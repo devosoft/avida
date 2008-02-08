@@ -1393,8 +1393,8 @@ double cPhenotype::ExtractParentEnergy() {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get() > 0);
   // energy model config variables
   double energy_given_at_birth = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get();
-  double frac_parent_energy_given_at_birth = m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_AT_BIRTH.Get();
-  double frac_energy_decay_at_birth = m_world->GetConfig().FRAC_ENERGY_DECAY_AT_BIRTH.Get();
+  double frac_parent_energy_given_at_birth = m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_TO_ORG_AT_BIRTH.Get();
+  double frac_energy_decay_at_birth = m_world->GetConfig().FRAC_ENERGY_DECAY_AT_ORG_BIRTH.Get();
   double energy_cap = (double) m_world->GetConfig().ENERGY_CAP.Get();
   
   // apply energy if APPLY_ENERGY_METHOD is set to "on divide" (0)

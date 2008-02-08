@@ -1066,6 +1066,8 @@ There are several bases this can be checked on:
 1: 'full_deme' - ...demes that have been filled up.
 2: 'corners'   - ...demes with upper left and lower right corners filled.
 3: 'deme-age'  - ...demes who have reached their maximum age
+4: 'birth-count' ...demes that have had a certain number of births.
+
 */
 
 void cPopulation::ReplicateDemes(int rep_trigger)
@@ -1149,6 +1151,15 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // Stats tracking; pre-replication hook.
   m_world->GetStats().DemePreReplication(source_deme, target_deme);
   
+  // used to pass energy to offspring demes (set to zero if energy model is not enabled)
+  double source_deme_energy(0.0), deme_energy_decay(0.0), parent_deme_energy(0.0), offspring_deme_energy(0.0);
+  if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
+    source_deme_energy = source_deme.CalculateTotalEnergy();
+    deme_energy_decay = 1.0 - m_world->GetConfig().FRAC_ENERGY_DECAY_AT_DEME_BIRTH.Get();
+    parent_deme_energy = source_deme_energy * deme_energy_decay * (1.0 - m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_TO_DEME_AT_BIRTH.Get());
+    offspring_deme_energy = source_deme_energy * deme_energy_decay * m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_TO_DEME_AT_BIRTH.Get();
+  }
+  
   // Are we using germlines?  If so, we need to mutate the germline to get the
   // genome that we're going to seed the target with.
   if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
@@ -1199,8 +1210,13 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   }
   
   // Reset both demes, in case they have any cleanup work to do.
-  source_deme.Reset();
-  target_deme.Reset();
+  if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
+    source_deme.Reset(parent_deme_energy);
+    target_deme.Reset(offspring_deme_energy);  
+  } else {
+    source_deme.Reset();
+    target_deme.Reset();
+  }
   
   // All done; do our post-replication stats tracking.
   m_world->GetStats().DemePostReplication(source_deme, target_deme);

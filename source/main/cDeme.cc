@@ -22,6 +22,8 @@
  */
 
 #include "cDeme.h"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cResource.h"
@@ -88,14 +90,36 @@ void cDeme::ProcessUpdate() {
   ++_age;
 }
 
-void cDeme::Reset() 
+void cDeme::Reset()
 {
-  birth_count = 0; 
-  _age = 0;  
-  //clear cell energy
-  
+  birth_count = 0;
+  _age = 0;
   deme_resource_count.ReinitializeResources();
 }
+
+void cDeme::Reset(double deme_energy)
+{
+  assert(m_world->GetConfig().ENERGY_ENABLED.Get());
+  assert(org_count>0);
+  
+  total_org_energy = deme_energy;
+  if(total_org_energy < 0.0)
+    total_org_energy = 0.0;
+  
+  // split deme energy evenly between organisms in deme
+  for (int i=0; i<GetSize(); i++) {
+    int cellid = GetCellID(i);
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+    if(cell.IsOccupied()) {
+      cOrganism* organism = cell.GetOrganism();
+      cPhenotype& phenotype = organism->GetPhenotype();
+      phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(org_count));
+      phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+    }
+  }
+  Reset();
+}
+
 
 /*! Replacing this deme's germline has the effect of changing the deme's lineage.
 There's still some work to do here; the lineage labels of the Genomes in the germline
@@ -183,4 +207,20 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value) {
 void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration) {
   cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width);
   cell_events.Push(demeEvent);
+}
+
+double cDeme::CalculateTotalEnergy() {
+  assert(m_world->GetConfig().ENERGY_ENABLED.Get());
+    
+  double energy_sum = 0.0;
+  for (int i=0; i<GetSize(); i++) {
+    int cellid = GetCellID(i);
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+    if(cell.IsOccupied()) {
+      cOrganism* organism = cell.GetOrganism();
+      cPhenotype& phenotype = organism->GetPhenotype();
+      energy_sum += phenotype.GetStoredEnergy();
+    }
+  }
+  return energy_sum;
 }

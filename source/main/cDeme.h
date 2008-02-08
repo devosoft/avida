@@ -46,6 +46,7 @@ private:
   int birth_count; //!< Number of organisms that have been born into this deme since reset.
   int org_count; //!< Number of organisms are currently in this deme.
   int _age; //!< Age of this deme, in updates.
+  double total_org_energy; //! total amount of energy in organisms in this deme
   
   cGermline _germline; //!< The germline for this deme, if used.
 
@@ -57,7 +58,7 @@ private:
   tArray<cDemeCellEvent> cell_events;
   
 public:
-  cDeme() : width(0), birth_count(0), org_count(0), _age(0), deme_resource_count(0) { ; }
+  cDeme() : width(0), birth_count(0), org_count(0), _age(0), total_org_energy(0.0), deme_resource_count(0) { ; }
   ~cDeme() { ; }
 
   void Setup(const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
@@ -72,6 +73,7 @@ public:
   int GetHeight() const { return cell_ids.GetSize() / width; }
 
   void Reset();
+  void Reset(double deme_energy); //! used to pass energy to offspring deme
   int GetBirthCount() const { return birth_count; }
   void IncBirthCount() { birth_count++; }
 
@@ -110,6 +112,8 @@ public:
   int GetRelativeCellID(int absolute_cell_id) { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
 
   void SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration);
+  
+  double CalculateTotalEnergy();
 };
 
 #endif
