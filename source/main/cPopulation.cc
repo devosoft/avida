@@ -120,6 +120,7 @@ cPopulation::cPopulation(cWorld* world)
   
   // Not yet supported:
   assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()==1);
+  assert(m_world->GetConfig().DEMES_HAVE_MERIT.Get()==0);
   
 #ifdef DEBUG
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();

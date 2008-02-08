@@ -452,6 +452,8 @@ private:
   bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
+  //! Execute the following instruction if all resources are above their min level.
+  bool Inst_IfResources(cAvidaContext& ctx);
   bool Inst_CollectCellData(cAvidaContext& ctx);
 
   void DoDonate(cOrganism * to_org);

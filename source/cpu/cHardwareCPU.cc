@@ -29,6 +29,7 @@
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
+#include "cEnvironment.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
 #include "cHardwareManager.h"
@@ -42,6 +43,10 @@
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cReaction.h"
+#include "cReactionLib.h"
+#include "cReactionProcess.h"
+#include "cResource.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
 #include "cWorldDriver.h"
@@ -203,6 +208,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2, nInstFlag::STALL),           // If you add more sense instructions
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
+    tInstLibEntry<tMethod>("if-resources", &cHardwareCPU::Inst_IfResources, nInstFlag::STALL),
     // Data collection
     tInstLibEntry<tMethod>("collect-cell-data", &cHardwareCPU::Inst_CollectCellData, nInstFlag::STALL),
 
@@ -3113,6 +3119,36 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   // Note that we are converting <double> resources to <int> register values
 }
 
+
+/*! Sense the level of resources in this organism's cell, and if all of the 
+resources present are above the min level for that resource, execute the following
+intruction.  Otherwise, skip the following instruction.
+*/
+bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
+{
+  // These are the current levels of resources at this cell:
+  const tArray<double>& resources = organism->GetOrgInterface().GetResources();
+
+  // Now we loop through the different reactions, checking to see if their
+  // required resources are below what's available.  If so, we skip ahead an
+  // instruction and return.
+  const cReactionLib& rxlib = m_world->GetEnvironment().GetReactionLib();
+  for(int i=0; i<rxlib.GetSize(); ++i) {
+    cReaction* rx = rxlib.GetReaction(i);
+    tLWConstListIterator<cReactionProcess> processes(rx->GetProcesses());
+    while(!processes.AtEnd()) {
+      const cReactionProcess* proc = processes.Next();
+      cResource* res = proc->GetResource(); // Infinite resource == 0.
+      if((res != 0) && (proc->GetMinNumber() < resources[res->GetID()])) {
+        IP().Advance();
+        return true;
+      }
+    }
+  }
+  return true;
+}
+
+
 bool cHardwareCPU::Inst_CollectCellData(cAvidaContext& ctx) {
   int cellID = organism->GetCellID();
   const int out_reg = FindModifiedRegister(REG_BX);
@@ -4672,6 +4708,7 @@ bool cHardwareCPU::Inst_RetrieveMessage(cAvidaContext& ctx)
   GetRegister(data_reg) = msg->GetData();
   return true;
 }
+
 
 //// Placebo insts ////
 bool cHardwareCPU::Inst_Skip(cAvidaContext& ctx)
