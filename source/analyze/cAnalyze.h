@@ -84,9 +84,8 @@ class cAnalyze {
 #if USE_tMemTrack
   tMemTrack<cAnalyze> mt;
 #endif
-// FIXME@kaben : must switch back to private. 3 Nov 2007.
-public:
-//private:
+
+private:
   int cur_batch;
 
   /*
