@@ -69,6 +69,7 @@ public:                                                                         
 }                                                                                         /* 13 */ \
 
 STATS_OUT_FILE(PrintAverageData,            average.dat         );
+STATS_OUT_FILE(PrintDemeAverageData,        deme_average.dat    );
 STATS_OUT_FILE(PrintErrorData,              error.dat           );
 STATS_OUT_FILE(PrintVarianceData,           variance.dat        );
 STATS_OUT_FILE(PrintDominantData,           dominant.dat        );
@@ -2607,6 +2608,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 {
   // Stats Out Files
   action_lib->Register<cActionPrintAverageData>("PrintAverageData");
+  action_lib->Register<cActionPrintDemeAverageData>("PrintDemeAverageData");
   action_lib->Register<cActionPrintErrorData>("PrintErrorData");
   action_lib->Register<cActionPrintVarianceData>("PrintVarianceData");
   action_lib->Register<cActionPrintDominantData>("PrintDominantData");

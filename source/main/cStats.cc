@@ -562,6 +562,19 @@ void cStats::PrintAverageData(const cString& filename)
   df.Endl();
 }
 
+void cStats::PrintDemeAverageData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida Average Deme Data");
+  df.WriteTimeStamp();
+
+  df.Write(m_update,                        "Update");
+  df.Write(sum_deme_age.Average(),          "Age");
+  df.Write(sum_deme_birth_count.Average(),  "Births");
+  df.Write(sum_deme_org_count.Average(),    "Organisms");
+  df.Endl();
+}
 
 void cStats::PrintErrorData(const cString& filename)
 {

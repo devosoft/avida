@@ -2211,6 +2211,25 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
   for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
 }
 
+// Loop through all the demes getting stats and doing calculations
+// which must be done on a deme by deme basis.
+void cPopulation::UpdateDemeStats() {
+  cStats& stats = m_world->GetStats();
+
+  stats.SumDemeAge().Clear();
+  stats.SumDemeBirthCount().Clear();
+  stats.SumDemeOrgCount().Clear();
+  
+  for(int i = 0; i < GetNumDemes(); i++) {
+    cDeme& deme = GetDeme(i);
+    if(deme.IsEmpty())  // ignore empty demes
+      continue;
+    stats.SumDemeAge().Add(deme.GetAge());
+    stats.SumDemeBirthCount().Add(deme.GetBirthCount());
+    stats.SumDemeOrgCount().Add(deme.GetOrgCount());
+  }
+}
+
 
 void cPopulation::UpdateOrganismStats()
 {
@@ -2536,6 +2555,7 @@ void cPopulation::CalcUpdateStats()
   // Reset the Genebank to prepare it for stat collection.
   m_world->GetClassificationManager().UpdateReset();
   
+  UpdateDemeStats();
   UpdateOrganismStats();
   UpdateGenotypeStats();
   UpdateSpeciesStats();

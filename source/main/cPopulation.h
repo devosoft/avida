@@ -122,6 +122,7 @@ private:
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
 
   // Update statistics collecting...
+  void UpdateDemeStats();
   void UpdateOrganismStats();
   void UpdateGenotypeStats();
   void UpdateSpeciesStats();

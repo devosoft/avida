@@ -260,6 +260,11 @@ private:
 
   tArray<int> numAsleep;
   
+  // simple deme stats
+  cIntSum sum_deme_age;
+  cIntSum sum_deme_birth_count;
+  cIntSum sum_deme_org_count;
+
   // Speculative Execution Stats
   int m_spec_total;
   int m_spec_num;
@@ -395,6 +400,11 @@ public:
   cDoubleSum& SumExeSize()       { return sum_exe_size; }
   cDoubleSum& SumMemSize()       { return sum_mem_size; }
 
+  //deme
+  cIntSum& SumDemeAge()          { return sum_deme_age; }
+  cIntSum& SumDemeBirthCount()   { return sum_deme_birth_count; }
+  cIntSum& SumDemeOrgCount()     { return sum_deme_org_count; }
+
 #if INSTRUCTION_COUNT
   void ZeroInst();
 #endif
@@ -426,7 +436,11 @@ public:
   const cDoubleSum& SumExeSize() const       { return sum_exe_size; }
   const cDoubleSum& SumMemSize() const       { return sum_mem_size; }
 
-  
+  //deme
+  const cIntSum& SumDemeAge() const          { return sum_deme_age; }
+  const cIntSum& SumDemeBirthCount() const   { return sum_deme_birth_count; }
+  const cIntSum& SumDemeOrgCount() const     { return sum_deme_org_count; }
+
   void IncResamplings() { ++num_resamplings; }  // @AWC 06/29/06
   void IncFailedResamplings() { ++num_failedResamplings; }  // @AWC 06/29/06
 
@@ -615,6 +629,7 @@ public:
 
   // Public calls to output data files (for events)
   void PrintAverageData(const cString& filename);
+  void PrintDemeAverageData(const cString& filename);
   void PrintErrorData(const cString& filename);
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);
