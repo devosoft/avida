@@ -92,6 +92,13 @@ void cReactionResult::Lethal(bool flag)
  lethal = flag;
 }
 
+void cReactionResult::Sterilize(bool flag)
+{
+  ActivateReaction();
+  sterilize = flag;
+}
+
+
 void cReactionResult::MarkTask(int id, const double quality, const double value)
 {
   ActivateReaction();
@@ -155,6 +162,12 @@ bool cReactionResult::GetLethal()
 {
   if (GetActive() == false) return false;
   return lethal;
+}
+
+bool cReactionResult::GetSterilize()
+{
+  if (GetActive() == false) return false;
+  return sterilize;
 }
 
 bool cReactionResult::ReactionTriggered(int id)

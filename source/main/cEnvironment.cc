@@ -200,6 +200,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
         return false;
       new_process->SetLethal(var_value.AsInt());
     }
+    else if (var_name == "sterilize") {
+      if (!AssertInputBool(var_value, "sterilize", var_type))
+        return false;
+      new_process->SetSterile(var_value.AsInt());
+    }
     else if (var_name == "detect") {
       cResource* test_resource = resource_lib.GetResource(var_value);
       if (!AssertInputValid(test_resource, "product", var_type, var_value)) {
@@ -1062,7 +1067,8 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       result.AddInst(inst_id);
     }
     
-    result.Lethal(cur_process->GetLethal());    
+    result.Lethal(cur_process->GetLethal());
+    result.Sterilize(cur_process->GetSterilize());
     }
 }
 

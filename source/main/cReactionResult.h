@@ -45,6 +45,7 @@ private:
   double bonus_mult;
   tArray<int> insts_triggered;
   bool lethal;
+  bool sterilize;
   bool active_reaction;
 
   inline void ActivateReaction();
@@ -63,6 +64,7 @@ public:
   void Produce(int id, double num);
   void Detect(int id, double num);
   void Lethal(bool flag);
+  void Sterilize(bool flag);
   void MarkTask(int id, const double quality=1, const double value=0);
 
   void MarkReaction(int id);
@@ -76,6 +78,7 @@ public:
   double GetProduced(int id);
   double GetDetected(int id);
   bool GetLethal();  
+  bool GetSterilize();
   bool ReactionTriggered(int id);
   bool TaskDone(int id);
   double TaskQuality(int id);

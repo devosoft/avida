@@ -1023,7 +1023,11 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 
   //Kill any cells that did lethal reactions
   to_die = result.GetLethal();
-  
+
+  // Sterilize organisms that have performed a sterilizing task.
+  if(result.GetSterilize()) {
+    is_fertile = false;
+  }
   return true;
 }
 
