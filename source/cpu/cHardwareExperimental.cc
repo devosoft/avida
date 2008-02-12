@@ -161,6 +161,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Promoter Model
     tInstLibEntry<tMethod>("promoter", &cHardwareExperimental::Inst_Promoter, nInstFlag::PROMOTER),
     tInstLibEntry<tMethod>("terminate", &cHardwareExperimental::Inst_Terminate),
+    tInstLibEntry<tMethod>("term-cons", &cHardwareExperimental::Inst_TerminateConsensus),
+    tInstLibEntry<tMethod>("term-cons-24", &cHardwareExperimental::Inst_TerminateConsensus24),
     tInstLibEntry<tMethod>("regulate", &cHardwareExperimental::Inst_Regulate),
     tInstLibEntry<tMethod>("regulate-sp", &cHardwareExperimental::Inst_RegulateSpecificPromoters),
     tInstLibEntry<tMethod>("s-regulate", &cHardwareExperimental::Inst_SenseRegulate),
@@ -320,7 +322,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   cPhenotype& phenotype = organism->GetPhenotype();
 
   // First instruction - check whether we should be starting at a promoter, when enabled.
-  if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) Inst_Terminate(ctx);
+  if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
   
   phenotype.IncCPUCyclesUsed();
   if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed();
@@ -400,10 +402,10 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       // In the promoter model, we may force termination after a certain number of inst have been executed
       if (m_promoters_enabled) {
         const double processivity = m_world->GetConfig().PROMOTER_PROCESSIVITY.Get();
-        if (ctx.GetRandom().P(1 - processivity)) Inst_Terminate(ctx);
+        if (ctx.GetRandom().P(1 - processivity)) PromoterTerminate(ctx);
         if (m_world->GetConfig().PROMOTER_INST_MAX.Get() &&
             (m_threads[m_cur_thread].GetPromoterInstExecuted() >= m_world->GetConfig().PROMOTER_INST_MAX.Get())) {
-          Inst_Terminate(ctx);
+          PromoterTerminate(ctx);
         }
       }
     } // if exec
@@ -1401,80 +1403,27 @@ bool cHardwareExperimental::Inst_Promoter(cAvidaContext& ctx)
 // Move the instruction ptr to the next active promoter
 bool cHardwareExperimental::Inst_Terminate(cAvidaContext& ctx)
 {
-  // Optionally,
-  // Reset the thread.
-  if (m_world->GetConfig().TERMINATION_RESETS.Get())
-  {
-    m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
-    
-    //Setting this makes it harder to do things. You have to be modular.
-    organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
-    organism->ClearInput();                         // Also clear their input buffers, or they can still claim
-                                                    // rewards for numbers no longer in their environment!
-  }
-  
-  // Reset our count
-  m_threads[m_cur_thread].ResetPromoterInstExecuted();
-  m_advance_ip = false;
-  const int promoter_reg_used = REG_DX; // register to put chosen promoter code in, default to DX
-  
-  
-  // @DMB - should the promoter index and offset be stored in cLocalThread to allow multiple threads?
-  
-  // Search for an active promoter  
-  int start_offset = m_promoter_offset;
-  int start_index  = m_promoter_index;
-  
-  bool no_promoter_found = true;
-  if (m_promoters.GetSize() > 0) {
-    while (true) {
-      // If the next promoter is active, then break out
-      NextPromoter();
-      if (IsActivePromoter()) {
-        no_promoter_found = false;
-        break;
-      }
-      
-      // If we just checked the promoter that we were originally on, then there
-      // are no active promoters.
-      if ((start_offset == m_promoter_offset) && (start_index == m_promoter_index)) break;
-      
-      // If we originally were not on a promoter, then stop once we check the
-      // first promoter and an offset of zero
-      if (start_index == -1) start_index = 0;
-    } 
-  }
-  
-  if (no_promoter_found) {
-    switch (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get()) {
-      case 0:
-      case 2:
-        // Set defaults for when no active promoter is found
-        m_promoter_index = -1;
-        IP().Set(0);
-        GetRegister(promoter_reg_used) = 0;
-        break;
-        
-      case 1: // Death to organisms that refuse to use promoters!
-        organism->Die();
-        break;
-        
-      default:
-        cout << "Unrecognized NO_ACTIVE_PROMOTER_EFFECT setting: " << m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() << endl;
-        exit(1);
-        break;
-    }
-  } else {
-    // We found an active match, offset to just after it.
-    // cHeadCPU will do the mod genome size for us
-    IP().Set(m_promoters[m_promoter_index].m_pos + 1);
-    
-    // Put its bit code in BX for the organism to have if option is set
-    if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
-      GetRegister(promoter_reg_used) = m_promoters[m_promoter_index].m_bit_code;
-  }
+  PromoterTerminate(ctx);
   return true;
 }
+
+// Move the instruction ptr to the next active promoter
+bool cHardwareExperimental::Inst_TerminateConsensus(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_DX);
+  if (BitCount(GetRegister(op1)) <  CONSENSUS)  PromoterTerminate(ctx);
+  return true;
+}
+
+
+// Move the instruction ptr to the next active promoter
+bool cHardwareExperimental::Inst_TerminateConsensus24(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_DX);
+  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  PromoterTerminate(ctx);
+  return true;
+}
+
 
 // Set a new regulation code (which is XOR'ed with ALL promoter codes).
 bool cHardwareExperimental::Inst_Regulate(cAvidaContext& ctx)
@@ -1550,40 +1499,109 @@ bool cHardwareExperimental::Do_Numberate(cAvidaContext& ctx, int num_bits)
   return true;
 }
 
-// Move to the next promoter.
-void cHardwareExperimental::NextPromoter()
+
+void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
 {
-  // Move promoter index, rolling over if necessary
-  m_promoter_index++;
-  
-  if (m_promoter_index == m_promoters.GetSize()) {
-    m_promoter_index = 0;
+  // Optionally,
+  // Reset the thread.
+  if (m_world->GetConfig().TERMINATION_RESETS.Get())
+  {
+    m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
     
-    // Move offset, rolling over when there are not enough bits before we would have to wrap around left
-    const int promoter_exe_length = m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
-    m_promoter_offset += promoter_exe_length;
-    if (m_promoter_offset + promoter_exe_length > m_world->GetConfig().PROMOTER_CODE_SIZE.Get()) m_promoter_offset = 0;
-  }
-}
-
-
-// Check whether the current promoter is active.
-bool cHardwareExperimental::IsActivePromoter()
-{
-  assert( m_promoters.GetSize() != 0 );
-
-  const int promoter_exe_length = m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
-  const int promoter_code_size = m_world->GetConfig().PROMOTER_CODE_SIZE.Get();
-
-  int count = 0;
-  unsigned int code = m_promoters[m_promoter_index].GetRegulatedBitCode();
-  for (int i = 0; i < promoter_exe_length; i++) {
-    int offset = (m_promoter_offset + i) % promoter_code_size;
-    int state = code >> offset;
-    count += (state & 1);
+    //Setting this makes it harder to do things. You have to be modular.
+    organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
+    organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+    // rewards for numbers no longer in their environment!
   }
   
-  return (count >= m_world->GetConfig().PROMOTER_EXE_THRESHOLD.Get());
+  // Reset our count
+  m_threads[m_cur_thread].ResetPromoterInstExecuted();
+  m_advance_ip = false;
+  const int promoter_reg_used = REG_DX; // register to put chosen promoter code in, default to DX
+  
+  
+  // @DMB - should the promoter index and offset be stored in cLocalThread to allow multiple threads?
+  
+  // Search for an active promoter  
+  int start_offset = m_promoter_offset;
+  int start_index  = m_promoter_index;
+  
+  
+  bool no_promoter_found = true;
+  if (m_promoters.GetSize() > 0) {
+    const int promoter_exe_length = m_world->GetConfig().PROMOTER_EXE_LENGTH.Get();
+    const int promoter_code_size = m_world->GetConfig().PROMOTER_CODE_SIZE.Get();
+    const int promoter_exe_threshold = m_world->GetConfig().PROMOTER_EXE_THRESHOLD.Get();
+    
+    while (true) {
+      // If the next promoter is active, then break out
+      
+      // Move promoter index, rolling over if necessary
+      m_promoter_index++;
+      
+      if (m_promoter_index == m_promoters.GetSize()) {
+        m_promoter_index = 0;
+        
+        // Move offset, rolling over when there are not enough bits before we would have to wrap around left
+        m_promoter_offset += promoter_exe_length;
+        if (m_promoter_offset + promoter_exe_length > promoter_code_size) m_promoter_offset = 0;
+      }
+      
+      
+      int count = 0;
+      unsigned int code = m_promoters[m_promoter_index].GetRegulatedBitCode();
+      for (int i = 0; i < promoter_exe_length; i++) {
+        // @DMB - changed the following to avoid integer division. We should only ever need to circle around once
+        //int offset = (m_promoter_offset + i) % promoter_code_size;
+        int offset = m_promoter_offset + i;
+        if (offset >= promoter_code_size) offset -= promoter_code_size;
+        int state = code >> offset;
+        count += (state & 1);
+      }
+      
+      if (count >= promoter_exe_threshold) {
+        no_promoter_found = false;
+        break;
+      }
+      
+      // If we just checked the promoter that we were originally on, then there
+      // are no active promoters.
+      if ((start_offset == m_promoter_offset) && (start_index == m_promoter_index)) break;
+      
+      // If we originally were not on a promoter, then stop once we check the
+      // first promoter and an offset of zero
+      if (start_index == -1) start_index = 0;
+    } 
+  }
+  
+  if (no_promoter_found) {
+    switch (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get()) {
+      case 0:
+      case 2:
+        // Set defaults for when no active promoter is found
+        m_promoter_index = -1;
+        IP().Set(0);
+        GetRegister(promoter_reg_used) = 0;
+        break;
+        
+      case 1: // Death to organisms that refuse to use promoters!
+        organism->Die();
+        break;
+        
+      default:
+        cout << "Unrecognized NO_ACTIVE_PROMOTER_EFFECT setting: " << m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() << endl;
+        exit(1);
+        break;
+    }
+  } else {
+    // We found an active match, offset to just after it.
+    // cHeadCPU will do the mod genome size for us
+    IP().Set(m_promoters[m_promoter_index].m_pos + 1);
+    
+    // Put its bit code in BX for the organism to have if option is set
+    if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
+      GetRegister(promoter_reg_used) = m_promoters[m_promoter_index].m_bit_code;
+  }  
 }
 
 // Construct a promoter bit code from instruction bit codes

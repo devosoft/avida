@@ -371,6 +371,8 @@ private:
   // Promoter Model
   bool Inst_Promoter(cAvidaContext& ctx);
   bool Inst_Terminate(cAvidaContext& ctx);
+  bool Inst_TerminateConsensus(cAvidaContext& ctx);
+  bool Inst_TerminateConsensus24(cAvidaContext& ctx);
   bool Inst_Regulate(cAvidaContext& ctx);
   bool Inst_RegulateSpecificPromoters(cAvidaContext& ctx);
   bool Inst_SenseRegulate(cAvidaContext& ctx);
@@ -379,8 +381,7 @@ private:
   bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
   
   // Promoter Helper functions
-  bool IsActivePromoter();
-  void NextPromoter();
+  void PromoterTerminate(cAvidaContext& ctx);
   int  Numberate(int _pos, int _dir, int _num_bits = 0);
   
   
