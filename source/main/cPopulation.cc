@@ -1249,7 +1249,6 @@ void cPopulation::SeedDeme(cDeme& deme, cGenome& genome) {
   }
 }
 
-
 /*! Helper method to seed a target deme from the organisms in the source deme.
 All organisms in the target deme are terminated, and a subset of the organisms in
 the source will be cloned to the target.
@@ -1257,40 +1256,90 @@ the source will be cloned to the target.
 void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
   cRandom& random = m_world->GetRandom();
 
-  // Select a random organism from the source.  All we need to do here is get a
-  // genome and a lineage label.
-  cOrganism* seed = 0;
-  while(seed == 0) {
-    int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
-    if(cell_array[cellid].IsOccupied()) {
-      seed = cell_array[cellid].GetOrganism();
+  if(m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get() == 0.0) {
+    // Select a random organism from the source.  All we need to do here is get a
+    // genome and a lineage label.
+    cOrganism* seed = 0;
+    while(seed == 0) {
+      int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
+      if(cell_array[cellid].IsOccupied()) {
+        seed = cell_array[cellid].GetOrganism();
+      }
     }
-  }
-
-  cGenome genome = seed->GetGenome();
-  int lineage = seed->GetLineageLabel();
-  seed = 0; // We're done with the seed organism.
-  
-  // Kill all the organisms in the source and target demes.
-  for (int i=0; i<target_deme.GetSize(); i++) {
-    KillOrganism(cell_array[target_deme.GetCellID(i)]);
-  }
-  for (int i=0; i<source_deme.GetSize(); i++) {
-    KillOrganism(cell_array[source_deme.GetCellID(i)]);
-  }
     
-  // Repopulation the source.
-  for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
-    int cellid = DemeSelectInjectionCell(source_deme, i);
-    InjectGenome(cellid, genome, lineage);
-    DemePostInjection(source_deme, cell_array[cellid]);
-  }
-  
-  // And repopulate the target.
-  for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
-    int cellid = DemeSelectInjectionCell(target_deme, i);
-    InjectGenome(cellid, genome, lineage);
-    DemePostInjection(target_deme, cell_array[cellid]);
+    cGenome genome = seed->GetGenome();
+    int lineage = seed->GetLineageLabel();
+    seed = 0; // We're done with the seed organism.
+    
+    // Kill all the organisms in the source and target demes.
+    for (int i=0; i<target_deme.GetSize(); i++) {
+      KillOrganism(cell_array[target_deme.GetCellID(i)]);
+    }
+    for (int i=0; i<source_deme.GetSize(); i++) {
+      KillOrganism(cell_array[source_deme.GetCellID(i)]);
+    }
+
+    // Repopulation the source.
+    for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
+      int cellid = DemeSelectInjectionCell(source_deme, i);
+      InjectGenome(cellid, genome, lineage);
+      DemePostInjection(source_deme, cell_array[cellid]);
+    }
+    
+    // And repopulate the target.
+    for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
+      int cellid = DemeSelectInjectionCell(target_deme, i);
+      InjectGenome(cellid, genome, lineage);
+      DemePostInjection(target_deme, cell_array[cellid]);
+    }
+  } else {
+    assert(m_world->GetConfig().DEMES_USE_GERMLINE.Get() != 1);
+    vector< pair<cGenome, int> > fruiting_body;
+
+    // Kill all the organisms in the target deme.
+    for (int i=0; i<target_deme.GetSize(); i++) {
+      KillOrganism(cell_array[target_deme.GetCellID(i)]);
+    }
+
+    for(int i = 0; i < source_deme.GetSize(); i++) {
+      int source_cellid = source_deme.GetCellID(i);
+      
+      if(cell_array[source_cellid].IsOccupied() && random.GetDouble(0.0, 1.0) < m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()) {
+        // save genome and lineage label of organism being transfered
+        cOrganism* seed = cell_array[source_cellid].GetOrganism();
+        cGenome genome = seed->GetGenome();
+        int lineage = seed->GetLineageLabel();
+        seed = 0; // We're done with the seed organism.
+        
+        // remove organism from source deme
+        KillOrganism(cell_array[source_cellid]);
+        
+        // inject into target deme
+        int target_cellid = DemeSelectInjectionCell(target_deme, i);
+        InjectGenome(target_cellid, genome, lineage);
+        DemePostInjection(target_deme, cell_array[target_cellid]);
+      }
+      
+      // collect genome and lineage label of organisms that remain in source deme
+      if(cell_array[source_cellid].IsOccupied()) {
+        cOrganism* seed = cell_array[source_cellid].GetOrganism();
+        fruiting_body.push_back(make_pair(seed->GetGenome(), seed->GetLineageLabel()));
+        seed = 0;
+
+        // kill remaining organisms
+        KillOrganism(cell_array[source_cellid]);
+      }
+    }
+    
+    int i = 0;
+    // reseed source deme
+    for(vector< pair<cGenome, int> >::iterator iter = fruiting_body.begin(); iter < fruiting_body.end(); iter++) {
+      // inject back into source deme
+      int source_offspring_cellid = DemeSelectInjectionCell(source_deme, i);
+      InjectGenome(source_offspring_cellid, (*iter).first, (*iter).second);
+      DemePostInjection(source_deme, cell_array[source_offspring_cellid]);
+      i++;
+    }
   }
 }
 
@@ -1301,14 +1350,15 @@ Respects all of the different placement options that are relevant for deme repli
 int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
   int cellid = -1;
   
-  assert(sequence == 0); //we only support one for now...
+  assert(sequence < deme.GetSize()); // cannot inject a sequence bigger then the deme
   
   switch(m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()) {
     case 0: { // Array-middle.
-      cellid = deme.GetCellID(deme.GetSize()/2);
+      cellid = deme.GetCellID((deme.GetSize()/2 + sequence) % deme.GetSize());
       break;
     }
     case 1: { // Sequential placement, start in the center of the deme.
+      assert(sequence == 0);  // not sure how to handle a sequence in this case (Ben)
       cellid = deme.GetCellID(deme.GetWidth()/2, deme.GetHeight()/2);
       break;
     }

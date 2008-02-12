@@ -298,7 +298,8 @@ public:
   CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline (default=0).");
   CONFIG_ADD_VAR(DEMES_HAVE_MERIT, int, 0, "Whether demes have merit (default=0).");
   CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Whether to prevent sterile demes from\nreplicating (default=0).");
-  CONFIG_ADD_VAR(DEMES_REPLICATE_SIZE, int, 1, "Number of organisms to create or copy from the\nsource deme to the target deme (default=1).");
+  CONFIG_ADD_VAR(DEMES_REPLICATE_SIZE, int, 1, "Number of identical organisms to create or copy from the\nsource deme to the target deme (default=1).");
+  CONFIG_ADD_VAR(DEMES_PROB_ORG_TRANSFER, double, 0.0, "Probablity of an organism being transferred from the\nsource deme to the target deme (default=0.0).");
   CONFIG_ADD_VAR(DEMES_ORGANISM_PLACEMENT, int, 0, "How organisms are placed during deme replication.\n0=cell-array middle (default).\n1=deme center.\n2=random placement.");
   CONFIG_ADD_VAR(DEMES_ORGANISM_FACING, int, 0, "How organisms are facing during deme replication.\n0=unchanged (default).\n1=northwest.\n2=random.");
   CONFIG_ADD_VAR(DEMES_MAX_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication (default=500).");
