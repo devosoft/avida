@@ -42,6 +42,7 @@ cReactionResult::cReactionResult(const int num_resources,
   , bonus_mult(1.0)
   , insts_triggered(0)
   , lethal(false)
+  , sterilize(false)
   , active_reaction(false)
 {
 }
