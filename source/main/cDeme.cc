@@ -90,14 +90,15 @@ void cDeme::ProcessUpdate() {
   ++_age;
 }
 
-void cDeme::Reset()
+void cDeme::Reset(bool resetResources)
 {
   birth_count = 0;
   _age = 0;
-  deme_resource_count.ReinitializeResources();
+  if(resetResources)
+    deme_resource_count.ReinitializeResources();
 }
 
-void cDeme::Reset(double deme_energy)
+void cDeme::Reset(double deme_energy, bool resetResources)
 {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get());
   assert(org_count>0);
@@ -117,7 +118,7 @@ void cDeme::Reset(double deme_energy)
       phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
     }
   }
-  Reset();
+  Reset(resetResources);
 }
 
 

@@ -557,7 +557,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
   last_task_quality         = cur_task_quality;
-  last_task_value			= cur_task_value;
+  last_task_value           = cur_task_value;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;

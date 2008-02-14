@@ -20,4 +20,4 @@ based CPUs should still function fine.
 Make sure all output files have headers.  There should be a central object
 that all files are output through that will make sure this is the case.
 
-Make events just call analyze scripts.  Re-design entire even structure.
+Make events just call analyze scripts.  Re-design entire event structure.

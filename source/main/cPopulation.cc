@@ -1211,10 +1211,10 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   
   // Reset both demes, in case they have any cleanup work to do.
   if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
-    source_deme.Reset(parent_deme_energy);
-    target_deme.Reset(offspring_deme_energy);  
+    source_deme.Reset(parent_deme_energy, m_world->GetConfig().DEMES_RESET_PARENT_RESOURCES.Get());
+    target_deme.Reset(offspring_deme_energy);
   } else {
-    source_deme.Reset();
+    source_deme.Reset(m_world->GetConfig().DEMES_RESET_PARENT_RESOURCES.Get());
     target_deme.Reset();
   }
   

@@ -72,8 +72,8 @@ public:
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }
 
-  void Reset();
-  void Reset(double deme_energy); //! used to pass energy to offspring deme
+  void Reset(bool resetResources = true);
+  void Reset(double deme_energy, bool resetResources = true); //! used to pass energy to offspring deme
   int GetBirthCount() const { return birth_count; }
   void IncBirthCount() { birth_count++; }
 
