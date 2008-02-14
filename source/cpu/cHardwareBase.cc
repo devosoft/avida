@@ -805,7 +805,8 @@ void cHardwareBase::CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)
   if( (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
    || (m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() && (organism->GetPhenotype().GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get()))
    || (m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() && (organism->GetPhenotype().GetCurBonus() >= m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get()))
-   || (m_world->GetConfig().IMPLICIT_REPRO_END.Get() && exec_last_inst ))
+   || (m_world->GetConfig().IMPLICIT_REPRO_END.Get() && exec_last_inst )
+   || (m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get() && ( organism->GetPhenotype().GetStoredEnergy() >= m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get())) )
   {
     Inst_Repro(ctx);
   }

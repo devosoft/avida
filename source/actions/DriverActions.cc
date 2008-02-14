@@ -80,12 +80,29 @@ public:
   }
 };
 
+class cActionStopFastForward : public cAction
+{
+private:
+public:
+  cActionStopFastForward(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+  }
+  
+  static const cString GetDescription() { return "Arguments: none"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+      m_world->GetDriver().ClearFastForward();
+  }
+};
 
 void RegisterDriverActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionExit>("Exit");
   action_lib->Register<cActionExitAveLineageLabelGreater>("ExitAveLineageLabelGreater");
   action_lib->Register<cActionExitAveLineageLabelLess>("ExitAveLineageLabelLess");
+  action_lib->Register<cActionStopFastForward>("StopFastForward");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionExit>("exit");

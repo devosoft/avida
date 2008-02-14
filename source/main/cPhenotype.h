@@ -325,6 +325,7 @@ public:
   int GetGeneration() const { assert(initialized == true); return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
+  int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
   int GetAge()        const { assert(initialized == true); return age; }
   const cString& GetFault() const { assert(initialized == true); return fault_desc; }
   double GetNeutralMetric() const { assert(initialized == true); return neutral_metric; }
@@ -390,6 +391,7 @@ public:
   void SetEnergy(const double value);
   void SetGestationTime(int in_time) { gestation_time = in_time; }
   void SetTimeUsed(int in_time) { time_used = in_time; }
+  void SetTrialTimeUsed(int in_time) { trial_time_used = in_time; }
   void SetFault(const cString& in_fault) { fault_desc = in_fault; }
   void SetNeutralMetric(double _in){ neutral_metric = _in; }
   void SetLifeFitness(double _in){ life_fitness = _in; }

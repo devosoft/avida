@@ -45,7 +45,11 @@ private:
 protected:
   cWorld* m_world;
   bool m_done;  // This is set to true when run should finish.
-
+  bool m_fastforward;
+  double m_last_generation;
+  int m_generation_same_update_count;
+  int m_generation_update_fastforward_threshold;
+  
 public:
   cDefaultRunDriver(cWorld* world);
   ~cDefaultRunDriver();
@@ -62,6 +66,11 @@ public:
   // Notifications
   void NotifyComment(const cString& in_string);
   void NotifyWarning(const cString& in_string);
+  
+  void ClearFastForward() { m_fastforward = false; m_generation_same_update_count = 0; }
+  void UpdateFastForward (double inGeneration);
+  bool GetFastForward() { return m_fastforward; }
+
 };
 
 

@@ -45,10 +45,14 @@
 using namespace std;
 
 
-cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(false)
+cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(false), 
+      m_fastforward(false),m_last_generation(0),  m_generation_same_update_count(0) 
 {
   cDriverManager::Register(static_cast<cAvidaDriver*>(this));
   world->SetDriver(this);
+  
+  // Save this config variable
+  m_generation_update_fastforward_threshold = m_world->GetConfig().FASTFORWARD_UPDATES.Get();
 }
 
 cDefaultRunDriver::~cDefaultRunDriver()
@@ -74,7 +78,7 @@ void cDefaultRunDriver::Run()
   }
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
-
+  
   while (!m_done) {
     if (cChangeList* change_list = population.GetChangeList()) {
       change_list->Reset();
@@ -99,17 +103,20 @@ void cDefaultRunDriver::Run()
       }
     }
     
+    // don't process organisms if we are in fast-forward mode. -- @JEB
+    if (!GetFastForward())
+    {
+      // Process the update.
+      const int UD_size = ave_time_slice * population.GetNumOrganisms();
+      const double step_size = 1.0 / (double) UD_size;
     
-    // Process the update.
-    const int UD_size = ave_time_slice * population.GetNumOrganisms();
-    const double step_size = 1.0 / (double) UD_size;
-    
-    for (int i = 0; i < UD_size; i++) {
-      if (population.GetNumOrganisms() == 0) {
-        m_done = true;
-        break;
+      for (int i = 0; i < UD_size; i++) {
+        if (population.GetNumOrganisms() == 0) {
+          m_done = true;
+          break;
+        }
+        (population.*ActiveProcessStep)(ctx, step_size, population.ScheduleOrganism());
       }
-      (population.*ActiveProcessStep)(ctx, step_size, population.ScheduleOrganism());
     }
     
     // end of update stats...
@@ -147,6 +154,9 @@ void cDefaultRunDriver::Run()
       }
     }
     
+    // Keep track of changes in generation for fast-forward purposes
+    UpdateFastForward(stats.GetGeneration());
+      
     // Exit conditons...
     if (population.GetNumOrganisms() == 0) m_done = true;
   }
@@ -171,4 +181,20 @@ void cDefaultRunDriver::NotifyComment(const cString& in_string)
 void cDefaultRunDriver::NotifyWarning(const cString& in_string)
 {
   cout << "Warning: " << in_string << endl;
+}
+
+void cDefaultRunDriver::UpdateFastForward (double inGeneration)
+{
+  if (!m_generation_update_fastforward_threshold) return;
+
+  if (inGeneration == m_last_generation)
+  {
+    m_generation_same_update_count++;
+    if (m_generation_same_update_count >= m_generation_update_fastforward_threshold) m_fastforward = true;
+  }
+  else
+  {
+    m_generation_same_update_count = 0;
+    m_last_generation = inGeneration;
+  }
 }

@@ -3402,6 +3402,14 @@ void cPopulation::NewTrial()
   {
     if (GetCell(i).IsOccupied())
     {
+      cPopulationCell& cell = GetCell(i);
+      
+      // Correct gestation time for speculative execution
+      cPhenotype & p =  GetCell(i).GetOrganism()->GetPhenotype();
+      p.SetTrialTimeUsed(p.GetTrialTimeUsed() - GetCell(i).GetSpeculativeState());
+      p.SetTimeUsed(p.GetTimeUsed() - GetCell(i).GetSpeculativeState());
+
+
       GetCell(i).GetOrganism()->NewTrial();
       GetCell(i).GetOrganism()->GetHardware().Reset();
     }
@@ -3438,7 +3446,7 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   int different_orgs_copied = 0;
   int num_competed_orgs = 0;
 
-  int num_trials = 0;
+  int num_trials = -1;
   int dynamic_scaling = (competition_type==3);
   
   // How many trials were there? -- same for every organism
@@ -3448,8 +3456,15 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
     if (GetCell(i).IsOccupied())
     { 
       cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
+      
+      if ( (num_trials != -1) && (num_trials != p.GetTrialFitnesses().GetSize()) )
+      {
+        cout << "The number of trials is not the same for every organism in the population.\n";
+        cout << "You need to remove all normal ways of replicating for CompeteOrganisms to work correctly.\n";
+        exit(1);
+      }
+      
       num_trials = p.GetTrialFitnesses().GetSize();
-      break;
     }
   }
   tArray<double> min_trial_fitnesses(num_trials);

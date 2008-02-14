@@ -46,6 +46,7 @@ class cWorldDriver
 private:
   cWorldDriver(const cWorldDriver&); // @not_implemented
   cWorldDriver& operator=(const cWorldDriver&); // @not_implemented
+  
 public:
   cWorldDriver() { ; }
   virtual ~cWorldDriver() { ; }
@@ -65,6 +66,12 @@ public:
   virtual bool IsInteractive() { return false; }
   virtual void Flush() { std::cout.flush(); std::cerr.flush(); }
   virtual bool ProcessKeypress(int keypress) { return false; }
+  
+  // Fast-forward through epochs when no replication is happening -- @JEB
+  // These are only implemented in the DefaultWorldDriver
+  virtual void ClearFastForward() { }
+  virtual bool GetFastForward() { }
+
 };
 
 
