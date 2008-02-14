@@ -1147,6 +1147,14 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 }
 
 
+/*! Called immediately prior to germline replacement.
+*/
+void cStats::GermlineReplication(cGermline& source_germline, cGermline& target_germline)
+{
+  m_germline_generation.Add(source_germline.Size());
+}
+
+
 /*! Print statistics related to deme replication.  Currently only prints the
 number of deme replications since the last time PrintDemeReplicationData was
 invoked.
@@ -1157,9 +1165,23 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   
   df.WriteComment("Avida deme replication data");
   df.WriteTimeStamp();
-  df.Write(m_update, "Update");
-  df.Write(m_deme_num_repls, "Number of deme replications.");
+  df.Write(m_update, "Update [update]");
+  df.Write(m_deme_num_repls, "Number of deme replications [numrepl]");
   df.Endl();
   
   m_deme_num_repls = 0;
+}
+
+
+void cStats::PrintGermlineData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida germline data");
+  df.WriteTimeStamp();
+  df.Write(m_update, "Update");
+  df.Write(m_germline_generation.Average(), "Mean germline generation of replicated germlines [replgen]");
+  df.Endl();
+    
+  m_germline_generation.Clear();
 }

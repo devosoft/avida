@@ -94,6 +94,8 @@ STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
+STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
+
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
 class cAction ## METHOD : public cAction {                                                /*  2 */ \
@@ -2645,6 +2647,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
+  action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   
   
   //Coalescence Clade Actions

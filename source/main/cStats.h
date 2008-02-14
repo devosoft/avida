@@ -682,12 +682,15 @@ public:
   //! Called immediately after deme replacement.
   void DemePostReplication(cDeme& source_deme, cDeme& target_deme) { }
   //! Called immediately prior to germline replacement.
-  void GermlineReplication(cGermline& source_germline, cGermline& target_germline) { }
+  void GermlineReplication(cGermline& source_germline, cGermline& target_germline);
   //! Print statistics about deme replication.
   void PrintDemeReplicationData(const cString& filename);
+  //! Print statistics about germlines.
+  void PrintGermlineData(const cString& filename);
   
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
+  cDoubleSum m_germline_generation; //!< "Generation" accumulator of replicated germlines.
 };
 
 
