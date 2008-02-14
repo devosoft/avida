@@ -1145,7 +1145,6 @@ both CompeteDemes and ReplicateDemes (and can be called directly via an event if
 so desired).
 
 @refactor Replace manual mutation with strategy pattern.
-@todo Add insertion and deletion mutations.
 */
 void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme) 
 {

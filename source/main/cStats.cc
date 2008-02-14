@@ -123,6 +123,7 @@ cStats::cStats(cWorld* world)
   , m_spec_total(0)
   , m_spec_num(0)
   , m_spec_waste(0)
+  , m_deme_num_repls(0)
 {
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();
@@ -1137,4 +1138,28 @@ void cStats::PrintPredicatedMessages(const cString& filename)
     out << " ";
   }
   df.Endl();  
+}
+
+
+void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
+{
+  ++m_deme_num_repls;
+}
+
+
+/*! Print statistics related to deme replication.  Currently only prints the
+number of deme replications since the last time PrintDemeReplicationData was
+invoked.
+*/
+void cStats::PrintDemeReplicationData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida deme replication data");
+  df.WriteTimeStamp();
+  df.Write(m_update, "Update");
+  df.Write(m_deme_num_repls, "Number of deme replications.");
+  df.Endl();
+  
+  m_deme_num_repls = 0;
 }
