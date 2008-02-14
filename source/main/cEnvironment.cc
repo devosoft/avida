@@ -47,6 +47,7 @@ to organisms doing certain tasks).  */
 #include "cTools.h"
 #include "cWorld.h"
 #include <iostream>
+#include <algorithm>
 
 #ifndef tArray_h
 #include "tArray.h"
@@ -991,6 +992,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Make sure we're not above the maximum consumption.
       if (consumed > max_consumed) consumed = max_consumed;
 
+      assert((task_quality >= 0.0) && (task_quality <= 1.0));
       consumed *= task_quality;  // modify consumed based on task quality
       
       // Test if we are below the minimum consumption.
@@ -998,6 +1000,9 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       
       // If we don't actually have any resource to consume stop here.
       if (consumed == 0.0) continue;
+      
+      // Can't consume more resource than what's available.
+      consumed = std::min(consumed, resource_count[res_id]);
       
       // Mark in the results the resource consumed.
       if (cur_process->GetDepletable()) result.Consume(res_id, consumed);
