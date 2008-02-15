@@ -1214,13 +1214,16 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     case 0:
       // reset resource in both demes
       source_deme_resource_reset = target_deme_resource_reset = true;
+      break;
     case 1:
       // reset resource only in target deme
       source_deme_resource_reset = false;
       target_deme_resource_reset = true;
+      break;
     case 2:
       // do not reset either deme resource
       source_deme_resource_reset = target_deme_resource_reset = false;
+      break;
     default:
       cout << "Undefined value " << m_world->GetConfig().DEMES_RESET_RESOURCES.Get() << " for DEMES_RESET_RESOURCES\n";
       exit(1);
