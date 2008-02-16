@@ -30,6 +30,8 @@
 #include "cWorld.h"
 #include "cWorldDriver.h"
 
+#include <ctime>
+
 class cActionExit : public cAction
 {
 public:
@@ -97,11 +99,96 @@ public:
   }
 };
 
+
+/*! Exit Avida when the average generation is greater than or equal to a
+threshold value.  Respects demes / germlines configuration.
+
+MUST appear earlier in event file than PrintGermlineData, if used.
+*/
+class cActionExitAveGeneration : public cAction {
+public:
+  /*! Constructor; parse out the targeted generation.
+  */
+  cActionExitAveGeneration(cWorld* world, const cString& args) : cAction(world, args) {
+    cString largs(args);
+    if(largs.GetSize()) {
+      m_tgt_gen = largs.PopWord().AsDouble();
+    } else {
+      // error; no default value for targeted generation.
+      m_world->GetDriver().RaiseFatalException(-1, "ExitAveGeneration event requires generation.");
+    }
+  }
+
+  static const cString GetDescription() { return "Arguments: <double generation>"; }
+
+  /*! Check to see if we should exit Avida based on the average generation.  The
+  average generation is calculated differently based on whether demes / germlines
+  are used.  This method is called based on the events file.
+  */
+  void Process(cAvidaContext& ctx) {
+    if(m_world->GetConfig().NUM_DEMES.Get() > 1) {
+      // Using demes; generation might be different.
+      if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
+         && (m_world->GetStats().GetAveGermlineGeneration() > m_tgt_gen)) {
+        m_world->GetDriver().SetDone();
+      }
+    } else {
+      // No demes; generation is calculated in cStats.
+      if(m_world->GetStats().GetGeneration() > m_tgt_gen) {
+        m_world->GetDriver().SetDone();
+      }
+    }
+  }
+  
+protected:
+  double m_tgt_gen; //!< Target generation above which Avida should exit.
+};
+
+
+/*! Exit Avida when the elapsed wallclock time has exceeded a threshold number
+of seconds, beginning from the construction of this object.
+*/
+class cActionExitElapsedTime : public cAction {
+public:
+  /*! Constructor; parse out the threshold time.
+  */
+  cActionExitElapsedTime(cWorld* world, const cString& args) : cAction(world, args) {
+    cString largs(args);
+    if(largs.GetSize()) {
+      m_time = largs.PopWord().AsInt();
+    } else {
+      // error; no default value for elapsed time.
+      m_world->GetDriver().RaiseFatalException(-1, "ExitElapsedTime event requires elapsed time.");
+    }
+    
+    // When did we start?
+    m_then = time(0);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int elapsed time [seconds]>"; }
+  
+  /*! Check to see if we should exit Avida based on the elapsed time since construction
+  of this object.  This method is called based on the events file.
+  */
+  void Process(cAvidaContext& ctx) {
+    if((time(0) - m_then) >= m_time) {
+      m_world->GetDriver().SetDone();
+    }
+  }
+  
+protected:
+  int m_time; //!< Number of seconds after which Avida should exit.
+  int m_then; //!< Time at which this object was constructed (the 'start' of Avida).
+};
+
+
 void RegisterDriverActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionExit>("Exit");
   action_lib->Register<cActionExitAveLineageLabelGreater>("ExitAveLineageLabelGreater");
   action_lib->Register<cActionExitAveLineageLabelLess>("ExitAveLineageLabelLess");
+  action_lib->Register<cActionExitAveGeneration>("ExitAveGeneration");
+  action_lib->Register<cActionExitElapsedTime>("ExitElapsedTime");
   action_lib->Register<cActionStopFastForward>("StopFastForward");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.

@@ -1179,7 +1179,7 @@ void cStats::PrintGermlineData(const cString& filename)
   
   df.WriteComment("Avida germline data");
   df.WriteTimeStamp();
-  df.Write(m_update, "Update");
+  df.Write(m_update, "Update [update]");
   df.Write(m_germline_generation.Average(), "Mean germline generation of replicated germlines [replgen]");
   df.Endl();
     

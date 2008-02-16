@@ -687,6 +687,8 @@ public:
   void PrintDemeReplicationData(const cString& filename);
   //! Print statistics about germlines.
   void PrintGermlineData(const cString& filename);
+  //! Accessor for average "generation" of germlines.
+  double GetAveGermlineGeneration() const { return m_germline_generation.Average(); }
   
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
