@@ -104,6 +104,8 @@ public:
 threshold value.  Respects demes / germlines configuration.
 
 MUST appear earlier in event file than PrintGermlineData, if used.
+
+@todo Doesn't currently work with demes w/o germlines.
 */
 class cActionExitAveGeneration : public cAction {
 public:
@@ -116,6 +118,11 @@ public:
     } else {
       // error; no default value for targeted generation.
       m_world->GetDriver().RaiseFatalException(-1, "ExitAveGeneration event requires generation.");
+    }
+    
+    // Can't currently calc generation for non-germlines demes.
+    if(m_world->GetConfig().NUM_DEMES.Get() > 1) {
+      assert(m_world->GetConfig().DEMES_USE_GERMLINE.Get());
     }
   }
 
