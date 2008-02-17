@@ -76,6 +76,7 @@ protected:
 
 protected:
   unsigned Divide_DoExactMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int pointmut = INT_MAX);
+  bool Divide_TestFitnessMeasures1(cAvidaContext& ctx);
   
   void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
   bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,

@@ -341,6 +341,65 @@ public:
   }
 };
 
+/*
+ Injects identical organisms into a range of cells of the population with a specified divide mut rate (per site).
+ 
+ Parameters:
+   sequence (string) [required]
+     The genome sequence for this organism.
+   cell_start (int)
+     First cell to inject into.
+   cell_end (int)
+     First cell *not* to inject into.
+   merit (double) default: -1
+     The initial merit of the organism. If set to -1, this is ignored.
+   lineage label (integer) default: 0
+     An integer that marks all descendants of this organism.
+   neutral metric (double) default: 0
+     A double value that randomly drifts over time.
+*/
+class cActionInjectSequenceWithDivMutRate : public cAction
+{
+private:
+  cString m_sequence;
+  int m_cell_start;
+  int m_cell_end;
+  double m_merit;
+  double m_div_mut_rate;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectSequenceWithDivMutRate(cWorld* world, const cString& args)
+    : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_div_mut_rate(0.0),m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    m_sequence = largs.PopWord();
+    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_div_mut_rate = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double div_mut_rate=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+      m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
+    } else {
+      cGenome genome(m_sequence);
+      for (int i = m_cell_start; i < m_cell_end; i++) {
+        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+	m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
 
 /*
  Injects identical parasites into a range of cells of the population.
@@ -1573,6 +1632,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectAll>("InjectAll");
   action_lib->Register<cActionInjectRange>("InjectRange");
   action_lib->Register<cActionInjectSequence>("InjectSequence");
+  action_lib->Register<cActionInjectSequenceWithDivMutRate>("InjectSequenceWDivMutRate");
   action_lib->Register<cActionInjectDemes>("InjectDemes");
 
   action_lib->Register<cActionInjectParasite>("InjectParasite");

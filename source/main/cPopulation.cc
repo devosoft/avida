@@ -31,6 +31,7 @@
 #include "cCodeLabel.h"
 #include "cConstSchedule.h"
 #include "cDataFile.h"
+#include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
 #include "functions.h"
 #include "cGenome.h"
@@ -355,7 +356,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
         delete test_cpu;
       }
     }
-    schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit());
+    schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit(),parent_cell.GetDemeID());
     
     // In a local run, face the child toward the parent. 
     const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
@@ -488,7 +489,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   m_world->GetClassificationManager().AdjustGenotype(*in_genotype);
   
   // Initialize the time-slice for this new organism.
-  schedule->Adjust(target_cell.GetID(), in_organism->GetPhenotype().GetMerit());
+  schedule->Adjust(target_cell.GetID(), in_organism->GetPhenotype().GetMerit(),target_cell.GetDemeID());
   
   // Special handling for certain birth methods.
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
@@ -676,7 +677,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   else organism->GetPhenotype().SetToDelete();
   
   // Alert the scheduler that this cell has a 0 merit.
-  schedule->Adjust(in_cell.GetID(), cMerit(0));
+  schedule->Adjust(in_cell.GetID(), cMerit(0),in_cell.GetDemeID());
   
   // Update the archive (note: genotype adjustment may be defered)
   m_world->GetClassificationManager().AdjustGenotype(*genotype);
@@ -819,16 +820,16 @@ void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
   //cout << "SwapCells: organism 2 is non-null, fix up source cell" << endl;
   if (org2 != NULL) {
     cell1.InsertOrganism(org2);
-    schedule->Adjust(cell1.GetID(), org2->GetPhenotype().GetMerit());
+    schedule->Adjust(cell1.GetID(), org2->GetPhenotype().GetMerit(),cell1.GetDemeID());
   } else {
-    schedule->Adjust(cell1.GetID(), cMerit(0));
+    schedule->Adjust(cell1.GetID(), cMerit(0), cell1.GetDemeID());
   }
   //cout << "SwapCells: organism 1 is non-null, fix up dest cell" << endl;
   if (org1 != NULL) {
     cell2.InsertOrganism(org1);
-    schedule->Adjust(cell2.GetID(), org1->GetPhenotype().GetMerit());
+    schedule->Adjust(cell2.GetID(), org1->GetPhenotype().GetMerit(), cell2.GetDemeID());
   } else {
-    schedule->Adjust(cell2.GetID(), cMerit(0));
+    schedule->Adjust(cell2.GetID(), cMerit(0), cell2.GetDemeID());
   }
   //cout << "SwapCells: Done." << endl;
 }
@@ -2121,7 +2122,24 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     return *out_cell;
   }
   else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
-    const int deme_id = parent_cell.GetDemeID();
+    int deme_id = parent_cell.GetDemeID();
+    
+    //@AWC -- decide wether the child will migrate to another deme
+    if((m_world->GetConfig().MIGRATION_RATE.Get() > 0.0) 
+       && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())){
+      
+      //get another -unadjusted- deme id
+      int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
+      
+      //if the -unadjusted- id is above the excluded id, bump it up one
+      //insures uniform prob of landing in any deme but the parent's
+      if(rnd_deme_id >= deme_id) rnd_deme_id++;
+      
+      //set the new deme_id
+      deme_id = rnd_deme_id;
+    }
+    
+    
     const int deme_size = deme_array[deme_id].GetSize();
     
     int out_pos = m_world->GetRandom().GetUInt(deme_size);
@@ -2845,7 +2863,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
         InjectGenotype( current_cell, (*it).genotype );
         cPhenotype & phenotype = GetCell(current_cell).GetOrganism()->GetPhenotype();
         if ( (*it).merit > 0) phenotype.SetMerit( cMerit((*it).merit) );
-        schedule->Adjust(current_cell, phenotype.GetMerit());
+        schedule->Adjust(current_cell, phenotype.GetMerit(), GetCell(current_cell).GetDemeID());
         
         int lineage_label = 0;
         LineageSetupOrganism(GetCell(current_cell).GetOrganism(),
@@ -2935,7 +2953,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
   phenotype.SetNeutralMetric(neutral);
     
   if (merit > 0) phenotype.SetMerit(cMerit(merit));
-  schedule->Adjust(cell_id, phenotype.GetMerit());
+  schedule->Adjust(cell_id, phenotype.GetMerit(), GetCell(cell_id).GetDemeID());
   
   LineageSetupOrganism(GetCell(cell_id).GetOrganism(), 0, lineage_label);
   
@@ -3022,6 +3040,9 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
       break;
     case SLICE_PROB_MERIT:
       schedule = new cProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF));
+      break;
+    case SLICE_DEME_PROB_MERIT:
+      schedule = new cDemeProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF), deme_array.GetSize());
       break;
     case SLICE_INTEGRATED_MERIT:
       schedule = new cIntegratedSchedule(cell_array.GetSize());
@@ -3393,7 +3414,7 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   if (new_merit <= old_merit) {
 	  phenotype.SetIsDonorCur(); }  
   else  { phenotype.SetIsReceiver(); } 
-  schedule->Adjust(cell_id, phenotype.GetMerit());
+  schedule->Adjust(cell_id, phenotype.GetMerit(),GetCell(cell_id).GetDemeID());
   
   return true;
 }

@@ -278,6 +278,7 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cDataFileManager.cc
   ${TOOLS_DIR}/cDataManager_Base.cc
   ${TOOLS_DIR}/cDefaultMessageDisplay.cc
+  ${TOOLS_DIR}/cDemeProbSchedule.cc
   ${TOOLS_DIR}/cDoubleSum.cc
   ${TOOLS_DIR}/cFile.cc
   ${TOOLS_DIR}/cHelpAlias.cc

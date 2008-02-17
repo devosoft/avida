@@ -76,7 +76,7 @@ bool cIntegratedSchedule::OK()
 }
 
 
-void cIntegratedSchedule::Adjust(int item_id, const cMerit & new_merit)
+void cIntegratedSchedule::Adjust(int item_id, const cMerit & new_merit, int deme_id)
 {
   if (cChangeList *change_list = GetChangeList()) {
     change_list->MarkChange(item_id);

@@ -58,7 +58,7 @@ public:
   ~cConstSchedule() { ; }
 
   bool OK();
-  void Adjust(int item_id, const cMerit& merit);
+  void Adjust(int item_id, const cMerit& merit, int deme_id);
 
   int GetNextID();
 };

@@ -268,7 +268,10 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
         totalMutations++;
       }
     }
-  }
+  }/*
+  else if(organism->GetDivMutProb() == 0.0){
+    cerr << "*******************DivMutProb NOT SET" << organism->GetID() << "****************" << endl;
+  }*/
   
 
   
@@ -578,6 +581,79 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
       }
       
       return (!sterilize) && revert;
+}
+
+// test whether the offspring creature contains an advantageous mutation.
+/*
+ Return true iff only a reversion is performed -- returns false is sterilized regardless of whether or 
+ not a reversion is performed.  AWC 06/29/06
+ */
+bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
+{
+  cPhenotype & phenotype = organism->GetPhenotype();
+  phenotype.CopyTrue() = ( organism->ChildGenome() == organism->GetGenome() );
+  phenotype.ChildFertile() = true;
+	
+  // Only continue if we're supposed to do a fitness test on divide...
+  if (organism->GetTestOnDivide() == false) return false;
+	
+  // If this was a perfect copy, then we don't need to worry about any other
+  // tests...  Theoretically, we need to worry about the parent changing,
+  // but as long as the child is always compared to the original genotype,
+  // this won't be an issue.
+  if (phenotype.CopyTrue() == true) return false;
+	
+  const double parent_fitness = organism->GetTestFitness(ctx);
+  const double neut_min = parent_fitness * (1.0 - organism->GetNeutralMin());//nHardware::FITNESS_NEUTRAL_MIN;
+  const double neut_max = parent_fitness * (1.0 + organism->GetNeutralMax());//nHardware::FITNESS_NEUTRAL_MAX;
+      
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cCPUTestInfo test_info;
+  test_info.UseRandomInputs();
+  testcpu->TestGenome(ctx, test_info, organism->ChildGenome());
+  const double child_fitness = test_info.GetGenotypeFitness();
+  delete testcpu;
+  
+  bool revert = false;
+  bool sterilize = false;
+  
+  //if you?r suppose to be dead, you really are going to be dead
+  if(!test_info.IsViable()){
+    //if (test_info.GetMaxDepth() > 0) sterilize = true;
+    sterilize = true;
+  }
+  
+  // If implicit mutations are turned off, make sure this won't spawn one.
+  if (organism->GetFailImplicit() == true) {
+    if (test_info.GetMaxDepth() > 0) sterilize = true;
+  }
+  
+  if (child_fitness == 0.0) {
+    // Fatal mutation... test for reversion.
+    if (ctx.GetRandom().P(organism->GetRevertFatal())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizeFatal())) sterilize = true;
+  } else if (child_fitness < neut_min) {
+    if (ctx.GetRandom().P(organism->GetRevertNeg())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
+  } else if (child_fitness <= neut_max) {
+    if (ctx.GetRandom().P(organism->GetRevertNeut())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
+  } else {
+    if (ctx.GetRandom().P(organism->GetRevertPos())) revert = true;
+    if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
+  }
+  
+  // Ideally, we won't have reversions and sterilizations turned on at the
+  // same time, but if we do, give revert the priority.
+  if (revert == true) {
+    organism->ChildGenome() = organism->GetGenome();
+  }
+  
+  if (sterilize == true) {
+    organism->GetPhenotype().ChildFertile() = false;
+  }
+  
+  return (!sterilize) && revert;
 }
 
 int cHardwareBase::PointMutate(cAvidaContext& ctx, const double mut_rate)

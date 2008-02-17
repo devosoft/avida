@@ -1,5 +1,5 @@
 /*
- *  cIntegratedSchedule.h
+ *  Cintegratedschedule.h
  *  Avida
  *
  *  Called "integrated_schedule.hh" prior to 12/7/05.
@@ -66,7 +66,7 @@ public:
   cIntegratedSchedule(int _item_count);
   ~cIntegratedSchedule();
 
-  void Adjust(int item_id, const cMerit & new_merit);
+  void Adjust(int item_id, const cMerit & new_merit,int deme_id);
   int GetNextID();
   double GetStatus(int id);
 

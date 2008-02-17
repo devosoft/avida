@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef cProbSchedule_h
-#define cProbSchedule_h
+#ifndef cDemeProbSchedule_h
+#define cDemeProbSchedule_h
 
 #ifndef cRandom_h
 #include "cRandom.h"
@@ -35,29 +35,59 @@
 #ifndef cWeightedIndex_h
 #include "cWeightedIndex.h"
 #endif
+//need a pointer to the world to figure out number of demes
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
+//need tList to construct array of trees
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
 
 /**
- * The Probiblistic Schedule has the chance for an item to
- * be scheduled proportional to the merit of that item.
+ * The DemeProbiblistic Schedule has the chance for an item to
+ * be scheduled within each Deme proportional to the merit of that 
+ * item relative to the rest of the deme.
+ * 
+ * @AWC -- further implementation notes in CC file.
  **/
 
 class cMerit;
 
-class cProbSchedule : public cSchedule
+class cDemeProbSchedule : public cSchedule
 {
 private:
-  cRandom m_rng;
-  cWeightedIndex chart;
+  cRandom m_rng; 
+  tArray<cWeightedIndex*> chart;
+
+  //how many demes are there?
+  int num_demes;
+
+  //size of each deme... num_cells/num_demes
+  int deme_size;
+
+  //what deme should GetNextID give the next CPU cycle to?
+  int curr_deme;
+
+  //const cWorld* m_world;
   
   
-  cProbSchedule(const cProbSchedule&); // @not_implemented
-  cProbSchedule& operator=(const cProbSchedule&); // @not_implemented
+  cDemeProbSchedule(const cDemeProbSchedule&); // @not_implemented
+  cDemeProbSchedule& operator=(const cDemeProbSchedule&); // @not_implemented
 
 public:
-  cProbSchedule(int num_cells, int seed) : cSchedule(num_cells), m_rng(seed), chart(num_cells) { ; }
-  ~cProbSchedule() { ; }
+  cDemeProbSchedule(int num_cells, int seed, int ndemes) : cSchedule(num_cells), m_rng(seed), num_demes(ndemes) { 
+    
+    deme_size = num_cells/num_demes;
 
-  void Adjust(int item_id, const cMerit& merit, int deme_id);
+    for(int i = 0; i < num_demes; i++){
+      chart.Push(new cWeightedIndex(deme_size));
+    }
+  }
+  ~cDemeProbSchedule() { ; }
+
+  void Adjust(int item_id, const cMerit& merit, int deme_id=0);
   int GetNextID();
 };
 

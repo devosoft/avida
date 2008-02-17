@@ -1496,7 +1496,7 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
       m_world->GetStats().IncResamplings();
     }
 
-    fitTest = Divide_TestFitnessMeasures(ctx);
+    fitTest = Divide_TestFitnessMeasures1(ctx);
     //if(mutations > 1 ) cerr << "Too Many mutations!!!!!!!!!!!!!!!" << endl;
     if(!fitTest && mutations >= totalMutations) break;
 
