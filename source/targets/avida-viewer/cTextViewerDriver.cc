@@ -121,7 +121,7 @@ void cTextViewerDriver::Run()
       }
     }
     else {
-      for (int i = 0; i < UD_size; i++) population.ProcessStep(ctx, step_size);
+      for (int i = 0; i < UD_size; i++) population.ProcessStep(ctx, step_size, population.ScheduleOrganism());
     }
     
     

@@ -70,7 +70,7 @@ public:
   // Fast-forward through epochs when no replication is happening -- @JEB
   // These are only implemented in the DefaultWorldDriver
   virtual void ClearFastForward() { }
-  virtual bool GetFastForward() { }
+  virtual bool GetFastForward() { return false; }
 
 };
 
