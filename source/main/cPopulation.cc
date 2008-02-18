@@ -1177,13 +1177,13 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     }
     
     if((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
-       && m_world->GetRandom().P(m_world->GetConfig().DIVIDE_INS_PROB.Get())) {
+       && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_INS_MUT.Get())) {
       const unsigned int mut_line = ctx.GetRandom().GetUInt(next_germ.GetSize() + 1);
       next_germ.Insert(mut_line, instset.GetRandomInst(ctx));
     }
     
     if((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
-       && m_world->GetRandom().P(m_world->GetConfig().DIVIDE_DEL_PROB.Get())) {
+       && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_DEL_MUT.Get())) {
       const unsigned int mut_line = ctx.GetRandom().GetUInt(next_germ.GetSize());
       next_germ.Remove(mut_line);
     }
@@ -3460,13 +3460,12 @@ void cPopulation::NewTrial()
       cPopulationCell& cell = GetCell(i);
       
       // Correct gestation time for speculative execution
-      cPhenotype & p =  GetCell(i).GetOrganism()->GetPhenotype();
-      p.SetTrialTimeUsed(p.GetTrialTimeUsed() - GetCell(i).GetSpeculativeState());
-      p.SetTimeUsed(p.GetTimeUsed() - GetCell(i).GetSpeculativeState());
+      cPhenotype & p =  cell.GetOrganism()->GetPhenotype();
+      p.SetTrialTimeUsed(p.GetTrialTimeUsed() - cell.GetSpeculativeState());
+      p.SetTimeUsed(p.GetTimeUsed() - cell.GetSpeculativeState());
 
-
-      GetCell(i).GetOrganism()->NewTrial();
-      GetCell(i).GetOrganism()->GetHardware().Reset();
+      cell.GetOrganism()->NewTrial();
+      cell.GetOrganism()->GetHardware().Reset();
     }
   }
   

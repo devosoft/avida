@@ -112,7 +112,7 @@ const tArray<double> & cPopulationInterface::GetResources()
 
 const tArray<double> & cPopulationInterface::GetDemeResources(int deme_id)
 {
-  return m_world->GetPopulation().GetDemeResources(deme_id);
+  return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id);
 }
 
 void cPopulationInterface::UpdateResources(const tArray<double> & res_change)
