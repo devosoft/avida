@@ -1010,6 +1010,7 @@ void cStats::PrintGenotypeMap(const cString& filename)
     df.WriteBlockElement(genotype_map[i],i,xsize);
   }
   df.WriteRaw("];");
+  df.Flush();
 }
 
 void cStats::PrintMarketData(const cString& filename)
