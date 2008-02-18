@@ -2097,16 +2097,46 @@ void cPopulation::CCladeSetupOrganism(cOrganism* organism)
  * and it gives a centralized function to work with.  The parent_ok flag asks
  * if it is okay to replace the parent.
  **/
-
+//@AWC -- This could REALLY stand some functional abstraction...
 cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool parent_ok)
 {
   assert(parent_cell.IsOccupied());
   
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
-  
-  // Try out global/full-deme birth methods first...
-  
-  if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
+
+  //@AWC -- decide wether the child will migrate to another deme -- if migrating we ignore the birth method.  
+  if ((m_world->GetConfig().MIGRATION_RATE.Get() > 0.0) //@AWC -- Pedantic test to maintain consistancy.
+      && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())){
+
+    int deme_id = parent_cell.GetDemeID();
+
+    //get another -unadjusted- deme id
+    int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
+    
+    //if the -unadjusted- id is above the excluded id, bump it up one
+    //insures uniform prob of landing in any deme but the parent's
+    if(rnd_deme_id >= deme_id) rnd_deme_id++;
+    
+    //set the new deme_id
+    deme_id = rnd_deme_id;
+
+    //The rest of this is essentially POSITION_CHILD_DEME_RANDOM
+    const int deme_size = deme_array[deme_id].GetSize();
+    
+    int out_pos = m_world->GetRandom().GetUInt(deme_size);
+    int out_cell_id = deme_array[deme_id].GetCellID(out_pos);
+    while (parent_ok == false && out_cell_id == parent_cell.GetID()) {
+      out_pos = m_world->GetRandom().GetUInt(deme_size);
+      out_cell_id = deme_array[deme_id].GetCellID(out_pos);
+    }
+    
+    deme_array[deme_id].IncBirthCount();
+    GetCell(out_cell_id).SetMigrant();
+    return GetCell(out_cell_id);    
+    
+  }
+  // @AWC If not migrating try out global/full-deme birth methods first...
+  else if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
     int out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
     while (parent_ok == false && out_pos == parent_cell.GetID()) {
       out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
@@ -2122,24 +2152,8 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     return *out_cell;
   }
   else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
-    int deme_id = parent_cell.GetDemeID();
-    
-    //@AWC -- decide wether the child will migrate to another deme
-    if((m_world->GetConfig().MIGRATION_RATE.Get() > 0.0) //@AWC -- Pedantic test to maintain consistancy.
-       && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())){
-      
-      //get another -unadjusted- deme id
-      int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
-      
-      //if the -unadjusted- id is above the excluded id, bump it up one
-      //insures uniform prob of landing in any deme but the parent's
-      if(rnd_deme_id >= deme_id) rnd_deme_id++;
-      
-      //set the new deme_id
-      deme_id = rnd_deme_id;
-    }
-    
-    
+
+    const int deme_id = parent_cell.GetDemeID();    
     const int deme_size = deme_array[deme_id].GetSize();
     
     int out_pos = m_world->GetRandom().GetUInt(deme_size);

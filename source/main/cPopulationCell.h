@@ -63,6 +63,8 @@ private:
   int m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
   int m_spec_state;
 
+  bool m_migrant; //@AWC -- does the cell contain a migrant genome?
+
   // location in population
   int m_x; //!< The x-coordinate of the position of this cell in the environment.
   int m_y; //!< The y-coordinate of the position of this cell in the environment.
@@ -73,7 +75,7 @@ private:
 
   
 public:
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL) { ; }
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { delete m_mut_rates; }
 
@@ -82,6 +84,11 @@ public:
   void Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y);
   void SetDemeID(int in_id) { m_deme_id = in_id; }
   void Rotate(cPopulationCell& new_facing);
+
+  //@AWC -- This is, admittatidly, a hack to get migration between demes working under local copy...
+  void SetMigrant() {m_migrant = true;} //@AWC -- this cell will contain a migrant genome
+  void UnsetMigrant() {m_migrant = false;} //@AWC -- unset the migrant flag
+  bool IsMigrant() {return m_migrant;} //@AWC -- does this contain a migrant genome?
 
   inline cOrganism* GetOrganism() const { return m_organism; }
   inline cHardwareBase* GetHardware() const { return m_hardware; }
