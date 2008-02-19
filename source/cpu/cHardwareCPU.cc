@@ -3128,7 +3128,8 @@ intruction.  Otherwise, skip the following instruction.
 bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
 {
   // These are the current levels of resources at this cell:
-  const tArray<double>& resources = organism->GetOrgInterface().GetResources();
+  const tArray<double> resources = organism->GetOrgInterface().GetResources() + 
+    organism->GetOrgInterface().GetDemeResources(organism->GetOrgInterface().GetDemeID());
 
   // Now we loop through the different reactions, checking to see if their
   // required resources are below what's available.  If so, we skip ahead an
@@ -3140,7 +3141,7 @@ bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
     while(!processes.AtEnd()) {
       const cReactionProcess* proc = processes.Next();
       cResource* res = proc->GetResource(); // Infinite resource == 0.
-      if((res != 0) && (proc->GetMinNumber() < resources[res->GetID()])) {
+      if((res != 0) && (resources[res->GetID()] < proc->GetMinNumber())) {
         IP().Advance();
         return true;
       }
