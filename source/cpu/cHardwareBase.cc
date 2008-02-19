@@ -919,9 +919,10 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
+    int cellID = organism->GetCellID();
+    
+    if((cellID != -1) && (energy_req > 0.0)) { // guard against running in the test cpu.
 
-    if (energy_req > 0.0) { 
-      int cellID = organism->GetCellID();
       if (organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
         inst_energy_cost[cur_inst.GetOp()] = 0;
         // subtract energy used from current org energy.

@@ -2414,7 +2414,8 @@ bool cHardwareGX::DoSense(cAvidaContext& ctx, int conversion_method, double base
 {
   // Returns the log2 amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = organism->GetOrgInterface().GetResources() + 
+    organism->GetOrgInterface().GetDemeResources(organism->GetOrgInterface().GetDemeID());
 
   // Arbitrarily set to BX since the conditionals use this directly.
   int reg_to_set = REG_BX;
