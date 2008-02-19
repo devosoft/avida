@@ -58,7 +58,11 @@ class cMerit;
 class cDemeProbSchedule : public cSchedule
 {
 private:
+
+  //Keep our own RNG so as to better preserve consistancy.
   cRandom m_rng; 
+
+  //Array of WeightedIndex tree's to farm out the scheduling.
   tArray<cWeightedIndex*> chart;
 
   //how many demes are there?

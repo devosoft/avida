@@ -48,6 +48,7 @@
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
 #include "cProbSchedule.h"
+#include "cProbDemeProbSchedule.h"
 #include "cResource.h"
 #include "cResourceCount.h"
 #include "cSaleItem.h"
@@ -3057,6 +3058,9 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
       break;
     case SLICE_DEME_PROB_MERIT:
       schedule = new cDemeProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF), deme_array.GetSize());
+      break;
+    case SLICE_PROB_DEMESIZE_PROB_MERIT:
+      schedule = new cProbDemeProbSchedule(cell_array.GetSize(), m_world->GetRandom().GetInt(0x7FFFFFFF), deme_array.GetSize());
       break;
     case SLICE_INTEGRATED_MERIT:
       schedule = new cIntegratedSchedule(cell_array.GetSize());
