@@ -191,7 +191,7 @@ void cTestCPU::SetResourceUpdate(int update, bool round_to_closest)
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   for(int i=0; i<resource_lib.GetSize(); i++) 
   {
-    if(i >= (int)(*m_res)[which].second.size()) {
+    if( (which >= (int)m_res->size()) || (i >= (int)(*m_res)[which].second.size()) ) {
       m_resource_count.Set(i, 0.0);
     } else {
       m_resource_count.Set(i, (*m_res)[which].second[i]);

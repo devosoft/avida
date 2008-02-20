@@ -109,6 +109,8 @@ cAnalyze::cAnalyze(cWorld* world)
   for (int i = 0; i < MAX_BATCHES; i++) {
     batch[i].Name().Set("Batch%d", i);
   }
+  
+  resources.clear();
 }
 
 
@@ -440,9 +442,12 @@ void cAnalyze::LoadResources(cString cur_string)
   // Process the resource.dat, currently assuming this is the only possible
   // input file
   ifstream resourceFile(filename, ios::in);
-  assert(resourceFile.good());
-  
-  // Read in each line of the resource file and process it
+  if ( !resourceFile.good() ) {
+    m_world->GetDriver().RaiseException("Failed to load resource file.");
+    return;
+  }
+      
+  // Read in each line of the resource file and process in
   char line[4096];
   while(!resourceFile.eof()) {
     resourceFile.getline(line, 4095);
@@ -478,7 +483,7 @@ void cAnalyze::LoadResources(cString cur_string)
     resources.push_back(make_pair(update, tempValues));
   }
   resourceFile.close();
-  
+
   return;
 }
 
