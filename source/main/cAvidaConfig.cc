@@ -70,7 +70,11 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
     tConstListIterator<cString> err_it(init_file.GetErrors());
     const cString* errstr = NULL;
     while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    if (crash_if_not_found) {
+    if (init_file.WasFound()) {
+      // exit the program if the requested configuration was found but could not be loaded
+      cerr << "Error: failed to load '" << filename << "'.  Ending the program." << endl;
+      exit(-1);
+    } else if (crash_if_not_found) {
       // exit the program if the requested configuration file is not found
       cerr << "Error: Unable to find file '" << filename 
            << "'.  Ending the program." << endl;

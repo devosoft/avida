@@ -53,6 +53,7 @@ class cInitFile
 {
 private:
   cString m_filename;
+  bool m_found;
   bool m_opened;
   mutable tList<cString> m_errors;
   
@@ -94,6 +95,7 @@ public:
     while ((errstr = m_errors.Pop())) delete errstr;
   }
   
+  bool WasFound() const { return m_found; }
   bool WasOpened() const { return m_opened; }
   const tList<cString>& GetErrors() const { return m_errors; }
   

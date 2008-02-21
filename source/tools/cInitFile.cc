@@ -32,7 +32,7 @@
 using namespace std;
 
 
-cInitFile::cInitFile(const cString& filename) : m_filename(filename), m_ftype("unknown")
+cInitFile::cInitFile(const cString& filename) : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   tSmartArray<sLine*> lines;
   m_opened = LoadFile(filename, lines);
@@ -40,7 +40,7 @@ cInitFile::cInitFile(const cString& filename) : m_filename(filename), m_ftype("u
 }
 
 cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappings)
-  : m_filename(filename), m_ftype("unknown")
+  : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   InitMappings(mappings);
   tSmartArray<sLine*> lines;
@@ -49,7 +49,7 @@ cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappin
 }
 
 
-cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_ftype("unknown")
+cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_found(false), m_opened(false), m_ftype("unknown")
 {
   if (in_stream.good() == false) {
     m_errors.PushRear(new cString("Bad stream, unable to process."));
@@ -98,6 +98,8 @@ bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
     m_errors.PushRear(new cString(cStringUtil::Stringf("Unable to open file '%s'.", (const char*)filename)));
     return false;   // The file must be opened!
   }
+  
+  m_found = true;
   
   cStringList line_list;   // Create a list to load all of the lines into.
 
