@@ -3849,11 +3849,23 @@ bool cHardwareCPU::Inst_ModCopyMut(cAvidaContext& ctx)
 // 
 bool cHardwareCPU::Inst_Tumble(cAvidaContext& ctx)
 {
-  // Code taken from Inst_Inject
-  //cout << "Tumble: start" << endl;
+  // Get number of neighbor cells that the organism can move to.
   const int num_neighbors = organism->GetNeighborhoodSize();
-  //cout << "Tumble: size = " << num_neighbors << endl;
-  organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
+  // Exclude extreme case of the completely disconnected cell
+  if (0 < num_neighbors) {
+    // Choose a base 0 random number of turns to make in facing, [0 .. num_neighbors-2].
+    int irot = ctx.GetRandom().GetUInt(num_neighbors-1);
+    // Treat as base 0 number of turns to make
+    for (int i = 0; i <= irot; i++) {
+      organism->Rotate(1);
+    }
+  }
+  // Logging
+  // ofstream tumblelog;
+  // tumblelog.open("data/tumblelog.txt",ios::app);
+  // tumblelog << organism->GetID() << "," << irot << endl;
+  // tumblelog.close();
+
   return true;
 }
 
