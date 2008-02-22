@@ -315,6 +315,9 @@ void cSpatialResCount::StateAll() {
 
 void cSpatialResCount::FlowAll() {
 
+  // @JEB save time if diffusion and gravity off...
+  if ((xdiffuse == 0.0) && (ydiffuse == 0.0) && (xgravity == 0.0) && (ygravity == 0.0)) return;
+
   int     i,k,ii,xdist,ydist;
   double  dist;
  

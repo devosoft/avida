@@ -151,6 +151,28 @@ public:
   }
 };
 
+class cZeroResources : public cAction
+{
+private:
+  
+public:
+  cZeroResources(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+  }
+  
+  static const cString GetDescription() { return "Arguments: none"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
+    for (int i=0; i < res_lib.GetSize(); i++)  {
+      cResource* res = res_lib.GetResource(i);
+      m_world->GetPopulation().SetResource(res->GetID(), 0.0);
+    }
+  }
+};
+
 class cActionSetCellResource : public cAction
 {
 private:
@@ -696,6 +718,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
+  action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");  
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");

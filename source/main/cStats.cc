@@ -822,6 +822,42 @@ void cStats::PrintReactionData(const cString& filename)
   for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
     if(cell.IsOccupied()) {
+      const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
+      for(int j=0; j<num_reactions; ++j) {
+        reactions[j] += org_rx[j];
+      }
+    }
+  }
+    
+  for(int i=0; i<num_reactions; ++i) {
+    df.Write(reactions[i], m_world->GetEnvironment().GetReactionLib().GetReaction(i)->GetName());
+  }
+  
+//    df.Write( 0.0, 
+//    df.Write(reaction_count[i], reaction_names[i] );
+//    task_exe_count[i] = 0;
+//  }
+  df.Endl();
+}
+
+void cStats::PrintCurrentReactionData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida reaction data");
+  df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the number");
+  df.WriteComment("of currently living organisms each reaction has affected.");
+
+  df.Write(m_update,   "Update");
+  
+  const int num_reactions=m_world->GetEnvironment().GetReactionLib().GetSize();
+  tArray<int> reactions(num_reactions);
+  reactions.SetAll(0);
+  
+  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+    if(cell.IsOccupied()) {
       const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetCurReactionCount();
       for(int j=0; j<num_reactions; ++j) {
         reactions[j] += org_rx[j];
@@ -839,6 +875,7 @@ void cStats::PrintReactionData(const cString& filename)
 //  }
   df.Endl();
 }
+
 
 void cStats::PrintReactionRewardData(const cString& filename)
 {

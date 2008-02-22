@@ -641,6 +641,7 @@ public:
   void PrintTasksExeData(const cString& filename);
   void PrintTasksQualData(const cString& filename);
   void PrintReactionData(const cString& filename);
+  void PrintCurrentReactionData(const cString& filename);
   void PrintReactionRewardData(const cString& filename);
   void PrintResourceData(const cString& filename);
   void PrintSpatialResData(const cString& filename, int i);
