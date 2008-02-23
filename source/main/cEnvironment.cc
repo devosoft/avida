@@ -799,6 +799,13 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
   {
     // Specific inputs trump everything
     input_array = m_specific_inputs;
+    
+    // If a mask has been set, process the inputs with it
+    if (m_mask) {
+      for (int i = 0; i < m_input_size; i++) {
+        input_array[i] = (input_array[i] & ~m_mask) | (m_mask & ctx.GetRandom().GetUInt(1 << 24));
+      }
+    }
   } else if (random) {
     if (m_true_rand) {
       for (int i = 0; i < m_input_size; i++) {
@@ -827,9 +834,6 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
       input_array[i] = input_array[i % 3] << (i / 3);
     }
   }
-  
-  // If a mask has been set, process the inputs with it
-  if (m_mask) for (int i = 0; i < m_input_size; i++) input_array[i] = (input_array[i] & ~m_mask) | m_mask_value;
 }
 
 
