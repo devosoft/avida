@@ -43,21 +43,40 @@ cWeightedIndex::~cWeightedIndex()
 {
 }
 
-void cWeightedIndex::AdjustSubtree(int id, double weight_change)
-{
-  subtree_weight[id] += weight_change;
-  if(subtree_weight[id] < 0.0001)  //bb: added to catch round off error
-    subtree_weight[id] = 0.0;
-  if (id != 0) {
-    AdjustSubtree(GetParent(id), weight_change);
-  }
-}
 
+// The following method is subject to floating point rounding errors that can lead to weight mismatches
+// Instead, as implemented below, directly add the subtree weights to ensure that this doesn't happen. @DMB
+
+//void cWeightedIndex::AdjustSubtree(int id, double weight_change)
+//{
+//  subtree_weight[id] += weight_change;
+//  if(subtree_weight[id] < 0.0001)  //bb: added to catch round off error
+//    subtree_weight[id] = 0.0;
+//  if (id != 0) {
+//    AdjustSubtree(GetParent(id), weight_change);
+//  }
+//}
+//
+//void cWeightedIndex::SetWeight(int id, double in_weight)
+//{
+//  const double weight_change = in_weight - item_weight[id];
+//  item_weight[id] = in_weight;
+//  AdjustSubtree(id, weight_change);
+//}
+  
 void cWeightedIndex::SetWeight(int id, double in_weight)
 {
-  const double weight_change = in_weight - item_weight[id];
   item_weight[id] = in_weight;
-  AdjustSubtree(id, weight_change);
+  
+  while (true) {
+    const int left_id = GetLeftChild(id);
+    const int right_id = GetRightChild(id);
+    const double left_subtree = (left_id >= size) ? 0.0 : subtree_weight[left_id];
+    const double right_subtree = (right_id >= size) ? 0.0 : subtree_weight[right_id];
+    subtree_weight[id] = item_weight[id] + left_subtree + right_subtree;
+    if (id == 0) break;
+    id = GetParent(id);
+  }
 }
 
 // This order of testing is about 10% faster than the one used below.

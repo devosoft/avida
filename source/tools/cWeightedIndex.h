@@ -47,8 +47,6 @@ protected:
   tArray<double> subtree_weight;
 
   
-  void AdjustSubtree(int id, double weight_change);
-  
   cWeightedIndex(); // @not_implemented
   
 public:
