@@ -368,9 +368,11 @@ private:
   double m_div_mut_rate;
   int m_lineage_label;
   double m_neutral_metric;
+  
+  
 public:
   cActionInjectSequenceWithDivMutRate(cWorld* world, const cString& args)
-    : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_div_mut_rate(0.0),m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+    : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_div_mut_rate(0.0), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
     m_sequence = largs.PopWord();

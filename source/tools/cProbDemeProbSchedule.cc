@@ -52,8 +52,6 @@ int cProbDemeProbSchedule::GetNextID()
   
   // return the adjusted ID of the cell to get the CPU cycle
   return chart[curr_deme]->FindPosition(position) + offset;
-    
-  
 }
 
 
@@ -64,13 +62,12 @@ void cProbDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit, int de
   int offset_id = item_id - (deme_id * deme_size);
 
   //is this cell about to be populated by a living organism?
-  if(item_merit.GetDouble() > 0.0){
-    if(chart[deme_id]->GetWeight(offset_id) == 0.0){  //...was it previously unpopulated?  -- if so, population size has increased
+  if (item_merit.GetDouble() > 0.0) {
+    if (chart[deme_id]->GetWeight(offset_id) == 0.0) {  //...was it previously unpopulated?  -- if so, population size has increased
       demeChart.SetWeight(deme_id,demeChart.GetWeight(deme_id) + 1.0);//increment the deme's weight to reflect the new population size
     }
-  } 
-  else { //by definition the merit is zero -- no such thing as merits less than 0.0 in Avida
-    if(chart[deme_id]->GetWeight(offset_id) > 0.0){ //...was the cell previously populated -- is so, populatino size has decreased
+  } else { //by definition the merit is zero -- no such thing as merits less than 0.0 in Avida
+    if (chart[deme_id]->GetWeight(offset_id) > 0.0) { //...was the cell previously populated -- is so, populatino size has decreased
       demeChart.SetWeight(deme_id,demeChart.GetWeight(deme_id) - 1.0);//decrement the deme's weight to reflect the new population size
     }
   }

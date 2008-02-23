@@ -41,21 +41,20 @@
 //get the next CPU cycle, awarded to the next populated deme and cycled in a round-robin fashion
 int cDemeProbSchedule::GetNextID()
 {
-  //iterate the deme
+  // iterate the deme
   curr_deme = ++curr_deme % num_demes;
 
   //loop to check each deme at most once -- this could be a problem in sparse pops, best to start with populated or mostly-poulated demes
-  for (int i = 0; i < num_demes; i++){
+  for (int i = 0; i < num_demes; i++) {
 
-    //check to see if deme is populated
-    if (chart[curr_deme]->GetTotalWeight() == 0){ 
-
-      //deme is empty -- iterate the deme
+    // check to see if deme is populated
+    if (chart[curr_deme]->GetTotalWeight() == 0) { 
+      // deme is empty -- iterate the deme
       curr_deme = ++curr_deme % num_demes;
-    }
-    else{ //deme not empty -- return offset id
+    } else {
+      // deme not empty -- return offset id
 
-      //calculate the offset
+      // calculate the offset
       int offset = curr_deme * deme_size;
       
       // get the within postion of the node whos corresponding cell will get the CPU cycle
@@ -65,6 +64,9 @@ int cDemeProbSchedule::GetNextID()
       return chart[curr_deme]->FindPosition(position) + offset;
     }
   }
+  
+  assert(false);
+  return -1;
 }
 
 
