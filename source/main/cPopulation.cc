@@ -3799,7 +3799,7 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   
   // copy stats to cStats, so that these can be remembered and printed
   m_world->GetStats().SetCompetitionTrialFitnesses(avg_trial_fitnesses);
-  m_world->GetStats().SetCompetitionFitness(average_fitness);
+  m_world->GetStats().SetCompetitionFitnesses(average_fitness, lowest_fitness, highest_fitness, average_fitness_copied, lowest_fitness_copied, highest_fitness_copied);
   m_world->GetStats().SetCompetitionOrgsReplicated(different_orgs_copied);
   
   NewTrial();

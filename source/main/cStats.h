@@ -256,6 +256,11 @@ private:
   // Stats for competitions
   tArray<double> avg_trial_fitnesses;
   double avg_competition_fitness;
+  double min_competition_fitness;
+  double max_competition_fitness;
+  double avg_competition_copied_fitness;
+  double min_competition_copied_fitness;
+  double max_competition_copied_fitness;  
   int num_orgs_replicated;
 
   tArray<int> numAsleep;
@@ -507,7 +512,9 @@ public:
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
   void SetCompetitionTrialFitnesses(tArray<double> _in) { avg_trial_fitnesses = _in; }
-  void SetCompetitionFitness(double _in) { avg_competition_fitness = _in; }
+  void SetCompetitionFitnesses(double _in_avg, double _in_min, double _in_max, double _in_cp_avg, double _in_cp_min, double _in_cp_max) 
+    { avg_competition_fitness = _in_avg; min_competition_fitness = _in_min; max_competition_fitness = _in_max; 
+      avg_competition_copied_fitness = _in_cp_avg; min_competition_copied_fitness = _in_cp_min; max_competition_copied_fitness = _in_cp_max; }
   void SetCompetitionOrgsReplicated(int _in) { num_orgs_replicated = _in; }
 
   //market info

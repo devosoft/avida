@@ -1036,20 +1036,24 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         result.AddEnergy(bonus);
         break;
       case nReaction::PROCTYPE_ENZYME: //@JEB
+      {
         const int res_id = in_resource->GetID();
         assert(cur_process->GetMaxFraction() != 0);
         assert(resource_count[res_id] != 0);
         double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
         result.AddBonus( reward , reaction_id);
         break;
+      }
       case nReaction::PROCTYPE_EXP: //@JEB
+      {
         // Cumulative rewards are Value * integral (exp (-MaxFraction * TaskCount))
         // Evaluate to get stepwise amount to add per task executed.
         assert(task_count >= 1);
         const double decay = cur_process->GetMaxFraction();
         const double value = cur_process->GetValue();
         result.AddBonus( value * (1.0 / decay) * ( exp((task_count-1) * decay) - exp(task_count * decay)), reaction_id );
-      break;
+        break;
+      }
           
       default:
         assert(false);  // Should not get here!

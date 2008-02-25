@@ -119,6 +119,11 @@ cStats::cStats(cWorld* world)
   , num_own_used(0)
   , sense_size(0)
   , avg_competition_fitness(0)
+  , min_competition_fitness(0)
+  , max_competition_fitness(0)
+  , avg_competition_copied_fitness(0)
+  , min_competition_copied_fitness(0)
+  , max_competition_copied_fitness(0)
   , num_orgs_replicated(0)
   , m_spec_total(0)
   , m_spec_num(0)
@@ -1138,7 +1143,12 @@ void cStats::PrintCompetitionData(const cString& filename){
   df.WriteComment( "results of the current competitions" );
   
   df.Write( GetUpdate(), "update" );
-  df.Write( avg_competition_fitness, "overall competition fitness" );
+  df.Write( avg_competition_fitness, "average competition fitness" );
+  df.Write( min_competition_fitness, "min competition fitness" );
+  df.Write( max_competition_fitness, "max competition fitness" );
+  df.Write( avg_competition_copied_fitness, "average copied fitness" );
+  df.Write( min_competition_copied_fitness, "min copied fitness" );
+  df.Write( max_competition_copied_fitness, "max copied fitness" );
   df.Write( num_orgs_replicated, "number of organisms copied" );
 
   // Only print trial info if there were multiple trials.
