@@ -135,8 +135,16 @@ sub process_action_file {
       s/ ?action_lib->Register<//;
       s/>\(//;
       my @tmp = split/\"/;
-      $tmp[0] =~ s/^ ?//;
+      $tmp[0] =~ s/^ *//;
       $action_to_class_h{$tmp[1]} = $tmp[0];
+
+    # Handle special cases in PrintActions.cc where a number of actions
+    # are defined using macro expension
+
+    } elsif (/^ *STATS_OUT_FILE/ or /^ *POP_OUT_FILE/) {
+      s/ //g;
+      my @tmp = split/[(,)]/;
+      $class_to_command_line_h{"cAction$tmp[1]"} = "[string fname=\"$tmp[2]\"]";
     }
   }
   close (SOURCE);
