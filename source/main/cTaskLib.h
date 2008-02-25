@@ -79,7 +79,8 @@ public:
 
   cTaskEntry* AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, tList<cString>* errors);
   const cTaskEntry& GetTask(int id) const { return *(task_array[id]); }
-  
+  cTaskEntry * GetTaskReference(int id) { return task_array[id]; }
+
   void SetupTests(cTaskContext& ctx) const;
   inline double TestOutput(cTaskContext& ctx) const { return (this->*(ctx.GetTaskEntry()->GetTestFun()))(ctx); }
 

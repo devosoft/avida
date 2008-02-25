@@ -163,6 +163,7 @@ public:
   bool SetReactionInst(const cString& name, cString inst_name);
   bool SetReactionMinTaskCount(const cString& name, int min_count);
   bool SetReactionMaxTaskCount(const cString& name, int max_count);
+  bool SetReactionTask(const cString& name, const cString& task);
   bool SetResourceInflow(const cString& name, double _inflow );
   bool SetResourceOutflow(const cString& name, double _outflow );
   

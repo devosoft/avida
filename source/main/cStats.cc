@@ -1141,8 +1141,12 @@ void cStats::PrintCompetitionData(const cString& filename){
   df.Write( avg_competition_fitness, "overall competition fitness" );
   df.Write( num_orgs_replicated, "number of organisms copied" );
 
-  for( int i=0; i < avg_trial_fitnesses.GetSize(); i++ ){
-    df.Write(avg_trial_fitnesses[i], cStringUtil::Stringf("trial.%d fitness", i));
+  // Only print trial info if there were multiple trials.
+  if (avg_trial_fitnesses.GetSize() > 1)
+  {
+    for( int i=0; i < avg_trial_fitnesses.GetSize(); i++ ){
+      df.Write(avg_trial_fitnesses[i], cStringUtil::Stringf("trial.%d fitness", i));
+    }
   }
   df.Endl();
 }

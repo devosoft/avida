@@ -50,7 +50,7 @@ private:
   double max_number;     // Max quantity of resource usable.
   double min_number;     // Minimum quantity of resource needed (otherwise 0)
   double max_fraction;   // Max fraction of avaiable resources useable.
-  cResource* product;   // Output resource.
+  cResource* product;    // Output resource.
   double conversion;     // Conversion factor.
   bool lethal;		 // Lethality of reaction
   bool sterilize; //! Whether performance of this reaction sterilizes the organism.

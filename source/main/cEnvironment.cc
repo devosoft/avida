@@ -162,6 +162,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
       else if (var_value=="lin") new_process->SetType(nReaction::PROCTYPE_LIN);
       else if (var_value=="energy") new_process->SetType(nReaction::PROCTYPE_ENERGY);
       else if (var_value=="enzyme") new_process->SetType(nReaction::PROCTYPE_ENZYME);
+      else if (var_value=="exp") new_process->SetType(nReaction::PROCTYPE_EXP);
       else {
         cerr << "Unknown reaction process type '" << var_value
         << "' found in '" << reaction->GetName() << "'." << endl;
@@ -1035,14 +1036,20 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         result.AddEnergy(bonus);
         break;
       case nReaction::PROCTYPE_ENZYME: //@JEB
-        {
-	  const int res_id = in_resource->GetID();
-          assert(cur_process->GetMaxFraction() != 0);
-          assert(resource_count[res_id] != 0);
-          double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
-          result.AddBonus( reward , reaction_id);
-        }
+        const int res_id = in_resource->GetID();
+        assert(cur_process->GetMaxFraction() != 0);
+        assert(resource_count[res_id] != 0);
+        double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
+        result.AddBonus( reward , reaction_id);
         break;
+      case nReaction::PROCTYPE_EXP: //@JEB
+        // Cumulative rewards are Value * integral (exp (-MaxFraction * TaskCount))
+        // Evaluate to get stepwise amount to add per task executed.
+        assert(task_count >= 1);
+        const double decay = cur_process->GetMaxFraction();
+        const double value = cur_process->GetValue();
+        result.AddBonus( value * (1.0 / decay) * ( exp((task_count-1) * decay) - exp(task_count * decay)), reaction_id );
+      break;
           
       default:
         assert(false);  // Should not get here!
@@ -1157,6 +1164,49 @@ bool cEnvironment::SetReactionMaxTaskCount(const cString& name, int max_count)
   cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   return found_reaction->SetMaxTaskCount( max_count );
+}
+
+bool cEnvironment::SetReactionTask(const cString& name, const cString& task)
+{
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+
+  for(int i=0; i<m_tasklib.GetSize(); i++)
+  {
+    if (m_tasklib.GetTask(i).GetName() == task) 
+    {
+      found_reaction->SetTask( m_tasklib.GetTaskReference(i) ); 
+      return true;
+    }
+  }
+  
+  // If we didn't find the task, then we need to make a new one
+  // @JEB currently, this messes up stat tracking to add a task
+  // in the middle of a run.
+/*  
+  // Finish loading in this reaction.
+  cString trigger_info = task;
+	cString trigger = trigger_info.Pop(':');
+  
+  // Load the task trigger
+  cEnvReqs envreqs;
+  tList<cString> errors;
+  
+  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, &errors);
+  if (cur_task == NULL || errors.GetSize() > 0) {
+    cString* err_str;
+    while ((err_str = errors.Pop()) != NULL) {
+      cerr << *err_str << endl;
+      delete err_str;
+    }
+    return false;
+  }
+  
+  found_reaction->SetTask(cur_task);      // Attack task to reaction.  
+  return true;
+*/
+
+  return false;
 }
 
 bool cEnvironment::SetResourceInflow(const cString& name, double _inflow )

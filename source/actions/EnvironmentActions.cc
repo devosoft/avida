@@ -334,6 +334,29 @@ public:
   }
 };
 
+class cActionSetReactionTask : public cAction
+{
+private:
+  cString m_name;
+  cString m_task;
+  
+public:
+  cActionSetReactionTask(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_task("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_task = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <string task_name>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    bool success = m_world->GetEnvironment().SetReactionTask(m_name, m_task);
+    if (!success) m_world->GetDriver().RaiseFatalException(-2,"SetReactionTask action failed");
+  }
+};
+
 class cActionSetResourceInflow : public cAction
 {
 private:
@@ -723,6 +746,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");
   action_lib->Register<cActionSetReactionMinTaskCount>("SetReactionMinTaskCount");
   action_lib->Register<cActionSetReactionMaxTaskCount>("SetReactionMaxTaskCount");
+  action_lib->Register<cActionSetReactionTask>("SetReactionTask");
 
   action_lib->Register<cActionSetResourceInflow>("SetResourceInflow");
   action_lib->Register<cActionSetResourceOutflow>("SetResourceOutflow");

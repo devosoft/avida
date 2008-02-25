@@ -3488,17 +3488,23 @@ void cPopulation::NewTrial()
 {
   for (int i=0; i< GetSize(); i++)
   {
-    if (GetCell(i).IsOccupied())
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied())
     {
-      cPopulationCell& cell = GetCell(i);
-      
-      // Correct gestation time for speculative execution
       cPhenotype & p =  cell.GetOrganism()->GetPhenotype();
-      p.SetTrialTimeUsed(p.GetTrialTimeUsed() - cell.GetSpeculativeState());
-      p.SetTimeUsed(p.GetTimeUsed() - cell.GetSpeculativeState());
 
-      cell.GetOrganism()->NewTrial();
-      cell.GetOrganism()->GetHardware().Reset();
+      // Don't continue if the time used was zero
+      if (p.GetTrialTimeUsed() != 0)
+      {
+        // Correct gestation time for speculative execution
+        p.SetTrialTimeUsed(p.GetTrialTimeUsed() - cell.GetSpeculativeState());
+        p.SetTimeUsed(p.GetTimeUsed() - cell.GetSpeculativeState());
+
+        cell.GetOrganism()->NewTrial();
+        cell.GetOrganism()->GetHardware().Reset();
+        
+        cell.SetSpeculativeState(0);
+      }
     }
   }
   
@@ -3519,7 +3525,8 @@ void cPopulation::NewTrial()
 
 void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
 {
-  if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "==Compete Organisms==" << endl;
+  NewTrial();
+
   double total_fitness = 0;
   int num_cells = GetSize();
   tArray<double> org_fitness(num_cells); 
@@ -3543,6 +3550,8 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
     if (GetCell(i).IsOccupied())
     { 
       cPhenotype& p = GetCell(i).GetOrganism()->GetPhenotype();
+      // We trigger a lot of asserts if the copied size is zero... 
+      p.SetLinesCopied(p.GetGenomeLength());
       
       if ( (num_trials != -1) && (num_trials != p.GetTrialFitnesses().GetSize()) )
       {
@@ -3554,6 +3563,12 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
       num_trials = p.GetTrialFitnesses().GetSize();
     }
   }
+  
+  //If there weren't any trials then end here (but call new trial so things are set up for the next iteration)
+  if (num_trials == 0) return;
+  
+  if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "==Compete Organisms==" << endl;
+
   tArray<double> min_trial_fitnesses(num_trials);
   tArray<double> max_trial_fitnesses(num_trials);
   tArray<double> avg_trial_fitnesses(num_trials);
@@ -3586,9 +3601,12 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   
   if (m_world->GetVerbosity() > VERBOSE_SILENT)
   {
-    for (int t=0; t < min_trial_fitnesses.GetSize(); t++) 
+    if (min_trial_fitnesses.GetSize() > 1)
     {
-      cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << ", Avg fitness = " << avg_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
+      for (int t=0; t < min_trial_fitnesses.GetSize(); t++) 
+      {
+        cout << "Trial #" << t << " Min Fitness = " << min_trial_fitnesses[t] << ", Avg fitness = " << avg_trial_fitnesses[t] << " Max Fitness = " << max_trial_fitnesses[t] << endl;
+      }
     }
   }
   
@@ -3784,4 +3802,5 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   m_world->GetStats().SetCompetitionFitness(average_fitness);
   m_world->GetStats().SetCompetitionOrgsReplicated(different_orgs_copied);
   
+  NewTrial();
 }

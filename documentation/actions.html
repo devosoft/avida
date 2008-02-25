@@ -9,7 +9,7 @@
 
 <div class="revision">
 Revised 2006-09-03 DMB
-<br>Generated Mon Feb 18 16:33:15 2008 by make_actions_html</div>
+<br>Generated Mon Feb 25 09:53:04 2008 by make_actions_html</div>
 
 <p>
 <a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
@@ -106,8 +106,10 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#Exit">Exit</a><br>
       <a href="#exit_if_ave_lineage_label_larger">exit_if_ave_lineage_label_larger</a><br>
       <a href="#exit_if_ave_lineage_label_smaller">exit_if_ave_lineage_label_smaller</a><br>
+      <a href="#ExitAveGeneration">ExitAveGeneration</a><br>
       <a href="#ExitAveLineageLabelGreater">ExitAveLineageLabelGreater</a><br>
       <a href="#ExitAveLineageLabelLess">ExitAveLineageLabelLess</a><br>
+      <a href="#ExitElapsedTime">ExitElapsedTime</a><br>
       <a href="#FullLandscape">FullLandscape</a><br>
       <a href="#genetic_distance_pop_dump">genetic_distance_pop_dump</a><br>
       <a href="#HillClimb">HillClimb</a><br>
@@ -129,6 +131,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#InjectResource">InjectResource</a><br>
       <a href="#InjectScaledResource">InjectScaledResource</a><br>
       <a href="#InjectSequence">InjectSequence</a><br>
+      <a href="#InjectSequenceWDivMutRate">InjectSequenceWDivMutRate</a><br>
       <a href="#InsertionLandscape">InsertionLandscape</a><br>
       <a href="#join_grid_col">join_grid_col</a><br>
       <a href="#join_grid_row">join_grid_row</a><br>
@@ -194,11 +197,13 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintCCladeRelativeFitnessHistogram">PrintCCladeRelativeFitnessHistogram</a><br>
       <a href="#PrintCompetitionData">PrintCompetitionData</a><br>
       <a href="#PrintCountData">PrintCountData</a><br>
+      <a href="#PrintCurrentReactionData">PrintCurrentReactionData</a><br>
       <a href="#PrintData">PrintData</a><br>
       <a href="#PrintDebug">PrintDebug</a><br>
       <a href="#PrintDemeAllStats">PrintDemeAllStats</a><br>
       <a href="#PrintDemeAverageData">PrintDemeAverageData</a><br>
       <a href="#PrintDemeDonorStats">PrintDemeDonorStats</a><br>
+      <a href="#PrintDemeReplicationData">PrintDemeReplicationData</a><br>
       <a href="#PrintDemeResourceStats">PrintDemeResourceStats</a><br>
       <a href="#PrintDemeSpacialEnergyStats">PrintDemeSpacialEnergyStats</a><br>
       <a href="#PrintDemeSpacialSleepStats">PrintDemeSpacialSleepStats</a><br>
@@ -215,6 +220,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintGenotypeAbundanceHistogram">PrintGenotypeAbundanceHistogram</a><br>
       <a href="#PrintGenotypeMap">PrintGenotypeMap</a><br>
       <a href="#PrintGenotypes">PrintGenotypes</a><br>
+      <a href="#PrintGermlineData">PrintGermlineData</a><br>
       <a href="#PrintInstructionAbundanceHistogram">PrintInstructionAbundanceHistogram</a><br>
       <a href="#PrintInstructionData">PrintInstructionData</a><br>
     <td valign="top">
@@ -267,8 +273,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#set_reaction_value_mult">set_reaction_value_mult</a><br>
       <a href="#set_resource">set_resource</a><br>
       <a href="#SetCellResource">SetCellResource</a><br>
-      <a href="#SetEnvironmentInputMask">SetEnvironmentInputMask</a><br>
       <a href="#SetEnvironmentInputs">SetEnvironmentInputs</a><br>
+      <a href="#SetEnvironmentRandomMask">SetEnvironmentRandomMask</a><br>
       <a href="#SetMutProb">SetMutProb</a><br>
       <a href="#SetNumInstBefore0Energy">SetNumInstBefore0Energy</a><br>
       <a href="#SetOptimizeMinMax">SetOptimizeMinMax</a><br>
@@ -276,6 +282,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SetReactionInst">SetReactionInst</a><br>
       <a href="#SetReactionMaxTaskCount">SetReactionMaxTaskCount</a><br>
       <a href="#SetReactionMinTaskCount">SetReactionMinTaskCount</a><br>
+      <a href="#SetReactionTask">SetReactionTask</a><br>
       <a href="#SetReactionValue">SetReactionValue</a><br>
       <a href="#SetReactionValueMult">SetReactionValueMult</a><br>
       <a href="#SetResource">SetResource</a><br>
@@ -289,6 +296,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#sever_grid_row">sever_grid_row</a><br>
       <a href="#SeverGridCol">SeverGridCol</a><br>
       <a href="#SeverGridRow">SeverGridRow</a><br>
+      <a href="#StopFastForward">StopFastForward</a><br>
       <a href="#swap_cells">swap_cells</a><br>
       <a href="#SwapCells">SwapCells</a><br>
       <a href="#task_snapshot">task_snapshot</a><br>
@@ -299,6 +307,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#VERBOSE">VERBOSE</a><br>
       <a href="#zero_muts">zero_muts</a><br>
       <a href="#ZeroMuts">ZeroMuts</a><br>
+      <a href="#ZeroResources">ZeroResources</a><br>
   </tr>
 </table>
 <p>&nbsp;</p>
@@ -342,6 +351,14 @@ These actions control the driver object responsible for executing the current ru
   </p>
 </li>
 <li><p>
+  <strong><a name="ExitAveGeneration">ExitAveGeneration</a></strong>
+  <i>&lt;double generation&gt;</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="ExitAveLineageLabelGreater">ExitAveLineageLabelGreater</a></strong>
   <i>&lt;double threshold&gt;</i>
   </p>
@@ -359,6 +376,22 @@ These actions control the driver object responsible for executing the current ru
      Halts the run if the current average lineage label is smaller
    than <span class="cmdarg">threshold</span>.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="ExitElapsedTime">ExitElapsedTime</a></strong>
+  <i>&lt;int elapsed time [seconds]&gt;</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="StopFastForward">StopFastForward</a></strong>
+  <i>none</i>
+  </p>
+  <p>
+  
   </p>
 </li>
 </UL>
@@ -470,14 +503,6 @@ and reaction parameters.
   </p>
 </li>
 <li><p>
-  <strong><a name="SetEnvironmentInputMask">SetEnvironmentInputMask</a></strong>
-  <i>&lt;int mask&gt; &lt;int value&gt; </i>
-  </p>
-  <p>
-  
-  </p>
-</li>
-<li><p>
   <strong><a name="SetEnvironmentInputs">SetEnvironmentInputs</a></strong>
   <i>&lt;int input_1&gt; &lt;int input_2&gt; &lt;int input_3&gt; </i>
   </p>
@@ -486,6 +511,14 @@ and reaction parameters.
   be exactly three inputs, and they must have the usual values for the top 8 "key" bits, i.e. they must be of the form
   0x0F?????? 0x33?????? 0x55?????? where ? can be replaced with any hexadecimal digit.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="SetEnvironmentRandomMask">SetEnvironmentRandomMask</a></strong>
+  <i>&lt;int mask&gt;</i>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -542,6 +575,17 @@ and reaction parameters.
   <p>
     Set the min task count required to trigger a reaction to <span class="cmdarg">task_count</span>.
   <span class="cmdarg">reaction_name</span> must already 
+  exist in the environment file.
+
+  </p>
+</li>
+<li><p>
+  <strong><a name="SetReactionTask">SetReactionTask</a></strong>
+  <i>&lt;string reaction_name&gt; &lt;string task_name&gt;</i>
+  </p>
+  <p>
+    Set the task required to trigger a reaction to <span class="cmdarg">task_name</span>.
+  <span class="cmdarg">reaction_name</span> and <span class="cmdarg">task_name</span> must already 
   exist in the environment file.
 
   </p>
@@ -625,6 +669,15 @@ and reaction parameters.
   </p>
   <p>
   
+  </p>
+</li>
+<li><p>
+  <strong><a name="ZeroResources">ZeroResources</a></strong>
+  <i>none</i>
+  </p>
+  <p>
+    Set all resurce levels to zero.
+
   </p>
 </li>
 </UL>
@@ -1022,6 +1075,14 @@ change the course of the run.  There are a wide variety of these.
   <br /><code>InjectSequence ckdfhgklsahnfsaggdsgajfg 0 10 100</code>
   <br />Will inject 10 organisms into cells 0 through 9 with a merit of 100.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="InjectSequenceWDivMutRate">InjectSequenceWDivMutRate</a></strong>
+  <i>&lt;string sequence&gt; [int cell_start=0] [int cell_end=-1] [double div_mut_rate=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -1812,6 +1873,13 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintCurrentReactionData">PrintCurrentReactionData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="PrintData">PrintData</a></strong>
   <i>&lt;cString fname&gt; &lt;cString format&gt;</i>
   </p>
@@ -1852,6 +1920,13 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="PrintDemeDonorStats">PrintDemeDonorStats</a></strong>
   <i>No Arguments</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeReplicationData">PrintDemeReplicationData</a></strong>
   </p>
   <p>
   
@@ -2028,6 +2103,13 @@ a single, complete file for each trigger.
   <br />This will print out the full population every 1000 updates, including all
   genotypes that have died out since the last time it was printed.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintGermlineData">PrintGermlineData</a></strong>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
