@@ -809,30 +809,35 @@ void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
 {
   // Sanity checks: Don't process if the cells are the same and 
   // don't bother trying to move when given a cell that isn't there
-  //cout << "SwapCells: testing if cell1 and cell2 are non-null" << endl;
-  //if (!(NULL != cell1) || !(NULL != cell2)) return;
   if ((&cell1 == NULL) || (&cell2 == NULL)) return;
-  //cout << "SwapCells: testing if cell1 and cell2 are different" << endl;  
   if (cell1.GetID() == cell2.GetID()) return;
   // Clear current contents of cells
-  //cout << "SwapCells: clearing cell contents" << endl;
   cOrganism * org1 = cell1.RemoveOrganism();
   cOrganism * org2 = cell2.RemoveOrganism();
-  //cout << "SwapCells: organism 2 is non-null, fix up source cell" << endl;
   if (org2 != NULL) {
     cell1.InsertOrganism(org2);
     schedule->Adjust(cell1.GetID(), org2->GetPhenotype().GetMerit(),cell1.GetDemeID());
   } else {
     schedule->Adjust(cell1.GetID(), cMerit(0), cell1.GetDemeID());
   }
-  //cout << "SwapCells: organism 1 is non-null, fix up dest cell" << endl;
   if (org1 != NULL) {
     cell2.InsertOrganism(org1);
+    // Increment visit count
+    cell2.IncVisits();
+    // Adjust for movement factor if needed
+    if (1.0 != m_world->GetConfig().BIOMIMETIC_MOVEMENT_FACTOR.Get()) {
+      double afterfit = org1->GetPhenotype().GetCurBonus() * m_world->GetConfig().BIOMIMETIC_MOVEMENT_FACTOR.Get();
+      org1->GetPhenotype().SetCurBonus(afterfit); //Update fitness
+    }
+    // Trigger evaluation for task completion
+    if (0 < m_world->GetConfig().BIOMIMETIC_EVAL_ON_MOVEMENT.Get()) {
+      cAvidaContext& ctx = m_world->GetDefaultContext();
+      org1->DoOutput(ctx,0);
+    }
     schedule->Adjust(cell2.GetID(), org1->GetPhenotype().GetMerit(), cell2.GetDemeID());
   } else {
     schedule->Adjust(cell2.GetID(), cMerit(0), cell2.GetDemeID());
   }
-  //cout << "SwapCells: Done." << endl;
 }
 
 // CompeteDemes  probabilistically copies demes into the next generation
@@ -2105,6 +2110,36 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
 
+  // @WRE carrying capacity handling
+  /* Pick and kill an organism here if needed
+   * and then enter choices for birth method handling.
+   */
+  if ((0 < m_world->GetConfig().BIOMIMETIC_K.Get()) &&
+      (num_organisms >= m_world->GetConfig().BIOMIMETIC_K.Get())) {
+    // Measure temporary variables
+    double max_msr = 0.0;
+    double msr = 0.0;
+    int max_msrndx = 0;
+    for  (int i=0; i < cell_array.GetSize(); i++) {
+      if (cell_array[i].IsOccupied()) {
+	if (cell_array[i].GetOrganism()->GetPhenotype().OK()) {
+	  // Get measurement, exclude parent
+	  if (parent_cell.GetID() != cell_array[i].GetID()) {
+	    msr = random();
+	  } else {
+	    msr = 0.0;
+	  }
+
+	  if (max_msr < msr) {
+	    max_msr = msr;
+	    max_msrndx = i;
+	  }
+	}
+      }
+    }
+    KillOrganism(cell_array[max_msrndx]);
+  }
+
   //@AWC -- decide wether the child will migrate to another deme -- if migrating we ignore the birth method.  
   if ((m_world->GetConfig().MIGRATION_RATE.Get() > 0.0) //@AWC -- Pedantic test to maintain consistancy.
       && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())){
@@ -2336,12 +2371,6 @@ void cPopulation::UpdateDemeStats() {
 
 void cPopulation::UpdateOrganismStats()
 {
-  // Carrying capacity @WRE 04-20-07
-  // Check for positive non-zero carrying capacity and apply it
-  if (0 < m_world->GetConfig().BIOMIMETIC_K.Get()) {
-    SerialTransfer(m_world->GetConfig().BIOMIMETIC_K.Get(),true);
-  }
-
   // Loop through all the cells getting stats and doing calculations
   // which must be done on a creature by creature basis.
   

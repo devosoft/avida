@@ -655,6 +655,8 @@ public:
   void PrintSenseExeData(const cString& filename);
   void PrintSleepData(const cString& filename);
   void PrintCompetitionData(const cString& filename);
+  // @WRE: Added event for printing visit counts
+  void PrintCellVisitsData(const cString& filename);
 
   // -------- Messaging support --------
 public:

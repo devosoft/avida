@@ -79,6 +79,8 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
   else if (name == "add3")  NewTask(name, "Add3",  &cTaskLib::Task_Add3);  
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
+  // @WRE DontCare task always succeeds.
+  else if (name == "dontcare")  NewTask(name, "DontCare", &cTaskLib::Task_DontCare);
   
   // All 1- and 2-Input Logic Functions
   if (name == "not") NewTask(name, "Not", &cTaskLib::Task_Not);
@@ -546,6 +548,12 @@ double cTaskLib::Task_Sub(cTaskContext& ctx) const
     }
   }
   return 0.0;
+}
+
+// @WRE DontCare task always succeeds.
+double cTaskLib::Task_DontCare(cTaskContext& ctx) const
+{
+  return 1.0;
 }
 
 double cTaskLib::Task_Not(cTaskContext& ctx) const

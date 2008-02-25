@@ -507,8 +507,10 @@ public:
   CONFIG_ADD_GROUP(BIOMIMETIC_GROUP, "Biomimetic Features Settings");
   CONFIG_ADD_VAR(BIOMIMETIC_REFRACTORY_PERIOD, double, 0.0, "Number of updates affected by refractory period");
   CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_STEP, int, 0, "Number of cells to move Avidian on move instruction");
+  CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_LOG, int, 0, "Log detailed movement information (WARNING: large data file)");
+  CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_FACTOR, double, 1.0, "Scale merit bonus due to movement (m<1.0 applies a cost)");
+  CONFIG_ADD_VAR(BIOMIMETIC_EVAL_ON_MOVEMENT, int, 0, "Force task evaluation on each movement step");
   CONFIG_ADD_VAR(BIOMIMETIC_K, int, 0, "Carrying capacity in number of organisms");
-  
   
   CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");

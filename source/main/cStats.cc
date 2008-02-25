@@ -949,6 +949,27 @@ void cStats::PrintSpatialResData(const cString& filename, int i)
   df.Flush();
 }
 
+// @WRE: Added method for printing out visit data
+void cStats::PrintCellVisitsData(const cString& filename)
+{
+  // Write cell visits data to a file that can easily be read into Matlab
+
+  cString tmpfilename = "visits.m";
+  cDataFile& df = m_world->GetDataFile(tmpfilename);
+  cString UpdateStr = cStringUtil::Stringf( "visits%07i", GetUpdate() ) + " = [ ...";
+
+  df.WriteRaw(UpdateStr);
+
+  int xsize = m_world->GetConfig().WORLD_X.Get();
+  
+  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    df.WriteBlockElement(m_world->GetPopulation().GetCell(i).GetVisits(), i, xsize);
+  }
+
+  df.WriteRaw("];");
+  df.Flush();
+}
+
 
 void cStats::PrintTimeData(const cString& filename)
 {

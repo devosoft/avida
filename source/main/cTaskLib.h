@@ -97,6 +97,7 @@ private:  // Direct task related methods
   double Task_Add(cTaskContext& ctx) const;
   double Task_Add3(cTaskContext& ctx) const;
   double Task_Sub(cTaskContext& ctx) const;
+  double Task_DontCare(cTaskContext& ctx) const;
 
   // All 1- and 2-Input Logic Functions
   double Task_Not(cTaskContext& ctx) const;

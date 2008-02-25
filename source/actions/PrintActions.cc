@@ -96,6 +96,8 @@ STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
+// @WRE: Added output event for collected visit counts
+STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -2636,6 +2638,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
   action_lib->Register<cActionPrintSleepData>("PrintSleepData");
   action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
+  
+  // @WRE: Added printing of visit data
+  action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
 
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
