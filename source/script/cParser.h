@@ -27,24 +27,12 @@
 
 #include <iostream>
 
-#ifndef AvidaScript_h
 #include "AvidaScript.h"
-#endif
-#ifndef ASTree_h
 #include "ASTree.h"
-#endif
-#ifndef cASLibrary_h
+
 #include "cASLibrary.h"
-#endif
-#ifndef cLexer_h
 #include "cLexer.h"
-#endif
-#ifndef cScriptObject_h
 #include "cScriptObject.h"
-#endif
-#ifndef cSymbolTable_h
-#include "cSymbolTable.h"
-#endif
 
 class cFile;
 
@@ -52,8 +40,6 @@ class cFile;
 class cParser
 {
 private:
-  cASLibrary* m_library;
-  
   cString m_filename;
   
   cLexer* m_lexer;
@@ -69,17 +55,16 @@ private:
   bool m_err_eof;
   
   
-  cParser(); // @not_implemented
   cParser(const cParser&); // @not_implemented
   cParser& operator=(const cParser&); // @not_implemented
   
   
 public:
-  cParser(cASLibrary* library);
+  cParser();
   ~cParser();
   
   bool Parse(cFile& input);
-  inline void Accept(cASTVisitor& visitor) { if (m_tree) m_tree->Accept(visitor); }
+  inline cASTNode* ExtractTree() { cASTNode* tree = m_tree; m_tree = NULL; return tree; }
   
   
 private:

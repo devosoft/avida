@@ -195,9 +195,8 @@
 #define TOKEN(x) AS_TOKEN_ ## x
 
 
-cParser::cParser(cASLibrary* library)
-: m_library(library)
-, m_filename("(unknown)")
+cParser::cParser()
+: m_filename("(unknown)")
 , m_eof(false)
 , m_success(true)
 , m_cur_tok(TOKEN(INVALID))

@@ -26,6 +26,6 @@
 
 #undef yyFlexLexer
 #define yyFlexLexer cLexer
-#include "FlexLexer.h"
+#include <FlexLexer.h>
 
 #endif

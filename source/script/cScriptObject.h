@@ -27,10 +27,15 @@
 
 class cScriptObject
 {
-private:
+private:  
+  cScriptObject(const cScriptObject&); // @not_implemented
+  cScriptObject& operator=(const cScriptObject&); // @not_implemented
+    
   
 public:
-    cScriptObject() { ; }
+  cScriptObject() { ; }
+  
+  virtual void Run() = 0;
 };
 
 

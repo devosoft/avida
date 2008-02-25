@@ -22,19 +22,27 @@
  *
  */
 
-#ifndef cASTDumpVisitor_h
-#define cASTDumpVisitor_h
+#ifndef cSemanticASTVisitor_h
+#define cSemanticASTVisitor_h
 
 #include "cASTVisitor.h"
 
+#include "tSmartArray.h"
 
-class cASTDumpVisitor : public cASTVisitor
+class cASLibrary;
+class cSymbolTable;
+
+
+class cSemanticASTVisitor : public cASTVisitor
 {
 private:
-  int m_depth;
+  cASLibrary* m_library;
+  cSymbolTable* m_global_symtbl;
+  cSymbolTable* m_cur_symtbl;
+  tSmartArray<cSymbolTable*> m_symtbl_stack;
   
 public:
-  cASTDumpVisitor();
+  cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl);
   
   void visitAssignment(cASTAssignment&);
   
@@ -60,9 +68,7 @@ public:
   void visitUnpackTarget(cASTUnpackTarget&);
 
 private:
-  inline void indent();
-  void printToken(ASToken_t token);
-  const char* mapType(ASType_t type);
+
 };
 
 #endif

@@ -23,11 +23,14 @@
  */
 
 #include "avida.h"
+#include "PlatformExpert.h"
+
 #include "cASLibrary.h"
 #include "cASTDumpVisitor.h"
 #include "cFile.h"
 #include "cParser.h"
-#include "PlatformExpert.h"
+#include "cSemanticASTVisitor.h"
+#include "cSymbolTable.h"
 
 #include <iostream>
 
@@ -37,15 +40,21 @@ int main (int argc, char * const argv[])
   PlatformExpert::Initialize();
 
   cASLibrary* lib = new cASLibrary;
-  cParser* parser = new cParser(lib);
+  cParser* parser = new cParser;
   
   cFile file;
   if (file.Open("main.asl")) {
     if (parser->Parse(file)) {
       std::cout << "Parse Successful\n" << std::endl;
+      
+      cASTNode* tree = parser->ExtractTree();
 
-      cASTDumpVisitor visitor;
-      parser->Accept(visitor);
+      cSymbolTable global_symtbl;
+      cSemanticASTVisitor semantic_check(lib, &global_symtbl);
+      tree->Accept(semantic_check);
+      
+      cASTDumpVisitor dump;
+      tree->Accept(dump);
       
       std::cout << std::endl;
       Avida::Exit(0);

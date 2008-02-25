@@ -161,7 +161,6 @@
 		7023ECD40C0A447800362B9C /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		7023ECD70C0A44BF00362B9C /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC57097AF730002F8733 /* main.cc */; };
 		7023ECD80C0A44C400362B9C /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
-		7023ECD90C0A44C600362B9C /* cASSymbol.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731669097C6E0C00815164 /* cASSymbol.cc */; };
 		7023ECDA0C0A44C900362B9C /* cLexer.l in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAD21097AF81A002F8733 /* cLexer.l */; };
 		7023ECDB0C0A44CA00362B9C /* cParser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073165B097C6C8F00815164 /* cParser.cc */; };
 		7023ECDC0C0A44CC00362B9C /* cScriptObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52DF0992FD8000B2B507 /* cScriptObject.cc */; };
@@ -186,6 +185,7 @@
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
+		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
 		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
 		70A778390D69D5CA00735F1E /* cDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */; };
@@ -487,8 +487,8 @@
 		7073165B097C6C8F00815164 /* cParser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParser.cc; sourceTree = "<group>"; };
 		70731662097C6DF500815164 /* cASLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASLibrary.h; sourceTree = "<group>"; };
 		70731663097C6DF500815164 /* cASLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASLibrary.cc; sourceTree = "<group>"; };
-		70731668097C6E0C00815164 /* cASSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASSymbol.h; sourceTree = "<group>"; };
-		70731669097C6E0C00815164 /* cASSymbol.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASSymbol.cc; sourceTree = "<group>"; };
+		7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSemanticASTVisitor.cc; sourceTree = "<group>"; };
+		7073972D0D725B9D003855D3 /* cSemanticASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSemanticASTVisitor.h; sourceTree = "<group>"; };
 		707415C70AA7E4100064A546 /* main.css */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = main.css; sourceTree = "<group>"; };
 		7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_CumulativeStemminess.cc; sourceTree = "<group>"; };
 		7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_Gamma.cc; sourceTree = "<group>"; };
@@ -799,7 +799,6 @@
 		70DCAD1F097AF81A002F8733 /* AvidaScript.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AvidaScript.h; sourceTree = "<group>"; };
 		70DCAD20097AF81A002F8733 /* cLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLexer.h; sourceTree = "<group>"; };
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
-		70DCAD22097AF81A002F8733 /* FlexLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = FlexLexer.h; sourceTree = "<group>"; };
 		70DCF50109CFB0B400924128 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "system-alloc.h"; sourceTree = "<group>"; };
 		70DCF50209CFB0B400924128 /* system-alloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "system-alloc.cc"; sourceTree = "<group>"; };
 		70DCF52809CFB93200924128 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
@@ -1206,18 +1205,17 @@
 		70DCAD1E097AF81A002F8733 /* script */ = {
 			isa = PBXGroup;
 			children = (
+				7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */,
+				7073972D0D725B9D003855D3 /* cSemanticASTVisitor.h */,
 				704368CC0C3198F200A05ABA /* ASTree.cc */,
 				704368CD0C3198F200A05ABA /* ASTree.h */,
 				70DCAD1F097AF81A002F8733 /* AvidaScript.h */,
 				70731662097C6DF500815164 /* cASLibrary.h */,
 				70731663097C6DF500815164 /* cASLibrary.cc */,
-				70731668097C6E0C00815164 /* cASSymbol.h */,
-				70731669097C6E0C00815164 /* cASSymbol.cc */,
 				70DCAD20097AF81A002F8733 /* cLexer.h */,
 				70DCAD21097AF81A002F8733 /* cLexer.l */,
 				7073165A097C6C8F00815164 /* cParser.h */,
 				7073165B097C6C8F00815164 /* cParser.cc */,
-				70DCAD22097AF81A002F8733 /* FlexLexer.h */,
 				702F52A70992F8F600B2B507 /* cSymbolTable.h */,
 				702F52A80992F8F600B2B507 /* cSymbolTable.cc */,
 				702F52DE0992FD8000B2B507 /* cScriptObject.h */,
@@ -2012,13 +2010,13 @@
 			files = (
 				7023ECD70C0A44BF00362B9C /* main.cc in Sources */,
 				7023ECD80C0A44C400362B9C /* cASLibrary.cc in Sources */,
-				7023ECD90C0A44C600362B9C /* cASSymbol.cc in Sources */,
 				7023ECDA0C0A44C900362B9C /* cLexer.l in Sources */,
 				7023ECDB0C0A44CA00362B9C /* cParser.cc in Sources */,
 				7023ECDC0C0A44CC00362B9C /* cScriptObject.cc in Sources */,
 				7023ECDD0C0A44CE00362B9C /* cSymbolTable.cc in Sources */,
 				704368D60C31991500A05ABA /* ASTree.cc in Sources */,
 				70F9FC100C469DD70083B788 /* cASTDumpVisitor.cc in Sources */,
+				7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

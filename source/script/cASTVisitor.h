@@ -25,9 +25,7 @@
 #ifndef cASTVisitor_h
 #define cASTVisitor_h
 
-#ifndef ASTree_h
 #include "ASTree.h"
-#endif
 
 
 class cASTVisitor

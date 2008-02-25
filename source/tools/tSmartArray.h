@@ -151,11 +151,22 @@ public:
     return m_data[index];
   }
   
+  
+  // Stack-like Methods...
   void Push(const T& value)
   {
     Resize(m_active + 1);
     m_data[m_active - 1] = value;
   }
+  
+  T Pop()
+  {
+    T value = m_data[m_active - 1];
+    Resize(m_active - 1);
+    return value;
+  }
+  
+  
   
   void SetAll(const T& value)
   {

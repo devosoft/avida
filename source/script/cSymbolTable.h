@@ -25,21 +25,52 @@
 #ifndef cSymbolTable_h
 #define cSymbolTable_h
 
-#ifndef cASSymbol_h
-#include "cASSymbol.h"
-#endif
-#ifndef tDictionary_h
+#include "AvidaScript.h"
+
+#include "tArray.h"
 #include "tDictionary.h"
-#endif
+
+// Active/inactive functions and variables within the scope of the current function (or globally)
 
 
 class cSymbolTable
 {
 private:
-  tDictionary<cASSymbol> m_symbols;
+  struct sSymbolEntry
+  {
+    cString name;
+    ASType_t type;
+
+    bool active;
+    
+    sSymbolEntry(const cString& in_name, ASType_t in_type) : name(in_name), type(in_type), active(true) { ; }
+  };
+  tArray<sSymbolEntry*> m_sym_tbl;
+  tDictionary<int> m_sym_dict;
+  
+  struct sFunctionEntry
+  {
+    cString name;
+    ASType_t type;
+    
+    bool active;
+    
+    sFunctionEntry(const cString& in_name, ASType_t in_type) : name(in_name), type(in_type), active(true) { ; }    
+  };
+  tArray<sFunctionEntry*> m_fun_tbl;
+  tDictionary<int> m_fun_dict;
+  
+  
+  cSymbolTable(const cSymbolTable&); // @not_implemented
+  cSymbolTable& operator=(const cSymbolTable&); // @not_implemented
+  
   
 public:
   cSymbolTable() { ; }
+  
+  bool AddSymbol(const cString& name);
+  
+  bool Lookup(const cString& name) const;
 };
 
 

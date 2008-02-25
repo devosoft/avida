@@ -25,21 +25,14 @@
 #ifndef ASTree_h
 #define ASTree_h
 
-#ifndef AvidaScript_h
 #include "AvidaScript.h"
-#endif
-#ifndef cString_h
+
 #include "cString.h"
-#endif
-#ifndef defs_h
+
 #include "defs.h"
-#endif
-#ifndef tList_h
+
 #include "tList.h"
-#endif
-#ifndef tManagedPointerArray_h
 #include "tManagedPointerArray.h"
-#endif
 
 
 class cASTVisitor;
