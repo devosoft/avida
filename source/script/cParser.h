@@ -32,7 +32,6 @@
 
 #include "cASLibrary.h"
 #include "cLexer.h"
-#include "cScriptObject.h"
 
 class cFile;
 

@@ -34,6 +34,7 @@ private:
   
 public:
   cScriptObject() { ; }
+  virtual ~cScriptObject() { ; }
   
   virtual void Run() = 0;
 };

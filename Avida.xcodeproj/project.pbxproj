@@ -1756,6 +1756,7 @@
 				70DCAC9F097AF7CC002F8733 /* Sources */,
 				70DCAD07097AF7CC002F8733 /* Frameworks */,
 				70DCAD08097AF7CC002F8733 /* CopyFiles */,
+				70D845480D73677E00601F5A /* ShellScript */,
 			);
 			buildRules = (
 				70DCAD2A097AF865002F8733 /* PBXBuildRule */,
@@ -1826,6 +1827,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "mkdir -p $DERIVED_FILE_DIR\nif (test -x /usr/bin/svnversion)\nthen svncmd=/usr/bin/svnversion\nelif (test -x /usr/local/bin/svnversion)\nthen svncmd=/usr/local/bin/svnversion\nelif (test -x /usr/local/svn/bin/svnversion)\nthen svncmd=/usr/local/svn/bin/svnversion\nelse\n  echo \"Warning: 'svn' not found, please install subversion\"\n  if [[ ! -f $DERIVED_FILE_DIR/revision.h ]]\n  then\n    echo \"#ifndef revision_h\" > $DERIVED_FILE_DIR/revision.h\n    echo \"#define revision_h\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#define REVISION \\\"???\\\"\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#endif\" >> $DERIVED_FILE_DIR/revision.h\n  fi\nfi\n\necho \"#ifndef revision_h\" > /tmp/newrev.tmp\necho \"#define revision_h\" >> /tmp/newrev.tmp\necho \\#define REVISION \\\"`$svncmd`\\\" >> /tmp/newrev.tmp\necho \"#endif\" >> /tmp/newrev.tmp\n\nif [[ -f $DERIVED_FILE_DIR/revision.h ]]\nthen\n  revdiff=`diff $DERIVED_FILE_DIR/revision.h /tmp/newrev.tmp`\nelse\n  revdiff=\"yes\"\nfi\n\nif [[ -n \"$revdiff\" ]]\nthen\n  echo \"New revision.h Generated\"\n  cp /tmp/newrev.tmp $DERIVED_FILE_DIR/revision.h\n  touch $SRCROOT/source/main/avida.cc\nfi\n\nrm /tmp/newrev.tmp\n";
+			showEnvVarsInLog = 0;
+		};
+		70D845480D73677E00601F5A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./run_tests --builddir=$BUILD_DIR/$BUILD_STYLE/ _asl*";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
