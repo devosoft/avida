@@ -24,6 +24,13 @@
 
 #include "cSymbolTable.h"
 
+
+cSymbolTable::~cSymbolTable()
+{
+  for (int i = 0; i < m_sym_tbl.GetSize(); i++) delete m_sym_tbl[i];
+  for (int i = 0; i < m_fun_tbl.GetSize(); i++) delete m_fun_tbl[i];
+}
+
 bool cSymbolTable::AddVariable(const cString& name, ASType_t type)
 {
   if (HasSymbol(name)) return false;
@@ -43,3 +50,5 @@ bool cSymbolTable::AddFunction(const cString& name, ASType_t type)
   
   return true;
 }
+
+

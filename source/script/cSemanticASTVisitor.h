@@ -27,6 +27,7 @@
 
 #include "cASTVisitor.h"
 
+#include "tArray.h"
 #include "tSmartArray.h"
 
 class cASLibrary;
@@ -38,8 +39,21 @@ class cSemanticASTVisitor : public cASTVisitor
 private:
   cASLibrary* m_library;
   cSymbolTable* m_global_symtbl;
+  cSymbolTable* m_parent_scope;
+  int m_fun_id;
   cSymbolTable* m_cur_symtbl;
-  tSmartArray<cSymbolTable*> m_symtbl_stack;
+  
+  struct sFunctionEntry
+  {
+    cSymbolTable* scope;
+    int fun_id;
+
+    cSymbolTable* fun_symtbl;
+    
+    sFunctionEntry() : scope(NULL), fun_id(-1) { ; }
+  };
+  tSmartArray<sFunctionEntry> m_fun_stack;
+
   
   bool m_success;
 
@@ -76,6 +90,7 @@ public:
   void visitUnpackTarget(cASTUnpackTarget&);
 
 private:
-  void reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, const cString& info);
+  void checkCast(ASType_t in_type, ASType_t out_type);
+  void reportError(bool fail, ASSemanticError_t err, const cASFilePosition& fp, const int line, ...);
 };
 #endif

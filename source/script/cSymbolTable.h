@@ -67,12 +67,22 @@ private:
   
 public:
   cSymbolTable() { ; }
+  ~cSymbolTable();
 
   
   bool AddVariable(const cString& name, ASType_t type);
   bool AddFunction(const cString& name, ASType_t type);
   
+  ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
+  ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
+  
+  bool LookupVariable(const cString& name, int& var_id) { return m_sym_dict.Find(name, var_id); }
+  bool LookupFunction(const cString& name, int& fun_id) { return m_fun_dict.Find(name, fun_id); }
+  
   inline bool HasSymbol(const cString& name) const { return m_sym_dict.HasEntry(name) || m_fun_dict.HasEntry(name); }
+  
+  inline cString VariableNearMatch(const cString& name) const { return m_sym_dict.NearMatch(name); }
+  inline cString FunctionNearMatch(const cString& name) const { return m_fun_dict.NearMatch(name); }
 };
 
 

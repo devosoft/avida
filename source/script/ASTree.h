@@ -81,6 +81,8 @@ protected:
 public:
   virtual ~cASTNode() { ; }
   
+  virtual ASType_t GetType() const { return AS_TYPE_INVALID; }
+
   inline const cASFilePosition& GetFilePosition() const { return m_file_pos; }
   
   virtual void Accept(cASTVisitor& visitor) = 0;
@@ -224,7 +226,7 @@ public:
     cElseIf(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code) { ; }
     
   public:
-      cASTNode* GetCondition() { return m_expr; }
+    cASTNode* GetCondition() { return m_expr; }
     cASTNode* GetCode() { return m_code; }
   };
   
