@@ -185,6 +185,7 @@
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E6770D74C36F008B3CA0 /* AvidaScript.cc */; };
+		7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
@@ -198,7 +199,6 @@
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
-		70F9FC100C469DD70083B788 /* cASTDumpVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
 		B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */ = {isa = PBXBuildFile; fileRef = B516AF790C91E24600023D53 /* cDemeCellEvent.cc */; };
@@ -448,6 +448,8 @@
 		704ADBC40A6EEFC300666970 /* DriverActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DriverActions.cc; sourceTree = "<group>"; };
 		704D57210AA53F8600207FC1 /* code_standards.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_standards.html; sourceTree = "<group>"; };
 		7050E6770D74C36F008B3CA0 /* AvidaScript.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AvidaScript.cc; sourceTree = "<group>"; };
+		7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDumpASTVisitor.cc; sourceTree = "<group>"; };
+		7050E69E0D74CFEB008B3CA0 /* cDumpASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDumpASTVisitor.h; sourceTree = "<group>"; };
 		705260BB0B87A7DB0007426F /* cInstLibEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cInstLibEntry.h; sourceTree = "<group>"; };
 		705261050B87AF5C0007426F /* cInstLib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstLib.h; sourceTree = "<group>"; };
 		705332480929764A006BD186 /* cSpecies.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpecies.cc; sourceTree = "<group>"; };
@@ -824,8 +826,6 @@
 		70F7DE710929678E009E311D /* cGenotype_BirthData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_BirthData.h; sourceTree = "<group>"; };
 		70F7DE730929678E009E311D /* cGenotype_TestData.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotype_TestData.h; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
-		70F9FC0E0C469DC10083B788 /* cASTDumpVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTDumpVisitor.h; sourceTree = "<group>"; };
-		70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cASTDumpVisitor.cc; sourceTree = "<group>"; };
 		70F9FD990C4E89C40083B788 /* tAutoRelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAutoRelease.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenPlastGenotype.h; sourceTree = "<group>"; };
@@ -1207,6 +1207,8 @@
 		70DCAD1E097AF81A002F8733 /* script */ = {
 			isa = PBXGroup;
 			children = (
+				7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */,
+				7050E69E0D74CFEB008B3CA0 /* cDumpASTVisitor.h */,
 				7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */,
 				7073972D0D725B9D003855D3 /* cSemanticASTVisitor.h */,
 				704368CC0C3198F200A05ABA /* ASTree.cc */,
@@ -1223,8 +1225,6 @@
 				702F52DE0992FD8000B2B507 /* cScriptObject.h */,
 				702F52DF0992FD8000B2B507 /* cScriptObject.cc */,
 				70E130E30C4551E900CE9249 /* cASTVisitor.h */,
-				70F9FC0E0C469DC10083B788 /* cASTDumpVisitor.h */,
-				70F9FC0F0C469DC10083B788 /* cASTDumpVisitor.cc */,
 				7050E6770D74C36F008B3CA0 /* AvidaScript.cc */,
 			);
 			path = script;
@@ -2034,9 +2034,9 @@
 				7023ECDC0C0A44CC00362B9C /* cScriptObject.cc in Sources */,
 				7023ECDD0C0A44CE00362B9C /* cSymbolTable.cc in Sources */,
 				704368D60C31991500A05ABA /* ASTree.cc in Sources */,
-				70F9FC100C469DD70083B788 /* cASTDumpVisitor.cc in Sources */,
 				7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */,
 				7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */,
+				7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,7 +26,7 @@
 #include "PlatformExpert.h"
 
 #include "cASLibrary.h"
-#include "cASTDumpVisitor.h"
+#include "cDumpASTVisitor.h"
 #include "cFile.h"
 #include "cParser.h"
 #include "cSemanticASTVisitor.h"
@@ -53,7 +53,7 @@ int main (int argc, char * const argv[])
       cSemanticASTVisitor semantic_check(lib, &global_symtbl);
       tree->Accept(semantic_check);
       
-      cASTDumpVisitor dump;
+      cDumpASTVisitor dump;
       tree->Accept(dump);
       
       std::cout << std::endl;

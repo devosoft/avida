@@ -1,5 +1,5 @@
 /*
- *  cASTDumpVisitor.h
+ *  cDumpASTVisitor.h
  *  Avida
  *
  *  Created by David on 7/12/07.

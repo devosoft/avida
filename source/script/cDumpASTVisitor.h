@@ -1,5 +1,5 @@
 /*
- *  cASTDumpVisitor.h
+ *  cDumpASTVisitor.h
  *  Avida
  *
  *  Created by David on 7/12/07.
@@ -22,19 +22,19 @@
  *
  */
 
-#ifndef cASTDumpVisitor_h
-#define cASTDumpVisitor_h
+#ifndef cDumpASTVisitor_h
+#define cDumpASTVisitor_h
 
 #include "cASTVisitor.h"
 
 
-class cASTDumpVisitor : public cASTVisitor
+class cDumpASTVisitor : public cASTVisitor
 {
 private:
   int m_depth;
   
 public:
-  cASTDumpVisitor();
+  cDumpASTVisitor();
   
   void visitAssignment(cASTAssignment&);
   
