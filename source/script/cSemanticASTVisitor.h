@@ -41,6 +41,14 @@ private:
   cSymbolTable* m_cur_symtbl;
   tSmartArray<cSymbolTable*> m_symtbl_stack;
   
+  bool m_success;
+
+  
+  cSemanticASTVisitor(); // @not_implemented
+  cSemanticASTVisitor(const cSemanticASTVisitor&); // @not_implemented
+  cSemanticASTVisitor& operator=(const cSemanticASTVisitor&); // @not_implemented
+  
+  
 public:
   cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl);
   
@@ -68,7 +76,6 @@ public:
   void visitUnpackTarget(cASTUnpackTarget&);
 
 private:
-
+  void reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, const cString& info);
 };
-
 #endif

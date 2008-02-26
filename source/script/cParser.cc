@@ -192,6 +192,8 @@
 #define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__)
 #define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } return NULL; }
 
+#define FILEPOS cASFilePosition(m_filename, m_lexer ? m_lexer->lineno() : 0)
+
 #define TOKEN(x) AS_TOKEN_ ## x
 
 
@@ -267,7 +269,7 @@ cASTNode* cParser::parseArrayUnpack()
   
   if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
 
-  tAutoRelease<cASTUnpackTarget> ut(new cASTUnpackTarget());
+  tAutoRelease<cASTUnpackTarget> ut(new cASTUnpackTarget(FILEPOS));
   (*ut).AddVar(currentText());
   
   while (nextToken()) {
@@ -303,7 +305,7 @@ cASTNode* cParser::parseArrayUnpack()
 cASTArgumentList* cParser::parseArgumentList()
 {
   PARSE_TRACE("parseArgumentList");
-  cASTArgumentList* al = new cASTArgumentList();
+  cASTArgumentList* al = new cASTArgumentList(FILEPOS);
 
   al->AddNode(parseExpression());
   while (currentToken() == TOKEN(COMMA)) {
@@ -317,7 +319,7 @@ cASTArgumentList* cParser::parseArgumentList()
 cASTNode* cParser::parseAssignment()
 {
   PARSE_TRACE("parseAssignment");
-  cASTAssignment* an = new cASTAssignment(currentText());
+  cASTAssignment* an = new cASTAssignment(FILEPOS, currentText());
   
   nextToken(); // consume '='
 
@@ -338,11 +340,11 @@ cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
     switch (currentToken()) {
       case TOKEN(DOT):
         if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
-        ce.Set(new cASTExpressionBinary(TOKEN(DOT), ce.Release(), new cASTVariableReference(currentText())));
+        ce.Set(new cASTExpressionBinary(FILEPOS, TOKEN(DOT), ce.Release(), new cASTVariableReference(FILEPOS, currentText())));
         nextToken(); // consume id
         break;
       case TOKEN(PREC_OPEN):
-        cASTFunctionCall* fc = new cASTFunctionCall(ce.Release());
+        cASTFunctionCall* fc = new cASTFunctionCall(FILEPOS, ce.Release());
         ce.Set(fc);
         if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());
         if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
@@ -354,7 +356,7 @@ cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
       case TOKEN(IDX_OPEN):
         do {
           nextToken(); // consume '['
-          ce.Set(new cASTExpressionBinary(TOKEN(IDX_OPEN), ce.Release(), parseExpression()));
+          ce.Set(new cASTExpressionBinary(FILEPOS, TOKEN(IDX_OPEN), ce.Release(), parseExpression()));
           if (currentToken() != TOKEN(IDX_CLOSE)) PARSE_UNEXPECT();
         } while (nextToken() == TOKEN(IDX_OPEN));
         break;
@@ -409,7 +411,7 @@ cASTNode* cParser::parseExprP0()
         nextToken();
         r = parseExprP1();
         if (!r) PARSE_ERROR(NULL_EXPR);
-        l = new cASTExpressionBinary(op, l, r);
+        l = new cASTExpressionBinary(FILEPOS, op, l, r);
         break;
         
       default:
@@ -434,7 +436,7 @@ cASTNode* cParser::parseExprP1()
         nextToken();
         r = parseExprP2();
         if (!r) PARSE_ERROR(NULL_EXPR);
-        l = new cASTExpressionBinary(op, l, r);
+        l = new cASTExpressionBinary(FILEPOS, op, l, r);
         break;
         
       default:
@@ -459,7 +461,7 @@ cASTNode* cParser::parseExprP2()
         nextToken();
         r = parseExprP3();
         if (!r) PARSE_ERROR(NULL_EXPR);
-        l = new cASTExpressionBinary(op, l, r);
+        l = new cASTExpressionBinary(FILEPOS, op, l, r);
         break;
         
       default:
@@ -488,7 +490,7 @@ cASTNode* cParser::parseExprP3()
         nextToken();
         r = parseExprP4();
         if (!r) PARSE_ERROR(NULL_EXPR);
-        l = new cASTExpressionBinary(op, l, r);
+        l = new cASTExpressionBinary(FILEPOS, op, l, r);
         break;
         
       default:
@@ -513,7 +515,7 @@ cASTNode* cParser::parseExprP4()
         nextToken();
         r = parseExprP5();
         if (!r) PARSE_ERROR(NULL_EXPR);
-        l = new cASTExpressionBinary(op, l, r);
+        l = new cASTExpressionBinary(FILEPOS, op, l, r);
         break;
         
       default:
@@ -539,7 +541,7 @@ cASTNode* cParser::parseExprP5()
         nextToken();
         r = parseExprP6();
         if (!r) PARSE_ERROR(NULL_EXPR);
-        l = new cASTExpressionBinary(op, l, r);
+        l = new cASTExpressionBinary(FILEPOS, op, l, r);
         break;
         
       default:
@@ -559,27 +561,27 @@ cASTNode* cParser::parseExprP6()
   
   switch (currentToken()) {
     case TOKEN(FLOAT):
-      expr.Set(new cASTLiteral(AS_TYPE_FLOAT, currentText()));
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_FLOAT, currentText()));
       break;
     case TOKEN(INT):
-      expr.Set(new cASTLiteral(AS_TYPE_INT, currentText()));
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_INT, currentText()));
       break;
     case TOKEN(CHAR):
-      expr.Set(new cASTLiteral(AS_TYPE_CHAR, currentText()));
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_CHAR, currentText()));
       break;
     case TOKEN(STRING):
-      expr.Set(new cASTLiteral(AS_TYPE_STRING, currentText()));
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_STRING, currentText()));
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {
-        cASTNode* vr = new cASTVariableReference(currentText());
+        cASTNode* vr = new cASTVariableReference(FILEPOS, currentText());
         nextToken(); // consume id token
-        cASTFunctionCall* fc = new cASTFunctionCall(vr);
+        cASTFunctionCall* fc = new cASTFunctionCall(FILEPOS, vr);
         expr.Set(fc);
         if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());        
         if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
       } else {
-        expr = new cASTVariableReference(currentText());
+        expr = new cASTVariableReference(FILEPOS, currentText());
       }
       break;
     case TOKEN(PREC_OPEN):
@@ -594,7 +596,7 @@ cASTNode* cParser::parseExprP6()
     case TOKEN(ARR_OPEN):
       if (nextToken() != TOKEN(ARR_CLOSE)) expr.Set(parseArgumentList());
       if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
-      expr.Set(new cASTLiteralArray(expr.Release(), is_matrix));
+      expr.Set(new cASTLiteralArray(FILEPOS, expr.Release(), is_matrix));
       break;
       
     case TOKEN(OP_BIT_NOT):
@@ -606,7 +608,7 @@ cASTNode* cParser::parseExprP6()
         PARSE_ERROR(NULL_EXPR);
         return NULL;
       }
-      expr.Set(new cASTExpressionUnary(op, r));
+      expr.Set(new cASTExpressionUnary(FILEPOS, op, r));
       nextToken();
       return expr.Release();
       
@@ -653,7 +655,7 @@ cASTNode* cParser::parseForeachStatement()
     return NULL;
   }
   
-  tAutoRelease<cASTVariableDefinition> var(new cASTVariableDefinition(type, currentText()));
+  tAutoRelease<cASTVariableDefinition> var(new cASTVariableDefinition(FILEPOS, type, currentText()));
   
   if (nextToken() != TOKEN(PREC_OPEN)) {
     PARSE_UNEXPECT();
@@ -671,7 +673,7 @@ cASTNode* cParser::parseForeachStatement()
   
   cASTNode* code = parseCodeBlock();
   
-  return new cASTForeachBlock(var.Release(), expr.Release(), code);
+  return new cASTForeachBlock(FILEPOS, var.Release(), expr.Release(), code);
 }
 
 cASTNode* cParser::parseFunctionDefine()
@@ -719,7 +721,7 @@ cASTFunctionDefinition* cParser::parseFunctionHeader()
   if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
   nextToken(); // consume ')'
   
-  return new cASTFunctionDefinition(type, name, args.Release());
+  return new cASTFunctionDefinition(FILEPOS, type, name, args.Release());
 }
 
 cASTNode* cParser::parseIDStatement()
@@ -733,7 +735,7 @@ cASTNode* cParser::parseIDStatement()
     case TOKEN(DOT):
     case TOKEN(IDX_OPEN):
     case TOKEN(PREC_OPEN):
-      cASTNode* target = new cASTVariableReference(currentText());
+      cASTNode* target = new cASTVariableReference(FILEPOS, currentText());
       nextToken(); // consume id
       return parseCallExpression(target, true);
       break;
@@ -757,7 +759,7 @@ cASTNode* cParser::parseIfStatement()
   if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
   nextToken();
   
-  tAutoRelease<cASTIfBlock> is(new cASTIfBlock(cond.Release(), parseCodeBlock()));
+  tAutoRelease<cASTIfBlock> is(new cASTIfBlock(FILEPOS, cond.Release(), parseCodeBlock()));
 
   while (currentToken() == TOKEN(CMD_ELSEIF)) {
     
@@ -813,7 +815,7 @@ cASTNode* cParser::parseReturnStatement()
   PARSE_TRACE("parseReturnStatement");
   
   nextToken(); // consume 'return'
-  cASTNode* rs = new cASTReturnStatement(parseExpression());
+  cASTNode* rs = new cASTReturnStatement(FILEPOS, parseExpression());
   
   return rs;
 }
@@ -822,7 +824,7 @@ cASTNode* cParser::parseReturnStatement()
 cASTNode* cParser::parseStatementList()
 {
   PARSE_TRACE("parseStatementList");
-  tAutoRelease<cASTStatementList> sl(new cASTStatementList());
+  tAutoRelease<cASTStatementList> sl(new cASTStatementList(FILEPOS));
   
   tAutoRelease<cASTNode> node;
 
@@ -912,7 +914,7 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
   
   if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
   
-  tAutoRelease<cASTVariableDefinition> vd(new cASTVariableDefinition(vtype, currentText()));
+  tAutoRelease<cASTVariableDefinition> vd(new cASTVariableDefinition(FILEPOS, vtype, currentText()));
   
   switch (nextToken()) {
     case TOKEN(ASSIGN):
@@ -936,7 +938,7 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
 cASTVariableDefinitionList* cParser::parseVariableDefinitionList()
 {
   PARSE_TRACE("parseVariableDefinitionList");
-  tAutoRelease<cASTVariableDefinitionList> vl(new cASTVariableDefinitionList());
+  tAutoRelease<cASTVariableDefinitionList> vl(new cASTVariableDefinitionList(FILEPOS));
  
   cASTVariableDefinition* vd = parseVariableDefinition();
   if (!vd) return NULL;
@@ -964,7 +966,7 @@ cASTNode* cParser::parseWhileStatement()
   nextToken();
   
   cASTNode* code = parseCodeBlock();
-  return new cASTWhileBlock(cond.Release(), code);
+  return new cASTWhileBlock(FILEPOS, cond.Release(), code);
 }
 
 
@@ -1017,5 +1019,7 @@ void cParser::reportError(ASParseError_t err, const int line)
 
 #undef PARSE_ERROR()
 #undef PARSE_UNEXPECT()
+
+#undef FILEPOS
 
 #undef TOKEN()

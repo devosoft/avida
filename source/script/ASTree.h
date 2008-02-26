@@ -38,6 +38,30 @@
 class cASTVisitor;
 
 
+class cASFilePosition
+{
+private:
+  cString m_filename;
+  int m_line;
+  
+  
+  cASFilePosition(); // @not_implemented
+  cASFilePosition& operator=(const cASFilePosition&); // @not_implemented
+  
+  
+public:
+  inline cASFilePosition(const cString& fn, int line) : m_filename(fn), m_line(line) { ; }
+  inline cASFilePosition(const cASFilePosition& fp) : m_filename(fp.m_filename), m_line(fp.m_line) { ; }
+  
+  inline const cString& GetFilename() const { return m_filename; }
+  inline int GetLineNumber() const { return m_line; }
+  
+  inline bool operator==(const cASFilePosition& fp) { return m_line == fp.m_line && m_filename == fp.m_filename; }
+  inline bool operator!=(const cASFilePosition& fp) { return m_line != fp.m_line || m_filename != fp.m_filename; }
+};
+
+  
+
 // -- Abstract Syntax Tree Base Class
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -46,14 +70,18 @@ class cASTVisitor;
 class cASTNode
 {
 private:
+  cASTNode(); // @not_implemented
   cASTNode(const cASTNode&); // @not_implemented
   cASTNode& operator=(const cASTNode&); // @not_implmented
 
 protected:
-  cASTNode() { ; }
+  cASFilePosition m_file_pos;
+  cASTNode(const cASFilePosition& fp) : m_file_pos(fp) { ; }
 
 public:
   virtual ~cASTNode() { ; }
+  
+  inline const cASFilePosition& GetFilePosition() const { return m_file_pos; }
   
   virtual void Accept(cASTVisitor& visitor) = 0;
 };
@@ -97,7 +125,7 @@ private:
   cASTNode* m_expr;
   
 public:
-  cASTAssignment(const cString& var) : m_var(var), m_expr(NULL) { ; }
+  cASTAssignment(const cASFilePosition& fp, const cString& var) : cASTNode(fp), m_var(var), m_expr(NULL) { ; }
   ~cASTAssignment() { delete m_expr; }
   
   inline const cString& GetVariable() { return m_var; }
@@ -115,7 +143,7 @@ private:
   tList<cASTNode> m_nodes;
   
 public:
-  cASTArgumentList() { ; }
+  cASTArgumentList(const cASFilePosition& fp) : cASTNode(fp) { ; }
   ~cASTArgumentList() { ; }
   
   inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
@@ -135,7 +163,7 @@ private:
   cASTNode* m_expr;
   
 public:
-  cASTReturnStatement(cASTNode* expr) : m_expr(expr) { ; }
+  cASTReturnStatement(const cASFilePosition& fp, cASTNode* expr) : cASTNode(fp), m_expr(expr) { ; }
   ~cASTReturnStatement() { delete m_expr; }
 
   inline cASTNode* GetExpression() { return m_expr; }
@@ -150,7 +178,7 @@ private:
   tList<cASTNode> m_nodes;
   
 public:
-  cASTStatementList() { ; }
+  cASTStatementList(const cASFilePosition& fp) : cASTNode(fp) { ; }
   ~cASTStatementList();
   
   inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
@@ -172,7 +200,8 @@ private:
   cASTNode* m_code;
   
 public:
-  cASTForeachBlock(cASTVariableDefinition* v, cASTNode* e, cASTNode* c) : m_var(v), m_expr(e), m_code(c) { ; }
+  cASTForeachBlock(const cASFilePosition& fp, cASTVariableDefinition* v, cASTNode* e, cASTNode* c) 
+    : cASTNode(fp), m_var(v), m_expr(e), m_code(c) { ; }
   
   inline cASTVariableDefinition* GetVariable() { return m_var; }
   inline cASTNode* GetValues() { return m_expr; }
@@ -207,7 +236,8 @@ private:
   tList<cElseIf> m_elifs;
   
 public:
-  cASTIfBlock(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code), m_else(NULL) { ; }
+  cASTIfBlock(const cASFilePosition& fp, cASTNode* expr, cASTNode* code)
+    : cASTNode(fp), m_expr(expr), m_code(code), m_else(NULL) { ; }
   ~cASTIfBlock()
   {
     delete m_expr;
@@ -239,7 +269,7 @@ private:
   cASTNode* m_code;
   
 public:
-  cASTWhileBlock(cASTNode* expr, cASTNode* code) : m_expr(expr), m_code(code) { ; }
+  cASTWhileBlock(const cASFilePosition& fp, cASTNode* expr, cASTNode* code) : cASTNode(fp), m_expr(expr), m_code(code) { ; }
   ~cASTWhileBlock() { delete m_expr; delete m_code; }
   
   inline cASTNode* GetCondition() { return m_expr; }
@@ -262,8 +292,8 @@ private:
   cASTNode* m_code;
   
 public:
-  cASTFunctionDefinition(ASType_t type, const cString& name, cASTVariableDefinitionList* args)
-    : m_type(type), m_name(name), m_args(args), m_code(NULL) { ; }
+  cASTFunctionDefinition(const cASFilePosition& fp, ASType_t type, const cString& name, cASTVariableDefinitionList* args)
+    : cASTNode(fp), m_type(type), m_name(name), m_args(args), m_code(NULL) { ; }
   
   inline ASType_t GetType() { return m_type; }
   inline const cString& GetName() { return m_name; }
@@ -287,7 +317,8 @@ private:
   cASTArgumentList* m_dims;
   
 public:
-  cASTVariableDefinition(ASType_t type, const cString& var) : m_type(type), m_var(var), m_assign(NULL), m_dims(NULL) { ; }
+  cASTVariableDefinition(const cASFilePosition& fp, ASType_t type, const cString& var)
+    : cASTNode(fp), m_type(type), m_var(var), m_assign(NULL), m_dims(NULL) { ; }
   ~cASTVariableDefinition() { delete m_assign; delete m_dims; }
   
   inline ASType_t GetType() { return m_type; }
@@ -307,7 +338,7 @@ private:
   tList<cASTVariableDefinition> m_nodes;
   
 public:
-  cASTVariableDefinitionList() { ; }
+  cASTVariableDefinitionList(const cASFilePosition& fp) : cASTNode(fp) { ; }
   ~cASTVariableDefinitionList() { ; }
   
   inline void AddNode(cASTVariableDefinition* n) { m_nodes.PushRear(n); }
@@ -332,7 +363,8 @@ private:
   cASTNode* m_right;
   
 public:
-  cASTExpressionBinary(ASToken_t op, cASTNode* l, cASTNode* r) : m_op(op), m_left(l), m_right(r) { ; }
+  cASTExpressionBinary(const cASFilePosition& fp, ASToken_t op, cASTNode* l, cASTNode* r)
+    : cASTNode(fp), m_op(op), m_left(l), m_right(r) { ; }
   ~cASTExpressionBinary() { delete m_left; delete m_right; }
   
   inline ASToken_t GetOperator() { return m_op; }
@@ -352,7 +384,7 @@ private:
   cASTNode* m_expr;
   
 public:
-  cASTExpressionUnary(ASToken_t op, cASTNode* e) : m_op(op), m_expr(e) { ; }
+  cASTExpressionUnary(const cASFilePosition& fp, ASToken_t op, cASTNode* e) : cASTNode(fp), m_op(op), m_expr(e) { ; }
   ~cASTExpressionUnary() { delete m_expr; }
 
   inline ASToken_t GetOperator() { return m_op; }
@@ -373,7 +405,7 @@ private:
   cASTArgumentList* m_args;
   
 public:
-  cASTFunctionCall(cASTNode* target) : m_target(target), m_args(NULL) { ; }
+  cASTFunctionCall(const cASFilePosition& fp, cASTNode* target) : cASTNode(fp), m_target(target), m_args(NULL) { ; }
   ~cASTFunctionCall() { delete m_args; }
   
   cASTNode* GetTarget() { return m_target; }
@@ -393,7 +425,7 @@ private:
   cString m_value;
   
 public:
-  cASTLiteral(ASType_t t, const cString& v) : m_type(t), m_value(v) { ; }
+  cASTLiteral(const cASFilePosition& fp, ASType_t t, const cString& v) : cASTNode(fp), m_type(t), m_value(v) { ; }
   
   inline ASType_t GetType() { return m_type; }
   inline const cString& GetValue() { return m_value; }
@@ -409,7 +441,7 @@ private:
   bool m_is_matrix;
   
 public:
-  cASTLiteralArray(cASTNode* v, bool is_mat) : m_value(v), m_is_matrix(is_mat) { ; }
+  cASTLiteralArray(const cASFilePosition& fp, cASTNode* v, bool is_mat) : cASTNode(fp), m_value(v), m_is_matrix(is_mat) { ; }
   ~cASTLiteralArray() { delete m_value; }  
   
   inline cASTNode* GetValue() { return m_value; }
@@ -425,7 +457,7 @@ private:
   cString m_name;
   
 public:
-  cASTVariableReference(const cString& name) : m_name(name) { ; }
+  cASTVariableReference(const cASFilePosition& fp, const cString& name) : cASTNode(fp), m_name(name) { ; }
   
   inline const cString& GetName() { return m_name; }
   
@@ -442,7 +474,7 @@ private:
   cASTNode* m_expr;
   
 public:
-  cASTUnpackTarget() : m_last_wild(false), m_last_named(false), m_expr(NULL) { ; }
+  cASTUnpackTarget(const cASFilePosition& fp) : cASTNode(fp), m_last_wild(false), m_last_named(false), m_expr(NULL) { ; }
   ~cASTUnpackTarget() { delete m_expr; }
   
   inline void AddVar(const cString& name) { m_nodes.Push(name); }

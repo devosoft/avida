@@ -28,8 +28,11 @@
 #include "cSymbolTable.h"
 
 
+#define SEMANTIC_ERROR(code, info) reportError(AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, info)
+
+
 cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl)
-  : m_library(lib), m_global_symtbl(global_symtbl), m_cur_symtbl(NULL)
+  : m_library(lib), m_global_symtbl(global_symtbl), m_cur_symtbl(global_symtbl)
 {
 }
 
@@ -77,6 +80,9 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 
 void cSemanticASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
 {
+  if (!m_cur_symtbl->AddVariable(node.GetVariable(), node.GetType())) {
+    SEMANTIC_ERROR(VARIABLE_REDEFINITION, node.GetVariable());
+  }
 }
 
 
@@ -123,3 +129,29 @@ void cSemanticASTVisitor::visitVariableReference(cASTVariableReference& node)
 void cSemanticASTVisitor::visitUnpackTarget(cASTUnpackTarget& node)
 {
 }
+
+
+void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, const cString& info)
+{
+#define ERR_ENDL "  (cSemanticASTVisitor.cc:" << line << ")" << std::endl
+  
+  m_success = false;
+  
+  std::cerr << fp.GetFilename() << ":" << fp.GetLineNumber() << ": error: ";
+  
+  switch (err) {
+    case AS_SEMANTIC_ERR_VARIABLE_REDEFINITION:
+      std::cerr << "redefining variable '" << info << "'" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_INTERNAL:
+      std::cerr << "internal semantic analysis error at cSemanticASTVisitor.cc:" << line << std::endl;
+      break;
+    case AS_SEMANTIC_ERR_UNKNOWN:
+      default:
+      std::cerr << "unknown error" << std::endl;
+  }
+  
+#undef ERR_ENDL
+}
+
+#undef SEMANTIC_ERROR()

@@ -24,3 +24,22 @@
 
 #include "cSymbolTable.h"
 
+bool cSymbolTable::AddVariable(const cString& name, ASType_t type)
+{
+  if (HasSymbol(name)) return false;
+
+  m_sym_tbl.Push(new sSymbolEntry(name, type));
+  m_sym_dict.Add(name, m_sym_tbl.GetSize() - 1);
+  
+  return true;
+}
+
+bool cSymbolTable::AddFunction(const cString& name, ASType_t type)
+{
+  if (HasSymbol(name)) return false;
+  
+  m_fun_tbl.Push(new sFunctionEntry(name, type));
+  m_fun_dict.Add(name, m_fun_tbl.GetSize() - 1);
+  
+  return true;
+}

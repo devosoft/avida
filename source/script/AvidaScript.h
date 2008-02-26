@@ -110,6 +110,14 @@ typedef enum eASParseErrors {
 } ASParseError_t;
 
 
+typedef enum eASSemanticErrors {
+  AS_SEMANTIC_ERR_VARIABLE_REDEFINITION,
+  AS_SEMANTIC_ERR_INTERNAL,
+  
+  AS_SEMANTIC_ERR_UNKNOWN
+} ASSemanticError_t;
+
+
 typedef enum eASTypes {
   AS_TYPE_ARRAY = 0,
   AS_TYPE_CHAR,

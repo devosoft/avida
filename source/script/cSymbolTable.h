@@ -67,10 +67,12 @@ private:
   
 public:
   cSymbolTable() { ; }
+
   
-  bool AddSymbol(const cString& name);
+  bool AddVariable(const cString& name, ASType_t type);
+  bool AddFunction(const cString& name, ASType_t type);
   
-  bool Lookup(const cString& name) const;
+  inline bool HasSymbol(const cString& name) const { return m_sym_dict.HasEntry(name) || m_fun_dict.HasEntry(name); }
 };
 
 
