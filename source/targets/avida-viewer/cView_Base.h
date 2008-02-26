@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 1999-2007 Michigan State University                             //
+// Copyright (C) 1999-2008 Michigan State University                             //
 //                                                                          //
 // Read the COPYING and README files, or contact 'avida@alife.org',         //
 // before continuing.  SOME RESTRICTIONS MAY APPLY TO USE OF THIS FILE.     //

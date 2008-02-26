@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "hardware_status_printer.hh" prior to 11/30/05.
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2008 Michigan State University. All rights reserved.
  *  Copyright 1999-2004 California Institute of Technology.
  *
  *

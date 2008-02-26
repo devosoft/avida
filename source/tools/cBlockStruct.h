@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "block_struct.hh" prior to 12/2/05.
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2008 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *

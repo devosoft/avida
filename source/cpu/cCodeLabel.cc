@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "code_label.cc" prior to 11/22/05.
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2008 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *

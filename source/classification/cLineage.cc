@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "lineage.cc" prior to 11/30/05.
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2008 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology.
  *
  *

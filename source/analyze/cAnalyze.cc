@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "analyze.cc" prior to 12/1/05.
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2008 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *

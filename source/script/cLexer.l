@@ -4,7 +4,7 @@
  *  avida_test_language
  *
  *  Created by David on 1/13/06.
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2008 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
