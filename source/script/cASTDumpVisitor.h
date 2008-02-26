@@ -61,8 +61,6 @@ public:
 
 private:
   inline void indent();
-  void printToken(ASToken_t token);
-  const char* mapType(ASType_t type);
 };
 
 #endif

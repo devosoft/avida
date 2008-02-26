@@ -29,16 +29,21 @@
 
 #include <cstdarg>
 
+using namespace AvidaScript;
 
-#define SEMANTIC_ERROR(code, ...) reportError(true, AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, __VA_ARGS__)
-#define SEMANTIC_WARNING(code, ...) reportError(false, AS_SEMANTIC_WARN_ ## code, node.GetFilePosition(),  __LINE__, __VA_ARGS__)
+
+#define SEMANTIC_ERROR(code, ...) reportError(true, AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
+#define SEMANTIC_WARNING(code, ...) reportError(false, AS_SEMANTIC_WARN_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
+
+#define TOKEN(x) AS_TOKEN_ ## x
+#define TYPE(x) AS_TYPE_ ## x
 
 
 cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl)
   : m_library(lib), m_global_symtbl(global_symtbl), m_parent_scope(global_symtbl), m_fun_id(0), m_cur_symtbl(global_symtbl)
 {
   // Add internal definition of the global function
-  m_global_symtbl->AddFunction("__asmain", AS_TYPE_INT);
+  m_global_symtbl->AddFunction("__asmain", TYPE(INT));
 }
 
 void cSemanticASTVisitor::visitAssignment(cASTAssignment& node)
@@ -117,6 +122,51 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
 
 void cSemanticASTVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 {
+  node.GetExpression()->Accept(*this);
+  
+  switch (node.GetOperator()) {
+    case TOKEN(OP_BIT_NOT):
+      switch (node.GetExpression()->GetType()) {
+        case TYPE(ARRAY):
+        case TYPE(MATRIX):
+          // Array and Matrix meta-op, validity must be determined at runtime
+        case TYPE(INT):
+        case TYPE(CHAR):
+          // Char and Int Okay
+
+          node.SetType(node.GetExpression()->GetType());
+          break;
+          
+        default:
+          SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_BIT_NOT)), mapType(node.GetExpression()->GetType())); 
+          break;          
+      }
+      break;
+    case TOKEN(OP_LOGIC_NOT):
+      // All types support boolean usage
+      break;
+    case TOKEN(OP_SUB):
+      switch (node.GetExpression()->GetType()) {
+        case TYPE(ARRAY):
+        case TYPE(MATRIX):
+          // Array and Matrix meta-op, validity must be determined at runtime
+        case TYPE(CHAR):
+        case TYPE(FLOAT):
+        case TYPE(INT):
+          // Char, Float and Int Okay
+          
+          node.SetType(node.GetExpression()->GetType());
+          break;
+        default:
+          SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_SUB)), mapType(node.GetExpression()->GetType())); 
+          break;
+      };
+      
+      break;
+    default:
+      SEMANTIC_ERROR(INTERNAL);
+      break;
+  }
 }
 
 
@@ -166,23 +216,27 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
   if (err < AS_SEMANTIC_WARN__LAST) std::cerr << ": warning: ";
   else std::cerr << ": error: ";
   
-  va_list info_list;
-  va_start(info_list, line);
+  va_list vargs;
+  va_start(vargs, line);
   switch (err) {
     case AS_SEMANTIC_WARN_UNREACHABLE:
       std::cerr << "unreachable statement(s)" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_VARIABLE_UNDEFINED:
       {
-        cString varname = va_arg(info_list, const char*);
+        cString varname = va_arg(vargs, const char*);
         std::cerr << "'" << varname << "' undefined";
         cString nearmatch = m_cur_symtbl->VariableNearMatch(varname);
         if (nearmatch != "") std::cerr << " - possible match '" << nearmatch << "'";
         std::cerr << ERR_ENDL;
       }
       break;
+    case AS_SEMANTIC_ERR_UNDEFINED_TYPE_OP:
+      std::cerr << "'" << va_arg(vargs, const char*) << "' operation undefined for type '"
+                << va_arg(vargs, const char*) << "'" << ERR_ENDL;
+      break;
     case AS_SEMANTIC_ERR_VARIABLE_REDEFINITION:
-      std::cerr << "redefining variable '" << va_arg(info_list, const char*) << "'" << ERR_ENDL;
+      std::cerr << "redefining variable '" << va_arg(vargs, const char*) << "'" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_INTERNAL:
       std::cerr << "internal semantic analysis error at cSemanticASTVisitor.cc:" << line << std::endl;
@@ -191,9 +245,12 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
       default:
       std::cerr << "unknown error" << std::endl;
   }
-  va_end(info_list);
+  va_end(vargs);
   
 #undef ERR_ENDL
 }
-
+                
 #undef SEMANTIC_ERROR()
+#undef SEMANTIC_WARNING()
+#undef TOKEN()
+#undef TYPE()

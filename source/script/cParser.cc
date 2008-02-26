@@ -28,6 +28,8 @@
 #include "cFile.h"
 #include "tAutoRelease.h"
 
+using namespace AvidaScript;
+
 /*
  The following represents the grammar for AvidaScript in BNF, adjusted so that it is compatible with recursive descent
  parsing (to be) implemented by cParser.

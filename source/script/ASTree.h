@@ -384,14 +384,19 @@ class cASTExpressionUnary : public cASTNode
 private:
   ASToken_t m_op;
   cASTNode* m_expr;
+  ASType_t m_type;
   
 public:
-  cASTExpressionUnary(const cASFilePosition& fp, ASToken_t op, cASTNode* e) : cASTNode(fp), m_op(op), m_expr(e) { ; }
+  cASTExpressionUnary(const cASFilePosition& fp, ASToken_t op, cASTNode* e)
+    : cASTNode(fp), m_op(op), m_expr(e), m_type(AS_TYPE_INVALID) { ; }
   ~cASTExpressionUnary() { delete m_expr; }
 
   inline ASToken_t GetOperator() { return m_op; }
   inline void SetExpression(cASTNode* expr) { m_expr = expr; }
   inline cASTNode* GetExpression() { return m_expr; }
+  
+  ASType_t GetType() const { return m_type; }
+  inline void SetType(ASType_t type) { m_type = type; }
   
   void Accept(cASTVisitor& visitor);
 };

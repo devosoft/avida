@@ -114,6 +114,7 @@ typedef enum eASSemanticErrors {
   AS_SEMANTIC_WARN_UNREACHABLE,
   AS_SEMANTIC_WARN__LAST,
   
+  AS_SEMANTIC_ERR_UNDEFINED_TYPE_OP,
   AS_SEMANTIC_ERR_VARIABLE_UNDEFINED,
   AS_SEMANTIC_ERR_VARIABLE_REDEFINITION,
   AS_SEMANTIC_ERR_INTERNAL,
@@ -134,5 +135,11 @@ typedef enum eASTypes {
   
   AS_TYPE_INVALID
 } ASType_t;
+
+
+namespace AvidaScript {
+  const char* mapToken(ASToken_t type);
+  const char* mapType(ASType_t type);
+};
 
 #endif

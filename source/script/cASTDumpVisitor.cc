@@ -27,6 +27,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace AvidaScript;
 
 
 cASTDumpVisitor::cASTDumpVisitor() : m_depth(0)
@@ -39,53 +40,6 @@ inline void cASTDumpVisitor::indent()
 {
   for (int i = 0; i < m_depth; i++) cout << "  ";
 }
-
-void cASTDumpVisitor::printToken(ASToken_t token)
-{
-  switch (token) {
-    case AS_TOKEN_OP_BIT_NOT:   cout << '~';  break;
-    case AS_TOKEN_OP_BIT_AND:   cout << '&';  break;
-    case AS_TOKEN_OP_BIT_OR:    cout << '|';  break;
-    case AS_TOKEN_OP_LOGIC_NOT: cout << '!';  break;
-    case AS_TOKEN_OP_LOGIC_AND: cout << "&&"; break;
-    case AS_TOKEN_OP_LOGIC_OR:  cout << "||"; break;
-    case AS_TOKEN_OP_ADD:       cout << '+';  break;
-    case AS_TOKEN_OP_SUB:       cout << '-';  break;
-    case AS_TOKEN_OP_MUL:       cout << '*';  break;
-    case AS_TOKEN_OP_DIV:       cout << '/';  break;
-    case AS_TOKEN_OP_MOD:       cout << '%';  break;
-    case AS_TOKEN_DOT:          cout << '.';  break;
-    case AS_TOKEN_OP_EQ:        cout << "=="; break;
-    case AS_TOKEN_OP_LE:        cout << "<="; break;
-    case AS_TOKEN_OP_GE:        cout << ">="; break;
-    case AS_TOKEN_OP_LT:        cout << '<';  break;
-    case AS_TOKEN_OP_GT:        cout << '>';  break;
-    case AS_TOKEN_OP_NEQ:       cout << "!="; break;
-    case AS_TOKEN_ARR_RANGE:    cout << ':';  break;
-    case AS_TOKEN_ARR_EXPAN:    cout << '^';  break;
-    case AS_TOKEN_IDX_OPEN:     cout << "[]"; break;
-    default:                    cout << '?';  break;
-  }
-}
-
-const char* cASTDumpVisitor::mapType(ASType_t type)
-{
-  switch (type) {
-    case AS_TYPE_ARRAY:       return "array";
-    case AS_TYPE_CHAR:        return "char";
-    case AS_TYPE_FLOAT:       return "float";
-    case AS_TYPE_INT:         return "int";
-    case AS_TYPE_MATRIX:      return "matrix";
-    case AS_TYPE_STRING:      return "string";
-    case AS_TYPE_VOID:        return "void";
-    case AS_TYPE_OBJECT_REF:  return "object";
-    
-    case AS_TYPE_INVALID:
-    default:
-      return "*INVALID*";
-  }
-}
-
 
 void cASTDumpVisitor::visitAssignment(cASTAssignment& node)
 {
@@ -299,7 +253,7 @@ void cASTDumpVisitor::visitExpressionBinary(cASTExpressionBinary& node)
   m_depth--;
   
   indent();
-  printToken(node.GetOperator());
+  cout << mapToken(node.GetOperator());
   cout << endl;
   
   m_depth++;
@@ -311,7 +265,7 @@ void cASTDumpVisitor::visitExpressionBinary(cASTExpressionBinary& node)
 void cASTDumpVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 {
   indent();
-  printToken(node.GetOperator());
+  cout << mapToken(node.GetOperator());
   cout << endl;
   
   m_depth++;
