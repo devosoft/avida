@@ -702,6 +702,7 @@ public:
   
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
+  cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.
   cDoubleSum m_germline_generation; //!< "Generation" accumulator of replicated germlines.
 };
 
