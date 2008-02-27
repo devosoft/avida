@@ -90,7 +90,8 @@ public:
   void visitUnpackTarget(cASTUnpackTarget&);
 
 private:
-  void checkCast(ASType_t in_type, ASType_t out_type);
+  
+  inline bool validBitwiseType(ASType_t type) const;
   void reportError(bool fail, ASSemanticError_t err, const cASFilePosition& fp, const int line, ...);
 };
 #endif

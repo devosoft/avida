@@ -363,10 +363,11 @@ private:
   ASToken_t m_op;
   cASTNode* m_left;
   cASTNode* m_right;
+  ASType_t m_type;
   
 public:
   cASTExpressionBinary(const cASFilePosition& fp, ASToken_t op, cASTNode* l, cASTNode* r)
-    : cASTNode(fp), m_op(op), m_left(l), m_right(r) { ; }
+    : cASTNode(fp), m_op(op), m_left(l), m_right(r), m_type(AS_TYPE_INVALID) { ; }
   ~cASTExpressionBinary() { delete m_left; delete m_right; }
   
   inline ASToken_t GetOperator() { return m_op; }
@@ -374,7 +375,10 @@ public:
   inline cASTNode* GetLeft() { return m_left; }
   inline void SetRight(cASTNode* right) { m_right = right; }
   inline cASTNode* GetRight() { return m_right; }
-  
+
+  ASType_t GetType() const { return m_type; }
+  inline void SetType(ASType_t type) { m_type = type; }
+
   void Accept(cASTVisitor& visitor);
 };
 
@@ -410,15 +414,20 @@ class cASTFunctionCall : public cASTNode
 private:
   cASTNode* m_target;
   cASTArgumentList* m_args;
+  ASType_t m_type;
   
 public:
-  cASTFunctionCall(const cASFilePosition& fp, cASTNode* target) : cASTNode(fp), m_target(target), m_args(NULL) { ; }
+  cASTFunctionCall(const cASFilePosition& fp, cASTNode* target)
+    : cASTNode(fp), m_target(target), m_args(NULL), m_type(AS_TYPE_INVALID) { ; }
   ~cASTFunctionCall() { delete m_args; }
   
   cASTNode* GetTarget() { return m_target; }
   void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
   cASTArgumentList* GetArguments() { return m_args; }
   
+  ASType_t GetType() const { return m_type; }
+  inline void SetType(ASType_t type) { m_type = type; }
+
   bool HasArguments() const { return (m_args); }
   
   void Accept(cASTVisitor& visitor);
@@ -434,7 +443,7 @@ private:
 public:
   cASTLiteral(const cASFilePosition& fp, ASType_t t, const cString& v) : cASTNode(fp), m_type(t), m_value(v) { ; }
   
-  inline ASType_t GetType() { return m_type; }
+  ASType_t GetType() const { return m_type; }
   inline const cString& GetValue() { return m_value; }
   
   void Accept(cASTVisitor& visitor);
@@ -454,6 +463,8 @@ public:
   inline cASTNode* GetValue() { return m_value; }
   inline bool IsMatrix() const { return m_is_matrix; }
   
+  ASType_t GetType() const { return m_is_matrix ? AS_TYPE_MATRIX : AS_TYPE_ARRAY; }
+  
   void Accept(cASTVisitor& visitor);
 };
 
@@ -462,11 +473,16 @@ class cASTVariableReference : public cASTNode
 {
 private:
   cString m_name;
+  ASType_t m_type;
   
 public:
-  cASTVariableReference(const cASFilePosition& fp, const cString& name) : cASTNode(fp), m_name(name) { ; }
+  cASTVariableReference(const cASFilePosition& fp, const cString& name)
+    : cASTNode(fp), m_name(name), m_type(AS_TYPE_INVALID) { ; }
   
   inline const cString& GetName() { return m_name; }
+  
+  ASType_t GetType() const { return m_type; }
+  inline void SetType(ASType_t type) { m_type = type; }
   
   void Accept(cASTVisitor& visitor);
 };
