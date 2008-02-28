@@ -281,6 +281,34 @@ cPopulation.cc
 </ul>
 
 
+<p>&nbsp;</p>
+<h2>Class Dependency Guidelines</h2>
+<div style="margin-left: 10px">
+  <p>
+  Some groupings of classes should maintain important limitations with respect
+  to class dependency.
+  </p>
+
+  <h3>Tools Classes</h3>
+  <div style="margin-left: 10px">
+    <p>
+    All classes developed as general utility classes should be placed within the
+    <kbd style="color: #008844">source/tools</kbd> directory.   These classes
+    should have no dependencies that extend outside of this directory.
+    </p>
+  </div>
+
+  <h3>STL Usage</h3>
+  <div style="margin-left: 10px">
+    <p>
+    Usage of the Standard Template Library should be very limited.  A number of
+    these templates have unspecified orderings that can vary across platforms,
+    affecting consistency.  Where possible, it is greatly preferred to use the
+    local tools classes.
+    </p>
+  </div>
+</div>
+
 <hr />
 <p><a href="index.html">Return to the Index</a></p>
 
