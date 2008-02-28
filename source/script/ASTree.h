@@ -125,15 +125,22 @@ class cASTAssignment : public cASTNode
 private:
   cString m_var;
   cASTNode* m_expr;
+  int m_id;
+  bool m_global;
   
 public:
-  cASTAssignment(const cASFilePosition& fp, const cString& var) : cASTNode(fp), m_var(var), m_expr(NULL) { ; }
+  cASTAssignment(const cASFilePosition& fp, const cString& var)
+    : cASTNode(fp), m_var(var), m_expr(NULL), m_id(-1), m_global(false) { ; }
   ~cASTAssignment() { delete m_expr; }
   
   inline const cString& GetVariable() { return m_var; }
   
   inline void SetExpression(cASTNode* expr) { delete m_expr; m_expr = expr; }
   inline cASTNode* GetExpression() { return m_expr; }
+  
+  inline int GetVarID() const { return m_id; }
+  inline bool IsVarGlobal() const { return m_global; }
+  inline void SetVar(int in_id, bool global) { m_id = in_id; m_global = global; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -474,15 +481,21 @@ class cASTVariableReference : public cASTNode
 private:
   cString m_name;
   ASType_t m_type;
+  int m_id;
+  bool m_global;
   
 public:
   cASTVariableReference(const cASFilePosition& fp, const cString& name)
-    : cASTNode(fp), m_name(name), m_type(AS_TYPE_INVALID) { ; }
+    : cASTNode(fp), m_name(name), m_type(AS_TYPE_INVALID), m_id(-1), m_global(false) { ; }
   
   inline const cString& GetName() { return m_name; }
   
   ASType_t GetType() const { return m_type; }
   inline void SetType(ASType_t type) { m_type = type; }
+  
+  inline int GetVarID() const { return m_id; }
+  inline bool IsVarGlobal() const { return m_global; }
+  inline void SetVar(int in_id, bool global) { m_id = in_id; m_global = global; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -491,7 +504,19 @@ public:
 class cASTUnpackTarget : public cASTNode
 {
 private:
-  tManagedPointerArray<cString> m_nodes;
+  struct sUnpackNode {
+    cString name;
+    int var_id;
+    bool global;
+    ASType_t type;
+    
+    inline sUnpackNode() : name(""), var_id(-1), global(false), type(AS_TYPE_INVALID) { ; }
+    inline sUnpackNode(const cString& in_name) : name(in_name), var_id(-1), global(false), type(AS_TYPE_INVALID) { ; }
+    inline sUnpackNode(const sUnpackNode& un) : name(un.name), var_id(un.var_id), global(un.global), type(un.type) { ; }
+    
+    inline void SetVar(int in_vi, bool in_g, ASType_t in_t) { var_id = in_vi; global = in_g; type = in_t; }
+  };
+  tManagedPointerArray<sUnpackNode> m_nodes;
   bool m_last_wild;
   bool m_last_named;
   cASTNode* m_expr;
@@ -500,9 +525,13 @@ public:
   cASTUnpackTarget(const cASFilePosition& fp) : cASTNode(fp), m_last_wild(false), m_last_named(false), m_expr(NULL) { ; }
   ~cASTUnpackTarget() { delete m_expr; }
   
-  inline void AddVar(const cString& name) { m_nodes.Push(name); }
+  inline void AddVar(const cString& name) { m_nodes.Push(sUnpackNode(name)); }
   inline int GetSize() const { return m_nodes.GetSize(); }
-  inline const cString& GetVar(int idx) const { return m_nodes[idx]; }
+  inline const cString& GetVarName(int idx) const { return m_nodes[idx].name; }
+  inline int GetVarID(int idx) const { return m_nodes[idx].var_id; }
+  inline bool IsVarGlobal(int idx) const { return m_nodes[idx].global; }
+  inline ASType_t GetVarType(int idx) const { return m_nodes[idx].type; }
+  inline void SetVar(int idx, int var_id, bool global, ASType_t type) { m_nodes[idx].SetVar(var_id, global, type); }
   
   inline bool IsLastNamed() const { return m_last_named; }
   inline bool IsLastWild() const { return m_last_wild; }

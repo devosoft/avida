@@ -352,7 +352,7 @@ void cDumpASTVisitor::visitUnpackTarget(cASTUnpackTarget& node)
   for (int i = 0; i < node.GetSize(); i++) {
     cout << endl;
     indent();
-    cout << node.GetVar(i);
+    cout << node.GetVarName(i);
   }
   if (node.IsLastNamed()) {
     cout << "..";

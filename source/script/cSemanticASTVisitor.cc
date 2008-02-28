@@ -78,10 +78,9 @@ void cSemanticASTVisitor::visitAssignment(cASTAssignment& node)
 {
   node.GetExpression()->Accept(*this);
   int var_id = -1;
-  if (m_cur_symtbl->LookupVariable(node.GetVariable(), var_id)) {
-    checkCast(node.GetExpression()->GetType(), m_cur_symtbl->GetVariableType(var_id));
-  } else if (m_cur_symtbl != m_global_symtbl && m_global_symtbl->LookupVariable(node.GetVariable(), var_id)) {
-    checkCast(node.GetExpression()->GetType(), m_global_symtbl->GetVariableType(var_id));    
+  bool global = false;
+  if (lookupVariable(node.GetVariable(), var_id, global)) {
+    checkCast(node.GetExpression()->GetType(), (global ? m_global_symtbl : m_cur_symtbl)->GetVariableType(var_id));
   } else {
     SEMANTIC_ERROR(VARIABLE_UNDEFINED, (const char*)node.GetVariable());
   }
@@ -289,6 +288,7 @@ void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
 
 void cSemanticASTVisitor::visitLiteral(cASTLiteral& node)
 {
+  // Nothing to do here...   type already determined by the parser
 }
 
 
@@ -299,11 +299,41 @@ void cSemanticASTVisitor::visitLiteralArray(cASTLiteralArray& node)
 
 void cSemanticASTVisitor::visitVariableReference(cASTVariableReference& node)
 {
+  int var_id = -1;
+  bool global = false;
+  if (lookupVariable(node.GetName(), var_id, global)) {
+    node.SetVar(var_id, global);
+    node.SetType(m_cur_symtbl->GetVariableType(var_id));
+  } else {
+    SEMANTIC_ERROR(VARIABLE_UNDEFINED, (const char*)node.GetName());
+  }
 }
 
 
 void cSemanticASTVisitor::visitUnpackTarget(cASTUnpackTarget& node)
 {
+  node.GetExpression()->Accept(*this);
+  
+  // Make sure that the expression can be used as an array
+  checkCast(node.GetExpression()->GetType(), TYPE(ARRAY));
+  
+  // Check each named variable and determine if it exists
+  for (int var = 0; var < node.GetSize(); var++) {
+    int var_id = -1;
+    bool global = false;
+    if (lookupVariable(node.GetVarName(var), var_id, global)) {
+      node.SetVar(var, var_id, global, (global ? m_global_symtbl : m_cur_symtbl)->GetVariableType(var_id));
+    } else {
+      SEMANTIC_ERROR(VARIABLE_UNDEFINED, (const char*)node.GetVarName(var));
+    }
+  }
+  
+  // Check if last named is of array type
+  const int last = node.GetSize() - 1;
+  if (node.IsLastNamed() && node.GetVarID(last) != -1 && node.GetVarType(last) != TYPE(ARRAY))
+    SEMANTIC_ERROR(UNPACK_WILD_NONARRAY, (const char*)node.GetVarName(last));
+  
+  // Rest of variable type checking must be done at runtime
 }
 
 ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
@@ -413,6 +443,20 @@ inline bool cSemanticASTVisitor::validBitwiseType(ASType_t type) const {
       return false;
   }
 }
+        
+inline bool cSemanticASTVisitor::lookupVariable(const cString& name, int& var_id, bool& global) const
+{
+  if (m_cur_symtbl->LookupVariable(name, var_id)) {
+    global = false;
+    return true;
+  } else if (m_cur_symtbl != m_global_symtbl && m_global_symtbl->LookupVariable(name, var_id)) {
+    global = true;
+    return true;
+  } 
+  
+  return false;
+}
+
 
 
 void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cASFilePosition& fp, const int line, ...)
@@ -451,6 +495,8 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
       std::cerr << "'" << va_arg(vargs, const char*) << "' operation undefined for type '"
                 << va_arg(vargs, const char*) << "'" << ERR_ENDL;
       break;
+    case AS_SEMANTIC_ERR_UNPACK_WILD_NONARRAY:
+      std::cerr << "cannot unpack ... items into '" << va_arg(vargs, const char*) << "', variable must be an array" << ERR_ENDL;
     case AS_SEMANTIC_ERR_VARIABLE_REDEFINITION:
       std::cerr << "redefining variable '" << va_arg(vargs, const char*) << "'" << ERR_ENDL;
       break;
