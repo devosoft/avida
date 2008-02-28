@@ -39,16 +39,19 @@ using namespace AvidaScript;
 #define TYPE(x) AS_TYPE_ ## x
 
 namespace AvidaScript {
-  static const bool valid_cast[8][8] = {
-    // ARRAY, BOOL , CHAR , FLOAT, INT  , @OBJ , MATRX, STRNG
-    {true , true , false, false, false, false, false, true }, // TYPE(ARRAY)
-    {true , true , true , true , true , false, true , true }, // TYPE(BOOL)
-    {true , true , true , true , true , false, true , true }, // TYPE(CHAR)
-    {true , true , false, true , true , false, true , true }, // TYPE(FLOAT)
-    {true , true , true , true , true , false, true , true }, // TYPE(INT)
-    {true , true , false, false, false, true , false, true }, // TYPE(OBJECT_REF)
-    {true , true , false, false, false, false, true , true }, // TYPE(MATRIX)
-    {true , true , false, true , true , false, false, true }  // TYPE(STRNG)
+  static const bool valid_cast[11][11] = {
+  // ARRAY, BOOL , CHAR , FLOAT, INT  , @OBJ , MATRX, STRNG, RUNTM, VOID , INVLD
+    {true , true , false, false, false, false, false, true , true , false, false}, // TYPE(ARRAY)
+    {true , true , true , true , true , false, true , true , true , false, false}, // TYPE(BOOL)
+    {true , true , true , true , true , false, true , true , true , false, false}, // TYPE(CHAR)
+    {true , true , false, true , true , false, true , true , true , false, false}, // TYPE(FLOAT)
+    {true , true , true , true , true , false, true , true , true , false, false}, // TYPE(INT)
+    {true , true , false, false, false, true , false, true , false, false, false}, // TYPE(OBJECT_REF)
+    {true , true , false, false, false, false, true , true , true , false, false}, // TYPE(MATRIX)
+    {true , true , false, true , true , false, false, true , true , false, false}, // TYPE(STRNG)
+    {true , true , true , true , true , true , true , true , true , false, false}, // TYPE(RUNTIME)
+    {false, false, false, false, false, false, false, false, false, false, false}, // TYPE(VOID)
+    {false, false, false, false, false, false, false, false, false, false, false}  // TYPE(INVALID)
   };
 }
 
@@ -149,11 +152,20 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
     case TOKEN(DOT):
       break;
     case TOKEN(IDX_OPEN):
+      checkCast(node.GetLeft()->GetType(), TYPE(ARRAY));
+      checkCast(node.GetRight()->GetType(), TYPE(INT));
+      node.SetType(TYPE(RUNTIME));
       break;
     case TOKEN(ARR_RANGE):
+      checkCast(node.GetLeft()->GetType(), TYPE(INT));
+      checkCast(node.GetRight()->GetType(), TYPE(INT));
+      node.SetType(TYPE(ARRAY));
       break;
     case TOKEN(ARR_EXPAN):
+      checkCast(node.GetRight()->GetType(), TYPE(INT));
+      node.SetType(TYPE(ARRAY));
       break;
+      
     case TOKEN(OP_BIT_AND):
     case TOKEN(OP_BIT_OR):
       {
@@ -167,12 +179,10 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
           SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetRight()->GetType())); 
         }
         
-        if (valid_types) {
-          // @TODO - get consensus type
-          // Set node return type
-        }
+        if (valid_types) node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
       }      
       break;
+      
     case TOKEN(OP_LOGIC_AND):
     case TOKEN(OP_LOGIC_OR):
     case TOKEN(OP_EQ):
@@ -185,16 +195,44 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
       checkCast(node.GetRight()->GetType(), TYPE(BOOL));
       node.SetType(TYPE(BOOL));
       break;
+      
     case TOKEN(OP_ADD):
+      if (validArithmeticType(node.GetLeft()->GetType(), true) || validArithmeticType(node.GetRight()->GetType(), true) ||
+          node.GetLeft()->GetType() == TYPE(STRING) || node.GetLeft()->GetType() == TYPE(ARRAY)) {
+        node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
+      } else {
+        SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
+        SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetRight()->GetType()));        
+      }
+      break;
+      
     case TOKEN(OP_SUB):
     case TOKEN(OP_MUL):
+      if (validArithmeticType(node.GetLeft()->GetType(), true) || validArithmeticType(node.GetRight()->GetType(), true)) {
+        node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
+      } else {
+        SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
+        SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetRight()->GetType()));        
+      }
+      break;
+    
     case TOKEN(OP_DIV):
     case TOKEN(OP_MOD):
+      if (validArithmeticType(node.GetLeft()->GetType()) || validArithmeticType(node.GetRight()->GetType())) {
+        node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
+      } else {
+        SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
+        SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetRight()->GetType()));        
+      }
       break;
 
     default:
       SEMANTIC_ERROR(INTERNAL);
       break;
+  }
+  
+  if (node.GetType() == TYPE(INVALID) && m_success == true) {
+    SEMANTIC_ERROR(INTERNAL);
   }
 }
 
@@ -268,11 +306,103 @@ void cSemanticASTVisitor::visitUnpackTarget(cASTUnpackTarget& node)
 {
 }
 
+ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
+{
+  switch (left) {
+    case TYPE(ARRAY):
+      return TYPE(ARRAY);
+    case TYPE(BOOL):
+      switch (right) {
+        case TYPE(ARRAY):
+        case TYPE(BOOL):
+        case TYPE(CHAR):
+        case TYPE(FLOAT):
+        case TYPE(INT):
+        case TYPE(MATRIX):
+        case TYPE(OBJECT_REF):
+        case TYPE(STRING):
+          return TYPE(BOOL);
+
+        case TYPE(RUNTIME):
+          return TYPE(RUNTIME);
+        default: break;
+      }
+      break;
+    case TYPE(CHAR):
+      switch (right) {
+        case TYPE(ARRAY):     return TYPE(ARRAY);
+        case TYPE(BOOL):      return TYPE(CHAR);
+        case TYPE(CHAR):      return TYPE(CHAR);
+        case TYPE(FLOAT):     return TYPE(FLOAT);
+        case TYPE(INT):       return TYPE(INT);
+        case TYPE(MATRIX):    return TYPE(MATRIX);
+        case TYPE(STRING):    return TYPE(STRING);
+        case TYPE(RUNTIME):   return TYPE(RUNTIME);
+        default: break;
+      }
+      break;
+    case TYPE(FLOAT):
+      switch (right) {
+        case TYPE(ARRAY):     return TYPE(ARRAY);
+        case TYPE(BOOL):      return TYPE(FLOAT);
+        case TYPE(CHAR):      return TYPE(FLOAT);
+        case TYPE(FLOAT):     return TYPE(FLOAT);
+        case TYPE(INT):       return TYPE(FLOAT);
+        case TYPE(MATRIX):    return TYPE(MATRIX);
+        case TYPE(STRING):    return TYPE(FLOAT);
+        case TYPE(RUNTIME):   return TYPE(RUNTIME);
+        default: break;
+      }
+      break;
+    case TYPE(INT):
+      switch (right) {
+        case TYPE(ARRAY):     return TYPE(ARRAY);
+        case TYPE(BOOL):      return TYPE(INT);
+        case TYPE(CHAR):      return TYPE(INT);
+        case TYPE(FLOAT):     return TYPE(FLOAT);
+        case TYPE(INT):       return TYPE(INT);
+        case TYPE(MATRIX):    return TYPE(MATRIX);
+        case TYPE(STRING):    return TYPE(INT);
+        case TYPE(RUNTIME):   return TYPE(RUNTIME);
+        default: break;
+      }
+      break;
+    case TYPE(MATRIX):
+      return TYPE(MATRIX);
+    case TYPE(STRING):
+      return TYPE(STRING);
+    
+    case TYPE(RUNTIME):
+      return TYPE(RUNTIME);
+
+    default: break;
+  }
+  
+  return TYPE(INVALID);
+}
+
+inline bool cSemanticASTVisitor::validArithmeticType(ASType_t type, bool allow_matrix) const {
+  switch (type) {
+    case TYPE(MATRIX):
+      return allow_matrix;
+      
+    case TYPE(RUNTIME):
+    case TYPE(INT):
+    case TYPE(CHAR):
+    case TYPE(FLOAT):
+      return true;
+      
+    default:
+      return false;
+  }
+}
+
 
 inline bool cSemanticASTVisitor::validBitwiseType(ASType_t type) const {
   switch (type) {
     case TYPE(ARRAY):
     case TYPE(MATRIX):
+    case TYPE(RUNTIME):
       // Array and Matrix meta-op, validity must be determined at runtime
     case TYPE(INT):
     case TYPE(CHAR):

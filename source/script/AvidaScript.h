@@ -134,8 +134,11 @@ typedef enum eASTypes {
   AS_TYPE_OBJECT_REF,
   AS_TYPE_MATRIX,
   AS_TYPE_STRING,
-  AS_TYPE_VOID,
   
+  AS_TYPE_RUNTIME,
+
+  AS_TYPE_VOID,
+
   AS_TYPE_INVALID
 } ASType_t;
 

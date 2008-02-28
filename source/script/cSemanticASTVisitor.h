@@ -90,7 +90,8 @@ public:
   void visitUnpackTarget(cASTUnpackTarget&);
 
 private:
-  
+  ASType_t getConsensusType(ASType_t t1, ASType_t t2);
+  inline bool validArithmeticType(ASType_t type, bool allow_matrix = false) const;
   inline bool validBitwiseType(ASType_t type) const;
   void reportError(bool fail, ASSemanticError_t err, const cASFilePosition& fp, const int line, ...);
 };

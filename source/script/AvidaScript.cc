@@ -62,8 +62,9 @@ const char* AvidaScript::mapType(ASType_t type)
     case AS_TYPE_INT:         return "int";
     case AS_TYPE_MATRIX:      return "matrix";
     case AS_TYPE_STRING:      return "string";
-    case AS_TYPE_VOID:        return "void";
     case AS_TYPE_OBJECT_REF:  return "object";
+    case AS_TYPE_RUNTIME:     return "runtime";
+    case AS_TYPE_VOID:        return "void";
       
     case AS_TYPE_INVALID:
     default:
