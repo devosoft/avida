@@ -207,6 +207,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
         return false;
       new_process->SetSterile(var_value.AsInt());
     }
+    else if (var_name == "demefrac") {
+      if (!AssertInputDouble(var_value, "demefrac", var_type))
+        return false;
+      new_process->SetDemeFraction(var_value.AsDouble());
+    }
     else if (var_name == "detect") {
       cResource* test_resource = resource_lib.GetResource(var_value);
       if (!AssertInputValid(test_resource, "product", var_type, var_value)) {

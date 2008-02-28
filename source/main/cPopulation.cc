@@ -122,7 +122,6 @@ cPopulation::cPopulation(cWorld* world)
   
   // Not yet supported:
   assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()==1);
-  assert(m_world->GetConfig().DEMES_HAVE_MERIT.Get()==0);
   
 #ifdef DEBUG
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
@@ -490,7 +489,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   m_world->GetClassificationManager().AdjustGenotype(*in_genotype);
   
   // Initialize the time-slice for this new organism.
-  schedule->Adjust(target_cell.GetID(), in_organism->GetPhenotype().GetMerit(),target_cell.GetDemeID());
+  schedule->Adjust(target_cell.GetID(), in_organism->GetPhenotype().GetMerit(), target_cell.GetDemeID());
   
   // Special handling for certain birth methods.
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
@@ -1214,6 +1213,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // If we're using deme merit, the source's merit must be transferred to the target.
   if(m_world->GetConfig().DEMES_HAVE_MERIT.Get()) {
     target_deme.UpdateDemeMerit(source_deme);
+    source_deme.UpdateDemeMerit();
   }
   
   bool source_deme_resource_reset(true), target_deme_resource_reset(true);

@@ -125,21 +125,26 @@ void cDeme::Reset(double deme_energy, bool resetResources)
 /*! Replacing this deme's germline has the effect of changing the deme's lineage.
 There's still some work to do here; the lineage labels of the Genomes in the germline
 are all messed up.
-
-@todo Fix lineage labels in germlines.
 */
 void cDeme::ReplaceGermline(const cGermline& germline) {
 	_germline = germline;
 }
 
 
-/*! Update this deme's merit from the given source.
+/*! If this method is called, this is the "parent" deme.  As with individuals,
+we need to rotate the heritable merit to the current merit.
+*/
+void cDeme::UpdateDemeMerit() {
+  _current_merit = _next_merit;
+  _next_merit = 0;
+}
 
-@todo We have a little bit of work to do here yet, as the deme merit isn't yet
-tied into the scheduler.  Crash.
+
+/*! Update this deme's merit from the given source.
 */
 void cDeme::UpdateDemeMerit(cDeme& source) {
-  assert(false);
+  _current_merit = source.GetHeritableDemeMerit();
+  _next_merit = 0;
 }
 
 

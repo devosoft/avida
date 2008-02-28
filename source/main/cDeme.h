@@ -26,6 +26,7 @@
 
 #include "cDemeCellEvent.h"
 #include "cGermline.h"
+#include "cMerit.h"
 #include "tArray.h"
 #include "cResourceCount.h"
 #include "cStringList.h"
@@ -56,6 +57,9 @@ private:
   tArray<int> energy_res_ids; //!< IDs of energy resources
   
   tArray<cDemeCellEvent> cell_events;
+  
+  cMerit _current_merit; //!< Deme merit applied to all organisms living in this deme.
+  cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
   
 public:
   cDeme() : width(0), birth_count(0), org_count(0), _age(0), total_org_energy(0.0), deme_resource_count(0) { ; }
@@ -90,8 +94,16 @@ public:
   //! Replaces this deme's germline.
   void ReplaceGermline(const cGermline& germline);
   
-  //! Update this deme's merit from the given source.
+  //! Update this deme's merit by rotating the heritable merit to the current merit.
+  void UpdateDemeMerit();
+  //! Update this deme's merit from the given source; merit will be applied to organisms now.
   void UpdateDemeMerit(cDeme& source);
+  //! Update the heritable merit; will be applied to this deme and it's offspring upon replication.
+  void UpdateHeritableDemeMerit(double value) { _next_merit += value; }
+  //! Retrieve this deme's current merit; to be applied to organisms living in this deme now.
+  const cMerit& GetDemeMerit() const { return _current_merit; }
+  //! Retrieve this deme's heritable merit.
+  const cMerit& GetHeritableDemeMerit() const { return _next_merit; }
 
   // -= Update support =-
   //! Called once, at the end of every update.

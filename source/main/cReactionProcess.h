@@ -53,7 +53,8 @@ private:
   cResource* product;    // Output resource.
   double conversion;     // Conversion factor.
   bool lethal;		 // Lethality of reaction
-  bool sterilize; //! Whether performance of this reaction sterilizes the organism.
+  bool sterilize; //!< Whether performance of this reaction sterilizes the organism.
+  double deme_fraction; //!< Fraction of process reward that is applied to the organism's deme.
   cString match_string;	 // Bit string to match if this is a match string reaction
   int inst_id;           // Instruction to be triggered if reaction successful.
   bool depletable;       // Does completing consume resource?
@@ -81,6 +82,7 @@ public:
     , conversion(1.0)
     , lethal(0)
     , sterilize(false)
+    , deme_fraction(0.0)
     , inst_id(-1)
     , depletable(true)
     , detect(NULL)
@@ -102,6 +104,7 @@ public:
   bool GetDepletable() const { return depletable; }
   bool GetLethal() const { return lethal; }
   bool GetSterilize() const { return sterilize; }
+  double GetDemeFraction() const { return deme_fraction; }
   cResource* GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }
   double GetDetectionError() const { return detection_error; }
@@ -119,6 +122,7 @@ public:
   void SetDepletable(bool _in) { depletable = _in; }
   void SetLethal(int _in) { lethal = _in; }
   void SetSterile(int _in) { sterilize = _in; }
+  void SetDemeFraction(double _in) { deme_fraction = _in; }
   void SetDetect(cResource* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }

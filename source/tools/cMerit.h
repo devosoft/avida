@@ -63,7 +63,8 @@ public:
 
   void operator=(double _merit) { UpdateValue(_merit); }
   void operator+=(const cMerit & _m){ UpdateValue(value + _m.GetDouble()); }
-
+  void operator+=(double _merit) { UpdateValue(value + _merit); }
+  cMerit operator*(const cMerit& _m) const { return cMerit(value * _m.GetDouble()); }
   int  operator>(const cMerit & _m)  const { return value >  _m.GetDouble(); }
   int  operator<(const cMerit & _m)  const { return value <  _m.GetDouble(); }
   int  operator>=(const cMerit & _m) const { return value >= _m.GetDouble(); }

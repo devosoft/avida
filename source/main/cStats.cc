@@ -1218,7 +1218,8 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 {
   ++m_deme_num_repls;
   m_deme_gestation_time.Add(source_deme.GetAge());
-  m_deme_births.Add(source_deme.GetBirthCount());                      
+  m_deme_births.Add(source_deme.GetBirthCount());
+  m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
 }
 
 
@@ -1243,13 +1244,15 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_update, "Update [update]");
   df.Write(m_deme_num_repls, "Number of deme replications [numrepl]");
   df.Write(m_deme_gestation_time.Average(), "Mean deme gestation time [gesttime]");
-  df.Write(m_deme_births.Average(), "Mean number of births [numbirths]");
+  df.Write(m_deme_births.Average(), "Mean number of births within replicated demes [numbirths]");
+  df.Write(m_deme_merit.Average(), "Mean heritable merit of replicated demes [merit]");
   
   df.Endl();
   
   m_deme_num_repls = 0;
   m_deme_gestation_time.Clear();
   m_deme_births.Clear();
+  m_deme_merit.Clear();
 }
 
 
