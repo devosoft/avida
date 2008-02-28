@@ -83,8 +83,7 @@ public:
   }
   ~cDemeProbSchedule() { for (int i = 0; i < chart.GetSize(); i++) delete chart[i]; }
 
-  virtual void Adjust(int item_id, const cMerit& merit, const cDeme& deme);
-  virtual void Adjust(int item_id, const cMerit& merit);
+  virtual void Adjust(int item_id, const cMerit& merit, int deme_id = 0);
 
   int GetNextID();
 };

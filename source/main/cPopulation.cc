@@ -274,6 +274,15 @@ cPopulation::~cPopulation()
 }
 
 
+inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMerit& merit)
+{
+  const int deme_id = cell.GetDemeID();
+  const cDeme& deme = deme_array[deme_id];
+  schedule->Adjust(cell.GetID(), deme.HasDemeMerit() ? (merit * deme.GetDemeMerit()) : merit, cell.GetDemeID());
+}
+
+
+
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.
 
@@ -356,7 +365,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
         delete test_cpu;
       }
     }
-    schedule->Adjust(parent_cell.GetID(), parent_phenotype.GetMerit(), deme_array[parent_cell.GetDemeID()]);
+    AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
     
     // In a local run, face the child toward the parent. 
     const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
@@ -489,7 +498,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   m_world->GetClassificationManager().AdjustGenotype(*in_genotype);
   
   // Initialize the time-slice for this new organism.
-  schedule->Adjust(target_cell.GetID(), in_organism->GetPhenotype().GetMerit(), deme_array[target_cell.GetDemeID()]);
+  AdjustSchedule(target_cell, in_organism->GetPhenotype().GetMerit());
   
   // Special handling for certain birth methods.
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
@@ -677,7 +686,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   else organism->GetPhenotype().SetToDelete();
   
   // Alert the scheduler that this cell has a 0 merit.
-  schedule->Adjust(in_cell.GetID(), cMerit(0), deme_array[in_cell.GetDemeID()]);
+  AdjustSchedule(in_cell, cMerit(0));
   
   // Update the archive (note: genotype adjustment may be defered)
   m_world->GetClassificationManager().AdjustGenotype(*genotype);
@@ -815,9 +824,9 @@ void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
   cOrganism * org2 = cell2.RemoveOrganism();
   if (org2 != NULL) {
     cell1.InsertOrganism(org2);
-    schedule->Adjust(cell1.GetID(), org2->GetPhenotype().GetMerit(), deme_array[cell1.GetDemeID()]);
+    AdjustSchedule(cell1, org2->GetPhenotype().GetMerit());
   } else {
-    schedule->Adjust(cell1.GetID(), cMerit(0), deme_array[cell1.GetDemeID()]);
+    AdjustSchedule(cell1, cMerit(0));
   }
   if (org1 != NULL) {
     cell2.InsertOrganism(org1);
@@ -833,9 +842,9 @@ void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
       cAvidaContext& ctx = m_world->GetDefaultContext();
       org1->DoOutput(ctx,0);
     }
-    schedule->Adjust(cell2.GetID(), org1->GetPhenotype().GetMerit(), deme_array[cell2.GetDemeID()]);
+    AdjustSchedule(cell2, org1->GetPhenotype().GetMerit());
   } else {
-    schedule->Adjust(cell2.GetID(), cMerit(0), deme_array[cell2.GetDemeID()]);
+    AdjustSchedule(cell2, cMerit(0));
   }
 }
 
@@ -2906,7 +2915,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
         InjectGenotype( current_cell, (*it).genotype );
         cPhenotype & phenotype = GetCell(current_cell).GetOrganism()->GetPhenotype();
         if ( (*it).merit > 0) phenotype.SetMerit( cMerit((*it).merit) );
-        schedule->Adjust(current_cell, phenotype.GetMerit(), deme_array[GetCell(current_cell).GetDemeID()]);
+        AdjustSchedule(GetCell(current_cell), phenotype.GetMerit());
         
         int lineage_label = 0;
         LineageSetupOrganism(GetCell(current_cell).GetOrganism(),
@@ -2996,7 +3005,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
   phenotype.SetNeutralMetric(neutral);
     
   if (merit > 0) phenotype.SetMerit(cMerit(merit));
-  schedule->Adjust(cell_id, phenotype.GetMerit(), deme_array[GetCell(cell_id).GetDemeID()]);
+  AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
   
   LineageSetupOrganism(GetCell(cell_id).GetOrganism(), 0, lineage_label);
   
@@ -3460,7 +3469,7 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   if (new_merit <= old_merit) {
 	  phenotype.SetIsDonorCur(); }  
   else  { phenotype.SetIsReceiver(); } 
-  schedule->Adjust(cell_id, phenotype.GetMerit(), deme_array[GetCell(cell_id).GetDemeID()]);
+  AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
   
   return true;
 }

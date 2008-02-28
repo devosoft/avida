@@ -57,8 +57,7 @@ public:
   cProbSchedule(int num_cells, int seed) : cSchedule(num_cells), m_rng(seed), chart(num_cells) { ; }
   ~cProbSchedule() { ; }
 
-  virtual void Adjust(int item_id, const cMerit& merit, const cDeme& deme);
-  virtual void Adjust(int item_id, const cMerit& merit);
+  virtual void Adjust(int item_id, const cMerit& merit, int deme_id = 0);
 
   int GetNextID();
 };

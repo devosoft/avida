@@ -72,10 +72,8 @@ int cDemeProbSchedule::GetNextID()
 
 
 //adjust the weight of an org within deme
-void cDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit, const cDeme& deme)
+void cDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit, int deme_id)
 {
-  int deme_id = deme.GetID();
-  
   //calculate the corrected id for the org to be adjusted
   int offset_id = item_id - (deme_id * deme_size);
   
@@ -88,9 +86,3 @@ void cDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit, const cDem
   chart[deme_id]->SetWeight(offset_id, item_merit.GetDouble());
 }
 
-
-//adjust the weight of an org within deme
-void cDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit)
-{
-  assert(false);
-}

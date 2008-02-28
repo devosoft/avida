@@ -38,13 +38,8 @@ int cProbSchedule::GetNextID()
   return chart.FindPosition(position);
 }
 
-void cProbSchedule::Adjust(int item_id, const cMerit& item_merit, const cDeme& deme)
-{
-  Adjust(item_id, item_merit * deme.GetDemeMerit());
-}
 
-
-void cProbSchedule::Adjust(int item_id, const cMerit& item_merit)
+void cProbSchedule::Adjust(int item_id, const cMerit& item_merit, int deme_id)
 {
   if (cChangeList *change_list = GetChangeList()) {
     change_list->MarkChange(item_id);

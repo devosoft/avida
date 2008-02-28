@@ -106,6 +106,8 @@ public:
   const cMerit& GetDemeMerit() const { return _current_merit; }
   //! Retrieve this deme's heritable merit.
   const cMerit& GetHeritableDemeMerit() const { return _next_merit; }
+  
+  bool HasDemeMerit() const { return _current_merit.GetDouble() != 1.0; }
 
   // -= Update support =-
   //! Called once, at the end of every update.

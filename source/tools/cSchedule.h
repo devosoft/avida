@@ -60,8 +60,7 @@ public:
   virtual ~cSchedule();
 
   virtual bool OK() { return true; }
-  virtual void Adjust(int item_id, const cMerit& merit, const cDeme& deme) = 0;
-  virtual void Adjust(int item_id, const cMerit& merit) = 0;
+  virtual void Adjust(int item_id, const cMerit& merit, int deme_id = 0) = 0;
   virtual int GetNextID() = 0;
   virtual double GetStatus(int id) { return 0.0; }
   void SetChangeList(cChangeList *change_list);

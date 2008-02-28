@@ -143,6 +143,9 @@ private:
 	
   // Must be called to activate *any* organism in the population.
   void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
+  
+  inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
+  
 
   cPopulation(); // @not_implemented
   cPopulation(const cPopulation&); // @not_implemented
