@@ -33,12 +33,12 @@
 #include "tArray.h"
 #endif
 
+class cDeme;
+class cMerit;
+
 /**
  * This class rotates between all items to schedule, giving each equal time.
  **/
-
-class cMerit;
-
 class cConstSchedule : public cSchedule
 {
 private:
@@ -58,7 +58,9 @@ public:
   ~cConstSchedule() { ; }
 
   bool OK();
-  void Adjust(int item_id, const cMerit& merit, int deme_id);
+
+  virtual void Adjust(int item_id, const cMerit& merit, const cDeme& deme);
+  virtual void Adjust(int item_id, const cMerit& merit);
 
   int GetNextID();
 };

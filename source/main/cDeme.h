@@ -42,6 +42,7 @@ class cDeme
 {
 private:
   cWorld* m_world;
+  int _id; //!< ID of this deme (position in cPopulation::deme_array).
   tArray<int> cell_ids;
   int width; //!< Width of this deme.
   int birth_count; //!< Number of organisms that have been born into this deme since reset.
@@ -62,11 +63,12 @@ private:
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
   
 public:
-  cDeme() : width(0), birth_count(0), org_count(0), _age(0), total_org_energy(0.0), deme_resource_count(0) { ; }
+  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), total_org_energy(0.0), deme_resource_count(0) { ; }
   ~cDeme() { ; }
 
-  void Setup(const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
+  void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
 
+  int GetID() const { return _id; }
   int GetSize() const { return cell_ids.GetSize(); }
   int GetCellID(int pos) const { return cell_ids[pos]; }
   int GetCellID(int x, int y) const;

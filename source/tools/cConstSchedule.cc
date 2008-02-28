@@ -25,6 +25,7 @@
 
 #include "cConstSchedule.h"
 
+#include "cDeme.h"
 #include "cChangeList.h"
 #include "cMerit.h"
 
@@ -35,7 +36,12 @@ bool cConstSchedule::OK()
   return true;
 }
 
-void cConstSchedule::Adjust(int item_id, const cMerit & merit, int deme_id)
+void cConstSchedule::Adjust(int item_id, const cMerit & merit, const cDeme& deme)
+{
+  Adjust(item_id, merit);
+}
+
+void cConstSchedule::Adjust(int item_id, const cMerit & merit)
 {
   if (cChangeList *change_list = GetChangeList()) {
     change_list->MarkChange(item_id);

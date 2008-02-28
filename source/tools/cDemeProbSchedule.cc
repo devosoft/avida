@@ -26,6 +26,7 @@
 #include "cDemeProbSchedule.h"
 
 #include "cChangeList.h"
+#include "cDeme.h"
 #include "cMerit.h"
 
 // The larger merits cause problems here; things need to be re-thought out. 
@@ -71,16 +72,25 @@ int cDemeProbSchedule::GetNextID()
 
 
 //adjust the weight of an org within deme
-void cDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit, int deme_id)
+void cDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit, const cDeme& deme)
 {
+  int deme_id = deme.GetID();
+  
   //calculate the corrected id for the org to be adjusted
   int offset_id = item_id - (deme_id * deme_size);
-
+  
   //who the hell knows what this crap does -- "ineherited" from cProbScheduler
   if (cChangeList *change_list = GetChangeList()) {
     change_list->MarkChange(item_id);
   }
-
+  
   //adjust the merit of the org in the tree
   chart[deme_id]->SetWeight(offset_id, item_merit.GetDouble());
+}
+
+
+//adjust the weight of an org within deme
+void cDemeProbSchedule::Adjust(int item_id, const cMerit& item_merit)
+{
+  assert(false);
 }

@@ -29,13 +29,17 @@
 #include "cResource.h"
 #include "cWorld.h"
 
-void cDeme::Setup(const tArray<int> & in_cells, int in_width, cWorld* world)
+void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* world)
 {
+  _id = id;
   cell_ids = in_cells;
   birth_count = 0;
   org_count = 0;
   m_world = world;
 
+  _current_merit = 1.0;
+  _next_merit = 1.0;
+  
   // If width is negative, set it to the full number of cells.
   width = in_width;
   if (width < 1) width = cell_ids.GetSize();
@@ -136,7 +140,7 @@ we need to rotate the heritable merit to the current merit.
 */
 void cDeme::UpdateDemeMerit() {
   _current_merit = _next_merit;
-  _next_merit = 0;
+  _next_merit = 1.0;
 }
 
 
@@ -144,7 +148,7 @@ void cDeme::UpdateDemeMerit() {
 */
 void cDeme::UpdateDemeMerit(cDeme& source) {
   _current_merit = source.GetHeritableDemeMerit();
-  _next_merit = 0;
+  _next_merit = 1.0;
 }
 
 

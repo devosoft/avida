@@ -25,6 +25,7 @@
 
 #include "cIntegratedSchedule.h"
 
+#include "cDeme.h"
 #include "cChangeList.h"
 #include "functions.h"
 #include "cIntegratedScheduleNode.h"
@@ -75,8 +76,12 @@ bool cIntegratedSchedule::OK()
   return true;
 }
 
+void cIntegratedSchedule::Adjust(int item_id, const cMerit& new_merit, const cDeme& deme)
+{
+  Adjust(item_id, new_merit * deme.GetDemeMerit());
+}
 
-void cIntegratedSchedule::Adjust(int item_id, const cMerit & new_merit, int deme_id)
+void cIntegratedSchedule::Adjust(int item_id, const cMerit& new_merit)
 {
   if (cChangeList *change_list = GetChangeList()) {
     change_list->MarkChange(item_id);
