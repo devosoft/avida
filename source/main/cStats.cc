@@ -1218,6 +1218,7 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 {
   ++m_deme_num_repls;
   m_deme_gestation_time.Add(source_deme.GetAge());
+  m_deme_births.Add(source_deme.GetBirthCount());                      
 }
 
 
@@ -1242,10 +1243,13 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_update, "Update [update]");
   df.Write(m_deme_num_repls, "Number of deme replications [numrepl]");
   df.Write(m_deme_gestation_time.Average(), "Mean deme gestation time [gesttime]");
+  df.Write(m_deme_births.Average(), "Mean number of births [numbirths]");
+  
   df.Endl();
   
   m_deme_num_repls = 0;
   m_deme_gestation_time.Clear();
+  m_deme_births.Clear();
 }
 
 
