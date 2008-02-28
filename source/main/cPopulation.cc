@@ -1210,11 +1210,10 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     SeedDeme(source_deme, target_deme);
   }
 
-  // If we're using deme merit, the source's merit must be transferred to the target.
-  if(m_world->GetConfig().DEMES_HAVE_MERIT.Get()) {
-    target_deme.UpdateDemeMerit(source_deme);
-    source_deme.UpdateDemeMerit();
-  }
+  // The source's merit must be transferred to the target, and then the source has
+  // rotate its merits.
+  target_deme.UpdateDemeMerit(source_deme);
+  source_deme.UpdateDemeMerit();
   
   bool source_deme_resource_reset(true), target_deme_resource_reset(true);
   switch(m_world->GetConfig().DEMES_RESET_RESOURCES.Get()) {

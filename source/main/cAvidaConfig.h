@@ -296,7 +296,6 @@ public:
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");
   CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline (default=0).");
-  CONFIG_ADD_VAR(DEMES_HAVE_MERIT, int, 0, "Whether demes have merit (default=0).");
   CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Whether to prevent sterile demes from\nreplicating (default=0).");
   CONFIG_ADD_VAR(DEMES_RESET_RESOURCES, int, 0, "Reset resources in demes on replication. \n0 = reset both demes \n1 = reset target deme \n2 = deme resources remain unchanged\n");
   CONFIG_ADD_VAR(DEMES_REPLICATE_SIZE, int, 1, "Number of identical organisms to create or copy from the\nsource deme to the target deme (default=1).");
