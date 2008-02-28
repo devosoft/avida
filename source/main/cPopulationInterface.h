@@ -35,6 +35,7 @@
 #ifndef cWorldDriver_h
 #include "cWorldDriver.h"
 #endif
+#include "cDeme.h"
 
 class cPopulation;
 class cOrgMessage;
@@ -57,6 +58,7 @@ public:
 
   int GetCellID() { return m_cell_id; }
   int GetDemeID() { return m_deme_id; }
+  cDeme* GetDeme();
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
 

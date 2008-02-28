@@ -122,7 +122,7 @@ public:
   void SetDepletable(bool _in) { depletable = _in; }
   void SetLethal(int _in) { lethal = _in; }
   void SetSterile(int _in) { sterilize = _in; }
-  void SetDemeFraction(double _in) { deme_fraction = _in; }
+  void SetDemeFraction(double _in) { assert(_in>=0.0); assert(_in<=1.0); deme_fraction = _in; }
   void SetDetect(cResource* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }

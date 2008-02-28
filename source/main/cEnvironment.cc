@@ -1021,8 +1021,11 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     // Mark the reaction as having been performed if we get here.
     result.MarkReaction(reaction_id);
     
-    // Calculate the bonus
-    double bonus = consumed * cur_process->GetValue();
+    // How much of this bonus belongs to the deme, and how much belongs to the organism?
+    double deme_bonus = cur_process->GetDemeFraction() * consumed * cur_process->GetValue();
+    double bonus = (1.0 - cur_process->GetDemeFraction()) * consumed * cur_process->GetValue();
+
+    result.DemeBonus(deme_bonus);
     
     switch (cur_process->GetType()) {
       case nReaction::PROCTYPE_ADD:

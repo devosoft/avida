@@ -41,6 +41,11 @@
 #define NULL 0
 #endif
 
+cDeme* cPopulationInterface::GetDeme()
+{
+  return &m_world->GetPopulation().GetDeme(m_deme_id);
+}
+
 
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome)
 {

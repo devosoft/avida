@@ -26,6 +26,7 @@
 #include "cPhenotype.h"
 
 #include "cEnvironment.h"
+#include "cDeme.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cReactionResult.h"
@@ -1005,6 +1006,11 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cur_bonus *= result.GetMultBonus();
   cur_bonus += result.GetAddBonus();
   
+  // Update deme merit.
+  if(taskctx.GetOrganism()->GetOrgInterface().GetDeme()) {
+    taskctx.GetOrganism()->GetOrgInterface().GetDeme()->UpdateHeritableDemeMerit(result.GetDemeBonus());
+  }
+    
   // Update the energy bonus
   cur_energy_bonus += result.GetAddEnergy();
   

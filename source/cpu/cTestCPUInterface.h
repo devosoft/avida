@@ -46,6 +46,7 @@ public:
 
   int GetCellID() { return -1; }
   int GetDemeID() { return -1; }
+  cDeme* GetDeme() { return 0; }
   void SetCellID(int in_id) { ; }
   void SetDemeID(int in_id) { ; }
 

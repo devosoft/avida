@@ -44,6 +44,7 @@ cReactionResult::cReactionResult(const int num_resources,
   , lethal(false)
   , sterilize(false)
   , active_reaction(false)
+  , deme_bonus(0.0)
 {
 }
 
@@ -134,6 +135,13 @@ void cReactionResult::MultBonus(double value)
   ActivateReaction();
   bonus_mult *= value;
 }
+
+void cReactionResult::DemeBonus(double value)
+{
+  ActivateReaction();
+  deme_bonus += value;
+}
+
 
 void cReactionResult::AddInst(int id)
 {

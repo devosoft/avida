@@ -36,6 +36,7 @@
 
 class cAvidaContext;
 class cCodeLabel;
+class cDeme;
 class cGenome;
 class cOrganism;
 class cOrgMessage;
@@ -55,6 +56,7 @@ public:
 
   virtual int GetCellID() = 0;
   virtual int GetDemeID() = 0;
+  virtual cDeme* GetDeme() = 0;
   virtual void SetCellID(int in_id) = 0;
   virtual void SetDemeID(int in_id) = 0;
 

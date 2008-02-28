@@ -48,6 +48,8 @@ private:
   bool sterilize;
   bool active_reaction;
 
+  double deme_bonus; //!< Bonus applied to the deme as a result of this reaction.
+  
   inline void ActivateReaction();
   
   cReactionResult(); // @not_implemented
@@ -71,6 +73,7 @@ public:
   void AddEnergy(double value);
   void AddBonus(double value, int id);
   void MultBonus(double value);
+  void DemeBonus(double value);
   
   void AddInst(int id);
   
@@ -88,6 +91,7 @@ public:
   double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }
   tArray<int>& GetInstArray() { return insts_triggered; }
+  double GetDemeBonus() { return deme_bonus; }
 };
 
 
