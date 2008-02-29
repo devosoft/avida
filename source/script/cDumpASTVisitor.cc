@@ -337,7 +337,7 @@ void cDumpASTVisitor::visitLiteralArray(cASTLiteralArray& node)
   cout << "{" << endl;
   m_depth++;
   
-  node.GetValue()->Accept(*this);
+  node.GetValues()->Accept(*this);
   
   m_depth--;
   indent();

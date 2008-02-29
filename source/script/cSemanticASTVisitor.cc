@@ -110,22 +110,65 @@ void cSemanticASTVisitor::visitStatementList(cASTStatementList& node)
 
 void cSemanticASTVisitor::visitForeachBlock(cASTForeachBlock& node)
 {
+  // Check values and make sure we can process it as an array
+  node.GetValues()->Accept(*this);
+  checkCast(node.GetValues()->GetType(), TYPE(ARRAY));
+  
+  // @TODO - push scope
+  
+  // Check and define the variable in this scope
+  node.GetVariable()->Accept(*this);
+  
+  // Check the code
+  node.GetCode()->Accept(*this);
+  
+  // @TODO - pop scope
 }
 
 
 void cSemanticASTVisitor::visitIfBlock(cASTIfBlock& node)
 {
+  // Check main condition and code
+  node.GetCondition()->Accept(*this);
+  checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
+  // @TODO - push scope
+  node.GetCode()->Accept(*this);
+  // @TODO - pop scope
+  
+  // Check all elseif blocks
+  tListIterator<cASTIfBlock::cElseIf> it = node.ElseIfIterator();
+  cASTIfBlock::cElseIf* ei = NULL;
+  while ((ei = it.Next())) {
+    ei->GetCondition()->Accept(*this);
+    checkCast(ei->GetCondition()->GetType(), TYPE(BOOL));
+    // @TODO - push scope
+    ei->GetCode()->Accept(*this);
+    // @TODO - pop scope
+  }
+  
+  // Check else block if there is one
+  if (node.GetElseCode()) {
+    // @TODO - push scope
+    node.GetElseCode()->Accept(*this);
+    // @TODO - pop scope
+  }
 }
 
 
 void cSemanticASTVisitor::visitWhileBlock(cASTWhileBlock& node)
 {
+  node.GetCondition()->Accept(*this);
+  checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
+  // @TODO - push scope
+  node.GetCode()->Accept(*this);
+  // @TODO - pop scope
 }
 
 
 
 void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 {
+  // @TODO - function definition
 }
 
 
@@ -150,8 +193,8 @@ void cSemanticASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
       // If empty, warn...
       if (al->GetSize() == 0) SEMANTIC_WARNING(NO_DIMENSIONS);
       
-      // Arrays can only have one dimension specifier
-      if (node.GetType() == TYPE(ARRAY) && al->GetSize() > 1) {
+      // If dimensions exceed type limits
+      if ((node.GetType() == TYPE(ARRAY) && al->GetSize() > 1) || (node.GetType() == TYPE(MATRIX) && al->GetSize() > 2)) {
         SEMANTIC_ERROR(TOO_MANY_ARGUMENTS);
         SEMANTIC_ERROR(VARIABLE_DIMENSIONS_INVALID, (const char*)node.GetName(), mapType(node.GetType()));
       }
@@ -171,6 +214,8 @@ void cSemanticASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
 
 void cSemanticASTVisitor::visitVariableDefinitionList(cASTVariableDefinitionList& node)
 {
+  // Should never recurse into here.  Variable definition lists are processed by function definitions.
+  SEMANTIC_ERROR(INTERNAL);
 }
 
 
@@ -316,6 +361,7 @@ void cSemanticASTVisitor::visitArgumentList(cASTArgumentList& node)
 
 void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
 {
+  // @TODO - function call
 }
 
 
@@ -327,16 +373,26 @@ void cSemanticASTVisitor::visitLiteral(cASTLiteral& node)
 
 void cSemanticASTVisitor::visitLiteralArray(cASTLiteralArray& node)
 {
+  cASTArgumentList* al = node.GetValues();
+  if (al) {
+    tListIterator<cASTNode> it = al->Iterator();
+    cASTNode* alnode = NULL;
+    while ((alnode = it.Next())) alnode->Accept(*this);
+  }
+  
+  // Matrix dimension check must be performed at runtime
 }
 
 
 void cSemanticASTVisitor::visitObjectCall(cASTObjectCall& node)
 {
+  // @TODO - object call
 }
 
 
 void cSemanticASTVisitor::visitObjectReference(cASTObjectReference& node)
 {
+  // @TODO - object reference
 }
 
 
@@ -519,11 +575,27 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
     case AS_SEMANTIC_WARN_LOSS_OF_PRECISION:
       std::cerr << "loss of precision occuring in cast of " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
       break;
+    case AS_SEMANTIC_WARN_NO_DIMENSIONS:
+      std::cerr << "no dimensions specified" << ERR_ENDL;
+      break;
     case AS_SEMANTIC_WARN_UNREACHABLE:
       std::cerr << "unreachable statement(s)" << ERR_ENDL;
       break;
+      
     case AS_SEMANTIC_ERR_CANNOT_CAST:
       std::cerr << "cannot cast " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_TOO_MANY_ARGUMENTS:
+      std::cerr << "too many arguments" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_UNDEFINED_TYPE_OP:
+      std::cerr << "'" << VA_ARG_STR << "' operation undefined for type '" << VA_ARG_STR << "'" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_UNPACK_WILD_NONARRAY:
+      std::cerr << "cannot unpack ... items into '" << VA_ARG_STR << "', variable must be an array" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_VARIABLE_DIMENSIONS_INVALID:
+      std::cerr << "dimensions of '" << VA_ARG_STR << "' invalid for type " << VA_ARG_STR << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_VARIABLE_UNDEFINED:
       {
@@ -534,11 +606,6 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
         std::cerr << ERR_ENDL;
       }
       break;
-    case AS_SEMANTIC_ERR_UNDEFINED_TYPE_OP:
-      std::cerr << "'" << VA_ARG_STR << "' operation undefined for type '" << VA_ARG_STR << "'" << ERR_ENDL;
-      break;
-    case AS_SEMANTIC_ERR_UNPACK_WILD_NONARRAY:
-      std::cerr << "cannot unpack ... items into '" << VA_ARG_STR << "', variable must be an array" << ERR_ENDL;
     case AS_SEMANTIC_ERR_VARIABLE_REDEFINITION:
       std::cerr << "redefining variable '" << VA_ARG_STR << "'" << ERR_ENDL;
       break;

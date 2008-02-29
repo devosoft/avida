@@ -474,15 +474,15 @@ public:
 class cASTLiteralArray : public cASTNode
 {
 private:
-  cASTArgumentList* m_value;
+  cASTArgumentList* m_values;
   bool m_is_matrix;
   
 public:
   cASTLiteralArray(const cASFilePosition& fp, cASTArgumentList* v, bool is_mat)
-    : cASTNode(fp), m_value(v), m_is_matrix(is_mat) { ; }
-  ~cASTLiteralArray() { delete m_value; }  
+    : cASTNode(fp), m_values(v), m_is_matrix(is_mat) { ; }
+  ~cASTLiteralArray() { delete m_values; }  
   
-  inline cASTArgumentList* GetValue() { return m_value; }
+  inline cASTArgumentList* GetValues() { return m_values; }
   inline bool IsMatrix() const { return m_is_matrix; }
   
   ASType_t GetType() const { return m_is_matrix ? AS_TYPE_MATRIX : AS_TYPE_ARRAY; }
