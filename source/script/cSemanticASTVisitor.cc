@@ -70,7 +70,8 @@ cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_s
   : m_library(lib), m_global_symtbl(global_symtbl), m_parent_scope(global_symtbl), m_fun_id(0), m_cur_symtbl(global_symtbl)
 {
   // Add internal definition of the global function
-  m_global_symtbl->AddFunction("__asmain", TYPE(INT));
+  int fun_id = -1;
+  m_global_symtbl->AddFunction("__asmain", TYPE(INT), fun_id);
 }
 
 
@@ -130,8 +131,40 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 
 void cSemanticASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
 {
-  if (!m_cur_symtbl->AddVariable(node.GetVariable(), node.GetType())) {
-    SEMANTIC_ERROR(VARIABLE_REDEFINITION, (const char*)node.GetVariable());
+  int var_id = -1;
+  if (m_cur_symtbl->AddVariable(node.GetName(), node.GetType(), var_id)) node.SetVar(var_id);
+  else SEMANTIC_ERROR(VARIABLE_REDEFINITION, (const char*)node.GetName());
+  
+  // Process matrix/array dimensions
+  cASTArgumentList* al = node.GetDimensions();
+  if (al) {
+    if (node.GetType() == TYPE(MATRIX) || node.GetType() == TYPE(ARRAY)) {
+      // Check individual arguments for validity
+      tListIterator<cASTNode> it = al->Iterator();
+      cASTNode* alnode = NULL;
+      while ((alnode = it.Next())) {
+        alnode->Accept(*this);
+        checkCast(alnode->GetType(), TYPE(INT));
+      }
+      
+      // If empty, warn...
+      if (al->GetSize() == 0) SEMANTIC_WARNING(NO_DIMENSIONS);
+      
+      // Arrays can only have one dimension specifier
+      if (node.GetType() == TYPE(ARRAY) && al->GetSize() > 1) {
+        SEMANTIC_ERROR(TOO_MANY_ARGUMENTS);
+        SEMANTIC_ERROR(VARIABLE_DIMENSIONS_INVALID, (const char*)node.GetName(), mapType(node.GetType()));
+      }
+    } else {
+      SEMANTIC_ERROR(VARIABLE_DIMENSIONS_INVALID, (const char*)node.GetName(), mapType(node.GetType()));
+    }
+  }
+  
+  // Process assignment
+  cASTNode* ae = node.GetAssignmentExpression();
+  if (ae) {
+    ae->Accept(*this);
+    checkCast(ae->GetType(), node.GetType());
   }
 }
 
@@ -277,6 +310,8 @@ void cSemanticASTVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 
 void cSemanticASTVisitor::visitArgumentList(cASTArgumentList& node)
 {
+  // Should never recurse into here.  Argument lists are processed by their owners as needed.
+  SEMANTIC_ERROR(INTERNAL);
 }
 
 void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
@@ -470,6 +505,7 @@ inline bool cSemanticASTVisitor::lookupVariable(const cString& name, int& var_id
 void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cASFilePosition& fp, const int line, ...)
 {
 #define ERR_ENDL "  (cSemanticASTVisitor.cc:" << line << ")" << std::endl
+#define VA_ARG_STR va_arg(vargs, const char*)
   
   if (fail) m_success = false;
   
@@ -481,18 +517,17 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
   va_start(vargs, line);
   switch (err) {
     case AS_SEMANTIC_WARN_LOSS_OF_PRECISION:
-      std::cerr << "loss of precision occuring in cast of " << va_arg(vargs, const char*) << " to " 
-                << va_arg(vargs, const char*) << ERR_ENDL;
+      std::cerr << "loss of precision occuring in cast of " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
       break;
     case AS_SEMANTIC_WARN_UNREACHABLE:
       std::cerr << "unreachable statement(s)" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_CANNOT_CAST:
-      std::cerr << "cannot cast " << va_arg(vargs, const char*) << " to " << va_arg(vargs, const char*) << ERR_ENDL;
+      std::cerr << "cannot cast " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_VARIABLE_UNDEFINED:
       {
-        cString varname = va_arg(vargs, const char*);
+        cString varname = VA_ARG_STR;
         std::cerr << "'" << varname << "' undefined";
         cString nearmatch = m_cur_symtbl->VariableNearMatch(varname);
         if (nearmatch != "") std::cerr << " - possible match '" << nearmatch << "'";
@@ -500,13 +535,12 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
       }
       break;
     case AS_SEMANTIC_ERR_UNDEFINED_TYPE_OP:
-      std::cerr << "'" << va_arg(vargs, const char*) << "' operation undefined for type '"
-                << va_arg(vargs, const char*) << "'" << ERR_ENDL;
+      std::cerr << "'" << VA_ARG_STR << "' operation undefined for type '" << VA_ARG_STR << "'" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_UNPACK_WILD_NONARRAY:
-      std::cerr << "cannot unpack ... items into '" << va_arg(vargs, const char*) << "', variable must be an array" << ERR_ENDL;
+      std::cerr << "cannot unpack ... items into '" << VA_ARG_STR << "', variable must be an array" << ERR_ENDL;
     case AS_SEMANTIC_ERR_VARIABLE_REDEFINITION:
-      std::cerr << "redefining variable '" << va_arg(vargs, const char*) << "'" << ERR_ENDL;
+      std::cerr << "redefining variable '" << VA_ARG_STR << "'" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_INTERNAL:
       std::cerr << "internal semantic analysis error at cSemanticASTVisitor.cc:" << line << std::endl;
@@ -518,6 +552,7 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
   va_end(vargs);
   
 #undef ERR_ENDL
+#undef VA_ARG_STR
 }
                 
 #undef SEMANTIC_ERROR()

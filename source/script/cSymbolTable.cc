@@ -31,22 +31,24 @@ cSymbolTable::~cSymbolTable()
   for (int i = 0; i < m_fun_tbl.GetSize(); i++) delete m_fun_tbl[i];
 }
 
-bool cSymbolTable::AddVariable(const cString& name, ASType_t type)
+bool cSymbolTable::AddVariable(const cString& name, ASType_t type, int& var_id)
 {
-  if (HasSymbol(name)) return false;
+  if (LookupVariable(name, var_id)) return false;
 
+  var_id = m_sym_tbl.GetSize();
   m_sym_tbl.Push(new sSymbolEntry(name, type));
-  m_sym_dict.Add(name, m_sym_tbl.GetSize() - 1);
+  m_sym_dict.Add(name, var_id);
   
   return true;
 }
 
-bool cSymbolTable::AddFunction(const cString& name, ASType_t type)
+bool cSymbolTable::AddFunction(const cString& name, ASType_t type, int& fun_id)
 {
-  if (HasSymbol(name)) return false;
+  if (LookupFunction(name, fun_id)) return false;
   
+  fun_id = m_fun_tbl.GetSize();
   m_fun_tbl.Push(new sFunctionEntry(name, type));
-  m_fun_dict.Add(name, m_fun_tbl.GetSize() - 1);
+  m_fun_dict.Add(name, fun_id);
   
   return true;
 }

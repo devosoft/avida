@@ -70,8 +70,8 @@ public:
   ~cSymbolTable();
 
   
-  bool AddVariable(const cString& name, ASType_t type);
-  bool AddFunction(const cString& name, ASType_t type);
+  bool AddVariable(const cString& name, ASType_t type, int& var_id);
+  bool AddFunction(const cString& name, ASType_t type, int& fun_id);
   
   ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
   ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }

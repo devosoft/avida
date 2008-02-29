@@ -155,9 +155,10 @@ private:
   
 public:
   cASTArgumentList(const cASFilePosition& fp) : cASTNode(fp) { ; }
-  ~cASTArgumentList() { ; }
+  ~cASTArgumentList() { while (m_nodes.GetSize()) delete m_nodes.Pop(); }
   
   inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
+  inline int GetSize() const { return m_nodes.GetSize(); }
   inline tListIterator<cASTNode> Iterator() { return tListIterator<cASTNode>(m_nodes); }
   
   void Accept(cASTVisitor& visitor);
@@ -323,21 +324,25 @@ class cASTVariableDefinition : public cASTNode
 {
 private:
   ASType_t m_type;
-  cString m_var;
+  cString m_name;
   cASTNode* m_assign;
   cASTArgumentList* m_dims;
+  int m_id;
   
 public:
-  cASTVariableDefinition(const cASFilePosition& fp, ASType_t type, const cString& var)
-    : cASTNode(fp), m_type(type), m_var(var), m_assign(NULL), m_dims(NULL) { ; }
+  cASTVariableDefinition(const cASFilePosition& fp, ASType_t type, const cString& name)
+    : cASTNode(fp), m_type(type), m_name(name), m_assign(NULL), m_dims(NULL), m_id(-1) { ; }
   ~cASTVariableDefinition() { delete m_assign; delete m_dims; }
   
   inline ASType_t GetType() { return m_type; }
-  inline const cString& GetVariable() { return m_var; }
+  inline const cString& GetName() { return m_name; }
   inline void SetAssignmentExpression(cASTNode* assign) { delete m_assign; m_assign = assign; }
   inline cASTNode* GetAssignmentExpression() { return m_assign; }
   inline void SetDimensions(cASTArgumentList* dims) { delete m_dims; m_dims = dims; }
   inline cASTArgumentList* GetDimensions() { return m_dims; }
+  
+  inline int GetVarID() const { return m_id; }
+  inline void SetVar(int in_id) { m_id = in_id; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -469,14 +474,15 @@ public:
 class cASTLiteralArray : public cASTNode
 {
 private:
-  cASTNode* m_value;
+  cASTArgumentList* m_value;
   bool m_is_matrix;
   
 public:
-  cASTLiteralArray(const cASFilePosition& fp, cASTNode* v, bool is_mat) : cASTNode(fp), m_value(v), m_is_matrix(is_mat) { ; }
+  cASTLiteralArray(const cASFilePosition& fp, cASTArgumentList* v, bool is_mat)
+    : cASTNode(fp), m_value(v), m_is_matrix(is_mat) { ; }
   ~cASTLiteralArray() { delete m_value; }  
   
-  inline cASTNode* GetValue() { return m_value; }
+  inline cASTArgumentList* GetValue() { return m_value; }
   inline bool IsMatrix() const { return m_is_matrix; }
   
   ASType_t GetType() const { return m_is_matrix ? AS_TYPE_MATRIX : AS_TYPE_ARRAY; }

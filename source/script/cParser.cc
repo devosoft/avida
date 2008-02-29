@@ -595,9 +595,12 @@ cASTNode* cParser::parseExprP6()
       if (nextToken() != TOKEN(ARR_OPEN)) PARSE_UNEXPECT();
       is_matrix = true;
     case TOKEN(ARR_OPEN):
-      if (nextToken() != TOKEN(ARR_CLOSE)) expr.Set(parseArgumentList());
-      if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
-      expr.Set(new cASTLiteralArray(FILEPOS, expr.Release(), is_matrix));
+      {
+        tAutoRelease<cASTArgumentList> al;
+        if (nextToken() != TOKEN(ARR_CLOSE)) al.Set(parseArgumentList());
+        if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
+        expr.Set(new cASTLiteralArray(FILEPOS, al.Release(), is_matrix));
+      }
       break;
       
     case TOKEN(OP_BIT_NOT):

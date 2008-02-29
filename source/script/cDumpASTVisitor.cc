@@ -218,7 +218,18 @@ void cDumpASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 void cDumpASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
 {
   indent();
-  cout << mapType(node.GetType()) << " " << node.GetVariable() << endl;
+  cout << mapType(node.GetType()) << " " << node.GetName() << endl;
+  
+  if (node.GetDimensions()) {
+    m_depth++;
+    indent();
+    cout << "dimensions:" << endl;
+    
+    m_depth++;
+    node.GetDimensions()->Accept(*this);
+
+    m_depth -= 2;
+  }
   
   if (node.GetAssignmentExpression()) {
     m_depth++;
