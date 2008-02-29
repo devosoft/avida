@@ -90,6 +90,7 @@ private:
   cWorld* m_world;
   cSchedule* schedule;                // Handles allocation of CPU cycles
   tArray<cPopulationCell> cell_array;  // Local cells composing the population
+  tArray<int> empty_cell_id_array;     // Used for PREFER_EMPTY birth methods
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label

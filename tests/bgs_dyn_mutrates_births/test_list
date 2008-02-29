@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -s 1 -set BIRTH_METHOD 6 -set NUM_DEMES 30 -set EVENT_FILE events-Test-NumBirthsSelection.cfg -set INST_SET inst_set.divide -set ENVIRONMENT_FILE environment.77 -set WORLD_X 15 -set WORLD_Y 60 -set CHILD_SIZE_RANGE 1.0 -set COPY_MUT_PROB 0.0 -set DIVIDE_INS_PROB 0.0 -set DIVIDE_DEL_PROB 0.0 -set DIV_MUT_PROB 0.03 -set START_CREATURE org.div1
+args = -s 1 -set BIRTH_METHOD 6 -set PREFER_EMPTY 0 -set NUM_DEMES 30 -set EVENT_FILE events-Test-NumBirthsSelection.cfg -set INST_SET inst_set.divide -set ENVIRONMENT_FILE environment.77 -set WORLD_X 15 -set WORLD_Y 60 -set CHILD_SIZE_RANGE 1.0 -set COPY_MUT_PROB 0.0 -set DIVIDE_INS_PROB 0.0 -set DIVIDE_DEL_PROB 0.0 -set DIV_MUT_PROB 0.03 -set START_CREATURE org.div1
 app = %(default_app)s
 
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)

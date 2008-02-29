@@ -374,8 +374,14 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("s-regulate", &cHardwareCPU::Inst_SenseRegulate),
     tInstLibEntry<tMethod>("numberate", &cHardwareCPU::Inst_Numberate),
     tInstLibEntry<tMethod>("numberate-24", &cHardwareCPU::Inst_Numberate24),
+
+    // Bit Consensus
     tInstLibEntry<tMethod>("bit-cons", &cHardwareCPU::Inst_BitConsensus),
     tInstLibEntry<tMethod>("bit-cons-24", &cHardwareCPU::Inst_BitConsensus24),
+    tInstLibEntry<tMethod>("if-cons", &cHardwareCPU::Inst_IfConsensus, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
+    tInstLibEntry<tMethod>("if-cons-24", &cHardwareCPU::Inst_IfConsensus24, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
+    tInstLibEntry<tMethod>("if-less-cons", &cHardwareCPU::Inst_IfLessConsensus, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
+    tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareCPU::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
 
     // Energy usage
     tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage, nInstFlag::STALL),
@@ -4654,39 +4660,68 @@ int cHardwareCPU::Numberate(int _pos, int _dir, int _num_bits)
   return code;
 }
 
-/*! 
-  Sets BX to 1 if >=50% of the bits in the specified register places
-  are 1's and zero otherwise.
-*/
+
+//// Copied from cHardwareExperimental -- @JEB
+static const unsigned int CONSENSUS = (sizeof(int) * 8) / 2;
+static const unsigned int CONSENSUS24 = 12;
+static const unsigned int MASK24 = 0xFFFFFF;
+
+inline unsigned int cHardwareCPU::BitCount(unsigned int value) const
+{
+  const unsigned int w = value - ((value >> 1) & 0x55555555);
+  const unsigned int x = (w & 0x33333333) + ((w >> 2) & 0x33333333);
+  const unsigned int bit_count = ((x + (x >> 4) & 0xF0F0F0F) * 0x1010101) >> 24;
+  return bit_count;
+}
 
 bool cHardwareCPU::Inst_BitConsensus(cAvidaContext& ctx)
 {
-  return BitConsensus(ctx, sizeof(int) * 8);
-}
-
-// Looks at only the lower 24 bits
-bool cHardwareCPU::Inst_BitConsensus24(cAvidaContext& ctx)
-{
-  return BitConsensus(ctx, 24);
-}
-
-bool cHardwareCPU::BitConsensus(cAvidaContext& ctx, const unsigned int num_bits)
-{
-  assert(num_bits <= sizeof(int) * 8);
-
   const int reg_used = FindModifiedRegister(REG_BX);
-  int reg_val = GetRegister(REG_CX);
-  unsigned int bits_on = 0;
-  
-  for (unsigned int i = 0; i < num_bits; i++)
-  {
-    bits_on += (reg_val & 1);
-    reg_val >>= 1;
-  }
-  
-  GetRegister(reg_used) = ( bits_on >= (sizeof(int) * 8)/2 ) ? 1 : 0;
+  const int op1 = FindModifiedNextRegister(reg_used);
+  GetRegister(reg_used) = (BitCount(GetRegister(op1)) >= CONSENSUS) ? 1 : 0;
   return true; 
 }
+
+bool cHardwareCPU::Inst_BitConsensus24(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  const int op1 = FindModifiedNextRegister(reg_used);
+  GetRegister(reg_used) = (BitCount(GetRegister(op1) & MASK24) >= CONSENSUS24) ? 1 : 0;
+  return true; 
+}
+
+bool cHardwareCPU::Inst_IfConsensus(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (BitCount(GetRegister(op1)) <  CONSENSUS)  IP().Advance();
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfConsensus24(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  IP().Advance();
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfLessConsensus(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  if (BitCount(GetRegister(op1)) >=  BitCount(GetRegister(op2)))  IP().Advance();
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfLessConsensus24(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  if (BitCount(GetRegister(op1) & MASK24) >=  BitCount(GetRegister(op2) & MASK24))  IP().Advance();
+  return true;
+}
+
+//// End copied from cHardwareExperimental
+
 
 /*! Send a message to the organism that is currently faced by this cell,
 where the label field of sent message is from register ?BX?, and the data field

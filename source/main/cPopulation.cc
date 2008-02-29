@@ -133,6 +133,7 @@ cPopulation::cPopulation(cWorld* world)
   
   // Allocate the cells, resources, and market.
   cell_array.ResizeClear(num_cells);
+  empty_cell_id_array.ResizeClear(cell_array.GetSize());
   market.Resize(MARKET_SIZE);
   
   // Setup the cells.  Do things that are not dependent upon topology here.
@@ -2181,6 +2182,26 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   }
   // @AWC If not migrating try out global/full-deme birth methods first...
   else if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
+   
+    // @JEB Look randomly within empty cells, if requested
+    if (m_world->GetConfig().PREFER_EMPTY.Get()) {
+      
+      // Note: empty_cell_id_array was resized to be large enough to hold
+      // all cells in the cPopulation when it was created. Using functions
+      // that resize it (like Push) will slow this code down considerably.
+      // Instead, we keep track of how much of this memory we are using.
+      
+      int num_empty_cells = 0;      
+      for (int i=0; i<cell_array.GetSize(); i++) {
+        if (GetCell(i).IsOccupied() == false) empty_cell_id_array[num_empty_cells++] = i;
+      }
+     
+       if (num_empty_cells > 0) {
+        int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
+        return GetCell(empty_cell_id_array[out_pos]);
+      } 
+    }
+
     int out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
     while (parent_ok == false && out_pos == parent_cell.GetID()) {
       out_pos = m_world->GetRandom().GetUInt(cell_array.GetSize());
@@ -2196,18 +2217,39 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     return *out_cell;
   }
   else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
-
     const int deme_id = parent_cell.GetDemeID();    
     const int deme_size = deme_array[deme_id].GetSize();
     
+    deme_array[deme_id].IncBirthCount();
+
+    // @JEB Look randomly within empty cells, if requested
+    if (m_world->GetConfig().PREFER_EMPTY.Get()) {
+      
+      // Note: empty_cell_id_array was resized to be large enough to hold
+      // all cells in the cPopulation when it was created. Using functions
+      // that resize it (like Push) will slow this code down considerably.
+      // Instead, we keep track of how much of this memory we are using.
+      
+      int num_empty_cells = 0; 
+      for (int i=0; i<deme_array[deme_id].GetSize(); i++) {
+        int cell_id = deme_array[deme_id].GetCellID(i);
+        if (!GetCell(cell_id).IsOccupied()) /*return cell;*/ empty_cell_id_array[num_empty_cells++] = cell_id;
+      }
+     
+      if (num_empty_cells > 0) {
+        int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
+        return GetCell(empty_cell_id_array[out_pos]);
+      } 
+    }
+
     int out_pos = m_world->GetRandom().GetUInt(deme_size);
     int out_cell_id = deme_array[deme_id].GetCellID(out_pos);
+    
     while (parent_ok == false && out_cell_id == parent_cell.GetID()) {
       out_pos = m_world->GetRandom().GetUInt(deme_size);
       out_cell_id = deme_array[deme_id].GetCellID(out_pos);
     }
     
-    deme_array[deme_id].IncBirthCount();
     return GetCell(out_cell_id);    
   }
   else if (birth_method == POSITION_CHILD_PARENT_FACING) {
@@ -3042,7 +3084,6 @@ cPopulationCell& cPopulation::GetCell(int in_num)
 {
   return cell_array[in_num];
 }
-
 
 void cPopulation::UpdateResources(const tArray<double> & res_change)
 {

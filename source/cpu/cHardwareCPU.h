@@ -579,13 +579,15 @@ private:
   void NextPromoter();
   int  Numberate(int _pos, int _dir, int _num_bits = 0);
   
-  
   //// Bit consensus functions ////
+  inline unsigned int BitCount(unsigned int value) const;
   bool Inst_BitConsensus(cAvidaContext& ctx);
   bool Inst_BitConsensus24(cAvidaContext& ctx);
-  bool BitConsensus(cAvidaContext& ctx, const unsigned int num_bits);
-
-
+  bool Inst_IfConsensus(cAvidaContext& ctx);
+  bool Inst_IfConsensus24(cAvidaContext& ctx);  
+  bool Inst_IfLessConsensus(cAvidaContext& ctx);
+  bool Inst_IfLessConsensus24(cAvidaContext& ctx);
+  
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
   bool Inst_RetrieveMessage(cAvidaContext& ctx);
