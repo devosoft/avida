@@ -339,32 +339,32 @@ cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
   
   bool eoe = false;
   while (!eoe) {
-    switch (currentToken()) {
-      case TOKEN(DOT):
-        if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
-        ce.Set(new cASTExpressionBinary(FILEPOS, TOKEN(DOT), ce.Release(), new cASTVariableReference(FILEPOS, currentText())));
-        nextToken(); // consume id
-        break;
-      case TOKEN(PREC_OPEN):
-        cASTFunctionCall* fc = new cASTFunctionCall(FILEPOS, ce.Release());
-        ce.Set(fc);
-        if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());
+    if (currentToken() == TOKEN(DOT)) {
+      if (nextToken() != TOKEN(ID)) PARSE_UNEXPECT();
+      cString name(currentText());
+      nextToken(); // consume id
+
+      if (currentToken() == TOKEN(PREC_OPEN)) {
+        cASTObjectCall* oc = new cASTObjectCall(FILEPOS, ce.Release(), name);
+        ce.Set(oc);
+        if (nextToken() != TOKEN(PREC_CLOSE)) oc->SetArguments(parseArgumentList());
         if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
         nextToken(); // consume ')'
         
         // If the next token is not a continued call expression, then set the end-of-expression flag
         if (currentToken() != TOKEN(IDX_OPEN) && currentToken() != TOKEN(DOT)) eoe = true;
-        break;
-      case TOKEN(IDX_OPEN):
-        do {
-          nextToken(); // consume '['
-          ce.Set(new cASTExpressionBinary(FILEPOS, TOKEN(IDX_OPEN), ce.Release(), parseExpression()));
-          if (currentToken() != TOKEN(IDX_CLOSE)) PARSE_UNEXPECT();
-        } while (nextToken() == TOKEN(IDX_OPEN));
-        break;
-      default:
-        if (required) { PARSE_UNEXPECT(); }
-        else eoe = true;
+      } else {
+        ce.Set(new cASTObjectReference(FILEPOS, ce.Release(), name));
+      }
+    } else if (currentToken() == TOKEN(IDX_OPEN)) {
+      do {
+        nextToken(); // consume '['
+        ce.Set(new cASTExpressionBinary(FILEPOS, TOKEN(IDX_OPEN), ce.Release(), parseExpression()));
+        if (currentToken() != TOKEN(IDX_CLOSE)) PARSE_UNEXPECT();
+      } while (nextToken() == TOKEN(IDX_OPEN));
+    } else {
+      if (required) { PARSE_UNEXPECT(); }
+      else eoe = true;
     }
   }
     
@@ -576,10 +576,9 @@ cASTNode* cParser::parseExprP6()
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {
-        cASTNode* vr = new cASTVariableReference(FILEPOS, currentText());
-        nextToken(); // consume id token
-        cASTFunctionCall* fc = new cASTFunctionCall(FILEPOS, vr);
+        cASTFunctionCall* fc = new cASTFunctionCall(FILEPOS, currentText());
         expr.Set(fc);
+        nextToken(); // consume id token
         if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());        
         if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
       } else {

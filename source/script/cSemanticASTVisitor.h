@@ -86,6 +86,8 @@ public:
   void visitFunctionCall(cASTFunctionCall&);
   void visitLiteral(cASTLiteral&);
   void visitLiteralArray(cASTLiteralArray&);
+  void visitObjectCall(cASTObjectCall&);
+  void visitObjectReference(cASTObjectReference&);
   void visitVariableReference(cASTVariableReference&);
   void visitUnpackTarget(cASTUnpackTarget&);
 

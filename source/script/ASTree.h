@@ -113,6 +113,8 @@ class cASTExpressionUnary;
 class cASTFunctionCall;
 class cASTLiteral;
 class cASTLiteralArray;
+class cASTObjectCall;
+class cASTObjectReference;
 class cASTVariableReference;
 class cASTUnpackTarget;
 
@@ -419,21 +421,28 @@ public:
 class cASTFunctionCall : public cASTNode
 {
 private:
-  cASTNode* m_target;
+  cString m_name;
   cASTArgumentList* m_args;
   ASType_t m_type;
+  int m_id;
+  bool m_global;
   
 public:
-  cASTFunctionCall(const cASFilePosition& fp, cASTNode* target)
-    : cASTNode(fp), m_target(target), m_args(NULL), m_type(AS_TYPE_INVALID) { ; }
+  cASTFunctionCall(const cASFilePosition& fp, const cString& name)
+    : cASTNode(fp), m_name(name), m_args(NULL), m_type(AS_TYPE_INVALID), m_id(-1), m_global(false) { ; }
   ~cASTFunctionCall() { delete m_args; }
   
-  cASTNode* GetTarget() { return m_target; }
+  const cString& GetName() const { return m_name; }
+  
   void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
   cASTArgumentList* GetArguments() { return m_args; }
   
   ASType_t GetType() const { return m_type; }
   inline void SetType(ASType_t type) { m_type = type; }
+  
+  inline int GetFuncID() const { return m_id; }
+  inline bool IsFuncGlobal() const { return m_global; }
+  inline void SetFunc(int in_id, bool global) { m_id = in_id; m_global = global; }
 
   bool HasArguments() const { return (m_args); }
   
@@ -471,6 +480,57 @@ public:
   inline bool IsMatrix() const { return m_is_matrix; }
   
   ASType_t GetType() const { return m_is_matrix ? AS_TYPE_MATRIX : AS_TYPE_ARRAY; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTObjectCall : public cASTNode
+{
+private:
+  cASTNode* m_object;
+  cString m_name;
+  cASTArgumentList* m_args;
+  ASType_t m_type;
+  
+public:
+  cASTObjectCall(const cASFilePosition& fp, cASTNode* object, const cString& name)
+    : cASTNode(fp), m_object(object), m_name(name), m_args(NULL), m_type(AS_TYPE_INVALID) { ; }
+  ~cASTObjectCall() { delete m_object; delete m_args; }
+  
+  cASTNode* GetObject() { return m_object; }
+  const cString& GetName() const { return m_name; }
+  
+  void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
+  cASTArgumentList* GetArguments() { return m_args; }
+  
+  ASType_t GetType() const { return m_type; }
+  inline void SetType(ASType_t type) { m_type = type; }
+  
+  
+  bool HasArguments() const { return (m_args); }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTObjectReference : public cASTNode
+{
+private:
+  cASTNode* m_object;
+  cString m_name;
+  ASType_t m_type;
+  
+public:
+  cASTObjectReference(const cASFilePosition& fp, cASTNode* object, const cString& name)
+    : cASTNode(fp), m_object(object), m_name(name) { ; }
+  ~cASTObjectReference() { delete m_object; }
+  
+  cASTNode* GetObject() { return m_object; }
+  inline const cString& GetName() { return m_name; }
+  
+  ASType_t GetType() const { return m_type; }
+  inline void SetType(ASType_t type) { m_type = type; }
   
   void Accept(cASTVisitor& visitor);
 };

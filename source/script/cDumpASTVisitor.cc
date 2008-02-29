@@ -295,7 +295,8 @@ void cDumpASTVisitor::visitFunctionCall(cASTFunctionCall& node)
   cout << "target:" << endl;
   
   m_depth++;
-  node.GetTarget()->Accept(*this);
+  indent();
+  cout << node.GetName() << endl;
   m_depth--;
   
   if (node.HasArguments()) {
@@ -332,6 +333,47 @@ void cDumpASTVisitor::visitLiteralArray(cASTLiteralArray& node)
   cout << "}" << endl;
 }
 
+
+void cDumpASTVisitor::visitObjectCall(cASTObjectCall& node)
+{
+  indent();
+  cout << "call:" << endl;
+  m_depth++;
+  
+  indent();
+  cout << "target:" << endl;
+  
+  m_depth++;
+  node.GetObject()->Accept(*this);
+  m_depth--;
+  
+  if (node.HasArguments()) {
+    indent();
+    cout << "with:" << endl;
+    
+    m_depth++;
+    node.GetArguments()->Accept(*this);
+    m_depth--;
+  }
+  
+  m_depth--;
+
+}
+
+void cDumpASTVisitor::visitObjectReference(cASTObjectReference& node)
+{
+  m_depth++;
+  node.GetObject()->Accept(*this);
+  m_depth--;
+  
+  indent();
+  cout << mapToken(AS_TOKEN_DOT) << endl;
+  
+  m_depth++;
+  indent();
+  cout << node.GetName() << endl;
+  m_depth--;  
+}
 
 void cDumpASTVisitor::visitVariableReference(cASTVariableReference& node)
 {

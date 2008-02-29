@@ -148,9 +148,6 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
   node.GetRight()->Accept(*this);
   
   switch (node.GetOperator()) {
-    case TOKEN(DOT):
-      // @TODO
-      break;
     case TOKEN(IDX_OPEN):
       checkCast(node.GetLeft()->GetType(), TYPE(ARRAY));
       checkCast(node.GetRight()->GetType(), TYPE(INT));
@@ -294,6 +291,16 @@ void cSemanticASTVisitor::visitLiteral(cASTLiteral& node)
 
 
 void cSemanticASTVisitor::visitLiteralArray(cASTLiteralArray& node)
+{
+}
+
+
+void cSemanticASTVisitor::visitObjectCall(cASTObjectCall& node)
+{
+}
+
+
+void cSemanticASTVisitor::visitObjectReference(cASTObjectReference& node)
 {
 }
 

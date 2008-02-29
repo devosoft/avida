@@ -47,6 +47,8 @@ void cASTArgumentList::Accept(cASTVisitor& visitor) { visitor.visitArgumentList(
 void cASTFunctionCall::Accept(cASTVisitor& visitor) { visitor.visitFunctionCall(*this); }
 void cASTLiteral::Accept(cASTVisitor& visitor) { visitor.visitLiteral(*this); }
 void cASTLiteralArray::Accept(cASTVisitor& visitor) { visitor.visitLiteralArray(*this); }
+void cASTObjectCall::Accept(cASTVisitor& visitor) { visitor.visitObjectCall(*this); }
+void cASTObjectReference::Accept(cASTVisitor& visitor) { visitor.visitObjectReference(*this); }
 void cASTVariableReference::Accept(cASTVisitor& visitor) { visitor.visitVariableReference(*this); }
 void cASTUnpackTarget::Accept(cASTVisitor& visitor) { visitor.visitUnpackTarget(*this); }
 
