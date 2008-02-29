@@ -59,3 +59,9 @@ cASTStatementList::~cASTStatementList()
   tListIterator<cASTNode> it(m_nodes);
   while ((node = it.Next())) delete node;
 }
+
+cASTFunctionDefinition::~cASTFunctionDefinition()
+{
+  delete m_args;
+  delete m_code;
+}

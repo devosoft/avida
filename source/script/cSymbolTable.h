@@ -26,9 +26,11 @@
 #define cSymbolTable_h
 
 #include "AvidaScript.h"
+#include "ASTree.h"
 
 #include "tArray.h"
 #include "tDictionary.h"
+
 
 // Active/inactive functions and variables within the scope of the current function (or globally)
 
@@ -52,10 +54,15 @@ private:
   {
     cString name;
     ASType_t type;
+    cASTVariableDefinitionList* signature;
+    cSymbolTable* symtbl;
+    cASTNode* code;
     
     bool active;
     
-    sFunctionEntry(const cString& in_name, ASType_t in_type) : name(in_name), type(in_type), active(true) { ; }    
+    sFunctionEntry(const cString& in_name, ASType_t in_type)
+      : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), active(true) { ; }
+    ~sFunctionEntry() { delete signature; delete symtbl; delete code; }
   };
   tArray<sFunctionEntry*> m_fun_tbl;
   tDictionary<int> m_fun_dict;
@@ -73,17 +80,24 @@ public:
   bool AddVariable(const cString& name, ASType_t type, int& var_id);
   bool AddFunction(const cString& name, ASType_t type, int& fun_id);
   
-  ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
-  ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
-  
   bool LookupVariable(const cString& name, int& var_id) { return m_sym_dict.Find(name, var_id); }
   bool LookupFunction(const cString& name, int& fun_id) { return m_fun_dict.Find(name, fun_id); }
   
-  inline bool HasSymbol(const cString& name) const { return m_sym_dict.HasEntry(name) || m_fun_dict.HasEntry(name); }
+  ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
+  
+  ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
+  cSymbolTable* GetFunctionSymbolTable(int fun_id) { return m_fun_tbl[fun_id]->symtbl; }
+  cASTVariableDefinitionList* GetFunctionSignature(int fun_id) { return m_fun_tbl[fun_id]->signature; }
+  cASTNode* GetFunctionDefinition(int fun_id) { return m_fun_tbl[fun_id]->code; }
+  
+  inline void SetFunctionSymbolTable(int fun_id, cSymbolTable* symtbl) { m_fun_tbl[fun_id]->symtbl = symtbl; }
+  inline void SetFunctionSignature(int fun_id, cASTVariableDefinitionList* vdl) { m_fun_tbl[fun_id]->signature = vdl; }
+  inline void SetFunctionDefinition(int fun_id, cASTNode* code) { m_fun_tbl[fun_id]->code = code; }
   
   inline cString VariableNearMatch(const cString& name) const { return m_sym_dict.NearMatch(name); }
   inline cString FunctionNearMatch(const cString& name) const { return m_fun_dict.NearMatch(name); }
 };
+
 
 
 #endif

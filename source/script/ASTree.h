@@ -306,15 +306,15 @@ private:
 public:
   cASTFunctionDefinition(const cASFilePosition& fp, ASType_t type, const cString& name, cASTVariableDefinitionList* args)
     : cASTNode(fp), m_type(type), m_name(name), m_args(args), m_code(NULL) { ; }
+  ~cASTFunctionDefinition();
   
-  inline ASType_t GetType() { return m_type; }
+  inline ASType_t GetType() const { return m_type; }
   inline const cString& GetName() { return m_name; }
   inline cASTVariableDefinitionList* GetArguments() { return m_args; }
+  inline void ClearArguments() { m_args = NULL; }
   
   inline void SetCode(cASTNode* code) { m_code = code; }
   inline cASTNode* GetCode() { return m_code; }
-  
-  inline bool IsDefinition() { return (m_code); }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -334,7 +334,7 @@ public:
     : cASTNode(fp), m_type(type), m_name(name), m_assign(NULL), m_dims(NULL), m_id(-1) { ; }
   ~cASTVariableDefinition() { delete m_assign; delete m_dims; }
   
-  inline ASType_t GetType() { return m_type; }
+  inline ASType_t GetType() const { return m_type; }
   inline const cString& GetName() { return m_name; }
   inline void SetAssignmentExpression(cASTNode* assign) { delete m_assign; m_assign = assign; }
   inline cASTNode* GetAssignmentExpression() { return m_assign; }

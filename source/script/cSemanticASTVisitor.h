@@ -45,12 +45,13 @@ private:
   
   struct sFunctionEntry
   {
-    cSymbolTable* scope;
+    cSymbolTable* parent_scope;
     int fun_id;
 
     cSymbolTable* fun_symtbl;
     
-    sFunctionEntry() : scope(NULL), fun_id(-1) { ; }
+    sFunctionEntry() : parent_scope(NULL), fun_id(-1) { ; }
+    sFunctionEntry(cSymbolTable* ps, int in_fun_id) : parent_scope(ps), fun_id(in_fun_id) { ; }
   };
   tSmartArray<sFunctionEntry> m_fun_stack;
 
@@ -98,6 +99,6 @@ private:
   
   inline bool lookupVariable(const cString& name, int& var_id, bool& global) const;
   
-  void reportError(bool fail, ASSemanticError_t err, const cASFilePosition& fp, const int line, ...);
+  void reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, ...);
 };
 #endif

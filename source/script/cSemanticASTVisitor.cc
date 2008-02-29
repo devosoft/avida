@@ -32,8 +32,8 @@
 using namespace AvidaScript;
 
 
-#define SEMANTIC_ERROR(code, ...) reportError(true, AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
-#define SEMANTIC_WARNING(code, ...) reportError(false, AS_SEMANTIC_WARN_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
+#define SEMANTIC_ERROR(code, ...) reportError(AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
+#define SEMANTIC_WARNING(code, ...) reportError(AS_SEMANTIC_WARN_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
 
 #define TOKEN(x) AS_TOKEN_ ## x
 #define TYPE(x) AS_TYPE_ ## x
@@ -168,7 +168,87 @@ void cSemanticASTVisitor::visitWhileBlock(cASTWhileBlock& node)
 
 void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 {
-  // @TODO - function definition
+  int fun_id = -1;
+  bool added = m_cur_symtbl->AddFunction(node.GetName(), node.GetType(), fun_id);
+  
+  m_fun_stack.Push(sFunctionEntry(m_parent_scope, m_fun_id));
+  m_parent_scope = m_cur_symtbl;
+  m_fun_id = fun_id;
+
+  if (added) {
+    // Create new symtbl and scope
+    m_cur_symtbl = new cSymbolTable;
+    m_parent_scope->SetFunctionSymbolTable(fun_id, m_cur_symtbl);
+    
+    // Check call signature
+    cASTVariableDefinitionList* args = node.GetArguments();
+    if (args) {
+      // Move the args to the symbol table entry
+      m_parent_scope->SetFunctionSignature(fun_id, args);
+      node.ClearArguments();
+      
+      tListIterator<cASTVariableDefinition> it = args->Iterator();
+      cASTVariableDefinition* vd = NULL;
+      bool def_val_start = false;
+      while ((vd = it.Next())) {
+        vd->Accept(*this);
+        if (def_val_start) {
+          if (!vd->GetAssignmentExpression())
+            SEMANTIC_ERROR(FUNCTION_DEFAULT_REQUIRED, (const char*)vd->GetName(), (const char*)node.GetName());
+        } else {
+          if (vd->GetAssignmentExpression()) def_val_start = true;
+        }
+      }
+    }
+  } else {
+    if (m_parent_scope->GetFunctionRType(fun_id) != node.GetType())
+      SEMANTIC_ERROR(FUNCTION_RTYPE_MISMATCH, (const char*)node.GetName());
+    
+    // Lookup previously defined symbol table
+    m_cur_symtbl = m_parent_scope->GetFunctionSymbolTable(fun_id);
+    
+    // Verify that the call signatures match
+    cASTVariableDefinitionList* ssig = m_parent_scope->GetFunctionSignature(fun_id);
+    if (ssig && node.GetArguments()) {
+      if (ssig->GetSize() == node.GetArguments()->GetSize()) {
+        tListIterator<cASTVariableDefinition> sit = ssig->Iterator();
+        tListIterator<cASTVariableDefinition> nit = node.GetArguments()->Iterator();
+        while (true) {
+          cASTVariableDefinition* svd = sit.Next();
+          cASTVariableDefinition* nvd = nit.Next();
+          if (!svd || !nvd) break;
+          
+          if (svd->GetName() != nvd->GetName() || svd->GetType() != nvd->GetType() || nvd->GetAssignmentExpression()) {
+            SEMANTIC_ERROR(FUNCTION_SIGNATURE_MISMATCH, (const char*)node.GetName());
+            break;
+          }
+        }
+      } else {
+        SEMANTIC_ERROR(FUNCTION_SIGNATURE_MISMATCH, (const char*)node.GetName());
+      }
+    } else if ((ssig && !node.GetArguments()) || (!ssig && node.GetArguments())) {
+      SEMANTIC_ERROR(FUNCTION_SIGNATURE_MISMATCH, (const char*)node.GetName());
+    }
+  }
+
+  // If this is the definition process the code
+  if (node.GetCode()) {
+    if (!m_parent_scope->GetFunctionDefinition(fun_id)) {
+      node.GetCode()->Accept(*this);
+      
+      // Move the code to the symbol table entry
+      m_parent_scope->SetFunctionDefinition(fun_id, node.GetCode());
+      node.SetCode(NULL);
+    } else {
+      SEMANTIC_ERROR(FUNCTION_REDEFINITION, (const char*)node.GetName());
+    }
+  }
+  
+  // Pop function stack
+  sFunctionEntry prev = m_fun_stack.Pop();
+  m_cur_symtbl = m_parent_scope;
+  m_parent_scope = prev.parent_scope;
+  m_fun_id = prev.fun_id;
 }
 
 
@@ -558,16 +638,14 @@ inline bool cSemanticASTVisitor::lookupVariable(const cString& name, int& var_id
 
 
 
-void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cASFilePosition& fp, const int line, ...)
+void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, ...)
 {
 #define ERR_ENDL "  (cSemanticASTVisitor.cc:" << line << ")" << std::endl
 #define VA_ARG_STR va_arg(vargs, const char*)
   
-  if (fail) m_success = false;
-  
   std::cerr << fp.GetFilename() << ":" << fp.GetLineNumber();
   if (err < AS_SEMANTIC_WARN__LAST) std::cerr << ": warning: ";
-  else std::cerr << ": error: ";
+  else { m_success = false; std::cerr << ": error: "; }
   
   va_list vargs;
   va_start(vargs, line);
@@ -584,6 +662,19 @@ void cSemanticASTVisitor::reportError(bool fail, ASSemanticError_t err, const cA
       
     case AS_SEMANTIC_ERR_CANNOT_CAST:
       std::cerr << "cannot cast " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_DEFAULT_REQUIRED:
+      std::cerr << "'" << VA_ARG_STR << "' argument of '" << VA_ARG_STR << "()' requires a default value due to previous"
+                << "argument defaults" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_REDEFINITION:
+      std::cerr << "redefinition of '" << VA_ARG_STR << "()'" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_RTYPE_MISMATCH:
+      std::cerr << "return type of '" << VA_ARG_STR << "()' does not match declaration" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_SIGNATURE_MISMATCH:
+      std::cerr << "call signature of '" << VA_ARG_STR << "()' does not match declaration" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_TOO_MANY_ARGUMENTS:
       std::cerr << "too many arguments" << ERR_ENDL;

@@ -193,7 +193,7 @@ void cDumpASTVisitor::visitWhileBlock(cASTWhileBlock& node)
 void cDumpASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 {
   indent();
-  cout << (node.IsDefinition() ? "":"@") << "function: " << mapType(node.GetType()) << " " << node.GetName() << "(";
+  cout << (node.GetCode() ? "":"@") << "function: " << mapType(node.GetType()) << " " << node.GetName() << "(";
   if (node.GetArguments()->GetSize()) { 
     cout << endl;
     node.GetArguments()->Accept(*this);
@@ -204,7 +204,7 @@ void cDumpASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
   indent();
   cout << "{" << endl;
   
-  if (node.IsDefinition()) {
+  if (node.GetCode()) {
     m_depth++;
     node.GetCode()->Accept(*this);
     m_depth--;
