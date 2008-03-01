@@ -43,9 +43,11 @@ private:
     cString name;
     ASType_t type;
 
-    bool active;
+    int scope;
+    bool deactivate;
     
-    sSymbolEntry(const cString& in_name, ASType_t in_type) : name(in_name), type(in_type), active(true) { ; }
+    sSymbolEntry(const cString& in_name, ASType_t in_type, int in_scope)
+      : name(in_name), type(in_type), scope(in_scope), deactivate(0) { ; }
   };
   tArray<sSymbolEntry*> m_sym_tbl;
   tDictionary<int> m_sym_dict;
@@ -58,14 +60,18 @@ private:
     cSymbolTable* symtbl;
     cASTNode* code;
     
-    bool active;
+    int scope;
+    int deactivate;
     
-    sFunctionEntry(const cString& in_name, ASType_t in_type)
-      : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), active(true) { ; }
+    sFunctionEntry(const cString& in_name, ASType_t in_type, int in_scope)
+      : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), scope(in_scope), deactivate(0) { ; }
     ~sFunctionEntry() { delete signature; delete symtbl; delete code; }
   };
   tArray<sFunctionEntry*> m_fun_tbl;
   tDictionary<int> m_fun_dict;
+
+  int m_scope;
+  int m_deactivate_cycle;
   
   
   cSymbolTable(const cSymbolTable&); // @not_implemented
@@ -73,7 +79,7 @@ private:
   
   
 public:
-  cSymbolTable() { ; }
+  cSymbolTable() : m_scope(0), m_deactivate_cycle(0) { ; }
   ~cSymbolTable();
 
   
@@ -83,12 +89,22 @@ public:
   bool LookupVariable(const cString& name, int& var_id) { return m_sym_dict.Find(name, var_id); }
   bool LookupFunction(const cString& name, int& fun_id) { return m_fun_dict.Find(name, fun_id); }
   
-  ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
+  inline int GetNumVariables() const { return m_sym_tbl.GetSize(); }
+  inline int GetNumFunctions() const { return m_fun_tbl.GetSize(); }
   
-  ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
-  cSymbolTable* GetFunctionSymbolTable(int fun_id) { return m_fun_tbl[fun_id]->symtbl; }
-  cASTVariableDefinitionList* GetFunctionSignature(int fun_id) { return m_fun_tbl[fun_id]->signature; }
-  cASTNode* GetFunctionDefinition(int fun_id) { return m_fun_tbl[fun_id]->code; }
+  inline void PushScope() { m_scope++; }
+  void PopScope();
+  inline int GetScope() const { return m_scope; }
+  
+  inline ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
+
+  inline const cString& GetFunctionName(int fun_id) const { return m_fun_tbl[fun_id]->name; }
+  inline ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
+  inline cSymbolTable* GetFunctionSymbolTable(int fun_id) { return m_fun_tbl[fun_id]->symtbl; }
+  inline cASTVariableDefinitionList* GetFunctionSignature(int fun_id) { return m_fun_tbl[fun_id]->signature; }
+  inline cASTNode* GetFunctionDefinition(int fun_id) { return m_fun_tbl[fun_id]->code; }
+  inline int GetFunctionScope(int fun_id) const { return m_fun_tbl[fun_id]->scope; }
+  inline bool IsFunctionActive(int fun_id) const { return !m_fun_tbl[fun_id]->deactivate; }
   
   inline void SetFunctionSymbolTable(int fun_id, cSymbolTable* symtbl) { m_fun_tbl[fun_id]->symtbl = symtbl; }
   inline void SetFunctionSignature(int fun_id, cASTVariableDefinitionList* vdl) { m_fun_tbl[fun_id]->signature = vdl; }
@@ -96,8 +112,36 @@ public:
   
   inline cString VariableNearMatch(const cString& name) const { return m_sym_dict.NearMatch(name); }
   inline cString FunctionNearMatch(const cString& name) const { return m_fun_dict.NearMatch(name); }
-};
 
+  
+  class cFunctionIterator
+  {
+    friend class cSymbolTable;
+  
+  private:
+    cSymbolTable* m_symtbl;
+    int m_scope;
+    int m_idx;
+    
+    cFunctionIterator(cSymbolTable* symtbl)
+      : m_symtbl(symtbl), m_scope(symtbl->GetScope()), m_idx(symtbl->GetNumFunctions() - 1) { ; }
+
+  public:
+    bool Next()
+    {
+      for (; m_idx >= 0; m_idx--)
+        if (m_symtbl->GetFunctionScope(m_idx) == m_scope && m_symtbl->IsFunctionActive(m_idx)) return true;
+      
+      return false;
+    }
+    
+    inline bool HasCode() const { return m_symtbl->GetFunctionDefinition(m_idx); }
+    inline const cString& GetName() const { return m_symtbl->GetFunctionName(m_idx); }
+  };
+
+
+  inline cFunctionIterator ActiveFunctionIterator() { return cFunctionIterator(this); }  
+};
 
 
 #endif

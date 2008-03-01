@@ -114,7 +114,7 @@ void cSemanticASTVisitor::visitForeachBlock(cASTForeachBlock& node)
   node.GetValues()->Accept(*this);
   checkCast(node.GetValues()->GetType(), TYPE(ARRAY));
   
-  // @TODO - push scope
+  m_cur_symtbl->PushScope();
   
   // Check and define the variable in this scope
   node.GetVariable()->Accept(*this);
@@ -122,7 +122,10 @@ void cSemanticASTVisitor::visitForeachBlock(cASTForeachBlock& node)
   // Check the code
   node.GetCode()->Accept(*this);
   
-  // @TODO - pop scope
+  // Check all functions in the current scope level and make sure they have been defined
+  cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
+  while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
+  m_cur_symtbl->PopScope();
 }
 
 
@@ -131,9 +134,15 @@ void cSemanticASTVisitor::visitIfBlock(cASTIfBlock& node)
   // Check main condition and code
   node.GetCondition()->Accept(*this);
   checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
-  // @TODO - push scope
+  
+  m_cur_symtbl->PushScope();
+  
   node.GetCode()->Accept(*this);
-  // @TODO - pop scope
+
+  // Check all functions in the current scope level and make sure they have been defined
+  cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
+  while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
+  m_cur_symtbl->PopScope();
   
   // Check all elseif blocks
   tListIterator<cASTIfBlock::cElseIf> it = node.ElseIfIterator();
@@ -141,16 +150,27 @@ void cSemanticASTVisitor::visitIfBlock(cASTIfBlock& node)
   while ((ei = it.Next())) {
     ei->GetCondition()->Accept(*this);
     checkCast(ei->GetCondition()->GetType(), TYPE(BOOL));
-    // @TODO - push scope
+    
+    m_cur_symtbl->PushScope();
+    
     ei->GetCode()->Accept(*this);
-    // @TODO - pop scope
+
+    // Check all functions in the current scope level and make sure they have been defined
+    cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
+    while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
+    m_cur_symtbl->PopScope();
   }
   
   // Check else block if there is one
   if (node.GetElseCode()) {
-    // @TODO - push scope
+    m_cur_symtbl->PushScope();
+    
     node.GetElseCode()->Accept(*this);
-    // @TODO - pop scope
+
+    // Check all functions in the current scope level and make sure they have been defined
+    cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
+    while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
+    m_cur_symtbl->PopScope();
   }
 }
 
@@ -159,9 +179,15 @@ void cSemanticASTVisitor::visitWhileBlock(cASTWhileBlock& node)
 {
   node.GetCondition()->Accept(*this);
   checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
-  // @TODO - push scope
+
+  m_cur_symtbl->PushScope();
+  
   node.GetCode()->Accept(*this);
-  // @TODO - pop scope
+
+  // Check all functions in the current scope level and make sure they have been defined
+  cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
+  while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
+  m_cur_symtbl->PopScope();
 }
 
 
@@ -243,6 +269,10 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
       SEMANTIC_ERROR(FUNCTION_REDEFINITION, (const char*)node.GetName());
     }
   }
+  
+  // Check all functions in the current scope level and make sure they have been defined
+  cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
+  while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
   
   // Pop function stack
   sFunctionEntry prev = m_fun_stack.Pop();
@@ -675,6 +705,9 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_ERR_FUNCTION_SIGNATURE_MISMATCH:
       std::cerr << "call signature of '" << VA_ARG_STR << "()' does not match declaration" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_UNDEFINED:
+      std::cerr << "'" << VA_ARG_STR << "()' declared but not defined" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_TOO_MANY_ARGUMENTS:
       std::cerr << "too many arguments" << ERR_ENDL;
