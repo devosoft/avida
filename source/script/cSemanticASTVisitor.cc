@@ -92,7 +92,7 @@ void cSemanticASTVisitor::visitReturnStatement(cASTReturnStatement& node)
 {
   node.GetExpression()->Accept(*this);
   checkCast(m_parent_scope->GetFunctionRType(m_fun_id), node.GetExpression()->GetType());
-  // @TODO - mark scope as containing return
+  m_cur_symtbl->SetScopeReturn();
 }
 
 
@@ -100,10 +100,17 @@ void cSemanticASTVisitor::visitStatementList(cASTStatementList& node)
 {
   tListIterator<cASTNode> it = node.Iterator();
   
+  bool has_return = false;
+  bool warn_unreach = false;
   cASTNode* stmt = NULL;
   while ((stmt = it.Next())) {
+    m_fun_def = false;
     stmt->Accept(*this);
-    // @TODO - check for unreachable statements
+    if (!has_return && m_cur_symtbl->ScopeHasReturn()) has_return = true;
+    else if (has_return && !m_fun_def && !warn_unreach) {
+      reportError(AS_SEMANTIC_WARN_UNREACHABLE, stmt->GetFilePosition(),  __LINE__);
+      warn_unreach = true;
+    }
   }
 }
 
@@ -262,6 +269,8 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
     if (!m_parent_scope->GetFunctionDefinition(fun_id)) {
       node.GetCode()->Accept(*this);
       
+      if (node.GetType() != TYPE(VOID) && !m_cur_symtbl->ScopeHasReturn()) SEMANTIC_WARNING(NO_RETURN);
+      
       // Move the code to the symbol table entry
       m_parent_scope->SetFunctionDefinition(fun_id, node.GetCode());
       node.SetCode(NULL);
@@ -279,6 +288,8 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
   m_cur_symtbl = m_parent_scope;
   m_parent_scope = prev.parent_scope;
   m_fun_id = prev.fun_id;
+  
+  m_fun_def = true;
 }
 
 
@@ -685,6 +696,9 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_WARN_NO_DIMENSIONS:
       std::cerr << "no dimensions specified" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_WARN_NO_RETURN:
+      std::cerr << "control reaches the end of non-void function" << ERR_ENDL;
       break;
     case AS_SEMANTIC_WARN_UNREACHABLE:
       std::cerr << "unreachable statement(s)" << ERR_ENDL;

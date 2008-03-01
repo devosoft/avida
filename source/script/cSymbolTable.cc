@@ -73,6 +73,7 @@ void cSymbolTable::PopScope()
     }
   }
 
+  m_return = false;
   m_scope--;
 }
 

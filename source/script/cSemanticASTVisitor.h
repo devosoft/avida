@@ -57,6 +57,7 @@ private:
 
   
   bool m_success;
+  bool m_fun_def;
 
   
   cSemanticASTVisitor(); // @not_implemented

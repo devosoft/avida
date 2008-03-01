@@ -73,13 +73,15 @@ private:
   int m_scope;
   int m_deactivate_cycle;
   
+  bool m_return;
+  
   
   cSymbolTable(const cSymbolTable&); // @not_implemented
   cSymbolTable& operator=(const cSymbolTable&); // @not_implemented
   
   
 public:
-  cSymbolTable() : m_scope(0), m_deactivate_cycle(0) { ; }
+  cSymbolTable() : m_scope(0), m_deactivate_cycle(0), m_return(false) { ; }
   ~cSymbolTable();
 
   
@@ -95,6 +97,9 @@ public:
   inline void PushScope() { m_scope++; }
   void PopScope();
   inline int GetScope() const { return m_scope; }
+  
+  inline void SetScopeReturn() { m_return = true; }
+  inline bool ScopeHasReturn() const { return m_return; }
   
   inline ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
 
