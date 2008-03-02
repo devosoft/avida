@@ -227,7 +227,7 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
         vd->Accept(*this);
         if (def_val_start) {
           if (!vd->GetAssignmentExpression())
-            SEMANTIC_ERROR(FUNCTION_DEFAULT_REQUIRED, (const char*)vd->GetName(), (const char*)node.GetName());
+            SEMANTIC_ERROR(ARGUMENT_DEFAULT_REQUIRED, (const char*)vd->GetName(), (const char*)node.GetName());
         } else {
           if (vd->GetAssignmentExpression()) def_val_start = true;
         }
@@ -482,7 +482,59 @@ void cSemanticASTVisitor::visitArgumentList(cASTArgumentList& node)
 
 void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
 {
-  // @TODO - function call
+  int fun_id = -1;
+  bool global = false;
+  if (lookupFunction(node.GetName(), fun_id, global)) {
+    cASTVariableDefinitionList* sig = (global ? m_global_symtbl : m_cur_symtbl)->GetFunctionSignature(fun_id);
+    
+    // Check function parameters for match to the signature
+    cASTArgumentList* args = node.GetArguments();
+    if (args) {
+      if (sig && args->GetSize() <= sig->GetSize()) {
+        
+        bool err = false;
+        tListIterator<cASTVariableDefinition> sit = sig->Iterator();
+        tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
+        cASTNode* an = NULL;
+        while ((an = cit.Next())) {
+          an->Accept(*this);
+          
+          ASType_t in_type = an->GetType();
+          ASType_t out_type = sit.Next()->GetType();
+          if (valid_cast[in_type][out_type]) { 
+            if ((in_type == TYPE(FLOAT) && out_type == TYPE(INT)) || (in_type == TYPE(INT) && out_type == TYPE(CHAR))) 
+              SEMANTIC_WARNING(LOSS_OF_PRECISION, mapType(in_type), mapType(out_type)); 
+          } else { 
+            if (!err) {
+              SEMANTIC_ERROR(FUNCTION_CALL_SIGNATURE_MISMATCH, (const char*)node.GetName());
+              err = true;
+            }
+            SEMANTIC_ERROR(CANNOT_CAST, mapType(in_type), mapType(out_type)); 
+          }
+        }
+        
+        if (!sit.AtEnd() && !sit.Next()->GetAssignmentExpression()) 
+          SEMANTIC_ERROR(ARGUMENT_MISSING_REQUIRED, (const char*)sit.Get()->GetName());
+      } else {
+        SEMANTIC_ERROR(FUNCTION_CALL_SIGNATURE_MISMATCH, (const char*)node.GetName());
+      }
+    } else {
+      if (sig && sig->GetSize() && !sig->GetFirst()->GetAssignmentExpression()) {
+        SEMANTIC_ERROR(FUNCTION_CALL_SIGNATURE_MISMATCH, (const char*)node.GetName());
+        tListIterator<cASTVariableDefinition> it = sig->Iterator();
+        cASTVariableDefinition* vd = NULL;
+        while ((vd == it.Next())) {
+          if (!vd->GetAssignmentExpression()) SEMANTIC_ERROR(ARGUMENT_MISSING_REQUIRED, (const char*)vd->GetName());
+          else break;
+        }
+      }
+    }
+    
+    node.SetFunc(fun_id, global);
+    node.SetType(m_cur_symtbl->GetFunctionRType(fun_id));
+  } else {
+    SEMANTIC_ERROR(FUNCTION_UNDECLARED, (const char*)node.GetName());
+  }
 }
 
 
@@ -663,13 +715,27 @@ inline bool cSemanticASTVisitor::validBitwiseType(ASType_t type) const {
       return false;
   }
 }
-        
+
 inline bool cSemanticASTVisitor::lookupVariable(const cString& name, int& var_id, bool& global) const
 {
   if (m_cur_symtbl->LookupVariable(name, var_id)) {
     global = false;
     return true;
   } else if (m_cur_symtbl != m_global_symtbl && m_global_symtbl->LookupVariable(name, var_id)) {
+    global = true;
+    return true;
+  } 
+  
+  return false;
+}
+
+
+inline bool cSemanticASTVisitor::lookupFunction(const cString& name, int& fun_id, bool& global) const
+{
+  if (m_cur_symtbl->LookupFunction(name, fun_id)) {
+    global = false;
+    return true;
+  } else if (m_cur_symtbl != m_global_symtbl && m_global_symtbl->LookupFunction(name, fun_id)) {
     global = true;
     return true;
   } 
@@ -704,12 +770,18 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       std::cerr << "unreachable statement(s)" << ERR_ENDL;
       break;
       
+    case AS_SEMANTIC_ERR_ARGUMENT_DEFAULT_REQUIRED:
+      std::cerr << "'" << VA_ARG_STR << "' argument of '" << VA_ARG_STR << "()' requires a default value due to previous"
+                << "argument defaults" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_ARGUMENT_MISSING_REQUIRED:
+      std::cerr << "required argument " << VA_ARG_STR << " not found" << ERR_ENDL;
+      break;
     case AS_SEMANTIC_ERR_CANNOT_CAST:
       std::cerr << "cannot cast " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
       break;
-    case AS_SEMANTIC_ERR_FUNCTION_DEFAULT_REQUIRED:
-      std::cerr << "'" << VA_ARG_STR << "' argument of '" << VA_ARG_STR << "()' requires a default value due to previous"
-                << "argument defaults" << ERR_ENDL;
+    case AS_SEMANTIC_ERR_FUNCTION_CALL_SIGNATURE_MISMATCH:
+      std::cerr << "invalid call signature for '" << VA_ARG_STR << "()'" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_FUNCTION_REDEFINITION:
       std::cerr << "redefinition of '" << VA_ARG_STR << "()'" << ERR_ENDL;
@@ -719,6 +791,17 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_ERR_FUNCTION_SIGNATURE_MISMATCH:
       std::cerr << "call signature of '" << VA_ARG_STR << "()' does not match declaration" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_UNDECLARED:
+      {
+        cString varname = VA_ARG_STR;
+        std::cerr << "'" << varname << "()' undeclared";
+        cString nearmatch1 = m_cur_symtbl->FunctionNearMatch(varname);
+        cString nearmatch2 = m_global_symtbl->FunctionNearMatch(varname);
+        if (nearmatch1 != "") std::cerr << " - possible match '" << nearmatch1 << "()'";
+        if (nearmatch2 != "" && nearmatch1 != nearmatch2) std::cerr << " or '" << nearmatch2 << "()'";
+        std::cerr << ERR_ENDL;
+      }
       break;
     case AS_SEMANTIC_ERR_FUNCTION_UNDEFINED:
       std::cerr << "'" << VA_ARG_STR << "()' declared but not defined" << ERR_ENDL;

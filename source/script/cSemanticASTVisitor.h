@@ -99,6 +99,7 @@ private:
   inline bool validBitwiseType(ASType_t type) const;
   
   inline bool lookupVariable(const cString& name, int& var_id, bool& global) const;
+  inline bool lookupFunction(const cString& name, int& fun_id, bool& global) const;
   
   void reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, ...);
 };

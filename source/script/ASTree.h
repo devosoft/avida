@@ -359,6 +359,7 @@ public:
   
   inline void AddNode(cASTVariableDefinition* n) { m_nodes.PushRear(n); }
   inline tListIterator<cASTVariableDefinition> Iterator() { return tListIterator<cASTVariableDefinition>(m_nodes); }
+  inline cASTVariableDefinition* GetFirst() { return m_nodes.GetFirst(); }
   
   inline int GetSize() const { return m_nodes.GetSize(); }
   
