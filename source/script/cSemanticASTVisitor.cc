@@ -68,6 +68,7 @@ namespace AvidaScript {
 
 cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl)
   : m_library(lib), m_global_symtbl(global_symtbl), m_parent_scope(global_symtbl), m_fun_id(0), m_cur_symtbl(global_symtbl)
+  , m_success(true), m_fun_def(false)
 {
   // Add internal definition of the global function
   int fun_id = -1;

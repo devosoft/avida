@@ -140,6 +140,15 @@ typedef enum eASSemanticErrors {
 } ASSemanticError_t;
 
 
+enum eASExitCodes {
+  AS_EXIT_OK = 0,
+  AS_EXIT_FILE_NOT_FOUND = 100,
+  AS_EXIT_FAIL_PARSE,
+  AS_EXIT_FAIL_SEMANTIC,
+
+  AS_EXIT_UNKNOWN
+};
+
 typedef enum eASTypes {
   AS_TYPE_ARRAY = 0,
   AS_TYPE_BOOL,

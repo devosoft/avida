@@ -68,6 +68,9 @@ private:
 public:
   cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl);
   
+  inline bool WasSuccessful() { return m_success; }
+  
+  
   void visitAssignment(cASTAssignment&);
   
   void visitReturnStatement(cASTReturnStatement&);

@@ -45,26 +45,29 @@ int main (int argc, char * const argv[])
   cFile file;
   if (file.Open("main.asl")) {
     if (parser->Parse(file)) {
-      std::cout << "Parse Successful\n" << std::endl;
-      
       cASTNode* tree = parser->ExtractTree();
 
+      cDumpASTVisitor dump;
+      tree->Accept(dump);
+      std::cout << std::endl;
+      
       cSymbolTable global_symtbl;
       cSemanticASTVisitor semantic_check(lib, &global_symtbl);
       tree->Accept(semantic_check);
+      if (!semantic_check.WasSuccessful()) {
+        std::cerr << "error: semantics check failed" << std::endl;
+        Avida::Exit(AS_EXIT_FAIL_SEMANTIC);
+      }
       
-      cDumpASTVisitor dump;
-      tree->Accept(dump);
-      
-      std::cout << std::endl;
-      Avida::Exit(0);
+      Avida::Exit(AS_EXIT_OK);
     } else {
-      std::cout << "Parse Failed" << std::endl;
-      Avida::Exit(-1);
+      std::cerr << "error: parse failed" << std::endl;
+      Avida::Exit(AS_EXIT_FAIL_PARSE);
     }
   } else {
     std::cerr << "error: unable to open script" << std::endl;
+    Avida::Exit(AS_EXIT_FILE_NOT_FOUND);
   }
   
-  return -1;
+  return AS_EXIT_UNKNOWN;
 }

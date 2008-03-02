@@ -188,8 +188,8 @@ using namespace AvidaScript;
  */
 
 
-#define PARSE_DEBUG(x) { std::cerr << x << std::endl; }
-#define PARSE_TRACE(x) { std::cerr << "trace: " << x << std::endl; }
+#define PARSE_DEBUG(x) /*{ std::cerr << x << std::endl; }*/
+#define PARSE_TRACE(x) /*{ std::cerr << "trace: " << x << std::endl; }*/
 
 #define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__)
 #define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } return NULL; }
