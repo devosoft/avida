@@ -1007,8 +1007,11 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cur_bonus += result.GetAddBonus();
   
   // Update deme merit.
-  if(taskctx.GetOrganism()->GetOrgInterface().GetDeme()) {
-    taskctx.GetOrganism()->GetOrgInterface().GetDeme()->UpdateHeritableDemeMerit(result.GetDemeBonus());
+  if(taskctx.GetOrganism()->GetOrgInterface().GetDeme() && result.GetActiveDeme()) {
+    cDeme* deme = taskctx.GetOrganism()->GetOrgInterface().GetDeme();
+    double deme_bonus = 1 + result.GetAddDemeBonus();
+    deme_bonus *= result.GetMultDemeBonus();
+    deme->UpdateHeritableDemeMerit(deme_bonus);
   }
     
   // Update the energy bonus

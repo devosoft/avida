@@ -1025,23 +1025,26 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     double deme_bonus = cur_process->GetDemeFraction() * consumed * cur_process->GetValue();
     double bonus = (1.0 - cur_process->GetDemeFraction()) * consumed * cur_process->GetValue();
 
-    result.DemeBonus(deme_bonus);
-    
     switch (cur_process->GetType()) {
       case nReaction::PROCTYPE_ADD:
         result.AddBonus(bonus, reaction_id);
+        result.AddDemeBonus(deme_bonus);
         break;
       case nReaction::PROCTYPE_MULT:
         result.MultBonus(bonus);
+        result.AddDemeBonus(deme_bonus);
         break;
       case nReaction::PROCTYPE_POW:
-        result.MultBonus( pow(2.0, bonus) );
+        result.MultBonus(pow(2.0, bonus));
+        result.AddDemeBonus(pow(2.0, deme_bonus));
         break;
       case nReaction::PROCTYPE_LIN:
-        result.AddBonus( bonus * task_count, reaction_id);
+        result.AddBonus(bonus * task_count, reaction_id);
+        assert(deme_bonus == 0.0);
         break;
       case nReaction::PROCTYPE_ENERGY:
         result.AddEnergy(bonus);
+        assert(deme_bonus == 0.0);
         break;
       case nReaction::PROCTYPE_ENZYME: //@JEB
       {

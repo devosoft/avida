@@ -139,6 +139,7 @@ void cDeme::ReplaceGermline(const cGermline& germline) {
 we need to rotate the heritable merit to the current merit.
 */
 void cDeme::UpdateDemeMerit() {
+  assert(_next_merit.GetDouble()>=1.0);
   _current_merit = _next_merit;
   _next_merit = 1.0;
 }
@@ -149,6 +150,7 @@ void cDeme::UpdateDemeMerit() {
 void cDeme::UpdateDemeMerit(cDeme& source) {
   _current_merit = source.GetHeritableDemeMerit();
   _next_merit = 1.0;
+  assert(_current_merit.GetDouble()>=1.0);
 }
 
 
