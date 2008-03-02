@@ -49,7 +49,6 @@ private:
   bool active_reaction;
 
   double deme_add_bonus; //!< Additive bonus applied to the deme as a result of this reaction.
-  double deme_mult_bonus; //!< Multiplicative bonus applied to the deme as a result of this reaction.
   bool active_deme_reaction; //!< Whether this reaction result includes a deme merit component.
   
   inline void ActivateReaction();
@@ -77,7 +76,6 @@ public:
   void AddBonus(double value, int id);
   void MultBonus(double value);
   void AddDemeBonus(double value);
-  void MultDemeBonus(double value);
   
   void AddInst(int id);
   
@@ -96,7 +94,6 @@ public:
   double GetMultBonus() { return bonus_mult; }
   tArray<int>& GetInstArray() { return insts_triggered; }
   double GetAddDemeBonus() { return deme_add_bonus; }
-  double GetMultDemeBonus() { return deme_mult_bonus; }
 };
 
 

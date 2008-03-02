@@ -1025,18 +1025,19 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     double deme_bonus = cur_process->GetDemeFraction() * consumed * cur_process->GetValue();
     double bonus = (1.0 - cur_process->GetDemeFraction()) * consumed * cur_process->GetValue();
 
+    // Take care of the organism's bonus:
     switch (cur_process->GetType()) {
       case nReaction::PROCTYPE_ADD:
         result.AddBonus(bonus, reaction_id);
-        result.AddDemeBonus(deme_bonus);
         break;
       case nReaction::PROCTYPE_MULT:
         result.MultBonus(bonus);
-        result.AddDemeBonus(deme_bonus);
+        // Not quite sure what to do to the deme_bonus for this process:type.
         break;
       case nReaction::PROCTYPE_POW:
         result.MultBonus(pow(2.0, bonus));
-        result.AddDemeBonus(pow(2.0, deme_bonus));
+        // Increase deme_bonus according to type=pow.
+        deme_bonus = pow(2.0, deme_bonus);
         break;
       case nReaction::PROCTYPE_LIN:
         result.AddBonus(bonus * task_count, reaction_id);
@@ -1070,7 +1071,14 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         assert(false);  // Should not get here!
         break;
     };
-    
+
+    // And now let's take care of the deme's bonus.  Note that all deme bonuses
+    // are additive, though the amount of bonus that's added to the deme depends
+    // on the process:type.
+    if(cur_process->GetDemeFraction() > 0.0) {
+      result.AddDemeBonus(deme_bonus);
+    }
+        
     // Determine detection events
     cResource* detected = cur_process->GetDetect();
     if (detected != NULL) {
