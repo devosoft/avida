@@ -60,7 +60,7 @@ int main (int argc, char * const argv[])
       Avida::Exit(0);
     } else {
       std::cout << "Parse Failed" << std::endl;
-      Avida::Exit(1);
+      Avida::Exit(-1);
     }
   } else {
     std::cerr << "error: unable to open script" << std::endl;

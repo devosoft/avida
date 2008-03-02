@@ -57,6 +57,7 @@ const char* AvidaScript::mapType(ASType_t type)
 {
   switch (type) {
     case AS_TYPE_ARRAY:       return "array";
+    case AS_TYPE_BOOL:        return "bool";
     case AS_TYPE_CHAR:        return "char";
     case AS_TYPE_FLOAT:       return "float";
     case AS_TYPE_INT:         return "int";

@@ -54,7 +54,7 @@ using namespace AvidaScript;
   
  lineterm: SUPPRESS | ENDL
  
- type_def: TYPE_ARRAY | TYPE_CHAR | TYPE_FLOAT | TYPE_INT | TYPE_MATRIX | TYPE_STRING | ID REF
+ type_def: TYPE_ARRAY | TYPE_BOOL | TYPE_CHAR | TYPE_FLOAT | TYPE_INT | TYPE_MATRIX | TYPE_STRING | ID REF
  type_any: type_def | TYPE_VOID
  
  assign_expr: assign_dest ASSIGN expr
@@ -571,6 +571,9 @@ cASTNode* cParser::parseExprP6()
     case TOKEN(CHAR):
       expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_CHAR, currentText()));
       break;
+    case TOKEN(BOOL):
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_BOOL, currentText()));
+      break;
     case TOKEN(STRING):
       expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_STRING, currentText()));
       break;
@@ -634,6 +637,7 @@ cASTNode* cParser::parseForeachStatement()
   ASType_t type = AS_TYPE_INVALID;
   switch (nextToken()) {
     case TOKEN(TYPE_ARRAY):  type = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_BOOL):   type = AS_TYPE_BOOL;   break;
     case TOKEN(TYPE_CHAR):   type = AS_TYPE_CHAR;   break;
     case TOKEN(TYPE_FLOAT):  type = AS_TYPE_FLOAT;  break;
     case TOKEN(TYPE_INT):    type = AS_TYPE_INT;    break;
@@ -698,6 +702,7 @@ cASTFunctionDefinition* cParser::parseFunctionHeader()
   ASType_t type = AS_TYPE_INVALID;
   switch (nextToken()) {
     case TOKEN(TYPE_ARRAY):  type = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_BOOL):   type = AS_TYPE_BOOL;   break;
     case TOKEN(TYPE_CHAR):   type = AS_TYPE_CHAR;   break;
     case TOKEN(TYPE_FLOAT):  type = AS_TYPE_FLOAT;  break;
     case TOKEN(TYPE_INT):    type = AS_TYPE_INT;    break;
@@ -863,6 +868,7 @@ cASTNode* cParser::parseStatementList()
       case TOKEN(SUPPRESS):
         continue;
       case TOKEN(TYPE_ARRAY):
+      case TOKEN(TYPE_BOOL):
       case TOKEN(TYPE_CHAR):
       case TOKEN(TYPE_FLOAT):
       case TOKEN(TYPE_INT):
@@ -901,6 +907,7 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
   ASType_t vtype = AS_TYPE_INVALID;
   switch (currentToken()) {
     case TOKEN(TYPE_ARRAY):  vtype = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_BOOL):   vtype = AS_TYPE_BOOL;   break;
     case TOKEN(TYPE_CHAR):   vtype = AS_TYPE_CHAR;   break;
     case TOKEN(TYPE_FLOAT):  vtype = AS_TYPE_FLOAT;  break;
     case TOKEN(TYPE_INT):    vtype = AS_TYPE_INT;    break;

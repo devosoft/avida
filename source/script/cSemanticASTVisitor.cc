@@ -560,12 +560,14 @@ void cSemanticASTVisitor::visitLiteralArray(cASTLiteralArray& node)
 void cSemanticASTVisitor::visitObjectCall(cASTObjectCall& node)
 {
   // @TODO - object call
+  SEMANTIC_ERROR(INTERNAL);
 }
 
 
 void cSemanticASTVisitor::visitObjectReference(cASTObjectReference& node)
 {
   // @TODO - object reference
+  SEMANTIC_ERROR(INTERNAL);
 }
 
 

@@ -3,11 +3,7 @@
 ; Command line arguments to pass to the application
 args = 
 app = %(builddir)s/work/avida-s
-nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
-                         ;  disallow - treat non-zero exit codes as failures
-                         ;  allow - all exit codes are acceptable
-                         ;  require - treat zero exit codes as failures, useful
-                         ;            for creating tests for app error checking
+nonzeroexit = disallow
 createdby = David Bryson ; Who created the test
 email = brysonda@egr.msu.edu ; Email address for the test's creator
 

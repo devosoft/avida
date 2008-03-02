@@ -86,6 +86,7 @@
 \$          return AS_TOKEN_MAT_MODIFY;    // Matrix Modifier
 
 array       return AS_TOKEN_TYPE_ARRAY;    // Built-in Types
+bool        return AS_TOKEN_TYPE_BOOL;
 char        return AS_TOKEN_TYPE_CHAR;
 float       return AS_TOKEN_TYPE_FLOAT;
 int         return AS_TOKEN_TYPE_INT;
@@ -101,6 +102,9 @@ foreach     return AS_TOKEN_CMD_FOREACH;
 function    return AS_TOKEN_CMD_FUNCTION;
 
 return      return AS_TOKEN_CMD_RETURN;
+
+true        return AS_TOKEN_BOOL;
+false       return AS_TOKEN_BOOL;
 
 ([a-zA-Z]|_+[a-zA-Z])[a-zA-Z0-9_]*  return AS_TOKEN_ID;      // Identifiers
   
