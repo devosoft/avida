@@ -1,0 +1,32 @@
+;--- Begin Test Configuration File (test_list) ---
+[main]
+; Command line arguments to pass to the application
+args = 
+app = %(builddir)s/work/avida-s
+nonzeroexit = disallow
+createdby = David Bryson ; Who created the test
+email = brysonda@egr.msu.edu ; Email address for the test's creator
+
+[consistency]
+enabled = yes            ; Is this test a consistency test?
+long = no                ; Is this test a long test?
+
+[performance]
+enabled = no             ; Is this test a performance test?
+long = no                ; Is this test a long test?
+
+; The following variables can be used in constructing setting values by calling
+; them with %(variable_name)s.  For example see 'app' above.
+;
+; builddir 
+; cpus
+; default_app 
+; mode 
+; perf_repeat 
+; perf_user_margin 
+; perf_wall_margin 
+; svn 
+; svnmetadir 
+; svnversion 
+; testdir 
+;--- End Test Configuration File ---

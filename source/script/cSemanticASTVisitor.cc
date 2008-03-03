@@ -32,6 +32,10 @@
 using namespace AvidaScript;
 
 
+#ifndef DEBUG_AS_SEMANTIC
+#define DEBUG_AS_SEMANTIC 0
+#endif
+
 #define SEMANTIC_ERROR(code, ...) reportError(AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
 #define SEMANTIC_WARNING(code, ...) reportError(AS_SEMANTIC_WARN_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
 
@@ -66,13 +70,14 @@ namespace AvidaScript {
 }
 
 
-cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl)
+cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl, cASTNode* main)
   : m_library(lib), m_global_symtbl(global_symtbl), m_parent_scope(global_symtbl), m_fun_id(0), m_cur_symtbl(global_symtbl)
   , m_success(true), m_fun_def(false)
 {
   // Add internal definition of the global function
   int fun_id = -1;
   m_global_symtbl->AddFunction("__asmain", TYPE(INT), fun_id);
+  m_global_symtbl->SetFunctionDefinition(0, main);
 }
 
 
@@ -611,6 +616,17 @@ void cSemanticASTVisitor::visitUnpackTarget(cASTUnpackTarget& node)
   // Rest of variable type checking must be done at runtime
 }
 
+void cSemanticASTVisitor::PostCheck()
+{
+  // Check all functions in the current scope level and make sure they have been defined
+  cSymbolTable::cFunctionIterator fit = m_global_symtbl->ActiveFunctionIterator();
+  while (fit.Next()) if (!fit.HasCode())
+    reportError(AS_SEMANTIC_ERR_FUNCTION_UNDEFINED, m_global_symtbl->GetFunctionDefinition(0)->GetFilePosition()
+                ,  __LINE__, (const char*)fit.GetName());
+}
+
+
+
 ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
 {
   switch (left) {
@@ -750,7 +766,12 @@ inline bool cSemanticASTVisitor::lookupFunction(const cString& name, int& fun_id
 
 void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, ...)
 {
-#define ERR_ENDL "  (cSemanticASTVisitor.cc:" << line << ")" << std::endl
+#if DEBUG_AS_SEMANTIC
+# define ERR_ENDL "  (cSemanticASTVisitor.cc:" << line << ")" << std::endl
+#else
+# define ERR_ENDL std::endl
+#endif
+  
 #define VA_ARG_STR va_arg(vargs, const char*)
   
   std::cerr << fp.GetFilename() << ":" << fp.GetLineNumber();
@@ -761,7 +782,11 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
   va_start(vargs, line);
   switch (err) {
     case AS_SEMANTIC_WARN_LOSS_OF_PRECISION:
-      std::cerr << "loss of precision occuring in cast of " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
+      {
+        const char* type1 = VA_ARG_STR;
+        const char* type2 = VA_ARG_STR;
+        std::cerr << "loss of precision occuring in cast of " << type1 << " to " << type2 << ERR_ENDL;
+      }
       break;
     case AS_SEMANTIC_WARN_NO_DIMENSIONS:
       std::cerr << "no dimensions specified" << ERR_ENDL;
@@ -774,14 +799,21 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
       
     case AS_SEMANTIC_ERR_ARGUMENT_DEFAULT_REQUIRED:
-      std::cerr << "'" << VA_ARG_STR << "' argument of '" << VA_ARG_STR << "()' requires a default value due to previous"
-                << "argument defaults" << ERR_ENDL;
+      {
+        const char* arg = VA_ARG_STR;
+        const char* fun = VA_ARG_STR;
+        std::cerr << "'" << arg << "' argument of '" << fun << "()' requires a default value" << ERR_ENDL;
+      }
       break;
     case AS_SEMANTIC_ERR_ARGUMENT_MISSING_REQUIRED:
       std::cerr << "required argument " << VA_ARG_STR << " not found" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_CANNOT_CAST:
-      std::cerr << "cannot cast " << VA_ARG_STR << " to " << VA_ARG_STR << ERR_ENDL;
+      {
+        const char* type1 = VA_ARG_STR;
+        const char* type2 = VA_ARG_STR;
+        std::cerr << "cannot cast " << type1 << " to " << type2 << ERR_ENDL;
+      }
       break;
     case AS_SEMANTIC_ERR_FUNCTION_CALL_SIGNATURE_MISMATCH:
       std::cerr << "invalid call signature for '" << VA_ARG_STR << "()'" << ERR_ENDL;
@@ -813,13 +845,21 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       std::cerr << "too many arguments" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_UNDEFINED_TYPE_OP:
-      std::cerr << "'" << VA_ARG_STR << "' operation undefined for type '" << VA_ARG_STR << "'" << ERR_ENDL;
+      {
+        const char* op = VA_ARG_STR;
+        const char* type = VA_ARG_STR;
+        std::cerr << "'" << op << "' operation undefined for type '" << type << "'" << ERR_ENDL;
+      }
       break;
     case AS_SEMANTIC_ERR_UNPACK_WILD_NONARRAY:
-      std::cerr << "cannot unpack ... items into '" << VA_ARG_STR << "', variable must be an array" << ERR_ENDL;
+      std::cerr << "cannot unpack .. items into '" << VA_ARG_STR << "', variable must be an array" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_VARIABLE_DIMENSIONS_INVALID:
-      std::cerr << "dimensions of '" << VA_ARG_STR << "' invalid for type " << VA_ARG_STR << ERR_ENDL;
+      {
+        const char* var = VA_ARG_STR;
+        const char* type = VA_ARG_STR;
+        std::cerr << "dimensions of '" << var << "' invalid for type " << type << ERR_ENDL;
+      }
       break;
     case AS_SEMANTIC_ERR_VARIABLE_UNDEFINED:
       {

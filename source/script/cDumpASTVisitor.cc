@@ -201,17 +201,17 @@ void cDumpASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
   }
   cout << ")" << endl;
   
-  indent();
-  cout << "{" << endl;
-  
   if (node.GetCode()) {
+    indent();
+    cout << "{" << endl;
+    
     m_depth++;
     node.GetCode()->Accept(*this);
     m_depth--;
-  }
 
-  indent();
-  cout << "}" << endl;
+    indent();
+    cout << "}" << endl;
+  }
 }
 
 

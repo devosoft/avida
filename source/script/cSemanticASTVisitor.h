@@ -66,7 +66,7 @@ private:
   
   
 public:
-  cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl);
+  cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl, cASTNode* main);
   
   inline bool WasSuccessful() { return m_success; }
   
@@ -95,6 +95,9 @@ public:
   void visitObjectReference(cASTObjectReference&);
   void visitVariableReference(cASTVariableReference&);
   void visitUnpackTarget(cASTUnpackTarget&);
+
+  void PostCheck();
+
 
 private:
   ASType_t getConsensusType(ASType_t t1, ASType_t t2);

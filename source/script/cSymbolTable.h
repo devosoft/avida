@@ -44,10 +44,11 @@ private:
     ASType_t type;
 
     int scope;
+    int shadow;
     bool deactivate;
     
     sSymbolEntry(const cString& in_name, ASType_t in_type, int in_scope)
-      : name(in_name), type(in_type), scope(in_scope), deactivate(0) { ; }
+      : name(in_name), type(in_type), scope(in_scope), shadow(-1), deactivate(0) { ; }
   };
   tArray<sSymbolEntry*> m_sym_tbl;
   tDictionary<int> m_sym_dict;
@@ -61,10 +62,12 @@ private:
     cASTNode* code;
     
     int scope;
+    int shadow;
     int deactivate;
     
     sFunctionEntry(const cString& in_name, ASType_t in_type, int in_scope)
-      : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), scope(in_scope), deactivate(0) { ; }
+      : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), scope(in_scope), shadow(-1)
+      , deactivate(0) { ; }
     ~sFunctionEntry() { delete signature; delete symtbl; delete code; }
   };
   tArray<sFunctionEntry*> m_fun_tbl;
@@ -129,12 +132,12 @@ public:
     int m_idx;
     
     cFunctionIterator(cSymbolTable* symtbl)
-      : m_symtbl(symtbl), m_scope(symtbl->GetScope()), m_idx(symtbl->GetNumFunctions() - 1) { ; }
+      : m_symtbl(symtbl), m_scope(symtbl->GetScope()), m_idx(symtbl->GetNumFunctions()) { ; }
 
   public:
     bool Next()
     {
-      for (; m_idx >= 0; m_idx--)
+      for (m_idx--; m_idx >= 0; m_idx--)
         if (m_symtbl->GetFunctionScope(m_idx) == m_scope && m_symtbl->IsFunctionActive(m_idx)) return true;
       
       return false;

@@ -52,8 +52,10 @@ int main (int argc, char * const argv[])
       std::cout << std::endl;
       
       cSymbolTable global_symtbl;
-      cSemanticASTVisitor semantic_check(lib, &global_symtbl);
+      cSemanticASTVisitor semantic_check(lib, &global_symtbl, tree);
       tree->Accept(semantic_check);
+      semantic_check.PostCheck();
+      
       if (!semantic_check.WasSuccessful()) {
         std::cerr << "error: semantics check failed" << std::endl;
         Avida::Exit(AS_EXIT_FAIL_SEMANTIC);

@@ -187,9 +187,17 @@ using namespace AvidaScript;
 
  */
 
+#ifndef DEBUG_AS_PARSER
+#define DEBUG_AS_PARSER 0
+#endif
 
-#define PARSE_DEBUG(x) /*{ std::cerr << x << std::endl; }*/
-#define PARSE_TRACE(x) /*{ std::cerr << "trace: " << x << std::endl; }*/
+#if DEBUG_AS_PARSER
+# define PARSE_DEBUG(x) /*{ std::cerr << x << std::endl; }*/
+# define PARSE_TRACE(x) /*{ std::cerr << "trace: " << x << std::endl; }*/
+#else
+# define PARSE_DEBUG(x)
+# define PARSE_TRACE(x)
+#endif
 
 #define PARSE_ERROR(x) reportError(AS_PARSE_ERR_ ## x, __LINE__)
 #define PARSE_UNEXPECT() { if (currentToken()) { PARSE_ERROR(UNEXPECTED_TOKEN); } else { PARSE_ERROR(EOF); } return NULL; }
@@ -367,7 +375,7 @@ cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
       else eoe = true;
     }
   }
-    
+  
   return ce.Release();
 }
 
@@ -610,6 +618,7 @@ cASTNode* cParser::parseExprP6()
     case TOKEN(OP_LOGIC_NOT):
     case TOKEN(OP_SUB):
       ASToken_t op = currentToken();
+      nextToken(); // consume operation
       cASTNode* r = parseExpression();
       if (!r) {
         PARSE_ERROR(NULL_EXPR);
@@ -741,9 +750,23 @@ cASTNode* cParser::parseIDStatement()
     case TOKEN(ASSIGN):
       return parseAssignment();
       break;
+    case TOKEN(PREC_OPEN):
+      {
+        cASTFunctionCall* fc = new cASTFunctionCall(FILEPOS, currentText());
+        nextToken(); // consume id token
+        if (nextToken() != TOKEN(PREC_CLOSE)) fc->SetArguments(parseArgumentList());        
+        if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+        nextToken(); // consume ')'
+        
+        if (currentToken() == TOKEN(DOT) || currentToken() == TOKEN(IDX_OPEN)) {
+          return parseCallExpression(fc, true);
+        }
+        
+        return fc;
+      }
+      break;
     case TOKEN(DOT):
     case TOKEN(IDX_OPEN):
-    case TOKEN(PREC_OPEN):
       cASTNode* target = new cASTVariableReference(FILEPOS, currentText());
       nextToken(); // consume id
       return parseCallExpression(target, true);
@@ -796,7 +819,7 @@ cASTNode* cParser::parseIfStatement()
 cASTNode* cParser::parseLooseBlock()
 {
   PARSE_TRACE("parseLooseBlock");
-  nextToken();
+  //nextToken();
   tAutoRelease<cASTNode> sl(parseStatementList());
   
   if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
@@ -983,7 +1006,11 @@ cASTNode* cParser::parseWhileStatement()
 
 void cParser::reportError(ASParseError_t err, const int line)
 {
-#define ERR_ENDL "  (cParser.cc:" << line << ")" << std::endl
+#if DEBUG_AS_PARSER
+# define ERR_ENDL "  (cParser.cc:" << line << ")" << std::endl
+#else
+# define ERR_ENDL std::endl
+#endif
   
   m_success = false;
 

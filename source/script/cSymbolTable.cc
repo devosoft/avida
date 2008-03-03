@@ -33,22 +33,38 @@ cSymbolTable::~cSymbolTable()
 
 bool cSymbolTable::AddVariable(const cString& name, ASType_t type, int& var_id)
 {
-  if (LookupVariable(name, var_id)) return false;
-
+  int shadow = var_id;
+  bool found = LookupVariable(name, var_id);
+  if (found && m_sym_tbl[var_id]->scope == m_scope && !m_sym_tbl[var_id]->deactivate) return false;
+  
   var_id = m_sym_tbl.GetSize();
   m_sym_tbl.Push(new sSymbolEntry(name, type, m_scope));
-  m_sym_dict.Add(name, var_id);
+  
+  if (found) {
+    m_sym_dict.SetValue(name, var_id);
+    m_sym_tbl[var_id]->shadow = shadow;
+  } else {
+    m_sym_dict.Add(name, var_id);
+  }
   
   return true;
 }
 
 bool cSymbolTable::AddFunction(const cString& name, ASType_t type, int& fun_id)
 {
-  if (LookupFunction(name, fun_id)) return false;
+  int shadow = fun_id;
+  bool found = LookupFunction(name, fun_id);
+  if (found && m_fun_tbl[fun_id]->scope == m_scope && !m_fun_tbl[fun_id]->deactivate) return false;
   
   fun_id = m_fun_tbl.GetSize();
   m_fun_tbl.Push(new sFunctionEntry(name, type, m_scope));
-  m_fun_dict.Add(name, fun_id);
+  
+  if (found) {
+    m_fun_dict.SetValue(name, fun_id);
+    m_fun_tbl[fun_id]->shadow = shadow;
+  } else {
+    m_fun_dict.Add(name, fun_id);
+  }
   
   return true;
 }
@@ -60,7 +76,8 @@ void cSymbolTable::PopScope()
   for (int i = 0; i < m_sym_tbl.GetSize(); i++) {
     sSymbolEntry* se = m_sym_tbl[i];
     if (se->scope == m_scope && !se->deactivate) {
-      m_sym_dict.Remove(se->name);
+      if (se->shadow == -1) m_sym_dict.Remove(se->name);
+      else m_sym_dict.SetValue(se->name, se->shadow);
       se->deactivate = m_deactivate_cycle;
     }
   }
@@ -68,7 +85,8 @@ void cSymbolTable::PopScope()
   for (int i = 0; i < m_fun_tbl.GetSize(); i++) {
     sFunctionEntry* fe = m_fun_tbl[i];
     if (fe->scope == m_scope && !fe->deactivate) {
-      m_fun_dict.Remove(fe->name);
+      if (fe->shadow == -1) m_fun_dict.Remove(fe->name);
+      else m_fun_dict.SetValue(fe->name, fe->shadow);
       fe->deactivate = m_deactivate_cycle;
     }
   }
