@@ -72,7 +72,7 @@ namespace AvidaScript {
 
 cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl, cASTNode* main)
   : m_library(lib), m_global_symtbl(global_symtbl), m_parent_scope(global_symtbl), m_fun_id(0), m_cur_symtbl(global_symtbl)
-  , m_success(true), m_fun_def(false)
+  , m_success(true), m_fun_def(false), m_top_level(true)
 {
   // Add internal definition of the global function
   int fun_id = -1;
@@ -106,6 +106,14 @@ void cSemanticASTVisitor::visitStatementList(cASTStatementList& node)
 {
   tListIterator<cASTNode> it = node.Iterator();
   
+  bool should_pop = false;
+  if (m_top_level) {
+    m_top_level = false;
+  } else {
+    m_cur_symtbl->PushScope();
+    should_pop = true;
+  }
+  
   bool has_return = false;
   bool warn_unreach = false;
   cASTNode* stmt = NULL;
@@ -117,6 +125,13 @@ void cSemanticASTVisitor::visitStatementList(cASTStatementList& node)
       reportError(AS_SEMANTIC_WARN_UNREACHABLE, stmt->GetFilePosition(),  __LINE__);
       warn_unreach = true;
     }
+  }
+  
+  if (should_pop) {
+    // Check all functions in the current scope level and make sure they have been defined
+    cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
+    while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
+    m_cur_symtbl->PopScope();    
   }
 }
 
@@ -133,6 +148,7 @@ void cSemanticASTVisitor::visitForeachBlock(cASTForeachBlock& node)
   node.GetVariable()->Accept(*this);
   
   // Check the code
+  m_top_level = true;
   node.GetCode()->Accept(*this);
   
   // Check all functions in the current scope level and make sure they have been defined
@@ -148,14 +164,7 @@ void cSemanticASTVisitor::visitIfBlock(cASTIfBlock& node)
   node.GetCondition()->Accept(*this);
   checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
   
-  m_cur_symtbl->PushScope();
-  
   node.GetCode()->Accept(*this);
-
-  // Check all functions in the current scope level and make sure they have been defined
-  cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
-  while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
-  m_cur_symtbl->PopScope();
   
   // Check all elseif blocks
   tListIterator<cASTIfBlock::cElseIf> it = node.ElseIfIterator();
@@ -163,28 +172,11 @@ void cSemanticASTVisitor::visitIfBlock(cASTIfBlock& node)
   while ((ei = it.Next())) {
     ei->GetCondition()->Accept(*this);
     checkCast(ei->GetCondition()->GetType(), TYPE(BOOL));
-    
-    m_cur_symtbl->PushScope();
-    
     ei->GetCode()->Accept(*this);
-
-    // Check all functions in the current scope level and make sure they have been defined
-    cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
-    while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
-    m_cur_symtbl->PopScope();
   }
   
   // Check else block if there is one
-  if (node.GetElseCode()) {
-    m_cur_symtbl->PushScope();
-    
-    node.GetElseCode()->Accept(*this);
-
-    // Check all functions in the current scope level and make sure they have been defined
-    cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
-    while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
-    m_cur_symtbl->PopScope();
-  }
+  if (node.GetElseCode()) node.GetElseCode()->Accept(*this);
 }
 
 
@@ -192,15 +184,7 @@ void cSemanticASTVisitor::visitWhileBlock(cASTWhileBlock& node)
 {
   node.GetCondition()->Accept(*this);
   checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
-
-  m_cur_symtbl->PushScope();
-  
   node.GetCode()->Accept(*this);
-
-  // Check all functions in the current scope level and make sure they have been defined
-  cSymbolTable::cFunctionIterator fit = m_cur_symtbl->ActiveFunctionIterator();
-  while (fit.Next()) if (!fit.HasCode()) SEMANTIC_ERROR(FUNCTION_UNDEFINED, (const char*)fit.GetName());
-  m_cur_symtbl->PopScope();
 }
 
 
@@ -273,6 +257,7 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
   // If this is the definition process the code
   if (node.GetCode()) {
     if (!m_parent_scope->GetFunctionDefinition(fun_id)) {
+      m_top_level = true;
       node.GetCode()->Accept(*this);
       
       if (node.GetType() != TYPE(VOID) && !m_cur_symtbl->ScopeHasReturn()) SEMANTIC_WARNING(NO_RETURN);

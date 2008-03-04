@@ -33,8 +33,8 @@ cSymbolTable::~cSymbolTable()
 
 bool cSymbolTable::AddVariable(const cString& name, ASType_t type, int& var_id)
 {
-  int shadow = var_id;
   bool found = LookupVariable(name, var_id);
+  int shadow = var_id;
   if (found && m_sym_tbl[var_id]->scope == m_scope && !m_sym_tbl[var_id]->deactivate) return false;
   
   var_id = m_sym_tbl.GetSize();

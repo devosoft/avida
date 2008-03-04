@@ -45,7 +45,7 @@ private:
 
     int scope;
     int shadow;
-    bool deactivate;
+    int deactivate;
     
     sSymbolEntry(const cString& in_name, ASType_t in_type, int in_scope)
       : name(in_name), type(in_type), scope(in_scope), shadow(-1), deactivate(0) { ; }

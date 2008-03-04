@@ -58,6 +58,7 @@ private:
   
   bool m_success;
   bool m_fun_def;
+  bool m_top_level;
 
   
   cSemanticASTVisitor(); // @not_implemented
