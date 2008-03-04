@@ -1,4 +1,16 @@
 #!/usr/bin/perl
+
+#########################################################################
+#
+#  Script to create the ../../../documentation/actions.html file based on 
+#  routines in the *Action.cc files in the ../../actions/ and information
+#  in the actions_source_info file in the current directory
+#
+#  Created by B.D.Baer 20-February-2007
+#  Copyright 2008 Michigan State University. All rights reserved. 
+#
+#########################################################################
+
 use strict;
 use Time::Local;
 
@@ -209,8 +221,10 @@ sub process_template_file{
   close (TEMPLATE);
 }
 
-# Create sort that ignores case
+# Create sort that ignores case and underscores
 
 sub sort_ic {
- lc($a) cmp lc($b);
+ my $c = $a; my $d = $b;
+ $c =~ s/_//; $d =~ s/_//;
+ lc($c) cmp lc($d);
 } 

@@ -3853,3 +3853,55 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   
   NewTrial();
 }
+
+/* This routine is designed to change values in the resource count in the 
+   middle of a run.  This is designed to work with cActionChangeEnvironment
+   routine BDB 22-Feb-2008 */
+
+void cPopulation::UpdateResourceCount(const int Verbosity) {
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  int global_res_index = -1;
+  int deme_res_index = -1;
+  int num_deme_res = 0;
+
+  //setting size of global and deme-level resources
+  for(int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if(res->GetDemeResource())
+      num_deme_res++;
+  }
+  
+  for(int i = 0; i < GetNumDemes(); i++) {
+    cResourceCount tmp_deme_res_count(num_deme_res);
+    GetDeme(i).SetDemeResourceCount(tmp_deme_res_count);
+  }
+
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    cResource * res = resource_lib.GetResource(i);
+    if (!res->GetDemeResource()) {
+      global_res_index++;
+      const double decay = 1.0 - res->GetOutflow();
+      resource_count.Setup(global_res_index, res->GetName(), res->GetInitial(), 
+                           res->GetInflow(), decay,
+                           res->GetGeometry(), res->GetXDiffuse(),
+                           res->GetXGravity(), res->GetYDiffuse(), 
+                           res->GetYGravity(), res->GetInflowX1(), 
+                           res->GetInflowX2(), res->GetInflowY1(), 
+                           res->GetInflowY2(), res->GetOutflowX1(), 
+                           res->GetOutflowX2(), res->GetOutflowY1(), 
+                           res->GetOutflowY2(), res->GetCellListPtr(),
+                           Verbosity);
+      m_world->GetStats().SetResourceName(global_res_index, res->GetName());
+    } else if(res->GetDemeResource()) {
+      deme_res_index++;
+      for(int j = 0; j < GetNumDemes(); j++) {
+        GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity);
+        // could add deme resources to global resource stats here
+      }
+    } else {
+      cerr<< "ERROR: Resource \"" << res->GetName() <<"\"is not a global or deme resource.  Exit";
+      exit(1);
+    }
+  }
+
+}

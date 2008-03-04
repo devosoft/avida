@@ -392,6 +392,154 @@
   <span class="cmdarg">inst</span> must be in the instruction set. 
 === Action ZeroResources ===
   Set all resurce levels to zero.
+=== Action ChangeEnvironment ===
+  Action designed to read in and process a line formatted as if it were in the
+  <a href="environment.html">environment</a> file.  This will change 
+  environmental settings on the fly.  <b>You should create all resources and 
+  reactions in the environment file</b> and only use this file to change these
+  resources and reactions. 
+=== Action inject_resource ===
+  <font color="red">DEPRECATED</font>
+=== Action inject_scaled_resource ===
+  <font color="red">DEPRECATED</font>
+=== Action outflow_scaled_resource ===
+  <font color="red">DEPRECATED</font>
+=== Action set_resource ===
+  <font color="red">DEPRECATED</font>
+=== Action set_reaction_value ===
+  <font color="red">DEPRECATED</font>
+=== Action set_reaction_value_mult ===
+  <font color="red">DEPRECATED</font>
+=== Action set_reaction_inst ===
+  <font color="red">DEPRECATED</font>
+=== Action exit ===
+  <font color="red">DEPRECATED</font>
+=== Action exit_if_ave_lineage_label_larger ===
+  <font color="red">DEPRECATED</font>
+=== Action exit_if_ave_lineage_label_smaller ===
+  <font color="red">DEPRECATED</font>
+=== Action inject ===
+  <font color="red">DEPRECATED</font>
+=== Action inject_random ===
+  <font color="red">DEPRECATED</font>
+=== Action inject_all_random_repro ===
+  <font color="red">DEPRECATED</font>
+=== Action inject_all ===
+  <font color="red">DEPRECATED</font>
+=== Action inject_range ===
+  <font color="red">DEPRECATED</font>
+=== Action inject_sequence ===
+  <font color="red">DEPRECATED</font>
+=== Action apocalypse ===
+  <font color="red">DEPRECATED</font>
+=== Action rate_kill ===
+  <font color="red">DEPRECATED</font>
+=== Action kill_rectangle ===
+  <font color="red">DEPRECATED</font>
+=== Action serial_transfer ===
+  <font color="red">DEPRECATED</font>
+=== Action zero_muts ===
+  <font color="red">DEPRECATED</font>
+=== Action compete_demes ===
+  <font color="red">DEPRECATED</font>
+=== Action replicate_demes ===
+  <font color="red">DEPRECATED</font>
+=== Action reset_demes ===
+  <font color="red">DEPRECATED</font>
+=== Action copy_deme ===
+  <font color="red">DEPRECATED</font>
+=== Action new_trial ===
+  <font color="red">DEPRECATED</font>
+=== Action compete_organisms ===
+  <font color="red">DEPRECATED</font>
+=== Action sever_grid_col ===
+  <font color="red">DEPRECATED</font>
+=== Action sever_grid_row ===
+  <font color="red">DEPRECATED</font>
+=== Action join_grid_col ===
+  <font color="red">DEPRECATED</font>
+=== Action join_grid_row ===
+  <font color="red">DEPRECATED</font>
+=== Action connect_cells ===
+  <font color="red">DEPRECATED</font>
+=== Action disconnect_cells ===
+  <font color="red">DEPRECATED</font>
+=== Action swap_cells ===
+  <font color="red">DEPRECATED</font>
+=== Action print_average_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_error_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_variance_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_dominant_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_stats_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_count_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_totals_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_tasks_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_tasks_exe_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_tasks_qual_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_resource_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_time_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_mutation_rate_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_divide_mut_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_instruction_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_genotype_map ===
+  <font color="red">DEPRECATED</font>
+=== Action print_market_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_number_phenotypes ===
+  <font color="red">DEPRECATED</font>
+=== Action print_phenotype_status ===
+  <font color="red">DEPRECATED</font>
+=== Action print_donation_stats ===
+  <font color="red">DEPRECATED</font>
+=== Action print_deme_stats ===
+  <font color="red">DEPRECATED</font>
+=== Action print_data ===
+  <font color="red">DEPRECATED</font>
+=== Action print_instruction_abundance_histogram ===
+  <font color="red">DEPRECATED</font>
+=== Action print_depth_histogram ===
+  <font color="red">DEPRECATED</font>
+=== Action echo ===
+  <font color="red">DEPRECATED</font>
+=== Action print_genotype_abundance_histogram ===
+  <font color="red">DEPRECATED</font>
+=== Action print_species_abundance_histogram ===
+  <font color="red">DEPRECATED</font>
+=== Action print_lineage_totals ===
+  <font color="red">DEPRECATED</font>
+=== Action save_clone ===
+  <font color="red">DEPRECATED</font>
+=== Action load_clone ===
+  <font color="red">DEPRECATED</font>
+=== Action load_dump_file ===
+  <font color="red">DEPRECATED</font>
+=== Action dump_pop ===
+  <font color="red">DEPRECATED</font>
+=== Action detail_pop ===
+  <font color="red">DEPRECATED</font>
+=== Action detail_sex_pop ===
+  <font color="red">DEPRECATED</font>
+=== Action detail_parasite_pop ===
+  <font color="red">DEPRECATED</font>
+=== Action dump_historic_pop ===
+  <font color="red">DEPRECATED</font>
+=== Action dump_historic_sex_pop ===
+  <font color="red">DEPRECATED</font>
 === head ===
 <html>
 <!-- This HTML was generated by the make_actions_html routine please modify --->

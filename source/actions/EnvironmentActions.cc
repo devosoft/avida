@@ -17,8 +17,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  along with this program; if not, write to the Free Software Foundation, 
+ *  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  */
 
@@ -127,6 +127,7 @@ public:
   }
 };
 
+/* Change the amount of a particular global resource */
 
 class cActionSetResource : public cAction
 {
@@ -173,6 +174,8 @@ public:
   }
 };
 
+/* Change the amount of a particular resource in a particular cells */
+
 class cActionSetCellResource : public cAction
 {
 private:
@@ -216,6 +219,29 @@ public:
   }
 };
 
+
+/* Change Environment settings */
+
+class cActionChangeEnvironment : public cAction
+{
+private:
+  cString env_string;
+  
+public:
+  cActionChangeEnvironment(cWorld* world, const cString& args) : cAction(world, args), env_string("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) env_string = largs;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string env_string>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().LoadLine(env_string);
+    m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity());
+  }
+};
 
 // Set the values associated with a specified reaction.  If the name of the
 // reaction used is "ALL" then all reactions will be changed.  If the name is
@@ -739,7 +765,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
   action_lib->Register<cZeroResources>("ZeroResources");
-  action_lib->Register<cActionSetCellResource>("SetCellResource");  
+  action_lib->Register<cActionSetCellResource>("SetCellResource");
+  action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");

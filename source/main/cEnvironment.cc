@@ -557,8 +557,8 @@ bool cEnvironment::LoadReaction(cString desc)
   // Make sure this reaction hasn't already been loaded with a different
   // definition.
   if (new_reaction->GetTask() != NULL) {
-    cerr << "Error: Re-defining reaction '" << name << "'." << endl;
-    return false;
+    cerr << "Warning: Re-defining reaction '" << name << "'." << endl;
+    // return false;
   }
   
   // Finish loading in this reaction.

@@ -294,6 +294,9 @@ public:
   // Trials and genetic algorithm @JEB
   void NewTrial();
   void CompeteOrganisms(int competition_type, int parents_survive);
+  
+  // Let users change environmental variables durning the run @BDB 22-Feb-2008
+  void UpdateResourceCount(const int Verbosity);
 };
 
 
