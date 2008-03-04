@@ -186,6 +186,7 @@
 		704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E6770D74C36F008B3CA0 /* AvidaScript.cc */; };
 		7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */; };
+		7050E7D70D7DC979008B3CA0 /* cDirectInterpretASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
@@ -450,6 +451,8 @@
 		7050E6770D74C36F008B3CA0 /* AvidaScript.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AvidaScript.cc; sourceTree = "<group>"; };
 		7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDumpASTVisitor.cc; sourceTree = "<group>"; };
 		7050E69E0D74CFEB008B3CA0 /* cDumpASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDumpASTVisitor.h; sourceTree = "<group>"; };
+		7050E7D50D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDirectInterpretASTVisitor.h; sourceTree = "<group>"; };
+		7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDirectInterpretASTVisitor.cc; sourceTree = "<group>"; };
 		705260BB0B87A7DB0007426F /* cInstLibEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cInstLibEntry.h; sourceTree = "<group>"; };
 		705261050B87AF5C0007426F /* cInstLib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstLib.h; sourceTree = "<group>"; };
 		705332480929764A006BD186 /* cSpecies.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cSpecies.cc; sourceTree = "<group>"; };
@@ -1226,6 +1229,8 @@
 				702F52DF0992FD8000B2B507 /* cScriptObject.cc */,
 				70E130E30C4551E900CE9249 /* cASTVisitor.h */,
 				7050E6770D74C36F008B3CA0 /* AvidaScript.cc */,
+				7050E7D50D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.h */,
+				7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */,
 			);
 			path = script;
 			sourceTree = "<group>";
@@ -2037,6 +2042,7 @@
 				7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */,
 				7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */,
 				7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */,
+				7050E7D70D7DC979008B3CA0 /* cDirectInterpretASTVisitor.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
