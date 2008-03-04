@@ -164,7 +164,7 @@ public:
   }
   cString(const cString& in) { CopyString(in); }
 
-  virtual ~cString() { if (value->RemoveRef() == 0) delete value; }
+  ~cString() { if (value->RemoveRef() == 0) delete value; }
 
 
   // Cast to const char *
