@@ -126,6 +126,18 @@ void cDeme::Reset(double deme_energy, bool resetResources)
 }
 
 
+/*! Check every cell in this deme for a living organism.  If found, kill it. */
+void cDeme::KillAll()
+{
+  for (int i=0; i<GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_ids[i]);
+    if(cell.IsOccupied()) {
+      m_world->GetPopulation().KillOrganism(cell);
+    }
+  }
+}
+
+
 /*! Replacing this deme's germline has the effect of changing the deme's lineage.
 There's still some work to do here; the lineage labels of the Genomes in the germline
 are all messed up.

@@ -80,6 +80,8 @@ public:
 
   void Reset(bool resetResources = true);
   void Reset(double deme_energy, bool resetResources = true); //! used to pass energy to offspring deme
+  //! Kills all organisms currently in this deme.
+  void KillAll();
   int GetBirthCount() const { return birth_count; }
   void IncBirthCount() { birth_count++; }
 

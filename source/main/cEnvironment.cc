@@ -1032,7 +1032,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         break;
       case nReaction::PROCTYPE_MULT:
         result.MultBonus(bonus);
-        // Not quite sure what to do to the deme_bonus for this process:type.
+        // @todo Not quite sure what to do to the deme_bonus for this process:type.
         break;
       case nReaction::PROCTYPE_POW:
         result.MultBonus(pow(2.0, bonus));

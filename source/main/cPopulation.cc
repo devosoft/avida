@@ -113,15 +113,18 @@ cPopulation::cPopulation(cWorld* world)
     num_demes = 1; // One population == one deme.
   }
 
-  // Error checking for demes vs. non-demes setup.
-
-  // The following combination of options creates an infinite rotate-loop.
+  // The following combination of options creates an infinite rotate-loop:
   assert(!((m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()==0)
            && (m_world->GetConfig().DEMES_ORGANISM_FACING.Get()==1)
            && (m_world->GetConfig().WORLD_GEOMETRY.Get()==1)));
   
-  // Not yet supported:
-  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()==1);
+  // Incompatible deme replication strategies:
+  assert(!(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()
+           && (m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()>0.0)));
+  assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
+           && (m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()>0.0)));
+  assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
+           && (m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()>1)));
   
 #ifdef DEBUG
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
@@ -150,6 +153,9 @@ cPopulation::cPopulation(cWorld* world)
   const int deme_size_y = world_y / num_demes;
   const int deme_size = deme_size_x * deme_size_y;
   deme_array.Resize(num_demes);
+  
+  // Broken setting:
+  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() <= deme_size);         
   
   // Setup the deme structures.
   tArray<int> deme_cells(deme_size);
@@ -1221,7 +1227,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   }
 
   // The source's merit must be transferred to the target, and then the source has
-  // rotate its merits.
+  // to rotate its heritable merit to its current merit.
   target_deme.UpdateDemeMerit(source_deme);
   source_deme.UpdateDemeMerit();
   
@@ -1247,9 +1253,11 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   
   // Reset both demes, in case they have any cleanup work to do.
   if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
+    // Transfer energy from source to target if we're using the energy model.
     source_deme.Reset(parent_deme_energy, source_deme_resource_reset);
     target_deme.Reset(offspring_deme_energy, target_deme_resource_reset);
   } else {
+    // Default; reset both source and target.
     source_deme.Reset(source_deme_resource_reset);
     target_deme.Reset(target_deme_resource_reset);
   }
@@ -1268,13 +1276,7 @@ deme's germline is left unchanged.
 */
 void cPopulation::SeedDeme(cDeme& deme, cGenome& genome) {
   // Kill all the organisms in the deme.
-  for (int i=0; i<deme.GetSize(); i++) {
-    KillOrganism(cell_array[deme.GetCellID(i)]);
-  }
-
-  // Sanity.
-  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() < deme.GetSize());
-  assert(m_world->GetConfig().DEMES_REPLICATE_SIZE.Get() > 0);
+  deme.KillAll();
   
   // Create the specified number of organisms in the deme.
   for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
@@ -1290,90 +1292,107 @@ the source will be cloned to the target.
 */
 void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
   cRandom& random = m_world->GetRandom();
-
+  
+  // Check to see if we're doing probabilistic organism replication from source
+  // to target deme.
   if(m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get() == 0.0) {
-    // Select a random organism from the source.  All we need to do here is get a
-    // genome and a lineage label.
-    cOrganism* seed = 0;
-    while(seed == 0) {
-      int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
-      if(cell_array[cellid].IsOccupied()) {
-        seed = cell_array[cellid].GetOrganism();
+    // Here's the idea: store up a list of the genotypes from the source that we
+    // need to copy to the target. Then clear both the source and target demes, 
+    // and finally inject organisms from the saved genotypes into both the source 
+    // and target.
+    //
+    // This is a little ugly - Note that if you're trying to get something a little
+    // more random, there's also the "fruiting body" option (DEMES_PROB_ORG_TRANSFER),
+    // and the even less contrived MIGRATION_RATE.
+    //
+    // @todo In order to get lineage tracking to work again, we need to change this
+    //       from tracking cGenomes to tracking cGenotypes.  But that's a pain,
+    //       because the cGenotype* from cOrganism::GetGenotype may not live after
+    //       a call to cDeme::KillAll.
+    std::vector<std::pair<cGenome,int> > xfer; // List of genomes we're going to transfer.
+  
+    switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
+      case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
+        // being selected more than once).
+        while((int)xfer.size() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
+          int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
+          if(cell_array[cellid].IsOccupied()) {
+            xfer.push_back(std::make_pair(cell_array[cellid].GetOrganism()->GetGenome(),
+                                          cell_array[cellid].GetOrganism()->GetLineageLabel()));
+          }
+        }
+        break;
+      }
+      case 1: { // Sequential selection, from the beginning.  Good with DEMES_ORGANISM_PLACEMENT=3.
+        for(int i=0; i<m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
+          int cellid = source_deme.GetCellID(i);
+          if(cell_array[cellid].IsOccupied()) {
+            xfer.push_back(std::make_pair(cell_array[cellid].GetOrganism()->GetGenome(),
+                                          cell_array[cellid].GetOrganism()->GetLineageLabel()));
+          }
+        }
+        break;
+      }
+      default: {
+        cout << "Undefined value (" << m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()
+          << ") for DEMES_ORGANISM_SELECTION." << endl;
+        exit(1);
       }
     }
+        
+    // We'd better have at *least* one genome.
+    assert(xfer.size()>0);
     
-    cGenome genome = seed->GetGenome();
-    int lineage = seed->GetLineageLabel();
-    seed = 0; // We're done with the seed organism.
+    // Clear the demes.
+    source_deme.KillAll();
+    target_deme.KillAll();
     
-    // Kill all the organisms in the source and target demes.
-    for (int i=0; i<target_deme.GetSize(); i++) {
-      KillOrganism(cell_array[target_deme.GetCellID(i)]);
-    }
-    for (int i=0; i<source_deme.GetSize(); i++) {
-      KillOrganism(cell_array[source_deme.GetCellID(i)]);
-    }
-
-    // Repopulation the source.
-    for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
-      int cellid = DemeSelectInjectionCell(source_deme, i);
-      InjectGenome(cellid, genome, lineage);
+    // And now populate the source and target.
+    int j=0;
+    for(std::vector<std::pair<cGenome,int> >::iterator i=xfer.begin(); i!=xfer.end(); ++i, ++j) {
+      int cellid = DemeSelectInjectionCell(source_deme, j);
+      InjectGenome(cellid, i->first, i->second);
       DemePostInjection(source_deme, cell_array[cellid]);
-    }
-    
-    // And repopulate the target.
-    for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
-      int cellid = DemeSelectInjectionCell(target_deme, i);
-      InjectGenome(cellid, genome, lineage);
-      DemePostInjection(target_deme, cell_array[cellid]);
+
+      cellid = DemeSelectInjectionCell(target_deme, j);
+      InjectGenome(cellid, i->first, i->second);
+      DemePostInjection(target_deme, cell_array[cellid]);      
     }
   } else {
-    assert(m_world->GetConfig().DEMES_USE_GERMLINE.Get() != 1);
-    vector< pair<cGenome, int> > fruiting_body;
-
+    // Probabilistic organism replication -- aka "fruiting body."
+    //
+    // This is a little different than the other deme replication styles.  First,
+    // in a fruiting body we don't reset the individuals in the source deme; we
+    // leave them unchanged.  The idea is that we're pulling random organisms
+    // out, and letting the source continue.
+    
     // Kill all the organisms in the target deme.
-    for (int i=0; i<target_deme.GetSize(); i++) {
-      KillOrganism(cell_array[target_deme.GetCellID(i)]);
-    }
+    target_deme.KillAll();
 
-    for(int i = 0; i < source_deme.GetSize(); i++) {
+    // Check all the organisms in the source deme to see if they get transferred
+    // to the target.
+    for(int i=0,j=0; i<source_deme.GetSize(); ++i) {
       int source_cellid = source_deme.GetCellID(i);
       
-      if(cell_array[source_cellid].IsOccupied() && random.GetDouble(0.0, 1.0) < m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()) {
-        // save genome and lineage label of organism being transfered
+      // Does this organism stay with the source or move to the target?
+      if(cell_array[source_cellid].IsOccupied() && random.P(m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get())) {
+        // Moves to the target; save the genome and lineage label of organism being transfered.
         cOrganism* seed = cell_array[source_cellid].GetOrganism();
         cGenome genome = seed->GetGenome();
         int lineage = seed->GetLineageLabel();
         seed = 0; // We're done with the seed organism.
         
-        // remove organism from source deme
+        // Remove this organism from the source.
         KillOrganism(cell_array[source_cellid]);
         
-        // inject into target deme
-        int target_cellid = DemeSelectInjectionCell(target_deme, i);
+        // And inject it into target deme.
+        int target_cellid = DemeSelectInjectionCell(target_deme, j++);
         InjectGenome(target_cellid, genome, lineage);
         DemePostInjection(target_deme, cell_array[target_cellid]);
-      }
-      
-      // collect genome and lineage label of organisms that remain in source deme
-      if(cell_array[source_cellid].IsOccupied()) {
-        cOrganism* seed = cell_array[source_cellid].GetOrganism();
-        fruiting_body.push_back(make_pair(seed->GetGenome(), seed->GetLineageLabel()));
-        seed = 0;
-
-        // kill remaining organisms
-        KillOrganism(cell_array[source_cellid]);
-      }
-    }
-    
-    int i = 0;
-    // reseed source deme
-    for(vector< pair<cGenome, int> >::iterator iter = fruiting_body.begin(); iter < fruiting_body.end(); iter++) {
-      // inject back into source deme
-      int source_offspring_cellid = DemeSelectInjectionCell(source_deme, i);
-      InjectGenome(source_offspring_cellid, (*iter).first, (*iter).second);
-      DemePostInjection(source_deme, cell_array[source_offspring_cellid]);
-      i++;
+      } 
+      //else {
+      // Stays with the source.  Nothing to do here yet.
+      //}
     }
   }
 }
@@ -1381,6 +1400,10 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
 
 /*! Helper method that determines the cell into which an organism will be placed.
 Respects all of the different placement options that are relevant for deme replication.
+
+@param sequence The number of times DemeSelectInjectionCell has been called on this deme
+                already.  Used for replicating multiple organisms from the source to the
+                target deme in a sensible fashion.
 */
 int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
   int cellid = -1;
@@ -1403,7 +1426,11 @@ int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
         cellid = deme.GetCellID(m_world->GetRandom().GetInt(0, deme.GetSize()-1));
       }
       break;
-    }      
+    }
+    case 3: { // Sequential.
+      cellid = deme.GetCellID(sequence);
+      break;
+    }
     default: {
       assert(false); // Shouldn't ever reach here.
     }
