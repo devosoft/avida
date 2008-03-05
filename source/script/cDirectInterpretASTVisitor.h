@@ -78,6 +78,8 @@ public:
 
 private:
   bool asBool(ASType_t type, uAnyType value, cASTNode& node);
+  char asChar(ASType_t type, uAnyType value, cASTNode& node);
+  int asInt(ASType_t type, uAnyType value, cASTNode& node);
   void reportError(ASDirectInterpretError_t err, const cASFilePosition& fp, const int line, ...);
 };
 

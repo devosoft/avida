@@ -379,10 +379,11 @@ private:
   cASTNode* m_left;
   cASTNode* m_right;
   ASType_t m_type;
+  ASType_t m_compare_type;
   
 public:
   cASTExpressionBinary(const cASFilePosition& fp, ASToken_t op, cASTNode* l, cASTNode* r)
-    : cASTNode(fp), m_op(op), m_left(l), m_right(r), m_type(AS_TYPE_INVALID) { ; }
+    : cASTNode(fp), m_op(op), m_left(l), m_right(r), m_type(AS_TYPE_INVALID), m_compare_type(AS_TYPE_INVALID) { ; }
   ~cASTExpressionBinary() { delete m_left; delete m_right; }
   
   inline ASToken_t GetOperator() { return m_op; }
@@ -393,6 +394,9 @@ public:
 
   ASType_t GetType() const { return m_type; }
   inline void SetType(ASType_t type) { m_type = type; }
+
+  inline ASType_t GetCompareType() const { return m_compare_type; }
+  inline void SetCompareType(ASType_t type) { m_compare_type = type; }
 
   void Accept(cASTVisitor& visitor);
 };

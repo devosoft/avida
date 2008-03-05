@@ -372,20 +372,38 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
       
     case TOKEN(OP_LOGIC_AND):
     case TOKEN(OP_LOGIC_OR):
-    case TOKEN(OP_EQ):
-    case TOKEN(OP_LE):
-    case TOKEN(OP_GE):
-    case TOKEN(OP_LT):
-    case TOKEN(OP_GT):
-    case TOKEN(OP_NEQ):
       checkCast(node.GetLeft()->GetType(), TYPE(BOOL));
       checkCast(node.GetRight()->GetType(), TYPE(BOOL));
       node.SetType(TYPE(BOOL));
       break;
+    
+    case TOKEN(OP_EQ):
+    case TOKEN(OP_NEQ):
+      if ((validArithmeticType(node.GetLeft()->GetType(), true) && validArithmeticType(node.GetRight()->GetType(), true)) ||
+          (node.GetLeft()->GetType() == TYPE(STRING) && node.GetRight()->GetType() == TYPE(STRING))) {
+        node.SetCompareType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
+        node.SetType(TYPE(BOOL));
+      } else {
+        SEMANTIC_ERROR(CANNOT_COMPARE);
+      }
+      break;
+      
+    case TOKEN(OP_LE):
+    case TOKEN(OP_GE):
+    case TOKEN(OP_LT):
+    case TOKEN(OP_GT):
+      if (validArithmeticType(node.GetLeft()->GetType(), true) && validArithmeticType(node.GetRight()->GetType(), true)) {
+        node.SetCompareType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
+        node.SetType(TYPE(BOOL));
+      } else {
+        SEMANTIC_ERROR(CANNOT_COMPARE);
+      }
+      break;
       
     case TOKEN(OP_ADD):
-      if (validArithmeticType(node.GetLeft()->GetType(), true) || validArithmeticType(node.GetRight()->GetType(), true) ||
-          node.GetLeft()->GetType() == TYPE(STRING) || node.GetLeft()->GetType() == TYPE(ARRAY)) {
+      if ((validArithmeticType(node.GetLeft()->GetType(), true) && validArithmeticType(node.GetRight()->GetType(), true)) ||
+          (node.GetLeft()->GetType() == TYPE(STRING) && node.GetRight()->GetType() == TYPE(STRING)) ||
+          (node.GetLeft()->GetType() == TYPE(ARRAY) && node.GetRight()->GetType() == TYPE(ARRAY))) {
         node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
       } else {
         SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
@@ -395,7 +413,7 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
       
     case TOKEN(OP_SUB):
     case TOKEN(OP_MUL):
-      if (validArithmeticType(node.GetLeft()->GetType(), true) || validArithmeticType(node.GetRight()->GetType(), true)) {
+      if (validArithmeticType(node.GetLeft()->GetType(), true) && validArithmeticType(node.GetRight()->GetType(), true)) {
         node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
       } else {
         SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
@@ -405,7 +423,7 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
     
     case TOKEN(OP_DIV):
     case TOKEN(OP_MOD):
-      if (validArithmeticType(node.GetLeft()->GetType()) || validArithmeticType(node.GetRight()->GetType())) {
+      if (validArithmeticType(node.GetLeft()->GetType()) && validArithmeticType(node.GetRight()->GetType())) {
         node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
       } else {
         SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
@@ -706,10 +724,7 @@ inline bool cSemanticASTVisitor::validArithmeticType(ASType_t type, bool allow_m
 
 inline bool cSemanticASTVisitor::validBitwiseType(ASType_t type) const {
   switch (type) {
-    case TYPE(ARRAY):
-    case TYPE(MATRIX):
     case TYPE(RUNTIME):
-      // Array and Matrix meta-op, validity must be determined at runtime
     case TYPE(INT):
     case TYPE(CHAR):
       // Char and Int Okay
@@ -800,6 +815,8 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
         std::cerr << "cannot cast " << type1 << " to " << type2 << ERR_ENDL;
       }
       break;
+    case AS_SEMANTIC_ERR_CANNOT_COMPARE:
+      std::cerr << "cannot compare values" << ERR_ENDL; 
     case AS_SEMANTIC_ERR_FUNCTION_CALL_SIGNATURE_MISMATCH:
       std::cerr << "invalid call signature for '" << VA_ARG_STR << "()'" << ERR_ENDL;
       break;

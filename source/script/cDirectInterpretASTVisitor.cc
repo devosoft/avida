@@ -112,12 +112,52 @@ void cDirectInterpretASTVisitor::visitVariableDefinitionList(cASTVariableDefinit
 void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
 {
   // @TODO - handle binary expression
+  
+  switch (node.GetOperator()) {
+    case TOKEN(ARR_RANGE):
+    case TOKEN(ARR_EXPAN):
+      // @TODO - implement array range/expand
+      INTERPRET_ERROR(INTERNAL);
+    
+    case TOKEN(OP_LOGIC_AND):
+    case TOKEN(OP_LOGIC_OR):
+      {
+        node.GetLeft()->Accept(*this);
+        bool lval = asBool(m_rtype, m_rvalue, node);
+        node.GetRight()->Accept(*this);
+        bool rval = asBool(m_rtype, m_rvalue, node);
+        m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_LOGIC_AND)) ? (lval && rval) : (lval || rval);
+      }
+      break;
+      
+    case TOKEN(OP_BIT_AND):
+    case TOKEN(OP_BIT_OR):
+      
+    case TOKEN(OP_EQ):
+    case TOKEN(OP_NEQ):
+
+    case TOKEN(OP_LE):
+    case TOKEN(OP_GE):
+    case TOKEN(OP_LT):
+    case TOKEN(OP_GT):
+      
+      
+    case TOKEN(OP_ADD):
+    case TOKEN(OP_SUB):
+    case TOKEN(OP_MUL):
+    case TOKEN(OP_DIV):
+    case TOKEN(OP_MOD):
+    case TOKEN(IDX_OPEN):
+      break;
+      
+    default:
+      INTERPRET_ERROR(INTERNAL);
+  }
 }
 
 
 void cDirectInterpretASTVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 {
-  // @TODO - handle unary expression
   node.GetExpression()->Accept(*this);
   
   switch (node.GetOperator()) {
@@ -273,6 +313,47 @@ bool cDirectInterpretASTVisitor::asBool(ASType_t type, uAnyType value, cASTNode&
   
   return false;
 }
+
+
+char cDirectInterpretASTVisitor::asChar(ASType_t type, uAnyType value, cASTNode& node)
+{
+  switch (type) {
+    case TYPE(BOOL):
+      return (value.as_bool) ? 1 : 0;
+    case TYPE(CHAR):
+      return value.as_char;
+    case TYPE(INT):
+      return (char)value.as_int;
+
+    default:
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(CHAR)));
+  }
+  
+  return false;
+}
+
+
+int cDirectInterpretASTVisitor::asInt(ASType_t type, uAnyType value, cASTNode& node)
+{
+  switch (type) {
+    case TYPE(BOOL):
+      return (value.as_bool) ? 1 : 0;
+    case TYPE(CHAR):
+      return (int)value.as_char;
+    case TYPE(INT):
+      return value.as_int;
+    case TYPE(FLOAT):
+      return (int)value.as_float;
+    case TYPE(STRING):
+      return value.as_string->AsInt();
+      
+    default:
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(INT)));
+  }
+  
+  return false;
+}
+
 
 
 void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const cASFilePosition& fp, const int line, ...)
