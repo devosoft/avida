@@ -383,6 +383,9 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
           (node.GetLeft()->GetType() == TYPE(STRING) && node.GetRight()->GetType() == TYPE(STRING))) {
         node.SetCompareType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
         node.SetType(TYPE(BOOL));
+      } else if (node.GetLeft()->GetType() == TYPE(BOOL) || node.GetRight()->GetType() == TYPE(BOOL)) {
+        node.SetCompareType(TYPE(BOOL));
+        node.SetType(TYPE(BOOL));
       } else {
         SEMANTIC_ERROR(CANNOT_COMPARE);
       }

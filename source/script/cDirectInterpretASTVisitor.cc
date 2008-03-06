@@ -127,14 +127,97 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
         node.GetRight()->Accept(*this);
         bool rval = asBool(m_rtype, m_rvalue, node);
         m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_LOGIC_AND)) ? (lval && rval) : (lval || rval);
+        m_rtype = TYPE(BOOL);
       }
       break;
       
     case TOKEN(OP_BIT_AND):
     case TOKEN(OP_BIT_OR):
+      {
+        ASType_t rettype = node.GetType();
+        
+        // Process the left and right side expressions
+        node.GetLeft()->Accept(*this);
+        uAnyType lval = m_rvalue;
+        ASType_t ltype = m_rtype;
+        node.GetRight()->Accept(*this);
+        uAnyType rval = m_rvalue;
+        ASType_t rtype = m_rtype;
+                
+        // Determine the operation type if it is a runtime decision
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+
+        if (rettype == TYPE(CHAR)) {
+          int l = asChar(ltype, lval, node);
+          int r = asChar(rtype, rval, node);
+          m_rvalue.as_char = (node.GetOperator() == TOKEN(OP_BIT_AND)) ? (l & r) : (l | r);        
+          m_rtype = TYPE(CHAR);
+        } else if (rettype == TYPE(INT)) {
+          int l = asInt(ltype, lval, node);
+          int r = asInt(rtype, rval, node);
+          m_rvalue.as_int = (node.GetOperator() == TOKEN(OP_BIT_AND)) ? (l & r) : (l | r);
+          m_rtype = TYPE(INT);
+        } else {
+          INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(rettype));
+        }
+      }
+      break;
       
     case TOKEN(OP_EQ):
     case TOKEN(OP_NEQ):
+      {
+        ASType_t comptype = node.GetCompareType();
+        
+        // Process the left and right side expressions
+        node.GetLeft()->Accept(*this);
+        uAnyType lval = m_rvalue;
+        ASType_t ltype = m_rtype;
+        node.GetRight()->Accept(*this);
+        uAnyType rval = m_rvalue;
+        ASType_t rtype = m_rtype;
+        
+        // Determine the operation type if it is a runtime decision
+        if (comptype == TYPE(RUNTIME)) comptype = getRuntimeType(ltype, rtype);
+             
+        switch (comptype) {
+          case TYPE(BOOL):
+            
+          case TYPE(CHAR):
+          case TYPE(INT):
+            // Handle both char and int as integers
+            {
+              int l = asInt(ltype, lval, node);
+              int r = asInt(rtype, rval, node);
+              m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_EQ)) ? (l == r) : (l != r);
+            }
+            break;
+            
+          case TYPE(FLOAT):
+            {
+              double l = asFloat(ltype, lval, node);
+              double r = asFloat(rtype, rval, node);
+              m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_EQ)) ? (l == r) : (l != r);
+            }
+            break;            
+            
+          case TYPE(STRING):
+            {
+              cString* l = lval.as_string;
+              cString* r = rval.as_string;
+              m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_EQ)) ? (*l == *r) : (*l != *r);
+              delete l;
+              delete r;
+            }
+            break;
+            
+          default:
+            // Semantic check should not allow an invalid comparison type to pass
+            INTERPRET_ERROR(INTERNAL);
+        }
+        
+        m_rtype = TYPE(BOOL);
+      }
+      break;
 
     case TOKEN(OP_LE):
     case TOKEN(OP_GE):
@@ -151,6 +234,7 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
       break;
       
     default:
+      // Parser should not allow an invalid operator to pass
       INTERPRET_ERROR(INTERNAL);
   }
 }
@@ -301,7 +385,12 @@ bool cDirectInterpretASTVisitor::asBool(ASType_t type, uAnyType value, cASTNode&
     case TYPE(INT):
       return (value.as_int);
     case TYPE(STRING):
-      return (*value.as_string != "");
+      {
+        bool rval = (*value.as_string != "");
+        delete value.as_string;
+        return rval;
+      }
+      
 
     case TYPE(OBJECT_REF):
       // @TODO - implement asBool for object ref
@@ -345,13 +434,119 @@ int cDirectInterpretASTVisitor::asInt(ASType_t type, uAnyType value, cASTNode& n
     case TYPE(FLOAT):
       return (int)value.as_float;
     case TYPE(STRING):
-      return value.as_string->AsInt();
+      {
+        int rval = value.as_string->AsInt();
+        delete value.as_string;
+        return rval;
+      }
       
     default:
       INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(INT)));
   }
   
   return false;
+}
+
+
+double cDirectInterpretASTVisitor::asFloat(ASType_t type, uAnyType value, cASTNode& node)
+{
+  switch (type) {
+    case TYPE(BOOL):
+      return (value.as_bool) ? 1.0 : 0.0;
+    case TYPE(CHAR):
+      return (double)value.as_char;
+    case TYPE(INT):
+      return (double)value.as_int;
+    case TYPE(FLOAT):
+      return value.as_float;
+    case TYPE(STRING):
+      {
+        double rval = value.as_string->AsDouble();
+        delete value.as_string;
+        return rval;
+      }
+      
+    default:
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(INT)));
+  }
+  
+  return false;
+}
+
+
+ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rtype)
+{
+  switch (ltype) {
+    case TYPE(ARRAY):
+      return TYPE(ARRAY);
+    case TYPE(BOOL):
+      switch (rtype) {
+        case TYPE(ARRAY):
+        case TYPE(BOOL):
+        case TYPE(CHAR):
+        case TYPE(FLOAT):
+        case TYPE(INT):
+        case TYPE(MATRIX):
+        case TYPE(OBJECT_REF):
+        case TYPE(STRING):
+          return TYPE(BOOL);
+          
+        case TYPE(RUNTIME):
+          return TYPE(INVALID);
+        default: break;
+      }
+      break;
+    case TYPE(CHAR):
+      switch (rtype) {
+        case TYPE(ARRAY):     return TYPE(ARRAY);
+        case TYPE(BOOL):      return TYPE(CHAR);
+        case TYPE(CHAR):      return TYPE(CHAR);
+        case TYPE(FLOAT):     return TYPE(FLOAT);
+        case TYPE(INT):       return TYPE(INT);
+        case TYPE(MATRIX):    return TYPE(MATRIX);
+        case TYPE(STRING):    return TYPE(STRING);
+        case TYPE(RUNTIME):   return TYPE(INVALID);
+        default: break;
+      }
+      break;
+    case TYPE(FLOAT):
+      switch (rtype) {
+        case TYPE(ARRAY):     return TYPE(ARRAY);
+        case TYPE(BOOL):      return TYPE(FLOAT);
+        case TYPE(CHAR):      return TYPE(FLOAT);
+        case TYPE(FLOAT):     return TYPE(FLOAT);
+        case TYPE(INT):       return TYPE(FLOAT);
+        case TYPE(MATRIX):    return TYPE(MATRIX);
+        case TYPE(STRING):    return TYPE(FLOAT);
+        case TYPE(RUNTIME):   return TYPE(INVALID);
+        default: break;
+      }
+      break;
+    case TYPE(INT):
+      switch (rtype) {
+        case TYPE(ARRAY):     return TYPE(ARRAY);
+        case TYPE(BOOL):      return TYPE(INT);
+        case TYPE(CHAR):      return TYPE(INT);
+        case TYPE(FLOAT):     return TYPE(FLOAT);
+        case TYPE(INT):       return TYPE(INT);
+        case TYPE(MATRIX):    return TYPE(MATRIX);
+        case TYPE(STRING):    return TYPE(INT);
+        case TYPE(RUNTIME):   return TYPE(INVALID);
+        default: break;
+      }
+      break;
+    case TYPE(MATRIX):
+      return TYPE(MATRIX);
+    case TYPE(STRING):
+      return TYPE(STRING);
+      
+    case TYPE(RUNTIME):
+      return TYPE(INVALID);
+      
+    default: break;
+  }
+  
+  return TYPE(INVALID);
 }
 
 

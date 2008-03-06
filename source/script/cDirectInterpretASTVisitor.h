@@ -80,6 +80,10 @@ private:
   bool asBool(ASType_t type, uAnyType value, cASTNode& node);
   char asChar(ASType_t type, uAnyType value, cASTNode& node);
   int asInt(ASType_t type, uAnyType value, cASTNode& node);
+  double asFloat(ASType_t type, uAnyType value, cASTNode& node);
+
+  ASType_t getRuntimeType(ASType_t ltype, ASType_t rtype);
+  
   void reportError(ASDirectInterpretError_t err, const cASFilePosition& fp, const int line, ...);
 };
 
