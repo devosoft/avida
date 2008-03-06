@@ -347,6 +347,8 @@ private:
 
   // I/O and Sensory
   bool Inst_TaskIO(cAvidaContext& ctx);
+  bool Inst_TaskInput(cAvidaContext& ctx);
+  bool Inst_TaskOutput(cAvidaContext& ctx);
 
   // Head-based instructions...
   bool Inst_HeadAlloc(cAvidaContext& ctx);

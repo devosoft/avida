@@ -122,6 +122,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?"),
     
     tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, (nInstFlag::DEFAULT | nInstFlag::STALL), "Output ?BX?, and input new number back into ?BX?"),
+    tInstLibEntry<tMethod>("input", &cHardwareExperimental::Inst_TaskInput, nInstFlag::STALL, "Input new number into ?BX?"),
+    tInstLibEntry<tMethod>("output", &cHardwareExperimental::Inst_TaskOutput, nInstFlag::STALL, "Output ?BX?"),
     
     tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("div", &cHardwareExperimental::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
@@ -1205,6 +1207,31 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   GetRegister(reg_used) = value_in;
   organism->DoInput(value_in);
   
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_TaskInput(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  
+  // Do the "get" component
+  const int value_in = organism->GetNextInput();
+  GetRegister(reg_used) = value_in;
+  organism->DoInput(value_in);
+  
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  
+  // Do the "put" component
+  const int value_out = GetRegister(reg_used);
+  organism->DoOutput(ctx, value_out);  // Check for tasks completed.
+
   return true;
 }
 
