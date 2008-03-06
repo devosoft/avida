@@ -24,6 +24,8 @@
 
 #include "cDirectInterpretASTVisitor.h"
 
+#include <cmath>
+
 #include "avida.h"
 #include "AvidaScript.h"
 
@@ -111,7 +113,14 @@ void cDirectInterpretASTVisitor::visitVariableDefinitionList(cASTVariableDefinit
 
 void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
 {
-  // @TODO - handle binary expression
+  // Process the left and right side expressions
+  node.GetLeft()->Accept(*this);
+  uAnyType lval = m_rvalue;
+  ASType_t ltype = m_rtype;
+  node.GetRight()->Accept(*this);
+  uAnyType rval = m_rvalue;
+  ASType_t rtype = m_rtype;
+  
   
   switch (node.GetOperator()) {
     case TOKEN(ARR_RANGE):
@@ -122,11 +131,9 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
     case TOKEN(OP_LOGIC_AND):
     case TOKEN(OP_LOGIC_OR):
       {
-        node.GetLeft()->Accept(*this);
-        bool lval = asBool(m_rtype, m_rvalue, node);
-        node.GetRight()->Accept(*this);
-        bool rval = asBool(m_rtype, m_rvalue, node);
-        m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_LOGIC_AND)) ? (lval && rval) : (lval || rval);
+        bool l = asBool(ltype, lval, node);
+        bool r = asBool(rtype, rval, node);
+        m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_LOGIC_AND)) ? (l && r) : (l || r);
         m_rtype = TYPE(BOOL);
       }
       break;
@@ -136,14 +143,6 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
       {
         ASType_t rettype = node.GetType();
         
-        // Process the left and right side expressions
-        node.GetLeft()->Accept(*this);
-        uAnyType lval = m_rvalue;
-        ASType_t ltype = m_rtype;
-        node.GetRight()->Accept(*this);
-        uAnyType rval = m_rvalue;
-        ASType_t rtype = m_rtype;
-                
         // Determine the operation type if it is a runtime decision
         if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
 
@@ -168,19 +167,17 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
       {
         ASType_t comptype = node.GetCompareType();
         
-        // Process the left and right side expressions
-        node.GetLeft()->Accept(*this);
-        uAnyType lval = m_rvalue;
-        ASType_t ltype = m_rtype;
-        node.GetRight()->Accept(*this);
-        uAnyType rval = m_rvalue;
-        ASType_t rtype = m_rtype;
-        
         // Determine the operation type if it is a runtime decision
         if (comptype == TYPE(RUNTIME)) comptype = getRuntimeType(ltype, rtype);
              
         switch (comptype) {
           case TYPE(BOOL):
+            {
+              bool l = asBool(ltype, lval, node);
+              bool r = asBool(rtype, rval, node);
+              m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_EQ)) ? (l == r) : (l != r);
+            }
+            break;
             
           case TYPE(CHAR):
           case TYPE(INT):
@@ -211,8 +208,7 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
             break;
             
           default:
-            // Semantic check should not allow an invalid comparison type to pass
-            INTERPRET_ERROR(INTERNAL);
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(comptype));
         }
         
         m_rtype = TYPE(BOOL);
@@ -223,13 +219,180 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
     case TOKEN(OP_GE):
     case TOKEN(OP_LT):
     case TOKEN(OP_GT):
+      {
+        ASType_t comptype = node.GetCompareType();
+        
+        // Determine the operation type if it is a runtime decision
+        if (comptype == TYPE(RUNTIME)) comptype = getRuntimeType(ltype, rtype);
+             
+        switch (comptype) {
+          case TYPE(CHAR):
+          case TYPE(INT):
+            // Handle both char and int as integers
+            {
+              int l = asInt(ltype, lval, node);
+              int r = asInt(rtype, rval, node);
+              switch (node.GetOperator()) {
+                case TOKEN(OP_LE): m_rvalue.as_bool = (l <= r); break;
+                case TOKEN(OP_GE): m_rvalue.as_bool = (l >= r); break;
+                case TOKEN(OP_LT): m_rvalue.as_bool = (l < r); break;
+                case TOKEN(OP_GT): m_rvalue.as_bool = (l > r); break;
+                default: INTERPRET_ERROR(INTERNAL);
+              }
+            }
+            break;
+            
+          case TYPE(FLOAT):
+            {
+              double l = asFloat(ltype, lval, node);
+              double r = asFloat(rtype, rval, node);
+              switch (node.GetOperator()) {
+                case TOKEN(OP_LE): m_rvalue.as_bool = (l <= r); break;
+                case TOKEN(OP_GE): m_rvalue.as_bool = (l >= r); break;
+                case TOKEN(OP_LT): m_rvalue.as_bool = (l < r); break;
+                case TOKEN(OP_GT): m_rvalue.as_bool = (l > r); break;
+                default: INTERPRET_ERROR(INTERNAL);
+              }
+            }
+            break;            
+            
+          default:
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(comptype));
+        }
+        
+        m_rtype = TYPE(BOOL);
+      }
+      break;
       
       
     case TOKEN(OP_ADD):
+      {
+        ASType_t rettype = node.GetType();
+        
+        // Determine the operation type if it is a runtime decision
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+             
+        switch (rettype) {
+          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) + asChar(rtype, rval, node); break;
+          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) + asInt(rtype, rval, node); break;
+          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) + asFloat(rtype, rval, node); break;            
+
+          case TYPE(STRING):
+            {
+              cString* l = lval.as_string;
+              cString* r = rval.as_string;
+              m_rvalue.as_string = new cString(*l + *r);
+              delete l;
+              delete r;
+            }
+            break;
+            
+          case TYPE(ARRAY):
+            // @TODO - array concatenation
+            INTERPRET_ERROR(INTERNAL);
+            
+          case TYPE(MATRIX):
+            // @TODO - matrix addition
+            INTERPRET_ERROR(INTERNAL);
+            
+          default:
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
+        }
+        
+        m_rtype = rettype;
+      }
+      break;
+
     case TOKEN(OP_SUB):
+      {
+        ASType_t rettype = node.GetType();
+        
+        // Determine the operation type if it is a runtime decision
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+             
+        switch (rettype) {
+          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) - asChar(rtype, rval, node); break;
+          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) - asInt(rtype, rval, node); break;
+          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) - asFloat(rtype, rval, node); break;            
+
+          case TYPE(MATRIX):
+            // @TODO - matrix subtraction
+            INTERPRET_ERROR(INTERNAL);
+            
+          default:
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
+        }
+        
+        m_rtype = rettype;
+      }
+      break;
+
     case TOKEN(OP_MUL):
+      {
+        ASType_t rettype = node.GetType();
+        
+        // Determine the operation type if it is a runtime decision
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+             
+        switch (rettype) {
+          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) * asChar(rtype, rval, node); break;
+          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) * asInt(rtype, rval, node); break;
+          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) * asFloat(rtype, rval, node); break;            
+
+          case TYPE(MATRIX):
+            // @TODO - matrix multiplication
+            INTERPRET_ERROR(INTERNAL);
+            
+          default:
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
+        }
+        
+        m_rtype = rettype;
+      }
+      break;
+
     case TOKEN(OP_DIV):
+      {
+        ASType_t rettype = node.GetType();
+        
+        // Determine the operation type if it is a runtime decision
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+             
+        // @TODO - handle division by zero
+        switch (rettype) {
+          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) / asChar(rtype, rval, node); break;
+          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) / asInt(rtype, rval, node); break;
+          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) / asFloat(rtype, rval, node); break;            
+
+          default:
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
+        }
+        
+        m_rtype = rettype;
+      }
+      break;
+
     case TOKEN(OP_MOD):
+      {
+        ASType_t rettype = node.GetType();
+        
+        // Determine the operation type if it is a runtime decision
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+             
+        // @TODO - handle division by zero
+        switch (rettype) {
+          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) % asChar(rtype, rval, node); break;
+          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) % asInt(rtype, rval, node); break;
+          case TYPE(FLOAT): m_rvalue.as_float = fmod(asFloat(ltype, lval, node), asFloat(rtype, rval, node)); break;
+
+          default:
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
+        }
+        
+        m_rtype = rettype;
+      }
+      break;
+
     case TOKEN(IDX_OPEN):
       break;
       
