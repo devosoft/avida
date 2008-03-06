@@ -27,10 +27,17 @@
 
 #include "cASTVisitor.h"
 
+#include "tSmartArray.h"
+
+class cSymbolTable;
+
 
 class cDirectInterpretASTVisitor : public cASTVisitor
 {
 private:
+  cSymbolTable* m_global_symtbl;
+  cSymbolTable* m_cur_symtbl;
+  
   typedef union {
     bool as_bool;
     char as_char;
@@ -41,14 +48,18 @@ private:
   
   uAnyType m_rvalue;
   ASType_t m_rtype;
+  
+  tSmartArray<uAnyType> m_call_stack;
+  int m_sp;
   bool m_has_returned;
+  
   
   cDirectInterpretASTVisitor(const cDirectInterpretASTVisitor&); // @not_implemented
   cDirectInterpretASTVisitor& operator=(const cDirectInterpretASTVisitor&); // @not_implemented
   
   
 public:
-  cDirectInterpretASTVisitor();
+  cDirectInterpretASTVisitor(cSymbolTable* global_symtbl);
   
   
   void visitAssignment(cASTAssignment&);
@@ -81,8 +92,9 @@ private:
   char asChar(ASType_t type, uAnyType value, cASTNode& node);
   int asInt(ASType_t type, uAnyType value, cASTNode& node);
   double asFloat(ASType_t type, uAnyType value, cASTNode& node);
+  cString* asString(ASType_t type, uAnyType value, cASTNode& node);
 
-  ASType_t getRuntimeType(ASType_t ltype, ASType_t rtype);
+  ASType_t getRuntimeType(ASType_t ltype, ASType_t rtype, bool allow_str = false);
   
   void reportError(ASDirectInterpretError_t err, const cASFilePosition& fp, const int line, ...);
 };

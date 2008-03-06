@@ -39,8 +39,8 @@
 
 // "I am so smart..."
 static const int SMRT_INCREASE_MINIMUM = 10;
-static const double SMRT_INCREASE_FACTOR = 1.5;
-static const double SMRT_SHRINK_TEST_FACTOR = 4.0;
+static const int SMRT_INCREASE_FACTOR = 2;
+static const int SMRT_SHRINK_TEST_FACTOR = 4;
 
 template <class T> class tSmartArray
 {
@@ -52,11 +52,13 @@ private:
   T* m_data;    // Data Array
   int m_size;   // Raw Array Size
   int m_active; // Active Size
+  int m_reserve;
   
 public:
-  explicit tSmartArray(const int size = 0) : m_data(NULL), m_size(0), m_active(0) { ResizeClear(size); }
-  tSmartArray(const tSmartArray& rhs) : m_data(NULL), m_size(0), m_active(0) { this->operator=(rhs); }
-  tSmartArray(const tArray<T>& rhs) : m_data(NULL), m_size(0), m_active(0) { this->operator=(rhs); }
+  explicit tSmartArray(int size = 0, int reserve = 0)
+    : m_data(NULL), m_size(0), m_active(0), m_reserve(reserve) { ResizeClear(size); }
+  tSmartArray(const tSmartArray& rhs) : m_data(NULL), m_size(0), m_active(0), m_reserve(0) { this->operator=(rhs); }
+  tSmartArray(const tArray<T>& rhs) : m_data(NULL), m_size(0), m_active(0), m_reserve(0) { this->operator=(rhs); }
 
   ~tSmartArray() { delete [] m_data; }
   
@@ -73,7 +75,9 @@ public:
     return *this;
   }
   
-  bool Good() const { return (m_data != NULL); }
+  int GetReserve() const { return m_reserve; }
+  void SetReserve(int reserve) { m_reserve = reserve; }
+  
   int GetSize() const { return m_active; }
   
   void ResizeClear(const int in_size)
@@ -81,12 +85,12 @@ public:
     assert(m_size >= 0);
 
     m_active = in_size;
-    m_size = in_size;
+    m_size = (in_size >= m_reserve) ? in_size : m_reserve;    
     
     if (m_data != NULL) delete [] m_data;
     
-    if (in_size > 0) {
-      m_data = new T[in_size];   // Allocate block for data
+    if (m_size > 0) {
+      m_data = new T[m_size];   // Allocate block for data
       assert(m_data != NULL); // Memory allocation error: Out of Memory?
     }
     else m_data = NULL;
@@ -109,11 +113,11 @@ public:
     }
     
     // Determine if we need to adjust the allocated array sizes...
-    if (new_size > m_size || new_size * SMRT_SHRINK_TEST_FACTOR < m_size) {
-      int new_array_size = static_cast<int>(new_size * SMRT_INCREASE_FACTOR);
+    int shrink_test = new_size * SMRT_SHRINK_TEST_FACTOR;
+    if (new_size > m_size || (shrink_test < m_size && shrink_test >= m_reserve)) {
+      int new_array_size = new_size * SMRT_INCREASE_FACTOR;
       const int new_array_min = new_size + SMRT_INCREASE_MINIMUM;
       if (new_array_min > new_array_size) new_array_size = new_array_min;
-      
       
       T* new_data = new T[new_array_size];
       assert(new_data != NULL); // Memory Allocation Error: Out of Memory?

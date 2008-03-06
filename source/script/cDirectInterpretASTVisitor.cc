@@ -29,6 +29,9 @@
 #include "avida.h"
 #include "AvidaScript.h"
 
+#include "cStringUtil.h"
+#include "cSymbolTable.h"
+
 using namespace AvidaScript;
 
 
@@ -41,14 +44,35 @@ using namespace AvidaScript;
 #define TOKEN(x) AS_TOKEN_ ## x
 #define TYPE(x) AS_TYPE_ ## x
 
-
-cDirectInterpretASTVisitor::cDirectInterpretASTVisitor() : m_has_returned(false)
+cDirectInterpretASTVisitor::cDirectInterpretASTVisitor(cSymbolTable* global_symtbl)
+  : m_global_symtbl(global_symtbl), m_cur_symtbl(global_symtbl), m_call_stack(0, 2048), m_sp(0), m_has_returned(false)
 {
+  for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) m_call_stack[i].as_string = NULL;
 }
 
 void cDirectInterpretASTVisitor::visitAssignment(cASTAssignment& node)
 {
-  // @TODO - handle assignment
+  cSymbolTable* symtbl = node.IsVarGlobal() ? m_global_symtbl : m_cur_symtbl;
+  int vid = node.GetVarID();
+  
+  node.GetExpression()->Accept(*this);
+  
+  switch (symtbl->GetVariableType(vid)) {
+    case TYPE(ARRAY):       INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+    case TYPE(BOOL):        m_call_stack[m_sp + vid].as_bool = asBool(m_rtype, m_rvalue, node); break;
+    case TYPE(CHAR):        m_call_stack[m_sp + vid].as_char = asChar(m_rtype, m_rvalue, node); break;
+    case TYPE(FLOAT):       m_call_stack[m_sp + vid].as_float = asFloat(m_rtype, m_rvalue, node); break;
+    case TYPE(INT):         m_call_stack[m_sp + vid].as_int = asInt(m_rtype, m_rvalue, node); break;
+    case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+    case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+    case TYPE(STRING):
+      delete m_call_stack[m_sp + vid].as_string;
+      m_call_stack[m_sp + vid].as_string = asString(m_rtype, m_rvalue, node);
+      break;
+      
+    default:
+      INTERPRET_ERROR(INTERNAL);
+  }
 }
 
 
@@ -199,8 +223,8 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
             
           case TYPE(STRING):
             {
-              cString* l = lval.as_string;
-              cString* r = rval.as_string;
+              cString* l = asString(ltype, lval, node);
+              cString* r = asString(rtype, rval, node);
               m_rvalue.as_bool = (node.GetOperator() == TOKEN(OP_EQ)) ? (*l == *r) : (*l != *r);
               delete l;
               delete r;
@@ -270,7 +294,7 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
         ASType_t rettype = node.GetType();
         
         // Determine the operation type if it is a runtime decision
-        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype, true);
              
         switch (rettype) {
           case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) + asChar(rtype, rval, node); break;
@@ -279,8 +303,8 @@ void cDirectInterpretASTVisitor::visitExpressionBinary(cASTExpressionBinary& nod
 
           case TYPE(STRING):
             {
-              cString* l = lval.as_string;
-              cString* r = rval.as_string;
+              cString* l = asString(ltype, lval, node);
+              cString* r = asString(rtype, rval, node);
               m_rvalue.as_string = new cString(*l + *r);
               delete l;
               delete r;
@@ -512,11 +536,13 @@ void cDirectInterpretASTVisitor::visitLiteralArray(cASTLiteralArray& node)
 void cDirectInterpretASTVisitor::visitObjectCall(cASTObjectCall& node)
 {
   // @TODO - handle object call
+  INTERPRET_ERROR(INTERNAL);
 }
 
 void cDirectInterpretASTVisitor::visitObjectReference(cASTObjectReference& node)
 {
   // @TODO - handle object reference
+  INTERPRET_ERROR(INTERNAL);
 }
 
 void cDirectInterpretASTVisitor::visitVariableReference(cASTVariableReference& node)
@@ -637,7 +663,27 @@ double cDirectInterpretASTVisitor::asFloat(ASType_t type, uAnyType value, cASTNo
 }
 
 
-ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rtype)
+cString* cDirectInterpretASTVisitor::asString(ASType_t type, uAnyType value, cASTNode& node)
+{
+  switch (type) {
+    case TYPE(ARRAY):       INTERPRET_ERROR(INTERNAL); // @TODO - as string
+    case TYPE(BOOL):        return new cString(cStringUtil::Convert(value.as_bool));
+    case TYPE(CHAR):        return new cString(value.as_char);
+    case TYPE(INT):         return new cString(cStringUtil::Convert(value.as_int));
+    case TYPE(FLOAT):       return new cString(cStringUtil::Convert(value.as_float));
+    case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - as string
+    case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - as string
+    case TYPE(STRING):      return value.as_string;
+      
+    default:
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(INT)));
+  }
+  
+  return false;
+}
+
+
+ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rtype, bool allow_str)
 {
   switch (ltype) {
     case TYPE(ARRAY):
@@ -667,7 +713,7 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
         case TYPE(FLOAT):     return TYPE(FLOAT);
         case TYPE(INT):       return TYPE(INT);
         case TYPE(MATRIX):    return TYPE(MATRIX);
-        case TYPE(STRING):    return TYPE(STRING);
+        case TYPE(STRING):    if (allow_str) return TYPE(STRING); break;
         case TYPE(RUNTIME):   return TYPE(INVALID);
         default: break;
       }
@@ -680,7 +726,7 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
         case TYPE(FLOAT):     return TYPE(FLOAT);
         case TYPE(INT):       return TYPE(FLOAT);
         case TYPE(MATRIX):    return TYPE(MATRIX);
-        case TYPE(STRING):    return TYPE(FLOAT);
+        case TYPE(STRING):    if (allow_str) return TYPE(FLOAT); break;
         case TYPE(RUNTIME):   return TYPE(INVALID);
         default: break;
       }
@@ -693,7 +739,7 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
         case TYPE(FLOAT):     return TYPE(FLOAT);
         case TYPE(INT):       return TYPE(INT);
         case TYPE(MATRIX):    return TYPE(MATRIX);
-        case TYPE(STRING):    return TYPE(INT);
+        case TYPE(STRING):    if (allow_str) return TYPE(INT); break;
         case TYPE(RUNTIME):   return TYPE(INVALID);
         default: break;
       }
@@ -701,7 +747,7 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
     case TYPE(MATRIX):
       return TYPE(MATRIX);
     case TYPE(STRING):
-      return TYPE(STRING);
+      if (allow_str) return TYPE(STRING); break;
       
     case TYPE(RUNTIME):
       return TYPE(INVALID);
