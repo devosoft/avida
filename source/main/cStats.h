@@ -710,6 +710,7 @@ protected:
   cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.
   cDoubleSum m_deme_births; //!< Mean number of births in replicated demes.
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
+  cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
   cDoubleSum m_germline_generation; //!< "Generation" accumulator of replicated germlines.
 };
 
