@@ -207,7 +207,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
         return false;
       new_process->SetSterile(var_value.AsInt());
     }
-    else if (var_name == "demefrac") {
+    else if (var_name == "deme") {
       if (!AssertInputDouble(var_value, "demefrac", var_type))
         return false;
       new_process->SetDemeFraction(var_value.AsDouble());
@@ -1029,15 +1029,15 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     switch (cur_process->GetType()) {
       case nReaction::PROCTYPE_ADD:
         result.AddBonus(bonus, reaction_id);
+        result.AddDemeBonus(deme_bonus);
         break;
       case nReaction::PROCTYPE_MULT:
         result.MultBonus(bonus);
-        // @todo Not quite sure what to do to the deme_bonus for this process:type.
+        result.MultDemeBonus(deme_bonus);
         break;
       case nReaction::PROCTYPE_POW:
         result.MultBonus(pow(2.0, bonus));
-        // Increase deme_bonus according to type=pow.
-        deme_bonus = pow(2.0, deme_bonus);
+        result.MultDemeBonus(pow(2.0, deme_bonus));
         break;
       case nReaction::PROCTYPE_LIN:
         result.AddBonus(bonus * task_count, reaction_id);
@@ -1072,13 +1072,6 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         break;
     };
 
-    // And now let's take care of the deme's bonus.  Note that all deme bonuses
-    // are additive, though the amount of bonus that's added to the deme depends
-    // on the process:type.
-    if(cur_process->GetDemeFraction() > 0.0) {
-      result.AddDemeBonus(deme_bonus);
-    }
-        
     // Determine detection events
     cResource* detected = cur_process->GetDetect();
     if (detected != NULL) {

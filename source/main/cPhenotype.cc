@@ -1010,7 +1010,10 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // no deme object.  Don't touch deme merit if there is no deme frac component.
   cDeme* deme = taskctx.GetOrganism()->GetOrgInterface().GetDeme();
   if(deme && result.GetActiveDeme()) {
-    deme->UpdateHeritableDemeMerit(result.GetAddDemeBonus());
+    double deme_bonus = deme->GetHeritableDemeMerit().GetDouble();
+    deme_bonus *= result.GetMultDemeBonus();
+    deme_bonus += result.GetAddDemeBonus();
+    deme->UpdateHeritableDemeMerit(deme_bonus);
   }
     
   // Update the energy bonus
