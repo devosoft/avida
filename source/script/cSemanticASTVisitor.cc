@@ -88,6 +88,7 @@ void cSemanticASTVisitor::visitAssignment(cASTAssignment& node)
   bool global = false;
   if (lookupVariable(node.GetVariable(), var_id, global)) {
     checkCast(node.GetExpression()->GetType(), (global ? m_global_symtbl : m_cur_symtbl)->GetVariableType(var_id));
+    node.SetVar(var_id, global);
   } else {
     SEMANTIC_ERROR(VARIABLE_UNDEFINED, (const char*)node.GetVariable());
   }
@@ -543,7 +544,7 @@ void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
     }
     
     node.SetFunc(fun_id, global);
-    node.SetType(m_cur_symtbl->GetFunctionRType(fun_id));
+    node.SetType((global ? m_global_symtbl : m_cur_symtbl)->GetFunctionRType(fun_id));
   } else {
     SEMANTIC_ERROR(FUNCTION_UNDECLARED, (const char*)node.GetName());
   }

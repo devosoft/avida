@@ -47,6 +47,7 @@ using namespace AvidaScript;
 cDirectInterpretASTVisitor::cDirectInterpretASTVisitor(cSymbolTable* global_symtbl)
   : m_global_symtbl(global_symtbl), m_cur_symtbl(global_symtbl), m_call_stack(0, 2048), m_sp(0), m_has_returned(false)
 {
+  m_call_stack.Resize(m_global_symtbl->GetNumVariables());
   for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) m_call_stack[i].as_string = NULL;
 }
 
@@ -560,9 +561,11 @@ void cDirectInterpretASTVisitor::visitFunctionCall(cASTFunctionCall& node)
   // Set current scope to the function symbol table
   m_cur_symtbl = func_symtbl->GetFunctionSymbolTable(fun_id);
   m_sp += prev_symtbl->GetNumVariables();
+  m_call_stack.Resize(m_call_stack.GetSize() + m_cur_symtbl->GetNumVariables());
   for (int i = 0; i < m_cur_symtbl->GetNumVariables(); i++) m_call_stack[m_sp + i].as_string = NULL;
   
   // Process the arguments to the function
+  tSmartArray<int> str_var_idxs;
   tListIterator<cASTVariableDefinition> sit = func_symtbl->GetFunctionSignature(fun_id)->Iterator();
   tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
   cASTVariableDefinition* arg_def = NULL;
@@ -581,7 +584,12 @@ void cDirectInterpretASTVisitor::visitFunctionCall(cASTFunctionCall& node)
       case TYPE(INT):         m_call_stack[m_sp + var_id].as_int = asInt(m_rtype, m_rvalue, node); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
       case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
-      case TYPE(STRING):      m_call_stack[m_sp + var_id].as_string = asString(m_rtype, m_rvalue, node); break;
+      case TYPE(STRING):
+        {
+          m_call_stack[m_sp + var_id].as_string = asString(m_rtype, m_rvalue, node);
+          str_var_idxs.Push(var_id);
+        }
+        break;
         
       default:
         INTERPRET_ERROR(INTERNAL);
@@ -608,11 +616,13 @@ void cDirectInterpretASTVisitor::visitFunctionCall(cASTFunctionCall& node)
       INTERPRET_ERROR(INTERNAL);
   }
   m_rtype = node.GetType();
-  
-  // @TODO - cleanup scope (delete local string objects on the stack)
+
+  // Clean up string variables in the current scope
+  for (int i = 0; i < str_var_idxs.GetSize(); i++) delete m_call_stack[m_sp + str_var_idxs[i]].as_string;
   
   // Restore previous scope
   m_has_returned = false;
+  m_call_stack.Resize(m_call_stack.GetSize() - m_cur_symtbl->GetNumVariables());
   m_sp -= prev_symtbl->GetNumVariables();
   m_cur_symtbl = prev_symtbl;
 }

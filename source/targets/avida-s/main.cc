@@ -26,6 +26,7 @@
 #include "PlatformExpert.h"
 
 #include "cASLibrary.h"
+#include "cDirectInterpretASTVisitor.h"
 #include "cDumpASTVisitor.h"
 #include "cFile.h"
 #include "cParser.h"
@@ -61,7 +62,10 @@ int main (int argc, char * const argv[])
         Avida::Exit(AS_EXIT_FAIL_SEMANTIC);
       }
       
-      Avida::Exit(AS_EXIT_OK);
+      cDirectInterpretASTVisitor interpeter(&global_symtbl);
+      int exit_code = interpeter.Interpret(tree);
+      
+      Avida::Exit(exit_code);
     } else {
       std::cerr << "error: parse failed" << std::endl;
       Avida::Exit(AS_EXIT_FAIL_PARSE);
