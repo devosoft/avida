@@ -269,6 +269,7 @@ private:
   cIntSum sum_deme_age;
   cIntSum sum_deme_birth_count;
   cIntSum sum_deme_org_count;
+  cIntSum sum_deme_generation;
 
   // Speculative Execution Stats
   int m_spec_total;
@@ -409,6 +410,8 @@ public:
   cIntSum& SumDemeAge()          { return sum_deme_age; }
   cIntSum& SumDemeBirthCount()   { return sum_deme_birth_count; }
   cIntSum& SumDemeOrgCount()     { return sum_deme_org_count; }
+  cIntSum& SumDemeGeneration()   { return sum_deme_generation; }
+
 
 #if INSTRUCTION_COUNT
   void ZeroInst();
@@ -445,6 +448,8 @@ public:
   const cIntSum& SumDemeAge() const          { return sum_deme_age; }
   const cIntSum& SumDemeBirthCount() const   { return sum_deme_birth_count; }
   const cIntSum& SumDemeOrgCount() const     { return sum_deme_org_count; }
+  const cIntSum& SumDemeGeneration() const   { return sum_deme_generation; }
+
 
   void IncResamplings() { ++num_resamplings; }  // @AWC 06/29/06
   void IncFailedResamplings() { ++num_failedResamplings; }  // @AWC 06/29/06

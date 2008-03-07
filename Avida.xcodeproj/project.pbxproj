@@ -218,6 +218,23 @@
 		};
 /* End PBXBuildRule section */
 
+/* Begin PBXBuildStyle section */
+		B51C949C0D6B3FD1004D5839 /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Development;
+		};
+		B51C949D0D6B3FD1004D5839 /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
+
 /* Begin PBXContainerItemProxy section */
 		56F555DA0C3B36FC00E2E929 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1803,12 +1820,16 @@
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
-			compatibilityVersion = "Xcode 2.4";
+			buildSettings = {
+			};
+			buildStyles = (
+				B51C949C0D6B3FD1004D5839 /* Development */,
+				B51C949D0D6B3FD1004D5839 /* Deployment */,
+			);
 			hasScannedForEncodings = 0;
 			mainGroup = DCC30C490762532C008F7A48;
 			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;
 			projectDirPath = "";
-			projectRoot = "";
 			targets = (
 				7023ED520C0A590200362B9C /* full-suite */,
 				DCC3164C07626CF3008F7A48 /* avida */,
@@ -1835,7 +1856,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "mkdir -p $DERIVED_FILE_DIR\nif (test -x /usr/bin/svnversion)\nthen svncmd=/usr/bin/svnversion\nelif (test -x /usr/local/bin/svnversion)\nthen svncmd=/usr/local/bin/svnversion\nelif (test -x /usr/local/svn/bin/svnversion)\nthen svncmd=/usr/local/svn/bin/svnversion\nelse\n  echo \"Warning: 'svn' not found, please install subversion\"\n  if [[ ! -f $DERIVED_FILE_DIR/revision.h ]]\n  then\n    echo \"#ifndef revision_h\" > $DERIVED_FILE_DIR/revision.h\n    echo \"#define revision_h\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#define REVISION \\\"???\\\"\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#endif\" >> $DERIVED_FILE_DIR/revision.h\n  fi\nfi\n\necho \"#ifndef revision_h\" > /tmp/newrev.tmp\necho \"#define revision_h\" >> /tmp/newrev.tmp\necho \\#define REVISION \\\"`$svncmd`\\\" >> /tmp/newrev.tmp\necho \"#endif\" >> /tmp/newrev.tmp\n\nif [[ -f $DERIVED_FILE_DIR/revision.h ]]\nthen\n  revdiff=`diff $DERIVED_FILE_DIR/revision.h /tmp/newrev.tmp`\nelse\n  revdiff=\"yes\"\nfi\n\nif [[ -n \"$revdiff\" ]]\nthen\n  echo \"New revision.h Generated\"\n  cp /tmp/newrev.tmp $DERIVED_FILE_DIR/revision.h\n  touch $SRCROOT/source/main/avida.cc\nfi\n\nrm /tmp/newrev.tmp\n";
-			showEnvVarsInLog = 0;
 		};
 		70D845480D73677E00601F5A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1849,7 +1869,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "./run_tests --builddir=$BUILD_DIR/$BUILD_STYLE/ _asl*";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 

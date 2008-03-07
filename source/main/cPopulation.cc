@@ -1077,7 +1077,7 @@ void cPopulation::CompeteDemes(int competition_type)
   
   // Reset all deme stats to zero.
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    deme_array[deme_id].Reset();
+    deme_array[deme_id].Reset(deme_array[deme_id].GetGeneration()); // increase deme generation by 1
   }
 }
 
@@ -1252,17 +1252,18 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   }
   
   // Reset both demes, in case they have any cleanup work to do.
+  int source_deme_generation = source_deme.GetGeneration();
   if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
     // Transfer energy from source to target if we're using the energy model.
-    source_deme.Reset(parent_deme_energy, source_deme_resource_reset);
-    target_deme.Reset(offspring_deme_energy, target_deme_resource_reset);
+    source_deme.Reset(parent_deme_energy, source_deme_generation, source_deme_resource_reset);
+    target_deme.Reset(offspring_deme_energy, source_deme_generation, target_deme_resource_reset);
   } else {
     // Default; reset both source and target.
-    source_deme.Reset(source_deme_resource_reset);
-    target_deme.Reset(target_deme_resource_reset);
+    source_deme.Reset(source_deme_generation, source_deme_resource_reset);
+    target_deme.Reset(source_deme_generation, target_deme_resource_reset);
   }
   
-  // All done; do our post-replication stats tracking.
+  // do our post-replication stats tracking.
   m_world->GetStats().DemePostReplication(source_deme, target_deme);
 }
 
@@ -2434,6 +2435,7 @@ void cPopulation::UpdateDemeStats() {
   stats.SumDemeAge().Clear();
   stats.SumDemeBirthCount().Clear();
   stats.SumDemeOrgCount().Clear();
+  stats.SumDemeGeneration().Clear();
   
   for(int i = 0; i < GetNumDemes(); i++) {
     cDeme& deme = GetDeme(i);
@@ -2442,6 +2444,7 @@ void cPopulation::UpdateDemeStats() {
     stats.SumDemeAge().Add(deme.GetAge());
     stats.SumDemeBirthCount().Add(deme.GetBirthCount());
     stats.SumDemeOrgCount().Add(deme.GetOrgCount());
+    stats.SumDemeGeneration().Add(deme.GetGeneration());
   }
 }
 

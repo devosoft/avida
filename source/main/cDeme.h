@@ -48,6 +48,7 @@ private:
   int birth_count; //!< Number of organisms that have been born into this deme since reset.
   int org_count; //!< Number of organisms are currently in this deme.
   int _age; //!< Age of this deme, in updates.
+  int generation; //!< Generation of this deme
   double total_org_energy; //! total amount of energy in organisms in this deme
   
   cGermline _germline; //!< The germline for this deme, if used.
@@ -63,7 +64,7 @@ private:
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
   
 public:
-  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), total_org_energy(0.0), deme_resource_count(0) { ; }
+  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0), deme_resource_count(0) { ; }
   ~cDeme() { ; }
 
   void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
@@ -78,8 +79,8 @@ public:
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }
 
-  void Reset(bool resetResources = true);
-  void Reset(double deme_energy, bool resetResources = true); //! used to pass energy to offspring deme
+  void Reset(int previous_generation, bool resetResources = true);
+  void Reset(double deme_energy, int previous_generation, bool resetResources = true); //! used to pass energy to offspring deme
   //! Kills all organisms currently in this deme.
   void KillAll();
   int GetBirthCount() const { return birth_count; }
@@ -88,6 +89,8 @@ public:
   int GetOrgCount() const { return org_count; }
   void IncOrgCount() { org_count++; }
   void DecOrgCount() { org_count--; }
+  
+  int GetGeneration() const { return generation; }
 
   bool IsEmpty() const { return org_count == 0; }
   bool IsFull() const { return org_count == cell_ids.GetSize(); }
