@@ -37,30 +37,34 @@ class cSymbolTable;
 class cSemanticASTVisitor : public cASTVisitor
 {
 private:
+  // --------  Internal Type Declarations  --------
+  struct sFunctionEntry
+  {
+    cSymbolTable* parent_scope;
+    int fun_id;
+    
+    cSymbolTable* fun_symtbl;
+    
+    sFunctionEntry() : parent_scope(NULL), fun_id(-1) { ; }
+    sFunctionEntry(cSymbolTable* ps, int in_fun_id) : parent_scope(ps), fun_id(in_fun_id) { ; }
+  };
+  
+  
+  // --------  Internal Variables  --------
   cASLibrary* m_library;
   cSymbolTable* m_global_symtbl;
   cSymbolTable* m_parent_scope;
   int m_fun_id;
   cSymbolTable* m_cur_symtbl;
   
-  struct sFunctionEntry
-  {
-    cSymbolTable* parent_scope;
-    int fun_id;
-
-    cSymbolTable* fun_symtbl;
-    
-    sFunctionEntry() : parent_scope(NULL), fun_id(-1) { ; }
-    sFunctionEntry(cSymbolTable* ps, int in_fun_id) : parent_scope(ps), fun_id(in_fun_id) { ; }
-  };
   tSmartArray<sFunctionEntry> m_fun_stack;
-
   
   bool m_success;
   bool m_fun_def;
   bool m_top_level;
 
   
+  // --------  Private Constructors  --------
   cSemanticASTVisitor(); // @not_implemented
   cSemanticASTVisitor(const cSemanticASTVisitor&); // @not_implemented
   cSemanticASTVisitor& operator=(const cSemanticASTVisitor&); // @not_implemented
@@ -72,35 +76,36 @@ public:
   inline bool WasSuccessful() { return m_success; }
   
   
-  void visitAssignment(cASTAssignment&);
+  void VisitAssignment(cASTAssignment&);
   
-  void visitReturnStatement(cASTReturnStatement&);
-  void visitStatementList(cASTStatementList&);
+  void VisitReturnStatement(cASTReturnStatement&);
+  void VisitStatementList(cASTStatementList&);
   
-  void visitForeachBlock(cASTForeachBlock&);
-  void visitIfBlock(cASTIfBlock&);
-  void visitWhileBlock(cASTWhileBlock&);
+  void VisitForeachBlock(cASTForeachBlock&);
+  void VisitIfBlock(cASTIfBlock&);
+  void VisitWhileBlock(cASTWhileBlock&);
   
-  void visitFunctionDefinition(cASTFunctionDefinition&);
-  void visitVariableDefinition(cASTVariableDefinition&);
-  void visitVariableDefinitionList(cASTVariableDefinitionList&);
+  void VisitFunctionDefinition(cASTFunctionDefinition&);
+  void VisitVariableDefinition(cASTVariableDefinition&);
+  void VisitVariableDefinitionList(cASTVariableDefinitionList&);
   
-  void visitExpressionBinary(cASTExpressionBinary&);
-  void visitExpressionUnary(cASTExpressionUnary&);
+  void VisitExpressionBinary(cASTExpressionBinary&);
+  void VisitExpressionUnary(cASTExpressionUnary&);
   
-  void visitArgumentList(cASTArgumentList&);
-  void visitFunctionCall(cASTFunctionCall&);
-  void visitLiteral(cASTLiteral&);
-  void visitLiteralArray(cASTLiteralArray&);
-  void visitObjectCall(cASTObjectCall&);
-  void visitObjectReference(cASTObjectReference&);
-  void visitVariableReference(cASTVariableReference&);
-  void visitUnpackTarget(cASTUnpackTarget&);
+  void VisitArgumentList(cASTArgumentList&);
+  void VisitFunctionCall(cASTFunctionCall&);
+  void VisitLiteral(cASTLiteral&);
+  void VisitLiteralArray(cASTLiteralArray&);
+  void VisitObjectCall(cASTObjectCall&);
+  void VisitObjectReference(cASTObjectReference&);
+  void VisitVariableReference(cASTVariableReference&);
+  void VisitUnpackTarget(cASTUnpackTarget&);
 
   void PostCheck();
 
 
 private:
+  // --------  Internal Utility Methods  --------
   ASType_t getConsensusType(ASType_t t1, ASType_t t2);
   inline bool validArithmeticType(ASType_t type, bool allow_matrix = false) const;
   inline bool validBitwiseType(ASType_t type) const;
@@ -110,4 +115,5 @@ private:
   
   void reportError(ASSemanticError_t err, const cASFilePosition& fp, const int line, ...);
 };
+
 #endif

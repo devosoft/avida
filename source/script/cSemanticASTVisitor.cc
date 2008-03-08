@@ -46,11 +46,11 @@ namespace AvidaScript {
   static const bool valid_cast[11][11] = {
   // ARRAY, BOOL , CHAR , FLOAT, INT  , @OBJ , MATRX, STRNG, RUNTM, VOID , INVLD
     {true , true , false, false, false, false, false, true , true , false, false}, // TYPE(ARRAY)
-    {true , true , true , true , true , false, true , true , true , false, false}, // TYPE(BOOL)
-    {true , true , true , true , true , false, true , true , true , false, false}, // TYPE(CHAR)
-    {true , true , false, true , true , false, true , true , true , false, false}, // TYPE(FLOAT)
-    {true , true , true , true , true , false, true , true , true , false, false}, // TYPE(INT)
-    {true , true , false, false, false, true , false, true , false, false, false}, // TYPE(OBJECT_REF)
+    {false, true , true , true , true , false, true , true , true , false, false}, // TYPE(BOOL)
+    {false, true , true , true , true , false, true , true , true , false, false}, // TYPE(CHAR)
+    {false, true , false, true , true , false, true , true , true , false, false}, // TYPE(FLOAT)
+    {false, true , true , true , true , false, true , true , true , false, false}, // TYPE(INT)
+    {false, true , false, false, false, true , false, true , false, false, false}, // TYPE(OBJECT_REF)
     {true , true , false, false, false, false, true , true , true , false, false}, // TYPE(MATRIX)
     {true , true , false, true , true , false, false, true , true , false, false}, // TYPE(STRNG)
     {true , true , true , true , true , true , true , true , true , false, false}, // TYPE(RUNTIME)
@@ -81,7 +81,7 @@ cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_s
 }
 
 
-void cSemanticASTVisitor::visitAssignment(cASTAssignment& node)
+void cSemanticASTVisitor::VisitAssignment(cASTAssignment& node)
 {
   node.GetExpression()->Accept(*this);
   int var_id = -1;
@@ -95,7 +95,7 @@ void cSemanticASTVisitor::visitAssignment(cASTAssignment& node)
 }
 
 
-void cSemanticASTVisitor::visitReturnStatement(cASTReturnStatement& node)
+void cSemanticASTVisitor::VisitReturnStatement(cASTReturnStatement& node)
 {
   node.GetExpression()->Accept(*this);
   checkCast(m_parent_scope->GetFunctionRType(m_fun_id), node.GetExpression()->GetType());
@@ -103,7 +103,7 @@ void cSemanticASTVisitor::visitReturnStatement(cASTReturnStatement& node)
 }
 
 
-void cSemanticASTVisitor::visitStatementList(cASTStatementList& node)
+void cSemanticASTVisitor::VisitStatementList(cASTStatementList& node)
 {
   tListIterator<cASTNode> it = node.Iterator();
   
@@ -137,7 +137,7 @@ void cSemanticASTVisitor::visitStatementList(cASTStatementList& node)
 }
 
 
-void cSemanticASTVisitor::visitForeachBlock(cASTForeachBlock& node)
+void cSemanticASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
 {
   // Check values and make sure we can process it as an array
   node.GetValues()->Accept(*this);
@@ -159,7 +159,7 @@ void cSemanticASTVisitor::visitForeachBlock(cASTForeachBlock& node)
 }
 
 
-void cSemanticASTVisitor::visitIfBlock(cASTIfBlock& node)
+void cSemanticASTVisitor::VisitIfBlock(cASTIfBlock& node)
 {
   // Check main condition and code
   node.GetCondition()->Accept(*this);
@@ -181,7 +181,7 @@ void cSemanticASTVisitor::visitIfBlock(cASTIfBlock& node)
 }
 
 
-void cSemanticASTVisitor::visitWhileBlock(cASTWhileBlock& node)
+void cSemanticASTVisitor::VisitWhileBlock(cASTWhileBlock& node)
 {
   node.GetCondition()->Accept(*this);
   checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
@@ -190,7 +190,7 @@ void cSemanticASTVisitor::visitWhileBlock(cASTWhileBlock& node)
 
 
 
-void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
+void cSemanticASTVisitor::VisitFunctionDefinition(cASTFunctionDefinition& node)
 {
   int fun_id = -1;
   bool added = m_cur_symtbl->AddFunction(node.GetName(), node.GetType(), fun_id);
@@ -285,7 +285,7 @@ void cSemanticASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 }
 
 
-void cSemanticASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
+void cSemanticASTVisitor::VisitVariableDefinition(cASTVariableDefinition& node)
 {
   int var_id = -1;
   if (m_cur_symtbl->AddVariable(node.GetName(), node.GetType(), var_id)) node.SetVar(var_id);
@@ -325,7 +325,7 @@ void cSemanticASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
 }
 
 
-void cSemanticASTVisitor::visitVariableDefinitionList(cASTVariableDefinitionList& node)
+void cSemanticASTVisitor::VisitVariableDefinitionList(cASTVariableDefinitionList& node)
 {
   // Should never recurse into here.  Variable definition lists are processed by function definitions.
   SEMANTIC_ERROR(INTERNAL);
@@ -333,7 +333,7 @@ void cSemanticASTVisitor::visitVariableDefinitionList(cASTVariableDefinitionList
 
 
 
-void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
+void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
 {
   node.GetLeft()->Accept(*this);
   node.GetRight()->Accept(*this);
@@ -446,7 +446,7 @@ void cSemanticASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
 }
 
 
-void cSemanticASTVisitor::visitExpressionUnary(cASTExpressionUnary& node)
+void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
 {
   node.GetExpression()->Accept(*this);
   
@@ -487,13 +487,13 @@ void cSemanticASTVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 }
 
 
-void cSemanticASTVisitor::visitArgumentList(cASTArgumentList& node)
+void cSemanticASTVisitor::VisitArgumentList(cASTArgumentList& node)
 {
   // Should never recurse into here.  Argument lists are processed by their owners as needed.
   SEMANTIC_ERROR(INTERNAL);
 }
 
-void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
+void cSemanticASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
   // @TODO - somewhere in here, make sure that default value expressions are valid for this context if used
   
@@ -553,13 +553,13 @@ void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
 }
 
 
-void cSemanticASTVisitor::visitLiteral(cASTLiteral& node)
+void cSemanticASTVisitor::VisitLiteral(cASTLiteral& node)
 {
   // Nothing to do here...   type already determined by the parser
 }
 
 
-void cSemanticASTVisitor::visitLiteralArray(cASTLiteralArray& node)
+void cSemanticASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
 {
   cASTArgumentList* al = node.GetValues();
   if (al) {
@@ -572,21 +572,21 @@ void cSemanticASTVisitor::visitLiteralArray(cASTLiteralArray& node)
 }
 
 
-void cSemanticASTVisitor::visitObjectCall(cASTObjectCall& node)
+void cSemanticASTVisitor::VisitObjectCall(cASTObjectCall& node)
 {
   // @TODO - object call
   SEMANTIC_ERROR(INTERNAL);
 }
 
 
-void cSemanticASTVisitor::visitObjectReference(cASTObjectReference& node)
+void cSemanticASTVisitor::VisitObjectReference(cASTObjectReference& node)
 {
   // @TODO - object reference
   SEMANTIC_ERROR(INTERNAL);
 }
 
 
-void cSemanticASTVisitor::visitVariableReference(cASTVariableReference& node)
+void cSemanticASTVisitor::VisitVariableReference(cASTVariableReference& node)
 {
   int var_id = -1;
   bool global = false;
@@ -599,7 +599,7 @@ void cSemanticASTVisitor::visitVariableReference(cASTVariableReference& node)
 }
 
 
-void cSemanticASTVisitor::visitUnpackTarget(cASTUnpackTarget& node)
+void cSemanticASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
 {
   node.GetExpression()->Accept(*this);
   

@@ -35,30 +35,30 @@ public:
   virtual ~cASTVisitor() { ; }
 
   
-  virtual void visitAssignment(cASTAssignment&) = 0;
+  virtual void VisitAssignment(cASTAssignment&) = 0;
   
-  virtual void visitReturnStatement(cASTReturnStatement&) = 0;
-  virtual void visitStatementList(cASTStatementList&) = 0;
+  virtual void VisitReturnStatement(cASTReturnStatement&) = 0;
+  virtual void VisitStatementList(cASTStatementList&) = 0;
   
-  virtual void visitForeachBlock(cASTForeachBlock&) = 0;
-  virtual void visitIfBlock(cASTIfBlock&) = 0;
-  virtual void visitWhileBlock(cASTWhileBlock&) = 0;
+  virtual void VisitForeachBlock(cASTForeachBlock&) = 0;
+  virtual void VisitIfBlock(cASTIfBlock&) = 0;
+  virtual void VisitWhileBlock(cASTWhileBlock&) = 0;
   
-  virtual void visitFunctionDefinition(cASTFunctionDefinition&) = 0;
-  virtual void visitVariableDefinition(cASTVariableDefinition&) = 0;
-  virtual void visitVariableDefinitionList(cASTVariableDefinitionList&) = 0;
+  virtual void VisitFunctionDefinition(cASTFunctionDefinition&) = 0;
+  virtual void VisitVariableDefinition(cASTVariableDefinition&) = 0;
+  virtual void VisitVariableDefinitionList(cASTVariableDefinitionList&) = 0;
 
-  virtual void visitExpressionBinary(cASTExpressionBinary&) = 0;
-  virtual void visitExpressionUnary(cASTExpressionUnary&) = 0;
+  virtual void VisitExpressionBinary(cASTExpressionBinary&) = 0;
+  virtual void VisitExpressionUnary(cASTExpressionUnary&) = 0;
 
-  virtual void visitArgumentList(cASTArgumentList&) = 0;
-  virtual void visitFunctionCall(cASTFunctionCall&) = 0;
-  virtual void visitLiteral(cASTLiteral&) = 0;
-  virtual void visitLiteralArray(cASTLiteralArray&) = 0;
-  virtual void visitObjectCall(cASTObjectCall&) = 0;
-  virtual void visitObjectReference(cASTObjectReference&) = 0;
-  virtual void visitVariableReference(cASTVariableReference&) = 0;
-  virtual void visitUnpackTarget(cASTUnpackTarget&) = 0;
+  virtual void VisitArgumentList(cASTArgumentList&) = 0;
+  virtual void VisitFunctionCall(cASTFunctionCall&) = 0;
+  virtual void VisitLiteral(cASTLiteral&) = 0;
+  virtual void VisitLiteralArray(cASTLiteralArray&) = 0;
+  virtual void VisitObjectCall(cASTObjectCall&) = 0;
+  virtual void VisitObjectReference(cASTObjectReference&) = 0;
+  virtual void VisitVariableReference(cASTVariableReference&) = 0;
+  virtual void VisitUnpackTarget(cASTUnpackTarget&) = 0;
 };
 
 #endif

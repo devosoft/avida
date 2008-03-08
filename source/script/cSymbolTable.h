@@ -38,38 +38,14 @@
 class cSymbolTable
 {
 private:
-  struct sSymbolEntry
-  {
-    cString name;
-    ASType_t type;
+  // --------  Internal Type Declarations  --------
+  struct sSymbolEntry;
+  struct sFunctionEntry;
 
-    int scope;
-    int shadow;
-    int deactivate;
-    
-    sSymbolEntry(const cString& in_name, ASType_t in_type, int in_scope)
-      : name(in_name), type(in_type), scope(in_scope), shadow(-1), deactivate(0) { ; }
-  };
+  
+  // --------  Internal Variables  --------
   tArray<sSymbolEntry*> m_sym_tbl;
   tDictionary<int> m_sym_dict;
-  
-  struct sFunctionEntry
-  {
-    cString name;
-    ASType_t type;
-    cASTVariableDefinitionList* signature;
-    cSymbolTable* symtbl;
-    cASTNode* code;
-    
-    int scope;
-    int shadow;
-    int deactivate;
-    
-    sFunctionEntry(const cString& in_name, ASType_t in_type, int in_scope)
-      : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), scope(in_scope), shadow(-1)
-      , deactivate(0) { ; }
-    ~sFunctionEntry() { delete signature; delete symtbl; delete code; }
-  };
   tArray<sFunctionEntry*> m_fun_tbl;
   tDictionary<int> m_fun_dict;
 
@@ -79,6 +55,7 @@ private:
   bool m_return;
   
   
+  // --------  Private Constructors  --------
   cSymbolTable(const cSymbolTable&); // @not_implemented
   cSymbolTable& operator=(const cSymbolTable&); // @not_implemented
   
@@ -88,6 +65,7 @@ public:
   ~cSymbolTable();
 
   
+  // --------  Add/Lookup Methods  --------
   bool AddVariable(const cString& name, ASType_t type, int& var_id);
   bool AddFunction(const cString& name, ASType_t type, int& fun_id);
   
@@ -97,6 +75,11 @@ public:
   inline int GetNumVariables() const { return m_sym_tbl.GetSize(); }
   inline int GetNumFunctions() const { return m_fun_tbl.GetSize(); }
   
+  inline cString VariableNearMatch(const cString& name) const { return m_sym_dict.NearMatch(name); }
+  inline cString FunctionNearMatch(const cString& name) const { return m_fun_dict.NearMatch(name); }
+
+
+  // --------  Scope Methods  --------
   inline void PushScope() { m_scope++; }
   void PopScope();
   inline int GetScope() const { return m_scope; }
@@ -104,8 +87,12 @@ public:
   inline void SetScopeReturn() { m_return = true; }
   inline bool ScopeHasReturn() const { return m_return; }
   
+
+  // --------  Variable Property Methods  --------
   inline ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
 
+
+  // --------  Function Property Methods  --------
   inline const cString& GetFunctionName(int fun_id) const { return m_fun_tbl[fun_id]->name; }
   inline ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
   inline cSymbolTable* GetFunctionSymbolTable(int fun_id) { return m_fun_tbl[fun_id]->symtbl; }
@@ -118,10 +105,8 @@ public:
   inline void SetFunctionSignature(int fun_id, cASTVariableDefinitionList* vdl) { m_fun_tbl[fun_id]->signature = vdl; }
   inline void SetFunctionDefinition(int fun_id, cASTNode* code) { m_fun_tbl[fun_id]->code = code; }
   
-  inline cString VariableNearMatch(const cString& name) const { return m_sym_dict.NearMatch(name); }
-  inline cString FunctionNearMatch(const cString& name) const { return m_fun_dict.NearMatch(name); }
-
   
+  // --------  Externally Visible Type Declarations  --------
   class cFunctionIterator
   {
     friend class cSymbolTable;
@@ -148,7 +133,42 @@ public:
   };
 
 
+  // --------  Externally Visible Type Dependent Methods  --------
   inline cFunctionIterator ActiveFunctionIterator() { return cFunctionIterator(this); }  
+  
+
+private:
+  // --------  Internal Type Definitions  --------
+  struct sSymbolEntry
+  {
+    cString name;
+    ASType_t type;
+    
+    int scope;
+    int shadow;
+    int deactivate;
+    
+    sSymbolEntry(const cString& in_name, ASType_t in_type, int in_scope)
+      : name(in_name), type(in_type), scope(in_scope), shadow(-1), deactivate(0) { ; }
+  };
+  
+  struct sFunctionEntry
+  {
+    cString name;
+    ASType_t type;
+    cASTVariableDefinitionList* signature;
+    cSymbolTable* symtbl;
+    cASTNode* code;
+    
+    int scope;
+    int shadow;
+    int deactivate;
+    
+    sFunctionEntry(const cString& in_name, ASType_t in_type, int in_scope)
+      : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), scope(in_scope), shadow(-1)
+      , deactivate(0) { ; }
+    ~sFunctionEntry() { delete signature; delete symtbl; delete code; }
+  };
 };
 
 

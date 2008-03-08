@@ -41,7 +41,7 @@ inline void cDumpASTVisitor::indent()
   for (int i = 0; i < m_depth; i++) cout << "  ";
 }
 
-void cDumpASTVisitor::visitAssignment(cASTAssignment& node)
+void cDumpASTVisitor::VisitAssignment(cASTAssignment& node)
 {
   m_depth++;
   indent();
@@ -57,7 +57,7 @@ void cDumpASTVisitor::visitAssignment(cASTAssignment& node)
 }
 
 
-void cDumpASTVisitor::visitReturnStatement(cASTReturnStatement& node)
+void cDumpASTVisitor::VisitReturnStatement(cASTReturnStatement& node)
 {
   indent();
   cout << "return:" << endl;
@@ -68,7 +68,7 @@ void cDumpASTVisitor::visitReturnStatement(cASTReturnStatement& node)
 }
 
 
-void cDumpASTVisitor::visitStatementList(cASTStatementList& node)
+void cDumpASTVisitor::VisitStatementList(cASTStatementList& node)
 {
   tListIterator<cASTNode> it = node.Iterator();
   
@@ -80,7 +80,7 @@ void cDumpASTVisitor::visitStatementList(cASTStatementList& node)
 
 
 
-void cDumpASTVisitor::visitForeachBlock(cASTForeachBlock& node)
+void cDumpASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
 {
   indent();
   cout << "foreach:" << endl;
@@ -105,7 +105,7 @@ void cDumpASTVisitor::visitForeachBlock(cASTForeachBlock& node)
 }
 
 
-void cDumpASTVisitor::visitIfBlock(cASTIfBlock& node)
+void cDumpASTVisitor::VisitIfBlock(cASTIfBlock& node)
 {
   indent();
   cout << "if:" << endl;
@@ -165,7 +165,7 @@ void cDumpASTVisitor::visitIfBlock(cASTIfBlock& node)
 }
 
 
-void cDumpASTVisitor::visitWhileBlock(cASTWhileBlock& node)
+void cDumpASTVisitor::VisitWhileBlock(cASTWhileBlock& node)
 {
   indent();
   cout << "while:" << endl;
@@ -190,7 +190,7 @@ void cDumpASTVisitor::visitWhileBlock(cASTWhileBlock& node)
 
 
 
-void cDumpASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
+void cDumpASTVisitor::VisitFunctionDefinition(cASTFunctionDefinition& node)
 {
   indent();
   cout << (node.GetCode() ? "":"@") << "function: " << mapType(node.GetType()) << " " << node.GetName() << "(";
@@ -215,7 +215,7 @@ void cDumpASTVisitor::visitFunctionDefinition(cASTFunctionDefinition& node)
 }
 
 
-void cDumpASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
+void cDumpASTVisitor::VisitVariableDefinition(cASTVariableDefinition& node)
 {
   indent();
   cout << mapType(node.GetType()) << " " << node.GetName() << endl;
@@ -244,7 +244,7 @@ void cDumpASTVisitor::visitVariableDefinition(cASTVariableDefinition& node)
 }
 
 
-void cDumpASTVisitor::visitVariableDefinitionList(cASTVariableDefinitionList& node)
+void cDumpASTVisitor::VisitVariableDefinitionList(cASTVariableDefinitionList& node)
 {
   m_depth++;
   
@@ -257,7 +257,7 @@ void cDumpASTVisitor::visitVariableDefinitionList(cASTVariableDefinitionList& no
 
 
 
-void cDumpASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
+void cDumpASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
 {
   m_depth++;
   node.GetLeft()->Accept(*this);
@@ -273,7 +273,7 @@ void cDumpASTVisitor::visitExpressionBinary(cASTExpressionBinary& node)
 }
 
 
-void cDumpASTVisitor::visitExpressionUnary(cASTExpressionUnary& node)
+void cDumpASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
 {
   indent();
   cout << mapToken(node.GetOperator());
@@ -285,7 +285,7 @@ void cDumpASTVisitor::visitExpressionUnary(cASTExpressionUnary& node)
 }
 
 
-void cDumpASTVisitor::visitArgumentList(cASTArgumentList& node)
+void cDumpASTVisitor::VisitArgumentList(cASTArgumentList& node)
 {
   m_depth++;
   
@@ -296,7 +296,7 @@ void cDumpASTVisitor::visitArgumentList(cASTArgumentList& node)
   m_depth--;
 }
 
-void cDumpASTVisitor::visitFunctionCall(cASTFunctionCall& node)
+void cDumpASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
   indent();
   cout << "call:" << endl;
@@ -323,14 +323,14 @@ void cDumpASTVisitor::visitFunctionCall(cASTFunctionCall& node)
 }
 
 
-void cDumpASTVisitor::visitLiteral(cASTLiteral& node)
+void cDumpASTVisitor::VisitLiteral(cASTLiteral& node)
 {
   indent();
   cout << "(" << mapType(node.GetType()) << ") " << node.GetValue() << endl;
 }
 
 
-void cDumpASTVisitor::visitLiteralArray(cASTLiteralArray& node)
+void cDumpASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
 {
   indent();
   if (node.IsMatrix()) cout << "$";
@@ -345,7 +345,7 @@ void cDumpASTVisitor::visitLiteralArray(cASTLiteralArray& node)
 }
 
 
-void cDumpASTVisitor::visitObjectCall(cASTObjectCall& node)
+void cDumpASTVisitor::VisitObjectCall(cASTObjectCall& node)
 {
   indent();
   cout << "call:" << endl;
@@ -371,7 +371,7 @@ void cDumpASTVisitor::visitObjectCall(cASTObjectCall& node)
 
 }
 
-void cDumpASTVisitor::visitObjectReference(cASTObjectReference& node)
+void cDumpASTVisitor::VisitObjectReference(cASTObjectReference& node)
 {
   m_depth++;
   node.GetObject()->Accept(*this);
@@ -386,14 +386,14 @@ void cDumpASTVisitor::visitObjectReference(cASTObjectReference& node)
   m_depth--;  
 }
 
-void cDumpASTVisitor::visitVariableReference(cASTVariableReference& node)
+void cDumpASTVisitor::VisitVariableReference(cASTVariableReference& node)
 {
   indent();
   cout << node.GetName() << endl;
 }
 
 
-void cDumpASTVisitor::visitUnpackTarget(cASTUnpackTarget& node)
+void cDumpASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
 {
   m_depth++;
   

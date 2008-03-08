@@ -769,6 +769,7 @@ cASTNode* cParser::parseIDStatement()
     case TOKEN(IDX_OPEN):
       cASTNode* target = new cASTVariableReference(FILEPOS, currentText());
       nextToken(); // consume id
+      // @TODO - handle call expression assignments
       return parseCallExpression(target, true);
       break;
     case TOKEN(REF):

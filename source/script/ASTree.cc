@@ -27,30 +27,30 @@
 #include "cASTVisitor.h"
 
 
-void cASTAssignment::Accept(cASTVisitor& visitor) { visitor.visitAssignment(*this); }
+void cASTAssignment::Accept(cASTVisitor& visitor) { visitor.VisitAssignment(*this); }
 
-void cASTReturnStatement::Accept(cASTVisitor& visitor) { visitor.visitReturnStatement(*this); }
-void cASTStatementList::Accept(cASTVisitor& visitor) { visitor.visitStatementList(*this); }
+void cASTReturnStatement::Accept(cASTVisitor& visitor) { visitor.VisitReturnStatement(*this); }
+void cASTStatementList::Accept(cASTVisitor& visitor) { visitor.VisitStatementList(*this); }
 
-void cASTForeachBlock::Accept(cASTVisitor& visitor) { visitor.visitForeachBlock(*this); }
-void cASTIfBlock::Accept(cASTVisitor& visitor) { visitor.visitIfBlock(*this); }
-void cASTWhileBlock::Accept(cASTVisitor& visitor) { visitor.visitWhileBlock(*this); }
+void cASTForeachBlock::Accept(cASTVisitor& visitor) { visitor.VisitForeachBlock(*this); }
+void cASTIfBlock::Accept(cASTVisitor& visitor) { visitor.VisitIfBlock(*this); }
+void cASTWhileBlock::Accept(cASTVisitor& visitor) { visitor.VisitWhileBlock(*this); }
 
-void cASTFunctionDefinition::Accept(cASTVisitor& visitor) { visitor.visitFunctionDefinition(*this); }
-void cASTVariableDefinition::Accept(cASTVisitor& visitor) { visitor.visitVariableDefinition(*this); }
-void cASTVariableDefinitionList::Accept(cASTVisitor& visitor) { visitor.visitVariableDefinitionList(*this); }
+void cASTFunctionDefinition::Accept(cASTVisitor& visitor) { visitor.VisitFunctionDefinition(*this); }
+void cASTVariableDefinition::Accept(cASTVisitor& visitor) { visitor.VisitVariableDefinition(*this); }
+void cASTVariableDefinitionList::Accept(cASTVisitor& visitor) { visitor.VisitVariableDefinitionList(*this); }
 
-void cASTExpressionBinary::Accept(cASTVisitor& visitor) { visitor.visitExpressionBinary(*this); }
-void cASTExpressionUnary::Accept(cASTVisitor& visitor) { visitor.visitExpressionUnary(*this); }
+void cASTExpressionBinary::Accept(cASTVisitor& visitor) { visitor.VisitExpressionBinary(*this); }
+void cASTExpressionUnary::Accept(cASTVisitor& visitor) { visitor.VisitExpressionUnary(*this); }
 
-void cASTArgumentList::Accept(cASTVisitor& visitor) { visitor.visitArgumentList(*this); }
-void cASTFunctionCall::Accept(cASTVisitor& visitor) { visitor.visitFunctionCall(*this); }
-void cASTLiteral::Accept(cASTVisitor& visitor) { visitor.visitLiteral(*this); }
-void cASTLiteralArray::Accept(cASTVisitor& visitor) { visitor.visitLiteralArray(*this); }
-void cASTObjectCall::Accept(cASTVisitor& visitor) { visitor.visitObjectCall(*this); }
-void cASTObjectReference::Accept(cASTVisitor& visitor) { visitor.visitObjectReference(*this); }
-void cASTVariableReference::Accept(cASTVisitor& visitor) { visitor.visitVariableReference(*this); }
-void cASTUnpackTarget::Accept(cASTVisitor& visitor) { visitor.visitUnpackTarget(*this); }
+void cASTArgumentList::Accept(cASTVisitor& visitor) { visitor.VisitArgumentList(*this); }
+void cASTFunctionCall::Accept(cASTVisitor& visitor) { visitor.VisitFunctionCall(*this); }
+void cASTLiteral::Accept(cASTVisitor& visitor) { visitor.VisitLiteral(*this); }
+void cASTLiteralArray::Accept(cASTVisitor& visitor) { visitor.VisitLiteralArray(*this); }
+void cASTObjectCall::Accept(cASTVisitor& visitor) { visitor.VisitObjectCall(*this); }
+void cASTObjectReference::Accept(cASTVisitor& visitor) { visitor.VisitObjectReference(*this); }
+void cASTVariableReference::Accept(cASTVisitor& visitor) { visitor.VisitVariableReference(*this); }
+void cASTUnpackTarget::Accept(cASTVisitor& visitor) { visitor.VisitUnpackTarget(*this); }
 
 
 cASTStatementList::~cASTStatementList()

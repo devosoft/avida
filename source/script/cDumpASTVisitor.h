@@ -36,30 +36,30 @@ private:
 public:
   cDumpASTVisitor();
   
-  void visitAssignment(cASTAssignment&);
+  void VisitAssignment(cASTAssignment&);
   
-  void visitReturnStatement(cASTReturnStatement&);
-  void visitStatementList(cASTStatementList&);
+  void VisitReturnStatement(cASTReturnStatement&);
+  void VisitStatementList(cASTStatementList&);
   
-  void visitForeachBlock(cASTForeachBlock&);
-  void visitIfBlock(cASTIfBlock&);
-  void visitWhileBlock(cASTWhileBlock&);
+  void VisitForeachBlock(cASTForeachBlock&);
+  void VisitIfBlock(cASTIfBlock&);
+  void VisitWhileBlock(cASTWhileBlock&);
   
-  void visitFunctionDefinition(cASTFunctionDefinition&);
-  void visitVariableDefinition(cASTVariableDefinition&);
-  void visitVariableDefinitionList(cASTVariableDefinitionList&);
+  void VisitFunctionDefinition(cASTFunctionDefinition&);
+  void VisitVariableDefinition(cASTVariableDefinition&);
+  void VisitVariableDefinitionList(cASTVariableDefinitionList&);
   
-  void visitExpressionBinary(cASTExpressionBinary&);
-  void visitExpressionUnary(cASTExpressionUnary&);
+  void VisitExpressionBinary(cASTExpressionBinary&);
+  void VisitExpressionUnary(cASTExpressionUnary&);
   
-  void visitArgumentList(cASTArgumentList&);
-  void visitFunctionCall(cASTFunctionCall&);
-  void visitLiteral(cASTLiteral&);
-  void visitLiteralArray(cASTLiteralArray&);
-  void visitObjectCall(cASTObjectCall&);
-  void visitObjectReference(cASTObjectReference&);
-  void visitVariableReference(cASTVariableReference&);
-  void visitUnpackTarget(cASTUnpackTarget&);
+  void VisitArgumentList(cASTArgumentList&);
+  void VisitFunctionCall(cASTFunctionCall&);
+  void VisitLiteral(cASTLiteral&);
+  void VisitLiteralArray(cASTLiteralArray&);
+  void VisitObjectCall(cASTObjectCall&);
+  void VisitObjectReference(cASTObjectReference&);
+  void VisitVariableReference(cASTVariableReference&);
+  void VisitUnpackTarget(cASTUnpackTarget&);
 
 private:
   inline void indent();
