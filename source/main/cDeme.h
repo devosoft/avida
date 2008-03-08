@@ -45,11 +45,15 @@ private:
   int _id; //!< ID of this deme (position in cPopulation::deme_array).
   tArray<int> cell_ids;
   int width; //!< Width of this deme.
+
+// The following should be moved to cDemePhenotype
   int birth_count; //!< Number of organisms that have been born into this deme since reset.
   int org_count; //!< Number of organisms are currently in this deme.
   int _age; //!< Age of this deme, in updates.
   int generation; //!< Generation of this deme
   double total_org_energy; //! total amount of energy in organisms in this deme
+  double deme_time_used; //!< number of cpu cycles, normalized by current orgs, this deme has used
+// End of phenotypic traits
   
   cGermline _germline; //!< The germline for this deme, if used.
 
@@ -64,7 +68,7 @@ private:
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
   
 public:
-  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0), deme_resource_count(0) { ; }
+  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0), deme_time_used(0.0), deme_resource_count(0) { ; }
   ~cDeme() { ; }
 
   void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
@@ -135,6 +139,9 @@ public:
   void SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration);
   
   double CalculateTotalEnergy();
+  
+  void IncTimeUsed() { deme_time_used += 1.0/(double)org_count; }
+  double GetTimeUsed() { return deme_time_used; }
 };
 
 #endif

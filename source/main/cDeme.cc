@@ -96,6 +96,7 @@ void cDeme::ProcessUpdate() {
 
 void cDeme::Reset(int previous_generation, bool resetResources)
 {
+  deme_time_used = 0;
   birth_count = 0;
   _age = 0;
   generation = previous_generation + 1;

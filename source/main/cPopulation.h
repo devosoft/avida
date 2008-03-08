@@ -187,6 +187,9 @@ public:
   //! Replicate all demes based on the given replication trigger.
   void ReplicateDemes(int rep_trigger);
 
+  //! Helper method to replicate deme
+  void ReplicateDeme(cDeme & source_deme);
+
   //! Helper method that replaces a target deme with the given source deme.
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme);
   
@@ -207,6 +210,7 @@ public:
   void CopyDeme(int deme1_id, int deme2_id);
   void SpawnDeme(int deme1_id, int deme2_id=-1);
 
+  void CheckImplicitDemeRepro(cDeme& deme);
   
   // Deme-related stats methods
   void PrintDemeAllStats();

@@ -1102,14 +1102,6 @@ void cPopulation::ReplicateDemes(int rep_trigger)
   for(int deme_id=0; deme_id<num_demes; ++deme_id) {
     cDeme& source_deme = deme_array[deme_id];
     
-    // Doesn't make sense to try and replicate a deme that *has no organisms*.
-    if(source_deme.IsEmpty()) continue;
-    
-    // Prevent sterile demes from replicating.
-    if(m_world->GetConfig().DEMES_PREVENT_STERILE.Get() && (source_deme.GetBirthCount() == 0)) {
-      continue;
-    }
-    
     // Test this deme to determine if it should be replicated.  If not,
     // continue on to the next deme.
     switch (rep_trigger) {
@@ -1149,17 +1141,40 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       }
     }
     
-    // If we made it this far, we should replicate this deme.  Pick a target
-    // deme to replicate to, making sure that we don't try to replicate over ourself.
-    int target_id = deme_id;
-    while(target_id == deme_id) {
+    // Pick a target deme to replicate to, making sure that 
+    // we don't try to replicate over ourself.
+    int target_id = source_deme.GetID();
+    const int num_demes = GetNumDemes();
+    while(target_id == source_deme.GetID()) {
       target_id = m_world->GetRandom().GetUInt(num_demes);
     }
-    
+  
     ReplaceDeme(source_deme, deme_array[target_id]);
   }
 }
 
+/*! ReplicateDeme is a helper method for replicating a source deme.
+*/
+void cPopulation::ReplicateDeme(cDeme & source_deme)
+{
+    // Doesn't make sense to try and replicate a deme that *has no organisms*.
+    if(source_deme.IsEmpty()) return;
+    
+    // Prevent sterile demes from replicating.
+    if(m_world->GetConfig().DEMES_PREVENT_STERILE.Get() && (source_deme.GetBirthCount() == 0)) {
+      return;
+    }
+
+    // Pick a target deme to replicate to, making sure that 
+    // we don't try to replicate over ourself.
+    int target_id = source_deme.GetID();
+    const int num_demes = GetNumDemes();
+    while(target_id == source_deme.GetID()) {
+      target_id = m_world->GetRandom().GetUInt(num_demes);
+    }
+  
+    ReplaceDeme(source_deme, deme_array[target_id]);
+}
 
 /*! ReplaceDeme is a helper method that handles all the different configuration
 options related to the replacement of a target deme by a source.  It works with
@@ -1297,6 +1312,7 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
   // Check to see if we're doing probabilistic organism replication from source
   // to target deme.
   if(m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get() == 0.0) {
+  
     // Here's the idea: store up a list of the genotypes from the source that we
     // need to copy to the target. Then clear both the source and target demes, 
     // and finally inject organisms from the saved genotypes into both the source 
@@ -1721,6 +1737,16 @@ void cPopulation::SpawnDeme(int deme1_id, int deme2_id)
   // And do the spawning.
   int cell2_id = deme2.GetCellID( random.GetUInt(deme2.GetSize()) );
   InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()) );    
+}
+
+void cPopulation::CheckImplicitDemeRepro(cDeme& deme) {
+
+  if (GetNumDemes() <= 1) return;
+  
+  if (m_world->GetConfig().DEMES_REPLICATE_CPU_CYCLES.Get() 
+    && (deme.GetTimeUsed() >= m_world->GetConfig().DEMES_REPLICATE_CPU_CYCLES.Get())) ReplicateDeme(deme);
+  else if (m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get() 
+    && (deme.GetBirthCount() >= m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get())) ReplicateDeme(deme);      
 }
 
 // Print out all statistics about individual demes
@@ -2384,7 +2410,16 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 
   m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
-  for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
+  
+  // Deme specific
+  if (GetNumDemes() > 1)
+  {
+    for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
+  
+    cDeme & deme = GetDeme(GetCell(cell_id).GetDemeID());
+    deme.IncTimeUsed();
+    CheckImplicitDemeRepro(deme);
+  }
 }
 
 
@@ -2424,7 +2459,16 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
 
   m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
-  for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
+ 
+   // Deme specific
+  if (GetNumDemes() > 1)
+  {
+    for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
+  
+    cDeme & deme = GetDeme(GetCell(cell_id).GetDemeID());
+    deme.IncTimeUsed();
+    CheckImplicitDemeRepro(deme);
+  }
 }
 
 // Loop through all the demes getting stats and doing calculations
