@@ -1141,15 +1141,7 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       }
     }
     
-    // Pick a target deme to replicate to, making sure that 
-    // we don't try to replicate over ourself.
-    int target_id = source_deme.GetID();
-    const int num_demes = GetNumDemes();
-    while(target_id == source_deme.GetID()) {
-      target_id = m_world->GetRandom().GetUInt(num_demes);
-    }
-  
-    ReplaceDeme(source_deme, deme_array[target_id]);
+    ReplicateDeme(source_deme);
   }
 }
 
