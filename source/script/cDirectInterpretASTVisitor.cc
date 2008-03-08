@@ -555,18 +555,18 @@ void cDirectInterpretASTVisitor::visitFunctionCall(cASTFunctionCall& node)
   cSymbolTable* prev_symtbl = m_cur_symtbl;
   
   // Get function information
-  cSymbolTable* func_symtbl = node.IsFuncGlobal() ? m_global_symtbl : m_cur_symtbl;
+  cSymbolTable* func_src_symtbl = node.IsFuncGlobal() ? m_global_symtbl : m_cur_symtbl;
   int fun_id = node.GetFuncID();
   
   // Set current scope to the function symbol table
-  m_cur_symtbl = func_symtbl->GetFunctionSymbolTable(fun_id);
-  m_sp += prev_symtbl->GetNumVariables();
-  m_call_stack.Resize(m_call_stack.GetSize() + m_cur_symtbl->GetNumVariables());
-  for (int i = 0; i < m_cur_symtbl->GetNumVariables(); i++) m_call_stack[m_sp + i].as_string = NULL;
+  cSymbolTable* func_symtbl = func_src_symtbl->GetFunctionSymbolTable(fun_id);
+  int sp = m_sp + prev_symtbl->GetNumVariables();
+  m_call_stack.Resize(m_call_stack.GetSize() + func_symtbl->GetNumVariables());
+  for (int i = 0; i < func_symtbl->GetNumVariables(); i++) m_call_stack[sp + i].as_string = NULL;
   
   // Process the arguments to the function
   tSmartArray<int> str_var_idxs;
-  tListIterator<cASTVariableDefinition> sit = func_symtbl->GetFunctionSignature(fun_id)->Iterator();
+  tListIterator<cASTVariableDefinition> sit = func_src_symtbl->GetFunctionSignature(fun_id)->Iterator();
   tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
   cASTVariableDefinition* arg_def = NULL;
   while ((arg_def = sit.Next())) {
@@ -578,15 +578,15 @@ void cDirectInterpretASTVisitor::visitFunctionCall(cASTFunctionCall& node)
 
     switch (m_cur_symtbl->GetVariableType(var_id)) {
       case TYPE(ARRAY):       INTERPRET_ERROR(INTERNAL); // @TODO - assignment
-      case TYPE(BOOL):        m_call_stack[m_sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
-      case TYPE(CHAR):        m_call_stack[m_sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
-      case TYPE(FLOAT):       m_call_stack[m_sp + var_id].as_float = asFloat(m_rtype, m_rvalue, node); break;
-      case TYPE(INT):         m_call_stack[m_sp + var_id].as_int = asInt(m_rtype, m_rvalue, node); break;
+      case TYPE(BOOL):        m_call_stack[sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
+      case TYPE(CHAR):        m_call_stack[sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
+      case TYPE(FLOAT):       m_call_stack[sp + var_id].as_float = asFloat(m_rtype, m_rvalue, node); break;
+      case TYPE(INT):         m_call_stack[sp + var_id].as_int = asInt(m_rtype, m_rvalue, node); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
       case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
       case TYPE(STRING):
         {
-          m_call_stack[m_sp + var_id].as_string = asString(m_rtype, m_rvalue, node);
+          m_call_stack[sp + var_id].as_string = asString(m_rtype, m_rvalue, node);
           str_var_idxs.Push(var_id);
         }
         break;
@@ -598,7 +598,9 @@ void cDirectInterpretASTVisitor::visitFunctionCall(cASTFunctionCall& node)
   
   
   // Execute the function
-  func_symtbl->GetFunctionDefinition(fun_id)->Accept(*this);
+  m_cur_symtbl = func_symtbl;
+  m_sp = sp;
+  func_src_symtbl->GetFunctionDefinition(fun_id)->Accept(*this);
   
   // Handle function return value
   switch (node.GetType()) {

@@ -495,6 +495,8 @@ void cSemanticASTVisitor::visitArgumentList(cASTArgumentList& node)
 
 void cSemanticASTVisitor::visitFunctionCall(cASTFunctionCall& node)
 {
+  // @TODO - somewhere in here, make sure that default value expressions are valid for this context if used
+  
   int fun_id = -1;
   bool global = false;
   if (lookupFunction(node.GetName(), fun_id, global)) {
