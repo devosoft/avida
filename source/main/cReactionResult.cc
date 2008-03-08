@@ -149,7 +149,7 @@ void cReactionResult::MultDemeBonus(double value)
 {
   ActivateReaction();
   active_deme_reaction = true;
-  deme_mult_bonus += value;
+  deme_mult_bonus *= value;
 }
 
 void cReactionResult::AddInst(int id)

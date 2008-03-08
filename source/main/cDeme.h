@@ -110,7 +110,7 @@ public:
   //! Update this deme's merit from the given source; merit will be applied to organisms now.
   void UpdateDemeMerit(cDeme& source);
   //! Update the heritable merit; will be applied to this deme and it's offspring upon replication.
-  void UpdateHeritableDemeMerit(double value) { _next_merit += value; }
+  void UpdateHeritableDemeMerit(double value) { _next_merit = value; }
   //! Retrieve this deme's current merit; to be applied to organisms living in this deme now.
   const cMerit& GetDemeMerit() const { return _current_merit; }
   //! Retrieve this deme's heritable merit.
