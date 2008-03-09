@@ -464,9 +464,6 @@ void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
       break;
     case TOKEN(OP_SUB):
       switch (node.GetExpression()->GetType()) {
-        case TYPE(ARRAY):
-        case TYPE(MATRIX):
-          // Array and Matrix meta-op, validity must be determined at runtime
         case TYPE(CHAR):
         case TYPE(FLOAT):
         case TYPE(INT):

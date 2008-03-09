@@ -121,12 +121,13 @@ private:
   class cLocalArray
   {
   private:
-    tArray<sAggregateValue>* m_storage;
+    tArray<sAggregateValue> m_storage;
     int m_ref_count;
     
     
   public:
-    inline cLocalArray() : m_storage(new tArray<sAggregateValue>), m_ref_count(1) { ; }
+    inline cLocalArray() : m_ref_count(1) { ; }
+    inline explicit cLocalArray(int sz) : m_storage(sz), m_ref_count(1) { ; }
     inline explicit cLocalArray(cLocalArray* in_array); // Create a copy
     inline cLocalArray(cLocalArray* arr1, cLocalArray* arr2); // Concat two arrays
     ~cLocalArray();
@@ -135,10 +136,10 @@ private:
     inline void RemoveReference() { m_ref_count--;  if (m_ref_count == 0) delete this; }
     inline bool IsShared() const { return (m_ref_count > 1); }
     
-    inline int GetSize() const { return m_storage->GetSize(); }
+    inline int GetSize() const { return m_storage.GetSize(); }
     void Resize(int sz);
     
-    inline const sAggregateValue& Get(int i) const { return (*m_storage)[i]; }    
+    inline const sAggregateValue& Get(int i) const { return m_storage[i]; }    
     void Set(int i, ASType_t type, uAnyType value);
     
     
@@ -154,19 +155,17 @@ private:
 };
 
 
-inline cDirectInterpretASTVisitor::cLocalArray::cLocalArray(cLocalArray* in_array) : m_ref_count(1)
+inline cDirectInterpretASTVisitor::cLocalArray::cLocalArray(cLocalArray* in_array)
+  : m_storage(in_array->m_storage.GetSize()), m_ref_count(1)
 {
-  m_storage = new tArray<sAggregateValue>(in_array->m_storage->GetSize());
-  copy(0, *in_array->m_storage);
+  copy(0, in_array->m_storage);
 }
 
-inline cDirectInterpretASTVisitor::cLocalArray::cLocalArray(cLocalArray* arr1, cLocalArray* arr2) : m_ref_count(1)
+inline cDirectInterpretASTVisitor::cLocalArray::cLocalArray(cLocalArray* arr1, cLocalArray* arr2)
+  : m_storage(arr1->m_storage.GetSize() + arr2->m_storage.GetSize()), m_ref_count(1)
 {
-  int sz1 = arr1->m_storage->GetSize();
-  m_storage = new tArray<sAggregateValue>(sz1 + arr2->m_storage->GetSize());
-  
-  copy(0, *arr1->m_storage);
-  copy(sz1, *arr2->m_storage);
+  copy(0, arr1->m_storage);
+  copy(arr1->m_storage.GetSize(), arr2->m_storage);
 }
 
 

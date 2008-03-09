@@ -71,13 +71,20 @@ void cDirectInterpretASTVisitor::VisitAssignment(cASTAssignment& node)
   node.GetExpression()->Accept(*this);
   
   switch (symtbl->GetVariableType(var_id)) {
-    case TYPE(ARRAY):       INTERPRET_ERROR(INTERNAL); // @TODO - assignment
     case TYPE(BOOL):        m_call_stack[sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
     case TYPE(CHAR):        m_call_stack[sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
     case TYPE(FLOAT):       m_call_stack[sp + var_id].as_float = asFloat(m_rtype, m_rvalue, node); break;
     case TYPE(INT):         m_call_stack[sp + var_id].as_int = asInt(m_rtype, m_rvalue, node); break;
     case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+
+    case TYPE(ARRAY):
+      m_call_stack[sp + var_id].as_array->RemoveReference();
+      m_call_stack[sp + var_id].as_array = asArray(m_rtype, m_rvalue, node);
+      break;
+      
+
     case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+
     case TYPE(STRING):
       delete m_call_stack[sp + var_id].as_string;
       m_call_stack[sp + var_id].as_string = asString(m_rtype, m_rvalue, node);
@@ -110,9 +117,45 @@ void cDirectInterpretASTVisitor::VisitStatementList(cASTStatementList& node)
 
 void cDirectInterpretASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
 {
-  //int var_id = node.GetVariable()->GetVarID();
+  int var_id = node.GetVariable()->GetVarID();
+  ASType_t var_type = node.GetVariable()->GetType();
   
-  // @TODO - foreach block
+  node.GetValues()->Accept(*this);
+  cLocalArray* arr = m_rvalue.as_array;
+
+  int var_idx = m_sp + var_id;
+  for (int i = 0; i < arr->GetSize(); i++) {
+    // Set the variable value for this iteration
+    const sAggregateValue& val = arr->Get(i);
+    switch (var_type) {
+      case TYPE(BOOL):        m_call_stack[var_idx].as_bool = asBool(val.type, val.value, node); break;
+      case TYPE(CHAR):        m_call_stack[var_idx].as_char = asChar(val.type, val.value, node); break;
+      case TYPE(FLOAT):       m_call_stack[var_idx].as_float = asFloat(val.type, val.value, node); break;
+      case TYPE(INT):         m_call_stack[var_idx].as_int = asInt(val.type, val.value, node); break;
+      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+        
+      case TYPE(ARRAY):
+        m_call_stack[var_idx].as_array->RemoveReference();
+        m_call_stack[var_idx].as_array = asArray(val.type, val.value, node);
+        break;
+        
+        
+      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+        
+      case TYPE(STRING):
+        delete m_call_stack[var_idx].as_string;
+        m_call_stack[var_idx].as_string = asString(val.type, val.value, node);
+        break;
+        
+      default:
+        INTERPRET_ERROR(INTERNAL);
+    }
+    
+    // Execute the body
+    node.GetCode()->Accept(*this);
+  }
+
+  arr->RemoveReference();
 }
 
 
@@ -164,7 +207,7 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
     
     node.GetAssignmentExpression()->Accept(*this);
     
-    switch (m_cur_symtbl->GetVariableType(var_id)) {
+    switch (node.GetType()) {
       case TYPE(ARRAY):       m_call_stack[m_sp + var_id].as_array = asArray(m_rtype, m_rvalue, node); break;
       case TYPE(BOOL):        m_call_stack[m_sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
       case TYPE(CHAR):        m_call_stack[m_sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
@@ -181,7 +224,18 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
         INTERPRET_ERROR(INTERNAL);
     }
   } else if (node.GetDimensions()) {
-    INTERPRET_ERROR(INTERNAL); // @TODO - array/matrix dimensions
+    if (node.GetType() == TYPE(ARRAY)) {
+      cASTNode* szn = node.GetDimensions()->Iterator().Next();
+      szn->Accept(*this);
+      
+      cLocalArray* arr = new cLocalArray();
+      arr->Resize(asInt(m_rtype, m_rvalue, node));
+      m_call_stack[m_sp + node.GetVarID()].as_array = arr;
+    } else if (node.GetType() == TYPE(MATRIX)) { // @TODO - variable def dimensions
+      
+    } else {
+      INTERPRET_ERROR(INTERNAL);
+    }
   }
 }
 
@@ -207,9 +261,42 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
   
   switch (node.GetOperator()) {
     case TOKEN(ARR_RANGE):
+      {
+        int l = asInt(ltype, lval, node);
+        int r = asInt(rtype, rval, node);
+        int sz = abs(r - l) + 1;
+
+        cLocalArray* arr = new cLocalArray(sz);
+        uAnyType val;
+        if (r > l) {
+          for (int i = 0; i < sz; i++) {
+            val.as_int = l + i;
+            arr->Set(i, TYPE(INT), val);
+          }
+        } else {
+          for (int i = 0; i < sz; i++) {
+            val.as_int = l - i;
+            arr->Set(i, TYPE(INT), val);
+          }
+        }
+        
+        m_rvalue.as_array = arr;
+        m_rtype = TYPE(ARRAY);
+      }
+      break;
+      
     case TOKEN(ARR_EXPAN):
-      // @TODO - implement array range/expand
-      INTERPRET_ERROR(INTERNAL);
+      {
+        int n = asInt(rtype, rval, node);
+        if (n < 0) INTERPRET_ERROR(INVALID_ARRAY_SIZE);
+        
+        cLocalArray* arr = new cLocalArray(n);
+        for (int i = 0; i < n; i++) arr->Set(i, ltype, lval);
+        
+        m_rvalue.as_array = arr;
+        m_rtype = TYPE(ARRAY);
+      }
+      break;
     
     case TOKEN(OP_LOGIC_AND):
     case TOKEN(OP_LOGIC_OR):
@@ -371,11 +458,16 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
             break;
             
           case TYPE(ARRAY):
-            // @TODO - array concatenation
-            INTERPRET_ERROR(INTERNAL);
+            {
+              cLocalArray* l = asArray(ltype, lval, node);
+              cLocalArray* r = asArray(rtype, rval, node);
+              m_rvalue.as_array = new cLocalArray(l, r);
+              l->RemoveReference();
+              r->RemoveReference();
+            }
+            break;
             
-          case TYPE(MATRIX):
-            // @TODO - matrix addition
+          case TYPE(MATRIX): // @TODO - addition
             INTERPRET_ERROR(INTERNAL);
             
           default:
@@ -398,8 +490,7 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
           case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) - asInt(rtype, rval, node); break;
           case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) - asFloat(rtype, rval, node); break;            
 
-          case TYPE(MATRIX):
-            // @TODO - matrix subtraction
+          case TYPE(MATRIX): // @TODO - subtraction
             INTERPRET_ERROR(INTERNAL);
             
           default:
@@ -422,8 +513,7 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
           case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) * asInt(rtype, rval, node); break;
           case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) * asFloat(rtype, rval, node); break;            
 
-          case TYPE(MATRIX):
-            // @TODO - matrix multiplication
+          case TYPE(MATRIX): // @TODO - multiplication
             INTERPRET_ERROR(INTERNAL);
             
           default:
@@ -441,11 +531,28 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
         // Determine the operation type if it is a runtime decision
         if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
              
-        // @TODO - handle division by zero
         switch (rettype) {
-          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) / asChar(rtype, rval, node); break;
-          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) / asInt(rtype, rval, node); break;
-          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) / asFloat(rtype, rval, node); break;            
+          case TYPE(CHAR):
+            {
+              char r = asChar(rtype, rval, node);
+              if (r == 0) INTERPRET_ERROR(DIVISION_BY_ZERO);
+              m_rvalue.as_char = asChar(ltype, lval, node) / r;
+            }
+            break;
+          case TYPE(INT):
+            {
+              int r = asInt(rtype, rval, node);
+              if (r == 0) INTERPRET_ERROR(DIVISION_BY_ZERO);
+              m_rvalue.as_int = asInt(ltype, lval, node) / r;
+            }
+            break;
+          case TYPE(FLOAT):
+            {
+              double r = asFloat(rtype, rval, node);
+              if (r == 0.0) INTERPRET_ERROR(DIVISION_BY_ZERO);
+              m_rvalue.as_float = asFloat(ltype, lval, node) / r;
+            }
+            break;            
 
           default:
             INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
@@ -462,12 +569,29 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
         // Determine the operation type if it is a runtime decision
         if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
              
-        // @TODO - handle division by zero
         switch (rettype) {
-          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) % asChar(rtype, rval, node); break;
-          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) % asInt(rtype, rval, node); break;
-          case TYPE(FLOAT): m_rvalue.as_float = fmod(asFloat(ltype, lval, node), asFloat(rtype, rval, node)); break;
-
+          case TYPE(CHAR):
+            {
+              char r = asChar(rtype, rval, node);
+              if (r == 0) INTERPRET_ERROR(DIVISION_BY_ZERO);
+              m_rvalue.as_char = asChar(ltype, lval, node) % r;
+            }
+            break;
+          case TYPE(INT):
+            {
+              int r = asInt(rtype, rval, node);
+              if (r == 0) INTERPRET_ERROR(DIVISION_BY_ZERO);
+              m_rvalue.as_int = asInt(ltype, lval, node) % r;
+            }
+            break;
+          case TYPE(FLOAT):
+            {
+              double r = asFloat(rtype, rval, node);
+              if (r == 0.0) INTERPRET_ERROR(DIVISION_BY_ZERO);
+              m_rvalue.as_float = fmod(asFloat(ltype, lval, node), r);
+            }
+            break;            
+            
           default:
             INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
         }
@@ -493,11 +617,6 @@ void cDirectInterpretASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
   switch (node.GetOperator()) {
     case TOKEN(OP_BIT_NOT):
       switch (m_rtype) {
-        case TYPE(ARRAY):
-        case TYPE(MATRIX):
-          // @TODO - implement ~ for array/matrix
-          INTERPRET_ERROR(INTERNAL);
-          
         case TYPE(CHAR):
           m_rvalue.as_char = ~m_rvalue.as_char;
           break;
@@ -517,11 +636,6 @@ void cDirectInterpretASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
     
     case TOKEN(OP_SUB):
       switch (m_rtype) {
-        case TYPE(ARRAY):
-        case TYPE(MATRIX):
-          // @TODO - implement unary- for array/matrix
-          INTERPRET_ERROR(INTERNAL);
-          
         case TYPE(CHAR):
           m_rvalue.as_char = -m_rvalue.as_char;
           break;
@@ -662,8 +776,24 @@ void cDirectInterpretASTVisitor::VisitLiteral(cASTLiteral& node)
 
 void cDirectInterpretASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
 {
-  // @TODO - handle literal array
-  INTERPRET_ERROR(INTERNAL);
+  cASTArgumentList* vals = node.GetValues();
+  
+  if (node.IsMatrix()) {
+    // @TODO - literal matrix
+  } else {
+    cLocalArray* arr = new cLocalArray(vals->GetSize());
+    
+    tListIterator<cASTNode> it = vals->Iterator();
+    cASTNode* val = NULL;
+    int i = 0;
+    while ((val = it.Next())) {
+      val->Accept(*this);
+      arr->Set(i++, m_rtype, m_rvalue);
+    }
+    
+    m_rvalue.as_array = arr;    
+    m_rtype = TYPE(ARRAY);
+  }
 }
 
 
@@ -703,7 +833,62 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
 
 void cDirectInterpretASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
 {
-  // @TODO - handle unpack target
+  node.GetExpression()->Accept(*this);
+  cLocalArray* arr = m_rvalue.as_array;
+  
+  int unpack_size = node.GetSize();
+  if (node.IsLastNamed()) unpack_size--;
+  if (unpack_size > arr->GetSize()) INTERPRET_ERROR(UNPACK_VALUE_TOO_SMALL);
+  if (unpack_size < arr->GetSize() && !node.IsLastWild()) INTERPRET_ERROR(UNPACK_VALUE_TOO_LARGE);
+  
+  // Unpack the values up to the last non-wild value
+  for (int i = 0; i < unpack_size; i++) {
+    ASType_t var_type = (node.IsVarGlobal(i) ? m_global_symtbl : m_cur_symtbl)->GetVariableType(node.GetVarID(i));
+    int var_idx = (node.IsVarGlobal(i) ? 0 : m_sp) + node.GetVarID(i);
+    
+    // Set the variable value for this iteration
+    const sAggregateValue& val = arr->Get(i);
+    switch (var_type) {
+      case TYPE(BOOL):        m_call_stack[var_idx].as_bool = asBool(val.type, val.value, node); break;
+      case TYPE(CHAR):        m_call_stack[var_idx].as_char = asChar(val.type, val.value, node); break;
+      case TYPE(FLOAT):       m_call_stack[var_idx].as_float = asFloat(val.type, val.value, node); break;
+      case TYPE(INT):         m_call_stack[var_idx].as_int = asInt(val.type, val.value, node); break;
+      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+        
+      case TYPE(ARRAY):
+        m_call_stack[var_idx].as_array->RemoveReference();
+        m_call_stack[var_idx].as_array = asArray(val.type, val.value, node);
+        break;
+        
+        
+      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+        
+      case TYPE(STRING):
+        delete m_call_stack[var_idx].as_string;
+        m_call_stack[var_idx].as_string = asString(val.type, val.value, node);
+        break;
+        
+      default:
+        INTERPRET_ERROR(INTERNAL);
+    }
+  }
+  
+  if (node.IsLastNamed()) {
+    int var_idx = (node.IsVarGlobal(unpack_size) ? 0 : m_sp) + node.GetVarID(unpack_size);
+    int sz = arr->GetSize() - unpack_size;
+    
+    cLocalArray* wild = new cLocalArray(sz);
+    
+    for (int i = 0; i < sz; i++) {
+      const sAggregateValue& val = arr->Get(i + unpack_size);
+      wild->Set(i, val.type, val.value);
+    }
+    
+    m_call_stack[var_idx].as_array->RemoveReference();
+    m_call_stack[var_idx].as_array = wild;
+  }
+  
+  arr->RemoveReference();
 }
 
 cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(ASType_t type, uAnyType value, cASTNode& node)
@@ -711,10 +896,9 @@ cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(AST
   switch (type) {
     case TYPE(ARRAY):
       return value.as_array;
-    case TYPE(MATRIX):
-      INTERPRET_ERROR(INTERNAL); // @TODO - matrix as array 
-    case TYPE(STRING):
-      INTERPRET_ERROR(INTERNAL); // @TODO - string as array 
+    case TYPE(MATRIX): // @TODO - asArray 
+    case TYPE(STRING): // @TODO - asArray
+      INTERPRET_ERROR(INTERNAL);
       
     default:
       INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(CHAR)));
@@ -733,8 +917,7 @@ bool cDirectInterpretASTVisitor::asBool(ASType_t type, uAnyType value, cASTNode&
         return rval;
       }
       
-    case TYPE(MATRIX):
-      // @TODO - implement asBool for matrix
+    case TYPE(MATRIX): // @TODO - implement asBool
       INTERPRET_ERROR(INTERNAL);
       
     case TYPE(BOOL):
@@ -753,8 +936,7 @@ bool cDirectInterpretASTVisitor::asBool(ASType_t type, uAnyType value, cASTNode&
       }
       
 
-    case TYPE(OBJECT_REF):
-      // @TODO - implement asBool for object ref
+    case TYPE(OBJECT_REF): // @TODO - implement asBool
       INTERPRET_ERROR(INTERNAL);
 
     default:
@@ -838,14 +1020,30 @@ double cDirectInterpretASTVisitor::asFloat(ASType_t type, uAnyType value, cASTNo
 cString* cDirectInterpretASTVisitor::asString(ASType_t type, uAnyType value, cASTNode& node)
 {
   switch (type) {
-    case TYPE(ARRAY):       INTERPRET_ERROR(INTERNAL); // @TODO - as string
     case TYPE(BOOL):        return new cString(cStringUtil::Convert(value.as_bool));
     case TYPE(CHAR):        return new cString(value.as_char);
     case TYPE(INT):         return new cString(cStringUtil::Convert(value.as_int));
     case TYPE(FLOAT):       return new cString(cStringUtil::Convert(value.as_float));
-    case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - as string
-    case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - as string
     case TYPE(STRING):      return value.as_string;
+      
+    case TYPE(ARRAY):
+      {
+        cString* str = new cString(cStringUtil::Stringf("< array(%d) >", value.as_array->GetSize()));
+        value.as_array->RemoveReference();
+        return str;
+      }
+
+    case TYPE(MATRIX): // @TODO - as string
+      {
+        cString* str = new cString(cStringUtil::Stringf("< matrix(,) >"));
+        return str;
+      }
+
+    case TYPE(OBJECT_REF): // @TODO - as string
+    {
+      cString* str = new cString(cStringUtil::Stringf("< object >"));
+      return str;
+    }
       
     default:
       INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(INT)));
@@ -931,19 +1129,46 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
 }
 
 
+void cDirectInterpretASTVisitor::cLocalArray::Set(int i, ASType_t type, uAnyType value)
+{
+  m_storage[i].type = type;
+
+  switch (type) {
+    case TYPE(BOOL):
+    case TYPE(CHAR):
+    case TYPE(INT):
+    case TYPE(FLOAT):
+      m_storage[i].value = value;
+      break;
+      
+    case TYPE(STRING):
+      m_storage[i].value.as_string = new cString(*value.as_string);
+      break;
+    
+    case TYPE(ARRAY):
+      m_storage[i].value.as_array = value.as_array->GetReference();
+      break;
+      
+    case TYPE(MATRIX): // @TODO - array set
+      break;
+      
+    default: break;
+  }
+  
+}
+
 void cDirectInterpretASTVisitor::cLocalArray::copy(int offset, tArray<sAggregateValue>& in_storage)
 {
   for (int i = 0; i < in_storage.GetSize(); i++) {
-    (*m_storage)[i + offset].type = in_storage[i].type;
+    m_storage[i + offset].type = in_storage[i].type;
     switch (in_storage[i].type) {
-      case TYPE(BOOL):    (*m_storage)[i + offset].value.as_bool = in_storage[i].value.as_bool; break;
-      case TYPE(CHAR):    (*m_storage)[i + offset].value.as_char = in_storage[i].value.as_char; break;
-      case TYPE(INT):     (*m_storage)[i + offset].value.as_int = in_storage[i].value.as_int; break;
-      case TYPE(FLOAT):   (*m_storage)[i + offset].value.as_float = in_storage[i].value.as_float; break;
-      case TYPE(STRING):  (*m_storage)[i + offset].value.as_string = new cString(*in_storage[i].value.as_string); break;
-      case TYPE(ARRAY):   (*m_storage)[i + offset].value.as_array = in_storage[i].value.as_array->GetReference(); break;
-      case TYPE(MATRIX):
-        // @TODO - matrix types
+      case TYPE(BOOL):    m_storage[i + offset].value.as_bool = in_storage[i].value.as_bool; break;
+      case TYPE(CHAR):    m_storage[i + offset].value.as_char = in_storage[i].value.as_char; break;
+      case TYPE(INT):     m_storage[i + offset].value.as_int = in_storage[i].value.as_int; break;
+      case TYPE(FLOAT):   m_storage[i + offset].value.as_float = in_storage[i].value.as_float; break;
+      case TYPE(STRING):  m_storage[i + offset].value.as_string = new cString(*in_storage[i].value.as_string); break;
+      case TYPE(ARRAY):   m_storage[i + offset].value.as_array = in_storage[i].value.as_array->GetReference(); break;
+      case TYPE(MATRIX):  // @TODO - array copy
         break;
         
       default: break;
@@ -954,23 +1179,23 @@ void cDirectInterpretASTVisitor::cLocalArray::copy(int offset, tArray<sAggregate
 
 void cDirectInterpretASTVisitor::cLocalArray::Resize(int sz)
 {
-  int o_sz = m_storage->GetSize();
+  int o_sz = m_storage.GetSize();
   
-  m_storage->Resize(sz);
+  m_storage.Resize(sz);
   
   for (int i = o_sz; i < sz; i++) {
-    (*m_storage)[i].value.as_int = 0;
-    (*m_storage)[i].type = TYPE(INT);
+    m_storage[i].value.as_int = 0;
+    m_storage[i].type = TYPE(INT);
   }  
 }
 
 cDirectInterpretASTVisitor::cLocalArray::~cLocalArray()
 {
-  int sz = m_storage->GetSize();
+  int sz = m_storage.GetSize();
   
   // Cleanup values stored in the array
   for (int i = 0; i < sz; i++) {
-    sAggregateValue& cell = (*m_storage)[i];
+    sAggregateValue& cell = m_storage[i];
     switch (cell.type) {
       case TYPE(STRING):  delete cell.value.as_string; break;
       case TYPE(ARRAY):   cell.value.as_array->RemoveReference(); break;
@@ -978,8 +1203,6 @@ cDirectInterpretASTVisitor::cLocalArray::~cLocalArray()
       default: break;
     }
   }
-  
-  delete m_storage;
 }
 
 
@@ -999,6 +1222,12 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
   va_list vargs;
   va_start(vargs, line);
   switch (err) {
+    case AS_DIRECT_INTERPRET_ERR_DIVISION_BY_ZERO:
+      std::cerr << "division by zero" << ERR_ENDL;
+      break;
+    case AS_DIRECT_INTERPRET_ERR_INVALID_ARRAY_SIZE:
+      std::cerr << "invalid array dimension" << ERR_ENDL;
+      break;
     case AS_DIRECT_INTERPRET_ERR_TYPE_CAST:
       {
         const char* type1 = VA_ARG_STR;
@@ -1012,6 +1241,12 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
         const char* type = VA_ARG_STR;
         std::cerr << "'" << op << "' operation undefined for type '" << type << "'" << ERR_ENDL;
       }
+      break;
+    case AS_DIRECT_INTERPRET_ERR_UNPACK_VALUE_TOO_LARGE:
+      std::cerr << "unpack value too large" << ERR_ENDL;
+      break;
+    case AS_DIRECT_INTERPRET_ERR_UNPACK_VALUE_TOO_SMALL:
+      std::cerr << "unpack value too small" << ERR_ENDL;
       break;
       
     case AS_DIRECT_INTERPRET_ERR_INTERNAL:
