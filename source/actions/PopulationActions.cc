@@ -805,6 +805,25 @@ public:
   }
 };
 
+class cActionSetMigrationRate : public cAction
+{
+private:
+    double m_rate;
+
+public:
+    cActionSetMigrationRate(cWorld* world, const cString& args) : cAction(world, args), m_rate(0.0)
+    {
+	cString largs(args);
+	if(largs.GetSize()) m_rate = largs.PopWord().AsDouble();
+    }
+
+    static const cString GetDescription() { return "Arguments: [double rate=0.0]"; }
+
+    void Process(cAvidaContext& ctx)
+    {
+	m_world->GetConfig().MIGRATION_RATE.Set(m_rate);
+    }
+};
 
 class cActionSetMutProb : public cAction
 {
@@ -1647,6 +1666,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
 
+  action_lib->Register<cActionSetMigrationRate>("SetMigrationRate");
   action_lib->Register<cActionSetMutProb>("SetMutProb");
   action_lib->Register<cActionModMutProb>("ModMutProb");
   action_lib->Register<cActionZeroMuts>("ZeroMuts");

@@ -397,30 +397,14 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
   organism->GetPhenotype().SetDivType(mut_multiplier);
   
   // Divide Mutations
-  if (organism->TestDivideMut(ctx) && totalMutations < maxmut) {
+  if (totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
 //    ++cpu_stats.mut_stats.divide_mut_count;
     totalMutations++;
     //cerr << "Mutating HERE!!!! BAD!!!!!" << endl;
   }
-  
-  // Divide Insertions
-  if (organism->TestDivideIns(ctx) && child_genome.GetSize() < MAX_CREATURE_SIZE && totalMutations < maxmut) {
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-    child_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
-//    ++cpu_stats.mut_stats.divide_insert_mut_count;
-    totalMutations++;
-  }
-  
-  // Divide Deletions
-  if (organism->TestDivideDel(ctx) && child_genome.GetSize() > MIN_CREATURE_SIZE && totalMutations < maxmut) {
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
-    child_genome.Remove(mut_line);
-//    ++cpu_stats.mut_stats.divide_delete_mut_count;
-    totalMutations++;
-  }
-  
+   
   // Divide Mutations (per site)
   if (organism->GetDivMutProb() > 0 && totalMutations < maxmut) {
     //int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
@@ -433,84 +417,10 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
         child_genome[site] = m_inst_set->GetRandomInst(ctx);
 //        ++cpu_stats.mut_stats.div_mut_count;
         totalMutations++;
-        //cerr << "OK to mutate here " << totalMutations << endl;
+        cerr << "Resampling here " << totalMutations << endl;
       }
     }
   }
-  
-  
-  
-  // Need to come back and fix tese last two - per site instructions
-  // Insert Mutations (per site)
-  if (organism->GetInsMutProb() > 0 && totalMutations < maxmut) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  organism->GetInsMutProb());
-    
-    // If would make creature to big, insert up to MAX_CREATURE_SIZE
-    if (num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE) {
-      num_mut = MAX_CREATURE_SIZE - child_genome.GetSize();
-    }
-    // If we have lines to insert...
-    if (num_mut > 0) {
-      // Build a list of the sites where mutations occured
-      static int mut_sites[MAX_CREATURE_SIZE];
-      for (int i = 0; i < num_mut; i++) {
-        mut_sites[i] = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-      }
-      // Sort the list
-      qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
-      // Actually do the mutations (in reverse sort order)
-      for (int i = num_mut-1; i >= 0; i--) {
-        child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
-//        cpu_stats.mut_stats.insert_mut_count++;
-        totalMutations++; //Unlike the others we can't be sure this was done only on divide -- AWC 06/29/06
-      }
-    }
-  }
-  
-  
-  // Delete Mutations (per site)
-  if (organism->GetDelMutProb() > 0 && totalMutations < maxmut) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  organism->GetDelMutProb());
-    // If would make creature too small, delete down to MIN_CREATURE_SIZE
-    if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
-      num_mut = child_genome.GetSize() - MIN_CREATURE_SIZE;
-    }
-    
-    // If we have lines to delete...
-    for (int i = 0; i < num_mut; i++) {
-      int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
-      child_genome.Remove(site);
-//      cpu_stats.mut_stats.delete_mut_count++;
-      totalMutations++;
-    }
-  }
-  
-  // Mutations in the parent's genome
-  if (organism->GetParentMutProb() > 0 && totalMutations < maxmut) {
-    for (int i = 0; i < GetMemory().GetSize(); i++) {
-      if (organism->TestParentMut(ctx)) {
-        GetMemory()[i] = m_inst_set->GetRandomInst(ctx);
-//        cpu_stats.mut_stats.parent_mut_line_count++;
-        totalMutations++; //Unlike the others we can't be sure this was done only on divide -- AWC 06/29/06
-        
-      }
-    }
-  }
-  
-  
-  // Count up mutated lines
-//  for (int i = 0; i < GetMemory().GetSize(); i++) {
-//    if (GetMemory().FlagPointMut(i)) {
-//      cpu_stats.mut_stats.point_mut_line_count++;
-//    }
-//  }
-//  for (int i = 0; i < child_genome.GetSize(); i++) {
-//    if (child_genome.FlagCopyMut(i)) {
-//      cpu_stats.mut_stats.copy_mut_line_count++;
-//    }
-//  }
   
   return totalMutations;
 }
@@ -616,16 +526,15 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   
   bool revert = false;
   bool sterilize = false;
-  
-  //if you?r suppose to be dead, you really are going to be dead
-  if(!test_info.IsViable()){
+    
+  // If implicit mutations are turned off, make sure this won't spawn one.
+  if (organism->GetFailImplicit() > 0) {
+    if (test_info.GetMaxDepth() > 0) sterilize = true;
+  }
+
+  if(organism->GetFailImplicit() > 1 && !test_info.IsViable()){
     //if (test_info.GetMaxDepth() > 0) sterilize = true;
     sterilize = true;
-  }
-  
-  // If implicit mutations are turned off, make sure this won't spawn one.
-  if (organism->GetFailImplicit() == true) {
-    if (test_info.GetMaxDepth() > 0) sterilize = true;
   }
   
   if (child_fitness == 0.0) {

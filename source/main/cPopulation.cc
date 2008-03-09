@@ -2198,6 +2198,8 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   //@AWC -- decide wether the child will migrate to another deme -- if migrating we ignore the birth method.  
   if ((m_world->GetConfig().MIGRATION_RATE.Get() > 0.0) //@AWC -- Pedantic test to maintain consistancy.
       && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())){
+     
+      //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
 
     int deme_id = parent_cell.GetDemeID();
 

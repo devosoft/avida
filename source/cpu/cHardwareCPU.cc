@@ -1334,7 +1334,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if
   // lineages need to be updated.
-  Divide_TestFitnessMeasures(ctx);
+  Divide_TestFitnessMeasures1(ctx); 
   
 #if INSTRUCTION_COSTS
   // reset first time instruction costs
@@ -1411,7 +1411,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
       m_world->GetStats().IncResamplings();
     }
 
-    fitTest = Divide_TestFitnessMeasures(ctx);
+    fitTest = Divide_TestFitnessMeasures1(ctx);
     
     if(!fitTest && mutations >= totalMutations) break;
 

@@ -479,7 +479,7 @@ double cOrganism::CalcMeritRatio()
 
 
 bool cOrganism::GetTestOnDivide() const { return m_interface->TestOnDivide(); }
-bool cOrganism::GetFailImplicit() const { return m_world->GetConfig().FAIL_IMPLICIT.Get(); }
+int cOrganism::GetFailImplicit() const { return m_world->GetConfig().FAIL_IMPLICIT.Get(); }
 
 bool cOrganism::GetRevertFatal() const { return m_world->GetConfig().REVERT_FATAL.Get(); }
 bool cOrganism::GetRevertNeg() const { return m_world->GetConfig().REVERT_DETRIMENTAL.Get(); }
