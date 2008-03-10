@@ -124,7 +124,7 @@ cPopulation::cPopulation(cWorld* world)
   assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
            && (m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get()>0.0)));
   assert(!(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
-           && (m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()>1)));
+           && (m_world->GetConfig().MIGRATION_RATE.Get()>0.0)));
   
 #ifdef DEBUG
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
@@ -2177,19 +2177,19 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     int max_msrndx = 0;
     for  (int i=0; i < cell_array.GetSize(); i++) {
       if (cell_array[i].IsOccupied()) {
-	if (cell_array[i].GetOrganism()->GetPhenotype().OK()) {
-	  // Get measurement, exclude parent
-	  if (parent_cell.GetID() != cell_array[i].GetID()) {
-	    msr = random();
-	  } else {
-	    msr = 0.0;
-	  }
+        if (cell_array[i].GetOrganism()->GetPhenotype().OK()) {
+          // Get measurement, exclude parent
+          if (parent_cell.GetID() != cell_array[i].GetID()) {
+            msr = random();
+          } else {
+            msr = 0.0;
+          }
 
-	  if (max_msr < msr) {
-	    max_msr = msr;
-	    max_msrndx = i;
-	  }
-	}
+          if (max_msr < msr) {
+            max_msr = msr;
+            max_msrndx = i;
+          }
+        }
       }
     }
     KillOrganism(cell_array[max_msrndx]);
@@ -2463,6 +2463,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
     deme.IncTimeUsed();
     CheckImplicitDemeRepro(deme);
   }
+  
 }
 
 // Loop through all the demes getting stats and doing calculations
