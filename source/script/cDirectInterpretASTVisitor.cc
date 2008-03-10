@@ -24,6 +24,7 @@
 
 #include "cDirectInterpretASTVisitor.h"
 
+#include <cassert>
 #include <cmath>
 
 #include "avida.h"
@@ -45,7 +46,8 @@ using namespace AvidaScript;
 #define TYPE(x) AS_TYPE_ ## x
 
 cDirectInterpretASTVisitor::cDirectInterpretASTVisitor(cSymbolTable* global_symtbl)
-  : m_global_symtbl(global_symtbl), m_cur_symtbl(global_symtbl), m_call_stack(0, 2048), m_sp(0), m_has_returned(false)
+  : m_global_symtbl(global_symtbl), m_cur_symtbl(global_symtbl), m_call_stack(0, 2048), m_sp(0)
+  , m_has_returned(false), m_obj_assign(false)
 {
   m_call_stack.Resize(m_global_symtbl->GetNumVariables());
   for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) m_call_stack[i].as_string = NULL;
@@ -105,8 +107,12 @@ void cDirectInterpretASTVisitor::VisitArgumentList(cASTArgumentList& node)
 
 void cDirectInterpretASTVisitor::VisitObjectAssignment(cASTObjectAssignment& node)
 {
-  // @TODO - handle object assignment
-  INTERPRET_ERROR(INTERNAL);
+  node.GetTarget()->Accept(*this);
+  cObjectRef* obj = m_rvalue.as_ref;
+  
+  node.GetExpression()->Accept(*this);
+  
+  if (!obj->Set(m_rtype, m_rvalue)) INTERPRET_ERROR(OBJECT_ASSIGN_FAIL);
 }
 
 
@@ -615,7 +621,26 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
       }
       break;
 
-    case TOKEN(IDX_OPEN): // @TODO - handle indexing
+    case TOKEN(IDX_OPEN):
+      if (m_obj_assign) {
+        cObjectRef* obj = lval.as_ref;
+        int idx = asInt(rtype, rval, node);
+        
+        if (obj->GetType() != TYPE(ARRAY))
+          INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(IDX_OPEN)), mapType(obj->GetType()));
+        
+        m_rvalue.as_ref = new cObjectIndexRef(obj, idx);
+        m_rtype = TYPE(OBJECT_REF);
+      } else {
+        cLocalArray* arr = asArray(ltype, lval, node);
+        int idx = asInt(rtype, rval, node);
+        
+        if (idx < 0 || idx >= arr->GetSize()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
+        
+        const sAggregateValue val = arr->Get(idx);
+        m_rtype = val.type;
+        m_rvalue = val.value;
+      }
       break;
       
     default:
@@ -823,20 +848,33 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
   int var_id = node.GetVarID();
   int sp = node.IsVarGlobal() ? 0 : m_sp;
   
-  switch (node.GetType()) {
-    case TYPE(ARRAY):       m_rvalue.as_array = m_call_stack[sp + var_id].as_array->GetReference(); break;
-    case TYPE(BOOL):        m_rvalue.as_bool = m_call_stack[sp + var_id].as_bool; break;
-    case TYPE(CHAR):        m_rvalue.as_char = m_call_stack[sp + var_id].as_char; break;
-    case TYPE(FLOAT):       m_rvalue.as_float = m_call_stack[sp + var_id].as_float; break;
-    case TYPE(INT):         m_rvalue.as_int = m_call_stack[sp + var_id].as_int; break;
-    case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
-    case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
-    case TYPE(STRING):      m_rvalue.as_string = new cString(*m_call_stack[sp + var_id].as_string); break;
-      
-    default:
-      INTERPRET_ERROR(INTERNAL);
+  if (m_obj_assign) {
+    switch (node.GetType()) {
+      case TYPE(ARRAY):       m_rvalue.as_ref = new cArrayVarRef(m_call_stack[sp + var_id]); break;
+      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+      case TYPE(STRING):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+        
+      default:
+        INTERPRET_ERROR(INTERNAL);
+    }
+    m_rtype = TYPE(OBJECT_REF);
+  } else {
+    switch (node.GetType()) {
+      case TYPE(ARRAY):       m_rvalue.as_array = m_call_stack[sp + var_id].as_array->GetReference(); break;
+      case TYPE(BOOL):        m_rvalue.as_bool = m_call_stack[sp + var_id].as_bool; break;
+      case TYPE(CHAR):        m_rvalue.as_char = m_call_stack[sp + var_id].as_char; break;
+      case TYPE(FLOAT):       m_rvalue.as_float = m_call_stack[sp + var_id].as_float; break;
+      case TYPE(INT):         m_rvalue.as_int = m_call_stack[sp + var_id].as_int; break;
+      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+      case TYPE(STRING):      m_rvalue.as_string = new cString(*m_call_stack[sp + var_id].as_string); break;
+        
+      default:
+        INTERPRET_ERROR(INTERNAL);
+    }
+    m_rtype = node.GetType();
   }
-  m_rtype = node.GetType();
 }
 
 
@@ -1228,6 +1266,66 @@ cDirectInterpretASTVisitor::cLocalArray::~cLocalArray()
 }
 
 
+bool cDirectInterpretASTVisitor::cArrayVarRef::Set(int idx, ASType_t type, uAnyType value)
+{
+  cLocalArray* arr = m_var.as_array;
+  if (idx < 0 || idx >= arr->GetSize()) return false;
+
+  if (arr->IsShared()) {
+    arr = new cLocalArray(arr);
+    m_var.as_array->RemoveReference();
+    m_var.as_array = arr;
+  }
+  
+  arr->Set(idx, type, value);
+  
+  return true;
+}
+
+
+ASType_t cDirectInterpretASTVisitor::cObjectIndexRef::GetType(int idx)
+{
+  if (m_obj->GetType(m_idx) != TYPE(ARRAY)) return TYPE(INVALID);
+  
+  cLocalArray* arr = m_obj->Get(m_idx).as_array;
+  if (idx < 0 || idx >= arr->GetSize()) return TYPE(INVALID);
+  
+  return arr->Get(idx).type;
+}
+
+
+cDirectInterpretASTVisitor::uAnyType cDirectInterpretASTVisitor::cObjectIndexRef::Get(int idx)
+{
+  assert(m_obj->GetType(m_idx) == TYPE(ARRAY));
+  
+  cLocalArray* arr = m_obj->Get(m_idx).as_array;
+  assert(idx < 0 || idx >= arr->GetSize());
+  
+  return arr->Get(idx).value;
+}
+
+
+bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(int idx, ASType_t type, uAnyType value)
+{
+  if (m_obj->GetType(m_idx) != TYPE(ARRAY)) return false;
+  
+  cLocalArray* arr = m_obj->Get(m_idx).as_array;
+  if (idx < 0 || idx >= arr->GetSize()) return false;
+  
+  if (arr->IsShared()) {
+    arr = new cLocalArray(arr);
+    arr->Set(idx, type, value);
+    
+    uAnyType val;
+    val.as_array = arr;
+    m_obj->Set(m_idx, TYPE(ARRAY), val);
+  } else {
+    arr->Set(idx, type, value);    
+  }
+  
+  return true;
+}
+
 
 void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const cASFilePosition& fp, const int line, ...)
 {
@@ -1247,8 +1345,14 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
     case AS_DIRECT_INTERPRET_ERR_DIVISION_BY_ZERO:
       std::cerr << "division by zero" << ERR_ENDL;
       break;
+    case AS_DIRECT_INTERPRET_ERR_INDEX_OUT_OF_BOUNDS:
+      std::cerr << "array index out of bounds" << ERR_ENDL;
+      break;
     case AS_DIRECT_INTERPRET_ERR_INVALID_ARRAY_SIZE:
       std::cerr << "invalid array dimension" << ERR_ENDL;
+      break;
+    case AS_DIRECT_INTERPRET_ERR_OBJECT_ASSIGN_FAIL:
+      std::cerr << "aggregate assignment failed" << ERR_ENDL;
       break;
     case AS_DIRECT_INTERPRET_ERR_TYPE_CAST:
       {

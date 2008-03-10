@@ -38,6 +38,7 @@ private:
   // --------  Internal Type Declarations  --------
   class cLocalArray;
   class cLocalMatrix;
+  class cObjectRef;
   
   typedef union {
     bool as_bool;
@@ -47,6 +48,7 @@ private:
     cString* as_string;
     cLocalArray* as_array;
     cLocalMatrix* as_matrix;
+    cObjectRef* as_ref;
   } uAnyType;
   
 
@@ -60,6 +62,7 @@ private:
   tSmartArray<uAnyType> m_call_stack;
   int m_sp;
   bool m_has_returned;
+  bool m_obj_assign;
   
   
   // --------  Private Constructors  --------
@@ -152,6 +155,61 @@ private:
   class cLocalMatrix
   {
     
+  };
+  
+  class cObjectRef
+  {
+  public:
+    virtual ~cObjectRef() { ; }
+
+    virtual bool IsWritable() = 0;
+    virtual ASType_t GetType() = 0;
+    virtual ASType_t GetType(int idx) = 0;
+    
+    virtual uAnyType Get() = 0;
+    virtual uAnyType Get(int idx) = 0;
+    virtual bool Set(ASType_t type, uAnyType value) = 0;
+    virtual bool Set(int idx, ASType_t type, uAnyType value) = 0;
+  };
+
+  class cArrayVarRef : public cObjectRef
+  {
+  private:
+    uAnyType& m_var;
+    
+  public:
+    cArrayVarRef(uAnyType& var) : m_var(var) { ; }
+    ~cArrayVarRef() { ; }
+
+    bool IsWritable() { return true; }
+    ASType_t GetType() { return AS_TYPE_ARRAY; }
+    ASType_t GetType(int idx)
+    { if (idx < 0 || idx >= m_var.as_array->GetSize()) return AS_TYPE_INVALID; else return m_var.as_array->Get(idx).type; }
+    
+    uAnyType Get() { return m_var; }
+    uAnyType Get(int idx) { assert(idx > 0 && idx < m_var.as_array->GetSize()); return m_var.as_array->Get(idx).value; }
+    bool Set(ASType_t type, uAnyType value) { return false; }
+    bool Set(int idx, ASType_t type, uAnyType value);
+  };
+  
+  class cObjectIndexRef : public cObjectRef
+  {
+  private:
+    cObjectRef* m_obj;
+    int m_idx;
+    
+  public:
+    cObjectIndexRef(cObjectRef* obj, int idx) : m_obj(obj), m_idx(idx) { ; }
+    ~cObjectIndexRef() { delete m_obj; }
+    
+    bool IsWritable() { return m_obj->IsWritable(); }
+    ASType_t GetType() { return m_obj->GetType(m_idx); }
+    ASType_t GetType(int idx);
+    
+    uAnyType Get() { return m_obj->Get(m_idx); }
+    uAnyType Get(int idx);
+    bool Set(ASType_t type, uAnyType value) { return m_obj->Set(m_idx, type, value); }
+    bool Set(int idx, ASType_t type, uAnyType value);
   };
 };
 
