@@ -107,7 +107,9 @@ void cDirectInterpretASTVisitor::VisitArgumentList(cASTArgumentList& node)
 
 void cDirectInterpretASTVisitor::VisitObjectAssignment(cASTObjectAssignment& node)
 {
+  m_obj_assign = true;
   node.GetTarget()->Accept(*this);
+  m_obj_assign = false;
   cObjectRef* obj = m_rvalue.as_ref;
   
   node.GetExpression()->Accept(*this);
