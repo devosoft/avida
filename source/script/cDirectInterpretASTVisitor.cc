@@ -96,6 +96,21 @@ void cDirectInterpretASTVisitor::VisitAssignment(cASTAssignment& node)
 }
 
 
+void cDirectInterpretASTVisitor::VisitArgumentList(cASTArgumentList& node)
+{
+  // Should never recurse into here.  Argument lists are processed by their owners as needed.
+  INTERPRET_ERROR(INTERNAL);
+}
+
+
+void cDirectInterpretASTVisitor::VisitObjectAssignment(cASTObjectAssignment& node)
+{
+  // @TODO - handle object assignment
+  INTERPRET_ERROR(INTERNAL);
+}
+
+
+
 void cDirectInterpretASTVisitor::VisitReturnStatement(cASTReturnStatement& node)
 {
   node.GetExpression()->Accept(*this);
@@ -600,7 +615,7 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
       }
       break;
 
-    case TOKEN(IDX_OPEN):
+    case TOKEN(IDX_OPEN): // @TODO - handle indexing
       break;
       
     default:
@@ -656,12 +671,6 @@ void cDirectInterpretASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
   }
 }
 
-
-void cDirectInterpretASTVisitor::VisitArgumentList(cASTArgumentList& node)
-{
-  // Should never recurse into here.  Argument lists are processed by their owners as needed.
-  INTERPRET_ERROR(INTERNAL);
-}
 
 void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
@@ -896,9 +905,22 @@ cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(AST
   switch (type) {
     case TYPE(ARRAY):
       return value.as_array;
+
     case TYPE(MATRIX): // @TODO - asArray 
-    case TYPE(STRING): // @TODO - asArray
       INTERPRET_ERROR(INTERNAL);
+    
+    case TYPE(STRING):
+      {
+        cString* str = value.as_string;
+        cLocalArray* arr = new cLocalArray(str->GetSize());
+        for (int i = 0; i < str->GetSize(); i++) {
+          uAnyType val;
+          val.as_char = (*str)[i];
+          arr->Set(i, TYPE(CHAR), val);
+        }
+        delete str;
+        return arr;
+      }
       
     default:
       INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(CHAR)));

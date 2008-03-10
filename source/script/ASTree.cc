@@ -28,6 +28,9 @@
 
 
 void cASTAssignment::Accept(cASTVisitor& visitor) { visitor.VisitAssignment(*this); }
+void cASTArgumentList::Accept(cASTVisitor& visitor) { visitor.VisitArgumentList(*this); }
+void cASTObjectAssignment::Accept(cASTVisitor& visitor) { visitor.VisitObjectAssignment(*this); }
+
 
 void cASTReturnStatement::Accept(cASTVisitor& visitor) { visitor.VisitReturnStatement(*this); }
 void cASTStatementList::Accept(cASTVisitor& visitor) { visitor.VisitStatementList(*this); }
@@ -43,7 +46,6 @@ void cASTVariableDefinitionList::Accept(cASTVisitor& visitor) { visitor.VisitVar
 void cASTExpressionBinary::Accept(cASTVisitor& visitor) { visitor.VisitExpressionBinary(*this); }
 void cASTExpressionUnary::Accept(cASTVisitor& visitor) { visitor.VisitExpressionUnary(*this); }
 
-void cASTArgumentList::Accept(cASTVisitor& visitor) { visitor.VisitArgumentList(*this); }
 void cASTFunctionCall::Accept(cASTVisitor& visitor) { visitor.VisitFunctionCall(*this); }
 void cASTLiteral::Accept(cASTVisitor& visitor) { visitor.VisitLiteral(*this); }
 void cASTLiteralArray::Accept(cASTVisitor& visitor) { visitor.VisitLiteralArray(*this); }

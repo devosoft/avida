@@ -95,6 +95,7 @@ public:
 
 class cASTAssignment;
 class cASTArgumentList;
+class cASTObjectAssignment;
 
 class cASTReturnStatement;
 class cASTStatementList;
@@ -160,6 +161,26 @@ public:
   inline void AddNode(cASTNode* n) { m_nodes.PushRear(n); }
   inline int GetSize() const { return m_nodes.GetSize(); }
   inline tListIterator<cASTNode> Iterator() { return tListIterator<cASTNode>(m_nodes); }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTObjectAssignment : public cASTNode
+{
+private:
+  cASTNode* m_trgt;
+  cASTNode* m_expr;
+
+public:
+  cASTObjectAssignment(const cASFilePosition& fp, cASTNode* trgt)
+    : cASTNode(fp), m_trgt(trgt), m_expr(NULL) { ; }
+  ~cASTObjectAssignment() { delete m_expr; }
+  
+  inline cASTNode* GetTarget() { return m_trgt; }
+
+  inline void SetExpression(cASTNode* expr) { delete m_expr; m_expr = expr; }
+  inline cASTNode* GetExpression() { return m_expr; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -530,7 +551,6 @@ class cASTObjectReference : public cASTNode
 private:
   cASTNode* m_object;
   cString m_name;
-  ASType_t m_type;
   
 public:
   cASTObjectReference(const cASFilePosition& fp, cASTNode* object, const cString& name)
@@ -540,8 +560,7 @@ public:
   cASTNode* GetObject() { return m_object; }
   inline const cString& GetName() { return m_name; }
   
-  ASType_t GetType() const { return m_type; }
-  inline void SetType(ASType_t type) { m_type = type; }
+  ASType_t GetType() const { return AS_TYPE_OBJECT_REF; }
   
   void Accept(cASTVisitor& visitor);
 };

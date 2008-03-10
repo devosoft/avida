@@ -62,6 +62,7 @@ private:
   bool m_success;
   bool m_fun_def;
   bool m_top_level;
+  bool m_call_expr;
 
   
   // --------  Private Constructors  --------
@@ -77,6 +78,8 @@ public:
   
   
   void VisitAssignment(cASTAssignment&);
+  void VisitArgumentList(cASTArgumentList&);
+  void VisitObjectAssignment(cASTObjectAssignment&);
   
   void VisitReturnStatement(cASTReturnStatement&);
   void VisitStatementList(cASTStatementList&);
@@ -92,7 +95,6 @@ public:
   void VisitExpressionBinary(cASTExpressionBinary&);
   void VisitExpressionUnary(cASTExpressionUnary&);
   
-  void VisitArgumentList(cASTArgumentList&);
   void VisitFunctionCall(cASTFunctionCall&);
   void VisitLiteral(cASTLiteral&);
   void VisitLiteralArray(cASTLiteralArray&);

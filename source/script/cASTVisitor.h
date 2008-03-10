@@ -36,6 +36,8 @@ public:
 
   
   virtual void VisitAssignment(cASTAssignment&) = 0;
+  virtual void VisitArgumentList(cASTArgumentList&) = 0;
+  virtual void VisitObjectAssignment(cASTObjectAssignment&) = 0;  
   
   virtual void VisitReturnStatement(cASTReturnStatement&) = 0;
   virtual void VisitStatementList(cASTStatementList&) = 0;
@@ -51,7 +53,6 @@ public:
   virtual void VisitExpressionBinary(cASTExpressionBinary&) = 0;
   virtual void VisitExpressionUnary(cASTExpressionUnary&) = 0;
 
-  virtual void VisitArgumentList(cASTArgumentList&) = 0;
   virtual void VisitFunctionCall(cASTFunctionCall&) = 0;
   virtual void VisitLiteral(cASTLiteral&) = 0;
   virtual void VisitLiteralArray(cASTLiteralArray&) = 0;

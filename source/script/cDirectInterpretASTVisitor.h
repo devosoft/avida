@@ -73,6 +73,8 @@ public:
   int Interpret(cASTNode* node);
   
   void VisitAssignment(cASTAssignment&);
+  void VisitObjectAssignment(cASTObjectAssignment&);
+  void VisitArgumentList(cASTArgumentList&);
   
   void VisitReturnStatement(cASTReturnStatement&);
   void VisitStatementList(cASTStatementList&);
@@ -88,7 +90,6 @@ public:
   void VisitExpressionBinary(cASTExpressionBinary&);
   void VisitExpressionUnary(cASTExpressionUnary&);
   
-  void VisitArgumentList(cASTArgumentList&);
   void VisitFunctionCall(cASTFunctionCall&);
   void VisitLiteral(cASTLiteral&);
   void VisitLiteralArray(cASTLiteralArray&);

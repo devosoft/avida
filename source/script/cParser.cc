@@ -331,9 +331,9 @@ cASTNode* cParser::parseAssignment()
   PARSE_TRACE("parseAssignment");
   cASTAssignment* an = new cASTAssignment(FILEPOS, currentText());
   
-  nextToken(); // consume '='
+  nextToken(); // consume id
 
-  nextToken();
+  nextToken(); // consume '='
   cASTNode* expr = parseExpression();
   an->SetExpression(expr);
 
@@ -363,6 +363,14 @@ cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
         if (currentToken() != TOKEN(IDX_OPEN) && currentToken() != TOKEN(DOT)) eoe = true;
       } else {
         ce.Set(new cASTObjectReference(FILEPOS, ce.Release(), name));
+        
+        if (required && currentToken() == TOKEN(ASSIGN)) {
+          cASTObjectAssignment* oa = new cASTObjectAssignment(FILEPOS, ce.Release());
+          ce.Set(oa);
+          nextToken(); // consume '='
+          oa->SetExpression(parseExpression());
+          eoe = true;
+        }
       }
     } else if (currentToken() == TOKEN(IDX_OPEN)) {
       do {
@@ -370,6 +378,14 @@ cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
         ce.Set(new cASTExpressionBinary(FILEPOS, TOKEN(IDX_OPEN), ce.Release(), parseExpression()));
         if (currentToken() != TOKEN(IDX_CLOSE)) PARSE_UNEXPECT();
       } while (nextToken() == TOKEN(IDX_OPEN));
+      
+      if (required && currentToken() == TOKEN(ASSIGN)) {
+        cASTObjectAssignment* oa = new cASTObjectAssignment(FILEPOS, ce.Release());
+        ce.Set(oa);
+        nextToken(); // consume '='
+        oa->SetExpression(parseExpression());
+        eoe = true;
+      }      
     } else {
       if (required) { PARSE_UNEXPECT(); }
       else eoe = true;
@@ -769,7 +785,6 @@ cASTNode* cParser::parseIDStatement()
     case TOKEN(IDX_OPEN):
       cASTNode* target = new cASTVariableReference(FILEPOS, currentText());
       nextToken(); // consume id
-      // @TODO - handle call expression assignments
       return parseCallExpression(target, true);
       break;
     case TOKEN(REF):

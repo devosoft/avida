@@ -57,6 +57,31 @@ void cDumpASTVisitor::VisitAssignment(cASTAssignment& node)
 }
 
 
+void cDumpASTVisitor::VisitArgumentList(cASTArgumentList& node)
+{
+  m_depth++;
+  
+  tListIterator<cASTNode> it = node.Iterator();
+  cASTNode* val = NULL;
+  while ((val = it.Next())) val->Accept(*this);
+  
+  m_depth--;
+}
+
+void cDumpASTVisitor::VisitObjectAssignment(cASTObjectAssignment& node)
+{
+  m_depth++;
+  node.GetTarget()->Accept(*this);
+  m_depth--;
+  
+  indent();
+  cout << "=" << endl;
+  
+  m_depth++;
+  node.GetExpression()->Accept(*this);
+  m_depth--;
+}
+
 void cDumpASTVisitor::VisitReturnStatement(cASTReturnStatement& node)
 {
   indent();
@@ -284,17 +309,6 @@ void cDumpASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
   m_depth--;
 }
 
-
-void cDumpASTVisitor::VisitArgumentList(cASTArgumentList& node)
-{
-  m_depth++;
-  
-  tListIterator<cASTNode> it = node.Iterator();
-  cASTNode* val = NULL;
-  while ((val = it.Next())) val->Accept(*this);
-  
-  m_depth--;
-}
 
 void cDumpASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {

@@ -72,7 +72,7 @@ namespace AvidaScript {
 
 cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl, cASTNode* main)
   : m_library(lib), m_global_symtbl(global_symtbl), m_parent_scope(global_symtbl), m_fun_id(0), m_cur_symtbl(global_symtbl)
-  , m_success(true), m_fun_def(false), m_top_level(true)
+  , m_success(true), m_fun_def(false), m_top_level(true), m_call_expr(false)
 {
   // Add internal definition of the global function
   int fun_id = -1;
@@ -93,6 +93,26 @@ void cSemanticASTVisitor::VisitAssignment(cASTAssignment& node)
     SEMANTIC_ERROR(VARIABLE_UNDEFINED, (const char*)node.GetVariable());
   }
 }
+
+
+void cSemanticASTVisitor::VisitArgumentList(cASTArgumentList& node)
+{
+  // Should never recurse into here.  Argument lists are processed by their owners as needed.
+  SEMANTIC_ERROR(INTERNAL);
+}
+
+
+void cSemanticASTVisitor::VisitObjectAssignment(cASTObjectAssignment& node)
+{
+  m_call_expr = true;
+  node.GetTarget()->Accept(*this);
+  m_call_expr = false;
+  
+  if (node.GetTarget()->GetType() != TYPE(OBJECT_REF)) SEMANTIC_ERROR(INVALID_ASSIGNMENT_TARGET);
+  
+  node.GetExpression()->Accept(*this);
+}
+
 
 
 void cSemanticASTVisitor::VisitReturnStatement(cASTReturnStatement& node)
@@ -342,7 +362,7 @@ void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
     case TOKEN(IDX_OPEN):
       checkCast(node.GetLeft()->GetType(), TYPE(ARRAY));
       checkCast(node.GetRight()->GetType(), TYPE(INT));
-      node.SetType(TYPE(RUNTIME));
+      node.SetType(m_call_expr ? TYPE(OBJECT_REF) : TYPE(RUNTIME));
       break;
     case TOKEN(ARR_RANGE):
       checkCast(node.GetLeft()->GetType(), TYPE(INT));
@@ -483,12 +503,6 @@ void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
   }
 }
 
-
-void cSemanticASTVisitor::VisitArgumentList(cASTArgumentList& node)
-{
-  // Should never recurse into here.  Argument lists are processed by their owners as needed.
-  SEMANTIC_ERROR(INTERNAL);
-}
 
 void cSemanticASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
@@ -845,6 +859,9 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_ERR_FUNCTION_UNDEFINED:
       std::cerr << "'" << VA_ARG_STR << "()' declared but not defined" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_INVALID_ASSIGNMENT_TARGET:
+      std::cerr << "invalid assignment target" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_TOO_MANY_ARGUMENTS:
       std::cerr << "too many arguments" << ERR_ENDL;

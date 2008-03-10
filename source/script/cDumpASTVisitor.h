@@ -37,6 +37,8 @@ public:
   cDumpASTVisitor();
   
   void VisitAssignment(cASTAssignment&);
+  void VisitArgumentList(cASTArgumentList&);
+  void VisitObjectAssignment(cASTObjectAssignment&);
   
   void VisitReturnStatement(cASTReturnStatement&);
   void VisitStatementList(cASTStatementList&);
@@ -52,7 +54,6 @@ public:
   void VisitExpressionBinary(cASTExpressionBinary&);
   void VisitExpressionUnary(cASTExpressionUnary&);
   
-  void VisitArgumentList(cASTArgumentList&);
   void VisitFunctionCall(cASTFunctionCall&);
   void VisitLiteral(cASTLiteral&);
   void VisitLiteralArray(cASTLiteralArray&);
