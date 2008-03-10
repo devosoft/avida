@@ -487,6 +487,7 @@ void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
         case TYPE(CHAR):
         case TYPE(FLOAT):
         case TYPE(INT):
+        case TYPE(RUNTIME):
           // Char, Float and Int Okay
           
           node.SetType(node.GetExpression()->GetType());

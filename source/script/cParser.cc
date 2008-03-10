@@ -192,8 +192,8 @@ using namespace AvidaScript;
 #endif
 
 #if DEBUG_AS_PARSER
-# define PARSE_DEBUG(x) /*{ std::cerr << x << std::endl; }*/
-# define PARSE_TRACE(x) /*{ std::cerr << "trace: " << x << std::endl; }*/
+# define PARSE_DEBUG(x) { std::cerr << x << std::endl; }
+# define PARSE_TRACE(x) { std::cerr << "trace: " << x << std::endl; }
 #else
 # define PARSE_DEBUG(x)
 # define PARSE_TRACE(x)
@@ -635,13 +635,12 @@ cASTNode* cParser::parseExprP6()
     case TOKEN(OP_SUB):
       ASToken_t op = currentToken();
       nextToken(); // consume operation
-      cASTNode* r = parseExpression();
+      cASTNode* r = parseExprP6();
       if (!r) {
         PARSE_ERROR(NULL_EXPR);
         return NULL;
       }
       expr.Set(new cASTExpressionUnary(FILEPOS, op, r));
-      nextToken();
       return expr.Release();
       
     default:

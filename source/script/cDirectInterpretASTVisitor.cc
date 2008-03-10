@@ -50,7 +50,37 @@ cDirectInterpretASTVisitor::cDirectInterpretASTVisitor(cSymbolTable* global_symt
   , m_has_returned(false), m_obj_assign(false)
 {
   m_call_stack.Resize(m_global_symtbl->GetNumVariables());
-  for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) m_call_stack[i].as_string = NULL;
+  for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) {
+    switch (m_global_symtbl->GetVariableType(i)) {
+      case TYPE(ARRAY):       m_call_stack[i].as_array = new cLocalArray; break;
+      case TYPE(BOOL):        m_call_stack[i].as_bool = false; break;
+      case TYPE(CHAR):        m_call_stack[i].as_char = 0; break;
+      case TYPE(INT):         m_call_stack[i].as_int = 0; break;
+      case TYPE(FLOAT):       m_call_stack[i].as_float = 0.0; break;
+      case TYPE(MATRIX):      m_call_stack[i].as_matrix = NULL; break;
+      case TYPE(OBJECT_REF):  m_call_stack[i].as_ref = NULL; break;
+      case TYPE(STRING):      m_call_stack[i].as_string = NULL; break;
+      default: break;
+    }
+  }
+}
+
+cDirectInterpretASTVisitor::~cDirectInterpretASTVisitor()
+{
+  for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) {
+    switch (m_global_symtbl->GetVariableType(i)) {
+      case TYPE(ARRAY):       m_call_stack[i].as_array->RemoveReference(); break;
+      case TYPE(BOOL):        break;
+      case TYPE(CHAR):        break;
+      case TYPE(INT):         break;
+      case TYPE(FLOAT):       break;
+      case TYPE(MATRIX):      break; // @TODO - cleanup scope
+      case TYPE(OBJECT_REF):  delete m_call_stack[i].as_ref; break;
+      case TYPE(STRING):      delete m_call_stack[i].as_string; break;
+      default: break;
+    }
+  }
+  
 }
 
 
@@ -712,10 +742,21 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
   cSymbolTable* func_symtbl = func_src_symtbl->GetFunctionSymbolTable(fun_id);
   int sp = m_sp + prev_symtbl->GetNumVariables();
   m_call_stack.Resize(m_call_stack.GetSize() + func_symtbl->GetNumVariables());
-  for (int i = 0; i < func_symtbl->GetNumVariables(); i++) m_call_stack[sp + i].as_string = NULL;
+  for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
+    switch (func_symtbl->GetVariableType(i)) {
+      case TYPE(ARRAY):       m_call_stack[sp + i].as_array = new cLocalArray; break;
+      case TYPE(BOOL):        m_call_stack[sp + i].as_bool = false; break;
+      case TYPE(CHAR):        m_call_stack[sp + i].as_char = 0; break;
+      case TYPE(INT):         m_call_stack[sp + i].as_int = 0; break;
+      case TYPE(FLOAT):       m_call_stack[sp + i].as_float = 0.0; break;
+      case TYPE(MATRIX):      m_call_stack[sp + i].as_matrix = NULL; break;
+      case TYPE(OBJECT_REF):  m_call_stack[sp + i].as_ref = NULL; break;
+      case TYPE(STRING):      m_call_stack[sp + i].as_string = NULL; break;
+      default: break;
+    }
+  }
   
   // Process the arguments to the function
-  tSmartArray<int> str_var_idxs;
   tListIterator<cASTVariableDefinition> sit = func_src_symtbl->GetFunctionSignature(fun_id)->Iterator();
   tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
   cASTVariableDefinition* arg_def = NULL;
@@ -737,7 +778,6 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
       case TYPE(STRING):
         {
           m_call_stack[sp + var_id].as_string = asString(m_rtype, m_rvalue, node);
-          str_var_idxs.Push(var_id);
         }
         break;
         
@@ -769,8 +809,20 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
   }
   m_rtype = node.GetType();
 
-  // Clean up string variables in the current scope
-  for (int i = 0; i < str_var_idxs.GetSize(); i++) delete m_call_stack[m_sp + str_var_idxs[i]].as_string;
+  // Clean up variables in the current scope
+  for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
+    switch (func_symtbl->GetVariableType(i)) {
+      case TYPE(ARRAY):       m_call_stack[sp + i].as_array->RemoveReference(); break;
+      case TYPE(BOOL):        break;
+      case TYPE(CHAR):        break;
+      case TYPE(INT):         break;
+      case TYPE(FLOAT):       break;
+      case TYPE(MATRIX):      break; // @TODO - cleanup scope
+      case TYPE(OBJECT_REF):  delete m_call_stack[sp + i].as_ref; break;
+      case TYPE(STRING):      delete m_call_stack[sp + i].as_string; break;
+      default: break;
+    }
+  }
   
   // Restore previous scope
   m_has_returned = false;

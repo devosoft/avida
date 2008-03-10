@@ -72,6 +72,7 @@ private:
   
 public:
   cDirectInterpretASTVisitor(cSymbolTable* global_symtbl);
+  ~cDirectInterpretASTVisitor();
   
   int Interpret(cASTNode* node);
   
