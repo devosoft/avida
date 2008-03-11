@@ -253,6 +253,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\analyze\cAnalyzeTreeStats_CumulativeStemminess.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\analyze\cAnalyzeTreeStats_Gamma.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\targets\avida-viewer\cAnalyzeView.h"
 				>
 			</File>
@@ -362,6 +370,14 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cDeme.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cDemeCellEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cDemeProbSchedule.h"
 				>
 			</File>
 			<File
@@ -649,6 +665,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cPhenPlastGenotype.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cPlasticPhenotype.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cPopulation.h"
 				>
 			</File>
@@ -658,6 +682,10 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cPopulationInterface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cProbDemeProbSchedule.h"
 				>
 			</File>
 			<File
@@ -821,7 +849,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cThread.h"
+				RelativePath=".\source\platform\cThread.h"
 				>
 			</File>
 			<File
@@ -922,6 +950,10 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\platform.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\platform\PlatformExpert.h"
 				>
 			</File>
 			<File
@@ -1057,6 +1089,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\analyze\cAnalyzeTreeStats_CumulativeStemminess.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\analyze\cAnalyzeTreeStats_Gamma.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\targets\avida-viewer\cAnalyzeView.cc"
 				>
 			</File>
@@ -1146,6 +1186,14 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cDeme.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cDemeCellEvent.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cDemeProbSchedule.cc"
 				>
 			</File>
 			<File
@@ -1353,6 +1401,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cPhenPlastGenotype.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cPlasticPhenotype.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cPopulation.cc"
 				>
 			</File>
@@ -1362,6 +1418,10 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cPopulationInterface.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cProbDemeProbSchedule.cc"
 				>
 			</File>
 			<File
@@ -1485,7 +1545,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cThread.cc"
+				RelativePath=".\source\platform\cThread.cc"
 				>
 			</File>
 			<File
@@ -1522,6 +1582,10 @@
 			</File>
 			<File
 				RelativePath=".\source\actions\LandscapeActions.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\platform\PlatformExpert.cc"
 				>
 			</File>
 			<File

@@ -143,36 +143,9 @@ int CompareAGUpdateBorn(const void * _a, const void * _b){
 
 // Quicksort functions.
 void QSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array){
-  const int size = gen_array.GetSize();
-  cAnalyzeGenotype *c_gen_array[size];
-  
-  /* Copy unsorted array from gen_array into c_gen_array. */
-  for(int i = 0; i < size; i++){
-    c_gen_array[i] = (gen_array[i]);
-  }
-  
-  /* Quicksort c_gen_array. */
-  qsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGPhyloDepth);
-  
-  /* If qsort returned successfully, copy sorted array from c_gen_array into gen_array. */
-  for(int i = 0; i < size; i++){
-    gen_array[i] = (c_gen_array[i]);
-  }
-}  
+  gen_array.QSort(CompareAGPhyloDepth);
+} 
+
 void QSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array){
-  const int size = gen_array.GetSize();
-  cAnalyzeGenotype *c_gen_array[size];
-  
-  /* Copy unsorted array from gen_array into c_gen_array. */
-  for(int i = 0; i < size; i++){
-    c_gen_array[i] = (gen_array[i]);
-  }
-  
-  /* Quicksort c_gen_array. */
-  qsort(c_gen_array, size, sizeof(cAnalyzeGenotype*), CompareAGUpdateBorn);
-  
-  /* If qsort returned successfully, copy sorted array from c_gen_array into gen_array. */
-  for(int i = 0; i < size; i++){
-    gen_array[i] = (c_gen_array[i]);
-  }
+  gen_array.QSort(CompareAGUpdateBorn);
 }  

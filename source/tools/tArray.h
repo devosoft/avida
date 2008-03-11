@@ -205,6 +205,13 @@ public:
     a.SplitLoadSave(*this, version);
   } 
 
+  // wrapper for the c++ qsort routine
+  
+  void QSort(int ( * comparator ) ( const void *, const void * ))
+  {
+    qsort(m_data, m_size, sizeof(m_data[0]), comparator);
+  }
+
 };
 
 #endif

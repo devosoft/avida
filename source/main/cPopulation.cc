@@ -2180,11 +2180,10 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
         if (cell_array[i].GetOrganism()->GetPhenotype().OK()) {
           // Get measurement, exclude parent
           if (parent_cell.GetID() != cell_array[i].GetID()) {
-            msr = random();
+            msr = m_world->GetRandom().GetDouble();
           } else {
             msr = 0.0;
           }
-
           if (max_msr < msr) {
             max_msr = msr;
             max_msrndx = i;
