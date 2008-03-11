@@ -34,34 +34,25 @@ using namespace std;
 
 // ** class cStringData **
 // -- Constructors --
-cString::cStringData::cStringData(short in_size)
-  : refs(1)
-  , size(in_size)
-  , data(new char[size+1])
+cString::cStringData::cStringData(int in_size) : m_refs(1), m_size(in_size), m_data(new char[m_size + 1])
 {
-  assert(data!=NULL); // Memory Allocation Error: Out of Memory
-  data[0] = '\0';
-  data[size] = '\0';
+  assert(m_data != NULL); // Memory Allocation Error: Out of Memory
+  m_data[0] = '\0';
+  m_data[m_size] = '\0';
 }
 
-cString::cStringData::cStringData(short in_size, const char * in)
-  : refs(1)
-  , size(in_size)
-  , data(new char[size+1])
+cString::cStringData::cStringData(int in_size, const char* in) : m_refs(1), m_size(in_size), m_data(new char[m_size + 1])
 {
-  assert(data!=NULL); // Memory Allocation Error: Out of Memory
-  for( short i = 0; i < size; i++ )  data[i]=in[i];
-  data[size] = '\0';
+  assert(m_data != NULL); // Memory Allocation Error: Out of Memory
+  for (short i = 0; i < m_size; i++) m_data[i] = in[i];
+  m_data[m_size] = '\0';
 }
 
-cString::cStringData::cStringData(const cStringData & in)
-  : refs(1)
-  , size(in.GetSize())
-  , data(new char[size+1])
+cString::cStringData::cStringData(const cStringData& in) : m_refs(1), m_size(in.GetSize()), m_data(new char[m_size + 1])
 {
-  assert(data!=NULL); // Memory Allocation Error: Out of Memory
-  for( short i = 0; i < size; i++ )  data[i]=in[i];
-  data[size] = '\0';
+  assert(m_data != NULL); // Memory Allocation Error: Out of Memory
+  for (short i = 0; i < m_size; i++)  m_data[i] = in[i];
+  m_data[m_size] = '\0';
 }
 
 

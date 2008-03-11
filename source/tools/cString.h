@@ -86,62 +86,63 @@ private:
   {
     // NOTE: Terminating NULL is always there (you can't assign!!)
   private:
-    short refs;   // Number of references
-    short size;   // size of data (NOT INCLUDING TRAILING NULL)
-    char* data;
+    short m_refs;   // Number of references
+    int m_size;   // size of data (NOT INCLUDING TRAILING NULL)
+    char* m_data;
     
     
     cStringData(); // @not_implemented
 
   public:
-    explicit cStringData(short in_size);
-    cStringData(short in_size, const char* in);
+    explicit cStringData(int in_size);
+    cStringData(int in_size, const char* in);
     cStringData(const cStringData& in);
 
-    ~cStringData(){
-      assert(refs == 0);  // Deleting cStringData with References!!
-      delete [] data;
+    ~cStringData()
+    {
+      assert(m_refs == 0);  // Deleting cStringData with References!!
+      delete [] m_data;
     }
 
     cStringData& operator=(const cStringData& in)
     {
-      delete [] data;
-      size = in.GetSize();
-      data = new char [size+1];
-      assert(data != NULL);   // Memory Allocation Error: Out of Memory
-      for( short i=0; i<size; ++i )  data[i]=in[i];
-      data[size] = '\0';
+      delete [] m_data;
+      m_size = in.GetSize();
+      m_data = new char [m_size + 1];
+      assert(m_data != NULL);   // Memory Allocation Error: Out of Memory
+      for(int i = 0; i < m_size; ++i)  m_data[i] = in[i];
+      m_data[m_size] = '\0';
       return (*this);
     }
 
-    short GetSize() const { return size; }
-    const char* GetData() const { return data; }
+    int GetSize() const { return m_size; }
+    const char* GetData() const { return m_data; }
 
     char operator[] (int index) const
     {
       assert(index >= 0);    // Lower Bounds Error
-      assert(index <= size); // Upper Bounds Error
-      return data[index];
+      assert(index <= m_size); // Upper Bounds Error
+      return m_data[index];
     }
 
     char& operator[](int index)
     {
       assert(index >= 0);     // Lower Bounds Error
-      assert(index <= size);  // Upper Bounds Error
-      assert(index != size);  // Cannot Change Terminating NULL
-      return data[index];
+      assert(index <= m_size);  // Upper Bounds Error
+      assert(index != m_size);  // Cannot Change Terminating NULL
+      return m_data[index];
     }
 
-    bool IsShared() { return (refs > 1); }
-    bool AtMaxRefs() { return (refs >= MAX_STRING_REF_COUNT); }
+    bool IsShared() { return (m_refs > 1); }
+    bool AtMaxRefs() { return (m_refs >= MAX_STRING_REF_COUNT); }
 
     short RemoveRef()
     {
-      assert( refs > 0 );  // Reference count corrupted
-      return (--refs);
+      assert(m_refs > 0);  // Reference count corrupted
+      return (--m_refs);
     }
 
-    cStringData* NewRef() { ++refs; return this; }
+    cStringData* NewRef() { ++m_refs; return this; }
   };
 
 public:
