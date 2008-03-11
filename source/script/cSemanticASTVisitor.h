@@ -61,8 +61,9 @@ private:
   
   bool m_success;
   bool m_fun_def;
+  bool m_fun_def_arg;
   bool m_top_level;
-  bool m_call_expr;
+  bool m_obj_assign;
 
   
   // --------  Private Constructors  --------

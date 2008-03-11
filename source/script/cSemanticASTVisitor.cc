@@ -72,7 +72,7 @@ namespace AvidaScript {
 
 cSemanticASTVisitor::cSemanticASTVisitor(cASLibrary* lib, cSymbolTable* global_symtbl, cASTNode* main)
   : m_library(lib), m_global_symtbl(global_symtbl), m_parent_scope(global_symtbl), m_fun_id(0), m_cur_symtbl(global_symtbl)
-  , m_success(true), m_fun_def(false), m_top_level(true), m_call_expr(false)
+  , m_success(true), m_fun_def(false), m_fun_def_arg(false), m_top_level(true), m_obj_assign(false)
 {
   // Add internal definition of the global function
   int fun_id = -1;
@@ -104,9 +104,9 @@ void cSemanticASTVisitor::VisitArgumentList(cASTArgumentList& node)
 
 void cSemanticASTVisitor::VisitObjectAssignment(cASTObjectAssignment& node)
 {
-  m_call_expr = true;
+  m_obj_assign = true;
   node.GetTarget()->Accept(*this);
-  m_call_expr = false;
+  m_obj_assign = false;
   
   if (node.GetTarget()->GetType() != TYPE(OBJECT_REF)) SEMANTIC_ERROR(INVALID_ASSIGNMENT_TARGET);
   
@@ -240,7 +240,12 @@ void cSemanticASTVisitor::VisitFunctionDefinition(cASTFunctionDefinition& node)
           if (!vd->GetAssignmentExpression())
             SEMANTIC_ERROR(ARGUMENT_DEFAULT_REQUIRED, (const char*)vd->GetName(), (const char*)node.GetName());
         } else {
-          if (vd->GetAssignmentExpression()) def_val_start = true;
+          if (vd->GetAssignmentExpression()) {
+            def_val_start = true;
+            m_fun_def_arg = true;
+            vd->GetAssignmentExpression()->Accept(*this);
+            m_fun_def_arg = false;
+          }
         }
       }
     }
@@ -362,7 +367,7 @@ void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
     case TOKEN(IDX_OPEN):
       checkCast(node.GetLeft()->GetType(), TYPE(ARRAY));
       checkCast(node.GetRight()->GetType(), TYPE(INT));
-      node.SetType(m_call_expr ? TYPE(OBJECT_REF) : TYPE(RUNTIME));
+      node.SetType(m_obj_assign ? TYPE(OBJECT_REF) : TYPE(RUNTIME));
       break;
     case TOKEN(ARR_RANGE):
       checkCast(node.GetLeft()->GetType(), TYPE(INT));
@@ -507,7 +512,10 @@ void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
 
 void cSemanticASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
-  // @TODO - somewhere in here, make sure that default value expressions are valid for this context if used
+  if (m_fun_def_arg) {
+    SEMANTIC_ERROR(FUNCTION_DEFAULT_CALL_INVALID);
+    return;
+  }
   
   int fun_id = -1;
   bool global = false;
@@ -600,6 +608,11 @@ void cSemanticASTVisitor::VisitObjectReference(cASTObjectReference& node)
 
 void cSemanticASTVisitor::VisitVariableReference(cASTVariableReference& node)
 {
+  if (m_fun_def_arg) {
+    SEMANTIC_ERROR(FUNCTION_DEFAULT_VARIABLE_REF_INVALID);
+    return;
+  }
+
   int var_id = -1;
   bool global = false;
   if (lookupVariable(node.GetName(), var_id, global)) {
@@ -835,8 +848,15 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_ERR_CANNOT_COMPARE:
       std::cerr << "cannot compare values" << ERR_ENDL; 
+      break;
     case AS_SEMANTIC_ERR_FUNCTION_CALL_SIGNATURE_MISMATCH:
       std::cerr << "invalid call signature for '" << VA_ARG_STR << "()'" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_DEFAULT_CALL_INVALID:
+      std::cerr << "function call invalid in default value" << ERR_ENDL; 
+      break;
+    case AS_SEMANTIC_ERR_FUNCTION_DEFAULT_VARIABLE_REF_INVALID:
+      std::cerr << "variable reference invalid in default value" << ERR_ENDL; 
       break;
     case AS_SEMANTIC_ERR_FUNCTION_REDEFINITION:
       std::cerr << "redefinition of '" << VA_ARG_STR << "()'" << ERR_ENDL;
