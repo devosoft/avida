@@ -101,10 +101,20 @@ while       return AS_TOKEN_CMD_WHILE;
 foreach     return AS_TOKEN_CMD_FOREACH;
 function    return AS_TOKEN_CMD_FUNCTION;
 
+asbool      return AS_TOKEN_BUILTIN_CALL;
+aschar      return AS_TOKEN_BUILTIN_CALL;
+asint       return AS_TOKEN_BUILTIN_CALL;
+asfloat     return AS_TOKEN_BUILTIN_CALL;
+asstring    return AS_TOKEN_BUILTIN_CALL;
+len         return AS_TOKEN_BUILTIN_CALL;
+resize      return AS_TOKEN_BUILTIN_METHOD;
+
 return      return AS_TOKEN_CMD_RETURN;
 
 true        return AS_TOKEN_BOOL;
 false       return AS_TOKEN_BOOL;
+
+
 
 ([a-zA-Z]|_+[a-zA-Z])[a-zA-Z0-9_]*  return AS_TOKEN_ID;      // Identifiers
   

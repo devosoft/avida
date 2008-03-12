@@ -111,6 +111,7 @@ class cASTVariableDefinitionList;
 class cASTExpressionBinary;
 class cASTExpressionUnary;
 
+class cASTBuiltInCall;
 class cASTFunctionCall;
 class cASTLiteral;
 class cASTLiteralArray;
@@ -448,6 +449,35 @@ public:
 
 
 // --------  Expression Value Nodes  --------
+
+class cASTBuiltInCall : public cASTNode
+{
+private:
+  cASTArgumentList* m_args;
+  ASType_t m_type;
+  ASBuiltIn_t m_builtin;
+  cASTVariableReference* m_vr;
+  
+public:
+  cASTBuiltInCall(const cASFilePosition& fp, const cString& name);
+  ~cASTBuiltInCall();
+  
+  ASBuiltIn_t GetBuiltIn() const { return m_builtin; }
+  
+  void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
+  cASTArgumentList* GetArguments() { return m_args; }
+  
+  ASType_t GetType() const { return m_type; }
+  inline void SetType(ASType_t type) { m_type = type; }
+  
+  cASTVariableReference* GetVariableReference() { return m_vr; }
+  void SetVariableReference(cASTVariableReference* vr);
+  
+  bool HasArguments() const { return (m_args); }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
 
 class cASTFunctionCall : public cASTNode
 {

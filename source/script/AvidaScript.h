@@ -87,15 +87,18 @@ typedef enum eASTokens {
   
   AS_TOKEN_CMD_RETURN, // 48
   
-  AS_TOKEN_ID, // 49
+  AS_TOKEN_BUILTIN_CALL, // 49
+  AS_TOKEN_BUILTIN_METHOD,
   
-  AS_TOKEN_FLOAT, // 50
+  AS_TOKEN_ID, // 51
+  
+  AS_TOKEN_FLOAT, // 52
   AS_TOKEN_INT,
   AS_TOKEN_STRING,
   AS_TOKEN_CHAR,
   AS_TOKEN_BOOL,
   
-  AS_TOKEN_UNKNOWN, // 54
+  AS_TOKEN_UNKNOWN, // 56
   AS_TOKEN_INVALID
 } ASToken_t;
 
@@ -121,6 +124,7 @@ typedef enum eASSemanticErrors {
   
   AS_SEMANTIC_ERR_ARGUMENT_DEFAULT_REQUIRED,
   AS_SEMANTIC_ERR_ARGUMENT_MISSING_REQUIRED,
+  AS_SEMANTIC_ERR_BUILTIN_CALL_SIGNATURE_MISMATCH,
   AS_SEMANTIC_ERR_CANNOT_CAST,
   AS_SEMANTIC_ERR_CANNOT_COMPARE,
   AS_SEMANTIC_ERR_FUNCTION_CALL_SIGNATURE_MISMATCH,
@@ -157,9 +161,21 @@ typedef enum eASDirectInterpretErrors {
   AS_DIRECT_INTERPRET_ERR_UNKNOWN
 } ASDirectInterpretError_t;
 
+typedef enum eASBuiltInFunction {
+  AS_BUILTIN_CAST_BOOL,
+  AS_BUILTIN_CAST_CHAR,
+  AS_BUILTIN_CAST_INT,
+  AS_BUILTIN_CAST_FLOAT,
+  AS_BUILTIN_CAST_STRING,
+  AS_BUILTIN_LEN,
+  AS_BUILTIN_RESIZE,
+  
+  AS_BUILTIN_UNKNOWN
+} ASBuiltIn_t;
+
 enum eASExitCodes {
   AS_EXIT_OK = 0,
-  AS_EXIT_FILE_NOT_FOUND = 100,
+  AS_EXIT_FILE_NOT_FOUND = 200,
   AS_EXIT_FAIL_PARSE,
   AS_EXIT_FAIL_SEMANTIC,
   AS_EXIT_FAIL_INTERPRET,
@@ -186,7 +202,8 @@ typedef enum eASTypes {
 
 
 namespace AvidaScript {
-  const char* mapToken(ASToken_t type);
+  const char* mapBuiltIn(ASBuiltIn_t builtin);  
+  const char* mapToken(ASToken_t token);
   const char* mapType(ASType_t type);
 };
 

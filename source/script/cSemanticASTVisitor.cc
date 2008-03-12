@@ -509,6 +509,113 @@ void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
   }
 }
 
+void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
+{
+#define ERR_BUILTIN_MISMATCH SEMANTIC_ERROR(BUILTIN_CALL_SIGNATURE_MISMATCH, mapBuiltIn(node.GetBuiltIn()))
+  cASTArgumentList* args = node.GetArguments();
+  
+  switch (node.GetBuiltIn()) {
+    case AS_BUILTIN_CAST_BOOL:
+      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
+      else {
+        cASTNode* argn = args->Iterator().Next();
+        argn->Accept(*this);
+        checkCast(argn->GetType(), TYPE(BOOL));
+        node.SetType(TYPE(BOOL));
+      }
+      break;
+
+    case AS_BUILTIN_CAST_CHAR:
+      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
+      else {
+        cASTNode* argn = args->Iterator().Next();
+        argn->Accept(*this);
+        checkCast(argn->GetType(), TYPE(CHAR));
+        node.SetType(TYPE(CHAR));
+      }
+      break;
+      
+    case AS_BUILTIN_CAST_INT:
+      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
+      else {
+        cASTNode* argn = args->Iterator().Next();
+        argn->Accept(*this);
+        checkCast(argn->GetType(), TYPE(INT));
+        node.SetType(TYPE(INT));
+      }
+      break;
+      
+    case AS_BUILTIN_CAST_FLOAT:
+      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
+      else {
+        cASTNode* argn = args->Iterator().Next();
+        argn->Accept(*this);
+        checkCast(argn->GetType(), TYPE(FLOAT));
+        node.SetType(TYPE(FLOAT));
+      }
+      break;
+      
+    case AS_BUILTIN_CAST_STRING:
+      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
+      else {
+        cASTNode* argn = args->Iterator().Next();
+        argn->Accept(*this);
+        checkCast(argn->GetType(), TYPE(STRING));
+        node.SetType(TYPE(STRING));
+      }
+      break;
+      
+    case AS_BUILTIN_LEN:
+      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
+      else {
+        cASTNode* argn = args->Iterator().Next();
+        argn->Accept(*this);
+        checkCast(argn->GetType(), TYPE(ARRAY));
+        node.SetType(TYPE(INT));
+      }
+      break;
+      
+    case AS_BUILTIN_RESIZE:
+      if (!node.GetVariableReference() || !args) ERR_BUILTIN_MISMATCH;
+      else {
+        node.GetVariableReference()->Accept(*this);
+        
+        if (node.GetVariableReference()->GetType() == TYPE(ARRAY)) {
+          if (args->GetSize() == 1) {
+            cASTNode* argn = args->Iterator().Next();
+            argn->Accept(*this);
+            checkCast(argn->GetType(), TYPE(INT));
+          } else {
+            ERR_BUILTIN_MISMATCH;
+          }
+        } else if (node.GetVariableReference()->GetType() == TYPE(MATRIX)) {
+          if (args->GetSize() == 2) {
+            tListIterator<cASTNode> it = args->Iterator();
+            cASTNode* argn = it.Next();
+            argn->Accept(*this);
+            checkCast(argn->GetType(), TYPE(INT));
+            argn = it.Next();
+            argn->Accept(*this);
+            checkCast(argn->GetType(), TYPE(INT));
+          } else {
+            ERR_BUILTIN_MISMATCH;
+          }          
+        } else {
+          ERR_BUILTIN_MISMATCH;
+        }
+
+        node.SetType(TYPE(VOID));
+      }
+      break;
+      
+    default:
+      SEMANTIC_ERROR(INTERNAL);
+      break;
+  }
+
+#undef ERR_BUILTIN_MISMATCH
+}
+
 
 void cSemanticASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
@@ -838,6 +945,9 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_ERR_ARGUMENT_MISSING_REQUIRED:
       std::cerr << "required argument " << VA_ARG_STR << " not found" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_BUILTIN_CALL_SIGNATURE_MISMATCH:
+      std::cerr << "invalid invocation of builtin method '" << VA_ARG_STR << "()'" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_CANNOT_CAST:
       {

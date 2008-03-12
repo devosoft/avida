@@ -310,6 +310,33 @@ void cDumpASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
 }
 
 
+void cDumpASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
+{
+  indent();
+  cout << "builtin:" << endl;
+  m_depth++;
+  
+  indent();
+  cout << "method:" << endl;
+  
+  m_depth++;
+  indent();
+  cout << mapBuiltIn(node.GetBuiltIn()) << endl;
+  m_depth--;
+  
+  if (node.HasArguments()) {
+    indent();
+    cout << "with:" << endl;
+    
+    m_depth++;
+    node.GetArguments()->Accept(*this);
+    m_depth--;
+  }
+  
+  m_depth--;
+}
+
+
 void cDumpASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
   indent();

@@ -25,6 +25,20 @@
 #include "AvidaScript.h"
 
 
+const char* AvidaScript::mapBuiltIn(ASBuiltIn_t builtin)
+{
+  switch (builtin) {
+    case AS_BUILTIN_CAST_BOOL:    return "asbool";
+    case AS_BUILTIN_CAST_CHAR:    return "aschar";
+    case AS_BUILTIN_CAST_INT:     return "asint";
+    case AS_BUILTIN_CAST_FLOAT:   return "asfloat";
+    case AS_BUILTIN_CAST_STRING:  return "asstring";
+    case AS_BUILTIN_LEN:          return "len";
+    case AS_BUILTIN_RESIZE:       return "resize";
+    default:                      return "?";
+  }
+}
+
 const char* AvidaScript::mapToken(ASToken_t token)
 {
   switch (token) {

@@ -53,6 +53,7 @@ public:
   virtual void VisitExpressionBinary(cASTExpressionBinary&) = 0;
   virtual void VisitExpressionUnary(cASTExpressionUnary&) = 0;
 
+  virtual void VisitBuiltInCall(cASTBuiltInCall&) = 0;
   virtual void VisitFunctionCall(cASTFunctionCall&) = 0;
   virtual void VisitLiteral(cASTLiteral&) = 0;
   virtual void VisitLiteralArray(cASTLiteralArray&) = 0;

@@ -599,7 +599,7 @@ cASTNode* cParser::parseExprP6()
       expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_BOOL, currentText()));
       break;
     case TOKEN(STRING):
-      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_STRING, currentText()));
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_STRING, currentText().Substring(1, currentText().GetSize() - 2)));
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {
@@ -610,6 +610,17 @@ cASTNode* cParser::parseExprP6()
         if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
       } else {
         expr = new cASTVariableReference(FILEPOS, currentText());
+      }
+      break;
+    case TOKEN(BUILTIN_CALL):
+      if (peekToken() == TOKEN(PREC_OPEN)) {
+        cASTBuiltInCall* bi = new cASTBuiltInCall(FILEPOS, currentText());
+        expr.Set(bi);
+        nextToken(); // consume builtin methon name token
+        if (nextToken() != TOKEN(PREC_CLOSE)) bi->SetArguments(parseArgumentList());        
+        if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+      } else {
+        PARSE_UNEXPECT();
       }
       break;
     case TOKEN(PREC_OPEN):
@@ -899,6 +910,27 @@ cASTNode* cParser::parseStatementList()
         continue;
       case TOKEN(ID):
         node.Set(parseIDStatement());
+        break;
+      case TOKEN(BUILTIN_METHOD):
+        if (peekToken() == TOKEN(PREC_OPEN)) {
+          cASTBuiltInCall* bi = new cASTBuiltInCall(FILEPOS, currentText());
+          nextToken(); // consume builtin method name token
+          if (nextToken() != TOKEN(PREC_CLOSE) && currentToken() == TOKEN(ID)) {
+            bi->SetVariableReference(new cASTVariableReference(FILEPOS, currentText()));
+            if (nextToken() == TOKEN(COMMA)) {
+              nextToken(); // consume ','
+              bi->SetArguments(parseArgumentList());
+            }
+          }
+          if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+          nextToken(); // consume ')'
+          
+          if (currentToken() == TOKEN(DOT) || currentToken() == TOKEN(IDX_OPEN)) {
+            node.Set(parseCallExpression(bi, true));
+          } else {
+            node.Set(bi);
+          }
+        }
         break;
       case TOKEN(REF):
         node.Set(parseRefStatement());

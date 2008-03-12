@@ -94,6 +94,7 @@ public:
   void VisitExpressionBinary(cASTExpressionBinary&);
   void VisitExpressionUnary(cASTExpressionUnary&);
   
+  void VisitBuiltInCall(cASTBuiltInCall&);
   void VisitFunctionCall(cASTFunctionCall&);
   void VisitLiteral(cASTLiteral&);
   void VisitLiteralArray(cASTLiteralArray&);

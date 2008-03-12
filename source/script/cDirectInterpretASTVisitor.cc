@@ -729,6 +729,82 @@ void cDirectInterpretASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
 }
 
 
+void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
+{
+  cASTArgumentList* args = node.GetArguments();
+  
+  switch (node.GetBuiltIn()) {
+    case AS_BUILTIN_CAST_BOOL:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = asBool(m_rtype, m_rvalue, node);
+      m_rtype = TYPE(BOOL);
+      break;
+
+    case AS_BUILTIN_CAST_CHAR:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_char = asChar(m_rtype, m_rvalue, node);
+      m_rtype = TYPE(CHAR);
+      break;
+      
+    case AS_BUILTIN_CAST_INT:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_int = asInt(m_rtype, m_rvalue, node);
+      m_rtype = TYPE(INT);
+      break;
+      
+    case AS_BUILTIN_CAST_FLOAT:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_float = asFloat(m_rtype, m_rvalue, node);
+      m_rtype = TYPE(FLOAT);
+      break;
+      
+    case AS_BUILTIN_CAST_STRING:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_string = asString(m_rtype, m_rvalue, node);
+      m_rtype = TYPE(STRING);
+      break;
+      
+    case AS_BUILTIN_LEN:
+      args->Iterator().Next()->Accept(*this);
+      if (m_rtype == TYPE(STRING)) {
+        int sz = m_rvalue.as_string->GetSize();
+        delete m_rvalue.as_string;
+        m_rvalue.as_int = sz;
+      } else {
+        cLocalArray* arr = asArray(m_rtype, m_rvalue, node);
+        m_rvalue.as_int = arr->GetSize();
+        arr->RemoveReference();
+      }
+      m_rtype = TYPE(INT);
+      break;
+      
+    case AS_BUILTIN_RESIZE:
+      cASTVariableReference* vr = node.GetVariableReference();
+      if (vr->GetType() == TYPE(ARRAY)) {
+        int var_idx = (vr->IsVarGlobal() ? 0 : m_sp) + vr->GetVarID();
+        
+        args->Iterator().Next()->Accept(*this);
+        int sz = asInt(m_rtype, m_rvalue, node);
+        
+        cLocalArray* arr = m_call_stack[var_idx].as_array;
+        if (arr->IsShared()) {
+          arr = new cLocalArray(arr);
+          m_call_stack[var_idx].as_array->RemoveReference();
+          m_call_stack[var_idx].as_array = arr;         
+        }
+        m_call_stack[var_idx].as_array->Resize(sz);
+      } else {
+        // @TODO - resize matrix
+      }
+      break;
+      
+    default:
+      INTERPRET_ERROR(INTERNAL);
+      break;
+  }
+}
+
+
 void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
   // Save previous scope information
