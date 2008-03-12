@@ -582,6 +582,7 @@
 		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
+		70A33CC00D878407008EF976 /* as_overview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = as_overview.html; sourceTree = "<group>"; };
 		70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeProbSchedule.cc; sourceTree = "<group>"; };
 		70A778380D69D5C200735F1E /* cDemeProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeProbSchedule.h; sourceTree = "<group>"; };
 		70AA941909D486AE006A24C8 /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1082,6 +1083,7 @@
 			isa = PBXGroup;
 			children = (
 				707415C70AA7E4100064A546 /* main.css */,
+				70A33CC00D878407008EF976 /* as_overview.html */,
 				704D57210AA53F8600207FC1 /* code_standards.html */,
 				707CE7500AA334120022D19C /* analyze.html */,
 				707CE7490AA333060022D19C /* actions.html */,
