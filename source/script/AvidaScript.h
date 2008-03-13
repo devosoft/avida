@@ -25,6 +25,8 @@
 #ifndef AvidaScript_h
 #define AvidaScript_h
 
+#include "cString.h"
+
 typedef enum eASTokens {
   AS_TOKEN_SUPPRESS = 1,
   AS_TOKEN_ENDL,
@@ -200,11 +202,21 @@ typedef enum eASTypes {
   AS_TYPE_INVALID
 } ASType_t;
 
+struct sASTypeInfo {
+  ASType_t type;
+  cString info;
+  
+  sASTypeInfo(ASType_t in_type) : type(in_type) { ; }
+  
+  bool operator==(const sASTypeInfo& ot) const { return (type == ot.type && info == ot.info); }
+  bool operator!=(const sASTypeInfo& ot) const { return (type != ot.type || info != ot.info); }
+};
+
 
 namespace AvidaScript {
   const char* mapBuiltIn(ASBuiltIn_t builtin);  
   const char* mapToken(ASToken_t token);
-  const char* mapType(ASType_t type);
+  const char* mapType(const sASTypeInfo& type);
 };
 
 #endif

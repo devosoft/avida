@@ -45,13 +45,14 @@ using namespace AvidaScript;
 #define TOKEN(x) AS_TOKEN_ ## x
 #define TYPE(x) AS_TYPE_ ## x
 
+
 cDirectInterpretASTVisitor::cDirectInterpretASTVisitor(cSymbolTable* global_symtbl)
-  : m_global_symtbl(global_symtbl), m_cur_symtbl(global_symtbl), m_call_stack(0, 2048), m_sp(0)
+  : m_global_symtbl(global_symtbl), m_cur_symtbl(global_symtbl), m_rtype(TYPE(INVALID)), m_call_stack(0, 2048), m_sp(0)
   , m_has_returned(false), m_obj_assign(false)
 {
   m_call_stack.Resize(m_global_symtbl->GetNumVariables());
   for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) {
-    switch (m_global_symtbl->GetVariableType(i)) {
+    switch (m_global_symtbl->GetVariableType(i).type) {
       case TYPE(ARRAY):       m_call_stack[i].as_array = new cLocalArray; break;
       case TYPE(BOOL):        m_call_stack[i].as_bool = false; break;
       case TYPE(CHAR):        m_call_stack[i].as_char = 0; break;
@@ -68,7 +69,7 @@ cDirectInterpretASTVisitor::cDirectInterpretASTVisitor(cSymbolTable* global_symt
 cDirectInterpretASTVisitor::~cDirectInterpretASTVisitor()
 {
   for (int i = 0; i < m_global_symtbl->GetNumVariables(); i++) {
-    switch (m_global_symtbl->GetVariableType(i)) {
+    switch (m_global_symtbl->GetVariableType(i).type) {
       case TYPE(ARRAY):       m_call_stack[i].as_array->RemoveReference(); break;
       case TYPE(BOOL):        break;
       case TYPE(CHAR):        break;
@@ -102,7 +103,7 @@ void cDirectInterpretASTVisitor::VisitAssignment(cASTAssignment& node)
   
   node.GetExpression()->Accept(*this);
   
-  switch (symtbl->GetVariableType(var_id)) {
+  switch (symtbl->GetVariableType(var_id).type) {
     case TYPE(BOOL):        m_call_stack[sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
     case TYPE(CHAR):        m_call_stack[sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
     case TYPE(FLOAT):       m_call_stack[sp + var_id].as_float = asFloat(m_rtype, m_rvalue, node); break;
@@ -144,7 +145,7 @@ void cDirectInterpretASTVisitor::VisitObjectAssignment(cASTObjectAssignment& nod
   
   node.GetExpression()->Accept(*this);
   
-  if (!obj->Set(m_rtype, m_rvalue)) INTERPRET_ERROR(OBJECT_ASSIGN_FAIL);
+  if (!obj->Set(m_rtype.type, m_rvalue)) INTERPRET_ERROR(OBJECT_ASSIGN_FAIL);
 }
 
 
@@ -171,7 +172,7 @@ void cDirectInterpretASTVisitor::VisitStatementList(cASTStatementList& node)
 void cDirectInterpretASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
 {
   int var_id = node.GetVariable()->GetVarID();
-  ASType_t var_type = node.GetVariable()->GetType();
+  sASTypeInfo var_type = node.GetVariable()->GetType();
   
   node.GetValues()->Accept(*this);
   cLocalArray* arr = m_rvalue.as_array;
@@ -180,7 +181,7 @@ void cDirectInterpretASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
   for (int i = 0; i < arr->GetSize(); i++) {
     // Set the variable value for this iteration
     const sAggregateValue& val = arr->Get(i);
-    switch (var_type) {
+    switch (var_type.type) {
       case TYPE(BOOL):        m_call_stack[var_idx].as_bool = asBool(val.type, val.value, node); break;
       case TYPE(CHAR):        m_call_stack[var_idx].as_char = asChar(val.type, val.value, node); break;
       case TYPE(FLOAT):       m_call_stack[var_idx].as_float = asFloat(val.type, val.value, node); break;
@@ -260,7 +261,7 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
     
     node.GetAssignmentExpression()->Accept(*this);
     
-    switch (node.GetType()) {
+    switch (node.GetType().type) {
       case TYPE(ARRAY):       m_call_stack[m_sp + var_id].as_array = asArray(m_rtype, m_rvalue, node); break;
       case TYPE(BOOL):        m_call_stack[m_sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
       case TYPE(CHAR):        m_call_stack[m_sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
@@ -306,10 +307,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
   // Process the left and right side expressions
   node.GetLeft()->Accept(*this);
   uAnyType lval = m_rvalue;
-  ASType_t ltype = m_rtype;
+  sASTypeInfo ltype = m_rtype;
   node.GetRight()->Accept(*this);
   uAnyType rval = m_rvalue;
-  ASType_t rtype = m_rtype;
+  sASTypeInfo rtype = m_rtype;
   
   
   switch (node.GetOperator()) {
@@ -344,7 +345,7 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
         if (n < 0) INTERPRET_ERROR(INVALID_ARRAY_SIZE);
         
         cLocalArray* arr = new cLocalArray(n);
-        for (int i = 0; i < n; i++) arr->Set(i, ltype, lval);
+        for (int i = 0; i < n; i++) arr->Set(i, ltype.type, lval);
         
         m_rvalue.as_array = arr;
         m_rtype = TYPE(ARRAY);
@@ -364,10 +365,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
     case TOKEN(OP_BIT_AND):
     case TOKEN(OP_BIT_OR):
       {
-        ASType_t rettype = node.GetType();
+        sASTypeInfo rettype = node.GetType();
         
         // Determine the operation type if it is a runtime decision
-        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type);
 
         if (rettype == TYPE(CHAR)) {
           int l = asChar(ltype, lval, node);
@@ -388,10 +389,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
     case TOKEN(OP_EQ):
     case TOKEN(OP_NEQ):
       {
-        ASType_t comptype = node.GetCompareType();
+        ASType_t comptype = node.GetCompareType().type;
         
         // Determine the operation type if it is a runtime decision
-        if (comptype == TYPE(RUNTIME)) comptype = getRuntimeType(ltype, rtype);
+        if (comptype == TYPE(RUNTIME)) comptype = getRuntimeType(ltype.type, rtype.type);
              
         switch (comptype) {
           case TYPE(BOOL):
@@ -443,10 +444,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
     case TOKEN(OP_LT):
     case TOKEN(OP_GT):
       {
-        ASType_t comptype = node.GetCompareType();
+        ASType_t comptype = node.GetCompareType().type;
         
         // Determine the operation type if it is a runtime decision
-        if (comptype == TYPE(RUNTIME)) comptype = getRuntimeType(ltype, rtype);
+        if (comptype == TYPE(RUNTIME)) comptype = getRuntimeType(ltype.type, rtype.type);
              
         switch (comptype) {
           case TYPE(CHAR):
@@ -490,10 +491,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
       
     case TOKEN(OP_ADD):
       {
-        ASType_t rettype = node.GetType();
+        ASType_t rettype = node.GetType().type;
         
         // Determine the operation type if it is a runtime decision
-        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype, true);
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type, true);
              
         switch (rettype) {
           case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) + asChar(rtype, rval, node); break;
@@ -533,10 +534,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
 
     case TOKEN(OP_SUB):
       {
-        ASType_t rettype = node.GetType();
+        ASType_t rettype = node.GetType().type;
         
         // Determine the operation type if it is a runtime decision
-        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type);
              
         switch (rettype) {
           case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) - asChar(rtype, rval, node); break;
@@ -556,10 +557,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
 
     case TOKEN(OP_MUL):
       {
-        ASType_t rettype = node.GetType();
+        ASType_t rettype = node.GetType().type;
         
         // Determine the operation type if it is a runtime decision
-        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type);
              
         switch (rettype) {
           case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) * asChar(rtype, rval, node); break;
@@ -579,10 +580,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
 
     case TOKEN(OP_DIV):
       {
-        ASType_t rettype = node.GetType();
+        ASType_t rettype = node.GetType().type;
         
         // Determine the operation type if it is a runtime decision
-        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type);
              
         switch (rettype) {
           case TYPE(CHAR):
@@ -617,10 +618,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
 
     case TOKEN(OP_MOD):
       {
-        ASType_t rettype = node.GetType();
+        ASType_t rettype = node.GetType().type;
         
         // Determine the operation type if it is a runtime decision
-        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype, rtype);
+        if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type);
              
         switch (rettype) {
           case TYPE(CHAR):
@@ -688,7 +689,7 @@ void cDirectInterpretASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
   
   switch (node.GetOperator()) {
     case TOKEN(OP_BIT_NOT):
-      switch (m_rtype) {
+      switch (m_rtype.type) {
         case TYPE(CHAR):
           m_rvalue.as_char = ~m_rvalue.as_char;
           break;
@@ -707,7 +708,7 @@ void cDirectInterpretASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
       break;
     
     case TOKEN(OP_SUB):
-      switch (m_rtype) {
+      switch (m_rtype.type) {
         case TYPE(CHAR):
           m_rvalue.as_char = -m_rvalue.as_char;
           break;
@@ -819,7 +820,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
   int sp = m_sp + prev_symtbl->GetNumVariables();
   m_call_stack.Resize(m_call_stack.GetSize() + func_symtbl->GetNumVariables());
   for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
-    switch (func_symtbl->GetVariableType(i)) {
+    switch (func_symtbl->GetVariableType(i).type) {
       case TYPE(ARRAY):       m_call_stack[sp + i].as_array = new cLocalArray; break;
       case TYPE(BOOL):        m_call_stack[sp + i].as_bool = false; break;
       case TYPE(CHAR):        m_call_stack[sp + i].as_char = 0; break;
@@ -843,7 +844,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
     
     int var_id = arg_def->GetVarID();
 
-    switch (m_cur_symtbl->GetVariableType(var_id)) {
+    switch (m_cur_symtbl->GetVariableType(var_id).type) {
       case TYPE(ARRAY):       m_call_stack[sp + var_id].as_array = asArray(m_rtype, m_rvalue, node); break;
       case TYPE(BOOL):        m_call_stack[sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
       case TYPE(CHAR):        m_call_stack[sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
@@ -869,7 +870,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
   func_src_symtbl->GetFunctionDefinition(fun_id)->Accept(*this);
   
   // Handle function return value
-  switch (node.GetType()) {
+  switch (node.GetType().type) {
     case TYPE(ARRAY):       m_rvalue.as_array = asArray(m_rtype, m_rvalue, node); break;
     case TYPE(BOOL):        m_rvalue.as_bool = asBool(m_rtype, m_rvalue, node); break;
     case TYPE(CHAR):        m_rvalue.as_char = asChar(m_rtype, m_rvalue, node); break;
@@ -887,7 +888,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 
   // Clean up variables in the current scope
   for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
-    switch (func_symtbl->GetVariableType(i)) {
+    switch (func_symtbl->GetVariableType(i).type) {
       case TYPE(ARRAY):       m_call_stack[sp + i].as_array->RemoveReference(); break;
       case TYPE(BOOL):        break;
       case TYPE(CHAR):        break;
@@ -910,7 +911,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 
 void cDirectInterpretASTVisitor::VisitLiteral(cASTLiteral& node)
 {
-  switch (node.GetType()) {
+  switch (node.GetType().type) {
     case TYPE(BOOL):
       if (node.GetValue() == "true") m_rvalue.as_bool = true;
       else m_rvalue.as_bool = false;
@@ -952,7 +953,7 @@ void cDirectInterpretASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
     int i = 0;
     while ((val = it.Next())) {
       val->Accept(*this);
-      arr->Set(i++, m_rtype, m_rvalue);
+      arr->Set(i++, m_rtype.type, m_rvalue);
     }
     
     m_rvalue.as_array = arr;    
@@ -979,7 +980,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
   int sp = node.IsVarGlobal() ? 0 : m_sp;
   
   if (m_obj_assign) {
-    switch (node.GetType()) {
+    switch (node.GetType().type) {
       case TYPE(ARRAY):       m_rvalue.as_ref = new cArrayVarRef(m_call_stack[sp + var_id]); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
       case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
@@ -990,7 +991,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
     }
     m_rtype = TYPE(OBJECT_REF);
   } else {
-    switch (node.GetType()) {
+    switch (node.GetType().type) {
       case TYPE(ARRAY):       m_rvalue.as_array = m_call_stack[sp + var_id].as_array->GetReference(); break;
       case TYPE(BOOL):        m_rvalue.as_bool = m_call_stack[sp + var_id].as_bool; break;
       case TYPE(CHAR):        m_rvalue.as_char = m_call_stack[sp + var_id].as_char; break;
@@ -1020,12 +1021,12 @@ void cDirectInterpretASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
   
   // Unpack the values up to the last non-wild value
   for (int i = 0; i < unpack_size; i++) {
-    ASType_t var_type = (node.IsVarGlobal(i) ? m_global_symtbl : m_cur_symtbl)->GetVariableType(node.GetVarID(i));
+    sASTypeInfo var_type = (node.IsVarGlobal(i) ? m_global_symtbl : m_cur_symtbl)->GetVariableType(node.GetVarID(i));
     int var_idx = (node.IsVarGlobal(i) ? 0 : m_sp) + node.GetVarID(i);
     
     // Set the variable value for this iteration
     const sAggregateValue& val = arr->Get(i);
-    switch (var_type) {
+    switch (var_type.type) {
       case TYPE(BOOL):        m_call_stack[var_idx].as_bool = asBool(val.type, val.value, node); break;
       case TYPE(CHAR):        m_call_stack[var_idx].as_char = asChar(val.type, val.value, node); break;
       case TYPE(FLOAT):       m_call_stack[var_idx].as_float = asFloat(val.type, val.value, node); break;
@@ -1068,9 +1069,9 @@ void cDirectInterpretASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
   arr->RemoveReference();
 }
 
-cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(ASType_t type, uAnyType value, cASTNode& node)
+cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(const sASTypeInfo& type, uAnyType value, cASTNode& node)
 {
-  switch (type) {
+  switch (type.type) {
     case TYPE(ARRAY):
       return value.as_array;
 
@@ -1097,9 +1098,9 @@ cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(AST
   return false;
 }
 
-bool cDirectInterpretASTVisitor::asBool(ASType_t type, uAnyType value, cASTNode& node)
+bool cDirectInterpretASTVisitor::asBool(const sASTypeInfo& type, uAnyType value, cASTNode& node)
 {
-  switch (type) {
+  switch (type.type) {
     case TYPE(ARRAY):
       {
         bool rval = (value.as_array->GetSize());
@@ -1137,9 +1138,9 @@ bool cDirectInterpretASTVisitor::asBool(ASType_t type, uAnyType value, cASTNode&
 }
 
 
-char cDirectInterpretASTVisitor::asChar(ASType_t type, uAnyType value, cASTNode& node)
+char cDirectInterpretASTVisitor::asChar(const sASTypeInfo& type, uAnyType value, cASTNode& node)
 {
-  switch (type) {
+  switch (type.type) {
     case TYPE(BOOL):
       return (value.as_bool) ? 1 : 0;
     case TYPE(CHAR):
@@ -1155,9 +1156,9 @@ char cDirectInterpretASTVisitor::asChar(ASType_t type, uAnyType value, cASTNode&
 }
 
 
-int cDirectInterpretASTVisitor::asInt(ASType_t type, uAnyType value, cASTNode& node)
+int cDirectInterpretASTVisitor::asInt(const sASTypeInfo& type, uAnyType value, cASTNode& node)
 {
-  switch (type) {
+  switch (type.type) {
     case TYPE(BOOL):
       return (value.as_bool) ? 1 : 0;
     case TYPE(CHAR):
@@ -1181,9 +1182,9 @@ int cDirectInterpretASTVisitor::asInt(ASType_t type, uAnyType value, cASTNode& n
 }
 
 
-double cDirectInterpretASTVisitor::asFloat(ASType_t type, uAnyType value, cASTNode& node)
+double cDirectInterpretASTVisitor::asFloat(const sASTypeInfo& type, uAnyType value, cASTNode& node)
 {
-  switch (type) {
+  switch (type.type) {
     case TYPE(BOOL):
       return (value.as_bool) ? 1.0 : 0.0;
     case TYPE(CHAR):
@@ -1207,9 +1208,9 @@ double cDirectInterpretASTVisitor::asFloat(ASType_t type, uAnyType value, cASTNo
 }
 
 
-cString* cDirectInterpretASTVisitor::asString(ASType_t type, uAnyType value, cASTNode& node)
+cString* cDirectInterpretASTVisitor::asString(const sASTypeInfo& type, uAnyType value, cASTNode& node)
 {
-  switch (type) {
+  switch (type.type) {
     case TYPE(BOOL):        return new cString(cStringUtil::Convert(value.as_bool));
     case TYPE(CHAR):        return new cString(value.as_char);
     case TYPE(INT):         return new cString(cStringUtil::Convert(value.as_int));
@@ -1413,9 +1414,9 @@ bool cDirectInterpretASTVisitor::cArrayVarRef::Set(int idx, ASType_t type, uAnyT
 }
 
 
-ASType_t cDirectInterpretASTVisitor::cObjectIndexRef::GetType(int idx)
+sASTypeInfo cDirectInterpretASTVisitor::cObjectIndexRef::GetType(int idx)
 {
-  if (m_obj->GetType(m_idx) != TYPE(ARRAY)) return TYPE(INVALID);
+  if (m_obj->GetType(m_idx).type != TYPE(ARRAY)) return TYPE(INVALID);
   
   cLocalArray* arr = m_obj->Get(m_idx).as_array;
   if (idx < 0 || idx >= arr->GetSize()) return TYPE(INVALID);

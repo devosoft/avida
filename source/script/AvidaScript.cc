@@ -67,9 +67,9 @@ const char* AvidaScript::mapToken(ASToken_t token)
   }      
 }
 
-const char* AvidaScript::mapType(ASType_t type)
+const char* AvidaScript::mapType(const sASTypeInfo& type)
 {
-  switch (type) {
+  switch (type.type) {
     case AS_TYPE_ARRAY:       return "array";
     case AS_TYPE_BOOL:        return "bool";
     case AS_TYPE_CHAR:        return "char";
@@ -77,7 +77,7 @@ const char* AvidaScript::mapType(ASType_t type)
     case AS_TYPE_INT:         return "int";
     case AS_TYPE_MATRIX:      return "matrix";
     case AS_TYPE_STRING:      return "string";
-    case AS_TYPE_OBJECT_REF:  return "object";
+    case AS_TYPE_OBJECT_REF:  return type.info;
     case AS_TYPE_RUNTIME:     return "runtime";
     case AS_TYPE_VOID:        return "void";
       

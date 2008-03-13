@@ -31,7 +31,7 @@ cSymbolTable::~cSymbolTable()
   for (int i = 0; i < m_fun_tbl.GetSize(); i++) delete m_fun_tbl[i];
 }
 
-bool cSymbolTable::AddVariable(const cString& name, ASType_t type, int& var_id)
+bool cSymbolTable::AddVariable(const cString& name, const sASTypeInfo& type, int& var_id)
 {
   bool found = LookupVariable(name, var_id);
   int shadow = var_id;
@@ -50,7 +50,7 @@ bool cSymbolTable::AddVariable(const cString& name, ASType_t type, int& var_id)
   return true;
 }
 
-bool cSymbolTable::AddFunction(const cString& name, ASType_t type, int& fun_id)
+bool cSymbolTable::AddFunction(const cString& name, const sASTypeInfo& type, int& fun_id)
 {
   int shadow = fun_id;
   bool found = LookupFunction(name, fun_id);

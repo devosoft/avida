@@ -66,8 +66,8 @@ public:
 
   
   // --------  Add/Lookup Methods  --------
-  bool AddVariable(const cString& name, ASType_t type, int& var_id);
-  bool AddFunction(const cString& name, ASType_t type, int& fun_id);
+  bool AddVariable(const cString& name, const sASTypeInfo& type, int& var_id);
+  bool AddFunction(const cString& name, const sASTypeInfo& type, int& fun_id);
   
   bool LookupVariable(const cString& name, int& var_id) { return m_sym_dict.Find(name, var_id); }
   bool LookupFunction(const cString& name, int& fun_id) { return m_fun_dict.Find(name, fun_id); }
@@ -89,12 +89,12 @@ public:
   
 
   // --------  Variable Property Methods  --------
-  inline ASType_t GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
+  inline const sASTypeInfo& GetVariableType(int var_id) const { return m_sym_tbl[var_id]->type; }
 
 
   // --------  Function Property Methods  --------
   inline const cString& GetFunctionName(int fun_id) const { return m_fun_tbl[fun_id]->name; }
-  inline ASType_t GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
+  inline const sASTypeInfo& GetFunctionRType(int fun_id) const { return m_fun_tbl[fun_id]->type; }
   inline cSymbolTable* GetFunctionSymbolTable(int fun_id) { return m_fun_tbl[fun_id]->symtbl; }
   inline cASTVariableDefinitionList* GetFunctionSignature(int fun_id) { return m_fun_tbl[fun_id]->signature; }
   inline cASTNode* GetFunctionDefinition(int fun_id) { return m_fun_tbl[fun_id]->code; }
@@ -142,20 +142,20 @@ private:
   struct sSymbolEntry
   {
     cString name;
-    ASType_t type;
+    sASTypeInfo type;
     
     int scope;
     int shadow;
     int deactivate;
     
-    sSymbolEntry(const cString& in_name, ASType_t in_type, int in_scope)
+    sSymbolEntry(const cString& in_name, const sASTypeInfo& in_type, int in_scope)
       : name(in_name), type(in_type), scope(in_scope), shadow(-1), deactivate(0) { ; }
   };
   
   struct sFunctionEntry
   {
     cString name;
-    ASType_t type;
+    sASTypeInfo type;
     cASTVariableDefinitionList* signature;
     cSymbolTable* symtbl;
     cASTNode* code;
@@ -164,7 +164,7 @@ private:
     int shadow;
     int deactivate;
     
-    sFunctionEntry(const cString& in_name, ASType_t in_type, int in_scope)
+    sFunctionEntry(const cString& in_name, const sASTypeInfo& in_type, int in_scope)
       : name(in_name), type(in_type), signature(NULL), symtbl(NULL), code(NULL), scope(in_scope), shadow(-1)
       , deactivate(0) { ; }
     ~sFunctionEntry() { delete signature; delete symtbl; delete code; }

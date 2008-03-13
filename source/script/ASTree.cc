@@ -27,6 +27,9 @@
 #include "cASTVisitor.h"
 
 
+const sASTypeInfo cASTNode::s_invalid_type(AS_TYPE_INVALID);
+
+
 void cASTAssignment::Accept(cASTVisitor& visitor) { visitor.VisitAssignment(*this); }
 void cASTArgumentList::Accept(cASTVisitor& visitor) { visitor.VisitArgumentList(*this); }
 void cASTObjectAssignment::Accept(cASTVisitor& visitor) { visitor.VisitObjectAssignment(*this); }

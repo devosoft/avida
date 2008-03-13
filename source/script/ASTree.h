@@ -70,6 +70,9 @@ public:
 class cASTNode
 {
 private:
+  static const sASTypeInfo s_invalid_type;
+  
+  
   cASTNode(); // @not_implemented
   cASTNode(const cASTNode&); // @not_implemented
   cASTNode& operator=(const cASTNode&); // @not_implmented
@@ -81,7 +84,7 @@ protected:
 public:
   virtual ~cASTNode() { ; }
   
-  virtual ASType_t GetType() const { return AS_TYPE_INVALID; }
+  virtual const sASTypeInfo& GetType() const { return s_invalid_type; }
 
   inline const cASFilePosition& GetFilePosition() const { return m_file_pos; }
   
@@ -320,17 +323,17 @@ public:
 class cASTFunctionDefinition : public cASTNode
 {
 private:
-  ASType_t m_type;
+  sASTypeInfo m_type;
   cString m_name;
   cASTVariableDefinitionList* m_args;
   cASTNode* m_code;
   
 public:
-  cASTFunctionDefinition(const cASFilePosition& fp, ASType_t type, const cString& name, cASTVariableDefinitionList* args)
+  cASTFunctionDefinition(const cASFilePosition& fp, const sASTypeInfo& type, const cString& name, cASTVariableDefinitionList* args)
     : cASTNode(fp), m_type(type), m_name(name), m_args(args), m_code(NULL) { ; }
   ~cASTFunctionDefinition();
   
-  inline ASType_t GetType() const { return m_type; }
+  inline const sASTypeInfo& GetType() const { return m_type; }
   inline const cString& GetName() { return m_name; }
   inline cASTVariableDefinitionList* GetArguments() { return m_args; }
   inline void ClearArguments() { m_args = NULL; }
@@ -345,18 +348,18 @@ public:
 class cASTVariableDefinition : public cASTNode
 {
 private:
-  ASType_t m_type;
+  sASTypeInfo m_type;
   cString m_name;
   cASTNode* m_assign;
   cASTArgumentList* m_dims;
   int m_id;
   
 public:
-  cASTVariableDefinition(const cASFilePosition& fp, ASType_t type, const cString& name)
+  cASTVariableDefinition(const cASFilePosition& fp, const sASTypeInfo& type, const cString& name)
     : cASTNode(fp), m_type(type), m_name(name), m_assign(NULL), m_dims(NULL), m_id(-1) { ; }
   ~cASTVariableDefinition() { delete m_assign; delete m_dims; }
   
-  inline ASType_t GetType() const { return m_type; }
+  inline const sASTypeInfo& GetType() const { return m_type; }
   inline const cString& GetName() { return m_name; }
   inline void SetAssignmentExpression(cASTNode* assign) { delete m_assign; m_assign = assign; }
   inline cASTNode* GetAssignmentExpression() { return m_assign; }
@@ -400,8 +403,8 @@ private:
   ASToken_t m_op;
   cASTNode* m_left;
   cASTNode* m_right;
-  ASType_t m_type;
-  ASType_t m_compare_type;
+  sASTypeInfo m_type;
+  sASTypeInfo m_compare_type;
   
 public:
   cASTExpressionBinary(const cASFilePosition& fp, ASToken_t op, cASTNode* l, cASTNode* r)
@@ -414,11 +417,11 @@ public:
   inline void SetRight(cASTNode* right) { m_right = right; }
   inline cASTNode* GetRight() { return m_right; }
 
-  ASType_t GetType() const { return m_type; }
-  inline void SetType(ASType_t type) { m_type = type; }
+  const sASTypeInfo& GetType() const { return m_type; }
+  inline void SetType(const sASTypeInfo& type) { m_type = type; }
 
-  inline ASType_t GetCompareType() const { return m_compare_type; }
-  inline void SetCompareType(ASType_t type) { m_compare_type = type; }
+  inline const sASTypeInfo& GetCompareType() const { return m_compare_type; }
+  inline void SetCompareType(const sASTypeInfo& type) { m_compare_type = type; }
 
   void Accept(cASTVisitor& visitor);
 };
@@ -429,7 +432,7 @@ class cASTExpressionUnary : public cASTNode
 private:
   ASToken_t m_op;
   cASTNode* m_expr;
-  ASType_t m_type;
+  sASTypeInfo m_type;
   
 public:
   cASTExpressionUnary(const cASFilePosition& fp, ASToken_t op, cASTNode* e)
@@ -440,8 +443,8 @@ public:
   inline void SetExpression(cASTNode* expr) { m_expr = expr; }
   inline cASTNode* GetExpression() { return m_expr; }
   
-  ASType_t GetType() const { return m_type; }
-  inline void SetType(ASType_t type) { m_type = type; }
+  const sASTypeInfo& GetType() const { return m_type; }
+  inline void SetType(const sASTypeInfo& type) { m_type = type; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -454,7 +457,7 @@ class cASTBuiltInCall : public cASTNode
 {
 private:
   cASTArgumentList* m_args;
-  ASType_t m_type;
+  sASTypeInfo m_type;
   ASBuiltIn_t m_builtin;
   cASTVariableReference* m_vr;
   
@@ -467,8 +470,8 @@ public:
   void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
   cASTArgumentList* GetArguments() { return m_args; }
   
-  ASType_t GetType() const { return m_type; }
-  inline void SetType(ASType_t type) { m_type = type; }
+  const sASTypeInfo& GetType() const { return m_type; }
+  inline void SetType(const sASTypeInfo& type) { m_type = type; }
   
   cASTVariableReference* GetVariableReference() { return m_vr; }
   void SetVariableReference(cASTVariableReference* vr);
@@ -484,7 +487,7 @@ class cASTFunctionCall : public cASTNode
 private:
   cString m_name;
   cASTArgumentList* m_args;
-  ASType_t m_type;
+  sASTypeInfo m_type;
   int m_id;
   bool m_global;
   
@@ -498,8 +501,8 @@ public:
   void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
   cASTArgumentList* GetArguments() { return m_args; }
   
-  ASType_t GetType() const { return m_type; }
-  inline void SetType(ASType_t type) { m_type = type; }
+  const sASTypeInfo& GetType() const { return m_type; }
+  inline void SetType(const sASTypeInfo& type) { m_type = type; }
   
   inline int GetFuncID() const { return m_id; }
   inline bool IsFuncGlobal() const { return m_global; }
@@ -514,13 +517,13 @@ public:
 class cASTLiteral : public cASTNode
 {
 private:
-  ASType_t m_type;
+  sASTypeInfo m_type;
   cString m_value;
   
 public:
-  cASTLiteral(const cASFilePosition& fp, ASType_t t, const cString& v) : cASTNode(fp), m_type(t), m_value(v) { ; }
+  cASTLiteral(const cASFilePosition& fp, const sASTypeInfo& t, const cString& v) : cASTNode(fp), m_type(t), m_value(v) { ; }
   
-  ASType_t GetType() const { return m_type; }
+  const sASTypeInfo& GetType() const { return m_type; }
   inline const cString& GetValue() { return m_value; }
   
   void Accept(cASTVisitor& visitor);
@@ -532,16 +535,17 @@ class cASTLiteralArray : public cASTNode
 private:
   cASTArgumentList* m_values;
   bool m_is_matrix;
+  sASTypeInfo m_type;
   
 public:
   cASTLiteralArray(const cASFilePosition& fp, cASTArgumentList* v, bool is_mat)
-    : cASTNode(fp), m_values(v), m_is_matrix(is_mat) { ; }
+    : cASTNode(fp), m_values(v), m_is_matrix(is_mat), m_type(m_is_matrix ? AS_TYPE_MATRIX : AS_TYPE_ARRAY) { ; }
   ~cASTLiteralArray() { delete m_values; }  
   
   inline cASTArgumentList* GetValues() { return m_values; }
   inline bool IsMatrix() const { return m_is_matrix; }
   
-  ASType_t GetType() const { return m_is_matrix ? AS_TYPE_MATRIX : AS_TYPE_ARRAY; }
+  const sASTypeInfo& GetType() const { return m_type; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -553,7 +557,7 @@ private:
   cASTNode* m_object;
   cString m_name;
   cASTArgumentList* m_args;
-  ASType_t m_type;
+  sASTypeInfo m_type;
   
 public:
   cASTObjectCall(const cASFilePosition& fp, cASTNode* object, const cString& name)
@@ -566,8 +570,8 @@ public:
   void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
   cASTArgumentList* GetArguments() { return m_args; }
   
-  ASType_t GetType() const { return m_type; }
-  inline void SetType(ASType_t type) { m_type = type; }
+  const sASTypeInfo& GetType() const { return m_type; }
+  inline void SetType(const sASTypeInfo& type) { m_type = type; }
   
   
   bool HasArguments() const { return (m_args); }
@@ -581,16 +585,17 @@ class cASTObjectReference : public cASTNode
 private:
   cASTNode* m_object;
   cString m_name;
+  sASTypeInfo m_type;
   
 public:
   cASTObjectReference(const cASFilePosition& fp, cASTNode* object, const cString& name)
-    : cASTNode(fp), m_object(object), m_name(name) { ; }
+    : cASTNode(fp), m_object(object), m_name(name), m_type(AS_TYPE_OBJECT_REF) { ; }
   ~cASTObjectReference() { delete m_object; }
   
   cASTNode* GetObject() { return m_object; }
   inline const cString& GetName() { return m_name; }
   
-  ASType_t GetType() const { return AS_TYPE_OBJECT_REF; }
+  const sASTypeInfo& GetType() const { return m_type; }
   
   void Accept(cASTVisitor& visitor);
 };
@@ -600,7 +605,7 @@ class cASTVariableReference : public cASTNode
 {
 private:
   cString m_name;
-  ASType_t m_type;
+  sASTypeInfo m_type;
   int m_id;
   bool m_global;
   
@@ -610,8 +615,8 @@ public:
   
   inline const cString& GetName() { return m_name; }
   
-  ASType_t GetType() const { return m_type; }
-  inline void SetType(ASType_t type) { m_type = type; }
+  const sASTypeInfo& GetType() const { return m_type; }
+  inline void SetType(const sASTypeInfo& type) { m_type = type; }
   
   inline int GetVarID() const { return m_id; }
   inline bool IsVarGlobal() const { return m_global; }
@@ -628,13 +633,13 @@ private:
     cString name;
     int var_id;
     bool global;
-    ASType_t type;
+    sASTypeInfo type;
     
     inline sUnpackNode() : name(""), var_id(-1), global(false), type(AS_TYPE_INVALID) { ; }
     inline sUnpackNode(const cString& in_name) : name(in_name), var_id(-1), global(false), type(AS_TYPE_INVALID) { ; }
     inline sUnpackNode(const sUnpackNode& un) : name(un.name), var_id(un.var_id), global(un.global), type(un.type) { ; }
     
-    inline void SetVar(int in_vi, bool in_g, ASType_t in_t) { var_id = in_vi; global = in_g; type = in_t; }
+    inline void SetVar(int in_vi, bool in_g, const sASTypeInfo& in_t) { var_id = in_vi; global = in_g; type = in_t; }
   };
   tManagedPointerArray<sUnpackNode> m_nodes;
   bool m_last_wild;
@@ -650,8 +655,8 @@ public:
   inline const cString& GetVarName(int idx) const { return m_nodes[idx].name; }
   inline int GetVarID(int idx) const { return m_nodes[idx].var_id; }
   inline bool IsVarGlobal(int idx) const { return m_nodes[idx].global; }
-  inline ASType_t GetVarType(int idx) const { return m_nodes[idx].type; }
-  inline void SetVar(int idx, int var_id, bool global, ASType_t type) { m_nodes[idx].SetVar(var_id, global, type); }
+  inline const sASTypeInfo& GetVarType(int idx) const { return m_nodes[idx].type; }
+  inline void SetVar(int idx, int var_id, bool global, const sASTypeInfo& type) { m_nodes[idx].SetVar(var_id, global, type); }
   
   inline bool IsLastNamed() const { return m_last_named; }
   inline bool IsLastWild() const { return m_last_wild; }

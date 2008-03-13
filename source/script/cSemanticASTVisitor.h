@@ -110,9 +110,9 @@ public:
 
 private:
   // --------  Internal Utility Methods  --------
-  ASType_t getConsensusType(ASType_t t1, ASType_t t2);
-  inline bool validArithmeticType(ASType_t type, bool allow_matrix = false) const;
-  inline bool validBitwiseType(ASType_t type) const;
+  ASType_t getConsensusType(const sASTypeInfo& t1, const sASTypeInfo& t2);
+  inline bool validArithmeticType(const sASTypeInfo& type, bool allow_matrix = false) const;
+  inline bool validBitwiseType(const sASTypeInfo& type) const;
   
   inline bool lookupVariable(const cString& name, int& var_id, bool& global) const;
   inline bool lookupFunction(const cString& name, int& fun_id, bool& global) const;

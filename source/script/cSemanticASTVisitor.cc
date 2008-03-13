@@ -41,6 +41,7 @@ using namespace AvidaScript;
 
 #define TOKEN(x) AS_TOKEN_ ## x
 #define TYPE(x) AS_TYPE_ ## x
+#define TYPEINFO(x) sASTypeInfo(AS_TYPE_ ## x)
 
 namespace AvidaScript {
   static const bool valid_cast[11][11] = {
@@ -61,8 +62,9 @@ namespace AvidaScript {
 
 
 #define checkCast(in_type, out_type) { \
-  if (valid_cast[in_type][out_type]) { \
-    if ((in_type == TYPE(FLOAT) && out_type == TYPE(INT)) || (in_type == TYPE(INT) && out_type == TYPE(CHAR))) \
+  if (valid_cast[in_type.type][out_type.type]) { \
+    if ((in_type.type == TYPE(FLOAT) && out_type.type == TYPE(INT)) || \
+        (in_type.type == TYPE(INT) && out_type.type == TYPE(CHAR))) \
       SEMANTIC_WARNING(LOSS_OF_PRECISION, mapType(in_type), mapType(out_type)); \
   } else { \
     SEMANTIC_ERROR(CANNOT_CAST, mapType(in_type), mapType(out_type)); \
@@ -108,7 +110,7 @@ void cSemanticASTVisitor::VisitObjectAssignment(cASTObjectAssignment& node)
   node.GetTarget()->Accept(*this);
   m_obj_assign = false;
   
-  if (node.GetTarget()->GetType() != TYPE(OBJECT_REF)) SEMANTIC_ERROR(INVALID_ASSIGNMENT_TARGET);
+  if (node.GetTarget()->GetType().type != TYPE(OBJECT_REF)) SEMANTIC_ERROR(INVALID_ASSIGNMENT_TARGET);
   
   node.GetExpression()->Accept(*this);
 }
@@ -161,7 +163,7 @@ void cSemanticASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
 {
   // Check values and make sure we can process it as an array
   node.GetValues()->Accept(*this);
-  checkCast(node.GetValues()->GetType(), TYPE(ARRAY));
+  checkCast(node.GetValues()->GetType(), TYPEINFO(ARRAY));
   
   m_cur_symtbl->PushScope();
   
@@ -183,7 +185,7 @@ void cSemanticASTVisitor::VisitIfBlock(cASTIfBlock& node)
 {
   // Check main condition and code
   node.GetCondition()->Accept(*this);
-  checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
+  checkCast(node.GetCondition()->GetType(), TYPEINFO(BOOL));
   
   node.GetCode()->Accept(*this);
   
@@ -192,7 +194,7 @@ void cSemanticASTVisitor::VisitIfBlock(cASTIfBlock& node)
   cASTIfBlock::cElseIf* ei = NULL;
   while ((ei = it.Next())) {
     ei->GetCondition()->Accept(*this);
-    checkCast(ei->GetCondition()->GetType(), TYPE(BOOL));
+    checkCast(ei->GetCondition()->GetType(), TYPEINFO(BOOL));
     ei->GetCode()->Accept(*this);
   }
   
@@ -204,7 +206,7 @@ void cSemanticASTVisitor::VisitIfBlock(cASTIfBlock& node)
 void cSemanticASTVisitor::VisitWhileBlock(cASTWhileBlock& node)
 {
   node.GetCondition()->Accept(*this);
-  checkCast(node.GetCondition()->GetType(), TYPE(BOOL));
+  checkCast(node.GetCondition()->GetType(), TYPEINFO(BOOL));
   node.GetCode()->Accept(*this);
 }
 
@@ -286,7 +288,7 @@ void cSemanticASTVisitor::VisitFunctionDefinition(cASTFunctionDefinition& node)
       m_top_level = true;
       node.GetCode()->Accept(*this);
       
-      if (node.GetType() != TYPE(VOID) && !m_cur_symtbl->ScopeHasReturn()) SEMANTIC_WARNING(NO_RETURN);
+      if (node.GetType().type != TYPE(VOID) && !m_cur_symtbl->ScopeHasReturn()) SEMANTIC_WARNING(NO_RETURN);
       
       // Move the code to the symbol table entry
       m_parent_scope->SetFunctionDefinition(fun_id, node.GetCode());
@@ -319,20 +321,20 @@ void cSemanticASTVisitor::VisitVariableDefinition(cASTVariableDefinition& node)
   // Process matrix/array dimensions
   cASTArgumentList* al = node.GetDimensions();
   if (al) {
-    if (node.GetType() == TYPE(MATRIX) || node.GetType() == TYPE(ARRAY)) {
+    if (node.GetType().type == TYPE(MATRIX) || node.GetType().type == TYPE(ARRAY)) {
       // Check individual arguments for validity
       tListIterator<cASTNode> it = al->Iterator();
       cASTNode* alnode = NULL;
       while ((alnode = it.Next())) {
         alnode->Accept(*this);
-        checkCast(alnode->GetType(), TYPE(INT));
+        checkCast(alnode->GetType(), TYPEINFO(INT));
       }
       
       // If empty, warn...
       if (al->GetSize() == 0) SEMANTIC_WARNING(NO_DIMENSIONS);
       
       // If dimensions exceed type limits
-      if ((node.GetType() == TYPE(ARRAY) && al->GetSize() > 1) || (node.GetType() == TYPE(MATRIX) && al->GetSize() > 2)) {
+      if ((node.GetType().type == TYPE(ARRAY) && al->GetSize() > 1) || (node.GetType().type == TYPE(MATRIX) && al->GetSize() > 2)) {
         SEMANTIC_ERROR(TOO_MANY_ARGUMENTS);
         SEMANTIC_ERROR(VARIABLE_DIMENSIONS_INVALID, (const char*)node.GetName(), mapType(node.GetType()));
       }
@@ -365,17 +367,17 @@ void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
   
   switch (node.GetOperator()) {
     case TOKEN(IDX_OPEN):
-      checkCast(node.GetLeft()->GetType(), TYPE(ARRAY));
-      checkCast(node.GetRight()->GetType(), TYPE(INT));
-      node.SetType(m_obj_assign ? TYPE(OBJECT_REF) : TYPE(RUNTIME));
+      checkCast(node.GetLeft()->GetType(), TYPEINFO(ARRAY));
+      checkCast(node.GetRight()->GetType(), TYPEINFO(INT));
+      node.SetType(m_obj_assign ? TYPEINFO(OBJECT_REF) : TYPEINFO(RUNTIME));
       break;
     case TOKEN(ARR_RANGE):
-      checkCast(node.GetLeft()->GetType(), TYPE(INT));
-      checkCast(node.GetRight()->GetType(), TYPE(INT));
+      checkCast(node.GetLeft()->GetType(), TYPEINFO(INT));
+      checkCast(node.GetRight()->GetType(), TYPEINFO(INT));
       node.SetType(TYPE(ARRAY));
       break;
     case TOKEN(ARR_EXPAN):
-      checkCast(node.GetRight()->GetType(), TYPE(INT));
+      checkCast(node.GetRight()->GetType(), TYPEINFO(INT));
       node.SetType(TYPE(ARRAY));
       break;
       
@@ -398,18 +400,18 @@ void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
       
     case TOKEN(OP_LOGIC_AND):
     case TOKEN(OP_LOGIC_OR):
-      checkCast(node.GetLeft()->GetType(), TYPE(BOOL));
-      checkCast(node.GetRight()->GetType(), TYPE(BOOL));
+      checkCast(node.GetLeft()->GetType(), TYPEINFO(BOOL));
+      checkCast(node.GetRight()->GetType(), TYPEINFO(BOOL));
       node.SetType(TYPE(BOOL));
       break;
     
     case TOKEN(OP_EQ):
     case TOKEN(OP_NEQ):
       if ((validArithmeticType(node.GetLeft()->GetType(), true) && validArithmeticType(node.GetRight()->GetType(), true)) ||
-          (node.GetLeft()->GetType() == TYPE(STRING) && node.GetRight()->GetType() == TYPE(STRING))) {
+          (node.GetLeft()->GetType().type == TYPE(STRING) && node.GetRight()->GetType().type == TYPE(STRING))) {
         node.SetCompareType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
         node.SetType(TYPE(BOOL));
-      } else if (node.GetLeft()->GetType() == TYPE(BOOL) || node.GetRight()->GetType() == TYPE(BOOL)) {
+      } else if (node.GetLeft()->GetType().type == TYPE(BOOL) || node.GetRight()->GetType().type == TYPE(BOOL)) {
         node.SetCompareType(TYPE(BOOL));
         node.SetType(TYPE(BOOL));
       } else {
@@ -431,8 +433,8 @@ void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
       
     case TOKEN(OP_ADD):
       if ((validArithmeticType(node.GetLeft()->GetType(), true) && validArithmeticType(node.GetRight()->GetType(), true)) ||
-          (node.GetLeft()->GetType() == TYPE(STRING) && node.GetRight()->GetType() == TYPE(STRING)) ||
-          (node.GetLeft()->GetType() == TYPE(ARRAY) && node.GetRight()->GetType() == TYPE(ARRAY))) {
+          (node.GetLeft()->GetType().type == TYPE(STRING) && node.GetRight()->GetType().type == TYPE(STRING)) ||
+          (node.GetLeft()->GetType().type == TYPE(ARRAY) && node.GetRight()->GetType().type == TYPE(ARRAY))) {
         node.SetType(getConsensusType(node.GetLeft()->GetType(), node.GetRight()->GetType()));
       } else {
         SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
@@ -465,7 +467,7 @@ void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
       break;
   }
   
-  if (node.GetType() == TYPE(INVALID) && m_success == true) {
+  if (node.GetType().type == TYPE(INVALID) && m_success == true) {
     SEMANTIC_ERROR(INTERNAL);
   }
 }
@@ -484,11 +486,11 @@ void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
       }
       break;
     case TOKEN(OP_LOGIC_NOT):
-      checkCast(node.GetExpression()->GetType(), TYPE(BOOL));
+      checkCast(node.GetExpression()->GetType(), TYPEINFO(BOOL));
       node.SetType(TYPE(BOOL));
       break;
     case TOKEN(OP_SUB):
-      switch (node.GetExpression()->GetType()) {
+      switch (node.GetExpression()->GetType().type) {
         case TYPE(CHAR):
         case TYPE(FLOAT):
         case TYPE(INT):
@@ -520,7 +522,7 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPE(BOOL));
+        checkCast(argn->GetType(), TYPEINFO(BOOL));
         node.SetType(TYPE(BOOL));
       }
       break;
@@ -530,7 +532,7 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPE(CHAR));
+        checkCast(argn->GetType(), TYPEINFO(CHAR));
         node.SetType(TYPE(CHAR));
       }
       break;
@@ -540,7 +542,7 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPE(INT));
+        checkCast(argn->GetType(), TYPEINFO(INT));
         node.SetType(TYPE(INT));
       }
       break;
@@ -550,7 +552,7 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPE(FLOAT));
+        checkCast(argn->GetType(), TYPEINFO(FLOAT));
         node.SetType(TYPE(FLOAT));
       }
       break;
@@ -560,7 +562,7 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPE(STRING));
+        checkCast(argn->GetType(), TYPEINFO(STRING));
         node.SetType(TYPE(STRING));
       }
       break;
@@ -570,7 +572,7 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPE(ARRAY));
+        checkCast(argn->GetType(), TYPEINFO(ARRAY));
         node.SetType(TYPE(INT));
       }
       break;
@@ -580,23 +582,23 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       else {
         node.GetVariableReference()->Accept(*this);
         
-        if (node.GetVariableReference()->GetType() == TYPE(ARRAY)) {
+        if (node.GetVariableReference()->GetType().type == TYPE(ARRAY)) {
           if (args->GetSize() == 1) {
             cASTNode* argn = args->Iterator().Next();
             argn->Accept(*this);
-            checkCast(argn->GetType(), TYPE(INT));
+            checkCast(argn->GetType(), TYPEINFO(INT));
           } else {
             ERR_BUILTIN_MISMATCH;
           }
-        } else if (node.GetVariableReference()->GetType() == TYPE(MATRIX)) {
+        } else if (node.GetVariableReference()->GetType().type == TYPE(MATRIX)) {
           if (args->GetSize() == 2) {
             tListIterator<cASTNode> it = args->Iterator();
             cASTNode* argn = it.Next();
             argn->Accept(*this);
-            checkCast(argn->GetType(), TYPE(INT));
+            checkCast(argn->GetType(), TYPEINFO(INT));
             argn = it.Next();
             argn->Accept(*this);
-            checkCast(argn->GetType(), TYPE(INT));
+            checkCast(argn->GetType(), TYPEINFO(INT));
           } else {
             ERR_BUILTIN_MISMATCH;
           }          
@@ -641,8 +643,8 @@ void cSemanticASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
         while ((an = cit.Next())) {
           an->Accept(*this);
           
-          ASType_t in_type = an->GetType();
-          ASType_t out_type = sit.Next()->GetType();
+          ASType_t in_type = an->GetType().type;
+          ASType_t out_type = sit.Next()->GetType().type;
           if (valid_cast[in_type][out_type]) { 
             if ((in_type == TYPE(FLOAT) && out_type == TYPE(INT)) || (in_type == TYPE(INT) && out_type == TYPE(CHAR))) 
               SEMANTIC_WARNING(LOSS_OF_PRECISION, mapType(in_type), mapType(out_type)); 
@@ -736,7 +738,7 @@ void cSemanticASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
   node.GetExpression()->Accept(*this);
   
   // Make sure that the expression can be used as an array
-  checkCast(node.GetExpression()->GetType(), TYPE(ARRAY));
+  checkCast(node.GetExpression()->GetType(), TYPEINFO(ARRAY));
   
   // Check each named variable and determine if it exists
   for (int var = 0; var < node.GetSize(); var++) {
@@ -768,13 +770,13 @@ void cSemanticASTVisitor::PostCheck()
 
 
 
-ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
+ASType_t cSemanticASTVisitor::getConsensusType(const sASTypeInfo& left, const sASTypeInfo& right)
 {
-  switch (left) {
+  switch (left.type) {
     case TYPE(ARRAY):
       return TYPE(ARRAY);
     case TYPE(BOOL):
-      switch (right) {
+      switch (right.type) {
         case TYPE(ARRAY):
         case TYPE(BOOL):
         case TYPE(CHAR):
@@ -791,7 +793,7 @@ ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
       }
       break;
     case TYPE(CHAR):
-      switch (right) {
+      switch (right.type) {
         case TYPE(ARRAY):     return TYPE(ARRAY);
         case TYPE(BOOL):      return TYPE(CHAR);
         case TYPE(CHAR):      return TYPE(CHAR);
@@ -804,7 +806,7 @@ ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
       }
       break;
     case TYPE(FLOAT):
-      switch (right) {
+      switch (right.type) {
         case TYPE(ARRAY):     return TYPE(ARRAY);
         case TYPE(BOOL):      return TYPE(FLOAT);
         case TYPE(CHAR):      return TYPE(FLOAT);
@@ -817,7 +819,7 @@ ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
       }
       break;
     case TYPE(INT):
-      switch (right) {
+      switch (right.type) {
         case TYPE(ARRAY):     return TYPE(ARRAY);
         case TYPE(BOOL):      return TYPE(INT);
         case TYPE(CHAR):      return TYPE(INT);
@@ -843,8 +845,8 @@ ASType_t cSemanticASTVisitor::getConsensusType(ASType_t left, ASType_t right)
   return TYPE(INVALID);
 }
 
-inline bool cSemanticASTVisitor::validArithmeticType(ASType_t type, bool allow_matrix) const {
-  switch (type) {
+inline bool cSemanticASTVisitor::validArithmeticType(const sASTypeInfo& type, bool allow_matrix) const {
+  switch (type.type) {
     case TYPE(MATRIX):
       return allow_matrix;
       
@@ -860,8 +862,8 @@ inline bool cSemanticASTVisitor::validArithmeticType(ASType_t type, bool allow_m
 }
 
 
-inline bool cSemanticASTVisitor::validBitwiseType(ASType_t type) const {
-  switch (type) {
+inline bool cSemanticASTVisitor::validBitwiseType(const sASTypeInfo& type) const {
+  switch (type.type) {
     case TYPE(RUNTIME):
     case TYPE(INT):
     case TYPE(CHAR):

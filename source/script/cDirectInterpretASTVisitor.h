@@ -57,7 +57,7 @@ private:
   cSymbolTable* m_cur_symtbl;
   
   uAnyType m_rvalue;
-  ASType_t m_rtype;
+  sASTypeInfo m_rtype;
   
   tSmartArray<uAnyType> m_call_stack;
   int m_sp;
@@ -106,12 +106,12 @@ public:
 
 private:
   // --------  Internal Utility Methods  --------
-  cLocalArray* asArray(ASType_t type, uAnyType value, cASTNode& node);
-  bool asBool(ASType_t type, uAnyType value, cASTNode& node);
-  char asChar(ASType_t type, uAnyType value, cASTNode& node);
-  int asInt(ASType_t type, uAnyType value, cASTNode& node);
-  double asFloat(ASType_t type, uAnyType value, cASTNode& node);
-  cString* asString(ASType_t type, uAnyType value, cASTNode& node);
+  cLocalArray* asArray(const sASTypeInfo& type, uAnyType value, cASTNode& node);
+  bool asBool(const sASTypeInfo& type, uAnyType value, cASTNode& node);
+  char asChar(const sASTypeInfo& type, uAnyType value, cASTNode& node);
+  int asInt(const sASTypeInfo& type, uAnyType value, cASTNode& node);
+  double asFloat(const sASTypeInfo& type, uAnyType value, cASTNode& node);
+  cString* asString(const sASTypeInfo& type, uAnyType value, cASTNode& node);
 
   ASType_t getRuntimeType(ASType_t ltype, ASType_t rtype, bool allow_str = false);
   
@@ -165,8 +165,8 @@ private:
     virtual ~cObjectRef() { ; }
 
     virtual bool IsWritable() = 0;
-    virtual ASType_t GetType() = 0;
-    virtual ASType_t GetType(int idx) = 0;
+    virtual sASTypeInfo GetType() = 0;
+    virtual sASTypeInfo GetType(int idx) = 0;
     
     virtual uAnyType Get() = 0;
     virtual uAnyType Get(int idx) = 0;
@@ -184,9 +184,8 @@ private:
     ~cArrayVarRef() { ; }
 
     bool IsWritable() { return true; }
-    ASType_t GetType() { return AS_TYPE_ARRAY; }
-    ASType_t GetType(int idx)
-    { if (idx < 0 || idx >= m_var.as_array->GetSize()) return AS_TYPE_INVALID; else return m_var.as_array->Get(idx).type; }
+    sASTypeInfo GetType() { return AS_TYPE_ARRAY; }
+    inline sASTypeInfo GetType(int idx);
     
     uAnyType Get() { return m_var; }
     uAnyType Get(int idx) { assert(idx > 0 && idx < m_var.as_array->GetSize()); return m_var.as_array->Get(idx).value; }
@@ -205,8 +204,8 @@ private:
     ~cObjectIndexRef() { delete m_obj; }
     
     bool IsWritable() { return m_obj->IsWritable(); }
-    ASType_t GetType() { return m_obj->GetType(m_idx); }
-    ASType_t GetType(int idx);
+    sASTypeInfo GetType() { return m_obj->GetType(m_idx); }
+    sASTypeInfo GetType(int idx);
     
     uAnyType Get() { return m_obj->Get(m_idx); }
     uAnyType Get(int idx);
@@ -229,6 +228,15 @@ inline cDirectInterpretASTVisitor::cLocalArray::cLocalArray(cLocalArray* arr1, c
   copy(arr1->m_storage.GetSize(), arr2->m_storage);
 }
 
+inline sASTypeInfo cDirectInterpretASTVisitor::cArrayVarRef::GetType(int idx)
+{
+  if (idx < 0 || idx >= m_var.as_array->GetSize()) return AS_TYPE_INVALID;
+  else {
+    ASType_t type = m_var.as_array->Get(idx).type;
+    if (type == AS_TYPE_OBJECT_REF) return m_var.as_array->Get(idx).value.as_ref->GetType();
+    else return type;
+  }
+}
 
 
 #endif
