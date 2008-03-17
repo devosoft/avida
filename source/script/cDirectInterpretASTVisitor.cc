@@ -1271,7 +1271,7 @@ cString* cDirectInterpretASTVisitor::asString(const sASTypeInfo& type, uAnyType 
 {
   switch (type.type) {
     case TYPE(BOOL):        return new cString(cStringUtil::Convert(value.as_bool));
-    case TYPE(CHAR):        return new cString(value.as_char);
+    case TYPE(CHAR):        { cString* str = new cString(1); (*str)[0] = value.as_char; return str; }
     case TYPE(INT):         return new cString(cStringUtil::Convert(value.as_int));
     case TYPE(FLOAT):       return new cString(cStringUtil::Convert(value.as_float));
     case TYPE(STRING):      return value.as_string;
