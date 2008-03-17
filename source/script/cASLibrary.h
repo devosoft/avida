@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 1/16/06.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 2006-2008 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -25,16 +25,47 @@
 #ifndef cASLibrary_h
 #define cASLibrary_h
 
+#include "cASFunction.h"
 #include "tDictionary.h"
 
 
 class cASLibrary
 {
 private:
-//  tDictionary<cASSymbol> m_symtbl;
+  // --------  Internal Type Declarations  --------
+  struct sObjectEntry;
+  
 
+  // --------  Internal Variables  --------
+  tArray<sObjectEntry*> m_obj_tbl;
+  tDictionary<int> m_obj_dict;
+  tDictionary<cASFunction*> m_fun_dict;
+
+  
+  // --------  Private Constructors  --------
+  cASLibrary(const cASLibrary&); // @not_implemented
+  cASLibrary& operator=(const cASLibrary&); // @not_implemented
+  
+  
 public:
   cASLibrary() { ; }
+  ~cASLibrary();
+
+  bool LookupObject(const cString& obj_name, int& obj_id);
+  bool LookupFunction(const cString& name, cASFunction*& func);
+
+  bool RegisterFunction(cASFunction* func);
+  
+  
+private:
+  // --------  Internal Type Definitions  --------
+  struct sObjectEntry
+  {
+    cString name;
+    
+    sObjectEntry(const cString& in_name) : name(in_name) { ; }
+  };
+  
 };
 
 #endif

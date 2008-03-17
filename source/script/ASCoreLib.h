@@ -1,9 +1,9 @@
 /*
- *  cASLibrary.cc
+ *  ASCoreLib.h
  *  Avida
  *
- *  Created by David on 1/16/06.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Created by David on 3/16/08.
+ *  Copyright 2008 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,26 +22,12 @@
  *
  */
 
-#include "cASLibrary.h"
+#ifndef ASCoreLib_h
+#define ASCoreLib_h
 
+class cASLibrary;
 
-cASLibrary::~cASLibrary()
-{
-  for (int i = 0; i < m_obj_tbl.GetSize(); i++) delete m_obj_tbl[i];
-  
-  // @TODO - cleanup function objects
-}
+void RegisterASCoreLib(cASLibrary* lib);
 
+#endif
 
-bool cASLibrary::RegisterFunction(cASFunction* func)
-{
-  cASFunction* old_func = NULL;
-  bool found = m_fun_dict.Find(func->GetName(), old_func);
-  
-  if (found) {
-    return false;
-  } else {
-    m_fun_dict.Add(func->GetName(), func);
-    return true;
-  }
-}

@@ -669,23 +669,26 @@ cASTNode* cParser::parseForeachStatement()
 {
   PARSE_TRACE("parseForeachStatement");
   
-  ASType_t type = AS_TYPE_INVALID;
+  sASTypeInfo type(AS_TYPE_INVALID);
   switch (nextToken()) {
-    case TOKEN(TYPE_ARRAY):  type = AS_TYPE_ARRAY;  break;
-    case TOKEN(TYPE_BOOL):   type = AS_TYPE_BOOL;   break;
-    case TOKEN(TYPE_CHAR):   type = AS_TYPE_CHAR;   break;
-    case TOKEN(TYPE_FLOAT):  type = AS_TYPE_FLOAT;  break;
-    case TOKEN(TYPE_INT):    type = AS_TYPE_INT;    break;
-    case TOKEN(TYPE_MATRIX): type = AS_TYPE_MATRIX; break;
-    case TOKEN(TYPE_STRING): type = AS_TYPE_STRING; break;
-    case TOKEN(TYPE_VOID):   type = AS_TYPE_VOID;   break;
+    case TOKEN(TYPE_ARRAY):  type.type = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_BOOL):   type.type = AS_TYPE_BOOL;   break;
+    case TOKEN(TYPE_CHAR):   type.type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_FLOAT):  type.type = AS_TYPE_FLOAT;  break;
+    case TOKEN(TYPE_INT):    type.type = AS_TYPE_INT;    break;
+    case TOKEN(TYPE_MATRIX): type.type = AS_TYPE_MATRIX; break;
+    case TOKEN(TYPE_STRING): type.type = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_VOID):   type.type = AS_TYPE_VOID;   break;
     case TOKEN(ID):
       if (peekToken() != TOKEN(REF)) {
         nextToken();
         PARSE_UNEXPECT();
-        return NULL;
       }
-      type = AS_TYPE_OBJECT_REF;
+      
+      type.type = AS_TYPE_OBJECT_REF;
+      type.info = currentText();
+      
+      nextToken(); // consume id
       break;
       
     default:
@@ -734,19 +737,26 @@ cASTFunctionDefinition* cParser::parseFunctionHeader()
 {
   PARSE_TRACE("parseFunctionHeader");
   
-  ASType_t type = AS_TYPE_INVALID;
+  sASTypeInfo type(AS_TYPE_INVALID);
   switch (nextToken()) {
-    case TOKEN(TYPE_ARRAY):  type = AS_TYPE_ARRAY;  break;
-    case TOKEN(TYPE_BOOL):   type = AS_TYPE_BOOL;   break;
-    case TOKEN(TYPE_CHAR):   type = AS_TYPE_CHAR;   break;
-    case TOKEN(TYPE_FLOAT):  type = AS_TYPE_FLOAT;  break;
-    case TOKEN(TYPE_INT):    type = AS_TYPE_INT;    break;
-    case TOKEN(TYPE_MATRIX): type = AS_TYPE_MATRIX; break;
-    case TOKEN(TYPE_STRING): type = AS_TYPE_STRING; break;
-    case TOKEN(TYPE_VOID):   type = AS_TYPE_VOID;   break;
+    case TOKEN(TYPE_ARRAY):  type.type = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_BOOL):   type.type = AS_TYPE_BOOL;   break;
+    case TOKEN(TYPE_CHAR):   type.type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_FLOAT):  type.type = AS_TYPE_FLOAT;  break;
+    case TOKEN(TYPE_INT):    type.type = AS_TYPE_INT;    break;
+    case TOKEN(TYPE_MATRIX): type.type = AS_TYPE_MATRIX; break;
+    case TOKEN(TYPE_STRING): type.type = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_VOID):   type.type = AS_TYPE_VOID;   break;
     case TOKEN(ID):
-      if (nextToken() != TOKEN(REF)) PARSE_UNEXPECT();
-      type = AS_TYPE_OBJECT_REF;
+      if (peekToken() != TOKEN(REF)) {
+        nextToken();
+        PARSE_UNEXPECT();
+      }
+      
+      type.type = AS_TYPE_OBJECT_REF;
+      type.info = currentText();
+      
+      nextToken(); // consume id
       break;
       
     default:
@@ -974,19 +984,25 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
 {
   PARSE_TRACE("parseVariableDefinition");
   
-  ASType_t vtype = AS_TYPE_INVALID;
+  sASTypeInfo vtype(AS_TYPE_INVALID);
   switch (currentToken()) {
-    case TOKEN(TYPE_ARRAY):  vtype = AS_TYPE_ARRAY;  break;
-    case TOKEN(TYPE_BOOL):   vtype = AS_TYPE_BOOL;   break;
-    case TOKEN(TYPE_CHAR):   vtype = AS_TYPE_CHAR;   break;
-    case TOKEN(TYPE_FLOAT):  vtype = AS_TYPE_FLOAT;  break;
-    case TOKEN(TYPE_INT):    vtype = AS_TYPE_INT;    break;
-    case TOKEN(TYPE_MATRIX): vtype = AS_TYPE_MATRIX; break;
-    case TOKEN(TYPE_STRING): vtype = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_ARRAY):  vtype.type = AS_TYPE_ARRAY;  break;
+    case TOKEN(TYPE_BOOL):   vtype.type = AS_TYPE_BOOL;   break;
+    case TOKEN(TYPE_CHAR):   vtype.type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_FLOAT):  vtype.type = AS_TYPE_FLOAT;  break;
+    case TOKEN(TYPE_INT):    vtype.type = AS_TYPE_INT;    break;
+    case TOKEN(TYPE_MATRIX): vtype.type = AS_TYPE_MATRIX; break;
+    case TOKEN(TYPE_STRING): vtype.type = AS_TYPE_STRING; break;
     case TOKEN(ID):
-      if (nextToken() != TOKEN(REF)) PARSE_UNEXPECT();
-
-      vtype = AS_TYPE_OBJECT_REF;
+      if (peekToken() != TOKEN(REF)) {
+        nextToken();
+        PARSE_UNEXPECT();
+      }
+      
+      vtype.type = AS_TYPE_OBJECT_REF;
+      vtype.info = currentText();
+      
+      nextToken(); // consume id
       break;
       
     default:

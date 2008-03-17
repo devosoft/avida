@@ -25,6 +25,8 @@
 #include "avida.h"
 #include "PlatformExpert.h"
 
+#include "ASCoreLib.h"
+
 #include "cASLibrary.h"
 #include "cDirectInterpretASTVisitor.h"
 #include "cDumpASTVisitor.h"
@@ -40,7 +42,9 @@ int main (int argc, char * const argv[])
 {
   PlatformExpert::Initialize();
 
-  cASLibrary* lib = new cASLibrary;
+  cASLibrary* lib = new cASLibrary;  
+  RegisterASCoreLib(lib);
+  
   cParser* parser = new cParser;
   
   cFile file;

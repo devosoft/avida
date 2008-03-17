@@ -1,9 +1,9 @@
 /*
- *  cASLibrary.cc
+ *  ASCoreLib.cc
  *  Avida
  *
- *  Created by David on 1/16/06.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Created by David on 3/16/08.
+ *  Copyright 2008 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,26 +22,22 @@
  *
  */
 
+#include "ASCoreLib.h"
+
 #include "cASLibrary.h"
 
-
-cASLibrary::~cASLibrary()
-{
-  for (int i = 0; i < m_obj_tbl.GetSize(); i++) delete m_obj_tbl[i];
-  
-  // @TODO - cleanup function objects
-}
+#include <iostream>
 
 
-bool cASLibrary::RegisterFunction(cASFunction* func)
-{
-  cASFunction* old_func = NULL;
-  bool found = m_fun_dict.Find(func->GetName(), old_func);
-  
-  if (found) {
-    return false;
-  } else {
-    m_fun_dict.Add(func->GetName(), func);
-    return true;
+namespace ASCoreLib {
+  void print(const cString& value)
+  {
+    std::cout << value << std::endl;
   }
+};
+
+
+void RegisterASCoreLib(cASLibrary* lib)
+{
+  lib->RegisterFunction(new tASFunction<void (const cString&)>(&ASCoreLib::print, "print"));
 }

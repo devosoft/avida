@@ -206,6 +206,7 @@ struct sASTypeInfo {
   ASType_t type;
   cString info;
   
+  sASTypeInfo() : type(AS_TYPE_INVALID) { ; }
   sASTypeInfo(ASType_t in_type) : type(in_type) { ; }
   
   bool operator==(const sASTypeInfo& ot) const { return (type == ot.type && info == ot.info); }
@@ -217,6 +218,14 @@ namespace AvidaScript {
   const char* mapBuiltIn(ASBuiltIn_t builtin);  
   const char* mapToken(ASToken_t token);
   const char* mapType(const sASTypeInfo& type);
+  
+  template<typename T> inline sASTypeInfo TypeOf() { return sASTypeInfo(AS_TYPE_INVALID); }
+  template<> inline sASTypeInfo TypeOf<bool>() { return sASTypeInfo(AS_TYPE_BOOL); }
+  template<> inline sASTypeInfo TypeOf<char>() { return sASTypeInfo(AS_TYPE_CHAR); }
+  template<> inline sASTypeInfo TypeOf<int>() { return sASTypeInfo(AS_TYPE_INT); }
+  template<> inline sASTypeInfo TypeOf<double>() { return sASTypeInfo(AS_TYPE_FLOAT); }
+  template<> inline sASTypeInfo TypeOf<const cString&>() { return sASTypeInfo(AS_TYPE_STRING); }
+  template<> inline sASTypeInfo TypeOf<void>() { return sASTypeInfo(AS_TYPE_VOID); }
 };
 
 #endif
