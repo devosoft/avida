@@ -32,6 +32,11 @@
 namespace ASCoreLib {
   void print(const cString& value)
   {
+    std::cout << value;
+  }
+  
+  void println(const cString& value)
+  {
     std::cout << value << std::endl;
   }
 };
@@ -40,4 +45,5 @@ namespace ASCoreLib {
 void RegisterASCoreLib(cASLibrary* lib)
 {
   lib->RegisterFunction(new tASFunction<void (const cString&)>(&ASCoreLib::print, "print"));
+  lib->RegisterFunction(new tASFunction<void (const cString&)>(&ASCoreLib::println, "println"));
 }

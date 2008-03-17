@@ -39,7 +39,7 @@ private:
   // --------  Internal Variables  --------
   tArray<sObjectEntry*> m_obj_tbl;
   tDictionary<int> m_obj_dict;
-  tDictionary<cASFunction*> m_fun_dict;
+  tDictionary<const cASFunction*> m_fun_dict;
 
   
   // --------  Private Constructors  --------
@@ -52,9 +52,11 @@ public:
   ~cASLibrary();
 
   bool LookupObject(const cString& obj_name, int& obj_id);
-  bool LookupFunction(const cString& name, cASFunction*& func);
+  bool LookupFunction(const cString& name, const cASFunction*& func) { return m_fun_dict.Find(name, func); }
+  
+  bool HasFunction(const cString& name) const { return m_fun_dict.HasEntry(name); }
 
-  bool RegisterFunction(cASFunction* func);
+  bool RegisterFunction(const cASFunction* func);
   
   
 private:

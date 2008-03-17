@@ -33,9 +33,9 @@ cASLibrary::~cASLibrary()
 }
 
 
-bool cASLibrary::RegisterFunction(cASFunction* func)
+bool cASLibrary::RegisterFunction(const cASFunction* func)
 {
-  cASFunction* old_func = NULL;
+  const cASFunction* old_func = NULL;
   bool found = m_fun_dict.Find(func->GetName(), old_func);
   
   if (found) {

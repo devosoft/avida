@@ -35,8 +35,8 @@
 #include "tManagedPointerArray.h"
 
 
+class cASFunction;
 class cASTVisitor;
-
 
 class cASFilePosition
 {
@@ -490,10 +490,11 @@ private:
   sASTypeInfo m_type;
   int m_id;
   bool m_global;
+  const cASFunction* m_func;
   
 public:
   cASTFunctionCall(const cASFilePosition& fp, const cString& name)
-    : cASTNode(fp), m_name(name), m_args(NULL), m_type(AS_TYPE_INVALID), m_id(-1), m_global(false) { ; }
+    : cASTNode(fp), m_name(name), m_args(NULL), m_type(AS_TYPE_INVALID), m_id(-1), m_global(false), m_func(NULL) { ; }
   ~cASTFunctionCall() { delete m_args; }
   
   const cString& GetName() const { return m_name; }
@@ -507,6 +508,10 @@ public:
   inline int GetFuncID() const { return m_id; }
   inline bool IsFuncGlobal() const { return m_global; }
   inline void SetFunc(int in_id, bool global) { m_id = in_id; m_global = global; }
+  
+  inline const cASFunction* GetASFunction() const { return m_func; }
+  inline bool IsASFunction() const { return (m_func); }
+  inline void SetASFunction(const cASFunction* func) { m_func = func; }
 
   bool HasArguments() const { return (m_args); }
   

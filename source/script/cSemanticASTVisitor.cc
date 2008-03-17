@@ -214,6 +214,11 @@ void cSemanticASTVisitor::VisitWhileBlock(cASTWhileBlock& node)
 
 void cSemanticASTVisitor::VisitFunctionDefinition(cASTFunctionDefinition& node)
 {
+  if (m_library->HasFunction(node.GetName())) {
+    SEMANTIC_ERROR(CANNOT_OVERRIDE_LIB_FUNCTION, (const char*)node.GetName());
+    return;
+  }
+  
   int fun_id = -1;
   bool added = m_cur_symtbl->AddFunction(node.GetName(), node.GetType(), fun_id);
   
@@ -626,9 +631,42 @@ void cSemanticASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
     return;
   }
   
+  const cASFunction* libfun = NULL;
   int fun_id = -1;
   bool global = false;
-  if (lookupFunction(node.GetName(), fun_id, global)) {
+
+  if (m_library->LookupFunction(node.GetName(), libfun)) {
+    // Check function parameters for match to the signature
+    cASTArgumentList* args = node.GetArguments();
+    if (args && libfun->GetArity() == args->GetSize()) { 
+      bool err = false;
+      tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
+      cASTNode* an = NULL;
+      for (int i = 0; i < libfun->GetArity(); i++) {
+        an = cit.Next();
+        an->Accept(*this);
+        
+        ASType_t in_type = an->GetType().type;
+        ASType_t out_type = libfun->GetArgumentType(i).type;
+        if (valid_cast[in_type][out_type]) {
+          if ((in_type == TYPE(FLOAT) && out_type == TYPE(INT)) || (in_type == TYPE(INT) && out_type == TYPE(CHAR))) 
+            SEMANTIC_WARNING(LOSS_OF_PRECISION, mapType(in_type), mapType(out_type)); 
+        } else { 
+          if (!err) {
+            SEMANTIC_ERROR(FUNCTION_CALL_SIGNATURE_MISMATCH, (const char*)node.GetName());
+            err = true;
+          }
+          SEMANTIC_ERROR(CANNOT_CAST, mapType(in_type), mapType(out_type)); 
+        }
+      }
+    } else if (libfun->GetArity()) {
+      SEMANTIC_ERROR(FUNCTION_CALL_SIGNATURE_MISMATCH, (const char*)node.GetName());
+    }
+    
+    node.SetASFunction(libfun);
+    node.SetType(libfun->GetReturnType());
+    
+  } else if (lookupFunction(node.GetName(), fun_id, global)) {
     cASTVariableDefinitionList* sig = (global ? m_global_symtbl : m_cur_symtbl)->GetFunctionSignature(fun_id);
     
     // Check function parameters for match to the signature
@@ -960,6 +998,9 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_ERR_CANNOT_COMPARE:
       std::cerr << "cannot compare values" << ERR_ENDL; 
+      break;
+    case AS_SEMANTIC_ERR_CANNOT_OVERRIDE_LIB_FUNCTION:
+      std::cerr << "cannot override library method '" << VA_ARG_STR << "()'" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_FUNCTION_CALL_SIGNATURE_MISMATCH:
       std::cerr << "invalid call signature for '" << VA_ARG_STR << "()'" << ERR_ENDL;

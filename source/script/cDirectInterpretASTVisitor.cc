@@ -30,6 +30,7 @@
 #include "avida.h"
 #include "AvidaScript.h"
 
+#include "cASFunction.h"
 #include "cStringUtil.h"
 #include "cSymbolTable.h"
 
@@ -808,104 +809,162 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
 
 void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 {
-  // Save previous scope information
-  cSymbolTable* prev_symtbl = m_cur_symtbl;
-  
-  // Get function information
-  cSymbolTable* func_src_symtbl = node.IsFuncGlobal() ? m_global_symtbl : m_cur_symtbl;
-  int fun_id = node.GetFuncID();
-  
-  // Set current scope to the function symbol table
-  cSymbolTable* func_symtbl = func_src_symtbl->GetFunctionSymbolTable(fun_id);
-  int sp = m_sp + prev_symtbl->GetNumVariables();
-  m_call_stack.Resize(m_call_stack.GetSize() + func_symtbl->GetNumVariables());
-  for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
-    switch (func_symtbl->GetVariableType(i).type) {
-      case TYPE(ARRAY):       m_call_stack[sp + i].as_array = new cLocalArray; break;
-      case TYPE(BOOL):        m_call_stack[sp + i].as_bool = false; break;
-      case TYPE(CHAR):        m_call_stack[sp + i].as_char = 0; break;
-      case TYPE(INT):         m_call_stack[sp + i].as_int = 0; break;
-      case TYPE(FLOAT):       m_call_stack[sp + i].as_float = 0.0; break;
-      case TYPE(MATRIX):      m_call_stack[sp + i].as_matrix = NULL; break;
-      case TYPE(OBJECT_REF):  m_call_stack[sp + i].as_ref = NULL; break;
-      case TYPE(STRING):      m_call_stack[sp + i].as_string = NULL; break;
-      default: break;
-    }
-  }
-  
-  // Process the arguments to the function
-  tListIterator<cASTVariableDefinition> sit = func_src_symtbl->GetFunctionSignature(fun_id)->Iterator();
-  tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
-  cASTVariableDefinition* arg_def = NULL;
-  while ((arg_def = sit.Next())) {
-    cASTNode* arg = cit.Next();
-    if (arg) arg->Accept(*this);
-    else arg_def->GetAssignmentExpression()->Accept(*this);
+  if (node.IsASFunction()) {
+    // Call internal function
+    const cASFunction* func = node.GetASFunction();
     
-    int var_id = arg_def->GetVarID();
+    // Setup arguments
+    cASFunction::cParameter* args = new cASFunction::cParameter[func->GetArity()];
+    tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
+    cASTNode* an = NULL;
+    for (int i = 0; i < func->GetArity(); i++) {
+      an = cit.Next();
+      an->Accept(*this);
+     
+      switch (func->GetArgumentType(i).type) {
+        case TYPE(BOOL):        args[i].Set(asBool(m_rtype, m_rvalue, node)); break;
+        case TYPE(CHAR):        args[i].Set(asChar(m_rtype, m_rvalue, node)); break;
+        case TYPE(FLOAT):       args[i].Set(asFloat(m_rtype, m_rvalue, node)); break;
+        case TYPE(INT):         args[i].Set(asInt(m_rtype, m_rvalue, node)); break;
+        case TYPE(STRING):      args[i].Set(asString(m_rtype, m_rvalue, node)); break;
+          
+        default:
+          INTERPRET_ERROR(INTERNAL);
+      }
+    }
+    
+    // Call the function
+    cASFunction::cParameter rvalue = func->Call(args);
 
-    switch (m_cur_symtbl->GetVariableType(var_id).type) {
-      case TYPE(ARRAY):       m_call_stack[sp + var_id].as_array = asArray(m_rtype, m_rvalue, node); break;
-      case TYPE(BOOL):        m_call_stack[sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
-      case TYPE(CHAR):        m_call_stack[sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
-      case TYPE(FLOAT):       m_call_stack[sp + var_id].as_float = asFloat(m_rtype, m_rvalue, node); break;
-      case TYPE(INT):         m_call_stack[sp + var_id].as_int = asInt(m_rtype, m_rvalue, node); break;
-      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
-      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
-      case TYPE(STRING):
-        {
-          m_call_stack[sp + var_id].as_string = asString(m_rtype, m_rvalue, node);
-        }
-        break;
+    // Handle the return value
+    switch (node.GetType().type) {
+      case TYPE(BOOL):        m_rvalue.as_bool = rvalue.Get<bool>(); break;
+      case TYPE(CHAR):        m_rvalue.as_char = rvalue.Get<char>(); break;
+      case TYPE(FLOAT):       m_rvalue.as_float = rvalue.Get<double>(); break;
+      case TYPE(INT):         m_rvalue.as_int = rvalue.Get<int>(); break;
+      case TYPE(STRING):      m_rvalue.as_string = rvalue.Get<cString*>(); break;
+      case TYPE(VOID):        break;
         
       default:
         INTERPRET_ERROR(INTERNAL);
     }
-  }
-  
-  
-  // Execute the function
-  m_cur_symtbl = func_symtbl;
-  m_sp = sp;
-  func_src_symtbl->GetFunctionDefinition(fun_id)->Accept(*this);
-  
-  // Handle function return value
-  switch (node.GetType().type) {
-    case TYPE(ARRAY):       m_rvalue.as_array = asArray(m_rtype, m_rvalue, node); break;
-    case TYPE(BOOL):        m_rvalue.as_bool = asBool(m_rtype, m_rvalue, node); break;
-    case TYPE(CHAR):        m_rvalue.as_char = asChar(m_rtype, m_rvalue, node); break;
-    case TYPE(FLOAT):       m_rvalue.as_float = asFloat(m_rtype, m_rvalue, node); break;
-    case TYPE(INT):         m_rvalue.as_int = asInt(m_rtype, m_rvalue, node); break;
-    case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - return
-    case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - return
-    case TYPE(STRING):      m_rvalue.as_string = asString(m_rtype, m_rvalue, node); break;
-    case TYPE(VOID):        break;
-      
-    default:
-      INTERPRET_ERROR(INTERNAL);
-  }
-  m_rtype = node.GetType();
-
-  // Clean up variables in the current scope
-  for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
-    switch (func_symtbl->GetVariableType(i).type) {
-      case TYPE(ARRAY):       m_call_stack[sp + i].as_array->RemoveReference(); break;
-      case TYPE(BOOL):        break;
-      case TYPE(CHAR):        break;
-      case TYPE(INT):         break;
-      case TYPE(FLOAT):       break;
-      case TYPE(MATRIX):      break; // @TODO - cleanup scope
-      case TYPE(OBJECT_REF):  delete m_call_stack[sp + i].as_ref; break;
-      case TYPE(STRING):      delete m_call_stack[sp + i].as_string; break;
-      default: break;
+    m_rtype = node.GetType();
+    
+    // Clean up arguments
+    for (int i = 0; i < func->GetArity(); i++) {
+      switch (func->GetArgumentType(i).type) {
+        case TYPE(BOOL):    break;
+        case TYPE(CHAR):    break;
+        case TYPE(FLOAT):   break;
+        case TYPE(INT):     break;
+        case TYPE(STRING):  delete args[i].Get<cString*>(); break;
+          
+        default:
+          INTERPRET_ERROR(INTERNAL);
+      }
     }
+    delete [] args;
+    
+  } else {
+    // Save previous scope information
+    cSymbolTable* prev_symtbl = m_cur_symtbl;
+    
+    // Get function information
+    cSymbolTable* func_src_symtbl = node.IsFuncGlobal() ? m_global_symtbl : m_cur_symtbl;
+    int fun_id = node.GetFuncID();
+    
+    // Set current scope to the function symbol table
+    cSymbolTable* func_symtbl = func_src_symtbl->GetFunctionSymbolTable(fun_id);
+    int sp = m_sp + prev_symtbl->GetNumVariables();
+    m_call_stack.Resize(m_call_stack.GetSize() + func_symtbl->GetNumVariables());
+    for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
+      switch (func_symtbl->GetVariableType(i).type) {
+        case TYPE(ARRAY):       m_call_stack[sp + i].as_array = new cLocalArray; break;
+        case TYPE(BOOL):        m_call_stack[sp + i].as_bool = false; break;
+        case TYPE(CHAR):        m_call_stack[sp + i].as_char = 0; break;
+        case TYPE(INT):         m_call_stack[sp + i].as_int = 0; break;
+        case TYPE(FLOAT):       m_call_stack[sp + i].as_float = 0.0; break;
+        case TYPE(MATRIX):      m_call_stack[sp + i].as_matrix = NULL; break;
+        case TYPE(OBJECT_REF):  m_call_stack[sp + i].as_ref = NULL; break;
+        case TYPE(STRING):      m_call_stack[sp + i].as_string = NULL; break;
+        default: break;
+      }
+    }
+    
+    // Process the arguments to the function
+    tListIterator<cASTVariableDefinition> sit = func_src_symtbl->GetFunctionSignature(fun_id)->Iterator();
+    tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
+    cASTVariableDefinition* arg_def = NULL;
+    while ((arg_def = sit.Next())) {
+      cASTNode* arg = cit.Next();
+      if (arg) arg->Accept(*this);
+      else arg_def->GetAssignmentExpression()->Accept(*this);
+      
+      int var_id = arg_def->GetVarID();
+
+      switch (m_cur_symtbl->GetVariableType(var_id).type) {
+        case TYPE(ARRAY):       m_call_stack[sp + var_id].as_array = asArray(m_rtype, m_rvalue, node); break;
+        case TYPE(BOOL):        m_call_stack[sp + var_id].as_bool = asBool(m_rtype, m_rvalue, node); break;
+        case TYPE(CHAR):        m_call_stack[sp + var_id].as_char = asChar(m_rtype, m_rvalue, node); break;
+        case TYPE(FLOAT):       m_call_stack[sp + var_id].as_float = asFloat(m_rtype, m_rvalue, node); break;
+        case TYPE(INT):         m_call_stack[sp + var_id].as_int = asInt(m_rtype, m_rvalue, node); break;
+        case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+        case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+        case TYPE(STRING):
+          {
+            m_call_stack[sp + var_id].as_string = asString(m_rtype, m_rvalue, node);
+          }
+          break;
+          
+        default:
+          INTERPRET_ERROR(INTERNAL);
+      }
+    }
+    
+    
+    // Execute the function
+    m_cur_symtbl = func_symtbl;
+    m_sp = sp;
+    func_src_symtbl->GetFunctionDefinition(fun_id)->Accept(*this);
+    
+    // Handle function return value
+    switch (node.GetType().type) {
+      case TYPE(ARRAY):       m_rvalue.as_array = asArray(m_rtype, m_rvalue, node); break;
+      case TYPE(BOOL):        m_rvalue.as_bool = asBool(m_rtype, m_rvalue, node); break;
+      case TYPE(CHAR):        m_rvalue.as_char = asChar(m_rtype, m_rvalue, node); break;
+      case TYPE(FLOAT):       m_rvalue.as_float = asFloat(m_rtype, m_rvalue, node); break;
+      case TYPE(INT):         m_rvalue.as_int = asInt(m_rtype, m_rvalue, node); break;
+      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - return
+      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - return
+      case TYPE(STRING):      m_rvalue.as_string = asString(m_rtype, m_rvalue, node); break;
+      case TYPE(VOID):        break;
+        
+      default:
+        INTERPRET_ERROR(INTERNAL);
+    }
+    m_rtype = node.GetType();
+
+    // Clean up variables in the current scope
+    for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
+      switch (func_symtbl->GetVariableType(i).type) {
+        case TYPE(ARRAY):       m_call_stack[sp + i].as_array->RemoveReference(); break;
+        case TYPE(BOOL):        break;
+        case TYPE(CHAR):        break;
+        case TYPE(INT):         break;
+        case TYPE(FLOAT):       break;
+        case TYPE(MATRIX):      break; // @TODO - cleanup scope
+        case TYPE(OBJECT_REF):  delete m_call_stack[sp + i].as_ref; break;
+        case TYPE(STRING):      delete m_call_stack[sp + i].as_string; break;
+        default: break;
+      }
+    }
+    
+    // Restore previous scope
+    m_has_returned = false;
+    m_call_stack.Resize(m_call_stack.GetSize() - m_cur_symtbl->GetNumVariables());
+    m_sp -= prev_symtbl->GetNumVariables();
+    m_cur_symtbl = prev_symtbl;
   }
-  
-  // Restore previous scope
-  m_has_returned = false;
-  m_call_stack.Resize(m_call_stack.GetSize() - m_cur_symtbl->GetNumVariables());
-  m_sp -= prev_symtbl->GetNumVariables();
-  m_cur_symtbl = prev_symtbl;
 }
 
 

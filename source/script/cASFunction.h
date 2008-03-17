@@ -25,7 +25,9 @@
 #ifndef cASFunction_h
 #define cASFunction_h
 
+#include "avida.h"
 #include "AvidaScript.h"
+
 #include "cString.h"
 
 
@@ -40,7 +42,7 @@ public:
       char m_char;
       int m_int;
       double m_float;
-      const cString* m_string;
+      cString* m_string;
     };
     
   public:
@@ -51,19 +53,15 @@ public:
     void Set(int val) { m_int = val; }
     void Set(double val) { m_float = val; }
     void Set(cString* val) { m_string = val; }
+    void Set(const cString& val) { m_string = new cString(val); }
     
-    bool Get(bool) const { return m_bool; }
-    char Get(char) const { return m_char; }
-    int Get(int) const { return m_int; }
-    double Get(double) const { return m_float; }
-    const cString& Get(const cString&) const { return *m_string; }
+    template<typename T> inline T Get() const { Avida::Exit(AS_EXIT_INTERNAL_ERROR); return m_int; }
   };
   
   
 protected:
   cString m_name;
   sASTypeInfo m_rtype;
-  cParameter m_rvalue;
   
   
 public:
@@ -72,13 +70,21 @@ public:
   
   const cString& GetName() const { return m_name; }
 
-  virtual int GetArity() = 0;
+  virtual int GetArity() const = 0;
   const sASTypeInfo& GetReturnType() const { return m_rtype; }
   virtual const sASTypeInfo& GetArgumentType(int arg) const = 0;
   
-  virtual void Call(cParameter args[]) = 0;
-  const cParameter& GetReturnValue() const { return m_rvalue; }
+  virtual cParameter Call(cParameter args[]) const = 0;
 };
+
+
+template<> inline bool cASFunction::cParameter::Get<bool>() const { return m_bool; }
+template<> inline char cASFunction::cParameter::Get<char>() const { return m_char; }
+template<> inline int cASFunction::cParameter::Get<int>() const { return m_int; }
+template<> inline double cASFunction::cParameter::Get<double>() const { return m_float; }
+template<> inline const cString& cASFunction::cParameter::Get<const cString&>() const { return *m_string; }
+template<> inline const cString* cASFunction::cParameter::Get<const cString*>() const { return m_string; }
+template<> inline cString* cASFunction::cParameter::Get<cString*>() const { return m_string; }
 
 
 template<typename FunctionType> class tASFunction;
@@ -101,13 +107,14 @@ public:
     m_signature = AvidaScript::TypeOf<Arg1Type>();
   }
   
-  int GetArity() { return 1; }
+  int GetArity() const { return 1; }
   const sASTypeInfo& GetArgumentType(int arg) const { return m_signature; }
   
-  void Call(cParameter args[])
+  cParameter Call(cParameter args[]) const
   {
-    void* x = NULL;
-    m_rvalue.Set((*m_func)(args[0].Get((Arg1Type)x)));
+    cParameter rvalue;
+    rvalue.Set((*m_func)(args[0].Get<Arg1Type>()));
+    return rvalue;
   }
 };
                   
@@ -129,13 +136,14 @@ public:
     m_signature = AvidaScript::TypeOf<Arg1Type>();
   }
   
-  int GetArity() { return 1; }
+  int GetArity() const { return 1; }
   const sASTypeInfo& GetArgumentType(int arg) const { return m_signature; }
   
-  void Call(cParameter args[])
+  cParameter Call(cParameter args[]) const
   {
-    void* x = NULL;
-    (*m_func)(args[0].Get((Arg1Type)x));
+    (*m_func)(args[0].Get<Arg1Type>());
+    
+    return cParameter();
   }
 };
 
