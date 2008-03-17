@@ -599,7 +599,8 @@ cASTNode* cParser::parseExprP6()
       expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_BOOL, currentText()));
       break;
     case TOKEN(STRING):
-      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_STRING, currentText().Substring(1, currentText().GetSize() - 2)));
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_STRING,
+                               currentText().Substring(1, currentText().GetSize() - 2).ParseEscapeSequences()));
       break;
     case TOKEN(ID):
       if (peekToken() == TOKEN(PREC_OPEN)) {

@@ -214,24 +214,18 @@ public:
 
 
   // Additional modifiers
-  cString & Set(const char * fmt, ...);
+  cString& Set(const char * fmt, ...);
 
-  cString & Insert(const char in, int pos=0, int excise=0){
-    return InsertStr(1, &in, pos, excise); }
-  cString & Insert(const char * in, int pos=0, int excise=0){
-    return InsertStr(strlen(in), in, pos, excise); }
-  cString & Insert(const cString & in, int pos=0, int excise=0){
-    return InsertStr(in.GetSize(), in, pos, excise); }
+  cString& Insert(const char in, int pos = 0, int excise = 0) { return InsertStr(1, &in, pos, excise); }
+  cString& Insert(const char* in, int pos = 0, int excise = 0) { return InsertStr(strlen(in), in, pos, excise); }
+  cString& Insert(const cString& in, int pos = 0, int excise = 0) { return InsertStr(in.GetSize(), in, pos, excise); }
 
 
   // Removes 'size' characters from 'pos' (default size = to end of string)
-  cString & Clip(int pos, int size = -1 /*end of string*/ ){
-    if( size < 0 ) size = GetSize()-pos;
-    return InsertStr(0, NULL, pos, size); }
-  cString & ClipFront(int size){  // Clip off first 'clip_size' chars
-    return InsertStr(0, NULL, 0, size); }
-  cString & ClipEnd(int size){    // Clip off last 'clip_size' chars
-    return InsertStr(0, NULL, GetSize()-size, size); }
+  cString& Clip(int pos, int size = -1 /*end of string*/ )
+    { if( size < 0 ) size = GetSize() - pos; return InsertStr(0, NULL, pos, size); }
+  cString& ClipFront(int size) { /* Clip off first 'clip_size' chars */ return InsertStr(0, NULL, 0, size); }
+  cString& ClipEnd(int size) { /* Clip off last 'clip_size' chars */ return InsertStr(0, NULL, GetSize() - size, size); }
   
   /**
    * Find and replace a substring in the string with a different substring.
@@ -242,7 +236,7 @@ public:
    * @param new_string The replacement.
    * @param pos The position at which the search should start.
    **/
-  int Replace(const cString & old_st, const cString & new_st, int pos=0);
+  int Replace(const cString& old_st, const cString& new_st, int pos = 0);
 
   cString Pop(const char delim);  // Remove and return up to delim char
   
@@ -258,7 +252,7 @@ public:
    *
    * @return The removed line.
    **/
-  cString PopLine(){ return Pop('\n'); } 
+  cString PopLine() { return Pop('\n'); } 
   
   /**
    * Remove begining whitespace.
@@ -319,11 +313,14 @@ public:
    * Get rid of one character at a specific location
    **/
   void RemovePos(int pos);
+  
+  
+  // Parse for and replace escape sequences within the string
+  cString& ParseEscapeSequences();
+  
 
   // Individal Char Access
-  inline char operator[] (int index) const {
-    return static_cast<char>((*value)[index]);
-  }
+  inline char operator[] (int index) const { return static_cast<char>((*value)[index]); }
   cCharProxy operator[] (int index) { return cCharProxy(*this,index); }
 
 
