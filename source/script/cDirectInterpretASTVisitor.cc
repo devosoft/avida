@@ -1415,6 +1415,31 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
 }
 
 
+bool cDirectInterpretASTVisitor::sAggregateValue::operator==(const sAggregateValue& lval)
+{
+  if (type == lval.type) {
+    switch (type) {
+      case TYPE(BOOL):    return val.as_bool == lval.val.as_bool;
+      case TYPE(CHAR):    return val.as_char == lval.val.as_char;
+      case TYPE(INT):     return val.as_int == lval.val.as_int;
+      case TYPE(FLOAT):   return val.as_float == lval.val.as_float;
+      case TYPE(STRING):  return *val.as_string == *lval.val.as_string;
+      case TYPE(ARRAY):   return val.as_array == lval.val.as_array;
+        
+      case TYPE(DICT): // @TODO - aggregate value compare
+      case TYPE(MATRIX): // @TODO - aggregate value compare
+      case TYPE(OBJECT_REF): // @TODO - aggregate value compare
+        return val.as_void == lval.val.as_void;
+      
+      default:
+        break;
+    }
+  }
+  
+  return false;
+}
+
+                                                             
 void cDirectInterpretASTVisitor::cLocalArray::Set(int i, const sASTypeInfo& type, uAnyType value)
 {
   m_storage[i].type = type;

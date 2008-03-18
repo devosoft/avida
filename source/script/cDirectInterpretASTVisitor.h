@@ -37,6 +37,7 @@ class cDirectInterpretASTVisitor : public cASTVisitor
 private:
   // --------  Internal Type Declarations  --------
   class cLocalArray;
+  class cLocalDict;
   class cLocalMatrix;
   class cObjectRef;
   
@@ -47,13 +48,17 @@ private:
     double as_float;
     cString* as_string;
     cLocalArray* as_array;
+    cLocalDict* as_dict;
     cLocalMatrix* as_matrix;
     cObjectRef* as_ref;
+    void* as_void;
   } uAnyType;
   
   struct sAggregateValue {
     uAnyType value;
     sASTypeInfo type;
+    
+    bool operator==(const sAggregateValue& rval);
   };
     
 
@@ -155,6 +160,12 @@ private:
   };
   
   
+  class cLocalDict
+  {
+    
+  };
+  
+  
   class cLocalMatrix
   {
     
@@ -214,6 +225,20 @@ private:
     bool Set(int idx, ASType_t type, uAnyType value);
   };
 };
+
+namespace nHashTable {
+  template<> inline int HashKey<sAggregateValue>(const sAggregateValue& key)
+  {
+    switch (key.type) {
+      case AS_TYPE_BOOL:    return HashKey<int>(key.value.as_bool);
+      case AS_TYPE_CHAR:    return HashKey<int>(key.value.as_char);
+      case AS_TYPE_INT:     return HashKey<int>(key.value.as_int);
+      case AS_TYPE_FLOAT:   return HashKey<int>((int)key.value.as_float);
+      case AS_TYPE_STRING:  return HashKey<cString>(*key.value.as_string);
+      default:              return HashKey<void*>(key.value.as_void);
+    }
+  }
+}
 
 
 inline cDirectInterpretASTVisitor::cLocalArray::cLocalArray(cLocalArray* in_array)
