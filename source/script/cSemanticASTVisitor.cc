@@ -44,19 +44,21 @@ using namespace AvidaScript;
 #define TYPEINFO(x) sASTypeInfo(AS_TYPE_ ## x)
 
 namespace AvidaScript {
-  static const bool valid_cast[11][11] = {
-  // ARRAY, BOOL , CHAR , FLOAT, INT  , @OBJ , MATRX, STRNG, RUNTM, VOID , INVLD
-    {true , true , false, false, false, false, false, true , true , false, false}, // TYPE(ARRAY)
-    {false, true , true , true , true , false, true , true , true , false, false}, // TYPE(BOOL)
-    {false, true , true , true , true , false, true , true , true , false, false}, // TYPE(CHAR)
-    {false, true , false, true , true , false, true , true , true , false, false}, // TYPE(FLOAT)
-    {false, true , true , true , true , false, true , true , true , false, false}, // TYPE(INT)
-    {false, true , false, false, false, true , false, true , false, false, false}, // TYPE(OBJECT_REF)
-    {true , true , false, false, false, false, true , true , true , false, false}, // TYPE(MATRIX)
-    {true , true , false, true , true , false, false, true , true , false, false}, // TYPE(STRNG)
-    {true , true , true , true , true , true , true , true , true , false, false}, // TYPE(RUNTIME)
-    {false, false, false, false, false, false, false, false, false, false, false}, // TYPE(VOID)
-    {false, false, false, false, false, false, false, false, false, false, false}  // TYPE(INVALID)
+  static const bool valid_cast[13][13] = {
+  // ARRAY, BOOL , CHAR , DICT , FLOAT, INT  , @OBJ , MATRX, STRNG, VAR  , RUNTM, VOID , INVLD
+    {true , true , false, true , false, false, false, false, true , true , true , false, false}, // TYPE(ARRAY)
+    {false, true , true , false, true , true , false, true , true , true , true , false, false}, // TYPE(BOOL)
+    {false, true , true , false, true , true , false, true , true , true , true , false, false}, // TYPE(CHAR)
+    {false, false, false, true , false, false, false, false, true , true , true , false, false}, // TYPE(DICT)
+    {false, true , false, false, true , true , false, true , true , true , true , false, false}, // TYPE(FLOAT)
+    {false, true , true , false, true , true , false, true , true , true , true , false, false}, // TYPE(INT)
+    {false, true , false, false, false, false, true , false, true , true , false, false, false}, // TYPE(OBJECT_REF)
+    {true , true , false, false, false, false, false, true , true , true , true , false, false}, // TYPE(MATRIX)
+    {true , true , false, false, true , true , false, false, true , true , true , false, false}, // TYPE(STRNG)
+    {true , true , true , true , true , true , true , true , true , true , true , false, false}, // TYPE(VAR)
+    {true , true , true , true , true , true , true , true , true , true , true , false, false}, // TYPE(RUNTIME)
+    {false, false, false, false, false, false, false, false, false, false, false, false, false}, // TYPE(VOID)
+    {false, false, false, false, false, false, false, false, false, false, false, false, false}  // TYPE(INVALID)
   };
 }
 
@@ -825,6 +827,7 @@ ASType_t cSemanticASTVisitor::getConsensusType(const sASTypeInfo& left, const sA
         case TYPE(STRING):
           return TYPE(BOOL);
 
+        case TYPE(VAR):
         case TYPE(RUNTIME):
           return TYPE(RUNTIME);
         default: break;
@@ -839,6 +842,7 @@ ASType_t cSemanticASTVisitor::getConsensusType(const sASTypeInfo& left, const sA
         case TYPE(INT):       return TYPE(INT);
         case TYPE(MATRIX):    return TYPE(MATRIX);
         case TYPE(STRING):    return TYPE(STRING);
+        case TYPE(VAR):       return TYPE(RUNTIME);
         case TYPE(RUNTIME):   return TYPE(RUNTIME);
         default: break;
       }
@@ -852,6 +856,7 @@ ASType_t cSemanticASTVisitor::getConsensusType(const sASTypeInfo& left, const sA
         case TYPE(INT):       return TYPE(FLOAT);
         case TYPE(MATRIX):    return TYPE(MATRIX);
         case TYPE(STRING):    return TYPE(FLOAT);
+        case TYPE(VAR):       return TYPE(RUNTIME);
         case TYPE(RUNTIME):   return TYPE(RUNTIME);
         default: break;
       }
@@ -865,6 +870,7 @@ ASType_t cSemanticASTVisitor::getConsensusType(const sASTypeInfo& left, const sA
         case TYPE(INT):       return TYPE(INT);
         case TYPE(MATRIX):    return TYPE(MATRIX);
         case TYPE(STRING):    return TYPE(INT);
+        case TYPE(VAR):       return TYPE(RUNTIME);
         case TYPE(RUNTIME):   return TYPE(RUNTIME);
         default: break;
       }
@@ -873,6 +879,9 @@ ASType_t cSemanticASTVisitor::getConsensusType(const sASTypeInfo& left, const sA
       return TYPE(MATRIX);
     case TYPE(STRING):
       return TYPE(STRING);
+      
+    case TYPE(VAR):
+      return TYPE(RUNTIME);
     
     case TYPE(RUNTIME):
       return TYPE(RUNTIME);

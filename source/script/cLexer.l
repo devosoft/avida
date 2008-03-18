@@ -88,10 +88,12 @@
 array       return AS_TOKEN_TYPE_ARRAY;    // Built-in Types
 bool        return AS_TOKEN_TYPE_BOOL;
 char        return AS_TOKEN_TYPE_CHAR;
+dict        return AS_TOKEN_TYPE_DICT;
 float       return AS_TOKEN_TYPE_FLOAT;
 int         return AS_TOKEN_TYPE_INT;
 matrix      return AS_TOKEN_TYPE_MATRIX;
 string      return AS_TOKEN_TYPE_STRING;
+var         return AS_TOKEN_TYPE_VAR;
 void        return AS_TOKEN_TYPE_VOID;
 
 if          return AS_TOKEN_CMD_IF;        // Blocks

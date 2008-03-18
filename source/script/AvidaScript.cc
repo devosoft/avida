@@ -73,14 +73,16 @@ const char* AvidaScript::mapType(const sASTypeInfo& type)
     case AS_TYPE_ARRAY:       return "array";
     case AS_TYPE_BOOL:        return "bool";
     case AS_TYPE_CHAR:        return "char";
+    case AS_TYPE_DICT:        return "dict";
     case AS_TYPE_FLOAT:       return "float";
     case AS_TYPE_INT:         return "int";
     case AS_TYPE_MATRIX:      return "matrix";
-    case AS_TYPE_STRING:      return "string";
     case AS_TYPE_OBJECT_REF:  return type.info;
-    case AS_TYPE_RUNTIME:     return "runtime";
+    case AS_TYPE_STRING:      return "string";
+    case AS_TYPE_VAR:         return "var";
+    case AS_TYPE_RUNTIME:     return "-runtime-";
     case AS_TYPE_VOID:        return "void";
-      
+
     case AS_TYPE_INVALID:
     default:
       return "*INVALID*";

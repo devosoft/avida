@@ -51,6 +51,11 @@ private:
     cObjectRef* as_ref;
   } uAnyType;
   
+  struct sAggregateValue {
+    uAnyType value;
+    sASTypeInfo type;
+  };
+    
 
   // --------  Internal Variables  --------
   cSymbolTable* m_global_symtbl;
@@ -59,7 +64,7 @@ private:
   uAnyType m_rvalue;
   sASTypeInfo m_rtype;
   
-  tSmartArray<uAnyType> m_call_stack;
+  tSmartArray<sAggregateValue> m_call_stack;
   int m_sp;
   bool m_has_returned;
   bool m_obj_assign;
@@ -119,11 +124,6 @@ private:
   
 
   // --------  Internal Type Definitions  --------
-  struct sAggregateValue {
-    uAnyType value;
-    ASType_t type;
-  };
-  
   class cLocalArray
   {
   private:
@@ -146,7 +146,7 @@ private:
     void Resize(int sz);
     
     inline const sAggregateValue& Get(int i) const { return m_storage[i]; }    
-    void Set(int i, ASType_t type, uAnyType value);
+    void Set(int i, const sASTypeInfo& type, uAnyType value);
     
     
   private:
@@ -232,7 +232,7 @@ inline sASTypeInfo cDirectInterpretASTVisitor::cArrayVarRef::GetType(int idx)
 {
   if (idx < 0 || idx >= m_var.as_array->GetSize()) return AS_TYPE_INVALID;
   else {
-    ASType_t type = m_var.as_array->Get(idx).type;
+    ASType_t type = m_var.as_array->Get(idx).type.type;
     if (type == AS_TYPE_OBJECT_REF) return m_var.as_array->Get(idx).value.as_ref->GetType();
     else return type;
   }

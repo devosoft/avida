@@ -675,10 +675,12 @@ cASTNode* cParser::parseForeachStatement()
     case TOKEN(TYPE_ARRAY):  type.type = AS_TYPE_ARRAY;  break;
     case TOKEN(TYPE_BOOL):   type.type = AS_TYPE_BOOL;   break;
     case TOKEN(TYPE_CHAR):   type.type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_DICT):   type.type = AS_TYPE_DICT;   break;
     case TOKEN(TYPE_FLOAT):  type.type = AS_TYPE_FLOAT;  break;
     case TOKEN(TYPE_INT):    type.type = AS_TYPE_INT;    break;
     case TOKEN(TYPE_MATRIX): type.type = AS_TYPE_MATRIX; break;
     case TOKEN(TYPE_STRING): type.type = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_VAR):    type.type = AS_TYPE_VAR;    break;
     case TOKEN(TYPE_VOID):   type.type = AS_TYPE_VOID;   break;
     case TOKEN(ID):
       if (peekToken() != TOKEN(REF)) {
@@ -743,10 +745,12 @@ cASTFunctionDefinition* cParser::parseFunctionHeader()
     case TOKEN(TYPE_ARRAY):  type.type = AS_TYPE_ARRAY;  break;
     case TOKEN(TYPE_BOOL):   type.type = AS_TYPE_BOOL;   break;
     case TOKEN(TYPE_CHAR):   type.type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_DICT):   type.type = AS_TYPE_DICT;   break;
     case TOKEN(TYPE_FLOAT):  type.type = AS_TYPE_FLOAT;  break;
     case TOKEN(TYPE_INT):    type.type = AS_TYPE_INT;    break;
     case TOKEN(TYPE_MATRIX): type.type = AS_TYPE_MATRIX; break;
     case TOKEN(TYPE_STRING): type.type = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_VAR):    type.type = AS_TYPE_VAR;    break;
     case TOKEN(TYPE_VOID):   type.type = AS_TYPE_VOID;   break;
     case TOKEN(ID):
       if (peekToken() != TOKEN(REF)) {
@@ -951,10 +955,12 @@ cASTNode* cParser::parseStatementList()
       case TOKEN(TYPE_ARRAY):
       case TOKEN(TYPE_BOOL):
       case TOKEN(TYPE_CHAR):
+      case TOKEN(TYPE_DICT):
       case TOKEN(TYPE_FLOAT):
       case TOKEN(TYPE_INT):
       case TOKEN(TYPE_MATRIX):
       case TOKEN(TYPE_STRING):
+      case TOKEN(TYPE_VAR):
         node.Set(parseVariableDefinition());
         break;
         
@@ -990,10 +996,12 @@ cASTVariableDefinition* cParser::parseVariableDefinition()
     case TOKEN(TYPE_ARRAY):  vtype.type = AS_TYPE_ARRAY;  break;
     case TOKEN(TYPE_BOOL):   vtype.type = AS_TYPE_BOOL;   break;
     case TOKEN(TYPE_CHAR):   vtype.type = AS_TYPE_CHAR;   break;
+    case TOKEN(TYPE_DICT):   vtype.type = AS_TYPE_DICT;   break;
     case TOKEN(TYPE_FLOAT):  vtype.type = AS_TYPE_FLOAT;  break;
     case TOKEN(TYPE_INT):    vtype.type = AS_TYPE_INT;    break;
     case TOKEN(TYPE_MATRIX): vtype.type = AS_TYPE_MATRIX; break;
     case TOKEN(TYPE_STRING): vtype.type = AS_TYPE_STRING; break;
+    case TOKEN(TYPE_VAR):    vtype.type = AS_TYPE_VAR;    break;
     case TOKEN(ID):
       if (peekToken() != TOKEN(REF)) {
         nextToken();
