@@ -53,6 +53,7 @@ void cASTBuiltInCall::Accept(cASTVisitor& visitor) { visitor.VisitBuiltInCall(*t
 void cASTFunctionCall::Accept(cASTVisitor& visitor) { visitor.VisitFunctionCall(*this); }
 void cASTLiteral::Accept(cASTVisitor& visitor) { visitor.VisitLiteral(*this); }
 void cASTLiteralArray::Accept(cASTVisitor& visitor) { visitor.VisitLiteralArray(*this); }
+void cASTLiteralDict::Accept(cASTVisitor& visitor) { visitor.VisitLiteralDict(*this); }
 void cASTObjectCall::Accept(cASTVisitor& visitor) { visitor.VisitObjectCall(*this); }
 void cASTObjectReference::Accept(cASTVisitor& visitor) { visitor.VisitObjectReference(*this); }
 void cASTVariableReference::Accept(cASTVisitor& visitor) { visitor.VisitVariableReference(*this); }

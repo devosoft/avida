@@ -83,7 +83,8 @@
 \^          return AS_TOKEN_ARR_EXPAN;
 \.\.        return AS_TOKEN_ARR_WILD;
 
-\$          return AS_TOKEN_MAT_MODIFY;    // Matrix Modifier
+@\{         return AS_TOKEN_LITERAL_DICT;  // Aggregate literals
+\$\{        return AS_TOKEN_LITERAL_MATRIX;
 
 array       return AS_TOKEN_TYPE_ARRAY;    // Built-in Types
 bool        return AS_TOKEN_TYPE_BOOL;

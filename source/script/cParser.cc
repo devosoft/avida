@@ -630,8 +630,13 @@ cASTNode* cParser::parseExprP6()
       if (expr.IsNull()) PARSE_ERROR(NULL_EXPR);
       if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
       break;
-    case TOKEN(MAT_MODIFY):
-      if (nextToken() != TOKEN(ARR_OPEN)) PARSE_UNEXPECT();
+      
+    case TOKEN(LITERAL_DICT):
+      expr.Set(parseLiteralDict());
+      if (currentToken() != TOKEN(ARR_CLOSE)) PARSE_UNEXPECT();
+      break;
+
+    case TOKEN(LITERAL_MATRIX):
       is_matrix = true;
     case TOKEN(ARR_OPEN):
       {
@@ -855,6 +860,25 @@ cASTNode* cParser::parseIfStatement()
   }
   
   return is.Release();
+}
+
+
+cASTNode* cParser::parseLiteralDict()
+{
+  PARSE_TRACE("parseLiteralDict");
+  cASTLiteralDict* ld = new cASTLiteralDict(FILEPOS);
+  
+  if (nextToken() != TOKEN(ARR_CLOSE)) {
+    do {
+      cASTNode* idxexpr = parseExpression();
+      if (currentToken() != TOKEN(ARR_RANGE)) PARSE_UNEXPECT();
+      cASTNode* valexpr = parseExpression();
+      
+      ld->AddMapping(idxexpr, valexpr);
+    } while (currentToken() == TOKEN(COMMA) && nextToken());
+  }
+  
+  return ld;
 }
 
 cASTNode* cParser::parseLooseBlock()

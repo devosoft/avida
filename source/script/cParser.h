@@ -93,6 +93,7 @@ private:
   cASTNode* parseIDStatement();
   cASTNode* parseIfStatement();
   cASTNode* parseIndexExpression();
+  cASTNode* parseLiteralDict();
   cASTNode* parseLooseBlock();
   cASTNode* parseRefStatement();
   cASTNode* parseReturnStatement();

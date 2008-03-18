@@ -1047,6 +1047,11 @@ void cDirectInterpretASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
   }
 }
 
+void cDirectInterpretASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
+{
+  // @TODO - handle literal dict
+  INTERPRET_ERROR(INTERNAL);
+}
 
 void cDirectInterpretASTVisitor::VisitObjectCall(cASTObjectCall& node)
 {

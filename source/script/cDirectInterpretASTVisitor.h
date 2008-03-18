@@ -103,6 +103,7 @@ public:
   void VisitFunctionCall(cASTFunctionCall&);
   void VisitLiteral(cASTLiteral&);
   void VisitLiteralArray(cASTLiteralArray&);
+  void VisitLiteralDict(cASTLiteralDict&);
   void VisitObjectCall(cASTObjectCall&);
   void VisitObjectReference(cASTObjectReference&);
   void VisitVariableReference(cASTVariableReference&);

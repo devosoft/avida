@@ -741,6 +741,12 @@ void cSemanticASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
 }
 
 
+void cSemanticASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
+{
+  // @TODO - literal dict
+}
+
+
 void cSemanticASTVisitor::VisitObjectCall(cASTObjectCall& node)
 {
   // @TODO - object call

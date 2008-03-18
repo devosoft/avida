@@ -57,6 +57,7 @@ public:
   virtual void VisitFunctionCall(cASTFunctionCall&) = 0;
   virtual void VisitLiteral(cASTLiteral&) = 0;
   virtual void VisitLiteralArray(cASTLiteralArray&) = 0;
+  virtual void VisitLiteralDict(cASTLiteralDict&) = 0;
   virtual void VisitObjectCall(cASTObjectCall&) = 0;
   virtual void VisitObjectReference(cASTObjectReference&) = 0;
   virtual void VisitVariableReference(cASTVariableReference&) = 0;

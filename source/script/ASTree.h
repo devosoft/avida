@@ -118,6 +118,7 @@ class cASTBuiltInCall;
 class cASTFunctionCall;
 class cASTLiteral;
 class cASTLiteralArray;
+class cASTLiteralDict;
 class cASTObjectCall;
 class cASTObjectReference;
 class cASTVariableReference;
@@ -549,6 +550,24 @@ public:
   
   inline cASTArgumentList* GetValues() { return m_values; }
   inline bool IsMatrix() const { return m_is_matrix; }
+  
+  const sASTypeInfo& GetType() const { return m_type; }
+  
+  void Accept(cASTVisitor& visitor);
+};
+
+
+class cASTLiteralDict : public cASTNode
+{
+private:
+  sASTypeInfo m_type;
+  
+public:
+  cASTLiteralDict(const cASFilePosition& fp) : cASTNode(fp), m_type(AS_TYPE_DICT) { ; }
+  ~cASTLiteralDict() { ; }  
+  
+  void AddMapping(cASTNode* idx, cASTNode* val) { /* @TODO */ }
+  
   
   const sASTypeInfo& GetType() const { return m_type; }
   

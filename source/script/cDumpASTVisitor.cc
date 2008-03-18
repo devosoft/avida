@@ -386,6 +386,12 @@ void cDumpASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
 }
 
 
+void cDumpASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
+{
+  // @TODO - literal dict
+}
+
+
 void cDumpASTVisitor::VisitObjectCall(cASTObjectCall& node)
 {
   indent();
