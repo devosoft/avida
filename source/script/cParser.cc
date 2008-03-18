@@ -998,7 +998,7 @@ cASTNode* cParser::parseStatementList()
     }
     
     if (currentToken() == TOKEN(SUPPRESS)) {
-      // @todo - mark output as suppressed
+      // @TODO - mark output as suppressed
     } else if (currentToken() != TOKEN(ENDL)) {
       PARSE_ERROR(UNTERMINATED_EXPR);
     }

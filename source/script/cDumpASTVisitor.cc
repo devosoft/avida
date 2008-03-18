@@ -388,7 +388,27 @@ void cDumpASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
 
 void cDumpASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
 {
-  // @TODO - literal dict
+  indent();
+  cout << "@{" << endl;
+  m_depth++;
+  
+  m_depth++;
+  tListIterator<cASTLiteralDict::sMapping> it = node.Iterator();
+  cASTLiteralDict::sMapping* mapping = NULL;
+  while ((mapping = it.Next())) {
+    mapping->idx->Accept(*this);
+    m_depth--;
+    indent();
+    cout << ":" << endl;
+    m_depth++;
+    mapping->val->Accept(*this);
+  }
+  m_depth--;
+
+  m_depth--;
+  indent();
+  cout << "}" << endl;
+  
 }
 
 

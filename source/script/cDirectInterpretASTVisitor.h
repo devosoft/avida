@@ -27,6 +27,7 @@
 
 #include "cASTVisitor.h"
 
+#include "tHashTable.h"
 #include "tSmartArray.h"
 
 class cSymbolTable;
@@ -60,6 +61,7 @@ private:
     
     bool operator==(const sAggregateValue& rval);
   };
+  template<typename HASH_TYPE> friend inline int nHashTable::HashKey(const HASH_TYPE& key, int table_size);
     
 
   // --------  Internal Variables  --------
@@ -120,6 +122,7 @@ private:
   cLocalArray* asArray(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   bool asBool(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   char asChar(const sASTypeInfo& type, uAnyType value, cASTNode& node);
+  cLocalDict* asDict(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   int asInt(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   double asFloat(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   cString* asString(const sASTypeInfo& type, uAnyType value, cASTNode& node);
@@ -162,7 +165,24 @@ private:
   
   class cLocalDict
   {
+  private:
+    tHashTable<sAggregateValue, sAggregateValue> m_storage;
+    int m_ref_count;
     
+    
+  public:
+    inline cLocalDict() : m_ref_count(1) { ; }
+    ~cLocalDict();
+    
+    inline cLocalDict* GetReference() { m_ref_count++; return this; }
+    inline void RemoveReference() { m_ref_count--;  if (m_ref_count == 0) delete this; }
+    inline bool IsShared() const { return (m_ref_count > 1); }
+    
+    inline int GetSize() const { return m_storage.GetSize(); }
+    
+    bool Get(const sAggregateValue& idx, sAggregateValue& val) const { return m_storage.Find(idx, val); }
+    void Set(const sAggregateValue& idx, const sAggregateValue& val) { m_storage.SetValue(idx, val); }
+    void Remove(const sAggregateValue& idx) { m_storage.Remove(idx); }
   };
   
   
@@ -227,15 +247,15 @@ private:
 };
 
 namespace nHashTable {
-  template<> inline int HashKey<sAggregateValue>(const sAggregateValue& key)
+  template<> inline int HashKey<cDirectInterpretASTVisitor::sAggregateValue>(const cDirectInterpretASTVisitor::sAggregateValue& key, int table_size)
   {
-    switch (key.type) {
-      case AS_TYPE_BOOL:    return HashKey<int>(key.value.as_bool);
-      case AS_TYPE_CHAR:    return HashKey<int>(key.value.as_char);
-      case AS_TYPE_INT:     return HashKey<int>(key.value.as_int);
-      case AS_TYPE_FLOAT:   return HashKey<int>((int)key.value.as_float);
-      case AS_TYPE_STRING:  return HashKey<cString>(*key.value.as_string);
-      default:              return HashKey<void*>(key.value.as_void);
+    switch (key.type.type) {
+      case AS_TYPE_BOOL:    return HashKey<int>(key.value.as_bool, table_size);
+      case AS_TYPE_CHAR:    return HashKey<int>(key.value.as_char, table_size);
+      case AS_TYPE_INT:     return HashKey<int>(key.value.as_int, table_size);
+      case AS_TYPE_FLOAT:   return HashKey<int>((int)key.value.as_float, table_size);
+      case AS_TYPE_STRING:  return HashKey<cString>(*key.value.as_string, table_size);
+      default:              return HashKey<void*>(key.value.as_void, table_size);
     }
   }
 }
