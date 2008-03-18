@@ -330,7 +330,8 @@ private:
   cASTNode* m_code;
   
 public:
-  cASTFunctionDefinition(const cASFilePosition& fp, const sASTypeInfo& type, const cString& name, cASTVariableDefinitionList* args)
+  cASTFunctionDefinition(const cASFilePosition& fp, const sASTypeInfo& type, const cString& name,
+                         cASTVariableDefinitionList* args)
     : cASTNode(fp), m_type(type), m_name(name), m_args(args), m_code(NULL) { ; }
   ~cASTFunctionDefinition();
   
@@ -559,15 +560,25 @@ public:
 
 class cASTLiteralDict : public cASTNode
 {
-private:
+public:
+  struct sMapping {
+    cASTNode* idx;
+    cASTNode* val;
+    
+    sMapping(cASTNode* in_idx, cASTNode* in_val) : idx(in_idx), val(in_val) { ; }
+    ~sMapping() { delete idx; delete val; }
+  };
+  
+private:  
   sASTypeInfo m_type;
+  tList<sMapping> m_mappings;
   
 public:
   cASTLiteralDict(const cASFilePosition& fp) : cASTNode(fp), m_type(AS_TYPE_DICT) { ; }
   ~cASTLiteralDict() { ; }  
   
-  void AddMapping(cASTNode* idx, cASTNode* val) { /* @TODO */ }
-  
+  void AddMapping(cASTNode* idx, cASTNode* val) { m_mappings.PushRear(new sMapping(idx, val)); }
+  tListIterator<sMapping> Iterator() { return tListIterator<sMapping>(m_mappings); }
   
   const sASTypeInfo& GetType() const { return m_type; }
   
@@ -680,7 +691,8 @@ public:
   inline int GetVarID(int idx) const { return m_nodes[idx].var_id; }
   inline bool IsVarGlobal(int idx) const { return m_nodes[idx].global; }
   inline const sASTypeInfo& GetVarType(int idx) const { return m_nodes[idx].type; }
-  inline void SetVar(int idx, int var_id, bool global, const sASTypeInfo& type) { m_nodes[idx].SetVar(var_id, global, type); }
+  inline void SetVar(int idx, int var_id, bool global, const sASTypeInfo& type)
+    { m_nodes[idx].SetVar(var_id, global, type); }
   
   inline bool IsLastNamed() const { return m_last_named; }
   inline bool IsLastWild() const { return m_last_wild; }

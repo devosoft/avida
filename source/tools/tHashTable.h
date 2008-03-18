@@ -90,6 +90,43 @@
 template <class DATA_TYPE> class tList; // access
 template <class DATA_TYPE> class tListIterator; // aggregate
 
+namespace nHashTable {
+  
+  // HASH_TYPE = basic object
+  // Casts the pointer to an int, shift right last two bit positions, mod by
+  // the size of the hash table and hope for the best.  The shift is to account
+  // for typical 4-byte alignment of pointer values.  Depending on architecture
+  // this may not be true and could result in suboptimal hashing at higher
+  // order alignments.
+  template<typename HASH_TYPE> inline int HashKey(const HASH_TYPE& key, int table_size)
+  {
+    // Cast/Dereference of key as an int* tells the compiler that we really want
+    // to truncate the value to an integer, even if a pointer is larger.
+    return abs((*((int*)&key) >> 2) % table_size);    
+  }
+  
+  // HASH_TYPE = int
+  // Simply mod the into by the size of the hash table and hope for the best
+  template<> inline int HashKey<int>(const int& key, int table_size)
+  {
+    return abs(key % table_size);
+  }
+  
+  // HASH_TYPE = cString
+  // We hash a string simply by adding up the individual character values in
+  // that string and modding by the hash size.  For most applications this
+  // will work fine (and reasonably fast!) but some patterns will cause all
+  // strings to go into the same cell.  For example, "ABC"=="CBA"=="BBB".
+  template<> inline int HashKey<cString>(const cString& key, int table_size)
+  {
+    unsigned int out_hash = 0;
+    for (int i = 0; i < key.GetSize(); i++)
+      out_hash += (unsigned int) key[i];
+    return out_hash % table_size;
+  }
+};
+
+
 template <class HASH_TYPE, class DATA_TYPE> class tHashTable {
 #if USE_tMemTrack
   tMemTrack<tHashTable<HASH_TYPE, DATA_TYPE> > mt;
@@ -126,45 +163,10 @@ private:
   // Create an iterator for entry_list
   mutable tListIterator< tHashEntry<HASH_TYPE, DATA_TYPE> > list_it;
   
-  // Create a set of HashKey methods for each of the basic data types that
-  // we allow:
-  
-  // HASH_TYPE = int
-  // Simply mod the into by the size of the hash table and hope for the best
-  int HashKey(const int& key) const
-  {
-    return abs(key % table_size);
-  }
-
-  // HASH_TYPE = void*
-  // Casts the pointer to an int, shift right last two bit positions, mod by
-  // the size of the hash table and hope for the best.  The shift is to account
-  // for typical 4-byte alignment of pointer values.  Depending on architecture
-  // this may not be true and could result in suboptimal hashing at higher
-  // order alignments.
-  int HashKey(const void* const& key) const
-  {
-    // Cast/Dereference of key as an int* tells the compiler that we really want
-    // to truncate the value to an integer, even if a pointer is larger.
-    return abs((*((int*)&key) >> 2) % table_size);
-  }
-  
-  // HASH_TYPE = cString
-  // We hash a string simply by adding up the individual character values in
-  // that string and modding by the hash size.  For most applications this
-  // will work fine (and reasonably fast!) but some patterns will cause all
-  // strings to go into the same cell.  For example, "ABC"=="CBA"=="BBB".
-  int HashKey(const cString& key) const {
-    unsigned int out_hash = 0;
-    for (int i = 0; i < key.GetSize(); i++)
-      out_hash += (unsigned int) key[i];
-    return out_hash % table_size;
-  }
-  
   // Function to find the appropriate tHashEntry for a key that is passed
   // in and return it.
   tHashEntry<HASH_TYPE, DATA_TYPE> * FindEntry(const HASH_TYPE& key) const {
-    const int bin = HashKey(key);
+    const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
     if (cell_array[bin] == NULL) return NULL;
     
     // Set the list iterator to the first entry of this bin.
@@ -245,7 +247,7 @@ public:
     tHashEntry<HASH_TYPE, DATA_TYPE> * new_entry = new tHashEntry<HASH_TYPE, DATA_TYPE>;
     new_entry->key = key;
     new_entry->data = data;
-    const int bin = HashKey(key);
+    const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
     new_entry->id = bin;
     
     
@@ -289,9 +291,9 @@ public:
     return false;
   }
   
-  DATA_TYPE Remove(const HASH_TYPE & key) {
+  DATA_TYPE Remove(const HASH_TYPE& key) {
     // Determine the bin that we are going to be using.
-    const int bin = HashKey(key);
+    const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
     
     DATA_TYPE out_data;
     assert(cell_array[bin] != NULL);
@@ -340,7 +342,7 @@ public:
       tHashEntry<HASH_TYPE, DATA_TYPE> * cur_entry = backup_list.Pop();
       
       // determine the new bin for this entry.
-      int bin = HashKey(cur_entry->key);
+      int bin = nHashTable::HashKey<HASH_TYPE>(cur_entry->key, table_size);
       cur_entry->id = bin;
       
       if (cell_array[bin] == NULL) { list_it.Reset(); } // Reset to list start

@@ -341,7 +341,8 @@ void cSemanticASTVisitor::VisitVariableDefinition(cASTVariableDefinition& node)
       if (al->GetSize() == 0) SEMANTIC_WARNING(NO_DIMENSIONS);
       
       // If dimensions exceed type limits
-      if ((node.GetType().type == TYPE(ARRAY) && al->GetSize() > 1) || (node.GetType().type == TYPE(MATRIX) && al->GetSize() > 2)) {
+      if ((node.GetType().type == TYPE(ARRAY) && al->GetSize() > 1) ||
+          (node.GetType().type == TYPE(MATRIX) && al->GetSize() > 2)) {
         SEMANTIC_ERROR(TOO_MANY_ARGUMENTS);
         SEMANTIC_ERROR(VARIABLE_DIMENSIONS_INVALID, (const char*)node.GetName(), mapType(node.GetType()));
       }
@@ -743,7 +744,12 @@ void cSemanticASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
 
 void cSemanticASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
 {
-  // @TODO - literal dict
+  tListIterator<cASTLiteralDict::sMapping> it = node.Iterator();
+  cASTLiteralDict::sMapping* mapping = NULL;
+  while ((mapping = it.Next())) {
+    mapping->idx->Accept(*this);
+    mapping->val->Accept(*this);
+  }
 }
 
 
