@@ -202,13 +202,11 @@ private:
     virtual ~cObjectRef() { ; }
 
     virtual bool IsWritable() = 0;
-    virtual sASTypeInfo GetType() = 0;
-    virtual sASTypeInfo GetType(const sAggregateValue& idx) = 0;
     
-    virtual uAnyType Get() = 0;
-    virtual uAnyType Get(const sAggregateValue& idx) = 0;
-    virtual bool Set(ASType_t type, uAnyType value) = 0;
-    virtual bool Set(const sAggregateValue& idx, ASType_t type, uAnyType value) = 0;
+    virtual bool Get(sAggregateValue& val) = 0;
+    virtual bool Get(const sAggregateValue& idx, sAggregateValue& val) = 0;
+    virtual bool Set(sAggregateValue& val) = 0;
+    virtual bool Set(sAggregateValue& idx, sAggregateValue& val) = 0;
   };
 
   class cArrayVarRef : public cObjectRef
@@ -221,13 +219,28 @@ private:
     ~cArrayVarRef() { ; }
 
     bool IsWritable() { return true; }
-    sASTypeInfo GetType() { return AS_TYPE_ARRAY; }
-    sASTypeInfo GetType(const sAggregateValue& idx);
     
-    uAnyType Get() { return m_var; }
-    uAnyType Get(const sAggregateValue& idx);
-    bool Set(ASType_t type, uAnyType value) { return false; }
-    bool Set(const sAggregateValue& idx, ASType_t type, uAnyType value);
+    bool Get(sAggregateValue& val) { val.value = m_var; val.type = AS_TYPE_ARRAY; return true; }
+    bool Get(const sAggregateValue& idx, sAggregateValue& val);
+    bool Set(sAggregateValue& val) { return false; }
+    bool Set(sAggregateValue& idx, sAggregateValue& val);
+  };
+  
+  class cDictVarRef : public cObjectRef
+  {
+  private:
+    uAnyType& m_var;
+    
+  public:
+    cDictVarRef(uAnyType& var) : m_var(var) { ; }
+    ~cDictVarRef() { ; }
+    
+    bool IsWritable() { return true; }
+    
+    bool Get(sAggregateValue& val) { val.value = m_var; val.type = AS_TYPE_DICT; return true;}
+    bool Get(const sAggregateValue& idx, sAggregateValue& val);
+    bool Set(sAggregateValue& val) { return false; }
+    bool Set(sAggregateValue& idx, sAggregateValue& val);
   };
   
   class cObjectIndexRef : public cObjectRef
@@ -241,13 +254,11 @@ private:
     ~cObjectIndexRef() { delete m_obj; }
     
     bool IsWritable() { return m_obj->IsWritable(); }
-    sASTypeInfo GetType() { return m_obj->GetType(m_idx); }
-    sASTypeInfo GetType(const sAggregateValue& idx);
     
-    uAnyType Get() { return m_obj->Get(m_idx); }
-    uAnyType Get(const sAggregateValue& idx);
-    bool Set(ASType_t type, uAnyType value) { return m_obj->Set(m_idx, type, value); }
-    bool Set(const sAggregateValue& idx, ASType_t type, uAnyType value);
+    bool Get(sAggregateValue& val) { return m_obj->Get(m_idx, val); }
+    bool Get(const sAggregateValue& idx, sAggregateValue& val);
+    bool Set(sAggregateValue& val) { return m_obj->Set(m_idx, val); }
+    bool Set(sAggregateValue& idx, sAggregateValue& val);
   };
 };
 

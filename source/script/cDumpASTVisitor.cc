@@ -399,7 +399,7 @@ void cDumpASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
     mapping->idx->Accept(*this);
     m_depth--;
     indent();
-    cout << ":" << endl;
+    cout << "=>" << endl;
     m_depth++;
     mapping->val->Accept(*this);
   }

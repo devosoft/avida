@@ -33,7 +33,7 @@ using namespace AvidaScript;
 
 
 #ifndef DEBUG_AS_SEMANTIC
-#define DEBUG_AS_SEMANTIC 0
+#define DEBUG_AS_SEMANTIC 1
 #endif
 
 #define SEMANTIC_ERROR(code, ...) reportError(AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)
@@ -375,8 +375,21 @@ void cSemanticASTVisitor::VisitExpressionBinary(cASTExpressionBinary& node)
   
   switch (node.GetOperator()) {
     case TOKEN(IDX_OPEN):
-      checkCast(node.GetLeft()->GetType(), TYPEINFO(ARRAY));
-      checkCast(node.GetRight()->GetType(), TYPEINFO(INT));
+      switch (node.GetLeft()->GetType().type) {
+        case TYPE(ARRAY):
+        case TYPE(MATRIX):
+        case TYPE(STRING):
+          checkCast(node.GetRight()->GetType(), TYPEINFO(INT));
+          break;
+          
+        case TYPE(DICT):
+        case TYPE(RUNTIME):
+          break;
+          
+        default:
+          SEMANTIC_ERROR(UNDEFINED_TYPE_OP, mapToken(node.GetOperator()), mapType(node.GetLeft()->GetType()));
+          break;
+      }
       node.SetType(m_obj_assign ? TYPEINFO(OBJECT_REF) : TYPEINFO(RUNTIME));
       break;
     case TOKEN(ARR_RANGE):

@@ -162,7 +162,11 @@ void cDirectInterpretASTVisitor::VisitObjectAssignment(cASTObjectAssignment& nod
   
   node.GetExpression()->Accept(*this);
   
-  if (!obj->Set(m_rtype.type, m_rvalue)) INTERPRET_ERROR(OBJECT_ASSIGN_FAIL);
+  sAggregateValue val(m_rtype, m_rvalue);
+  if (!obj->Set(val)) {
+    val.Cleanup();
+    INTERPRET_ERROR(OBJECT_ASSIGN_FAIL);
+  }
 }
 
 
@@ -689,26 +693,79 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
     case TOKEN(IDX_OPEN):
       if (m_obj_assign) {
         cObjectRef* obj = lval.as_ref;
-        sAggregateValue idx(m_rtype, m_rvalue);
+        sAggregateValue idx(rtype, rval);
+        sAggregateValue o_val;
         
-        // @TODO - handle dict indexing
+        if (!obj->Get(o_val)) {
+          idx.Cleanup();
+          INTERPRET_ERROR(INDEX_ERROR);
+        }
         
-        if (obj->GetType() != TYPE(ARRAY))
-          INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(IDX_OPEN)), mapType(obj->GetType()));
+        switch (o_val.type.type) {
+          case TYPE(ARRAY):
+          case TYPE(DICT):
+          case TYPE(MATRIX):
+            break;
+            
+          default:
+            INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(IDX_OPEN)), mapType(o_val.type));
+        }
         
         m_rvalue.as_ref = new cObjectIndexRef(obj, idx);
         m_rtype = TYPE(OBJECT_REF);
       } else {
         
-        // @TODO - handle dict indexing
-        cLocalArray* arr = asArray(ltype, lval, node);
-        int idx = asInt(rtype, rval, node);
+        switch (ltype.type) {
+          case TYPE(ARRAY):
+            {
+              cLocalArray* arr = lval.as_array;
+              int idx = asInt(rtype, rval, node);
+              
+              if (idx < 0 || idx >= arr->GetSize()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
+              
+              const sAggregateValue val = arr->Get(idx);
+              m_rtype = val.type;
+              m_rvalue = val.value;
+            }
+            break;
+            
+          case TYPE(DICT):
+            {
+              cLocalDict* dict = lval.as_dict;
+              sAggregateValue idx(rtype, rval);
+              
+              sAggregateValue val;
+              if (!dict->Get(idx, val)) {
+                idx.Cleanup();
+                INTERPRET_ERROR(KEY_NOT_FOUND);
+              }
+              
+              idx.Cleanup();
+
+              m_rtype = val.type;
+              m_rvalue = val.value;
+            }
+            break;
+            
+          case TYPE(MATRIX): // @TODO - indexing 
+            INTERPRET_ERROR(INTERNAL);
+            
+          case TYPE(STRING):
+          {
+            cString* str = lval.as_string;
+            int idx = asInt(rtype, rval, node);
+            if (idx < 0 || idx >= str->GetSize()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
+
+            m_rtype = TYPE(CHAR);
+            m_rvalue.as_char = (*str)[idx];
+            delete str;
+          }
+            
+          default:
+            INTERPRET_ERROR(TYPE_CAST, mapType(ltype.type), mapType(TYPE(ARRAY)));
+        }
         
-        if (idx < 0 || idx >= arr->GetSize()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
         
-        const sAggregateValue val = arr->Get(idx);
-        m_rtype = val.type;
-        m_rvalue = val.value;
       }
       break;
       
@@ -1106,7 +1163,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
   if (m_obj_assign) {
     switch (node.GetType().type) {
       case TYPE(ARRAY):       m_rvalue.as_ref = new cArrayVarRef(m_call_stack[sp + var_id].value); break;
-      case TYPE(DICT):        INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
+      case TYPE(DICT):        m_rvalue.as_ref = new cDictVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
       case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
       case TYPE(STRING):      INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
@@ -1602,9 +1659,14 @@ cDirectInterpretASTVisitor::cLocalArray::~cLocalArray()
 void cDirectInterpretASTVisitor::cLocalDict::Set(const sAggregateValue& idx, const sAggregateValue& val)
 {
   sAggregateValue o_val;
-  if (m_storage.Find(idx, o_val)) o_val.Cleanup();
+  if (m_storage.Find(idx, o_val)) {
+    o_val.Cleanup();
+    m_storage.SetValue(idx, val);
+    const_cast<sAggregateValue&>(idx).Cleanup();  // make sure to remove references to the index value
+  } else {
+    m_storage.SetValue(idx, val);
+  }
   
-  m_storage.SetValue(idx, val);
 }
 
 
@@ -1623,128 +1685,89 @@ cDirectInterpretASTVisitor::cLocalDict::~cLocalDict()
 }
 
 
-sASTypeInfo cDirectInterpretASTVisitor::cArrayVarRef::GetType(const sAggregateValue& idx)
-{
-  cLocalArray* arr = m_var.as_array;
-
-  int idxi = -1;
-  switch (idx.type.type) {
-    case TYPE(BOOL):    idxi = (idx.value.as_bool) ? 1 : 0; break;
-    case TYPE(CHAR):    idxi = (int)idx.value.as_char; break;
-    case TYPE(INT):     idxi = idx.value.as_int; break;
-    case TYPE(FLOAT):   idxi = (int)idx.value.as_float; break;
-    case TYPE(STRING):  idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
-    default: break;
-  } 
-  if (idxi < 0 || idxi >= arr->GetSize()) return TYPE(INVALID);
-
-  ASType_t type = m_var.as_array->Get(idxi).type.type;
-  if (type == TYPE(OBJECT_REF)) return m_var.as_array->Get(idxi).value.as_ref->GetType();
-  else return type;
-}
-
-cDirectInterpretASTVisitor::uAnyType cDirectInterpretASTVisitor::cArrayVarRef::Get(const sAggregateValue& idx)
+bool cDirectInterpretASTVisitor::cArrayVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
 {
   int idxi = -1;
   switch (idx.type.type) {
-    case TYPE(BOOL):    idxi = (idx.value.as_bool) ? 1 : 0; break;
-    case TYPE(CHAR):    idxi = (int)idx.value.as_char; break;
-    case TYPE(INT):     idxi = idx.value.as_int; break;
-    case TYPE(FLOAT):   idxi = (int)idx.value.as_float; break;
-    case TYPE(STRING):  idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
+    case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+    case TYPE(INT):         idxi = idx.value.as_int; break;
+    case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+    case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); break;
     default: break;
   } 
 
-  assert(idxi >= 0 && idxi < m_var.as_array->GetSize());
+  if (idxi < 0 || idxi >= m_var.as_array->GetSize()) return false;
   
-  return m_var.as_array->Get(idxi).value;
+  val = m_var.as_array->Get(idxi);
+  return true;
 }
 
-bool cDirectInterpretASTVisitor::cArrayVarRef::Set(const sAggregateValue& idx, ASType_t type, uAnyType value)
+bool cDirectInterpretASTVisitor::cArrayVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
 {
-  assert(idx.type.type == AS_TYPE_INT);
-  int idxi = idx.value.as_int;
+  int idxi = -1;
+  switch (idx.type.type) {
+    case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+    case TYPE(INT):         idxi = idx.value.as_int; break;
+    case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+    case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
+    case TYPE(ARRAY):       idx.value.as_array->RemoveReference(); break;
+    case TYPE(DICT):        idx.value.as_dict->RemoveReference(); break;
+    case TYPE(MATRIX):      // @TODO - array ref get
+    case TYPE(OBJECT_REF):  delete idx.value.as_ref; break;
+    default: break;
+  } 
   
-  cLocalArray* arr = m_var.as_array;
-  if (idxi < 0 || idxi >= arr->GetSize()) return false;
-
-  if (arr->IsShared()) {
-    arr = new cLocalArray(arr);
-    m_var.as_array->RemoveReference();
-    m_var.as_array = arr;
-  }
-  
-  arr->Set(idxi, type, value);
+  if (idxi < 0 || idxi >= m_var.as_array->GetSize()) return false;
+    
+  m_var.as_array->Set(idxi, val.type, val.value);
   
   return true;
 }
 
 
-sASTypeInfo cDirectInterpretASTVisitor::cObjectIndexRef::GetType(const sAggregateValue& idx)
+
+
+bool cDirectInterpretASTVisitor::cDictVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
 {
-  switch (m_obj->GetType(m_idx).type) {
-    case TYPE(ARRAY):
-      {
-        cLocalArray* arr = m_obj->Get(m_idx).as_array;
-        
-        int idxi = -1;
-        switch (idx.type.type) {
-          case TYPE(BOOL):    idxi = (idx.value.as_bool) ? 1 : 0; break;
-          case TYPE(CHAR):    idxi = (int)idx.value.as_char; break;
-          case TYPE(INT):     idxi = idx.value.as_int; break;
-          case TYPE(FLOAT):   idxi = (int)idx.value.as_float; break;
-          case TYPE(STRING):  idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
-          default: break;
-        } 
-        if (idxi < 0 || idxi >= arr->GetSize()) return TYPE(INVALID);
-        
-        return arr->Get(idxi).type;
-      }
-      
-    case TYPE(DICT):
-      {
-        cLocalDict* dict = m_obj->Get(m_idx).as_dict;
-        sAggregateValue val;
-        if (dict->Get(idx, val)) return val.type;
-      }
-      return TYPE(INVALID);
-      
-    case TYPE(MATRIX):
-      return TYPE(ARRAY);
-      
-    default:
-      return TYPE(INVALID);
-  }  
+  return m_var.as_dict->Get(idx, val);
+}
+
+bool cDirectInterpretASTVisitor::cDictVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
+{
+  m_var.as_dict->Set(idx, val);  
+  return true;
 }
 
 
-cDirectInterpretASTVisitor::uAnyType cDirectInterpretASTVisitor::cObjectIndexRef::Get(const sAggregateValue& idx)
+bool cDirectInterpretASTVisitor::cObjectIndexRef::Get(const sAggregateValue& idx, sAggregateValue& val)
 {
-  switch (m_obj->GetType(m_idx).type) {
+  sAggregateValue o_val;
+  
+  if (!m_obj->Get(m_idx, o_val)) return false;
+  
+  switch (o_val.type.type) {
     case TYPE(ARRAY):
       {
-        cLocalArray* arr = m_obj->Get(m_idx).as_array;
+        cLocalArray* arr = o_val.value.as_array;
         
         int idxi = -1;
         switch (idx.type.type) {
-          case TYPE(BOOL):    idxi = (idx.value.as_bool) ? 1 : 0; break;
-          case TYPE(CHAR):    idxi = (int)idx.value.as_char; break;
-          case TYPE(INT):     idxi = idx.value.as_int; break;
-          case TYPE(FLOAT):   idxi = (int)idx.value.as_float; break;
-          case TYPE(STRING):  idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
+          case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+          case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+          case TYPE(INT):         idxi = idx.value.as_int; break;
+          case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+          case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); break;
           default: break;
         }      
-        assert(idxi >= 0 || idxi < arr->GetSize());
-        return arr->Get(idxi).value;
+        if (idxi < 0 || idxi >= arr->GetSize()) return false;
+        val = arr->Get(idxi);
+        return true;
       }
       
     case TYPE(DICT):
-      {
-        cLocalDict* dict = m_obj->Get(m_idx).as_dict;
-        sAggregateValue val;
-        if (dict->Get(idx, val)) return val.value;
-      }
-      break;
+      return o_val.value.as_dict->Get(idx, val);
       
     case TYPE(MATRIX): // @TODO - object index ref get
       break;
@@ -1753,41 +1776,46 @@ cDirectInterpretASTVisitor::uAnyType cDirectInterpretASTVisitor::cObjectIndexRef
       break;
   }  
 
-  Avida::Exit(AS_EXIT_FAIL_INTERPRET);
   
-  uAnyType novalue;
-  return novalue;
+  return false;
 }
 
 
-bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(const sAggregateValue& idx, ASType_t type, uAnyType value)
+bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(sAggregateValue& idx, sAggregateValue& val)
 {
-  switch (m_obj->GetType(m_idx).type) {
+  sAggregateValue o_val;
+  
+  if (!m_obj->Get(m_idx)) {
+    idx.Cleanup();
+    return false;
+  }
+  
+  switch (o_val.type.type) {
     case TYPE(ARRAY):
       {
-        cLocalArray* arr = m_obj->Get(m_idx).as_array;
+        cLocalArray* arr = o_val.value.as_array;
         
         int idxi = -1;
         switch (idx.type.type) {
-          case TYPE(BOOL):    idxi = (idx.value.as_bool) ? 1 : 0; break;
-          case TYPE(CHAR):    idxi = (int)idx.value.as_char; break;
-          case TYPE(INT):     idxi = idx.value.as_int; break;
-          case TYPE(FLOAT):   idxi = (int)idx.value.as_float; break;
-          case TYPE(STRING):  idxi = value.as_string->AsInt(); delete value.as_string; break;
+          case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+          case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+          case TYPE(INT):         idxi = idx.value.as_int; break;
+          case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+          case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
+          case TYPE(ARRAY):       idx.value.as_array->RemoveReference(); break;
+          case TYPE(DICT):        idx.value.as_dict->RemoveReference(); break;
+          case TYPE(MATRIX):      // @TODO - array ref get
+          case TYPE(OBJECT_REF):  delete idx.value.as_ref; break;
           default: break;
         }      
         if (idxi < 0 || idxi >= arr->GetSize()) return false;
         
-        arr->Set(idxi, type, value);
+        arr->Set(idxi, val.type, val.value);
       }
       return true;
       
     case TYPE(DICT):
-      {
-        cLocalDict* dict = m_obj->Get(m_idx).as_dict;
-        sAggregateValue val(type, value);
-        dict->Set(idx, val);
-      }
+      o_val.value.as_dict->Set(idx, val);
       return true;
       
     case TYPE(MATRIX): // @TODO - object index ref set
@@ -1796,7 +1824,8 @@ bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(const sAggregateValue& idx
     default:
       break;
   }  
-  
+
+  idx.Cleanup();
   return false;
 }
 
@@ -1819,11 +1848,17 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
     case AS_DIRECT_INTERPRET_ERR_DIVISION_BY_ZERO:
       std::cerr << "division by zero" << ERR_ENDL;
       break;
+    case AS_DIRECT_INTERPRET_ERR_INDEX_ERROR:
+      std::cerr << "index operation failed" << ERR_ENDL;
+      break;
     case AS_DIRECT_INTERPRET_ERR_INDEX_OUT_OF_BOUNDS:
       std::cerr << "array index out of bounds" << ERR_ENDL;
       break;
     case AS_DIRECT_INTERPRET_ERR_INVALID_ARRAY_SIZE:
       std::cerr << "invalid array dimension" << ERR_ENDL;
+      break;
+    case AS_DIRECT_INTERPRET_ERR_KEY_NOT_FOUND:
+      std::cerr << "key not found" << ERR_ENDL;
       break;
     case AS_DIRECT_INTERPRET_ERR_OBJECT_ASSIGN_FAIL:
       std::cerr << "aggregate assignment failed" << ERR_ENDL;

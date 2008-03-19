@@ -188,7 +188,7 @@ using namespace AvidaScript;
  */
 
 #ifndef DEBUG_AS_PARSER
-#define DEBUG_AS_PARSER 0
+#define DEBUG_AS_PARSER 1
 #endif
 
 #if DEBUG_AS_PARSER
@@ -868,14 +868,18 @@ cASTNode* cParser::parseLiteralDict()
   PARSE_TRACE("parseLiteralDict");
   cASTLiteralDict* ld = new cASTLiteralDict(FILEPOS);
   
-  if (nextToken() != TOKEN(ARR_CLOSE)) {
+  if (peekToken() != TOKEN(ARR_CLOSE)) {
     do {
+      nextToken(); // consume ',' (or '@{' on first pass)
       cASTNode* idxexpr = parseExpression();
-      if (currentToken() != TOKEN(ARR_RANGE)) PARSE_UNEXPECT();
+      if (currentToken() != TOKEN(DICT_MAPPING)) PARSE_UNEXPECT();
+      nextToken(); // consume '=>'
       cASTNode* valexpr = parseExpression();
       
       ld->AddMapping(idxexpr, valexpr);
-    } while (currentToken() == TOKEN(COMMA) && nextToken());
+    } while (currentToken() == TOKEN(COMMA));
+  } else {
+    nextToken();
   }
   
   return ld;

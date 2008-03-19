@@ -84,6 +84,7 @@
 \.\.        return AS_TOKEN_ARR_WILD;
 
 @\{         return AS_TOKEN_LITERAL_DICT;  // Aggregate literals
+=\>         return AS_TOKEN_DICT_MAPPING;
 \$\{        return AS_TOKEN_LITERAL_MATRIX;
 
 array       return AS_TOKEN_TYPE_ARRAY;    // Built-in Types
