@@ -162,8 +162,6 @@ void cDirectInterpretASTVisitor::VisitObjectAssignment(cASTObjectAssignment& nod
   
   node.GetExpression()->Accept(*this);
   
-  // @TODO - check object assign type for validity
-  
   if (!obj->Set(m_rtype.type, m_rvalue)) INTERPRET_ERROR(OBJECT_ASSIGN_FAIL);
 }
 
@@ -692,6 +690,8 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
       if (m_obj_assign) {
         cObjectRef* obj = lval.as_ref;
         sAggregateValue idx(m_rtype, m_rvalue);
+        
+        // @TODO - handle dict indexing
         
         if (obj->GetType() != TYPE(ARRAY))
           INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(IDX_OPEN)), mapType(obj->GetType()));
