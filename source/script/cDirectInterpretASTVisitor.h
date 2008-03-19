@@ -59,6 +59,11 @@ private:
     uAnyType value;
     sASTypeInfo type;
     
+    sAggregateValue() { ; }
+    sAggregateValue(sASTypeInfo in_type, uAnyType in_value) : value(in_value), type(in_type) { ; }
+    
+    void Cleanup();
+    
     bool operator==(const sAggregateValue& rval);
   };
   template<typename HASH_TYPE> friend inline int nHashTable::HashKey(const HASH_TYPE& key, int table_size);
@@ -181,7 +186,7 @@ private:
     inline int GetSize() const { return m_storage.GetSize(); }
     
     bool Get(const sAggregateValue& idx, sAggregateValue& val) const { return m_storage.Find(idx, val); }
-    void Set(const sAggregateValue& idx, const sAggregateValue& val) { m_storage.SetValue(idx, val); }
+    void Set(const sAggregateValue& idx, const sAggregateValue& val);
     void Remove(const sAggregateValue& idx) { m_storage.Remove(idx); }
   };
   
@@ -198,12 +203,12 @@ private:
 
     virtual bool IsWritable() = 0;
     virtual sASTypeInfo GetType() = 0;
-    virtual sASTypeInfo GetType(int idx) = 0;
+    virtual sASTypeInfo GetType(const sAggregateValue& idx) = 0;
     
     virtual uAnyType Get() = 0;
-    virtual uAnyType Get(int idx) = 0;
+    virtual uAnyType Get(const sAggregateValue& idx) = 0;
     virtual bool Set(ASType_t type, uAnyType value) = 0;
-    virtual bool Set(int idx, ASType_t type, uAnyType value) = 0;
+    virtual bool Set(const sAggregateValue& idx, ASType_t type, uAnyType value) = 0;
   };
 
   class cArrayVarRef : public cObjectRef
@@ -217,32 +222,32 @@ private:
 
     bool IsWritable() { return true; }
     sASTypeInfo GetType() { return AS_TYPE_ARRAY; }
-    inline sASTypeInfo GetType(int idx);
+    sASTypeInfo GetType(const sAggregateValue& idx);
     
     uAnyType Get() { return m_var; }
-    uAnyType Get(int idx) { assert(idx > 0 && idx < m_var.as_array->GetSize()); return m_var.as_array->Get(idx).value; }
+    uAnyType Get(const sAggregateValue& idx);
     bool Set(ASType_t type, uAnyType value) { return false; }
-    bool Set(int idx, ASType_t type, uAnyType value);
+    bool Set(const sAggregateValue& idx, ASType_t type, uAnyType value);
   };
   
   class cObjectIndexRef : public cObjectRef
   {
   private:
     cObjectRef* m_obj;
-    int m_idx;
+    sAggregateValue m_idx;
     
   public:
-    cObjectIndexRef(cObjectRef* obj, int idx) : m_obj(obj), m_idx(idx) { ; }
+    cObjectIndexRef(cObjectRef* obj, const sAggregateValue& idx) : m_obj(obj), m_idx(idx) { ; }
     ~cObjectIndexRef() { delete m_obj; }
     
     bool IsWritable() { return m_obj->IsWritable(); }
     sASTypeInfo GetType() { return m_obj->GetType(m_idx); }
-    sASTypeInfo GetType(int idx);
+    sASTypeInfo GetType(const sAggregateValue& idx);
     
     uAnyType Get() { return m_obj->Get(m_idx); }
-    uAnyType Get(int idx);
+    uAnyType Get(const sAggregateValue& idx);
     bool Set(ASType_t type, uAnyType value) { return m_obj->Set(m_idx, type, value); }
-    bool Set(int idx, ASType_t type, uAnyType value);
+    bool Set(const sAggregateValue& idx, ASType_t type, uAnyType value);
   };
 };
 
@@ -272,16 +277,6 @@ inline cDirectInterpretASTVisitor::cLocalArray::cLocalArray(cLocalArray* arr1, c
 {
   copy(0, arr1->m_storage);
   copy(arr1->m_storage.GetSize(), arr2->m_storage);
-}
-
-inline sASTypeInfo cDirectInterpretASTVisitor::cArrayVarRef::GetType(int idx)
-{
-  if (idx < 0 || idx >= m_var.as_array->GetSize()) return AS_TYPE_INVALID;
-  else {
-    ASType_t type = m_var.as_array->Get(idx).type.type;
-    if (type == AS_TYPE_OBJECT_REF) return m_var.as_array->Get(idx).value.as_ref->GetType();
-    else return type;
-  }
 }
 
 
