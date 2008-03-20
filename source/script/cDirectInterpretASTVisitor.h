@@ -161,6 +161,10 @@ private:
     
     inline const sAggregateValue& Get(int i) const { return m_storage[i]; }    
     void Set(int i, const sASTypeInfo& type, uAnyType value);
+    inline void Set(int i, const sAggregateValue& val) { Set(i, val.type, val.value); }
+    
+    void SetWithKeys(cLocalDict* dict);
+    void SetWithValues(cLocalDict* dict);
     
     
   private:
@@ -185,9 +189,15 @@ private:
     
     inline int GetSize() const { return m_storage.GetSize(); }
     
+    void Clear();
+
     bool Get(const sAggregateValue& idx, sAggregateValue& val) const { return m_storage.Find(idx, val); }
     void Set(const sAggregateValue& idx, const sAggregateValue& val);
-    void Remove(const sAggregateValue& idx) { m_storage.Remove(idx); }
+    void Remove(const sAggregateValue& idx) { sAggregateValue val = m_storage.Remove(idx); val.Cleanup(); }
+    
+    inline bool HasKey(const sAggregateValue& idx) { return m_storage.HasEntry(idx); }
+    inline void GetKeys(tArray<sAggregateValue>& out_array) { m_storage.GetKeys(out_array); }
+    inline void GetValues(tArray<sAggregateValue>& out_array) { m_storage.GetValues(out_array); }
   };
   
   

@@ -862,48 +862,80 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       
     case AS_BUILTIN_IS_ARRAY:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(ARRAY);
       m_rtype = TYPE(BOOL);
       break;
       
     case AS_BUILTIN_IS_BOOL:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(BOOL);
       m_rtype = TYPE(BOOL);
       break;
       
     case AS_BUILTIN_IS_CHAR:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(CHAR);
       m_rtype = TYPE(BOOL);
       break;
       
     case AS_BUILTIN_IS_DICT:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(DICT);
       m_rtype = TYPE(BOOL);
       break;
       
     case AS_BUILTIN_IS_INT:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(INT);
       m_rtype = TYPE(BOOL);
       break;
       
     case AS_BUILTIN_IS_FLOAT:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(FLOAT);
       m_rtype = TYPE(BOOL);
       break;
       
     case AS_BUILTIN_IS_MATRIX:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(MATRIX);
       m_rtype = TYPE(BOOL);
       break;
       
     case AS_BUILTIN_IS_STRING:
       args->Iterator().Next()->Accept(*this);
+      {
+        sAggregateValue val(m_rtype, m_rvalue);
+        val.Cleanup();
+      }
       m_rvalue.as_bool = m_rtype.type == TYPE(STRING);
       m_rtype = TYPE(BOOL);
       break;
@@ -911,28 +943,74 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       
     case AS_BUILTIN_CLEAR:
       trgt->Accept(*this);
-      if (m_rtype.type == TYPE(DICT)) { // @TODO - builtin clear
-        INTERPRET_ERROR(INTERNAL);
+      if (m_rtype.type == TYPE(DICT)) {
+        m_rvalue.as_dict->Clear();
+        m_rvalue.as_dict->RemoveReference();
       } else if (m_rtype.type == TYPE(MATRIX)) { // @TODO - builtin clear
         INTERPRET_ERROR(INTERNAL);
       } else if (m_rtype.type == TYPE(ARRAY)) {
         m_rvalue.as_array->Resize(0);
+        m_rvalue.as_array->RemoveReference();
       } else {
-        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "resize", mapType(m_rtype));
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "clear", mapType(m_rtype));
       }
       break;
       
-    case AS_BUILTIN_COPY: // @TODO
-      INTERPRET_ERROR(INTERNAL);
+    case AS_BUILTIN_COPY:
+      trgt->Accept(*this);
+      if (m_rtype.type == TYPE(ARRAY)) {
+        cLocalArray* arr = new cLocalArray(m_rvalue.as_array);
+        m_rvalue.as_array->RemoveReference();
+        m_rvalue.as_array = arr;
+      } else {
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "copy", mapType(m_rtype));
+      }
+      break;
       
-    case AS_BUILTIN_HASKEY: // @TODO
-      INTERPRET_ERROR(INTERNAL);
+    case AS_BUILTIN_HASKEY:
+      trgt->Accept(*this);
+      if (m_rtype.type == TYPE(DICT)) {
+        cLocalDict* dict = m_rvalue.as_dict;
+
+        args->Iterator().Next()->Accept(*this);
+        sAggregateValue idx(m_rtype, m_rvalue);
+        m_rvalue.as_bool = dict->HasKey(idx);
+        idx.Cleanup();
+        dict->RemoveReference();
+        
+        m_rtype = TYPE(BOOL);
+      } else {
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "keys", mapType(m_rtype));
+      }
+      break;
       
-    case AS_BUILTIN_KEYS: // @TODO
-      INTERPRET_ERROR(INTERNAL);
+      
+    case AS_BUILTIN_KEYS:
+      trgt->Accept(*this);
+      if (m_rtype.type == TYPE(DICT)) {
+        cLocalArray* arr = new cLocalArray();
+        arr->SetWithKeys(m_rvalue.as_dict);
+        m_rvalue.as_dict->RemoveReference();
+        m_rvalue.as_array = arr;
+        m_rtype = TYPE(ARRAY);
+      } else {
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "keys", mapType(m_rtype));
+      }
+      break;
       
     case AS_BUILTIN_VALUES: // @TODO
-      INTERPRET_ERROR(INTERNAL);
+      trgt->Accept(*this);
+      if (m_rtype.type == TYPE(DICT)) {
+        cLocalArray* arr = new cLocalArray();
+        arr->SetWithValues(m_rvalue.as_dict);
+        m_rvalue.as_dict->RemoveReference();
+        m_rvalue.as_array = arr;
+        m_rtype = TYPE(ARRAY);
+      } else {
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "values", mapType(m_rtype));
+      }
+      break;
+      
       
     case AS_BUILTIN_LEN:
       trgt->Accept(*this);
@@ -948,22 +1026,58 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       m_rtype = TYPE(INT);
       break;
       
-    case AS_BUILTIN_REMOVE: // @TODO
-      INTERPRET_ERROR(INTERNAL);
-    
+    case AS_BUILTIN_REMOVE:
+      trgt->Accept(*this);
+      if (m_rtype.type == TYPE(DICT)) {
+        cLocalDict* dict = m_rvalue.as_dict;
+        
+        if (!dict->IsShared()) {
+          dict->RemoveReference();
+          break;
+        }
+        
+        args->Iterator().Next()->Accept(*this);
+        sAggregateValue idx(m_rtype, m_rvalue);
+        dict->Remove(idx);
+        idx.Cleanup();
+        dict->RemoveReference();
+      } else if (m_rtype.type == TYPE(ARRAY)) {
+        cLocalArray* arr = m_rvalue.as_array;
+        
+        if (!arr->IsShared()) {
+          arr->RemoveReference();
+          break;
+        }
+        
+        args->Iterator().Next()->Accept(*this);
+        int i = asInt(m_rtype, m_rvalue, node);
+        
+        if (i < 0 || i >= arr->GetSize()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
+        
+        for (; i < (arr->GetSize() - 1); i++) arr->Set(i, arr->Get(i + 1));
+        arr->Resize(arr->GetSize() - 1);
+      } else {
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "remove", mapType(m_rtype));
+      }
+      break;
+      
     case AS_BUILTIN_RESIZE:
       trgt->Accept(*this);
-      if (m_rtype.type == TYPE(DICT)) { // @TODO - builtin resize
-        INTERPRET_ERROR(INTERNAL);
-      } else if (m_rtype.type == TYPE(MATRIX)) { // @TODO - builtin resize
+      if (m_rtype.type == TYPE(MATRIX)) { // @TODO - builtin resize
         INTERPRET_ERROR(INTERNAL);
       } else if (m_rtype.type == TYPE(ARRAY)) {
         cLocalArray* arr = m_rvalue.as_array;
+
+        if (!arr->IsShared()) {
+          arr->RemoveReference();
+          break;
+        }
         
         args->Iterator().Next()->Accept(*this);
         int sz = asInt(m_rtype, m_rvalue, node);
         
         arr->Resize(sz);
+        arr->RemoveReference();
       } else {
         INTERPRET_ERROR(UNDEFINED_TYPE_OP, "resize", mapType(m_rtype));
       }
@@ -1728,6 +1842,47 @@ void cDirectInterpretASTVisitor::cLocalArray::Resize(int sz)
   }  
 }
 
+
+void cDirectInterpretASTVisitor::cLocalArray::SetWithKeys(cLocalDict* dict)
+{
+  Resize(0);
+  
+  dict->GetKeys(m_storage);
+  
+  for (int i = 0; i < m_storage.GetSize(); i++) {
+    switch (m_storage[i].type.type) {
+      case TYPE(STRING):  m_storage[i].value.as_string = new cString(*m_storage[i].value.as_string); break;
+      case TYPE(ARRAY):   m_storage[i].value.as_array->GetReference(); break;
+      case TYPE(DICT):    m_storage[i].value.as_dict->GetReference(); break;
+      case TYPE(MATRIX):  // @TODO - array copy
+        break;
+        
+      default: break;
+    }
+  }
+}
+
+
+void cDirectInterpretASTVisitor::cLocalArray::SetWithValues(cLocalDict* dict)
+{
+  Resize(0);
+  
+  dict->GetValues(m_storage);
+  
+  for (int i = 0; i < m_storage.GetSize(); i++) {
+    switch (m_storage[i].type.type) {
+      case TYPE(STRING):  m_storage[i].value.as_string = new cString(*m_storage[i].value.as_string); break;
+      case TYPE(ARRAY):   m_storage[i].value.as_array->GetReference(); break;
+      case TYPE(DICT):    m_storage[i].value.as_dict->GetReference(); break;
+      case TYPE(MATRIX):  // @TODO - array copy
+        break;
+        
+      default: break;
+    }
+  }
+}
+
+
 cDirectInterpretASTVisitor::cLocalArray::~cLocalArray()
 {
   int sz = m_storage.GetSize();
@@ -1743,18 +1898,36 @@ void cDirectInterpretASTVisitor::cLocalDict::Set(const sAggregateValue& idx, con
   if (m_storage.Find(idx, o_val)) {
     o_val.Cleanup();
     m_storage.SetValue(idx, val);
-    const_cast<sAggregateValue&>(idx).Cleanup();  // make sure to remove references to the index value
   } else {
     m_storage.SetValue(idx, val);
   }
   
 }
 
+void cDirectInterpretASTVisitor::cLocalDict::Clear()
+{
+  tList<sAggregateValue> keys;
+  tList<sAggregateValue> vals;
+  
+  m_storage.AsListsUnsorted(keys, vals);
+  
+  sAggregateValue* av = NULL;
+  
+  tListIterator<sAggregateValue> kit(keys);
+  while ((av = kit.Next())) av->Cleanup();
+  
+  tListIterator<sAggregateValue> vit(vals);
+  while ((av = vit.Next())) av->Cleanup();
+  
+  m_storage.ClearAll();
+}
 
 cDirectInterpretASTVisitor::cLocalDict::~cLocalDict()
 {
   tList<sAggregateValue> keys;
   tList<sAggregateValue> vals;
+  
+  m_storage.AsListsUnsorted(keys, vals);
   
   sAggregateValue* av = NULL;
   

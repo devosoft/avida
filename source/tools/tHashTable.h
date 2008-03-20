@@ -386,10 +386,35 @@ public:
   }
   
   
+  // The following method allows the user to convert the hash table contents into lists.
+  // Empty lists show be passed in as arguments and the method will fill in their contents.
+  void AsListsUnsorted(tList<HASH_TYPE>& key_list, tList<DATA_TYPE>& value_list) const
+  {
+    assert(key_list.GetSize() == 0);
+    assert(value_list.GetSize() == 0);
+    
+    // Loop through the current entries and included them into the output list one at a time.
+    list_it.Reset();
+    while (list_it.Next() != NULL) {
+      key_list.Push(&list_it.Get()->key);
+      value_list.Push(&list_it.Get()->data);
+    }
+  }
+  
+  
   void GetKeys(tList<HASH_TYPE>& key_list) const
   {
     list_it.Reset();
     while (list_it.Next() != NULL) key_list.Push(&list_it.Get()->key);
+  }
+  
+  void GetKeys(tArray<DATA_TYPE>& value_array) const
+  {
+    value_array.Resize(entry_count);
+    int idx = 0;
+    
+    list_it.Reset();
+    while (list_it.Next() != NULL) value_array[idx++] = list_it.Get()->key;
   }
   
   
