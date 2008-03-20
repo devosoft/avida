@@ -110,8 +110,22 @@ aschar      return AS_TOKEN_BUILTIN_CALL;
 asint       return AS_TOKEN_BUILTIN_CALL;
 asfloat     return AS_TOKEN_BUILTIN_CALL;
 asstring    return AS_TOKEN_BUILTIN_CALL;
-len         return AS_TOKEN_BUILTIN_CALL;
+isarray     return AS_TOKEN_BUILTIN_CALL;
+isbool      return AS_TOKEN_BUILTIN_CALL;
+ischar      return AS_TOKEN_BUILTIN_CALL;
+isdict      return AS_TOKEN_BUILTIN_CALL;
+isint       return AS_TOKEN_BUILTIN_CALL;
+isfloat     return AS_TOKEN_BUILTIN_CALL;
+ismatrix    return AS_TOKEN_BUILTIN_CALL;
+isstring    return AS_TOKEN_BUILTIN_CALL;
+clear       return AS_TOKEN_BUILTIN_METHOD;
+copy        return AS_TOKEN_BUILTIN_METHOD;
+haskey      return AS_TOKEN_BUILTIN_METHOD;
+keys        return AS_TOKEN_BUILTIN_METHOD;
+len         return AS_TOKEN_BUILTIN_METHOD;
+remove      return AS_TOKEN_BUILTIN_METHOD;
 resize      return AS_TOKEN_BUILTIN_METHOD;
+values      return AS_TOKEN_BUILTIN_METHOD;
 
 return      return AS_TOKEN_CMD_RETURN;
 

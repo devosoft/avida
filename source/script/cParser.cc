@@ -344,6 +344,21 @@ cASTNode* cParser::parseCallExpression(cASTNode* target, bool required)
 {
   PARSE_TRACE("parseCallExpression");
   tAutoRelease<cASTNode> ce(target);
+
+  if (currentToken() == TOKEN(DOT) && peekToken() == TOKEN(BUILTIN_METHOD)) {
+    nextToken(); // consume '.'
+    
+    cASTBuiltInCall* bi = new cASTBuiltInCall(FILEPOS, currentText(), ce.Release());
+    ce.Set(bi);
+    
+    if (nextToken() != TOKEN(PREC_OPEN)) PARSE_UNEXPECT();
+    if (nextToken() != TOKEN(PREC_CLOSE)) bi->SetArguments(parseArgumentList());
+    if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
+    nextToken(); // consume ')'
+    
+    if (currentToken() != TOKEN(DOT) || currentToken() != TOKEN(IDX_OPEN)) return ce.Release();
+  }
+  
   
   bool eoe = false;
   while (!eoe) {
@@ -953,27 +968,6 @@ cASTNode* cParser::parseStatementList()
         continue;
       case TOKEN(ID):
         node.Set(parseIDStatement());
-        break;
-      case TOKEN(BUILTIN_METHOD):
-        if (peekToken() == TOKEN(PREC_OPEN)) {
-          cASTBuiltInCall* bi = new cASTBuiltInCall(FILEPOS, currentText());
-          nextToken(); // consume builtin method name token
-          if (nextToken() != TOKEN(PREC_CLOSE) && currentToken() == TOKEN(ID)) {
-            bi->SetVariableReference(new cASTVariableReference(FILEPOS, currentText()));
-            if (nextToken() == TOKEN(COMMA)) {
-              nextToken(); // consume ','
-              bi->SetArguments(parseArgumentList());
-            }
-          }
-          if (currentToken() != TOKEN(PREC_CLOSE)) PARSE_UNEXPECT();
-          nextToken(); // consume ')'
-          
-          if (currentToken() == TOKEN(DOT) || currentToken() == TOKEN(IDX_OPEN)) {
-            node.Set(parseCallExpression(bi, true));
-          } else {
-            node.Set(bi);
-          }
-        }
         break;
       case TOKEN(REF):
         node.Set(parseRefStatement());

@@ -826,6 +826,7 @@ void cDirectInterpretASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
 void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
 {
   cASTArgumentList* args = node.GetArguments();
+  cASTNode* trgt = node.GetTarget();
   
   switch (node.GetBuiltIn()) {
     case AS_BUILTIN_CAST_BOOL:
@@ -858,8 +859,83 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       m_rtype = TYPE(STRING);
       break;
       
-    case AS_BUILTIN_LEN:
+      
+    case AS_BUILTIN_IS_ARRAY:
       args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(ARRAY);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+    case AS_BUILTIN_IS_BOOL:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(BOOL);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+    case AS_BUILTIN_IS_CHAR:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(CHAR);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+    case AS_BUILTIN_IS_DICT:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(DICT);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+    case AS_BUILTIN_IS_INT:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(INT);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+    case AS_BUILTIN_IS_FLOAT:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(FLOAT);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+    case AS_BUILTIN_IS_MATRIX:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(MATRIX);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+    case AS_BUILTIN_IS_STRING:
+      args->Iterator().Next()->Accept(*this);
+      m_rvalue.as_bool = m_rtype.type == TYPE(STRING);
+      m_rtype = TYPE(BOOL);
+      break;
+      
+      
+    case AS_BUILTIN_CLEAR:
+      trgt->Accept(*this);
+      if (m_rtype.type == TYPE(DICT)) { // @TODO - builtin clear
+        INTERPRET_ERROR(INTERNAL);
+      } else if (m_rtype.type == TYPE(MATRIX)) { // @TODO - builtin clear
+        INTERPRET_ERROR(INTERNAL);
+      } else if (m_rtype.type == TYPE(ARRAY)) {
+        m_rvalue.as_array->Resize(0);
+      } else {
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "resize", mapType(m_rtype));
+      }
+      break;
+      
+    case AS_BUILTIN_COPY: // @TODO
+      INTERPRET_ERROR(INTERNAL);
+      
+    case AS_BUILTIN_HASKEY: // @TODO
+      INTERPRET_ERROR(INTERNAL);
+      
+    case AS_BUILTIN_KEYS: // @TODO
+      INTERPRET_ERROR(INTERNAL);
+      
+    case AS_BUILTIN_VALUES: // @TODO
+      INTERPRET_ERROR(INTERNAL);
+      
+    case AS_BUILTIN_LEN:
+      trgt->Accept(*this);
       if (m_rtype == TYPE(STRING)) {
         int sz = m_rvalue.as_string->GetSize();
         delete m_rvalue.as_string;
@@ -872,23 +948,24 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       m_rtype = TYPE(INT);
       break;
       
+    case AS_BUILTIN_REMOVE: // @TODO
+      INTERPRET_ERROR(INTERNAL);
+    
     case AS_BUILTIN_RESIZE:
-      cASTVariableReference* vr = node.GetVariableReference();
-      if (vr->GetType() == TYPE(ARRAY)) {
-        int var_idx = (vr->IsVarGlobal() ? 0 : m_sp) + vr->GetVarID();
+      trgt->Accept(*this);
+      if (m_rtype.type == TYPE(DICT)) { // @TODO - builtin resize
+        INTERPRET_ERROR(INTERNAL);
+      } else if (m_rtype.type == TYPE(MATRIX)) { // @TODO - builtin resize
+        INTERPRET_ERROR(INTERNAL);
+      } else if (m_rtype.type == TYPE(ARRAY)) {
+        cLocalArray* arr = m_rvalue.as_array;
         
         args->Iterator().Next()->Accept(*this);
         int sz = asInt(m_rtype, m_rvalue, node);
         
-        cLocalArray* arr = m_call_stack[var_idx].value.as_array;
-        if (arr->IsShared()) {
-          arr = new cLocalArray(arr);
-          m_call_stack[var_idx].value.as_array->RemoveReference();
-          m_call_stack[var_idx].value.as_array = arr;         
-        }
-        m_call_stack[var_idx].value.as_array->Resize(sz);
+        arr->Resize(sz);
       } else {
-        // @TODO - resize matrix
+        INTERPRET_ERROR(UNDEFINED_TYPE_OP, "resize", mapType(m_rtype));
       }
       break;
       
@@ -1638,9 +1715,13 @@ void cDirectInterpretASTVisitor::cLocalArray::copy(int offset, tArray<sAggregate
 void cDirectInterpretASTVisitor::cLocalArray::Resize(int sz)
 {
   int o_sz = m_storage.GetSize();
+
+  // Cleanup values if we are shrinking
+  for (int i = sz; i < o_sz; i++) m_storage[i].Cleanup();
   
   m_storage.Resize(sz);
   
+  // Initialize values if we are growing
   for (int i = o_sz; i < sz; i++) {
     m_storage[i].value.as_int = 0;
     m_storage[i].type = TYPE(INT);

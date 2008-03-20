@@ -74,26 +74,33 @@ cASTFunctionDefinition::~cASTFunctionDefinition()
 }
 
 
-cASTBuiltInCall::cASTBuiltInCall(const cASFilePosition& fp, const cString& name)
-  : cASTNode(fp), m_args(NULL), m_type(AS_TYPE_INVALID), m_builtin(AS_BUILTIN_UNKNOWN), m_vr(NULL)
+cASTBuiltInCall::cASTBuiltInCall(const cASFilePosition& fp, const cString& name, cASTNode* target)
+  : cASTNode(fp), m_args(NULL), m_type(AS_TYPE_INVALID), m_builtin(AS_BUILTIN_UNKNOWN), m_target(target)
 {
   if (name == "asbool") m_builtin = AS_BUILTIN_CAST_BOOL;
   else if (name == "aschar") m_builtin = AS_BUILTIN_CAST_CHAR;
   else if (name == "asint") m_builtin = AS_BUILTIN_CAST_INT;
   else if (name == "asfloat") m_builtin = AS_BUILTIN_CAST_FLOAT;
   else if (name == "asstring") m_builtin = AS_BUILTIN_CAST_STRING;
+  
+  else if (name == "isarray") m_builtin = AS_BUILTIN_IS_ARRAY;
+  else if (name == "isbool") m_builtin = AS_BUILTIN_IS_BOOL;
+  else if (name == "ischar") m_builtin = AS_BUILTIN_IS_CHAR;
+  else if (name == "isdict") m_builtin = AS_BUILTIN_IS_DICT;
+  else if (name == "isint") m_builtin = AS_BUILTIN_IS_INT;
+  else if (name == "isfloat") m_builtin = AS_BUILTIN_IS_FLOAT;
+  else if (name == "ismatrix") m_builtin = AS_BUILTIN_IS_MATRIX;
+  else if (name == "isstring") m_builtin = AS_BUILTIN_IS_STRING;
+  
+  else if (name == "clear") m_builtin = AS_BUILTIN_CLEAR;
+  else if (name == "copy") m_builtin = AS_BUILTIN_COPY;
+  else if (name == "haskey") m_builtin = AS_BUILTIN_HASKEY;
+  else if (name == "keys") m_builtin = AS_BUILTIN_KEYS;
   else if (name == "len") m_builtin = AS_BUILTIN_LEN;
+  else if (name == "remove") m_builtin = AS_BUILTIN_REMOVE;
   else if (name == "resize") m_builtin = AS_BUILTIN_RESIZE;
+  else if (name == "values") m_builtin = AS_BUILTIN_VALUES;
 }
 
-cASTBuiltInCall::~cASTBuiltInCall()
-{
-  delete m_args;
-  delete m_vr;
-}
 
-void cASTBuiltInCall::SetVariableReference(cASTVariableReference* vr)
-{
-  delete m_vr;
-  m_vr = vr;
-}
+

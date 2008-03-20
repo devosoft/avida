@@ -111,6 +111,7 @@ public:
 
 private:
   // --------  Internal Utility Methods  --------
+  void checkBuiltInCast(cASTBuiltInCall& node, ASType_t type);
   ASType_t getConsensusType(const sASTypeInfo& t1, const sASTypeInfo& t2);
   inline bool validArithmeticType(const sASTypeInfo& type, bool allow_matrix = false) const;
   inline bool validBitwiseType(const sASTypeInfo& type) const;

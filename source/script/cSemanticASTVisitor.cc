@@ -532,78 +532,109 @@ void cSemanticASTVisitor::VisitExpressionUnary(cASTExpressionUnary& node)
   }
 }
 
+
+void cSemanticASTVisitor::checkBuiltInCast(cASTBuiltInCall& node, ASType_t type)
+{
+  cASTArgumentList* args = node.GetArguments();
+  if (!args || args->GetSize() != 1) SEMANTIC_ERROR(BUILTIN_CALL_SIGNATURE_MISMATCH, mapBuiltIn(node.GetBuiltIn()));
+  else {
+    cASTNode* argn = args->Iterator().Next();
+    argn->Accept(*this);
+    checkCast(argn->GetType(), sASTypeInfo(type));
+  }  
+  node.SetType(type);
+}
+
 void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
 {
 #define ERR_BUILTIN_MISMATCH SEMANTIC_ERROR(BUILTIN_CALL_SIGNATURE_MISMATCH, mapBuiltIn(node.GetBuiltIn()))
   cASTArgumentList* args = node.GetArguments();
+  cASTNode* trgt = node.GetTarget();
+  bool allow_dict = false;
   
   switch (node.GetBuiltIn()) {
-    case AS_BUILTIN_CAST_BOOL:
+    case AS_BUILTIN_CAST_BOOL:    checkBuiltInCast(node, TYPE(BOOL)); break;
+    case AS_BUILTIN_CAST_CHAR:    checkBuiltInCast(node, TYPE(CHAR)); break;
+    case AS_BUILTIN_CAST_INT:     checkBuiltInCast(node, TYPE(INT)); break;
+    case AS_BUILTIN_CAST_FLOAT:   checkBuiltInCast(node, TYPE(FLOAT)); break;
+    case AS_BUILTIN_CAST_STRING:  checkBuiltInCast(node, TYPE(STRING)); break;
+      
+    case AS_BUILTIN_IS_ARRAY:
+    case AS_BUILTIN_IS_BOOL:
+    case AS_BUILTIN_IS_CHAR:
+    case AS_BUILTIN_IS_DICT:
+    case AS_BUILTIN_IS_INT:
+    case AS_BUILTIN_IS_FLOAT:
+    case AS_BUILTIN_IS_MATRIX:
+    case AS_BUILTIN_IS_STRING:
       if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPEINFO(BOOL));
-        node.SetType(TYPE(BOOL));
       }
-      break;
-
-    case AS_BUILTIN_CAST_CHAR:
-      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
-      else {
-        cASTNode* argn = args->Iterator().Next();
-        argn->Accept(*this);
-        checkCast(argn->GetType(), TYPEINFO(CHAR));
-        node.SetType(TYPE(CHAR));
-      }
+      node.SetType(TYPE(BOOL));
       break;
       
-    case AS_BUILTIN_CAST_INT:
-      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
-      else {
-        cASTNode* argn = args->Iterator().Next();
-        argn->Accept(*this);
-        checkCast(argn->GetType(), TYPEINFO(INT));
-        node.SetType(TYPE(INT));
+    case AS_BUILTIN_CLEAR:
+      trgt->Accept(*this);
+      {
+        ASType_t ttype = trgt->GetType().type;
+        if (ttype != TYPE(ARRAY) && ttype != TYPE(DICT) && ttype != TYPE(MATRIX) && ttype != TYPE(RUNTIME)) ERR_BUILTIN_MISMATCH;
       }
+      if (args) ERR_BUILTIN_MISMATCH;
+      node.SetType(TYPE(VOID));
       break;
       
-    case AS_BUILTIN_CAST_FLOAT:
-      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
-      else {
-        cASTNode* argn = args->Iterator().Next();
-        argn->Accept(*this);
-        checkCast(argn->GetType(), TYPEINFO(FLOAT));
-        node.SetType(TYPE(FLOAT));
+      
+    case AS_BUILTIN_COPY:
+      trgt->Accept(*this);
+      {
+        ASType_t ttype = trgt->GetType().type;
+        if (ttype != TYPE(ARRAY) && ttype != TYPE(RUNTIME)) ERR_BUILTIN_MISMATCH;
       }
+      if (args) ERR_BUILTIN_MISMATCH;
+      node.SetType(TYPE(VOID));
       break;
       
-    case AS_BUILTIN_CAST_STRING:
+    case AS_BUILTIN_HASKEY:
+      trgt->Accept(*this);
+      checkCast(trgt->GetType(), TYPEINFO(DICT));
       if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
       else {
         cASTNode* argn = args->Iterator().Next();
         argn->Accept(*this);
-        checkCast(argn->GetType(), TYPEINFO(STRING));
-        node.SetType(TYPE(STRING));
       }
+      node.SetType(TYPE(BOOL));
+      break;
+      
+    case AS_BUILTIN_KEYS:
+    case AS_BUILTIN_VALUES:
+      trgt->Accept(*this);
+      checkCast(trgt->GetType(), TYPEINFO(DICT));
+      if (args) ERR_BUILTIN_MISMATCH;
+      node.SetType(TYPE(ARRAY));
       break;
       
     case AS_BUILTIN_LEN:
-      if (!args || args->GetSize() != 1) ERR_BUILTIN_MISMATCH;
-      else {
-        cASTNode* argn = args->Iterator().Next();
-        argn->Accept(*this);
-        checkCast(argn->GetType(), TYPEINFO(ARRAY));
-        node.SetType(TYPE(INT));
-      }
+      trgt->Accept(*this);
+      checkCast(trgt->GetType(), TYPEINFO(ARRAY));
+      if (args) ERR_BUILTIN_MISMATCH;
+      node.SetType(TYPE(INT));
       break;
       
+
+    case AS_BUILTIN_REMOVE:
+      allow_dict = true;
     case AS_BUILTIN_RESIZE:
-      if (!node.GetVariableReference() || !args) ERR_BUILTIN_MISMATCH;
-      else {
-        node.GetVariableReference()->Accept(*this);
+      trgt->Accept(*this);
+
+      {
+        ASType_t ttype = trgt->GetType().type;
+        if ((allow_dict && ttype != TYPE(ARRAY) && ttype != TYPE(DICT) && ttype != TYPE(RUNTIME)) || 
+            (!allow_dict && ttype != TYPE(ARRAY) && ttype != TYPE(MATRIX) && ttype != TYPE(RUNTIME)))
+          ERR_BUILTIN_MISMATCH;
         
-        if (node.GetVariableReference()->GetType().type == TYPE(ARRAY)) {
+        if (ttype == TYPE(ARRAY)) {
           if (args->GetSize() == 1) {
             cASTNode* argn = args->Iterator().Next();
             argn->Accept(*this);
@@ -611,7 +642,14 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
           } else {
             ERR_BUILTIN_MISMATCH;
           }
-        } else if (node.GetVariableReference()->GetType().type == TYPE(MATRIX)) {
+        } else if (ttype == TYPE(DICT)) {
+          if (args->GetSize() == 1) {
+            cASTNode* argn = args->Iterator().Next();
+            argn->Accept(*this);
+          } else {
+            ERR_BUILTIN_MISMATCH;
+          }
+        } else if (ttype == TYPE(MATRIX)) {
           if (args->GetSize() == 2) {
             tListIterator<cASTNode> it = args->Iterator();
             cASTNode* argn = it.Next();
@@ -623,14 +661,13 @@ void cSemanticASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
           } else {
             ERR_BUILTIN_MISMATCH;
           }          
-        } else {
-          ERR_BUILTIN_MISMATCH;
         }
-
-        node.SetType(TYPE(VOID));
       }
+
+      node.SetType(TYPE(VOID));
       break;
       
+
     default:
       SEMANTIC_ERROR(INTERNAL);
       break;

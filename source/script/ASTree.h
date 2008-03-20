@@ -461,22 +461,21 @@ private:
   cASTArgumentList* m_args;
   sASTypeInfo m_type;
   ASBuiltIn_t m_builtin;
-  cASTVariableReference* m_vr;
+  cASTNode* m_target;
   
 public:
-  cASTBuiltInCall(const cASFilePosition& fp, const cString& name);
-  ~cASTBuiltInCall();
+  cASTBuiltInCall(const cASFilePosition& fp, const cString& name, cASTNode* target = NULL);
+  ~cASTBuiltInCall() { delete m_args; delete m_target; }
   
   ASBuiltIn_t GetBuiltIn() const { return m_builtin; }
   
   void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
   cASTArgumentList* GetArguments() { return m_args; }
   
-  const sASTypeInfo& GetType() const { return m_type; }
+  inline const sASTypeInfo& GetType() const { return m_type; }
   inline void SetType(const sASTypeInfo& type) { m_type = type; }
   
-  cASTVariableReference* GetVariableReference() { return m_vr; }
-  void SetVariableReference(cASTVariableReference* vr);
+  inline cASTNode* GetTarget() { return m_target; }
   
   bool HasArguments() const { return (m_args); }
   
