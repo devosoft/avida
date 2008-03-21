@@ -1187,7 +1187,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
       
       int var_id = arg_def->GetVarID();
 
-      switch (m_cur_symtbl->GetVariableType(var_id).type) {
+      switch (func_symtbl->GetVariableType(var_id).type) {
         case TYPE(ARRAY):       m_call_stack[sp + var_id].value.as_array = asArray(m_rtype, m_rvalue, node); break;
         case TYPE(BOOL):        m_call_stack[sp + var_id].value.as_bool = asBool(m_rtype, m_rvalue, node); break;
         case TYPE(CHAR):        m_call_stack[sp + var_id].value.as_char = asChar(m_rtype, m_rvalue, node); break;
