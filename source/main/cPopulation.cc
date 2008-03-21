@@ -1156,7 +1156,29 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
     if(m_world->GetConfig().DEMES_PREVENT_STERILE.Get() && (source_deme.GetBirthCount() == 0)) {
       return;
     }
-
+    
+    //Option to bridge between kin and group selection.
+    if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get())
+    {
+      //Reset deme (resources and births, among other things)
+      int source_deme_generation = source_deme.GetGeneration();
+      bool source_deme_resource_reset = m_world->GetConfig().DEMES_RESET_RESOURCES.Get() == 0;
+      source_deme.Reset(source_deme_generation, source_deme_resource_reset);
+      
+      //Reset all organisms in deme, by re-injecting them?
+      if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get() == 2) {
+        for (int i=0; i<source_deme.GetSize(); i++) {
+          int cellid = source_deme.GetCellID(i);
+          if (GetCell(cellid).IsOccupied()) {          
+            int lineage = GetCell(cellid).GetOrganism()->GetLineageLabel();
+            cGenome genome = GetCell(cellid).GetOrganism()->GetGenome();
+            InjectGenome(cellid, genome, lineage);
+          }
+        }
+      }
+      return;
+    }
+    
     // Pick a target deme to replicate to, making sure that 
     // we don't try to replicate over ourself.
     int target_id = source_deme.GetID();
@@ -2196,22 +2218,73 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
 
   //@AWC -- decide wether the child will migrate to another deme -- if migrating we ignore the birth method.  
   if ((m_world->GetConfig().MIGRATION_RATE.Get() > 0.0) //@AWC -- Pedantic test to maintain consistancy.
-      && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())){
-     
-      //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
+      && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())) {
 
+    //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
     int deme_id = parent_cell.GetDemeID();
-
-    //get another -unadjusted- deme id
-    int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
     
-    //if the -unadjusted- id is above the excluded id, bump it up one
-    //insures uniform prob of landing in any deme but the parent's
-    if(rnd_deme_id >= deme_id) rnd_deme_id++;
+    //@JEB - Different target modes
+    //Original (random OTHER deme) by @AWC
+    if (m_world->GetConfig().DEMES_MIGRATION_TARGET_MODE.Get() == 0) {  
+     
+      //get another -unadjusted- deme id
+      int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
+      
+      //if the -unadjusted- id is above the excluded id, bump it up one
+      //insures uniform prob of landing in any deme but the parent's
+      if(rnd_deme_id >= deme_id) rnd_deme_id++;
+      
+      //set the new deme_id
+      deme_id = rnd_deme_id;
+    }
     
-    //set the new deme_id
-    deme_id = rnd_deme_id;
+    //@JEB - random OTHER deme in neighborhood (assuming torus)
+    //Extremely hacked, temporary until demes fixed
+    else if (m_world->GetConfig().DEMES_MIGRATION_TARGET_MODE.Get() == 1) {
+    
+      //get a random eight-neighbor
+      int dir = m_world->GetRandom().GetInt(8);
+      
+      // 0 = NW, 1=N, continuing clockwise....
+    
+      // Up one row
+      int x_size = m_world->GetConfig().DEMES_NUM_X.Get();
+      int y_size = (int) (m_world->GetConfig().NUM_DEMES.Get() / x_size);
 
+      assert(y_size * x_size == m_world->GetConfig().NUM_DEMES.Get());
+
+      int x = deme_id % x_size;
+      int y = (int) (deme_id / x_size);
+
+      if ( (dir == 0) || (dir == 1) || (dir == 2) ) y--;
+      if ( (dir == 5) || (dir == 6) || (dir == 7) ) y++;
+      if ( (dir == 0) || (dir == 3) || (dir == 5) ) x--;
+      if ( (dir == 2) || (dir == 4) || (dir == 7) ) x++;
+      
+      //handle boundary conditions...
+      
+      x = (x + x_size) % x_size;
+      y = (y + y_size) % y_size;
+
+      //set the new deme_id
+      deme_id = x + x_size * y;
+
+      assert(deme_id > 0);
+      assert(deme_id > 0);
+    }
+    
+    //@JEB - random deme adjacent in list
+    else if (m_world->GetConfig().DEMES_MIGRATION_TARGET_MODE.Get() == 2) {
+
+      //get a random direction to move in deme list
+      int rnd_deme_id = m_world->GetRandom().GetInt(1);
+      if (rnd_deme_id = 0) rnd_deme_id = -1;
+      
+      //set the new deme_id
+      deme_id = (deme_id + rnd_deme_id + deme_array.GetSize()) % deme_array.GetSize();
+    }
+    
+    
     //The rest of this is essentially POSITION_CHILD_DEME_RANDOM
     const int deme_size = deme_array[deme_id].GetSize();
     
@@ -2225,8 +2298,10 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     deme_array[deme_id].IncBirthCount();
     GetCell(out_cell_id).SetMigrant();
     return GetCell(out_cell_id);    
-    
   }
+  
+  // Fix so range can be arbitrary and we won't accidentally include ourself as a target
+  
   // @AWC If not migrating try out global/full-deme birth methods first...
   else if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
    
@@ -3658,8 +3733,12 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   int num_competed_orgs = 0;
 
   int num_trials = -1;
-  int dynamic_scaling = (competition_type==3);
   
+  int dynamic_scaling = 0; 
+
+  if (competition_type==3) dynamic_scaling = 1;
+  else if  (competition_type==4) dynamic_scaling = 2;
+    
   // How many trials were there? -- same for every organism
   // we just need to find one...
   for (int i = 0; i < num_cells; i++) 
@@ -3748,37 +3827,50 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
         //Geometric Mean        
         case 0:
         case 3:
-        fitness = 1.0;
-        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
-        { 
-          fitness*=trial_fitnesses[t]; 
-        }
-        fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
+        case 4:    
+          //Treat as logs to avoid overflow when multiplying very large fitnesses
+          fitness = 0;
+          for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+          { 
+            fitness += log(trial_fitnesses[t]); 
+          }
+          fitness /= (double)trial_fitnesses.GetSize();
+          fitness = exp( fitness );
         break;
-        
+  
+        //Product
+        case 5:
+          //Treat as logs to avoid overflow when multiplying very large fitnesses
+          fitness = 0;
+          for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+          { 
+            fitness += log(trial_fitnesses[t]); 
+          }       
+          fitness = exp( fitness );
+        break;
+         
         //Geometric Mean of normalized values
         case 1:
-        fitness = 1.0;        
-        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
-        { 
-           fitness*=trial_fitnesses[t] / max_trial_fitnesses[t]; 
-        }
-        fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
+          fitness = 1.0;        
+          for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+          { 
+             fitness*=trial_fitnesses[t] / max_trial_fitnesses[t]; 
+          }
+          fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
         break;
         
         //Arithmetic Mean
         case 2:
-        fitness = 0;
-        for (int t=0; t < trial_fitnesses.GetSize(); t++) 
-        { 
-          fitness+=trial_fitnesses[t]; 
-        }
-        fitness /= (double)trial_fitnesses.GetSize();
+          fitness = 0;
+          for (int t=0; t < trial_fitnesses.GetSize(); t++) 
+          { 
+            fitness+=trial_fitnesses[t]; 
+          }
+          fitness /= (double)trial_fitnesses.GetSize();
         break;
       
         default:
-        cout << "Unknown CompeteOrganisms method!" << endl;
-        exit(1);
+          m_world->GetDriver().RaiseFatalException(1, "Unknown CompeteOrganisms method");
       }
       if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Trial fitness in cell " << i << " = " << fitness << endl;
       org_fitness[i] = fitness;
@@ -3790,21 +3882,44 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   }
   average_fitness = total_fitness / num_competed_orgs;
  
-  //Rescale by the geometric mean of the difference from the top score and the median
-  if ( dynamic_scaling )
-  {
+  //Rescale by the geometric mean of the difference from the top score and the average
+  if ( dynamic_scaling == 1 ) {
     int num_org_not_max = 0;
-    double dynamic_factor = 0;
-    for (int i = 0; i < num_cells; i++) 
-    {
-      if (GetCell(i).IsOccupied())
-      {
-          if (org_fitness[i] != highest_fitness)
-          {
-            num_org_not_max++;
-            dynamic_factor += log(highest_fitness - org_fitness[i]);
-            //cout << "Time scaling factor " << time_scaling_factor << endl;
-          }
+    double dynamic_factor = 1.0;
+    if (highest_fitness > 0) {
+      dynamic_factor = 2/highest_fitness;
+    }
+    
+    total_fitness = 0;
+    for (int i = 0; i < num_cells; i++) {
+      if ( GetCell(i).IsOccupied() ) {
+        org_fitness[i] *= dynamic_factor;
+        total_fitness += org_fitness[i];
+      }
+    }
+  }
+  
+  // Rescale geometric mean to 1
+  else if ( dynamic_scaling == 2 ) {
+    int num_org = 0;
+    double dynamic_factor = 1.0;
+    for (int i = 0; i < num_cells; i++) {
+      if ( GetCell(i).IsOccupied() && (org_fitness[i] > 0.0)) {
+        num_org++;
+        dynamic_factor += log(org_fitness[i]);
+      }
+    }
+        
+    cout << "Scaling factor = " << dynamic_factor << endl;
+    if (num_org > 0) dynamic_factor = exp(dynamic_factor / (double)num_org);
+    cout << "Scaling factor = " << dynamic_factor << endl;
+    
+    total_fitness = 0;
+
+    for (int i = 0; i < num_cells; i++) {
+      if ( GetCell(i).IsOccupied() ) {
+        org_fitness[i] /= dynamic_factor;
+        total_fitness += org_fitness[i];
       }
     }
   }
