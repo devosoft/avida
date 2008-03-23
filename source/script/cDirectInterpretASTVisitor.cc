@@ -1743,6 +1743,7 @@ cDirectInterpretASTVisitor::cLocalMatrix* cDirectInterpretASTVisitor::asMatrix(c
         cLocalMatrix* mat = new cLocalMatrix();
         mat->Resize(1, 1);
         mat->GetRow(0)->Set(0, val);
+        return mat;
       }
       
     case TYPE(MATRIX):
