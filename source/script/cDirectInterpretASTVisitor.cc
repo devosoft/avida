@@ -1158,7 +1158,8 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
     
     // Set current scope to the function symbol table
     cSymbolTable* func_symtbl = func_src_symtbl->GetFunctionSymbolTable(fun_id);
-    int sp = m_sp + prev_symtbl->GetNumVariables();
+    int o_sp = m_sp;
+    int sp = m_call_stack.GetSize();
     m_call_stack.Resize(m_call_stack.GetSize() + func_symtbl->GetNumVariables());
     for (int i = 0; i < func_symtbl->GetNumVariables(); i++) {
       switch (func_symtbl->GetVariableType(i).type) {
@@ -1255,7 +1256,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
     // Restore previous scope
     m_has_returned = false;
     m_call_stack.Resize(m_call_stack.GetSize() - m_cur_symtbl->GetNumVariables());
-    m_sp -= prev_symtbl->GetNumVariables();
+    m_sp = o_sp;
     m_cur_symtbl = prev_symtbl;
   }
 }

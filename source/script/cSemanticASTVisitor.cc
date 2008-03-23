@@ -33,7 +33,7 @@ using namespace AvidaScript;
 
 
 #ifndef DEBUG_AS_SEMANTIC
-#define DEBUG_AS_SEMANTIC 1
+#define DEBUG_AS_SEMANTIC 0
 #endif
 
 #define SEMANTIC_ERROR(code, ...) reportError(AS_SEMANTIC_ERR_ ## code, node.GetFilePosition(),  __LINE__, ##__VA_ARGS__)

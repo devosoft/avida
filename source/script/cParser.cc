@@ -188,7 +188,7 @@ using namespace AvidaScript;
  */
 
 #ifndef DEBUG_AS_PARSER
-#define DEBUG_AS_PARSER 1
+#define DEBUG_AS_PARSER 0
 #endif
 
 #if DEBUG_AS_PARSER
