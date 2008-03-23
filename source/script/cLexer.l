@@ -140,7 +140,7 @@ false       return AS_TOKEN_BOOL;
 [0-9]+                              return AS_TOKEN_INT;
 \"\"                                return AS_TOKEN_STRING;
 \"([^"\\\n]|\\\"|\\\\|\\.)*\"       return AS_TOKEN_STRING;
-\'([^'\\\n]|\\\'|\\\\)\'            return AS_TOKEN_CHAR;
+\'([^'\\\n]|\\\'|\\\\|\\.)\'        return AS_TOKEN_CHAR;
 
 .           return AS_TOKEN_UNKNOWN;           // Unrecognized Tokens
 

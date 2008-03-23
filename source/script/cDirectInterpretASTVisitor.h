@@ -263,23 +263,6 @@ private:
     bool Set(sAggregateValue& idx, sAggregateValue& val);
   };
   
-  class cMatrixVarRef : public cObjectRef
-  {
-  private:
-    uAnyType& m_var;
-    
-  public:
-    cMatrixVarRef(uAnyType& var) : m_var(var) { ; }
-    ~cMatrixVarRef() { ; }
-    
-    bool IsWritable() { return true; }
-    
-    bool Get(sAggregateValue& val) { val.value = m_var; val.type = AS_TYPE_MATRIX; return true; }
-    bool Get(const sAggregateValue& idx, sAggregateValue& val);
-    bool Set(sAggregateValue& val) { return false; }
-    bool Set(sAggregateValue& idx, sAggregateValue& val);
-  };
-  
   class cDictVarRef : public cObjectRef
   {
   private:
@@ -292,6 +275,23 @@ private:
     bool IsWritable() { return true; }
     
     bool Get(sAggregateValue& val) { val.value = m_var; val.type = AS_TYPE_DICT; return true;}
+    bool Get(const sAggregateValue& idx, sAggregateValue& val);
+    bool Set(sAggregateValue& val) { return false; }
+    bool Set(sAggregateValue& idx, sAggregateValue& val);
+  };
+  
+  class cMatrixVarRef : public cObjectRef
+  {
+  private:
+    uAnyType& m_var;
+    
+  public:
+    cMatrixVarRef(uAnyType& var) : m_var(var) { ; }
+    ~cMatrixVarRef() { ; }
+    
+    bool IsWritable() { return true; }
+    
+    bool Get(sAggregateValue& val) { val.value = m_var; val.type = AS_TYPE_MATRIX; return true; }
     bool Get(const sAggregateValue& idx, sAggregateValue& val);
     bool Set(sAggregateValue& val) { return false; }
     bool Set(sAggregateValue& idx, sAggregateValue& val);
@@ -314,6 +314,24 @@ private:
     bool Set(sAggregateValue& val) { return m_obj->Set(m_idx, val); }
     bool Set(sAggregateValue& idx, sAggregateValue& val);
   };
+
+  class cStringVarRef : public cObjectRef
+  {
+  private:
+    uAnyType& m_var;
+    
+  public:
+    cStringVarRef(uAnyType& var) : m_var(var) { ; }
+    ~cStringVarRef() { ; }
+    
+    bool IsWritable() { return true; }
+    
+    bool Get(sAggregateValue& val) { val.value = m_var; val.type = AS_TYPE_STRING; return true; }
+    bool Get(const sAggregateValue& idx, sAggregateValue& val);
+    bool Set(sAggregateValue& val) { return false; }
+    bool Set(sAggregateValue& idx, sAggregateValue& val);
+  };
+  
 };
 
 namespace nHashTable {

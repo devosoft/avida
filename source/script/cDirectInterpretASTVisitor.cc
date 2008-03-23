@@ -719,6 +719,7 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
           case TYPE(ARRAY):
           case TYPE(DICT):
           case TYPE(MATRIX):
+          case TYPE(STRING):
             break;
             
           default:
@@ -1439,7 +1440,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
       case TYPE(DICT):        m_rvalue.as_ref = new cDictVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
       case TYPE(MATRIX):      m_rvalue.as_ref = new cMatrixVarRef(m_call_stack[sp + var_id].value); break;
-      case TYPE(STRING):      INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
+      case TYPE(STRING):      m_rvalue.as_ref = new cStringVarRef(m_call_stack[sp + var_id].value); break;
         
       default:
         INTERPRET_ERROR(INTERNAL);
@@ -2140,6 +2141,18 @@ bool cDirectInterpretASTVisitor::cArrayVarRef::Set(sAggregateValue& idx, sAggreg
 }
 
 
+bool cDirectInterpretASTVisitor::cDictVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
+{
+  return m_var.as_dict->Get(idx, val);
+}
+
+bool cDirectInterpretASTVisitor::cDictVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
+{
+  m_var.as_dict->Set(idx, val);  
+  return true;
+}
+
+
 bool cDirectInterpretASTVisitor::cMatrixVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
 {
   int idxi = -1;
@@ -2186,18 +2199,6 @@ bool cDirectInterpretASTVisitor::cMatrixVarRef::Set(sAggregateValue& idx, sAggre
 }
 
 
-
-
-bool cDirectInterpretASTVisitor::cDictVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
-{
-  return m_var.as_dict->Get(idx, val);
-}
-
-bool cDirectInterpretASTVisitor::cDictVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
-{
-  m_var.as_dict->Set(idx, val);  
-  return true;
-}
 
 
 bool cDirectInterpretASTVisitor::cObjectIndexRef::Get(const sAggregateValue& idx, sAggregateValue& val)
@@ -2326,6 +2327,57 @@ bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(sAggregateValue& idx, sAgg
   idx.Cleanup();
   return false;
 }
+
+
+bool cDirectInterpretASTVisitor::cStringVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
+{
+  int idxi = -1;
+  switch (idx.type.type) {
+    case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+    case TYPE(INT):         idxi = idx.value.as_int; break;
+    case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+    case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); break;
+    default: break;
+  } 
+  
+  if (idxi < 0 || idxi >= m_var.as_string->GetSize()) return false;
+  
+  val.value.as_char = (*m_var.as_string)[idxi];
+  val.type = TYPE(CHAR);
+  return true;
+}
+
+bool cDirectInterpretASTVisitor::cStringVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
+{
+  int idxi = -1;
+  switch (idx.type.type) {
+    case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+    case TYPE(INT):         idxi = idx.value.as_int; break;
+    case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+    case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
+    case TYPE(ARRAY):       idx.value.as_array->RemoveReference(); break;
+    case TYPE(DICT):        idx.value.as_dict->RemoveReference(); break;
+    case TYPE(MATRIX):      idx.value.as_matrix->RemoveReference(); break;
+    case TYPE(OBJECT_REF):  delete idx.value.as_ref; break;
+    default: break;
+  } 
+  
+  if (idxi < 0 || idxi >= m_var.as_string->GetSize()) return false;
+  
+  switch (val.type.type) {
+    case TYPE(BOOL):  (*m_var.as_string)[idxi] = (val.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):  (*m_var.as_string)[idxi] = val.value.as_char; break;
+    case TYPE(INT):   (*m_var.as_string)[idxi] = (char)val.value.as_int; break;
+      
+    default:
+      return false;
+  }
+  
+  return true;
+}
+
 
 
 void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const cASFilePosition& fp, const int line, ...)

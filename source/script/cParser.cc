@@ -608,7 +608,8 @@ cASTNode* cParser::parseExprP6()
       expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_INT, currentText()));
       break;
     case TOKEN(CHAR):
-      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_CHAR, currentText()));
+      expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_CHAR,
+                               currentText().Substring(1, currentText().GetSize() - 2).ParseEscapeSequences()));
       break;
     case TOKEN(BOOL):
       expr.Set(new cASTLiteral(FILEPOS, AS_TYPE_BOOL, currentText()));

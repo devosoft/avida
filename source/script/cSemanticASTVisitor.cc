@@ -778,7 +778,9 @@ void cSemanticASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
 
 void cSemanticASTVisitor::VisitLiteral(cASTLiteral& node)
 {
-  // Nothing to do here...   type already determined by the parser
+  if (node.GetType() == TYPE(CHAR) && node.GetValue().GetSize() != 1) {
+    SEMANTIC_ERROR(INVALID_CHAR_LITERAL);
+  }
 }
 
 
@@ -1110,6 +1112,9 @@ void cSemanticASTVisitor::reportError(ASSemanticError_t err, const cASFilePositi
       break;
     case AS_SEMANTIC_ERR_INVALID_ASSIGNMENT_TARGET:
       std::cerr << "invalid assignment target" << ERR_ENDL;
+      break;
+    case AS_SEMANTIC_ERR_INVALID_CHAR_LITERAL:
+      std::cerr << "invalid char literal" << ERR_ENDL;
       break;
     case AS_SEMANTIC_ERR_TOO_MANY_ARGUMENTS:
       std::cerr << "too many arguments" << ERR_ENDL;
