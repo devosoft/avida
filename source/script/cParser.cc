@@ -991,13 +991,10 @@ cASTNode* cParser::parseStatementList()
         return sl.Release();
     }
     
-    if (node.IsNull()) {
-      // Some error has occured, so terminate early
-      if (m_success) PARSE_ERROR(INTERNAL); // Should not receive a null response without an error flag
-    }
+    if (node.IsNull() && m_success) PARSE_ERROR(INTERNAL); // Should not receive a null response without an error flag
     
     if (currentToken() == TOKEN(SUPPRESS)) {
-      // @TODO - mark output as suppressed
+      if (!node.IsNull()) (*node).SuppressOutput();
     } else if (currentToken() != TOKEN(ENDL)) {
       PARSE_ERROR(UNTERMINATED_EXPR);
     }

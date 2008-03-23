@@ -34,6 +34,8 @@
 #include "cStringUtil.h"
 #include "cSymbolTable.h"
 
+#include "tMatrix.h"
+
 using namespace AvidaScript;
 
 
@@ -199,7 +201,7 @@ void cDirectInterpretASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
   sASTypeInfo var_type = node.GetVariable()->GetType();
   
   node.GetValues()->Accept(*this);
-  cLocalArray* arr = m_rvalue.as_array;
+  cLocalArray* arr = asArray(m_rtype, m_rvalue, node);
 
   int var_idx = m_sp + var_id;
   for (int i = 0; i < arr->GetSize(); i++) {
@@ -547,10 +549,11 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
         if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type, true);
              
         switch (rettype) {
-          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) + asChar(rtype, rval, node); break;
-          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) + asInt(rtype, rval, node); break;
-          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) + asFloat(rtype, rval, node); break;            
-
+          case TYPE(CHAR):    m_rvalue.as_char = asChar(ltype, lval, node) + asChar(rtype, rval, node); break;
+          case TYPE(INT):     m_rvalue.as_int = asInt(ltype, lval, node) + asInt(rtype, rval, node); break;
+          case TYPE(FLOAT):   m_rvalue.as_float = asFloat(ltype, lval, node) + asFloat(rtype, rval, node); break;            
+          case TYPE(MATRIX):  matrixAdd(asMatrix(ltype, lval, node), asMatrix(rtype, rval, node), node); break;
+            
           case TYPE(STRING):
             {
               cString* l = asString(ltype, lval, node);
@@ -571,9 +574,6 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
             }
             break;
             
-          case TYPE(MATRIX): // @TODO - addition
-            INTERPRET_ERROR(INTERNAL);
-            
           default:
             INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
         }
@@ -590,13 +590,11 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
         if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type);
              
         switch (rettype) {
-          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) - asChar(rtype, rval, node); break;
-          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) - asInt(rtype, rval, node); break;
-          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) - asFloat(rtype, rval, node); break;            
-
-          case TYPE(MATRIX): // @TODO - subtraction
-            INTERPRET_ERROR(INTERNAL);
-            
+          case TYPE(CHAR):    m_rvalue.as_char = asChar(ltype, lval, node) - asChar(rtype, rval, node); break;
+          case TYPE(INT):     m_rvalue.as_int = asInt(ltype, lval, node) - asInt(rtype, rval, node); break;
+          case TYPE(FLOAT):   m_rvalue.as_float = asFloat(ltype, lval, node) - asFloat(rtype, rval, node); break;            
+          case TYPE(MATRIX):  matrixSubtract(asMatrix(ltype, lval, node), asMatrix(rtype, rval, node), node); break;
+                        
           default:
             INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
         }
@@ -613,12 +611,10 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
         if (rettype == TYPE(RUNTIME)) rettype = getRuntimeType(ltype.type, rtype.type);
              
         switch (rettype) {
-          case TYPE(CHAR):  m_rvalue.as_char = asChar(ltype, lval, node) * asChar(rtype, rval, node); break;
-          case TYPE(INT):   m_rvalue.as_int = asInt(ltype, lval, node) * asInt(rtype, rval, node); break;
-          case TYPE(FLOAT): m_rvalue.as_float = asFloat(ltype, lval, node) * asFloat(rtype, rval, node); break;            
-
-          case TYPE(MATRIX): // @TODO - multiplication
-            INTERPRET_ERROR(INTERNAL);
+          case TYPE(CHAR):    m_rvalue.as_char = asChar(ltype, lval, node) * asChar(rtype, rval, node); break;
+          case TYPE(INT):     m_rvalue.as_int = asInt(ltype, lval, node) * asInt(rtype, rval, node); break;
+          case TYPE(FLOAT):   m_rvalue.as_float = asFloat(ltype, lval, node) * asFloat(rtype, rval, node); break;            
+          case TYPE(MATRIX):  matrixMultiply(asMatrix(ltype, lval, node), asMatrix(rtype, rval, node), node); break;
             
           default:
             INTERPRET_ERROR(UNDEFINED_TYPE_OP, mapToken(TOKEN(OP_ADD)), mapType(rettype));
@@ -1577,7 +1573,7 @@ cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(con
       }
       
     default:
-      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(CHAR)));
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(ARRAY)));
   }
   
   return false;
@@ -1872,6 +1868,307 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
   
   return TYPE(INVALID);
 }
+
+
+void cDirectInterpretASTVisitor::matrixAdd(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node)
+{
+  INTERPRET_ERROR(INTERNAL); // @TODO - handle matrix add
+}
+
+
+void cDirectInterpretASTVisitor::matrixSubtract(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node)
+{
+  INTERPRET_ERROR(INTERNAL); // @TODO - handle matrix sub
+}
+
+
+void cDirectInterpretASTVisitor::matrixMultiply(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node)
+{
+  // Validate all values in matrix operands and determine operation type
+  ASType_t op_type = TYPE(INT);
+  for (int i = 0; i < m1->GetNumRows(); i++) {
+    cLocalArray* row = m1->GetRow(i);
+    for (int j = 0; j < m1->GetNumCols(); j++) {
+      switch (row->Get(j).type.type) {
+        case TYPE(BOOL):
+        case TYPE(CHAR):
+        case TYPE(INT):
+        case TYPE(STRING):
+          break;
+          
+        case TYPE(FLOAT):
+          op_type = TYPE(FLOAT);
+          break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+  for (int i = 0; i < m2->GetNumRows(); i++) {
+    cLocalArray* row = m2->GetRow(i);
+    for (int j = 0; j < m2->GetNumCols(); j++) {
+      switch (row->Get(j).type.type) {
+        case TYPE(BOOL):
+        case TYPE(CHAR):
+        case TYPE(INT):
+        case TYPE(STRING):
+          break;
+          
+        case TYPE(FLOAT):
+          op_type = TYPE(FLOAT);
+          break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+  
+  
+  
+  if (m1->GetNumRows() == 1 && m1->GetNumCols() == 1) {
+    // left op scalar multiply
+    
+    if (op_type == TYPE(INT)) matrixMultiply_ScalarInt(m1, m2, node);
+    else matrixMultiply_ScalarFloat(m1, m2, node);
+    
+  } else if (m2->GetNumRows() == 1 && m2->GetNumCols() == 1) {
+    // right op scalar multiply
+    
+    if (op_type == TYPE(INT)) matrixMultiply_ScalarInt(m2, m1, node);
+    else matrixMultiply_ScalarFloat(m2, m1, node);
+    
+  } else {
+    // full multiply
+    
+    if (m1->GetNumCols() != m2->GetNumRows()) INTERPRET_ERROR(MATRIX_SIZE_MISMATCH, mapToken(TOKEN(OP_MUL)));
+    
+    if (op_type == TYPE(INT)) matrixMultiply_FullInt(m1, m2, node);
+    else matrixMultiply_FullFloat(m1, m2, node);
+  }
+}
+
+void cDirectInterpretASTVisitor::matrixMultiply_ScalarInt(cLocalMatrix* s, cLocalMatrix* m, cASTNode& node)
+{
+  int scalar = 0;
+  tMatrix<int> op(m->GetNumRows(), m->GetNumCols());
+  
+  const sAggregateValue& val = s->GetRow(0)->Get(0);
+  switch (val.type.type) {
+    case TYPE(BOOL):    scalar = (val.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):    scalar = (int)val.value.as_char; break;
+    case TYPE(INT):     scalar = val.value.as_int; break;
+    case TYPE(STRING):  scalar = val.value.as_string->AsInt(); break;
+      
+    default:
+      INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(val.type));
+  }
+
+  for (int i = 0; i < m->GetNumRows(); i++) {
+    cLocalArray* row = m->GetRow(i);
+    for (int j = 0; j < m->GetNumCols(); j++) {
+      const sAggregateValue& val = row->Get(j);
+      switch (val.type.type) {
+        case TYPE(BOOL):    op[i][j] = (val.value.as_bool) ? 1 : 0; break;
+        case TYPE(CHAR):    op[i][j] = (int)val.value.as_char; break;
+        case TYPE(INT):     op[i][j] = val.value.as_int; break;
+        case TYPE(STRING):  op[i][j] = val.value.as_string->AsInt(); break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+  
+  int sz_x = m->GetNumRows();
+  int sz_y = m->GetNumCols();
+  cLocalMatrix* mat = new cLocalMatrix();
+  mat->Resize(sz_x, sz_y);
+  
+  sASTypeInfo op_type(TYPE(INT));
+  for (int i = 0; i < sz_x; i++) {
+    cLocalArray* row = mat->GetRow(i);
+    for (int j = 0; j < sz_y; j++) {
+      uAnyType val;
+      val.as_int = scalar * op[i][j];
+      row->Set(j, op_type, val);
+    }
+  }
+  
+  m_rvalue.as_matrix = mat;
+  m_rtype = TYPE(MATRIX);  
+}
+
+void cDirectInterpretASTVisitor::matrixMultiply_ScalarFloat(cLocalMatrix* s, cLocalMatrix* m, cASTNode& node)
+{
+  double scalar = 0.0;
+  tMatrix<double> op(m->GetNumRows(), m->GetNumCols());
+  
+  const sAggregateValue& val = s->GetRow(0)->Get(0);
+  switch (val.type.type) {
+    case TYPE(BOOL):    scalar = (val.value.as_bool) ? 1.0 : 0.0; break;
+    case TYPE(CHAR):    scalar = (double)val.value.as_char; break;
+    case TYPE(INT):     scalar = (double)val.value.as_int; break;
+    case TYPE(FLOAT):   scalar = val.value.as_float; break;
+    case TYPE(STRING):  scalar = val.value.as_string->AsDouble(); break;
+      
+    default:
+      INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(val.type));
+  }
+  
+  for (int i = 0; i < m->GetNumRows(); i++) {
+    cLocalArray* row = m->GetRow(i);
+    for (int j = 0; j < m->GetNumCols(); j++) {
+      const sAggregateValue& val = row->Get(j);
+      switch (val.type.type) {
+        case TYPE(BOOL):    op[i][j] = (val.value.as_bool) ? 1.0 : 0.0; break;
+        case TYPE(CHAR):    op[i][j] = (double)val.value.as_char; break;
+        case TYPE(INT):     op[i][j] = (double)val.value.as_int; break;
+        case TYPE(FLOAT):   op[i][j] = val.value.as_float; break;
+        case TYPE(STRING):  op[i][j] = val.value.as_string->AsDouble(); break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+  
+  int sz_x = m->GetNumRows();
+  int sz_y = m->GetNumCols();
+  cLocalMatrix* mat = new cLocalMatrix();
+  mat->Resize(sz_x, sz_y);
+  
+  sASTypeInfo op_type(TYPE(FLOAT));
+  for (int i = 0; i < sz_x; i++) {
+    cLocalArray* row = mat->GetRow(i);
+    for (int j = 0; j < sz_y; j++) {
+      uAnyType val;
+      val.as_float = scalar * op[i][j];
+      row->Set(j, op_type, val);
+    }
+  }
+  
+  m_rvalue.as_matrix = mat;
+  m_rtype = TYPE(MATRIX);
+}
+
+void cDirectInterpretASTVisitor::matrixMultiply_FullInt(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node)
+{
+  tMatrix<int> op1(m1->GetNumRows(), m1->GetNumCols());
+  tMatrix<int> op2(m2->GetNumRows(), m2->GetNumCols());
+  
+  for (int i = 0; i < m1->GetNumRows(); i++) {
+    cLocalArray* row = m1->GetRow(i);
+    for (int j = 0; j < m1->GetNumCols(); j++) {
+      const sAggregateValue& val = row->Get(j);
+      switch (val.type.type) {
+        case TYPE(BOOL):    op1[i][j] = (val.value.as_bool) ? 1 : 0; break;
+        case TYPE(CHAR):    op1[i][j] = (int)val.value.as_char; break;
+        case TYPE(INT):     op1[i][j] = val.value.as_int; break;
+        case TYPE(STRING):  op1[i][j] = val.value.as_string->AsInt(); break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+  for (int i = 0; i < m2->GetNumRows(); i++) {
+    cLocalArray* row = m2->GetRow(i);
+    for (int j = 0; j < m2->GetNumCols(); j++) {
+      const sAggregateValue& val = row->Get(j);
+      switch (val.type.type) {
+        case TYPE(BOOL):    op2[i][j] = (val.value.as_bool) ? 1 : 0; break;
+        case TYPE(CHAR):    op2[i][j] = (int)val.value.as_char; break;
+        case TYPE(INT):     op2[i][j] = val.value.as_int; break;
+        case TYPE(STRING):  op2[i][j] = val.value.as_string->AsInt(); break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+
+  int sz_x = m1->GetNumRows();
+  int sz_y = m2->GetNumCols();
+  cLocalMatrix* mat = new cLocalMatrix();
+  mat->Resize(sz_x, sz_y);
+  
+  sASTypeInfo op_type(TYPE(INT));
+  for (int i = 0; i < sz_x; i++) {
+    cLocalArray* row = mat->GetRow(i);
+    for (int j = 0; j < sz_y; j++) {
+      uAnyType sum;
+      sum.as_int = 0;
+      for (int k = 0; k < m1->GetNumCols(); k++) sum.as_int += op1[i][k] * op2[k][j];
+      row->Set(j, op_type, sum);
+    }
+  }
+  
+  m_rvalue.as_matrix = mat;
+  m_rtype = TYPE(MATRIX);
+}
+
+
+void cDirectInterpretASTVisitor::matrixMultiply_FullFloat(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node)
+{
+  tMatrix<double> op1(m1->GetNumRows(), m1->GetNumCols());
+  tMatrix<double> op2(m2->GetNumRows(), m2->GetNumCols());
+  
+  for (int i = 0; i < m1->GetNumRows(); i++) {
+    cLocalArray* row = m1->GetRow(i);
+    for (int j = 0; j < m1->GetNumCols(); j++) {
+      const sAggregateValue& val = row->Get(j);
+      switch (val.type.type) {
+        case TYPE(BOOL):    op1[i][j] = (val.value.as_bool) ? 1.0 : 0.0; break;
+        case TYPE(CHAR):    op1[i][j] = (double)val.value.as_char; break;
+        case TYPE(INT):     op1[i][j] = (double)val.value.as_int; break;
+        case TYPE(FLOAT):   op1[i][j] = val.value.as_float; break;
+        case TYPE(STRING):  op1[i][j] = val.value.as_string->AsDouble(); break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+  for (int i = 0; i < m2->GetNumRows(); i++) {
+    cLocalArray* row = m2->GetRow(i);
+    for (int j = 0; j < m2->GetNumCols(); j++) {
+      const sAggregateValue& val = row->Get(j);
+      switch (val.type.type) {
+        case TYPE(BOOL):    op2[i][j] = (val.value.as_bool) ? 1.0 : 0.0; break;
+        case TYPE(CHAR):    op2[i][j] = (double)val.value.as_char; break;
+        case TYPE(INT):     op2[i][j] = (double)val.value.as_int; break;
+        case TYPE(FLOAT):   op2[i][j] = val.value.as_float; break;
+        case TYPE(STRING):  op2[i][j] = val.value.as_string->AsDouble(); break;
+          
+        default:
+          INTERPRET_ERROR(MATRIX_OP_TYPE_MISMATCH, mapToken(TOKEN(OP_MUL)), mapType(row->Get(j).type));
+      }
+    }
+  }
+  
+  int sz_x = m1->GetNumRows();
+  int sz_y = m2->GetNumCols();
+  cLocalMatrix* mat = new cLocalMatrix();
+  mat->Resize(sz_x, sz_y);
+  
+  sASTypeInfo op_type(TYPE(FLOAT));
+  for (int i = 0; i < sz_x; i++) {
+    cLocalArray* row = mat->GetRow(i);
+    for (int j = 0; j < sz_y; j++) {
+      uAnyType sum;
+      sum.as_float = 0.0;
+      for (int k = 0; k < m1->GetNumCols(); k++) sum.as_float += op1[i][k] * op2[k][j];
+      row->Set(j, op_type, sum);
+    }
+  }
+  
+  m_rvalue.as_matrix = mat;
+  m_rtype = TYPE(MATRIX);
+}
+
+
 
 
 void cDirectInterpretASTVisitor::sAggregateValue::Cleanup()
@@ -2412,6 +2709,16 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
       break;
     case AS_DIRECT_INTERPRET_ERR_KEY_NOT_FOUND:
       std::cerr << "key not found" << ERR_ENDL;
+      break;
+    case AS_DIRECT_INTERPRET_ERR_MATRIX_OP_TYPE_MISMATCH:
+      {
+        const char* op = VA_ARG_STR;
+        const char* type = VA_ARG_STR;
+        std::cerr << "matrix '" << op << "' undefined for contained value of type '" << type << "'" << ERR_ENDL;
+      }
+      break;
+    case AS_DIRECT_INTERPRET_ERR_MATRIX_SIZE_MISMATCH:
+      std::cerr << "matrix size mismatch for '" << VA_ARG_STR << "' operation" << ERR_ENDL;
       break;
     case AS_DIRECT_INTERPRET_ERR_OBJECT_ASSIGN_FAIL:
       std::cerr << "aggregate assignment failed" << ERR_ENDL;

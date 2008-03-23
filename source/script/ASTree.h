@@ -72,21 +72,26 @@ class cASTNode
 private:
   static const sASTypeInfo s_invalid_type;
   
-  
   cASTNode(); // @not_implemented
   cASTNode(const cASTNode&); // @not_implemented
   cASTNode& operator=(const cASTNode&); // @not_implmented
 
+  
 protected:
   cASFilePosition m_file_pos;
+
   cASTNode(const cASFilePosition& fp) : m_file_pos(fp) { ; }
 
+  
 public:
   virtual ~cASTNode() { ; }
   
   virtual const sASTypeInfo& GetType() const { return s_invalid_type; }
 
   inline const cASFilePosition& GetFilePosition() const { return m_file_pos; }
+  
+  virtual bool IsOutputSuppressed() const { return false; }
+  virtual void SuppressOutput() { ; }
   
   virtual void Accept(cASTVisitor& visitor) = 0;
 };

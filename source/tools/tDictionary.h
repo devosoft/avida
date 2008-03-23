@@ -77,6 +77,9 @@ public:
     m_hash.AsLists(name_list, value_list);
   }
   inline void GetKeys(tList<cString>& names) const { m_hash.GetKeys(names); }
+  inline void GetKeys(tArray<cString>& names) const { m_hash.GetKeys(names); }
+  inline void GetValues(tList<T>& values) const { m_hash.GetValues(values); }
+  inline void GetValues(tArray<T>& values) const { m_hash.GetValues(values); }
   
   // This function will take an input string and load its value into the
   // dictionary; it will only work for types that cStringUtil can convert to.

@@ -28,8 +28,10 @@
 cASLibrary::~cASLibrary()
 {
   for (int i = 0; i < m_obj_tbl.GetSize(); i++) delete m_obj_tbl[i];
-  
-  // @TODO - cleanup function objects
+
+  tArray<const cASFunction*> fun_objs;
+  m_fun_dict.GetValues(fun_objs);
+  for (int i = 0; i < fun_objs.GetSize(); i++) delete fun_objs[i];
 }
 
 

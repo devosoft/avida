@@ -300,7 +300,7 @@ bool cString::IsAlphaNumeric() const
 
 cString cString::Substring(int start, int size) const
 {
-  assert(size > 0); // Non-Positive Size
+  assert(size >= 0); // Non-Positive Size
   assert(start >= 0); // Negative Position
   assert(start + size <= GetSize()); // Position+Size Past End of String
   

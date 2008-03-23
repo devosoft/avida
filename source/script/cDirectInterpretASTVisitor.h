@@ -133,8 +133,17 @@ private:
   double asFloat(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   cLocalMatrix* asMatrix(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   cString* asString(const sASTypeInfo& type, uAnyType value, cASTNode& node);
-
+  
   ASType_t getRuntimeType(ASType_t ltype, ASType_t rtype, bool allow_str = false);
+  
+  void matrixAdd(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node);
+  void matrixSubtract(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node);
+  
+  void matrixMultiply(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node);
+  void matrixMultiply_ScalarInt(cLocalMatrix* s, cLocalMatrix* m, cASTNode& node);
+  void matrixMultiply_ScalarFloat(cLocalMatrix* s, cLocalMatrix* m, cASTNode& node);
+  void matrixMultiply_FullInt(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node);
+  void matrixMultiply_FullFloat(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node);
   
   void reportError(ASDirectInterpretError_t err, const cASFilePosition& fp, const int line, ...);
   
