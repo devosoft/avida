@@ -81,7 +81,7 @@ cDirectInterpretASTVisitor::~cDirectInterpretASTVisitor()
       case TYPE(DICT):        m_call_stack[i].value.as_dict->RemoveReference(); break;
       case TYPE(INT):         break;
       case TYPE(FLOAT):       break;
-      case TYPE(MATRIX):      break; // @TODO - cleanup scope
+      case TYPE(MATRIX):      m_call_stack[i].value.as_matrix->RemoveReference(); break;
       case TYPE(OBJECT_REF):  delete m_call_stack[i].value.as_ref; break;
       case TYPE(STRING):      delete m_call_stack[i].value.as_string; break;
       default: break;
@@ -133,8 +133,11 @@ void cDirectInterpretASTVisitor::VisitAssignment(cASTAssignment& node)
       break;
       
       
-    case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
-
+    case TYPE(MATRIX):
+      m_call_stack[sp + var_id].value.as_matrix->RemoveReference();
+      m_call_stack[sp + var_id].value.as_matrix = asMatrix(m_rtype, m_rvalue, node);
+      break;
+      
     case TYPE(STRING):
       delete m_call_stack[sp + var_id].value.as_string;
       m_call_stack[sp + var_id].value.as_string = asString(m_rtype, m_rvalue, node);
@@ -224,7 +227,10 @@ void cDirectInterpretASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
         m_call_stack[var_idx].type = val.type;
         break;
         
-      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - foreach assignment
+      case TYPE(MATRIX):
+        m_call_stack[var_idx].value.as_matrix->RemoveReference();
+        m_call_stack[var_idx].value.as_matrix = asMatrix(val.type, val.value, node);
+        break;
         
       case TYPE(STRING):
         delete m_call_stack[var_idx].value.as_string;
@@ -299,7 +305,7 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
       case TYPE(FLOAT):       m_call_stack[m_sp + var_id].value.as_float = asFloat(m_rtype, m_rvalue, node); break;
       case TYPE(INT):         m_call_stack[m_sp + var_id].value.as_int = asInt(m_rtype, m_rvalue, node); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - var def assignment
-      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - var def assignment
+      case TYPE(MATRIX):      m_call_stack[m_sp + var_id].value.as_matrix = asMatrix(m_rtype, m_rvalue, node); break;
       case TYPE(STRING):
         delete m_call_stack[m_sp + var_id].value.as_string;
         m_call_stack[m_sp + var_id].value.as_string = asString(m_rtype, m_rvalue, node);
@@ -321,8 +327,16 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
       cLocalArray* arr = new cLocalArray();
       arr->Resize(asInt(m_rtype, m_rvalue, node));
       m_call_stack[m_sp + node.GetVarID()].value.as_array = arr;
-    } else if (node.GetType() == TYPE(MATRIX)) { // @TODO - variable def dimensions
+    } else if (node.GetType() == TYPE(MATRIX)) {
+      tListIterator<cASTNode> it = node.GetDimensions()->Iterator();
+      it.Next()->Accept(*this);
+      int sz_x = asInt(m_rtype, m_rvalue, node);
+      it.Next()->Accept(*this);
+      int sz_y = asInt(m_rtype, m_rvalue, node);
       
+      cLocalMatrix* mat = new cLocalMatrix();
+      mat->Resize(sz_x, sz_y);
+      m_call_stack[m_sp + node.GetVarID()].value.as_matrix = mat;      
     } else {
       INTERPRET_ERROR(INTERNAL);
     }
@@ -726,6 +740,8 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
               const sAggregateValue val = arr->Get(idx);
               m_rtype = val.type;
               m_rvalue = val.value;
+              
+              arr->RemoveReference();
             }
             break;
             
@@ -744,22 +760,36 @@ void cDirectInterpretASTVisitor::VisitExpressionBinary(cASTExpressionBinary& nod
 
               m_rtype = val.type;
               m_rvalue = val.value;
+              
+              dict->RemoveReference();
             }
             break;
             
-          case TYPE(MATRIX): // @TODO - indexing 
-            INTERPRET_ERROR(INTERNAL);
+          case TYPE(MATRIX):
+            {
+              cLocalMatrix* mat = lval.as_matrix;
+              int idx = asInt(rtype, rval, node);
+              
+              if (idx < 0 || idx >= mat->GetNumRows()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
+              
+              m_rtype = TYPE(ARRAY);
+              m_rvalue.as_array = mat->GetRow(idx);
+              
+              mat->RemoveReference();
+            }
+            break;
             
           case TYPE(STRING):
-          {
-            cString* str = lval.as_string;
-            int idx = asInt(rtype, rval, node);
-            if (idx < 0 || idx >= str->GetSize()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
+            {
+              cString* str = lval.as_string;
+              int idx = asInt(rtype, rval, node);
+              if (idx < 0 || idx >= str->GetSize()) INTERPRET_ERROR(INDEX_OUT_OF_BOUNDS);
 
-            m_rtype = TYPE(CHAR);
-            m_rvalue.as_char = (*str)[idx];
-            delete str;
-          }
+              m_rtype = TYPE(CHAR);
+              m_rvalue.as_char = (*str)[idx];
+              delete str;
+            }
+            break;
             
           default:
             INTERPRET_ERROR(TYPE_CAST, mapType(ltype.type), mapType(TYPE(ARRAY)));
@@ -946,8 +976,9 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       if (m_rtype.type == TYPE(DICT)) {
         m_rvalue.as_dict->Clear();
         m_rvalue.as_dict->RemoveReference();
-      } else if (m_rtype.type == TYPE(MATRIX)) { // @TODO - builtin clear
-        INTERPRET_ERROR(INTERNAL);
+      } else if (m_rtype.type == TYPE(MATRIX)) {
+        m_rvalue.as_matrix->Resize(0, 0);
+        m_rvalue.as_matrix->RemoveReference();
       } else if (m_rtype.type == TYPE(ARRAY)) {
         m_rvalue.as_array->Resize(0);
         m_rvalue.as_array->RemoveReference();
@@ -998,7 +1029,7 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       }
       break;
       
-    case AS_BUILTIN_VALUES: // @TODO
+    case AS_BUILTIN_VALUES:
       trgt->Accept(*this);
       if (m_rtype.type == TYPE(DICT)) {
         cLocalArray* arr = new cLocalArray();
@@ -1063,11 +1094,31 @@ void cDirectInterpretASTVisitor::VisitBuiltInCall(cASTBuiltInCall& node)
       
     case AS_BUILTIN_RESIZE:
       trgt->Accept(*this);
-      if (m_rtype.type == TYPE(MATRIX)) { // @TODO - builtin resize
-        INTERPRET_ERROR(INTERNAL);
+      if (m_rtype.type == TYPE(MATRIX)) {
+        cLocalMatrix* mat = m_rvalue.as_matrix;
+        
+        if (args->GetSize() != 2) INTERPRET_ERROR(INVALID_ARRAY_SIZE);
+        
+        if (!mat->IsShared()) {
+          mat->RemoveReference();
+          break;
+        }
+        
+        tListIterator<cASTNode> it = args->Iterator();
+        it.Next()->Accept(*this);
+        int sz_x = asInt(m_rtype, m_rvalue, node);
+        it.Next()->Accept(*this);
+        int sz_y = asInt(m_rtype, m_rvalue, node);
+        
+        mat->Resize(sz_x, sz_y);
+        mat->RemoveReference();
       } else if (m_rtype.type == TYPE(ARRAY)) {
         cLocalArray* arr = m_rvalue.as_array;
+        
+        if (!arr->IsResizable()) INTERPRET_ERROR(CANNOT_RESIZE_MATRIX_ROW);
 
+        if (args->GetSize() != 1) INTERPRET_ERROR(INVALID_ARRAY_SIZE);
+        
         if (!arr->IsShared()) {
           arr->RemoveReference();
           break;
@@ -1196,7 +1247,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
         case TYPE(FLOAT):       m_call_stack[sp + var_id].value.as_float = asFloat(m_rtype, m_rvalue, node); break;
         case TYPE(INT):         m_call_stack[sp + var_id].value.as_int = asInt(m_rtype, m_rvalue, node); break;
         case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - func call arg assignment
-        case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - func call arg assignment
+        case TYPE(MATRIX):      m_call_stack[sp + var_id].value.as_matrix = asMatrix(m_rtype, m_rvalue, node); break;
         case TYPE(STRING):
           {
             m_call_stack[sp + var_id].value.as_string = asString(m_rtype, m_rvalue, node);
@@ -1228,7 +1279,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
       case TYPE(FLOAT):       m_rvalue.as_float = asFloat(m_rtype, m_rvalue, node); break;
       case TYPE(INT):         m_rvalue.as_int = asInt(m_rtype, m_rvalue, node); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - return
-      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - return
+      case TYPE(MATRIX):      m_rvalue.as_matrix = asMatrix(m_rtype, m_rvalue, node); break;
       case TYPE(STRING):      m_rvalue.as_string = asString(m_rtype, m_rvalue, node); break;
       case TYPE(VAR):         break;
       case TYPE(VOID):        break;
@@ -1246,7 +1297,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
       switch (type) {
         case TYPE(ARRAY):       m_call_stack[sp + i].value.as_array->RemoveReference(); break;
         case TYPE(DICT):        m_call_stack[sp + i].value.as_dict->RemoveReference(); break;
-        case TYPE(MATRIX):      break; // @TODO - cleanup scope
+        case TYPE(MATRIX):      m_call_stack[sp + i].value.as_matrix->RemoveReference(); break;
         case TYPE(OBJECT_REF):  delete m_call_stack[sp + i].value.as_ref; break;
         case TYPE(STRING):      delete m_call_stack[sp + i].value.as_string; break;
         default: break;
@@ -1297,7 +1348,37 @@ void cDirectInterpretASTVisitor::VisitLiteralArray(cASTLiteralArray& node)
   cASTArgumentList* vals = node.GetValues();
   
   if (node.IsMatrix()) {
-    // @TODO - literal matrix
+    cLocalMatrix* mat = new cLocalMatrix();
+    
+    int sz_y = 1;
+    bool first = true;
+    
+    tListIterator<cASTNode> it = vals->Iterator();
+    cASTNode* val = NULL;
+    int i = 0;
+    while ((val = it.Next())) {
+      val->Accept(*this);
+      if (first && m_rtype.type == TYPE(ARRAY)) {
+        sz_y = m_rvalue.as_array->GetSize();
+      }
+      
+      mat->Resize(i + 1, sz_y);
+      
+      if (sz_y > 1) {
+        if (m_rtype.type != TYPE(ARRAY)) INTERPRET_ERROR(INVALID_ARRAY_SIZE);
+        mat->Set(i, m_rvalue.as_array);
+      } else {
+        mat->GetRow(i)->Set(0, m_rtype, m_rvalue);
+      }
+
+      sAggregateValue val(m_rtype, m_rvalue);
+      val.Cleanup();
+      first = false;
+      i++;
+    }
+    
+    m_rvalue.as_matrix = mat;
+    m_rtype = TYPE(MATRIX);
   } else {
     cLocalArray* arr = new cLocalArray(vals->GetSize());
     
@@ -1357,7 +1438,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
       case TYPE(ARRAY):       m_rvalue.as_ref = new cArrayVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(DICT):        m_rvalue.as_ref = new cDictVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
-      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
+      case TYPE(MATRIX):      m_rvalue.as_ref = new cMatrixVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(STRING):      INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
         
       default:
@@ -1377,7 +1458,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
       case TYPE(DICT):        m_rvalue.as_dict = m_call_stack[sp + var_id].value.as_dict->GetReference(); break;
       case TYPE(FLOAT):       m_rvalue.as_float = m_call_stack[sp + var_id].value.as_float; break;
       case TYPE(INT):         m_rvalue.as_int = m_call_stack[sp + var_id].value.as_int; break;
-      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - var ref assignment
+      case TYPE(MATRIX):      m_rvalue.as_matrix = m_call_stack[sp + var_id].value.as_matrix->GetReference(); break;
       case TYPE(STRING):      m_rvalue.as_string = new cString(*m_call_stack[sp + var_id].value.as_string); break;
 
       
@@ -1428,9 +1509,11 @@ void cDirectInterpretASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
         m_call_stack[var_idx].value.as_dict->RemoveReference();
         m_call_stack[var_idx].value.as_dict = asDict(val.type, val.value, node);
         break;
-        
-        
-      case TYPE(MATRIX):      INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+                
+      case TYPE(MATRIX):
+        m_call_stack[var_idx].value.as_matrix->RemoveReference();
+        m_call_stack[var_idx].value.as_matrix = asMatrix(val.type, val.value, node);
+        break;
         
       case TYPE(STRING):
         delete m_call_stack[var_idx].value.as_string;
@@ -1466,9 +1549,19 @@ cDirectInterpretASTVisitor::cLocalArray* cDirectInterpretASTVisitor::asArray(con
     case TYPE(ARRAY):
       return value.as_array;
 
-    case TYPE(MATRIX): // @TODO - asArray 
-      INTERPRET_ERROR(INTERNAL);
-    
+    case TYPE(MATRIX):
+      {
+        cLocalMatrix* mat = value.as_matrix;
+        cLocalArray* arr = new cLocalArray(mat->GetNumRows());
+        uAnyType val;
+        for (int i = 0; i < mat->GetNumRows(); i++) {
+          val.as_array = new cLocalArray(mat->GetRow(i));
+          arr->Set(i, TYPE(ARRAY), val);
+        }
+        mat->RemoveReference();
+        return arr;
+      }
+      
     case TYPE(STRING):
       {
         cString* str = value.as_string;
@@ -1506,8 +1599,12 @@ bool cDirectInterpretASTVisitor::asBool(const sASTypeInfo& type, uAnyType value,
       return rval;
     }
       
-    case TYPE(MATRIX): // @TODO - implement asBool
-      INTERPRET_ERROR(INTERNAL);
+    case TYPE(MATRIX):
+      {
+        bool rval = (value.as_matrix->GetNumRows() && value.as_matrix->GetNumCols());
+        value.as_matrix->RemoveReference();
+        return rval;
+      }
       
     case TYPE(BOOL):
       return value.as_bool;
@@ -1554,14 +1651,28 @@ char cDirectInterpretASTVisitor::asChar(const sASTypeInfo& type, uAnyType value,
 }
 
 
-cDirectInterpretASTVisitor::cLocalDict* cDirectInterpretASTVisitor::asDict(const sASTypeInfo& type, uAnyType value, cASTNode& node)
+cDirectInterpretASTVisitor::cLocalDict* cDirectInterpretASTVisitor::asDict(const sASTypeInfo& type, uAnyType value,
+                                                                           cASTNode& node)
 {
   switch (type.type) {
     case TYPE(DICT):
       return value.as_dict;
       
-    case TYPE(ARRAY): // @TODO - asDict
-      INTERPRET_ERROR(INTERNAL);
+    case TYPE(ARRAY):
+      {
+        cLocalDict* dict = new cLocalDict();
+        cLocalArray* arr = value.as_array;
+        
+        sAggregateValue idx;
+        idx.type.type = TYPE(INT);
+        
+        for (idx.value.as_int = 0; idx.value.as_int < arr->GetSize(); idx.value.as_int++) {
+          dict->Set(idx, arr->Get(idx.value.as_int));
+        }
+        
+        arr->RemoveReference();
+        return dict;
+      }
       
     default:
       INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(CHAR)));
@@ -1615,10 +1726,36 @@ double cDirectInterpretASTVisitor::asFloat(const sASTypeInfo& type, uAnyType val
       }
       
     default:
-      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(INT)));
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(FLOAT)));
   }
   
   return 0.0;
+}
+
+
+cDirectInterpretASTVisitor::cLocalMatrix* cDirectInterpretASTVisitor::asMatrix(const sASTypeInfo& type, uAnyType value,
+                                                                               cASTNode& node)
+{
+  switch (type.type) {
+    case TYPE(BOOL):
+    case TYPE(CHAR):
+    case TYPE(FLOAT):
+    case TYPE(INT):
+      {
+        sAggregateValue val(type, value);
+        cLocalMatrix* mat = new cLocalMatrix();
+        mat->Resize(1, 1);
+        mat->GetRow(0)->Set(0, val);
+      }
+      
+    case TYPE(MATRIX):
+      return value.as_matrix;
+     
+    default:
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(MATRIX)));
+  }
+  
+  return NULL;
 }
 
 
@@ -1645,9 +1782,9 @@ cString* cDirectInterpretASTVisitor::asString(const sASTypeInfo& type, uAnyType 
       return str;
     }
       
-    case TYPE(MATRIX): // @TODO - as string
+    case TYPE(MATRIX):
       {
-        cString* str = new cString(cStringUtil::Stringf("< matrix(,) >"));
+        cString* str = new cString(cStringUtil::Stringf("< matrix(%d, %d) >", value.as_matrix->GetNumRows(), value.as_matrix->GetNumCols()));
         return str;
       }
 
@@ -1658,7 +1795,7 @@ cString* cDirectInterpretASTVisitor::asString(const sASTypeInfo& type, uAnyType 
     }
       
     default:
-      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(INT)));
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(STRING)));
   }
   
   return NULL;
@@ -1741,7 +1878,7 @@ void cDirectInterpretASTVisitor::sAggregateValue::Cleanup()
   switch (type.type) {
     case TYPE(ARRAY):       value.as_array->RemoveReference(); break;
     case TYPE(DICT):        value.as_dict->RemoveReference(); break;
-    case TYPE(MATRIX):      break; // @TODO - aggregate value cleanup
+    case TYPE(MATRIX):      value.as_matrix->RemoveReference(); break;
     case TYPE(OBJECT_REF):  delete value.as_ref; break;
     case TYPE(STRING):      delete value.as_string; break;
     default: break;
@@ -1759,8 +1896,8 @@ bool cDirectInterpretASTVisitor::sAggregateValue::operator==(const sAggregateVal
       case TYPE(STRING):  return *value.as_string == *lval.value.as_string;
       case TYPE(ARRAY):   return value.as_array == lval.value.as_array;
       case TYPE(DICT):    return value.as_dict == lval.value.as_dict;
+      case TYPE(MATRIX):  return value.as_matrix == lval.value.as_matrix;
         
-      case TYPE(MATRIX): // @TODO - aggregate value compare
       case TYPE(OBJECT_REF): // @TODO - aggregate value compare
         return value.as_void == lval.value.as_void;
       
@@ -1798,7 +1935,8 @@ void cDirectInterpretASTVisitor::cLocalArray::Set(int i, const sASTypeInfo& type
       m_storage[i].value.as_dict = value.as_dict->GetReference();
       break;
       
-    case TYPE(MATRIX): // @TODO - array set
+    case TYPE(MATRIX):
+      m_storage[i].value.as_matrix = value.as_matrix->GetReference();
       break;
       
     default: break;
@@ -1818,8 +1956,7 @@ void cDirectInterpretASTVisitor::cLocalArray::copy(int offset, tArray<sAggregate
       case TYPE(STRING):  m_storage[i + offset].value.as_string = new cString(*in_storage[i].value.as_string); break;
       case TYPE(ARRAY):   m_storage[i + offset].value.as_array = in_storage[i].value.as_array->GetReference(); break;
       case TYPE(DICT):    m_storage[i + offset].value.as_dict = in_storage[i].value.as_dict->GetReference(); break;
-      case TYPE(MATRIX):  // @TODO - array copy
-        break;
+      case TYPE(MATRIX):  m_storage[i + offset].value.as_matrix = in_storage[i].value.as_matrix->GetReference(); break;
         
       default: break;
     }
@@ -1843,6 +1980,12 @@ void cDirectInterpretASTVisitor::cLocalArray::Resize(int sz)
   }  
 }
 
+void cDirectInterpretASTVisitor::cLocalArray::SetWithArray(cLocalArray* arr)
+{
+  Resize(arr->GetSize());
+  
+  for (int i = 0; i < arr->GetSize(); i++) Set(i, arr->Get(i));
+}
 
 void cDirectInterpretASTVisitor::cLocalArray::SetWithKeys(cLocalDict* dict)
 {
@@ -1855,8 +1998,7 @@ void cDirectInterpretASTVisitor::cLocalArray::SetWithKeys(cLocalDict* dict)
       case TYPE(STRING):  m_storage[i].value.as_string = new cString(*m_storage[i].value.as_string); break;
       case TYPE(ARRAY):   m_storage[i].value.as_array->GetReference(); break;
       case TYPE(DICT):    m_storage[i].value.as_dict->GetReference(); break;
-      case TYPE(MATRIX):  // @TODO - array copy
-        break;
+      case TYPE(MATRIX):  m_storage[i].value.as_matrix->GetReference(); break;
         
       default: break;
     }
@@ -1875,8 +2017,7 @@ void cDirectInterpretASTVisitor::cLocalArray::SetWithValues(cLocalDict* dict)
       case TYPE(STRING):  m_storage[i].value.as_string = new cString(*m_storage[i].value.as_string); break;
       case TYPE(ARRAY):   m_storage[i].value.as_array->GetReference(); break;
       case TYPE(DICT):    m_storage[i].value.as_dict->GetReference(); break;
-      case TYPE(MATRIX):  // @TODO - array copy
-        break;
+      case TYPE(MATRIX):  m_storage[i].value.as_matrix->GetReference(); break;
         
       default: break;
     }
@@ -1891,6 +2032,23 @@ cDirectInterpretASTVisitor::cLocalArray::~cLocalArray()
   // Cleanup values stored in the array
   for (int i = 0; i < sz; i++) m_storage[i].Cleanup();
 }
+
+
+void cDirectInterpretASTVisitor::cLocalMatrix::Resize(int sz_x, int sz_y)
+{
+  int o_sz = m_storage.GetSize();
+  m_storage.Resize(sz_x);
+  
+  // Resize the columns
+  for (int i = (m_sz_y == sz_y) ? o_sz : 0; i < sz_x; i++) {
+    m_storage[i].SetNonResizable();
+    m_storage[i].Resize(sz_y);
+  }
+
+  m_sz_y = sz_y;
+}
+
+
 
 
 void cDirectInterpretASTVisitor::cLocalDict::Set(const sAggregateValue& idx, const sAggregateValue& val)
@@ -1969,7 +2127,7 @@ bool cDirectInterpretASTVisitor::cArrayVarRef::Set(sAggregateValue& idx, sAggreg
     case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
     case TYPE(ARRAY):       idx.value.as_array->RemoveReference(); break;
     case TYPE(DICT):        idx.value.as_dict->RemoveReference(); break;
-    case TYPE(MATRIX):      // @TODO - array ref get
+    case TYPE(MATRIX):      idx.value.as_matrix->RemoveReference(); break;
     case TYPE(OBJECT_REF):  delete idx.value.as_ref; break;
     default: break;
   } 
@@ -1977,6 +2135,56 @@ bool cDirectInterpretASTVisitor::cArrayVarRef::Set(sAggregateValue& idx, sAggreg
   if (idxi < 0 || idxi >= m_var.as_array->GetSize()) return false;
     
   m_var.as_array->Set(idxi, val.type, val.value);
+  
+  return true;
+}
+
+
+bool cDirectInterpretASTVisitor::cMatrixVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
+{
+  int idxi = -1;
+  switch (idx.type.type) {
+    case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+    case TYPE(INT):         idxi = idx.value.as_int; break;
+    case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+    case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); break;
+    default: break;
+  } 
+  
+  if (idxi < 0 || idxi >= m_var.as_matrix->GetNumRows()) return false;
+  
+  val.value.as_array = m_var.as_matrix->GetRow(idxi);
+  val.type = TYPE(ARRAY);
+  return true;
+}
+
+bool cDirectInterpretASTVisitor::cMatrixVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
+{
+  int idxi = -1;
+  switch (idx.type.type) {
+    case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+    case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+    case TYPE(INT):         idxi = idx.value.as_int; break;
+    case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+    case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
+    case TYPE(ARRAY):       idx.value.as_array->RemoveReference(); break;
+    case TYPE(DICT):        idx.value.as_dict->RemoveReference(); break;
+    case TYPE(MATRIX):      idx.value.as_matrix->RemoveReference(); break;
+    case TYPE(OBJECT_REF):  delete idx.value.as_ref; break;
+    default: break;
+  } 
+  
+  if (idxi < 0 || idxi >= m_var.as_matrix->GetNumRows()) return false;
+  
+  if (m_var.as_matrix->GetNumCols() > 1) {
+    if (val.type.type != TYPE(ARRAY)) return false;
+    m_var.as_matrix->Set(idxi, val.value.as_array);
+  } else if (m_var.as_matrix->GetNumCols() == 0) {
+    m_var.as_matrix->GetRow(idxi)->Set(0, val);    
+  } else {
+    return false;
+  }
   
   return true;
 }
@@ -2024,8 +2232,24 @@ bool cDirectInterpretASTVisitor::cObjectIndexRef::Get(const sAggregateValue& idx
     case TYPE(DICT):
       return o_val.value.as_dict->Get(idx, val);
       
-    case TYPE(MATRIX): // @TODO - object index ref get
-      break;
+    case TYPE(MATRIX):
+      {
+        cLocalMatrix* mat = o_val.value.as_matrix;
+        
+        int idxi = -1;
+        switch (idx.type.type) {
+          case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+          case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+          case TYPE(INT):         idxi = idx.value.as_int; break;
+          case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+          case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); break;
+          default: break;
+        }      
+        if (idxi < 0 || idxi >= mat->GetNumRows()) return false;
+        val.value.as_array = mat->GetRow(idxi);
+        val.type = TYPE(ARRAY);
+        return true;
+      }
       
     default:
       break;
@@ -2040,7 +2264,7 @@ bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(sAggregateValue& idx, sAgg
 {
   sAggregateValue o_val;
   
-  if (!m_obj->Get(m_idx)) {
+  if (!m_obj->Get(m_idx, o_val)) {
     idx.Cleanup();
     return false;
   }
@@ -2059,7 +2283,7 @@ bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(sAggregateValue& idx, sAgg
           case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
           case TYPE(ARRAY):       idx.value.as_array->RemoveReference(); break;
           case TYPE(DICT):        idx.value.as_dict->RemoveReference(); break;
-          case TYPE(MATRIX):      // @TODO - array ref get
+          case TYPE(MATRIX):      idx.value.as_matrix->RemoveReference(); break;
           case TYPE(OBJECT_REF):  delete idx.value.as_ref; break;
           default: break;
         }      
@@ -2073,8 +2297,35 @@ bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(sAggregateValue& idx, sAgg
       o_val.value.as_dict->Set(idx, val);
       return true;
       
-    case TYPE(MATRIX): // @TODO - object index ref set
-      break;
+    case TYPE(MATRIX):
+      {
+        cLocalMatrix* mat = o_val.value.as_matrix;
+        
+        int idxi = -1;
+        switch (idx.type.type) {
+          case TYPE(BOOL):        idxi = (idx.value.as_bool) ? 1 : 0; break;
+          case TYPE(CHAR):        idxi = (int)idx.value.as_char; break;
+          case TYPE(INT):         idxi = idx.value.as_int; break;
+          case TYPE(FLOAT):       idxi = (int)idx.value.as_float; break;
+          case TYPE(STRING):      idxi = idx.value.as_string->AsInt(); delete idx.value.as_string; break;
+          case TYPE(ARRAY):       idx.value.as_array->RemoveReference(); break;
+          case TYPE(DICT):        idx.value.as_dict->RemoveReference(); break;
+          case TYPE(MATRIX):      idx.value.as_matrix->RemoveReference(); break;
+          case TYPE(OBJECT_REF):  delete idx.value.as_ref; break;
+          default: break;
+        }      
+        if (idxi < 0 || idxi >= mat->GetNumRows()) return false;
+        
+        if (mat->GetNumCols() > 1) {
+          if (val.type.type != TYPE(ARRAY)) return false;
+          mat->Set(idxi, val.value.as_array);
+        } else if (mat->GetNumCols() == 0) {
+          mat->GetRow(idxi)->Set(0, val);    
+        } else {
+          return false;
+        }
+      }
+      return true;
       
     default:
       break;
@@ -2100,6 +2351,9 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
   va_list vargs;
   va_start(vargs, line);
   switch (err) {
+    case AS_DIRECT_INTERPRET_ERR_CANNOT_RESIZE_MATRIX_ROW:
+      std::cerr << "cannot directly resize matrix row" << ERR_ENDL;
+      break;
     case AS_DIRECT_INTERPRET_ERR_DIVISION_BY_ZERO:
       std::cerr << "division by zero" << ERR_ENDL;
       break;
