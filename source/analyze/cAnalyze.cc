@@ -7049,6 +7049,537 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
   delete testcpu;
 }
 
+void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
+{
+  cout << "Analyzing genome complexity (one and two sites)..." << endl;
+  
+  /*
+   * Arguments:
+   * 1) mutation rate (default: 0.0 - selection only)
+   * 2) directory for results (default: 'complexity_two_sites/'
+   * 3) use resources ? -- 0 or 1 (default: 0)
+   * 4) batch frequency (default: 1 - all genotypes in batch)
+   *    -- how many genotypes to skip in batch
+   * 5) convergence accuracy (default: 1.e-10)
+   * 
+   */
+  
+  // number of arguments provided  
+  int words = cur_string.CountNumWords();
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  Number of arguments passed: " << words << endl;
+  }
+  
+  //
+  // argument 1 -- mutation rate 
+  //
+  double mut_rate = 0.0075;
+  if(words < 1) {
+    // no mutation rate provided
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  - No mutation rate passed, using default mu = " << mut_rate << endl;
+    }
+  } else {
+    // mutation rate provided
+    mut_rate = cur_string.PopWord().AsDouble();
+    if (mut_rate < 0.0) {
+      // can't have mutation rate below zero
+      mut_rate = 0.0; 
+    }
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  - Mutation rate passed, using mu = " << mut_rate << endl;
+    }  
+  }
+  
+  //
+  // argument 2 -- directory
+  //
+  cString dir = cur_string.PopWord();
+  cString defaultDirectory = "complexity_two_sites/";
+  cString directory = PopDirectory(dir, defaultDirectory);
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  - Analysis results to directory: " << directory << endl;
+  }
+  
+  //
+  // argument 3 -- use resources?
+  //
+  // Default for usage of resources is false
+  int useResources = 0;
+  if(words >= 3) {
+    useResources = cur_string.PopWord().AsInt();
+    // All non-zero values are considered false (Handled by testcpu->InitResources)
+  }
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  - Use resorces set to: " << useResources << " (0=false, true other int)" << endl;
+  }
+  
+  //
+  // argument 4 -- batch frequncy
+  //   - default batchFrequency=1 (every organism analyzed)
+  //
+  int batchFrequency = 1;
+  if(words >= 4) {
+    batchFrequency = cur_string.PopWord().AsInt();
+    if(batchFrequency <= 0) {
+      batchFrequency = 1;
+    }
+  }
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  - Batch frequency set to: " << batchFrequency << endl;
+  }
+  
+  //
+  // argument 5 -- convergence accuracy for mutation-selection balance
+  //
+  double converg_accuracy = 1.e-10;
+  if(words >= 5) {
+    converg_accuracy = cur_string.PopWord().AsDouble();
+  }
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  - Convergence accuracy: " << converg_accuracy << endl;
+  }
+
+  // test cpu
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  
+  // get current batch
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  
+  // create file for batch summary
+  cString summary_filename;
+  summary_filename.Set("%scomplexity_batch_summary.dat", static_cast<const char*>(directory));
+  cDataFile & summary_fp = m_world->GetDataFile(summary_filename);
+  summary_fp.WriteComment( "One, Two Site Entropy/Complexity Analysis" );
+  summary_fp.WriteTimeStamp();  
+  
+  // analyze each genotype in the batch
+  while ((genotype = batch_it.Next()) != NULL) {
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  Analyzing complexity for " << genotype->GetName() << endl;
+    }
+    // entropy and complexity for whole genome
+    // in both mers and bits
+    // >> single site approximation
+    double genome_ss_entropy_mers = 0.0;
+    double genome_ss_entropy_bits = 0.0;
+    double genome_ss_complexity_mers = 0.0;
+    double genome_ss_complexity_bits = 0.0;
+    // >> two site approximation
+    double genome_ds_mut_info_mers = 0.0;
+    double genome_ds_mut_info_bits = 0.0;
+    double genome_ds_complexity_mers = 0.0;
+    double genome_ds_complexity_bits = 0.0;
+    
+    // Construct filename
+    cString filename_2s;
+    filename_2s.Set("%s%s.twosite.complexity.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
+    cDataFile & fp_2s = m_world->GetDataFile(filename_2s);
+    fp_2s.WriteComment( "One, Two Site Entropy/Complexity Analysis" );
+    fp_2s.WriteComment( "NOTE: mutual information = (col 6 + col 8) - (col 9)" );
+    fp_2s.WriteComment( "NOTE: possible negative mutual information-- is this real? " );
+    fp_2s.WriteTimeStamp();
+        
+    int updateBorn = -1;
+    updateBorn = genotype->GetUpdateBorn();
+    cCPUTestInfo test_info;
+    test_info.SetResourceOptions(useResources, &resources, updateBorn, m_resource_time_spent_offset);
+    
+    // Calculate the stats for the genotype we're working with ...
+    genotype->Recalculate(m_ctx, &test_info);
+    const int num_insts = inst_set.GetSize();
+    const int max_line = genotype->GetLength();
+    const cGenome & base_genome = genotype->GetGenome();
+    cGenome mod_genome(base_genome);
+    
+    /*
+     * 
+     *  ONE SITE CALCULATIONS
+     * 
+     */
+     
+    // single site entropies for use with
+    // two site calculations (below)
+    tArray<double> entropy_ss_mers(max_line);
+    tArray<double> entropy_ss_bits(max_line);
+    // used in single site calculations
+    tArray<double> test_fitness(num_insts);
+    tArray<double> prob(num_insts);
+    tArray<double> prob_next(num_insts);
+    
+    // run through lines in genome
+    for (int line_num = 0; line_num < max_line; line_num++) {
+      // get the current instruction at this line/site
+      int cur_inst = base_genome[line_num].GetOp();
+      
+      // recalculate fitness of each mutant.
+      for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
+        mod_genome[line_num].SetOp(mod_inst);
+        cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
+        test_genotype.Recalculate(m_ctx);
+        test_fitness[mod_inst] = test_genotype.GetFitness();
+      }
+      
+      // Adjust fitness
+      // - set all fitness values greater than current instruction
+      // equal to current instruction fitness
+      // - make the rest of the fitness values relative to 
+      // the current instruction fitness
+      double cur_inst_fitness = test_fitness[cur_inst];
+      // test that current fitness greater than zero
+      // if NOT, all fitnesses will be set to zero
+      if (cur_inst_fitness > 0.0) {
+        for (int mod_inst = 0; mod_inst < num_insts; mod_inst++) {
+          if (test_fitness[mod_inst] > cur_inst_fitness)
+            test_fitness[mod_inst] = cur_inst_fitness;
+          test_fitness[mod_inst] /= cur_inst_fitness;
+        }
+      } else {
+        cout << "Fitness of this genotype is ZERO--no information." << endl;
+        continue;
+      }
+           
+      // initialize prob for
+      // mutation-selection balance
+      double fitness_total = 0.0;
+      for (int i = 0; i < num_insts; i ++ ) {
+        fitness_total += test_fitness[i];
+      }
+      for (int i = 0; i < num_insts; i ++ ) {
+        prob[i] = test_fitness[i]/fitness_total;
+        prob_next[i] = 0.0;
+      }
+      
+      double check_sum = 0.0;
+      while(1) {
+        check_sum = 0.0;
+        double delta_prob = 0.0;
+        //double delta_prob_ex = 0.0;
+        for (int mod_inst = 0; mod_inst < num_insts; mod_inst ++) {  
+          // calculate the average fitness
+          double w_avg = 0.0;
+          for (int i = 0; i < num_insts; i++) {
+            w_avg += prob[i]*test_fitness[i];
+          }
+          if (mut_rate != 0.0) {
+            // run mutation-selection equation
+            prob_next[mod_inst] = ((1.0-mut_rate)*test_fitness[mod_inst]*prob[mod_inst])/(w_avg);
+            prob_next[mod_inst] += mut_rate/((double)num_insts);
+          } else {
+            // run selection equation
+            prob_next[mod_inst] = (test_fitness[mod_inst]*prob[mod_inst])/(w_avg);
+          }
+          // increment change in probs
+          delta_prob += (prob_next[mod_inst]-prob[mod_inst])*(prob_next[mod_inst]-prob[mod_inst]);
+          //delta_prob_ex += (prob_next[mod_inst]-prob[mod_inst]);
+        }
+        // transfer t+1 to t for next iteration
+        for (int i = 0; i < num_insts; i++) {
+          prob[i]=prob_next[i];
+          check_sum += prob[i]; 
+        }
+        
+        // test for convergence
+        if (delta_prob < converg_accuracy)
+          break;
+      }
+      
+      // Calculate complexity and entropy in bits and mers
+      double entropy_mers = 0;
+      double entropy_bits = 0;
+      for (int i = 0; i < num_insts; i ++) {
+        // watch for prob[i] == 0
+        // --> 0.0 log(0.0) = 0.0
+        if (prob[i] != 0.0) { 
+          entropy_mers += prob[i] * log((double) 1.0/prob[i]) / log ((double) num_insts);
+          entropy_bits += prob[i] * log((double) 1.0/prob[i]) / log ((double) 2.0);
+        }
+      }
+      double complexity_mers = 1 - entropy_mers;
+      double complexity_bits = (log ((double) num_insts) / log ((double) 2.0)) - entropy_bits;
+            
+      // update entropy and complexity values
+      // with this site's values
+      genome_ss_entropy_mers += entropy_mers;
+      genome_ss_entropy_bits += entropy_bits;
+      genome_ss_complexity_mers += complexity_mers;
+      genome_ss_complexity_bits += complexity_bits;
+      
+      // save entropy for this line/site number
+      entropy_ss_mers[line_num] = entropy_mers;
+      entropy_ss_bits[line_num] = entropy_bits;
+      
+      // Reset the mod_genome back to the original sequence.
+      mod_genome[line_num].SetOp(cur_inst);
+    }
+    
+    /*
+     * 
+     *  TWO SITE CALCULATIONS
+     * 
+     */
+    
+    // Loop through all the lines of code, 
+    // testing all TWO SITE mutations...
+    tMatrix<double> test_fitness_2s(num_insts,num_insts);
+    tArray<double> prob_1s_i(num_insts);
+    tArray<double> prob_1s_j(num_insts);
+    tMatrix<double> prob_2s(num_insts,num_insts);
+    tMatrix<double> prob_next_2s(num_insts,num_insts);
+    
+    // run through lines in genome
+    // - only consider lin_num2 > lin_num1 so that we don't consider
+    // Mut Info [1][45] and Mut Info [45][1]
+    for (int line_num1 = 0; line_num1 < max_line; line_num1++) {
+      for (int line_num2 = line_num1+1; line_num2 < max_line; line_num2++) {
+        // debug
+        //cout << "line #1, #2: " << line_num1 << ", " << line_num2 << endl; 
+        
+        // get current instructions at site 1 and site 2
+        int cur_inst1 = base_genome[line_num1].GetOp();
+        int cur_inst2 = base_genome[line_num2].GetOp();
+      
+        // get current fitness
+        double cur_inst_fitness_2s = genotype->GetFitness();
+        
+        // initialize running fitness total
+        double fitness_total_2s = 0.0;
+        
+        // test that current fitness is greater than zero
+        if (cur_inst_fitness_2s > 0.0) {
+          // current fitness greater than zero
+          // run through all possible instructions
+          for (int mod_inst1 = 0; mod_inst1 < num_insts; mod_inst1++) {
+            for (int mod_inst2 = 0; mod_inst2 < num_insts; mod_inst2++) {
+              // modify mod_genome at two sites
+              mod_genome[line_num1].SetOp(mod_inst1);
+              mod_genome[line_num2].SetOp(mod_inst2);
+              // analyze mod_genome
+              cAnalyzeGenotype test_genotype(m_world, mod_genome, inst_set);
+              test_genotype.Recalculate(m_ctx);
+              test_fitness_2s[mod_inst1][mod_inst2] = test_genotype.GetFitness();
+              
+              // if modified fitness is greater than current fitness
+              //  - set equal to current fitness
+              if (test_fitness_2s[mod_inst1][mod_inst2] > cur_inst_fitness_2s)
+                test_fitness_2s[mod_inst1][mod_inst2] = cur_inst_fitness_2s;
+              
+              // in all cases, scale fitness relative to current fitness
+              test_fitness_2s[mod_inst1][mod_inst2] /= cur_inst_fitness_2s;
+              
+              // update fitness total
+              fitness_total_2s += test_fitness_2s[mod_inst1][mod_inst2];
+            }
+          }
+        } else {
+          // current fitness is not greater than zero--skip
+          cout << "Fitness of this genotype is ZERO--no information." << endl;
+          continue;
+        }
+        
+        // initialize probabilities
+        for (int i = 0; i < num_insts; i++ ) {
+          // single site probabilities
+          // to be built from two site probabilities
+          prob_1s_i[i] = 0.0;
+          prob_1s_j[i] = 0.0;
+          for (int j = 0; j < num_insts; j++ ) {
+            // intitialize two site probability with
+            // relative fitness
+            prob_2s[i][j] = test_fitness_2s[i][j]/fitness_total_2s;
+            prob_next_2s[i][j] = 0.0;
+          }
+        }
+      
+        double check_sum_2s = 0.0;
+        while(1) {
+          check_sum_2s = 0.0;
+          double delta_prob_2s = 0.0;
+          //double delta_prob_ex = 0.0;
+          for (int mod_inst1 = 0; mod_inst1 < num_insts; mod_inst1 ++) {
+            for (int mod_inst2 = 0; mod_inst2 < num_insts; mod_inst2 ++) {  
+              // calculate the average fitness
+              double w_avg_2s = 0.0;
+              for (int i = 0; i < num_insts; i++) {
+                for (int j = 0; j < num_insts; j++) {
+                  w_avg_2s += prob_2s[i][j]*test_fitness_2s[i][j];
+                }
+              }
+              if (mut_rate != 0.0) {
+                // run mutation-selection equation
+                // -term 1
+                prob_next_2s[mod_inst1][mod_inst2] = ((1.0-mut_rate)*(1.0-mut_rate)*test_fitness_2s[mod_inst1][mod_inst2]*prob_2s[mod_inst1][mod_inst2])/(w_avg_2s);
+                // -term 2
+                double sum_term2 = 0.0;
+                for (int i = 0; i < num_insts; i++) {
+                  sum_term2 += (test_fitness_2s[i][mod_inst2]*prob_2s[i][mod_inst2])/(w_avg_2s);
+                }
+                prob_next_2s[mod_inst1][mod_inst2] += (((mut_rate*(1.0-mut_rate))/((double)num_insts)))*sum_term2;
+                // -term 3
+                double sum_term3 = 0.0;
+                for (int j = 0; j < num_insts; j++) {
+                  sum_term3 += (test_fitness_2s[mod_inst1][j]*prob_2s[mod_inst1][j])/(w_avg_2s);
+                }
+                prob_next_2s[mod_inst1][mod_inst2] += (((mut_rate*(1.0-mut_rate))/((double)num_insts)))*sum_term3;
+                // -term 4
+                prob_next_2s[mod_inst1][mod_inst2] += (mut_rate/((double)num_insts))*(mut_rate/((double)num_insts));
+              } else {
+                // run selection equation
+                prob_next_2s[mod_inst1][mod_inst2] = (test_fitness_2s[mod_inst1][mod_inst2]*prob_2s[mod_inst1][mod_inst2])/(w_avg_2s);
+                                
+              }
+              // increment change in probs
+              delta_prob_2s += (prob_next_2s[mod_inst1][mod_inst2]-prob_2s[mod_inst1][mod_inst2])*(prob_next_2s[mod_inst1][mod_inst2]-prob_2s[mod_inst1][mod_inst2]);
+              //delta_prob_ex += (prob_next[mod_inst]-prob[mod_inst]);
+            }
+          }
+          // transfer probabilities at time t+1 
+          // to t for next iteration
+          for (int i = 0; i < num_insts; i++) {
+            for (int j = 0; j < num_insts; j++) {
+              prob_2s[i][j]=prob_next_2s[i][j];
+              check_sum_2s += prob_2s[i][j];
+            } 
+          }
+        
+          // test for convergence
+          if (delta_prob_2s < converg_accuracy)
+            break;
+        }
+
+        // get single site probabilites from 
+        // two site probabilities
+        // site i (first site)
+        double check_prob_sum_site_1 = 0.0;
+        double check_prob_sum_site_2 = 0.0;
+        for (int i = 0; i < num_insts; i++) {
+          for (int j = 0; j < num_insts; j++) {
+            prob_1s_i[i] += prob_2s[i][j];
+          }
+          check_prob_sum_site_1 += prob_1s_i[i]; 
+        }
+        // site j (second site)
+        for (int j = 0; j < num_insts; j++) {
+          for (int i = 0; i < num_insts; i++) {
+            prob_1s_j[j] += prob_2s[i][j];
+          }
+          check_prob_sum_site_2 += prob_1s_j[j];
+        }
+
+        // Calculate one site and two versions of 
+        // complexity and entropy in bits and mers
+        //-mers
+        double entropy_ss_site1_mers = 0.0;
+        double entropy_ss_site2_mers = 0.0;
+        double entropy_ds_mers = 0.0;
+        //-bits
+        double entropy_ss_site1_bits = 0.0;
+        double entropy_ss_site2_bits = 0.0;
+        double entropy_ds_bits = 0.0;
+        
+        // single site entropies
+        for (int i = 0; i < num_insts; i ++) {
+          // watch for zero probabilities
+          if (prob_1s_i[i] != 0.0) {
+            // mers
+            entropy_ss_site1_mers += prob_1s_i[i] * log((double) 1.0/prob_1s_i[i]) / log ((double) num_insts);
+            // bits
+            entropy_ss_site1_bits += prob_1s_i[i] * log((double) 1.0/prob_1s_i[i]) / log ((double) 2.0);
+          }
+          if (prob_1s_j[i] != 0.0) {
+            // mers
+            entropy_ss_site2_mers += prob_1s_j[i] * log((double) 1.0/prob_1s_j[i]) / log ((double) num_insts);
+            // bits
+            entropy_ss_site2_bits += prob_1s_j[i] * log((double) 1.0/prob_1s_j[i]) / log ((double) 2.0);
+          }
+        }
+        
+        // two site joint entropies
+        for (int i = 0; i < num_insts; i ++) {
+          for (int j = 0; j < num_insts; j ++) {
+            // watch for zero probabilities
+            if (prob_2s[i][j] != 0.0) {
+              // two site entropy in mers
+              entropy_ds_mers += prob_2s[i][j] * log((double) 1.0/prob_2s[i][j]) / log ((double) num_insts);
+              // two site entropy in bitss
+              entropy_ds_bits += prob_2s[i][j] * log((double) 1.0/prob_2s[i][j]) / log ((double) 2.0);
+            }
+          }
+        }
+        
+        // calculate the mutual information
+        // - add single site entropies
+        // - subtract two site joint entropy
+        // units: mers
+        double mutual_information_mers = entropy_ss_site1_mers + entropy_ss_site2_mers;
+        mutual_information_mers -= entropy_ds_mers;
+        
+        // units: bits
+        double mutual_information_bits = entropy_ss_site1_bits + entropy_ss_site2_bits;
+        mutual_information_bits -= entropy_ds_bits;
+        
+        // two site, only update mutatual informtion total
+        genome_ds_mut_info_mers += mutual_information_mers;
+        genome_ds_mut_info_bits += mutual_information_bits;
+        
+        // write output to file
+        fp_2s.Write(line_num1,                    "Site 1 in genome");
+        fp_2s.Write(line_num2,                    "Site 2 in genome");
+        fp_2s.Write(cur_inst1,                    "Current Instruction, Site 1");
+        fp_2s.Write(cur_inst2,                    "Current Instruction, Site 2");
+        fp_2s.Write(entropy_ss_mers[line_num1],   "Entropy (MERS), Site 1 -- single site mut-sel balance");
+        fp_2s.Write(entropy_ss_site1_mers,        "Entropy (MERS), Site 1 -- TWO site mut-sel balance");
+        fp_2s.Write(entropy_ss_mers[line_num2],   "Entropy (MERS), Site 2 -- single site mut-sel balance");
+        fp_2s.Write(entropy_ss_site2_mers,        "Entropy (MERS), Site 2 -- TWO site mut-sel balance");
+        fp_2s.Write(entropy_ds_mers,              "Joint Entropy (MERS), Site 1 & 2 -- TWO site mut-sel balance");
+        fp_2s.Write(mutual_information_mers,      "Mutual Information (MERS), Site 1 & 2 -- TWO site mut-sel balance");
+        fp_2s.Endl();
+                    
+        // Reset the mod_genome back to the original sequence.
+        mod_genome[line_num1].SetOp(cur_inst1);
+        mod_genome[line_num2].SetOp(cur_inst2);
+        
+      }// end line 2
+    }// end line 1
+    
+    // cleanup file for this genome
+    m_world->GetDataFileManager().Remove(filename_2s);
+    
+    // calculate the two site complexity
+    // (2 site complexity) = (1 site complexity) + (total 2 site mutual info)
+    genome_ds_complexity_mers = genome_ss_complexity_mers + genome_ds_mut_info_mers;
+    genome_ds_complexity_bits = genome_ss_complexity_bits + genome_ds_mut_info_bits;
+        
+    summary_fp.Write(genotype->GetID(),           "Genotype ID");
+    summary_fp.Write(genotype->GetFitness(),      "Genotype Fitness");
+    summary_fp.Write(genome_ss_entropy_mers,      "Entropy (single-site) MERS");
+    summary_fp.Write(genome_ss_complexity_mers,   "Complexity (single-site) MERS");
+    summary_fp.Write(genome_ds_mut_info_mers,     "Mutual Information MERS");
+    summary_fp.Write(genome_ds_complexity_mers,   "Complexity (two-site) MERS");
+    summary_fp.Write(genome_ss_entropy_bits,      "Entropy (single-site) BITS");
+    summary_fp.Write(genome_ss_complexity_bits,   "Complexity (single-site) BITS");
+    summary_fp.Write(genome_ds_mut_info_bits,     "Mutual Information BITS");
+    summary_fp.Write(genome_ds_complexity_bits,   "Complexity (two-site) BITS");
+    summary_fp.Endl();
+        
+    // Always grabs the first one
+    // Skip i-1 times, so that the beginning of the loop will grab the ith one
+    // where i is the batchFrequency
+    for(int count=0; genotype != NULL && count < batchFrequency - 1; count++) {
+      genotype = batch_it.Next();
+      if(genotype != NULL && m_world->GetVerbosity() >= VERBOSE_ON) {
+        cout << "Skipping: " << genotype->GetName() << endl;
+      }
+    }
+    if(genotype == NULL) { break; }
+  }
+  
+  m_world->GetDataFileManager().Remove(summary_filename);
+  
+  delete testcpu;
+}
+
 void cAnalyze::AnalyzePopComplexity(cString cur_string)
 {
   cout << "Analyzing population complexity ..." << endl;
@@ -8591,6 +9122,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("AVERAGE_MODULARITY", &cAnalyze::CommandAverageModularity);
   AddLibraryDef("MAP_MUTATIONS", &cAnalyze::CommandMapMutations);
   AddLibraryDef("ANALYZE_COMPLEXITY", &cAnalyze::AnalyzeComplexity);
+  AddLibraryDef("ANALYZE_COMPLEXITY_TWO_SITES", &cAnalyze::AnalyzeComplexityTwoSites);
   AddLibraryDef("ANALYZE_KNOCKOUTS", &cAnalyze::AnalyzeKnockouts);
   AddLibraryDef("ANALYZE_POP_COMPLEXITY", &cAnalyze::AnalyzePopComplexity);
   AddLibraryDef("MAP_DEPTH", &cAnalyze::CommandMapDepth);
