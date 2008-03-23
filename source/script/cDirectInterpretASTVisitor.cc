@@ -2177,14 +2177,10 @@ bool cDirectInterpretASTVisitor::cMatrixVarRef::Set(sAggregateValue& idx, sAggre
   
   if (idxi < 0 || idxi >= m_var.as_matrix->GetNumRows()) return false;
   
-  if (m_var.as_matrix->GetNumCols() > 1) {
-    if (val.type.type != TYPE(ARRAY)) return false;
-    m_var.as_matrix->Set(idxi, val.value.as_array);
-  } else if (m_var.as_matrix->GetNumCols() == 0) {
-    m_var.as_matrix->GetRow(idxi)->Set(0, val);    
-  } else {
-    return false;
-  }
+  if (m_var.as_matrix->GetNumCols() == 0) return false;
+  if (val.type.type != TYPE(ARRAY)) return false;
+  if (val.value.as_array->GetSize() != m_var.as_matrix->GetNumCols()) return false;
+  m_var.as_matrix->Set(idxi, val.value.as_array);
   
   return true;
 }
@@ -2316,14 +2312,10 @@ bool cDirectInterpretASTVisitor::cObjectIndexRef::Set(sAggregateValue& idx, sAgg
         }      
         if (idxi < 0 || idxi >= mat->GetNumRows()) return false;
         
-        if (mat->GetNumCols() > 1) {
-          if (val.type.type != TYPE(ARRAY)) return false;
-          mat->Set(idxi, val.value.as_array);
-        } else if (mat->GetNumCols() == 0) {
-          mat->GetRow(idxi)->Set(0, val);    
-        } else {
-          return false;
-        }
+        if (mat->GetNumCols() == 0) return false;
+        if (val.type.type != TYPE(ARRAY)) return false;
+        if (val.value.as_array->GetSize() != mat->GetNumCols()) return false;
+        mat->Set(idxi, val.value.as_array);
       }
       return true;
       
