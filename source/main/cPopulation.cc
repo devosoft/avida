@@ -29,6 +29,7 @@
 #include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cCodeLabel.h"
+#include "cConstBurstSchedule.h"
 #include "cConstSchedule.h"
 #include "cDataFile.h"
 #include "cDemeProbSchedule.h"
@@ -2278,7 +2279,7 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
 
       //get a random direction to move in deme list
       int rnd_deme_id = m_world->GetRandom().GetInt(1);
-      if (rnd_deme_id = 0) rnd_deme_id = -1;
+      if (rnd_deme_id == 0) rnd_deme_id = -1;
       
       //set the new deme_id
       deme_id = (deme_id + rnd_deme_id + deme_array.GetSize()) % deme_array.GetSize();
@@ -3286,6 +3287,8 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
     case SLICE_INTEGRATED_MERIT:
       schedule = new cIntegratedSchedule(cell_array.GetSize());
       break;
+    case SLICE_CONSTANT_BURST:
+      schedule = new cConstBurstSchedule(cell_array.GetSize(), m_world->GetConfig().SLICING_BURST_SIZE.Get());
     default:
       cout << "Warning: Requested Time Slicer not found, defaulting to Integrated." << endl;
       schedule = new cIntegratedSchedule(cell_array.GetSize());
@@ -3884,10 +3887,9 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
  
   //Rescale by the geometric mean of the difference from the top score and the average
   if ( dynamic_scaling == 1 ) {
-    int num_org_not_max = 0;
     double dynamic_factor = 1.0;
     if (highest_fitness > 0) {
-      dynamic_factor = 2/highest_fitness;
+      dynamic_factor = 2 / highest_fitness;
     }
     
     total_fitness = 0;

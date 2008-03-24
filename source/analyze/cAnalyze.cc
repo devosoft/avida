@@ -7106,7 +7106,7 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
   }
 
   // test cpu
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  //cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   
   // get current batch
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());

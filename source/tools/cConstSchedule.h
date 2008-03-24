@@ -33,7 +33,6 @@
 #include "tArray.h"
 #endif
 
-class cDeme;
 class cMerit;
 
 /**
