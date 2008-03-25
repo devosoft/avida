@@ -27,6 +27,7 @@
 
 #include "cDataFile.h"
 #include "cEnvironment.h"
+#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
@@ -1203,7 +1204,7 @@ void cStats::PrintPredicatedMessages(const cString& filename)
   df.WriteColumnDesc("predicate:{p_info,...}...");
   df.FlushComments();
   
-  df.WriteAnonymous(m_update);
+  df.WriteAnonymous(GetUpdate());
   std::ofstream& out = df.GetOFStream();
   for(message_pred_ptr_list::iterator i=m_message_predicates.begin();
       i!=m_message_predicates.end(); ++i) {
@@ -1225,6 +1226,25 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 }
 
 
+/*! This method is a generic hook for post-deme-replication stat tracking.  We 
+currently only track the genotype ids of all the founders of each deme in the population.
+Note that we capture genotype ids at the time of deme replication, so we unfortunately
+lose the ancestral deme founders.
+*/
+void cStats::DemePostReplication(cDeme& source_deme, cDeme& target_deme)
+{
+  std::set<int> genotype_ids;
+  for(int i=0; i<target_deme.GetSize(); ++i) {
+    cPopulationCell& cell = target_deme.GetCell(i);
+    if(cell.IsOccupied()) {
+      genotype_ids.insert(cell.GetOrganism()->GetGenotype()->GetID());  
+    }
+  }
+  assert(genotype_ids.size()>0); // How did we get to replication otherwise?
+  m_deme_founders[target_deme.GetID()] = genotype_ids;
+}
+
+
 /*! Called immediately prior to germline replacement.
 */
 void cStats::GermlineReplication(cGermline& source_germline, cGermline& target_germline)
@@ -1243,7 +1263,7 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   
   df.WriteComment("Avida deme replication data");
   df.WriteTimeStamp();
-  df.Write(m_update, "Update [update]");
+  df.Write(GetUpdate(), "Update [update]");
   df.Write(m_deme_num_repls, "Number of deme replications [numrepl]");
   df.Write(m_deme_gestation_time.Average(), "Mean deme gestation time [gesttime]");
   df.Write(m_deme_births.Average(), "Mean number of births within replicated demes [numbirths]");
@@ -1266,9 +1286,42 @@ void cStats::PrintGermlineData(const cString& filename)
   
   df.WriteComment("Avida germline data");
   df.WriteTimeStamp();
-  df.Write(m_update, "Update [update]");
+  df.Write(GetUpdate(), "Update [update]");
   df.Write(m_germline_generation.Average(), "Mean germline generation of replicated germlines [replgen]");
   df.Endl();
     
   m_germline_generation.Clear();
+}
+
+
+/*! Print the genotype IDs of the founders of recently born demes.
+
+Prints only the most recent set of founding genotype ids for each deme.  If a deme was replaced multiple
+times since the last time this method ran, only the most recent is maintained.  Only deme "births" (i.e., due
+to deme replication) are tracked; the ancestral deme founders are lost.  The update column is the update 
+at which this method executes, not the time at which the given deme was born.  Only unique genotype ids are
+recorded (if multiple individuals are cloned from source to target deme [propagule size > 1], only a single
+genotype id will appear in the datafile).          
+*/
+void cStats::PrintDemeFounders(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida deme founder data.");
+  df.WriteTimeStamp();
+  df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("Deme ID [demeid]");
+  df.WriteColumnDesc("Number of founders [size]");
+  df.WriteColumnDesc("{Genotype ID of founder 0, ...}");
+  df.FlushComments();
+  
+  std::ofstream& out = df.GetOFStream();
+  for(t_founder_map::iterator i=m_deme_founders.begin(); i!=m_deme_founders.end(); ++i) {
+    out << GetUpdate() << " " << i->first << " " << i->second.size();    
+    for(std::set<int>::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+      out << " " << *j;
+    }
+    df.Endl();
+  }
+  m_deme_founders.clear();
 }

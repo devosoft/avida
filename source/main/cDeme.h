@@ -33,6 +33,7 @@
 
 class cResource;
 class cWorld;
+class cPopulationCell;
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -79,6 +80,7 @@ public:
   int GetCellID(int x, int y) const;
   //! Returns an (x,y) pair for the position of the passed-in cell ID.
   std::pair<int, int> GetCellPosition(int cellid) const;
+  cPopulationCell& GetCell(int pos);
 
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }

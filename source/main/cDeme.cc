@@ -68,6 +68,11 @@ std::pair<int, int> cDeme::GetCellPosition(int cellid) const
   return std::make_pair(cellid % GetWidth(), cellid / GetWidth());
 }
 
+cPopulationCell& cDeme::GetCell(int pos)
+{
+  return m_world->GetPopulation().GetCell(cell_ids[pos]);
+}
+
 void cDeme::ProcessUpdate() {
   for(int i = 0; i < cell_events.GetSize(); i++) {
     cDemeCellEvent& event = cell_events[i];

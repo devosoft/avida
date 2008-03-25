@@ -30,6 +30,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
+#include <set>
 
 #ifndef defs_h
 #include "defs.h"
@@ -695,7 +697,7 @@ public:
   //! Called immediately prior to deme replacement.
   void DemePreReplication(cDeme& source_deme, cDeme& target_deme);
   //! Called immediately after deme replacement.
-  void DemePostReplication(cDeme& source_deme, cDeme& target_deme) { }
+  void DemePostReplication(cDeme& source_deme, cDeme& target_deme);
   //! Called immediately prior to germline replacement.
   void GermlineReplication(cGermline& source_germline, cGermline& target_germline);
   //! Print statistics about deme replication.
@@ -704,7 +706,12 @@ public:
   void PrintGermlineData(const cString& filename);
   //! Accessor for average "generation" of germlines.
   double GetAveGermlineGeneration() const { return m_germline_generation.Average(); }
-  
+  /*! Typedef of a data structure to track deme founders.
+    * Map of deme id -> {founder genotype id_0, id_1,... id_{deme propagule size}} */
+  typedef std::map<int, std::set<int> > t_founder_map;
+  //! Print the genotype IDs for the founders of demes that have recently been "born."
+  void PrintDemeFounders(const cString& filename);
+
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
   cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.
@@ -712,6 +719,7 @@ protected:
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
   cDoubleSum m_germline_generation; //!< "Generation" accumulator of replicated germlines.
+  t_founder_map m_deme_founders; //!< Data structure to track the founders of demes.
 };
 
 

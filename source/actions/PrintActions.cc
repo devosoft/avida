@@ -95,6 +95,7 @@ STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
+STATS_OUT_FILE(PrintDemeFounders,           deme_founders.dat   );
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
@@ -2654,6 +2655,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
+  action_lib->Register<cActionPrintDemeFounders>("PrintDemeFounders");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   
   
