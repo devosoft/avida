@@ -1237,11 +1237,11 @@ lose the ancestral deme founders.
 */
 void cStats::DemePostReplication(cDeme& source_deme, cDeme& target_deme)
 {
-  std::set<int> genotype_ids;
+  std::vector<int> genotype_ids;
   for(int i=0; i<target_deme.GetSize(); ++i) {
     cPopulationCell& cell = target_deme.GetCell(i);
     if(cell.IsOccupied()) {
-      genotype_ids.insert(cell.GetOrganism()->GetGenotype()->GetID());  
+      genotype_ids.push_back(cell.GetOrganism()->GetGenotype()->GetID());  
     }
   }
   assert(genotype_ids.size()>0); // How did we get to replication otherwise?
@@ -1301,11 +1301,9 @@ void cStats::PrintGermlineData(const cString& filename)
 /*! Print the genotype IDs of the founders of recently born demes.
 
 Prints only the most recent set of founding genotype ids for each deme.  If a deme was replaced multiple
-times since the last time this method ran, only the most recent is maintained.  Only deme "births" (i.e., due
+times since the last time this method ran, only the most recent is printed.  Only deme "births" (i.e., due
 to deme replication) are tracked; the ancestral deme founders are lost.  The update column is the update 
-at which this method executes, not the time at which the given deme was born.  Only unique genotype ids are
-recorded (if multiple individuals are cloned from source to target deme [propagule size > 1], only a single
-genotype id will appear in the datafile).          
+at which this method executes, not the time at which the given deme was born.
 */
 void cStats::PrintDemeFounders(const cString& filename)
 {
@@ -1322,7 +1320,7 @@ void cStats::PrintDemeFounders(const cString& filename)
   std::ofstream& out = df.GetOFStream();
   for(t_founder_map::iterator i=m_deme_founders.begin(); i!=m_deme_founders.end(); ++i) {
     out << GetUpdate() << " " << i->first << " " << i->second.size();    
-    for(std::set<int>::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+    for(std::vector<int>::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
       out << " " << *j;
     }
     df.Endl();

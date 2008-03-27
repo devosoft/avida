@@ -31,7 +31,6 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <set>
 
 #ifndef defs_h
 #include "defs.h"
@@ -716,7 +715,7 @@ public:
   double GetAveGermlineGeneration() const { return m_germline_generation.Average(); }
   /*! Typedef of a data structure to track deme founders.
     * Map of deme id -> {founder genotype id_0, id_1,... id_{deme propagule size}} */
-  typedef std::map<int, std::set<int> > t_founder_map;
+  typedef std::map<int, std::vector<int> > t_founder_map;
   //! Print the genotype IDs for the founders of demes that have recently been "born."
   void PrintDemeFounders(const cString& filename);
 
