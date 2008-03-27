@@ -290,7 +290,6 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_task_time.SetAll(0.0);  // Added for time tracking; WRE 03-18-07
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  parent_phenotype.sensed_resources[j];
-  //SetupPromoterWeights(_genome, true);
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -425,7 +424,6 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   sensed_resources.SetAll(0);
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
-  //SetupPromoterWeights(_genome, true);
   cur_trial_fitnesses.Resize(0);
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -648,12 +646,13 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+  if ( (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
+    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE)
+    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE_EPIGENETIC) ) {
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
-    //SetupPromoterWeights(_genome, true);
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
@@ -721,7 +720,6 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_sense_count.SetAll(0); 
   cur_task_time.SetAll(0.0);
   sensed_resources.SetAll(-1.0);
- //SetupPromoterWeights(_genome, true);
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -843,7 +841,6 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_task_time.SetAll(0.0);
   for (int j = 0; j < sensed_resources.GetSize(); j++)
 	      sensed_resources[j] =  clone_phenotype.sensed_resources[j];
-  //SetupPromoterWeights(_genome); Do we reset here? @JEB
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -1609,12 +1606,13 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
 
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+  if ( (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
+    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE)
+    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE_EPIGENETIC) ) {    
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
-    //SetupPromoterWeights(_genome, true);
   }
 
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;

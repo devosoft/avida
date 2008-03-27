@@ -576,11 +576,15 @@ void cStats::PrintDemeAverageData(const cString& filename)
   df.WriteComment("Avida Average Deme Data");
   df.WriteTimeStamp();
 
-  df.Write(m_update,                        "Update");
-  df.Write(sum_deme_age.Average(),          "Age");
-  df.Write(sum_deme_birth_count.Average(),  "Births");
-  df.Write(sum_deme_org_count.Average(),    "Organisms");
-  df.Write(sum_deme_generation.Average(),   "Generation");
+  df.Write(m_update,                                        "Update");
+  df.Write(sum_deme_age.Average(),                          "Age");
+  df.Write(sum_deme_birth_count.Average(),                  "Births");
+  df.Write(sum_deme_org_count.Average(),                    "Organisms");
+  df.Write(sum_deme_generation.Average(),                   "Generation");
+  df.Write(sum_deme_merit.Average(),                        "Merit");
+  df.Write(sum_deme_gestation_time.Average(),               "Gestation Time");
+  df.Write(sum_deme_normalized_time_used.Average(),         "Time Used (normalized by org fitness)");
+
   df.Endl();
 }
 

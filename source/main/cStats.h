@@ -272,6 +272,9 @@ private:
   cIntSum sum_deme_birth_count;
   cIntSum sum_deme_org_count;
   cIntSum sum_deme_generation;
+  cIntSum sum_deme_gestation_time;
+  cDoubleSum sum_deme_normalized_time_used;
+  cDoubleSum sum_deme_merit;
 
   // Speculative Execution Stats
   int m_spec_total;
@@ -413,7 +416,9 @@ public:
   cIntSum& SumDemeBirthCount()   { return sum_deme_birth_count; }
   cIntSum& SumDemeOrgCount()     { return sum_deme_org_count; }
   cIntSum& SumDemeGeneration()   { return sum_deme_generation; }
-
+  cIntSum& SumDemeGestationTime()   { return sum_deme_gestation_time; }
+  cDoubleSum& SumDemeNormalizedTimeUsed()   { return sum_deme_normalized_time_used; }
+  cDoubleSum& SumDemeMerit()   { return sum_deme_merit; }
 
 #if INSTRUCTION_COUNT
   void ZeroInst();
@@ -451,6 +456,9 @@ public:
   const cIntSum& SumDemeBirthCount() const   { return sum_deme_birth_count; }
   const cIntSum& SumDemeOrgCount() const     { return sum_deme_org_count; }
   const cIntSum& SumDemeGeneration() const   { return sum_deme_generation; }
+  const cIntSum& SumDemeGestationTime() const  { return sum_deme_generation; }
+  const cDoubleSum& SumDemeNormalizedTimeUsed() const  { return sum_deme_normalized_time_used; }
+  const cDoubleSum& SumDemeMerit()  const  { return sum_deme_merit; }
 
 
   void IncResamplings() { ++num_resamplings; }  // @AWC 06/29/06

@@ -187,6 +187,9 @@ public:
   virtual tBuffer<int>& GetInputBuf();
   virtual tBuffer<int>& GetOutputBuf();
   
+  // --------  State Transfer  --------
+  virtual void InheritState(cHardwareBase& in_hardware){ ; }
+  
 protected:
   // --------  No-Operation Instruction --------
   bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 

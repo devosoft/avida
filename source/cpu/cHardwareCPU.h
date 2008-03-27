@@ -118,6 +118,7 @@ protected:
     int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
     void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
+    
   };
 
     
@@ -294,7 +295,7 @@ public:
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
-  
+  const cLocalThread& GetThread(int _index) const { return m_threads[_index]; }
   
   // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
@@ -304,6 +305,10 @@ public:
   
   int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
   bool GetMalActive() const   { return m_mal_active; }
+  
+  // --------  Inherit State  --------
+  void InheritState(cHardwareBase& in_hardware);
+
   
 private:
   // ---------- Instruction Library -----------

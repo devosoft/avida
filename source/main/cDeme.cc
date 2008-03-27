@@ -99,37 +99,48 @@ void cDeme::ProcessUpdate() {
   ++_age;
 }
 
-void cDeme::Reset(int previous_generation, bool resetResources)
+void cDeme::Reset(bool resetResources, double deme_energy)
 {
-  deme_time_used = 0;
-  birth_count = 0;
-  _age = 0;
-  generation = previous_generation + 1;
-  if(resetResources)
-    deme_resource_count.ReinitializeResources();
-}
-
-void cDeme::Reset(double deme_energy, int previous_generation, bool resetResources)
-{
-  assert(m_world->GetConfig().ENERGY_ENABLED.Get());
-  assert(org_count>0);
-  
-  total_org_energy = deme_energy;
-  if(total_org_energy < 0.0)
-    total_org_energy = 0.0;
-  
-  // split deme energy evenly between organisms in deme
-  for (int i=0; i<GetSize(); i++) {
-    int cellid = GetCellID(i);
-    cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-    if(cell.IsOccupied()) {
-      cOrganism* organism = cell.GetOrganism();
-      cPhenotype& phenotype = organism->GetPhenotype();
-      phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(org_count));
-      phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+  // Handle energy model
+  if (m_world->GetConfig().ENERGY_ENABLED.Get())
+  {
+    assert(org_count>0);
+    
+    total_org_energy = deme_energy;
+    if(total_org_energy < 0.0)
+      total_org_energy = 0.0;
+    
+    // split deme energy evenly between organisms in deme
+    for (int i=0; i<GetSize(); i++) {
+      int cellid = GetCellID(i);
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+      if(cell.IsOccupied()) {
+        cOrganism* organism = cell.GetOrganism();
+        cPhenotype& phenotype = organism->GetPhenotype();
+        phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(org_count));
+        phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+      }
     }
   }
-  Reset(previous_generation, resetResources);
+  
+  // Handle stat and resource resets
+  _age = 0;
+  time_used = 0;
+  birth_count = 0;
+  cur_normalized_time_used = 0;
+
+  if(resetResources) deme_resource_count.ReinitializeResources();
+}
+
+
+void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_energy)
+{
+  //Save statistics according to parent before reset.
+  generation = parent_deme.GetGeneration() + 1;
+  gestation_time = parent_deme.GetTimeUsed();
+  last_normalized_time_used = parent_deme.GetNormalizedTimeUsed();
+  
+  Reset(resetResources, deme_energy);
 }
 
 

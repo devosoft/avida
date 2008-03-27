@@ -53,8 +53,12 @@ private:
   int _age; //!< Age of this deme, in updates.
   int generation; //!< Generation of this deme
   double total_org_energy; //! total amount of energy in organisms in this deme
-  double deme_time_used; //!< number of cpu cycles, normalized by current orgs, this deme has used
-// End of phenotypic traits
+  int time_used; //!< number of cpu cycles this deme has used
+  int gestation_time; // Time used during last generation
+  double cur_normalized_time_used; // normalized by merit and number of orgs
+  double last_normalized_time_used; 
+  
+  // End of phenotypic traits
   
   cGermline _germline; //!< The germline for this deme, if used.
 
@@ -69,7 +73,9 @@ private:
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
   
 public:
-  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0), deme_time_used(0.0), deme_resource_count(0) { ; }
+  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0),
+            time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
+            deme_resource_count(0) { ; }
   ~cDeme() { ; }
 
   void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
@@ -85,8 +91,9 @@ public:
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }
 
-  void Reset(int previous_generation, bool resetResources = true);
-  void Reset(double deme_energy, int previous_generation, bool resetResources = true); //! used to pass energy to offspring deme
+  void Reset(bool resetResources = true, double deme_energy = 0.0); //! used to pass energy to offspring deme
+  void DivideReset(cDeme& parent_deme, bool resetResources = true, double deme_energy = 0.0);
+  
   //! Kills all organisms currently in this deme.
   void KillAll();
   int GetBirthCount() const { return birth_count; }
@@ -142,8 +149,13 @@ public:
   
   double CalculateTotalEnergy();
   
-  void IncTimeUsed() { deme_time_used += 1.0/(double)org_count; }
-  double GetTimeUsed() { return deme_time_used; }
+  void IncTimeUsed(double merit) 
+    { time_used++; cur_normalized_time_used += 1.0/merit/(double)org_count; }
+  int GetTimeUsed() { return time_used; }
+  int GetGestationTime() { return gestation_time; }
+  double GetNormalizedTimeUsed() { return cur_normalized_time_used; }
+  double GetLastNormalizedTimeUsed() { return last_normalized_time_used; }
+
 };
 
 #endif
