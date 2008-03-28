@@ -227,7 +227,9 @@ public:
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
-
+  
+  // Print deme founders
+  void DumpDemeFounders(ofstream& fp);
   
   // Print donation stats
   void PrintDonationStats();

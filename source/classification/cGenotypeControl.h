@@ -72,6 +72,7 @@ public:
   inline cGenotype * GetCoalescent() const { return coalescent; }
 
   cGenotype * Find(const cGenome & in_genome) const;
+  cGenotype * Find(const int in_genotype_id) const;
   int FindPos(cGenotype & in_genotype, int max_depth = -1);
 
   inline cGenotype * Get(int thread) const { return threads[thread]; }

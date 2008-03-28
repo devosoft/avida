@@ -313,7 +313,8 @@ public:
   CONFIG_ADD_VAR(DEMES_REPLICATION_ONLY_RESETS, int, 0, "Kin selection mode. Deme replication really:\n1=resets deme resources\n2=rests deme resources and re-injects organisms");
   CONFIG_ADD_VAR(DEMES_MIGRATION_TARGET_MODE, int, 0, "How do we choose what demes an org may land in when it migrates?\n0=all other demes\n1=eight adjacent neighbors\n2=two adjacent demes in list");
   CONFIG_ADD_VAR(DEMES_NUM_X, int, 0, "Simulated number of demes in X dimension. Only used for migration. ");
-  CONFIG_ADD_VAR(DEMES_SEED_METHOD, int, 0, "Deme seeding method.\n0=maintain old consistency\n1=full genotype and phenotype inheritance\n2=genotype inheritance, phenotype reset");
+  CONFIG_ADD_VAR(DEMES_SEED_METHOD, int, 0, "Deme seeding method.\n0=maintain old consistency\n1=new method using genotypes");
+  CONFIG_ADD_VAR(DEMES_DIVIDE_METHOD, int, 0, "Deme divide method. Only works with DEMES_SEED_METHOD 1\n0=replace and target demes\n1= replace target deme, reset source deme to founders\n2=replace target deme, leave source deme unchanged");
 
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced on birth?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood");

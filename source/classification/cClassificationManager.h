@@ -132,6 +132,8 @@ public:
   cGenotype* GetGenotypeLoaded(const cGenome& in_genome, int update_born = 0, int id_num = -1);
   const cGenotype* FindGenotype(const cGenome& in_genome, int lineage_label, int list_num = -1) const;
   cGenotype* FindGenotype(const cGenome& in_genome, int lineage_label, int list_num = -1);
+  cGenotype* FindGenotype(const int _in_genotype_id) { return m_genotype_ctl->Find(_in_genotype_id); }
+
   void RemoveGenotype(cGenotype& in_genotype);
   void ThresholdGenotype(cGenotype& in_genotype);
   bool AdjustGenotype(cGenotype& in_genotype);

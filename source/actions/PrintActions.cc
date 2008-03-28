@@ -2565,6 +2565,29 @@ public:
   }
 };
 
+class cActionSaveDemeFounders : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionSaveDemeFounders(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("deme_founders-%d.dat", m_world->GetStats().GetUpdate());
+    m_world->GetPopulation().DumpDemeFounders(m_world->GetDataFileOFStream(filename));
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 class cActionSetVerbose : public cAction
 {
 private:
@@ -2657,7 +2680,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
   action_lib->Register<cActionPrintDemeFounders>("PrintDemeFounders");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
-  
+  action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
   
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");

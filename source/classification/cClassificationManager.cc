@@ -732,7 +732,7 @@ void cClassificationManager::DumpDetailHeading (ofstream& fp)
   << "#  1: ID" << endl
   << "#  2: parent ID" << endl
   << "#  3: parent distance" << endl
-  << "#  4: number of orgranisms currently alive" << endl
+  << "#  4: number of organisms currently alive" << endl
   << "#  5: total number of organisms that ever existed" << endl
   << "#  6: length of genome" << endl
   << "#  7: merit" << endl

@@ -1402,15 +1402,32 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       // @JEB
       // Updated seed deme method that maintains genotype inheritance.
       
-      tArray<cOrganism*> xfer; // List of organisms we're going to transfer.
-    
+      tArray<cOrganism*> founders; // List of organisms we're going to transfer.
+
+      /*
+      // Debug
+      tArray<int>& source_founders = source_deme.GetFounders();
+      cerr << "Original source genotype ids:" << endl;
+      for(int i=0; i<source_founders.GetSize(); i++) {
+        cerr << source_founders[i] << " ";
+      }
+      cerr << endl;
+  
+      tArray<int>& target_founders = target_deme.GetFounders();
+      cerr << "Original target genotype ids:" << endl;
+      for(int i=0; i<target_founders.GetSize(); i++) {
+        cerr << target_founders[i] << " ";
+      }
+      cerr << endl;
+      */
+      
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
           // being selected more than once).
-          while(xfer.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
+          while(founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
             int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
             if(cell_array[cellid].IsOccupied()) {
-              xfer.Push(cell_array[cellid].GetOrganism());
+              founders.Push(cell_array[cellid].GetOrganism());
             }
           }
           break;
@@ -1419,7 +1436,7 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           for(int i=0; i<m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
             int cellid = source_deme.GetCellID(i);
             if(cell_array[cellid].IsOccupied()) {
-              xfer.Push(cell_array[cellid].GetOrganism());
+              founders.Push(cell_array[cellid].GetOrganism());
             }
           }
           break;
@@ -1432,7 +1449,7 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       }
           
       // We'd better have at *least* one genome.
-      assert(xfer.GetSize()>0);
+      assert(founders.GetSize()>0);
       
       // We clear the deme, but trick cPopulation::KillOrganism
       // to NOT delete the organisms, by pretending 
@@ -1441,59 +1458,123 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       // We also need to defer adjusting the genotype
       // or it will be prematurely deleted before we are done!
       
-      tArray<cOrganism*> old_deme_organisms;
-    
+      tArray<cOrganism*> old_source_organisms;
       for(int i=0; i<source_deme.GetSize(); ++i) {
         int cell_id = source_deme.GetCellID(i);
           
         if(cell_array[cell_id].IsOccupied()) {
           cOrganism * org = cell_array[cell_id].GetOrganism();
-          old_deme_organisms.Push(org);
+          old_source_organisms.Push(org);
           org->SetRunning(true);
           org->GetGenotype()->IncDeferAdjust();
         }
       }  
       
+      tArray<cOrganism*> old_target_organisms;
       for(int i=0; i<target_deme.GetSize(); ++i) {
         int cell_id = target_deme.GetCellID(i);
           
         if(cell_array[cell_id].IsOccupied()) {
           cOrganism * org = cell_array[cell_id].GetOrganism();
-          old_deme_organisms.Push(org);
+          old_target_organisms.Push(org);
           org->SetRunning(true);
           org->GetGenotype()->IncDeferAdjust();
         }
       }
       
       // Clear the demes.
-      source_deme.KillAll();
       target_deme.KillAll();
+      target_deme.ClearFounders();
       
-      // And now populate the source and target.
-      // We have a choice here between using InjectClone and InjectGenotype
-      // The first maintains the phenotype of the organism, i.e. its merit!
-      // The latter sets the phenotype to injected defaults.
-      int j=0;
-      for(int i=0; i<xfer.GetSize(); i++) {
-        int cellid = DemeSelectInjectionCell(source_deme, j);
-        if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 1) InjectClone(cellid, *xfer[i]);
-        else InjectGenotype(cellid, xfer[i]->GetGenotype());
-        DemePostInjection(source_deme, cell_array[cellid]);
-
-        cellid = DemeSelectInjectionCell(target_deme, j);
-        if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 1) InjectClone(cellid, *xfer[i]);
-        else InjectGenotype(cellid, xfer[i]->GetGenotype());        
-        DemePostInjection(target_deme, cell_array[cellid]);      
+      // Now populate the target (and optionally the source) using InjectGenotype.
+      // In the future InjectClone could be used, but this would require the 
+      // deme keeping complete copies of the founder organisms when
+      // we wanted to re-seed from the original founders.
+      for(int i=0; i<founders.GetSize(); i++) {
+          int cellid = DemeSelectInjectionCell(target_deme, i);
+          InjectGenotype(cellid, founders[i]->GetGenotype());        
+          DemePostInjection(target_deme, cell_array[cellid]);  
+          target_deme.AddFounder(*founders[i]->GetGenotype());          
       }
       
-      // remember to delete the old organisms and adjust their genotypes
-      for(int i=0; i<old_deme_organisms.GetSize(); ++i) {
-        old_deme_organisms[i]->SetRunning(false);
-        cGenotype * genotype = old_deme_organisms[i]->GetGenotype();
+      // We either repeat this procedure in the source deme,
+      // restart the source deme from its old founders, 
+      // or do nothing to the source deme...
+      
+      // source deme is replaced in the same way as the target
+      if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 0) {
+        source_deme.KillAll();
+        source_deme.ClearFounders();
+        
+        for(int i=0; i<founders.GetSize(); i++) {
+          int cellid = DemeSelectInjectionCell(source_deme, i);
+          InjectGenotype(cellid, founders[i]->GetGenotype());
+          DemePostInjection(source_deme, cell_array[cellid]);
+          source_deme.AddFounder(*founders[i]->GetGenotype());          
+        }
+      }
+      // source deme is "reset" by re-injecting founder genotypes
+      else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 1) {
+          
+        source_deme.KillAll();
+        // do not clear or change founder list
+        
+        // use it to recreate ancestral state of genotypes
+        tArray<int>& source_founders = source_deme.GetFounders();
+        for(int i=0; i<source_founders.GetSize(); i++) {
+          int cellid = DemeSelectInjectionCell(source_deme, i);
+          cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(source_founders[i]);
+          assert(genotype);
+          InjectGenotype(cellid, genotype);
+          DemePostInjection(source_deme, cell_array[cellid]); 
+        }
+      }
+      // source deme is left untouched
+      else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 2) {
+      }
+      else {
+        m_world->GetDriver().RaiseFatalException(1, "Unknown DEMES_DIVIDE_METHOD");
+      }
+      
+      /*
+      // Debug
+      tArray<int>& new_source_founders = source_deme.GetFounders();
+      cerr << "New source genotype ids:" << endl;
+      for(int i=0; i<new_source_founders.GetSize(); i++) {
+        cerr << new_source_founders[i] << " ";
+      }
+      cerr << endl;
+  
+      tArray<int>& new_target_founders = target_deme.GetFounders();
+      cerr << "New target genotype ids:" << endl;
+      for(int i=0; i<new_target_founders.GetSize(); i++) {
+        cerr << new_target_founders[i] << " ";
+      }
+      cerr << endl;
+      */
+              
+      // remember to delete the old target organisms and adjust their genotypes
+      for(int i=0; i<old_target_organisms.GetSize(); ++i) {
+        old_target_organisms[i]->SetRunning(false);
+        cGenotype * genotype = old_target_organisms[i]->GetGenotype();
         genotype->DecDeferAdjust();
         m_world->GetClassificationManager().AdjustGenotype(*genotype);
-        delete old_deme_organisms[i];
+        delete old_target_organisms[i];
       }
+      
+      for(int i=0; i<old_source_organisms.GetSize(); ++i) {
+        old_source_organisms[i]->SetRunning(false);
+        cGenotype * genotype = old_source_organisms[i]->GetGenotype();
+        genotype->DecDeferAdjust();
+        m_world->GetClassificationManager().AdjustGenotype(*genotype);
+        
+        // delete old source organisms ONLY if source was replaced
+        if ( (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 0)
+          || (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 1) ) {
+        delete old_source_organisms[i];
+        }
+      }
+      
     } //End DEMES_PROB_ORG_TRANSFER > 0 methods
   } else {
     // Probabilistic organism replication -- aka "fruiting body."
@@ -2237,6 +2318,34 @@ void cPopulation::PrintDemeTasks() {
   df_task.Endl();
 }
 
+void cPopulation::DumpDemeFounders(ofstream& fp) {
+  fp << "#filetype deme_founders" << endl
+  << "#format deme_id num_founders genotype_ids" << endl
+  << endl
+  << "#  1: Deme ID" << endl
+  << "#  2: Number of founders" << endl
+  << "#  3+: founder genotype ids" << endl << endl;
+  
+  for(int i=0; i<deme_array.GetSize(); i++) {
+  
+    if(deme_array[i].IsEmpty()) continue;
+    
+    tArray<int>& deme_founders = deme_array[i].GetFounders();   
+    
+    // this case really shouldn't happen, but starting
+    // orgs don't count as founders currently...
+    if (deme_founders.GetSize() == 0) continue;
+      
+    fp << i << " " << deme_founders.GetSize();    
+    for(int j=0; j<deme_founders.GetSize(); j++) {  
+      fp << " " << deme_founders[j];
+    }
+  
+    fp << endl;
+  }
+}
+
+
 /**
 * This function is responsible for adding an organism to a given lineage,
  * and setting the organism's lineage label and the lineage pointer.
@@ -2659,7 +2768,7 @@ void cPopulation::UpdateDemeStats() {
   stats.SumDemeGestationTime().Clear();
   stats.SumDemeNormalizedTimeUsed().Clear();
   stats.SumDemeMerit().Clear();
-  
+
   for(int i = 0; i < GetNumDemes(); i++) {
     cDeme& deme = GetDeme(i);
     if(deme.IsEmpty())  // ignore empty demes
@@ -3512,6 +3621,9 @@ void cPopulation::FindEmptyCell(tList<cPopulationCell> & cell_list,
 void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
+  if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
+    m_world->GetDriver().RaiseFatalException(1, "InjectGenotype into nonexistant cell");
+  }
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
   

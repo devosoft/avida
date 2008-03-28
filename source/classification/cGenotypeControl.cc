@@ -258,6 +258,21 @@ cGenotype * cGenotypeControl::Find(const cGenome & in_genome) const
   return NULL;
 }
 
+cGenotype * cGenotypeControl::Find(const int in_genotype_id) const
+{
+  int i;
+  cGenotype * cur_genotype = best;
+
+  for (i = 0; i < size; i++) {
+    if (in_genotype_id == cur_genotype->GetID()) {
+      return cur_genotype;
+    }
+    cur_genotype = cur_genotype->GetNext();
+  }
+
+  return NULL;
+}
+
 int cGenotypeControl::FindPos(cGenotype & in_genotype, int max_depth)
 {
   cGenotype * temp_genotype = best;

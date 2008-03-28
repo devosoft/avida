@@ -22,6 +22,8 @@
  */
 
 #include "cDeme.h"
+#include "cClassificationManager.h"
+#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
@@ -265,4 +267,27 @@ double cDeme::CalculateTotalEnergy() {
     }
   }
   return energy_sum;
+}
+
+// --- Founder list management --- //
+
+void cDeme::AddFounder(cGenotype& _in_genotype) {
+  // save genotype id
+  m_founder_genotype_ids.Push( _in_genotype.GetID() );
+
+  // defer adjusting this genotype until we are done with it
+  _in_genotype.IncDeferAdjust();
+}
+
+void cDeme::ClearFounders() {
+  // check for unused genotypes, now that we're done with these
+  for (int i=0; i<m_founder_genotype_ids.GetSize(); i++) {
+    cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(m_founder_genotype_ids[i]);
+    assert(genotype);
+    genotype->DecDeferAdjust();
+    m_world->GetClassificationManager().AdjustGenotype(*genotype);
+  }
+  
+  // empty our list
+  m_founder_genotype_ids.ResizeClear(0);
 }

@@ -34,6 +34,7 @@
 class cResource;
 class cWorld;
 class cPopulationCell;
+class cGenotype;
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -69,6 +70,9 @@ private:
   
   tArray<cDemeCellEvent> cell_events;
   
+  tArray<int> m_founder_genotype_ids; // List of genotype ids used to found deme.
+                                      // Keep a lease on these genotypes for the deme's lifetime.
+                                      
   cMerit _current_merit; //!< Deme merit applied to all organisms living in this deme.
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
   
@@ -156,6 +160,10 @@ public:
   double GetNormalizedTimeUsed() { return cur_normalized_time_used; }
   double GetLastNormalizedTimeUsed() { return last_normalized_time_used; }
 
+  // --- Founder list management --- //
+  void ClearFounders();
+  void AddFounder(cGenotype& _in_genotype);
+  tArray<int>& GetFounders() { return m_founder_genotype_ids; }
 };
 
 #endif
