@@ -70,6 +70,7 @@ private:
   
   tArray<cDemeCellEvent> cell_events;
   
+  int         m_germline_genotype_id; // Genotype id of germline (if in use)
   tArray<int> m_founder_genotype_ids; // List of genotype ids used to found deme.
                                       // Keep a lease on these genotypes for the deme's lifetime.
                                       
@@ -79,7 +80,7 @@ private:
 public:
   cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0),
             time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
-            deme_resource_count(0) { ; }
+            deme_resource_count(0), m_germline_genotype_id(0) { ; }
   ~cDeme() { ; }
 
   void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
@@ -164,6 +165,10 @@ public:
   void ClearFounders();
   void AddFounder(cGenotype& _in_genotype);
   tArray<int>& GetFounders() { return m_founder_genotype_ids; }
+  
+  // --- Germline management --- //
+  void ReplaceGermline(cGenotype& _in_genotype);
+  int GetGermlineGenotypeID() { return m_germline_genotype_id; }
 };
 
 #endif

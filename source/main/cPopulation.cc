@@ -398,8 +398,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     ActivateOrganism(ctx, child_array[i], GetCell(target_cells[i]));
     
     //@JEB - we may want to pass along some state information from parent to child
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE_EPIGENETIC)
-    {
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE_EPIGENETIC) {
       child_array[i]->GetHardware().InheritState(parent_organism.GetHardware());
     }
     
@@ -1220,7 +1219,8 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   
   // Are we using germlines?  If so, we need to mutate the germline to get the
   // genome that we're going to seed the target with.
-  if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
+  if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
+    // @JEB Original germlines
     cCPUMemory next_germ(source_deme.GetGermline().GetLatest());
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
     cAvidaContext ctx(m_world->GetRandom());
@@ -1249,7 +1249,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     // mutated germ to ONLY the target's germline.  The source remains unchanged.
     target_deme.ReplaceGermline(source_deme.GetGermline());
     target_deme.GetGermline().Add(next_germ);
-    
+        
     // Germline stats tracking.
     m_world->GetStats().GermlineReplication(source_deme.GetGermline(), target_deme.GetGermline());
     
@@ -1257,6 +1257,46 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     SeedDeme(source_deme, source_deme.GetGermline().GetLatest());
     SeedDeme(target_deme, target_deme.GetGermline().GetLatest());
     
+  } else if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
+    // @JEB -- New germlines using cGenotype
+    
+    // get germline genotype
+    int germline_genotype_id = source_deme.GetGermlineGenotypeID();
+    cGenotype * germline_genotype = m_world->GetClassificationManager().FindGenotype(germline_genotype_id);
+    assert(germline_genotype);
+    
+    // create a new genome by mutation
+    cCPUMemory new_genome(germline_genotype->GetGenome());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+    cAvidaContext ctx(m_world->GetRandom());
+    
+    if(m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
+      for(int i=0; i<new_genome.GetSize(); ++i) {
+        if(m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
+          new_genome[i] = instset.GetRandomInst(ctx);
+        }
+      }
+    }
+    
+    if((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
+       && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_INS_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize() + 1);
+      new_genome.Insert(mut_line, instset.GetRandomInst(ctx));
+    }
+    
+    if((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
+       && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_DEL_MUT.Get())) {
+      const unsigned int mut_line = ctx.GetRandom().GetUInt(new_genome.GetSize());
+      new_genome.Remove(mut_line);
+    }
+    
+    //Create a new genotype which is daughter to the old one.
+    cGenotype * new_germline_genotype = m_world->GetClassificationManager().GetGenotype(new_genome, germline_genotype, NULL);
+    source_deme.ReplaceGermline(*new_germline_genotype);
+    target_deme.ReplaceGermline(*new_germline_genotype);
+    SeedDeme(source_deme, *new_germline_genotype);
+    SeedDeme(target_deme, *new_germline_genotype);
+
   } else {
     // Not using germlines; things are much simpler.  Seed the target from the source.
     SeedDeme(source_deme, target_deme);
@@ -1321,6 +1361,21 @@ void cPopulation::SeedDeme(cDeme& deme, cGenome& genome) {
     InjectGenome(cellid, genome, 0);
     DemePostInjection(deme, cell_array[cellid]);
   }
+}
+
+void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype) {
+  // Kill all the organisms in the deme.
+  _deme.KillAll();
+  _deme.ClearFounders();
+  
+  // Create the specified number of organisms in the deme.
+  for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
+    int cellid = DemeSelectInjectionCell(_deme, i);
+    InjectGenotype(cellid, &_genotype);
+    DemePostInjection(_deme, cell_array[cellid]);
+    _deme.AddFounder(_genotype);
+  }
+  
 }
 
 /*! Helper method to seed a target deme from the organisms in the source deme.
@@ -1483,8 +1538,8 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       }
       
       // Clear the demes.
-      target_deme.KillAll();
       target_deme.ClearFounders();
+      target_deme.KillAll();
       
       // Now populate the target (and optionally the source) using InjectGenotype.
       // In the future InjectClone could be used, but this would require the 
@@ -1503,8 +1558,8 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       
       // source deme is replaced in the same way as the target
       if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 0) {
-        source_deme.KillAll();
         source_deme.ClearFounders();
+        source_deme.KillAll();
         
         for(int i=0; i<founders.GetSize(); i++) {
           int cellid = DemeSelectInjectionCell(source_deme, i);
@@ -3418,12 +3473,20 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
   LineageSetupOrganism(GetCell(cell_id).GetOrganism(), 0, lineage_label);
   
   // If we're using germlines, then we have to be a little careful here.
-	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
+  // This should probably not be within Inject() since we mainly want it to
+  // apply to the START_CREATURE? -- @JEB
+	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
 		cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
 		if(deme.GetGermline().Size()==0) {  
 			deme.GetGermline().Add(GetCell(cell_id).GetOrganism()->GetGenome());
 		}
 	}  
+  else if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
+    //find the genotype we just created from the genome, and save it
+		cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
+    cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(genome, lineage_label);
+    deme.ReplaceGermline(*genotype);
+  }
 }
 
 void cPopulation::InjectParasite(const cCodeLabel& label, const cGenome& injected_code, int cell_id)
@@ -3622,7 +3685,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
-    m_world->GetDriver().RaiseFatalException(1, "InjectGenotype into nonexistant cell");
+    m_world->GetDriver().RaiseFatalException(1, "InjectGenotype into nonexistent cell");
   }
   
   cAvidaContext& ctx = m_world->GetDefaultContext();

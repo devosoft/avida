@@ -195,6 +195,9 @@ public:
   
   //! Helper method that seeds a deme from the given genome.
   void SeedDeme(cDeme& deme, cGenome& genome);
+
+  //! Helper method that seeds a deme from the given genotype.
+  void SeedDeme(cDeme& _deme, cGenotype& _genotype);
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
   void SeedDeme(cDeme& source_deme, cDeme& target_deme);

@@ -291,3 +291,23 @@ void cDeme::ClearFounders() {
   // empty our list
   m_founder_genotype_ids.ResizeClear(0);
 }
+
+void cDeme::ReplaceGermline(cGenotype& _in_genotype) {
+  
+  // same genotype, no changes
+  if (m_germline_genotype_id == _in_genotype.GetID()) return;
+    
+  // first, save and put a hold on new germline genotype
+  int prev_germline_genotype_id = m_germline_genotype_id;
+  m_germline_genotype_id = _in_genotype.GetID();
+  _in_genotype.IncDeferAdjust();  
+      
+  // next, if we previously were saving a germline genotype, free it
+  cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(prev_germline_genotype_id);
+  if (genotype) {
+    genotype->DecDeferAdjust();
+    m_world->GetClassificationManager().AdjustGenotype(*genotype);
+  }
+
+}
+

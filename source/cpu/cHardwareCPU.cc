@@ -1631,7 +1631,7 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   return true;
 }
 
-void cHardwareCPU::InheritState(cHardwareBase& in_hardware)
+void cHardwareCPU::Divide_InheritState(cHardwareBase& in_hardware)
 { 
   cHardwareCPU& in_h = (cHardwareCPU&)in_hardware; 
   const cLocalThread& thread = in_h.GetThread(in_h.GetCurThread());
@@ -1640,6 +1640,7 @@ void cHardwareCPU::InheritState(cHardwareBase& in_hardware)
     m_threads[m_cur_thread].reg[i] = thread.reg[i];
   }
 }
+
 
 
 //////////////////////////

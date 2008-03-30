@@ -221,6 +221,7 @@ protected:
   bool Divide_Main2RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
 
   void Divide_DoTransposons(cAvidaContext& ctx);
+  void Divide_InheritState(cHardwareBase& in_hardware);
   
   void InjectCode(const cGenome& injection, const int line_num);
   
@@ -305,9 +306,6 @@ public:
   
   int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
   bool GetMalActive() const   { return m_mal_active; }
-  
-  // --------  Inherit State  --------
-  void InheritState(cHardwareBase& in_hardware);
 
   
 private:
