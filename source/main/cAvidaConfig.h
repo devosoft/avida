@@ -310,8 +310,10 @@ public:
   CONFIG_ADD_VAR(GERMLINE_DEL_MUT, double, 0.05, "Prob. of a deletion mutation occuring\nduring germline replication (default=0.05).");
   CONFIG_ADD_VAR(DEMES_REPLICATE_CPU_CYCLES, double, 0.0, "Replicate a deme immediately after it has used\nthis number of cpu cycles, normalized\nby number of orgs in deme (0 = OFF).");
   CONFIG_ADD_VAR(DEMES_REPLICATE_BIRTHS, int, 0, "Replicate a deme immediately after it has \nproduced this many offspring (0 = OFF).");
+  CONFIG_ADD_VAR(DEMES_REPLICATE_ORGS, int, 0, "Replicate a deme immediately once it reaches a\ncertain number of organisms (0 = OFF).");
   CONFIG_ADD_VAR(DEMES_REPLICATION_ONLY_RESETS, int, 0, "Kin selection mode. Deme replication really:\n1=resets deme resources\n2=rests deme resources and re-injects organisms");
-  CONFIG_ADD_VAR(DEMES_MIGRATION_TARGET_MODE, int, 0, "How do we choose what demes an org may land in when it migrates?\n0=all other demes\n1=eight adjacent neighbors\n2=two adjacent demes in list");
+  CONFIG_ADD_VAR(DEMES_MIGRATION_RATE, double, 0.0, "Probability of an offspring being born in a different deme.");
+  CONFIG_ADD_VAR(DEMES_MIGRATION_METHOD, int, 0, "How do we choose what demes an org may land in when it migrates?\n0=all other demes\n1=eight adjacent neighbors\n2=two adjacent demes in list");
   CONFIG_ADD_VAR(DEMES_NUM_X, int, 0, "Simulated number of demes in X dimension. Only used for migration. ");
   CONFIG_ADD_VAR(DEMES_SEED_METHOD, int, 0, "Deme seeding method.\n0=maintain old consistency\n1=new method using genotypes");
   CONFIG_ADD_VAR(DEMES_DIVIDE_METHOD, int, 0, "Deme divide method. Only works with DEMES_SEED_METHOD 1\n0=replace and target demes\n1= replace target deme, reset source deme to founders\n2=replace target deme, leave source deme unchanged");

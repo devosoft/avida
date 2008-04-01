@@ -1011,6 +1011,14 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     deme_bonus *= result.GetMultDemeBonus();
     deme_bonus += result.GetAddDemeBonus();
     deme->UpdateHeritableDemeMerit(deme_bonus);
+    
+    //also count tasks/reactions
+    for (int i = 0; i < num_tasks; i++) {
+      if (result.TaskDone(i) == true) deme->AddCurTask(i);
+    }
+    for (int i = 0; i < num_reactions; i++) {
+      if (result.ReactionTriggered(i) == true) deme->AddCurReaction(i);
+    }
   }
     
   // Update the energy bonus

@@ -96,6 +96,9 @@ STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
 STATS_OUT_FILE(PrintDemeFounders,           deme_founders.dat   );
+STATS_OUT_FILE(PrintDemeTasks,              deme_tasks.dat      );
+STATS_OUT_FILE(PrintDemeTasksExe,           deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintDemeReactions,          deme_reactions.dat  );
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
@@ -2681,7 +2684,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeFounders>("PrintDemeFounders");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
-  
+  action_lib->Register<cActionPrintDemeTasks>("PrintDemeTasksData");
+  action_lib->Register<cActionPrintDemeTasksExe>("PrintDemeTasksExeData");
+  action_lib->Register<cActionPrintDemeReactions>("PrintDemeReactionData");
+
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
   action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");

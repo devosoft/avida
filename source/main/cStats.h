@@ -418,7 +418,7 @@ public:
   cIntSum& SumDemeGestationTime()   { return sum_deme_gestation_time; }
   cDoubleSum& SumDemeNormalizedTimeUsed()   { return sum_deme_normalized_time_used; }
   cDoubleSum& SumDemeMerit()   { return sum_deme_merit; }
-
+  
 #if INSTRUCTION_COUNT
   void ZeroInst();
 #endif
@@ -718,6 +718,11 @@ public:
   typedef std::map<int, std::vector<int> > t_founder_map;
   //! Print the genotype IDs for the founders of demes that have recently been "born."
   void PrintDemeFounders(const cString& filename);
+
+  void PrintDemeTasks(const cString& filename);
+  void PrintDemeTasksExe(const cString& filename);
+  void PrintDemeReactions(const cString& filename);
+
 
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.

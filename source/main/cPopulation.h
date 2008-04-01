@@ -120,6 +120,9 @@ private:
   void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
+  cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
+  int UpdateEmptyCellIDArray(int deme_id = -1);
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
 
   // Update statistics collecting...

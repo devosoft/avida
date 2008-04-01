@@ -1327,3 +1327,63 @@ void cStats::PrintDemeFounders(const cString& filename)
   }
   m_deme_founders.clear();
 }
+
+void cStats::PrintDemeTasks(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida deme tasks data");
+	df.WriteTimeStamp();
+	df.WriteComment("First column gives the current update, next columns give the number");
+	df.WriteComment("of organisms that have the particular task as a component of their merit");
+	df.WriteComment("in a particular deme");
+
+  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+
+	df.Write(m_update,   "Update");
+  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+    for(int j = 0; j < num_tasks; j++) {
+      df.Write( (deme.GetLastTaskCount()[j] > 0), cStringUtil::Stringf("%i.", i) + task_names[j] );
+    }
+	}
+  df.Endl();
+}
+
+void cStats::PrintDemeTasksExe(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida deme tasks exe data");
+	df.WriteTimeStamp();
+	df.WriteComment("First column gives the current update, next columns give the number");
+	df.WriteComment("of times a task has contributed to the merit of all organisms");
+	df.WriteComment("in a particular deme");
+
+  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+
+	df.Write(m_update,   "Update");
+  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+    for(int j = 0; j < num_tasks; j++) {
+      df.Write( deme.GetLastTaskCount()[j], cStringUtil::Stringf("%i.", i) + task_names[j] );
+    }
+	}
+  df.Endl();
+}
+
+void cStats::PrintDemeReactions(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida deme reactions data");
+	df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the number");
+  df.WriteComment("of currently living organisms each reaction has affected.");
+
+  const int num_reactions = m_world->GetEnvironment().GetReactionLib().GetSize();
+
+	df.Write(m_update,   "Update");
+  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+    for(int j = 0; j < num_reactions; j++) {
+      df.Write( deme.GetLastReactionCount()[j], cStringUtil::Stringf("%i.", i) + m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetName()  );
+    }
+  }
+  df.Endl();
+}
+

@@ -23,6 +23,7 @@
 
 #include "cDeme.h"
 #include "cClassificationManager.h"
+#include "cEnvironment.h"
 #include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -42,6 +43,17 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   _current_merit = 1.0;
   _next_merit = 1.0;
   
+  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+  const int num_reactions = m_world->GetNumReactions();  
+  cur_task_count.Resize(num_tasks);
+  cur_task_count.SetAll(0);
+  cur_reaction_count.ResizeClear(num_reactions);
+  cur_reaction_count.SetAll(0);
+  last_task_count.ResizeClear(num_tasks);
+  last_task_count.SetAll(0);
+  last_reaction_count.ResizeClear(num_reactions);
+  last_reaction_count.SetAll(0);
+
   // If width is negative, set it to the full number of cells.
   width = in_width;
   if (width < 1) width = cell_ids.GetSize();
@@ -130,6 +142,9 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   time_used = 0;
   birth_count = 0;
   cur_normalized_time_used = 0;
+  
+  cur_task_count.SetAll(0);
+  cur_reaction_count.SetAll(0);
 
   if(resetResources) deme_resource_count.ReinitializeResources();
 }
@@ -142,6 +157,9 @@ void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_ene
   gestation_time = parent_deme.GetTimeUsed();
   last_normalized_time_used = parent_deme.GetNormalizedTimeUsed();
   
+  last_task_count = cur_task_count;
+  last_reaction_count = cur_reaction_count;
+
   Reset(resetResources, deme_energy);
 }
 

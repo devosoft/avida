@@ -2002,7 +2002,9 @@ void cPopulation::CheckImplicitDemeRepro(cDeme& deme) {
   if (m_world->GetConfig().DEMES_REPLICATE_CPU_CYCLES.Get() 
     && (deme.GetTimeUsed() >= m_world->GetConfig().DEMES_REPLICATE_CPU_CYCLES.Get())) ReplicateDeme(deme);
   else if (m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get() 
-    && (deme.GetBirthCount() >= m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get())) ReplicateDeme(deme);      
+    && (deme.GetBirthCount() >= m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get())) ReplicateDeme(deme); 
+  else if (m_world->GetConfig().DEMES_REPLICATE_ORGS.Get() 
+    && (deme.GetOrgCount() >= m_world->GetConfig().DEMES_REPLICATE_ORGS.Get())) ReplicateDeme(deme);      
 }
 
 // Print out all statistics about individual demes
@@ -2492,70 +2494,19 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
 
     //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
     int deme_id = parent_cell.GetDemeID();
+         
+    //get another -unadjusted- deme id
+    int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
     
-    //@JEB - Different target modes
-    //Original (random OTHER deme) by @AWC
-    if (m_world->GetConfig().DEMES_MIGRATION_TARGET_MODE.Get() == 0) {  
-     
-      //get another -unadjusted- deme id
-      int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
-      
-      //if the -unadjusted- id is above the excluded id, bump it up one
-      //insures uniform prob of landing in any deme but the parent's
-      if(rnd_deme_id >= deme_id) rnd_deme_id++;
-      
-      //set the new deme_id
-      deme_id = rnd_deme_id;
-    }
+    //if the -unadjusted- id is above the excluded id, bump it up one
+    //insures uniform prob of landing in any deme but the parent's
+    if(rnd_deme_id >= deme_id) rnd_deme_id++;
     
-    //@JEB - random OTHER deme in neighborhood (assuming torus)
-    //Extremely hacked, temporary until demes fixed
-    else if (m_world->GetConfig().DEMES_MIGRATION_TARGET_MODE.Get() == 1) {
-    
-      //get a random eight-neighbor
-      int dir = m_world->GetRandom().GetInt(8);
-      
-      // 0 = NW, 1=N, continuing clockwise....
-    
-      // Up one row
-      int x_size = m_world->GetConfig().DEMES_NUM_X.Get();
-      int y_size = (int) (m_world->GetConfig().NUM_DEMES.Get() / x_size);
-
-      assert(y_size * x_size == m_world->GetConfig().NUM_DEMES.Get());
-
-      int x = deme_id % x_size;
-      int y = (int) (deme_id / x_size);
-
-      if ( (dir == 0) || (dir == 1) || (dir == 2) ) y--;
-      if ( (dir == 5) || (dir == 6) || (dir == 7) ) y++;
-      if ( (dir == 0) || (dir == 3) || (dir == 5) ) x--;
-      if ( (dir == 2) || (dir == 4) || (dir == 7) ) x++;
-      
-      //handle boundary conditions...
-      
-      x = (x + x_size) % x_size;
-      y = (y + y_size) % y_size;
-
-      //set the new deme_id
-      deme_id = x + x_size * y;
-
-      assert(deme_id > 0);
-      assert(deme_id > 0);
-    }
-    
-    //@JEB - random deme adjacent in list
-    else if (m_world->GetConfig().DEMES_MIGRATION_TARGET_MODE.Get() == 2) {
-
-      //get a random direction to move in deme list
-      int rnd_deme_id = m_world->GetRandom().GetInt(1);
-      if (rnd_deme_id == 0) rnd_deme_id = -1;
-      
-      //set the new deme_id
-      deme_id = (deme_id + rnd_deme_id + deme_array.GetSize()) % deme_array.GetSize();
-    }
-    
+    //set the new deme_id
+    deme_id = rnd_deme_id;
     
     //The rest of this is essentially POSITION_CHILD_DEME_RANDOM
+    //@JEB: But note that this will not honor PREFER_EMPTY in the new deme.
     const int deme_size = deme_array[deme_id].GetSize();
     
     int out_pos = m_world->GetRandom().GetUInt(deme_size);
@@ -2569,26 +2520,29 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     GetCell(out_cell_id).SetMigrant();
     return GetCell(out_cell_id);    
   }
-  
   // Fix so range can be arbitrary and we won't accidentally include ourself as a target
-  
   // @AWC If not migrating try out global/full-deme birth methods first...
-  else if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
+  
+  // Similar to MIGRATION_RATE code above but allows for a bit more flexibility
+  // in how migration between demes works. Also, respects PREFER_EMPTY in new deme.
+  // Temporary until Deme 
+  if ((m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
+      && m_world->GetRandom().P(m_world->GetConfig().DEMES_MIGRATION_RATE.Get())) 
+  {
+    deme_array[parent_cell.GetDemeID()].IncBirthCount();
+    return PositionDemeMigration(parent_cell, parent_ok);
+  }
+  
+  // This block should be changed to a switch statment with functions handling 
+  // the cases. For now, a bunch of if's that return if they handle.
+  
+  if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
    
-    // @JEB Look randomly within empty cells, if requested
+    // Look randomly within empty cells first, if requested
     if (m_world->GetConfig().PREFER_EMPTY.Get()) {
       
-      // Note: empty_cell_id_array was resized to be large enough to hold
-      // all cells in the cPopulation when it was created. Using functions
-      // that resize it (like Push) will slow this code down considerably.
-      // Instead, we keep track of how much of this memory we are using.
-      
-      int num_empty_cells = 0;      
-      for (int i=0; i<cell_array.GetSize(); i++) {
-        if (GetCell(i).IsOccupied() == false) empty_cell_id_array[num_empty_cells++] = i;
-      }
-     
-       if (num_empty_cells > 0) {
+      int num_empty_cells = UpdateEmptyCellIDArray();
+      if (num_empty_cells > 0) {
         int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
         return GetCell(empty_cell_id_array[out_pos]);
       } 
@@ -2600,7 +2554,8 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     }
     return GetCell(out_pos);
   }
-  else if (birth_method == POSITION_CHILD_FULL_SOUP_ELDEST) {
+  
+  if (birth_method == POSITION_CHILD_FULL_SOUP_ELDEST) {
     cPopulationCell * out_cell = reaper_queue.PopRear();
     if (parent_ok == false && out_cell->GetID() == parent_cell.GetID()) {
       out_cell = reaper_queue.PopRear();
@@ -2608,41 +2563,10 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     }
     return *out_cell;
   }
-  else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
-    const int deme_id = parent_cell.GetDemeID();    
-    const int deme_size = deme_array[deme_id].GetSize();
-    
-    deme_array[deme_id].IncBirthCount();
-
-    // @JEB Look randomly within empty cells, if requested
-    if (m_world->GetConfig().PREFER_EMPTY.Get()) {
-      
-      // Note: empty_cell_id_array was resized to be large enough to hold
-      // all cells in the cPopulation when it was created. Using functions
-      // that resize it (like Push) will slow this code down considerably.
-      // Instead, we keep track of how much of this memory we are using.
-      
-      int num_empty_cells = 0; 
-      for (int i=0; i<deme_array[deme_id].GetSize(); i++) {
-        int cell_id = deme_array[deme_id].GetCellID(i);
-        if (!GetCell(cell_id).IsOccupied()) /*return cell;*/ empty_cell_id_array[num_empty_cells++] = cell_id;
-      }
-     
-      if (num_empty_cells > 0) {
-        int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
-        return GetCell(empty_cell_id_array[out_pos]);
-      } 
-    }
-
-    int out_pos = m_world->GetRandom().GetUInt(deme_size);
-    int out_cell_id = deme_array[deme_id].GetCellID(out_pos);
-    
-    while (parent_ok == false && out_cell_id == parent_cell.GetID()) {
-      out_pos = m_world->GetRandom().GetUInt(deme_size);
-      out_cell_id = deme_array[deme_id].GetCellID(out_pos);
-    }
-    
-    return GetCell(out_cell_id);    
+  
+  if (birth_method == POSITION_CHILD_DEME_RANDOM) {
+    deme_array[parent_cell.GetDemeID()].IncBirthCount();
+    return PositionDemeRandom(parent_cell.GetDemeID(), parent_cell, parent_ok);
   }
   else if (birth_method == POSITION_CHILD_PARENT_FACING) {
     return parent_cell.GetCellFaced();
@@ -2722,6 +2646,226 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   // Choose the organism randomly from those in the list, and return it.
   int choice = m_world->GetRandom().GetUInt(found_list.GetSize());
   return *( found_list.GetPos(choice) );
+}
+
+void cPopulation::PositionAge(cPopulationCell & parent_cell,
+                              tList<cPopulationCell> & found_list,
+                              bool parent_ok)
+{
+  // Start with the parent organism as the replacement, and see if we can find
+  // anything equivilent or better.
+  
+  found_list.Push(&parent_cell);
+  int max_age = parent_cell.GetOrganism()->GetPhenotype().GetAge();
+  if (parent_ok == false) max_age = -1;
+  
+  // Now look at all of the neighbors.
+  tListIterator<cPopulationCell> conn_it( parent_cell.ConnectionList() );
+  
+  cPopulationCell * test_cell;
+  while ( (test_cell = conn_it.Next()) != NULL) {
+    const int cur_age = test_cell->GetOrganism()->GetPhenotype().GetAge();
+    if (cur_age > max_age) {
+      max_age = cur_age;
+      found_list.Clear();
+      found_list.Push(test_cell);
+    }
+    else if (cur_age == max_age) {
+      found_list.Push(test_cell);
+    }
+  }
+}
+
+void cPopulation::PositionMerit(cPopulationCell & parent_cell,
+                                tList<cPopulationCell> & found_list,
+                                bool parent_ok)
+{
+  // Start with the parent organism as the replacement, and see if we can find
+  // anything equivilent or better.
+  
+  found_list.Push(&parent_cell);
+  double max_ratio = parent_cell.GetOrganism()->CalcMeritRatio();
+  if (parent_ok == false) max_ratio = -1;
+  
+  // Now look at all of the neighbors.
+  tListIterator<cPopulationCell> conn_it( parent_cell.ConnectionList() );
+  
+  cPopulationCell * test_cell;
+  while ( (test_cell = conn_it.Next()) != NULL) {
+    const double cur_ratio = test_cell->GetOrganism()->CalcMeritRatio();
+    if (cur_ratio > max_ratio) {
+      max_ratio = cur_ratio;
+      found_list.Clear();
+      found_list.Push(test_cell);
+    }
+    else if (cur_ratio == max_ratio) {
+      found_list.Push(test_cell);
+    }
+  }
+}
+
+void cPopulation::PositionEnergyUsed(cPopulationCell & parent_cell,
+                                tList<cPopulationCell> & found_list,
+                                bool parent_ok)
+{
+  // Start with the parent organism as the replacement, and see if we can find
+  // anything equivilent or better.
+  
+  found_list.Push(&parent_cell);
+  int max_energy_used = parent_cell.GetOrganism()->GetPhenotype().GetTimeUsed();
+  if (parent_ok == false) max_energy_used = -1;
+  
+  // Now look at all of the neighbors.
+  tListIterator<cPopulationCell> conn_it( parent_cell.ConnectionList() );
+  
+  cPopulationCell * test_cell;
+  while ( (test_cell = conn_it.Next()) != NULL) {
+    const int cur_energy_used = test_cell->GetOrganism()->GetPhenotype().GetTimeUsed();
+    if (cur_energy_used > max_energy_used) {
+      max_energy_used = cur_energy_used;
+      found_list.Clear();
+      found_list.Push(test_cell);
+    }
+    else if (cur_energy_used == max_energy_used) {
+      found_list.Push(test_cell);
+    }
+  }
+}
+
+// This function handles PositionChild() when there is migration between demes
+cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok)
+{
+    //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
+    int deme_id = parent_cell.GetDemeID();
+    
+    // Position randomly in any other deme
+    if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 0) {  
+                    
+      //get another -unadjusted- deme id
+      int rnd_deme_id = m_world->GetRandom().GetInt(deme_array.GetSize()-1);
+      
+      //if the -unadjusted- id is above the excluded id, bump it up one
+      //insures uniform prob of landing in any deme but the parent's
+      if(rnd_deme_id >= deme_id) rnd_deme_id++;
+      
+      //set the new deme_id
+      deme_id = rnd_deme_id;
+    }
+    
+    //Position randomly in an adjacent deme in neighborhood (assuming torus)
+    //Extremely hacked DEMES_NUM_X config setting simulates grid
+    else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 1) {
+    
+      //get a random eight-neighbor
+      int dir = m_world->GetRandom().GetInt(8);
+      
+      // 0 = NW, 1=N, continuing clockwise....
+    
+      // Up one row
+      if (m_world->GetConfig().DEMES_NUM_X.Get() == 0) {
+          m_world->GetDriver().RaiseFatalException(1, "DEMES_NUM_X must be non-zero if DEMES_MIGRATION_METHOD 1 used.");
+      }
+      int x_size = m_world->GetConfig().DEMES_NUM_X.Get();
+      int y_size = (int) (m_world->GetConfig().NUM_DEMES.Get() / x_size);
+
+      assert(y_size * x_size == m_world->GetConfig().NUM_DEMES.Get());
+
+      int x = deme_id % x_size;
+      int y = (int) (deme_id / x_size);
+
+      if ( (dir == 0) || (dir == 1) || (dir == 2) ) y--;
+      if ( (dir == 5) || (dir == 6) || (dir == 7) ) y++;
+      if ( (dir == 0) || (dir == 3) || (dir == 5) ) x--;
+      if ( (dir == 2) || (dir == 4) || (dir == 7) ) x++;
+      
+      //handle boundary conditions...
+      
+      x = (x + x_size) % x_size;
+      y = (y + y_size) % y_size;
+
+      //set the new deme_id
+      deme_id = x + x_size * y;
+
+      assert(deme_id > 0);
+      assert(deme_id > 0);
+    }
+    
+    //Random deme adjacent in list
+    else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 2) {
+
+      //get a random direction to move in deme list
+      int rnd_deme_id = m_world->GetRandom().GetInt(1);
+      if (rnd_deme_id == 0) rnd_deme_id = -1;
+      
+      //set the new deme_id
+      deme_id = (deme_id + rnd_deme_id + GetNumDemes()) % GetNumDemes();
+    }
+    
+    // TODO the above choice of deme does not respect PREFER_EMPTY
+    // i.e., it does not preferentially pick a deme with empty cells if they are 
+    // it might make sense for that to happen...
+    
+    // Now return an empty cell from the chosen deme
+    return PositionDemeRandom(deme_id, parent_cell, parent_ok); 
+}
+
+// This function handles PositionChild() by returning a random cell from the entire deme.
+cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok)
+{
+  assert((deme_id >=0) && (deme_id < deme_array.GetSize()));
+  
+  const int deme_size = deme_array[deme_id].GetSize();
+  cDeme& deme = deme_array[deme_id];
+
+  // Look randomly within empty cells first, if requested
+  if (m_world->GetConfig().PREFER_EMPTY.Get()) {
+    
+    int num_empty_cells = UpdateEmptyCellIDArray(deme_id);
+    if (num_empty_cells > 0) {
+      int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
+      return GetCell(empty_cell_id_array[out_pos]);
+    } 
+  }
+
+  int out_pos = m_world->GetRandom().GetUInt(deme_size);
+  int out_cell_id = deme.GetCellID(out_pos);
+  
+  while (parent_ok == false && out_cell_id == parent_cell.GetID()) {
+    out_pos = m_world->GetRandom().GetUInt(deme_size);
+    out_cell_id = deme.GetCellID(out_pos);
+  }
+  
+  return GetCell(out_cell_id); 
+}
+
+
+// This function updates the list of empty cell ids in the population
+// and returns the number of empty cells found. Used by global PREFER_EMPTY
+// PositionChild() methods. If deme_id is -1 (the default), then operates
+// on the entire population. 
+int cPopulation::UpdateEmptyCellIDArray(int deme_id)
+{
+  int num_empty_cells = 0;  
+  cDeme& deme = deme_array[deme_id];
+  // Note: empty_cell_id_array was resized to be large enough to hold
+  // all cells in the cPopulation when it was created. Using functions
+  // that resize it (like Push) will slow this code down considerably.
+  // Instead, we keep track of how much of this memory we are using.
+      
+  // Look at all cells
+  if (deme_id == -1) { 
+    for (int i=0; i<cell_array.GetSize(); i++) {
+      if (GetCell(i).IsOccupied() == false) empty_cell_id_array[num_empty_cells++] = i;
+    }
+  }
+  // Look at a specific deme
+  else {
+    for (int i=0; i<deme.GetSize(); i++) {
+      if (GetCell(deme.GetCellID(i)).IsOccupied() == false) empty_cell_id_array[num_empty_cells++] = deme.GetCellID(i);
+    }
+  }
+  
+  return num_empty_cells;
 }
 
 
@@ -2813,6 +2957,10 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
 // Loop through all the demes getting stats and doing calculations
 // which must be done on a deme by deme basis.
 void cPopulation::UpdateDemeStats() {
+
+  // bail early to save time if there are no demes
+  if (GetNumDemes() == 1) return ;
+
   cStats& stats = m_world->GetStats();
 
   stats.SumDemeAge().Clear();
@@ -2823,11 +2971,13 @@ void cPopulation::UpdateDemeStats() {
   stats.SumDemeGestationTime().Clear();
   stats.SumDemeNormalizedTimeUsed().Clear();
   stats.SumDemeMerit().Clear();
-
+  
   for(int i = 0; i < GetNumDemes(); i++) {
     cDeme& deme = GetDeme(i);
-    if(deme.IsEmpty())  // ignore empty demes
+    if(!deme.IsEmpty())  // ignore empty demes
+    { 
       continue;
+    }
     stats.SumDemeAge().Add(deme.GetAge());
     stats.SumDemeBirthCount().Add(deme.GetBirthCount());
     stats.SumDemeOrgCount().Add(deme.GetOrgCount());
@@ -3582,90 +3732,6 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
   schedule->SetChangeList(change_list);
 }
 
-
-void cPopulation::PositionAge(cPopulationCell & parent_cell,
-                              tList<cPopulationCell> & found_list,
-                              bool parent_ok)
-{
-  // Start with the parent organism as the replacement, and see if we can find
-  // anything equivilent or better.
-  
-  found_list.Push(&parent_cell);
-  int max_age = parent_cell.GetOrganism()->GetPhenotype().GetAge();
-  if (parent_ok == false) max_age = -1;
-  
-  // Now look at all of the neighbors.
-  tListIterator<cPopulationCell> conn_it( parent_cell.ConnectionList() );
-  
-  cPopulationCell * test_cell;
-  while ( (test_cell = conn_it.Next()) != NULL) {
-    const int cur_age = test_cell->GetOrganism()->GetPhenotype().GetAge();
-    if (cur_age > max_age) {
-      max_age = cur_age;
-      found_list.Clear();
-      found_list.Push(test_cell);
-    }
-    else if (cur_age == max_age) {
-      found_list.Push(test_cell);
-    }
-  }
-}
-
-void cPopulation::PositionMerit(cPopulationCell & parent_cell,
-                                tList<cPopulationCell> & found_list,
-                                bool parent_ok)
-{
-  // Start with the parent organism as the replacement, and see if we can find
-  // anything equivilent or better.
-  
-  found_list.Push(&parent_cell);
-  double max_ratio = parent_cell.GetOrganism()->CalcMeritRatio();
-  if (parent_ok == false) max_ratio = -1;
-  
-  // Now look at all of the neighbors.
-  tListIterator<cPopulationCell> conn_it( parent_cell.ConnectionList() );
-  
-  cPopulationCell * test_cell;
-  while ( (test_cell = conn_it.Next()) != NULL) {
-    const double cur_ratio = test_cell->GetOrganism()->CalcMeritRatio();
-    if (cur_ratio > max_ratio) {
-      max_ratio = cur_ratio;
-      found_list.Clear();
-      found_list.Push(test_cell);
-    }
-    else if (cur_ratio == max_ratio) {
-      found_list.Push(test_cell);
-    }
-  }
-}
-
-void cPopulation::PositionEnergyUsed(cPopulationCell & parent_cell,
-                                tList<cPopulationCell> & found_list,
-                                bool parent_ok)
-{
-  // Start with the parent organism as the replacement, and see if we can find
-  // anything equivilent or better.
-  
-  found_list.Push(&parent_cell);
-  int max_energy_used = parent_cell.GetOrganism()->GetPhenotype().GetTimeUsed();
-  if (parent_ok == false) max_energy_used = -1;
-  
-  // Now look at all of the neighbors.
-  tListIterator<cPopulationCell> conn_it( parent_cell.ConnectionList() );
-  
-  cPopulationCell * test_cell;
-  while ( (test_cell = conn_it.Next()) != NULL) {
-    const int cur_energy_used = test_cell->GetOrganism()->GetPhenotype().GetTimeUsed();
-    if (cur_energy_used > max_energy_used) {
-      max_energy_used = cur_energy_used;
-      found_list.Clear();
-      found_list.Push(test_cell);
-    }
-    else if (cur_energy_used == max_energy_used) {
-      found_list.Push(test_cell);
-    }
-  }
-}
 
 void cPopulation::FindEmptyCell(tList<cPopulationCell> & cell_list,
                                 tList<cPopulationCell> & found_list)

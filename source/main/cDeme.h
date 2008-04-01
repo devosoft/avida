@@ -48,7 +48,7 @@ private:
   tArray<int> cell_ids;
   int width; //!< Width of this deme.
 
-// The following should be moved to cDemePhenotype
+// The following should be moved to cDemePhenotype / cPopulationPhenotype
   int birth_count; //!< Number of organisms that have been born into this deme since reset.
   int org_count; //!< Number of organisms are currently in this deme.
   int _age; //!< Age of this deme, in updates.
@@ -58,6 +58,11 @@ private:
   int gestation_time; // Time used during last generation
   double cur_normalized_time_used; // normalized by merit and number of orgs
   double last_normalized_time_used; 
+  
+  tArray<int> cur_task_count;
+  tArray<int> cur_reaction_count;
+  tArray<int> last_task_count;
+  tArray<int> last_reaction_count;
   
   // End of phenotypic traits
   
@@ -98,7 +103,7 @@ public:
 
   void Reset(bool resetResources = true, double deme_energy = 0.0); //! used to pass energy to offspring deme
   void DivideReset(cDeme& parent_deme, bool resetResources = true, double deme_energy = 0.0);
-  
+
   //! Kills all organisms currently in this deme.
   void KillAll();
   int GetBirthCount() const { return birth_count; }
@@ -129,7 +134,14 @@ public:
   const cMerit& GetDemeMerit() const { return _current_merit; }
   //! Retrieve this deme's heritable merit.
   const cMerit& GetHeritableDemeMerit() const { return _next_merit; }
-  
+
+
+  void AddCurTask(int task_num) { cur_task_count[task_num]++; }
+  void AddCurReaction (int reaction_num) { cur_reaction_count[reaction_num]++; }
+
+  const tArray<int>& GetLastTaskCount() const { return last_task_count; }
+  const tArray<int>& GetLastReactionCount() const { return last_reaction_count; }
+
   bool HasDemeMerit() const { return _current_merit.GetDouble() != 1.0; }
 
   // -= Update support =-
