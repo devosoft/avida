@@ -527,9 +527,15 @@ bool cEnvironment::LoadCell(cString desc)
       }
     }
     for (int i=0; i < cell_list.GetSize(); i++) {
-      cCellResource tmp_cell_resource(cell_list[i],tmp_initial,
-                                      tmp_inflow, tmp_outflow);
-      this_resource->AddCellResource(tmp_cell_resource);
+      if (cCellResource *CellResourcePtr = 
+            this_resource->GetCellResourcePtr(cell_list[i])) {
+        this_resource->UpdateCellResource(CellResourcePtr,tmp_initial,
+                                          tmp_inflow, tmp_outflow);
+      } else {
+        cCellResource tmp_cell_resource(cell_list[i],tmp_initial,
+                                        tmp_inflow, tmp_outflow);
+        this_resource->AddCellResource(tmp_cell_resource);
+      }
     }
     
   }

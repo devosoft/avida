@@ -53,6 +53,9 @@ public:
   double GetInitial() const { return initial; }
   double GetInflow() const { return inflow; }
   double GetOutflow() const { return outflow; }
+  double SetInitial(double _initial) { initial = _initial; }
+  double SetInflow(double _inflow) { inflow = _inflow; }
+  double SetOutflow(double _outflow) { outflow = _outflow; }
 };
 
 /* class to hold all information for a single resource */
@@ -131,6 +134,9 @@ public:
   bool SetDemeResource(cString _deme_resource);
   bool SetEnergyResource(cString _energy_resource);
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
+  cCellResource *GetCellResourcePtr(int _id);
+  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, 
+                          double _inflow, double _outflow);
 };
 
 
