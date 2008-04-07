@@ -577,6 +577,7 @@ void cStats::PrintDemeAverageData(const cString& filename)
   df.WriteTimeStamp();
 
   df.Write(m_update,                                        "Update");
+  df.Write(m_num_occupied_demes,                            "Count");
   df.Write(sum_deme_age.Average(),                          "Age");
   df.Write(sum_deme_birth_count.Average(),                  "Births");
   df.Write(sum_deme_org_count.Average(),                    "Organisms");

@@ -1189,13 +1189,33 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
     }
     
     // Pick a target deme to replicate to, making sure that 
-    // we don't try to replicate over ourself.
-    int target_id = source_deme.GetID();
-    const int num_demes = GetNumDemes();
-    while(target_id == source_deme.GetID()) {
-      target_id = m_world->GetRandom().GetUInt(num_demes);
+    // we don't try to replicate over ourself, i.e. DEMES_REPLACE_PARENT 0
+    
+    int target_id = -1;
+    if (m_world->GetConfig().DEMES_PREFER_EMPTY.Get()) {
+    
+      //@JEB -- use empty_cell_id_array to hold empty demes
+      //so we don't have to allocate a list
+      int num_empty = 0;
+      for (int i=0; i<GetNumDemes(); i++) {
+        if (GetDeme(i).IsEmpty()) {
+          empty_cell_id_array[num_empty] = i;
+          num_empty++;
+        }
+      }  
+      if (num_empty > 0) {
+        target_id = empty_cell_id_array[m_world->GetRandom().GetUInt(num_empty)];
+      }
     }
-  
+    
+    // if we haven't found one yet, choose a random one
+    if (target_id == -1) {
+      target_id = source_deme.GetID();
+      const int num_demes = GetNumDemes();
+      while(target_id == source_deme.GetID()) {
+        target_id = m_world->GetRandom().GetUInt(num_demes);
+      }
+    }
     ReplaceDeme(source_deme, deme_array[target_id]);
 }
 
