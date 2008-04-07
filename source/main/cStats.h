@@ -275,6 +275,7 @@ private:
   cDoubleSum sum_deme_normalized_time_used;
   cDoubleSum sum_deme_merit;
   cDoubleSum sum_deme_generations_per_lifetime;
+  int m_num_occupied_demes;
 
   // Speculative Execution Stats
   int m_spec_total;
@@ -727,6 +728,11 @@ public:
   void PrintDemeOrgTasks(const cString& filename);
   void PrintDemeOrgTasksExe(const cString& filename);
   void PrintDemeOrgReactions(const cString& filename);
+  void PrintDemeGenPerFounder(const cString& filename);
+
+  void IncNumOccupiedDemes() { m_num_occupied_demes++; }
+  void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
+  int GetNumOccupiedDemes() { return m_num_occupied_demes; }
   
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.

@@ -136,12 +136,13 @@ void cDefaultRunDriver::Run()
         << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
       //  << "Energy: " << setw(9) << setprecision(7) << stats.GetAveEnergy() << "  "
 //        << "Merit: " << setw(9) << setprecision(7) << stats.GetAveMerit() << "  "
-        << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  "
+        << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  ";
 //        << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  "
 //        << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)UD_size) * 100.0) << "%"
 //        << "Thrd: " << setw(6) << stats.GetNumThreads() << "  "
 //        << "Para: " << stats.GetNumParasites()
-        << endl;
+      if (m_world->GetPopulation().GetNumDemes() > 1) cout << "Demes: " << setw(4) << stats.GetNumOccupiedDemes() << " ";
+      cout << endl;
     }
     
     

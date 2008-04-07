@@ -1245,7 +1245,8 @@ void cStats::DemePostReplication(cDeme& source_deme, cDeme& target_deme)
       genotype_ids.push_back(cell.GetOrganism()->GetGenotype()->GetID());  
     }
   }
-  assert(genotype_ids.size()>0); // How did we get to replication otherwise?
+  //assert(genotype_ids.size()>0); // How did we get to replication otherwise?
+  //@JEB some germline methods can result in empty source demes if they didn't produce a germ)
   m_deme_founders[target_deme.GetID()] = genotype_ids;
 }
 
@@ -1445,6 +1446,25 @@ void cStats::PrintDemeOrgReactions(const cString& filename){
     for(int j = 0; j < num_reactions; j++) {
       df.Write( deme.GetLastOrgReactionCount()[j], cStringUtil::Stringf("%i.", i) + m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetName()  );
     }
+  }
+  df.Endl();
+}
+
+
+void cStats::PrintDemeGenPerFounder(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida org generations between deme founders");
+	df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the number");
+  df.WriteComment("number of generations that passed between the parent and current deme's founders");
+
+
+	df.Write(m_update,   "Update");
+  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+    double val = deme.GetGenerationsPerLifetime();
+    if ( deme.IsEmpty() ) val = -1;
+    df.Write( val, cStringUtil::Stringf("deme.%i", i)  );
   }
   df.Endl();
 }

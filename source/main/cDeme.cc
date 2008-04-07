@@ -166,8 +166,8 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 
 void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_energy)
 {
-  // inherit last value from the parent
-  generations_per_lifetime = parent_deme.GetGenerationsPerLifetime();
+  // the parent might be us, so save this value...
+  double old_avg_founder_generation = parent_deme.GetAvgFounderGeneration();
 
   // update our average founder generation
   cDoubleSum gen;  
@@ -175,6 +175,9 @@ void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_ene
     gen.Add( m_founder_phenotypes[i].GetGeneration() );
   }
   avg_founder_generation = gen.Average();
+  
+  // update our generations per lifetime based on current founders and parents generation
+  generations_per_lifetime = avg_founder_generation - old_avg_founder_generation;
 
   //Save statistics according to parent before reset.
   generation = parent_deme.GetGeneration() + 1;
@@ -194,14 +197,14 @@ void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_ene
 
 // Given the input deme founders and original ones,
 // calculate how many generations this deme went through to divide.
-void cDeme::UpdateGenerationsPerLifetime(tArray<cPhenotype>& new_founder_phenotypes) 
+void cDeme::UpdateGenerationsPerLifetime(double old_avg_founder_generation, tArray<cPhenotype>& new_founder_phenotypes) 
 { 
   cDoubleSum gen;
   for (int i=0; i< new_founder_phenotypes.GetSize(); i++) {
     gen.Add( new_founder_phenotypes[i].GetGeneration() );
   }
   double new_avg_founder_generation = gen.Average();
-  generations_per_lifetime = new_avg_founder_generation - avg_founder_generation;
+  generations_per_lifetime = new_avg_founder_generation - old_avg_founder_generation;
 }
 
 /*! Check every cell in this deme for a living organism.  If found, kill it. */

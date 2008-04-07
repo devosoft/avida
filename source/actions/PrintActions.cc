@@ -103,6 +103,7 @@ STATS_OUT_FILE(PrintDemeOrgTasks,           deme_org_tasks.dat      );
 STATS_OUT_FILE(PrintDemeOrgTasksExe,        deme_org_tasks_exe.dat  );
 STATS_OUT_FILE(PrintDemeOrgReactions,       deme_org_reactions.dat  );
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
+STATS_OUT_FILE(PrintDemeGenPerFounder,      deme_gen_between_founders.dat );
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 
@@ -2693,6 +2694,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeOrgTasks>("PrintDemeOrgTasksData");
   action_lib->Register<cActionPrintDemeOrgTasksExe>("PrintDemeOrgTasksExeData");
   action_lib->Register<cActionPrintDemeOrgReactions>("PrintDemeOrgReactionData");
+  action_lib->Register<cActionPrintDemeGenPerFounder>("PrintDemeGenPerFounderData");
 
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");

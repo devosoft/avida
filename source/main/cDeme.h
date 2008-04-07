@@ -199,7 +199,7 @@ public:
   tArray<int>& GetFounderGenotypeIDs() { return m_founder_genotype_ids; }
   tArray<cPhenotype>& GetFounderPhenotypes() { return m_founder_phenotypes; }
   double GetAvgFounderGeneration() { return avg_founder_generation; }        
-  void UpdateGenerationsPerLifetime(tArray<cPhenotype>& new_founder_phenotypes);   
+  void UpdateGenerationsPerLifetime(double old_avg_founder_generation, tArray<cPhenotype>& new_founder_phenotypes);   
   double GetGenerationsPerLifetime() { return generations_per_lifetime; }  
 
   // --- Germline management --- //

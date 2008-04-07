@@ -203,7 +203,7 @@ public:
   void SeedDeme(cDeme& _deme, cGenotype& _genotype);
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
-  void SeedDeme(cDeme& source_deme, cDeme& target_deme);
+  bool SeedDeme(cDeme& source_deme, cDeme& target_deme);
 
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
   void InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype = NULL);

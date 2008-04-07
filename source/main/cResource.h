@@ -53,9 +53,9 @@ public:
   double GetInitial() const { return initial; }
   double GetInflow() const { return inflow; }
   double GetOutflow() const { return outflow; }
-  double SetInitial(double _initial) { initial = _initial; }
-  double SetInflow(double _inflow) { inflow = _inflow; }
-  double SetOutflow(double _outflow) { outflow = _outflow; }
+  void SetInitial(double _initial) { initial = _initial; }
+  void SetInflow(double _inflow) { inflow = _inflow; }
+  void SetOutflow(double _outflow) { outflow = _outflow; }
 };
 
 /* class to hold all information for a single resource */

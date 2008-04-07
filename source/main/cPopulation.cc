@@ -1220,6 +1220,8 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     offspring_deme_energy = source_deme_energy * deme_energy_decay * m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_TO_DEME_AT_BIRTH.Get();
   }
   
+  bool target_successfully_seeded = true;
+  
   // Are we using germlines?  If so, we need to mutate the germline to get the
   // genome that we're going to seed the target with.
   if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
@@ -1302,12 +1304,12 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
 
   } else {
     // Not using germlines; things are much simpler.  Seed the target from the source.
-    SeedDeme(source_deme, target_deme);
+    target_successfully_seeded = SeedDeme(source_deme, target_deme);
   }
 
   // The source's merit must be transferred to the target, and then the source has
   // to rotate its heritable merit to its current merit.
-  target_deme.UpdateDemeMerit(source_deme);
+  if (target_successfully_seeded) target_deme.UpdateDemeMerit(source_deme);
   source_deme.UpdateDemeMerit();
   
   bool source_deme_resource_reset(true), target_deme_resource_reset(true);
@@ -1334,11 +1336,11 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // Must reset target first for stats to be correctly updated!
   if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
     // Transfer energy from source to target if we're using the energy model.
-    target_deme.DivideReset(source_deme, target_deme_resource_reset, offspring_deme_energy);
+    if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset, offspring_deme_energy);
     source_deme.DivideReset(source_deme, source_deme_resource_reset, parent_deme_energy);
   } else {
     // Default; reset both source and target.
-    target_deme.DivideReset(source_deme, target_deme_resource_reset);
+    if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset);
     source_deme.DivideReset(source_deme, source_deme_resource_reset);
   }
 
@@ -1384,11 +1386,13 @@ void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype) {
 
 /*! Helper method to seed a target deme from the organisms in the source deme.
 All organisms in the target deme are terminated, and a subset of the organisms in
-the source will be cloned to the target.
+the source will be cloned to the target. Returns whether target deme was successfully seeded.
 */
-void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
+bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
   cRandom& random = m_world->GetRandom();
-  
+
+  bool successfully_seeded = true;
+
   // Check to see if we're doing probabilistic organism replication from source
   // to target deme.
   if(m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get() == 0.0) {
@@ -1535,12 +1539,15 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         }
         case 2: 
         case 3:
+        case 4:
+        case 5:
         { // Selection based on germline propensities.
           // 2: sum the germline propensities of all organisms
           // and pick TWO based on each organism getting a 
           // weighted probability of being germline
           // 3: treat germline propensities as zero or nonzero for picking
-          
+          // 4: same as 3: but replication to target fails if only one germ.
+          // 5: same as 3: but replication fails and source dies if fewer than two germs.
           if (source_deme.GetOrgCount() < 2) {
             m_world->GetDriver().RaiseFatalException(1, "Germline DEMES_ORGANISM_SELECTION method didn't find at least two organisms in deme.");
           }
@@ -1565,26 +1572,36 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
             }
           }
           
-          //cout << "Germline Propensity Sum: " << gp_sum.Sum() << endl;
-          //cout << "Num prospective founders: " << prospective_founders.GetSize() << endl;
+          if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "Germline Propensity Sum: " << gp_sum.Sum() << endl;
+          if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "Num prospective founders: " << prospective_founders.GetSize() << endl;
           
           if (prospective_founders.GetSize() < 2) {
+          
             // there were not enough orgs with nonzero germlines
-            // pick additional orgs at random without replacement
+            // pick additional orgs at random without replacement,
+            // unless our method forbids this
+
+            // leave the founder list empty for method 5
+            if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 5) {
             
-            founders = prospective_founders;
-            
-            while(founders.GetSize() < 2) {
-              int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
-              if( cell_array[cellid].IsOccupied() ) {
-                cOrganism * org = cell_array[cellid].GetOrganism();
-                bool found = false;
-                for(int i=0; i< founders.GetSize(); i++) {
-                  if (founders[i] == org) found = true;
+              founders = prospective_founders;
+              
+              //do not add additional founders randomly for method 4
+              if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 4) {
+              
+                while(founders.GetSize() < 2) {
+                  int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
+                  if( cell_array[cellid].IsOccupied() ) {
+                    cOrganism * org = cell_array[cellid].GetOrganism();
+                    bool found = false;
+                    for(int i=0; i< founders.GetSize(); i++) {
+                      if (founders[i] == org) found = true;
+                    }
+                    if (!found) founders.Push(cell_array[cellid].GetOrganism());
+                  }
                 }
-                if (!found) founders.Push(cell_array[cellid].GetOrganism());
-              }
-            }   
+              }  
+            }
           } else {
           
           // pick two orgs based on germline propensities from prospective founders
@@ -1646,18 +1663,22 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       tArray<cOrganism*> target_founders = founders; // List of organisms we're going to transfer.
 
       if ( (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 2)
-        || (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 3) )
+        || (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 3)
+        || (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 4)
+        || (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 5) )
       {
         source_founders.ResizeClear(0);
         target_founders.ResizeClear(0);
         
-        source_founders.Push(founders[0]);
-        target_founders.Push(founders[1]);
+        if (founders.GetSize() > 0) source_founders.Push(founders[0]);
+        if (founders.GetSize() > 1) target_founders.Push(founders[1]);
       }
       
+      
       // We'd better have at *least* one genome.
-      assert(source_founders.GetSize()>0);
-      assert(target_founders.GetSize()>0);
+      // Methods that require a germline can sometimes come up short...
+      //assert(source_founders.GetSize()>0);
+      //assert(target_founders.GetSize()>0);
 
       // We clear the deme, but trick cPopulation::KillOrganism
       // to NOT delete the organisms, by pretending 
@@ -1697,11 +1718,15 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         }
       }
       
-      // Clear the demes.
-      target_deme.ClearFounders();
-      target_deme.UpdateStats();
-      target_deme.KillAll();
-
+      // Clear the target deme (if we have successfully replaced it).
+      if (target_founders.GetSize() > 0) {
+        target_deme.ClearFounders();
+        target_deme.UpdateStats();
+        target_deme.KillAll();
+      } else {
+        successfully_seeded = false;
+      }
+      
       //cout << founders.GetSize() << " founders." << endl;
 
       // Now populate the target (and optionally the source) using InjectGenotype.
@@ -1764,13 +1789,14 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       }
       
       // Update *source* generations per lifetime by the founders we used to seed the *target*.
-      // and *source*, so that we average over them.
-      tArray<cPhenotype> new_phenotypes;
-      new_phenotypes = new_phenotypes + target_deme.GetFounderPhenotypes();
-      new_phenotypes = new_phenotypes + source_deme.GetFounderPhenotypes();
-      source_deme.UpdateGenerationsPerLifetime(new_phenotypes);
+      // and *source*, so that we average over them. At this point, the avg_founder_generation
+      // has not been updated, so we can use the old value from the source.
+
+//      source_deme.UpdateGenerationsPerLifetime( source_deme.GetAvgFounderGeneration(), source_deme.GetFounderPhenotypes() );
+//      if (successfully_seeded) {
+//        target_deme.UpdateGenerationsPerLifetime( source_deme.GetAvgFounderGeneration(), target_deme.GetFounderPhenotypes() );
+//      }
       
-                        
       /*
       // Debug Code
       //// Count the number of orgs in each deme.
@@ -1819,13 +1845,16 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       */
               
       // remember to delete the old target organisms and adjust their genotypes
-      for(int i=0; i<old_target_organisms.GetSize(); ++i) {
-        old_target_organisms[i]->SetRunning(false);
-        cGenotype * genotype = old_target_organisms[i]->GetGenotype();
-        genotype->DecDeferAdjust();
-        m_world->GetClassificationManager().AdjustGenotype(*genotype);
-        delete old_target_organisms[i];
-      }
+        for(int i=0; i<old_target_organisms.GetSize(); ++i) {
+          old_target_organisms[i]->SetRunning(false);
+          cGenotype * genotype = old_target_organisms[i]->GetGenotype();
+          genotype->DecDeferAdjust();
+          m_world->GetClassificationManager().AdjustGenotype(*genotype);
+          
+          // ONLY delete target orgs if seeding was successful
+          // otherwise they still exist int he population
+          if (successfully_seeded) delete old_target_organisms[i];
+        }
       
       for(int i=0; i<old_source_organisms.GetSize(); ++i) {
         old_source_organisms[i]->SetRunning(false);
@@ -1878,6 +1907,8 @@ void cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       //}
     }
   }
+  
+  return successfully_seeded;
 }
 
 void cPopulation::InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype)
@@ -1905,12 +1936,12 @@ void cPopulation::InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenoty
     // and germline propensity.
     organism->GetPhenotype().SetPermanentGermlinePropensity( _phenotype->GetPermanentGermlinePropensity()  );
     
-    if (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() > 0.0) {
+    if (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() >= 0.0) {
       organism->GetPhenotype().SetPermanentGermlinePropensity( m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() );
     }
   }
   
-  /* It requires mcuh more than this to correctly implement, do later if needed @JEB
+  /* It requires much more than this to correctly implement, do later if needed @JEB
   //Optionally, set the first organism's merit to a constant value
   //actually, we need to add so the first organism is seeded this way too...
   if (m_world->GetConfig().DEMES_DEFAULT_MERIT.Get()) {
@@ -3220,12 +3251,16 @@ void cPopulation::UpdateDemeStats() {
 
   stats.SumDemeGenerationsPerLifetime().Clear();
 
+  stats.ClearNumOccupiedDemes();
+
   for(int i = 0; i < GetNumDemes(); i++) {
     cDeme& deme = GetDeme(i);
     if(deme.IsEmpty())  // ignore empty demes
     { 
       continue;
     }
+    stats.IncNumOccupiedDemes();
+    
     stats.SumDemeAge().Add(deme.GetAge());
     stats.SumDemeBirthCount().Add(deme.GetBirthCount());
     stats.SumDemeOrgCount().Add(deme.GetOrgCount());
@@ -3903,7 +3938,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
         (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get());
         
         
-      if (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() > 0.0) {
+      if (m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() >= 0.0) {
          GetCell(cell_id).GetOrganism()->GetPhenotype().SetPermanentGermlinePropensity
           ( m_world->GetConfig().DEMES_FOUNDER_GERMLINE_PROPENSITY.Get() );
       }
