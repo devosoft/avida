@@ -115,7 +115,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_sense_count          = in_phen.cur_sense_count;                 
   sensed_resources         = in_phen.sensed_resources;            
   cur_task_time            = in_phen.cur_task_time;   
-  
+  cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
+
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
   tList<void*>       hash_keys;
@@ -142,7 +143,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_inst_count          = in_phen.last_inst_count;	  
   last_sense_count         = in_phen.last_sense_count;   
   last_fitness             = in_phen.last_fitness;            
-  
+  last_child_germline_propensity = in_phen.last_child_germline_propensity;
+
   // 4. Records from this organisms life...
   num_divides              = in_phen.num_divides;      
   generation               = in_phen.generation;        
@@ -211,6 +213,9 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   child_fertile           = in_phen.child_fertile;  
   last_child_fertile      = in_phen.last_child_fertile; 
   child_copied_size       = in_phen.child_copied_size;
+
+  // 7. Permanent information...
+  permanent_germline_propensity = in_phen.permanent_germline_propensity;
          
   return *this;
 }
@@ -295,7 +300,8 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  
+  cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+
   // Copy last values from parent
   last_merit_base           = parent_phenotype.last_merit_base;
   last_bonus                = parent_phenotype.last_bonus;
@@ -304,12 +310,13 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   last_num_donates          = parent_phenotype.last_num_donates;
   last_task_count           = parent_phenotype.last_task_count;
   last_task_quality         = parent_phenotype.last_task_quality;
-  last_task_value			= parent_phenotype.last_task_value;
+  last_task_value           = parent_phenotype.last_task_value;
   last_reaction_count       = parent_phenotype.last_reaction_count;
   last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
   last_inst_count           = parent_phenotype.last_inst_count;
   last_sense_count          = parent_phenotype.last_sense_count;
   last_fitness              = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
+  last_child_germline_propensity = parent_phenotype.last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   // Setup other miscellaneous values...
   num_divides     = 0;
@@ -381,6 +388,9 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   child_fertile      = true;
   child_copied_size  = 0;
 
+  // permanently set germline propensity of org (since DivideReset is called first, it is now in the "last" slot...)
+  permanent_germline_propensity  = parent_phenotype.last_child_germline_propensity;
+
   initialized = true;
 }
 
@@ -429,7 +439,8 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-  
+  cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+
   // Copy last values from parent
   last_merit_base = genome_length;
   last_bonus      = 1;
@@ -443,6 +454,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_reaction_add_reward.SetAll(0);
   last_inst_count.SetAll(0);
   last_sense_count.SetAll(0);
+  last_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
 
   // Setup other miscellaneous values...
   num_divides     = 0;
@@ -513,6 +525,8 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_child_fertile = true;
   child_copied_size = 0;
 
+  permanent_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
+
   initialized = true;
 }
 
@@ -561,6 +575,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
   last_sense_count          = cur_sense_count;
+  last_child_germline_propensity = cur_child_germline_propensity;
 
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
@@ -577,6 +592,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
+  cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
 
   // Setup other miscellaneous values...
   num_divides++;
@@ -646,9 +662,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if ( (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
-    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE)
-    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE_EPIGENETIC) ) {
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
@@ -704,7 +718,8 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
   last_sense_count          = cur_sense_count;  
-
+  last_child_germline_propensity = cur_child_germline_propensity;
+  
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
@@ -725,6 +740,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
+  cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
 
   // Setup other miscellaneous values...
   num_divides++;
@@ -846,6 +862,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
+  cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
 
   // Copy last values from parent
   last_merit_base          = clone_phenotype.last_merit_base;
@@ -859,6 +876,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   last_inst_count          = clone_phenotype.last_inst_count;
   last_sense_count         = clone_phenotype.last_sense_count;  
   last_fitness             = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
+  last_child_germline_propensity = clone_phenotype.last_child_germline_propensity;
 
   // Setup other miscellaneous values...
   num_divides     = 0;
@@ -930,6 +948,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   last_child_fertile = is_fertile;
   child_fertile      = true;
   child_copied_size  = 0;
+  permanent_germline_propensity = clone_phenotype.permanent_germline_propensity;
 
   initialized = true;
 }
@@ -1003,14 +1022,21 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cur_bonus *= result.GetMultBonus();
   cur_bonus += result.GetAddBonus();
   
+  // update the germline propensity
+  cur_child_germline_propensity += result.GetAddGermline();
+  cur_child_germline_propensity *= result.GetMultGermline();
+  
   // Update deme merit (guard against running in the test CPU, where there is
   // no deme object.  Don't touch deme merit if there is no deme frac component.
   cDeme* deme = taskctx.GetOrganism()->GetOrgInterface().GetDeme();
-  if(deme && result.GetActiveDeme()) {
-    double deme_bonus = deme->GetHeritableDemeMerit().GetDouble();
-    deme_bonus *= result.GetMultDemeBonus();
-    deme_bonus += result.GetAddDemeBonus();
-    deme->UpdateHeritableDemeMerit(deme_bonus);
+  if(deme) {
+  
+    if (result.GetActiveDeme()) {
+      double deme_bonus = deme->GetHeritableDemeMerit().GetDouble();
+      deme_bonus *= result.GetMultDemeBonus();
+      deme_bonus += result.GetAddDemeBonus();
+      deme->UpdateHeritableDemeMerit(deme_bonus);
+    }
     
     //also count tasks/reactions
     for (int i = 0; i < num_tasks; i++) {
@@ -1514,7 +1540,7 @@ void cPhenotype::NewTrial()
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);
-  //cur_trial_fitnesses.Resize(0); Don't throw out the tiral fitnesses! @JEB
+  //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
 
@@ -1574,7 +1600,6 @@ void cPhenotype::NewTrial()
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
-
 }
 
 /**
@@ -1614,9 +1639,7 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
 
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if ( (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
-    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE)
-    || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_KEEP_STATE_EPIGENETIC) ) {    
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {    
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;

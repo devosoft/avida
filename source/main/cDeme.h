@@ -26,6 +26,7 @@
 
 #include "cDemeCellEvent.h"
 #include "cGermline.h"
+#include "cPhenotype.h"
 #include "cMerit.h"
 #include "tArray.h"
 #include "cResourceCount.h"
@@ -35,6 +36,7 @@ class cResource;
 class cWorld;
 class cPopulationCell;
 class cGenotype;
+class cOrganism;
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -59,11 +61,21 @@ private:
   double cur_normalized_time_used; // normalized by merit and number of orgs
   double last_normalized_time_used; 
   
-  tArray<int> cur_task_count;
+  tArray<int> cur_task_exe_count;
   tArray<int> cur_reaction_count;
-  tArray<int> last_task_count;
+  tArray<int> last_task_exe_count;
   tArray<int> last_reaction_count;
   
+  tArray<int> cur_org_task_count;
+  tArray<int> cur_org_task_exe_count;
+  tArray<int> cur_org_reaction_count;
+  tArray<int> last_org_task_count;
+  tArray<int> last_org_task_exe_count;
+  tArray<int> last_org_reaction_count;
+  
+  double avg_founder_generation;  //Average generation of current founders                                    
+  double generations_per_lifetime; //Generations between current founders and founders of parent  
+
   // End of phenotypic traits
   
   cGermline _germline; //!< The germline for this deme, if used.
@@ -78,6 +90,7 @@ private:
   int         m_germline_genotype_id; // Genotype id of germline (if in use)
   tArray<int> m_founder_genotype_ids; // List of genotype ids used to found deme.
                                       // Keep a lease on these genotypes for the deme's lifetime.
+  tArray<cPhenotype> m_founder_phenotypes; // List of phenotypes of founder organsisms                                    
                                       
   cMerit _current_merit; //!< Deme merit applied to all organisms living in this deme.
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
@@ -85,6 +98,7 @@ private:
 public:
   cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0),
             time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
+            avg_founder_generation(0.0), generations_per_lifetime(0.0),
             deme_resource_count(0), m_germline_genotype_id(0) { ; }
   ~cDeme() { ; }
 
@@ -106,6 +120,8 @@ public:
 
   //! Kills all organisms currently in this deme.
   void KillAll();
+  void UpdateStats();
+  
   int GetBirthCount() const { return birth_count; }
   void IncBirthCount() { birth_count++; }
 
@@ -136,11 +152,15 @@ public:
   const cMerit& GetHeritableDemeMerit() const { return _next_merit; }
 
 
-  void AddCurTask(int task_num) { cur_task_count[task_num]++; }
+  void AddCurTask(int task_num) { cur_task_exe_count[task_num]++; }
   void AddCurReaction (int reaction_num) { cur_reaction_count[reaction_num]++; }
 
-  const tArray<int>& GetLastTaskCount() const { return last_task_count; }
+  const tArray<int>& GetLastTaskExeCount() const { return last_task_exe_count; }
   const tArray<int>& GetLastReactionCount() const { return last_reaction_count; }
+
+  const tArray<int>& GetLastOrgTaskCount() const { return last_org_task_count; }
+  const tArray<int>& GetLastOrgTaskExeCount() const { return last_org_task_exe_count; }
+  const tArray<int>& GetLastOrgReactionCount() const { return last_org_reaction_count; }
 
   bool HasDemeMerit() const { return _current_merit.GetDouble() != 1.0; }
 
@@ -175,9 +195,13 @@ public:
 
   // --- Founder list management --- //
   void ClearFounders();
-  void AddFounder(cGenotype& _in_genotype);
-  tArray<int>& GetFounders() { return m_founder_genotype_ids; }
-  
+  void AddFounder(cGenotype& _in_genotype, cPhenotype * _in_phenotype = NULL);
+  tArray<int>& GetFounderGenotypeIDs() { return m_founder_genotype_ids; }
+  tArray<cPhenotype>& GetFounderPhenotypes() { return m_founder_phenotypes; }
+  double GetAvgFounderGeneration() { return avg_founder_generation; }        
+  void UpdateGenerationsPerLifetime(tArray<cPhenotype>& new_founder_phenotypes);   
+  double GetGenerationsPerLifetime() { return generations_per_lifetime; }  
+
   // --- Germline management --- //
   void ReplaceGermline(cGenotype& _in_genotype);
   int GetGermlineGenotypeID() { return m_germline_genotype_id; }

@@ -274,6 +274,7 @@ private:
   cIntSum sum_deme_gestation_time;
   cDoubleSum sum_deme_normalized_time_used;
   cDoubleSum sum_deme_merit;
+  cDoubleSum sum_deme_generations_per_lifetime;
 
   // Speculative Execution Stats
   int m_spec_total;
@@ -418,7 +419,8 @@ public:
   cIntSum& SumDemeGestationTime()   { return sum_deme_gestation_time; }
   cDoubleSum& SumDemeNormalizedTimeUsed()   { return sum_deme_normalized_time_used; }
   cDoubleSum& SumDemeMerit()   { return sum_deme_merit; }
-  
+  cDoubleSum& SumDemeGenerationsPerLifetime()   { return sum_deme_generations_per_lifetime; }
+
 #if INSTRUCTION_COUNT
   void ZeroInst();
 #endif
@@ -458,7 +460,7 @@ public:
   const cIntSum& SumDemeGestationTime() const  { return sum_deme_generation; }
   const cDoubleSum& SumDemeNormalizedTimeUsed() const  { return sum_deme_normalized_time_used; }
   const cDoubleSum& SumDemeMerit()  const  { return sum_deme_merit; }
-
+  const cDoubleSum& SumDemeGenerationsPerLifetime() const  { return sum_deme_generations_per_lifetime; }
 
   void IncResamplings() { ++num_resamplings; }  // @AWC 06/29/06
   void IncFailedResamplings() { ++num_failedResamplings; }  // @AWC 06/29/06
@@ -722,8 +724,10 @@ public:
   void PrintDemeTasks(const cString& filename);
   void PrintDemeTasksExe(const cString& filename);
   void PrintDemeReactions(const cString& filename);
-
-
+  void PrintDemeOrgTasks(const cString& filename);
+  void PrintDemeOrgTasksExe(const cString& filename);
+  void PrintDemeOrgReactions(const cString& filename);
+  
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
   cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.

@@ -123,10 +123,11 @@ private:
   tHashTable<void*, cTaskState*> m_task_states;
   tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   tArray<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
-  tArray<int> cur_trial_times_used;        // Time used in of various trials.; @JEB
+  tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
-  
+  double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
+
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
   double last_bonus;
@@ -142,6 +143,7 @@ private:
   tArray<int> last_sense_count;   // Total times resource combinations have been sensed; @JEB 
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
+  double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   // 4. Records from this organisms life...
   int num_divides;       // Total successful divides organism has produced.
@@ -212,15 +214,14 @@ private:
   bool last_child_fertile;  // Was the child being born to be fertile?
   int child_copied_size; // Instruction copied into child.
 
-
-  cPhenotype(); // @not_implemented
-  
-protected:
-  cPhenotype(const cPhenotype&); 
-  cPhenotype& operator=(const cPhenotype&); 
+  // 7. Information that is set once (when organism was born)
+  double permanent_germline_propensity;
   
 public:
+  cPhenotype() { ; } // @not_implemented
   cPhenotype(cWorld* world);
+  cPhenotype(const cPhenotype&); 
+  cPhenotype& operator=(const cPhenotype&); 
   ~cPhenotype();
 
   bool OK();
@@ -320,6 +321,7 @@ public:
   const tArray<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
   const tArray<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
+  double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
   int GetGeneration() const { assert(initialized == true); return generation; }
@@ -392,6 +394,8 @@ public:
   void SetGestationTime(int in_time) { gestation_time = in_time; }
   void SetTimeUsed(int in_time) { time_used = in_time; }
   void SetTrialTimeUsed(int in_time) { trial_time_used = in_time; }
+  void SetGeneration(int in_generation) { generation = in_generation; }
+  void SetPermanentGermlinePropensity(double _in) { permanent_germline_propensity = _in; }
   void SetFault(const cString& in_fault) { fault_desc = in_fault; }
   void SetNeutralMetric(double _in){ neutral_metric = _in; }
   void SetLifeFitness(double _in){ life_fitness = _in; }
@@ -438,6 +442,7 @@ public:
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
   void IncSenseCount(const int i) { assert(initialized == true); cur_sense_count[i]++; }  
+  
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }
   bool& IsModified() { assert(initialized == true); return is_modified; }

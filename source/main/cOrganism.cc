@@ -266,8 +266,6 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   //update deme resources
   m_interface->UpdateDemeResources(deme_res_change);  
 
-  //if(m_world->GetConfig().CLEAR_ON_OUTPUT.Get()) input_buffer.Clear();  @JEB Not fully implemented 
-
   for (int i = 0; i < insts_triggered.GetSize(); i++) {
     const int cur_inst = insts_triggered[i];
     m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst));

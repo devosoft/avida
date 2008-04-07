@@ -150,6 +150,7 @@ public:
   cGenotype* GetGenotype() const { return m_genotype; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
   cPhenotype& GetPhenotype() { return m_phenotype; }
+  void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }
 
   const cGenome& GetGenome() const { return m_initial_genome; }
   

@@ -40,6 +40,8 @@ cReactionResult::cReactionResult(const int num_resources,
   , energy_add(0.0)
   , bonus_add(0.0)
   , bonus_mult(1.0)
+  , germline_add(0.0)
+  , germline_mult(1.0)
   , insts_triggered(0)
   , lethal(false)
   , sterilize(false)
@@ -151,6 +153,19 @@ void cReactionResult::MultDemeBonus(double value)
   active_deme_reaction = true;
   deme_mult_bonus *= value;
 }
+
+void cReactionResult::AddGermline(double value)
+{
+  ActivateReaction();
+  germline_add += value;
+}
+
+void cReactionResult::MultGermline(double value)
+{
+  ActivateReaction();
+  germline_mult *= value;
+}
+
 
 void cReactionResult::AddInst(int id)
 {

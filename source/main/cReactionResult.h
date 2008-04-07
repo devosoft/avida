@@ -43,6 +43,8 @@ private:
   double energy_add;
   double bonus_add;
   double bonus_mult;
+  double germline_add;
+  double germline_mult;
   tArray<int> insts_triggered;
   bool lethal;
   bool sterilize;
@@ -78,7 +80,9 @@ public:
   void MultBonus(double value);
   void AddDemeBonus(double value);
   void MultDemeBonus(double value);
-  
+  void AddGermline(double value);
+  void MultGermline(double value);
+
   void AddInst(int id);
   
   double GetConsumed(int id);
@@ -97,6 +101,9 @@ public:
   tArray<int>& GetInstArray() { return insts_triggered; }
   double GetAddDemeBonus() { return deme_add_bonus; }
   double GetMultDemeBonus() { return deme_mult_bonus; }
+  double GetAddGermline() { return germline_add; }
+  double GetMultGermline() { return germline_mult; }
+
 };
 
 

@@ -425,6 +425,7 @@ cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m
   /**/
   
   m_spec_die = false;
+  m_epigenetic_state = false;
   
   m_thread_slicing_parallel = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1);
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
@@ -448,6 +449,7 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 , m_mal_active(hardware_cpu.m_mal_active)
 , m_advance_ip(hardware_cpu.m_advance_ip)
 , m_executedmatchstrings(hardware_cpu.m_executedmatchstrings)
+, m_epigenetic_state(hardware_cpu.m_epigenetic_state)
 {
 #if INSTRUCTION_COSTS
   m_inst_cost = hardware_cpu.m_inst_cost;
@@ -473,6 +475,14 @@ void cHardwareCPU::Reset()
   m_threads[0].Reset(this, 0);
   m_thread_id_chart = 1; // Mark only the first thread as taken...
   m_cur_thread = 0;
+  
+  // But then reset thread to have any epigenetic information we have saved
+  if (m_epigenetic_state) {
+    for (int i=0; i<NUM_REGISTERS; i++) {
+      m_threads[0].reg[i] = m_epigenetic_saved_reg[i];
+    }
+    m_threads[0].stack = m_epigenetic_saved_stack;
+  }
   
   m_mal_active = false;
   m_executedmatchstrings = false;
@@ -1353,6 +1363,12 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
 
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
+  
+    if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_PARENT) 
+    || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
+      InheritState(*this);  
+    }
+
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
   }
   
@@ -1631,14 +1647,20 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   return true;
 }
 
-void cHardwareCPU::Divide_InheritState(cHardwareBase& in_hardware)
+// Sets the current state of the hardware and also saves this state so
+//  that future Reset() calls will reset to that epigenetic state
+void cHardwareCPU::InheritState(cHardwareBase& in_hardware)
 { 
+  m_epigenetic_state = true;
+
   cHardwareCPU& in_h = (cHardwareCPU&)in_hardware; 
   const cLocalThread& thread = in_h.GetThread(in_h.GetCurThread());
-  m_threads[m_cur_thread].stack = thread.stack;
   for (int i=0; i<NUM_REGISTERS; i++) {
-    m_threads[m_cur_thread].reg[i] = thread.reg[i];
+    m_epigenetic_saved_reg[i] = thread.reg[i];
+    m_threads[m_cur_thread].reg[i] = m_epigenetic_saved_reg[i];
   }
+  m_epigenetic_saved_stack = thread.stack;
+  m_threads[m_cur_thread].stack = m_epigenetic_saved_stack;
 }
 
 

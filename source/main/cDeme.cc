@@ -45,14 +45,28 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
   const int num_reactions = m_world->GetNumReactions();  
-  cur_task_count.Resize(num_tasks);
-  cur_task_count.SetAll(0);
+  
+  cur_task_exe_count.Resize(num_tasks);
+  cur_task_exe_count.SetAll(0);
   cur_reaction_count.ResizeClear(num_reactions);
   cur_reaction_count.SetAll(0);
-  last_task_count.ResizeClear(num_tasks);
-  last_task_count.SetAll(0);
+  last_task_exe_count.ResizeClear(num_tasks);
+  last_task_exe_count.SetAll(0);
   last_reaction_count.ResizeClear(num_reactions);
   last_reaction_count.SetAll(0);
+
+  cur_org_task_count.Resize(num_tasks);
+  cur_org_task_count.SetAll(0);
+  cur_org_task_exe_count.Resize(num_tasks);
+  cur_org_task_exe_count.SetAll(0);
+  cur_org_reaction_count.ResizeClear(num_reactions);
+  cur_org_reaction_count.SetAll(0);
+  last_org_task_count.ResizeClear(num_tasks);
+  last_org_task_count.SetAll(0);
+  last_org_task_exe_count.ResizeClear(num_tasks);
+  last_org_task_exe_count.SetAll(0);
+  last_org_reaction_count.ResizeClear(num_reactions);
+  last_org_reaction_count.SetAll(0);
 
   // If width is negative, set it to the full number of cells.
   width = in_width;
@@ -143,7 +157,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   birth_count = 0;
   cur_normalized_time_used = 0;
   
-  cur_task_count.SetAll(0);
+  cur_task_exe_count.SetAll(0);
   cur_reaction_count.SetAll(0);
 
   if(resetResources) deme_resource_count.ReinitializeResources();
@@ -152,17 +166,43 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 
 void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_energy)
 {
+  // inherit last value from the parent
+  generations_per_lifetime = parent_deme.GetGenerationsPerLifetime();
+
+  // update our average founder generation
+  cDoubleSum gen;  
+  for (int i=0; i< m_founder_phenotypes.GetSize(); i++) {
+    gen.Add( m_founder_phenotypes[i].GetGeneration() );
+  }
+  avg_founder_generation = gen.Average();
+
   //Save statistics according to parent before reset.
   generation = parent_deme.GetGeneration() + 1;
   gestation_time = parent_deme.GetTimeUsed();
   last_normalized_time_used = parent_deme.GetNormalizedTimeUsed();
   
-  last_task_count = cur_task_count;
+  last_task_exe_count = cur_task_exe_count;
   last_reaction_count = cur_reaction_count;
+
+  last_org_task_count = cur_org_task_count;
+  last_org_task_exe_count = cur_org_task_exe_count;
+  last_org_reaction_count = cur_org_reaction_count;
 
   Reset(resetResources, deme_energy);
 }
 
+
+// Given the input deme founders and original ones,
+// calculate how many generations this deme went through to divide.
+void cDeme::UpdateGenerationsPerLifetime(tArray<cPhenotype>& new_founder_phenotypes) 
+{ 
+  cDoubleSum gen;
+  for (int i=0; i< new_founder_phenotypes.GetSize(); i++) {
+    gen.Add( new_founder_phenotypes[i].GetGeneration() );
+  }
+  double new_avg_founder_generation = gen.Average();
+  generations_per_lifetime = new_avg_founder_generation - avg_founder_generation;
+}
 
 /*! Check every cell in this deme for a living organism.  If found, kill it. */
 void cDeme::KillAll()
@@ -171,6 +211,45 @@ void cDeme::KillAll()
     cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_ids[i]);
     if(cell.IsOccupied()) {
       m_world->GetPopulation().KillOrganism(cell);
+    }
+  }
+}
+
+void cDeme::UpdateStats()
+{
+  //save stats about what tasks our orgs were doing
+  //usually called before KillAll
+  
+  for(int j = 0; j < cur_org_task_count.GetSize(); j++) {
+    int count = 0;
+    for(int k=0; k<GetSize(); k++) {
+      int cellid = GetCellID(k);
+      if(m_world->GetPopulation().GetCell(cellid).IsOccupied()) {
+        count += (m_world->GetPopulation().GetCell(cellid).GetOrganism()->GetPhenotype().GetLastTaskCount()[j] > 0);
+      }
+     cur_org_task_count[j] = count; 
+    }
+  }
+  
+  for(int j = 0; j < cur_org_task_exe_count.GetSize(); j++) {
+    int count = 0;
+    for(int k=0; k<GetSize(); k++) {
+      int cellid = GetCellID(k);
+      if(m_world->GetPopulation().GetCell(cellid).IsOccupied()) {
+        count += m_world->GetPopulation().GetCell(cellid).GetOrganism()->GetPhenotype().GetLastTaskCount()[j];
+      }
+     cur_org_task_exe_count[j] = count; 
+    }
+  }
+
+ for(int j = 0; j < cur_org_reaction_count.GetSize(); j++) {
+    int count = 0;
+    for(int k=0; k<GetSize(); k++) {
+      int cellid = GetCellID(k);
+      if(m_world->GetPopulation().GetCell(cellid).IsOccupied()) {
+        count += m_world->GetPopulation().GetCell(cellid).GetOrganism()->GetPhenotype().GetLastReactionCount()[j];
+      }
+     cur_org_reaction_count[j] = count; 
     }
   }
 }
@@ -289,12 +368,17 @@ double cDeme::CalculateTotalEnergy() {
 
 // --- Founder list management --- //
 
-void cDeme::AddFounder(cGenotype& _in_genotype) {
+void cDeme::AddFounder(cGenotype& _in_genotype, cPhenotype * _in_phenotype) {
+
   // save genotype id
   m_founder_genotype_ids.Push( _in_genotype.GetID() );
+  cPhenotype phenotype;
+  if (_in_phenotype) phenotype = *_in_phenotype;
+  m_founder_phenotypes.Push( phenotype );
 
   // defer adjusting this genotype until we are done with it
   _in_genotype.IncDeferAdjust();
+  
 }
 
 void cDeme::ClearFounders() {
@@ -308,6 +392,7 @@ void cDeme::ClearFounders() {
   
   // empty our list
   m_founder_genotype_ids.ResizeClear(0);
+  m_founder_phenotypes.ResizeClear(0);
 }
 
 void cDeme::ReplaceGermline(cGenotype& _in_genotype) {

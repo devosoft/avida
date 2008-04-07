@@ -169,6 +169,12 @@ protected:
   tArray<cPromoter> m_promoters;
   // Promoter Model -->
 
+  // <-- Epigenetic State
+  bool m_epigenetic_state;
+  int m_epigenetic_saved_reg[NUM_REGISTERS];
+  cCPUStack m_epigenetic_saved_stack;
+  // Epigenetic State -->
+
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
   // --------  Stack Manipulation...  --------
@@ -221,7 +227,7 @@ protected:
   bool Divide_Main2RS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 07/28/06
 
   void Divide_DoTransposons(cAvidaContext& ctx);
-  void Divide_InheritState(cHardwareBase& in_hardware);
+  void InheritState(cHardwareBase& in_hardware);
   
   void InjectCode(const cGenome& injection, const int line_num);
   

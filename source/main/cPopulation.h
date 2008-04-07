@@ -204,6 +204,9 @@ public:
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
   void SeedDeme(cDeme& source_deme, cDeme& target_deme);
+
+  //! Helper method that adds a founder organism to a deme, and sets up its phenotype
+  void InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype = NULL);
   
   //! Helper method that determines the cell into which an organism will be placed during deme replication.
   int DemeSelectInjectionCell(cDeme& deme, int sequence=0);
