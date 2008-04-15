@@ -309,6 +309,7 @@ public:
   CONFIG_ADD_VAR(GERMLINE_INS_MUT, double, 0.05, "Prob. of an insertion mutation occuring\nduring germline replication (default=0.05).");
   CONFIG_ADD_VAR(GERMLINE_DEL_MUT, double, 0.05, "Prob. of a deletion mutation occuring\nduring germline replication (default=0.05).");
   CONFIG_ADD_VAR(DEMES_REPLICATE_CPU_CYCLES, double, 0.0, "Replicate a deme immediately after it has used\nthis number of cpu cycles, normalized\nby number of orgs in deme (0 = OFF).");
+  CONFIG_ADD_VAR(DEMES_REPLICATE_TIME, double, 0.0, "Replicate a deme immediately after it has used\nthis number of cpu cycles, normalized\nby number of orgs in deme and organism merit (0 = OFF).");
   CONFIG_ADD_VAR(DEMES_REPLICATE_BIRTHS, int, 0, "Replicate a deme immediately after it has \nproduced this many offspring (0 = OFF).");
   CONFIG_ADD_VAR(DEMES_REPLICATE_ORGS, int, 0, "Replicate a deme immediately once it reaches a\ncertain number of organisms (0 = OFF).");
   CONFIG_ADD_VAR(DEMES_REPLICATION_ONLY_RESETS, int, 0, "Kin selection mode. Deme replication really:\n1=resets deme resources\n2=rests deme resources and re-injects organisms");

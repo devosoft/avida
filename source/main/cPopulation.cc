@@ -1488,9 +1488,11 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       // @JEB
       // Updated seed deme method that maintains genotype inheritance.
       
-      tArray<cOrganism*> founders; // List of organisms we're going to transfer.
- 
-      /*
+      // deconstruct founders into two lists...
+      tArray<cOrganism*> source_founders; // List of organisms we're going to transfer.
+      tArray<cOrganism*> target_founders; // List of organisms we're going to transfer.
+      
+                  /*
       // Debug Code
       cGenotype * original_source_founder_genotype = NULL;
       if (1) {
@@ -1536,27 +1538,67 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       }
       cout << "Initial orgs in source deme: " << count << endl;     
       */
+
       
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
           // being selected more than once).
+          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
           while(founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
             int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
             if(cell_array[cellid].IsOccupied()) {
               founders.Push(cell_array[cellid].GetOrganism());
             }
           }
+          source_founders = founders;
+          target_founders = founders;
           break;
         }
         case 1: { // Sequential selection, from the beginning.  Good with DEMES_ORGANISM_PLACEMENT=3.
+          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
           for(int i=0; i<m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
             int cellid = source_deme.GetCellID(i);
             if(cell_array[cellid].IsOccupied()) {
               founders.Push(cell_array[cellid].GetOrganism());
             }
           }
+          source_founders = founders;
+          target_founders = founders;
           break;
         }
+        case 6: { // Random w/o replacement.  Take as many for each deme as DEME_REPLICATE_SIZE.
+          tList<cOrganism> prospective_founders;
+          
+          //Die if not >= two organisms. 
+          if (source_deme.GetOrgCount() >= 2) {
+          
+            //Collect prospective founder organisms into a list
+            for (int i=0; i < source_deme.GetSize(); i++) {
+              if ( GetCell(source_deme.GetCellID(i)).IsOccupied() ) {
+                  prospective_founders.Push( GetCell(source_deme.GetCellID(i)).GetOrganism() );
+              }
+            }
+
+            //add orgs alternately to source and target founders until
+            //we run out or each reaches DEMES_REPLICATE_SIZE.
+            int num_chosen_orgs = 0;
+            while( ((target_founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get())
+                || (source_founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()))
+                && (prospective_founders.GetSize() > 0) ) {
+
+              int chosen_org = random.GetUInt(prospective_founders.GetSize());
+              if (num_chosen_orgs % 2 == 0) {
+                source_founders.Push(prospective_founders.PopPos(chosen_org));
+              } else {
+                target_founders.Push(prospective_founders.PopPos(chosen_org));
+              } 
+                          
+              num_chosen_orgs++;
+            }
+          }
+          break;
+        }
+
         case 2: 
         case 3:
         case 4:
@@ -1568,108 +1610,117 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           // 3: treat germline propensities as zero or nonzero for picking
           // 4: same as 3: but replication to target fails if only one germ.
           // 5: same as 3: but replication fails and source dies if fewer than two germs.
-          if (source_deme.GetOrgCount() < 2) {
-            m_world->GetDriver().RaiseFatalException(1, "Germline DEMES_ORGANISM_SELECTION method didn't find at least two organisms in deme.");
-          }
-          
-          if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() != 0) {
-            m_world->GetDriver().RaiseFatalException(1, "Germline DEMES_ORGANISM_SELECTION methods 2 and 3 can only be used with DEMES_DIVIDE_METHOD 0.");
-          }
-          
-          tArray<cOrganism*> prospective_founders;
-          
-          cDoubleSum gp_sum;
-          double min = -1;
-          for (int i=0; i < source_deme.GetSize(); i++) {
-            if ( GetCell(source_deme.GetCellID(i)).IsOccupied() ) {
-              double gp = GetCell(source_deme.GetCellID(i)).GetOrganism()->GetPhenotype().GetPermanentGermlinePropensity();
-              if (gp > 0.0) {
-                gp_sum.Add( gp );
-                prospective_founders.Push( GetCell(source_deme.GetCellID(i)).GetOrganism() );
-              }
-              //cout << gp << " ";
-              if ( (min == -1) || (gp < min) ) min = gp;
-            }
-          }
-          
-          if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "Germline Propensity Sum: " << gp_sum.Sum() << endl;
-          if (m_world->GetVerbosity() > VERBOSE_SILENT) cout << "Num prospective founders: " << prospective_founders.GetSize() << endl;
-          
-          if (prospective_founders.GetSize() < 2) {
-          
-            // there were not enough orgs with nonzero germlines
-            // pick additional orgs at random without replacement,
-            // unless our method forbids this
+          tArray<cOrganism*> founders; // List of organisms we're going to transfer.
 
-            // leave the founder list empty for method 5
-            if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 5) {
+          if (source_deme.GetOrgCount() >= 2) {
+          
+            if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() != 0) {
+              m_world->GetDriver().RaiseFatalException(1, "Germline DEMES_ORGANISM_SELECTION methods 2 and 3 can only be used with DEMES_DIVIDE_METHOD 0.");
+            }
             
-              founders = prospective_founders;
+            tArray<cOrganism*> prospective_founders;
+            
+            cDoubleSum gp_sum;
+            double min = -1;
+            for (int i=0; i < source_deme.GetSize(); i++) {
+              if ( GetCell(source_deme.GetCellID(i)).IsOccupied() ) {
+                double gp = GetCell(source_deme.GetCellID(i)).GetOrganism()->GetPhenotype().GetPermanentGermlinePropensity();
+                if (gp > 0.0) {
+                  gp_sum.Add( gp );
+                  prospective_founders.Push( GetCell(source_deme.GetCellID(i)).GetOrganism() );
+                }
+                //cout << gp << " ";
+                if ( (min == -1) || (gp < min) ) min = gp;
+              }
+            }
+            
+            if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Germline Propensity Sum: " << gp_sum.Sum() << endl;
+            if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Num prospective founders: " << prospective_founders.GetSize() << endl;
+            
+            if (prospective_founders.GetSize() < 2) {
+            
+              // there were not enough orgs with nonzero germlines
+              // pick additional orgs at random without replacement,
+              // unless our method forbids this
+
+              // leave the founder list empty for method 5
+              if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 5) {
               
-              //do not add additional founders randomly for method 4
-              if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 4) {
-              
-                while(founders.GetSize() < 2) {
-                  int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
-                  if( cell_array[cellid].IsOccupied() ) {
-                    cOrganism * org = cell_array[cellid].GetOrganism();
-                    bool found = false;
-                    for(int i=0; i< founders.GetSize(); i++) {
-                      if (founders[i] == org) found = true;
+                founders = prospective_founders;
+                
+                //do not add additional founders randomly for method 4
+                if (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() != 4) {
+                
+                  while(founders.GetSize() < 2) {
+                    int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
+                    if( cell_array[cellid].IsOccupied() ) {
+                      cOrganism * org = cell_array[cellid].GetOrganism();
+                      bool found = false;
+                      for(int i=0; i< founders.GetSize(); i++) {
+                        if (founders[i] == org) found = true;
+                      }
+                      if (!found) founders.Push(cell_array[cellid].GetOrganism());
                     }
-                    if (!found) founders.Push(cell_array[cellid].GetOrganism());
                   }
-                }
-              }  
-            }
-          } else {
-          
-          // pick two orgs based on germline propensities from prospective founders
-
-            while(founders.GetSize() < 2) {
-            
-              double choice = (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 2)
-                ? random.GetDouble( gp_sum.Sum() ) : random.GetDouble( gp_sum.Count() );
-
-
-              //cout <<  "Count: " << gp_sum.Count() << endl;
-              
-              // find the next organism to choose
-              cOrganism * org = NULL;
-              int on = 0;
-              while( (choice > 0) && (on < prospective_founders.GetSize()) ) {
-                org = prospective_founders[on];
-                
-                // did we already have this org?
-                bool found = false;
-                for(int i=0; i< founders.GetSize(); i++) {
-                  if (founders[i] == org) found = true;
-                }
-                
-                // if it wasn't already chosen, then we count down...
-                if (!found) {
-                  choice -= (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 2) 
-                    ? org->GetPhenotype().GetPermanentGermlinePropensity()
-                    : (org->GetPhenotype().GetPermanentGermlinePropensity() > 0);
-                }
-                on++;
+                }  
               }
-              
-              gp_sum.Subtract(org->GetPhenotype().GetPermanentGermlinePropensity());
-              assert(org);
-              founders.Push(org);
-            }
-          }             
-          /*
-          // Debug Code
-          cout << endl;
-          cout << "sum " << gp_sum.Sum() << endl;
-          cout << "min " << min << endl;
-          cout << "choice " << choice << endl;
-          */
+            } else {
             
-          //cout << "Chose germline propensity " << chosen_org->GetPhenotype().GetLastGermlinePropensity() << endl;
-          break;
+            // pick two orgs based on germline propensities from prospective founders
+
+              while(founders.GetSize() < 2) {
+              
+                double choice = (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 2)
+                  ? random.GetDouble( gp_sum.Sum() ) : random.GetDouble( gp_sum.Count() );
+
+
+                //cout <<  "Count: " << gp_sum.Count() << endl;
+                
+                // find the next organism to choose
+                cOrganism * org = NULL;
+                int on = 0;
+                while( (choice > 0) && (on < prospective_founders.GetSize()) ) {
+                  org = prospective_founders[on];
+                  
+                  // did we already have this org?
+                  bool found = false;
+                  for(int i=0; i< founders.GetSize(); i++) {
+                    if (founders[i] == org) found = true;
+                  }
+                  
+                  // if it wasn't already chosen, then we count down...
+                  if (!found) {
+                    choice -= (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 2) 
+                      ? org->GetPhenotype().GetPermanentGermlinePropensity()
+                      : (org->GetPhenotype().GetPermanentGermlinePropensity() > 0);
+                  }
+                  on++;
+                }
+                
+                gp_sum.Subtract(org->GetPhenotype().GetPermanentGermlinePropensity());
+                assert(org);
+                founders.Push(org);
+              }
+            }      
+            
+            if (founders.GetSize() > 0) source_founders.Push(founders[0]);
+            if (founders.GetSize() > 1) target_founders.Push(founders[1]);       
+            
+            /*
+            // Debug Code
+            cout << endl;
+            cout << "sum " << gp_sum.Sum() << endl;
+            cout << "min " << min << endl;
+            cout << "choice " << choice << endl;
+            */
+              
+            //cout << "Chose germline propensity " << chosen_org->GetPhenotype().GetLastGermlinePropensity() << endl;
+          } else { 
+            //Failure because we didn't have at least two organisms...
+            //m_world->GetDriver().RaiseFatalException(1, "Germline DEMES_ORGANISM_SELECTION method didn't find at least two organisms in deme.");
+          }
+        
+        break;
         }  
         default: {
           cout << "Undefined value (" << m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()
@@ -1678,23 +1729,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         }
       }
       
-      // deconstruct founders into two lists...
-      tArray<cOrganism*> source_founders = founders; // List of organisms we're going to transfer.
-      tArray<cOrganism*> target_founders = founders; // List of organisms we're going to transfer.
 
-      if ( (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 2)
-        || (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 3)
-        || (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 4)
-        || (m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get() == 5) )
-      {
-        source_founders.ResizeClear(0);
-        target_founders.ResizeClear(0);
-        
-        if (founders.GetSize() > 0) source_founders.Push(founders[0]);
-        if (founders.GetSize() > 1) target_founders.Push(founders[1]);
-      }
-      
-      
       // We'd better have at *least* one genome.
       // Methods that require a germline can sometimes come up short...
       //assert(source_founders.GetSize()>0);
@@ -1807,16 +1842,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       else {
         m_world->GetDriver().RaiseFatalException(1, "Unknown DEMES_DIVIDE_METHOD");
       }
-      
-      // Update *source* generations per lifetime by the founders we used to seed the *target*.
-      // and *source*, so that we average over them. At this point, the avg_founder_generation
-      // has not been updated, so we can use the old value from the source.
-
-//      source_deme.UpdateGenerationsPerLifetime( source_deme.GetAvgFounderGeneration(), source_deme.GetFounderPhenotypes() );
-//      if (successfully_seeded) {
-//        target_deme.UpdateGenerationsPerLifetime( source_deme.GetAvgFounderGeneration(), target_deme.GetFounderPhenotypes() );
-//      }
-      
+       
       /*
       // Debug Code
       //// Count the number of orgs in each deme.
@@ -1872,7 +1898,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           m_world->GetClassificationManager().AdjustGenotype(*genotype);
           
           // ONLY delete target orgs if seeding was successful
-          // otherwise they still exist int he population
+          // otherwise they still exist in the population!!!
           if (successfully_seeded) delete old_target_organisms[i];
         }
       
@@ -2302,6 +2328,8 @@ void cPopulation::CheckImplicitDemeRepro(cDeme& deme) {
   
   if (m_world->GetConfig().DEMES_REPLICATE_CPU_CYCLES.Get() 
     && (deme.GetTimeUsed() >= m_world->GetConfig().DEMES_REPLICATE_CPU_CYCLES.Get())) ReplicateDeme(deme);
+  else if (m_world->GetConfig().DEMES_REPLICATE_TIME.Get() 
+    && (deme.GetNormalizedTimeUsed() >= m_world->GetConfig().DEMES_REPLICATE_TIME.Get())) ReplicateDeme(deme); 
   else if (m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get() 
     && (deme.GetBirthCount() >= m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get())) ReplicateDeme(deme); 
   else if (m_world->GetConfig().DEMES_REPLICATE_ORGS.Get() 
@@ -3286,6 +3314,9 @@ void cPopulation::UpdateDemeStats() {
     stats.SumDemeOrgCount().Add(deme.GetOrgCount());
     stats.SumDemeGeneration().Add(deme.GetGeneration());
 
+    stats.SumDemeLastBirthCount().Add(deme.GetLastBirthCount());
+    stats.SumDemeLastOrgCount().Add(deme.GetLastOrgCount());
+
     stats.SumDemeGestationTime().Add(deme.GetGestationTime());
     stats.SumDemeNormalizedTimeUsed().Add(deme.GetLastNormalizedTimeUsed());
     stats.SumDemeMerit().Add(deme.GetDemeMerit().GetDouble());
@@ -4258,28 +4289,51 @@ void cPopulation::PrintPhenotypeData(const cString& filename)
 {
   set<int> ids;
   set<cString> complete;
-  
+  double average_shannon_diversity = 0.0;
+  int num_orgs = 0; //could get from elsewhere, but more self-contained this way
+  double average_num_tasks = 0.0;
+    
   for (int i = 0; i < cell_array.GetSize(); i++) {
+    num_orgs++;
     // Only look at cells with organisms in them.
     if (cell_array[i].IsOccupied() == false) continue;
     
     const cPhenotype& phenotype = cell_array[i].GetOrganism()->GetPhenotype();
     
+    int total_tasks = 0;
     int id = 0;
     cString key;
     for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++) {
       if (phenotype.GetLastTaskCount()[j] > 0) id += (1 << j);
+      if (phenotype.GetLastTaskCount()[j] > 0) average_num_tasks += 1.0;
       key += cStringUtil::Stringf("%i-", phenotype.GetLastTaskCount()[j]);
+      total_tasks += phenotype.GetLastTaskCount()[j];
     }
     ids.insert(id);
     complete.insert(key);
+
+    // go through again to calculate Shannon Divserity of task counts
+    // now that we know the total number of tasks done
+    double shannon_diversity = 0;
+    for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++) {
+      if (phenotype.GetLastTaskCount()[j] == 0) continue;
+      double fraction = static_cast<double>(phenotype.GetLastTaskCount()[j]) / static_cast<double>(total_tasks);
+      shannon_diversity -= fraction * log(fraction) / log(2);
+    }
+    
+    average_shannon_diversity += static_cast<double>(shannon_diversity);
   }
+  
+  average_shannon_diversity /= static_cast<double>(num_orgs);
+  average_num_tasks /= num_orgs;
   
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteTimeStamp();
   df.Write(m_world->GetStats().GetUpdate(), "Update");
   df.Write(static_cast<int>(ids.size()), "Unique Phenotypes (by task done)");
   df.Write(static_cast<int>(complete.size()), "Unique Phenotypes (by task count)");
+  df.Write(average_shannon_diversity, "Average Phenotype Shannon Diversity (by task count)");
+  df.Write(average_num_tasks, "Average Task Diversity (number of different tasks)");
   df.Endl();
 }
 

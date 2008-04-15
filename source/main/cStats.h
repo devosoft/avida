@@ -269,7 +269,9 @@ private:
   // simple deme stats
   cIntSum sum_deme_age;
   cIntSum sum_deme_birth_count;
+  cIntSum sum_deme_last_birth_count;
   cIntSum sum_deme_org_count;
+  cIntSum sum_deme_last_org_count;
   cIntSum sum_deme_generation;
   cIntSum sum_deme_gestation_time;
   cDoubleSum sum_deme_normalized_time_used;
@@ -415,7 +417,9 @@ public:
   //deme
   cIntSum& SumDemeAge()          { return sum_deme_age; }
   cIntSum& SumDemeBirthCount()   { return sum_deme_birth_count; }
+  cIntSum& SumDemeLastBirthCount()   { return sum_deme_last_birth_count; }
   cIntSum& SumDemeOrgCount()     { return sum_deme_org_count; }
+  cIntSum& SumDemeLastOrgCount()     { return sum_deme_last_org_count; }
   cIntSum& SumDemeGeneration()   { return sum_deme_generation; }
   cIntSum& SumDemeGestationTime()   { return sum_deme_gestation_time; }
   cDoubleSum& SumDemeNormalizedTimeUsed()   { return sum_deme_normalized_time_used; }
@@ -456,7 +460,9 @@ public:
   //deme
   const cIntSum& SumDemeAge() const          { return sum_deme_age; }
   const cIntSum& SumDemeBirthCount() const   { return sum_deme_birth_count; }
+  const cIntSum& SumDemeLastBirthCount() const   { return sum_deme_last_birth_count; }
   const cIntSum& SumDemeOrgCount() const     { return sum_deme_org_count; }
+  const cIntSum& SumDemeLastOrgCount() const     { return sum_deme_last_org_count; }
   const cIntSum& SumDemeGeneration() const   { return sum_deme_generation; }
   const cIntSum& SumDemeGestationTime() const  { return sum_deme_generation; }
   const cDoubleSum& SumDemeNormalizedTimeUsed() const  { return sum_deme_normalized_time_used; }

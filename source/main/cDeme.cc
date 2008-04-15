@@ -36,8 +36,10 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
 {
   _id = id;
   cell_ids = in_cells;
-  birth_count = 0;
-  org_count = 0;
+  cur_birth_count = 0;
+  last_birth_count = 0;
+  cur_org_count = 0;
+  last_org_count = 0;
   m_world = world;
 
   _current_merit = 1.0;
@@ -145,7 +147,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
       if(cell.IsOccupied()) {
         cOrganism* organism = cell.GetOrganism();
         cPhenotype& phenotype = organism->GetPhenotype();
-        phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(org_count));
+        phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(cur_org_count));
         phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
       }
     }
@@ -154,7 +156,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   // Handle stat and resource resets
   _age = 0;
   time_used = 0;
-  birth_count = 0;
+  cur_birth_count = 0;
   cur_normalized_time_used = 0;
   
   cur_task_exe_count.SetAll(0);
@@ -184,12 +186,15 @@ void cDeme::DivideReset(cDeme& parent_deme, bool resetResources, double deme_ene
   gestation_time = parent_deme.GetTimeUsed();
   last_normalized_time_used = parent_deme.GetNormalizedTimeUsed();
   
-  last_task_exe_count = cur_task_exe_count;
-  last_reaction_count = cur_reaction_count;
+  last_task_exe_count = parent_deme.GetCurTaskExeCount();
+  last_reaction_count = parent_deme.GetCurReactionCount();
 
-  last_org_task_count = cur_org_task_count;
-  last_org_task_exe_count = cur_org_task_exe_count;
-  last_org_reaction_count = cur_org_reaction_count;
+  last_org_task_count = parent_deme.GetCurOrgTaskCount();
+  last_org_task_exe_count = parent_deme.GetCurOrgTaskExeCount();
+  last_org_reaction_count = parent_deme.GetCurOrgReactionCount();
+  
+  last_org_count = parent_deme.GetLastOrgCount(); // Org count was updated upon KillAll()....
+  last_birth_count = parent_deme.GetBirthCount();
 
   Reset(resetResources, deme_energy);
 }
@@ -210,6 +215,7 @@ void cDeme::UpdateGenerationsPerLifetime(double old_avg_founder_generation, tArr
 /*! Check every cell in this deme for a living organism.  If found, kill it. */
 void cDeme::KillAll()
 {
+  last_org_count = GetOrgCount();
   for (int i=0; i<GetSize(); ++i) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_ids[i]);
     if(cell.IsOccupied()) {

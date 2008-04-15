@@ -582,6 +582,8 @@ void cStats::PrintDemeAverageData(const cString& filename)
   df.Write(sum_deme_birth_count.Average(),                  "Births");
   df.Write(sum_deme_org_count.Average(),                    "Organisms");
   df.Write(sum_deme_generation.Average(),                   "Generation");
+  df.Write(sum_deme_last_birth_count.Average(),                  "Births (at last replication)");
+  df.Write(sum_deme_last_org_count.Average(),                    "Organisms (at last replication)");
   df.Write(sum_deme_merit.Average(),                        "Merit");
   df.Write(sum_deme_gestation_time.Average(),               "Gestation Time");
   df.Write(sum_deme_normalized_time_used.Average(),         "Time Used (normalized by org fitness)");

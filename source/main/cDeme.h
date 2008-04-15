@@ -51,8 +51,11 @@ private:
   int width; //!< Width of this deme.
 
 // The following should be moved to cDemePhenotype / cPopulationPhenotype
-  int birth_count; //!< Number of organisms that have been born into this deme since reset.
-  int org_count; //!< Number of organisms are currently in this deme.
+  int cur_birth_count; //!< Number of organisms that have been born into this deme since reset.
+  int last_birth_count;
+  int cur_org_count; //!< Number of organisms are currently in this deme.
+  int last_org_count; 
+
   int _age; //!< Age of this deme, in updates.
   int generation; //!< Generation of this deme
   double total_org_energy; //! total amount of energy in organisms in this deme
@@ -96,7 +99,8 @@ private:
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
   
 public:
-  cDeme() : _id(0), width(0), birth_count(0), org_count(0), _age(0), generation(0), total_org_energy(0.0),
+  cDeme() : _id(0), width(0), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), 
+            _age(0), generation(0), total_org_energy(0.0),
             time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
             avg_founder_generation(0.0), generations_per_lifetime(0.0),
             deme_resource_count(0), m_germline_genotype_id(0) { ; }
@@ -122,17 +126,20 @@ public:
   void KillAll();
   void UpdateStats();
   
-  int GetBirthCount() const { return birth_count; }
-  void IncBirthCount() { birth_count++; }
+  int GetBirthCount() const { return cur_birth_count; }
+  int GetLastBirthCount() const { return last_birth_count; }
+  void IncBirthCount() { cur_birth_count++; }
 
-  int GetOrgCount() const { return org_count; }
-  void IncOrgCount() { org_count++; }
-  void DecOrgCount() { org_count--; }
+  int GetOrgCount() const { return cur_org_count; }
+  int GetLastOrgCount() const { return last_org_count; }
+
+  void IncOrgCount() { cur_org_count++; }
+  void DecOrgCount() { cur_org_count--; }
   
   int GetGeneration() const { return generation; }
 
-  bool IsEmpty() const { return org_count == 0; }
-  bool IsFull() const { return org_count == cell_ids.GetSize(); }
+  bool IsEmpty() const { return cur_org_count == 0; }
+  bool IsFull() const { return cur_org_count == cell_ids.GetSize(); }
   
   // -= Germline =-
   //! Returns this deme's germline.
@@ -155,11 +162,16 @@ public:
   void AddCurTask(int task_num) { cur_task_exe_count[task_num]++; }
   void AddCurReaction (int reaction_num) { cur_reaction_count[reaction_num]++; }
 
+  const tArray<int>& GetCurTaskExeCount() const { return cur_task_exe_count; }
   const tArray<int>& GetLastTaskExeCount() const { return last_task_exe_count; }
+  const tArray<int>& GetCurReactionCount() const { return cur_reaction_count; }
   const tArray<int>& GetLastReactionCount() const { return last_reaction_count; }
 
+  const tArray<int>& GetCurOrgTaskCount() const { return cur_org_task_count; }
   const tArray<int>& GetLastOrgTaskCount() const { return last_org_task_count; }
+  const tArray<int>& GetCurOrgTaskExeCount() const { return cur_org_task_exe_count; }
   const tArray<int>& GetLastOrgTaskExeCount() const { return last_org_task_exe_count; }
+  const tArray<int>& GetCurOrgReactionCount() const { return cur_org_reaction_count; }
   const tArray<int>& GetLastOrgReactionCount() const { return last_org_reaction_count; }
 
   bool HasDemeMerit() const { return _current_merit.GetDouble() != 1.0; }
@@ -187,7 +199,7 @@ public:
   double CalculateTotalEnergy();
   
   void IncTimeUsed(double merit) 
-    { time_used++; cur_normalized_time_used += 1.0/merit/(double)org_count; }
+    { time_used++; cur_normalized_time_used += 1.0/merit/(double)cur_org_count; }
   int GetTimeUsed() { return time_used; }
   int GetGestationTime() { return gestation_time; }
   double GetNormalizedTimeUsed() { return cur_normalized_time_used; }
