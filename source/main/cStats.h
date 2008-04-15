@@ -726,15 +726,18 @@ public:
     * Map of deme id -> {founder genotype id_0, id_1,... id_{deme propagule size}} */
   typedef std::map<int, std::vector<int> > t_founder_map;
   //! Print the genotype IDs for the founders of demes that have recently been "born."
-  void PrintDemeFounders(const cString& filename);
+  void PrintDemeFoundersData(const cString& filename);
 
-  void PrintDemeTasks(const cString& filename);
-  void PrintDemeTasksExe(const cString& filename);
-  void PrintDemeReactions(const cString& filename);
-  void PrintDemeOrgTasks(const cString& filename);
-  void PrintDemeOrgTasksExe(const cString& filename);
-  void PrintDemeOrgReactions(const cString& filename);
-  void PrintDemeGenPerFounder(const cString& filename);
+  void PrintPerDemeTasksData(const cString& filename);
+  void PrintPerDemeTasksExeData(const cString& filename);
+  void PrintPerDemeReactionData(const cString& filename);
+  void PrintDemeTasksData(const cString& filename);
+  void PrintDemeTasksExeData(const cString& filename);
+  void PrintDemeReactionData(const cString& filename);
+  void PrintDemeOrgTasksData(const cString& filename);
+  void PrintDemeOrgTasksExeData(const cString& filename);
+  void PrintDemeOrgReactionData(const cString& filename);
+  void PrintPerDemeGenPerFounderData(const cString& filename);
 
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }

@@ -134,7 +134,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   // Handle energy model
   if (m_world->GetConfig().ENERGY_ENABLED.Get())
   {
-    assert(org_count>0);
+    assert(cur_org_count>0);
     
     total_org_energy = deme_energy;
     if(total_org_energy < 0.0)

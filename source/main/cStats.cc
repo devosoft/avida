@@ -1310,7 +1310,7 @@ times since the last time this method ran, only the most recent is printed.  Onl
 to deme replication) are tracked; the ancestral deme founders are lost.  The update column is the update 
 at which this method executes, not the time at which the given deme was born.
 */
-void cStats::PrintDemeFounders(const cString& filename)
+void cStats::PrintDemeFoundersData(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   
@@ -1333,7 +1333,7 @@ void cStats::PrintDemeFounders(const cString& filename)
   m_deme_founders.clear();
 }
 
-void cStats::PrintDemeTasks(const cString& filename){
+void cStats::PrintPerDemeTasksData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme tasks data");
 	df.WriteTimeStamp();
@@ -1353,7 +1353,7 @@ void cStats::PrintDemeTasks(const cString& filename){
   df.Endl();
 }
 
-void cStats::PrintDemeTasksExe(const cString& filename){
+void cStats::PrintPerDemeTasksExeData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme tasks exe data");
 	df.WriteTimeStamp();
@@ -1373,7 +1373,7 @@ void cStats::PrintDemeTasksExe(const cString& filename){
   df.Endl();
 }
 
-void cStats::PrintDemeReactions(const cString& filename){
+void cStats::PrintPerDemeReactionData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme reactions data");
 	df.WriteTimeStamp();
@@ -1392,7 +1392,99 @@ void cStats::PrintDemeReactions(const cString& filename){
   df.Endl();
 }
 
-void cStats::PrintDemeOrgTasks(const cString& filename){
+void cStats::PrintDemeTasksData(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida deme tasks data");
+	df.WriteTimeStamp();
+	df.WriteComment("First column gives the current update, next columns give the number");
+	df.WriteComment("of organisms per deme that had the given task as a component of their merit");
+	df.WriteComment("during the lifetime of the deme");
+
+  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+
+  tArray<int> deme_tasks;
+  deme_tasks.ResizeClear(num_tasks);
+  deme_tasks.SetAll(num_tasks);
+  int occupied_demes = 0;
+  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+    if (!deme.IsEmpty()) {
+      occupied_demes++;
+      for(int j = 0; j < num_tasks; j++) { 
+        deme_tasks[j] += static_cast<int>(deme.GetLastTaskExeCount()[j] > 0);
+      }
+    }
+  }
+  
+	df.Write(m_update,   "Update");
+  for(int j = 0; j < num_tasks; j++) {    
+    df.Write( static_cast<double>(deme_tasks[j]) / static_cast<double>(occupied_demes), task_names[j] );
+	}
+  df.Endl();
+}
+
+void cStats::PrintDemeTasksExeData(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida deme tasks exe data");
+	df.WriteTimeStamp();
+	df.WriteComment("First column gives the current update, next columns give the number");
+	df.WriteComment("of times per deme that a given task counted as a component of an");
+	df.WriteComment("organisms's merit during the lifetime of the deme");
+
+  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+
+  tArray<int> deme_tasks;
+  deme_tasks.ResizeClear(num_tasks);
+  deme_tasks.SetAll(num_tasks);
+  int occupied_demes = 0;
+  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+    if (!deme.IsEmpty()) {
+      occupied_demes++;
+      for(int j = 0; j < num_tasks; j++) { 
+        deme_tasks[j] += deme.GetLastTaskExeCount()[j];
+      }
+    }
+  }
+  
+	df.Write(m_update,   "Update");
+  for(int j = 0; j < num_tasks; j++) {    
+    df.Write( static_cast<double>(deme_tasks[j]) / static_cast<double>(occupied_demes), task_names[j] );
+	}
+  df.Endl();
+}
+
+void cStats::PrintDemeReactionData(const cString& filename){
+  cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida deme reactions data");
+	df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the number");
+  df.WriteComment("of times each reaction has affected a deme.");
+
+  const int num_reactions = m_world->GetEnvironment().GetReactionLib().GetSize();
+
+  tArray<int> deme_reactions;
+  deme_reactions.ResizeClear(num_reactions);
+  deme_reactions.SetAll(0);
+  int occupied_demes = 0;
+  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+    if (!deme.IsEmpty()) {
+      occupied_demes++;
+      for(int j = 0; j < num_reactions; j++) { 
+        deme_reactions[j] += deme.GetLastReactionCount()[j];
+      }
+    }
+  }
+  
+	df.Write(m_update,   "Update");
+  for(int j = 0; j < num_reactions; j++) {    
+    df.Write( static_cast<double>(deme_reactions[j]) / static_cast<double>(occupied_demes), m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetName() );
+	}
+  df.Endl();
+}
+
+void cStats::PrintDemeOrgTasksData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme org tasks data");
 	df.WriteTimeStamp();
@@ -1412,7 +1504,7 @@ void cStats::PrintDemeOrgTasks(const cString& filename){
   df.Endl();
 }
 
-void cStats::PrintDemeOrgTasksExe(const cString& filename){
+void cStats::PrintDemeOrgTasksExeData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme org tasks exe data");
 	df.WriteTimeStamp();
@@ -1433,7 +1525,7 @@ void cStats::PrintDemeOrgTasksExe(const cString& filename){
   df.Endl();
 }
 
-void cStats::PrintDemeOrgReactions(const cString& filename){
+void cStats::PrintDemeOrgReactionData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme org reactions data");
 	df.WriteTimeStamp();
@@ -1454,7 +1546,7 @@ void cStats::PrintDemeOrgReactions(const cString& filename){
 }
 
 
-void cStats::PrintDemeGenPerFounder(const cString& filename){
+void cStats::PrintPerDemeGenPerFounderData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida org generations between deme founders");
 	df.WriteTimeStamp();

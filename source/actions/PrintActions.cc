@@ -95,15 +95,18 @@ STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
-STATS_OUT_FILE(PrintDemeFounders,           deme_founders.dat   );
-STATS_OUT_FILE(PrintDemeTasks,              deme_tasks.dat      );
-STATS_OUT_FILE(PrintDemeTasksExe,           deme_tasks_exe.dat  );
-STATS_OUT_FILE(PrintDemeReactions,          deme_reactions.dat  );
-STATS_OUT_FILE(PrintDemeOrgTasks,           deme_org_tasks.dat      );
-STATS_OUT_FILE(PrintDemeOrgTasksExe,        deme_org_tasks_exe.dat  );
-STATS_OUT_FILE(PrintDemeOrgReactions,       deme_org_reactions.dat  );
+STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
+STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
+STATS_OUT_FILE(PrintPerDemeTasksExeData,    per_deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintPerDemeReactionData,    per_deme_reactions.dat  );
+STATS_OUT_FILE(PrintDemeTasksData,          deme_tasks.dat      );
+STATS_OUT_FILE(PrintDemeTasksExeData,       deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintDemeReactionData,       deme_reactions.dat  );
+STATS_OUT_FILE(PrintDemeOrgTasksData,       deme_org_tasks.dat      );
+STATS_OUT_FILE(PrintDemeOrgTasksExeData,    deme_org_tasks_exe.dat  );
+STATS_OUT_FILE(PrintDemeOrgReactionData,    deme_org_reactions.dat  );
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
-STATS_OUT_FILE(PrintDemeGenPerFounder,      deme_gen_between_founders.dat );
+STATS_OUT_FILE(PrintPerDemeGenPerFounderData,   deme_gen_between_founders.dat );
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 
@@ -2685,16 +2688,19 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
-  action_lib->Register<cActionPrintDemeFounders>("PrintDemeFounders");
+  action_lib->Register<cActionPrintDemeFoundersData>("PrintDemeFoundersData");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
-  action_lib->Register<cActionPrintDemeTasks>("PrintDemeTasksData");
-  action_lib->Register<cActionPrintDemeTasksExe>("PrintDemeTasksExeData");
-  action_lib->Register<cActionPrintDemeReactions>("PrintDemeReactionData");
-  action_lib->Register<cActionPrintDemeOrgTasks>("PrintDemeOrgTasksData");
-  action_lib->Register<cActionPrintDemeOrgTasksExe>("PrintDemeOrgTasksExeData");
-  action_lib->Register<cActionPrintDemeOrgReactions>("PrintDemeOrgReactionData");
-  action_lib->Register<cActionPrintDemeGenPerFounder>("PrintDemeGenPerFounderData");
+  action_lib->Register<cActionPrintPerDemeTasksData>("PrintPerDemeTasksData");
+  action_lib->Register<cActionPrintPerDemeTasksExeData>("PrintPerDemeTasksExeData");
+  action_lib->Register<cActionPrintPerDemeReactionData>("PrintPerDemeReactionData");
+  action_lib->Register<cActionPrintDemeTasksData>("PrintDemeTasksData");
+  action_lib->Register<cActionPrintDemeTasksExeData>("PrintDemeTasksExeData");
+  action_lib->Register<cActionPrintDemeReactionData>("PrintDemeReactionData");
+  action_lib->Register<cActionPrintDemeOrgTasksData>("PrintDemeOrgTasksData");
+  action_lib->Register<cActionPrintDemeOrgTasksExeData>("PrintDemeOrgTasksExeData");
+  action_lib->Register<cActionPrintDemeOrgReactionData>("PrintDemeOrgReactionData");
+  action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
 
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
