@@ -4318,7 +4318,7 @@ void cPopulation::PrintPhenotypeData(const cString& filename)
     for (int j = 0; j < phenotype.GetLastTaskCount().GetSize(); j++) {
       if (phenotype.GetLastTaskCount()[j] == 0) continue;
       double fraction = static_cast<double>(phenotype.GetLastTaskCount()[j]) / static_cast<double>(total_tasks);
-      shannon_diversity -= fraction * log(fraction) / log(2);
+      shannon_diversity -= fraction * log(fraction) / log(2.0);
     }
     
     average_shannon_diversity += static_cast<double>(shannon_diversity);
