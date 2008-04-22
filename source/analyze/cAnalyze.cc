@@ -3322,7 +3322,7 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
   cString filename("gamma.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
 
-  int furcation_time_convention = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 2;         // #1
+  int furcation_time_convention = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 1;         // #1
   
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
