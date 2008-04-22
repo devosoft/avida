@@ -21,11 +21,14 @@
  *
  */
 
-#ifndef cAnalyzeTreeStats_Gamma_h
-#define cAnalyzeTreeStats_Gamma_h
+#ifndef cAnalyzeTreeStats_Orig_Gamma_h
+#define cAnalyzeTreeStats_Orig_Gamma_h
 
 #ifndef tArray_h
 #include "tArray.h"
+#endif
+#ifndef tHashTable
+#include "tHashTable.h"
 #endif
 #ifndef tList_h
 #include "tList.h"
@@ -34,14 +37,14 @@
 class cAnalyzeGenotype;
 class cWorld;
 
-class cAnalyzeTreeStats_Gamma {
+class cAnalyzeTreeStats_Orig_Gamma {
 public:
   cWorld* m_world;
   tArray<cAnalyzeGenotype *> m_gen_array;
   tArray<int> m_g;
   double m_gamma;
 public:
-  cAnalyzeTreeStats_Gamma(cWorld* world);
+  cAnalyzeTreeStats_Orig_Gamma(cWorld* world);
   
   void LoadGenotypes(tList<cAnalyzeGenotype> &genotype_list);
   void QSortGenotypes(void);
@@ -61,5 +64,71 @@ int CompareAGUpdateBorn(const void * _a, const void * _b);
 // Quicksort functions.
 void QSortAGPhyloDepth(tArray<cAnalyzeGenotype *> &gen_array);
 void QSortAGUpdateBorn(tArray<cAnalyzeGenotype *> &gen_array);
+
+
+
+/* Rewrite */
+class cAnalyzeLineageFurcation {
+public:
+  cAnalyzeGenotype *m_parent;
+  cAnalyzeGenotype *m_first_child;
+  cAnalyzeGenotype *m_second_child;
+public:
+  cAnalyzeLineageFurcation(
+    cAnalyzeGenotype *parent = 0,
+    cAnalyzeGenotype *first_child = 0,
+    cAnalyzeGenotype *second_child = 0
+  );
+  /* This equality operator compares pointers -- this is bad form, but propagated from a similar equality operator in cAnalyzeGenotype. */
+  bool operator==(const cAnalyzeLineageFurcation &in) const ;
+};
+
+class cAnalyzeTreeStats_Gamma {
+public:
+  cWorld* m_world;
+  tArray<cAnalyzeGenotype *> m_gen_array;
+  tArray<int> m_g;
+  double m_gamma;
+public:
+  cAnalyzeTreeStats_Gamma(cWorld* world);
+  
+  void LoadGenotypes(tList<cAnalyzeGenotype> &genotype_list);
+  void MapIDToGenotypePos(
+    tArray<cAnalyzeGenotype *> &lineage,
+    tHashTable<int, int> &out_mapping
+  );
+  void Unlink(tArray<cAnalyzeGenotype *> &lineage);
+  void EstablishLinks(
+    tArray<cAnalyzeGenotype *> &lineage,
+    tHashTable<int, int> &out_mapping
+  );
+  void FindFurcations(
+    tArray<cAnalyzeGenotype *> &lineage,
+    tArray<cAnalyzeLineageFurcation> &out_furcations
+  );
+  void FindFurcationTimes(
+    tArray<cAnalyzeGenotype *> &lineage,
+    int (*furcation_time_policy)(cAnalyzeLineageFurcation &furcation),
+    tArray<int> &out_furcation_times
+  );
+  void FindInternodeDistances(
+    tArray<int> &furcation_times,
+    int end_time,
+    tArray<int> &out_internode_distances
+  );
+  double CalculateGamma(tArray<int> &inode_dists);
+  double Gamma(void);
+  
+  // Commands.
+  void AnalyzeBatch(
+    tList<cAnalyzeGenotype> &genotype_list,
+    int end_time,
+    int furcation_time_convention
+  );    
+};
+  
+int FurcationTimePolicy_ParentBirth(cAnalyzeLineageFurcation &furcation);
+int FurcationTimePolicy_FirstChildBirth(cAnalyzeLineageFurcation &furcation);
+int FurcationTimePolicy_SecondChildBirth(cAnalyzeLineageFurcation &furcation);
 
 #endif

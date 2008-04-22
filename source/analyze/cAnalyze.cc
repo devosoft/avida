@@ -3282,7 +3282,7 @@ void cAnalyze::CommandPrintCumulativeStemminess(cString cur_string)
 
 
 // Calculate Pybus-Harvey gamma statistic for trees in population.
-void cAnalyze::CommandPrintGamma(cString cur_string)
+void cAnalyze::Original_CommandPrintGamma(cString cur_string)
 {
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Printing Pybus-Harvey gamma statistic for batch "
     << cur_batch << endl;
@@ -3298,8 +3298,40 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
   fp << "# 1: Pybus-Harvey gamma statistic" << endl;
   fp << endl;
   
-  cAnalyzeTreeStats_Gamma agts(m_world);
+  cAnalyzeTreeStats_Orig_Gamma agts(m_world);
   agts.AnalyzeBatch(batch[cur_batch].List());
+  
+  fp << agts.Gamma();
+  fp << endl;
+}
+
+// Calculate Pybus-Harvey gamma statistic for trees in population.
+void cAnalyze::CommandPrintGamma(cString cur_string)
+{
+  if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Printing Pybus-Harvey gamma statistic for batch "
+    << cur_batch << endl;
+  else cout << "Printing Pybus-Harvey gamma statistic..." << endl;
+  
+  // Load in the variables...
+  int end_time = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;         // #1
+  if (end_time < 0) {
+    cout << "Error: end_time (argument 1) must be specified as nonzero." << endl;
+    return;
+  }
+  
+  cString filename("gamma.dat");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+
+  int furcation_time_convention = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 2;         // #1
+  
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  
+  fp << "# Legend:" << endl;
+  fp << "# 1: Pybus-Harvey gamma statistic" << endl;
+  fp << endl;
+  
+  cAnalyzeTreeStats_Gamma agts(m_world);
+  agts.AnalyzeBatch(batch[cur_batch].List(), end_time, furcation_time_convention);
   
   fp << agts.Gamma();
   fp << endl;
@@ -9241,6 +9273,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
   AddLibraryDef("PRINT_TREE_STATS", &cAnalyze::CommandPrintTreeStats);
   AddLibraryDef("PRINT_CUMULATIVE_STEMMINESS", &cAnalyze::CommandPrintCumulativeStemminess);
+  AddLibraryDef("ORIGINAL_PRINT_GAMMA", &cAnalyze::Original_CommandPrintGamma);
   AddLibraryDef("PRINT_GAMMA", &cAnalyze::CommandPrintGamma);
   AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::AnalyzeCommunityComplexity);
   AddLibraryDef("PRINT_RESOURCE_FITNESS_MAP", &cAnalyze::CommandPrintResourceFitnessMap);

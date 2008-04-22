@@ -258,6 +258,7 @@ private:
   void CommandPrintDiversity(cString cur_string);
   void CommandPrintTreeStats(cString cur_string);
   void CommandPrintCumulativeStemminess(cString cur_string);
+  void Original_CommandPrintGamma(cString cur_string);
   void CommandPrintGamma(cString cur_string);
   void PhyloCommunityComplexity(cString cur_string);
   void AnalyzeCommunityComplexity(cString cur_string);
