@@ -188,7 +188,9 @@ int CompareInt(const void * _a, const void * _b){
 }
 
 
-cAnalyzeTreeStats_Gamma::cAnalyzeTreeStats_Gamma(cWorld* world){
+cAnalyzeTreeStats_Gamma::cAnalyzeTreeStats_Gamma(cWorld* world)
+: m_world(world)
+{
 }
 
 void cAnalyzeTreeStats_Gamma::LoadGenotypes(tList<cAnalyzeGenotype> &genotype_list){
@@ -260,6 +262,12 @@ void cAnalyzeTreeStats_Gamma::FindFurcations(
           parent->GetChildList().GetPos(j)
         );
         out_furcations.Push(furcation);
+        if (m_world->GetVerbosity() >= VERBOSE_DETAILS){
+          cout << "Furcation("
+          << "parent_id=" << furcation.m_parent->GetID() << ", "
+          << "elder_child_id=" << furcation.m_first_child->GetID() << ", "
+          << "younger_child_id=" << furcation.m_second_child->GetID() << ")" << endl;
+        }
       }
     }
   }
@@ -270,6 +278,12 @@ void cAnalyzeTreeStats_Gamma::FindFurcationTimes(
   int (*furcation_time_policy)(cAnalyzeLineageFurcation &furcation),
   tArray<int> &out_furcation_times
 ){
+  /*
+  furcation_time_policy is one of
+    int FurcationTimePolicy_ParentBirth(cAnalyzeLineageFurcation &furcation);
+    int FurcationTimePolicy_FirstChildBirth(cAnalyzeLineageFurcation &furcation);
+    int FurcationTimePolicy_SecondChildBirth(cAnalyzeLineageFurcation &furcation);
+  */
   tArray<cAnalyzeLineageFurcation> furcations;
   FindFurcations(lineage, furcations);
 
@@ -277,8 +291,20 @@ void cAnalyzeTreeStats_Gamma::FindFurcationTimes(
   out_furcation_times.Resize(size, 0);
   for(int i = 0; i < size; i++){
     out_furcation_times[i] = furcation_time_policy(furcations[i]);
+    if (m_world->GetVerbosity() >= VERBOSE_DETAILS){
+      cout << "FurcationTime("
+      << "parent_id=" << furcations[i].m_parent->GetID() << ") = "
+      << out_furcation_times[i] <<  endl;
+    }
   }
   out_furcation_times.QSort(CompareInt);
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS){
+    for(int i = 0; i < size; i++){
+      cout << "SortedFurcationTime("
+      << "num_lineages=" << i+2 << ") = "
+      << out_furcation_times[i] <<  endl;
+    }
+  }
 }
 
 void cAnalyzeTreeStats_Gamma::FindInternodeDistances(
@@ -293,6 +319,14 @@ void cAnalyzeTreeStats_Gamma::FindInternodeDistances(
     out_internode_distances[i] = furcation_times[i+1] - furcation_times[i];
   }
   out_internode_distances[size-1] = end_time - furcation_times[size-1];
+
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS){
+    for(int i = 0; i < size; i++){
+      cout << "g_" << i+2 << " = InternodeDistance("
+      << "num_lineages=" << i+2 << ") = "
+      << out_internode_distances[i] <<  endl;
+    }
+  }
 }
 
 double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
@@ -305,7 +339,7 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
     }
     return nan("0");
   }
-  
+
   /*
    For convenience, make a copy of m_g with the indices offset.
    This permits use of the same indices as in the formula for gamma.
@@ -318,12 +352,26 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
   // si: interior summation values, cached
   tArray<int> si(n, 0);
   for(int k = 2; k <= n-1; k++) { si[k] = k*g[k] + si[k-1]; }    
-  
+
   // so: exterior summation
   int so = 0;
   for(int i = 2; i <= n-1; i++) { so += si[i]; }
   
   m_gamma = ( ( (1./(n-2.)) * so ) - (T/2.) ) / ( T*sqrt( 1. / (12.*(n-2.)) ) );
+  
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS){
+    for(int i = 2; i <= n; i++){
+      cout << i << "*g_" << i << " = " << i*g[i] << endl;
+    }
+    for(int i = 2; i <= n-1; i++){
+      cout << "sum(k=2.." << i << ", k*g_k) = " << si[i] << endl;
+    }
+    cout << "double_sum = " << so << endl;
+    cout << "T = " << T << endl;
+    cout << "gamma_numerator = " << ( ( (1./(n-2.)) * so ) - (T/2.) ) << endl;
+    cout << "gamma_denominator = " << ( T*sqrt( 1. / (12.*(n-2.)) ) ) << endl;
+    cout << "gamma = " << m_gamma << endl;
+  }
   
   return m_gamma;
 }
