@@ -98,14 +98,14 @@ void cAnalyzeTreeStats_Orig_Gamma::CalculateGamma(void){
     return;
   }
 
-  long T = 0;
+  unsigned long long T = 0;
   for(int j = 2; j <= n; j++) { T += j*m_g[j]; }
   
   // so: exterior summation
-  long so = 0;
+  unsigned long long so = 0;
   for(int i = 2; i <= n-1; i++) {
     // si: interior summation
-    long si = 1;
+    unsigned long long si = 1;
     for(int k = 2; k <= i; k++) { si += k*m_g[k]; }
     so += si;
   }
