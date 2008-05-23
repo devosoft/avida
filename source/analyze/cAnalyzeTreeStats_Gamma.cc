@@ -346,15 +346,15 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
    */
   tArray<int> g = tArray<int>(2, 0) + inode_dists;
   
-  int T = 0;
+  unsigned long long T = 0;
   for(int j = 2; j <= n; j++) { T += j*g[j]; }
 
   // si: interior summation values, cached
-  tArray<int> si(n, 0);
+  tArray<unsigned long long> si(n, 0);
   for(int k = 2; k <= n-1; k++) { si[k] = k*g[k] + si[k-1]; }    
 
   // so: exterior summation
-  int so = 0;
+  unsigned long long so = 0;
   for(int i = 2; i <= n-1; i++) { so += si[i]; }
   
   m_gamma = ( ( (1./(n-2.)) * so ) - (T/2.) ) / ( T*sqrt( 1. / (12.*(n-2.)) ) );
