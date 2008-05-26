@@ -327,8 +327,11 @@ void cAnalyzeTreeStats_Gamma::AnalyzeBatch(
       cerr << " - 1: Use parent's birth time" << endl;
       cerr << " - 2: Use elder child's birth time" << endl;
       cerr << " - 3: Use younger child's birth time" << endl;
+      cerr << "Defaulting to first time convention (parent's birth time)." << endl;
     }
+    furcation_time_policy = FurcationTimePolicy_ParentBirth;
   }
+
 
   LoadGenotypes(genotype_list);
   EstablishLinks(m_gen_array, mapping);
