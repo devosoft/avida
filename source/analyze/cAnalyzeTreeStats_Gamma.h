@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef cAnalyzeTreeStats_Orig_Gamma_h
-#define cAnalyzeTreeStats_Orig_Gamma_h
+#ifndef cAnalyzeTreeStats_Gamma_h
+#define cAnalyzeTreeStats_Gamma_h
 
 #ifndef tArray_h
 #include "tArray.h"
@@ -36,27 +36,6 @@
 
 class cAnalyzeGenotype;
 class cWorld;
-
-class cAnalyzeTreeStats_Orig_Gamma {
-public:
-  cWorld* m_world;
-  tArray<cAnalyzeGenotype *> m_gen_array;
-  tArray<int> m_g;
-  double m_gamma;
-public:
-  cAnalyzeTreeStats_Orig_Gamma(cWorld* world);
-  
-  void LoadGenotypes(tList<cAnalyzeGenotype> &genotype_list);
-  void QSortGenotypes(void);
-  void CalculateInternodeDistances(void);
-  void FixupInternodeDistances(void);
-  void CalculateGamma(void);
-  
-  double Gamma(void);
-  
-  // Commands.
-  void AnalyzeBatch(tList<cAnalyzeGenotype> &genotype_list);
-};
 
 // Comparison functions for qsort.
 int CompareAGPhyloDepth(const void * _a, const void * _b);

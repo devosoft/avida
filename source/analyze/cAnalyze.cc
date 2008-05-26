@@ -3281,29 +3281,6 @@ void cAnalyze::CommandPrintCumulativeStemminess(cString cur_string)
 }
 
 
-// Calculate Pybus-Harvey gamma statistic for trees in population.
-void cAnalyze::Original_CommandPrintGamma(cString cur_string)
-{
-  if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Printing Pybus-Harvey gamma statistic for batch "
-    << cur_batch << endl;
-  else cout << "Printing Pybus-Harvey gamma statistic..." << endl;
-  
-  // Load in the variables...
-  cString filename("gamma.dat");
-  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
-  
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  
-  fp << "# Legend:" << endl;
-  fp << "# 1: Pybus-Harvey gamma statistic" << endl;
-  fp << endl;
-  
-  cAnalyzeTreeStats_Orig_Gamma agts(m_world);
-  agts.AnalyzeBatch(batch[cur_batch].List());
-  
-  fp << agts.Gamma();
-  fp << endl;
-}
 
 // Calculate Pybus-Harvey gamma statistic for trees in population.
 void cAnalyze::CommandPrintGamma(cString cur_string)
@@ -5425,6 +5402,9 @@ void cAnalyze::CommandMapMutations(cString cur_string)
       filename.Set("%smut_map.%s.dat", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
     } else {   //  if (file_type == FILE_TYPE_HTML) {
       filename.Set("%smut_map.%s.html", static_cast<const char*>(directory), static_cast<const char*>(genotype->GetName()));
+    }
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  Using filename \"" << filename << "\"" << endl;
     }
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
@@ -9273,7 +9253,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
   AddLibraryDef("PRINT_TREE_STATS", &cAnalyze::CommandPrintTreeStats);
   AddLibraryDef("PRINT_CUMULATIVE_STEMMINESS", &cAnalyze::CommandPrintCumulativeStemminess);
-  AddLibraryDef("ORIGINAL_PRINT_GAMMA", &cAnalyze::Original_CommandPrintGamma);
   AddLibraryDef("PRINT_GAMMA", &cAnalyze::CommandPrintGamma);
   AddLibraryDef("COMMUNITY_COMPLEXITY", &cAnalyze::AnalyzeCommunityComplexity);
   AddLibraryDef("PRINT_RESOURCE_FITNESS_MAP", &cAnalyze::CommandPrintResourceFitnessMap);
