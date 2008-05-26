@@ -66,7 +66,9 @@ class cAnalyzeTreeStats_Gamma {
 public:
   cWorld* m_world;
   tArray<cAnalyzeGenotype *> m_gen_array;
-  tArray<int> m_g;
+  tArray<cAnalyzeLineageFurcation> m_furcations;
+  tArray<int> m_furcation_times;
+  tArray<int> m_internode_distances;
   double m_gamma;
 public:
   cAnalyzeTreeStats_Gamma(cWorld* world);
@@ -96,6 +98,10 @@ public:
     tArray<int> &out_internode_distances
   );
   double CalculateGamma(tArray<int> &inode_dists);
+
+  // Accessors.
+  const tArray<int> &FurcationTimes(void) const;
+  const tArray<int> &InternodeDistances(void) const;
   double Gamma(void);
   
   // Commands.

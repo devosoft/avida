@@ -3299,7 +3299,24 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
   cString filename("gamma.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
 
-  int furcation_time_convention = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 1;         // #1
+  cString lineage_thru_time_fname("");
+  if (cur_string.GetSize() != 0) lineage_thru_time_fname = cur_string.PopWord();
+
+  /*
+  I've hardwired the option 'furcation_time_convention' to '1'.
+
+  'furcation_time_convention' refers to the time at which a 'speciation' event
+  occurs (I'm not sure 'speciation' is the right word for this). If a parent
+  genotype produces two distinct surviving lineages, then the time of
+  speciation could be:
+  - 1: The parent genotype's birth time
+  - 2: The elder child genotype's birth time
+  - 3: The younger child genotype's birth time
+
+  @kgn
+  */
+  // int furcation_time_convention = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 1;
+  int furcation_time_convention = 1;
   
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
@@ -3307,11 +3324,25 @@ void cAnalyze::CommandPrintGamma(cString cur_string)
   fp << "# 1: Pybus-Harvey gamma statistic" << endl;
   fp << endl;
   
-  cAnalyzeTreeStats_Gamma agts(m_world);
-  agts.AnalyzeBatch(batch[cur_batch].List(), end_time, furcation_time_convention);
+  cAnalyzeTreeStats_Gamma atsg(m_world);
+  atsg.AnalyzeBatch(batch[cur_batch].List(), end_time, furcation_time_convention);
   
-  fp << agts.Gamma();
+  fp << atsg.Gamma();
   fp << endl;
+
+  if(lineage_thru_time_fname != ""){
+    ofstream& ltt_fp = m_world->GetDataFileOFStream(lineage_thru_time_fname);
+
+    ltt_fp << "# Legend:" << endl;
+    ltt_fp << "# 1: num_lineages" << endl;
+    ltt_fp << "# 2: furcation_time" << endl;
+    ltt_fp << endl;
+
+    int size = atsg.FurcationTimes().GetSize();
+    for(int i = 0; i < size; i++){
+      ltt_fp << i+2 << " " << atsg.FurcationTimes()[i] <<  endl;
+    }
+  }
 }
 
 

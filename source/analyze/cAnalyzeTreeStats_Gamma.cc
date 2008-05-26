@@ -194,16 +194,15 @@ void cAnalyzeTreeStats_Gamma::FindFurcationTimes(
     int FurcationTimePolicy_FirstChildBirth(cAnalyzeLineageFurcation &furcation);
     int FurcationTimePolicy_SecondChildBirth(cAnalyzeLineageFurcation &furcation);
   */
-  tArray<cAnalyzeLineageFurcation> furcations;
-  FindFurcations(lineage, furcations);
+  FindFurcations(lineage, m_furcations);
 
-  int size = furcations.GetSize();
+  int size = m_furcations.GetSize();
   out_furcation_times.Resize(size, 0);
   for(int i = 0; i < size; i++){
-    out_furcation_times[i] = furcation_time_policy(furcations[i]);
+    out_furcation_times[i] = furcation_time_policy(m_furcations[i]);
     if (m_world->GetVerbosity() >= VERBOSE_DETAILS){
       cout << "FurcationTime("
-      << "parent_id=" << furcations[i].m_parent->GetID() << ") = "
+      << "parent_id=" << m_furcations[i].m_parent->GetID() << ") = "
       << out_furcation_times[i] <<  endl;
     }
   }
@@ -251,8 +250,9 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
   }
 
   /*
-   For convenience, make a copy of m_g with the indices offset.
-   This permits use of the same indices as in the formula for gamma.
+   For convenience, make a copy of inode_dists (internode distances) with the
+   indices offset.  This permits use of the same indices as in the formula for
+   gamma.
    */
   tArray<int> g = tArray<int>(2, 0) + inode_dists;
   
@@ -286,18 +286,30 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
   return m_gamma;
 }
 
+
+
+// Accessors.
+const tArray<int> &cAnalyzeTreeStats_Gamma::FurcationTimes(void) const {
+  return m_furcation_times;
+}
+
+const tArray<int> &cAnalyzeTreeStats_Gamma::InternodeDistances(void) const {
+  return m_internode_distances;
+}
+
 double cAnalyzeTreeStats_Gamma::Gamma(void){
   return m_gamma;
 }
 
+
+
+// Commands.
 void cAnalyzeTreeStats_Gamma::AnalyzeBatch(
   tList<cAnalyzeGenotype> &genotype_list,
   int end_time,
   int furcation_time_convention
 ){
   tHashTable<int, int> mapping;
-  tArray<int> furcation_times;
-  tArray<int> internode_distances;
 
   int (*furcation_time_policy)(cAnalyzeLineageFurcation &furcation);
   furcation_time_policy = 0;
@@ -320,16 +332,16 @@ void cAnalyzeTreeStats_Gamma::AnalyzeBatch(
 
   LoadGenotypes(genotype_list);
   EstablishLinks(m_gen_array, mapping);
-  FindFurcationTimes(m_gen_array, furcation_time_policy, furcation_times);
+  FindFurcationTimes(m_gen_array, furcation_time_policy, m_furcation_times);
 
-  if (end_time < furcation_times[furcation_times.GetSize() - 1]){
+  if (end_time < m_furcation_times[m_furcation_times.GetSize() - 1]){
     /* Bad furcation time convention specified. */
     if(m_world->GetVerbosity() >= VERBOSE_ON) {
       cerr << "Error: Lineage end time comes before last furcation." << endl;
     }
   }
 
-  FindInternodeDistances(furcation_times, end_time, internode_distances);
-  CalculateGamma(internode_distances);
+  FindInternodeDistances(m_furcation_times, end_time, m_internode_distances);
+  CalculateGamma(m_internode_distances);
 }
 
