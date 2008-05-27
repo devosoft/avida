@@ -28,6 +28,7 @@
 #define cGUIWidget_h
 
 #include "cString.h"
+#include "cGUIEvent.h"
 
 class cGUIContainer;
 class cGUIEvent;

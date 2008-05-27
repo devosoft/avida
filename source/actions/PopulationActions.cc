@@ -330,7 +330,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
+      m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
     } else {
       cGenome genome(m_sequence);
       for (int i = m_cell_start; i < m_cell_end; i++) {
@@ -391,7 +391,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
+      m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       cGenome genome(m_sequence);
       for (int i = m_cell_start; i < m_cell_end; i++) {
@@ -1650,6 +1650,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
   action_lib->Register<cActionInjectRandom>("InjectRandom");
+  action_lib->Register<cActionInjectAllRandomRepro>("InjectAllRandomRepro");
   action_lib->Register<cActionInjectAll>("InjectAll");
   action_lib->Register<cActionInjectRange>("InjectRange");
   action_lib->Register<cActionInjectSequence>("InjectSequence");
@@ -1695,7 +1696,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectAllRandomRepro>("inject_all_random_repro");
   action_lib->Register<cActionInjectAll>("inject_all");
   action_lib->Register<cActionInjectRange>("inject_range");
-  action_lib->Register<cActionInject>("inject_sequence");
+  action_lib->Register<cActionInjectSequence>("inject_sequence");
 
   action_lib->Register<cActionKillProb>("apocalypse");
   action_lib->Register<cActionKillRate>("rate_kill");

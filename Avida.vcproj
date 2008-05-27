@@ -317,6 +317,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\cConstBurstSchedule.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\cConstSchedule.h"
 				>
 			</File>
@@ -1134,6 +1138,10 @@
 			</File>
 			<File
 				RelativePath=".\source\cpu\cCodeLabel.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cConstBurstSchedule.cc"
 				>
 			</File>
 			<File

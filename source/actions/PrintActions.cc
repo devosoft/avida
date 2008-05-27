@@ -2338,7 +2338,7 @@ public:
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();  
   }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname='grid_linage.update.dat']"; }
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
@@ -2804,7 +2804,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpFitnessGrid>("dump_fitness_grid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("dump_genotype_grid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("dump_phenotype_grid");
-  action_lib->Register<cActionDumpLineageGrid>("dump_lineage_grid");
   action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
   action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
   action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");

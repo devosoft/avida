@@ -47,6 +47,9 @@
 #include <cstdlib>
 
 #include <FL/Fl.H>
+
+#include <signal.h>
+
 // #include <FL/Fl_JPEG_Image.H>
 
 using namespace std;

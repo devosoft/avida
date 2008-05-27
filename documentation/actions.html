@@ -9,7 +9,7 @@
 
 <div class="revision">
 Revised 2006-09-03 DMB
-<br>Generated Thu Apr  3 16:13:04 2008 by make_actions_html</div>
+<br>Generated Tue May 27 15:04:24 2008 by make_actions_html</div>
 
 <p>
 <a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
@@ -88,7 +88,6 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#dump_historic_pop">dump_historic_pop</a><br>
       <a href="#dump_historic_sex_pop">dump_historic_sex_pop</a><br>
       <a href="#DumpLandscape">DumpLandscape</a><br>
-      <a href="#dump_lineage_grid">dump_lineage_grid</a><br>
       <a href="#DumpLineageGrid">DumpLineageGrid</a><br>
       <a href="#dump_memory">dump_memory</a><br>
       <a href="#DumpMemory">DumpMemory</a><br>
@@ -119,6 +118,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#inject_all">inject_all</a><br>
       <a href="#InjectAll">InjectAll</a><br>
       <a href="#inject_all_random_repro">inject_all_random_repro</a><br>
+      <a href="#InjectAllRandomRepro">InjectAllRandomRepro</a><br>
       <a href="#InjectDemes">InjectDemes</a><br>
       <a href="#InjectParasite">InjectParasite</a><br>
       <a href="#InjectParasitePair">InjectParasitePair</a><br>
@@ -142,9 +142,9 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#KillRate">KillRate</a><br>
       <a href="#KillRectangle">KillRectangle</a><br>
       <a href="#kill_rectangle">kill_rectangle</a><br>
-    <td valign="top">
       <a href="#LoadClone">LoadClone</a><br>
       <a href="#load_clone">load_clone</a><br>
+    <td valign="top">
       <a href="#load_dump_file">load_dump_file</a><br>
       <a href="#LoadPopulation">LoadPopulation</a><br>
       <a href="#ModMutProb">ModMutProb</a><br>
@@ -174,7 +174,10 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintDemeAllStats">PrintDemeAllStats</a><br>
       <a href="#PrintDemeAverageData">PrintDemeAverageData</a><br>
       <a href="#PrintDemeDonorStats">PrintDemeDonorStats</a><br>
-      <a href="#PrintDemeFounders">PrintDemeFounders</a><br>
+      <a href="#PrintDemeFoundersData">PrintDemeFoundersData</a><br>
+      <a href="#PrintDemeOrgReactionData">PrintDemeOrgReactionData</a><br>
+      <a href="#PrintDemeOrgTasksData">PrintDemeOrgTasksData</a><br>
+      <a href="#PrintDemeOrgTasksExeData">PrintDemeOrgTasksExeData</a><br>
       <a href="#PrintDemeReactionData">PrintDemeReactionData</a><br>
       <a href="#PrintDemeReplicationData">PrintDemeReplicationData</a><br>
       <a href="#PrintDemeResourceStats">PrintDemeResourceStats</a><br>
@@ -223,13 +226,17 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintMutationRateData">PrintMutationRateData</a><br>
       <a href="#print_number_phenotypes">print_number_phenotypes</a><br>
       <a href="#PrintParasiteData">PrintParasiteData</a><br>
+      <a href="#PrintPerDemeGenPerFounderData">PrintPerDemeGenPerFounderData</a><br>
+      <a href="#PrintPerDemeReactionData">PrintPerDemeReactionData</a><br>
+      <a href="#PrintPerDemeTasksData">PrintPerDemeTasksData</a><br>
+      <a href="#PrintPerDemeTasksExeData">PrintPerDemeTasksExeData</a><br>
       <a href="#print_phenotype_status">print_phenotype_status</a><br>
       <a href="#PrintPhenotypeData">PrintPhenotypeData</a><br>
       <a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a><br>
+    <td valign="top">
       <a href="#PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a><br>
       <a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a><br>
       <a href="#PrintReactionData">PrintReactionData</a><br>
-    <td valign="top">
       <a href="#PrintReactionRewardData">PrintReactionRewardData</a><br>
       <a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a><br>
       <a href="#print_resource_data">print_resource_data</a><br>
@@ -1029,6 +1036,14 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="InjectAllRandomRepro">InjectAllRandomRepro</a></strong>
+  <i>&lt;int length&gt; [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="InjectDemes">InjectDemes</a></strong>
   <i>[string fname="START_CREATURE"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
   </p>
@@ -1098,7 +1113,7 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="inject_sequence">inject_sequence</a></strong>
-  <i>[string fname="START_CREATURE"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
+  <i>&lt;string sequence&gt; [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
   </p>
   <p>
     <font color="red">DEPRECATED</font>
@@ -1485,19 +1500,12 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
-  <strong><a name="dump_lineage_grid">dump_lineage_grid</a></strong>
-  <i>[string fname=""]</i>
-  </p>
-  <p>
-  
-  </p>
-</li>
-<li><p>
   <strong><a name="DumpLineageGrid">DumpLineageGrid</a></strong>
-  <i>[string fname=""]</i>
+  <i>[string fname="grid_linage.update.dat"]</i>
   </p>
   <p>
-  
+    Print out the grid of lineage labels (set when ancestor was injected with action like InjectSequence)
+
   </p>
 </li>
 <li><p>
@@ -1778,8 +1786,32 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
-  <strong><a name="PrintDemeFounders">PrintDemeFounders</a></strong>
+  <strong><a name="PrintDemeFoundersData">PrintDemeFoundersData</a></strong>
   <i>[string fname="deme_founders.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeOrgReactionData">PrintDemeOrgReactionData</a></strong>
+  <i>[string fname="deme_org_reactions.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeOrgTasksData">PrintDemeOrgTasksData</a></strong>
+  <i>[string fname="deme_org_tasks.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeOrgTasksExeData">PrintDemeOrgTasksExeData</a></strong>
+  <i>[string fname="deme_org_tasks_exe.dat"]</i>
   </p>
   <p>
   
@@ -2241,6 +2273,38 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="PrintParasiteData">PrintParasiteData</a></strong>
   <i>[string fname="parasite.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintPerDemeGenPerFounderData">PrintPerDemeGenPerFounderData</a></strong>
+  <i>[string fname="deme_gen_between_founders.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintPerDemeReactionData">PrintPerDemeReactionData</a></strong>
+  <i>[string fname="per_deme_reactions.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintPerDemeTasksData">PrintPerDemeTasksData</a></strong>
+  <i>[string fname="per_deme_tasks.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintPerDemeTasksExeData">PrintPerDemeTasksExeData</a></strong>
+  <i>[string fname="per_deme_tasks_exe.dat"]</i>
   </p>
   <p>
   

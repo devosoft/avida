@@ -196,6 +196,8 @@
   Dump memory summary information.
 === Action DumpFitnessGrid ===
   Print out the grid of organism fitness values.
+=== Action DumpLineageGrid ===
+  Print out the grid of lineage labels (set when ancestor was injected with action like InjectSequence)
 === Action DumpGenotypeIDGrid ===
   Print out the grid of genotype IDs.
 === Action DumpTaskGrid ===

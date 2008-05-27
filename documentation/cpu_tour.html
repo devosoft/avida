@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Avida : A Guided Tour of an Ancestor and its Gardware</title>
+	<title>Avida : A Guided Tour of an Ancestor and its Hardware</title>
 	<link rel="stylesheet" type="text/css" href="main.css" />
 </head>
 <body>
@@ -44,7 +44,7 @@ figure below).
     stacks, but for practical purposes we currently limit the maximum stack
     depth to ten.</li>
 <li>An <strong style="color: #CCCC00">input buffer</strong> and an
-    <strong style="color: #CCCC00">output buffer</strong>that the organism
+    <strong style="color: #CCCC00">output buffer</strong> that the organism
     uses to receive information, and return the processed results.</li>
 <li>A <strong style="color: #8888FF">Read-Head</strong>, a
     <strong style="color: #8888FF">Write-Head</strong>, and a
@@ -139,7 +139,7 @@ another position in the code, such as
 the first complementary template (<code>nop-B</code>) and moves the Flow-Head
 there.  Templates may be composed of more than a single <code>nop</code>
 instruction.  A series of nops is typically abbreviated to the associated
-lecodeer and separated by colons.  This the sequence &quot;<code>nop-A nop-A nop-C</code>&quot;
+letter and separated by colons.  This the sequence &quot;<code>nop-A nop-A nop-C</code>&quot;
 would be displayed as &quot;<code>A:A:C</code>&quot;.
 </p>
 <p>
@@ -147,7 +147,7 @@ The label system used in Avida allows for an arbitrary number of nops.  By
 default, we have three: <code>nop-A</code>'s complement is <code>nop-B</code>,
 <code>nop-B</code>'s is <code>nop-C</code>, and <code>nop-C</code>'s is <code>nop-A</code>.
 Likewise, some instructions talk about the complement of a register or head
--- the same pacodeern is used in those cases.  So if an instruction tests if
+-- the same pattern is used in those cases.  So if an instruction tests if
 <code>?BX?</code> is equal to its complement, it will test if
 <code>BX&nbsp;==&nbsp;CX</code> by default, but if it is followed by a
 <code>nop-C</code> it will test if <code>CX&nbsp;==&nbsp;AX</code>.
@@ -287,7 +287,7 @@ The <code>h-copy</code> command will copy a single instruction from the Read-Hea
 (which we placed at the beginning of the offspring).  With any copy command
 there is a user-specified chance of a copy mutation.  If one occurs, the
 Write-Head will place a random instruction rather than the one that it
-gathered from the Read-Head.  After the copy occurs (for becodeer or worse),
+gathered from the Read-Head.  After the copy occurs (for better or worse),
 both the Read-Head and the Write-Head are advanced to the next instruction
 in the genome.  It is for this reason that a common mutation we see happening
 will place a long string of h-copy instruction one after another.
@@ -307,7 +307,7 @@ will move the head specified by the <code>nop</code> that follows (in this case
 beginning of the copy loop.
 </p>
 <p>
-This process will continue until all of the lines of code have been copies,
+This process will continue until all of the lines of code have been copied,
 and an offspring is born.
 </p>
 
