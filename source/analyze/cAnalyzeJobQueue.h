@@ -70,6 +70,10 @@ private:
   
   tArray<cAnalyzeJobWorker*> m_workers;
 
+
+  void singleThreadedJobExecution(cAnalyzeJob* job);
+  inline void queueJob(cAnalyzeJob* job);
+
   
   cAnalyzeJobQueue(); // @not_implemented
   cAnalyzeJobQueue(const cAnalyzeJobQueue&); // @not_implemented

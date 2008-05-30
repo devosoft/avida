@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 2/18/06.
- *  Copyright 2006-2007 Michigan State University. All rights reserved.
+ *  Copyright 2006-2008 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -42,9 +42,13 @@ cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world)
     m_rng_pool[i] = new cRandomMT(world->GetRandom().GetInt(0x7FFFFFFF));
   }
   
-  for (int i = 0; i < m_workers.GetSize(); i++) {
-    m_workers[i] = new cAnalyzeJobWorker(this);
-    m_workers[i]->Start();
+  if (m_workers.GetSize() > 1) {
+    for (int i = 0; i < m_workers.GetSize(); i++) {
+      m_workers[i] = new cAnalyzeJobWorker(this);
+      m_workers[i]->Start();
+    }
+  } else {
+    m_workers.Resize(0);
   }
 }
 
@@ -72,11 +76,17 @@ cAnalyzeJobQueue::~cAnalyzeJobQueue()
   }
 }
 
+inline void cAnalyzeJobQueue::queueJob(cAnalyzeJob* job)
+{
+  if (m_workers.GetSize()) m_queue.PushRear(job);
+  else singleThreadedJobExecution(job);
+}
+
 void cAnalyzeJobQueue::AddJob(cAnalyzeJob* job)
 {
   cMutexAutoLock lock(m_mutex);
   job->SetID(m_last_jobid++);
-  m_queue.PushRear(job);
+  queueJob(job);
   m_jobs++;
 }
 
@@ -84,7 +94,7 @@ void cAnalyzeJobQueue::AddJobImmediate(cAnalyzeJob* job)
 {
   m_mutex.Lock();
   job->SetID(m_last_jobid++);
-  m_queue.PushRear(job);
+  queueJob(job);
   m_jobs++;
   m_mutex.Unlock(); // should unlock prior to signaling condition variable
   m_cond.Signal();
@@ -116,4 +126,12 @@ void cAnalyzeJobQueue::Execute()
 
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
     m_world->GetDriver().NotifyComment("job queue complete");
+}
+
+void cAnalyzeJobQueue::singleThreadedJobExecution(cAnalyzeJob* job)
+{
+  cAvidaContext ctx(NULL);
+  ctx.SetRandom(GetRandom(job->GetID()));
+  job->Run(ctx);
+  delete job;
 }
