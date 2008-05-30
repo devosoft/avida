@@ -1352,12 +1352,12 @@
 		DCC30F7C0762539D008F7A48 /* cpu */ = {
 			isa = PBXGroup;
 			children = (
+				70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */,
 				705261050B87AF5C0007426F /* cInstLib.h */,
 				706C703E0B83FB95003174C1 /* tInstLibEntry.h */,
 				706C6FFE0B83F265003174C1 /* cInstSet.cc */,
 				706C6FFD0B83F254003174C1 /* cInstSet.h */,
 				70B1A6530B7E238F00067486 /* cHardwareExperimental.h */,
-				70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */,
 				7049F2D70A66859300640512 /* cHardwareTransSMT.cc */,
 				7049F2D80A66859300640512 /* cHardwareTransSMT.h */,
 				70C1EF4608C393BA00F50912 /* cCodeLabel.cc */,

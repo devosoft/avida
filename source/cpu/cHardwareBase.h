@@ -157,7 +157,6 @@ public:
   
   // --------  Register Manipulation  --------
   virtual int GetRegister(int reg_id) const = 0;
-  virtual int& GetRegister(int reg_id) = 0;
   virtual int GetNumRegisters() const = 0;
   
   
