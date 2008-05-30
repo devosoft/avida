@@ -246,7 +246,7 @@ double cAnalyzeTreeStats_Gamma::CalculateGamma(tArray<int> &inode_dists){
     if(m_world->GetVerbosity() >= VERBOSE_ON) {
       cerr << "Error: not enough genotypes in batch to calculate gamma - " << endl;
     }
-    return nan("0");
+    return 0.;
   }
 
   /*
