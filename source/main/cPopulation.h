@@ -186,6 +186,9 @@ public:
   // Deme-related methods
   //! Compete all demes with each other based on the given competition type.
   void CompeteDemes(int competition_type);
+  
+  //! Compete all demes with each other based on the given vector of fitness values.
+  void CompeteDemes(const std::vector<double>& fitness);
 
   //! Replicate all demes based on the given replication trigger.
   void ReplicateDemes(int rep_trigger);

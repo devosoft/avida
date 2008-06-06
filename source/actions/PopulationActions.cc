@@ -1068,6 +1068,41 @@ public:
 };
 
 
+
+/*! An abstract base class to ease the development of new deme competition fitness functions.
+ */
+class cAbstractCompeteDemes : public cAction {
+public:
+  //! Constructor.
+  cAbstractCompeteDemes(cWorld* world, const cString& args) : cAction(world, args) { }
+  //! Destructor.
+  virtual ~cAbstractCompeteDemes() { }
+  
+  /*! Compete all demes with each other.
+   
+   For deme competition, what we do here is iterate over every deme and calculate its 
+   fitness according to the subclass-defined fitness function.  The resulting vector of
+   fitness values is then passed to cPopulation::CompeteDemes for fitness-proportional
+   selection, and then each deme is piped through the standard battery of config options.
+   
+   Note that each fitness value must be >= 0.0, and the sum of all fitnesses must 
+   be > 0.0.
+   */
+  virtual void Process(cAvidaContext& ctx) {
+    std::vector<double> fitness;
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      fitness.push_back(Fitness(m_world->GetPopulation().GetDeme(i)));
+      assert(fitness.back() >= 0.0);
+    }
+    m_world->GetPopulation().CompeteDemes(fitness);
+  }
+
+  /*! Deme fitness function, to be overriden by specific types of deme competition.
+   */
+  virtual double Fitness(const cDeme& deme) = 0;
+};
+
+
 /* This Action will check if any demes have met the critera to be replicated
    and do so.  There are several bases this can be checked on:
 

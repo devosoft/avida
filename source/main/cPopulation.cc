@@ -64,6 +64,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 #include <set>
 #include <cfloat>
 #include <cmath>
@@ -1093,6 +1094,81 @@ void cPopulation::CompeteDemes(int competition_type)
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     deme_array[deme_id].Reset(deme_array[deme_id].GetGeneration()); // increase deme generation by 1
   }
+}
+
+
+/*! Compete all demes with each other based on the given vector of fitness values.
+ 
+ This form of compete demes uses fitness-proportional selection on a vector of deme
+ fitnesses for group selection.  It integrates with the various deme replication options
+ used in ReplicateDemes.
+ 
+ Note: New deme competition fitness functions are added in PopulationActions.cc by subclassing
+ cActionAbstractCompeteDemes and overriding cActionAbstractCompeteDemes::Fitness(cDeme&).  (Don't forget
+ to register the action and add it to the events file).
+ 
+ Another note: To mimic the behavior of the other version of CompeteDemes (which is kept around
+ for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of 
+ each deme.
+ */
+void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
+  // Each deme must have a fitness:
+  assert((int)fitness.size() == deme_array.GetSize());
+  
+  // Stat-tracking:
+  m_world->GetStats().CompeteDemes(fitness);
+  
+  // Now, select the demes to live.  Each deme has a probability to replicate that is
+  // equal to its fitness / total fitness.
+  const double total_fitness = std::accumulate(fitness.begin(), fitness.end(), 0.0);
+  assert(total_fitness > 0.0); // Must have *some* positive fitnesses...
+  std::vector<unsigned int> deme_counts(deme_array.GetSize(), 0); // Number of demes (at index) which should wind up in the next generation.
+  
+  // What we're doing here is summing up the fitnesses until we reach or exceed the target fitness.
+  // Then we're marking that deme as being part of the next generation.
+  for(int i=0; i<deme_array.GetSize(); ++i) {
+    double running_sum = 0.0;
+    double target_sum = m_world->GetRandom().GetDouble(total_fitness);
+    for(int j=0; j<deme_array.GetSize(); ++j) {
+      running_sum += fitness[j];
+      if(running_sum >= target_sum) {
+        // j'th deme will be replicated.
+        ++deme_counts[j];
+        break;
+      }
+    }
+  }
+  
+  // Now, while we can find both a source deme (one with a count greater than 1)
+  // and a target deme (one with a count of 0), replace the target with the source.
+  while(true) {
+    int source_id=0;
+    for(; source_id<(int)deme_counts.size(); ++source_id) {
+      if(deme_counts[source_id] > 1) {
+        --deme_counts[source_id];
+        break;
+      }
+    }
+    
+    if(source_id == (int)deme_counts.size()) {
+      break; // All done.
+    }
+    
+    int target_id=0;
+    for(; target_id<(int)deme_counts.size(); ++target_id) {
+      if(deme_counts[target_id] == 0) {
+        ++deme_counts[target_id];
+        break;
+      }
+    }
+    
+    assert(source_id < deme_array.GetSize());
+    assert(target_id < deme_array.GetSize());
+    assert(source_id != target_id);
+    
+    // Replace the target with a copy of the source:
+    ReplaceDeme(deme_array[source_id], deme_array[target_id]);
+  }  
 }
 
 

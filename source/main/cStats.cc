@@ -43,6 +43,7 @@
 #include "functions.h"
 
 #include <cfloat>
+#include <numeric>
 #include <cmath>
 
 
@@ -1568,3 +1569,25 @@ void cStats::PrintPerDemeGenPerFounderData(const cString& filename){
   df.Endl();
 }
 
+
+void cStats::CompeteDemes(const std::vector<double>& fitness) {
+  m_deme_fitness = fitness;
+}
+
+
+void cStats::PrintDemeCompetitionData(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida compete demes data");
+  df.WriteTimeStamp();
+  df.Write(m_update, "Update [update]");
+  
+  double avg = std::accumulate(m_deme_fitness.begin(), m_deme_fitness.end(), 0.0);
+  if(avg > 0.0) {
+    avg /= m_deme_fitness.size();
+  }
+  df.Write(avg, "Avg. deme fitness [avgfit]");
+  df.Endl();
+  
+  m_deme_fitness.clear();
+}

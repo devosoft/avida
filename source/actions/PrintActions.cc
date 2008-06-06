@@ -95,6 +95,7 @@ STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
+STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
 STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
 STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
 STATS_OUT_FILE(PrintPerDemeTasksExeData,    per_deme_tasks_exe.dat  );
@@ -2688,6 +2689,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
+  action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
   action_lib->Register<cActionPrintDemeFoundersData>("PrintDemeFoundersData");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");

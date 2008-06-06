@@ -751,6 +751,17 @@ protected:
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
   cDoubleSum m_germline_generation; //!< "Generation" accumulator of replicated germlines.
   t_founder_map m_deme_founders; //!< Data structure to track the founders of demes.
+  
+  
+  // -------- Deme competition support --------
+public:
+  //! Called immediately prior to deme competition.
+  void CompeteDemes(const std::vector<double>& fitness);
+  //! Print data regarding deme competition.
+  void PrintDemeCompetitionData(const cString& filename);
+  
+private:
+  std::vector<double> m_deme_fitness; //!< Fitness of each deme during last deme competition.
 };
 
 
