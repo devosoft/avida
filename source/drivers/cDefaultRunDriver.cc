@@ -53,6 +53,7 @@ cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(fal
   
   // Save this config variable
   m_generation_update_fastforward_threshold = m_world->GetConfig().FASTFORWARD_UPDATES.Get();
+  m_population_fastforward_threshold = m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get();
 }
 
 cDefaultRunDriver::~cDefaultRunDriver()
@@ -156,7 +157,7 @@ void cDefaultRunDriver::Run()
     }
     
     // Keep track of changes in generation for fast-forward purposes
-    UpdateFastForward(stats.GetGeneration());
+    UpdateFastForward(stats.GetGeneration(),stats.GetNumCreatures());
       
     // Exit conditons...
     if (population.GetNumOrganisms() == 0) m_done = true;
@@ -184,8 +185,13 @@ void cDefaultRunDriver::NotifyWarning(const cString& in_string)
   cout << "Warning: " << in_string << endl;
 }
 
-void cDefaultRunDriver::UpdateFastForward (double inGeneration)
+void cDefaultRunDriver::UpdateFastForward (double inGeneration, int population)
 {
+  if (bool(m_population_fastforward_threshold))
+  {
+	if (population >= m_population_fastforward_threshold) m_fastforward = true;
+	else m_fastforward = false;
+  }
   if (!m_generation_update_fastforward_threshold) return;
 
   if (inGeneration == m_last_generation)

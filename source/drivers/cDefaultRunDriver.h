@@ -49,6 +49,7 @@ protected:
   double m_last_generation;
   int m_generation_same_update_count;
   int m_generation_update_fastforward_threshold;
+  int m_population_fastforward_threshold;
   
 public:
   cDefaultRunDriver(cWorld* world);
@@ -68,7 +69,7 @@ public:
   void NotifyWarning(const cString& in_string);
   
   void ClearFastForward() { m_fastforward = false; m_generation_same_update_count = 0; }
-  void UpdateFastForward (double inGeneration);
+  void UpdateFastForward (double inGeneration, int population);
   bool GetFastForward() { return m_fastforward; }
 
 };

@@ -296,6 +296,10 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 
 bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism)
 {
+  if (m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get() > 0 && GetNumOrganisms() >= m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get())
+  {
+	  return true;
+  }
   assert(&parent_organism != NULL);
   
   tArray<cOrganism*> child_array;
@@ -2865,7 +2869,6 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
    
     // Look randomly within empty cells first, if requested
     if (m_world->GetConfig().PREFER_EMPTY.Get()) {
-      
       int num_empty_cells = UpdateEmptyCellIDArray();
       if (num_empty_cells > 0) {
         int out_pos = m_world->GetRandom().GetUInt(num_empty_cells);
@@ -3171,7 +3174,6 @@ cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& p
 int cPopulation::UpdateEmptyCellIDArray(int deme_id)
 {
   int num_empty_cells = 0;  
-  cDeme& deme = deme_array[deme_id];
   // Note: empty_cell_id_array was resized to be large enough to hold
   // all cells in the cPopulation when it was created. Using functions
   // that resize it (like Push) will slow this code down considerably.
@@ -3185,11 +3187,11 @@ int cPopulation::UpdateEmptyCellIDArray(int deme_id)
   }
   // Look at a specific deme
   else {
+	cDeme& deme = deme_array[deme_id];
     for (int i=0; i<deme.GetSize(); i++) {
       if (GetCell(deme.GetCellID(i)).IsOccupied() == false) empty_cell_id_array[num_empty_cells++] = deme.GetCellID(i);
     }
   }
-  
   return num_empty_cells;
 }
 
