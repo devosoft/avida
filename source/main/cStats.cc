@@ -1231,6 +1231,10 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   m_deme_births.Add(source_deme.GetBirthCount());
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
+
+  // reset #orgs. sleeping in demes
+  numAsleep[source_deme.GetID()]=0;
+  numAsleep[target_deme.GetID()]=0;
 }
 
 

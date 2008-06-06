@@ -220,6 +220,23 @@
 		};
 /* End PBXBuildRule section */
 
+/* Begin PBXBuildStyle section */
+		B54852BC0DF98D8E00AD254E /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Development;
+		};
+		B54852BD0DF98D8E00AD254E /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
+
 /* Begin PBXContainerItemProxy section */
 		56F555DA0C3B36FC00E2E929 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1817,12 +1834,16 @@
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
-			compatibilityVersion = "Xcode 2.4";
+			buildSettings = {
+			};
+			buildStyles = (
+				B54852BC0DF98D8E00AD254E /* Development */,
+				B54852BD0DF98D8E00AD254E /* Deployment */,
+			);
 			hasScannedForEncodings = 0;
 			mainGroup = DCC30C490762532C008F7A48;
 			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;
 			projectDirPath = "";
-			projectRoot = "";
 			targets = (
 				7023ED520C0A590200362B9C /* full-suite */,
 				DCC3164C07626CF3008F7A48 /* avida */,
