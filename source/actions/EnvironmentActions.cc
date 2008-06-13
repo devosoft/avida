@@ -726,15 +726,19 @@ public:
   }
 };
 
+
 class cActionDelayedDemeEvent : public cAction
 {
 private:
   int m_x1, m_y1, m_x2, m_y2; // bounding box of event in deme
   int m_delay; // deme age when event occurs
   int m_duration; // length of event; subverted when deme is reset
+  bool m_static_pos;
+  int m_time_to_live; // update when event no longer exists
+  int m_id;
   
 public:
-  cActionDelayedDemeEvent(cWorld* world, const cString& args) : cAction(world, args), m_x1(-1), m_y1(-1), m_x2(-1), m_y2(-1), m_delay(-1), m_duration(-1)
+  cActionDelayedDemeEvent(cWorld* world, const cString& args) : cAction(world, args), m_x1(-1), m_y1(-1), m_x2(-1), m_y2(-1), m_delay(-1), m_duration(-1), m_static_pos(1), m_time_to_live(-1), m_id(-1)
   {
     cString largs(args);
     if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
@@ -743,16 +747,19 @@ public:
     if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
     if (largs.GetSize()) m_delay = largs.PopWord().AsInt();
     if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_static_pos = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_time_to_live = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion>"; }
+  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <int static_position> <int time_to_live> <event ID>"; }
   
   void Process(cAvidaContext& ctx)
   {
     cPopulation& pop = m_world->GetPopulation();
     int numDemes = pop.GetNumDemes();
     for(int i = 0; i < numDemes; i++) {
-      pop.GetDeme(i).SetCellEvent(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration);
+      pop.GetDeme(i).SetCellEvent(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration, m_static_pos, m_time_to_live, m_id);
     }
   }
 };

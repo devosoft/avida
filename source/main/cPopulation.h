@@ -221,6 +221,7 @@ public:
   void ResetDemes();
   void CopyDeme(int deme1_id, int deme2_id);
   void SpawnDeme(int deme1_id, int deme2_id=-1);
+  void AddDemePred(cString type, int times);
 
   void CheckImplicitDemeRepro(cDeme& deme);
   

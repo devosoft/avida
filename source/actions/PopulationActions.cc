@@ -565,6 +565,7 @@ public:
         m_world->GetPopulation().Inject(genome,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
       }
     } else {
       for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
@@ -573,10 +574,165 @@ public:
         m_world->GetPopulation().Inject(genome,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        
       }
     }
   }
 };
+
+
+/*! Injects one or more organisms into all demes in the population at a specified cell.
+ *  Note: This gets the genotype from the germline, so germline use is required
+ *  Note: one organism is inserted each time this is called, and it will stop
+ *        when the given number of organisms has been injected.
+
+  Parameters:
+    - number of orgs (int): number of organisms to inject into each deme - default 1
+    - nest cell (int): relative cell id into which organism is injected - default 0
+    - merit (double): The initial merit of the organism. If set to -1, this is ignored - default -1
+    - lineage label (integer): An integer that marks all descendants of this organism  - default 0
+    - neutral metric (double):  A double value that randomly drifts over time - default 0
+
+*/
+
+class cActionInjectDemesFromNest : public cAction
+{
+private:
+  int m_num_orgs;
+  int m_nest_cellid;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+  
+public:
+  cActionInjectDemesFromNest(cWorld* world, const cString& args):
+    cAction(world, args),
+    m_num_orgs(1),
+    m_nest_cellid(0),
+    m_merit(-1),
+    m_lineage_label(0),
+    m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_nest_cellid = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+  } //End cActionInjectDemesFromNest constructor
+
+  static const cString GetDescription() { return "Arguments: [int num_orgs=1] [int nest_cellid=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+
+      // The first deme will have initially had one organism injected.  If this
+      // is the first injection and energy is used, increment the injected
+      // count (the initial injection wasn't counted) and skip the first deme
+      // so that the energies don't get messed up.
+      if( (i==0) && (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
+          (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        continue;
+      }
+
+      if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
+                                        m_world->GetPopulation().GetDeme(i).GetCellID(m_nest_cellid),
+                                        m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+      }
+
+    } //End iterating through demes
+
+  } //End Process()
+
+}; //End cActionInjectDemesFromNest
+
+
+
+/*! Injects one or more organisms into all demes in a randomly-chosen cell.
+ *  Note: This gets the genotype from the germline, so germline use is required
+ *  Note: one organism is inserted each time this is called, and it will stop
+ *        when the given number of organisms has been injected.
+
+  Parameters:
+    - number of orgs (int): number of organisms to inject into each deme - default 1
+    - merit (double): The initial merit of the organism. If set to -1, this is ignored - default -1
+    - lineage label (integer): An integer that marks all descendants of this organism  - default 0
+    - neutral metric (double):  A double value that randomly drifts over time - default 0
+
+*/
+
+class cActionInjectDemesRandom : public cAction
+{
+private:
+  int m_num_orgs;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+  
+public:
+  cActionInjectDemesRandom(cWorld* world, const cString& args):
+    cAction(world, args),
+    m_num_orgs(1),
+    m_merit(-1),
+    m_lineage_label(0),
+    m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+  } //End cActionInjectDemesRandom constructor
+
+  static const cString GetDescription() { return "Arguments: [int num_orgs=1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+
+  void Process(cAvidaContext& ctx)
+  {
+    int target_cell, target_cellr;
+    int deme_size;
+
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+
+      // The first deme will have initially had one organism injected.  If this
+      // is the first injection and energy is used, increment the injected
+      // count (the initial injection wasn't counted) and skip the first deme
+      // so that the energies don't get messed up.
+      if( (i==0) && (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
+          (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        continue;
+      }
+
+      target_cell = -1;
+      target_cellr = -1;
+      deme_size = m_world->GetPopulation().GetDeme(i).GetSize();
+
+      // Find a random, unoccupied cell to use. Assumes one exists.
+      do {
+        target_cellr = m_world->GetRandom().GetInt(0, deme_size-1);
+        target_cell = m_world->GetPopulation().GetDeme(i).GetCellID(target_cellr);
+      } while (m_world->GetPopulation().GetCell(target_cell).IsOccupied());
+
+      assert(target_cell > -1);
+      assert(target_cell < m_world->GetPopulation().GetSize());
+
+      if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), target_cell, m_merit,
+                                        m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+      }
+
+    } //End iterating through demes
+
+  } //End Process()
+
+}; //End cActionInjectDemesRandom
+
 
 
 /*
@@ -1111,6 +1267,7 @@ public:
     'corners'   - ...demes with upper left and lower right corners filled.
     'deme-age'  - ...demes that are a certain age
     'birth-count' ...demes that have had a certain number of births.
+    'sat-mov-pred'  - ...demes whose movement predicate was previously satisfied
 */
 
 class cActionReplicateDemes : public cAction
@@ -1129,6 +1286,7 @@ public:
     else if (in_trigger == "corners") m_rep_trigger = 2;
     else if (in_trigger == "deme-age") m_rep_trigger = 3;
     else if (in_trigger == "birth-count") m_rep_trigger = 4;
+    else if (in_trigger == "sat-mov-pred") m_rep_trigger = 5;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;
@@ -1680,6 +1838,77 @@ public:
   }
 };
 
+/*
+ Added predicate to all demes that is satisified when an organism reaches the center of an event
+*/
+class cActionPred_DemeEventMoveCenter : public cAction
+{
+private:
+  int m_times;
+
+public:
+  cActionPred_DemeEventMoveCenter(cWorld* world, const cString& args) : cAction(world, args), m_times(1) {
+    cString largs(args);
+    if (largs.GetSize()) m_times = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int times=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().AddDemePred("EventMovedIntoCenter", m_times);
+  }
+};
+
+
+/*
+ Added predicate to all demes that is satisified when an organism reaches a target cell
+ modified cActionPred_DemeEventMoveCenter
+*/
+class cActionPred_DemeEventMoveBetweenTargets : public cAction
+{
+private:
+  int m_times;
+
+public:
+  cActionPred_DemeEventMoveBetweenTargets(cWorld* world, const cString& args) : cAction(world, args), m_times(1) {
+    cString largs(args);
+    if (largs.GetSize()) m_times = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int times=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().AddDemePred("EventMovedBetweenTargets", m_times);
+  }
+};
+
+
+/*
+ Added predicate to all demes that is satisified when a number of organisms
+ reach a target cell
+*/
+class cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget : public cAction
+{
+private:
+  int m_numorgs;
+
+public:
+  cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget(cWorld* world, const cString& args) : cAction(world, args), m_numorgs(1) {
+    cString largs(args);
+    if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int numorgs=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().AddDemePred("EventNUniqueIndividualsMovedIntoTarget", m_numorgs);
+  }
+};
+
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -1691,6 +1920,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectSequence>("InjectSequence");
   action_lib->Register<cActionInjectSequenceWithDivMutRate>("InjectSequenceWDivMutRate");
   action_lib->Register<cActionInjectDemes>("InjectDemes");
+  action_lib->Register<cActionInjectDemesFromNest>("InjectDemesFromNest");
+  action_lib->Register<cActionInjectDemesRandom>("InjectDemesRandom");
 
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
@@ -1756,4 +1987,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionConnectCells>("connect_cells");
   action_lib->Register<cActionDisconnectCells>("disconnect_cells");
   action_lib->Register<cActionSwapCells>("swap_cells");
+
+  action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
+  action_lib->Register<cActionPred_DemeEventMoveBetweenTargets>("Pred_DemeEventMoveBetweenTargets");
+  action_lib->Register<cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget>("Pred_DemeEventNUniqueIndividualsMovedIntoTarget");
 }

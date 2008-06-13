@@ -42,6 +42,10 @@ struct cOrgMessagePredicate : public std::unary_function<cOrgMessage, bool>
   virtual bool operator()(const cOrgMessage& msg) = 0;
   virtual void Print(std::ostream& out) { }
   virtual void Reset() { }
+  virtual bool PreviouslySatisfied() = 0;
+  virtual cString GetName() = 0;
+  virtual void UpdateStats(cStats& stats) {}
+  virtual cDemeCellEvent* GetEvent() { return NULL; }
 };
 
 
@@ -124,6 +128,188 @@ struct cOrgMessagePred_SinkReceiverEQU : public cOrgMessagePredicate {
   unsigned int m_data;
   std::set<int> m_cell_ids;
   std::set<int> m_cell_ids_total_good;
+};
+
+
+/*! A predicate that returns true if a demeCellEvent has been received but the base station
+*/
+struct cOrgMessagePred_EventReceivedCenter : public cOrgMessagePredicate {
+  cOrgMessagePred_EventReceivedCenter(cDemeCellEvent* event, int base_station, int times) : 
+  m_base_station(base_station)
+  , m_event_received(false)
+  , m_stats_updated(false)
+  , m_event(event)
+  , m_total_times(times)
+  , m_current_times(0) { }
+  
+  ~cOrgMessagePred_EventReceivedCenter() { }
+  
+  virtual bool operator()(const cOrgMessage& msg) {
+    int deme_id = msg.GetSender()->GetOrgInterface().GetDemeID();
+    
+    if(deme_id != m_event->GetDeme()->GetDemeID() || m_event->IsDead()) {
+      return false;
+    }
+    
+    unsigned int eventID = m_event->GetEventID();
+    
+    if(m_event->IsActive() && eventID != 0 &&
+       (eventID == msg.GetData() ||
+        eventID == msg.GetLabel())) {
+      m_cell_ids.insert(msg.GetSender()->GetCellID());
+
+      if(m_base_station == msg.GetReceiver()->GetCellID()) {
+        m_current_times++;
+        if(m_current_times >= m_total_times) {
+          m_event_received = true;
+        }
+      }
+    }
+    return m_event_received;
+  }
+  
+  //need to print update!!!
+  virtual void Print(std::ostream& out) {
+    if(m_event->IsDead()) {
+      return;
+    }
+
+    out << m_event->GetEventID() << " [ ";
+    for(std::set<int>::iterator i=m_cell_ids.begin(); i!=m_cell_ids.end(); i++) {
+      out << *i << " ";
+    }
+    out << "]\n";
+    
+    m_cell_ids.clear();
+  }
+  
+  virtual void Reset() { 
+    m_event_received = false;
+    m_stats_updated = false;
+    m_current_times = 0;
+  }
+
+  virtual bool PreviouslySatisfied() {
+    return m_event_received;
+  }
+
+  virtual cString GetName() {
+    return "EventReceivedCenter";
+  }
+
+  virtual void UpdateStats(cStats& stats) {
+    if(m_event_received && !m_stats_updated) {
+      int eventCell = m_event->GetNextEventCellID();
+      while(eventCell != -1) {
+        stats.IncPredSat(eventCell);
+        eventCell = m_event->GetNextEventCellID();
+      }
+      m_stats_updated = true;
+    }
+  }
+  
+  cDemeCellEvent* GetEvent() { return m_event; }
+  
+  int m_base_station;
+  bool m_event_received;
+  bool m_stats_updated;
+  cDemeCellEvent* m_event;
+  std::set<int> m_cell_ids;
+  int m_total_times;
+  int m_current_times;
+};
+
+/*! A predicate that returns true if a demeCellEvent has been received but the base station
+*/
+struct cOrgMessagePred_EventReceivedLeftSide : public cOrgMessagePredicate {
+  cOrgMessagePred_EventReceivedLeftSide(cDemeCellEvent* event, cPopulation& population, int times) :
+  pop(population)
+  , m_event_received(false)
+  , m_stats_updated(false)
+  , m_event(event)
+  , m_total_times(times)
+  , m_current_times(0){ }
+  
+  ~cOrgMessagePred_EventReceivedLeftSide() { }
+  
+  virtual bool operator()(const cOrgMessage& msg) {
+    int deme_id = msg.GetSender()->GetOrgInterface().GetDemeID();
+    
+    if(deme_id != m_event->GetDeme()->GetDemeID() || m_event->IsDead()) {
+      return false;
+    }
+
+    if(m_event->IsActive() && 
+       ((unsigned int)m_event->GetEventID() == msg.GetData() ||
+        (unsigned int)m_event->GetEventID() == msg.GetLabel())) {
+      m_cell_ids.insert(msg.GetSender()->GetCellID());
+      
+      // find receiver coordinates
+      cOrganism* receiver = msg.GetReceiver();
+      int absolute_cell_ID = receiver->GetCellID();
+      int deme_id = receiver->GetOrgInterface().GetDemeID();
+      std::pair<int, int> pos = pop.GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
+
+      // does receiver have x cordinate of zero
+      if(pos.first == 0) {
+        m_current_times++;
+        if(m_current_times >= m_total_times) {
+          m_event_received = true;
+        }
+      }
+    }
+    return m_event_received;
+  }
+  
+  virtual void Print(std::ostream& out) {
+    if(m_event->IsDead()) {
+      return;
+    }
+
+    out << m_event->GetEventID() << " [ ";
+    for(std::set<int>::iterator i=m_cell_ids.begin(); i!=m_cell_ids.end(); i++) {
+      out << *i << " ";
+    }
+    out << "]\n";
+    
+    m_cell_ids.clear();
+  }
+  
+  virtual void Reset() { 
+    m_event_received = false;
+    m_stats_updated = false;
+    m_current_times = 0;
+    m_cell_ids.clear();
+  }
+
+  virtual bool PreviouslySatisfied() {
+    return m_event_received;
+  }
+
+  virtual cString GetName() {
+    return "EventReceivedLeftSide";
+  }
+
+  virtual void UpdateStats(cStats& stats) {
+    if(m_event_received && !m_stats_updated) {
+      int eventCell = m_event->GetNextEventCellID();
+      while(eventCell != -1) {
+        stats.IncPredSat(eventCell);
+        eventCell = m_event->GetNextEventCellID();
+      }
+      m_stats_updated = true;
+    }
+  }
+  
+  cDemeCellEvent* GetEvent() { return m_event; }
+  
+  cPopulation& pop;
+  bool m_event_received;
+  bool m_stats_updated;
+  cDemeCellEvent* m_event;
+  std::set<int> m_cell_ids;
+  int m_total_times;
+  int m_current_times;
 };
 
 

@@ -1180,6 +1180,7 @@ There are several bases this can be checked on:
 2: 'corners'   - ...demes with upper left and lower right corners filled.
 3: 'deme-age'  - ...demes who have reached their maximum age
 4: 'birth-count' ...demes that have had a certain number of births.
+5: 'sat-mov-pred'...demes whose movement predicate was previously satisfied
 
 */
 
@@ -1222,6 +1223,10 @@ void cPopulation::ReplicateDemes(int rep_trigger)
       case 4: {
         // Replicate demes that have had a certain number of births.
         if(source_deme.GetBirthCount() < m_world->GetConfig().DEMES_MAX_BIRTHS.Get()) continue;
+        break;
+      }
+      case 5: {
+        if(!(source_deme.MovPredSatisfiedPreviously())) continue;
         break;
       }
       default: {
@@ -2400,6 +2405,33 @@ void cPopulation::SpawnDeme(int deme1_id, int deme2_id)
   // And do the spawning.
   int cell2_id = deme2.GetCellID( random.GetUInt(deme2.GetSize()) );
   InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()) );    
+}
+
+void cPopulation::AddDemePred(cString type, int times) {
+  if(type == "EventReceivedCenter") {
+    for (int deme_id = 0; deme_id < deme_array.GetSize(); deme_id++) {
+      deme_array[deme_id].AddEventReceivedCenterPred(times);
+    }
+  } else if(type == "EventReceivedLeftSide") {
+    for (int deme_id = 0; deme_id < deme_array.GetSize(); deme_id++) {
+      deme_array[deme_id].AddEventReceivedLeftSidePred(times);
+    }
+  } else if(type == "EventMovedIntoCenter") {
+    for (int deme_id = 0; deme_id < deme_array.GetSize(); deme_id++) {
+      deme_array[deme_id].AddEventMoveCenterPred(times);
+    }  
+  } else if(type == "EventMovedBetweenTargets") {
+    for (int deme_id = 0; deme_id < deme_array.GetSize(); deme_id++) {
+      deme_array[deme_id].AddEventMoveBetweenTargetsPred(times);
+    }  
+  } else if(type == "EventNUniqueIndividualsMovedIntoTarget") {
+    for (int deme_id = 0; deme_id < deme_array.GetSize(); deme_id++) {
+      deme_array[deme_id].AddEventEventNUniqueIndividualsMovedIntoTargetPred(times);
+    }  
+  } else {
+    cout << "Unknown Predicate\n";
+    exit(1);
+  }
 }
 
 void cPopulation::CheckImplicitDemeRepro(cDeme& deme) {
@@ -4230,6 +4262,25 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   
   // Activate the organism in the population...
   ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
+
+  // Log the injection of this organism if LOG_INJECT is set to 1 and
+  // the current update number is >= INJECT_LOG_START
+  if ( (m_world->GetConfig().LOG_INJECT.Get() == 1) &&
+       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().INJECT_LOG_START.Get()) ){
+
+      cString tmpfilename = cStringUtil::Stringf("injectlog.dat");
+      cDataFile& df = m_world->GetDataFile(tmpfilename);
+
+      int update = m_world->GetStats().GetUpdate();
+      int orgid = new_organism->GetID();
+      int deme_id = m_world->GetPopulation().GetCell(cell_id).GetDemeID();
+      int facing = new_organism->GetFacing();
+      const char *orgname = (const char *)new_genotype->GetName();
+
+      cString UpdateStr = cStringUtil::Stringf("%d %d %d %d %d %s", update, orgid, cell_id, deme_id, facing, orgname);
+      df.WriteRaw(UpdateStr);
+  }
+
 }
 
 

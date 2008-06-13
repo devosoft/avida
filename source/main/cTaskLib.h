@@ -278,6 +278,21 @@ private:  // Direct task related methods
   // Network Tasks
   double Task_NetSend(cTaskContext& ctx) const;
   double Task_NetReceive(cTaskContext& ctx) const;
+
+  // Movement tasks (temp, rely on hack)
+  double Task_MoveUpGradient(cTaskContext& ctx) const;
+  double Task_MoveNeutralGradient(cTaskContext& ctx) const;
+  double Task_MoveDownGradient(cTaskContext& ctx) const;
+  double Task_MoveNotUpGradient(cTaskContext& ctx) const;
+  double Task_MoveToRightSide(cTaskContext& ctx) const;
+  double Task_MoveToLeftSide(cTaskContext& ctx) const;
+
+  // BDC Movement tasks
+  double Task_Move(cTaskContext& ctx) const;
+  double Task_MoveToTarget(cTaskContext& ctx) const;
+  double Task_MoveToMovementEvent(cTaskContext& ctx) const;
+  double Task_MoveBetweenMovementEvent(cTaskContext& ctx) const;
+
 };
 
 

@@ -30,6 +30,10 @@
 #include "cEnvReqs.h"
 #include "tHashTable.h"
 #include "cTaskState.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
+#include "cOrgMessagePredicate.h"
+#include "cOrgMovementPredicate.h"
 
 #include "platform.h"
 
@@ -384,7 +388,29 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "net_receive")
     NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
   
-  
+  // Movement Tasks
+  if (name == "move_up_gradient")
+    NewTask(name, "Move up gradient", &cTaskLib::Task_MoveUpGradient);
+  else if (name == "move_neutral_gradient")
+    NewTask(name, "Move neutral gradient", &cTaskLib::Task_MoveNeutralGradient);
+  else if (name == "move_down_gradient")
+    NewTask(name, "Move down gradient", &cTaskLib::Task_MoveDownGradient);
+  else if (name == "move_not_up_gradient")
+    NewTask(name, "Move not up gradient", &cTaskLib::Task_MoveNotUpGradient);
+  else if (name == "move_to_right_side")
+    NewTask(name, "Move to right side", &cTaskLib::Task_MoveToRightSide);
+  else if (name == "move_to_left_side")
+    NewTask(name, "Move to left side", &cTaskLib::Task_MoveToLeftSide);
+  // BDC Movement Tasks
+  else if (name == "move")
+    NewTask(name, "Successfully Moved", &cTaskLib::Task_Move);
+  else if (name == "movetotarget")
+    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveToTarget);
+  else if (name == "movetoevent")
+    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveToMovementEvent);
+  else if (name == "movebetweenevent")
+    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveBetweenMovementEvent);  
+
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -2834,3 +2860,150 @@ double cTaskLib::Task_NetReceive(cTaskContext& ctx) const
   if (ctx.NetIsValid()) return 1.0;
   return 0.0;
 }
+
+//TODO: add movement tasks here
+
+double cTaskLib::Task_MoveUpGradient(cTaskContext& ctx) const {
+  if(ctx.GetOrganism()->GetGradientMovement() == 1.0)
+    return 1.0;
+  return 0.0;
+}
+
+double cTaskLib::Task_MoveNeutralGradient(cTaskContext& ctx) const {
+  if(ctx.GetOrganism()->GetGradientMovement() == 0.0)
+    return 1.0;
+  return 0.0;
+}
+
+double cTaskLib::Task_MoveDownGradient(cTaskContext& ctx) const {
+  if(ctx.GetOrganism()->GetGradientMovement() == -1.0)
+    return 1.0;
+  return 0.0;
+}
+
+double cTaskLib::Task_MoveNotUpGradient(cTaskContext& ctx) const {
+  if(Task_MoveUpGradient(ctx))
+    return 0.0;
+  return 1.0;
+}
+
+double cTaskLib::Task_MoveToRightSide(cTaskContext& ctx) const {
+  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
+  std::pair<int, int> location = deme.GetCellPosition(ctx.GetOrgInterface()->GetCellID());
+  
+  if(location.first == m_world->GetConfig().WORLD_X.Get()-1)
+    return 1.0;
+  return 0.0;
+}
+
+double cTaskLib::Task_MoveToLeftSide(cTaskContext& ctx) const {
+  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
+  std::pair<int, int> location = deme.GetCellPosition(ctx.GetOrgInterface()->GetCellID());
+  
+  if(location.first == 0)
+    return 1.0;
+  return 0.0;
+}
+
+double cTaskLib::Task_Move(cTaskContext& ctx) const
+{
+  if(ctx.GetOrganism()->GetCellID() != ctx.GetOrganism()->GetPrevSeenCellID()) {
+    ctx.GetOrganism()->SetPrevSeenCellID(ctx.GetOrganism()->GetCellID());
+    return 1.0;
+  }
+  
+  return 0.0;
+
+} //End cTaskLib::Task_Move()
+
+double cTaskLib::Task_MoveToTarget(cTaskContext& ctx) const
+//Note - a generic version of this is now at - Task_MoveToMovementEvent
+{
+  cOrgInterface* iface = ctx.GetOrgInterface();
+  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
+  int celldata = m_world->GetPopulation().GetCell(iface->GetCellID()).GetCellData();
+
+  int current_cell = deme.GetRelativeCellID(iface->GetCellID());
+  int prev_target = deme.GetRelativeCellID(iface->GetPrevTaskCellID());
+  
+  // If the organism is currently on a target cell, see which target cell it previously
+  // visited.  Since we want them to move back and forth, only reward if we are on
+  // a different target cell.
+
+  if(celldata > 1) 
+  {
+    if (current_cell == prev_target) {
+      // At some point, we may want to return a fraction
+      return 0;
+    } else {
+      iface->AddReachedTaskCell();
+      iface->SetPrevTaskCellID(current_cell);
+      return 1.0;
+    }
+  }
+
+  return 0;
+
+} //End cTaskLib::TaskMoveToTarget()
+
+double cTaskLib::Task_MoveToMovementEvent(cTaskContext& ctx) const {
+  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
+  int cell_data = m_world->GetPopulation().GetCell(ctx.GetOrgInterface()->GetCellID()).GetCellData();
+  cOrgInterface* iface = ctx.GetOrgInterface();
+
+  if(cell_data <= 0)
+    return 0.0;
+    
+  for(int i = 0; i < deme.GetNumMovementPredicates(); i++) {
+      if(deme.GetMovPredicate(i)->GetEvent(0)->GetEventID() == cell_data) {
+        iface->AddReachedTaskCell();
+        iface->SetPrevTaskCellID(cell_data);
+        return 1.0;
+      }
+  }
+  return 0.0;
+}
+
+
+double cTaskLib::Task_MoveBetweenMovementEvent(cTaskContext& ctx) const {
+  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
+  int cell_data = m_world->GetPopulation().GetCell(ctx.GetOrgInterface()->GetCellID()).GetCellData();
+  cOrgInterface* iface = ctx.GetOrgInterface();
+  int prev_target = deme.GetRelativeCellID(iface->GetPrevTaskCellID());
+
+  int cellid = ctx.GetOrgInterface()->GetCellID();
+
+  // NOTE: as of now, orgs aren't rewarded if they touch a target more than
+  //   once in a row.  Could be useful in the future to have fractional reward
+  //   or something.
+  if( (cell_data <= 0) || (cell_data == prev_target) )
+    return 0.0;
+    
+  for(int i = 0; i < deme.GetNumMovementPredicates(); i++) {
+      // NOTE: having problems with calling the GetNumEvents function for some reason.  FIXME
+      //int num_events = deme.GetMovPredicate(i)->GetNumEvents;
+      int num_events = 2;
+
+      if(num_events == 1) {
+        if( (deme.GetMovPredicate(i)->GetEvent(0)->IsActive()) &&
+            (deme.GetMovPredicate(i)->GetEvent(0)->GetEventID() == cell_data) ) {
+          iface->AddReachedTaskCell();
+          iface->SetPrevTaskCellID(cell_data);
+          return 1.0;
+        }
+      } else {
+        for(int j = 0; j < num_events; j++) {
+          cDemeCellEvent *event = deme.GetMovPredicate(i)->GetEvent(j);
+          if( (event != NULL) && (event->IsActive()) &&
+              (event->GetEventID() == cell_data) ) {
+            iface->AddReachedTaskCell();
+            iface->SetPrevTaskCellID(cell_data);
+            return 1.0;
+          }
+        }
+      }
+
+  }
+  return 0.0;
+}
+

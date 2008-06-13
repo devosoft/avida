@@ -48,6 +48,10 @@ private:
   int m_cell_id;
   int m_deme_id;
 
+  int m_prevseen_cell_id;	// Previously-seen cell's ID
+  int m_prev_task_cell;		// Cell ID of previous task
+  int m_num_task_cells;		// Number of task cells seen
+
   cPopulationInterface(); // @not_implemented
   cPopulationInterface(const cPopulationInterface&); // @not_implemented
   cPopulationInterface operator=(const cPopulationInterface&); // @not_implemented
@@ -61,6 +65,13 @@ public:
   cDeme* GetDeme();
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
+
+  int GetPrevSeenCellID() { return m_prevseen_cell_id; }
+  int GetPrevTaskCellID() { return m_prev_task_cell; }
+  int GetNumTaskCellsReached() { return m_num_task_cells; }
+  void AddReachedTaskCell() { m_num_task_cells++; }
+  void SetPrevSeenCellID(int in_id) { m_prevseen_cell_id = in_id; }
+  void SetPrevTaskCellID(int in_id) { m_prev_task_cell = in_id; }
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();

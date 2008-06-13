@@ -185,6 +185,11 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
   // Adjust the organism's attributes to match this cell.
   m_organism->GetOrgInterface().SetCellID(m_cell_id);
   m_organism->GetOrgInterface().SetDemeID(m_deme_id);
+
+  // If this organism is new, set the previously-seen cell id
+  if(m_organism->GetOrgInterface().GetPrevSeenCellID() == -1) {
+    m_organism->GetOrgInterface().SetPrevSeenCellID(m_cell_id);
+  }
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0) {
     // uptake all the cells energy

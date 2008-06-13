@@ -274,7 +274,7 @@ public:
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
   CONFIG_ADD_VAR(VIEW_MODE, int, 1, "Initial viewer screen");
   CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
-  CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1=Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
+  CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
   CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
@@ -321,6 +321,7 @@ public:
   CONFIG_ADD_VAR(DEMES_DEFAULT_GERMLINE_PROPENSITY, double, 0.0, "Default germline propensity of organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.");
   CONFIG_ADD_VAR(DEMES_FOUNDER_GERMLINE_PROPENSITY, double, -1.0, "Default germline propensity of founder organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.\n <0 = OFF");
   CONFIG_ADD_VAR(DEMES_PREFER_EMPTY, int, 0, "Give empty demes preference as targets of deme replication?");
+  CONFIG_ADD_VAR(MAX_DEME_BIRTHS, int, 500, "The maximum number of births within a deme to be\nused for birth-based replication (default=500)."); 
 
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced on birth?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood");
@@ -527,6 +528,20 @@ public:
   CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_FACTOR, double, 1.0, "Scale merit bonus due to movement (m<1.0 applies a cost)");
   CONFIG_ADD_VAR(BIOMIMETIC_EVAL_ON_MOVEMENT, int, 0, "Force task evaluation on each movement step");
   CONFIG_ADD_VAR(BIOMIMETIC_K, int, 0, "Carrying capacity in number of organisms");
+
+  // BDC: Additions for pheromones
+  CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");
+  CONFIG_ADD_VAR(PHEROMONE_ENABLED, bool, 0, "Enable pheromone usage. 0/1 (off/on)");
+  CONFIG_ADD_VAR(PHEROMONE_AMOUNT, double, 1.0, "Amount of pheromone to add per drop");
+  CONFIG_ADD_VAR(PHEROMONE_DROP_MODE, int, 0, "Where to drop pheromone\n0 = Half amount at src, half at dest\n1 = All at source\n2 = All at dest");
+  CONFIG_ADD_VAR(EXPLOIT_EXPLORE_PROB, double, 0.00, "Probability of random exploration\ninstead of pheromone trail following");
+  CONFIG_ADD_VAR(LOG_PHEROMONE, bool, 0, "Log pheromone drops.  0/1 (off/on)");
+  CONFIG_ADD_VAR(PHEROMONE_LOG_START, int, 0, "Update at which to start logging pheromone drops");
+  CONFIG_ADD_VAR(EXPLOIT_LOG_START, int, 0, "Update at which to start logging exploit moves");
+  CONFIG_ADD_VAR(EXPLORE_LOG_START, int, 0, "Update at which to start logging explore moves");
+  CONFIG_ADD_VAR(MOVETARGET_LOG_START, int, 0, "Update at which to start logging movetarget moves");
+  CONFIG_ADD_VAR(LOG_INJECT, bool, 0, "Log injection of organisms.  0/1 (off/on)");
+  CONFIG_ADD_VAR(INJECT_LOG_START, int, 0, "Update at which to start logging injection of\norganisms");
   
   CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");

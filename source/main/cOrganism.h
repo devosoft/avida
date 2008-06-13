@@ -118,11 +118,14 @@ protected:
   bool m_sent_active;       // Has this org sent a number?
   int m_test_receive_pos;   // In a test CPU, what message to receive next?
 
+  double m_gradient_movement;  // TEMP.  Remove once movement tasks are implemented.
+  bool m_pher_drop;	   // Is the organism dropping pheromone?
+
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
   bool m_is_sleeping;      // Is this organisms sleeping?
   bool m_is_dead;          // Is this organism dead?
-  
+
   class cNetSupport
   {
   public:
@@ -185,6 +188,10 @@ public:
   
   bool IsDead() { return m_is_dead; }
   
+  bool GetPheromoneStatus() { return m_pher_drop; }
+  void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }
+  void SetPheromone(bool newval) { m_pher_drop = newval; }
+
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
@@ -211,6 +218,13 @@ public:
   tListNode<tListNode<cSaleItem> >* AddSoldItem(tListNode<cSaleItem>* node) { return m_sold_items.PushRear(node); }
   tList<tListNode<cSaleItem> >* GetSoldItems() { return &m_sold_items; }
   void UpdateMerit(double new_merit) { m_interface->UpdateMerit(new_merit); }
+
+  int GetPrevSeenCellID() const { return m_interface->GetPrevSeenCellID(); }
+  int GetPrevTaskCellID() const { return m_interface->GetPrevTaskCellID(); }
+  void SetPrevSeenCellID(int id) const { m_interface->SetPrevSeenCellID(id); }
+  void SetPrevTaskCellID(int id) const { m_interface->SetPrevTaskCellID(id); }
+  int GetNumTaskCellsReached() const { m_interface->GetNumTaskCellsReached(); }
+  void AddReachedTaskCell() { m_interface->AddReachedTaskCell(); }
   
 
   // --------  Input and Output Methods  --------
@@ -348,6 +362,21 @@ protected:
   //! Called to check for (and initialize) messaging support within this organism.
   inline void InitMessaging() { if(!m_msg) m_msg = new cMessagingSupport(); }
   // -------- End of messaging support --------
+
+  // -------- Movement TEMP --------
+public:
+  double GetGradientMovement() const {
+    return m_gradient_movement;
+  }
+  
+  void SetGradientMovement(const double value) {
+    m_gradient_movement = value;
+  }
+
+  // -------- BDC Movement ---------
+public:
+  void Move(cAvidaContext& ctx);
+
 };
 
 

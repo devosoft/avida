@@ -60,6 +60,13 @@ public:
   virtual void SetCellID(int in_id) = 0;
   virtual void SetDemeID(int in_id) = 0;
 
+  virtual int GetPrevSeenCellID() = 0;
+  virtual int GetPrevTaskCellID() = 0;
+  virtual int GetNumTaskCellsReached() = 0;
+  virtual void AddReachedTaskCell() = 0;
+  virtual void SetPrevSeenCellID(int in_id) = 0;
+  virtual void SetPrevTaskCellID(int in_id) = 0;
+
   virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome) = 0;
   virtual cOrganism* GetNeighbor() = 0;
   virtual int GetNumNeighbors() = 0;

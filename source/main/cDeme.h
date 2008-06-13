@@ -29,6 +29,7 @@
 #include "cPhenotype.h"
 #include "cMerit.h"
 #include "tArray.h"
+#include "tVector.h"
 #include "cResourceCount.h"
 #include "cStringList.h"
 
@@ -37,6 +38,8 @@ class cWorld;
 class cPopulationCell;
 class cGenotype;
 class cOrganism;
+class cOrgMovementPredicate;
+class cOrgMessagePredicate;
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -55,6 +58,7 @@ private:
   int last_birth_count;
   int cur_org_count; //!< Number of organisms are currently in this deme.
   int last_org_count; 
+  int injected_count; //<! Number of organisms that have been injected into this deme
 
   int _age; //!< Age of this deme, in updates.
   int generation; //!< Generation of this deme
@@ -88,7 +92,7 @@ private:
   cResourceCount deme_resource_count; //!< Resources available to the deme
   tArray<int> energy_res_ids; //!< IDs of energy resources
   
-  tArray<cDemeCellEvent> cell_events;
+  tVector<cDemeCellEvent> cell_events;
   
   int         m_germline_genotype_id; // Genotype id of germline (if in use)
   tArray<int> m_founder_genotype_ids; // List of genotype ids used to found deme.
@@ -97,10 +101,13 @@ private:
                                       
   cMerit _current_merit; //!< Deme merit applied to all organisms living in this deme.
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
+
+  tVector<cOrgMessagePredicate*> message_pred_list; // Message Predicates
+  tVector<cOrgMovementPredicate*> movement_pred_list;  // Movement Predicates
   
 public:
   cDeme() : _id(0), width(0), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), 
-            _age(0), generation(0), total_org_energy(0.0),
+            injected_count(0), _age(0), generation(0), total_org_energy(0.0),
             time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
             avg_founder_generation(0.0), generations_per_lifetime(0.0),
             deme_resource_count(0), m_germline_genotype_id(0) { ; }
@@ -112,6 +119,7 @@ public:
   int GetSize() const { return cell_ids.GetSize(); }
   int GetCellID(int pos) const { return cell_ids[pos]; }
   int GetCellID(int x, int y) const;
+  int GetDemeID() const { return _id; }
   //! Returns an (x,y) pair for the position of the passed-in cell ID.
   std::pair<int, int> GetCellPosition(int cellid) const;
   cPopulationCell& GetCell(int pos);
@@ -137,6 +145,9 @@ public:
   void DecOrgCount() { cur_org_count--; }
   
   int GetGeneration() const { return generation; }
+
+  int GetInjectedCount() const { return injected_count; }
+  void IncInjectedCount() { injected_count++; }
 
   bool IsEmpty() const { return cur_org_count == 0; }
   bool IsFull() const { return cur_org_count == cell_ids.GetSize(); }
@@ -194,7 +205,9 @@ public:
   void Update(double time_step) { deme_resource_count.Update(time_step); }
   int GetRelativeCellID(int absolute_cell_id) { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
 
-  void SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration);
+  void SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live, int ID = -1);
+  void SetCellEventGradient(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live);
+  int GetNumEvents();
   
   double CalculateTotalEnergy();
   
@@ -217,6 +230,26 @@ public:
   // --- Germline management --- //
   void ReplaceGermline(cGenotype& _in_genotype);
   int GetGermlineGenotypeID() { return m_germline_genotype_id; }
+
+  // --- Message/Movement predicates --- //
+  bool MsgPredSatisfiedPreviously();
+  bool MovPredSatisfiedPreviously();
+  int GetNumMessagePredicates();
+  int GetNumMovementPredicates();
+  cOrgMessagePredicate* GetMsgPredicate(int i);
+  cOrgMovementPredicate* GetMovPredicate(int i);
+
+  void AddEventReceivedCenterPred(int times);
+  void AddEventReceivedLeftSidePred(int times);
+  void AddEventMoveCenterPred(int times);
+  void AddEventMoveBetweenTargetsPred(int times);
+  void AddEventMigrateToTargetsPred(int times);
+  void AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times);
+
+  // --- Pheromones --- //
+  void AddPheromone(int absolute_cell_id, double value);
+
+
 };
 
 #endif

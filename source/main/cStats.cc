@@ -38,6 +38,7 @@
 #include "tDataEntry.h"
 #include "cOrgMessage.h"
 #include "cOrgMessagePredicate.h"
+#include "cOrgMovementPredicate.h"
 #include "cReaction.h"
 
 #include "functions.h"
@@ -228,6 +229,17 @@ cStats::cStats(cWorld* world)
 
   numAsleep.Resize(m_world->GetConfig().NUM_DEMES.Get());
   numAsleep.SetAll(0);
+
+  if(m_world->GetConfig().NUM_DEMES.Get() == 0) {
+    relative_pos_event_count.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get()); 
+    relative_pos_pred_sat.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get());
+  } else {
+    relative_pos_event_count.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get());
+    relative_pos_pred_sat.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get() / m_world->GetConfig().NUM_DEMES.Get());
+  }
+  
+  relative_pos_event_count.SetAll(0);
+  relative_pos_pred_sat.SetAll(0);
 
   SetupPrintDatabase();
 }
@@ -1196,6 +1208,49 @@ void cStats::AddMessagePredicate(cOrgMessagePredicate* predicate)
   m_message_predicates.push_back(predicate);
 }
 
+void cStats::RemoveMessagePredicate(cOrgMessagePredicate* predicate)
+{
+  for(message_pred_ptr_list::iterator iter = m_message_predicates.begin(); iter != m_message_predicates.end(); iter++) {
+    if((*iter) == predicate) {
+      m_message_predicates.erase(iter);
+      return;
+    }
+  }
+}
+
+
+/*! This method adds a movement predicate to the list of all movement predicates.  Each predicate
+ * in the list is evaluated for every organism movement.
+ *
+ * NOTE: cStats does NOT own the predicate pointer!  (It DOES NOT delete them!)
+ * */
+void cStats::AddMovementPredicate(cOrgMovementPredicate* predicate)
+{
+  m_movement_predicates.push_back(predicate);
+}
+
+/*! This method is called whenever an organism moves.*/
+void cStats::Move(cOrganism& org) {
+  // Check to see if this message matches any of our predicates.
+  for(movement_pred_ptr_list::iterator i=m_movement_predicates.begin();
+      i!=m_movement_predicates.end(); ++i) {
+    (**i)(org); // Predicate is responsible for tracking info about movement.
+  }
+}
+
+// deme predicate stats
+void cStats::IncEventCount(int x, int y) {
+  relative_pos_event_count.ElementAt(x,y)++;
+}
+
+void cStats::IncPredSat(int cell_id) {
+  cPopulation& pop = m_world->GetPopulation();
+  int deme_id = pop.GetCell(cell_id).GetDemeID();
+  std::pair<int, int> pos = pop.GetDeme(deme_id).GetCellPosition(cell_id);
+  relative_pos_pred_sat.ElementAt(pos.first, pos.second)++;
+}
+
+
 
 /*! This method prints information contained within all active message predicates.
 
@@ -1224,6 +1279,32 @@ void cStats::PrintPredicatedMessages(const cString& filename)
   df.Endl();  
 }
 
+void cStats::PrintPredSatFracDump(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment( "Displays the fraction of events detected in cell since last print.\n" );
+  df.FlushComments();
+  cString UpdateStr = cStringUtil::Stringf( "%07i", GetUpdate() ) + " = [ ...";
+  df.WriteRaw(UpdateStr);
+
+  int rows = relative_pos_pred_sat.GetNumRows();
+  int cols = relative_pos_pred_sat.GetNumCols();
+  for (int x = 0; x < rows; x++) {
+    for (int y = 0; y < cols; y++) {
+      double data;
+      if(relative_pos_event_count.ElementAt(x,y) == 0) {
+        data = 0.0;
+      } else {
+        data = (double) relative_pos_pred_sat.ElementAt(x,y) / (double) relative_pos_event_count.ElementAt(x,y);
+      }
+      df.WriteBlockElement(data, x*cols+y, cols);
+    }
+  }
+  df.WriteRaw("];");
+  df.Endl();
+  
+  relative_pos_pred_sat.SetAll(0);
+  relative_pos_event_count.SetAll(0);
+}
 
 void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 {

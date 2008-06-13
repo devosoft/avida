@@ -31,6 +31,8 @@
 #include "cPopulationCell.h"
 #include "cResource.h"
 #include "cWorld.h"
+#include "cOrgMessagePredicate.h"
+#include "cOrgMovementPredicate.h"
 
 void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* world)
 {
@@ -94,8 +96,9 @@ std::pair<int, int> cDeme::GetCellPosition(int cellid) const
 {
   assert(cell_ids.GetSize()>0);
   assert(GetWidth() > 0);
-  cellid -= cell_ids[0];
-  return std::make_pair(cellid % GetWidth(), cellid / GetWidth());
+//  cellid -= cell_ids[0];
+//  return std::make_pair(cellid % GetWidth(), cellid / GetWidth());
+  return std::make_pair(cellid % GetWidth(), ( cellid % cell_ids.GetSize() ) / GetWidth());
 }
 
 cPopulationCell& cDeme::GetCell(int pos)
@@ -104,14 +107,23 @@ cPopulationCell& cDeme::GetCell(int pos)
 }
 
 void cDeme::ProcessUpdate() {
-  for(int i = 0; i < cell_events.GetSize(); i++) {
+  for(int i = 0; i < cell_events.Size(); i++) {
     cDemeCellEvent& event = cell_events[i];
     if(event.GetDelay() == _age) {
       event.ActivateEvent(m_world); //start event
       int eventCell = event.GetNextEventCellID();
       while(eventCell != -1) {
         // place event ID in cells' data
-        m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(event.GetEventID());
+        if(event.IsDecayed()) {
+          m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(event.GetEventIDDecay(GetCellPosition(eventCell)));
+        } else {
+          m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(event.GetEventID());
+        }
+        
+        // record activation of each cell in stats
+        std::pair<int, int> pos = GetCellPosition(eventCell);
+        m_world->GetStats().IncEventCount(pos.first, pos.second);
+
         eventCell = event.GetNextEventCellID();
       }
     } else if(event.GetDelay()+event.GetDuration() == _age) {
@@ -158,11 +170,22 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   time_used = 0;
   cur_birth_count = 0;
   cur_normalized_time_used = 0;
+  injected_count = 0;
   
   cur_task_exe_count.SetAll(0);
   cur_reaction_count.SetAll(0);
 
   if(resetResources) deme_resource_count.ReinitializeResources();
+
+  //reset remaining message predicates
+  for(int i = 0; i < message_pred_list.Size(); i++) {
+    (*message_pred_list[i]).Reset();
+  }
+  //reset remaining message predicates
+  for(int i = 0; i < movement_pred_list.Size(); i++) {
+    (*movement_pred_list[i]).Reset();
+  }
+
 }
 
 
@@ -354,9 +377,21 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value) {
   deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
 }
 
-void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration) {
-  cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width);
-  cell_events.Push(demeEvent);
+void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live, int ID) {
+  cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_pos, time_to_live, this);
+  if(ID != -1)
+    demeEvent.SetEventID(ID);
+  cell_events.Add(demeEvent);
+}
+
+void cDeme::SetCellEventGradient(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live) {
+  cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_pos, time_to_live, this);
+  demeEvent.DecayEventIDFromCenter();
+  cell_events.Add(demeEvent);
+}
+
+int cDeme::GetNumEvents() {
+  return cell_events.Size();
 }
 
 double cDeme::CalculateTotalEnergy() {
@@ -422,4 +457,152 @@ void cDeme::ReplaceGermline(cGenotype& _in_genotype) {
   }
 
 }
+
+bool cDeme::MsgPredSatisfiedPreviously() {
+  for(int i = 0; i < message_pred_list.Size(); i++) {
+    if(message_pred_list[i]->PreviouslySatisfied()) {
+      message_pred_list[i]->UpdateStats(m_world->GetStats());
+      return true;
+    }
+  }
+  return false;
+}
+
+bool cDeme::MovPredSatisfiedPreviously() {
+  for(int i = 0; i < movement_pred_list.Size(); i++) {
+    if(movement_pred_list[i]->PreviouslySatisfied()) {
+      movement_pred_list[i]->UpdateStats(m_world->GetStats());
+      return true;
+    }
+  }
+  return false;
+}
+
+int cDeme::GetNumMessagePredicates() {
+  return message_pred_list.Size();
+}
+
+int cDeme::GetNumMovementPredicates() {
+  return movement_pred_list.Size();
+}
+
+cOrgMessagePredicate* cDeme::GetMsgPredicate(int i) {
+  assert(i < message_pred_list.Size());
+  return message_pred_list[i];
+}
+
+cOrgMovementPredicate* cDeme::GetMovPredicate(int i) {
+  assert(i < movement_pred_list.Size());
+  return movement_pred_list[i];
+}
+
+void cDeme::AddEventReceivedCenterPred(int times) {
+  if(cell_events.Size() == 0) {
+    cerr<<"Error: An EventReceivedCenterPred cannot be created until a CellEvent is added.\n";
+    exit(1);
+  }
+  for(int i = 0; i < cell_events.Size(); i++) {
+    if(!cell_events[i].IsDead()) {
+      int sink_cell = GetCellID(GetSize()/2);
+      cOrgMessagePred_EventReceivedCenter* pred = new cOrgMessagePred_EventReceivedCenter(&cell_events[i], sink_cell, times);
+      m_world->GetStats().AddMessagePredicate(pred);
+      message_pred_list.Add(pred);
+    }
+  }
+}
+
+void cDeme::AddEventReceivedLeftSidePred(int times) {
+  if(cell_events.Size() == 0) {
+    cerr<<"Error: An EventReceivedLeftSidePred cannot be created until a CellEvent is added.\n";
+    exit(1);
+  }
+  for(int i = 0; i < cell_events.Size(); i++) {
+    if(!cell_events[i].IsDead()) {
+      cOrgMessagePred_EventReceivedLeftSide* pred = new cOrgMessagePred_EventReceivedLeftSide(&cell_events[i], m_world->GetPopulation(), times);
+      m_world->GetStats().AddMessagePredicate(pred);
+      message_pred_list.Add(pred);
+    }
+  }
+}
+
+void cDeme::AddEventMoveCenterPred(int times) {
+  if(cell_events.Size() == 0) {
+    cerr<<"Error: An EventMovedIntoCenter cannot be created until a CellEvent is added.\n";
+    exit(1);
+  }
+  for(int i = 0; i < cell_events.Size(); i++) {
+    if(!cell_events[i].IsDead()) {
+      cOrgMovementPred_EventMovedIntoCenter* pred = new cOrgMovementPred_EventMovedIntoCenter(&cell_events[i], m_world->GetPopulation(), times);
+      m_world->GetStats().AddMovementPredicate(pred);
+      movement_pred_list.Add(pred);
+    }
+  }
+}
+
+
+void cDeme::AddEventMoveBetweenTargetsPred(int times) {
+  if(cell_events.Size() == 0) {
+    cerr<<"Error: An EventMoveBetweenTargets cannot be created until at least one CellEvent is added.\n";
+    exit(1);
+  }
+
+  tVector<cDemeCellEvent *> alive_events;
+
+  for(int i = 0; i < cell_events.Size(); i++) {
+    if(!cell_events[i].IsDead()) {
+      alive_events.Add(&cell_events[i]);
+    }
+  }
+
+  cOrgMovementPred_EventMovedBetweenTargets* pred = new cOrgMovementPred_EventMovedBetweenTargets(alive_events, m_world->GetPopulation(), times);
+  m_world->GetStats().AddMovementPredicate(pred);
+  movement_pred_list.Add(pred);
+}
+
+
+void cDeme::AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times) {
+  if(cell_events.Size() == 0) {
+    cerr<<"Error: An EventMovedIntoCenter cannot be created until a CellEvent is added.\n";
+    exit(1);
+  }
+  for(int i = 0; i < cell_events.Size(); i++) {
+    if(!cell_events[i].IsDead()) {
+      cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget* pred = new cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget(&cell_events[i], m_world->GetPopulation(), times);
+      m_world->GetStats().AddMovementPredicate(pred);
+      movement_pred_list.Add(pred);
+    }
+  }
+}
+
+void cDeme::AddPheromone(int absolute_cell_id, double value)
+{
+  assert(cell_ids[0] <= absolute_cell_id);
+  assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
+
+  cPopulation& pop = m_world->GetPopulation();
+
+  int relative_cell_id = GetRelativeCellID(absolute_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+
+  for (int i = 0; i < deme_resource_count.GetSize(); i++) {
+    if(strcmp(deme_resource_count.GetResName(i), "pheromone") == 0) {
+      // There should only be one "pheromone" resource, so no need to divvy value up
+      cell_resources[i] = value;
+    }
+    else {
+      cell_resources[i] = 0;
+    }
+  }
+
+//It appears that ModifyCell adds the amount of resources specified in the cell_resources array, so I'm just
+//settign the element to the value I want to add instead of setting the element to the current value plus the amount to add
+// Ask Ben why he does it differently in GiveBackCellEnergy()
+
+  deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
+
+  // CellData-based version
+  //const int newval = pop.GetCell(absolute_cell_id).GetCellData() + (int) round(value);
+  //pop.GetCell(absolute_cell_id).SetCellData(newval);
+
+} //End AddPheromone()
 

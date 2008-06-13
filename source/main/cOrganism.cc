@@ -72,6 +72,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_is_dead(false)
   , m_net(NULL)
   , m_msg(0)
+  , m_pher_drop(false)
 {
   // Initialization of structures...
   m_hardware = m_world->GetHardwareManager().Create(this);
@@ -664,3 +665,11 @@ const cOrgMessage* cOrganism::RetrieveMessage()
   
   return 0;
 }
+
+// Brian Movement
+void cOrganism::Move(cAvidaContext& ctx)
+{
+  assert(m_interface);
+  DoOutput(ctx);
+} //End cOrganism::Move()
+

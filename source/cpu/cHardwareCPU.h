@@ -603,6 +603,34 @@ private:
   
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
+
+  // @BDC Additions for pheromones
+  bool Inst_PheroOn(cAvidaContext& ctx);
+  bool Inst_PheroOff(cAvidaContext& ctx);
+  bool Inst_PheroToggle(cAvidaContext& ctx);
+  bool DoSenseFacing(cAvidaContext& ctx, int conversion_method, double base);
+  bool Inst_SenseLog2Facing(cAvidaContext& ctx);
+  bool Inst_SenseUnitFacing(cAvidaContext& ctx);
+  bool Inst_SenseMult100Facing(cAvidaContext& ctx);
+  bool Inst_SenseTarget(cAvidaContext& ctx);
+  bool Inst_SenseTargetFaced(cAvidaContext& ctx);
+  bool DoSensePheromone(cAvidaContext& ctx, int cellid);
+  bool Inst_SensePheromone(cAvidaContext& ctx);
+  bool Inst_SensePheromoneFaced(cAvidaContext& ctx);
+  bool Inst_Exploit(cAvidaContext& ctx);
+  bool Inst_ExploitForward5(cAvidaContext& ctx);
+  bool Inst_ExploitForward3(cAvidaContext& ctx);
+  bool Inst_Explore(cAvidaContext& ctx);
+  bool Inst_MoveTarget(cAvidaContext& ctx);
+  bool Inst_MoveTargetForward5(cAvidaContext& ctx);
+  bool Inst_MoveTargetForward3(cAvidaContext& ctx);
+  bool Inst_SuperMove(cAvidaContext& ctx);
+  bool Inst_IfTarget(cAvidaContext& ctx);
+  bool Inst_IfNotTarget(cAvidaContext& ctx);
+  bool Inst_IfPheromone(cAvidaContext& ctx);
+  bool Inst_IfNotPheromone(cAvidaContext& ctx);
+  bool Inst_DropPheromone(cAvidaContext& ctx);
+
 };
 
 

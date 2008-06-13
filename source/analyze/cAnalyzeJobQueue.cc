@@ -135,3 +135,4 @@ void cAnalyzeJobQueue::singleThreadedJobExecution(cAnalyzeJob* job)
   job->Run(ctx);
   delete job;
 }
+

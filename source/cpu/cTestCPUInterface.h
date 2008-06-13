@@ -50,6 +50,13 @@ public:
   void SetCellID(int in_id) { ; }
   void SetDemeID(int in_id) { ; }
 
+  int GetPrevSeenCellID() { return 0; }
+  int GetPrevTaskCellID() { return 0; }
+  void AddReachedTaskCell() { }
+  int GetNumTaskCellsReached() { return 0; }
+  void SetPrevSeenCellID(int in_id) { ; }
+  void SetPrevTaskCellID(int in_id) { ; }
+
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();
   int GetNumNeighbors();

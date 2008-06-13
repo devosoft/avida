@@ -118,6 +118,7 @@ public:
     return ret;
   }
   inline void AddTaskState(cTaskState* value) { m_task_states->Add(m_task_entry, value); }
+  inline cOrgInterface* GetOrgInterface() { return m_interface; }
 };
 
 

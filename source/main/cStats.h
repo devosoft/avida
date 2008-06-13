@@ -53,6 +53,9 @@
 #ifndef tDataManager_h
 #include "tDataManager.h"
 #endif
+#ifndef tMatrix_h
+#include "tMatrix.h"
+#endif
 #ifndef nGeometry_h
 #include "nGeometry.h"
 #endif
@@ -67,8 +70,10 @@
 class cGenotype;
 class cInjectGenotype;
 class cWorld;
+class cOrganism;
 class cOrgMessage;
 class cOrgMessagePredicate;
+class cOrgMovementPredicate;
 class cDeme;
 class cGermline;
 
@@ -278,6 +283,10 @@ private:
   cDoubleSum sum_deme_merit;
   cDoubleSum sum_deme_generations_per_lifetime;
   int m_num_occupied_demes;
+
+  // deme predicate stats
+  tMatrix<int> relative_pos_event_count;
+  tMatrix<int> relative_pos_pred_sat;
 
   // Speculative Execution Stats
   int m_spec_total;
@@ -688,6 +697,14 @@ public:
   // @WRE: Added event for printing visit counts
   void PrintCellVisitsData(const cString& filename);
 
+  // deme predicate stats
+  void IncEventCount(int x, int y);
+  void IncPredSat(int cell_id);
+  void PrintPredSatFracDump(const cString& filename);
+
+  void addOrgLocations(std::vector<std::pair<int, int> >); 
+  void PrintDemeRepOrgLocation(const cString& filename);
+
   // -------- Messaging support --------
 public:
   //! Type for a list of pointers to message predicates.
@@ -697,6 +714,8 @@ public:
   void SentMessage(const cOrgMessage& msg);
   //! Adds a predicate that will be evaluated for each message.
   void AddMessagePredicate(cOrgMessagePredicate* predicate);
+  //! Removes a predicate.
+  void RemoveMessagePredicate(cOrgMessagePredicate* predicate);
   //! Prints information regarding messages that "passed" their predicate.
   void PrintPredicatedMessages(const cString& filename);
 
@@ -707,6 +726,17 @@ protected:
   message_pred_ptr_list m_message_predicates;
   // -------- End messaging support --------
   
+
+  // -------- Movement support -------------
+public:
+  //! Type for a list of pointers to movement predicates.
+  typedef std::vector<cOrgMovementPredicate*> movement_pred_ptr_list;
+  void Move(cOrganism& org);
+  void AddMovementPredicate(cOrgMovementPredicate* predicate);
+protected:
+  movement_pred_ptr_list m_movement_predicates;
+  // -------- End movement support --------
+
   
   // -------- Deme replication support --------
 public:
