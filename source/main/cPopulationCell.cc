@@ -208,7 +208,8 @@ cOrganism * cPopulationCell::RemoveOrganism()
 
   // For the moment, the cell doesn't keep track of much...
   cOrganism * out_organism = m_organism;
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0) {
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0
+      && m_world->GetConfig().FRAC_ENERGY_DECAY_AT_DEME_BIRTH.Get() != 1.0) { // hack
     m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get());
   }
   m_organism = NULL;

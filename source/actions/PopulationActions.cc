@@ -1259,6 +1259,22 @@ public:
   virtual double Fitness(const cDeme& deme) = 0;
 };
 
+class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompeteDemes {
+
+  public:
+    cAbstractCompeteDemes_AttackKillAndEnergyConserve(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) { }
+
+    static const cString GetDescription() { return "No Arguments"; }
+  
+    double Fitness(const cDeme& deme) {    
+      double eventsKilled = static_cast<double>(deme.GetEventsKilled());
+      double totalEvents  = static_cast<double>(deme.GetEventsTotal());
+      double energyRemaining = deme.CalculateTotalEnergy();
+      double initialEnergy = deme.CalculateTotalInitialEnergyResources();
+      double fitnessOfDeme = ((eventsKilled / totalEvents) + (energyRemaining / initialEnergy)) / 2.0;
+      return fitnessOfDeme;
+    }
+};
 
 /* This Action will check if any demes have met the critera to be replicated
    and do so.  There are several bases this can be checked on:
@@ -1948,6 +1964,9 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDivideDemes>("DivideDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
+
+/****AbstractCompeteDemes sub-classes****/
+  action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");

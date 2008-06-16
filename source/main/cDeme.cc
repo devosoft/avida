@@ -151,6 +151,7 @@ void cDeme::ProcessUpdate() {
     
     
     if(!event.IsActive() && event.GetDelay() == _age) {
+      eventsTotal++;
       event.ActivateEvent(); //start event
       int eventCell = event.GetNextEventCellID();
       while(eventCell != -1) {
@@ -252,6 +253,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   cur_normalized_time_used = 0;
   injected_count = 0;
   birth_count_perslot = 0;
+  eventsTotal = 0;
   eventsKilled = 0;
   eventsKilledThisSlot = 0;
   eventKillAttempts = 0;
@@ -548,7 +550,7 @@ bool cDeme::KillCellEvent(const int eventID) {
   return false;
 }
 
-double cDeme::CalculateTotalEnergy() {
+double cDeme::CalculateTotalEnergy() const {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get());
     
   double energy_sum = 0.0;
@@ -566,6 +568,17 @@ double cDeme::CalculateTotalEnergy() {
   }
   return energy_sum;
 }
+
+double cDeme::CalculateTotalInitialEnergyResources() const {
+  assert(m_world->GetConfig().ENERGY_ENABLED.Get());
+    
+  double energy_sum = 0.0;
+  for(int i = 0; i < energy_res_ids.GetSize(); i++) {
+    energy_sum += deme_resource_count.GetInitialResourceValue(i);
+  }
+  return energy_sum;
+}
+
 
 // --- Founder list management --- //
 

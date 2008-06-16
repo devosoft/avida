@@ -71,6 +71,7 @@ private:
   double cur_normalized_time_used; // normalized by merit and number of orgs
   double last_normalized_time_used; 
   double total_energy_testament; //! total amount of energy from suicide organisms for offspring deme
+  int eventsTotal;
   unsigned int eventsKilled;
   unsigned int eventsKilledThisSlot;
   unsigned int eventKillAttempts;
@@ -121,7 +122,7 @@ public:
   cDeme() : _id(0), width(0), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
             _age(0), generation(0), total_org_energy(0.0),
             time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), total_energy_testament(0.0),
-            eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
+            eventsTotal(0), eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
             consecutiveSuccessfulEventPeriods(0), sleeping_count(0),
             avg_founder_generation(0.0), generations_per_lifetime(0.0),
             deme_resource_count(0), m_germline_genotype_id(0) { ; }
@@ -172,6 +173,7 @@ public:
   bool IsFull() const { return cur_org_count == cell_ids.GetSize(); }
 
   int GetSlotFlowRate() const;
+  int GetEventsTotal() const { return eventsTotal; }
   int GetEventsKilled() const { return eventsKilled; }
   int GetEventsKilledThisSlot() const { return eventsKilledThisSlot;}
   int GetEventKillAttempts() const { return eventKillAttempts; }
@@ -241,7 +243,8 @@ public:
   bool KillCellEvent(const int eventID);
   cDemeCellEvent* GetCellEvent(const int i) { return &cell_events[i]; };
   
-  double CalculateTotalEnergy();
+  double CalculateTotalEnergy() const;
+  double CalculateTotalInitialEnergyResources() const;
   double GetTotalEnergyTestament() { return total_energy_testament; }
   void IncreaseTotalEnergyTestament(double increment) { total_energy_testament += increment; }
   

@@ -494,6 +494,6 @@ void cResourceCount::DoUpdates() const
 
 void cResourceCount::ReinitializeResources(double additional_resource){
   for(int i = 0; i < resource_name.GetSize(); i++) {
-    Set(i, resource_initial[i]+additional_resource);
+    Set(i, resource_initial[i]+additional_resource); //will cause problem if more than one resource is used.
   }
 }
