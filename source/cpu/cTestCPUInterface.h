@@ -49,6 +49,9 @@ public:
   cDeme* GetDeme() { return 0; }
   void SetCellID(int in_id) { ; }
   void SetDemeID(int in_id) { ; }
+  
+  int GetCellData() { return -1; }
+  void SetCellData(const int newData) { ; }
 
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }
@@ -59,7 +62,9 @@ public:
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();
+  bool IsNeighborCellOccupied();
   int GetNumNeighbors();
+  int GetNeighborCellContents() { return 0; }
   void Rotate(int direction = 1);
   void Breakpoint() { ; }
   int GetInputAt(int& input_pointer);
@@ -84,6 +89,9 @@ public:
   int GetFacing() { return 0; }
   bool SendMessage(cOrgMessage& msg) { return false; }
   
+  bool BcastAlarm(int jump_label, int bcast_range) { return false; }
+  
+  void DivideOrgTestamentAmongDeme(double value) {;}
 };
 
 

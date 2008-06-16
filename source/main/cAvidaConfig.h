@@ -283,6 +283,8 @@ public:
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Original CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution");
+  CONFIG_ADD_VAR(BCAST_HOPS, int, 1, "Number of hops to broadcast an alarm");
+  CONFIG_ADD_VAR(ALARM_SELF, bool, 0, "Does sending an alarm move sender IP to alarm label?\n0=no\n1=yes");
   
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
@@ -296,7 +298,7 @@ public:
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");
   CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline (default=0).");
-  CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Whether to prevent sterile demes from\nreplicating (default=0).");
+  CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Whether to prevent sterile demes from\nreplicating (default=0 or no).");
   CONFIG_ADD_VAR(DEMES_RESET_RESOURCES, int, 0, "Reset resources in demes on replication. \n0 = reset both demes \n1 = reset target deme \n2 = deme resources remain unchanged\n");
   CONFIG_ADD_VAR(DEMES_REPLICATE_SIZE, int, 1, "Number of identical organisms to create or copy from the\nsource deme to the target deme (default=1).");
   CONFIG_ADD_VAR(DEMES_PROB_ORG_TRANSFER, double, 0.0, "Probablity of an organism being transferred from the\nsource deme to the target deme (default=0.0).");
@@ -305,6 +307,8 @@ public:
   CONFIG_ADD_VAR(DEMES_ORGANISM_FACING, int, 0, "How organisms are facing during deme replication.\n0=unchanged (default).\n1=northwest.\n2=random.");
   CONFIG_ADD_VAR(DEMES_MAX_AGE, int, 500, "The maximum age of a deme (in updates) to be\nused for age-based replication (default=500).");
   CONFIG_ADD_VAR(DEMES_MAX_BIRTHS, int, 100, "The maximum number of births that can occur\nwithin a deme; used with birth-count\nreplication (default=100).");
+  CONFIG_ADD_VAR(DEMES_MIM_EVENTS_KILLED_RATIO, double, 0.7, "Minimum ratio of events killed required for event period to be a success.");
+  CONFIG_ADD_VAR(DEMES_MIM_SUCCESSFUL_EVENT_PERIODS, int, 1, "Minimum number of consecutive event periods that must be a success.");
   CONFIG_ADD_VAR(GERMLINE_COPY_MUT, double, 0.0075, "Prob. of copy mutations occuring during\ngermline replication (default=0.0075).");
   CONFIG_ADD_VAR(GERMLINE_INS_MUT, double, 0.05, "Prob. of an insertion mutation occuring\nduring germline replication (default=0.05).");
   CONFIG_ADD_VAR(GERMLINE_DEL_MUT, double, 0.05, "Prob. of a deletion mutation occuring\nduring germline replication (default=0.05).");
@@ -336,6 +340,7 @@ public:
   CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "0 = Leaves the parasite thread state untouched.\n1 = Resets the calling thread state on inject");
   CONFIG_ADD_VAR(GENERATION_INC_METHOD, int, 1, "0 = Only the generation of the child is\n    increased on divide.\n1 = Both the generation of the mother and child are\n    increased on divide (good with DIVIDE_METHOD 1).");
   CONFIG_ADD_VAR(RESET_INPUTS_ON_DIVIDE, int, 0, "Reset environment inputs of parent upon successful divide.");
+  CONFIG_ADD_VAR(REPRO_METHOD, int, 1, "Replace existing organism: 1=yes");
 	
   CONFIG_ADD_GROUP(RECOMBINATION_GROUP, "Sexual Recombination and Modularity");
   CONFIG_ADD_VAR(RECOMBINATION_PROB, double, 1.0, "probability of recombination in div-sex");
@@ -478,6 +483,10 @@ public:
   CONFIG_ADD_VAR(APPLY_ENERGY_METHOD, int, 0, "When should rewarded energy be applied to current energy?\n0 = on divide\n1 = on completion of task\n2 = on sleep");  
   CONFIG_ADD_VAR(FRAC_ENERGY_TRANSFER, double, 0.0, "Fraction of replaced organism's energy take by new resident");
   CONFIG_ADD_VAR(LOG_SLEEP_TIMES, bool, 0, "Log sleep start and end times. 0/1 (off/on)\nWARNING: may use lots of memory.");
+  CONFIG_ADD_VAR(FRAC_ENERGY_RELINQUISH, double, 1.0, "Fraction of organisms energy to relinquish");
+  CONFIG_ADD_VAR(ENERGY_PASSED_ON_DEME_REPLICATION_METHOD, int, 0, "Who get energy passed from a parent deme\n0 = Energy divided among organisms injected to offspring deme\n1 = Energy divided among cells in offspring deme");
+  CONFIG_ADD_VAR(INHERIT_EXE_RATE, int, 0, "Inherit energy rate from parent? 0=no  1=yes");
+  CONFIG_ADD_VAR(ATTACK_DECAY_RATE, double, 0.0, "Percent of cell's energy decayed by attack");
 
   CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
   CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");

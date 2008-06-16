@@ -293,6 +293,9 @@ private:  // Direct task related methods
   double Task_MoveToMovementEvent(cTaskContext& ctx) const;
   double Task_MoveBetweenMovementEvent(cTaskContext& ctx) const;
 
+  // movement
+  double Task_MoveToEvent(cTaskContext& ctx) const;
+  double Task_EventKilled(cTaskContext& ctx) const;
 };
 
 

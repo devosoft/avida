@@ -30,6 +30,7 @@
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cResource.h"
+#include "cStats.h"
 #include "cWorld.h"
 #include "cOrgMessagePredicate.h"
 #include "cOrgMovementPredicate.h"
@@ -42,6 +43,7 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   last_birth_count = 0;
   cur_org_count = 0;
   last_org_count = 0;
+  birth_count_perslot = 0;
   m_world = world;
 
   _current_merit = 1.0;
@@ -107,10 +109,49 @@ cPopulationCell& cDeme::GetCell(int pos)
 }
 
 void cDeme::ProcessUpdate() {
+  energyUsage.Clear();
+
+  if(IsEmpty()) {  // deme is not processed if no organisms are present
+    total_energy_testament = 0.0;
+    return;
+  }
+
+  for(int i = 0; i < GetSize(); i++) {
+    cPopulationCell& cell = GetCell(i);
+    if(cell.IsOccupied()) {
+      energyUsage.Add(cell.GetOrganism()->GetPhenotype().GetEnergyUsageRatio());
+    }
+  }  
+
   for(int i = 0; i < cell_events.Size(); i++) {
     cDemeCellEvent& event = cell_events[i];
-    if(event.GetDelay() == _age) {
-      event.ActivateEvent(m_world); //start event
+    
+    if(event.IsActive() && event.GetDelay() < _age && _age <= event.GetDelay()+event.GetDuration()) {
+      //remove energy from cells  (should be done with outflow, but this will work for now)
+      int eventCell = event.GetNextEventCellID();
+      cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource("CELL_ENERGY");
+      
+      while(eventCell != -1) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(eventCell));
+        if(event.GetEventID() == cell.GetCellData()){
+          if(cell.IsOccupied()) {
+            // remove energy from organism
+            cPhenotype& orgPhenotype = cell.GetOrganism()->GetPhenotype();
+            orgPhenotype.ReduceEnergy(orgPhenotype.GetStoredEnergy()*m_world->GetConfig().ATTACK_DECAY_RATE.Get());
+          }
+          //remove energy from cell... organism might not takeup all of a cell's energy
+          tArray<double> cell_resources = deme_resource_count.GetCellResources(eventCell);  // uses global cell_id; is this a problem
+          cell_resources[res->GetID()] *= m_world->GetConfig().ATTACK_DECAY_RATE.Get();
+          deme_resource_count.ModifyCell(cell_resources, eventCell);
+        }
+        eventCell = event.GetNextEventCellID();
+      }
+    }
+    
+    
+    
+    if(!event.IsActive() && event.GetDelay() == _age) {
+      event.ActivateEvent(); //start event
       int eventCell = event.GetNextEventCellID();
       while(eventCell != -1) {
         // place event ID in cells' data
@@ -124,18 +165,49 @@ void cDeme::ProcessUpdate() {
         std::pair<int, int> pos = GetCellPosition(eventCell);
         m_world->GetStats().IncEventCount(pos.first, pos.second);
 
+
+        //TODO // increase outflow of energy from these cells if not event currently present
+        
+        
         eventCell = event.GetNextEventCellID();
       }
-    } else if(event.GetDelay()+event.GetDuration() == _age) {
+    } else if(event.IsActive() && event.GetDelay()+event.GetDuration() == _age) {
       int eventCell = event.GetNextEventCellID();
       while(eventCell != -1) {
         if(event.GetEventID() == m_world->GetPopulation().GetCell(GetCellID(eventCell)).GetCellData()) { // eventID == CellData
           //set cell data to 0
           m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(0);
-          eventCell = event.GetNextEventCellID();
+
+        //  TODO // remove energy outflow from these cells
+
         }
+        eventCell = event.GetNextEventCellID();
       }
       event.DeactivateEvent();  //event over
+    }
+  }
+  
+  for(vector<pair<int, int> >::iterator iter = event_slot_end_points.begin(); iter < event_slot_end_points.end(); iter++) {
+    if(_age == (*iter).first) {
+      // at end point              
+      if(GetEventsKilledThisSlot() >= m_world->GetConfig().DEMES_MIM_EVENTS_KILLED_RATIO.Get() * (*iter).second)
+        consecutiveSuccessfulEventPeriods++;
+      else
+        consecutiveSuccessfulEventPeriods = 0;
+      
+      // update stats.flow_rate_tuples
+      std::map<int, flow_rate_tuple>& flowRateTuples = m_world->GetStats().FlowRateTuples();
+
+      flowRateTuples[(*iter).second].orgCount.Add(GetOrgCount());
+      flowRateTuples[(*iter).second].eventsKilled.Add(GetEventsKilledThisSlot());
+      flowRateTuples[(*iter).second].attemptsToKillEvents.Add(GetEventKillAttemptsThisSlot());
+      flowRateTuples[(*iter).second].AvgEnergyUsageRatio.Add(energyUsage.Average());
+      flowRateTuples[(*iter).second].totalBirths.Add(birth_count_perslot);
+      flowRateTuples[(*iter).second].currentSleeping.Add(sleeping_count);
+      birth_count_perslot = 0;
+      eventsKilledThisSlot = 0;
+      eventKillAttemptsThisSlot = 0;
+      break;
     }
   }
   ++_age;
@@ -143,25 +215,33 @@ void cDeme::ProcessUpdate() {
 
 void cDeme::Reset(bool resetResources, double deme_energy)
 {
+  double additional_resource = 0.0;
   // Handle energy model
   if (m_world->GetConfig().ENERGY_ENABLED.Get())
   {
     assert(cur_org_count>0);
     
-    total_org_energy = deme_energy;
-    if(total_org_energy < 0.0)
-      total_org_energy = 0.0;
+    total_energy_testament = 0.0;
     
-    // split deme energy evenly between organisms in deme
-    for (int i=0; i<GetSize(); i++) {
-      int cellid = GetCellID(i);
-      cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-      if(cell.IsOccupied()) {
-        cOrganism* organism = cell.GetOrganism();
-        cPhenotype& phenotype = organism->GetPhenotype();
-        phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(cur_org_count));
-        phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+    if(m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 0) {
+      total_org_energy = deme_energy;
+      if(total_org_energy < 0.0)
+        total_org_energy = 0.0;
+    
+      // split deme energy evenly between organisms in deme
+      for (int i=0; i<GetSize(); i++) {
+        int cellid = GetCellID(i);
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+        if(cell.IsOccupied()) {
+          cOrganism* organism = cell.GetOrganism();
+          cPhenotype& phenotype = organism->GetPhenotype();
+          phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(cur_org_count));
+          phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+        }
       }
+    } else if(m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 1) {
+      // split deme energy evenly between cell in deme
+      additional_resource = deme_energy;  // spacial resource handles resource division
     }
   }
   
@@ -171,11 +251,17 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   cur_birth_count = 0;
   cur_normalized_time_used = 0;
   injected_count = 0;
+  birth_count_perslot = 0;
+  eventsKilled = 0;
+  eventsKilledThisSlot = 0;
+  eventKillAttempts = 0;
+  eventKillAttemptsThisSlot = 0;
+  sleeping_count = 0;
+  
+  consecutiveSuccessfulEventPeriods = 0;
   
   cur_task_exe_count.SetAll(0);
   cur_reaction_count.SetAll(0);
-
-  if(resetResources) deme_resource_count.ReinitializeResources();
 
   //reset remaining message predicates
   for(int i = 0; i < message_pred_list.Size(); i++) {
@@ -186,6 +272,8 @@ void cDeme::Reset(bool resetResources, double deme_energy)
     (*movement_pred_list[i]).Reset();
   }
 
+  if(resetResources)
+    deme_resource_count.ReinitializeResources(additional_resource);
 }
 
 
@@ -377,21 +465,87 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value) {
   deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
 }
 
-void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live, int ID) {
-  cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_pos, time_to_live, this);
-  if(ID != -1)
-    demeEvent.SetEventID(ID);
-  cell_events.Add(demeEvent);
+void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, bool static_position, int total_events) {
+  for(int i = 0; i < total_events; i++) {
+    cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_position, this, m_world);
+    cell_events.Add(demeEvent);
+  }
 }
 
-void cDeme::SetCellEventGradient(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live) {
+/*void cDeme::SetCellEventGradient(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live) {
   cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_pos, time_to_live, this);
   demeEvent.DecayEventIDFromCenter();
   cell_events.Add(demeEvent);
-}
+}*/
 
 int cDeme::GetNumEvents() {
   return cell_events.Size();
+}
+
+void cDeme::SetCellEventSlots(int x1, int y1, int x2, int y2, int delay, int duration, 
+                              bool static_position, int m_total_slots, int m_total_events_per_slot_max, 
+                              int m_total_events_per_slot_min, int m_tolal_event_flow_levels) {
+  assert(cell_events.Size() == 0); // not designed to be used with other cell events
+  assert(m_world->GetConfig().DEMES_MAX_AGE.Get() >= m_total_slots);
+  
+  int flow_level_increment = (m_total_events_per_slot_max - m_total_events_per_slot_min) / (m_tolal_event_flow_levels-1);
+  int slot_length = m_world->GetConfig().DEMES_MAX_AGE.Get() / m_total_slots;
+
+  // setup stats tuples
+
+  for(int i = 0; i < m_total_slots; i++) {
+    int slot_flow_level = flow_level_increment * m_world->GetRandom().GetInt(m_tolal_event_flow_levels) + m_total_events_per_slot_min; // number of event during this slot
+    int slot_delay = i * slot_length;
+    event_slot_end_points.push_back(make_pair(slot_delay+slot_length, slot_flow_level)); // last slot is never reached it is == to MAX_AGE
+
+    for(int k = 0; k < slot_flow_level; k++) {
+      cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_position, this, m_world);
+      demeEvent.ConfineToTimeSlot(slot_delay, slot_delay+slot_length);
+      cell_events.Add(demeEvent);
+    }
+  }
+    
+  // setup stats.flow_rate_tuples
+  std::map<int, flow_rate_tuple>& flowRateTuples = m_world->GetStats().FlowRateTuples();
+
+  for(int i = m_total_events_per_slot_min; i <= m_total_events_per_slot_max; i+=flow_level_increment) {
+    flowRateTuples[i].orgCount.Clear();
+    flowRateTuples[i].eventsKilled.Clear();
+    flowRateTuples[i].attemptsToKillEvents.Clear();
+    flowRateTuples[i].AvgEnergyUsageRatio.Clear();
+    flowRateTuples[i].totalBirths.Clear();
+    flowRateTuples[i].currentSleeping.Clear();
+  }
+}
+
+bool cDeme::KillCellEvent(const int eventID) {
+  eventKillAttemptsThisSlot++;
+
+  if(eventID <= 0)
+    return false;
+  for(int i = 0; i < cell_events.Size(); i++) {
+    cDemeCellEvent& event = cell_events[i];
+    if(event.IsActive() && event.GetEventID() == eventID) {
+      // remove event ID from all cells
+      int eventCell = event.GetNextEventCellID();
+      while(eventCell != -1) {
+        if(event.GetEventID() == m_world->GetPopulation().GetCell(GetCellID(eventCell)).GetCellData()) { // eventID == CellData
+          //set cell data to 0
+          m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(0);
+          
+        //  TODO // remove energy outflow from these cells
+
+        }
+        eventCell = event.GetNextEventCellID();
+      }
+      event.DeactivateEvent();  //event over
+      eventsKilled++;
+      eventsKilledThisSlot++;
+      eventKillAttempts++;
+      return true;
+    }
+  }
+  return false;
 }
 
 double cDeme::CalculateTotalEnergy() {
@@ -405,6 +559,9 @@ double cDeme::CalculateTotalEnergy() {
       cOrganism* organism = cell.GetOrganism();
       cPhenotype& phenotype = organism->GetPhenotype();
       energy_sum += phenotype.GetStoredEnergy();
+    } else {
+      double energy_in_cell = cell.UptakeCellEnergy(1.0);
+      energy_sum += energy_in_cell * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get();
     }
   }
   return energy_sum;
@@ -579,7 +736,7 @@ void cDeme::AddPheromone(int absolute_cell_id, double value)
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
 
-  cPopulation& pop = m_world->GetPopulation();
+//  cPopulation& pop = m_world->GetPopulation();
 
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
@@ -606,3 +763,14 @@ void cDeme::AddPheromone(int absolute_cell_id, double value)
 
 } //End AddPheromone()
 
+int cDeme::GetSlotFlowRate() const {
+  vector<pair<int, int> >::const_iterator iter = event_slot_end_points.begin();
+  while(iter != event_slot_end_points.end()) {
+    if(GetAge() <= (*iter).first) {
+      return (*iter).second;
+    }
+    iter++;
+  }
+//  assert(false); // slots must be of equal size and fit perfectally in deme lifetime
+  return 0;
+}

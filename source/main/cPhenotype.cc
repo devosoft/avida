@@ -87,9 +87,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   
   // 1. These are values calculated at the last divide (of self or offspring)
   merit                    = in_phen.merit;
-  executionRatio          = in_phen.executionRatio;
+  executionRatio           = in_phen.executionRatio;
   energy_store             = in_phen.energy_store;    
   energy_tobe_applied      = in_phen.energy_tobe_applied;
+  energy_testament         = in_phen.energy_testament;
   genome_length            = in_phen.genome_length;        
   bonus_instruction_count  = in_phen.bonus_instruction_count; 
   copied_size              = in_phen.copied_size;          
@@ -261,9 +262,14 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
 {
   // Copy divide values from parent, which should already be setup.
   merit           = parent_phenotype.merit;
-  executionRatio = 1.0;
+  if(m_world->GetConfig().INHERIT_EXE_RATE.Get() == 0)
+    executionRatio = 1.0;
+  else 
+    executionRatio = parent_phenotype.executionRatio;
+    
   energy_store    = min(energy_store, (double) m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
+  energy_testament = 0.0;
   genome_length   = _genome.GetSize();
   copied_size     = parent_phenotype.child_copied_size;
   executed_size   = parent_phenotype.executed_size;
@@ -413,6 +419,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   executed_size   = genome_length;
   energy_store    = min(m_world->GetConfig().ENERGY_GIVEN_ON_INJECT.Get(), m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
+  energy_testament = 0.0;
   executionRatio = 1.0;
   gestation_time  = 0;
   gestation_start = 0;
@@ -551,8 +558,10 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   }
   merit = cur_merit_base * cur_bonus;
   
-  //BB:TODO update energy store
   SetEnergy(energy_store + cur_energy_bonus);
+  m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
+  energy_testament = 0.0;
+
   
   genome_length   = _genome.GetSize();
   (void) copied_size;          // Unchanged
@@ -662,7 +671,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+  if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
@@ -826,9 +835,13 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   
   energy_store    = clone_phenotype.energy_store;
   energy_tobe_applied = 0.0;
-  executionRatio = 1.0;
-  
-  executionRatio  = clone_phenotype.executionRatio;
+  energy_testament = 0.0;
+
+  if(m_world->GetConfig().INHERIT_EXE_RATE.Get() == 0)
+    executionRatio = 1.0;
+  else 
+    executionRatio = clone_phenotype.executionRatio;
+
   genome_length   = clone_phenotype.genome_length;
   copied_size     = clone_phenotype.copied_size;
   // copied_size     = clone_phenotype.child_copied_size;
@@ -1399,16 +1412,16 @@ void cPhenotype::SetEnergy(const double value) {
   energy_store = max(0.0, min(value, (double) m_world->GetConfig().ENERGY_CAP.Get()));
 }
 
-bool cPhenotype::DoubleEnergyUsage(double energy_req) {
-  if(GetStoredEnergy() < energy_req) {
-    return false;
-  }
+void cPhenotype::DoubleEnergyUsage() {
   executionRatio *= 2.0;
-  return true;
 }
 
 void cPhenotype::HalfEnergyUsage() {
   executionRatio *= 0.5;
+}
+
+void cPhenotype::DefaultEnergyUsage() {
+  executionRatio = 1.0;
 }
 
 
@@ -1422,6 +1435,8 @@ void cPhenotype::RefreshEnergy() {
       energy_tobe_applied += cur_energy_bonus;
     } else if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 1) {
       SetEnergy(energy_store + cur_energy_bonus);
+      m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
+      energy_testament = 0.0;
     } else {
       cerr<< "Unknown APPLY_ENERGY_METHOD value " << m_world->GetConfig().APPLY_ENERGY_METHOD.Get();
       exit(-1);
@@ -1432,8 +1447,17 @@ void cPhenotype::RefreshEnergy() {
 
 void cPhenotype::ApplyToEnergyStore() {
   SetEnergy(energy_store + energy_tobe_applied);
+  m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
+  energy_testament = 0.0;
   energy_tobe_applied = 0.0;
+  energy_testament = 0.0;
 }
+
+void cPhenotype::EnergyTestament(const double value) {
+  assert(value > 0.0);
+  energy_tobe_applied += value;
+  energy_testament += value;
+} //! external energy given to organism
 
 double cPhenotype::ExtractParentEnergy() {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get() > 0);
@@ -1619,8 +1643,9 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
   }
   merit = cur_merit_base * cur_bonus;
 
-  //BB:TODO update energy store
   SetEnergy(energy_store + cur_energy_bonus);
+  m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
+  energy_testament = 0.0;
     
   genome_length   = _genome.GetSize();
   gestation_start = time_used;

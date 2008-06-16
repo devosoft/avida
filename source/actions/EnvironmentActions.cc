@@ -734,11 +734,20 @@ private:
   int m_delay; // deme age when event occurs
   int m_duration; // length of event; subverted when deme is reset
   bool m_static_pos;
-  int m_time_to_live; // update when event no longer exists
-  int m_id;
+  int m_total_events; // total number of unique event to create; they may overlab
+  bool m_static_position;
   
 public:
-  cActionDelayedDemeEvent(cWorld* world, const cString& args) : cAction(world, args), m_x1(-1), m_y1(-1), m_x2(-1), m_y2(-1), m_delay(-1), m_duration(-1), m_static_pos(1), m_time_to_live(-1), m_id(-1)
+  cActionDelayedDemeEvent(cWorld* world, const cString& args) : 
+    cAction(world, args)
+  , m_x1(-1)
+  , m_y1(-1)
+  , m_x2(-1)
+  , m_y2(-1)
+  , m_delay(-1)
+  , m_duration(-1)
+  , m_total_events(1)
+  , m_static_position(true)
   {
     cString largs(args);
     if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
@@ -747,19 +756,71 @@ public:
     if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
     if (largs.GetSize()) m_delay = largs.PopWord().AsInt();
     if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_static_pos = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_time_to_live = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_static_position = static_cast<bool>(largs.PopWord().AsInt());
+    if (largs.GetSize()) m_total_events = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <int static_position> <int time_to_live> <event ID>"; }
+  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_events>"; }
   
   void Process(cAvidaContext& ctx)
   {
     cPopulation& pop = m_world->GetPopulation();
     int numDemes = pop.GetNumDemes();
     for(int i = 0; i < numDemes; i++) {
-      pop.GetDeme(i).SetCellEvent(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration, m_static_pos, m_time_to_live, m_id);
+      pop.GetDeme(i).SetCellEvent(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration, m_static_position, m_total_events);
+    }
+  }
+};
+
+class cActionDelayedDemeEventsPerSlots : public cAction
+{
+private:
+  int m_x1, m_y1, m_x2, m_y2; // bounding box of event in deme
+  int m_delay; // deme age when event occurs
+  int m_duration; // length of event; subverted when deme is reset
+  int m_total_slots; // total number of slots
+  int m_total_events_per_slot_max; // maximum number of unique event to create per slot; they may overlab
+  int m_total_events_per_slot_min; // minimum number of unique event to create per slot; they may overlab
+  int m_tolal_event_flow_levels; // total number of evenly spaced event flow levels; not all flow levels will be represented in a single deme
+  bool m_static_position;
+  
+public:
+  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args) : 
+    cAction(world, args)
+  , m_x1(-1)
+  , m_y1(-1)
+  , m_x2(-1)
+  , m_y2(-1)
+  , m_delay(-1)
+  , m_duration(-1)
+  , m_total_slots(1)
+  , m_total_events_per_slot_max(1)
+  , m_total_events_per_slot_min(1)
+  , m_tolal_event_flow_levels(1)
+  , m_static_position(true)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_x2 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_delay = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_static_position = static_cast<bool>(largs.PopWord().AsInt());
+    if (largs.GetSize()) m_total_slots = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_total_events_per_slot_max = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_total_events_per_slot_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_tolal_event_flow_levels = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_slots_per_deme> <int total_events_per_slot_max> <int total_events_per_slot_min> <int tolal_event_flow_levels>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    int numDemes = pop.GetNumDemes();
+    for(int i = 0; i < numDemes; i++) {
+      pop.GetDeme(i).SetCellEventSlots(m_x1, m_y1, m_x2, m_y2, m_delay, m_duration, m_static_position, m_total_slots, m_total_events_per_slot_max, m_total_events_per_slot_min, m_tolal_event_flow_levels);
     }
   }
 };
@@ -767,6 +828,7 @@ public:
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionDelayedDemeEvent>("DelayedDemeEvent");
+  action_lib->Register<cActionDelayedDemeEventsPerSlots>("DelayedDemeEventsPerSlots");
   action_lib->Register<cActionInjectResource>("InjectResource");
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");

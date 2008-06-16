@@ -41,6 +41,10 @@ cOrganism* cTestCPUInterface::GetNeighbor()
   return NULL;
 }
 
+bool cTestCPUInterface::IsNeighborCellOccupied() {
+  return false;
+}
+
 int cTestCPUInterface::GetNumNeighbors()
 {
   return 0;

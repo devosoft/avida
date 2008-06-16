@@ -149,8 +149,8 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
   , m_event_received(false)
   , m_stats_updated(false)
   , m_events(events)
-  , m_total_orgs(1)   // TODO: eventually, want to make this a parameter.  problem is cPopulation::AddDemePred takes only 1 arg
-  , m_total_times(times) {
+  , m_total_times(times)
+  , m_total_orgs(1) {  // TODO: eventually, want to make this a parameter.  problem is cPopulation::AddDemePred takes only 1 arg
 
     m_event_success.clear();
     for(int i = 0; i < m_events.Size(); i++) {

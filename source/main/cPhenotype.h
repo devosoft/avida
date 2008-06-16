@@ -94,7 +94,6 @@ private:
   cMerit merit;             // Relative speed of CPU
   double executionRatio;    //  ratio of current execution merit over base execution merit
   double energy_store;      // Amount of energy.  Determines relative speed of CPU when turned on.
-  double energy_tobe_applied; //Energy that has not yet been added to energy store.
   int genome_length;        // Number of instructions in genome.
   int bonus_instruction_count; // Number of times MERIT_BONUS_INT is in genome.
   int copied_size;          // Instructions copied into genome.
@@ -108,6 +107,8 @@ private:
   // 2. These are "in progress" variables, updated as the organism operates
   double cur_bonus;                           // Current Bonus
   double cur_energy_bonus;                    // Current energy bonus
+  double energy_tobe_applied;                 // Energy that has not yet been added to energy store.
+  double energy_testament;
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
   tArray<int> cur_task_count;                 // Total times each task was performed
@@ -458,10 +459,13 @@ public:
   bool& ChildFertile() { assert(initialized == true); return child_fertile; }
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
   
-  bool DoubleEnergyUsage(double inst_energy_cost);
+  void DoubleEnergyUsage();
   void HalfEnergyUsage();
+  void DefaultEnergyUsage();
+  
   void RefreshEnergy();
   void ApplyToEnergyStore();
+  void EnergyTestament(const double value); //! external energy given to organism
   double ExtractParentEnergy();
   
   bool operator<(const cPhenotype& rhs) const;

@@ -59,6 +59,9 @@ public:
   virtual cDeme* GetDeme() = 0;
   virtual void SetCellID(int in_id) = 0;
   virtual void SetDemeID(int in_id) = 0;
+  
+  virtual int GetCellData() = 0;
+  virtual void SetCellData(const int newData) = 0;
 
   virtual int GetPrevSeenCellID() = 0;
   virtual int GetPrevTaskCellID() = 0;
@@ -69,8 +72,10 @@ public:
 
   virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome) = 0;
   virtual cOrganism* GetNeighbor() = 0;
+  virtual bool IsNeighborCellOccupied() = 0;
   virtual int GetNumNeighbors() = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
+  virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;
   virtual void Breakpoint() = 0;
   virtual int GetInputAt(int& input_pointer) = 0;
@@ -93,6 +98,9 @@ public:
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;
+
+  virtual bool BcastAlarm(int jump_jabel, int bcast_range) = 0;
+  virtual void DivideOrgTestamentAmongDeme(double value) = 0;
   
 };
 

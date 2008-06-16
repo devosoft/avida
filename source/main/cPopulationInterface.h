@@ -65,6 +65,9 @@ public:
   cDeme* GetDeme();
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
+  
+  int GetCellData();
+  void SetCellData(const int newData);
 
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }
@@ -75,8 +78,10 @@ public:
 
   bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome);
   cOrganism* GetNeighbor();
+  bool IsNeighborCellOccupied();
   int GetNumNeighbors();
   int GetFacing(); // Returns the facing of this organism.
+  int GetNeighborCellContents();
   void Rotate(int direction = 1);
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
   int GetInputAt(int& input_pointer);
@@ -100,7 +105,9 @@ public:
   bool TestOnDivide();
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
+  bool BcastAlarm(int jump_label, int bcast_range);
   
+  void DivideOrgTestamentAmongDeme(double value);
 };
 
 

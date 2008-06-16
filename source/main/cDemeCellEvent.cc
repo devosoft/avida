@@ -2,27 +2,31 @@
 #include "cDeme.h"
 #include "cWorld.h"
 
-cDemeCellEvent::cDemeCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, int deme_width, int deme_height, bool static_pos, int time_to_live, cDeme* deme) : 
-m_delay(delay)
-, m_duration(duration)
-, m_iter(0)
-, m_deme_width(deme_width)
-, m_deme_height(deme_height)
-, m_time_to_live(time_to_live)
-, m_use_gradient(false)
-, m_active(false)
-, m_static_pos(static_pos)
-, m_dead (false)
-, m_id_set(false)
-, m_deme(deme)
+cDemeCellEvent::cDemeCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, int deme_width, int deme_height, bool static_pos, cDeme* deme, cWorld* world) : 
+  m_delay(delay)
+  , m_duration(duration)
+  , m_iter(0)
+  , m_deme_width(deme_width)
+  , m_deme_height(deme_height)
+  , m_event_width(x2-x1)
+  , m_event_height(y2-y1)
+  , m_active(false)
+  , m_static_pos(static_pos)
+  , m_deme(deme)
+  , m_world(world)
 {
   assert(x1 <= x2);
   assert(y1 <= y2);
   assert(y1 < deme_width && y2 < deme_width);
-  assert(delay >= 0);
+  assert(x1 < deme_height && x2 < deme_height);
+  assert(delay >= -1);
   assert(duration >= 0);
   m_event_cells.ResizeClear((x2-x1+1) * (y2-y1+1));
   int i = 0;
+  
+  if(m_delay == -1) {
+    m_delay = m_world->GetRandom().GetInt(m_world->GetConfig().DEMES_MAX_AGE.Get() - m_duration);
+  }
   
   if(m_static_pos) {
     for(int j = y1; j <= y2; j++) {
@@ -49,7 +53,7 @@ int cDemeCellEvent::GetNextEventCellID() {
   return -1;
 }
 
-void cDemeCellEvent::ActivateEvent(cWorld* m_world) {
+void cDemeCellEvent::ActivateEvent() {
 
   if(m_dead) {
     return;
@@ -71,6 +75,19 @@ void cDemeCellEvent::ActivateEvent(cWorld* m_world) {
     pair<int, int> centerBottomleft = make_pair((int)floor((m_event_width/2.0)), (int)floor((m_event_height/2.0)));
     pair<int, int> centerTopRight = make_pair((int)ceil((m_event_width/2.0)), (int)ceil((m_event_height/2.0)));
     center = make_pair(centerBottomleft, centerTopRight);
+  }
+  
+  if(!m_static_pos) {
+    //non-static event position
+    int rand_x1 = m_world->GetRandom().GetInt(m_deme_width-m_event_width);
+    int rand_y1 = m_world->GetRandom().GetInt(m_deme_height-m_event_height);
+    int i = 0;
+    for(int j = rand_y1; j <= rand_y1+m_event_height; j++) {
+      for(int k = rand_x1; k <= rand_x1+m_event_width; k++) {
+        m_event_cells[i] = j*m_deme_width+k;
+        i++;
+      }
+    }
   }
   m_active = true;
 }
@@ -156,4 +173,12 @@ double cDemeCellEvent::linmap(const double dp, const double ds, const double de,
     rp = (dp - ds) * ((re - rs) / (de - ds)) + rs;
   }
   return rp;
+}
+
+// should be called before organisms in deme are running
+void cDemeCellEvent::ConfineToTimeSlot(int min_delay, int max_delay) {
+  assert(!m_active);
+  assert(max_delay > min_delay);
+  
+  m_delay = (m_delay % (max_delay - min_delay)) + min_delay;
 }

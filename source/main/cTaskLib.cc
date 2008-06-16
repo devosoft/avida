@@ -27,6 +27,7 @@
 #include "cTaskLib.h"
 
 #include "cArgSchema.h"
+#include "cDeme.h"
 #include "cEnvReqs.h"
 #include "tHashTable.h"
 #include "cTaskState.h"
@@ -411,6 +412,11 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "movebetweenevent")
     NewTask(name, "Move to a target area", &cTaskLib::Task_MoveBetweenMovementEvent);  
 
+  // event tasks
+  if(name == "move_to_event")
+    NewTask(name, "Moved into cell containing event", &cTaskLib::Task_MoveToEvent);
+  else if(name == "event_killed")
+    NewTask(name, "Killed event", &cTaskLib::Task_EventKilled);
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -2971,7 +2977,7 @@ double cTaskLib::Task_MoveBetweenMovementEvent(cTaskContext& ctx) const {
   cOrgInterface* iface = ctx.GetOrgInterface();
   int prev_target = deme.GetRelativeCellID(iface->GetPrevTaskCellID());
 
-  int cellid = ctx.GetOrgInterface()->GetCellID();
+//  int cellid = ctx.GetOrgInterface()->GetCellID();
 
   // NOTE: as of now, orgs aren't rewarded if they touch a target more than
   //   once in a row.  Could be useful in the future to have fractional reward
@@ -3007,3 +3013,21 @@ double cTaskLib::Task_MoveBetweenMovementEvent(cTaskContext& ctx) const {
   return 0.0;
 }
 
+double cTaskLib::Task_MoveToEvent(cTaskContext& ctx) const {
+  cDeme* deme = ctx.GetOrganism()->GetOrgInterface().GetDeme();
+  int cell_data = ctx.GetOrganism()->GetOrgInterface().GetCellData();
+  if(cell_data <= 0)
+    return 0.0;
+    
+  for(int i = 0; i < deme->GetNumEvents(); i++) {
+    if(deme->GetCellEvent(i)->GetEventID() == cell_data)
+      return 1.0;
+  }
+  return 0.0;
+}
+
+double cTaskLib::Task_EventKilled(cTaskContext& ctx) const {
+  if(ctx.GetOrganism()->GetEventKilled())
+    return 1.0;
+  return 0.0;
+}

@@ -370,6 +370,7 @@ public:
    // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
 
+
   // --------  Input/Output Buffers  --------
   virtual tBuffer<int>& GetInputBuf() { return m_current->GetInputBuf(); }
   virtual tBuffer<int>& GetOutputBuf() { return m_current->GetOutputBuf(); }

@@ -66,13 +66,14 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_sent_value(0)
   , m_sent_active(false)
   , m_test_receive_pos(0)
+  , m_pher_drop(false)
   , m_max_executed(-1)
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_is_dead(false)
+  , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
-  , m_pher_drop(false)
 {
   // Initialization of structures...
   m_hardware = m_world->GetHardwareManager().Create(this);
@@ -673,3 +674,19 @@ void cOrganism::Move(cAvidaContext& ctx)
   DoOutput(ctx);
 } //End cOrganism::Move()
 
+bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range) {
+  assert(m_interface);
+  
+  // If we're able to succesfully send an alarm...
+  if(m_interface->BcastAlarm(jump_label, bcast_range)) {
+    // check to see if we've performed any tasks...
+    DoOutput(ctx);
+    return true;
+  }  
+  return false;
+}
+
+void cOrganism::moveIPtoAlarmLabel(int jump_label) {
+  // move IP to alarm_label
+  m_hardware->Jump_To_Alarm_Label(jump_label);
+}

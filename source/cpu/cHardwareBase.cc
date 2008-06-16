@@ -806,15 +806,27 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
 }
 
 bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx) {
-  double energy_req = inst_energy_cost[IP().GetNextInst().GetOp()]
+/*  double energy_req = inst_energy_cost[IP().GetNextInst().GetOp()]
                         * cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy() * organism->GetPhenotype().GetEnergyUsageRatio() * 2.0, m_world)
                         / 100.0; //compensate by factor of 100
-
-  return organism->GetPhenotype().DoubleEnergyUsage(energy_req);
+*/
+  organism->GetPhenotype().DoubleEnergyUsage();
+  double newOrgMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  organism->UpdateMerit(newOrgMerit);
+  return true;
 }
 
 bool cHardwareBase::Inst_HalfEnergyUsage(cAvidaContext& ctx) {
   organism->GetPhenotype().HalfEnergyUsage();
+  double newOrgMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  organism->UpdateMerit(newOrgMerit);
+  return true;
+}
+
+bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx) {
+  organism->GetPhenotype().DefaultEnergyUsage();
+  double newOrgMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  organism->UpdateMerit(newOrgMerit);
   return true;
 }
 
@@ -845,8 +857,8 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
           if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
             pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
           }
-          pop.GetCell(cellID).GetOrganism()->SetSleeping(true);
-          m_world->GetStats().incNumAsleep(pop.GetCell(cellID).GetDemeID());
+          organism->SetSleeping(true);
+          organism->GetOrgInterface().GetDeme()->IncSleepingCount();
         }
       } else {
         organism->GetPhenotype().SetToDie();

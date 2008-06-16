@@ -15,13 +15,14 @@ private:
   int m_event_width, m_event_height, m_time_to_live;
   bool m_use_gradient, m_active, m_static_pos, m_dead, m_id_set;
   std::pair<std::pair<int, int>, std::pair<int, int> > center;
-  cDeme* m_deme;
+  cDeme* m_deme; 
+  cWorld* m_world;
   
   std::pair<double, double> GetCenter() const;
   
 public:
-  cDemeCellEvent() { cDemeCellEvent(-1, -1, -1, -1, 0, 0, 0, 0, true, 0, NULL); m_id_set = false;}
-  cDemeCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, int deme_width, int deme_height, bool static_pos, int time_to_live, cDeme* deme);
+  cDemeCellEvent() { cDemeCellEvent(-1, -1, -1, -1, 0, 0, 0, 0, true, NULL, NULL); }
+  cDemeCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, int deme_width, int deme_height, bool static_pos, cDeme* deme, cWorld* world);
   int GetNextEventCellID();
   int GetDelay();
   cDeme* GetDeme() const { return m_deme; }
@@ -38,11 +39,13 @@ public:
   void SetEventID(int ID) { m_eventID = ID; m_id_set = true;}
 
   void DecayEventIDFromCenter() { m_use_gradient = true; }
-  void ActivateEvent(cWorld* m_world);
+  void ActivateEvent();
   void DeactivateEvent();
   void Terminate() { m_dead = true; }
   
   // gradient generators
   double linmap(const double dp, const double ds, const double de, const double rs, const double re) const;
+  
+  void ConfineToTimeSlot(int min_delay, int max_delay);
 };
 #endif

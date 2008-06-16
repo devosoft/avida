@@ -46,6 +46,7 @@
 #include <cfloat>
 #include <numeric>
 #include <cmath>
+#include <sstream>
 
 
 cStats::cStats(cWorld* world)
@@ -226,9 +227,6 @@ cStats::cStats(cWorld* world)
   // End sense tracking initialization
 
   genotype_map.Resize( m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get() );
-
-  numAsleep.Resize(m_world->GetConfig().NUM_DEMES.Get());
-  numAsleep.SetAll(0);
 
   if(m_world->GetConfig().NUM_DEMES.Get() == 0) {
     relative_pos_event_count.ResizeClear(m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get()); 
@@ -601,8 +599,51 @@ void cStats::PrintDemeAverageData(const cString& filename)
   df.Write(sum_deme_gestation_time.Average(),               "Gestation Time");
   df.Write(sum_deme_normalized_time_used.Average(),         "Time Used (normalized by org fitness)");
   df.Write(sum_deme_generations_per_lifetime.Average(),     "Generations between current and last founders");
-
+  df.Write(sum_deme_events_killed.Average(),                "Events killed");
+  df.Write(sum_deme_events_kill_attempts.Average(),         "Attempts to kill event");
+  
   df.Endl();
+}
+
+void cStats::PrintFlowRateTuples(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Flow Rate Tuples");
+  df.WriteTimeStamp();
+
+  df.Write(m_update,                                        "Update");
+  // write each tuple
+  for(map<int, flow_rate_tuple>::iterator iter = flow_rate_tuples.begin(); iter != flow_rate_tuples.end(); iter++) {
+    ostringstream oss;
+    oss << "flow rate " << (*iter).first;
+    string flow_rate_str(oss.str());
+    string flow_rate_pop_size_str(flow_rate_str+" deme pop size");
+    string flow_rate_events_killed_str(flow_rate_str+" events killed");
+    string flow_rate_events_attempted_to_kill_str(flow_rate_str+" events attempted to kill");
+    string flow_rate_exe_ratio_str(flow_rate_str+" exe ratio");
+    string flow_rate_total_births_str(flow_rate_str+" total births");
+    string flow_rate_total_sleeping_str(flow_rate_str+" total sleeping");
+    
+    df.Write((*iter).first, flow_rate_str.c_str());
+    df.Write((*iter).second.orgCount.Average(), flow_rate_pop_size_str.c_str());
+    df.Write((*iter).second.eventsKilled.Average(), flow_rate_events_killed_str.c_str());
+    df.Write((*iter).second.attemptsToKillEvents.Average(), flow_rate_events_attempted_to_kill_str.c_str());
+    df.Write((*iter).second.AvgEnergyUsageRatio.Average(), flow_rate_exe_ratio_str.c_str());
+    df.Write((*iter).second.totalBirths.Average(), flow_rate_total_births_str.c_str());
+    df.Write((*iter).second.currentSleeping.Average(), flow_rate_total_sleeping_str.c_str());
+    
+  }
+  df.Endl();
+
+  // reset all tuples
+  for(map<int, flow_rate_tuple >::iterator iter = flow_rate_tuples.begin(); iter != flow_rate_tuples.end(); iter++) {
+    (*iter).second.orgCount.Clear();
+    (*iter).second.eventsKilled.Clear();
+    (*iter).second.attemptsToKillEvents.Clear();
+    (*iter).second.AvgEnergyUsageRatio.Clear();
+    (*iter).second.totalBirths.Clear();
+    (*iter).second.currentSleeping.Clear();
+  }
 }
 
 void cStats::PrintErrorData(const cString& filename)
@@ -1152,9 +1193,12 @@ void cStats::PrintSleepData(const cString& filename){
   df.WriteComment("total number of organisms sleeping" );
   
   df.Write( GetUpdate(), "update" );
-    
-  for( int i=0; i < numAsleep.GetSize(); i++ ){
-    df.Write(numAsleep[i], cStringUtil::Stringf("DemeID %d", i));
+  
+  cPopulation& pop = m_world->GetPopulation();
+  int numDemes = pop.GetNumDemes();
+  
+  for( int i=0; i < numDemes; i++ ){
+    df.Write(pop.GetDeme(i).GetSleepingCount(), cStringUtil::Stringf("DemeID %d", i));
   }
   df.Endl();
 }
@@ -1313,10 +1357,6 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   m_deme_births.Add(source_deme.GetBirthCount());
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
-
-  // reset #orgs. sleeping in demes
-  numAsleep[source_deme.GetID()]=0;
-  numAsleep[target_deme.GetID()]=0;
 }
 
 

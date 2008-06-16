@@ -189,6 +189,9 @@ public:
   // --------  State Transfer  --------
   virtual void InheritState(cHardwareBase& in_hardware){ ; }
   
+  //alarm
+  virtual bool Jump_To_Alarm_Label(int jump_label) { return false; }
+  
 protected:
   // --------  No-Operation Instruction --------
   bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 
@@ -200,6 +203,7 @@ protected:
   // --------  Execution Speed Instruction --------
   bool Inst_DoubleEnergyUsage(cAvidaContext& ctx);
   bool Inst_HalfEnergyUsage(cAvidaContext& ctx);
+  bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
 };
 
 

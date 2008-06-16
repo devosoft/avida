@@ -77,6 +77,15 @@ class cOrgMovementPredicate;
 class cDeme;
 class cGermline;
 
+struct flow_rate_tuple {
+  cIntSum orgCount;
+  cIntSum eventsKilled;
+  cIntSum attemptsToKillEvents;
+  cDoubleSum AvgEnergyUsageRatio;
+  cIntSum totalBirths;
+  cIntSum currentSleeping;
+};
+
 class cStats
 {
 #if USE_tMemTrack
@@ -269,7 +278,7 @@ private:
   double max_competition_copied_fitness;  
   int num_orgs_replicated;
 
-  tArray<int> numAsleep;
+//  tArray<int> numAsleep;
   
   // simple deme stats
   cIntSum sum_deme_age;
@@ -283,6 +292,18 @@ private:
   cDoubleSum sum_deme_merit;
   cDoubleSum sum_deme_generations_per_lifetime;
   int m_num_occupied_demes;
+
+  cIntSum sum_deme_events_killed;
+  cIntSum sum_deme_events_kill_attempts;
+  
+  cDoubleSum EnergyTestamentToFutureDeme;
+  cDoubleSum EnergyTestamentToNeighborOrganisms;
+  cDoubleSum EnergyTestamentToDemeOrganisms;
+  cDoubleSum EnergyTestamentAcceptedByOrganisms;
+  cDoubleSum EnergyTestamentAcceptedByDeme;
+  
+  //(event flow rate, (deme pop size, events killed))
+  std::map<int, flow_rate_tuple > flow_rate_tuples;
 
   // deme predicate stats
   tMatrix<int> relative_pos_event_count;
@@ -435,6 +456,17 @@ public:
   cDoubleSum& SumDemeMerit()   { return sum_deme_merit; }
   cDoubleSum& SumDemeGenerationsPerLifetime()   { return sum_deme_generations_per_lifetime; }
 
+  cIntSum& SumDemeEventsKilled()          { return sum_deme_events_killed; }  
+  cIntSum& SumDemeAttemptsToKillEvents()          { return sum_deme_events_kill_attempts; }
+  
+  cDoubleSum& SumEnergyTestamentToFutureDeme() { return EnergyTestamentToFutureDeme;}
+  cDoubleSum& SumEnergyTestamentToNeighborOrganisms() { return EnergyTestamentToNeighborOrganisms; }
+  cDoubleSum& SumEnergyTestamentToDemeOrganisms() { return EnergyTestamentToDemeOrganisms; }
+  cDoubleSum& SumEnergyTestamentAcceptedByOrganisms() { return EnergyTestamentAcceptedByOrganisms; }
+  cDoubleSum& SumEnergyTestamentAcceptedByDeme() { return EnergyTestamentAcceptedByDeme; }
+  
+  std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
+
 #if INSTRUCTION_COUNT
   void ZeroInst();
 #endif
@@ -477,6 +509,17 @@ public:
   const cDoubleSum& SumDemeNormalizedTimeUsed() const  { return sum_deme_normalized_time_used; }
   const cDoubleSum& SumDemeMerit()  const  { return sum_deme_merit; }
   const cDoubleSum& SumDemeGenerationsPerLifetime() const  { return sum_deme_generations_per_lifetime; }
+
+  const cIntSum& SumDemeEventsKilled() const          { return sum_deme_events_killed; }
+  const cIntSum& SumDemeAttemptsToKillEvents() const  { return sum_deme_events_kill_attempts; }
+  
+  const cDoubleSum& SumEnergyTestamentToFutureDeme() const { return EnergyTestamentToFutureDeme;}
+  const cDoubleSum& SumEnergyTestamentToNeighborOrganisms() const { return EnergyTestamentToNeighborOrganisms; }
+  const cDoubleSum& SumEnergyTestamentToDemeOrganisms() const { return EnergyTestamentToDemeOrganisms; }
+  const cDoubleSum& SumEnergyTestamentAcceptedByOrganisms() const { return EnergyTestamentAcceptedByOrganisms; }
+  const cDoubleSum& SumEnergyTestamentAcceptedByDeme() const { return EnergyTestamentAcceptedByDeme; }
+
+  const std::map<int, flow_rate_tuple >&  FlowRateTuples() const { return flow_rate_tuples; }
 
   void IncResamplings() { ++num_resamplings; }  // @AWC 06/29/06
   void IncFailedResamplings() { ++num_failedResamplings; }  // @AWC 06/29/06
@@ -650,10 +693,10 @@ public:
 
   int GetNumSenseSlots();
 
-  int getNumAsleep(int demeID) { return numAsleep[demeID]; }
+/*  int getNumAsleep(int demeID) { return numAsleep[demeID]; }
   void incNumAsleep(int demeID) { numAsleep[demeID]++; }
   void decNumAsleep(int demeID) { numAsleep[demeID]--; }
-
+*/
   double GetAveSpeculative() const { return (m_spec_num) ? ((double)m_spec_total / (double)m_spec_num) : 0.0; }
   int GetSpeculativeWaste() const { return m_spec_waste; }
 
@@ -669,6 +712,7 @@ public:
   // Public calls to output data files (for events)
   void PrintAverageData(const cString& filename);
   void PrintDemeAverageData(const cString& filename);
+  void PrintFlowRateTuples(const cString& filename);
   void PrintErrorData(const cString& filename);
   void PrintVarianceData(const cString& filename);
   void PrintDominantData(const cString& filename);

@@ -440,6 +440,9 @@ private:
   bool Inst_Kazi(cAvidaContext& ctx);
   bool Inst_Kazi5(cAvidaContext& ctx);
   bool Inst_Die(cAvidaContext& ctx);
+  bool Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx);
+  bool Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx);
+  bool Inst_RelinquishEnergyToOrganismsInDeme(cAvidaContext& ctx);
 
   // I/O and Sensory
   bool Inst_TaskGet(cAvidaContext& ctx);
@@ -464,6 +467,9 @@ private:
   //! Execute the following instruction if all resources are above their min level.
   bool Inst_IfResources(cAvidaContext& ctx);
   bool Inst_CollectCellData(cAvidaContext& ctx);
+  bool Inst_KillCellEvent(cAvidaContext& ctx);
+  bool Inst_KillFacedCellEvent(cAvidaContext& ctx);
+  bool Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx);
 
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);
@@ -491,6 +497,9 @@ private:
   bool Inst_RotateLeftOne(cAvidaContext& ctx);
   bool Inst_RotateRightOne(cAvidaContext& ctx);
   bool Inst_RotateLabel(cAvidaContext& ctx);
+  bool Inst_RotateOccupiedCell(cAvidaContext& ctx);
+  bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
+  bool Inst_RotateEventCell(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);
@@ -501,6 +510,10 @@ private:
   // @WRE additions for movement
   bool Inst_Tumble(cAvidaContext& ctx);
   bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_MoveToEvent(cAvidaContext& ctx);
+  bool Inst_IfNeighborEventInUnoccupiedCell(cAvidaContext& ctx);
+  bool Inst_IfFacingEventCell(cAvidaContext& ctx);
+  bool Inst_IfEventInCell(cAvidaContext& ctx);
 
   // Multi-threading...
 
@@ -600,6 +613,15 @@ private:
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
   bool Inst_RetrieveMessage(cAvidaContext& ctx);
+  
+  //// Alarm ////
+  bool Inst_Alarm_MSG_local(cAvidaContext& ctx);
+  bool Inst_Alarm_MSG_multihop(cAvidaContext& ctx);
+  bool Inst_Alarm_MSG_Bit_Cons24_local(cAvidaContext& ctx);
+  bool Inst_Alarm_MSG_Bit_Cons24_multihop(cAvidaContext& ctx);
+  bool Inst_Alarm_Label(cAvidaContext& ctx);
+  bool Jump_To_Alarm_Label(int jump_label);
+
   
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);

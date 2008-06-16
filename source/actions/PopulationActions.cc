@@ -1267,7 +1267,11 @@ public:
     'corners'   - ...demes with upper left and lower right corners filled.
     'deme-age'  - ...demes that are a certain age
     'birth-count' ...demes that have had a certain number of births.
+<<<<<<< .working
     'sat-mov-pred'  - ...demes whose movement predicate was previously satisfied
+=======
+    'events-killed' ...demes that have killed a certian number of events
+>>>>>>> .merge-right.r2644
 */
 
 class cActionReplicateDemes : public cAction
@@ -1287,6 +1291,7 @@ public:
     else if (in_trigger == "deme-age") m_rep_trigger = 3;
     else if (in_trigger == "birth-count") m_rep_trigger = 4;
     else if (in_trigger == "sat-mov-pred") m_rep_trigger = 5;
+    else if (in_trigger == "events-killed") m_rep_trigger = 6;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;

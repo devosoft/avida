@@ -110,6 +110,7 @@ STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
 STATS_OUT_FILE(PrintPerDemeGenPerFounderData,   deme_gen_between_founders.dat );
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
+STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -128,6 +129,7 @@ public:                                                                         
 
 POP_OUT_FILE(PrintPhenotypeData,       phenotype_count.dat );
 POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
+POP_OUT_FILE(PrintDemeTestamentStats,  deme_testament.dat  );
 
 
 class cActionPrintData : public cAction
@@ -2649,6 +2651,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   // Stats Out Files
   action_lib->Register<cActionPrintAverageData>("PrintAverageData");
   action_lib->Register<cActionPrintDemeAverageData>("PrintDemeAverageData");
+  action_lib->Register<cActionPrintFlowRateTuples>("PrintFlowRateTuples");
   action_lib->Register<cActionPrintErrorData>("PrintErrorData");
   action_lib->Register<cActionPrintVarianceData>("PrintVarianceData");
   action_lib->Register<cActionPrintDominantData>("PrintDominantData");
@@ -2681,6 +2684,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
+  action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
+  
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
@@ -2707,8 +2712,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   //Coalescence Clade Actions
   action_lib->Register<cActionPrintCCladeCounts>("PrintCCladeCounts");
   action_lib->Register<cActionPrintCCladeFitnessHistogram>("PrintCCladeFitnessHistogram");
-  action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");
-  
+  action_lib->Register<cActionPrintCCladeRelativeFitnessHistogram>("PrintCCladeRelativeFitnessHistogram");  
   
   // Processed Data
   action_lib->Register<cActionPrintData>("PrintData");

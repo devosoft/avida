@@ -27,6 +27,7 @@
 #define cOrganism_h
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #ifndef cCPUMemory_h
@@ -126,6 +127,8 @@ protected:
   bool m_is_sleeping;      // Is this organisms sleeping?
   bool m_is_dead;          // Is this organism dead?
 
+  bool killed_event;
+  
   class cNetSupport
   {
   public:
@@ -195,8 +198,10 @@ public:
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
+  bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
+  int GetNeighborCellContents() const { return m_interface->GetNeighborCellContents(); }
   void Rotate(int direction) { m_interface->Rotate(direction); }
   void DoBreakpoint() { m_interface->Breakpoint(); }
   int GetNextInput() { return m_interface->GetInputAt(m_input_pointer); }
@@ -223,9 +228,11 @@ public:
   int GetPrevTaskCellID() const { return m_interface->GetPrevTaskCellID(); }
   void SetPrevSeenCellID(int id) const { m_interface->SetPrevSeenCellID(id); }
   void SetPrevTaskCellID(int id) const { m_interface->SetPrevTaskCellID(id); }
-  int GetNumTaskCellsReached() const { m_interface->GetNumTaskCellsReached(); }
+  int GetNumTaskCellsReached() const { return m_interface->GetNumTaskCellsReached(); }
   void AddReachedTaskCell() { m_interface->AddReachedTaskCell(); }
-  
+
+  int GetCellData() { return m_interface->GetCellData(); }
+  void SetCellData(const int data) { m_interface->SetCellData(data); }  
 
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
@@ -374,9 +381,17 @@ public:
   }
 
   // -------- BDC Movement ---------
-public:
   void Move(cAvidaContext& ctx);
 
+  
+  /***** context switch********/
+  bool BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range);
+  void moveIPtoAlarmLabel(int jump_label);
+  
+  void DivideOrgTestamentAmongDeme(double value) { m_interface->DivideOrgTestamentAmongDeme(value); }
+  
+  void SetEventKilled() { killed_event = true; }
+  bool GetEventKilled() { return killed_event; }
 };
 
 

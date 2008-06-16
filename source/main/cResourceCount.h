@@ -105,7 +105,7 @@ public:
   double Get(int id) const;
   void ResizeSpatialGrids(int in_x, int in_y);
   cSpatialResCount GetSpatialResource(int id) { return spatial_resource_count[id]; }
-  void ReinitializeResources();
+  void ReinitializeResources(double additional_resource);
   cString GetResName(int id) { return resource_name[id]; }
 };
 

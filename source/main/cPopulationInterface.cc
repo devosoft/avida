@@ -46,6 +46,13 @@ cDeme* cPopulationInterface::GetDeme()
   return &m_world->GetPopulation().GetDeme(m_deme_id);
 }
 
+int cPopulationInterface::GetCellData() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
+}
+
+void cPopulationInterface::SetCellData(const int newData) {
+  m_world->GetPopulation().GetCell(m_cell_id).SetCellData(newData);
+}
 
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome)
 {
@@ -62,6 +69,11 @@ cOrganism * cPopulationInterface::GetNeighbor()
   return cell.ConnectionList().GetFirst()->GetOrganism();
 }
 
+bool cPopulationInterface::IsNeighborCellOccupied() {
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
+  return cell.ConnectionList().GetFirst()->IsOccupied();
+}
+
 int cPopulationInterface::GetNumNeighbors()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
@@ -75,6 +87,11 @@ int cPopulationInterface::GetFacing()
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
 	assert(cell.IsOccupied());
 	return cell.GetFacing();
+}
+
+int cPopulationInterface::GetNeighborCellContents() {
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
+  return cell.ConnectionList().GetFirst()->GetCellData();
 }
 
 void cPopulationInterface::Rotate(int direction)
@@ -258,3 +275,63 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
   return true;
 }
 
+
+bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
+  bool successfully_sent(false);
+  cPopulationCell& scell = m_world->GetPopulation().GetCell(m_cell_id);
+  assert(scell.IsOccupied()); // This organism; sanity.
+
+  const int ALARM_SELF = m_world->GetConfig().ALARM_SELF.Get(); // does an alarm affect the sender; 0=no  non-0=yes
+  
+  if(bcast_range > 1) { // multi-hop messaging
+    cDeme& deme = m_world->GetPopulation().GetDeme(GetDemeID());
+    for(int i = 0; i < deme.GetSize(); i++) {
+      int possible_receiver_id = deme.GetCellID(i);
+      cPopulationCell& rcell = m_world->GetPopulation().GetCell(possible_receiver_id);
+    
+      if(rcell.IsOccupied() && possible_receiver_id != GetCellID()) {
+        //check distance
+        pair<int, int> sender_pos = deme.GetCellPosition(GetCellID());
+        pair<int, int> possible_receiver_pos = deme.GetCellPosition(possible_receiver_id);
+        int hop_distance = max( abs(sender_pos.first  - possible_receiver_pos.first),
+                              abs(sender_pos.second - possible_receiver_pos.second));
+        if(hop_distance <= bcast_range) {
+          // send alarm to organisms
+          cOrganism* recvr = rcell.GetOrganism();
+          assert(recvr != NULL);
+          recvr->moveIPtoAlarmLabel(jump_label);
+          successfully_sent = true;
+        }
+      }
+    }
+  } else { // single hop messaging
+    for(int i = 0; i < scell.ConnectionList().GetSize(); i++) {
+      cPopulationCell* rcell = scell.ConnectionList().GetPos(i);
+      assert(rcell != NULL); // Cells should never be null.
+
+      // Fail if the cell we're facing is not occupied.
+      if(!rcell->IsOccupied())
+        continue;
+      cOrganism* recvr = rcell->GetOrganism();
+      assert(recvr != NULL);
+      recvr->moveIPtoAlarmLabel(jump_label);
+      successfully_sent = true;
+    }
+  }
+  
+  if(ALARM_SELF) {
+    scell.GetOrganism()->moveIPtoAlarmLabel(jump_label);
+  }
+  return successfully_sent;
+}
+
+void cPopulationInterface::DivideOrgTestamentAmongDeme(double value){
+  cDeme* deme = GetDeme();
+  for(int i = 0; i < deme->GetSize(); i++) {
+    cPopulationCell& cell = deme->GetCell(i);
+    if(cell.IsOccupied()) {
+      cOrganism* org = cell.GetOrganism();
+      org->GetPhenotype().EnergyTestament(value/deme->GetOrgCount());
+    }
+  }
+}

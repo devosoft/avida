@@ -492,8 +492,8 @@ void cResourceCount::DoUpdates() const
   }
 }
 
-void cResourceCount::ReinitializeResources(){
+void cResourceCount::ReinitializeResources(double additional_resource){
   for(int i = 0; i < resource_name.GetSize(); i++) {
-    Set(i, resource_initial[i]);
+    Set(i, resource_initial[i]+additional_resource);
   }
 }
