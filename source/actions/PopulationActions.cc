@@ -722,7 +722,8 @@ public:
       assert(target_cell < m_world->GetPopulation().GetSize());
 
       if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
-        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), target_cell, m_merit,
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
+                                        target_cell, m_merit,
                                         m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
       }
@@ -1267,11 +1268,9 @@ public:
     'corners'   - ...demes with upper left and lower right corners filled.
     'deme-age'  - ...demes that are a certain age
     'birth-count' ...demes that have had a certain number of births.
-<<<<<<< .working
     'sat-mov-pred'  - ...demes whose movement predicate was previously satisfied
-=======
     'events-killed' ...demes that have killed a certian number of events
->>>>>>> .merge-right.r2644
+    'sat-msg-pred'  - ...demes whose message predicate was previously satisfied
 */
 
 class cActionReplicateDemes : public cAction
@@ -1292,6 +1291,7 @@ public:
     else if (in_trigger == "birth-count") m_rep_trigger = 4;
     else if (in_trigger == "sat-mov-pred") m_rep_trigger = 5;
     else if (in_trigger == "events-killed") m_rep_trigger = 6;
+    else if (in_trigger == "sat-msg-pred") m_rep_trigger = 7;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;

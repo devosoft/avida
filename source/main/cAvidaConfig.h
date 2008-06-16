@@ -532,7 +532,7 @@ public:
   // @WRE: Additions for approaching various features of biological organisms
   CONFIG_ADD_GROUP(BIOMIMETIC_GROUP, "Biomimetic Features Settings");
   CONFIG_ADD_VAR(BIOMIMETIC_REFRACTORY_PERIOD, double, 0.0, "Number of updates affected by refractory period");
-  CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_STEP, int, 0, "Number of cells to move Avidian on move instruction");
+  CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_STEP, int, 1, "Number of cells to move Avidian on move instruction");
   CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_LOG, int, 0, "Log detailed movement information (WARNING: large data file)");
   CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_FACTOR, double, 1.0, "Scale merit bonus due to movement (m<1.0 applies a cost)");
   CONFIG_ADD_VAR(BIOMIMETIC_EVAL_ON_MOVEMENT, int, 0, "Force task evaluation on each movement step");

@@ -210,6 +210,9 @@ void cDeme::ProcessUpdate() {
       break;
     }
   }
+  if(IsEmpty()) {
+    return;
+  }
   ++_age;
 }
 

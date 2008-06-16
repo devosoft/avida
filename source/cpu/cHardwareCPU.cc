@@ -5945,8 +5945,6 @@ bool cHardwareCPU::Inst_MoveTarget(cAvidaContext& ctx)
   double pher_amount = 0; // this is used in logging
   int drop_mode = -1;
 
-//int smc = mycell.ConnectionList().GetSize();
- //SingleProcess shows decent-looking cellids until the end.  maybe this is a deme replication problem (probably)
   cPopulationCell faced = mycell.GetCellFaced();
 
   // Find if any neighbor is a target
@@ -5960,6 +5958,7 @@ bool cHardwareCPU::Inst_MoveTarget(cAvidaContext& ctx)
     mycell.ConnectionList().CircNext();
   }
 
+// apparently this doesn't work on macs
 //  assert(faced == pop.GetCell(fromcellID).GetCellFaced());
 
   // Rotate until we face the neighbor with a target.

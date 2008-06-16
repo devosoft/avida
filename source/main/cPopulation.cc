@@ -1186,6 +1186,7 @@ There are several bases this can be checked on:
 4: 'birth-count' ...demes that have had a certain number of births.
 5: 'sat-mov-pred'...demes whose movement predicate was previously satisfied
 6: 'events-killed' ...demes that have killed a certian number of events
+7: 'sat-msg-pred'...demes whose movement predicate was previously satisfied
 
 */
 
@@ -1248,6 +1249,10 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         
         // Replicate demes that have killed a certain number of event.
         if(source_deme.GetConsecutiveSuccessfulEventPeriods()+currentSlotSuccessful < m_world->GetConfig().DEMES_MIM_SUCCESSFUL_EVENT_PERIODS.Get()) continue;
+        break;
+      }
+      case 7: {
+        if(!(source_deme.MsgPredSatisfiedPreviously())) continue;
         break;
       }
       default: {
@@ -4110,7 +4115,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
         cell_id = 0;
     }
   }
-  
+
   InjectGenome(cell_id, genome, lineage_label);
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);
@@ -4431,7 +4436,7 @@ void cPopulation::InjectGenome(int cell_id, const cGenome& genome, int lineage_l
 {
   // Setup the genotype...
   cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotypeInjected(genome, lineage_label);
-  
+
   // The rest is done by InjectGenotype();
   InjectGenotype( cell_id, new_genotype );
 }
