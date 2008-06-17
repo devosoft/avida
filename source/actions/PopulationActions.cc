@@ -620,6 +620,10 @@ public:
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+
+    assert(m_num_orgs <= m_world->GetPopulation().GetSize());
+    assert(m_nest_cellid > -1);
+    assert(m_nest_cellid < m_world->GetPopulation().GetSize());
   } //End cActionInjectDemesFromNest constructor
 
   static const cString GetDescription() { return "Arguments: [int num_orgs=1] [int nest_cellid=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
@@ -628,11 +632,11 @@ public:
   {
     for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
 
-      // The first deme will have initially had one organism injected.  If this
+      // Each deme will have initially had one organism injected.  If this
       // is the first injection and energy is used, increment the injected
       // count (the initial injection wasn't counted) and skip the first deme
       // so that the energies don't get messed up.
-      if( (i==0) && (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
+      if( (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
           (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
         continue;
@@ -687,6 +691,7 @@ public:
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    assert(m_num_orgs <= m_world->GetPopulation().GetSize());
   } //End cActionInjectDemesRandom constructor
 
   static const cString GetDescription() { return "Arguments: [int num_orgs=1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
@@ -698,35 +703,35 @@ public:
 
     for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
 
-      // The first deme will have initially had one organism injected.  If this
+      // Each deme will have initially had one organism injected.  If this
       // is the first injection and energy is used, increment the injected
       // count (the initial injection wasn't counted) and skip the first deme
       // so that the energies don't get messed up.
-      if( (i==0) && (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
+      if( (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
           (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
         continue;
       }
 
-      target_cell = -1;
-      target_cellr = -1;
-      deme_size = m_world->GetPopulation().GetDeme(i).GetSize();
-
-      // Find a random, unoccupied cell to use. Assumes one exists.
-      do {
-        target_cellr = m_world->GetRandom().GetInt(0, deme_size-1);
-        target_cell = m_world->GetPopulation().GetDeme(i).GetCellID(target_cellr);
-      } while (m_world->GetPopulation().GetCell(target_cell).IsOccupied());
-
-      assert(target_cell > -1);
-      assert(target_cell < m_world->GetPopulation().GetSize());
-
       if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
+        target_cell = -1;
+        target_cellr = -1;
+        deme_size = m_world->GetPopulation().GetDeme(i).GetSize();
+
+        // Find a random, unoccupied cell to use. Assumes one exists.
+        do {
+          target_cellr = m_world->GetRandom().GetInt(0, deme_size-1);
+          target_cell = m_world->GetPopulation().GetDeme(i).GetCellID(target_cellr);
+        } while (m_world->GetPopulation().GetCell(target_cell).IsOccupied());
+
+        assert(target_cell > -1);
+        assert(target_cell < m_world->GetPopulation().GetSize());
+
         m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
                                         target_cell, m_merit,
                                         m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-      }
+      } //End if there are still orgs to be inserted
 
     } //End iterating through demes
 

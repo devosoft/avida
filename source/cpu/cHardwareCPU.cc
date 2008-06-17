@@ -431,19 +431,19 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sensef-m100", &cHardwareCPU::Inst_SenseMult100Facing),
     tInstLibEntry<tMethod>("sense-pheromone", &cHardwareCPU::Inst_SensePheromone),
     tInstLibEntry<tMethod>("sense-pheromone-faced", &cHardwareCPU::Inst_SensePheromoneFaced),
-    tInstLibEntry<tMethod>("exploit", &cHardwareCPU::Inst_Exploit),
-    tInstLibEntry<tMethod>("exploit-forward5", &cHardwareCPU::Inst_ExploitForward5),
-    tInstLibEntry<tMethod>("exploit-forward3", &cHardwareCPU::Inst_ExploitForward3),
-    tInstLibEntry<tMethod>("explore", &cHardwareCPU::Inst_Explore),
-    tInstLibEntry<tMethod>("movetarget", &cHardwareCPU::Inst_MoveTarget),
-    tInstLibEntry<tMethod>("movetarget-forward5", &cHardwareCPU::Inst_MoveTargetForward5),
-    tInstLibEntry<tMethod>("movetarget-forward3", &cHardwareCPU::Inst_MoveTargetForward3),
-    tInstLibEntry<tMethod>("supermove", &cHardwareCPU::Inst_SuperMove),
+    tInstLibEntry<tMethod>("exploit", &cHardwareCPU::Inst_Exploit, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("exploit-forward5", &cHardwareCPU::Inst_ExploitForward5, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("exploit-forward3", &cHardwareCPU::Inst_ExploitForward3, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("explore", &cHardwareCPU::Inst_Explore, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("movetarget", &cHardwareCPU::Inst_MoveTarget, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("movetarget-forward5", &cHardwareCPU::Inst_MoveTargetForward5, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("movetarget-forward3", &cHardwareCPU::Inst_MoveTargetForward3, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("supermove", &cHardwareCPU::Inst_SuperMove, nInstFlag::STALL),
     tInstLibEntry<tMethod>("if-target", &cHardwareCPU::Inst_IfTarget),
     tInstLibEntry<tMethod>("if-not-target", &cHardwareCPU::Inst_IfNotTarget),
     tInstLibEntry<tMethod>("if-pheromone", &cHardwareCPU::Inst_IfPheromone),
     tInstLibEntry<tMethod>("if-not-pheromone", &cHardwareCPU::Inst_IfNotPheromone),
-    tInstLibEntry<tMethod>("drop-pheromone", &cHardwareCPU::Inst_DropPheromone),
+    tInstLibEntry<tMethod>("drop-pheromone", &cHardwareCPU::Inst_DropPheromone, nInstFlag::STALL),
 
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -5957,9 +5957,6 @@ bool cHardwareCPU::Inst_MoveTarget(cAvidaContext& ctx)
 
     mycell.ConnectionList().CircNext();
   }
-
-// apparently this doesn't work on macs
-//  assert(faced == pop.GetCell(fromcellID).GetCellFaced());
 
   // Rotate until we face the neighbor with a target.
   // If there was no winner, just move forward.
