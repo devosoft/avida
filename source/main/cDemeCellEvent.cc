@@ -11,6 +11,7 @@ cDemeCellEvent::cDemeCellEvent(int x1, int y1, int x2, int y2, int delay, int du
   , m_event_width(x2-x1)
   , m_event_height(y2-y1)
   , m_active(false)
+  , m_dead(false)
   , m_static_pos(static_pos)
   , m_deme(deme)
   , m_world(world)
