@@ -1109,10 +1109,10 @@ used in ReplicateDemes.
 
 Note: New deme competition fitness functions are added in PopulationActions.cc by subclassing
 cActionAbstractCompeteDemes and overriding cActionAbstractCompeteDemes::Fitness(cDeme&).  (Don't forget
-                                                                                           to register the action and add it to the events file).
+to register the action and add it to the events file).
 
 Another note: To mimic the behavior of the other version of CompeteDemes (which is kept around
-                                                                          for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of 
+for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of 
 each deme.
 */
 void cPopulation::CompeteDemes(const std::vector<double>& fitness) {

@@ -276,20 +276,6 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 
   if(resetResources) {
     deme_resource_count.ReinitializeResources(additional_resource);
-    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-      cPopulation& pop = m_world->GetPopulation();
-      for (int i=0; i<GetSize(); i++) {
-        int cellid = GetCellID(i);
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-        if(cell.IsOccupied()) {
-          cOrganism* organism = cell.GetOrganism();
-          cPhenotype& phenotype = organism->GetPhenotype();
-          phenotype.SetEnergy(cell.UptakeCellEnergy(1.0));
-          phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
-          pop.UpdateMerit(cell.GetID(), (phenotype.GetMerit()).GetDouble());
-        }
-      }
-    }
   }
 }
 
