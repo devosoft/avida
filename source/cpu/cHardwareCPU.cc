@@ -5932,7 +5932,7 @@ bool cHardwareCPU::Inst_MoveTarget(cAvidaContext& ctx)
 
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+//  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
 
   int fromcellID, destcellID;
   int cell_data;
