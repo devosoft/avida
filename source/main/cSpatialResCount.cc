@@ -226,6 +226,7 @@ void cSpatialResCount::SetCellList(tArray<cCellResource> *in_cell_list_ptr) {
     if (cell_id >= 0 && cell_id <= grid.GetSize()) {
       Rate((*cell_list_ptr)[i].GetId(), (*cell_list_ptr)[i].GetInitial());
       State((*cell_list_ptr)[i].GetId());
+      Element(cell_id).SetInitial((*cell_list_ptr)[i].GetInitial());
     }
   }
 }

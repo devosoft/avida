@@ -33,7 +33,7 @@
 class cSpatialCountElem
 {
 private:
-  mutable double amount, delta;
+  mutable double amount, delta, initial;
   tArray<int> elempt, xdist, ydist;
   tArray<double> dist;
   
@@ -52,6 +52,8 @@ public:
   double GetPtrDist(int innum) { return dist[innum]; }
   friend void FlowMatter(cSpatialCountElem&, cSpatialCountElem&, double, double, double, double,
                          int, int, double);
+  void SetInitial(double init) { initial = init; }
+  double GetInitial() { return initial; }
 };
 
 

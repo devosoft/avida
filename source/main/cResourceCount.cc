@@ -493,7 +493,25 @@ void cResourceCount::DoUpdates() const
 }
 
 void cResourceCount::ReinitializeResources(double additional_resource){
+  cSpatialResCount src;
+  double c_curr_amount;
+  double c_initial_amount;
+  double c_new_amount;
+
   for(int i = 0; i < resource_name.GetSize(); i++) {
-    Set(i, resource_initial[i]+additional_resource); //will cause problem if more than one resource is used.
-  }
-}
+    Set(i, resource_initial[i]+additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
+
+    // Additionally, set any initial values given by the CELL command
+    src = GetSpatialResource(i);
+    for(int j = 0; j < src.GetSize(); j++) {
+      c_initial_amount = src.Element(j).GetInitial();
+      if(c_initial_amount > 0) {
+        c_curr_amount = spatial_resource_count[i].GetAmount(j);
+        c_new_amount = c_curr_amount + c_initial_amount + additional_resource;
+        spatial_resource_count[i].SetCellAmount(j, c_new_amount);
+      }
+    }
+
+  } //End going through the resources
+
+} //End ReinitializeResources()
