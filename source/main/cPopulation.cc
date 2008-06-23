@@ -1143,6 +1143,12 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
     }
   }
   
+  //re-inject demes with count of 1 back into self
+  for(int i = 0; i < (int)deme_counts.size(); i++) {
+    if(deme_counts[i] == 1)
+      ReplaceDeme(deme_array[i], deme_array[i]);
+  }
+
   // Now, while we can find both a source deme (one with a count greater than 1)
   // and a target deme (one with a count of 0), replace the target with the source.
   while(true) {
