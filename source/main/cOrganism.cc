@@ -102,8 +102,8 @@ cOrganism::~cOrganism()
   assert(m_is_running == false);
   delete m_hardware;
   delete m_interface;
-  if (m_net != NULL) delete m_net;
-  if(!m_msg) delete m_msg;
+  if(m_net) delete m_net;
+  if(m_msg) delete m_msg;
 }
 
 cOrganism::cNetSupport::~cNetSupport()
