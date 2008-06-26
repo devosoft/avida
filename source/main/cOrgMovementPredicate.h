@@ -194,7 +194,7 @@ struct cOrgMovementPred_EventMovedBetweenTargets : public cOrgMovementPredicate 
           {
              // See how many times this org has gone back and forth.  If it has
              // done it enough times, it is considered successful
-             unsigned int num_backforth = (int) floor(org.GetNumTaskCellsReached()/2);
+             unsigned int num_backforth = org.GetNumTaskCellsReached()/2;
 
              if(num_backforth >= m_total_times) {
                m_successful_orgs.insert(org_id);

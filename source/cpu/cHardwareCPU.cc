@@ -5358,7 +5358,10 @@ bool cHardwareCPU::DoSensePheromone(cAvidaContext& ctx, int cellid)
     }
   }
 
-  GetRegister(reg_to_set) = (int)round(pher_amount);
+  // In Visual Studio 2005 round function does not exist use floor instead
+  //  GetRegister(reg_to_set) = (int)round(pher_amount);
+
+  GetRegister(reg_to_set) = (int)floor(pher_amount + 0.5);
 
   return true;
 

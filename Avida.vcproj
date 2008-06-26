@@ -653,6 +653,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cOrgMessagePredicate.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cOrgMovementPredicate.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cOrgSeqMessage.h"
 				>
 			</File>
