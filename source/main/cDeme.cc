@@ -103,10 +103,17 @@ std::pair<int, int> cDeme::GetCellPosition(int cellid) const
   return std::make_pair(cellid % GetWidth(), ( cellid % cell_ids.GetSize() ) / GetWidth());
 }
 
-cPopulationCell& cDeme::GetCell(int pos)
+cPopulationCell& cDeme::GetCell(int pos) const
 {
   return m_world->GetPopulation().GetCell(cell_ids[pos]);
 }
+
+
+cOrganism* cDeme::GetOrganism(int pos) const
+{
+  return GetCell(pos).GetOrganism();
+}
+
 
 void cDeme::ProcessUpdate() {
   energyUsage.Clear();

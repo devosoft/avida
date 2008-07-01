@@ -46,6 +46,7 @@
 #include "cStats.h"
 
 #include <iomanip>
+#include <utility>
 
 using namespace std;
 
@@ -74,6 +75,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
+  , m_opinion(0)
 {
   // Initialization of structures...
   m_hardware = m_world->GetHardwareManager().Create(this);
@@ -104,6 +106,7 @@ cOrganism::~cOrganism()
   delete m_interface;
   if(m_net) delete m_net;
   if(m_msg) delete m_msg;
+  if(m_opinion) delete m_opinion;
 }
 
 cOrganism::cNetSupport::~cNetSupport()
@@ -689,4 +692,14 @@ bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_rang
 void cOrganism::moveIPtoAlarmLabel(int jump_label) {
   // move IP to alarm_label
   m_hardware->Jump_To_Alarm_Label(jump_label);
+}
+
+
+/*! Called to set this organism's opinion, which remains valid until a new opinion
+ is expressed.
+ */
+void cOrganism::SetOpinion(const Opinion& opinion)
+{
+  InitOpinions();
+  m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
 }

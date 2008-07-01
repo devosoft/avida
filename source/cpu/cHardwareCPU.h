@@ -653,6 +653,18 @@ private:
   bool Inst_IfNotPheromone(cAvidaContext& ctx);
   bool Inst_DropPheromone(cAvidaContext& ctx);
 
+  // -------- Opinion support --------
+  /* These instructions interact with the "opinion" support in cOrganism.h.  The
+   idea is that we're enabling organisms to express an opinion about *something*,
+   where that something is defined by the particular tasks and/or (deme) fitness function
+   in use.  This may have to be extended in the future to support different kinds of
+   opinions that can be expressed during the same experiment, and possibly augmented
+   with a "strength" of that opinion (but not right now).
+   */
+  //! Set this organism's current opinion.
+  bool Inst_SetOpinion(cAvidaContext& ctx);
+  //! Retrieve this organism's current opinion.
+  bool Inst_GetOpinion(cAvidaContext& ctx);
 };
 
 

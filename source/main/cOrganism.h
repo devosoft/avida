@@ -392,6 +392,43 @@ public:
   
   void SetEventKilled() { killed_event = true; }
   bool GetEventKilled() { return killed_event; }
+  
+  // -------- Opinion support --------
+  /*  Organisms express an opinion at a given point in time.  We can assume that they
+   hold this opinion until they express a new one.  The semantics of opinions are
+   left to the particular tasks or fitness functions in use; opinions are merely a generic
+   approach that we as developers can use to evaluate when an organism has made a decision.
+   
+   If we ever have a need for organisms to express different kinds of opinions, this code
+   can easily be adapted for that purpose (e.g., change the OpinionList typedef to a
+   std::map<int, DatedOpinion>, where the key represents the kind of opinion being expressed).
+   
+   As with other such types of "extended" functionality, opinion support is encapsulated in
+   a lazily-initialized struct.
+   */  
+public:
+  typedef int Opinion; //!< Typedef for an opinion.
+  typedef std::pair<Opinion, int> DatedOpinion; //!< Typedef for an opinion held at a given update.
+  typedef std::vector<DatedOpinion> DatedOpinionList; //!< Typedef for a list of dated opinions.
+  //! Called to set this organism's opinion.
+  void SetOpinion(const Opinion& opinion);
+  //! Retrieve this organism's current opinion.
+  const DatedOpinion& GetOpinion() { InitOpinions(); return m_opinion->opinion_list.back(); }
+  //! Retrieve all opinions expressed during this organism's lifetime.
+  const DatedOpinionList& GetOpinions() { InitOpinions(); return m_opinion->opinion_list; }
+  //! Return whether this organism has an opinion.
+  bool HasOpinion() { InitOpinions(); return m_opinion->opinion_list.size(); }
+  
+protected:
+  //! Initialize opinion support.
+  inline void InitOpinions() { if(!m_opinion) { m_opinion = new cOpinionSupport(); } }
+  //! Container for the data used to support opinions.
+  struct cOpinionSupport
+  {
+    DatedOpinionList opinion_list; //!< All opinions expressed by this organism during its lifetime.
+  };
+  cOpinionSupport* m_opinion; //!< Lazily-initialized pointer to the opinion data.
+  // -------- End of opinion support --------
 };
 
 

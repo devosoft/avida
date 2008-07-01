@@ -444,6 +444,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-pheromone", &cHardwareCPU::Inst_IfPheromone),
     tInstLibEntry<tMethod>("if-not-pheromone", &cHardwareCPU::Inst_IfNotPheromone),
     tInstLibEntry<tMethod>("drop-pheromone", &cHardwareCPU::Inst_DropPheromone, nInstFlag::STALL),
+    
+    // Opinion instructions.
+    // These are STALLs because opinions are only relevant with respect to time.
+    tInstLibEntry<tMethod>("set-opinion", &cHardwareCPU::Inst_SetOpinion, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-opinion", &cHardwareCPU::Inst_GetOpinion, nInstFlag::STALL),
 
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -6601,3 +6606,28 @@ bool cHardwareCPU::Inst_DropPheromone(cAvidaContext& ctx)
 
 } //End Inst_DropPheromone()
 
+
+/*! Set this organism's current opinion to the value in ?BX?.
+ */
+bool cHardwareCPU::Inst_SetOpinion(cAvidaContext& ctx)
+{
+  organism->SetOpinion(GetRegister(FindModifiedRegister(REG_BX)));
+  return true;
+}
+
+
+/*! Sense this organism's current opinion, placing the opinion in register ?BX?
+ and the age of that opinion (in updates) in register !?BX?.  If the organism has no
+ opinion, do nothing.
+ */
+bool cHardwareCPU::Inst_GetOpinion(cAvidaContext& ctx)
+{
+  if(organism->HasOpinion()) {
+    const int opinion_reg = FindModifiedRegister(REG_BX);
+    const int age_reg = FindNextRegister(opinion_reg);
+  
+    GetRegister(opinion_reg) = organism->GetOpinion().first;
+    GetRegister(age_reg) = m_world->GetStats().GetUpdate() - organism->GetOpinion().second;
+  }
+  return true;
+}
