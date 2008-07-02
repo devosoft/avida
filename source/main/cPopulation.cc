@@ -1335,6 +1335,19 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
       target_id = m_world->GetRandom().GetUInt(num_demes);
     }
   }
+
+  // Write some logging information if LOG_DEMES_REPLICATE is set.
+  if( (m_world->GetConfig().LOG_DEMES_REPLICATE.Get() == 1) &&
+      (m_world->GetStats().GetUpdate() >= m_world->GetConfig().DEMES_REPLICATE_LOG_START.Get()) ) {
+    cString tmpfilename = cStringUtil::Stringf("deme_replication.dat");
+    cDataFile& df = m_world->GetDataFile(tmpfilename);
+
+    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d",
+                                             m_world->GetStats().GetUpdate(),
+                                             source_deme.GetDemeID(), target_id);
+    df.WriteRaw(UpdateStr);
+  }
+
   ReplaceDeme(source_deme, deme_array[target_id]);
 }
 

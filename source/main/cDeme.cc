@@ -136,7 +136,6 @@ void cDeme::ProcessUpdate() {
     if(event.IsActive() && event.GetDelay() < _age && _age <= event.GetDelay()+event.GetDuration()) {
       //remove energy from cells  (should be done with outflow, but this will work for now)
       int eventCell = event.GetNextEventCellID();
-      cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource("CELL_ENERGY");
       
       while(eventCell != -1) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(eventCell));
@@ -148,7 +147,6 @@ void cDeme::ProcessUpdate() {
           }
           //remove energy from cell... organism might not takeup all of a cell's energy
           tArray<double> cell_resources = deme_resource_count.GetCellResources(eventCell);  // uses global cell_id; is this a problem
-          cell_resources[res->GetID()] *= m_world->GetConfig().ATTACK_DECAY_RATE.Get();
           deme_resource_count.ModifyCell(cell_resources, eventCell);
         }
         eventCell = event.GetNextEventCellID();
