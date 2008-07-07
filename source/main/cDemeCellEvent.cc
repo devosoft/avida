@@ -15,6 +15,7 @@ cDemeCellEvent::cDemeCellEvent(int x1, int y1, int x2, int y2, int delay, int du
   , m_static_pos(static_pos)
   , m_deme(deme)
   , m_world(world)
+  , m_id_set(false)
 {
   assert(x1 <= x2);
   assert(y1 <= y2);
