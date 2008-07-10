@@ -11,3 +11,4 @@ important enough to fix, but that we do want to keep track of.
 * BIRTH_METHOD 7 is currently a local birth method, but not grouped with the
   rest of them.  This required a special condition in cBirthChamber.cc for
   local recombination and in cPopulation.cc for offspring facing parent.
+
