@@ -53,6 +53,7 @@ bool cFile::Open(cString _fname, ios::openmode flags)
     if (err_id == EACCES) error_desc = "Access denied";
     else if (err_id == EINVAL) error_desc = "Invalid open flag or access mode";
     else if (err_id == ENOENT) error_desc = "File or path not found";
+    else if (_fname.Find('~') != -1) error_desc = "Tildes do not get expanded";
 
     // Print the error.
     cerr << "Error: Unable to open file '" << _fname << "' : " << error_desc << endl;
