@@ -124,7 +124,7 @@ namespace nHashTable {
       out_hash += (unsigned int) key[i];
     return out_hash % table_size;
   }
-};
+}
 
 
 template <class HASH_TYPE, class DATA_TYPE> class tHashTable {

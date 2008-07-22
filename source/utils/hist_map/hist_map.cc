@@ -4,11 +4,11 @@
 
 #include <iostream>
 
-#include "tools/tMatrix.h"
+#include "../../tools/tMatrix.h"
 
-#include "tools/cString.h"
-#include "tools/cFile.h"
-#include "tools/cInitFile.h"
+#include "../../tools/cString.h"
+#include "../../tools/cFile.h"
+#include "../../tools/cInitFile.h"
 
 
 using namespace std;
@@ -34,9 +34,9 @@ int main(int argc, char * argv[])
     cerr << "Processing: '" << argv[i+3] << "'" << endl;
 
     cInitFile file(argv[i+3]);
-    file.Load();
-    file.Compress();
-    file.Close();
+//     file.Load();
+//     file.Compress();
+//     file.Close();
 
     tArray<int> & site_count = count_arrays[i];
     site_count.SetAll(0);

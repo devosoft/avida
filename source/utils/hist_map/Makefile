@@ -22,14 +22,15 @@ LDFLAGS	= $(CXXFLAGS)
 ### Different Builds #########################################################
 
 # executable make
-TARGET		= hist_map2
+TARGET		= hist_map
 
 default:  $(TARGET)
 
 ### List Source Files in the Project #########################################
-SRC		= hist_map2.cc			../../tools/cFile.cc  \
+SRC		= hist_map.cc			../../tools/cFile.cc  \
 		../../tools/cInitFile.cc	../../tools/cString.cc  \
 		../../tools/cStringList.cc  ../../tools/cStringIterator.cc  \
+		../../tools/cStringUtil.cc
 
 ### List Object Files (for each source file there is a object file) ###########
 OBJ	 	= $(SRC:.cc=.o)
@@ -71,16 +72,3 @@ local_depend: $(SRC)
 ### Release Packageing ########################################################
 # DO NOT DELETE
 
-hist_map2.o: ../../tools/tMatrix.h ../../tools/tArray.h
-hist_map2.o: ../../tools/cString.h ../../tools/cFile.h
-hist_map2.o: ../../tools/cInitFile.h ../../tools/cStringList.h
-hist_map2.o: ../../tools/tList.h
-../../tools/file.o: ../../tools/cFile.h ../../tools/cString.h
-../../tools/file.o: ../../tools/cInitFile.h ../../tools/cStringList.h
-../../tools/file.o: ../../tools/tList.h ../../tools/tArray.h
-../../tools/file.o: ../../tools/cGenesis.h ../../tools/cStringIterator.h
-../../tools/file.o: ../../tools/cTools.h ../../tools/cRandom.h
-../../tools/init_file.o: ../../tools/cInitFile.h ../../tools/cStringList.h
-../../tools/init_file.o: ../../tools/tList.h ../../tools/tArray.h
-../../tools/init_file.o: ../../tools/cStringIterator.h
-../../tools/string.o: ../../tools/cString.h
