@@ -70,12 +70,13 @@ cDataFile& cDataFileManager::Get(const cString& name)
   
   // Determine directory prefix, default being the current data directory
   cString dir_prefix(m_target_dir);
-  if (target[0] == '.' &&             // Must start with '.' to trigger further testing
-      (target.GetSize() == 1 ||       // If string is exactly "."
-       (target.GetSize() > 1 &&       //   or if it ".." or "./" or ".\"
-        (target[1] == '.' || target[1] == '/' || target[1] == '\\')
+  if ((target[0] == '.' &&             // Must start with '.' to trigger further testing
+       (target.GetSize() == 1 ||       // If string is exactly "."
+        (target.GetSize() > 1 &&       //   or if it ".." or "./" or ".\"
+         (target[1] == '.' || target[1] == '/' || target[1] == '\\')
+        )
        )
-      )
+      ) || target[0] == '/'           // If it is an absolute path, ignore prefix as well
      )
   {
     // Treat path as current working directory relative
