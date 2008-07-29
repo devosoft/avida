@@ -225,8 +225,8 @@ private:
 
 
 public:
-  cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet & in_inst_set);
-  cAnalyzeGenotype(cWorld* world, const cGenome & _genome, cInstSet & in_inst_set);
+  cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet& in_inst_set);
+  cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstSet& in_inst_set);
   cAnalyzeGenotype(const cAnalyzeGenotype & _gen);
   ~cAnalyzeGenotype();
 

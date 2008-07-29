@@ -4897,7 +4897,6 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
   
   // Load in the variables...
   cString filename = cur_string.PopWord();
-  //    cString filename = "average.dat";
   
   int print_mode = 0;   // 0=Normal, 1=Boolean results
   
@@ -4998,7 +4997,10 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
   ///////////////////////////////////////////////////////
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-  cAnalyzeGenotype * genotype = NULL;
+  cAnalyzeGenotype* genotype = NULL;
+  
+  cInstSet map_inst_set(inst_set);
+  const cInstruction null_inst = map_inst_set.ActivateNullInst();
   
   // would like to test oly the viable ones, but they can be non-viable
   // and still reproduce and do tasks
@@ -5008,23 +5010,27 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
     int num_cpus = genotype->GetNumCPUs();
     
     if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "  Mapping " << genotype->GetName() << endl;
+    cout.flush();
     
     // Calculate the stats for the genotype we're working with...
     genotype->Recalculate(m_ctx);
     
     // Check if the organism does any tasks. 
-    int does_tasks = 0;
+    bool does_tasks = false;
     for (int i = 0; i < num_cols; i++) {
-      if (genotype->GetTaskCount(i) > 0)  does_tasks = 1;
+      if (genotype->GetTaskCount(i) > 0)  {
+        does_tasks = true;
+        break;
+      }
     }
     
     // Don't calculate the modularity if the organism doesn't reproduce
     // i.e. if the fitness is 0 
-    if (genotype->GetFitness() != 0 && does_tasks != 0) {
+    if (genotype->GetFitness() > 0.0 && does_tasks) {
       num_orgs = num_orgs + num_cpus;
       
       const int max_line = genotype->GetLength();
-      const cGenome & base_genome = genotype->GetGenome();
+      const cGenome& base_genome = genotype->GetGenome();
       cGenome mod_genome(base_genome);
       
       // Create and initialize the modularity matrix
@@ -5054,163 +5060,159 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
       int total_inst = 0;        // total number of instructions involved in tasks
       int total_all = 0;         // sum of mod_matrix
       double sum_task_overlap = 0;// task overlap for for this geneome
+      
+      // Loop through all the lines of code, testing the removal of each.
+      for (int line_num = 0; line_num < max_line; line_num++) {
+        int cur_inst = base_genome[line_num].GetOp();
         
-        cInstSet map_inst_set(inst_set);
-        const cInstruction null_inst = map_inst_set.ActivateNullInst();
+        mod_genome[line_num] = null_inst;
+        cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
+        test_genotype.Recalculate(m_ctx);
         
-        // Loop through all the lines of code, testing the removal of each.
-        for (int line_num = 0; line_num < max_line; line_num++) {
-          int cur_inst = base_genome[line_num].GetOp();
+        // Print the individual columns...
+        output_it.Reset();
+        tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
+        int cur_col = 0;
+        while ((data_command = output_it.Next()) != NULL) {
+          data_command->SetTarget(&test_genotype);
+          test_genotype.SetSpecialArgs(data_command->GetArgs());
+          const cFlexVar test_value = data_command->GetValue();
           
-          mod_genome[line_num] = null_inst;
-          cAnalyzeGenotype test_genotype(m_world, mod_genome, map_inst_set);
-          cAnalyzeGenotype old_genotype(m_world, base_genome, map_inst_set);
-          test_genotype.Recalculate(m_ctx);
+          // This is done so that under 'binary' option it marks
+          // the task as being influenced by the mutation iff
+          // it is completely knocked out, not just decreased
+          genotype->SetSpecialArgs(data_command->GetArgs());
           
-          // Print the individual columns...
-          output_it.Reset();
-          tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
-          int cur_col = 0;
-          while ((data_command = output_it.Next()) != NULL) {
-            data_command->SetTarget(&test_genotype);
-            test_genotype.SetSpecialArgs(data_command->GetArgs());
-            const cFlexVar test_value = data_command->GetValue();
-            
-            // This is done so that under 'binary' option it marks
-            // the task as being influenced by the mutation iff
-            // it is completely knocked out, not just decreased
-            genotype->SetSpecialArgs(data_command->GetArgs());
-            
-            int compare_type = data_command->GetCompareType();
-            int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
-            
-            // If knocking out an instruction stops the expression of a
-            // particular task, mark that in the modularity matrix
-            // and add it to two counts
-            // Only do the checking if the test_genotype replicate, i.e.
-            // if it's fitness is not zeros
-            
-            if (compare < 0  && test_genotype.GetFitness() != 0) {
-              mod_matrix(cur_col,line_num) = 1;
-              num_inst[cur_col]++;
-              num_task[line_num]++;
-            }
-            cur_col++;
-          }
+          int compare_type = data_command->GetCompareType();
+          int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
           
-          // Reset the mod_genome back to the original sequence.
-          mod_genome[line_num].SetOp(cur_inst);
-        } // end of genotype-phenotype mapping for a single organism
-        
-        for (int i = 0; i < num_cols; i++) {if (num_inst[i] != 0) total_task++;}
-        for (int i = 0; i < max_line; i++) {if (num_task[i] != 0) total_inst++;}
-        for (int i = 0; i < num_cols; i++) {total_all = total_all + num_inst[i];}
-        
-        // Add the values to the av_ variables, used for calculating the average
-        // in order to weigh them by abundance, multiply everything by num_cpus
-        
-        av_length = av_length + max_line*num_cpus;
-        av_task = av_task + total_task*num_cpus;
-        av_inst = av_inst + total_inst*num_cpus;
-        av_inst_len = av_inst_len + (double) total_inst*num_cpus/max_line;
-        
-        if (total_task !=0)  av_site_task = av_site_task + num_cpus * (double) total_all/total_task; 
-        if (total_inst !=0)  av_task_site = av_task_site + num_cpus * (double) total_all/total_inst; 
-        if (total_inst !=0 && total_task !=0) {
-          av_t_s_norm = av_t_s_norm + num_cpus * (double) total_all/(total_inst*total_task); 
-        }
-        
-        for (int i = 0; i < num_cols; i++) { 
-          if (num_inst[i] > 0) {
-            av_num_inst[i] = av_num_inst[i] + num_inst[i] * num_cpus;
-            org_task[i] = org_task[i] + num_cpus;   // count how many are actually doing the task
+          // If knocking out an instruction stops the expression of a
+          // particular task, mark that in the modularity matrix
+          // and add it to two counts
+          // Only do the checking if the test_genotype replicate, i.e.
+          // if it's fitness is not zeros
+          
+          if (compare < 0  && test_genotype.GetFitness() != 0) {
+            mod_matrix(cur_col,line_num) = 1;
+            num_inst[cur_col]++;
+            num_task[line_num]++;
           }
-        }	
-        
-        // calculate average task overlap
-        // first construct num_task x num_task matrix with number of sites overlapping
-        for (int i = 0; i < max_line; i++) {
-          for (int j = 0; j < num_cols; j++) {
-            for (int k = j; k < num_cols; k++) {
-              if (mod_matrix(j,i)>0 && mod_matrix(k,i)>0) {
-                task_overlap(j,k)++;
-                if (j!=k) task_overlap(k,j)++;
-              }               
-            }
-          }
+          cur_col++;
         }
         
-        // go though the task_overlap matrix, add and average everything up. 
-        if (total_task > 1) {
-          for (int i = 0; i < num_cols; i++) {
-            double overlap_per_task = 0;                 
-            for (int j = 0; j < num_cols; j++) {
-              if (i!=j) {overlap_per_task = overlap_per_task + task_overlap(i,j);}
-            }
-            if (task_overlap(i,i) !=0){
-              sum_task_overlap = sum_task_overlap + overlap_per_task / (task_overlap(i,i) * (total_task-1));   
-            }
-          }
+        // Reset the mod_genome back to the original sequence.
+        mod_genome[line_num].SetOp(cur_inst);
+      } // end of genotype-phenotype mapping for a single organism
+      
+      for (int i = 0; i < num_cols; i++) if (num_inst[i] != 0) total_task++;
+      for (int i = 0; i < max_line; i++) if (num_task[i] != 0) total_inst++;
+      for (int i = 0; i < num_cols; i++) total_all = total_all + num_inst[i];
+      
+      // Add the values to the av_ variables, used for calculating the average
+      // in order to weigh them by abundance, multiply everything by num_cpus
+      
+      av_length = av_length + max_line*num_cpus;
+      av_task = av_task + total_task*num_cpus;
+      av_inst = av_inst + total_inst*num_cpus;
+      av_inst_len = av_inst_len + (double) total_inst*num_cpus/max_line;
+      
+      if (total_task !=0)  av_site_task = av_site_task + num_cpus * (double) total_all/total_task; 
+      if (total_inst !=0)  av_task_site = av_task_site + num_cpus * (double) total_all/total_inst; 
+      if (total_inst !=0 && total_task !=0) {
+        av_t_s_norm = av_t_s_norm + num_cpus * (double) total_all/(total_inst*total_task); 
+      }
+      
+      for (int i = 0; i < num_cols; i++) { 
+        if (num_inst[i] > 0) {
+          av_num_inst[i] = av_num_inst[i] + num_inst[i] * num_cpus;
+          org_task[i] = org_task[i] + num_cpus;   // count how many are actually doing the task
         }
-        
-        // now, divide that by number of tasks done and add to the grand sum, weigthed by num_cpus 
-        if (total_task!=0) {
-          av_task_overlap = av_task_overlap + num_cpus * (double) sum_task_overlap/total_task ;
-        }
-        // calculate the first/last postion of a task, the task "spread"
-        // starting from the top look for the fist command that matters for a task
-        
-        for (int i = 0; i < num_cols; i++) { 
-          int j = 0; 
-          while (j < max_line) {
-            if (mod_matrix(i,j) > 0 && task_length[i] == 0 ) {
-              task_length[i] = j;
-              break;
-            }
-            j++;
+      }	
+      
+      // calculate average task overlap
+      // first construct num_task x num_task matrix with number of sites overlapping
+      for (int i = 0; i < max_line; i++) {
+        for (int j = 0; j < num_cols; j++) {
+          for (int k = j; k < num_cols; k++) {
+            if (mod_matrix(j,i)>0 && mod_matrix(k,i)>0) {
+              task_overlap(j,k)++;
+              if (j!=k) task_overlap(k,j)++;
+            }               
           }
         }
-        
-        // starting frm the bottom look for the last command that matters for a task
-        // and substract it from the first to get the task length
-        // add one in order to account for both the beginning and the end instruction
-        for (int i = 0; i < num_cols; i++) { 
-          int j = max_line - 1; 
-          while (j > -1) {
-            if (mod_matrix(i,j) > 0) {
-              task_length[i] = j - task_length[i] + 1;
-              break;
-            }
-            j--;
-          }
-        }
-        // add the task lengths to the average for the batch
-        // weigthed by the number of cpus for that genotype 
-        for (int i = 0; i < num_cols; i++) { 
-          av_task_length[i] = av_task_length[i] +  num_cpus * task_length[i];
-        }
-        
-        // calculate the Standard Deviation in the mean position of the task
-        for (int i = 0; i < num_cols; i++) { 
-          for (int j = 0; j < max_line; j++) { 
-            if (mod_matrix(i,j)>0) sum[i] = sum[i] + j;
-          }		
-        }
-        
-        double temp = 0;
+      }
+      
+      // go though the task_overlap matrix, add and average everything up. 
+      if (total_task > 1) {
         for (int i = 0; i < num_cols; i++) {
-          if (num_inst[i]>1) { 
-            double av_sum = sum[i]/num_inst[i];
-            for (int j = 0; j < max_line; j++) {
-              if (mod_matrix(i,j)>0) temp = (av_sum - j)*(av_sum - j);
-            }
-            std_task_position[i] = std_task_position[i] + sqrt(temp/(num_inst[i]-1))*num_cpus;
-          } 
+          double overlap_per_task = 0;                 
+          for (int j = 0; j < num_cols; j++) {
+            if (i!=j) {overlap_per_task = overlap_per_task + task_overlap(i,j);}
+          }
+          if (task_overlap(i,i) !=0){
+            sum_task_overlap = sum_task_overlap + overlap_per_task / (task_overlap(i,i) * (total_task-1));   
+          }
+        }
+      }
+      
+      // now, divide that by number of tasks done and add to the grand sum, weigthed by num_cpus 
+      if (total_task!=0) {
+        av_task_overlap = av_task_overlap + num_cpus * (double) sum_task_overlap/total_task ;
+      }
+      // calculate the first/last postion of a task, the task "spread"
+      // starting from the top look for the fist command that matters for a task
+      
+      for (int i = 0; i < num_cols; i++) { 
+        int j = 0; 
+        while (j < max_line) {
+          if (mod_matrix(i,j) > 0 && task_length[i] == 0 ) {
+            task_length[i] = j;
+            break;
+          }
+          j++;
+        }
+      }
+      
+      // starting frm the bottom look for the last command that matters for a task
+      // and substract it from the first to get the task length
+      // add one in order to account for both the beginning and the end instruction
+      for (int i = 0; i < num_cols; i++) { 
+        int j = max_line - 1; 
+        while (j > -1) {
+          if (mod_matrix(i,j) > 0) {
+            task_length[i] = j - task_length[i] + 1;
+            break;
+          }
+          j--;
+        }
+      }
+      // add the task lengths to the average for the batch
+      // weigthed by the number of cpus for that genotype 
+      for (int i = 0; i < num_cols; i++) { 
+        av_task_length[i] = av_task_length[i] +  num_cpus * task_length[i];
+      }
+      
+      // calculate the Standard Deviation in the mean position of the task
+      for (int i = 0; i < num_cols; i++) { 
+        for (int j = 0; j < max_line; j++) { 
+          if (mod_matrix(i,j)>0) sum[i] = sum[i] + j;
+        }		
+      }
+      
+      double temp = 0;
+      for (int i = 0; i < num_cols; i++) {
+        if (num_inst[i]>1) { 
+          double av_sum = sum[i]/num_inst[i];
+          for (int j = 0; j < max_line; j++) {
+            if (mod_matrix(i,j)>0) temp = (av_sum - j)*(av_sum - j);
+          }
+          std_task_position[i] = std_task_position[i] + sqrt(temp/(num_inst[i]-1))*num_cpus;
         } 
-        
-        for (int i = 0; i < max_line; i++) { inst_task[num_task[i]]++ ;}
-        for (int i = 0; i < num_cols+1; i++) { av_inst_task[i] = av_inst_task[i] + inst_task[i] * num_cpus;}
-        
+      } 
+      
+      for (int i = 0; i < max_line; i++) { inst_task[num_task[i]]++ ;}
+      for (int i = 0; i < num_cols+1; i++) { av_inst_task[i] = av_inst_task[i] + inst_task[i] * num_cpus;}
+      
     }
   }  // this is the end of the loop going though all the organisms
   
@@ -5243,7 +5245,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
     for (int i = 0; i < 8+4*num_cols+1; i++) {fp << "0 ";}
     fp << endl;
   }
-  }
+}
 
 
 void cAnalyze::CommandAnalyzeModularity(cString cur_string)
