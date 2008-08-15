@@ -542,17 +542,15 @@ class cActionSetSeasonalResource : public cAction
 	{
 	private:
 		cString m_res_name;
-		double yearLength;
 		
 	public:
-		cActionSetSeasonalResource(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), yearLength(0.0)
+		cActionSetSeasonalResource(cWorld* world, const cString& args): cAction(world, args), m_res_name("")
 		{
 			cString largs(args);
 			if (largs.GetSize()) m_res_name = largs.PopWord();
-			if (largs.GetSize()) yearLength = largs.PopWord().AsDouble();
 		}
 		
-		static const cString GetDescription() { return "Arguments: <string reaction_name> <double yearlenght> <string pi/frequence> <phaseShift*pi> <string initial_Y>"; }
+		static const cString GetDescription() { return "Arguments: <string reaction_name>"; }
 		
 		void Process(cAvidaContext& ctx)
 		{
@@ -879,7 +877,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetEnvironmentInputs>("SetEnvironmentInputs");
   action_lib->Register<cActionSetEnvironmentRandomMask>("SetEnvironmentRandomMask");
 
-	action_lib->Register<cActionSetPeriodicResource>("cActionSetSeasonalResource");
+	action_lib->Register<cActionSetSeasonalResource>("SetSeasonalResource");
   action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
   action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");
 
