@@ -536,6 +536,35 @@ public:
 };
 
 /**
+ Sets resource availiblity to seasonal
+ */
+class cActionSetSeasonalResource : public cAction
+	{
+	private:
+		cString m_res_name;
+		double yearLength;
+		
+	public:
+		cActionSetSeasonalResource(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), yearLength(0.0)
+		{
+			cString largs(args);
+			if (largs.GetSize()) m_res_name = largs.PopWord();
+			if (largs.GetSize()) yearLength = largs.PopWord().AsDouble();
+		}
+		
+		static const cString GetDescription() { return "Arguments: <string reaction_name> <double yearlenght> <string pi/frequence> <phaseShift*pi> <string initial_Y>"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			int time = m_world->GetStats().GetUpdate();
+			double m_res_count = -1*(0.4*tanh((time-182500)/50000)+0.5)*(0.5*sin(time/58.091)+0.5)+1;
+			cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+			if (res != NULL) m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+			
+		}
+	};
+
+/**
 Sets resource availiblity to periodic
  */
 class cActionSetPeriodicResource : public cAction
@@ -850,6 +879,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetEnvironmentInputs>("SetEnvironmentInputs");
   action_lib->Register<cActionSetEnvironmentRandomMask>("SetEnvironmentRandomMask");
 
+	action_lib->Register<cActionSetPeriodicResource>("cActionSetSeasonalResource");
   action_lib->Register<cActionSetPeriodicResource>("SetPeriodicResource");
   action_lib->Register<cActionSetNumInstBefore0Energy>("SetNumInstBefore0Energy");
 
