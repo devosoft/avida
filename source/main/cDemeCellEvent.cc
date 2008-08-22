@@ -11,11 +11,11 @@ cDemeCellEvent::cDemeCellEvent(int x1, int y1, int x2, int y2, int delay, int du
   , m_event_width(x2-x1)
   , m_event_height(y2-y1)
   , m_active(false)
-  , m_dead(false)
   , m_static_pos(static_pos)
+  , m_dead(false)
+  , m_id_set(false)
   , m_deme(deme)
   , m_world(world)
-  , m_id_set(false)
 {
   assert(x1 <= x2);
   assert(y1 <= y2);
