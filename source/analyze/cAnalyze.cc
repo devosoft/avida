@@ -4723,7 +4723,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       fp << endl;
       
     } else { // if (file_type == FILE_TYPE_HTML) {
-             // Mark file as html
+      // Mark file as html
       fp << "<html>" << endl;
       
       // Setup any javascript macros needed...
@@ -4743,16 +4743,10 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       fp << "</head>" << endl;
       
       // Setup the body...
-      fp << "<body bgcolor=\"#FFFFFF\"" << endl
-        << " text=\"#000000\"" << endl
-        << " link=\"#0000AA\"" << endl
-        << " alink=\"#0000FF\"" << endl
-        << " vlink=\"#000044\">" << endl
-        << endl
-        << "<h1 align=center>Run " << batch[cur_batch].Name()
-        << ", ID " << genotype->GetID() << "</h1>" << endl
-        << "<center>" << endl
-        << endl;
+      fp << "<body>" << endl
+      << "<div align=\"center\">" << endl
+      << "<h1 align=\"center\">Run " << batch[cur_batch].Name() << ", ID " << genotype->GetID() << "</h1>" << endl
+      << endl;
       
       // Links?
       fp << "<table width=90%><tr><td align=left>";
@@ -4836,7 +4830,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       
       // Print the individual columns...
       output_it.Reset();
-      tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
+      tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
       int cur_col = 0;
       while ((data_command = output_it.Next()) != NULL) {
         data_command->SetTarget(&test_genotype);
@@ -4844,9 +4838,6 @@ void cAnalyze::CommandMapTasks(cString cur_string)
         const cFlexVar test_value = data_command->GetValue();
         int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), data_command->GetCompareType());
         
-        // BUG! Either of the next two conditional print commands can
-        // cause landscaping to be triggered in a context that causes a crash, 
-        // notably, if you don't provide any column parameters to MapTasks.. @JEB
         if (file_type == FILE_TYPE_HTML) {
           HTMLPrintStat(test_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull(),
                         !(data_command->HasArg("blank")));
@@ -4882,14 +4873,14 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       
       // And close everything up...
       fp << "</table>" << endl
-        << "</center>" << endl;
+      << "</div>" << endl;
     }
     
     delete [] col_pass_count;
     delete [] col_fail_count;
     m_world->GetDataFileManager().Remove(filename);  // Close the data file object
-    }
-    }
+  }
+}
 
 void cAnalyze::CommandAverageModularity(cString cur_string)
 {

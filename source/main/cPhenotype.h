@@ -86,6 +86,7 @@ class cTaskState;
 
 class cPhenotype
 {
+  friend class cOrganism;
 private:
   cWorld* m_world;
   bool initialized;
@@ -218,12 +219,20 @@ private:
   // 7. Information that is set once (when organism was born)
   double permanent_germline_propensity;
   
-public:
-  cPhenotype() { ; } // @not_implemented
+
+  inline void SetInstSetSize(int inst_set_size);
+
+  
   cPhenotype(cWorld* world);
+
+  
+public:
+  cPhenotype() : m_world(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
+
   cPhenotype(const cPhenotype&); 
   cPhenotype& operator=(const cPhenotype&); 
   ~cPhenotype();
+  
 
   bool OK();
 
@@ -250,8 +259,6 @@ public:
                   tArray<int>& insts_triggered);
 
   // State saving and loading, and printing...
-  bool SaveState(std::ofstream& fp);
-  bool LoadState(std::ifstream & fp);
   void PrintStatus(std::ostream& fp) const;
 
   // Some useful methods...
@@ -480,15 +487,10 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nPhenotype {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
+inline void cPhenotype::SetInstSetSize(int inst_set_size)
+{
+  cur_inst_count.Resize(inst_set_size, 0);
+  last_inst_count.Resize(inst_set_size, 0);
 }
-#endif  
 
 #endif

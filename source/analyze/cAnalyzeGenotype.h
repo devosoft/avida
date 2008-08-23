@@ -103,7 +103,7 @@ private:
 private:
   cWorld* m_world;
   cGenome genome;            // Full Genome
-  cInstSet& inst_set;       // Instruction set used in this genome
+  cInstSet& m_inst_set;       // Instruction set used in this genome
   cString name;              // Name, if one was provided in loading
   cString aligned_sequence;  // Sequence (in ASCII) after alignment
   cString tag;               // All genotypes in a batch can be tagged

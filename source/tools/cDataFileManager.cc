@@ -96,7 +96,11 @@ cDataFile& cDataFileManager::Get(const cString& name)
     if (d == -1) break;
     
     // If directory name is not null
-    if (d - i > 0) cTools::MkDir(dir_prefix + target.Substring(0, d - i), false);
+    if (d - i > 0) {
+      cString dir = target.Substring(i, d - i);
+      // Create if  that this directory is not a relative path component
+      if (dir.GetSize() > 2 || (dir != "." && dir != "..")) cTools::MkDir(dir_prefix + target.Substring(0, d), false);
+    }
     
     // Adjust next directory name starting point
     i = d + 1;

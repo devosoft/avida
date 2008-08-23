@@ -1579,6 +1579,8 @@ class cActionPrintPhenotypicPlasticity : public cAction
     
     void Process(cAvidaContext& ctx)
     {
+      cCPUTestInfo test_info;
+      
       if (ctx.GetAnalyzeMode()){ // Analyze mode
         cString this_path = m_filename;
         ofstream& fot = m_world->GetDataFileOFStream(this_path);
@@ -1586,7 +1588,7 @@ class cActionPrintPhenotypicPlasticity : public cAction
         tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
         cAnalyzeGenotype* genotype = NULL;
         while((genotype = batch_it.Next())){
-          const cPhenPlastGenotype* ppgen = new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, m_world, ctx);
+          const cPhenPlastGenotype* ppgen = new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, test_info, m_world, ctx);
           PrintPPG(fot, ppgen, genotype->GetID(), genotype->GetParentID());
           delete ppgen;
         }
@@ -1597,7 +1599,7 @@ class cActionPrintPhenotypicPlasticity : public cAction
         PrintHeader(fot);
         cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
         for (int k = 0; k < m_world->GetClassificationManager().GetGenotypeCount(); k++){
-          const cPhenPlastGenotype* ppgen = new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, m_world, ctx);
+          const cPhenPlastGenotype* ppgen = new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, test_info, m_world, ctx);
           PrintPPG(fot, ppgen, genotype->GetID(), genotype->GetParentID());
           delete ppgen;
           genotype = genotype->GetNext();

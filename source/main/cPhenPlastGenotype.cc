@@ -26,14 +26,6 @@
 #include <iostream>
 #include <cmath>
 
-cPhenPlastGenotype::cPhenPlastGenotype(const cGenome& in_genome, int num_trials, cWorld* world, cAvidaContext& ctx)
-: m_genome(in_genome), m_num_trials(num_trials), m_world(world)
-{
-  cCPUTestInfo test_info;
-  test_info.UseRandomInputs(true);
-  Process(test_info, world, ctx);
-}
-
 cPhenPlastGenotype::cPhenPlastGenotype(const cGenome& in_genome, int num_trials, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx)
 : m_genome(in_genome), m_num_trials(num_trials), m_world(world)
 {

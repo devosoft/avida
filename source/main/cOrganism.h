@@ -80,6 +80,7 @@ class cEnvironment;
 class cGenotype;
 class cHardwareBase;
 class cInjectGenotype;
+class cInstSet;
 class cLineage;
 class cOrgSinkMessage;
 class cSaleItem;
@@ -104,8 +105,7 @@ protected:
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
  
 	// Other stats
-  cCPUMemory m_child_genome; // Child genome, while under construction.
-//  sCPUStats m_cpu_stats;     // Info for statistics
+  cCPUMemory m_child_genome;              // Child genome, while under construction.
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -143,12 +143,16 @@ protected:
   };
   cNetSupport* m_net;
   
+  
+  void initialize(cAvidaContext& ctx);
+  
   cOrganism(); // @not_implemented
   cOrganism(const cOrganism&); // @not_implemented
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
   cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome);
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome, cInstSet* inst_set);
   ~cOrganism();
 
   // --------  Accessor Methods  --------
@@ -181,7 +185,6 @@ public:
   int GetMaxExecuted() const { return m_max_executed; }
   
   cCPUMemory& ChildGenome() { return m_child_genome; }
-//  sCPUStats& CPUStats() { return m_cpu_stats; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }
@@ -431,17 +434,6 @@ protected:
   // -------- End of opinion support --------
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nOrganism {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif
 

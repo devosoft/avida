@@ -38,11 +38,12 @@
 #include "cWorld.h"
 
 
-cLandscape::cLandscape(cWorld* world, const cGenome & in_genome, const cInstSet & in_inst_set)
+cLandscape::cLandscape(cWorld* world, const cGenome& in_genome, const cInstSet& in_inst_set)
 : m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1), trials(1), m_min_found(0),
   m_max_trials(0), site_count(NULL)
 {
   Reset(in_genome);
+  test_info.SetInstSet(const_cast<cInstSet*>(&inst_set));
 }
 
 cLandscape::~cLandscape()
@@ -777,7 +778,6 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
     pos_frac = GetProbPos();
     
     // Print the information on the current best.
-    cCPUTestInfo test_info;
     testcpu->TestGenome(ctx, test_info, cur_genome);
     cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
     df.Write(gen, "Generation");

@@ -40,13 +40,15 @@
 #include "cWorld.h"
 #include "cWorldDriver.h"
 
+#include "tAutoRelease.h"
+
 #include <cmath>
 using namespace std;
 
 cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet& in_inst_set)
   : m_world(world)
   , genome(symbol_string)
-  , inst_set(in_inst_set)
+  , m_inst_set(in_inst_set)
   , name("")
   , aligned_sequence("")
   , tag("")
@@ -81,11 +83,11 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
     
   // Make sure that the sequences jive with the inst_set
   for (int i = 0; i < genome.GetSize(); i++) {
-    if (genome[i].GetOp() >= inst_set.GetSize()) {
+    if (genome[i].GetOp() >= m_inst_set.GetSize()) {
       cString msg("Trying to load instruction ");
       msg += genome[i].GetOp();
       msg += ".  Max in set is";
-      msg += (inst_set.GetSize() - 1);
+      msg += (m_inst_set.GetSize() - 1);
       m_world->GetDriver().RaiseException(msg);
     }
   }
@@ -94,7 +96,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
 cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstSet& in_inst_set)
   : m_world(world)
   , genome(_genome)
-  , inst_set(in_inst_set)
+  , m_inst_set(in_inst_set)
   , name("")
   , aligned_sequence("")
   , tag("")
@@ -131,7 +133,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
 cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
   : m_world(_gen.m_world)
   , genome(_gen.genome)
-  , inst_set(_gen.inst_set)
+  , m_inst_set(_gen.m_inst_set)
   , name(_gen.name)
   , aligned_sequence(_gen.aligned_sequence)
   , tag(_gen.tag)
@@ -212,7 +214,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   // Calculate the base fitness for the genotype we're working with...
   // (This may not have been run already, and cost negligiably more time
   // considering the number of knockouts we need to do.
-  cAnalyzeGenotype base_genotype(m_world, genome, inst_set);
+  cAnalyzeGenotype base_genotype(m_world, genome, m_inst_set);
   base_genotype.Recalculate(ctx);
   double base_fitness = base_genotype.GetFitness();
   const tArray<int> base_task_counts( base_genotype.GetTaskCounts() );
@@ -227,7 +229,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   cGenome mod_genome(genome);
   
   // Setup a NULL instruction in a special inst set.
-  cInstSet ko_inst_set(inst_set);
+  cInstSet ko_inst_set(m_inst_set);
   const cInstruction null_inst = ko_inst_set.ActivateNullInst();
   
   // If we are keeping track of the specific effects on tasks from the
@@ -347,7 +349,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
 void cAnalyzeGenotype::CheckLand() const
 {
   if (m_land == NULL) {
-    m_land = new cLandscape(m_world, genome, inst_set);
+    m_land = new cLandscape(m_world, genome, m_inst_set);
     m_land->SetDistance(1);
     m_land->Process(m_world->GetDefaultContext());
   }
@@ -356,8 +358,11 @@ void cAnalyzeGenotype::CheckLand() const
 void cAnalyzeGenotype::CheckPhenPlast() const
 {
   // Implicit genotype recalculation if required
-  if (m_phenplast_stats == NULL){
-    cPhenPlastGenotype pp(genome, 1000, m_world, m_world->GetDefaultContext());
+  if (m_phenplast_stats == NULL) {
+    cCPUTestInfo test_info;
+    test_info.SetInstSet(&m_inst_set);
+    
+    cPhenPlastGenotype pp(genome, 1000, test_info, m_world, m_world->GetDefaultContext());
     SummarizePhenotypicPlasticity(pp);
   }
 }
@@ -381,34 +386,26 @@ void cAnalyzeGenotype::SummarizePhenotypicPlasticity(const cPhenPlastGenotype& p
 
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
-  if (m_land == NULL) m_land = new cLandscape(m_world, genome, inst_set);
+  if (m_land == NULL) m_land = new cLandscape(m_world, genome, m_inst_set);
   m_land->SetDistance(1);
   m_land->Process(ctx);
 }
 
 void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, cAnalyzeGenotype* parent_genotype, int num_trials)
 {  
-  //Allocate our own test info if it wasn't provided
-  cCPUTestInfo* temp_test_info = NULL;
+  // Allocate our own test info if it wasn't provided
+  tAutoRelease<cCPUTestInfo> local_test_info;
   if (!test_info)
   {
-      temp_test_info = new cCPUTestInfo();
-      test_info = temp_test_info;
+    test_info = new cCPUTestInfo();
+    local_test_info.Set(test_info);
   }
 
-  // @DMB - This does some 'interesting' things with the instruction set
-  // Use the inst lib for this genotype... and syncrhonize environment
-  
-  // Backup old instruction set, update with new
-  cInstSet env_inst_set_backup = m_world->GetHardwareManager().GetInstSet();
-  m_world->GetHardwareManager().GetInstSet() = inst_set;
+  test_info->SetInstSet(&m_inst_set);
 
   // Handling recalculation here
   cPhenPlastGenotype recalc_data(genome, num_trials, *test_info, m_world, ctx);
  
-  // Restore the instruction set
-  m_world->GetHardwareManager().GetInstSet() = env_inst_set_backup;
-  
   // The most likely phenotype will be assigned to the phenotype stats
   const cPlasticPhenotype* likely_phenotype = recalc_data.GetMostLikelyPhenotype();
   
@@ -432,17 +429,12 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
     fitness_ratio = GetFitness() / parent_genotype->GetFitness();
     efficiency_ratio = GetEfficiency() / parent_genotype->GetEfficiency();
     comp_merit_ratio = GetCompMerit() / parent_genotype->GetCompMerit();
-    parent_dist = cStringUtil::EditDistance(genome.AsString(),
-        parent_genotype->GetGenome().AsString(), parent_muts);
+    parent_dist = cStringUtil::EditDistance(genome.AsString(), parent_genotype->GetGenome().AsString(), parent_muts);
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
 
   // Summarize plasticity information if multiple recalculations performed
-  if (num_trials > 1)
-    SummarizePhenotypicPlasticity(recalc_data);
-  
-  //Deallocate if we created
-  if (temp_test_info) delete temp_test_info;
+  if (num_trials > 1) SummarizePhenotypicPlasticity(recalc_data);
 }
 
 

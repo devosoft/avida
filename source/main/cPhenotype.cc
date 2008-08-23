@@ -28,7 +28,6 @@
 #include "cEnvironment.h"
 #include "cDeme.h"
 #include "cHardwareManager.h"
-#include "cInstSet.h"
 #include "cReactionResult.h"
 #include "cTaskState.h"
 #include "cTools.h"
@@ -49,7 +48,6 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_task_value(m_world->GetEnvironment().GetNumTasks())  
   , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
-  , cur_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
   , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
@@ -58,7 +56,6 @@ cPhenotype::cPhenotype(cWorld* world)
   , last_task_value(m_world->GetEnvironment().GetNumTasks())
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
-  , last_inst_count(world->GetHardwareManager().GetInstSet().GetSize())
   , last_sense_count(m_world->GetStats().GetSenseSize())
 {
 }
@@ -244,7 +241,7 @@ bool cPhenotype::OK()
   assert(age >= 0);
   assert(child_copied_size >= 0);
   // assert(to_die == false);
-  return true;
+  return (m_world);
 }
 
 
@@ -1087,221 +1084,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 }
 
 
-///// For Loading and Saving State: /////
 
-
-bool cPhenotype::SaveState(ofstream& fp)
-{
-  assert(fp.good());
-  fp << "cPhenotype" << endl;
-
-  fp << merit.GetDouble()   << " ";
-  fp << genome_length       << " ";
-  fp << copied_size         << " ";
-  fp << executed_size       << " ";
-  fp << gestation_time      << " ";
-  fp << gestation_start     << " ";
-  fp << fitness             << " ";
-  fp << div_type            << " ";
-
-  fp << cur_bonus           << " ";
-  fp << cur_num_errors      << " ";
-  fp << cur_num_donates      << " ";
-  for (int i = 0; i < cur_task_count.GetSize(); i++) {
-    fp << cur_task_count[i] << " ";
-  }
-  for (int i = 0; i < cur_reaction_count.GetSize(); i++) {
-    fp << cur_reaction_count[i] << " ";
-  }
-  for (int i = 0; i < cur_inst_count.GetSize(); i++) {
-    fp << cur_inst_count[i] << " ";
-  }
-
-  fp << last_merit_base     << " ";
-  fp << last_bonus          << " ";
-  fp << last_num_errors     << " ";
-  fp << last_num_donates    << " ";
-  for (int i = 0; i < last_task_count.GetSize(); i++) {
-    fp << last_task_count[i] << " ";
-  }
-  for (int i = 0; i < last_reaction_count.GetSize(); i++) {
-    fp << last_reaction_count[i] << " ";
-  }
-  for (int i = 0; i < last_inst_count.GetSize(); i++) {
-    fp << last_inst_count[i] << " ";
-  }
-
-  fp << num_divides         << " ";
-  fp << generation          << " ";
-  fp << cpu_cycles_used     << " ";
-  fp << time_used           << " ";
-  fp << age                 << " ";
-  fp << neutral_metric      << " ";
-  fp << life_fitness        << " ";
-
-  fp << is_injected         << " ";
-  fp << is_donor_last       << " ";
-  fp << is_donor_cur        << " ";
-  fp << is_donor_rand_last       << " ";
-  fp << is_donor_rand        << " ";
-  fp << is_donor_null_last       << " ";
-  fp << is_donor_null        << " ";
-  fp << is_donor_kin_last       << " ";
-  fp << is_donor_kin        << " ";
-  fp << is_donor_edit_last       << " ";
-  fp << is_donor_edit        << " ";
-  fp << is_donor_gbg_last       << " ";
-  fp << is_donor_gbg        << " ";
-  fp << is_donor_truegb_last       << " ";
-  fp << is_donor_truegb        << " ";
-  fp << is_donor_threshgb_last       << " ";
-  fp << is_donor_threshgb        << " ";
-  fp << is_donor_quanta_threshgb_last       << " ";
-  fp << is_donor_quanta_threshgb        << " ";
-  fp << num_thresh_gb_donations_last       << " ";
-  fp << num_thresh_gb_donations        << " ";
-  fp << num_quanta_thresh_gb_donations_last       << " ";
-  fp << num_quanta_thresh_gb_donations        << " ";
-
-  fp << is_receiver_last         << " ";
-  fp << is_receiver         << " ";
-  fp << is_receiver_rand         << " ";
-  fp << is_receiver_kin         << " ";
-  fp << is_receiver_kin_last         << " ";
-  fp << is_receiver_edit         << " ";
-  fp << is_receiver_edit_last         << " ";
-  fp << is_receiver_gbg         << " ";
-  fp << is_receiver_truegb_last         << " ";
-  fp << is_receiver_truegb         << " ";
-  fp << is_receiver_threshgb_last         << " ";
-  fp << is_receiver_threshgb         << " ";
-  fp << is_receiver_quanta_threshgb_last         << " ";
-  fp << is_receiver_quanta_threshgb         << " ";
-  fp << is_modifier         << " ";
-  fp << is_modified         << " ";
-  fp << is_fertile          << " ";
-  fp << is_mutated          << " ";
-  fp << parent_true         << " ";
-  fp << parent_sex          << " ";
-  fp << parent_cross_num    << " ";
-
-  fp << copy_true           << " ";
-  fp << divide_sex          << " ";
-  fp << mate_select_id      << " ";
-  fp << cross_num           << " ";
-  fp << child_fertile       << " ";
-  fp << last_child_fertile  << " ";
-
-  fp << endl;
-  return true;
-}
-
-
-bool cPhenotype::LoadState(ifstream & fp)
-{
-  double tmp_merit;
-  assert(fp.good());
-  if( !fp.good() ) return false;
-
-  fp >> tmp_merit;  merit = tmp_merit;
-  fp >> genome_length;
-  fp >> copied_size;
-  fp >> executed_size;
-  fp >> gestation_time;
-  fp >> gestation_start;
-  fp >> fitness;
-  fp >> div_type;
-
-  fp >> cur_bonus;
-  fp >> cur_num_errors;
-  fp >> cur_num_donates;
-
-  for (int i = 0; i < cur_task_count.GetSize(); i++) {
-    fp >> cur_task_count[i];
-  }
-  for (int i = 0; i < cur_reaction_count.GetSize(); i++) {
-    fp >> cur_reaction_count[i];
-  }
-  for (int i = 0; i < cur_inst_count.GetSize(); i++) {
-    fp >> cur_inst_count[i];
-  }
-
-  fp >> last_merit_base;
-  fp >> last_bonus;
-  fp >> last_num_errors;
-  fp >> last_num_donates;
-  for (int i = 0; i < last_task_count.GetSize(); i++) {
-    fp >> last_task_count[i];
-  }
-  for (int i = 0; i < last_reaction_count.GetSize(); i++) {
-    fp >> last_reaction_count[i];
-  }
-  for (int i = 0; i < last_inst_count.GetSize(); i++) {
-    fp >> last_inst_count[i];
-  }
-
-  fp >> num_divides;
-  fp >> generation;
-  fp >> cpu_cycles_used;
-  fp >> time_used;
-  fp >> age;
-  fp >> neutral_metric;
-  fp >> life_fitness;
-
-  fp >> is_injected;
-  fp >> is_donor_last;
-  fp >> is_donor_cur;
-  fp >> is_donor_rand_last;
-  fp >> is_donor_rand;
-  fp >> is_donor_null_last;
-  fp >> is_donor_null;
-  fp >> is_donor_kin_last;
-  fp >> is_donor_kin;
-  fp >> is_donor_edit_last;
-  fp >> is_donor_edit;
-  fp >> is_donor_gbg_last;
-  fp >> is_donor_gbg;
-  fp >> is_donor_truegb_last;
-  fp >> is_donor_truegb;
-  fp >> is_donor_threshgb_last;
-  fp >> is_donor_threshgb;
-  fp >> is_donor_quanta_threshgb_last;
-  fp >> is_donor_quanta_threshgb;
-  fp >> num_thresh_gb_donations_last;
-  fp >> num_thresh_gb_donations;
-  fp >> num_quanta_thresh_gb_donations_last;
-  fp >> num_quanta_thresh_gb_donations;
-  fp >> is_receiver_last;
-  fp >> is_receiver;
-  fp >> is_receiver_rand;
-  fp >> is_receiver_kin;
-  fp >> is_receiver_kin_last;
-  fp >> is_receiver_edit;
-  fp >> is_receiver_edit_last;
-  fp >> is_receiver_gbg;
-  fp >> is_receiver_truegb_last;
-  fp >> is_receiver_truegb;
-  fp >> is_receiver_threshgb_last;
-  fp >> is_receiver_threshgb;
-  fp >> is_receiver_quanta_threshgb_last;
-  fp >> is_receiver_quanta_threshgb;
-  fp >> is_modifier;
-  fp >> is_modified;
-  fp >> is_fertile;
-  fp >> is_mutated;
-  fp >> parent_true;
-  fp >> parent_sex;
-  fp >> parent_cross_num;
-
-  fp >> copy_true;
-  fp >> divide_sex;
-  fp >> mate_select_id;
-  fp >> cross_num;
-  fp >> child_fertile;
-  fp >> last_child_fertile;
-
-  return true;
-}
 
 void cPhenotype::PrintStatus(ostream& fp) const
 {

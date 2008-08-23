@@ -359,10 +359,13 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   if (test_info.org_array[cur_depth] != NULL) {
     delete test_info.org_array[cur_depth];
   }
-  test_info.org_array[cur_depth] = new cOrganism(m_world, ctx, genome);
-  cOrganism & organism = *( test_info.org_array[cur_depth] );
-  organism.SetOrgInterface(new cTestCPUInterface(this));
-  organism.GetPhenotype().SetupInject(genome);
+  cOrganism* organism = NULL;
+  
+  if (test_info.GetInstSet()) organism = new cOrganism(m_world, ctx, genome, test_info.GetInstSet());
+  else organism = new cOrganism(m_world, ctx, genome);
+  test_info.org_array[cur_depth] = organism;
+  organism->SetOrgInterface(new cTestCPUInterface(this));
+  organism->GetPhenotype().SetupInject(genome);
 
   // Run the current organism.
   ProcessGestation(ctx, test_info, cur_depth);
@@ -377,10 +380,10 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   //  4: It copied false => we must check the child.
 
   // Case 1:  ////////////////////////////////////
-  if (organism.GetPhenotype().GetNumDivides() == 0)  return false;
+  if (organism->GetPhenotype().GetNumDivides() == 0)  return false;
 
   // Case 2:  ////////////////////////////////////
-  if (organism.GetPhenotype().CopyTrue() == true) {
+  if (organism->GetPhenotype().CopyTrue() == true) {
     test_info.depth_found = cur_depth;
     test_info.is_viable = true;
     return true;
@@ -389,7 +392,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   // Case 3:  ////////////////////////////////////
   bool is_ancestor = false;
   for (int anc_depth = 0; anc_depth < cur_depth; anc_depth++) {
-    if (organism.ChildGenome() == test_info.org_array[anc_depth]->GetGenome()){
+    if (organism->ChildGenome() == test_info.org_array[anc_depth]->GetGenome()){
       is_ancestor = true;
       const int cur_cycle = cur_depth - anc_depth;
       if (test_info.max_cycle < cur_cycle) test_info.max_cycle = cur_cycle;
@@ -406,7 +409,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   // If we haven't reached maximum depth yet, check out the child.
   if (cur_depth+1 < test_info.generation_tests) {
     // Run the child's genome.
-    return TestGenome_Body(ctx, test_info, organism.ChildGenome(), cur_depth+1);
+    return TestGenome_Body(ctx, test_info, organism->ChildGenome(), cur_depth+1);
   }
 
   // All options have failed; just return false.

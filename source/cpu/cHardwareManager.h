@@ -61,7 +61,8 @@ public:
   cHardwareManager(cWorld* world);
   ~cHardwareManager() { ; }
   
-  cHardwareBase* Create(cOrganism* in_org);
+  cHardwareBase* Create(cOrganism* in_org, cInstSet* inst_set);
+  inline cHardwareBase* Create(cOrganism* in_org) { return Create(in_org, m_inst_set); }
   cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
   const cInstSet& GetInstSet() const { return *m_inst_set; }

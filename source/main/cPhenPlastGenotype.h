@@ -82,7 +82,6 @@ class cPhenPlastGenotype
     void Process(cCPUTestInfo& test_info, cWorld* world, cAvidaContext& ctx);
 
   public:
-      cPhenPlastGenotype(const cGenome& in_genome, int num_trials, cWorld* world, cAvidaContext& ctx);
     cPhenPlastGenotype(const cGenome& in_genome, int num_trails, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx);
     ~cPhenPlastGenotype();
     

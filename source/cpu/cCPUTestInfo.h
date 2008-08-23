@@ -39,6 +39,7 @@
 #endif
 
 class cHardwareTracer;
+class cInstSet;
 class cOrganism;
 class cPhenotype;
 class cString;
@@ -57,12 +58,12 @@ class cCPUTestInfo
 private:
   // Inputs...
   const int generation_tests; // Maximum depth in generations to test
-  bool trace_execution;       // Should we trace this CPU?
   bool trace_task_order;      // Should we keep track of ordering of tasks?
   bool use_random_inputs;     // Should we give the organism random inputs?
 	bool use_manual_inputs;     // Do we have inputs that we must use?
 	tArray<int> manual_inputs;  //   if so, use these.
   cHardwareTracer* m_tracer;
+  cInstSet* m_inst_set;
 
   // Outputs...
   bool is_viable;         // Is this organism colony forming?
@@ -94,7 +95,8 @@ public:
   void UseRandomInputs(bool _rand=true) { use_random_inputs = _rand; use_manual_inputs = false; }
 	void UseManualInputs(tArray<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
 	void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
-  void SetTraceExecution(cHardwareTracer *tracer = NULL);
+  void SetTraceExecution(cHardwareTracer* tracer = NULL) { m_tracer = tracer; }
+  void SetInstSet(cInstSet* inst_set = NULL) { m_inst_set = inst_set; }
   void SetResourceOptions(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int cpu_cycle_offset = 0)
     { m_res_method = (eTestCPUResourceMethod)res_method; m_res = res; m_res_update = update; m_res_cpu_cycle_offset = cpu_cycle_offset; }
 
@@ -103,7 +105,8 @@ public:
   int GetGenerationTests() const { return generation_tests; }
   bool GetTraceTaskOrder() const { return trace_task_order; }
   bool GetUseRandomInputs() const { return use_random_inputs; }
-  bool GetTraceExecution() const { return trace_execution; }
+  bool GetTraceExecution() const { return (m_tracer); }
+  cInstSet* GetInstSet() const { return m_inst_set; }
 	bool GetUseManualInputs() const { return use_manual_inputs; }
 	tArray<int> GetTestCPUInputs() const { return used_inputs; }
   cHardwareTracer *GetTracer() { return m_tracer; }

@@ -77,10 +77,47 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_msg(0)
   , m_opinion(0)
 {
-  // Initialization of structures...
   m_hardware = m_world->GetHardwareManager().Create(this);
-//  m_cpu_stats.Setup();
 
+  initialize(ctx);
+}
+
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome, cInstSet* inst_set)
+  : m_world(world)
+  , m_genotype(NULL)
+  , m_phenotype(world)
+  , m_initial_genome(in_genome)
+  , m_mut_info(world->GetEnvironment().GetMutationLib(), in_genome.GetSize())
+  , m_interface(NULL)
+  , m_lineage_label(-1)
+  , m_lineage(NULL)
+  , m_input_pointer(0)
+  , m_input_buf(world->GetEnvironment().GetInputSize())
+  , m_output_buf(world->GetEnvironment().GetOutputSize())
+  , m_received_messages(RECEIVED_MESSAGES_SIZE)
+  , m_sent_value(0)
+  , m_sent_active(false)
+  , m_test_receive_pos(0)
+  , m_pher_drop(false)
+  , m_max_executed(-1)
+  , m_is_running(false)
+  , m_is_sleeping(false)
+  , m_is_dead(false)
+  , killed_event(false)
+  , m_net(NULL)
+  , m_msg(0)
+  , m_opinion(0)
+{
+  m_hardware = m_world->GetHardwareManager().Create(this, inst_set);
+  
+  initialize(ctx);
+}
+
+
+void cOrganism::initialize(cAvidaContext& ctx)
+{
+  m_phenotype.SetInstSetSize(m_hardware->GetInstSet().GetSize());
+  
   if (m_world->GetConfig().DEATH_METHOD.Get() > DEATH_METHOD_OFF) {
     m_max_executed = m_world->GetConfig().AGE_LIMIT.Get();
     if (m_world->GetConfig().AGE_DEVIATION.Get() > 0.0) {
@@ -89,13 +126,13 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
     if (m_world->GetConfig().DEATH_METHOD.Get() == DEATH_METHOD_MULTIPLE) {
       m_max_executed *= m_initial_genome.GetSize();
     }
-
+    
     // m_max_executed must be positive or an organism will not die!
     if (m_max_executed < 1) m_max_executed = 1;
   }
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
-  m_id = m_world->GetStats().GetTotCreatures();
+  m_id = m_world->GetStats().GetTotCreatures();  
 }
 
 

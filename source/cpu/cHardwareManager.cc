@@ -82,22 +82,22 @@ cHardwareManager::cHardwareManager(cWorld* world)
   
 }
 
-cHardwareBase* cHardwareManager::Create(cOrganism* in_org)
+cHardwareBase* cHardwareManager::Create(cOrganism* in_org, cInstSet* inst_set)
 {
   assert(in_org != NULL);
   
   switch (m_type)
   {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      return new cHardwareCPU(m_world, in_org, m_inst_set);
+      return new cHardwareCPU(m_world, in_org, inst_set);
     case HARDWARE_TYPE_CPU_SMT:
-      return new cHardwareSMT(m_world, in_org, m_inst_set);
+      return new cHardwareSMT(m_world, in_org, inst_set);
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      return new cHardwareTransSMT(m_world, in_org, m_inst_set);
+      return new cHardwareTransSMT(m_world, in_org, inst_set);
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      return new cHardwareExperimental(m_world, in_org, m_inst_set);
+      return new cHardwareExperimental(m_world, in_org, inst_set);
     case HARDWARE_TYPE_CPU_GX:
-      return new cHardwareGX(m_world, in_org, m_inst_set);
+      return new cHardwareGX(m_world, in_org, inst_set);
     default:
       return NULL;
   }

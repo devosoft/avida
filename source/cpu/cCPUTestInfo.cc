@@ -33,11 +33,11 @@
 
 cCPUTestInfo::cCPUTestInfo(int max_tests)
   : generation_tests(max_tests)  // These vars not reset on Clear()
-  , trace_execution(false)
   , trace_task_order(false)
   , use_random_inputs(false)
   , use_manual_inputs(false)
   , m_tracer(NULL)
+  , m_inst_set(NULL)
   , org_array(max_tests)
   , m_res_method(RES_INITIAL)
   , m_res(NULL)
@@ -72,13 +72,6 @@ void cCPUTestInfo::Clear()
   }
 }
  
-
-void cCPUTestInfo::SetTraceExecution(cHardwareTracer *tracer)
-{
-  trace_execution = (tracer)?(true):(false);
-  m_tracer = tracer;
-}
-
 
 double cCPUTestInfo::GetGenotypeFitness()
 {
