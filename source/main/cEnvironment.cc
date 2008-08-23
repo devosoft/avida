@@ -1043,7 +1043,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       if (cur_process->GetDemeFraction()) {
         deme_bonus = cur_process->GetDemeFraction() * bonus;
         bonus = (1-cur_process->GetDemeFraction()) * bonus;
-      }
+        }
       
       // Take care of the organism's bonus:
       switch (cur_process->GetType()) {

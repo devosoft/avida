@@ -39,9 +39,13 @@
 # pragma warning( disable : 4355 )
 #endif
 
-#if defined(__APPLE__) || defined(unix) || defined(__unix) || defined(__unix__) || defined (__NetBSD__) || defined(_AIX)
+#if defined(__APPLE__) || defined(unix) || defined(__unix) || defined(__unix__) || defined (__NetBSD__) || defined(_AIX) || defined(__FreeBSD__)
 # define AVIDA_PLATFORM_UNIX 1
 # define AVIDA_PLATFORM_THREADS 1
+#endif
+
+#if defined(__FreeBSD__)
+# define AVIDA_PLATFORM_FREEBSD 1
 #endif
 
 #if defined(__APPLE__)

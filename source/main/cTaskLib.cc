@@ -49,6 +49,11 @@
 # define log2(x) (log(x)/log(2.0))
 #endif
 
+// Various workarounds for FreeBSD
+#if AVIDA_PLATFORM(FREEBSD)
+# define log2(x) (log(x)/log(2.0))
+#endif
+
 static const double dCastPrecision = 100000.0;
 
 
