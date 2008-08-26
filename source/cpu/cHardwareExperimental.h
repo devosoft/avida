@@ -530,7 +530,7 @@ inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int va
   dest.from_env = false;
   dest.originated = m_cycle_count;
   dest.oldest_component = src.oldest_component;
-  dest.env_component = src.from_env;  
+  dest.env_component = src.env_component;
 }
 
 

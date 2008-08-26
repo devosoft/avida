@@ -503,9 +503,12 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   fp << organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "IP:" << IP().GetPosition() << "    ";
   
+  
   for (int i = 0; i < NUM_REGISTERS; i++) {
+    sInternalValue& reg = m_threads[m_cur_thread].reg[i];
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
-    fp << setbase(16) << "[0x" << GetRegister(i) << "]  " << setbase(10);
+    fp << setbase(16) << "[0x" << reg.value <<  "] " << setbase(10);
+    fp << "(" << reg.from_env << " " << reg.env_component << " " << reg.originated << " " << reg.oldest_component << ")  ";
   }
   
   // Add some extra information if additional time costs are used for instructions,
@@ -520,6 +523,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
     << "W-Head:" << GetHead(nHardware::HEAD_WRITE).GetPosition()  << " "
     << "F-Head:" << GetHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
     << "RL:" << GetReadLabel().AsString() << "   "
+    << "Ex:" << m_last_output
     << endl;
     
   int number_of_stacks = GetNumStacks();
