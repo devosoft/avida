@@ -4106,6 +4106,12 @@ bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
   // Declarations
   int fromcellID, destcellID; //, actualNeighborhoodSize, fromFacing, destFacing, currentFacing;
 
+  fromcellID = organism->GetCellID(); //absolute id of current cell
+	
+  if(fromcellID == -1) {
+    return false;
+  }
+	
   // Get population
   cPopulation& pop = m_world->GetPopulation();
   cDeme &deme = pop.GetDeme(pop.GetCell(organism->GetCellID()).GetDemeID());
@@ -4121,7 +4127,7 @@ bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
   // Code
   if (0 < stepsize) {
     // Current cell
-    fromcellID = organism->GetCellID();
+    //fromcellID = organism->GetCellID();
     // With sanity check
     if (-1  == fromcellID) return false;
     // Destination cell
@@ -5312,9 +5318,15 @@ bool cHardwareCPU::Inst_SenseMult100Facing(cAvidaContext& ctx)
 // Sense if the organism is on a target -- put 1 in reg is so, 0 otherwise
 bool cHardwareCPU::Inst_SenseTarget(cAvidaContext& ctx) {
   int reg_to_set = FindModifiedRegister(REG_CX);
-  int cell_data = m_world->GetPopulation().GetCell(organism->GetCellID()).GetCellData();
-  int val = 0;
+  int cellid = organism->GetCellID();
 
+  if(cellid == -1) {
+    return false;
+  }
+	
+  int cell_data = m_world->GetPopulation().GetCell(cellid).GetCellData();
+  int val = 0;
+	
   if(cell_data > 0) {
     val = 1;
   }
@@ -5328,11 +5340,17 @@ bool cHardwareCPU::Inst_SenseTargetFaced(cAvidaContext& ctx) {
   int reg_to_set = FindModifiedRegister(REG_CX);
 
   cPopulation& pop = m_world->GetPopulation();
-  cPopulationCell& mycell = pop.GetCell(organism->GetCellID());
-
+  int cellid = organism->GetCellID();
+	
+  if(cellid == -1) {
+    return true;
+  }
+	
+  cPopulationCell& mycell = pop.GetCell(cellid);
+	
   int cell_data = mycell.GetCellFaced().GetCellData(); //absolute id of faced cell
   int val = 0;
-
+	
   if(cell_data > 0) {
     val = 1;
   }
@@ -5346,6 +5364,10 @@ bool cHardwareCPU::Inst_SenseTargetFaced(cAvidaContext& ctx) {
 bool cHardwareCPU::DoSensePheromone(cAvidaContext& ctx, int cellid)
 {
   int reg_to_set = FindModifiedRegister(REG_BX);
+
+  if(cellid == -1) {
+    return false;
+  }
 
   cPopulation& pop = m_world->GetPopulation();
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
@@ -6454,7 +6476,13 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_IfTarget(cAvidaContext& ctx)
 {
-  int cell_data = m_world->GetPopulation().GetCell(organism->GetCellID()).GetCellData();
+  int cellid = organism->GetCellID(); //absolute id of current cell
+	
+  if(cellid == -1) {
+	return true;
+  }		
+	
+  int cell_data = m_world->GetPopulation().GetCell(cellid).GetCellData();
 
   if(cell_data == -1) {
     IP().Advance();
@@ -6466,7 +6494,13 @@ bool cHardwareCPU::Inst_IfTarget(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_IfNotTarget(cAvidaContext& ctx)
 {
-  int cell_data = m_world->GetPopulation().GetCell(organism->GetCellID()).GetCellData();
+  int cellid = organism->GetCellID(); //absolute id of current cell
+	
+  if(cellid == -1) {
+    return true;
+  }	
+	
+  int cell_data = m_world->GetPopulation().GetCell(cellid).GetCellData();
 
   if(cell_data > 0) {
     IP().Advance();
