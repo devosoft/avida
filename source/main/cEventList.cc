@@ -133,6 +133,9 @@ double cEventList::GetTriggerValue(eTriggerType trigger) const
   case GENERATION:
     t_val = m_world->GetStats().SumGeneration().Average();
     break;
+  case BIRTHS:
+    t_val = m_world->GetStats().GetTotCreatures();
+    break;
   case UNDEFINED:
     break;
   }
@@ -251,6 +254,9 @@ void cEventList::PrintEventList(ostream& os)
       case IMMEDIATE:
         os << "immediate ";
         break;
+      case BIRTHS:
+        os << "births ";
+        break;
       default:
         os << "undefined ";
     }
@@ -305,6 +311,9 @@ bool cEventList::AddEventFileFormat(const cString& in_line)
     cur_word = cur_line.PopWord();
   } else if( cur_word == "g" || cur_word == "generation") {
     trigger = GENERATION;
+    cur_word = cur_line.PopWord();
+  } else if (cur_word == "b" || cur_word == "births") {
+    trigger = BIRTHS;
     cur_word = cur_line.PopWord();
   } else {
     // If Trigger is skipped so assume IMMEDIATE
