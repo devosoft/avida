@@ -169,6 +169,9 @@ cStats::cStats(cWorld* world)
   resource_count.Resize( m_world->GetNumResources() );
   resource_count.SetAll(0);
 
+  resource_geometry.Resize( m_world->GetNumResources() );
+  resource_geometry.SetAll(nGeometry::GLOBAL);
+
   task_names.Resize(num_tasks);
   for (int i = 0; i < num_tasks; i++)
     task_names[i] = env.GetTask(i).GetDesc();
