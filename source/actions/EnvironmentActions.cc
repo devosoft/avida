@@ -567,12 +567,14 @@ public:
 class cActionSetSeasonalResource1Kyears_1To_1 : public cAction {
 private:
 	cString m_res_name;
+	double m_scale;
 		
 public:
-	cActionSetSeasonalResource1Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name("")
+	cActionSetSeasonalResource1Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), m_scale(1.0)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_res_name = largs.PopWord();
+		if (largs.GetSize()) m_scale = largs.PopWord().AsDouble();
 	}
 		
 	static const cString GetDescription() { return "Arguments: <string reaction_name>"; }
@@ -583,7 +585,7 @@ public:
 		double m_res_count = -1*(tanh((time-182500)/50000)+1)*(0.5*sin(time/58.091)+0.5)+1;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);			
+			m_world->GetPopulation().SetResource(res->GetID(), m_res_count * m_scale);			
 	}
 };
 
@@ -594,15 +596,18 @@ public:
 class cActionSetSeasonalResource10Kyears_1To_1 : public cAction {
 private:
 	cString m_res_name;
+	double m_scale;
 	
 public:
-	cActionSetSeasonalResource10Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name("")
+	cActionSetSeasonalResource10Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), m_scale(1.0)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_res_name = largs.PopWord();
+		if (largs.GetSize()) m_scale = largs.PopWord().AsDouble();
+
 	}
 	
-	static const cString GetDescription() { return "Arguments: <string reaction_name>"; }
+	static const cString GetDescription() { return "Arguments: <string reaction_name> <double scale>"; }
 	
 	void Process(cAvidaContext& ctx)
 	{
@@ -610,7 +615,7 @@ public:
 		double m_res_count = -1*(tanh((time-1825000)/500000)+1)*(0.5*sin(time/58.091)+0.5)+1;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);			
+			m_world->GetPopulation().SetResource(res->GetID(), m_res_count* m_scale);			
 	}
 };
 
