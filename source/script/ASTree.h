@@ -600,7 +600,7 @@ private:
   
 public:
   cASTObjectCall(const cASFilePosition& fp, cASTNode* object, const cString& name)
-    : cASTNode(fp), m_object(object), m_name(name), m_args(NULL), m_type(AS_TYPE_INVALID) { ; }
+    : cASTNode(fp), m_object(object), m_name(name), m_args(NULL), m_type(AS_TYPE_RUNTIME) { ; }
   ~cASTObjectCall() { delete m_object; delete m_args; }
   
   cASTNode* GetObject() { return m_object; }
@@ -609,9 +609,7 @@ public:
   void SetArguments(cASTArgumentList* args) { delete m_args; m_args = args; }
   cASTArgumentList* GetArguments() { return m_args; }
   
-  const sASTypeInfo& GetType() const { return m_type; }
-  inline void SetType(const sASTypeInfo& type) { m_type = type; }
-  
+  const sASTypeInfo& GetType() const { return m_type; }  
   
   bool HasArguments() const { return (m_args); }
   
@@ -628,7 +626,7 @@ private:
   
 public:
   cASTObjectReference(const cASFilePosition& fp, cASTNode* object, const cString& name)
-    : cASTNode(fp), m_object(object), m_name(name), m_type(AS_TYPE_OBJECT_REF) { ; }
+    : cASTNode(fp), m_object(object), m_name(name), m_type(AS_TYPE_RUNTIME) { ; }
   ~cASTObjectReference() { delete m_object; }
   
   cASTNode* GetObject() { return m_object; }

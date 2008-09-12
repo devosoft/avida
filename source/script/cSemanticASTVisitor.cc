@@ -810,15 +810,21 @@ void cSemanticASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
 
 void cSemanticASTVisitor::VisitObjectCall(cASTObjectCall& node)
 {
-  // @TODO - object call
-  SEMANTIC_ERROR(INTERNAL);
+  node.GetObject()->Accept(*this);
+  checkCast(node.GetObject()->GetType(), TYPEINFO(OBJECT_REF));
+  
+  if (node.HasArguments()) { 
+    tListIterator<cASTNode> it = node.GetArguments()->Iterator();
+    cASTNode* an = NULL;
+    while((an = it.Next())) an->Accept(*this);
+  }
 }
 
 
 void cSemanticASTVisitor::VisitObjectReference(cASTObjectReference& node)
 {
-  // @TODO - object reference
-  SEMANTIC_ERROR(INTERNAL);
+  node.GetObject()->Accept(*this);
+  checkCast(node.GetObject()->GetType(), TYPEINFO(OBJECT_REF));
 }
 
 
