@@ -147,6 +147,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Replication Instructions
     tInstLibEntry<tMethod>("h-alloc", &cHardwareExperimental::Inst_HeadAlloc, nInstFlag::DEFAULT, "Allocate maximum allowed space"),
     tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, (nInstFlag::DEFAULT | nInstFlag::STALL), "Divide code between read and write heads."),
+    tInstLibEntry<tMethod>("h-divide-sex", &cHardwareExperimental::Inst_HeadDivideSex, (nInstFlag::DEFAULT | nInstFlag::STALL), "Divide code between read and write heads."),
     tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
 
@@ -1341,8 +1342,29 @@ bool cHardwareExperimental::Inst_IfLabel(cAvidaContext& ctx)
   return true;
 }
 
+
 bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
 {
+  organism->GetPhenotype().SetDivideSex(false);
+  organism->GetPhenotype().SetCrossNum(0);
+
+  AdjustHeads();
+  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  if (child_end == 0) child_end = m_memory.GetSize();
+  const int extra_lines = m_memory.GetSize() - child_end;
+  bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, 1.0);
+  // Re-adjust heads.
+  AdjustHeads();
+  return ret_val; 
+}
+
+
+bool cHardwareExperimental::Inst_HeadDivideSex(cAvidaContext& ctx)  
+{ 
+  organism->GetPhenotype().SetDivideSex(true);
+  organism->GetPhenotype().SetCrossNum(1);
+  
   AdjustHeads();
   const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
   int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();

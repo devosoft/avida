@@ -400,6 +400,7 @@ private:
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_IfLabel(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
+  bool Inst_HeadDivideSex(cAvidaContext& ctx);
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
