@@ -577,12 +577,14 @@ public:
 		if (largs.GetSize()) m_scale = largs.PopWord().AsDouble();
 	}
 		
-	static const cString GetDescription() { return "Arguments: <string reaction_name>"; }
+	static const cString GetDescription() { return "Arguments: <string reaction_name> <double scale>"; }
 	
 	void Process(cAvidaContext& ctx)
 	{
 		int time = m_world->GetStats().GetUpdate();
 		double m_res_count = -1*(tanh((time-182500)/50000)+1)*(0.5*sin(time/58.091)+0.5)+1;
+		if(m_res_count < 0.0)
+			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
 			m_world->GetPopulation().SetResource(res->GetID(), m_res_count * m_scale);			
@@ -613,6 +615,8 @@ public:
 	{
 		int time = m_world->GetStats().GetUpdate();
 		double m_res_count = -1*(tanh((time-1825000)/500000)+1)*(0.5*sin(time/58.091)+0.5)+1;
+		if(m_res_count < 0.0)
+			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
 			m_world->GetPopulation().SetResource(res->GetID(), m_res_count* m_scale);			
