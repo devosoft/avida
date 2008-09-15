@@ -1145,7 +1145,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
     const cASFunction* func = node.GetASFunction();
     
     // Setup arguments
-    cASFunction::cParameter* args = new cASFunction::cParameter[func->GetArity()];
+    cASCPPParameter* args = new cASCPPParameter[func->GetArity()];
     tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
     cASTNode* an = NULL;
     for (int i = 0; i < func->GetArity(); i++) {
@@ -1165,7 +1165,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
     }
     
     // Call the function
-    cASFunction::cParameter rvalue = func->Call(args);
+    cASCPPParameter rvalue = func->Call(args);
 
     // Handle the return value
     switch (node.GetType().type) {

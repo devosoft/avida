@@ -242,6 +242,10 @@ struct sASTypeInfo {
   bool operator!=(const sASTypeInfo& ot) const { return (type != ot.type || info != ot.info); }
 };
 
+enum eASMethodReturnValues {
+  AS_NOT_FOUND = -1
+};
+
 
 namespace AvidaScript {
   const char* mapBuiltIn(ASBuiltIn_t builtin);  

@@ -25,6 +25,7 @@
 #ifndef cDirectInterpretASTVisitor_h
 #define cDirectInterpretASTVisitor_h
 
+#include "cASNativeObject.h"
 #include "cASTVisitor.h"
 
 #include "tHashTable.h"
@@ -304,6 +305,22 @@ private:
     bool Get(const sAggregateValue& idx, sAggregateValue& val);
     bool Set(sAggregateValue& val) { return false; }
     bool Set(sAggregateValue& idx, sAggregateValue& val);
+  };
+  
+  class cNativeObjectRef : public cObjectRef
+  {
+  private:
+    cASNativeObject* m_no;
+    
+  public:
+    cNativeObjectRef();
+    ~cNativeObjectRef() { m_no->Release(); }
+    
+    bool IsWritable() { return false; } 
+    bool Get(sAggregateValue& val) { return false; }
+    bool Get(const sAggregateValue& idx, sAggregateValue& val) { return false; }
+    bool Set(sAggregateValue& val) { return false; }
+    bool Set(sAggregateValue& idx, sAggregateValue& val) { return false; }    
   };
   
   class cObjectIndexRef : public cObjectRef

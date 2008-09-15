@@ -591,6 +591,8 @@
 		70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeProbSchedule.cc; sourceTree = "<group>"; };
 		70A778380D69D5C200735F1E /* cDemeProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeProbSchedule.h; sourceTree = "<group>"; };
 		70AA941909D486AE006A24C8 /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		70AE2D360E7DCAA100A520B5 /* cASNativeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASNativeObject.h; sourceTree = "<group>"; };
+		70AE2D3B0E7DF6C500A520B5 /* cASCPPParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASCPPParameter.h; sourceTree = "<group>"; };
 		70B0864808F4972600FC65FE /* cLandscape.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLandscape.h; sourceTree = "<group>"; };
 		70B0864B08F4972600FC65FE /* cLocalMutations.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLocalMutations.h; sourceTree = "<group>"; };
 		70B0864C08F4972600FC65FE /* cMutation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutation.h; sourceTree = "<group>"; };
@@ -1243,6 +1245,8 @@
 				70A33CE80D8DBD1E008EF976 /* cASFunction.h */,
 				70A33CF40D8DCBB4008EF976 /* ASCoreLib.h */,
 				70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */,
+				70AE2D360E7DCAA100A520B5 /* cASNativeObject.h */,
+				70AE2D3B0E7DF6C500A520B5 /* cASCPPParameter.h */,
 			);
 			path = script;
 			sourceTree = "<group>";
