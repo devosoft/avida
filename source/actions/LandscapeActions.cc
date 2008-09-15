@@ -227,6 +227,11 @@ public:
     int update = -1;
     cLandscape* land = NULL;
     
+    if (m_dist < 1) {
+      m_world->GetDriver().RaiseException("landscape distance must be >= 1");
+      return;
+    }
+    
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Full Landscaping batch ");
