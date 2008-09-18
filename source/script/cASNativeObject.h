@@ -33,17 +33,40 @@ class cString;
 
 class cASNativeObject 
 {
+private:
+  int m_ref_count;
   
 public:
-  cASNativeObject() { ; }
+  cASNativeObject() : m_ref_count(1) { ; }
   virtual ~cASNativeObject() { ; }
   
-  bool CallMethod(int mid, int argc, cASCPPParameter args[]) { return false; } // @TODO
+  virtual const char* GetType() = 0;
+  
+  virtual bool CallMethod(int mid, int argc, cASCPPParameter args[]) = 0;
   
   int LookupValue(const cString& val_name) { return AS_NOT_FOUND; } // @TODO
   int LookupMethod(const cString& meth_name) { return AS_NOT_FOUND; } // @TODO
   
-  void Release() { ; }
+  inline cASNativeObject* GetReference() { m_ref_count++; return this; }
+  inline void RemoveReference() { m_ref_count--; if (m_ref_count == 0) delete this; }
+  inline bool IsShared() { return (m_ref_count > 1); }
 };
+
+
+template<class NativeClass, const char* TypeName>
+class tASNativeObject : public cASNativeObject
+{
+private:
+  NativeClass* m_object;
+  
+public:
+  tASNativeObject(NativeClass* obj) : m_object(obj) { ; }
+  ~tASNativeObject() { delete m_object; }
+
+  const char* GetType() { return TypeName; }
+  
+  bool CallMethod(int mid, int argc, cASCPPParameter args[]) { return false; } // @TODO;  
+};
+  
 
 #endif

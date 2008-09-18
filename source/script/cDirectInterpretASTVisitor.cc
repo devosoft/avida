@@ -116,7 +116,10 @@ void cDirectInterpretASTVisitor::VisitAssignment(cASTAssignment& node)
     case TYPE(CHAR):        m_call_stack[sp + var_id].value.as_char = asChar(m_rtype, m_rvalue, node); break;
     case TYPE(FLOAT):       m_call_stack[sp + var_id].value.as_float = asFloat(m_rtype, m_rvalue, node); break;
     case TYPE(INT):         m_call_stack[sp + var_id].value.as_int = asInt(m_rtype, m_rvalue, node); break;
-    case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+    
+    case TYPE(OBJECT_REF):
+      m_call_stack[sp + var_id].value.as_nobj->RemoveReference();
+      m_call_stack[sp + var_id].value.as_nobj = asNativeObject(symtbl->GetVariableType(var_id).info, m_rtype, m_rvalue, node);
 
     case TYPE(VAR):
       m_call_stack[sp + var_id].value = m_rvalue;
@@ -212,7 +215,10 @@ void cDirectInterpretASTVisitor::VisitForeachBlock(cASTForeachBlock& node)
       case TYPE(CHAR):        m_call_stack[var_idx].value.as_char = asChar(val.type, val.value, node); break;
       case TYPE(FLOAT):       m_call_stack[var_idx].value.as_float = asFloat(val.type, val.value, node); break;
       case TYPE(INT):         m_call_stack[var_idx].value.as_int = asInt(val.type, val.value, node); break;
-      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - foreach assignment
+      case TYPE(OBJECT_REF):
+        m_call_stack[var_idx].value.as_nobj->RemoveReference();
+        m_call_stack[var_idx].value.as_nobj = asNativeObject(var_type.info, val.type, val.value, node);
+        break;
         
       case TYPE(ARRAY):
         m_call_stack[var_idx].value.as_array->RemoveReference();
@@ -306,7 +312,7 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
       case TYPE(DICT):        m_call_stack[m_sp + var_id].value.as_dict = asDict(m_rtype, m_rvalue, node); break;
       case TYPE(FLOAT):       m_call_stack[m_sp + var_id].value.as_float = asFloat(m_rtype, m_rvalue, node); break;
       case TYPE(INT):         m_call_stack[m_sp + var_id].value.as_int = asInt(m_rtype, m_rvalue, node); break;
-      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - var def assignment
+      case TYPE(OBJECT_REF):  m_call_stack[m_sp + var_id].value.as_nobj = asNativeObject(node.GetType().info, m_rtype, m_rvalue, node); break;
       case TYPE(MATRIX):      m_call_stack[m_sp + var_id].value.as_matrix = asMatrix(m_rtype, m_rvalue, node); break;
       case TYPE(STRING):
         delete m_call_stack[m_sp + var_id].value.as_string;
@@ -342,6 +348,8 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
     } else {
       INTERPRET_ERROR(INTERNAL);
     }
+  } else if (node.GetType().type == TYPE(OBJECT_REF)) {
+    // @TODO - set native object ref to special NULL value
   }
 }
 
@@ -1243,7 +1251,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
         case TYPE(DICT):        m_call_stack[sp + var_id].value.as_dict = asDict(m_rtype, m_rvalue, node); break;
         case TYPE(FLOAT):       m_call_stack[sp + var_id].value.as_float = asFloat(m_rtype, m_rvalue, node); break;
         case TYPE(INT):         m_call_stack[sp + var_id].value.as_int = asInt(m_rtype, m_rvalue, node); break;
-        case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - func call arg assignment
+        case TYPE(OBJECT_REF):  m_call_stack[sp + var_id].value.as_nobj = asNativeObject(func_symtbl->GetVariableType(var_id).info, m_rtype, m_rvalue, node); break;
         case TYPE(MATRIX):      m_call_stack[sp + var_id].value.as_matrix = asMatrix(m_rtype, m_rvalue, node); break;
         case TYPE(STRING):
           {
@@ -1275,7 +1283,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
       case TYPE(DICT):        m_rvalue.as_dict = asDict(m_rtype, m_rvalue, node); break;
       case TYPE(FLOAT):       m_rvalue.as_float = asFloat(m_rtype, m_rvalue, node); break;
       case TYPE(INT):         m_rvalue.as_int = asInt(m_rtype, m_rvalue, node); break;
-      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - return
+      case TYPE(OBJECT_REF):  m_rvalue.as_nobj = asNativeObject(node.GetType().info, m_rtype, m_rvalue, node); break;
       case TYPE(MATRIX):      m_rvalue.as_matrix = asMatrix(m_rtype, m_rvalue, node); break;
       case TYPE(STRING):      m_rvalue.as_string = asString(m_rtype, m_rvalue, node); break;
       case TYPE(VAR):         break;
@@ -1434,7 +1442,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
     switch (node.GetType().type) {
       case TYPE(ARRAY):       m_rvalue.as_ref = new cArrayVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(DICT):        m_rvalue.as_ref = new cDictVarRef(m_call_stack[sp + var_id].value); break;
-      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - var ref object assignment
+      case TYPE(OBJECT_REF):  m_rvalue.as_ref = new cNativeObjectVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(MATRIX):      m_rvalue.as_ref = new cMatrixVarRef(m_call_stack[sp + var_id].value); break;
       case TYPE(STRING):      m_rvalue.as_ref = new cStringVarRef(m_call_stack[sp + var_id].value); break;
         
@@ -1459,7 +1467,7 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
       case TYPE(STRING):      m_rvalue.as_string = new cString(*m_call_stack[sp + var_id].value.as_string); break;
 
       
-      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - var ref assignment
+      case TYPE(OBJECT_REF):  m_rvalue.as_nobj = m_call_stack[sp + var_id].value.as_nobj->GetReference(); break;
         
       default:
         INTERPRET_ERROR(INTERNAL);
@@ -1490,7 +1498,10 @@ void cDirectInterpretASTVisitor::VisitUnpackTarget(cASTUnpackTarget& node)
       case TYPE(CHAR):        m_call_stack[var_idx].value.as_char = asChar(val.type, val.value, node); break;
       case TYPE(FLOAT):       m_call_stack[var_idx].value.as_float = asFloat(val.type, val.value, node); break;
       case TYPE(INT):         m_call_stack[var_idx].value.as_int = asInt(val.type, val.value, node); break;
-      case TYPE(OBJECT_REF):  INTERPRET_ERROR(INTERNAL); // @TODO - assignment
+      case TYPE(OBJECT_REF):
+        m_call_stack[var_idx].value.as_nobj->RemoveReference();
+        m_call_stack[var_idx].value.as_nobj = asNativeObject(var_type.info, val.type, val.value, node);
+        break;
         
       case TYPE(VAR):
         m_call_stack[var_idx].value = val.value;
@@ -1757,6 +1768,22 @@ cDirectInterpretASTVisitor::cLocalMatrix* cDirectInterpretASTVisitor::asMatrix(c
 }
 
 
+cASNativeObject* cDirectInterpretASTVisitor::asNativeObject(const cString& info, const sASTypeInfo& type, uAnyType value,
+                                                            cASTNode& node)                                                           
+{
+  switch (type.type) {
+    case TYPE(OBJECT_REF):
+      if (type.info != info) INTERPRET_ERROR(NATIVE_OBJECT_TYPE_MISMATCH, *info, *type.info);
+      return value.as_nobj;
+      
+    default:
+      INTERPRET_ERROR(TYPE_CAST, mapType(type), mapType(TYPE(OBJECT_REF)));
+  }
+  
+  return NULL;
+}
+
+
 cString* cDirectInterpretASTVisitor::asString(const sASTypeInfo& type, uAnyType value, cASTNode& node)
 {
   switch (type.type) {
@@ -1786,9 +1813,9 @@ cString* cDirectInterpretASTVisitor::asString(const sASTypeInfo& type, uAnyType 
         return str;
       }
 
-    case TYPE(OBJECT_REF): // @TODO - as string
+    case TYPE(OBJECT_REF):
     {
-      cString* str = new cString(cStringUtil::Stringf("< object >"));
+      cString* str = new cString(cStringUtil::Stringf("< %s object @ %p >", value.as_nobj->GetType(), value.as_nobj));
       return str;
     }
       
@@ -2196,9 +2223,7 @@ bool cDirectInterpretASTVisitor::sAggregateValue::operator==(const sAggregateVal
       case TYPE(ARRAY):   return value.as_array == lval.value.as_array;
       case TYPE(DICT):    return value.as_dict == lval.value.as_dict;
       case TYPE(MATRIX):  return value.as_matrix == lval.value.as_matrix;
-        
-      case TYPE(OBJECT_REF): // @TODO - aggregate value compare
-        return value.as_void == lval.value.as_void;
+      case TYPE(OBJECT_REF): return value.as_nobj == lval.value.as_nobj;
       
       default:
         break;
@@ -2497,6 +2522,19 @@ bool cDirectInterpretASTVisitor::cMatrixVarRef::Set(sAggregateValue& idx, sAggre
 }
 
 
+bool cDirectInterpretASTVisitor::cNativeObjectVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
+{
+  // @TODO - get indexed native var
+  return false;
+}
+
+bool cDirectInterpretASTVisitor::cNativeObjectVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
+{
+  // @TODO - set indexed native var
+  return false;
+}
+
+
 
 
 bool cDirectInterpretASTVisitor::cObjectIndexRef::Get(const sAggregateValue& idx, sAggregateValue& val)
@@ -2720,6 +2758,13 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
       break;
     case AS_DIRECT_INTERPRET_ERR_MATRIX_SIZE_MISMATCH:
       std::cerr << "matrix size mismatch for '" << VA_ARG_STR << "' operation" << ERR_ENDL;
+      break;
+    case AS_DIRECT_INTERPRET_ERR_NATIVE_OBJECT_TYPE_MISMATCH:
+      {
+        const char* otype = VA_ARG_STR;
+        const char* itype = VA_ARG_STR;
+        std::cerr << "expected object of type '" << otype << "', received '" << itype << "'" << ERR_ENDL;
+      }
       break;
     case AS_DIRECT_INTERPRET_ERR_OBJECT_ASSIGN_FAIL:
       std::cerr << "aggregate assignment failed" << ERR_ENDL;

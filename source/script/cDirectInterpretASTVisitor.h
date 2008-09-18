@@ -54,6 +54,7 @@ private:
     cLocalDict* as_dict;
     cLocalMatrix* as_matrix;
     cObjectRef* as_ref;
+    cASNativeObject* as_nobj;
     void* as_void;
   } uAnyType;
   
@@ -133,6 +134,7 @@ private:
   int asInt(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   double asFloat(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   cLocalMatrix* asMatrix(const sASTypeInfo& type, uAnyType value, cASTNode& node);
+  cASNativeObject* asNativeObject(const cString& info, const sASTypeInfo& type, uAnyType value, cASTNode& node);
   cString* asString(const sASTypeInfo& type, uAnyType value, cASTNode& node);
   
   ASType_t getRuntimeType(ASType_t ltype, ASType_t rtype, bool allow_str = false);
@@ -307,20 +309,20 @@ private:
     bool Set(sAggregateValue& idx, sAggregateValue& val);
   };
   
-  class cNativeObjectRef : public cObjectRef
+  class cNativeObjectVarRef : public cObjectRef
   {
   private:
-    cASNativeObject* m_no;
+    uAnyType& m_var;
     
   public:
-    cNativeObjectRef();
-    ~cNativeObjectRef() { m_no->Release(); }
+    cNativeObjectVarRef(uAnyType& var) : m_var(var) { ; }
+    ~cNativeObjectVarRef() { ; }
     
     bool IsWritable() { return false; } 
-    bool Get(sAggregateValue& val) { return false; }
-    bool Get(const sAggregateValue& idx, sAggregateValue& val) { return false; }
+    bool Get(sAggregateValue& val) { val.value = m_var; val.type = AS_TYPE_OBJECT_REF; return false; }
+    bool Get(const sAggregateValue& idx, sAggregateValue& val);
     bool Set(sAggregateValue& val) { return false; }
-    bool Set(sAggregateValue& idx, sAggregateValue& val) { return false; }    
+    bool Set(sAggregateValue& idx, sAggregateValue& val);
   };
   
   class cObjectIndexRef : public cObjectRef
