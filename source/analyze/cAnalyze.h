@@ -234,6 +234,7 @@ private:
   void FindLineage(cString cur_string);
   void FindSexLineage(cString cur_string);
   void FindClade(cString cur_string);
+  void FindLastCommonAncestor(cString cur_string);
   void SampleOrganisms(cString cur_string);
   void SampleGenotypes(cString cur_string);
   void KeepTopGenotypes(cString cur_string);
@@ -268,6 +269,7 @@ private:
   void CommandMapTasks(cString cur_string);
   void CommandAverageModularity(cString cur_string);
   void CommandAnalyzeModularity(cString cur_string);
+  void CommandAnalyzeRedundancyByInstFailure(cString cur_string);
   void CommandMapMutations(cString cur_string);
   void CommandMapDepth(cString cur_string);
   void CommandPairwiseEntropy(cString cur_string);

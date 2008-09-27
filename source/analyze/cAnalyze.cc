@@ -1265,6 +1265,7 @@ void cAnalyze::FindLineage(cString cur_string)
   batch[cur_batch].SetAligned(false);
 }
 
+
 void cAnalyze::FindSexLineage(cString cur_string)
 {
   
@@ -1492,6 +1493,146 @@ void cAnalyze::FindClade(cString cur_string)
   batch[cur_batch].SetLineage(false);
   batch[cur_batch].SetAligned(false);
 }
+
+// @JEB 9-25-2008
+void cAnalyze::FindLastCommonAncestor(cString cur_string)
+{  
+
+/*
+  // Assumes that the current batch contains a population and all of its common ancestors
+  // Finds the last common ancestor among all current organisms that are still alive,
+  // i.e. have an update_died of -1.
+
+  cout << "Finding last common ancestor of batch " << cur_batch << endl;
+  
+  // Make a list of alive organisms
+  tListPlus<cAnalyzeGenotype> alive_list;
+  {
+    tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+    cAnalyzeGenotype * test_genotype = NULL;
+    while ((test_genotype = batch_it.Next()) != NULL) {
+      if (test_genotype->GetUpdateDead() == -1) {
+        alive_list.Push(test_genotype);
+      }
+    }
+  }
+  
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  Number of genotypes that are alive: " << alive_list.GetSize() << endl;
+    cout << "  Number of ancestor genotypes: " << batch[cur_batch].List().GetSize() << endl;
+  }
+    
+  // Extract the lineage of the first alive organism.
+  // The LCA must be among these genotypes. The approach is to step back one ancestor
+  // at a time, collect all of its descendants, and then check to see if there are
+  // andy alive organisms that have not been collected yet.
+  
+  // find the lineage of the first genotype...
+  cAnalyzeGenotype * first_alive_genotype = alive_list.Pop();
+  tListPlus<cAnalyzeGenotype> master_lineage;
+  {
+    master_lineage.Push(first_alive_genotype);
+    int next_id = first_alive_genotype->GetParentID();
+    bool found = true;
+    while (found == true) {
+      found = false;
+      
+      tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+      cAnalyzeGenotype * found_gen = NULL;
+      while ((found_gen = batch_it.Next()) != NULL) {
+        if (found_gen->GetID() == next_id) {
+          master_lineage.Push(found_gen);
+          next_id = found_gen->GetParentID();
+          found = true;
+          break;
+        }
+      }
+    }
+  }
+ 
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  Size of master lineage: " << master_lineage.GetSize() << endl;
+  }
+    
+  tListIterator<cAnalyzeGenotype> master_lineage_batch_it(master_lineage);
+  
+  while ((collect_genotype = master_lineage_batch_it.Next()) != NULL) {
+    
+    // collect all children of the current lineage genotype
+    tListPlus<cAnalyzeGenotype> collect_genotype_list;
+    collect_genotype_list.PushRear(collect_genotype);
+    tListIterator<cAnalyzeGenotype> collect_batch_it(collect_genotype_list);
+    
+    next_collect_genotype_list;
+    
+    int current_id = alive_genotype->GetID();
+    int parent_id = alive_genotype->GetParentID();
+    bool found_parent = true;
+    bool found_in_master_lineage = false;
+    while (found_parent == true) {
+        
+      // Check to see if this id is among those in the first lineage.       
+      tListIterator<cAnalyzeGenotype> master_lineage_batch_it(master_lineage);
+      cAnalyzeGenotype * master_lineage_genotype;
+      while ((master_lineage_genotype = master_lineage_batch_it.Next()) != NULL) {
+        if (master_lineage_genotype->GetID() == current_id) break;
+      }
+
+      found_in_master_lineage = master_lineage_genotype != NULL;
+      if (found_in_master_lineage) {
+        
+        // Remove anything in the master lineage that is past this point.
+        // as it is younger than the new most recent common ancestor
+        while ((master_lineage_genotype = master_lineage_batch_it.Next()) != NULL) {
+          master_lineage_batch_it.Remove();
+        }
+        
+        // We can also stop looking at ancestors of the current alive_genotype
+        if (found_in_master_lineage) break;
+      }
+      
+      // Find the ancestor of the current organism in the alive_genotype lineage
+      found_parent = false;      
+      tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+      cAnalyzeGenotype * test_genotype = NULL;
+      while ((test_genotype = batch_it.Next()) != NULL) {
+        if (test_genotype->GetID() == parent_id) {
+          parent_id = test_genotype->GetParentID();
+          current_id = test_genotype->GetID();
+          found_parent = true;
+          break;
+        }
+      }
+    }
+    
+    // Warn if we did not find a common ancestor at all.
+    if (!found_in_master_lineage) { 
+      cout << "  Warning! Did not find common ancestor between two organisms. " << endl;
+    }
+    
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  Size of master lineage: " << master_lineage.GetSize() << endl;
+    }
+  }
+  
+  // The first one left in this lineage is the one we want to save.
+  cAnalyzeGenotype * last_common_ancestor = master_lineage.Pop();
+  
+  // Delete everything else.
+  tListIterator<cAnalyzeGenotype> delete_batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * delete_genotype = NULL;
+  while ((delete_genotype = delete_batch_it.Next()) != NULL) {
+    if (delete_genotype->GetID() != last_common_ancestor->GetID()) {
+      delete batch[cur_batch].List().Pop();
+    }
+  }
+  
+  // And fill it back in with the good stuff.
+  batch[cur_batch].List().PushRear(last_common_ancestor);
+
+  */
+}
+
 
 void cAnalyze::SampleOrganisms(cString cur_string)
 {
@@ -5388,6 +5529,87 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
 }
 
 
+// Determine redundancy by calculating the percentage of the lifetimes
+// where fitness is decreased over a range of instruction failure probabilities.
+// @JEB 9-24-2008
+void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
+{
+  cString filename("analyze_redundancy_by_inst_failure.dat");
+  if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  int replicates = 1000;
+  if (cur_string.GetSize() != 0) replicates = cur_string.PopWord().AsInt();
+
+  // Output is one line per organism in the current batch with columns.
+  cDataFile & df = m_world->GetDataFile(filename);
+  df.WriteComment( "Redundancy calculated by changing the probability of instruction failure" );
+  cString s;
+  s.Set("%i replicates at each chance of instruction failure", replicates);
+  df.WriteComment(s);
+  df.WriteTimeStamp();
+
+  // Loop through all of the genotypes in this batch...
+
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype * genotype = NULL;
+  while ((genotype = batch_it.Next()) != NULL) {
+
+    if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cout << "  Determining redundancy by instruction failure for " << genotype->GetName() << endl;
+    }
+    
+     cInstSet modify_inst_set = genotype->GetInstructionSet();
+      
+    // Modify the instruction set to include the current probability of failure.
+    for (int j=0; j<modify_inst_set.GetSize(); j++)
+    {
+      cString inst_name = modify_inst_set.GetName(j);
+      cInstruction inst = modify_inst_set.GetInst(inst_name);
+      modify_inst_set.SetProbFail(inst, 0);
+    }
+    genotype->SetInstructionSet(modify_inst_set);
+  
+    // Recalculate the baseline fitness
+    // May need to calculate multiple times to check for stochastic behavior....
+    genotype->Recalculate(m_ctx);
+    double baseline_fitness = genotype->GetFitness();
+  
+    if (baseline_fitness>0)
+    {
+      // Write information for this 
+      df.Write(genotype->GetName(), "genotype name");
+      df.Write(genotype->GetID(), "genotype id");
+      df.Write(baseline_fitness, "fitness");
+      
+      // Run the organism the specified number of replicates
+      
+      for (double log10_fc=-4.0; log10_fc<=0.0; log10_fc+=0.1)
+      {
+        double fc = exp(log10_fc*log(10));
+        
+        // Modify the instruction set to include the current probability of failure.
+        for (int j=0; j<modify_inst_set.GetSize(); j++)
+        {
+          cString inst_name = modify_inst_set.GetName(j);
+          cInstruction inst = modify_inst_set.GetInst(inst_name);
+          modify_inst_set.SetProbFail(inst, fc);
+        }
+        genotype->SetInstructionSet(modify_inst_set);
+        
+        // Recalculate the requested number of times
+        double chance = 0;
+        for (int i=0; i<replicates; i++)
+        {
+          genotype->Recalculate(m_ctx);
+          if (genotype->GetFitness() < baseline_fitness) chance++;
+        }      
+        s.Set("Inst prob fail %.3g", fc);
+        df.Write(chance/replicates, s);
+      }
+      df.Endl();
+    }
+  }
+}
+
 void cAnalyze::CommandMapMutations(cString cur_string)
 {
   cout << "Constructing genome mutations maps..." << endl;
@@ -9254,6 +9476,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("FIND_LINEAGE", &cAnalyze::FindLineage);
   AddLibraryDef("FIND_SEX_LINEAGE", &cAnalyze::FindSexLineage);
   AddLibraryDef("FIND_CLADE", &cAnalyze::FindClade);
+  AddLibraryDef("FIND_LAST_COMMON_ANCESTOR", &cAnalyze::FindLastCommonAncestor);  
   AddLibraryDef("SAMPLE_ORGANISMS", &cAnalyze::SampleOrganisms);
   AddLibraryDef("SAMPLE_GENOTYPES", &cAnalyze::SampleGenotypes);
   AddLibraryDef("KEEP_TOP", &cAnalyze::KeepTopGenotypes);
@@ -9286,6 +9509,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("MAP", &cAnalyze::CommandMapTasks);  // Deprecated...
   AddLibraryDef("MAP_TASKS", &cAnalyze::CommandMapTasks);
   AddLibraryDef("AVERAGE_MODULARITY", &cAnalyze::CommandAverageModularity);
+  AddLibraryDef("ANALYZE_REDUNDANCY_BY_INST_FAILURE", &cAnalyze::CommandAnalyzeRedundancyByInstFailure);
   AddLibraryDef("MAP_MUTATIONS", &cAnalyze::CommandMapMutations);
   AddLibraryDef("ANALYZE_COMPLEXITY", &cAnalyze::AnalyzeComplexity);
   AddLibraryDef("ANALYZE_FITNESS_TWO_SITES", &cAnalyze::AnalyzeFitnessLandscapeTwoSites);

@@ -37,6 +37,9 @@
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
+#ifndef cInstSet_h
+#include "cInstSet.h"
+#endif
 #ifndef cLandscape_h
 #include "cLandscape.h"
 #endif
@@ -241,6 +244,7 @@ public:
   // Set...
   void SetSequence(cString _sequence);
   void SetName(const cString & _name) { name = _name; }
+  void SetInstructionSet(cInstSet& _inst_set) { m_inst_set = _inst_set; }
   void SetAlignedSequence(const cString & _seq) { aligned_sequence = _seq; }
   void SetTag(const cString & _tag) { tag = _tag; }
 
@@ -285,6 +289,7 @@ public:
   // Accessors...
   const cGenome & GetGenome() const { return genome; }
   const cString & GetName() const { return name; }
+  const cInstSet & GetInstructionSet() const { return m_inst_set; }
   const cString & GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }
   cString GetAlignmentExecutedFlags() const;
