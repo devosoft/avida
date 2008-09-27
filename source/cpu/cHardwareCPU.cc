@@ -676,6 +676,12 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
+      // Flag instruction as executed even if it failed (moved from SingleProcess_ExecuteInst)
+      // this allows division conditions to be met even if most instruction executions failed. @JEB
+      
+      // Mark the instruction as executed
+      IP().SetFlagExecuted();
+      
       // Add to the promoter inst executed count before executing the inst (in case it is a terminator)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
 
@@ -730,10 +736,6 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
     
   // Get a pointer to the corresponding method...
   int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
-  
-  // Mark the instruction as executed
-  IP().SetFlagExecuted();
-	
   
 #if INSTRUCTION_COUNT
   // instruction execution count incremented
