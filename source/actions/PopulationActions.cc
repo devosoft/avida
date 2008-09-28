@@ -36,6 +36,8 @@
 #include "cWorld.h"
 #include "cOrganism.h"
 
+#include <map>
+#include <set>
 
 /*
  Injects a single organism into the population.
@@ -1230,6 +1232,62 @@ public:
 };
 
 
+/*! Assign a random identifier to the data for each cell and save those IDs for later
+ use, respecting deme boundaries.
+ 
+ This is a little hackish; feel free to modify.
+ */
+class cAssignRandomCellData : public cAction { 
+public:
+  typedef std::map<int, std::set<int> > DataMap;
+	
+  cAssignRandomCellData(cWorld* world, const cString& args) : cAction(world, args) { }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  virtual void Process(cAvidaContext& ctx) {
+		deme_to_id.clear();
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(i);
+      for(int j=0; j<deme.GetSize(); ++j) {
+				// Assign random data to each cell:
+        int d = m_world->GetRandom().GetInt(INT_MAX);
+        deme.GetCell(j).SetCellData(d);
+				// Save that data by deme in the map:
+        deme_to_id[deme.GetID()].insert(d);
+      }
+    }
+  }
+  
+  static bool IsCellDataInDeme(int data, const cDeme& deme) { 
+    DataMap::iterator i = deme_to_id.find(deme.GetID());
+    return i->second.find(data) != i->second.end();
+  }
+	
+	static void ReplaceCellData(int old_data, int new_data, const cDeme& deme) {
+		// Find all cells in the deme that hold the old data, and replace it with the new.
+		for(int i=0; i<deme.GetSize(); ++i) {
+			if(deme.GetCell(i).GetCellData() == old_data) {
+				deme.GetCell(i).SetCellData(new_data);
+			}
+		}
+		// Update the data map.
+		DataMap::iterator i = deme_to_id.find(deme.GetID());
+		i->second.erase(old_data);
+		i->second.insert(new_data);
+	}
+	
+	static const std::set<int>& GetDataInDeme(const cDeme& deme) {
+		return deme_to_id[deme.GetID()];
+	}
+  
+protected:
+  static std::map<int, std::set<int> > deme_to_id; //!< Map of deme ID -> set of all cell data in that deme.
+};
+
+//! Definition for static data.
+cAssignRandomCellData::DataMap cAssignRandomCellData::deme_to_id;
+
 
 /*! An abstract base class to ease the development of new deme competition fitness functions.
  */
@@ -1263,6 +1321,69 @@ public:
    */
   virtual double Fitness(const cDeme& deme) = 0;
 };
+
+
+/*! An abstract base class to ease the development of new deme competition fitness functions 
+ that require a per-update monitoring of each deme.
+ 
+ The idea here is that in addition to normal deme competition, we also have periodic housekeeping to do.
+ This housekeeping may or may not influence the final fitness value (once deme competition is triggered).
+ 
+ In the events file, when using any deme competition strategy that uses cAbstractMonitoringCompeteDemes,
+ the execution of the event corresponds to when the Update(...) method will be called, while the integer parameter
+ to the event is the period (in updates) of deme competition.  So this:
+ 
+ u 1:1:end SomeFormOfCompeteDemes 400
+ 
+ will call Update(...) every update, but only calls Fitness(...) every 400 updates.
+ 
+ WARNING: The compete_period argument MUST be an even multiple of the update period!
+ If it isn't, competition won't ever be triggered.  We're not preventing this, 'cause
+ there might be good reasons you'd want that...
+ */
+class cAbstractMonitoringCompeteDemes : public cAbstractCompeteDemes {
+public:
+	//! Constructor.
+	cAbstractMonitoringCompeteDemes(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args), _compete_period(100) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_compete_period = largs.PopWord().AsInt();
+		}
+  }
+  
+	//! Destructor.
+	virtual ~cAbstractMonitoringCompeteDemes() { }
+	
+	/*! Update each deme, and possibly compete them.
+
+	 Calls Update(...) on every execution, but only calls Fitness(...) when the current
+	 update is an even multiple of the competition period.
+	 */	
+	virtual void Process(cAvidaContext& ctx) {
+		_update_fitness.resize(m_world->GetPopulation().GetNumDemes());													 
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+			_update_fitness[i] += Update(m_world->GetPopulation().GetDeme(i));
+		}
+		
+		if((m_world->GetStats().GetUpdate() % _compete_period) == 0) {
+			std::vector<double> fitness;
+			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+				fitness.push_back(pow(_update_fitness[i] + Fitness(m_world->GetPopulation().GetDeme(i)), 2.0));
+				assert(fitness.back() >= 0.0);
+			}			
+			m_world->GetPopulation().CompeteDemes(fitness);
+			_update_fitness.clear();
+		}
+	}
+	
+	//! Called on each action invocation, *including* immediately prior to fitness calculation.
+	virtual double Update(cDeme& deme) = 0;
+	
+protected:
+	int _compete_period; //!< Period at which demes compete.
+	std::vector<double> _update_fitness; //!< Running sum of returns from Update(cDeme).
+};
+
 
 class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompeteDemes {
 

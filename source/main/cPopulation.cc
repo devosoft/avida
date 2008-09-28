@@ -1063,13 +1063,14 @@ void cPopulation::CompeteDemes(int competition_type)
     deme_count[from_deme_id]--;
     deme_count[to_deme_id]++;
     
-    cDeme & from_deme = deme_array[from_deme_id];
-    cDeme & to_deme   = deme_array[to_deme_id];
+    cDeme& from_deme = deme_array[from_deme_id];
+    cDeme& to_deme   = deme_array[to_deme_id];
     
-    
-    ///    ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
-    
-    
+		// Ideally, the below bit of code would be replaced with a call to ReplaceDeme:
+		// ReplaceDeme(from_deme, to_deme);
+		//
+		// But, use of InjectClone messes that up, breaking consistency.  So the next
+		// time that someone comes in here looking to refactor, consider fixing this.    
     
     // Do the actual copy!
     for (int i = 0; i < from_deme.GetSize(); i++) {
@@ -1121,7 +1122,13 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
   
   // Stat-tracking:
   m_world->GetStats().CompeteDemes(fitness);
-  
+
+  // This is to facilitate testing.  Obviously we can't do competition if there's
+	// only one deme, but we do want the stat-tracking.
+	if(fitness.size()==1) {
+		return; 
+	}	
+	
   // Now, select the demes to live.  Each deme has a probability to replicate that is
   // equal to its fitness / total fitness.
   const double total_fitness = std::accumulate(fitness.begin(), fitness.end(), 0.0);
@@ -2088,7 +2095,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
     }
   }
 
-return successfully_seeded;
+	return successfully_seeded;
 }
 
 void cPopulation::InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype)
