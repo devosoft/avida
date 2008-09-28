@@ -232,7 +232,7 @@ public:
   void SetupDemeRes(int id, cResource * res, int verbosity);
   void UpdateDemeRes() { deme_resource_count.GetResources(); }
   void Update(double time_step) { deme_resource_count.Update(time_step); }
-  int GetRelativeCellID(int absolute_cell_id) { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
+  int GetRelativeCellID(int absolute_cell_id) const { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
 
   void SetCellEventGradient(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live);
   int GetNumEvents();

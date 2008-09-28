@@ -762,8 +762,5 @@ void cOrganism::SendFlash(cAvidaContext& ctx) {
   // Flash not lost; continue.
   m_interface->SendFlash();
   m_world->GetStats().SentFlash(*this);
-  if(m_interface->GetDeme() != 0) {
-    //m_interface->GetDeme()->OrganismFlashed(*this);
-  }
   DoOutput(ctx);
 }

@@ -1263,6 +1263,8 @@ public:
   typedef std::map<int, std::set<int> > DataMap;
 	
   cAssignRandomCellData(cWorld* world, const cString& args) : cAction(world, args) { }
+	
+	virtual ~cAssignRandomCellData() { }
   
   static const cString GetDescription() { return "No Arguments"; }
   
@@ -1465,14 +1467,17 @@ public:
  problem, so that consensus on as many values as possible is reached in the shortest
  amount of time.
  */
-class cIteratedConsensus : public cAbstractMonitoringCompeteDemes, ConsensusSupport {
+class cActionIteratedConsensus : public cAbstractMonitoringCompeteDemes, ConsensusSupport {
 public:
-	cIteratedConsensus(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args), _replace(0) {
+	cActionIteratedConsensus(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args), _replace(0) {
 		if(args.GetSize()) {
 			cString largs(args);
 			_replace = largs.PopWord().AsInt();
 		}
 	}
+	
+	//! Destructor.
+	virtual ~cActionIteratedConsensus() { }
 	
 	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=0]]"; }
 	
@@ -1518,6 +1523,112 @@ public:
 private:
 	int _replace; //!< Number of cell datas that will be replaced on successful consensus.
 };
+
+
+/**** The below are merges-in-progress. ****/
+
+/*! Action to send an artificial flash to each deme in the population at a specified period.
+class cActionPacecarFlash : public cAction {
+public:
+	cActionPacecarFlash(cWorld* world, const cString& args): cAction(world, args), _pacecar(80) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_pacecar = largs.PopWord().AsInt();
+		}
+	}
+	
+	//! Destructor.
+	virtual ~cActionPacecarFlash() { }
+	
+	static const cString GetDescription() { return "Arguments: [pacecar=80]"; }
+	
+ //! Send a flash 
+	virtual void Process(cAvidaContext& ctx) {
+	}
+	
+private:
+	int _pacecar; //!< Period for artificial flashes that will be sent to each deme.
+};
+ */
+
+
+/*! Compete demes based on the ability of their constituent organisms
+ to synchronize their flashes to a common phase and period.
+class cActionSynchronization : public cAbstractMonitoringCompeteDemes {
+public:
+  //! Constructor.
+  cActionSynchronization(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args), _pacecar(0) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_pacecar = largs.PopWord().AsInt();
+		}		
+  }
+  
+  //! Description of this event.
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  //! Run this event on the population.
+  virtual void Process(cAvidaContext& ctx) {
+    std::vector<double> fitness;
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      fitness.push_back(fitness_function(m_world->GetPopulation().GetDeme(i)));
+    }    
+    m_world->GetPopulation().CompeteDemes(fitness);
+  }
+  
+  //! Calculate the fitness of a deme (must return > 0.0).
+  virtual double fitness_function(const cDeme& deme) {
+    // How many unique organisms have flashed in the last SYNC_FITNESS_WINDOW updates?
+    int total_flashed = deme.GetUniqueFlashes();
+		
+    // If not everyone has flashed, fitness is just the number that have flashed:
+    if(total_flashed < deme.GetSize()) {
+      return 1.0 + total_flashed;
+    }
+    
+    // If everyone has flashed, fitness is the difference between max and average
+    // squared, added to the size of the deme.
+    const cDeme::flash_row& fr = deme.GetFlashRollingSum();
+    double avg = std::accumulate(fr.begin(), fr.end(), 0.0) / fr.size();
+    double max = *std::max_element(fr.begin(), fr.end());
+    
+    return 1.0 + deme.GetSize() + pow(max-avg, 2.0);
+  }
+};
+ */
+
+
+/*! Compete demes based on the ability of their constituent organisms
+ to synchronize their flashes to a common period, and yet distribute themselves
+ throughout phase-space (phase desynchronization).
+class cActionDesynchronization : public cActionCompeteDemesFlashTiming {
+public:
+  //! Constructor.
+  cActionCompeteDemesFlashTimingDesync(cWorld* world, const cString& args) : cActionCompeteDemesFlashTiming(world, args) {
+  }
+  
+  //! Description of this event.
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  //! Calculate the fitness of a deme (must return > 0.0).
+  virtual double fitness_function(const cDeme& deme) {
+    // How many unique organisms have flashed in the last SYNC_FITNESS_WINDOW updates?
+    int total_flashed = deme.GetUniqueFlashes();
+    
+    // If not everyone has flashed, fitness is just the number that have flashed:
+    if(total_flashed < deme.GetSize()) {
+      return total_flashed + 1.0;
+    }
+    
+    // Let's find out the max number of flashes in any update:
+    const cDeme::flash_row& fr = deme.GetFlashRollingSum();
+    double max = *std::max_element(fr.begin(), fr.end());
+    
+    // And reward based on the difference:
+    return 1.0 + deme.GetSize() + pow(deme.GetSize()-max, 2.0);
+  }
+};
+ */
 
 
 class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompeteDemes {
@@ -2231,7 +2342,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	/****AbstractCompeteDemes sub-classes****/
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
-  action_lib->Register<cIteratedConsensus>("IteratedConsensus");
+  action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");

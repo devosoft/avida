@@ -1749,10 +1749,17 @@ void cStats::PrintCurrentOpinions(const cString& filename) {
 	}	
 }
 
-/*! Called after an organism flashes. */
+/*! Called when an organism issues a flash instruction.
+ 
+ We do some pretty detailed tracking here in order to support the use of flash
+ messages in deme competition.  All flashes are tracked per deme.
+ */
 void cStats::SentFlash(cOrganism& organism) {
-  ++m_flash_count;
-  m_flashed_cells.push_back(organism.GetOrgInterface().GetCellID());
+  ++m_flash_count;	
+	if(organism.GetOrgInterface().GetDeme() != 0) {
+		const cDeme* deme = organism.GetOrgInterface().GetDeme();
+		m_flash_times[GetUpdate()][deme->GetID()].push_back(deme->GetRelativeCellID(organism.GetCellID()));
+	}
 }
 
 
@@ -1767,7 +1774,7 @@ void cStats::PrintSynchronizationData(const cString& filename) {
   df.Endl();
   
   m_flash_count = 0;
-  m_flashed_cells.clear();
+	m_flash_times.clear();
 }
 
 
@@ -1776,13 +1783,19 @@ void cStats::PrintDetailedSynchronizationData(const cString& filename) {
   cDataFile& df = m_world->GetDataFile(filename);
   
   df.WriteComment("Detailed Avida synchronization data");
-  df.WriteComment("Rows are (update, cellid) tuples, representing the update at which that cell flashed.");
+  df.WriteComment("Rows are (update, demeid, cellid) tuples, representing the update at which that cell flashed.");
   df.WriteTimeStamp();
-  for(std::vector<int>::iterator i=m_flashed_cells.begin(); i!=m_flashed_cells.end(); ++i) {
-    df.Write(GetUpdate(), "Update [update]");
-    df.Write(*i, "Cellid [cellid]");
-    df.Endl();
-  }
-  
-  m_flashed_cells.clear();
+	
+	for(PopulationFlashes::iterator i=m_flash_times.begin(); i!=m_flash_times.end(); ++i) {
+		for(DemeFlashes::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+			for(CellFlashes::iterator k=j->second.begin(); k!=j->second.end(); ++k) {
+				df.Write(i->first, "Update [update]");
+				df.Write(j->first, "Deme ID [demeid]");
+				df.Write(*k, "Deme-relative cell ID that issued a flash at this update [relcellid]");
+				df.Endl();
+			}
+		}
+	}
+	
+	m_flash_times.clear();
 }

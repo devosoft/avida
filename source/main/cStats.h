@@ -849,15 +849,20 @@ public:
 	
 	// -------- Synchronization support --------
 public:
+	typedef std::vector<int> CellFlashes; //!< Typedef for a list of cell IDs.
+	typedef std::map<int, CellFlashes> DemeFlashes; //!< Typedef for cell IDs (in this deme) -> list of cell IDs.
+	typedef std::map<int, DemeFlashes> PopulationFlashes; //!< Typedef for deme IDs -> flashes in that deme.
   //! Called immediately after an organism has issued a "flash" to its neighbors.
   void SentFlash(cOrganism& organism);
+	//! Retrieve the cell ID -> flash time map.
+	const PopulationFlashes& GetFlashTimes() { return m_flash_times; }
   //! Print statistics about synchronization flashes.
   void PrintSynchronizationData(const cString& filename);
   //! Print detailed information regarding synchronization flashes.
   void PrintDetailedSynchronizationData(const cString& filename);
 protected:
   int m_flash_count; //!< Number of flashes that have occured since last PrintSynchronizationData.
-  std::vector<int> m_flashed_cells; //!< List of cellids that have flashed since last PrintDetailedSynchronizationData.	
+	PopulationFlashes m_flash_times; //!< For tracking flashes that have occurred throughout this population.
 };
 
 
