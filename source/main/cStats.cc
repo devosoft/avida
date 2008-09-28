@@ -1238,8 +1238,7 @@ the organism that this message was sent to. */
 void cStats::SentMessage(const cOrgMessage& msg)
 {
   // Check to see if this message matches any of our predicates.
-  for(message_pred_ptr_list::iterator i=m_message_predicates.begin(); 
-      i!=m_message_predicates.end(); ++i) {
+  for(message_pred_ptr_list::iterator i=m_message_predicates.begin(); i!=m_message_predicates.end(); ++i) {
     (**i)(msg); // Predicate is responsible for tracking info about messages.
   }  
 }
@@ -1301,29 +1300,24 @@ void cStats::IncPredSat(int cell_id) {
 
 /*! This method prints information contained within all active message predicates.
 
-about  specific messages that are being tracked.
-The messages that are being tracked are setup by the AddTrackedMessage method below.
-
-The format of this log file is:
-<update> \
-<predicate>:{<cell_id>,...}...
-*/
+ Each row of the data file has the following format: 
+   update predicate_name predicate_data...
+ */
 void cStats::PrintPredicatedMessages(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteColumnDesc("update [update]");
-  df.WriteColumnDesc("predicate:{p_info,...}...");
+	df.WriteColumnDesc("predicate name: [pname]");
+  df.WriteColumnDesc("predicate data: [pdata]");
   df.FlushComments();
   
-  df.WriteAnonymous(GetUpdate());
   std::ofstream& out = df.GetOFStream();
   for(message_pred_ptr_list::iterator i=m_message_predicates.begin();
       i!=m_message_predicates.end(); ++i) {
-    (*i)->Print(out);
+    (*i)->Print(GetUpdate(), out);
     (*i)->Reset();
-    out << " ";
   }
-  df.Endl();  
+//  df.Endl();  
 }
 
 void cStats::PrintPredSatFracDump(const cString& filename) {
@@ -1682,7 +1676,6 @@ void cStats::PrintPerDemeGenPerFounderData(const cString& filename){
   df.WriteComment("First column gives the current update, all further columns give the number");
   df.WriteComment("number of generations that passed between the parent and current deme's founders");
 
-
 	df.Write(m_update,   "Update");
   for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
     cDeme& deme = m_world->GetPopulation().GetDeme(i);
@@ -1714,4 +1707,82 @@ void cStats::PrintDemeCompetitionData(const cString& filename) {
   df.Endl();
   
   m_deme_fitness.clear();
+}
+
+
+/*! Prints the cell data from every cell, including the deme for that cell. */
+void cStats::PrintCellData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Cell data per udpate.");
+	df.WriteTimeStamp();
+	
+	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+		const cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		df.Write(GetUpdate(), "Update [update]");
+		df.Write(cell.GetID(), "Global cell ID [globalid]");
+		df.Write(cell.GetDemeID(), "Deme ID for cell [demeid]");
+		df.Write(cell.GetCellData(), "Cell data [data]");
+		df.Endl();
+	}
+}
+
+
+void cStats::PrintCurrentOpinions(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Current opinions of each organism.");
+	df.WriteTimeStamp();
+	df.WriteComment("1: Update [update]");
+	df.WriteComment("2: Global cell ID [globalid]");
+	df.WriteComment("3: Current opinion [opinion]");
+	df.FlushComments();
+
+	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+		const cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		df.WriteAnonymous(GetUpdate());
+		df.WriteAnonymous(cell.GetID());
+		if(cell.IsOccupied() && cell.GetOrganism()->HasOpinion()) {
+			df.WriteAnonymous(cell.GetOrganism()->GetOpinion().first);
+		} else {
+			df.WriteAnonymous(0);
+		}
+		df.Endl();
+	}	
+}
+
+/*! Called after an organism flashes. */
+void cStats::SentFlash(cOrganism& organism) {
+  ++m_flash_count;
+  m_flashed_cells.push_back(organism.GetOrgInterface().GetCellID());
+}
+
+
+/*! Print statistics about synchronization flashes. */
+void cStats::PrintSynchronizationData(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida synchronization data");
+  df.WriteTimeStamp();
+  df.Write(m_update, "Update [update]");
+  df.Write(m_flash_count, "Flash count [fcount]");
+  df.Endl();
+  
+  m_flash_count = 0;
+  m_flashed_cells.clear();
+}
+
+
+/*! Print detailed synchronization data. */
+void cStats::PrintDetailedSynchronizationData(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Detailed Avida synchronization data");
+  df.WriteComment("Rows are (update, cellid) tuples, representing the update at which that cell flashed.");
+  df.WriteTimeStamp();
+  for(std::vector<int>::iterator i=m_flashed_cells.begin(); i!=m_flashed_cells.end(); ++i) {
+    df.Write(GetUpdate(), "Update [update]");
+    df.Write(*i, "Cellid [cellid]");
+    df.Endl();
+  }
+  
+  m_flashed_cells.clear();
 }

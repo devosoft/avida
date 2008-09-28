@@ -204,6 +204,11 @@ protected:
   bool Inst_DoubleEnergyUsage(cAvidaContext& ctx);
   bool Inst_HalfEnergyUsage(cAvidaContext& ctx);
   bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
+	
+	// -------- Synchronization --------
+public:
+  //! Called when the organism that owns this CPU has received a flash from a neighbor.
+  virtual void ReceiveFlash();	
 };
 
 

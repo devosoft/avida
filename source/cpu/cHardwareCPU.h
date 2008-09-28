@@ -466,10 +466,6 @@ private:
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
   //! Execute the following instruction if all resources are above their min level.
   bool Inst_IfResources(cAvidaContext& ctx);
-  bool Inst_CollectCellData(cAvidaContext& ctx);
-  bool Inst_KillCellEvent(cAvidaContext& ctx);
-  bool Inst_KillFacedCellEvent(cAvidaContext& ctx);
-  bool Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx);
 
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);
@@ -654,6 +650,7 @@ private:
   bool Inst_DropPheromone(cAvidaContext& ctx);
 
   // -------- Opinion support --------
+public:
   /* These instructions interact with the "opinion" support in cOrganism.h.  The
    idea is that we're enabling organisms to express an opinion about *something*,
    where that something is defined by the particular tasks and/or (deme) fitness function
@@ -665,6 +662,45 @@ private:
   bool Inst_SetOpinion(cAvidaContext& ctx);
   //! Retrieve this organism's current opinion.
   bool Inst_GetOpinion(cAvidaContext& ctx);
+
+	// -------- Cell Data Support --------
+public:
+	//! Collect this cell's data, and place it in a register.
+  bool Inst_CollectCellData(cAvidaContext& ctx);
+	//! Detect if this cell's data has changed since the last collection.
+	bool Inst_IfCellDataChanged(cAvidaContext& ctx);
+	bool Inst_KillCellEvent(cAvidaContext& ctx);
+  bool Inst_KillFacedCellEvent(cAvidaContext& ctx);
+  bool Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx);
+	
+private:
+	std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.
+	
+	// -------- Synchronization primitives --------
+public:
+  //! Called when the owning organism receives a flash from a neighbor.
+  virtual void ReceiveFlash();
+  //! Sends a "flash" to all neighboring organisms.
+  bool Inst_Flash(cAvidaContext& ctx);
+  //! Test if this organism has ever received a flash.
+  bool Inst_IfRecvdFlash(cAvidaContext& ctx);
+  //! Get if & when this organism last received a flash.
+  bool Inst_FlashInfo(cAvidaContext& ctx);
+  //! Get if (but not when) this organism last received a flash.
+  bool Inst_FlashInfoB(cAvidaContext& ctx);  
+  //! Reset the information this organism has regarding receiving a flash.
+  bool Inst_ResetFlashInfo(cAvidaContext& ctx);  
+  //! Reset the entire CPU.
+  bool Inst_HardReset(cAvidaContext& ctx);
+  //! Current "time": the number of cycles this CPU has been "alive."
+  bool Inst_GetCycles(cAvidaContext& ctx);
+	
+private:
+  /*! Used to track the last flash received; first=whether we've received a flash, 
+	 second= #cycles since we've received a flash, or 0 if we haven't. */
+  std::pair<unsigned int, unsigned int> m_flash_info;
+  //! Cycle timer; counts the number of cycles this virtual CPU has executed.
+  unsigned int m_cycle_counter;	
 };
 
 

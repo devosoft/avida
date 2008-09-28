@@ -98,10 +98,9 @@ public:
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;
-
   virtual bool BcastAlarm(int jump_jabel, int bcast_range) = 0;
   virtual void DivideOrgTestamentAmongDeme(double value) = 0;
-  
+	virtual void SendFlash() = 0;
 };
 
 #endif

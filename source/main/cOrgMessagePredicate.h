@@ -24,12 +24,17 @@
 #ifndef cOrgMessagePredicate_h
 #define cOrgMessagePredicate_h
 
+#include "cDeme.h"
+#include "cDemeCellEvent.h"
+#include "cOrganism.h"
+#include "cOrgMessage.h"
+#include "cPopulation.h"
+#include "cStats.h"
+
 #include <iostream>
 #include <functional>
 #include <set>
-
-#include "cOrgMessage.h"
-#include "cOrganism.h"
+#include <vector>
 
 
 /*! \brief An STL-compatible predicate on cOrgMessages.  The intent here is to
@@ -40,7 +45,7 @@ struct cOrgMessagePredicate : public std::unary_function<cOrgMessage, bool>
 {
   virtual ~cOrgMessagePredicate() { }
   virtual bool operator()(const cOrgMessage& msg) = 0;
-  virtual void Print(std::ostream& out) { }
+  virtual void Print(int update, std::ostream& out) { }
   virtual void Reset() { }
   virtual bool PreviouslySatisfied() = 0;
   virtual cString GetName() = 0;
@@ -48,6 +53,35 @@ struct cOrgMessagePredicate : public std::unary_function<cOrgMessage, bool>
   virtual cDemeCellEvent* GetEvent() { return NULL; }
 };
 
+
+/*! A predicate that tracks all sent messages. */
+struct cOrgMessagePred_AllData : public cOrgMessagePredicate
+{
+	typedef std::vector<cOrgMessage> t_message_list;
+	
+	cOrgMessagePred_AllData(cWorld* world) : m_world(world) { }
+	virtual ~cOrgMessagePred_AllData() { }
+
+  virtual bool operator()(const cOrgMessage& msg) {
+		m_msgs.push_back(msg);
+		return true;
+	}
+  
+	virtual void Print(int update, std::ostream& out) {
+		for(t_message_list::iterator i=m_msgs.begin(); i!=m_msgs.end(); ++i) {
+			out << update << " ALL " << i->GetData() << " " << i->GetLabel() << endl;
+		}
+	}
+	
+  virtual void Reset() { m_msgs.clear(); }
+  virtual bool PreviouslySatisfied() { return false; }
+  virtual cString GetName() { return "cOrgMessagePred_All"; }
+  virtual void UpdateStats(cStats& stats) { }
+  virtual cDemeCellEvent* GetEvent() { return NULL; }
+	
+	cWorld* m_world;
+	t_message_list m_msgs;
+};
 
 /*! A predicate that returns true and tracks the sending cell_id for messages
 that contain the same data field as this predicate was constructed with.
@@ -63,7 +97,7 @@ struct cOrgMessagePred_DataEQU : public cOrgMessagePredicate
     return true;
   }
   
-  virtual void Print(std::ostream& out) { 
+  virtual void Print(int update, std::ostream& out) { 
     out << "data==" << m_data << ":{";
     for(std::set<int>::iterator i=m_cell_ids.begin(); i!=m_cell_ids.end(); ++i) {
       out << *i << ",";
@@ -98,7 +132,7 @@ struct cOrgMessagePred_SinkReceiverEQU : public cOrgMessagePredicate {
     return true;
   }
   
-  virtual void print(std::ostream& out) { 
+  virtual void print(int update, std::ostream& out) { 
 //    cPopulationCell::t_id_map& ids = cPopulationCell::GetRandomCellIDMap();
 //    int badMSGs = 0;
 //    
@@ -169,7 +203,7 @@ struct cOrgMessagePred_EventReceivedCenter : public cOrgMessagePredicate {
   }
   
   //need to print update!!!
-  virtual void Print(std::ostream& out) {
+  virtual void Print(int update, std::ostream& out) {
     if(m_event->IsDead()) {
       return;
     }
@@ -261,7 +295,7 @@ struct cOrgMessagePred_EventReceivedLeftSide : public cOrgMessagePredicate {
     return m_event_received;
   }
   
-  virtual void Print(std::ostream& out) {
+  virtual void Print(int update, std::ostream& out) {
     if(m_event->IsDead()) {
       return;
     }

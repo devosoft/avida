@@ -107,7 +107,12 @@ STATS_OUT_FILE(PrintDemeOrgTasksData,       deme_org_tasks.dat      );
 STATS_OUT_FILE(PrintDemeOrgTasksExeData,    deme_org_tasks_exe.dat  );
 STATS_OUT_FILE(PrintDemeOrgReactionData,    deme_org_reactions.dat  );
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
+STATS_OUT_FILE(PrintPredicatedMessages,     messages.dat        );
+STATS_OUT_FILE(PrintCellData,               cell_data.dat       );
+STATS_OUT_FILE(PrintCurrentOpinions,        opinions.dat        );
 STATS_OUT_FILE(PrintPerDemeGenPerFounderData,   deme_gen_between_founders.dat );
+STATS_OUT_FILE(PrintSynchronizationData,    sync.dat            );
+STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
@@ -2688,6 +2693,12 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
   
+	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
+	action_lib->Register<cActionPrintCellData>("PrintCellData");
+	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
+	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
+  action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
+	
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous

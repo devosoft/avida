@@ -105,9 +105,10 @@ public:
   bool TestOnDivide();
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
-  bool BcastAlarm(int jump_label, int bcast_range);
-  
+  bool BcastAlarm(int jump_label, int bcast_range);  
   void DivideOrgTestamentAmongDeme(double value);
+	//! Send a flash to all neighboring organisms.
+  void SendFlash();
 };
 
 

@@ -335,3 +335,17 @@ void cPopulationInterface::DivideOrgTestamentAmongDeme(double value){
     }
   }
 }
+
+/*! Send a flash to all neighboring organisms. */
+void cPopulationInterface::SendFlash() {
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+  assert(cell.IsOccupied());
+	
+  for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
+    cPopulationCell* neighbor = cell.ConnectionList().GetFirst();
+    if(neighbor->IsOccupied()) {
+      neighbor->GetOrganism()->ReceiveFlash();
+    }
+    cell.ConnectionList().CircNext();
+  }
+}

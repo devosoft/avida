@@ -283,6 +283,7 @@ public:
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Original CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution");
+	CONFIG_ADD_VAR(TRACE_EXECUTION, bool, 0, "Trace the execution of all organisms in the population (default=off,SLOW!)");
   CONFIG_ADD_VAR(BCAST_HOPS, int, 1, "Number of hops to broadcast an alarm");
   CONFIG_ADD_VAR(ALARM_SELF, bool, 0, "Does sending an alarm move sender IP to alarm label?\n0=no\n1=yes");
   
@@ -553,6 +554,12 @@ public:
   CONFIG_ADD_VAR(LOG_INJECT, bool, 0, "Log injection of organisms.  0/1 (off/on)");
   CONFIG_ADD_VAR(INJECT_LOG_START, int, 0, "Update at which to start logging injection of\norganisms");
   
+	// -------- Synchronization config options --------
+  CONFIG_ADD_GROUP(SYNCHRONIZATION_GROUP, "Synchronization settings");
+  CONFIG_ADD_VAR(SYNC_FITNESS_WINDOW, int, 100, "Number of updates over which to calculate fitness (default=100).");
+  CONFIG_ADD_VAR(SYNC_FLASH_LOSSRATE, double, 0.0, "P() to lose a flash send (0.0==off).");
+  CONFIG_ADD_VAR(SYNC_TEST_FLASH_ARRIVAL, int, -1, "CPU cycle at which an organism will receive a flash (off=-1, default=-1, analyze mode only.)");	
+	
   CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
   

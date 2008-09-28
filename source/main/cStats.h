@@ -836,6 +836,28 @@ public:
   
 private:
   std::vector<double> m_deme_fitness; //!< Fitness of each deme during last deme competition.
+	
+	// -------- Cell data support --------
+public:
+	//! Prints the cell data from every cell in the population.
+	void PrintCellData(const cString& filename);
+	
+	// -------- Opinion support --------
+public:
+	//! Prints the current opinions of all organisms in the population.
+	void PrintCurrentOpinions(const cString& filename);
+	
+	// -------- Synchronization support --------
+public:
+  //! Called immediately after an organism has issued a "flash" to its neighbors.
+  void SentFlash(cOrganism& organism);
+  //! Print statistics about synchronization flashes.
+  void PrintSynchronizationData(const cString& filename);
+  //! Print detailed information regarding synchronization flashes.
+  void PrintDetailedSynchronizationData(const cString& filename);
+protected:
+  int m_flash_count; //!< Number of flashes that have occured since last PrintSynchronizationData.
+  std::vector<int> m_flashed_cells; //!< List of cellids that have flashed since last PrintDetailedSynchronizationData.	
 };
 
 

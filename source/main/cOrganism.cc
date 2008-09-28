@@ -537,6 +537,7 @@ double cOrganism::GetNeutralMax() const { return m_world->GetConfig().NEUTRAL_MA
 void cOrganism::PrintStatus(ostream& fp, const cString& next_name)
 {
   fp << "---------------------------" << endl;
+	fp << "U:" << m_world->GetStats().GetUpdate() << endl;
   m_hardware->PrintStatus(fp);
   m_phenotype.PrintStatus(fp);
   fp << endl;
@@ -739,4 +740,30 @@ void cOrganism::SetOpinion(const Opinion& opinion)
 {
   InitOpinions();
   m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
+}
+
+
+/*! Called when an organism receives a flash from a neighbor. */
+void cOrganism::ReceiveFlash() {
+  m_hardware->ReceiveFlash();
+}
+
+
+/*! Called by the "flash" instruction. */
+void cOrganism::SendFlash(cAvidaContext& ctx) {
+  assert(m_interface);
+  
+  // Check to see if we should lose the flash:
+  if((m_world->GetConfig().SYNC_FLASH_LOSSRATE.Get() > 0.0) &&
+     (m_world->GetRandom().P(m_world->GetConfig().SYNC_FLASH_LOSSRATE.Get()))) {
+    return;
+  }
+  
+  // Flash not lost; continue.
+  m_interface->SendFlash();
+  m_world->GetStats().SentFlash(*this);
+  if(m_interface->GetDeme() != 0) {
+    //m_interface->GetDeme()->OrganismFlashed(*this);
+  }
+  DoOutput(ctx);
 }

@@ -913,3 +913,8 @@ void cHardwareBase::ResetInstructionCosts()
     for (int i = 0; i < num_inst_cost; i++) inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
   }
 }
+
+//! Called when the organism that owns this CPU has received a flash from a neighbor.
+void cHardwareBase::ReceiveFlash() {
+  m_world->GetDriver().RaiseFatalException(1, "Method cHardwareBase::ReceiveFlash must be overriden.");
+}

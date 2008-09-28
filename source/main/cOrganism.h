@@ -432,6 +432,14 @@ protected:
   };
   cOpinionSupport* m_opinion; //!< Lazily-initialized pointer to the opinion data.
   // -------- End of opinion support --------
+	
+	// -------- Synchronization support --------
+public:
+  //! Called when a neighboring organism issues a "flash" instruction.    
+  void ReceiveFlash();
+  //! Sends a "flash" to all neighboring organisms.
+  void SendFlash(cAvidaContext& ctx);
+  // -------- End of synchronization support --------	
 };
 
 

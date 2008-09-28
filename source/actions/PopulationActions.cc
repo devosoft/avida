@@ -30,6 +30,7 @@
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
+#include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStats.h"
@@ -38,6 +39,7 @@
 
 #include <map>
 #include <set>
+
 
 /*
  Injects a single organism into the population.
@@ -1199,6 +1201,25 @@ public:
 };
 
 
+/*! This action enables the tracking of all messages that are sent in each deme. */
+class cActionTrackAllMessages : public cAction {
+public:
+  cActionTrackAllMessages(cWorld* world, const cString& args) : cAction(world, args) { }
+
+  static const cString GetDescription() { return "No Arguments"; }
+	
+  void Process(cAvidaContext& ctx) {
+		s_pred = new cOrgMessagePred_AllData(m_world);
+		m_world->GetStats().AddMessagePredicate(s_pred);
+  }
+	
+private:
+	static cOrgMessagePred_AllData* s_pred;
+};
+
+cOrgMessagePred_AllData* cActionTrackAllMessages::s_pred=0;
+
+
 /*
  Compete all of the demes using a basic genetic algorithm approach. Fitness
  of each deme is determined differently depending on the competition_type: 
@@ -1290,6 +1311,10 @@ cAssignRandomCellData::DataMap cAssignRandomCellData::deme_to_id;
 
 
 /*! An abstract base class to ease the development of new deme competition fitness functions.
+ 
+ This base class does the bookkeeping associated with deme competitions, including calling a virtual
+ function to calculate the fitness of each deme at the right time, collecting those fitness values in
+ a vector, and finally invoking the deme competition.
  */
 class cAbstractCompeteDemes : public cAction {
 public:
@@ -1382,6 +1407,116 @@ public:
 protected:
 	int _compete_period; //!< Period at which demes compete.
 	std::vector<double> _update_fitness; //!< Running sum of returns from Update(cDeme).
+};
+
+
+/*! This class contains methods that are useful for consensus-related problems.
+ */
+class ConsensusSupport {
+public:
+	ConsensusSupport() { }
+	virtual ~ConsensusSupport() { }
+	
+	/*! Returns a pair (support, opinion), where support is equal to the maximum 
+	 number of organisms within the deme that have set their opinion to the same value,
+	 and opinion is the value that they have set their (shared) opinion to.
+	 */	 
+	virtual std::pair<unsigned int, cOrganism::Opinion> max_support(const cDeme& deme) {
+		typedef std::vector<cOrganism::Opinion> OpinionList;
+		OpinionList opinions;
+		// For each organism in the deme:
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			if((org != 0) && org->HasOpinion()) {
+				// Get its current opinion (we don't care about the date here):
+				opinions.push_back(org->GetOpinion().first);
+			}
+		}
+		
+		// Go through the list of opinions, count & filter:
+		typedef std::map<cOrganism::Opinion, unsigned int> OpinionMap;
+		unsigned int support=0;
+		cOrganism::Opinion opinion=0;
+		OpinionMap opinion_counts;
+		for(OpinionList::iterator i=opinions.begin(); i!=opinions.end(); ++i) {
+			// filter:
+			if(cAssignRandomCellData::IsCellDataInDeme(*i, deme)) {
+				// count:
+				++opinion_counts[*i];
+				// find support:
+				if(opinion_counts[*i] > support) {
+					support = opinion_counts[*i];
+					opinion = *i;
+				}
+			}
+		}		
+		return std::make_pair(support, opinion);
+	}	
+};
+
+
+/*! This class rewards for solving the Iterated Consensus Dilemma, where organisms
+ are to repeatedly reach consensus on one of a set of values.
+ 
+ Each organism is initialized with access to a single value, so the first part of
+ the ICD is to distribute knowledge of all possible values.  The second part of 
+ the ICD is to determine which of the possible values should be selected by the
+ group.  The third, and final, part of the ICD is for the group to iterate this
+ problem, so that consensus on as many values as possible is reached in the shortest
+ amount of time.
+ */
+class cIteratedConsensus : public cAbstractMonitoringCompeteDemes, ConsensusSupport {
+public:
+	cIteratedConsensus(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args), _replace(0) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_replace = largs.PopWord().AsInt();
+		}
+	}
+	
+	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=0]]"; }
+	
+	//! Calculate the current fitness of this deme.
+  virtual double Fitness(const cDeme& deme) {
+		return max_support(deme).first + 1;
+	}
+	
+	/*! Determine if the organisms in this deme have reached consensus, and if so,
+	 record that fact and reset so that they can "iterate" (try to reach consensus
+	 again).  This version includes protection against resetting to an "easy" value,
+	 removing the ability for organisms to continually filter in one direction to
+	 solve ICD.
+	 
+	 Resets always reset the cell data of the agreed-upon value, and if _replace is
+	 greater than zero, we also reset the cell data of other cells, which are
+	 selected at random with replacement.
+	 
+	 Called during every update (depending on configuration).  Return values are
+	 summed and included in final fitness calculation. */
+	virtual double Update(cDeme& deme) {
+		std::pair<unsigned int, cOrganism::Opinion> support = max_support(deme);
+		
+		// Have all organisms in this deme reached consensus?
+		if(support.first == static_cast<unsigned int>(deme.GetSize())) {
+			// Yes; change the cell data for the value that was agreed upon:
+			int min_data = *cAssignRandomCellData::GetDataInDeme(deme).begin();
+			int max_data = *cAssignRandomCellData::GetDataInDeme(deme).rbegin();
+			cAssignRandomCellData::ReplaceCellData(support.second, m_world->GetRandom().GetInt(min_data+1, max_data-1), deme);
+			
+			// Now reset the others:
+			for(int i=0; i<_replace; ++i) {
+				int cell_id = m_world->GetRandom().GetInt(deme.GetSize());
+				int cell_data = deme.GetCell(cell_id).GetCellData();
+				cAssignRandomCellData::ReplaceCellData(cell_data, m_world->GetRandom().GetInt(min_data+1, max_data-1), deme);
+			}
+			
+			return deme.GetSize();
+		}
+		return 0.0;
+	}
+	
+private:
+	int _replace; //!< Number of cell datas that will be replaced on successful consensus.
 };
 
 
@@ -2085,15 +2220,19 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionModMutProb>("ModMutProb");
   action_lib->Register<cActionZeroMuts>("ZeroMuts");
 
+	action_lib->Register<cActionTrackAllMessages>("TrackAllMessages");
+	
   action_lib->Register<cActionCompeteDemes>("CompeteDemes");
   action_lib->Register<cActionReplicateDemes>("ReplicateDemes");
   action_lib->Register<cActionDivideDemes>("DivideDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
 
-/****AbstractCompeteDemes sub-classes****/
+	/****AbstractCompeteDemes sub-classes****/
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
-  
+  action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
+  action_lib->Register<cIteratedConsensus>("IteratedConsensus");
+	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");
   

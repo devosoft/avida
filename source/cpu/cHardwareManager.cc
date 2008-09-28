@@ -29,6 +29,7 @@
 #include "cHardwareSMT.h"
 #include "cHardwareTransSMT.h"
 #include "cHardwareGX.h"
+#include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cWorld.h"
@@ -67,40 +68,56 @@ cHardwareManager::cHardwareManager(cWorld* world)
 		default:
       m_world->GetDriver().RaiseFatalException(1, "Unknown/Unsupported HARDWARE_TYPE specified");
   }
-  
+
   if (filename == "" || filename == "-") {
     filename = default_filename;
     m_world->GetDriver().NotifyComment(cString("Using default instruction set: ") + filename);
   }
-  
   
   if (m_world->GetConfig().INST_SET_FORMAT.Get()) {
     m_inst_set->LoadFromConfig();
   } else {
     m_inst_set->LoadFromLegacyFile(filename);
   }
-  
 }
 
 cHardwareBase* cHardwareManager::Create(cOrganism* in_org, cInstSet* inst_set)
 {
+  static unsigned int cpu=0;
   assert(in_org != NULL);
-  
-  switch (m_type)
-  {
+	
+  cHardwareBase* hw=0;
+	
+  switch (m_type) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      return new cHardwareCPU(m_world, in_org, inst_set);
+      hw = new cHardwareCPU(m_world, in_org, m_inst_set);
+      break;
     case HARDWARE_TYPE_CPU_SMT:
-      return new cHardwareSMT(m_world, in_org, inst_set);
+      hw = new cHardwareSMT(m_world, in_org, m_inst_set);
+      break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      return new cHardwareTransSMT(m_world, in_org, inst_set);
+      hw = new cHardwareTransSMT(m_world, in_org, m_inst_set);
+      break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      return new cHardwareExperimental(m_world, in_org, inst_set);
+      hw = new cHardwareExperimental(m_world, in_org, m_inst_set);
+      break;
     case HARDWARE_TYPE_CPU_GX:
-      return new cHardwareGX(m_world, in_org, inst_set);
+      hw = new cHardwareGX(m_world, in_org, m_inst_set);
+      break;
     default:
-      return NULL;
+      m_world->GetDriver().RaiseFatalException(-1, "Unrecognized hardware type.");
+      break;
   }
+  
+  // Are we tracing the execution of this cpu?
+  if(m_world->GetConfig().TRACE_EXECUTION.Get()) {
+    std::ostringstream filename;
+    filename << "trace-" << cpu++ << ".trace";    
+    hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename.str().c_str())));
+  }
+  
+  assert(hw != 0);
+  return hw;
 }
 
 bool cHardwareManager::SupportsSpeculative()

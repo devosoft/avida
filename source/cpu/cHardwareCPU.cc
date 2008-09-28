@@ -209,11 +209,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
     tInstLibEntry<tMethod>("if-resources", &cHardwareCPU::Inst_IfResources, nInstFlag::STALL),
-    // Data collection
-    tInstLibEntry<tMethod>("collect-cell-data", &cHardwareCPU::Inst_CollectCellData, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("kill-cell-event", &cHardwareCPU::Inst_KillCellEvent, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("kill-faced-cell-event", &cHardwareCPU::Inst_KillFacedCellEvent, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("collect-cell-data-and-kill-event", &cHardwareCPU::Inst_CollectCellDataAndKillEvent, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin, nInstFlag::STALL),
@@ -449,6 +444,22 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // These are STALLs because opinions are only relevant with respect to time.
     tInstLibEntry<tMethod>("set-opinion", &cHardwareCPU::Inst_SetOpinion, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-opinion", &cHardwareCPU::Inst_GetOpinion, nInstFlag::STALL),
+		
+		// Data collection
+		tInstLibEntry<tMethod>("if-cell-data-changed", &cHardwareCPU::Inst_IfCellDataChanged, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("collect-cell-data", &cHardwareCPU::Inst_CollectCellData, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kill-cell-event", &cHardwareCPU::Inst_KillCellEvent, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kill-faced-cell-event", &cHardwareCPU::Inst_KillFacedCellEvent, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("collect-cell-data-and-kill-event", &cHardwareCPU::Inst_CollectCellDataAndKillEvent, nInstFlag::STALL),
+		
+		// Synchronization
+    tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-recvd-flash", &cHardwareCPU::Inst_IfRecvdFlash, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("flash-info", &cHardwareCPU::Inst_FlashInfo, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("flash-info-b", &cHardwareCPU::Inst_FlashInfoB, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("reset-flash-info", &cHardwareCPU::Inst_ResetFlashInfo, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("hard-reset", &cHardwareCPU::Inst_HardReset, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-cycles", &cHardwareCPU::Inst_GetCycles, nInstFlag::STALL),		
 
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -475,6 +486,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 
 cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
 : cHardwareBase(world, in_organism, in_m_inst_set)
+, m_last_cell_data(false, 0)
 {
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
@@ -506,6 +518,7 @@ cHardwareCPU::cHardwareCPU(const cHardwareCPU &hardware_cpu)
 , m_advance_ip(hardware_cpu.m_advance_ip)
 , m_executedmatchstrings(hardware_cpu.m_executedmatchstrings)
 , m_epigenetic_state(hardware_cpu.m_epigenetic_state)
+, m_last_cell_data(false, 0)
 {
 #if INSTRUCTION_COSTS
   m_inst_cost = hardware_cpu.m_inst_cost;
@@ -564,6 +577,7 @@ void cHardwareCPU::Reset()
       }
     }
   }
+	m_last_cell_data = std::make_pair(false, 0);
 }
 
 void cHardwareCPU::cLocalThread::operator=(const cLocalThread& in_thread)
@@ -2151,6 +2165,7 @@ bool cHardwareCPU::Inst_Reset(cAvidaContext& ctx)
   GetRegister(REG_BX) = 0;
   GetRegister(REG_CX) = 0;
   StackClear();
+	m_last_cell_data = std::make_pair(false, 0);
   return true;
 }
 
@@ -3298,51 +3313,6 @@ bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
   return true;
 }
 
-
-bool cHardwareCPU::Inst_CollectCellData(cAvidaContext& ctx) {
-  const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = organism->GetCellData();
-  return true;
-}
-
-bool cHardwareCPU::Inst_KillCellEvent(cAvidaContext& ctx) {
-  // Fail if we're running in the test CPU.
-  if((organism->GetOrgInterface().GetDemeID() < 0) || (organism->GetCellID() < 0))
-    return false;
-
-  const int reg = FindModifiedRegister(REG_BX);
-  int eventID = organism->GetCellData();
-  GetRegister(reg) = organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
-  return true;
-}
-
-bool cHardwareCPU::Inst_KillFacedCellEvent(cAvidaContext& ctx) {
-  // Fail if we're running in the test CPU.
-  if((organism->GetOrgInterface().GetDemeID() < 0) || (organism->GetCellID() < 0))
-    return false;
-
-  const int reg = FindModifiedRegister(REG_BX);
-  int eventID = organism->GetNeighborCellContents();
-  GetRegister(reg) = organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
-  
-  if(GetRegister(reg))
-    organism->SetEventKilled();
-  
-  return true;
-}
-
-bool cHardwareCPU::Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx) {
-  // Fail if we're running in the test CPU.
-  if((organism->GetOrgInterface().GetDemeID() < 0) || (organism->GetCellID() < 0))
-    return false;
-  
-  const int out_reg = FindModifiedRegister(REG_BX);
-  int eventID = organism->GetCellData();
-  GetRegister(out_reg) = eventID;
-  
-  organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
-  return true;
-}
 
 void cHardwareCPU::DoDonate(cOrganism* to_org)
 {
@@ -6647,6 +6617,7 @@ bool cHardwareCPU::Inst_DropPheromone(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_SetOpinion(cAvidaContext& ctx)
 {
+	assert(organism != 0);
   organism->SetOpinion(GetRegister(FindModifiedRegister(REG_BX)));
   return true;
 }
@@ -6658,6 +6629,7 @@ bool cHardwareCPU::Inst_SetOpinion(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_GetOpinion(cAvidaContext& ctx)
 {
+	assert(organism != 0);
   if(organism->HasOpinion()) {
     const int opinion_reg = FindModifiedRegister(REG_BX);
     const int age_reg = FindNextRegister(opinion_reg);
@@ -6665,5 +6637,160 @@ bool cHardwareCPU::Inst_GetOpinion(cAvidaContext& ctx)
     GetRegister(opinion_reg) = organism->GetOpinion().first;
     GetRegister(age_reg) = m_world->GetStats().GetUpdate() - organism->GetOpinion().second;
   }
+  return true;
+}
+
+
+/*! Collect this cell's data, and place it in ?BX?.  Set the flag indicating that
+ this organism has collected cell data to true, and set the last collected cell data
+ as well.
+ */
+bool cHardwareCPU::Inst_CollectCellData(cAvidaContext& ctx)
+{
+  assert(organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = organism->GetCellData();
+	// Update last collected cell data:
+	m_last_cell_data = std::make_pair(true, GetRegister(out_reg));
+  return true;
+}
+
+
+/*! Detect if the cell data in which this organism lives has changed since the
+ last time that this organism has collected cell data.  Note that this process
+ DOES NOT take into account organism movement, and it only works with explicit
+ collection of cell data.
+ */
+bool cHardwareCPU::Inst_IfCellDataChanged(cAvidaContext& ctx)
+{
+  assert(organism != 0);
+	// If we haven't collected cell data yet, or it's the same as the current cell data, advance
+	// the IP:
+	if(!m_last_cell_data.first || (m_last_cell_data.second == organism->GetCellData())) {
+		IP().Advance();
+	}
+	
+	return true;
+}
+
+
+bool cHardwareCPU::Inst_KillCellEvent(cAvidaContext& ctx) {
+  // Fail if we're running in the test CPU.
+  if((organism->GetOrgInterface().GetDemeID() < 0) || (organism->GetCellID() < 0))
+    return false;
+	
+  const int reg = FindModifiedRegister(REG_BX);
+  int eventID = organism->GetCellData();
+  GetRegister(reg) = organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
+  return true;
+}
+
+
+bool cHardwareCPU::Inst_KillFacedCellEvent(cAvidaContext& ctx) {
+  // Fail if we're running in the test CPU.
+  if((organism->GetOrgInterface().GetDemeID() < 0) || (organism->GetCellID() < 0))
+    return false;
+	
+  const int reg = FindModifiedRegister(REG_BX);
+  int eventID = organism->GetNeighborCellContents();
+  GetRegister(reg) = organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
+  
+  if(GetRegister(reg))
+    organism->SetEventKilled();
+  
+  return true;
+}
+
+
+bool cHardwareCPU::Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx) {
+  // Fail if we're running in the test CPU.
+  if((organism->GetOrgInterface().GetDemeID() < 0) || (organism->GetCellID() < 0))
+    return false;
+  
+  const int out_reg = FindModifiedRegister(REG_BX);
+  int eventID = organism->GetCellData();
+  GetRegister(out_reg) = eventID;
+  
+  organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
+  return true;
+}
+
+
+/*! Called when the organism that owns this CPU has received a flash from a neighbor. */
+void cHardwareCPU::ReceiveFlash() {
+  m_flash_info.first = 1; // Yes, we've received a flash.
+  m_flash_info.second = m_cycle_counter; // When we received it.
+}
+
+
+/*! Send a "flash" event to all neighboring organisms. */
+bool cHardwareCPU::Inst_Flash(cAvidaContext& ctx) {
+  assert(organism != 0);
+  organism->SendFlash(ctx);
+  return true;
+}
+
+
+/*! Test if this organism has ever recieved a flash event. */
+bool cHardwareCPU::Inst_IfRecvdFlash(cAvidaContext& ctx) {
+  assert(organism != 0);
+  if(m_flash_info.first == 0) {
+    IP().Advance();
+  }
+  return true;
+}
+
+
+/*! Retrieve if & when this organism has last received a flash. */
+bool cHardwareCPU::Inst_FlashInfo(cAvidaContext& ctx) {
+  assert(organism != 0);
+  const int bx = FindModifiedRegister(REG_BX);
+  const int cx = FindNextRegister(bx);
+  
+  if(m_flash_info.first > 0) {
+    assert(m_cycle_counter >= m_flash_info.second);
+    GetRegister(bx) = m_flash_info.first;
+    GetRegister(cx) = m_cycle_counter - m_flash_info.second;
+  } else {
+    GetRegister(bx) = 0;
+    GetRegister(cx) = 0;
+  }
+  return true;
+}
+
+
+/*! Retrieve if (but not when) this organism has last received a flash. */
+bool cHardwareCPU::Inst_FlashInfoB(cAvidaContext& ctx) {
+  assert(organism != 0);
+  const int bx = FindModifiedRegister(REG_BX);
+  
+  if(m_flash_info.first > 0) {
+    assert(m_cycle_counter >= m_flash_info.second);
+    GetRegister(bx) = m_flash_info.first;
+  } else {
+    GetRegister(bx) = 0;
+  }
+  return true;
+}
+
+
+bool cHardwareCPU::Inst_ResetFlashInfo(cAvidaContext& ctx) {
+  assert(organism != 0);
+  m_flash_info.first = 0;
+  m_flash_info.second = 0;
+  return true;
+}
+
+
+bool cHardwareCPU::Inst_HardReset(cAvidaContext& ctx) {
+  Reset();
+  m_advance_ip = false;
+  return true;
+}
+
+
+//! Current "time": the number of cycles this CPU has been "alive."
+bool cHardwareCPU::Inst_GetCycles(cAvidaContext& ctx) {
+  GetRegister(FindModifiedRegister(REG_BX)) = m_cycle_counter;
   return true;
 }
