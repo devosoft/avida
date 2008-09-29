@@ -39,6 +39,7 @@
 
 #include <map>
 #include <set>
+#include <numeric>
 
 
 /*
@@ -1525,110 +1526,153 @@ private:
 };
 
 
-/**** The below are merges-in-progress. ****/
-
-/*! Action to send an artificial flash to each deme in the population at a specified period.
-class cActionPacecarFlash : public cAction {
+/*! Send an artificial flash to a single organism in each deme in the population
+ at a specified period.
+ 
+ This action sends a single flash to the organism in the center of each deme.  It
+ is meant to be sort of a "pacecar" flash, and is useful for analysis.  This action
+ is also capable of having a per-deme flash period, which should assist in evolving
+ organisms that can adapt their flash period.
+ */
+class cActionFlash : public cAction {
 public:
-	cActionPacecarFlash(cWorld* world, const cString& args): cAction(world, args), _pacecar(80) {
-		if(args.GetSize()) {
-			cString largs(args);
-			_pacecar = largs.PopWord().AsInt();
-		}
-	}
+	cActionFlash(cWorld* world, const cString& args): cAction(world, args) { }
 	
 	//! Destructor.
-	virtual ~cActionPacecarFlash() { }
+	virtual ~cActionFlash() { }
 	
-	static const cString GetDescription() { return "Arguments: [pacecar=80]"; }
+	static const cString GetDescription() { return "No arguments"; }
 	
- //! Send a flash 
+	//! Process this event, sending a flash to each deme.
 	virtual void Process(cAvidaContext& ctx) {
+		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+			SendFlash(m_world->GetPopulation().GetDeme(i));
+		}
 	}
-	
-private:
-	int _pacecar; //!< Period for artificial flashes that will be sent to each deme.
+								
+	//! Send a flash to a single organism in the given deme.							
+	void SendFlash(cDeme& deme) {
+		cOrganism* org = deme.GetOrganism(deme.GetSize()/2);
+		if(org != 0) {
+			org->ReceiveFlash();
+		}
+	}
 };
- */
 
 
 /*! Compete demes based on the ability of their constituent organisms
  to synchronize their flashes to a common phase and period.
-class cActionSynchronization : public cAbstractMonitoringCompeteDemes {
+ */
+class cActionSynchronization : public cAbstractCompeteDemes {
 public:
   //! Constructor.
-  cActionSynchronization(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args), _pacecar(0) {
-		if(args.GetSize()) {
-			cString largs(args);
-			_pacecar = largs.PopWord().AsInt();
-		}		
-  }
+  cActionSynchronization(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) { }
   
+	//! Destructor.
+	virtual ~cActionSynchronization() { }
+	
   //! Description of this event.
   static const cString GetDescription() { return "No Arguments"; }
-  
-  //! Run this event on the population.
-  virtual void Process(cAvidaContext& ctx) {
-    std::vector<double> fitness;
-    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-      fitness.push_back(fitness_function(m_world->GetPopulation().GetDeme(i)));
-    }    
-    m_world->GetPopulation().CompeteDemes(fitness);
-  }
-  
-  //! Calculate the fitness of a deme (must return > 0.0).
-  virtual double fitness_function(const cDeme& deme) {
-    // How many unique organisms have flashed in the last SYNC_FITNESS_WINDOW updates?
-    int total_flashed = deme.GetUniqueFlashes();
+	
+  /*! Calculate the fitness based on how well the organisms in this deme have
+	 synchronized their flashes.
+   */
+  virtual double Fitness(const cDeme& deme) {
+		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
+		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
+			// Hm, nothing to see here.  We're done.
+			return 1.0;
+		}
 		
-    // If not everyone has flashed, fitness is just the number that have flashed:
-    if(total_flashed < deme.GetSize()) {
-      return 1.0 + total_flashed;
-    }
+		// Now, chop off all flashes that are outside of the SYNC_FITNESS_WINDOW:
+		cStats::DemeFlashes window_flashes;
+		copy_flashes(window_flashes, deme_flashes->second, m_world->GetConfig().SYNC_FITNESS_WINDOW.Get());
+		
+		// Make sure that everyone's flashed:
+		if(window_flashes.size() < (unsigned int)deme.GetSize()) {
+			return 1.0 + window_flashes.size();
+		}
     
-    // If everyone has flashed, fitness is the difference between max and average
-    // squared, added to the size of the deme.
-    const cDeme::flash_row& fr = deme.GetFlashRollingSum();
-    double avg = std::accumulate(fr.begin(), fr.end(), 0.0) / fr.size();
-    double max = *std::max_element(fr.begin(), fr.end());
-    
-    return 1.0 + deme.GetSize() + pow(max-avg, 2.0);
+    // Since everyone has flashed, fitness is the difference between max and average
+    // number of flashes that occurred during the same update squared, added to
+		// the size of the deme.
+		std::vector<unsigned int> flash_counts;
+		count_flashes(window_flashes, flash_counts);
+		
+		double max = *std::max_element(flash_counts.begin(), flash_counts.end());
+		double mean = std::accumulate(flash_counts.begin(), flash_counts.end(), 0.0) / flash_counts.size();
+		
+		return 1.0 + deme.GetSize() + max - mean;
   }
+	
+protected:
+	//! Copy flashes that occured in the last window updates from source to target.
+	void copy_flashes(cStats::DemeFlashes& target, const cStats::DemeFlashes& source, int window) {
+		for(cStats::DemeFlashes::const_iterator i=source.begin(); i!=source.end(); ++i) {
+			for(cStats::CellFlashes::const_iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+				if(*j > (m_world->GetStats().GetUpdate() - window)) {
+					target[i->first].push_back(*j);
+				}
+			}
+		}
+	}
+	
+	//! Calculate the number of flashes that have occurred during each update.
+	void count_flashes(const cStats::DemeFlashes& flashes, std::vector<unsigned int>& flash_count) {
+		flash_count.clear();
+		flash_count.resize((unsigned int)m_world->GetConfig().SYNC_FITNESS_WINDOW.Get(), 0);
+		for(cStats::DemeFlashes::const_iterator i=flashes.begin(); i!=flashes.end(); ++i) {
+			for(cStats::CellFlashes::const_iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+				++flash_count[m_world->GetStats().GetUpdate()-*j];
+			}
+		}		
+	}
 };
- */
 
 
 /*! Compete demes based on the ability of their constituent organisms
  to synchronize their flashes to a common period, and yet distribute themselves
  throughout phase-space (phase desynchronization).
-class cActionDesynchronization : public cActionCompeteDemesFlashTiming {
+  */
+class cActionDesynchronization : public cActionSynchronization {
 public:
   //! Constructor.
-  cActionCompeteDemesFlashTimingDesync(cWorld* world, const cString& args) : cActionCompeteDemesFlashTiming(world, args) {
+  cActionDesynchronization(cWorld* world, const cString& args) : cActionSynchronization(world, args) {
   }
   
+	//! Destructor.
+	virtual ~cActionDesynchronization() { }
+	
   //! Description of this event.
   static const cString GetDescription() { return "No Arguments"; }
   
-  //! Calculate the fitness of a deme (must return > 0.0).
-  virtual double fitness_function(const cDeme& deme) {
-    // How many unique organisms have flashed in the last SYNC_FITNESS_WINDOW updates?
-    int total_flashed = deme.GetUniqueFlashes();
-    
-    // If not everyone has flashed, fitness is just the number that have flashed:
-    if(total_flashed < deme.GetSize()) {
-      return total_flashed + 1.0;
-    }
-    
-    // Let's find out the max number of flashes in any update:
-    const cDeme::flash_row& fr = deme.GetFlashRollingSum();
-    double max = *std::max_element(fr.begin(), fr.end());
-    
-    // And reward based on the difference:
-    return 1.0 + deme.GetSize() + pow(deme.GetSize()-max, 2.0);
+	//! Calculate fitness based on how well organisms have spread throughout phase-space.
+	virtual double Fitness(const cDeme& deme) {
+		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
+		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
+			// Hm, nothing to see here.  We're done.
+			return 1.0;
+		}
+		
+		// Now, chop off all flashes that are outside of the SYNC_FITNESS_WINDOW:
+		cStats::DemeFlashes window_flashes;
+		copy_flashes(window_flashes, deme_flashes->second, m_world->GetConfig().SYNC_FITNESS_WINDOW.Get());
+		
+		// Make sure that everyone's flashed:
+		if(window_flashes.size() < (unsigned int)deme.GetSize()) {
+			return 1.0 + window_flashes.size();
+		}
+		
+		// Since everyone has flashed, fitness is the size of the deme minus the max
+		// number of organisms that have flashed during the same update.
+		std::vector<unsigned int> flash_counts;
+		count_flashes(window_flashes, flash_counts);
+		
+		double max = *std::max_element(flash_counts.begin(), flash_counts.end());
+		
+		return 1.0 + 2*deme.GetSize() - max;
   }
 };
- */
 
 
 class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompeteDemes {
@@ -2339,10 +2383,15 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
 
+	action_lib->Register<cActionFlash>("Flash");
+	
 	/****AbstractCompeteDemes sub-classes****/
+		
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
+	action_lib->Register<cActionSynchronization>("Synchronization");
+	action_lib->Register<cActionDesynchronization>("Desynchronization");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");
