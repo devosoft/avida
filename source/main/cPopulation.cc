@@ -85,8 +85,10 @@ cPopulation::cPopulation(cWorld* world)
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
   world_y = world->GetConfig().WORLD_Y.Get();
+	world_z = world->GetConfig().WORLD_Z.Get();
+
   int num_demes = m_world->GetConfig().NUM_DEMES.Get();
-  const int num_cells = world_x * world_y;
+  const int num_cells = world_x * world_y * world_z;
   const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
   
   if(m_world->GetConfig().ENERGY_CAP.Get() == -1) {
@@ -98,12 +100,13 @@ cPopulation::cPopulation(cWorld* world)
   }
   // Print out world details
   if (world->GetVerbosity() > VERBOSE_NORMAL) {
-    cout << "Building world " << world_x << "x" << world_y << " = " << num_cells << " organisms." << endl;
+    cout << "Building world " << world_x << "x" << world_y << "x" << world_z << " = " << num_cells << " organisms." << endl;
     switch(geometry) {
       case nGeometry::GRID: { cout << "Geometry: Bounded grid" << endl; break; }
       case nGeometry::TORUS: { cout << "Geometry: Torus" << endl; break; }
       case nGeometry::CLIQUE: { cout << "Geometry: Clique" << endl; break; }
       case nGeometry::HEX: { cout << "Geometry: Hex" << endl; break; }
+			case nGeometry::LATTICE: { cout << "Geometry: Lattice" << endl; break; }
       default:
         cout << "Unknown geometry!" << endl;
         assert(false);
@@ -114,6 +117,10 @@ cPopulation::cPopulation(cWorld* world)
   if (num_demes <= 0) {
     num_demes = 1; // One population == one deme.
   }
+	
+	// Not ready for prime time yet; need to look at how resources work in this now
+	// more complex world.
+	assert(world_z == 1);
   
   // The following combination of options creates an infinite rotate-loop:
   assert(!((m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()==0)
@@ -190,6 +197,9 @@ cPopulation::cPopulation(cWorld* world)
       case nGeometry::HEX:
         build_hex(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
         break;
+			case nGeometry::LATTICE:
+				build_lattice(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y, world_z);
+				break;
       default:
         assert(false);
     }

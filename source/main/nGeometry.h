@@ -33,7 +33,8 @@ namespace nGeometry {
     GRID,
     TORUS,
     CLIQUE,
-    HEX
+    HEX,
+		LATTICE
   };
 }
 

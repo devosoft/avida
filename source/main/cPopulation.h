@@ -105,7 +105,8 @@ private:
 
   // Other data...
   int world_x;                         // Structured population width.
-  int world_y;                         // Structured population
+  int world_y;                         // Structured population height.
+	int world_z; //!< Population depth.
   int num_organisms;                   // Cell count with living organisms
   tArray<cDeme> deme_array;            // Deme structure of the population.
  
