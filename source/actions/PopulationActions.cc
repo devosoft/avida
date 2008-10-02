@@ -40,7 +40,7 @@
 #include <map>
 #include <set>
 #include <numeric>
-
+#include <algorithm>
 
 /*
  Injects a single organism into the population.

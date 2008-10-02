@@ -554,7 +554,7 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int time = m_world->GetStats().GetUpdate();
-		double m_res_count = -1*(0.4*tanh((time-182500)/50000)+0.5)*(0.5*sin(time/58.091)+0.5)+1;
+		double m_res_count = -1*(0.4*tanh(((double)time-182500.0)/50000.0)+0.5)*(0.5*sin((double)time/58.091)+0.5)+1;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
 			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
@@ -582,7 +582,7 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int time = m_world->GetStats().GetUpdate();
-		double m_res_count = -m_scale*(tanh((time-182500)/50000)+1)*(0.5*sin(time/58.091)+0.5)+1;
+		double m_res_count = -m_scale*(tanh(((double)time-182500.0)/50000.0)+1.0)*(0.5*sin((double)time/58.091)+0.5)+1.0;
 		if(m_res_count < 0.0)
 			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
@@ -614,7 +614,7 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int time = m_world->GetStats().GetUpdate();
-		double m_res_count = -m_scale*(tanh((time-1825000)/500000)+1)*(0.5*sin(time/58.091)+0.5)+1;
+		double m_res_count = -m_scale*(tanh(((double)time-1825000.0)/500000.0)+1.0)*(0.5*sin((double)time/58.091)+0.5)+1.0;
 		if(m_res_count < 0.0)
 			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);

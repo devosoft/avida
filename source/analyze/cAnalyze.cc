@@ -5584,7 +5584,7 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
       
       for (double log10_fc=-4.0; log10_fc<=0.0; log10_fc+=0.1)
       {
-        double fc = exp(log10_fc*log(10));
+        double fc = exp(log10_fc*log(10.0));
         
         // Modify the instruction set to include the current probability of failure.
         for (int j=0; j<modify_inst_set.GetSize(); j++)
