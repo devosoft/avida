@@ -40,9 +40,6 @@
 #ifndef INSTRUCTION_COUNT
 #define INSTRUCTION_COUNT 1
 #endif
-#ifndef SMT_FULLY_ASSOCIATIVE
-#define SMT_FULLY_ASSOCIATIVE 1
-#endif
 #ifndef FATAL_ERRORS
 #define FATAL_ERRORS 0
 #endif

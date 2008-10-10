@@ -1154,21 +1154,23 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
     
     // Setup arguments
     cASCPPParameter* args = new cASCPPParameter[func->GetArity()];
-    tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
-    cASTNode* an = NULL;
-    for (int i = 0; i < func->GetArity(); i++) {
-      an = cit.Next();
-      an->Accept(*this);
-     
-      switch (func->GetArgumentType(i).type) {
-        case TYPE(BOOL):        args[i].Set(asBool(m_rtype, m_rvalue, node)); break;
-        case TYPE(CHAR):        args[i].Set(asChar(m_rtype, m_rvalue, node)); break;
-        case TYPE(FLOAT):       args[i].Set(asFloat(m_rtype, m_rvalue, node)); break;
-        case TYPE(INT):         args[i].Set(asInt(m_rtype, m_rvalue, node)); break;
-        case TYPE(STRING):      args[i].Set(asString(m_rtype, m_rvalue, node)); break;
-          
-        default:
-          INTERPRET_ERROR(INTERNAL);
+    if (func->GetArity()) {
+      tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
+      cASTNode* an = NULL;
+      for (int i = 0; i < func->GetArity(); i++) {
+        an = cit.Next();
+        an->Accept(*this);
+       
+        switch (func->GetArgumentType(i).type) {
+          case TYPE(BOOL):        args[i].Set(asBool(m_rtype, m_rvalue, node)); break;
+          case TYPE(CHAR):        args[i].Set(asChar(m_rtype, m_rvalue, node)); break;
+          case TYPE(FLOAT):       args[i].Set(asFloat(m_rtype, m_rvalue, node)); break;
+          case TYPE(INT):         args[i].Set(asInt(m_rtype, m_rvalue, node)); break;
+          case TYPE(STRING):      args[i].Set(asString(m_rtype, m_rvalue, node)); break;
+            
+          default:
+            INTERPRET_ERROR(INTERNAL);
+        }
       }
     }
     
@@ -1182,6 +1184,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
       case TYPE(FLOAT):       m_rvalue.as_float = rvalue.Get<double>(); break;
       case TYPE(INT):         m_rvalue.as_int = rvalue.Get<int>(); break;
       case TYPE(STRING):      m_rvalue.as_string = rvalue.Get<cString*>(); break;
+      case TYPE(OBJECT_REF):  m_rvalue.as_nobj = rvalue.Get<cASNativeObject*>(); break;
       case TYPE(VOID):        break;
         
       default:

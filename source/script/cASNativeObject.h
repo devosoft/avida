@@ -29,6 +29,8 @@
 
 #include "cASCPPParameter.h"
 
+#include <typeinfo>
+
 class cString;
 
 class cASNativeObject 
@@ -53,7 +55,7 @@ public:
 };
 
 
-template<class NativeClass, const char* TypeName>
+template<class NativeClass>
 class tASNativeObject : public cASNativeObject
 {
 private:
@@ -63,7 +65,7 @@ public:
   tASNativeObject(NativeClass* obj) : m_object(obj) { ; }
   ~tASNativeObject() { delete m_object; }
 
-  const char* GetType() { return TypeName; }
+  const char* GetType() { return typeid(m_object).name(); }
   
   bool CallMethod(int mid, int argc, cASCPPParameter args[]) { return false; } // @TODO;  
 };

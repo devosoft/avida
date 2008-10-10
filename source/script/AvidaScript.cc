@@ -33,8 +33,22 @@ const char* AvidaScript::mapBuiltIn(ASBuiltIn_t builtin)
     case AS_BUILTIN_CAST_INT:     return "asint";
     case AS_BUILTIN_CAST_FLOAT:   return "asfloat";
     case AS_BUILTIN_CAST_STRING:  return "asstring";
+    case AS_BUILTIN_IS_ARRAY:     return "is_array";
+    case AS_BUILTIN_IS_BOOL:      return "is_bool";
+    case AS_BUILTIN_IS_CHAR:      return "is_char";
+    case AS_BUILTIN_IS_DICT:      return "is_dict";
+    case AS_BUILTIN_IS_INT:       return "is_int";
+    case AS_BUILTIN_IS_FLOAT:     return "is_float";
+    case AS_BUILTIN_IS_MATRIX:    return "is_matrix";
+    case AS_BUILTIN_IS_STRING:    return "is_string";
+    case AS_BUILTIN_CLEAR:        return "clear";
+    case AS_BUILTIN_COPY:         return "copy";
+    case AS_BUILTIN_HASKEY:       return "haskey";
+    case AS_BUILTIN_KEYS:         return "keys";
     case AS_BUILTIN_LEN:          return "len";
+    case AS_BUILTIN_REMOVE:       return "remove";
     case AS_BUILTIN_RESIZE:       return "resize";
+    case AS_BUILTIN_VALUES:       return "values";
     default:                      return "?";
   }
 }

@@ -30,6 +30,7 @@
 
 #include "cString.h"
 
+class cASNativeObject;
 
 class cASCPPParameter
 {
@@ -40,6 +41,7 @@ private:
     int m_int;
     double m_float;
     cString* m_string;
+    cASNativeObject* m_nobj;
   };
   
 public:
@@ -51,6 +53,7 @@ public:
   void Set(double val) { m_float = val; }
   void Set(cString* val) { m_string = val; }
   void Set(const cString& val) { m_string = new cString(val); }
+  void Set(cASNativeObject* val) { m_nobj = val; }
   
   template<typename T> inline T Get() const { Avida::Exit(AS_EXIT_INTERNAL_ERROR); return m_int; }
 };
@@ -62,5 +65,6 @@ template<> inline double cASCPPParameter::Get<double>() const { return m_float; 
 template<> inline const cString& cASCPPParameter::Get<const cString&>() const { return *m_string; }
 template<> inline const cString* cASCPPParameter::Get<const cString*>() const { return m_string; }
 template<> inline cString* cASCPPParameter::Get<cString*>() const { return m_string; }
+template<> inline cASNativeObject* cASCPPParameter::Get<cASNativeObject*>() const { return m_nobj; }
 
 #endif

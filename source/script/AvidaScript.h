@@ -248,6 +248,8 @@ enum eASMethodReturnValues {
 };
 
 
+class cASNativeObject;
+
 namespace AvidaScript {
   const char* mapBuiltIn(ASBuiltIn_t builtin);  
   const char* mapToken(ASToken_t token);
@@ -260,6 +262,7 @@ namespace AvidaScript {
   template<> inline sASTypeInfo TypeOf<double>() { return sASTypeInfo(AS_TYPE_FLOAT); }
   template<> inline sASTypeInfo TypeOf<const cString&>() { return sASTypeInfo(AS_TYPE_STRING); }
   template<> inline sASTypeInfo TypeOf<void>() { return sASTypeInfo(AS_TYPE_VOID); }
+  template<> inline sASTypeInfo TypeOf<cASNativeObject>() { return sASTypeInfo(AS_TYPE_OBJECT_REF); }
 };
 
 #endif
