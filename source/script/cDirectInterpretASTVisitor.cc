@@ -1425,9 +1425,74 @@ void cDirectInterpretASTVisitor::VisitLiteralDict(cASTLiteralDict& node)
 }
 
 void cDirectInterpretASTVisitor::VisitObjectCall(cASTObjectCall& node)
-{
-  // @TODO - handle object call
-  INTERPRET_ERROR(INTERNAL);
+{ 
+  node.GetObject()->Accept(*this);
+ 
+  if (m_rtype.type != TYPE(OBJECT_REF))
+    INTERPRET_ERROR(TYPE_CAST, mapType(m_rtype.type), mapType(TYPE(OBJECT_REF)));
+  
+  cASNativeObject* nobj = m_rvalue.as_nobj;
+  
+  int mid = -1;
+  if (!nobj->LookupMethod(node.GetName(), mid))
+    INTERPRET_ERROR(NOBJ_METHOD_LOOKUP_FAILED, *node.GetName(), *m_rtype.info);
+    
+  int arity = nobj->GetArity(mid);
+  // Setup arguments
+  cASCPPParameter* args = new cASCPPParameter[arity];
+  if (arity) {
+    tListIterator<cASTNode> cit = node.GetArguments()->Iterator();
+    cASTNode* an = NULL;
+    for (int i = 0; i < arity; i++) {
+      an = cit.Next();
+      an->Accept(*this);
+      
+      switch (nobj->GetArgumentType(mid, i).type) {
+        case TYPE(BOOL):        args[i].Set(asBool(m_rtype, m_rvalue, node)); break;
+        case TYPE(CHAR):        args[i].Set(asChar(m_rtype, m_rvalue, node)); break;
+        case TYPE(FLOAT):       args[i].Set(asFloat(m_rtype, m_rvalue, node)); break;
+        case TYPE(INT):         args[i].Set(asInt(m_rtype, m_rvalue, node)); break;
+        case TYPE(STRING):      args[i].Set(asString(m_rtype, m_rvalue, node)); break;
+          
+        default:
+          INTERPRET_ERROR(INTERNAL);
+      }
+    }
+  }
+  
+  // Call the function
+  cASCPPParameter rvalue = nobj->CallMethod(mid, args);
+  
+  // Handle the return value
+  m_rtype = nobj->GetReturnType(mid);
+  switch (m_rtype.type) {
+    case TYPE(BOOL):        m_rvalue.as_bool = rvalue.Get<bool>(); break;
+    case TYPE(CHAR):        m_rvalue.as_char = rvalue.Get<char>(); break;
+    case TYPE(FLOAT):       m_rvalue.as_float = rvalue.Get<double>(); break;
+    case TYPE(INT):         m_rvalue.as_int = rvalue.Get<int>(); break;
+    case TYPE(STRING):      m_rvalue.as_string = rvalue.Get<cString*>(); break;
+    case TYPE(OBJECT_REF):  m_rvalue.as_nobj = rvalue.Get<cASNativeObject*>(); break;
+    case TYPE(VOID):        break;
+      
+    default:
+      INTERPRET_ERROR(INTERNAL);
+  }
+  
+  // Clean up arguments
+  for (int i = 0; i < arity; i++) {
+    switch (nobj->GetArgumentType(mid, i).type) {
+      case TYPE(BOOL):    break;
+      case TYPE(CHAR):    break;
+      case TYPE(FLOAT):   break;
+      case TYPE(INT):     break;
+      case TYPE(STRING):  delete args[i].Get<cString*>(); break;
+        
+      default:
+        INTERPRET_ERROR(INTERNAL);
+    }
+  }
+  delete [] args;
+  
 }
 
 void cDirectInterpretASTVisitor::VisitObjectReference(cASTObjectReference& node)
@@ -1776,7 +1841,7 @@ cASNativeObject* cDirectInterpretASTVisitor::asNativeObject(const cString& info,
 {
   switch (type.type) {
     case TYPE(OBJECT_REF):
-      if (type.info != info) INTERPRET_ERROR(NATIVE_OBJECT_TYPE_MISMATCH, *info, *type.info);
+      if (type.info != info) INTERPRET_ERROR(NOBJ_TYPE_MISMATCH, *info, *type.info);
       return value.as_nobj;
       
     default:
@@ -2762,7 +2827,14 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
     case AS_DIRECT_INTERPRET_ERR_MATRIX_SIZE_MISMATCH:
       std::cerr << "matrix size mismatch for '" << VA_ARG_STR << "' operation" << ERR_ENDL;
       break;
-    case AS_DIRECT_INTERPRET_ERR_NATIVE_OBJECT_TYPE_MISMATCH:
+    case AS_DIRECT_INTERPRET_ERR_NOBJ_METHOD_LOOKUP_FAILED:
+      {
+        const char* meth = VA_ARG_STR;
+        const char* itype = VA_ARG_STR;
+        std::cerr << "method '" << meth << "' not supported by '" << itype << "'" << ERR_ENDL;
+      }
+      break;
+    case AS_DIRECT_INTERPRET_ERR_NOBJ_TYPE_MISMATCH:
       {
         const char* otype = VA_ARG_STR;
         const char* itype = VA_ARG_STR;

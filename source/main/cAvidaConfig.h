@@ -574,6 +574,7 @@ public:
   
   
   bool Get(const cString& entry, cString& ret) const;
+  cString GetAsString(const cString& entry);
   bool Set(const cString& entry, const cString& val);
   void Set(tDictionary<cString>& sets);
   

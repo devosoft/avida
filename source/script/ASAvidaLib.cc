@@ -83,8 +83,17 @@ public:
 };
 
 
+static void setupNativeObjects()
+{
+  tASNativeObject<cAvidaConfig>::InitializeMethodRegistrar();
+  tASNativeObject<cAvidaConfig>::
+    RegisterMethod(new tASNativeObjectMethod<cAvidaConfig, cString (const cString&)>(&cAvidaConfig::GetAsString), "Get");
+};
+
 
 void RegisterASAvidaLib(cASLibrary* lib)
 {
+  setupNativeObjects();
+  
   lib->RegisterFunction(new tASNativeObjectInstantiate<cAvidaConfig ()>("Config"));
 }

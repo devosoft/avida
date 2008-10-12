@@ -384,6 +384,14 @@ bool cAvidaConfig::Get(const cString& entry, cString& ret) const
   return false;
 }
 
+cString cAvidaConfig::GetAsString(const cString& entry)
+{
+  // Default to empty string on lookup failure
+  cString rtn("");
+  Get(entry, rtn);
+  return rtn;
+}
+
 bool cAvidaConfig::Set(const cString& entry, const cString& val)
 {
   // Loop through all groups, then all entries, searching for the specified entry.

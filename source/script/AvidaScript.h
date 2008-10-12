@@ -164,7 +164,8 @@ typedef enum eASDirectInterpretErrors {
   AS_DIRECT_INTERPRET_ERR_KEY_NOT_FOUND,
   AS_DIRECT_INTERPRET_ERR_MATRIX_OP_TYPE_MISMATCH,
   AS_DIRECT_INTERPRET_ERR_MATRIX_SIZE_MISMATCH,
-  AS_DIRECT_INTERPRET_ERR_NATIVE_OBJECT_TYPE_MISMATCH,
+  AS_DIRECT_INTERPRET_ERR_NOBJ_METHOD_LOOKUP_FAILED,
+  AS_DIRECT_INTERPRET_ERR_NOBJ_TYPE_MISMATCH,
   AS_DIRECT_INTERPRET_ERR_OBJECT_ASSIGN_FAIL,
   AS_DIRECT_INTERPRET_ERR_TYPE_CAST,
   AS_DIRECT_INTERPRET_ERR_UNDEFINED_TYPE_OP,
@@ -261,6 +262,7 @@ namespace AvidaScript {
   template<> inline sASTypeInfo TypeOf<int>() { return sASTypeInfo(AS_TYPE_INT); }
   template<> inline sASTypeInfo TypeOf<double>() { return sASTypeInfo(AS_TYPE_FLOAT); }
   template<> inline sASTypeInfo TypeOf<const cString&>() { return sASTypeInfo(AS_TYPE_STRING); }
+  template<> inline sASTypeInfo TypeOf<cString>() { return sASTypeInfo(AS_TYPE_STRING); }
   template<> inline sASTypeInfo TypeOf<void>() { return sASTypeInfo(AS_TYPE_VOID); }
   template<> inline sASTypeInfo TypeOf<cASNativeObject>() { return sASTypeInfo(AS_TYPE_OBJECT_REF); }
 };
