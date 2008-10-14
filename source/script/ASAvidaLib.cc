@@ -24,7 +24,7 @@
 
 #include "ASAvidaLib.h"
 
-#include "cASCPPParamNativeObjectSupport.h"
+#include "cASCPPParameter_NativeObjectSupport.h"
 #include "cASLibrary.h"
 
 #include "cAvidaConfig.h"

@@ -1,5 +1,5 @@
 /*
- *  cASCPPParamNativeObjectSupport.h
+ *  cASCPPParameter_NativeObjectSupport.h
  *  Avida
  *
  *  Created by David on 10/13/08.
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef cASCPPParamNativeObjectSupport_h
-#define cASCPPParamNativeObjectSupport_h
+#ifndef cASCPPParameter_NativeObjectSupport_h
+#define cASCPPParameter_NativeObjectSupport_h
 
 #include "cASCPPParameter.h"
 #include "cASNativeObject.h"
