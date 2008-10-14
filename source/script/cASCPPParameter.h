@@ -55,6 +55,7 @@ public:
   void Set(cString* val) { m_string = val; }
   void Set(const cString& val) { m_string = new cString(val); }
   void Set(cASNativeObject* val) { m_nobj = val; }
+  template<class NativeClass> void Set(tASNativeObject<NativeClass>* val) { m_nobj = val; }
   template<class NativeClass> void Set(NativeClass* val) { m_nobj = new tASNativeObject<NativeClass>(val); }
   
   template<typename T> inline T Get() const;

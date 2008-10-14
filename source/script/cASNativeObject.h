@@ -74,7 +74,7 @@ private:
   static tDictionary<int>* s_method_dict;
   
   NativeClass* m_object;
-
+  
   
 public:
   tASNativeObject(NativeClass* obj) : m_object(obj) { ; }
@@ -95,8 +95,8 @@ public:
   {
     s_methods = new tArray<cASNativeObjectMethod<NativeClass>*>();
     s_method_dict = new tDictionary<int>();
-    
   }
+  
   static void RegisterMethod(cASNativeObjectMethod<NativeClass>* method, const cString& name)
   {
     int mid = s_methods->Push(method);

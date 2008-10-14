@@ -239,6 +239,7 @@ struct sASTypeInfo {
   
   sASTypeInfo() : type(AS_TYPE_INVALID) { ; }
   sASTypeInfo(ASType_t in_type) : type(in_type) { ; }
+  sASTypeInfo(ASType_t in_type, const cString& in_info) : type(in_type), info(in_info) { ; }
   
   bool operator==(const sASTypeInfo& ot) const { return (type == ot.type && info == ot.info); }
   bool operator!=(const sASTypeInfo& ot) const { return (type != ot.type || info != ot.info); }

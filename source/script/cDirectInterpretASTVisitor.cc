@@ -63,8 +63,13 @@ cDirectInterpretASTVisitor::cDirectInterpretASTVisitor(cSymbolTable* global_symt
       case TYPE(INT):         m_call_stack[i].value.as_int = 0; break;
       case TYPE(FLOAT):       m_call_stack[i].value.as_float = 0.0; break;
       case TYPE(MATRIX):      m_call_stack[i].value.as_matrix = NULL; break;
-      case TYPE(OBJECT_REF):  m_call_stack[i].value.as_ref = NULL; break;
       case TYPE(STRING):      m_call_stack[i].value.as_string = NULL; break;
+
+      case TYPE(OBJECT_REF):
+        m_call_stack[i].value.as_ref = NULL;
+        m_call_stack[i].type.info = m_global_symtbl->GetVariableType(i).info;
+        break;
+      
       default: break;
     }
   }
@@ -1167,6 +1172,7 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
           case TYPE(FLOAT):       args[i].Set(asFloat(m_rtype, m_rvalue, node)); break;
           case TYPE(INT):         args[i].Set(asInt(m_rtype, m_rvalue, node)); break;
           case TYPE(STRING):      args[i].Set(asString(m_rtype, m_rvalue, node)); break;
+          case TYPE(OBJECT_REF):  args[i].Set(asNativeObject(func->GetArgumentType(i).info, m_rtype, m_rvalue, node)); break;
             
           default:
             INTERPRET_ERROR(INTERNAL);
@@ -1200,6 +1206,8 @@ void cDirectInterpretASTVisitor::VisitFunctionCall(cASTFunctionCall& node)
         case TYPE(FLOAT):   break;
         case TYPE(INT):     break;
         case TYPE(STRING):  delete args[i].Get<cString*>(); break;
+        case TYPE(OBJECT_REF):
+          args[i].Get<cASNativeObject*>()->RemoveReference(); break;
           
         default:
           INTERPRET_ERROR(INTERNAL);
@@ -1535,7 +1543,10 @@ void cDirectInterpretASTVisitor::VisitVariableReference(cASTVariableReference& n
       case TYPE(STRING):      m_rvalue.as_string = new cString(*m_call_stack[sp + var_id].value.as_string); break;
 
       
-      case TYPE(OBJECT_REF):  m_rvalue.as_nobj = m_call_stack[sp + var_id].value.as_nobj->GetReference(); break;
+      case TYPE(OBJECT_REF):
+        m_rvalue.as_nobj = m_call_stack[sp + var_id].value.as_nobj->GetReference(); 
+        m_rtype.info = m_call_stack[sp + var_id].type.info;
+        break;
         
       default:
         INTERPRET_ERROR(INTERNAL);

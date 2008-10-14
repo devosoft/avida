@@ -28,9 +28,36 @@
 #include "cASLibrary.h"
 
 #include "cAvidaConfig.h"
+#include "cDefaultRunDriver.h"
 #include "cWorld.h"
 
 #include <cstring>
+
+
+namespace AvidaScript {
+  template<> inline sASTypeInfo TypeOf<cAvidaConfig*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, "Config"); }
+  template<> inline sASTypeInfo TypeOf<cDefaultRunDriver*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, "Driver"); }  
+  template<> inline sASTypeInfo TypeOf<cWorld*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, "World"); }
+};
+
+
+
+
+static void setupNativeObjects()
+{
+  tASNativeObject<cAvidaConfig>::InitializeMethodRegistrar();
+  tASNativeObject<cAvidaConfig>::
+    RegisterMethod(new tASNativeObjectMethod<cAvidaConfig, cString (const cString&)>(&cAvidaConfig::GetAsString), "Get");
+  
+  
+  tASNativeObject<cDefaultRunDriver>::InitializeMethodRegistrar();
+  tASNativeObject<cDefaultRunDriver>::
+    RegisterMethod(new tASNativeObjectMethod<cDefaultRunDriver, void ()>(&cDefaultRunDriver::Run), "Run");
+
+  
+  tASNativeObject<cWorld>::InitializeMethodRegistrar();
+};
+
 
 
 
@@ -43,10 +70,9 @@ private:
   sASTypeInfo m_signature;
   
 public:
-  tASNativeObjectInstantiate(const cString& name) : cASFunction(name)
+  tASNativeObjectInstantiate() : cASFunction(AvidaScript::TypeOf<NativeClass*>().info)
   {
-    m_rtype = AvidaScript::TypeOf<cASNativeObject>();
-    m_rtype.info = name;
+    m_rtype = AvidaScript::TypeOf<NativeClass*>();
     m_signature = AvidaScript::TypeOf<void>();
   }
   
@@ -69,10 +95,9 @@ private:
   sASTypeInfo m_signature;
   
 public:
-  tASNativeObjectInstantiate(const cString& name) : cASFunction(name)
+  tASNativeObjectInstantiate() : cASFunction(AvidaScript::TypeOf<NativeClass*>().info)
   {
-    m_rtype = AvidaScript::TypeOf<cASNativeObject>();
-    m_rtype.info = name;
+    m_rtype = AvidaScript::TypeOf<NativeClass*>();
     m_signature = AvidaScript::TypeOf<Arg1Type>();
   }
   
@@ -88,22 +113,13 @@ public:
 };
 
 
-static void setupNativeObjects()
-{
-  tASNativeObject<cAvidaConfig>::InitializeMethodRegistrar();
-  tASNativeObject<cAvidaConfig>::
-    RegisterMethod(new tASNativeObjectMethod<cAvidaConfig, cString (const cString&)>(&cAvidaConfig::GetAsString), "Get");
-
-
-  tASNativeObject<cWorld>::InitializeMethodRegistrar();
-};
-
 
 void RegisterASAvidaLib(cASLibrary* lib)
 {
   setupNativeObjects();
   
-  lib->RegisterFunction(new tASNativeObjectInstantiate<cAvidaConfig ()>("Config"));
-  lib->RegisterFunction(new tASNativeObjectInstantiate<cWorld (cAvidaConfig*)>("World"));
+  lib->RegisterFunction(new tASNativeObjectInstantiate<cAvidaConfig ()>());
+  lib->RegisterFunction(new tASNativeObjectInstantiate<cDefaultRunDriver (cWorld*)>());
+  lib->RegisterFunction(new tASNativeObjectInstantiate<cWorld (cAvidaConfig*)>());
     // @TODO - world takes ownership of config, but I don't handle that here... world could delete it without AS knowing
 }

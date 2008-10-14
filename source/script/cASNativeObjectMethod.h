@@ -50,6 +50,34 @@ public:
 template<class NativeClass, class FunctionType> class tASNativeObjectMethod;
 
 
+template<class NativeClass>
+class tASNativeObjectMethod<NativeClass, void ()> : public cASNativeObjectMethod<NativeClass>
+{
+private:
+  sASTypeInfo m_rtype;
+  sASTypeInfo m_signature;
+  void (NativeClass::*m_method)();
+  
+public:
+  tASNativeObjectMethod(void (NativeClass::*method)()) : m_method(method)
+  {
+    m_rtype = AvidaScript::TypeOf<void>();
+    m_signature = AvidaScript::TypeOf<void>();
+  }
+  
+  int GetArity() const { return 0; }
+  const sASTypeInfo& GetArgumentType(int arg) const { return m_signature; }
+  const sASTypeInfo& GetReturnType() const { return m_rtype; }
+  
+  cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
+  {
+    cASCPPParameter rvalue;
+    (object->*m_method)();
+    return cASCPPParameter(); // @TODO - return actual void value?
+  }
+};
+
+
 template<class NativeClass, class ReturnType, class Arg1Type>
 class tASNativeObjectMethod<NativeClass, ReturnType (Arg1Type)> : public cASNativeObjectMethod<NativeClass>
 {
