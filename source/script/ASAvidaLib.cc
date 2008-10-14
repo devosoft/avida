@@ -41,23 +41,29 @@ AS_DECLARE_NATIVE_OBJECT(cAvidaConfig,       Config);
 AS_DECLARE_NATIVE_OBJECT(cDefaultRunDriver,  Driver);
 AS_DECLARE_NATIVE_OBJECT(cWorld,             World);
 
+#undef AS_DECLARE_NATIVE_OBJECT
+
 
 static void setupNativeObjects()
 {
+#define REGISTER_METHOD(CLASS, NAME, METHOD, SIGNATURE) \
+  tASNativeObject<CLASS>::RegisterMethod(new tASNativeObjectMethod<CLASS, SIGNATURE>(&CLASS::METHOD), NAME);
+
+  
   tASNativeObject<cAvidaConfig>::InitializeMethodRegistrar();
-  tASNativeObject<cAvidaConfig>::
-    RegisterMethod(new tASNativeObjectMethod<cAvidaConfig, cString (const cString&)>(&cAvidaConfig::GetAsString), "Get");
+  REGISTER_METHOD(cAvidaConfig, "Get", GetAsString, cString (const cString&));
   
   
   tASNativeObject<cDefaultRunDriver>::InitializeMethodRegistrar();
-  tASNativeObject<cDefaultRunDriver>::
-    RegisterMethod(new tASNativeObjectMethod<cDefaultRunDriver, void ()>(&cDefaultRunDriver::Run), "Run");
+  REGISTER_METHOD(cDefaultRunDriver, "Run", Run, void ());
 
   
   tASNativeObject<cWorld>::InitializeMethodRegistrar();
+  
+  
+#undef REGISTER_METHOD
 };
 
-#undef AS_DECLARE_NATIVE_OBJECT
 
 template<class FunctionType> class tASNativeObjectInstantiate;
 
