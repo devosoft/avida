@@ -438,6 +438,8 @@
 		70436B250C36C64000A05ABA /* platform.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		70436B260C36C64000A05ABA /* PlatformExpert.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PlatformExpert.cc; sourceTree = "<group>"; };
 		70436B270C36C64000A05ABA /* PlatformExpert.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PlatformExpert.h; sourceTree = "<group>"; };
+		7048A95E0EA417CD0087B7BD /* cASNativeObjectMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASNativeObjectMethod.h; sourceTree = "<group>"; };
+		7048A9A40EA431140087B7BD /* cASCPPParamNativeObjectSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASCPPParamNativeObjectSupport.h; sourceTree = "<group>"; };
 		7049F2D70A66859300640512 /* cHardwareTransSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareTransSMT.cc; sourceTree = "<group>"; };
 		7049F2D80A66859300640512 /* cHardwareTransSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTransSMT.h; sourceTree = "<group>"; };
 		7049F3520A66A8F500640512 /* instset-classic.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-classic.cfg"; sourceTree = "<group>"; };
@@ -1252,6 +1254,8 @@
 				70AE2D3B0E7DF6C500A520B5 /* cASCPPParameter.h */,
 				70BB2A290E9FA12F008269D2 /* ASAvidaLib.h */,
 				70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */,
+				7048A95E0EA417CD0087B7BD /* cASNativeObjectMethod.h */,
+				7048A9A40EA431140087B7BD /* cASCPPParamNativeObjectSupport.h */,
 			);
 			path = script;
 			sourceTree = "<group>";

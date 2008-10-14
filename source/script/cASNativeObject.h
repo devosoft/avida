@@ -28,10 +28,9 @@
 #include "AvidaScript.h"
 
 #include "cASCPPParameter.h"
+#include "cASNativeObjectMethod.h"
 #include "tArray.h"
 #include "tDictionary.h"
-
-#include <typeinfo>
 
 class cString;
 
@@ -46,6 +45,7 @@ public:
   virtual ~cASNativeObject() { ; }
   
   virtual const char* GetType() = 0;
+  virtual void* GetObject() = 0;
   
   virtual cASCPPParameter CallMethod(int mid, cASCPPParameter args[]) const = 0;
   
@@ -59,51 +59,6 @@ public:
   inline cASNativeObject* GetReference() { m_ref_count++; return this; }
   inline void RemoveReference() { m_ref_count--; if (m_ref_count == 0) delete this; }
   inline bool IsShared() { return (m_ref_count > 1); }
-};
-
-
-
-template <class NativeClass>
-class cASNativeObjectMethod
-{
-public:
-  virtual ~cASNativeObjectMethod() { ; }
-  
-  virtual int GetArity() const = 0;
-  virtual const sASTypeInfo& GetArgumentType(int arg) const = 0;
-  virtual const sASTypeInfo& GetReturnType() const = 0;
-
-  virtual cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const = 0;
-};
-
-
-template<class NativeClass, class FunctionType> class tASNativeObjectMethod;
-
-template<class NativeClass, class ReturnType, class Arg1Type>
-class tASNativeObjectMethod<NativeClass, ReturnType (Arg1Type)> : public cASNativeObjectMethod<NativeClass>
-{
-private:
-  sASTypeInfo m_rtype;
-  sASTypeInfo m_signature;
-  ReturnType (NativeClass::*m_method)(Arg1Type);
-  
-public:
-  tASNativeObjectMethod(ReturnType (NativeClass::*method)(Arg1Type)) : m_method(method)
-  {
-    m_rtype = AvidaScript::TypeOf<ReturnType>();
-    m_signature = AvidaScript::TypeOf<Arg1Type>();
-  }
-  
-  int GetArity() const { return 1; }
-  const sASTypeInfo& GetArgumentType(int arg) const { return m_signature; }
-  const sASTypeInfo& GetReturnType() const { return m_rtype; }
-  
-  cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
-  {
-    cASCPPParameter rvalue;
-    rvalue.Set((object->*m_method)(args[0].Get<Arg1Type>()));
-    return rvalue;
-  }
 };
 
 
@@ -126,6 +81,7 @@ public:
   ~tASNativeObject() { delete m_object; }
 
   const char* GetType() { return typeid(m_object).name(); }
+  void* GetObject() { return (void*)m_object; }
   
   cASCPPParameter CallMethod(int mid, cASCPPParameter args[]) const { return (*s_methods)[mid]->Call(m_object, args); }
 

@@ -24,10 +24,15 @@
 
 #include "ASAvidaLib.h"
 
-#include "cASNativeObject.h"
+#include "cASCPPParamNativeObjectSupport.h"
 #include "cASLibrary.h"
 
 #include "cAvidaConfig.h"
+#include "cWorld.h"
+
+#include <cstring>
+
+
 
 template<class FunctionType> class tASNativeObjectInstantiate;
 
@@ -88,6 +93,9 @@ static void setupNativeObjects()
   tASNativeObject<cAvidaConfig>::InitializeMethodRegistrar();
   tASNativeObject<cAvidaConfig>::
     RegisterMethod(new tASNativeObjectMethod<cAvidaConfig, cString (const cString&)>(&cAvidaConfig::GetAsString), "Get");
+
+
+  tASNativeObject<cWorld>::InitializeMethodRegistrar();
 };
 
 
@@ -96,4 +104,6 @@ void RegisterASAvidaLib(cASLibrary* lib)
   setupNativeObjects();
   
   lib->RegisterFunction(new tASNativeObjectInstantiate<cAvidaConfig ()>("Config"));
+  lib->RegisterFunction(new tASNativeObjectInstantiate<cWorld (cAvidaConfig*)>("World"));
+    // @TODO - world takes ownership of config, but I don't handle that here... world could delete it without AS knowing
 }
