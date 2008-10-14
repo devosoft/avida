@@ -33,14 +33,13 @@
 
 #include <cstring>
 
-
-namespace AvidaScript {
-  template<> inline sASTypeInfo TypeOf<cAvidaConfig*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, "Config"); }
-  template<> inline sASTypeInfo TypeOf<cDefaultRunDriver*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, "Driver"); }  
-  template<> inline sASTypeInfo TypeOf<cWorld*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, "World"); }
-};
+#define AS_DECLARE_NATIVE_OBJECT(CLASS, NAME) \
+ namespace AvidaScript { template<> inline sASTypeInfo TypeOf<CLASS*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, #NAME); } }
 
 
+AS_DECLARE_NATIVE_OBJECT(cAvidaConfig,       Config);
+AS_DECLARE_NATIVE_OBJECT(cDefaultRunDriver,  Driver);
+AS_DECLARE_NATIVE_OBJECT(cWorld,             World);
 
 
 static void setupNativeObjects()
@@ -58,8 +57,7 @@ static void setupNativeObjects()
   tASNativeObject<cWorld>::InitializeMethodRegistrar();
 };
 
-
-
+#undef AS_DECLARE_NATIVE_OBJECT
 
 template<class FunctionType> class tASNativeObjectInstantiate;
 
