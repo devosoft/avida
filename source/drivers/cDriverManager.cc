@@ -26,6 +26,7 @@
 
 #include "cActionLibrary.h"
 #include "cAvidaDriver.h"
+#include "cDriverStatusConduit.h"
 #include "cWorldDriver.h"
 
 #include <cassert>
@@ -101,6 +102,22 @@ void cDriverManager::Unregister(cWorldDriver* drv)
   m_dm->m_wdrvs.Remove(drv);
   m_dm->m_mutex.Unlock();
 }
+
+cDriverStatusConduit& cDriverManager::Status()
+{
+  cDriverStatusConduit* conduit = m_dm->m_conduit.Get();
+  if (!conduit) {
+    conduit = new cDriverStatusConduit;
+    m_dm->m_conduit.Set(conduit);
+  }
+  return *conduit;
+}
+
+void cDriverManager::SetConduit(cDriverStatusConduit* conduit)
+{
+  m_dm->m_conduit.Set(conduit);
+}
+
 
 cActionLibrary* cDriverManager::GetActionLibrary()
 {

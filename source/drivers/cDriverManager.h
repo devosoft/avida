@@ -31,9 +31,13 @@
 #ifndef cMutex_h
 #include "cMutex.h"
 #endif
+#ifndef tThreadSpecific_h
+#include "tThreadSpecific.h"
+#endif
 
 class cActionLibrary;
 class cAvidaDriver;
+class cDriverStatusConduit;
 class cWorldDriver;
 
 
@@ -47,6 +51,8 @@ private:
   
   cMutex m_mutex;
   cActionLibrary* m_actlib;
+  
+  tThreadSpecific<cDriverStatusConduit> m_conduit;
   
   cDriverManager();
   ~cDriverManager();
@@ -65,6 +71,9 @@ public:
   static void Unregister(cAvidaDriver* drv);
   static void Unregister(cWorldDriver* drv);
   
+  static cDriverStatusConduit& Status();
+  static void SetConduit(cDriverStatusConduit* conduit);
+    
   static cActionLibrary* GetActionLibrary();
 };
 

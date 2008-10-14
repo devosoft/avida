@@ -33,7 +33,8 @@
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "cDriverManager.h"
+#include "cDriverStatusConduit.h"
 #include "tDictionary.h"
 
 cHardwareManager::cHardwareManager(cWorld* world)
@@ -66,12 +67,12 @@ cHardwareManager::cHardwareManager(cWorld* world)
 			default_filename = cHardwareGX::GetDefaultInstFilename();
 			break;      
 		default:
-      m_world->GetDriver().RaiseFatalException(1, "Unknown/Unsupported HARDWARE_TYPE specified");
+      cDriverManager::Status().SignalFatalError(1, "Unknown/Unsupported HARDWARE_TYPE specified");
   }
 
   if (filename == "" || filename == "-") {
     filename = default_filename;
-    m_world->GetDriver().NotifyComment(cString("Using default instruction set: ") + filename);
+    cDriverManager::Status().NotifyComment(cString("Using default instruction set: ") + filename);
   }
   
   if (m_world->GetConfig().INST_SET_FORMAT.Get()) {
@@ -105,7 +106,7 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org, cInstSet* inst_set)
       hw = new cHardwareGX(m_world, in_org, m_inst_set);
       break;
     default:
-      m_world->GetDriver().RaiseFatalException(-1, "Unrecognized hardware type.");
+      cDriverManager::Status().SignalFatalError(1, "Unknown/Unsupported HARDWARE_TYPE specified");
       break;
   }
   
