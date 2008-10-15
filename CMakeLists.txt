@@ -205,6 +205,7 @@ SET(DRIVERS_SOURCES
   ${DRIVERS_DIR}/cDefaultAnalyzeDriver.cc
   ${DRIVERS_DIR}/cDefaultRunDriver.cc
   ${DRIVERS_DIR}/cDriverManager.cc
+  ${DRIVERS_DIR}/cDriverStatusConduit.cc
   ${DRIVERS_DIR}/cFallbackWorldDriver.cc
 )
 SOURCE_GROUP(drivers FILES ${DRIVERS_SOURCES})
