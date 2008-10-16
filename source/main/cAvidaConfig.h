@@ -566,15 +566,18 @@ public:
   
 #endif
   
-  void Load(const cString& filename, const bool& crash_if_not_found);
-  void Load(const cString& filename, const tDictionary<cString>& mappings, const bool& crash_if_not_found);
+  inline void Load(const cString& filename) { Load(filename, false); }
+  void Load(const cString& filename, bool crash_if_not_found);
+  void Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found = false);
   void Print(const cString& filename);
   void Status();
   void PrintReview();
   
   
   bool Get(const cString& entry, cString& ret) const;
-  cString GetAsString(const cString& entry);
+  cString GetAsString(const cString& entry) const;
+  bool HasEntry(const cString& entry) const { cString rtn; return Get(entry, rtn); }
+  
   bool Set(const cString& entry, const cString& val);
   void Set(tDictionary<cString>& sets);
   

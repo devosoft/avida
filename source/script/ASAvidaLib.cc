@@ -46,22 +46,28 @@ AS_DECLARE_NATIVE_OBJECT(cWorld,             World);
 
 static void setupNativeObjects()
 {
-#define REGISTER_METHOD(CLASS, NAME, METHOD, SIGNATURE) \
+#define REGISTER_S_METHOD(CLASS, NAME, METHOD, SIGNATURE) \
   tASNativeObject<CLASS>::RegisterMethod(new tASNativeObjectMethod<CLASS, SIGNATURE>(&CLASS::METHOD), NAME);
+#define REGISTER_C_METHOD(CLASS, NAME, METHOD, SIGNATURE) \
+  tASNativeObject<CLASS>::RegisterMethod(new tASNativeObjectMethodConst<CLASS, SIGNATURE>(&CLASS::METHOD), NAME);
 
   
   tASNativeObject<cAvidaConfig>::InitializeMethodRegistrar();
-  REGISTER_METHOD(cAvidaConfig, "Get", GetAsString, cString (const cString&));
+  REGISTER_C_METHOD(cAvidaConfig, "Get", GetAsString, cString (const cString&));
+  REGISTER_C_METHOD(cAvidaConfig, "HasEntry", HasEntry, bool (const cString&));
+  REGISTER_S_METHOD(cAvidaConfig, "Load", Load, void (const cString&));
+  REGISTER_S_METHOD(cAvidaConfig, "Set", Set, bool (const cString&, const cString&));
   
   
   tASNativeObject<cDefaultRunDriver>::InitializeMethodRegistrar();
-  REGISTER_METHOD(cDefaultRunDriver, "Run", Run, void ());
+  REGISTER_S_METHOD(cDefaultRunDriver, "Run", Run, void ());
 
   
   tASNativeObject<cWorld>::InitializeMethodRegistrar();
   
   
 #undef REGISTER_METHOD
+#undef REGISTER_METHOD_CONST
 };
 
 

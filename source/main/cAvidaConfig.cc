@@ -29,6 +29,7 @@
 #include "defs.h"
 #include "cActionLibrary.h"
 #include "cDriverManager.h"
+#include "cDriverStatusConduit.h"
 #include "cInitFile.h"
 #include "cStringIterator.h"
 #include "tDictionary.h"
@@ -54,14 +55,14 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
   }
 }
 
-void cAvidaConfig::Load(const cString& filename, const bool& crash_if_not_found = false)
+void cAvidaConfig::Load(const cString& filename, bool crash_if_not_found)
 {
   tDictionary<cString> mappings;
   Load(filename, mappings, crash_if_not_found);
 }
 
 
-void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings, const bool& crash_if_not_found = false)
+void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found)
 {
   // Load the contents from the file.
   cInitFile init_file(filename, mappings);
@@ -69,28 +70,25 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
   if (!init_file.WasOpened()) {
     tConstListIterator<cString> err_it(init_file.GetErrors());
     const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
+    while ((errstr = err_it.Next())) cDriverManager::Status().SignalError(*errstr);
     if (init_file.WasFound()) {
       // exit the program if the requested configuration was found but could not be loaded
-      cerr << "Error: failed to load '" << filename << "'.  Ending the program." << endl;
-      exit(-1);
+      cDriverManager::Status().SignalFatalError(-1, cString("unable to open configuration file '") + filename + "'");
     } else if (crash_if_not_found) {
       // exit the program if the requested configuration file is not found
-      cerr << "Error: Unable to find file '" << filename 
-           << "'.  Ending the program." << endl;
-      exit(-1);
+      cDriverManager::Status().SignalFatalError(-1, cString("configuration file '") + filename + "' not found"); 
     } else {
       // If we failed to open the config file, try creating it.
-      cerr << "Warning: Unable to find file '" << filename 
-           << "'.  Creating default." << endl;
+      cDriverManager::Status().NotifyWarning(
+        cString("configuration file '") + filename + "' not found, creating default config...");
       Print(filename);
     }
   }
   
   cString version_id = init_file.ReadString("VERSION_ID", "Unknown");
   if (version_id != VERSION) {
-    cerr << "Warning: Configuration file version number mismatch." << endl;
-    cerr << "         Avida Version: \"" << VERSION << "\".  Config Version: \"" << version_id << "\"" << endl;
+    cDriverManager::Status().NotifyWarning(
+      cString("config file version number mismatch -- Avida: '") + VERSION + "'  File: '" + version_id + "'");
   }
   
 
@@ -139,7 +137,7 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
   // Print out the collected warnings and messages
   tConstListIterator<cString> err_it(init_file.GetErrors());
   const cString* errstr = NULL;
-  while ((errstr = err_it.Next())) cerr << "Warning: " << *errstr << endl;
+  while ((errstr = err_it.Next())) cDriverManager::Status().NotifyWarning(*errstr);
 }
 
 /* Routine to create an avida configuration file from internal default values */
@@ -384,11 +382,12 @@ bool cAvidaConfig::Get(const cString& entry, cString& ret) const
   return false;
 }
 
-cString cAvidaConfig::GetAsString(const cString& entry)
+cString cAvidaConfig::GetAsString(const cString& entry) const
 {
   // Default to empty string on lookup failure
   cString rtn("");
-  Get(entry, rtn);
+  if (!Get(entry, rtn))
+    cDriverManager::Status().SignalError(cString("config entry '") + entry + "' not found");
   return rtn;
 }
 
