@@ -27,6 +27,7 @@
 
 #include "ASCoreLib.h"
 #include "ASAvidaLib.h"
+#include "ASAnalyzeLib.h"
 
 #include "cASLibrary.h"
 #include "cDirectInterpretASTVisitor.h"
@@ -48,6 +49,7 @@ int main (int argc, char * const argv[])
   cASLibrary* lib = new cASLibrary;  
   RegisterASCoreLib(lib);
   RegisterASAvidaLib(lib);
+  RegisterASAnalyzeLib(lib);
   
   cParser* parser = new cParser;
   

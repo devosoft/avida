@@ -83,7 +83,7 @@ public:
   }
 };
                   
-                  
+
 template<typename Arg1Type> 
 class tASFunction<void (Arg1Type)> : public cASFunction
 {
@@ -107,6 +107,132 @@ public:
   cASCPPParameter Call(cASCPPParameter args[]) const
   {
     (*m_func)(args[0].Get<Arg1Type>());
+    
+    return cASCPPParameter();
+  }
+};
+
+
+
+
+template<typename ReturnType, typename Arg1Type, typename Arg2Type> 
+class tASFunction<ReturnType (Arg1Type, Arg2Type)> : public cASFunction
+{
+private:
+  typedef ReturnType (*TrgtFunType)(Arg1Type, Arg2Type);
+  
+  sASTypeInfo m_signature[2];
+  TrgtFunType m_func;
+  
+  
+public:
+  tASFunction(TrgtFunType func, const cString& name) : cASFunction(name), m_func(func)
+  {
+    m_rtype = AvidaScript::TypeOf<ReturnType>();
+    m_signature[0] = AvidaScript::TypeOf<Arg1Type>();
+    m_signature[1] = AvidaScript::TypeOf<Arg2Type>();
+  }
+  
+  int GetArity() const { return 2; }
+  const sASTypeInfo& GetArgumentType(int arg) const { return m_signature[arg]; }
+  
+  cASCPPParameter Call(cASCPPParameter args[]) const
+  {
+    cASCPPParameter rvalue;
+    rvalue.Set((*m_func)(args[0].Get<Arg1Type>(), args[1].Get<Arg2Type>()));
+    return rvalue;
+  }
+};
+
+
+template<typename Arg1Type, typename Arg2Type> 
+class tASFunction<void (Arg1Type, Arg2Type)> : public cASFunction
+{
+private:
+  typedef void (*TrgtFunType)(Arg1Type, Arg2Type);
+  
+  sASTypeInfo m_signature[2];
+  TrgtFunType m_func;
+  
+  
+public:
+  tASFunction(TrgtFunType func, const cString& name) : cASFunction(name), m_func(func)
+  {
+    m_rtype = AvidaScript::TypeOf<void>();
+    m_signature[0] = AvidaScript::TypeOf<Arg1Type>();
+    m_signature[1] = AvidaScript::TypeOf<Arg2Type>();
+  }
+  
+  int GetArity() const { return 2; }
+  const sASTypeInfo& GetArgumentType(int arg) const { return m_signature[arg]; }
+  
+  cASCPPParameter Call(cASCPPParameter args[]) const
+  {
+    (*m_func)(args[0].Get<Arg1Type>(), args[1].Get<Arg2Type>());
+    
+    return cASCPPParameter();
+  }
+};
+
+
+
+
+template<typename ReturnType, typename Arg1Type, typename Arg2Type, typename Arg3Type> 
+class tASFunction<ReturnType (Arg1Type, Arg2Type, Arg3Type)> : public cASFunction
+{
+private:
+  typedef ReturnType (*TrgtFunType)(Arg1Type, Arg2Type, Arg3Type);
+  
+  sASTypeInfo m_signature[3];
+  TrgtFunType m_func;
+  
+  
+public:
+  tASFunction(TrgtFunType func, const cString& name) : cASFunction(name), m_func(func)
+  {
+    m_rtype = AvidaScript::TypeOf<ReturnType>();
+    m_signature[0] = AvidaScript::TypeOf<Arg1Type>();
+    m_signature[1] = AvidaScript::TypeOf<Arg2Type>();
+    m_signature[2] = AvidaScript::TypeOf<Arg3Type>();
+  }
+  
+  int GetArity() const { return 3; }
+  const sASTypeInfo& GetArgumentType(int arg) const { return m_signature[arg]; }
+  
+  cASCPPParameter Call(cASCPPParameter args[]) const
+  {
+    cASCPPParameter rvalue;
+    rvalue.Set((*m_func)(args[0].Get<Arg1Type>(), args[1].Get<Arg2Type>(), args[2].Get<Arg3Type>()));
+    return rvalue;
+  }
+};
+
+
+template<typename Arg1Type, typename Arg2Type, typename Arg3Type> 
+class tASFunction<void (Arg1Type, Arg2Type, Arg3Type)> : public cASFunction
+{
+private:
+  typedef void (*TrgtFunType)(Arg1Type, Arg2Type, Arg3Type);
+  
+  sASTypeInfo m_signature[3];
+  TrgtFunType m_func;
+  
+  
+public:
+  tASFunction(TrgtFunType func, const cString& name) : cASFunction(name), m_func(func)
+  {
+    m_rtype = AvidaScript::TypeOf<void>();
+    m_signature[0] = AvidaScript::TypeOf<Arg1Type>();
+    m_signature[1] = AvidaScript::TypeOf<Arg2Type>();
+    m_signature[2] = AvidaScript::TypeOf<Arg3Type>();
+  }
+  
+  int GetArity() const { return 2; }
+  const sASTypeInfo& GetArgumentType(int arg) const { return m_signature[arg]; }
+  
+  cASCPPParameter Call(cASCPPParameter args[]) const
+  {
+    (*m_func)(args[0].Get<Arg1Type>(), args[1].Get<Arg2Type>(), args[2].Get<Arg3Type>());
     
     return cASCPPParameter();
   }
