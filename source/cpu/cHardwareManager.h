@@ -50,7 +50,7 @@ private:
   cWorld* m_world;
   cInstSet* m_inst_set;
   int m_type;
-//  cTestResources m_testres;
+  int m_cpu_count;
   
   cHardwareManager(); // @not_implemented
   cHardwareManager(const cHardwareManager&); // @not_implemented

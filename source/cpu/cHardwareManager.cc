@@ -24,6 +24,8 @@
 
 #include "cHardwareManager.h"
 
+#include "cDriverManager.h"
+#include "cDriverStatusConduit.h"
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
 #include "cHardwareSMT.h"
@@ -32,13 +34,12 @@
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
+#include "cStringUtil.h"
 #include "cWorld.h"
-#include "cDriverManager.h"
-#include "cDriverStatusConduit.h"
 #include "tDictionary.h"
 
 cHardwareManager::cHardwareManager(cWorld* world)
-: m_world(world), m_type(world->GetConfig().HARDWARE_TYPE.Get()) /*, m_testres(world) */
+: m_world(world), m_type(world->GetConfig().HARDWARE_TYPE.Get()), m_cpu_count(0)
 {
   cString filename = world->GetConfig().INST_SET.Get();
 
@@ -84,10 +85,9 @@ cHardwareManager::cHardwareManager(cWorld* world)
 
 cHardwareBase* cHardwareManager::Create(cOrganism* in_org, cInstSet* inst_set)
 {
-  static unsigned int cpu=0;
   assert(in_org != NULL);
 	
-  cHardwareBase* hw=0;
+  cHardwareBase* hw = 0;
 	
   switch (m_type) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
@@ -111,10 +111,9 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org, cInstSet* inst_set)
   }
   
   // Are we tracing the execution of this cpu?
-  if(m_world->GetConfig().TRACE_EXECUTION.Get()) {
-    std::ostringstream filename;
-    filename << "trace-" << cpu++ << ".trace";    
-    hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename.str().c_str())));
+  if (m_world->GetConfig().TRACE_EXECUTION.Get()) {
+    cString filename =  cStringUtil::Stringf("trace-%d.trace", m_cpu_count++);
+    hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename)));
   }
   
   assert(hw != 0);
