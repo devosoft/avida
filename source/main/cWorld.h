@@ -49,6 +49,7 @@
 
 class cActionLibrary;
 class cAnalyze;
+class cAnalyzeGenotype;
 class cAvidaDriver;
 class cClassificationManager;
 class cEnvironment;
@@ -58,6 +59,8 @@ class cPopulation;
 class cStats;
 class cTestCPU;
 class cWorldDriver;
+template<class T> class tDataEntry;
+template<class T> class tDictionary;
 
 class cWorld
 {
@@ -77,6 +80,7 @@ protected:
   cPopulation* m_pop;
   cStats* m_stats;
   cWorldDriver* m_driver;
+  tDictionary<tDataEntry<cAnalyzeGenotype>*>* m_dedict_genotype;
 
   cRandom m_rng;
   
@@ -88,6 +92,7 @@ protected:
   // Internal Methods
   void Setup();
   
+  
   cWorld(const cWorld&); // @not_implemented
   cWorld& operator=(const cWorld&); // @not_implemented
   
@@ -95,7 +100,6 @@ public:
   cWorld(cAvidaConfig* cfg) : m_analyze(NULL), m_conf(cfg), m_ctx(m_rng) { Setup(); }
   ~cWorld();
   
-  void SetConfig(cAvidaConfig* cfg) { delete m_conf; m_conf = cfg; }
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
   
   // General Object Accessors
@@ -111,6 +115,8 @@ public:
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }
   cWorldDriver& GetDriver() { return *m_driver; }
+  
+  const tDictionary<tDataEntry<cAnalyzeGenotype>*>& GetGenotypeDEDict() const { return *m_dedict_genotype; }
   
   // Access to Data File Manager
   std::ofstream& GetDataFileOFStream(const cString& fname) { return m_data_mgr->GetOFStream(fname); }

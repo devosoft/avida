@@ -123,8 +123,6 @@ private:
 
   int interactive_depth;  // How nested are we if in interactive mode?
 
-  tList< tDataEntry<cAnalyzeGenotype> > genotype_data_list;
-
   cRandom random;
 
   // These are a set of constants used to determine what type of comparisons should be done between an
@@ -189,9 +187,8 @@ private:
   int CompareFlexStat(const cFlexVar& org_stat, const cFlexVar& parent_stat, int compare_type = FLEX_COMPARE_MAX);
   
   // Deal with genotype data list (linking keywords to stats)
-  void SetupGenotypeDataList();	
   tDataEntryCommand<cAnalyzeGenotype>* GetGenotypeDataCommand(const cString & stat_entry);
-  void LoadGenotypeDataList(cStringList arg_list, tList< tDataEntryCommand<cAnalyzeGenotype> > & output_list);
+  void LoadGenotypeDataList(cStringList arg_list, tList<tDataEntryCommand<cAnalyzeGenotype> > & output_list);
   
   void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString));
   void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString, tList<cAnalyzeCommand> &));

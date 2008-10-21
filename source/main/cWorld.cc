@@ -26,6 +26,7 @@
 
 #include "avida.h"
 #include "cAnalyze.h"
+#include "cAnalyzeGenotype.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
@@ -57,6 +58,8 @@ cWorld::~cWorld()
   // Delete after all classes that may be logging items
   if (m_data_mgr) { m_data_mgr->FlushAll(); }
   delete m_data_mgr; m_data_mgr = NULL;
+  
+  cAnalyzeGenotype::DestroyDEDict(m_dedict_genotype);
 
   // Delete Last
   delete m_conf; m_conf = NULL;
@@ -116,7 +119,6 @@ void cWorld::Setup()
     Avida::Exit(-1);
   }
   
-	
   
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
@@ -130,6 +132,9 @@ void cWorld::Setup()
   const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
   const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos);
+
+  
+  m_dedict_genotype = cAnalyzeGenotype::BuildDEDict(this);
 }
 
 cAnalyze& cWorld::GetAnalyze()

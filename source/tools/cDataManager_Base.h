@@ -49,8 +49,8 @@ public:
   
   const cString& GetFiletype() const { return filetype; }
 
-  virtual bool Print(const cString& name, std::ostream& fp) = 0;
-  virtual bool GetDesc(const cString& name, cString& out_desc) = 0;
+  virtual bool Print(const cString& name, std::ostream& fp) const = 0;
+  virtual bool GetDesc(const cString& name, cString& out_desc) const = 0;
 
   bool PrintRow(cDataFile& data_file, cString row_entries, char sep=' ');
 };

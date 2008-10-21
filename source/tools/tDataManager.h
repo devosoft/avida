@@ -66,7 +66,7 @@ public:
     return true;
   }
 
-  bool Print(const cString& name, std::ostream& fp)
+  bool Print(const cString& name, std::ostream& fp) const
   {
     tDataEntry<TargetType>* cur_entry = NULL;
     if (m_entry_dict.Find(name, cur_entry) == false) return false;
@@ -74,12 +74,18 @@ public:
     return true;
   }
 
-  bool GetDesc(const cString& name, cString& out_desc)
+  bool GetDesc(const cString& name, cString& out_desc) const
   {
     tDataEntry<TargetType>* cur_entry = NULL;
     if (m_entry_dict.Find(name, cur_entry) == false) return false;
     out_desc = cur_entry->GetDesc();
     return true;
+  }
+  
+  inline bool GetEntry(const cString& name, const tDataEntry<TargetType>*& entry) const
+  { 
+    if (m_entry_dict.Find(name, entry)) return true;
+    return false;
   }
 };
 

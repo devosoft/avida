@@ -116,7 +116,6 @@ cAnalyze::cAnalyze(cWorld* world)
 
 cAnalyze::~cAnalyze()
 {
-  while (genotype_data_list.GetSize()) delete genotype_data_list.Pop();
   while (command_list.GetSize()) delete command_list.Pop();
   while (function_list.GetSize()) delete function_list.Pop();
 }
@@ -2234,28 +2233,10 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Detailing batches for " << keyword << endl;
   else cout << "Detailing Batches..." << endl;
   
-  // Scan the functions list for the keyword we need...
-  SetupGenotypeDataList();
-  tListIterator< tDataEntry<cAnalyzeGenotype> >
-    output_it(genotype_data_list);
-  
-  // Divide up the keyword into its acrual entry and its arguments...
-  cString cur_args = keyword;
-  cString cur_entry = cur_args.Pop(':');
-  
   // Find its associated command...
-  tDataEntryCommand<cAnalyzeGenotype> * cur_command = NULL;
-  bool found = false;
-  while (output_it.Next() != NULL) {
-    if (output_it.Get()->GetName() == cur_entry) {
-      cur_command = new tDataEntryCommand<cAnalyzeGenotype>
-      (output_it.Get(), cur_args);
-      found = true;
-      break;
-    }
-  }
-  if (found == false) {
-    cout << "Error: Unknown data type: " << cur_entry << endl;
+  tDataEntryCommand<cAnalyzeGenotype>* cur_command = GetGenotypeDataCommand(keyword);
+  if (!cur_command) {
+    cout << "error: no data entry, unable to detail batches" << endl;
     return;
   }
   
@@ -2307,7 +2288,6 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
     tListIterator<cAnalyzeGenotype> batch_it(batch[i].List());
     cAnalyzeGenotype * genotype = NULL;
     while ((genotype = batch_it.Next()) != NULL) {
-      output_it.Reset();
       if (file_type == FILE_TYPE_HTML) fp << "<td>";
       
       genotype->SetSpecialArgs(cur_command->GetArgs());
@@ -2355,61 +2335,10 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   }
   
   // Construct a linked list of details needed...
-  tList< tDataEntry<cAnalyzeGenotype> > output_list;
-  tListIterator< tDataEntry<cAnalyzeGenotype> > output_it(output_list);
+  tList<tDataEntryCommand<cAnalyzeGenotype> > output_list;
+  tListIterator<tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
+  LoadGenotypeDataList(cStringList(cur_string), output_list);
   
-  // For the moment, just put everything into the output list.
-  SetupGenotypeDataList();
-  
-  // If no args were given, load all of the stats.
-  if (cur_string.CountNumWords() == 0) {
-    tListIterator< tDataEntry<cAnalyzeGenotype> >
-    genotype_data_it(genotype_data_list);
-    while (genotype_data_it.Next() != NULL) {
-      output_list.PushRear(genotype_data_it.Get());
-    }
-  }
-  // Otherwise, load only those listed.
-  else {
-    while (cur_string.GetSize() != 0) {
-      // Setup the next entry
-      cString cur_entry = cur_string.PopWord();
-      bool found_entry = false;
-      
-      // Scan the genotype data list for the current entry
-      tListIterator< tDataEntry<cAnalyzeGenotype> >
-        genotype_data_it(genotype_data_list);
-      
-      while (genotype_data_it.Next() != NULL) {
-        if (genotype_data_it.Get()->GetName() == cur_entry) {
-          output_list.PushRear(genotype_data_it.Get());
-          found_entry = true;
-          break;
-        }
-      }
-      
-      // If the entry was not found, give a warning.
-      if (found_entry == false) {
-        int best_match = 1000;
-        cString best_entry;
-        
-        genotype_data_it.Reset();
-        while (genotype_data_it.Next() != NULL) {
-          const cString & test_str = genotype_data_it.Get()->GetName();
-          const int test_dist = cStringUtil::EditDistance(test_str, cur_entry);
-          if (test_dist < best_match) {
-            best_match = test_dist;
-            best_entry = test_str;
-          }
-        }	
-        
-        cerr << "Warning: Format entry \"" << cur_entry
-          << "\" not found.  Best match is \""
-          << best_entry << "\"." << endl;
-      }
-      
-    }
-  }
   
   // Setup the file...
   ofstream& fp = m_world->GetDataFileOFStream(filename);
@@ -2465,7 +2394,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
     cAnalyzeGenotype * genotype = batch[batch_id].List().GetFirst();
     if (genotype == NULL) continue;
     output_it.Reset();
-    tDataEntry<cAnalyzeGenotype> * data_entry = NULL;
+    tDataEntryCommand<cAnalyzeGenotype>* data_entry = NULL;
     const cString & batch_name = batch[batch_id].Name();
     if (file_type == FILE_TYPE_HTML) {
       fp << "<tr><th><a href=lineage." << batch_name << ".html>"
@@ -2478,9 +2407,9 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
       if (file_type == FILE_TYPE_HTML) {
         fp << "<td align=center><a href=\""
         << data_entry->GetName() << "." << batch_name << ".png\">"
-        << data_entry->Get(genotype) << "</a> ";
+        << data_entry->GetValue(genotype) << "</a> ";
       } else {  // if (file_type == FILE_TYPE_TEXT) {
-        fp << data_entry->Get(genotype) << " ";
+        fp << data_entry->GetValue(genotype) << " ";
       }
       }
     if (file_type == FILE_TYPE_HTML) fp << "</tr>";
@@ -9212,218 +9141,43 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
 
 
 
-// A basic macro to link a keyword to a description and Get and Set methods in cAnalyzeGenotype.
-#define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                         \
-{                                                                                                          \
-  cString nstr_str(#NSTR), hstr_str(#HSTR);                                                                \
-  cString null_str = "0";                                                                                  \
-  if (nstr_str != "0") null_str = NSTR;                                                                    \
-  cString html_str = "align=center";                                                                       \
-  if (hstr_str != "0") html_str = HSTR;                                                                    \
-                                                                                                           \
-  genotype_data_list.PushRear(new tDataEntryOfType<cAnalyzeGenotype, TYPE>                                 \
-    (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str));            \
-}
-
-
-void cAnalyze::SetupGenotypeDataList()
+// Find a data entry bassed on a keyword
+tDataEntryCommand<cAnalyzeGenotype>* cAnalyze::GetGenotypeDataCommand(const cString& stat_entry) 
 {
-  if (genotype_data_list.GetSize() != 0) return; // List already setup.
-  
-  // To add a new keyword connected to a stat in cAnalyzeGenotype, you need to connect all of the pieces here.
-  // The ADD_GDATA macro takes eight arguments:
-  //  type              : The type of the variables being linked in.
-  //  keyword           : The short word used to reference this variable from analyze mode.
-  //  description       : A slightly fuller description of what this variable is; used in data legends.
-  //  "get" accessor    : The accessor method to retrieve the value of this variable from cAnalyzeGenotype
-  //  "set" accessor    : The method to set this variable in cAnalyzeGenotype (use SetNULL if none exists).
-  //  comparison method : A method that will take two genotypes and compare this value bewtween them (or CompareNULL)
-  //  null keyword      : A string to represent what should be printed if this stat is zero. (0 for default)
-  //  html flags        : A string to be included in the <td> when stat is printed in HTML table (0 for "align=center")
-  
-  // As a reminder about the compare types:
-  //   FLEX_COMPARE_NONE   = 0  -- No comparisons should be done at all.
-  //   FLEX_COMPARE_DIFF   = 1  -- Only track if a stat has changed, don't worry about direction.
-  //   FLEX_COMPARE_MAX    = 2  -- Color higher values as beneficial, lower as harmful.
-  //   FLEX_COMPARE_MIN    = 3  -- Color lower values as beneficial, higher as harmful.
-  //   FLEX_COMPARE_DIFF2  = 4  -- Same as FLEX_COMPARE_DIFF, but 0 indicates trait is off.
-  //   FLEX_COMPARE_MAX2   = 5  -- Same as FLEX_COMPARE_MAX, and 0 indicates trait is off.
-  //   FLEX_COMPARE_MIN2   = 6  -- Same as FLEX_COMPARE_MIN, BUT 0 still indicates off.
-  
-  ADD_GDATA(const cString&, "name", "Genotype Name",                 GetName,           SetName,       0, 0, 0);
-  ADD_GDATA(bool,   "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
-  ADD_GDATA(int,    "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
-  ADD_GDATA(const cString &, "tag", "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
-  ADD_GDATA(int,    "parent_id",    "Parent ID",                     GetParentID,       SetParentID,   0, 0, 0);
-  ADD_GDATA(int,    "parent2_id",   "Second Parent ID (sexual orgs)",GetParent2ID,      SetParent2ID,  0, 0, 0);
-  ADD_GDATA(int,    "parent_dist",  "Parent Distance",               GetParentDist,     SetParentDist, 0, 0, 0);
-  ADD_GDATA(int,    "ancestor_dist","Ancestor Distance",             GetAncestorDist,   SetAncestorDist, 0, 0, 0);
-  ADD_GDATA(int,    "lineage",      "Unique Lineage Label",          GetLineageLabel,   SetLineageLabel, 0, 0, 0);
-  ADD_GDATA(int,    "num_cpus",     "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
-  ADD_GDATA(int,    "total_cpus",   "Total CPUs Ever",               GetTotalCPUs,      SetTotalCPUs,  0, 0, 0);
-  ADD_GDATA(int,    "length",       "Genome Length",                 GetLength,         SetLength,     4, 0, 0);
-  ADD_GDATA(int,    "copy_length",  "Copied Length",                 GetCopyLength,     SetCopyLength, 0, 0, 0);
-  ADD_GDATA(int,    "exe_length",   "Executed Length",               GetExeLength,      SetExeLength,  0, 0, 0);
-  ADD_GDATA(double, "merit",        "Merit",                         GetMerit,          SetMerit,      5, 0, 0);
-  ADD_GDATA(double, "comp_merit",   "Computational Merit",           GetCompMerit,      SetNULL,       5, 0, 0);
-  ADD_GDATA(double, "comp_merit_ratio", "Computational Merit Ratio", GetCompMeritRatio, SetNULL,       5, 0, 0);
-  ADD_GDATA(int,    "gest_time",    "Gestation Time",                GetGestTime,       SetGestTime,   6, "Inf", 0);
-  ADD_GDATA(double, "efficiency",   "Rep. Efficiency",               GetEfficiency,     SetNULL,       5, 0, 0);
-  ADD_GDATA(double, "efficiency_ratio", "Rep. Efficiency Ratio",     GetEfficiencyRatio,SetNULL,       5, 0, 0);
-  ADD_GDATA(double, "fitness",      "Fitness",                       GetFitness,        SetFitness,    5, 0, 0);
-  ADD_GDATA(double, "div_type",     "Divide Type",                   GetDivType,        SetDivType,    0, 0, 0);
-  ADD_GDATA(int,    "mate_id",      "Mate Selection ID Number",      GetMateID,         SetMateID,     0, 0, 0);
-  ADD_GDATA(double, "fitness_ratio","Fitness Ratio",                 GetFitnessRatio,   SetNULL,       5, 0, 0);
-  ADD_GDATA(int,    "update_born",  "Update Born",                   GetUpdateBorn,     SetUpdateBorn, 0, 0, 0);
-  ADD_GDATA(int,    "update_dead",  "Update Dead",                   GetUpdateDead,     SetUpdateDead, 0, 0, 0);
-  ADD_GDATA(int,    "depth",        "Tree Depth",                    GetDepth,          SetDepth,      0, 0, 0);
-  ADD_GDATA(double, "frac_dead",    "Fraction Mutations Lethal",     GetFracDead,       SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "frac_neg",     "Fraction Mutations Detrimental",GetFracNeg,        SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "frac_neut",    "Fraction Mutations Neutral",    GetFracNeut,       SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "frac_pos",     "Fraction Mutations Beneficial", GetFracPos,        SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "complexity",   "Basic Complexity (beneficial muts are neutral)", GetComplexity, SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "land_fitness", "Average Lanscape Fitness",      GetLandscapeFitness, SetNULL,     0, 0, 0);
-  
-  ADD_GDATA(int,    "num_phen",           "Number of Plastic Phenotypes",          GetNumPhenotypes,          SetNULL, 0, 0, 0);
-  ADD_GDATA(int,    "num_trials",         "Number of Recalculation Trials",        GetNumTrials,              SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_entropy",       "Phenotpyic Entropy",                    GetPhenotypicEntropy,      SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_max_fitness",   "Phen Plast Maximum Fitness",            GetMaximumFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_max_fit_freq",  "Phen Plast Maximum Fitness Frequency",  GetMaximumFitnessFrequency,SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_min_fitness",   "Phen Plast Minimum Fitness",            GetMinimumFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_min_freq",      "Phen Plast Minimum Fitness Frequency",  GetMinimumFitnessFrequency,SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_avg_fitness",   "Phen Plast Wtd Avg Fitness",            GetAverageFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_likely_freq",   "Freq of Most Likely Phenotype",         GetLikelyFrequency,        SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_likely_fitness","Fitness of Most Likely Phenotype",      GetLikelyFitness,          SetNULL, 0, 0, 0);
-  
-  ADD_GDATA(const cString &, "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
-  ADD_GDATA(const cString &, "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
-  ADD_GDATA(cString, "sequence",    "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
-  ADD_GDATA(const cString &, "alignment", "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
-  
-  ADD_GDATA(cString, "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
-  ADD_GDATA(cString, "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, 0, "(N/A)", "");
-  ADD_GDATA(cString, "task_list", "List of all tasks performed",     GetTaskList,     SetNULL, 0, "(N/A)", "");
-  ADD_GDATA(cString, "link.tasksites", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
-  ADD_GDATA(cString, "html.sequence",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
-  
-  // coarse-grained task stats
-  ADD_GDATA(int, 		"total_task_count","# Different Tasks", 		GetTotalTaskCount, SetNULL, 1, 0, 0);
-  ADD_GDATA(int, 		"total_task_performance_count", "Total Tasks Performed",	GetTotalTaskPerformanceCount, SetNULL, 1, 0, 0);
-  
-  const cEnvironment& environment = m_world->GetEnvironment();
-  for (int i = 0; i < environment.GetNumTasks(); i++) {
-    cString t_name, t_desc;
-    t_name.Set("task.%d", i);
-    t_desc = environment.GetTask(i).GetDesc();
-    genotype_data_list.PushRear(
-      new tDataEntryWithArg<cAnalyzeGenotype, int, int>(t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, 5));
-  }
-  
-  for (int i = 0; i < environment.GetInputSize(); i++){
-    cString t_name, t_desc;
-    t_name.Set("env_input.%d", i);
-    t_desc.Set("env_input.%d", i);
-    genotype_data_list.PushRear(
-      new tDataEntryWithArg<cAnalyzeGenotype, int, int>(t_name, t_desc, &cAnalyzeGenotype::GetEnvInput, i, 0));
-  }
-  
-  // The remaining values should actually go in a seperate list called
-  // "population_data_list", but for the moment we're going to put them
-  // here so that we only need to worry about a single system to load and
-  // save genotype information.
-  ADD_GDATA(int, "update",       "Update Output",                   GetUpdateDead, SetUpdateDead, 0, 0, 0);
-  ADD_GDATA(int, "dom_num_cpus", "Number of Dominant Organisms",    GetNumCPUs,    SetNumCPUs,    0, 0, 0);
-  ADD_GDATA(int, "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth,      SetDepth,      0, 0, 0);
-  ADD_GDATA(int, "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
-  ADD_GDATA(cString, "dom_sequence", "Dominant Genotype Sequence",  GetSequence,   SetSequence,   0, "(N/A)", "");
-}
-
-
-// Find a data entry bassed on a keywrod.
-tDataEntryCommand<cAnalyzeGenotype> * cAnalyze::GetGenotypeDataCommand(const cString & stat_entry) 
-{
-  // Make sure we have all of the possibilities loaded...
-  SetupGenotypeDataList();
-  
-  // Get the name from the beginning of the entry; everything else is arguments.
   cString arg_list = stat_entry;
   cString stat_name = arg_list.Pop(':');
-  
-  // Create an iterator to scan the genotype data list for the current entry.
-  tListIterator< tDataEntry<cAnalyzeGenotype> > genotype_data_it(genotype_data_list);
-  
-  while (genotype_data_it.Next() != (void *) NULL) {
-    if (genotype_data_it.Get()->GetName() == stat_name) {
-      return new tDataEntryCommand<cAnalyzeGenotype>(genotype_data_it.Get(), arg_list);
-    }
+
+  tDataEntry<cAnalyzeGenotype>* data_entry;
+  if (m_world->GetGenotypeDEDict().Find(stat_name, data_entry)) {
+    return new tDataEntryCommand<cAnalyzeGenotype>(data_entry, arg_list);
   }
   
+  cerr << "warning: Format entry \"" << stat_name << "\" not found. Best match is \""
+       << m_world->GetGenotypeDEDict().NearMatch(stat_name) << "\"." << endl;
+
   return NULL;
 }
 
 
-// Pass in the arguments for a command and fill out the entries in list
-// format....
-
+// Pass in the arguments for a command and fill out the entries in list format....
 void cAnalyze::LoadGenotypeDataList(cStringList arg_list,
-                                    tList< tDataEntryCommand<cAnalyzeGenotype> > & output_list)
+                                    tList<tDataEntryCommand<cAnalyzeGenotype> >& output_list)
 {
-  // Make sure we have all of the possibilities loaded...
-  SetupGenotypeDataList();
-  
   // If no args were given, load all of the stats.
   if (arg_list.GetSize() == 0) {
-    tListIterator< tDataEntry<cAnalyzeGenotype> >
-    genotype_data_it(genotype_data_list);
-    while (genotype_data_it.Next() != (void *) NULL) {
-      tDataEntryCommand<cAnalyzeGenotype> * entry_command =
-      new tDataEntryCommand<cAnalyzeGenotype>(genotype_data_it.Get());
-      output_list.PushRear(entry_command);
-    }
+    tArray<tDataEntry<cAnalyzeGenotype>*> data_entries;
+    m_world->GetGenotypeDEDict().GetValues(data_entries);
+    for (int i = 0; i < data_entries.GetSize(); i++)
+      output_list.PushRear(new tDataEntryCommand<cAnalyzeGenotype>(data_entries[i], ""));
   }
   // Otherwise, load only those listed.
   else {
     while (arg_list.GetSize() != 0) {
       // Setup the next entry
-      cString cur_args = arg_list.Pop();
-      cString cur_entry = cur_args.Pop(':');
-      bool found_entry = false;
+      cString cur_entry = arg_list.Pop();
       
-      // Scan the genotype data list for the current entry
-      tListIterator< tDataEntry<cAnalyzeGenotype> >
-        genotype_data_it(genotype_data_list);
-      
-      while (genotype_data_it.Next() != (void *) NULL) {
-        if (genotype_data_it.Get()->GetName() == cur_entry) {
-          tDataEntryCommand<cAnalyzeGenotype> * entry_command =
-          new tDataEntryCommand<cAnalyzeGenotype>
-          (genotype_data_it.Get(), cur_args);
-          output_list.PushRear(entry_command);
-          found_entry = true;
-          break;
-        }
-      }
-      
-      // If the entry was not found, give a warning.
-      if (found_entry == false) {
-        int best_match = 1000;
-        cString best_entry;
-        
-        genotype_data_it.Reset();
-        while (genotype_data_it.Next() != (void *) NULL) {
-          const cString & test_str = genotype_data_it.Get()->GetName();
-          const int test_dist = cStringUtil::EditDistance(test_str, cur_entry);
-          if (test_dist < best_match) {
-            best_match = test_dist;
-            best_entry = test_str;
-          }
-        }	
-        
-        cerr << "Warning: Format entry \"" << cur_entry
-          << "\" not found.  Best match is \""
-          << best_entry << "\"." << endl;
-      }
-      
+      tDataEntryCommand<cAnalyzeGenotype>* cur_command = GetGenotypeDataCommand(cur_entry);
+      if (cur_command) output_list.PushRear(cur_command);
     }
   }
 }

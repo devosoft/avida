@@ -65,6 +65,8 @@ class cAvidaContext;
 class cInstSet;
 class cTestCPU;
 class cWorld;
+template<class T> class tDataEntry;
+template<class T> class tDictionary;
 
 
 class cAnalyzeGenotype;
@@ -232,6 +234,9 @@ public:
   cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstSet& in_inst_set);
   cAnalyzeGenotype(const cAnalyzeGenotype & _gen);
   ~cAnalyzeGenotype();
+  
+  static tDictionary<tDataEntry<cAnalyzeGenotype>*>* BuildDEDict(cWorld* world);
+  static void DestroyDEDict(tDictionary<tDataEntry<cAnalyzeGenotype>*>* dedict);
 
   const cStringList & GetSpecialArgs() { return special_args; }
   void SetSpecialArgs(const cStringList & _args) { special_args = _args; }
