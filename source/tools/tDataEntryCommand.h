@@ -36,34 +36,32 @@
 #include "cStringList.h"
 #endif
 
-#ifndef tDataEntryBase_h
-#include "tDataEntryBase.h"
+#ifndef tDataEntry_h
+#include "tDataEntry.h"
 #endif
 
 class cString;
 
 
-template <class T> class tDataEntryCommand {
+template <class T> class tDataEntryCommand
+{
 private:
-  tDataEntryBase<T> * data_entry;
-  cStringList args;
+  tDataEntry<T>* m_data_entry;
+  cStringList m_args;
 public:
-  tDataEntryCommand(tDataEntryBase<T> * _entry, const cString & _args="")
-    : data_entry(_entry), args(_args, ':') { ; }
+  tDataEntryCommand(tDataEntry<T>* entry, const cString& args = "") : m_data_entry(entry), m_args(args, ':') { ; }
   
-  const cStringList & GetArgs() const { return args; }
-  bool HasArg(const cString & test_arg) { return args.HasString(test_arg); }
+  const cStringList& GetArgs() const { return m_args; }
+  bool HasArg(const cString& test_arg) const { return m_args.HasString(test_arg); }
 
-  const cString & GetName() const { return data_entry->GetName(); }
-  const cString & GetDesc() const { return data_entry->GetDesc(); }
-  int GetCompareType() const { return data_entry->GetCompareType(); }
-  const cString & GetNull() const { return data_entry->GetNull(); }
-  const cString & GetHtmlCellFlags() const { return data_entry->GetHtmlCellFlags(); }
-  cFlexVar GetValue() const { assert(data_entry != NULL); return data_entry->Get(); }
-  cFlexVar GetValue(const T * temp_target) const { return data_entry->Get(temp_target); }
+  const cString& GetName() const { return m_data_entry->GetName(); }
+  const cString& GetDesc() const { return m_data_entry->GetDesc(); }
+  int GetCompareType() const { return m_data_entry->GetCompareType(); }
+  const cString& GetNull() const { return m_data_entry->GetNull(); }
+  const cString& GetHtmlCellFlags() const { return m_data_entry->GetHtmlCellFlags(); }
   
-  void SetTarget(T * _target) { data_entry->SetTarget(_target); }
-  bool SetValue(const cString & value) { return data_entry->Set(value); }
+  bool SetValue(T* target, const cString& value) const { return m_data_entry->Set(target, value); }
+  cFlexVar GetValue(const T* target) const { return m_data_entry->Get(target); }
 };
 
 #endif

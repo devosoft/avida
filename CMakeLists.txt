@@ -275,7 +275,6 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cChangeList.cc
   ${TOOLS_DIR}/cConstBurstSchedule.cc
   ${TOOLS_DIR}/cConstSchedule.cc
-  ${TOOLS_DIR}/cDataEntry.cc
   ${TOOLS_DIR}/cDataFile.cc
   ${TOOLS_DIR}/cDataFileManager.cc
   ${TOOLS_DIR}/cDataManager_Base.cc

@@ -70,7 +70,7 @@ class cAnalyzeCommand;
 class cAnalyzeFunction;
 class cAnalyzeCommandDefBase;
 class cAnalyzeScreen;
-template <class T> class tDataEntryBase;
+template <class T> class tDataEntry;
 class cInstSet;
 class cAnalyzeGenotype;
 class cInitFile;
@@ -123,7 +123,7 @@ private:
 
   int interactive_depth;  // How nested are we if in interactive mode?
 
-  tList< tDataEntryBase<cAnalyzeGenotype> > genotype_data_list;
+  tList< tDataEntry<cAnalyzeGenotype> > genotype_data_list;
 
   cRandom random;
 

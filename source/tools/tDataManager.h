@@ -31,8 +31,8 @@
 #ifndef cDataManager_Base_h
 #include "cDataManager_Base.h"
 #endif
-#ifndef tDataEntryBase_h
-#include "tDataEntryBase.h"
+#ifndef tDataEntry_h
+#include "tDataEntry.h"
 #endif
 #ifndef tDictionary_h
 #include "tDictionary.h"
@@ -44,37 +44,40 @@
 // then be printed to the output file.
 
 class cString;
-template <class T, class U> class tDataEntry;
+template <class TargetType, class EntryType> class tDataEntryOfType;
 
-template <class T> class tDataManager : public cDataManager_Base {
+template <class TargetType> class tDataManager : public cDataManager_Base
+{
 private:
-  T * target;
-  tDictionary< tDataEntryBase<T> * > entry_dict;
+  TargetType* m_target;
+  tDictionary<tDataEntry<TargetType>*> m_entry_dict;
+
 public:
-  tDataManager(T * _target, const cString & in_filetype="unknown")
-    : cDataManager_Base(in_filetype), target(_target) { ; }
+  tDataManager(TargetType* target, const cString& filetype = "unknown") : cDataManager_Base(filetype), m_target(target) { ; }
   ~tDataManager() { ; }
 
-  template<class OUT> bool Add(const cString& name,  const cString& desc,
-                               OUT (T::*_funR)() const, void (T::*_funS)(OUT _val) = NULL,
-                               int compare = 0, const cString& null="0", const cString& html_cell="align=center")
+  template<class EntryType> bool Add(const cString& name,  const cString& desc,
+                                     EntryType (TargetType::*funR)() const, void (TargetType::*funS)(EntryType) = NULL,
+                                     int compare = 0, const cString& null = "0", const cString& html_cell = "align=center")
   {
-    tDataEntryBase<T>* new_entry = new tDataEntry<T, OUT> (name, desc, _funR, _funS, compare, null, html_cell);
-    new_entry->SetTarget(target);
-    entry_dict.Add(name, new_entry);
+    tDataEntry<TargetType>* new_entry =
+      new tDataEntryOfType<TargetType, EntryType>(name, desc, funR, funS, compare, null, html_cell);
+    m_entry_dict.Add(name, new_entry);
     return true;
   }
 
-  bool Print(const cString & name, std::ostream& fp) {
-    tDataEntryBase<T> * cur_entry = NULL;
-    if (entry_dict.Find(name, cur_entry) == false) return false;
-    fp << cur_entry->Get();
+  bool Print(const cString& name, std::ostream& fp)
+  {
+    tDataEntry<TargetType>* cur_entry = NULL;
+    if (m_entry_dict.Find(name, cur_entry) == false) return false;
+    fp << cur_entry->Get(m_target);
     return true;
   }
 
-  bool GetDesc(const cString & name, cString & out_desc) {
-    tDataEntryBase<T> * cur_entry = NULL;
-    if (entry_dict.Find(name, cur_entry) == false) return false;
+  bool GetDesc(const cString& name, cString& out_desc)
+  {
+    tDataEntry<TargetType>* cur_entry = NULL;
+    if (m_entry_dict.Find(name, cur_entry) == false) return false;
     out_desc = cur_entry->GetDesc();
     return true;
   }

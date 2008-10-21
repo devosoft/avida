@@ -64,7 +64,6 @@
 #include "cSchedule.h"
 #include "cSpecies.h"
 #include "cStringIterator.h"
-#include "tArgDataEntry.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
 #include "tMatrix.h"
@@ -982,9 +981,8 @@ void cAnalyze::LoadFile(cString cur_string)
     output_it.Reset();
     tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
-      data_command->SetTarget(genotype);
       //        genotype->SetSpecialArgs(data_command->GetArgs());
-      data_command->SetValue(cur_line.PopWord());
+      data_command->SetValue(genotype, cur_line.PopWord());
     }
     
     // Give this genotype a name.  Base it on the ID if possible.
@@ -2119,7 +2117,6 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
     tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
       cur_genotype->SetSpecialArgs(data_command->GetArgs());
-      data_command->SetTarget(cur_genotype);
       cFlexVar cur_value = data_command->GetValue(cur_genotype);
       if (format_type == FILE_TYPE_HTML) {
         int compare = 0;
@@ -2132,7 +2129,7 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
         HTMLPrintStat(cur_value, fp, compare, data_command->GetHtmlCellFlags(), data_command->GetNull());
       }
       else {  // if (format_type == FILE_TYPE_TEXT) {
-        fp << data_command->GetValue() << " ";
+        fp << data_command->GetValue(cur_genotype) << " ";
       }
       }
     if (format_type == FILE_TYPE_HTML) fp << "</tr>";
@@ -2179,10 +2176,9 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
     output_it.Reset();
     tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
-      data_command->SetTarget(cur_genotype);
       cur_genotype->SetSpecialArgs(data_command->GetArgs());
       for (int j = 0; j < cur_genotype->GetNumCPUs(); j++) { 
-        output_counts[count].Add( data_command->GetValue().AsDouble() );
+        output_counts[count].Add( data_command->GetValue(cur_genotype).AsDouble() );
       } 	
       count++;
     }
@@ -2240,7 +2236,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   
   // Scan the functions list for the keyword we need...
   SetupGenotypeDataList();
-  tListIterator< tDataEntryBase<cAnalyzeGenotype> >
+  tListIterator< tDataEntry<cAnalyzeGenotype> >
     output_it(genotype_data_list);
   
   // Divide up the keyword into its acrual entry and its arguments...
@@ -2314,13 +2310,12 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
       output_it.Reset();
       if (file_type == FILE_TYPE_HTML) fp << "<td>";
       
-      cur_command->SetTarget(genotype);
       genotype->SetSpecialArgs(cur_command->GetArgs());
       if (file_type == FILE_TYPE_HTML) {
-        HTMLPrintStat(cur_command->GetValue(), fp, 0, cur_command->GetHtmlCellFlags(), cur_command->GetNull());
+        HTMLPrintStat(cur_command->GetValue(genotype), fp, 0, cur_command->GetHtmlCellFlags(), cur_command->GetNull());
       }
       else {  // if (file_type == FILE_TYPE_TEXT) {
-        fp << cur_command->GetValue() << " ";
+        fp << cur_command->GetValue(genotype) << " ";
       }
       }
     if (file_type == FILE_TYPE_HTML) fp << "</tr>";
@@ -2360,15 +2355,15 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   }
   
   // Construct a linked list of details needed...
-  tList< tDataEntryBase<cAnalyzeGenotype> > output_list;
-  tListIterator< tDataEntryBase<cAnalyzeGenotype> > output_it(output_list);
+  tList< tDataEntry<cAnalyzeGenotype> > output_list;
+  tListIterator< tDataEntry<cAnalyzeGenotype> > output_it(output_list);
   
   // For the moment, just put everything into the output list.
   SetupGenotypeDataList();
   
   // If no args were given, load all of the stats.
   if (cur_string.CountNumWords() == 0) {
-    tListIterator< tDataEntryBase<cAnalyzeGenotype> >
+    tListIterator< tDataEntry<cAnalyzeGenotype> >
     genotype_data_it(genotype_data_list);
     while (genotype_data_it.Next() != NULL) {
       output_list.PushRear(genotype_data_it.Get());
@@ -2382,7 +2377,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
       bool found_entry = false;
       
       // Scan the genotype data list for the current entry
-      tListIterator< tDataEntryBase<cAnalyzeGenotype> >
+      tListIterator< tDataEntry<cAnalyzeGenotype> >
         genotype_data_it(genotype_data_list);
       
       while (genotype_data_it.Next() != NULL) {
@@ -2470,7 +2465,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
     cAnalyzeGenotype * genotype = batch[batch_id].List().GetFirst();
     if (genotype == NULL) continue;
     output_it.Reset();
-    tDataEntryBase<cAnalyzeGenotype> * data_entry = NULL;
+    tDataEntry<cAnalyzeGenotype> * data_entry = NULL;
     const cString & batch_name = batch[batch_id].Name();
     if (file_type == FILE_TYPE_HTML) {
       fp << "<tr><th><a href=lineage." << batch_name << ".html>"
@@ -2480,7 +2475,6 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
     }
     
     while ((data_entry = output_it.Next()) != NULL) {
-      data_entry->SetTarget(genotype);
       if (file_type == FILE_TYPE_HTML) {
         fp << "<td align=center><a href=\""
         << data_entry->GetName() << "." << batch_name << ".png\">"
@@ -2602,8 +2596,7 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
     tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
     cAnalyzeGenotype * cur_genotype;
     while ((cur_genotype = batch_it.Next()) != NULL) {
-      data_command->SetTarget(cur_genotype);
-      const cString cur_name(data_command->GetValue().AsString());
+      const cString cur_name(data_command->GetValue(cur_genotype).AsString());
       int count = 0;
       count_dict.Find(cur_name, count);
       count += cur_genotype->GetNumCPUs();
@@ -4858,8 +4851,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       while ((data_command = output_it.Next()) != NULL) {
-        data_command->SetTarget(genotype);
-        fp << data_command->GetValue() << " ";
+        fp << data_command->GetValue(genotype) << " ";
       }
       fp << endl;
       
@@ -4914,9 +4906,8 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       cAnalyzeGenotype null_genotype(m_world, "a", inst_set);
       while ((data_command = output_it.Next()) != NULL) {
-        data_command->SetTarget(genotype);
         genotype->SetSpecialArgs(data_command->GetArgs());
-        const cFlexVar cur_value = data_command->GetValue();
+        const cFlexVar cur_value = data_command->GetValue(genotype);
         const cFlexVar null_value = data_command->GetValue(&null_genotype);
         int compare = CompareFlexStat(cur_value, null_value, data_command->GetCompareType()); 
         if (compare > 0) {
@@ -4974,9 +4965,8 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
       int cur_col = 0;
       while ((data_command = output_it.Next()) != NULL) {
-        data_command->SetTarget(&test_genotype);
         test_genotype.SetSpecialArgs(data_command->GetArgs());
-        const cFlexVar test_value = data_command->GetValue();
+        const cFlexVar test_value = data_command->GetValue(&test_genotype);
         int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), data_command->GetCompareType());
         
         if (file_type == FILE_TYPE_HTML) {
@@ -5206,9 +5196,8 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
         tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
         int cur_col = 0;
         while ((data_command = output_it.Next()) != NULL) {
-          data_command->SetTarget(&test_genotype);
           test_genotype.SetSpecialArgs(data_command->GetArgs());
-          const cFlexVar test_value = data_command->GetValue();
+          const cFlexVar test_value = data_command->GetValue(&test_genotype);
           
           // This is done so that under 'binary' option it marks
           // the task as being influenced by the mutation iff
@@ -5431,9 +5420,8 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       int cur_trait = 0;
       while ((data_command = output_it.Next()) != NULL) {
-        data_command->SetTarget(&test_genotype);
         test_genotype.SetSpecialArgs(data_command->GetArgs());
-        const cFlexVar test_value = data_command->GetValue();
+        const cFlexVar test_value = data_command->GetValue(&test_genotype);
         
         int compare_type = data_command->GetCompareType();
         int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
@@ -9228,13 +9216,13 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
 #define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                         \
 {                                                                                                          \
   cString nstr_str(#NSTR), hstr_str(#HSTR);                                                                \
-    cString null_str = "0";                                                                                  \
-      if (nstr_str != "0") null_str = NSTR;                                                                    \
-        cString html_str = "align=center";                                                                       \
-          if (hstr_str != "0") html_str = HSTR;                                                                    \
-            \
-            genotype_data_list.PushRear(new tDataEntry<cAnalyzeGenotype, TYPE>                                       \
-                                        (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str)); \
+  cString null_str = "0";                                                                                  \
+  if (nstr_str != "0") null_str = NSTR;                                                                    \
+  cString html_str = "align=center";                                                                       \
+  if (hstr_str != "0") html_str = HSTR;                                                                    \
+                                                                                                           \
+  genotype_data_list.PushRear(new tDataEntryOfType<cAnalyzeGenotype, TYPE>                                 \
+    (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str));            \
 }
 
 
@@ -9327,16 +9315,16 @@ void cAnalyze::SetupGenotypeDataList()
     cString t_name, t_desc;
     t_name.Set("task.%d", i);
     t_desc = environment.GetTask(i).GetDesc();
-    genotype_data_list.PushRear(new tArgDataEntry<cAnalyzeGenotype, int, int>
-                                (t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, 5));
+    genotype_data_list.PushRear(
+      new tDataEntryWithArg<cAnalyzeGenotype, int, int>(t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, 5));
   }
   
   for (int i = 0; i < environment.GetInputSize(); i++){
     cString t_name, t_desc;
     t_name.Set("env_input.%d", i);
     t_desc.Set("env_input.%d", i);
-    genotype_data_list.PushRear(new tArgDataEntry<cAnalyzeGenotype, int, int>
-                                (t_name, t_desc, &cAnalyzeGenotype::GetEnvInput, i, 0));
+    genotype_data_list.PushRear(
+      new tDataEntryWithArg<cAnalyzeGenotype, int, int>(t_name, t_desc, &cAnalyzeGenotype::GetEnvInput, i, 0));
   }
   
   // The remaining values should actually go in a seperate list called
@@ -9362,7 +9350,7 @@ tDataEntryCommand<cAnalyzeGenotype> * cAnalyze::GetGenotypeDataCommand(const cSt
   cString stat_name = arg_list.Pop(':');
   
   // Create an iterator to scan the genotype data list for the current entry.
-  tListIterator< tDataEntryBase<cAnalyzeGenotype> > genotype_data_it(genotype_data_list);
+  tListIterator< tDataEntry<cAnalyzeGenotype> > genotype_data_it(genotype_data_list);
   
   while (genotype_data_it.Next() != (void *) NULL) {
     if (genotype_data_it.Get()->GetName() == stat_name) {
@@ -9385,7 +9373,7 @@ void cAnalyze::LoadGenotypeDataList(cStringList arg_list,
   
   // If no args were given, load all of the stats.
   if (arg_list.GetSize() == 0) {
-    tListIterator< tDataEntryBase<cAnalyzeGenotype> >
+    tListIterator< tDataEntry<cAnalyzeGenotype> >
     genotype_data_it(genotype_data_list);
     while (genotype_data_it.Next() != (void *) NULL) {
       tDataEntryCommand<cAnalyzeGenotype> * entry_command =
@@ -9402,7 +9390,7 @@ void cAnalyze::LoadGenotypeDataList(cStringList arg_list,
       bool found_entry = false;
       
       // Scan the genotype data list for the current entry
-      tListIterator< tDataEntryBase<cAnalyzeGenotype> >
+      tListIterator< tDataEntry<cAnalyzeGenotype> >
         genotype_data_it(genotype_data_list);
       
       while (genotype_data_it.Next() != (void *) NULL) {

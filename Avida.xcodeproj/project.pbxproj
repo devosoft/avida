@@ -386,7 +386,6 @@
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
-		700E11BC0A0815B600B604CD /* cDataEntry.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataEntry.cc; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
@@ -658,7 +657,6 @@
 		70B087DE08F5F4A900FC65FE /* cVerifierSuiteRecurser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cVerifierSuiteRecurser.h; sourceTree = "<group>"; };
 		70B087DF08F5F4BA00FC65FE /* cChangeList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cChangeList.cc; sourceTree = "<group>"; };
 		70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cConstSchedule.cc; sourceTree = "<group>"; };
-		70B0884808F5FE4500FC65FE /* cDataEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataEntry.h; sourceTree = "<group>"; };
 		70B0884908F5FE4500FC65FE /* cDataFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFile.h; sourceTree = "<group>"; };
 		70B0884A08F5FE4500FC65FE /* cDataFileManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFileManager.h; sourceTree = "<group>"; };
 		70B0884B08F5FE4500FC65FE /* cDataManager_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataManager_Base.h; sourceTree = "<group>"; };
@@ -723,11 +721,9 @@
 		70B08B8008FB2E5500FC65FE /* cTools.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTools.h; sourceTree = "<group>"; };
 		70B08B8108FB2E5500FC65FE /* cUInt.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cUInt.h; sourceTree = "<group>"; };
 		70B08B8208FB2E5500FC65FE /* cWeightedIndex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cWeightedIndex.h; sourceTree = "<group>"; };
-		70B08B8308FB2E5500FC65FE /* tArgDataEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tArgDataEntry.h; sourceTree = "<group>"; };
 		70B08B8408FB2E5500FC65FE /* tArray.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tArray.h; sourceTree = "<group>"; };
 		70B08B8508FB2E5500FC65FE /* tBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tBuffer.h; sourceTree = "<group>"; };
 		70B08B8608FB2E5500FC65FE /* tDataEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataEntry.h; sourceTree = "<group>"; };
-		70B08B8708FB2E5500FC65FE /* tDataEntryBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataEntryBase.h; sourceTree = "<group>"; };
 		70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataEntryCommand.h; sourceTree = "<group>"; };
 		70B08B8908FB2E5500FC65FE /* tDataManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataManager.h; sourceTree = "<group>"; };
 		70B08B8A08FB2E5500FC65FE /* tDictionary.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDictionary.h; sourceTree = "<group>"; };
@@ -1528,17 +1524,14 @@
 				704368F50C32E6AB00A05ABA /* cFlexVar.h */,
 				7057886F0A21FE8D00E85D8E /* cFixedBlock.cc */,
 				705788700A21FE8D00E85D8E /* cFixedCoords.cc */,
-				700E11BC0A0815B600B604CD /* cDataEntry.cc */,
 				70B08B9008FB2E6B00FC65FE /* cTools.cc */,
 				70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */,
 				70B08B8008FB2E5500FC65FE /* cTools.h */,
 				70B08B8108FB2E5500FC65FE /* cUInt.h */,
 				70B08B8208FB2E5500FC65FE /* cWeightedIndex.h */,
-				70B08B8308FB2E5500FC65FE /* tArgDataEntry.h */,
 				70B08B8408FB2E5500FC65FE /* tArray.h */,
 				70B08B8508FB2E5500FC65FE /* tBuffer.h */,
 				70B08B8608FB2E5500FC65FE /* tDataEntry.h */,
-				70B08B8708FB2E5500FC65FE /* tDataEntryBase.h */,
 				70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */,
 				70B08B8908FB2E5500FC65FE /* tDataManager.h */,
 				70B08B8A08FB2E5500FC65FE /* tDictionary.h */,
@@ -1604,7 +1597,6 @@
 				70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */,
 				70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */,
 				70B0885308F5FE5800FC65FE /* cDoubleSum.cc */,
-				70B0884808F5FE4500FC65FE /* cDataEntry.h */,
 				70B0884908F5FE4500FC65FE /* cDataFile.h */,
 				70B0884A08F5FE4500FC65FE /* cDataFileManager.h */,
 				70B0884B08F5FE4500FC65FE /* cDataManager_Base.h */,
