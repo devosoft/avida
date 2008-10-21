@@ -413,12 +413,6 @@ void cAnalyze::LoadSequence(cString cur_string)
   batch[cur_batch].SetAligned(false);
 }
 
-void cAnalyze::LoadDominant(cString cur_string)
-{
-  (void) cur_string;
-  cerr << "Warning: \"LOAD_DOMINANT\" not implemented yet!"<<endl;
-}
-
 // Clears the current time oriented list of resources and loads in a new one
 // from a file specified by the user, or resource.dat by default.
 void cAnalyze::LoadResources(cString cur_string)
@@ -9207,7 +9201,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("LOAD_DETAIL_DUMP", &cAnalyze::LoadDetailDump);
   AddLibraryDef("LOAD_MULTI_DETAIL", &cAnalyze::LoadMultiDetail);
   AddLibraryDef("LOAD_SEQUENCE", &cAnalyze::LoadSequence);
-  AddLibraryDef("LOAD_DOMINANT", &cAnalyze::LoadDominant);
   AddLibraryDef("LOAD_RESOURCES", &cAnalyze::LoadResources);
   AddLibraryDef("LOAD", &cAnalyze::LoadFile);
   

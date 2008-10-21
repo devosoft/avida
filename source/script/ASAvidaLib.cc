@@ -31,6 +31,7 @@
 
 #include "cAvidaConfig.h"
 #include "cDefaultRunDriver.h"
+#include "cGenotypeBatch.h"
 #include "cWorld.h"
 
 #include <cstring>
@@ -55,6 +56,11 @@ static void setupNativeObjects()
   REGISTER_S_METHOD(cDefaultRunDriver, "Run", Run, void ());
 
   
+  tASNativeObject<cGenotypeBatch>::InitializeMethodRegistrar();
+  REGISTER_S_METHOD(cGenotypeBatch, "Name", GetName, const cString& ());
+  REGISTER_S_METHOD(cGenotypeBatch, "IsAligned", IsAligned, bool ());
+  REGISTER_S_METHOD(cGenotypeBatch, "IsLineage", IsLineage, bool ());
+
   tASNativeObject<cWorld>::InitializeMethodRegistrar();
   
   

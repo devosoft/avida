@@ -51,7 +51,8 @@ public:
   ~cGenotypeBatch() { ; }
 
   tListPlus<cAnalyzeGenotype> & List() { return genotype_list; }
-  cString & Name() { return name; }
+  cString& Name() { return name; }
+  const cString& GetName() { return name; }
   bool IsLineage() { return is_lineage; }
   bool IsAligned() { return is_aligned; }
 

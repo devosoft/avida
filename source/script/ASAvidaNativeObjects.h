@@ -31,10 +31,11 @@
   class CLASS; \
   namespace AvidaScript { template<> inline sASTypeInfo TypeOf<CLASS*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, NAME); } }
 
-AS_DECLARE_NATIVE_OBJECT("Config",    cAvidaConfig);
-AS_DECLARE_NATIVE_OBJECT("Driver",    cDefaultRunDriver);
-AS_DECLARE_NATIVE_OBJECT("Genotype",  cAnalyzeGenotype);
-AS_DECLARE_NATIVE_OBJECT("World",     cWorld);
+AS_DECLARE_NATIVE_OBJECT("Config",        cAvidaConfig);
+AS_DECLARE_NATIVE_OBJECT("Driver",        cDefaultRunDriver);
+AS_DECLARE_NATIVE_OBJECT("Genotype",      cAnalyzeGenotype);
+AS_DECLARE_NATIVE_OBJECT("GenotypeBatch", cGenotypeBatch);
+AS_DECLARE_NATIVE_OBJECT("World",         cWorld);
 
 #undef AS_DECLARE_NATIVE_OBJECT
 
