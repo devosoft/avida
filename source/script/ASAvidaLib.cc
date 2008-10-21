@@ -24,6 +24,8 @@
 
 #include "ASAvidaLib.h"
 
+#include "ASAvidaNativeObjects.h"
+
 #include "cASCPPParameter_NativeObjectSupport.h"
 #include "cASLibrary.h"
 
@@ -32,16 +34,6 @@
 #include "cWorld.h"
 
 #include <cstring>
-
-#define AS_DECLARE_NATIVE_OBJECT(CLASS, NAME) \
- namespace AvidaScript { template<> inline sASTypeInfo TypeOf<CLASS*>() { return sASTypeInfo(AS_TYPE_OBJECT_REF, #NAME); } }
-
-
-AS_DECLARE_NATIVE_OBJECT(cAvidaConfig,       Config);
-AS_DECLARE_NATIVE_OBJECT(cDefaultRunDriver,  Driver);
-AS_DECLARE_NATIVE_OBJECT(cWorld,             World);
-
-#undef AS_DECLARE_NATIVE_OBJECT
 
 
 static void setupNativeObjects()

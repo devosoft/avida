@@ -24,6 +24,8 @@
 
 #include "ASAnalyzeLib.h"
 
+#include "ASAvidaNativeObjects.h"
+
 #include "cASCPPParameter_NativeObjectSupport.h"
 #include "cASFunction.h"
 #include "cASLibrary.h"
@@ -95,7 +97,9 @@ void RegisterASAnalyzeLib(cASLibrary* lib)
   
 
   BIND_FUNCTION(cWorld, "LoadOrganism", LoadOrganism, cAnalyzeGenotype* (const cString&));
-  BIND_FUNCTION(cWorld, "LoadOrgnaismWithInstSet", LoadOrganismWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
+  BIND_FUNCTION(cWorld, "LoadOrganismWithInstSet", LoadOrganismWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
+  BIND_FUNCTION(cWorld, "LoadSequence", LoadSequence, cAnalyzeGenotype* (const cString&));
+  BIND_FUNCTION(cWorld, "LoadSequenceWithInstSet", LoadSequenceWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
 
 
 #undef BIND_FUNCTION

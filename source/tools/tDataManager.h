@@ -55,14 +55,11 @@ public:
     : cDataManager_Base(in_filetype), target(_target) { ; }
   ~tDataManager() { ; }
 
-  template<class OUT> bool Add(const cString & name,  const cString & desc,
-			       OUT (T::*_funR)() const,
-			       void (T::*_funS)(OUT _val) = NULL,
-			       int compare = 0,
-			       const cString & null="0",
-			       const cString & html_cell="align=center") {
-    tDataEntryBase<T> * new_entry =
-     new tDataEntry<T, OUT> (name, desc, _funR, _funS, compare, null, html_cell);
+  template<class OUT> bool Add(const cString& name,  const cString& desc,
+                               OUT (T::*_funR)() const, void (T::*_funS)(OUT _val) = NULL,
+                               int compare = 0, const cString& null="0", const cString& html_cell="align=center")
+  {
+    tDataEntryBase<T>* new_entry = new tDataEntry<T, OUT> (name, desc, _funR, _funS, compare, null, html_cell);
     new_entry->SetTarget(target);
     entry_dict.Add(name, new_entry);
     return true;
