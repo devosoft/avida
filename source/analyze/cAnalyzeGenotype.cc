@@ -27,6 +27,8 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
+#include "cDriverManager.h"
+#include "cDriverStatusConduit.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
@@ -42,7 +44,9 @@
 
 #include "tArray.h"
 #include "tAutoRelease.h"
-#include "tDataManager.h"
+#include "tDataEntry.h"
+#include "tDataEntryCommand.h"
+
 
 #include <cmath>
 using namespace std;
@@ -320,6 +324,46 @@ void cAnalyzeGenotype::DestroyDEDict(tDictionary<tDataEntry<cAnalyzeGenotype>*>*
   for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
   delete dedict;
 }
+
+
+
+// Find a data entry bassed on a keyword
+tDataEntryCommand<cAnalyzeGenotype>* cAnalyzeGenotype::GetDataCommand(cWorld* world, const cString& cmd) 
+{
+  cString arg_list = cmd;
+  cString entry_name = arg_list.Pop(':');
+  
+  tDataEntry<cAnalyzeGenotype>* data_entry;
+  if (world->GetGenotypeDEDict().Find(entry_name, data_entry)) {
+    return new tDataEntryCommand<cAnalyzeGenotype>(data_entry, arg_list);
+  }
+  
+  cDriverManager::Status().NotifyWarning(cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", *entry_name,
+                                                              *(world->GetGenotypeDEDict().NearMatch(entry_name))));
+  
+  return NULL;
+}
+
+
+// Pass in the arguments for a command and fill out the entries in list format....
+void cAnalyzeGenotype::LoadDataCommandList(cWorld* world, cStringList arg_list,
+                                    tList<tDataEntryCommand<cAnalyzeGenotype> >& output_list)
+{
+  if (arg_list.GetSize() == 0) {
+    // If no args were given, load all of the stats.
+    tArray<tDataEntry<cAnalyzeGenotype>*> data_entries;
+    world->GetGenotypeDEDict().GetValues(data_entries);
+    for (int i = 0; i < data_entries.GetSize(); i++)
+      output_list.PushRear(new tDataEntryCommand<cAnalyzeGenotype>(data_entries[i], ""));
+  } else {
+    while (arg_list.GetSize() != 0) {
+      tDataEntryCommand<cAnalyzeGenotype>* cur_command = GetDataCommand(world, arg_list.Pop());
+      if (cur_command) output_list.PushRear(cur_command);
+    }
+  }
+}
+
+
 
 
 

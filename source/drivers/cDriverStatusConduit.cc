@@ -33,15 +33,13 @@
 using namespace std;
 
 
-void cDriverStatusConduit::SignalError(const cString& msg)
+void cDriverStatusConduit::SignalError(const cString& msg, int exit_code)
 {
   cerr << "error: " << msg << endl;
-}
-
-void cDriverStatusConduit::SignalFatalError(int exit_code, const cString& msg)
-{
-  cerr << "error: " << msg << endl << "exiting..." << endl;
-  Avida::Exit(exit_code);
+  if (exit_code) {
+    cerr << "exiting..." << endl;
+    Avida::Exit(exit_code);
+  }
 }
 
 void cDriverStatusConduit::NotifyWarning(const cString& msg)

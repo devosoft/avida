@@ -29,7 +29,7 @@
 #include <iostream>
 
 #ifndef cFlexVar_h
-#define "cFlexVar.h"
+#include "cFlexVar.h"
 #endif
 
 #ifndef cStringList_h

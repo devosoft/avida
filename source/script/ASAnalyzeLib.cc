@@ -36,8 +36,12 @@
 #include "cDriverStatusConduit.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
+#include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
+#include "cInitFile.h"
 #include "cWorld.h"
+
+#include "tDataEntryCommand.h"
 
 
 class cWorld;
@@ -83,6 +87,70 @@ namespace ASAnalyzeLib {
   {
     cDriverManager::Status().NotifyComment(cString("Loading: ") + seq);
     return new cAnalyzeGenotype(world, seq, world->GetHardwareManager().GetInstSet());
+  }
+  
+  cGenotypeBatch* LoadBatchWithInstSet(cWorld* world, const cString& filename, cInstSet* inst_set)
+  {
+    cDriverStatusConduit& conduit = cDriverManager::Status();
+    conduit.NotifyComment(cString("Loading: ") + filename);
+    
+    cInitFile input_file(filename);
+    if (!input_file.WasOpened()) {
+      tConstListIterator<cString> err_it(input_file.GetErrors());
+      const cString* errstr = NULL;
+      while ((errstr = err_it.Next()))  conduit.SignalError(*errstr);
+      cString failstr(cStringUtil::Stringf("unable to load file: %s", *filename));
+      conduit.SignalError(failstr, 1);
+    }
+    
+    const cString filetype = input_file.GetFiletype();
+    if (filetype != "genotype_data") {
+      conduit.SignalError(cStringUtil::Stringf("unable to load files of type '%s'", *filetype), 1);;
+    }
+    
+    if (world->GetVerbosity() >= VERBOSE_ON) {
+      conduit.NotifyComment(cStringUtil::Stringf("Loading file of type: %s", *filetype));
+    }
+    
+    
+    // Construct a linked list of data types that can be loaded...
+    tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
+    tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
+    cAnalyzeGenotype::LoadDataCommandList(world, input_file.GetFormat(), output_list);
+    bool id_inc = input_file.GetFormat().HasString("id");
+    
+    // Setup the genome...
+    cGenome default_genome(1);
+    int load_count = 0;
+    cGenotypeBatch* batch = new cGenotypeBatch;
+    
+    for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+      cString cur_line = input_file.GetLine(line_id);
+      
+      cAnalyzeGenotype* genotype = new cAnalyzeGenotype(world, default_genome, *inst_set);
+      
+      output_it.Reset();
+      tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
+      while ((data_command = output_it.Next())) data_command->SetValue(genotype, cur_line.PopWord());
+      
+      // Give this genotype a name.  Base it on the ID if possible.
+      if (id_inc == false) genotype->SetName(cStringUtil::Stringf("org-%d", load_count++));
+      else genotype->SetName(cStringUtil::Stringf("org-%d", genotype->GetID()));
+      
+      // Add this genotype to the proper batch.
+      batch->List().PushRear(genotype);
+    }
+    
+    // Adjust the flags on this batch
+    batch->SetLineage(false);
+    batch->SetAligned(false);
+    
+    return batch;
+  }
+  
+  cGenotypeBatch* LoadBatch(cWorld* world, const cString& filename)
+  {
+    return LoadBatchWithInstSet(world, filename, &world->GetHardwareManager().GetInstSet());
   }
   
   

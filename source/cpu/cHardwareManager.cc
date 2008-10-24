@@ -68,7 +68,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
 			default_filename = cHardwareGX::GetDefaultInstFilename();
 			break;      
 		default:
-      cDriverManager::Status().SignalFatalError(1, "Unknown/Unsupported HARDWARE_TYPE specified");
+      cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);
   }
 
   if (filename == "" || filename == "-") {
@@ -106,7 +106,7 @@ cHardwareBase* cHardwareManager::Create(cOrganism* in_org, cInstSet* inst_set)
       hw = new cHardwareGX(m_world, in_org, m_inst_set);
       break;
     default:
-      cDriverManager::Status().SignalFatalError(1, "Unknown/Unsupported HARDWARE_TYPE specified");
+      cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);
       break;
   }
   

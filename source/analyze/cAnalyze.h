@@ -186,9 +186,6 @@ private:
                      const cString& cell_flags="align=center", const cString& null_text = "0", bool print_text = true);
   int CompareFlexStat(const cFlexVar& org_stat, const cFlexVar& parent_stat, int compare_type = FLEX_COMPARE_MAX);
   
-  // Deal with genotype data list (linking keywords to stats)
-  tDataEntryCommand<cAnalyzeGenotype>* GetGenotypeDataCommand(const cString & stat_entry);
-  void LoadGenotypeDataList(cStringList arg_list, tList<tDataEntryCommand<cAnalyzeGenotype> > & output_list);
   
   void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString));
   void AddLibraryDef(const cString & name, void (cAnalyze::*_fun)(cString, tList<cAnalyzeCommand> &));

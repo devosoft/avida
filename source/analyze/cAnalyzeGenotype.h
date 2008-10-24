@@ -66,6 +66,7 @@ class cInstSet;
 class cTestCPU;
 class cWorld;
 template<class T> class tDataEntry;
+template<class T> class tDataEntryCommand;
 template<class T> class tDictionary;
 
 
@@ -237,6 +238,9 @@ public:
   
   static tDictionary<tDataEntry<cAnalyzeGenotype>*>* BuildDEDict(cWorld* world);
   static void DestroyDEDict(tDictionary<tDataEntry<cAnalyzeGenotype>*>* dedict);
+  
+  static tDataEntryCommand<cAnalyzeGenotype>* GetDataCommand(cWorld* world, const cString& cmd);
+  static void LoadDataCommandList(cWorld* world, cStringList arg_list, tList<tDataEntryCommand<cAnalyzeGenotype> >& output_list);
 
   const cStringList & GetSpecialArgs() { return special_args; }
   void SetSpecialArgs(const cStringList & _args) { special_args = _args; }

@@ -39,8 +39,7 @@ public:
   virtual ~cDriverStatusConduit() { ; }
   
   // Signals
-  virtual void SignalError(const cString& msg);
-  virtual void SignalFatalError(int exit_code, const cString& msg);
+  virtual void SignalError(const cString& msg, int exit_code = 0);
   
   // Notifications
   virtual void NotifyWarning(const cString& msg);

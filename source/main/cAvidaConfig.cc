@@ -73,10 +73,10 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
     while ((errstr = err_it.Next())) cDriverManager::Status().SignalError(*errstr);
     if (init_file.WasFound()) {
       // exit the program if the requested configuration was found but could not be loaded
-      cDriverManager::Status().SignalFatalError(-1, cString("unable to open configuration file '") + filename + "'");
+      cDriverManager::Status().SignalError(cString("unable to open configuration file '") + filename + "'", -1);
     } else if (crash_if_not_found) {
       // exit the program if the requested configuration file is not found
-      cDriverManager::Status().SignalFatalError(-1, cString("configuration file '") + filename + "' not found"); 
+      cDriverManager::Status().SignalError(cString("configuration file '") + filename + "' not found", -1); 
     } else {
       // If we failed to open the config file, try creating it.
       cDriverManager::Status().NotifyWarning(

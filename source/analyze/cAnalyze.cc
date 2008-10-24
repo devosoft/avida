@@ -959,7 +959,7 @@ void cAnalyze::LoadFile(cString cur_string)
   // Construct a linked list of data types that can be loaded...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  LoadGenotypeDataList(input_file.GetFormat(), output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, input_file.GetFormat(), output_list);
   bool id_inc = input_file.GetFormat().HasString("id");
   
   // Setup the genome...
@@ -1011,7 +1011,7 @@ void cAnalyze::CommandFilter(cString cur_string)
   cString test_value = cur_string.PopWord();
   
   // Get the dynamic command to look up the stat we need.
-  tDataEntryCommand<cAnalyzeGenotype> * stat_command = GetGenotypeDataCommand(stat_name);
+  tDataEntryCommand<cAnalyzeGenotype> * stat_command = cAnalyzeGenotype::GetDataCommand(m_world, stat_name);
   
   
   // Check for various possible errors before moving on...
@@ -1963,7 +1963,7 @@ void cAnalyze::CommandDetail(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  LoadGenotypeDataList(cur_string, output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -2009,7 +2009,7 @@ void cAnalyze::CommandDetailTimeline(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  LoadGenotypeDataList(cur_string, output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -2199,7 +2199,7 @@ void cAnalyze::CommandDetailAverage(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  LoadGenotypeDataList(cur_string, output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
   
   // check if file is already in use.
   bool file_active = m_world->GetDataFileManager().IsOpen(filename);
@@ -2228,7 +2228,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   else cout << "Detailing Batches..." << endl;
   
   // Find its associated command...
-  tDataEntryCommand<cAnalyzeGenotype>* cur_command = GetGenotypeDataCommand(keyword);
+  tDataEntryCommand<cAnalyzeGenotype>* cur_command = cAnalyzeGenotype::GetDataCommand(m_world, keyword);
   if (!cur_command) {
     cout << "error: no data entry, unable to detail batches" << endl;
     return;
@@ -2331,7 +2331,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   // Construct a linked list of details needed...
   tList<tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator<tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  LoadGenotypeDataList(cStringList(cur_string), output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, cStringList(cur_string), output_list);
   
   
   // Setup the file...
@@ -2429,7 +2429,7 @@ void cAnalyze::CommandHistogram(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  LoadGenotypeDataList(cur_string, output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -4697,7 +4697,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   msg.Set("There are %d column args.", arg_list.GetSize());
   m_world->GetDriver().NotifyComment(msg);
   
-  LoadGenotypeDataList(arg_list, output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, arg_list, output_list);
   
   m_world->GetDriver().NotifyComment("Args are loaded.");
   
@@ -4959,7 +4959,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
   
   cout << "There are " << arg_list.GetSize() << " column args." << endl;
   
-  LoadGenotypeDataList(arg_list, output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, arg_list, output_list);
   
   cout << "Args are loaded." << endl;
   
@@ -5305,7 +5305,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
   cStringList arg_list(cur_string);
-  LoadGenotypeDataList(arg_list, output_list);
+  cAnalyzeGenotype::LoadDataCommandList(m_world, arg_list, output_list);
   const int num_traits = output_list.GetSize();
   
   // Setup the map_inst_set with the NULL instruction
@@ -9131,49 +9131,6 @@ int cAnalyze::CompareFlexStat(const cFlexVar & org_stat, const cFlexVar & parent
   
   assert(false);  // One of the other options should have been chosen.
   return 0;
-}
-
-
-
-// Find a data entry bassed on a keyword
-tDataEntryCommand<cAnalyzeGenotype>* cAnalyze::GetGenotypeDataCommand(const cString& stat_entry) 
-{
-  cString arg_list = stat_entry;
-  cString stat_name = arg_list.Pop(':');
-
-  tDataEntry<cAnalyzeGenotype>* data_entry;
-  if (m_world->GetGenotypeDEDict().Find(stat_name, data_entry)) {
-    return new tDataEntryCommand<cAnalyzeGenotype>(data_entry, arg_list);
-  }
-  
-  cerr << "warning: Format entry \"" << stat_name << "\" not found. Best match is \""
-       << m_world->GetGenotypeDEDict().NearMatch(stat_name) << "\"." << endl;
-
-  return NULL;
-}
-
-
-// Pass in the arguments for a command and fill out the entries in list format....
-void cAnalyze::LoadGenotypeDataList(cStringList arg_list,
-                                    tList<tDataEntryCommand<cAnalyzeGenotype> >& output_list)
-{
-  // If no args were given, load all of the stats.
-  if (arg_list.GetSize() == 0) {
-    tArray<tDataEntry<cAnalyzeGenotype>*> data_entries;
-    m_world->GetGenotypeDEDict().GetValues(data_entries);
-    for (int i = 0; i < data_entries.GetSize(); i++)
-      output_list.PushRear(new tDataEntryCommand<cAnalyzeGenotype>(data_entries[i], ""));
-  }
-  // Otherwise, load only those listed.
-  else {
-    while (arg_list.GetSize() != 0) {
-      // Setup the next entry
-      cString cur_entry = arg_list.Pop();
-      
-      tDataEntryCommand<cAnalyzeGenotype>* cur_command = GetGenotypeDataCommand(cur_entry);
-      if (cur_command) output_list.PushRear(cur_command);
-    }
-  }
 }
 
 
