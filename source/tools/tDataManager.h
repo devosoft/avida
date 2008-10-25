@@ -50,8 +50,8 @@ template <class TargetType> class tDataManager : public cDataManager_Base
 {
 private:
   TargetType* m_target;
-  tDictionary<tDataEntry<TargetType>*> m_entry_dict;
-
+  tDictionary<tDataEntry<TargetType>*> m_entry_dict;  
+  
 public:
   tDataManager(TargetType* target, const cString& filetype = "unknown") : cDataManager_Base(filetype), m_target(target) { ; }
   ~tDataManager() { ; }
@@ -61,7 +61,7 @@ public:
                                      int compare = 0, const cString& null = "0", const cString& html_cell = "align=center")
   {
     tDataEntry<TargetType>* new_entry =
-      new tDataEntryOfType<TargetType, EntryType>(name, desc, funR, funS, compare, null, html_cell);
+      new tDataEntryOfType<TargetType, EntryType ()>(name, desc, funR, funS, compare, null, html_cell);
     m_entry_dict.Add(name, new_entry);
     return true;
   }
@@ -78,7 +78,7 @@ public:
   {
     tDataEntry<TargetType>* cur_entry = NULL;
     if (m_entry_dict.Find(name, cur_entry) == false) return false;
-    out_desc = cur_entry->GetDesc();
+    out_desc = cur_entry->GetDesc(m_target, 0);
     return true;
   }
   

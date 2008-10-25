@@ -225,92 +225,81 @@ tDictionary<tDataEntry<cAnalyzeGenotype>*>* cAnalyzeGenotype::BuildDEDict(cWorld
   //   FLEX_COMPARE_MAX2   = 5  -- Same as FLEX_COMPARE_MAX, and 0 indicates trait is off.
   //   FLEX_COMPARE_MIN2   = 6  -- Same as FLEX_COMPARE_MIN, BUT 0 still indicates off.
   
-  ADD_GDATA(const cString&, "name", "Genotype Name",                 GetName,           SetName,       0, 0, 0);
-  ADD_GDATA(bool,   "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
-  ADD_GDATA(int,    "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
-  ADD_GDATA(const cString &, "tag", "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
-  ADD_GDATA(int,    "parent_id",    "Parent ID",                     GetParentID,       SetParentID,   0, 0, 0);
-  ADD_GDATA(int,    "parent2_id",   "Second Parent ID (sexual orgs)",GetParent2ID,      SetParent2ID,  0, 0, 0);
-  ADD_GDATA(int,    "parent_dist",  "Parent Distance",               GetParentDist,     SetParentDist, 0, 0, 0);
-  ADD_GDATA(int,    "ancestor_dist","Ancestor Distance",             GetAncestorDist,   SetAncestorDist, 0, 0, 0);
-  ADD_GDATA(int,    "lineage",      "Unique Lineage Label",          GetLineageLabel,   SetLineageLabel, 0, 0, 0);
-  ADD_GDATA(int,    "num_cpus",     "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
-  ADD_GDATA(int,    "total_cpus",   "Total CPUs Ever",               GetTotalCPUs,      SetTotalCPUs,  0, 0, 0);
-  ADD_GDATA(int,    "length",       "Genome Length",                 GetLength,         SetLength,     4, 0, 0);
-  ADD_GDATA(int,    "copy_length",  "Copied Length",                 GetCopyLength,     SetCopyLength, 0, 0, 0);
-  ADD_GDATA(int,    "exe_length",   "Executed Length",               GetExeLength,      SetExeLength,  0, 0, 0);
-  ADD_GDATA(double, "merit",        "Merit",                         GetMerit,          SetMerit,      5, 0, 0);
-  ADD_GDATA(double, "comp_merit",   "Computational Merit",           GetCompMerit,      SetNULL,       5, 0, 0);
-  ADD_GDATA(double, "comp_merit_ratio", "Computational Merit Ratio", GetCompMeritRatio, SetNULL,       5, 0, 0);
-  ADD_GDATA(int,    "gest_time",    "Gestation Time",                GetGestTime,       SetGestTime,   6, "Inf", 0);
-  ADD_GDATA(double, "efficiency",   "Rep. Efficiency",               GetEfficiency,     SetNULL,       5, 0, 0);
-  ADD_GDATA(double, "efficiency_ratio", "Rep. Efficiency Ratio",     GetEfficiencyRatio,SetNULL,       5, 0, 0);
-  ADD_GDATA(double, "fitness",      "Fitness",                       GetFitness,        SetFitness,    5, 0, 0);
-  ADD_GDATA(double, "div_type",     "Divide Type",                   GetDivType,        SetDivType,    0, 0, 0);
-  ADD_GDATA(int,    "mate_id",      "Mate Selection ID Number",      GetMateID,         SetMateID,     0, 0, 0);
-  ADD_GDATA(double, "fitness_ratio","Fitness Ratio",                 GetFitnessRatio,   SetNULL,       5, 0, 0);
-  ADD_GDATA(int,    "update_born",  "Update Born",                   GetUpdateBorn,     SetUpdateBorn, 0, 0, 0);
-  ADD_GDATA(int,    "update_dead",  "Update Dead",                   GetUpdateDead,     SetUpdateDead, 0, 0, 0);
-  ADD_GDATA(int,    "depth",        "Tree Depth",                    GetDepth,          SetDepth,      0, 0, 0);
-  ADD_GDATA(double, "frac_dead",    "Fraction Mutations Lethal",     GetFracDead,       SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "frac_neg",     "Fraction Mutations Detrimental",GetFracNeg,        SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "frac_neut",    "Fraction Mutations Neutral",    GetFracNeut,       SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "frac_pos",     "Fraction Mutations Beneficial", GetFracPos,        SetNULL,       0, 0, 0);
-  ADD_GDATA(double, "complexity",   "Basic Complexity (beneficial muts are neutral)", GetComplexity, SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "land_fitness", "Average Lanscape Fitness",      GetLandscapeFitness, SetNULL,     0, 0, 0);
+  ADD_GDATA(const cString& (), "name",         "Genotype Name",                 GetName,           SetName,       0, 0, 0);
+  ADD_GDATA(bool (),           "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
+  ADD_GDATA(int (),            "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
+  ADD_GDATA(const cString& (), "tag",          "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
+  ADD_GDATA(int (),            "parent_id",    "Parent ID",                     GetParentID,       SetParentID,   0, 0, 0);
+  ADD_GDATA(int (),            "parent2_id",   "Second Parent ID (sexual orgs)",GetParent2ID,      SetParent2ID,  0, 0, 0);
+  ADD_GDATA(int (),            "parent_dist",  "Parent Distance",               GetParentDist,     SetParentDist, 0, 0, 0);
+  ADD_GDATA(int (),            "ancestor_dist","Ancestor Distance",             GetAncestorDist,   SetAncestorDist, 0, 0, 0);
+  ADD_GDATA(int (),            "lineage",      "Unique Lineage Label",          GetLineageLabel,   SetLineageLabel, 0, 0, 0);
+  ADD_GDATA(int (),            "num_cpus",     "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
+  ADD_GDATA(int (),            "total_cpus",   "Total CPUs Ever",               GetTotalCPUs,      SetTotalCPUs,  0, 0, 0);
+  ADD_GDATA(int (),            "length",       "Genome Length",                 GetLength,         SetLength,     4, 0, 0);
+  ADD_GDATA(int (),            "copy_length",  "Copied Length",                 GetCopyLength,     SetCopyLength, 0, 0, 0);
+  ADD_GDATA(int (),            "exe_length",   "Executed Length",               GetExeLength,      SetExeLength,  0, 0, 0);
+  ADD_GDATA(double (),         "merit",        "Merit",                         GetMerit,          SetMerit,      5, 0, 0);
+  ADD_GDATA(double (),         "comp_merit",   "Computational Merit",           GetCompMerit,      SetNULL,       5, 0, 0);
+  ADD_GDATA(double (),         "comp_merit_ratio", "Computational Merit Ratio", GetCompMeritRatio, SetNULL,       5, 0, 0);
+  ADD_GDATA(int (),            "gest_time",    "Gestation Time",                GetGestTime,       SetGestTime,   6, "Inf", 0);
+  ADD_GDATA(double (),         "efficiency",   "Rep. Efficiency",               GetEfficiency,     SetNULL,       5, 0, 0);
+  ADD_GDATA(double (),         "efficiency_ratio", "Rep. Efficiency Ratio",     GetEfficiencyRatio,SetNULL,       5, 0, 0);
+  ADD_GDATA(double (),         "fitness",      "Fitness",                       GetFitness,        SetFitness,    5, 0, 0);
+  ADD_GDATA(double (),         "div_type",     "Divide Type",                   GetDivType,        SetDivType,    0, 0, 0);
+  ADD_GDATA(int (),            "mate_id",      "Mate Selection ID Number",      GetMateID,         SetMateID,     0, 0, 0);
+  ADD_GDATA(double (),         "fitness_ratio","Fitness Ratio",                 GetFitnessRatio,   SetNULL,       5, 0, 0);
+  ADD_GDATA(int (),            "update_born",  "Update Born",                   GetUpdateBorn,     SetUpdateBorn, 0, 0, 0);
+  ADD_GDATA(int (),            "update_dead",  "Update Dead",                   GetUpdateDead,     SetUpdateDead, 0, 0, 0);
+  ADD_GDATA(int (),            "depth",        "Tree Depth",                    GetDepth,          SetDepth,      0, 0, 0);
+  ADD_GDATA(double (),         "frac_dead",    "Fraction Mutations Lethal",     GetFracDead,       SetNULL,       0, 0, 0);
+  ADD_GDATA(double (),         "frac_neg",     "Fraction Mutations Detrimental",GetFracNeg,        SetNULL,       0, 0, 0);
+  ADD_GDATA(double (),         "frac_neut",    "Fraction Mutations Neutral",    GetFracNeut,       SetNULL,       0, 0, 0);
+  ADD_GDATA(double (),         "frac_pos",     "Fraction Mutations Beneficial", GetFracPos,        SetNULL,       0, 0, 0);
+  ADD_GDATA(double (),         "complexity",   "Basic Complexity (beneficial muts are neutral)", GetComplexity, SetNULL, 0, 0, 0);
+  ADD_GDATA(double (),         "land_fitness", "Average Lanscape Fitness",      GetLandscapeFitness, SetNULL,     0, 0, 0);
   
-  ADD_GDATA(int,    "num_phen",           "Number of Plastic Phenotypes",          GetNumPhenotypes,          SetNULL, 0, 0, 0);
-  ADD_GDATA(int,    "num_trials",         "Number of Recalculation Trials",        GetNumTrials,              SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_entropy",       "Phenotpyic Entropy",                    GetPhenotypicEntropy,      SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_max_fitness",   "Phen Plast Maximum Fitness",            GetMaximumFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_max_fit_freq",  "Phen Plast Maximum Fitness Frequency",  GetMaximumFitnessFrequency,SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_min_fitness",   "Phen Plast Minimum Fitness",            GetMinimumFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_min_freq",      "Phen Plast Minimum Fitness Frequency",  GetMinimumFitnessFrequency,SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_avg_fitness",   "Phen Plast Wtd Avg Fitness",            GetAverageFitness,         SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_likely_freq",   "Freq of Most Likely Phenotype",         GetLikelyFrequency,        SetNULL, 0, 0, 0);
-  ADD_GDATA(double, "phen_likely_fitness","Fitness of Most Likely Phenotype",      GetLikelyFitness,          SetNULL, 0, 0, 0);
+  ADD_GDATA(int (),    "num_phen",           "Number of Plastic Phenotypes",          GetNumPhenotypes,          SetNULL, 0, 0, 0);
+  ADD_GDATA(int (),    "num_trials",         "Number of Recalculation Trials",        GetNumTrials,              SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_entropy",       "Phenotpyic Entropy",                    GetPhenotypicEntropy,      SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_max_fitness",   "Phen Plast Maximum Fitness",            GetMaximumFitness,         SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_max_fit_freq",  "Phen Plast Maximum Fitness Frequency",  GetMaximumFitnessFrequency,SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_min_fitness",   "Phen Plast Minimum Fitness",            GetMinimumFitness,         SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_min_freq",      "Phen Plast Minimum Fitness Frequency",  GetMinimumFitnessFrequency,SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_avg_fitness",   "Phen Plast Wtd Avg Fitness",            GetAverageFitness,         SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_likely_freq",   "Freq of Most Likely Phenotype",         GetLikelyFrequency,        SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "phen_likely_fitness","Fitness of Most Likely Phenotype",      GetLikelyFitness,          SetNULL, 0, 0, 0);
   
-  ADD_GDATA(const cString &, "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
-  ADD_GDATA(const cString &, "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
-  ADD_GDATA(cString, "sequence",    "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
-  ADD_GDATA(const cString &, "alignment", "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
+  ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
+  ADD_GDATA(const cString& (), "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
+  ADD_GDATA(cString (),        "sequence",    "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
+  ADD_GDATA(const cString& (), "alignment", "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
   
-  ADD_GDATA(cString, "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
-  ADD_GDATA(cString, "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, 0, "(N/A)", "");
-  ADD_GDATA(cString, "task_list", "List of all tasks performed",     GetTaskList,     SetNULL, 0, "(N/A)", "");
-  ADD_GDATA(cString, "link.tasksites", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
-  ADD_GDATA(cString, "html.sequence",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
+  ADD_GDATA(cString (), "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
+  ADD_GDATA(cString (), "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, 0, "(N/A)", "");
+  ADD_GDATA(cString (), "task_list", "List of all tasks performed",     GetTaskList,     SetNULL, 0, "(N/A)", "");
+  ADD_GDATA(cString (), "link.tasksites", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
+  ADD_GDATA(cString (), "html.sequence",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
   
   // coarse-grained task stats
-  ADD_GDATA(int, 		"total_task_count","# Different Tasks", 		GetTotalTaskCount, SetNULL, 1, 0, 0);
-  ADD_GDATA(int, 		"total_task_performance_count", "Total Tasks Performed",	GetTotalTaskPerformanceCount, SetNULL, 1, 0, 0);
+  ADD_GDATA(int (), 		"total_task_count","# Different Tasks", 		GetTotalTaskCount, SetNULL, 1, 0, 0);
+  ADD_GDATA(int (), 		"total_task_performance_count", "Total Tasks Performed",	GetTotalTaskPerformanceCount, SetNULL, 1, 0, 0);
   
-  const cEnvironment& environment = world->GetEnvironment();
-  for (int i = 0; i < environment.GetNumTasks(); i++) {
-    cString t_name, t_desc;
-    t_name.Set("task.%d", i);
-    t_desc = environment.GetTask(i).GetDesc();
-    dedict->Add(t_name,
-      new tDataEntryWithArg<cAnalyzeGenotype, int, int>(t_name, t_desc, &cAnalyzeGenotype::GetTaskCount, i, 5));
-  }
   
-  for (int i = 0; i < environment.GetInputSize(); i++){
-    cString t_name, t_desc;
-    t_name.Set("env_input.%d", i);
-    t_desc.Set("env_input.%d", i);
-    dedict->Add(t_name,
-      new tDataEntryWithArg<cAnalyzeGenotype, int, int>(t_name, t_desc, &cAnalyzeGenotype::GetEnvInput, i, 0));
-  }
-  
+  dedict->Add("task", new tDataEntryOfType<cAnalyzeGenotype, int (int, const cStringList&)>
+              ("task", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskCount, 5));
+  dedict->Add("env_input", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
+              ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
+    
   // The remaining values should actually go in a seperate list called
   // "population_data_list", but for the moment we're going to put them
   // here so that we only need to worry about a single system to load and
   // save genotype information.
-  ADD_GDATA(int, "update",       "Update Output",                   GetUpdateDead, SetUpdateDead, 0, 0, 0);
-  ADD_GDATA(int, "dom_num_cpus", "Number of Dominant Organisms",    GetNumCPUs,    SetNumCPUs,    0, 0, 0);
-  ADD_GDATA(int, "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth,      SetDepth,      0, 0, 0);
-  ADD_GDATA(int, "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
-  ADD_GDATA(cString, "dom_sequence", "Dominant Genotype Sequence",  GetSequence,   SetSequence,   0, "(N/A)", "");
+  ADD_GDATA(int (),     "update",       "Update Output",                   GetUpdateDead, SetUpdateDead, 0, 0, 0);
+  ADD_GDATA(int (),     "dom_num_cpus", "Number of Dominant Organisms",    GetNumCPUs,    SetNumCPUs,    0, 0, 0);
+  ADD_GDATA(int (),     "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth,      SetDepth,      0, 0, 0);
+  ADD_GDATA(int (),     "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
+  ADD_GDATA(cString (), "dom_sequence", "Dominant Genotype Sequence",      GetSequence,   SetSequence,   0, "(N/A)", "");
   
   return dedict;
   
@@ -331,11 +320,12 @@ void cAnalyzeGenotype::DestroyDEDict(tDictionary<tDataEntry<cAnalyzeGenotype>*>*
 tDataEntryCommand<cAnalyzeGenotype>* cAnalyzeGenotype::GetDataCommand(cWorld* world, const cString& cmd) 
 {
   cString arg_list = cmd;
-  cString entry_name = arg_list.Pop(':');
+  cString idx = arg_list.Pop(':');
+  cString entry_name = idx.Pop('.');
   
   tDataEntry<cAnalyzeGenotype>* data_entry;
   if (world->GetGenotypeDEDict().Find(entry_name, data_entry)) {
-    return new tDataEntryCommand<cAnalyzeGenotype>(data_entry, arg_list);
+    return new tDataEntryCommand<cAnalyzeGenotype>(data_entry, idx, arg_list);
   }
   
   cDriverManager::Status().NotifyWarning(cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", *entry_name,
@@ -351,10 +341,12 @@ void cAnalyzeGenotype::LoadDataCommandList(cWorld* world, cStringList arg_list,
 {
   if (arg_list.GetSize() == 0) {
     // If no args were given, load all of the stats.
+    // @TODO - handle indexed items...  under this scheme only the first task and env_input value will be output    
+
     tArray<tDataEntry<cAnalyzeGenotype>*> data_entries;
     world->GetGenotypeDEDict().GetValues(data_entries);
     for (int i = 0; i < data_entries.GetSize(); i++)
-      output_list.PushRear(new tDataEntryCommand<cAnalyzeGenotype>(data_entries[i], ""));
+      output_list.PushRear(new tDataEntryCommand<cAnalyzeGenotype>(data_entries[i]));
   } else {
     while (arg_list.GetSize() != 0) {
       tDataEntryCommand<cAnalyzeGenotype>* cur_command = GetDataCommand(world, arg_list.Pop());
@@ -364,6 +356,11 @@ void cAnalyzeGenotype::LoadDataCommandList(cWorld* world, cStringList arg_list,
 }
 
 
+cString cAnalyzeGenotype::DescTask(int task_id) const
+{
+  if (task_id > task_counts.GetSize()) return "";
+  return m_world->GetEnvironment().GetTask(task_id).GetDesc();
+}
 
 
 

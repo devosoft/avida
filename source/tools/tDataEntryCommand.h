@@ -47,21 +47,23 @@ template <class T> class tDataEntryCommand
 {
 private:
   tDataEntry<T>* m_data_entry;
+  cFlexVar m_idx;
   cStringList m_args;
-public:
-  tDataEntryCommand(tDataEntry<T>* entry, const cString& args = "") : m_data_entry(entry), m_args(args, ':') { ; }
   
-  const cStringList& GetArgs() const { return m_args; }
+public:
+  tDataEntryCommand(tDataEntry<T>* entry, const cString& idx = "", const cString& args = "")
+    : m_data_entry(entry), m_idx(idx), m_args(args, ':') { ; }
+  
   bool HasArg(const cString& test_arg) const { return m_args.HasString(test_arg); }
-
+  
   const cString& GetName() const { return m_data_entry->GetName(); }
-  const cString& GetDesc() const { return m_data_entry->GetDesc(); }
+  cString GetDesc(const T* target) const { return m_data_entry->GetDesc(target, m_idx); }
   int GetCompareType() const { return m_data_entry->GetCompareType(); }
   const cString& GetNull() const { return m_data_entry->GetNull(); }
   const cString& GetHtmlCellFlags() const { return m_data_entry->GetHtmlCellFlags(); }
   
-  bool SetValue(T* target, const cString& value) const { return m_data_entry->Set(target, value); }
-  cFlexVar GetValue(const T* target) const { return m_data_entry->Get(target); }
+  bool SetValue(T* target, const cString& value) const { return m_data_entry->Set(target, m_idx, m_args, value); }
+  cFlexVar GetValue(const T* target) const { return m_data_entry->Get(target, m_idx, m_args); }
 };
 
 #endif

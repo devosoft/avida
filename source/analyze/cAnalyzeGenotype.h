@@ -211,8 +211,6 @@ private:
   };
   mutable cAnalyzePhenPlast* m_phenplast_stats;
   
-  cStringList special_args; // These are args placed after a ':' in details...
-
   int NumCompare(double new_val, double old_val) const {
     if (new_val == old_val) return  0;
     else if (new_val == 0)       return -2;
@@ -241,9 +239,6 @@ public:
   
   static tDataEntryCommand<cAnalyzeGenotype>* GetDataCommand(cWorld* world, const cString& cmd);
   static void LoadDataCommandList(cWorld* world, cStringList arg_list, tList<tDataEntryCommand<cAnalyzeGenotype> >& output_list);
-
-  const cStringList & GetSpecialArgs() { return special_args; }
-  void SetSpecialArgs(const cStringList & _args) { special_args = _args; }
 
   void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
@@ -289,6 +284,7 @@ public:
 //    void SetFracPos(double in_frac);
 
   // A set of NULL accessors to simplyfy automated accesses.
+  void SetNULL(int idx, int dummy) { (void) dummy; }
   void SetNULL(int dummy) { (void) dummy; }
   void SetNULL(char dummy) { (void) dummy; }
   void SetNULL(double dummy) { (void) dummy; }
@@ -384,12 +380,17 @@ public:
   int GetNumTasks() const { return task_counts.GetSize(); }
   int GetTaskCount(int task_id) const {
     if (task_id >= task_counts.GetSize()) return 0;
-    if (special_args.HasString("binary")) return (task_counts[task_id] > 0);
     return task_counts[task_id];
   }
-  const tArray<int> & GetTaskCounts() const {
+  int GetTaskCount(int task_id, const cStringList& args) const {
+    if (task_id >= task_counts.GetSize()) return 0;
+    if (args.HasString("binary")) return (task_counts[task_id] > 0);
+    return task_counts[task_id];
+  }
+  const tArray<int>& GetTaskCounts() const {
     return task_counts;
   }
+  cString DescTask(int task_id) const;
   
   double GetTaskQuality(int task_id) const {
 	  if (task_id >= task_counts.GetSize()) return 0;
@@ -422,6 +423,7 @@ public:
   const tArray<int>& GetEnvInputs() const{
     return m_env_inputs;
   }
+  cString DescEnvInput(int input_id) const { return cStringUtil::Stringf("task.%d", input_id); }
 
   // Comparisons...  Compares a genotype to the "previous" one, which is
   // passed in, in one specified phenotype.

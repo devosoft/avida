@@ -228,6 +228,8 @@ public:
   double AsDouble() const { return m_var->AsDouble(); }
   cString AsString() const { return m_var->AsString(); }
   void SetString(cString & in_str) const { m_var->SetString(in_str); }
+  
+  template<class Type> Type As() const;
 
   // Setup a way to convert the native types
   int MakeInt() { int val = AsInt(); delete m_var; m_var = new cFlexVar_Int(val); return val; }
@@ -272,6 +274,12 @@ public:
   FORWARD_FLEX_VAR_OP(>=, bool)
   
 };
+
+template<> inline int cFlexVar::As<int>() const { return m_var->AsInt(); }
+template<> inline char cFlexVar::As<char>() const { return m_var->AsChar(); }
+template<> inline double cFlexVar::As<double>() const { return m_var->AsDouble(); }
+template<> inline cString cFlexVar::As<cString>() const { return m_var->AsString(); }
+
 
 inline std::ostream& operator << (std::ostream& out, const cFlexVar & entry)
 {

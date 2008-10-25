@@ -974,7 +974,6 @@ void cAnalyze::LoadFile(cString cur_string)
     output_it.Reset();
     tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
-      //        genotype->SetSpecialArgs(data_command->GetArgs());
       data_command->SetValue(genotype, cur_line.PopWord());
     }
     
@@ -2033,16 +2032,18 @@ void cAnalyze::CommandDetailTimeline(cString cur_string)
 
 
 void cAnalyze::CommandDetail_Header(ostream& fp, int format_type,
-                                    tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it,
+                                    tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it,
                                     int time_step)
 {
+  cAnalyzeGenotype* cur_genotype = batch[cur_batch].List().GetFirst();
+
   // Write out the header on the file
   if (format_type == FILE_TYPE_TEXT) {
     fp << "#filetype genotype_data" << endl;
     fp << "#format ";
     if (time_step > 0) fp << "update ";
     while (output_it.Next() != NULL) {
-      const cString & entry_name = output_it.Get()->GetName();
+      const cString& entry_name = output_it.Get()->GetName();
       fp << entry_name << " ";
     }
     fp << endl << endl;
@@ -2052,7 +2053,7 @@ void cAnalyze::CommandDetail_Header(ostream& fp, int format_type,
     int count = 0;
     if (time_step > 0) fp << "# " << ++count << ": Update" << endl;
     while (output_it.Next() != NULL) {
-      const cString & entry_desc = output_it.Get()->GetDesc();
+      const cString& entry_desc = output_it.Get()->GetDesc(cur_genotype);
       fp << "# " << ++count << ": " << entry_desc << endl;
     }
     fp << endl;
@@ -2071,7 +2072,7 @@ void cAnalyze::CommandDetail_Header(ostream& fp, int format_type,
     
     if (time_step > 0) fp << "<th bgcolor=\"#AAAAFF\">Update ";
     while (output_it.Next() != NULL) {
-      const cString & entry_desc = output_it.Get()->GetDesc();
+      const cString& entry_desc = output_it.Get()->GetDesc(cur_genotype);
       fp << "<th bgcolor=\"#AAAAFF\">" << entry_desc << " ";
     }
     fp << "</tr>" << endl;
@@ -2109,12 +2110,10 @@ void cAnalyze::CommandDetail_Body(ostream& fp, int format_type,
     
     tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
-      cur_genotype->SetSpecialArgs(data_command->GetArgs());
       cFlexVar cur_value = data_command->GetValue(cur_genotype);
       if (format_type == FILE_TYPE_HTML) {
         int compare = 0;
         if (prev_genotype) {
-          prev_genotype->SetSpecialArgs(data_command->GetArgs());
           cFlexVar prev_value = data_command->GetValue(prev_genotype);
           int compare_type = data_command->GetCompareType();
           compare = CompareFlexStat(cur_value, prev_value, compare_type);
@@ -2169,7 +2168,6 @@ void cAnalyze::CommandDetailAverage_Body(ostream& fp, int nucoutputs,
     output_it.Reset();
     tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
     while ((data_command = output_it.Next()) != NULL) {
-      cur_genotype->SetSpecialArgs(data_command->GetArgs());
       for (int j = 0; j < cur_genotype->GetNumCPUs(); j++) { 
         output_counts[count].Add( data_command->GetValue(cur_genotype).AsDouble() );
       } 	
@@ -2242,6 +2240,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   if (file_extension == "html") file_type = FILE_TYPE_HTML;
   
   ofstream& fp = m_world->GetDataFileOFStream(filename);
+  cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
   
   // Write out the header on the file
   if (file_type == FILE_TYPE_TEXT) {
@@ -2252,7 +2251,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
     // Give the more human-readable legend.
     fp << "# Legend:" << endl
       << "#  Column 1 = Batch ID" << endl
-      << "#  Remaining entries: " << cur_command->GetDesc() << endl
+      << "#  Remaining entries: " << cur_command->GetDesc(first_genotype) << endl
       << endl;
     
   } else { // if (file_type == FILE_TYPE_HTML) {
@@ -2263,11 +2262,11 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
     << " alink=\"#0000FF\"" << endl
     << " vlink=\"#000044\">" << endl
     << endl
-    << "<h1 align=center> Distribution of " << cur_command->GetDesc()
+    << "<h1 align=center> Distribution of " << cur_command->GetDesc(first_genotype)
     << endl << endl
     << "<center>" << endl
     << "<table border=1 cellpadding=2>" << endl
-    << "<tr><th bgcolor=\"#AAAAFF\">" << cur_command->GetDesc() << "</tr>"
+    << "<tr><th bgcolor=\"#AAAAFF\">" << cur_command->GetDesc(first_genotype) << "</tr>"
     << endl;
   }
   
@@ -2284,7 +2283,6 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
     while ((genotype = batch_it.Next()) != NULL) {
       if (file_type == FILE_TYPE_HTML) fp << "<td>";
       
-      genotype->SetSpecialArgs(cur_command->GetArgs());
       if (file_type == FILE_TYPE_HTML) {
         HTMLPrintStat(cur_command->GetValue(genotype), fp, 0, cur_command->GetHtmlCellFlags(), cur_command->GetNull());
       }
@@ -2336,6 +2334,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   
   // Setup the file...
   ofstream& fp = m_world->GetDataFileOFStream(filename);
+  cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -2357,7 +2356,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
     fp << "# 1: Batch Name" << endl;
     int count = 1;
     while (output_it.Next() != NULL) {
-      const cString & entry_desc = output_it.Get()->GetDesc();
+      const cString& entry_desc = output_it.Get()->GetDesc(first_genotype);
       fp << "# " << ++count << ": " << entry_desc << endl;
     }
     fp << endl;
@@ -2376,7 +2375,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
     
     fp << "<th bgcolor=\"#AAAAFF\">Batch ";
     while (output_it.Next() != NULL) {
-      const cString & entry_desc = output_it.Get()->GetDesc();
+      const cString& entry_desc = output_it.Get()->GetDesc(first_genotype);
       fp << "<th bgcolor=\"#AAAAFF\">" << entry_desc << " ";
     }
     fp << "</tr>" << endl;
@@ -2454,6 +2453,8 @@ void cAnalyze::CommandHistogram(cString cur_string)
 void cAnalyze::CommandHistogram_Header(ostream& fp, int format_type,
                                        tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
 {
+  cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
+
   // Write out the header on the file
   if (format_type == FILE_TYPE_TEXT) {
     fp << "#filetype histogram_data" << endl;
@@ -2468,7 +2469,7 @@ void cAnalyze::CommandHistogram_Header(ostream& fp, int format_type,
     fp << "# Histograms:" << endl;
     int count = 0;
     while (output_it.Next() != NULL) {
-      const cString & entry_desc = output_it.Get()->GetDesc();
+      const cString & entry_desc = output_it.Get()->GetDesc(first_genotype);
       fp << "# " << ++count << ": " << entry_desc << endl;
     }
     fp << endl;
@@ -2487,7 +2488,7 @@ void cAnalyze::CommandHistogram_Header(ostream& fp, int format_type,
     << "<table border=1 cellpadding=2><tr>" << endl;
     
     while (output_it.Next() != NULL) {
-      const cString & entry_desc = output_it.Get()->GetDesc();
+      const cString & entry_desc = output_it.Get()->GetDesc(first_genotype);
       const cString & entry_name = output_it.Get()->GetName();
       fp << "<tr><th bgcolor=\"#AAAAFF\"><a href=\"#"
         << entry_name << "\">"
@@ -2499,18 +2500,19 @@ void cAnalyze::CommandHistogram_Header(ostream& fp, int format_type,
 
 
 void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
-                                     tListIterator< tDataEntryCommand<cAnalyzeGenotype> > & output_it)
+                                     tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it)
 {
   output_it.Reset();
   tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
+  cAnalyzeGenotype* first_genotype = batch[cur_batch].List().GetFirst();
   
   while ((data_command = output_it.Next()) != NULL) {
     if (format_type == FILE_TYPE_TEXT) {
-      fp << "# --- " << data_command->GetDesc() << " ---" << endl;
+      fp << "# --- " << data_command->GetDesc(first_genotype) << " ---" << endl;
     } else {
       fp << "<table cellpadding=3>" << endl
       << "<tr><th colspan=3><a name=\"" << data_command->GetName() << "\">"
-      << data_command->GetDesc() << "</th></tr>" << endl;
+      << data_command->GetDesc(first_genotype) << "</th></tr>" << endl;
     }
     
     tDictionary<int> count_dict;
@@ -4820,7 +4822,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       fp << "<tr><td colspan=3> ";
       output_it.Reset();
       while (output_it.Next() != NULL) {
-        fp << "<th>" << output_it.Get()->GetDesc() << " ";
+        fp << "<th>" << output_it.Get()->GetDesc(genotype) << " ";
       }
       fp << "</tr>" << endl;
       
@@ -4829,7 +4831,6 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       cAnalyzeGenotype null_genotype(m_world, "a", inst_set);
       while ((data_command = output_it.Next()) != NULL) {
-        genotype->SetSpecialArgs(data_command->GetArgs());
         const cFlexVar cur_value = data_command->GetValue(genotype);
         const cFlexVar null_value = data_command->GetValue(&null_genotype);
         int compare = CompareFlexStat(cur_value, null_value, data_command->GetCompareType()); 
@@ -4888,7 +4889,6 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype>* data_command = NULL;
       int cur_col = 0;
       while ((data_command = output_it.Next()) != NULL) {
-        test_genotype.SetSpecialArgs(data_command->GetArgs());
         const cFlexVar test_value = data_command->GetValue(&test_genotype);
         int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), data_command->GetCompareType());
         
@@ -5119,13 +5119,11 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
         tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
         int cur_col = 0;
         while ((data_command = output_it.Next()) != NULL) {
-          test_genotype.SetSpecialArgs(data_command->GetArgs());
           const cFlexVar test_value = data_command->GetValue(&test_genotype);
           
           // This is done so that under 'binary' option it marks
           // the task as being influenced by the mutation iff
           // it is completely knocked out, not just decreased
-          genotype->SetSpecialArgs(data_command->GetArgs());
           
           int compare_type = data_command->GetCompareType();
           int compare = CompareFlexStat(test_value, data_command->GetValue(genotype), compare_type);
@@ -5343,7 +5341,6 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       int cur_trait = 0;
       while ((data_command = output_it.Next()) != NULL) {
-        test_genotype.SetSpecialArgs(data_command->GetArgs());
         const cFlexVar test_value = data_command->GetValue(&test_genotype);
         
         int compare_type = data_command->GetCompareType();
