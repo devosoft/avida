@@ -671,12 +671,14 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
   assert(m_interface);
   InitMessaging();
 
+	m_interface->GetDeme()->IncMessageSent();
   // If we're able to succesfully send the message...
   if(m_interface->SendMessage(msg)) {
     // save it...
     m_msg->sent.push_back(msg);
     // stat-tracking...
     m_world->GetStats().SentMessage(msg);
+		m_interface->GetDeme()->MessageSuccessfullySent();
     // check to see if we've performed any tasks...
     DoOutput(ctx);
     // and set the receiver-pointer of this message to NULL.  We don't want to
@@ -684,7 +686,7 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
     m_msg->sent.back().SetReceiver(0);
     return true;
   }
-  
+	m_interface->GetDeme()->messageSendFailed();
   return false;
 }
 

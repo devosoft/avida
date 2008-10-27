@@ -261,6 +261,12 @@ bool cPopulationInterface::TestOnDivide()
 /*! Send a message to the faced organism, failing if this cell does not have 
 neighbors or if the cell currently faced is not occupied. */
 bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
+	static const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
+  if (drop_prob > 0.0 && m_world->GetRandom().P(drop_prob)) {
+		GetDeme()->messageDropped();
+		return false; // message dropped
+	}
+	
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied()); // This organism; sanity.
   cPopulationCell* rcell = cell.ConnectionList().GetFirst();

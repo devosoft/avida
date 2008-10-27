@@ -70,6 +70,10 @@ private:
   int gestation_time; // Time used during last generation
   double cur_normalized_time_used; // normalized by merit and number of orgs
   double last_normalized_time_used; 
+	unsigned int MSG_sendFailed;
+	unsigned int MSG_dropped;
+	unsigned int MSG_SuccessfullySent;
+	unsigned int MSG_sent;
   double total_energy_testament; //! total amount of energy from suicide organisms for offspring deme
   int eventsTotal;
   unsigned int eventsKilled;
@@ -121,7 +125,8 @@ private:
 public:
   cDeme() : _id(0), width(0), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
             _age(0), generation(0), total_org_energy(0.0),
-            time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), total_energy_testament(0.0),
+            time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
+						MSG_sendFailed(0), MSG_dropped(0), MSG_SuccessfullySent(0), MSG_sent(0), total_energy_testament(0.0),
             eventsTotal(0), eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
             consecutiveSuccessfulEventPeriods(0), sleeping_count(0),
             avg_founder_generation(0.0), generations_per_lifetime(0.0),
@@ -284,6 +289,17 @@ public:
   void AddEventMoveBetweenTargetsPred(int times);
   void AddEventMigrateToTargetsPred(int times);
   void AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times);
+	
+	// --- Messaging stats --- //
+	void IncMessageSent() { ++MSG_sent; }
+	void MessageSuccessfullySent() { ++MSG_SuccessfullySent; }
+	void messageDropped() { ++MSG_dropped; }
+	void messageSendFailed() { ++MSG_sendFailed; }
+	unsigned int GetMessagesSent() { return MSG_sent; }
+	unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
+	unsigned int GetMessageDropped() { return MSG_dropped; }
+	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
+	
 
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value);

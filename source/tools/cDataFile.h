@@ -108,6 +108,7 @@ public:
   void Write(double x, const char* descr);
   void Write(int i, const char* descr);
   void Write(long i, const char* descr);
+	void Write(unsigned int i, const char* descr);
   void Write(const char* data_str, const char* descr);
   inline void WriteAnonymous(double x) { m_fp << x << " "; }
   inline void WriteAnonymous(int i) { m_fp << i << " "; }

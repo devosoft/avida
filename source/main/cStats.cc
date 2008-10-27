@@ -799,6 +799,35 @@ void cStats::PrintCountData(const cString& filename)
   df.Endl();
 }
 
+void cStats::PrintMessageData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+  df.WriteComment( "Number of organsism to organisms messages\n" );
+  
+  df.Write( GetUpdate(), "update" );
+  
+  cPopulation& pop = m_world->GetPopulation();
+  int numDemes = pop.GetNumDemes();
+  
+	unsigned int totalMessagesSent(0);
+	unsigned int totalMessagesSuccessfullySent(0);
+	unsigned int totalMessagesDropped(0);
+	unsigned int totalMessagesFailed(0);
+	
+	for( int i=0; i < numDemes; i++ ){
+		totalMessagesSent += pop.GetDeme(i).GetMessagesSent();
+		totalMessagesSuccessfullySent += pop.GetDeme(i).GetMessageSuccessfullySent();
+		totalMessagesDropped += pop.GetDeme(i).GetMessageDropped();
+		totalMessagesFailed  += pop.GetDeme(i).GetMessageSendFailed();
+	}
+	
+	df.Write(totalMessagesSent, "Totlal messages sent");
+	df.Write(totalMessagesSuccessfullySent, "Sent successfully");
+	df.Write(totalMessagesDropped, "Dropped");
+	df.Write(totalMessagesFailed, "Failed");
+	
+  df.Endl();
+}
 
 void cStats::PrintTotalsData(const cString& filename)
 {

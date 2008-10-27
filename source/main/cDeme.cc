@@ -266,7 +266,11 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   eventKillAttempts = 0;
   eventKillAttemptsThisSlot = 0;
   sleeping_count = 0;
-  
+  MSG_sendFailed = 0;
+	MSG_dropped = 0;
+	MSG_SuccessfullySent = 0;
+	MSG_sent = 0;
+	
   consecutiveSuccessfulEventPeriods = 0;
   
   cur_task_exe_count.SetAll(0);
