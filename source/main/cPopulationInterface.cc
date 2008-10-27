@@ -275,6 +275,41 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
   return true;
 }
 
+/* Send a message to the given organism */
+bool cPopulationInterface::SendMessage(cOrganism* recvr, cOrgMessage& msg) {
+  assert(recvr != NULL);
+  recvr->ReceiveMessage(msg);
+  return true;
+} //End SendMessage()
+
+
+// Broadcast the message to all living organisms within range
+bool cPopulationInterface::BroadcastMessage(cOrgMessage& msg) {
+  bool all_sent = true;
+  const int bcast_range = m_world->GetConfig().MESSAGE_BCAST_RADIUS.Get();
+  assert(bcast_range >= 0);
+  tVector<int> neighbors;
+  neighbors.Clear();
+  
+  cDeme& deme = m_world->GetPopulation().GetDeme(GetDemeID());
+  deme.GetSurroundingCellIds(neighbors, GetCellID(), bcast_range);
+  
+  for(int i = 0; i < neighbors.Size(); i++) {
+    cPopulationCell& rcell = m_world->GetPopulation().GetCell(neighbors[i]);
+    if(rcell.IsOccupied()) {
+      cOrganism* neighbor = rcell.GetOrganism();
+      assert(neighbor != NULL);
+      
+      if(!SendMessage(neighbor, msg)) {
+        all_sent = false; 
+      }
+    }
+  }
+  
+  return all_sent;
+  
+} //End BroadcastMessage
+
 
 bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
   bool successfully_sent(false);

@@ -110,6 +110,9 @@ private:
   double cur_energy_bonus;                    // Current energy bonus
   double energy_tobe_applied;                 // Energy that has not yet been added to energy store.
   double energy_testament;
+  double energy_received_buffer;              // Energy received through donation, but not yet applied to energy store
+  double total_energy_donated;                // Tota amount of energy that has been donated
+  double total_energy_received;               // Total amount of energy received through donations
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
   tArray<int> cur_task_count;                 // Total times each task was performed
@@ -180,6 +183,9 @@ private:
   bool is_donor_threshgb_last;// Did this org's parent threshgbg_donate? 
   bool is_donor_quanta_threshgb;  // Has this organism quanta_threshgb_donated (true green beard)? 
   bool is_donor_quanta_threshgb_last;// Did this org's parent quanta_threshgbg_donate? 
+  bool is_energy_donor; // Has this organism donated energy?
+  bool is_energy_receiver;  // Has this organism received an energy donation?
+  bool has_used_donated_energy; // Has the organism actively used an energy donation?
   int num_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
   int num_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
   int num_quanta_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
@@ -233,7 +239,8 @@ public:
   cPhenotype& operator=(const cPhenotype&); 
   ~cPhenotype();
   
-
+  enum energy_levels {ENERGY_LEVEL_LOW = 0, ENERGY_LEVEL_MEDIUM, ENERGY_LEVEL_HIGH};
+	
   bool OK();
 
   // Run when being setup *as* and offspring.
@@ -295,6 +302,8 @@ public:
   double GetCurMeritBase() const { assert(initialized == true); return CalcSizeMerit(); }
   double GetStoredEnergy() const { return energy_store; }
   double GetEnergyBonus() const { assert(initialized == true); return cur_energy_bonus; }
+  int GetDiscreteEnergyLevel() const;
+  double GetEnergyInBufferAmount() const { return energy_received_buffer; }
   
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }
@@ -363,6 +372,9 @@ public:
   bool IsDonorThreshGbLast() const { assert(initialized == true); return is_donor_threshgb_last; }
   bool IsDonorQuantaThreshGb() const { assert(initialized == true); return is_donor_quanta_threshgb; }
   bool IsDonorQuantaThreshGbLast() const { assert(initialized == true); return is_donor_quanta_threshgb_last; }
+  bool IsEnergyDonor() const { assert(initialized == true); return is_energy_donor; }
+  bool IsEnergyReceiver() const { assert(initialized == true); return is_energy_receiver; }
+  bool HasUsedEnergyDonation() const { assert(initialized == true); return has_used_donated_energy; }
   bool IsReceiver() const { assert(initialized == true); return is_receiver; }
   bool IsReceiverLast() const { assert(initialized == true); return is_receiver_last; }
   bool IsReceiverRand() const { assert(initialized == true); return is_receiver_rand; }
@@ -415,7 +427,9 @@ public:
   void SetCrossNum(int _cross_num) { cross_num = _cross_num; }
   void SetToDie() { to_die = true; }
   void SetToDelete() { to_delete = true; }
-
+  void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
+  void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
+  
   void SetIsDonorCur() { is_donor_cur = true; } 
   void SetIsDonorRand() { SetIsDonorCur(); is_donor_rand = true; }
   void SetIsDonorKin() { SetIsDonorCur(); is_donor_kin = true; }
@@ -433,6 +447,9 @@ public:
   void SetIsReceiverTrueGb() { SetIsReceiver(); is_receiver_truegb = true; } 
   void SetIsReceiverThreshGb() { SetIsReceiver(); is_receiver_threshgb = true; } 
   void SetIsReceiverQuantaThreshGb() { SetIsReceiver(); is_receiver_quanta_threshgb = true; } 
+  void SetIsEnergyDonor() { is_energy_donor = true; }
+  void SetIsEnergyReceiver() { is_energy_receiver = true; }
+  void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
   
   void SetCurBonus(double _bonus) { cur_bonus = _bonus; }
   void SetCurBonusInstCount(int _num_bonus_inst) {bonus_instruction_count = _num_bonus_inst;}
@@ -473,6 +490,8 @@ public:
   void RefreshEnergy();
   void ApplyToEnergyStore();
   void EnergyTestament(const double value); //! external energy given to organism
+  void ApplyDonatedEnergy();
+  void ReceiveDonatedEnergy(const double value);
   double ExtractParentEnergy();
   
   bool operator<(const cPhenotype& rhs) const;

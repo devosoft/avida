@@ -219,6 +219,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("receive-donated-energy", &cHardwareCPU::Inst_ReceiveDonatedEnergy, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy", &cHardwareCPU::Inst_DonateEnergy, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0, nInstFlag::STALL),
@@ -231,7 +233,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("rotate-to-unoccupied-cell", &cHardwareCPU::Inst_RotateUnoccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-occupied-cell", &cHardwareCPU::Inst_RotateOccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-event-cell", &cHardwareCPU::Inst_RotateEventCell, nInstFlag::STALL),
-    
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
@@ -366,7 +367,15 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("relinquishEnergyToNeighborOrganisms", &cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms, nInstFlag::STALL),
     tInstLibEntry<tMethod>("relinquishEnergyToOrganismsInDeme", &cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme, nInstFlag::STALL),
 
-
+    // Energy level detection
+	  tInstLibEntry<tMethod>("if-energy-low", &cHardwareCPU::Inst_IfEnergyLow, nInstFlag::STALL),
+	  tInstLibEntry<tMethod>("if-energy-not-low", &cHardwareCPU::Inst_IfEnergyNotLow, nInstFlag::STALL),
+  	tInstLibEntry<tMethod>("if-energy-high", &cHardwareCPU::Inst_IfEnergyHigh, nInstFlag::STALL),
+  	tInstLibEntry<tMethod>("if-energy-not-high", &cHardwareCPU::Inst_IfEnergyNotHigh, nInstFlag::STALL),
+  	tInstLibEntry<tMethod>("if-energy-med", &cHardwareCPU::Inst_IfEnergyMed, nInstFlag::STALL),	  
+	  tInstLibEntry<tMethod>("if-energy-in-buffer", &cHardwareCPU::Inst_IfEnergyInBuffer, nInstFlag::STALL),
+	  tInstLibEntry<tMethod>("if-energy-not-in-buffer", &cHardwareCPU::Inst_IfEnergyNotInBuffer, nInstFlag::STALL),
+	  
     // Sleep and time
     tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sleep1", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
@@ -3327,11 +3336,14 @@ void cHardwareCPU::DoDonate(cOrganism* to_org)
 
   // Plug the current merit back into this organism and notify the scheduler.
   organism->UpdateMerit(cur_merit);
+  organism->GetPhenotype().SetIsEnergyDonor();
   
   // Update the merit of the organism being donated to...
   double other_merit = to_org->GetPhenotype().GetMerit().GetDouble();
   other_merit += merit_received;
   to_org->UpdateMerit(other_merit);
+  to_org->GetPhenotype().SetIsEnergyReceiver();
+
 }
 
 void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
@@ -3345,14 +3357,58 @@ void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
   
   //update energy store and merit of donor
   organism->GetPhenotype().ReduceEnergy(energy_given);
+  organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
   double senderMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
   organism->UpdateMerit(senderMerit);
+  organism->GetPhenotype().SetIsEnergyDonor();
   
   // update energy store and merit of donee
   to_org->GetPhenotype().ReduceEnergy(-1.0*energy_given);
+  to_org->GetPhenotype().IncreaseEnergyReceived(energy_given);
   double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
   to_org->UpdateMerit(receiverMerit);
+  to_org->GetPhenotype().SetIsEnergyReceiver();
 }
+
+
+// The difference between this version and the previous is that this one allows energy to be placed
+// into the recipient's incoming energy buffer and not be applied immediately.  Also, some of the
+// energy may be lost in transfer
+void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given)
+{
+  double losspct = m_world->GetConfig().ENERGY_SHARING_LOSS.Get();
+  
+  assert(to_org != NULL);
+  assert(frac_energy_given >= 0);
+  assert(frac_energy_given <= 1);
+  assert(losspct >= 0);
+  assert(losspct <= 1);
+    
+  double cur_energy = organism->GetPhenotype().GetStoredEnergy();
+  double energy_given = cur_energy * frac_energy_given;
+  
+  //update energy store and merit of donor
+  organism->GetPhenotype().ReduceEnergy(energy_given);
+  organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
+  double senderMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  organism->UpdateMerit(senderMerit);
+  
+  //apply loss in transfer
+  energy_given *= (1 - losspct);
+  
+  //place energy into receiver's incoming energy buffer
+  to_org->GetPhenotype().ReceiveDonatedEnergy(energy_given);
+  to_org->GetPhenotype().IncreaseEnergyReceived(energy_given);
+  
+  //if we are using the push energy method, pass the new energy into the receiver's energy store and recalculate merit
+  if(m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) {
+    to_org->GetPhenotype().ApplyDonatedEnergy();
+    double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
+    to_org->UpdateMerit(receiverMerit);
+  }
+  
+} //End DoEnergyDonatePercent()
+
 
 bool cHardwareCPU::Inst_DonateFacing(cAvidaContext& ctx) {
   if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
@@ -3852,6 +3908,72 @@ bool cHardwareCPU::Inst_DonateNULL(cAvidaContext& ctx)
   
   return true;
 }
+
+
+//Move energy from an organism's received energy buffer into their energy store, recalculate merit
+bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext& ctx)
+{
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  if(organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
+    organism->GetPhenotype().ApplyDonatedEnergy();
+    organism->GetPhenotype().SetHasUsedDonatedEnergy();
+    double receiverMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy() * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+    organism->UpdateMerit(receiverMerit);
+  }
+  
+  return true;
+  
+} //End Inst_ReceiveDonatedEnergy()
+
+
+//Donate a fraction of organism's energy to the organism that last requested it.
+bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
+{
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  const cOrgMessage* msg = organism->RetrieveMessage();
+  if(msg == 0) {
+    return false;
+  }
+    
+  cOrganism* receiver = msg->GetSender();
+
+  // If the requestor no longer exists, should the donor still lose energy???
+  if( (receiver == NULL) && (receiver->IsDead()) ) {
+    return false;
+  }
+  
+  //Note: could get fancier about fraction of energy to send
+  DoEnergyDonatePercent(receiver, m_world->GetConfig().MERIT_GIVEN.Get());
+  organism->GetPhenotype().IncDonates();
+  
+  return true;
+  
+} //End Inst_DonateEnergy()
+
+
+//Broadcast a request for energy
+bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
+{
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+    
+  //TODO: BDC: somehow use nop modifiers to pick a multiplier for the amount of energy to request
+  
+  cOrgMessage msg = cOrgMessage(organism);
+  // Could set the data field of the message to be the multiplier
+  
+  organism->BroadcastMessage(ctx, msg);
+  
+  return true;
+  
+} //End Inst_RequestEnergy()
 
 
 bool cHardwareCPU::Inst_SearchF(cAvidaContext& ctx)
@@ -4620,6 +4742,120 @@ bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
   return true; 
 }
 
+
+/* Execute the next instruction if the organism's energy level is low */
+bool cHardwareCPU::Inst_IfEnergyLow(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Note: these instructions should probably also make sure the returned energy level is not -1.
+  if(organism->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_LOW) {
+    IP().Advance();
+  }
+	
+  return true;
+	
+} //End Inst_IfEnergyLow()
+
+
+/* Execute the next instruction if the organism's energy level is not low */
+bool cHardwareCPU::Inst_IfEnergyNotLow(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  if(organism->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_LOW) {
+    IP().Advance();
+  }
+	
+  return true;
+	
+} //End Inst_IfEnergyNotLow()
+
+
+/* Execute the next instruction if the organism's energy level is high */
+bool cHardwareCPU::Inst_IfEnergyHigh(cAvidaContext& ctx) {
+	
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  if(organism->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_HIGH) {
+    IP().Advance();
+  }
+	
+  return true;
+	
+} //End Inst_IfEnergyHigh()
+
+
+/* Execute the next instruction if the organism's energy level is not high */
+bool cHardwareCPU::Inst_IfEnergyNotHigh(cAvidaContext& ctx) {
+
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  if(organism->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_HIGH) {
+    IP().Advance();
+  }
+	
+  return true;
+	
+} //End Inst_IfEnergyNotHigh()
+
+
+/* Execute the next instruction if the organism's energy level is medium */
+bool cHardwareCPU::Inst_IfEnergyMed(cAvidaContext& ctx) {
+
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+
+  if(organism->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_MEDIUM) {
+    IP().Advance();
+  }
+		
+  return true;
+	
+} //End Inst_IfEnergyMed()
+
+
+/* Execute the next instruction if the organism has received energy */
+bool cHardwareCPU::Inst_IfEnergyInBuffer(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  if(organism->GetPhenotype().GetEnergyInBufferAmount() == 0) {
+    IP().Advance();
+  }
+  
+  return true;
+	
+} //End Inst_IfEnergyInBuffer()
+
+
+/* Execute the next instruction if the organism has not received energy */
+bool cHardwareCPU::Inst_IfEnergyNotInBuffer(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  if(organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
+    IP().Advance();
+  }
+  
+  return true;
+	
+} //End Inst_IfEnergyNotInBuffer()
+
+
 bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
   cPopulation& pop = m_world->GetPopulation();
   int cellID = organism->GetCellID();
@@ -5315,7 +5551,7 @@ bool cHardwareCPU::Inst_SenseTargetFaced(cAvidaContext& ctx) {
   int cellid = organism->GetCellID();
 	
   if(cellid == -1) {
-    return true;
+    return false;
   }
 	
   cPopulationCell& mycell = pop.GetCell(cellid);
@@ -5371,7 +5607,7 @@ bool cHardwareCPU::Inst_SensePheromone(cAvidaContext& ctx)
   int cellid = organism->GetCellID(); //absolute id of current cell
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   return DoSensePheromone(ctx, cellid);
@@ -5382,7 +5618,7 @@ bool cHardwareCPU::Inst_SensePheromoneFaced(cAvidaContext& ctx)
   int cellid = organism->GetCellID(); //absolute id of current cell
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   cPopulation& pop = m_world->GetPopulation();
@@ -5403,7 +5639,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   int cellid = organism->GetCellID();
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   cPopulationCell& mycell = pop.GetCell(cellid);
@@ -5541,7 +5777,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
   int cellid = organism->GetCellID();
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   cPopulationCell& mycell = pop.GetCell(cellid);
@@ -5685,7 +5921,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
   int cellid = organism->GetCellID();
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   cPopulationCell& mycell = pop.GetCell(cellid);
@@ -6053,7 +6289,7 @@ bool cHardwareCPU::Inst_MoveTargetForward5(cAvidaContext& ctx)
   int cellid = organism->GetCellID();
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   cPopulationCell& mycell = pop.GetCell(cellid);
@@ -6185,7 +6421,7 @@ bool cHardwareCPU::Inst_MoveTargetForward3(cAvidaContext& ctx)
   int cellid = organism->GetCellID();
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   cPopulationCell& mycell = pop.GetCell(cellid);
@@ -6313,7 +6549,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   int cellid = organism->GetCellID();
 
   if(cellid == -1) {
-    return true;
+    return false;
   }
 
   cPopulationCell& mycell = pop.GetCell(cellid);

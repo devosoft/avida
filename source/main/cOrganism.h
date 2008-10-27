@@ -344,6 +344,7 @@ public:
   
   //! Called when this organism attempts to send a message.
   bool SendMessage(cAvidaContext& ctx, cOrgMessage& msg);
+  bool BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg);
   //! Called when this organism has been sent a message.
   void ReceiveMessage(cOrgMessage& msg);
   //! Called when this organism attempts to move a received message into its CPU.

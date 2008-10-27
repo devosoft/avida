@@ -469,6 +469,7 @@ private:
 
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);
+  void DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given);
   bool Inst_DonateRandom(cAvidaContext& ctx);
   bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
@@ -478,6 +479,10 @@ private:
   bool Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateNULL(cAvidaContext& ctx);
   bool Inst_DonateFacing(cAvidaContext& ctx);
+  bool Inst_ReceiveDonatedEnergy(cAvidaContext& ctx);
+  bool Inst_DonateEnergy(cAvidaContext& ctx);
+  bool Inst_RequestEnergy(cAvidaContext& ctx);
+
 
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);
@@ -579,6 +584,14 @@ private:
   bool Inst_HeadDivide0_01(cAvidaContext& ctx);
   bool Inst_HeadDivide0_001(cAvidaContext& ctx);
 
+  bool Inst_IfEnergyLow(cAvidaContext& ctx);
+  bool Inst_IfEnergyNotLow(cAvidaContext& ctx);
+  bool Inst_IfEnergyHigh(cAvidaContext& ctx);
+  bool Inst_IfEnergyNotHigh(cAvidaContext& ctx);
+  bool Inst_IfEnergyMed(cAvidaContext& ctx);
+  bool Inst_IfEnergyInBuffer(cAvidaContext& ctx);
+  bool Inst_IfEnergyNotInBuffer(cAvidaContext& ctx);
+	
   bool Inst_Sleep(cAvidaContext& ctx);
   bool Inst_GetUpdate(cAvidaContext& ctx);
 

@@ -233,7 +233,8 @@ public:
   void UpdateDemeRes() { deme_resource_count.GetResources(); }
   void Update(double time_step) { deme_resource_count.Update(time_step); }
   int GetRelativeCellID(int absolute_cell_id) const { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
-
+  int GetAbsoluteCellID(int relative_cell_id) const { return relative_cell_id + (_id * GetSize()); } //!< assumes all demes are the same size
+	
   void SetCellEventGradient(int x1, int y1, int x2, int y2, int delay, int duration, bool static_pos, int time_to_live);
   int GetNumEvents();
   void SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, bool static_position, int total_events);
@@ -286,6 +287,8 @@ public:
 
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value);
+	
+  void GetSurroundingCellIds(tVector<int> &cells, const int absolute_cell_id, const int radius);
 };
 
 #endif

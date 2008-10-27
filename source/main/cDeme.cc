@@ -795,3 +795,62 @@ int cDeme::GetSlotFlowRate() const {
 //  assert(false); // slots must be of equal size and fit perfectally in deme lifetime
   return 0;
 }
+
+/* Place the absolute IDs of all cells surrounding the given cell id within the given radius into vector cells */
+void cDeme::GetSurroundingCellIds(tVector<int> &cells, const int absolute_cell_id, const int radius) {
+	assert(cell_ids[0] <= absolute_cell_id);
+	assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
+	assert(radius >= 0);
+	
+	const int relative_cell_id = GetRelativeCellID(absolute_cell_id);
+	const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+	const int width = GetWidth();
+	const int height = GetHeight();
+	const std::pair<int, int> coords = GetCellPosition(absolute_cell_id);
+	const int curr_x = coords.first;
+	const int curr_y = coords.second;
+	int cid, acid;
+	int x2, y2;
+	
+	//Note: this code currently supports a grid or torus
+	assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
+	
+	if(geometry == nGeometry::GRID) {
+		for(int y = curr_y - radius; y <= curr_y + radius; y++) {
+			for(int x = curr_x - radius; x <= curr_x + radius; x++) {
+				cid = y * width + x;
+				acid = GetAbsoluteCellID(cid);
+				if(y >= 0 && y < height && x >= 0 && x < width && cid != relative_cell_id) {
+					cells.Add(acid);
+				}
+			} 
+		}
+	} //End if world is a grid
+	else if(geometry == nGeometry::TORUS) {
+		for(int y = curr_y - radius; y <= curr_y + radius; y++) {
+			for(int x = curr_x - radius; x <= curr_x + radius; x++) {
+				x2 = x; y2 = y;
+				
+				if(x2 < 0) {
+					x2 = x2 + width;
+				} else if(x2 >= width) {
+					x2 = x2 - width;
+				}
+				
+				if(y2 < 0) {
+					y2 = y2 + height;
+				} else if(y2 >= height) {
+					y2 = y2 - height;
+				}
+				
+				cid = y2 * width + x2;
+				acid = GetAbsoluteCellID(cid);
+				
+				if(cid != relative_cell_id) {
+					cells.Add(acid);
+				}
+			} 
+		}
+	} //End if world is a torus
+	
+} //End GetSurroundingCellIds()

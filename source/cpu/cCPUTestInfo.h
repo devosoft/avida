@@ -93,8 +93,8 @@ public:
   // Input Setup
   void TraceTaskOrder(bool _trace=true) { trace_task_order = _trace; }
   void UseRandomInputs(bool _rand=true) { use_random_inputs = _rand; use_manual_inputs = false; }
-	void UseManualInputs(tArray<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
-	void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
+  void UseManualInputs(tArray<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
+  void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(cHardwareTracer* tracer = NULL) { m_tracer = tracer; }
   void SetInstSet(cInstSet* inst_set = NULL) { m_inst_set = inst_set; }
   void SetResourceOptions(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int cpu_cycle_offset = 0)

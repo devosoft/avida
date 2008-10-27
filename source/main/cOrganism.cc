@@ -689,6 +689,31 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
 }
 
 
+// Broadcast a message - slightly modified version of SendMessage
+bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg)
+{
+  assert(m_interface);
+  InitMessaging();
+ 
+  // If we're able to succesfully send the message...
+  if(m_interface->BroadcastMessage(msg)) {
+    // save it...
+    m_msg->sent.push_back(msg);
+    // and set the receiver-pointer of this message to NULL.  We don't want to
+    // walk this list later thinking that the receivers are still around.
+    // Also, a broadcast message may have >1 receiver
+    m_msg->sent.back().SetReceiver(0);
+    // stat-tracking...  NOTE: this has receiver not specified, so may be a problem for predicates
+    m_world->GetStats().SentMessage(msg);
+    // check to see if we've performed any tasks...NOTE: this has receiver not specified, so may be a problem for tasks that care
+    DoOutput(ctx);
+    return true;
+  }
+  
+  return false;
+} //End BroadcastMessage()
+
+
 void cOrganism::ReceiveMessage(cOrgMessage& msg)
 {
   InitMessaging();
@@ -708,7 +733,7 @@ const cOrgMessage* cOrganism::RetrieveMessage()
   return 0;
 }
 
-// Brian Movement
+
 void cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);

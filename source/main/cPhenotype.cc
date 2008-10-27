@@ -88,6 +88,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   energy_store             = in_phen.energy_store;    
   energy_tobe_applied      = in_phen.energy_tobe_applied;
   energy_testament         = in_phen.energy_testament;
+  energy_received_buffer   = in_phen.energy_received_buffer;
   genome_length            = in_phen.genome_length;        
   bonus_instruction_count  = in_phen.bonus_instruction_count; 
   copied_size              = in_phen.copied_size;          
@@ -142,6 +143,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_sense_count         = in_phen.last_sense_count;   
   last_fitness             = in_phen.last_fitness;            
   last_child_germline_propensity = in_phen.last_child_germline_propensity;
+  total_energy_donated     = in_phen.total_energy_donated;
+  total_energy_received    = in_phen.total_energy_received;
 
   // 4. Records from this organisms life...
   num_divides              = in_phen.num_divides;      
@@ -202,6 +205,12 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   parent_true             = in_phen.parent_true;     
   parent_sex              = in_phen.parent_sex;      
   parent_cross_num        = in_phen.parent_cross_num; 
+  
+  is_energy_donor         = in_phen.is_energy_donor;
+  is_energy_receiver      = in_phen.is_energy_receiver;
+  has_used_donated_energy = in_phen.has_used_donated_energy;
+  total_energy_donated    = in_phen.total_energy_donated;
+  total_energy_received   = in_phen.total_energy_received;
 
   // 6. Child information...
   copy_true               = in_phen.copy_true;       
@@ -240,6 +249,7 @@ bool cPhenotype::OK()
   assert(time_used >= 0);
   assert(age >= 0);
   assert(child_copied_size >= 0);
+  assert(energy_received_buffer >= 0);
   // assert(to_die == false);
   return (m_world);
 }
@@ -267,6 +277,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   energy_store    = min(energy_store, (double) m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
   energy_testament = 0.0;
+  energy_received_buffer = 0.0;
   genome_length   = _genome.GetSize();
   copied_size     = parent_phenotype.child_copied_size;
   executed_size   = parent_phenotype.executed_size;
@@ -382,6 +393,12 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   to_die = false;
   to_delete = false;
 
+  is_energy_donor = false;
+  is_energy_receiver = false;
+  has_used_donated_energy = false;
+  total_energy_donated = 0.0;
+  total_energy_received = 0.0;  
+
   // Setup child info...
   copy_true          = false;
   divide_sex         = false;
@@ -417,6 +434,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   energy_store    = min(m_world->GetConfig().ENERGY_GIVEN_ON_INJECT.Get(), m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
   energy_testament = 0.0;
+  energy_received_buffer = 0.0;
   executionRatio = 1.0;
   gestation_time  = 0;
   gestation_start = 0;
@@ -519,6 +537,12 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   parent_cross_num    = 0;
   to_die = false;
   to_delete = false;
+  
+  is_energy_donor = false;
+  is_energy_receiver = false;
+  has_used_donated_energy = false;
+  total_energy_donated = 0.0;
+  total_energy_received = 0.0;
 
   // Setup child info...
   copy_true         = false;
@@ -558,7 +582,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   SetEnergy(energy_store + cur_energy_bonus);
   m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
   energy_testament = 0.0;
-
+  energy_received_buffer = 0.0;  // If donated energy not applied, it's lost here
   
   genome_length   = _genome.GetSize();
   (void) copied_size;          // Unchanged
@@ -833,6 +857,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   energy_store    = clone_phenotype.energy_store;
   energy_tobe_applied = 0.0;
   energy_testament = 0.0;
+  energy_received_buffer = 0.0;
 
   if(m_world->GetConfig().INHERIT_EXE_RATE.Get() == 0)
     executionRatio = 1.0;
@@ -949,6 +974,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   parent_cross_num    = clone_phenotype.cross_num;
   to_die = false;
   to_delete = false;
+  is_energy_donor = false;
+  is_energy_receiver = false;
+  has_used_donated_energy = false;
 
   // Setup child info...
   copy_true          = false;
@@ -1242,6 +1270,20 @@ void cPhenotype::EnergyTestament(const double value) {
   energy_testament += value;
 } //! external energy given to organism
 
+
+void cPhenotype::ApplyDonatedEnergy() {
+  SetEnergy(energy_store + energy_received_buffer);
+  energy_received_buffer = 0.0;
+} //End AppplyDonatedEnergy()
+
+
+void cPhenotype::ReceiveDonatedEnergy(const double donation) {
+  assert(donation >= 0.0);  
+  energy_received_buffer += donation;
+  is_energy_receiver = true;
+} //End ReceiveDonatedEnergy()
+
+
 double cPhenotype::ExtractParentEnergy() {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get() > 0);
   // energy model config variables
@@ -1399,6 +1441,8 @@ void cPhenotype::NewTrial()
   is_receiver_threshgb = false;
   is_receiver_quanta_threshgb_last = is_receiver_quanta_threshgb;
   is_receiver_quanta_threshgb = false;
+  is_energy_donor = false;
+  is_energy_receiver = false;
   (void) is_modifier;
   (void) is_modified;
   (void) is_fertile;
@@ -1514,3 +1558,28 @@ bool cPhenotype::operator>(const cPhenotype&  rhs) const
   
   return false;
 }
+
+// Return an integer classifying the organism's energy level as -1=error,0=low,1=med,2=high
+int cPhenotype::GetDiscreteEnergyLevel() const {
+  double max_energy = m_world->GetConfig().ENERGY_CAP.Get();
+  double high_pct = m_world->GetConfig().ENERGY_THRESH_HIGH.Get();
+  double low_pct = m_world->GetConfig().ENERGY_THRESH_LOW.Get();
+	
+  assert(max_energy >= 0);
+  assert(high_pct <= 1);
+  assert(high_pct >= 0);
+  assert(low_pct <= 1);
+  assert(low_pct >= 0);
+  assert(low_pct <= high_pct);
+	
+  if (energy_store < (low_pct * max_energy)) {
+    return ENERGY_LEVEL_LOW;
+  } else if ( (energy_store >= (low_pct * max_energy)) && (energy_store <= (high_pct * max_energy)) ) {
+    return ENERGY_LEVEL_MEDIUM;
+  } else if (energy_store > (high_pct * max_energy)) {
+    return ENERGY_LEVEL_HIGH;
+  } else {
+    return -1;
+  }			 
+	
+} //End GetDiscreteEnergyLevel()
