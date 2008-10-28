@@ -27,7 +27,6 @@
 #define cAnalyze_h
 
 #include <iostream>
-#include <vector>
 
 #ifndef cAnalyzeJobQueue_h
 #include "cAnalyzeJobQueue.h"
@@ -67,17 +66,19 @@
 const int MAX_BATCHES = 2000;
 
 class cAnalyzeCommand;
-class cAnalyzeFunction;
 class cAnalyzeCommandDefBase;
-class cAnalyzeScreen;
-template <class T> class tDataEntry;
-class cInstSet;
+class cAnalyzeFunction;
 class cAnalyzeGenotype;
-class cInitFile;
-template <class T> class tDataEntryCommand;
+class cAnalyzeScreen;
 class cEnvironment;
+class cInitFile;
+class cInstSet;
+class cResourceHistory;
 class cTestCPU;
 class cWorld;
+template <class T> class tDataEntry;
+template <class T> class tDataEntryCommand;
+
 
 class cAnalyze {
   friend class cAnalyzeScreen;
@@ -115,9 +116,8 @@ private:
   cAvidaContext& m_ctx;
   cAnalyzeJobQueue m_jobqueue;
 
-  // This is the storage for the resource information from resource.dat.  It 
-  // is a pair of the update and a vector of the resource concentrations
-  std::vector<std::pair<int, std::vector<double> > > resources;
+  // This is the storage for the resource information from resource.dat.
+  cResourceHistory* m_resources;
   int m_resource_time_spent_offset; // The amount to offset the time spent when 
                                     // beginning, using resources that change
 

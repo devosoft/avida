@@ -192,6 +192,8 @@
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
 		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
+		709A1EEB0EB6C42D006090AF /* cOrgMovementPredicate.h in Headers */ = {isa = PBXBuildFile; fileRef = 709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */; };
+		709A1EEC0EB6C42D006090AF /* cResourceHistory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */; };
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
 		70A778390D69D5CA00735F1E /* cDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */; };
 		70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
@@ -588,6 +590,9 @@
 		7099EF4E0B2FBC85001269F6 /* cTextViewerDriver_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextViewerDriver_Base.cc; sourceTree = "<group>"; };
 		7099EF4F0B2FBC85001269F6 /* cTextViewerDriver_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextViewerDriver_Base.h; sourceTree = "<group>"; };
 		7099EF500B2FBC85001269F6 /* cView_Base.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cView_Base.h; sourceTree = "<group>"; };
+		709A1E540EB69DA6006090AF /* cResourceHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cResourceHistory.h; sourceTree = "<group>"; };
+		709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgMovementPredicate.h; sourceTree = "<group>"; };
+		709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cResourceHistory.cc; sourceTree = "<group>"; };
 		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
@@ -1423,6 +1428,8 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */,
+				709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */,
 				B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */,
 				B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */,
 				B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */,
@@ -1509,6 +1516,7 @@
 				700AE91B09DB65F200A073FD /* cTaskContext.h */,
 				7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */,
 				70166B8D0B519CFE009533A5 /* cTaskState.h */,
+				709A1E540EB69DA6006090AF /* cResourceHistory.h */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1688,6 +1696,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */,
+				709A1EEB0EB6C42D006090AF /* cOrgMovementPredicate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2040,6 +2049,7 @@
 				2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */,
 				70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */,
 				70BB2AE20EA5303F008269D2 /* cDriverStatusConduit.cc in Sources */,
+				709A1EEC0EB6C42D006090AF /* cResourceHistory.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

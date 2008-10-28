@@ -26,8 +26,6 @@
 #ifndef cCPUTestInfo_h
 #define cCPUTestInfo_h
 
-#include <vector>
-
 #ifndef nHardware_h
 #include "nHardware.h"
 #endif
@@ -42,7 +40,9 @@ class cHardwareTracer;
 class cInstSet;
 class cOrganism;
 class cPhenotype;
+class cResourceHistory;
 class cString;
+
 
 enum eTestCPUResourceMethod { RES_INITIAL = 0, RES_CONSTANT, RES_UPDATED_DEPLETABLE, RES_DYNAMIC, RES_LAST };  
 // Modes for how the test CPU handles resources:
@@ -51,6 +51,7 @@ enum eTestCPUResourceMethod { RES_INITIAL = 0, RES_CONSTANT, RES_UPDATED_DEPLETA
 // UPDATED_DEPLETABLE - resources change every update according to resource data file (assuming an update
 //    is an average time slice). The organism also depletes these resources when using them.
 // DYNAMIC - UPDATED_DEPLETABLE + resources inflow/outflow (NOT IMPLEMENTED YET!)
+
 
 class cCPUTestInfo
 {
@@ -77,7 +78,7 @@ private:
   
   // Information about how to handle resources
   eTestCPUResourceMethod m_res_method;
-  std::vector<std::pair<int, std::vector<double> > > * m_res;
+  cResourceHistory* m_res;
   int m_res_update;
   int m_res_cpu_cycle_offset;
 
@@ -97,7 +98,7 @@ public:
   void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(cHardwareTracer* tracer = NULL) { m_tracer = tracer; }
   void SetInstSet(cInstSet* inst_set = NULL) { m_inst_set = inst_set; }
-  void SetResourceOptions(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int cpu_cycle_offset = 0)
+  void SetResourceOptions(int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0)
     { m_res_method = (eTestCPUResourceMethod)res_method; m_res = res; m_res_update = update; m_res_cpu_cycle_offset = cpu_cycle_offset; }
 
 

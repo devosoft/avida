@@ -162,12 +162,14 @@ void RegisterASAnalyzeLib(cASLibrary* lib)
 #define BIND_FUNCTION(CLASS, NAME, METHOD, SIGNATURE) \
   tASNativeObject<CLASS>::RegisterMethod(new tASNativeObjectBoundFunction<CLASS, SIGNATURE>(&ASAnalyzeLib::METHOD), NAME);
 #define REGISTER_FUNCTION(NAME, SIGNATURE) lib->RegisterFunction(new tASFunction<SIGNATURE>(&ASAnalyzeLib::NAME, #NAME));
-  
+
 
   BIND_FUNCTION(cWorld, "LoadOrganism", LoadOrganism, cAnalyzeGenotype* (const cString&));
   BIND_FUNCTION(cWorld, "LoadOrganismWithInstSet", LoadOrganismWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
   BIND_FUNCTION(cWorld, "LoadSequence", LoadSequence, cAnalyzeGenotype* (const cString&));
   BIND_FUNCTION(cWorld, "LoadSequenceWithInstSet", LoadSequenceWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
+  BIND_FUNCTION(cWorld, "LoadBatch", LoadBatch, cAnalyzeGenotype* (const cString&));
+  BIND_FUNCTION(cWorld, "LoadBatchWithInstSet", LoadBatchWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
 
 
 #undef BIND_FUNCTION

@@ -244,6 +244,7 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cReactionResult.cc
   ${MAIN_DIR}/cResource.cc
   ${MAIN_DIR}/cResourceCount.cc
+  ${MAIN_DIR}/cResourceHistory.cc
   ${MAIN_DIR}/cResourceLib.cc
   ${MAIN_DIR}/cSpatialCountElem.cc
   ${MAIN_DIR}/cSpatialResCount.cc

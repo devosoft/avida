@@ -26,48 +26,55 @@
 #include "cResourceLib.h"
 
 #include "cResource.h"
+#include "cResourceHistory.h"
 
 using namespace std;
 
 
 cResourceLib::~cResourceLib()
 {
-  for (int i = 0; i < resource_array.GetSize(); i++) {
-    delete resource_array[i];
-  }
+  for (int i = 0; i < m_resource_array.GetSize(); i++) delete m_resource_array[i];
+  delete m_initial_levels;
 }
 
-cResource * cResourceLib::AddResource(const cString & res_name)
+cResource* cResourceLib::AddResource(const cString& res_name)
 {
-  const int new_id = resource_array.GetSize();
-  cResource * new_resource = new cResource(res_name, new_id);
-  resource_array.Resize(new_id + 1);
-  resource_array[new_id] = new_resource;
+  if (m_initial_levels) return NULL; // Initial levels calculated, cannot add more resources
+  
+  const int new_id = m_resource_array.GetSize();
+  cResource* new_resource = new cResource(res_name, new_id);
+  m_resource_array.Resize(new_id + 1);
+  m_resource_array[new_id] = new_resource;
+  
   return new_resource;
 }
 
-cResource * cResourceLib::GetResource(const cString & res_name) const
+cResource* cResourceLib::GetResource(const cString& res_name) const
 {
-  for (int i = 0; i < resource_array.GetSize(); i++) {
-    if (resource_array[i]->GetName() == res_name) return resource_array[i];
+  for (int i = 0; i < m_resource_array.GetSize(); i++) {
+    if (m_resource_array[i]->GetName() == res_name) return m_resource_array[i];
   }
   cerr << "Error: Unknown resource '" << res_name << "'." << endl;
   return NULL;
 }
 
-cResource * cResourceLib::GetResource(int id) const
+
+const cResourceHistory& cResourceLib::GetInitialResourceLevels() const
 {
-  return resource_array[id];
+  if (!m_initial_levels) {
+    tArray<double> levels(m_resource_array.GetSize());
+    for (int i = 0; i < m_resource_array.GetSize(); i++) levels[i] = m_resource_array[i]->GetInitial();
+    m_initial_levels = new cResourceHistory;
+    m_initial_levels->AddEntry(0, levels);
+  }
+ 
+  return *m_initial_levels;
 }
 
-bool cResourceLib::DoesResourceExist(const cString & res_name) 
 
-/* Return boolean for if the named resource exists in the resource library */
-
+bool cResourceLib::DoesResourceExist(const cString& res_name) 
 {
-  for (int i = 0; i < resource_array.GetSize(); i++) {
-    if (resource_array[i]->GetName() == res_name) return true;
-  }
+  for (int i = 0; i < m_resource_array.GetSize(); i++) if (m_resource_array[i]->GetName() == res_name) return true;
   return false;
 }
 

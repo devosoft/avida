@@ -27,7 +27,6 @@
 #define cTestCPU_h
 
 #include <fstream>
-#include <vector>
 
 #ifndef tArray_h
 #include "tArray.h"
@@ -48,6 +47,7 @@ class cGenotype;
 class cInjectGenotype;
 class cInstSet;
 class cResourceCount;
+class cResourceHistory;
 class cWorld;
 
 
@@ -66,7 +66,7 @@ private:
   
   // Resource settings. Reinitialized from cCPUTestInfo on each test.
   eTestCPUResourceMethod m_res_method;
-  std::vector<std::pair<int, std::vector<double> > > * m_res;
+  const cResourceHistory* m_res;
   int m_res_update;
   int m_res_cpu_cycle_offset;
 
@@ -77,17 +77,15 @@ private:
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
 
-  // one copy of resources initialized from environment file
-  static std::vector<std::pair<int, std::vector<double> > > * s_resources;
-
+  
   cTestCPU(); // @not_implemented
   cTestCPU(const cTestCPU&); // @not_implemented
   cTestCPU& operator=(const cTestCPU&); // @not_implemented
   
   // Internal methods for setting up and updating resources
-  void InitResources(int res_method = RES_INITIAL, std::vector<std::pair<int, std::vector<double> > > * res = NULL, int update = 0, int cpu_cycle_offset = 0);
+  void InitResources(int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0);
   void UpdateResources(int cpu_cycles_used);
-  void SetResourceUpdate(int update, bool round_to_closest = false);
+  inline void SetResourceUpdate(int update, bool exact = true);
   inline void SetResource(int id, double new_level);
 public:
   cTestCPU(cWorld* world);

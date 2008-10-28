@@ -61,6 +61,7 @@
 #include "cProbSchedule.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
+#include "cResourceHistory.h"
 #include "cSchedule.h"
 #include "cSpecies.h"
 #include "cStringIterator.h"
@@ -100,6 +101,7 @@ cAnalyze::cAnalyze(cWorld* world)
 , inst_set(world->GetHardwareManager().GetInstSet())
 , m_ctx(world->GetDefaultContext())
 , m_jobqueue(world)
+, m_resources(NULL)
 , interactive_depth(0)
 {
   random.ResetSeed(m_world->GetConfig().RANDOM_SEED.Get());
@@ -109,7 +111,6 @@ cAnalyze::cAnalyze(cWorld* world)
     batch[i].Name().Set("Batch%d", i);
   }
   
-  resources.clear();
 }
 
 
@@ -417,69 +418,21 @@ void cAnalyze::LoadSequence(cString cur_string)
 // from a file specified by the user, or resource.dat by default.
 void cAnalyze::LoadResources(cString cur_string)
 {
-  resources.clear();
+  delete m_resources;
+  m_resources = new cResourceHistory;
   
   int words = cur_string.CountNumWords();
   
   cString filename = "resource.dat";
-  if(words >= 1) {
-    filename = cur_string.PopWord();
-  }
-  if(words >= 2) {
-    m_resource_time_spent_offset = cur_string.PopWord().AsInt();
-  }
+  if (words >= 1) filename = cur_string.PopWord();
+  if (words >= 2) m_resource_time_spent_offset = cur_string.PopWord().AsInt();
   
   cout << "Loading Resources from: " << filename << endl;
   
-  // Process the resource.dat, currently assuming this is the only possible
-  // input file
-  ifstream resourceFile(filename, ios::in);
-  if ( !resourceFile.good() ) {
-    m_world->GetDriver().RaiseException("Failed to load resource file.");
-    return;
-  }
-      
-  // Read in each line of the resource file and process in
-  char line[4096];
-  while(!resourceFile.eof()) {
-    resourceFile.getline(line, 4095);
-    
-    // Get rid of the whitespace at the beginning of the stream, then 
-    // see if the line begins with a #, if so move on to the next line.
-    stringstream ss;
-    ss << line; ss >> ws; 
-    if( (ss.peek() == '#') || (!ss.good()) ) { continue; }
-    
-    // Read the update number from the stream
-    int update;
-    ss >> update; assert(ss.good());
-    
-    // Read in the concentration values for the current update and put them
-    // into a temporary vector.
-    double x;
-    vector<double> tempValues;
-    // Loop until the stream is no longer valid, which means either all the
-    // data has been processed or a non-numeric was encountered.  Currently
-    // assuming a non-numeric is a comment denoting the rest of the line as
-    // not informational.
-    while(true) {
-      ss >> ws; ss >> x;
-      tempValues.push_back(x);
-      if(!ss.good()) { ss.clear(); break; }
-    }
-    // Can't have no resources, so assert
-    if(tempValues.empty()) { assert(0); }
-    // add the update to the list of updates.  Also assuming the values
-    // in the file are already sorted.  If this turns out not to be the
-    // case you will need to sort on resources[i].first
-    resources.push_back(make_pair(update, tempValues));
-  }
-  resourceFile.close();
-
-  return;
+  if (!m_resources->LoadFile(filename)) m_world->GetDriver().RaiseException("failed to load resource file");
 }
 
-double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype * genotype, double mu) 
+double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu) 
 {
   double entropy = 0.0;
   
@@ -1892,7 +1845,7 @@ void cAnalyze::CommandTrace(cString cur_string)
       test_info.UseManualInputs(manual_inputs);
     else
       test_info.UseRandomInputs(use_random_inputs); 
-    test_info.SetResourceOptions(use_resources, &resources, update, m_resource_time_spent_offset);
+    test_info.SetResourceOptions(use_resources, m_resources, update, m_resource_time_spent_offset);
 
     if (m_world->GetVerbosity() >= VERBOSE_ON){
       msg = cString("Tracing ") + filename;
@@ -2872,7 +2825,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   // Create Test Info 
   // No choice of use_resources for this analyze command...
   cCPUTestInfo test_info;
-  test_info.SetResourceOptions(RES_CONSTANT, &resources, update, m_resource_time_spent_offset);
+  test_info.SetResourceOptions(RES_CONSTANT, m_resources, update, m_resource_time_spent_offset);
   
   
   ///////////////////////////////////////////////////////////////////////
@@ -3451,7 +3404,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
   // Backup test CPU data
   cCPUTestInfo test_info;
   // No choice of use_resources for this analyze command...
-  test_info.SetResourceOptions(RES_CONSTANT, &resources, update, m_resource_time_spent_offset);
+  test_info.SetResourceOptions(RES_CONSTANT, m_resources, update, m_resource_time_spent_offset);
   
   vector<cAnalyzeGenotype *> community;
   cAnalyzeGenotype * genotype = NULL;
@@ -3802,53 +3755,46 @@ void cAnalyze::CommandPrintResourceFitnessMap(cString cur_string)
   for (int i=0; i<fitnesses.GetSize(); i++)
 	  fitnesses[i].Resize(fsize[1]+1,1);
   
-   // figure out what index into resources that we loaded goes with update we want
-  int index=-1;
-  for (unsigned int i = 0; i < resources.size(); i++)
-  {
-	  if (resources.at(i).first == update)
-	  {
-		  index=i;
-		  i=resources.size();
-	  }
+  // Get the resources for the specified update
+  tArray<double> resources;
+  if (!m_resources || !m_resources->GetResourceLevelsForUpdate(update, resources, true)) {
+    cout << "error: did not find the desired update in resource history" << endl;
+    return;
   }
-  if (index<0) cout << "error, never found desired update in resource array!\n";
-
-  else cout << "creating map using resources at update: " << update << endl;
+  
+  cout << "creating map using resources at update: " << update << endl;
    
-  for (int i=0; i<m_world->GetEnvironment().GetResourceLib().GetSize(); i++)
-  {
-  	  // first have to find reaction that matches this resource, so compare names
+  for (int i = 0; i < m_world->GetEnvironment().GetResourceLib().GetSize(); i++) {
+    
+    // first have to find reaction that matches this resource, so compare names
 	  cString name = m_world->GetEnvironment().GetResourceLib().GetResource(i)->GetName();
 	  cReaction* react = NULL;
-	  for (int j=0; j<m_world->GetEnvironment().GetReactionLib().GetSize(); j++)
-	  {
-		  if (m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetProcesses().GetPos(0)->GetResource()->GetName() == name)
-		  {
+	  for (int j = 0; j < m_world->GetEnvironment().GetReactionLib().GetSize(); j++) {
+		  if (m_world->GetEnvironment().GetReactionLib().GetReaction(j)->GetProcesses().GetPos(0)->GetResource()->GetName() == name) {
 			  react = m_world->GetEnvironment().GetReactionLib().GetReaction(j);
 			  j = m_world->GetEnvironment().GetReactionLib().GetSize();
 		  }
 	  }
-	  if (react==NULL)
-	    continue;
+	  if (react == NULL) continue;
+    
 	  // now have proper reaction, pull all the data need from the reaction
 	  double frac = react->GetProcesses().GetPos(0)->GetMaxFraction(); 
 	  double max = react->GetProcesses().GetPos(0)->GetMaxNumber();
 	  double min = react->GetProcesses().GetPos(0)->GetMinNumber();
 	  double value = react->GetValue();
 	  int fun = react->GetTask()->GetArguments().GetInt(0);
-	  if (fun==f1)
-		  fun=0;
-	  else if (fun==f2)
-		  fun=1;
+	  
+    if (fun == f1) fun = 0;
+	  else if (fun == f2) fun = 1;
 	  else cout << "function is neither f1 or f2! doh!\n";
+    
 	  double thresh = react->GetTask()->GetArguments().GetDouble(3);
 	  double threshMax = react->GetTask()->GetArguments().GetDouble(4);
 	  //double maxFx = react->GetTask()->GetArguments().GetDouble(1);
 	  //double minFx = react->GetTask()->GetArguments().GetDouble(2);
 
 	  // and pull the concentration of this resource from resource object loaded from resource.dat
-	  double concentration = resources.at(index).second.at(i);
+	  double concentration = resources[i];
 
 	  // calculate the merit based on this resource concentration, fraction, and value
 	  double mer = concentration * frac * value;
@@ -4766,7 +4712,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     cCPUTestInfo test_info;
     if (use_manual_inputs)
       test_info.UseManualInputs(manual_inputs);
-    test_info.SetResourceOptions(use_resources, &resources);
+    test_info.SetResourceOptions(use_resources, m_resources);
     genotype->Recalculate(m_ctx, &test_info);
     
     // Headers...
@@ -7107,7 +7053,7 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     int updateBorn = -1;
     updateBorn = genotype->GetUpdateBorn();
     cCPUTestInfo test_info;
-    test_info.SetResourceOptions(useResources, &resources, updateBorn, m_resource_time_spent_offset);
+    test_info.SetResourceOptions(useResources, m_resources, updateBorn, m_resource_time_spent_offset);
     
     // Calculate the stats for the genotype we're working with ...
     genotype->Recalculate(m_ctx, &test_info);
@@ -7287,7 +7233,7 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
     int updateBorn = -1;
     updateBorn = genotype->GetUpdateBorn();
     cCPUTestInfo test_info;
-    test_info.SetResourceOptions(useResources, &resources, updateBorn, m_resource_time_spent_offset);
+    test_info.SetResourceOptions(useResources, m_resources, updateBorn, m_resource_time_spent_offset);
     
     // Calculate the stats for the genotype we're working with ...
     genotype->Recalculate(m_ctx, &test_info);
@@ -7480,7 +7426,7 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     int updateBorn = -1;
     updateBorn = genotype->GetUpdateBorn();
     cCPUTestInfo test_info;
-    test_info.SetResourceOptions(useResources, &resources, updateBorn, m_resource_time_spent_offset);
+    test_info.SetResourceOptions(useResources, m_resources, updateBorn, m_resource_time_spent_offset);
     
     // Calculate the stats for the genotype we're working with ...
     genotype->Recalculate(m_ctx, &test_info);
@@ -8293,7 +8239,7 @@ void cAnalyze::BatchRecalculate(cString cur_string)
     test_info.UseManualInputs(manual_inputs);
   else
     test_info.UseRandomInputs(use_random_inputs); 
-  test_info.SetResourceOptions(use_resources, &resources, update, m_resource_time_spent_offset);
+  test_info.SetResourceOptions(use_resources, m_resources, update, m_resource_time_spent_offset);
 
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     msg.Set("Running batch %d through test CPUs...", cur_batch);
@@ -8380,7 +8326,7 @@ void cAnalyze::BatchRecalculateWithArgs(cString cur_string)
     test_info.UseManualInputs(manual_inputs);
   else
     test_info.UseRandomInputs(use_random_inputs); 
-  test_info.SetResourceOptions(use_resources, &resources, update, m_resource_time_spent_offset);
+  test_info.SetResourceOptions(use_resources, m_resources, update, m_resource_time_spent_offset);
   
   // Notifications
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
