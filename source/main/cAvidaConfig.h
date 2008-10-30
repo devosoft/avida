@@ -479,14 +479,14 @@ public:
   
   CONFIG_ADD_GROUP(ENERGY_GROUP, "Energy Settings");
   CONFIG_ADD_VAR(ENERGY_ENABLED, bool, 0, "Enable Energy Model. 0/1 (off/on)");
-  CONFIG_ADD_VAR(ENERGY_GIVEN_ON_INJECT, int, 0, "Energy given to organism upon injection.");
-  CONFIG_ADD_VAR(ENERGY_GIVEN_AT_BIRTH, int, 0, "Energy given to offspring upon birth.");
+  CONFIG_ADD_VAR(ENERGY_GIVEN_ON_INJECT, double, 0.0, "Energy given to organism upon injection.");
+  CONFIG_ADD_VAR(ENERGY_GIVEN_AT_BIRTH, double, 0.0, "Energy given to offspring upon birth.");
   CONFIG_ADD_VAR(FRAC_PARENT_ENERGY_GIVEN_TO_ORG_AT_BIRTH, double, 0.5, "Fraction of parent's energy given to offspring organism.");
   CONFIG_ADD_VAR(FRAC_PARENT_ENERGY_GIVEN_TO_DEME_AT_BIRTH, double, 0.5, "Fraction of parent's energy given to offspring deme.");
   CONFIG_ADD_VAR(FRAC_ENERGY_DECAY_AT_ORG_BIRTH, double, 0.0, "Fraction of energy lost due to decay during organism reproduction.");
   CONFIG_ADD_VAR(FRAC_ENERGY_DECAY_AT_DEME_BIRTH, double, 0.0, "Fraction of energy lost due to decay during deme reproduction.");
   CONFIG_ADD_VAR(NUM_INST_EXC_BEFORE_0_ENERGY, int, 0, "Number of instructions executed before energy is exhausted.");
-  CONFIG_ADD_VAR(ENERGY_CAP, int, -1, "Maximum amount of energy that can be stored in an organism.  -1 means the cap is set to Max Int");  // TODO - is this done?
+  CONFIG_ADD_VAR(ENERGY_CAP, double, -1.0, "Maximum amount of energy that can be stored in an organism.  -1 means the cap is set to Max Int");  // TODO - is this done?
   CONFIG_ADD_VAR(APPLY_ENERGY_METHOD, int, 0, "When should rewarded energy be applied to current energy?\n0 = on divide\n1 = on completion of task\n2 = on sleep");  
   CONFIG_ADD_VAR(FRAC_ENERGY_TRANSFER, double, 0.0, "Fraction of replaced organism's energy take by new resident");
   CONFIG_ADD_VAR(LOG_SLEEP_TIMES, bool, 0, "Log sleep start and end times. 0/1 (off/on)\nWARNING: may use lots of memory.");

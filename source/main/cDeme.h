@@ -65,7 +65,7 @@ private:
   int birth_count_perslot;
   int _age; //!< Age of this deme, in updates.
   int generation; //!< Generation of this deme
-  double total_org_energy; //! total amount of energy in organisms in this deme
+  double total_org_energy; //! amount of energy in organisms in this deme
   int time_used; //!< number of cpu cycles this deme has used
   int gestation_time; // Time used during last generation
   double cur_normalized_time_used; // normalized by merit and number of orgs
@@ -83,6 +83,8 @@ private:
   unsigned int consecutiveSuccessfulEventPeriods;
   int sleeping_count; //!< Number of organisms currently sleeping
   cDoubleSum energyUsage;
+  unsigned int energy_requests_made;
+  unsigned int energy_donations_made;
   
   tArray<int> cur_task_exe_count;
   tArray<int> cur_reaction_count;
@@ -299,7 +301,10 @@ public:
 	unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
 	unsigned int GetMessageDropped() { return MSG_dropped; }
 	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
-	
+  
+  // --- Energy sharing stats --- //
+  void IncEnergyRequestsMade() { energy_requests_made++; }
+  void IncEnergyDonationsMade() { energy_donations_made++; }
 
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value);

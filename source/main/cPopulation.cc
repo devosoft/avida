@@ -92,7 +92,7 @@ cPopulation::cPopulation(cWorld* world)
   const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
   
   if(m_world->GetConfig().ENERGY_CAP.Get() == -1) {
-    m_world->GetConfig().ENERGY_CAP.Set(INT_MAX);
+    m_world->GetConfig().ENERGY_CAP.Set(std::numeric_limits<double>::max());
   }
   
   if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)  {

@@ -274,7 +274,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   else 
     executionRatio = parent_phenotype.executionRatio;
     
-  energy_store    = min(energy_store, (double) m_world->GetConfig().ENERGY_CAP.Get());
+  energy_store    = min(energy_store, m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
   energy_testament = 0.0;
   energy_received_buffer = 0.0;
@@ -1220,7 +1220,7 @@ void cPhenotype::ReduceEnergy(const double cost) {
 }
 
 void cPhenotype::SetEnergy(const double value) {
-  energy_store = max(0.0, min(value, (double) m_world->GetConfig().ENERGY_CAP.Get()));
+  energy_store = max(0.0, min(value, m_world->GetConfig().ENERGY_CAP.Get()));
 }
 
 void cPhenotype::DoubleEnergyUsage() {
@@ -1272,6 +1272,14 @@ void cPhenotype::EnergyTestament(const double value) {
 
 
 void cPhenotype::ApplyDonatedEnergy() {
+  double energy_cap = m_world->GetConfig().ENERGY_CAP.Get();
+  
+  if((energy_store + energy_received_buffer) >= energy_cap) {
+    IncreaseEnergyApplied(energy_cap - energy_store);
+  } else {
+    IncreaseEnergyApplied(energy_received_buffer);
+  }
+  
   SetEnergy(energy_store + energy_received_buffer);
   energy_received_buffer = 0.0;
 } //End AppplyDonatedEnergy()
@@ -1290,7 +1298,7 @@ double cPhenotype::ExtractParentEnergy() {
   double energy_given_at_birth = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get();
   double frac_parent_energy_given_at_birth = m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_TO_ORG_AT_BIRTH.Get();
   double frac_energy_decay_at_birth = m_world->GetConfig().FRAC_ENERGY_DECAY_AT_ORG_BIRTH.Get();
-  double energy_cap = (double) m_world->GetConfig().ENERGY_CAP.Get();
+  double energy_cap = m_world->GetConfig().ENERGY_CAP.Get();
   
   // apply energy if APPLY_ENERGY_METHOD is set to "on divide" (0)
   if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 0) {

@@ -113,6 +113,7 @@ private:
   double energy_received_buffer;              // Energy received through donation, but not yet applied to energy store
   double total_energy_donated;                // Tota amount of energy that has been donated
   double total_energy_received;               // Total amount of energy received through donations
+  double total_energy_applied;                // Total amount of received energy applied to energy store
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
   tArray<int> cur_task_count;                 // Total times each task was performed
@@ -429,6 +430,7 @@ public:
   void SetToDelete() { to_delete = true; }
   void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
+  void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
   
   void SetIsDonorCur() { is_donor_cur = true; } 
   void SetIsDonorRand() { SetIsDonorCur(); is_donor_rand = true; }

@@ -221,6 +221,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing, nInstFlag::STALL),
     tInstLibEntry<tMethod>("receive-donated-energy", &cHardwareCPU::Inst_ReceiveDonatedEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-energy", &cHardwareCPU::Inst_DonateEnergy, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("request-energy", &cHardwareCPU::Inst_RequestEnergy, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0, nInstFlag::STALL),
@@ -3399,6 +3400,7 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
   //place energy into receiver's incoming energy buffer
   to_org->GetPhenotype().ReceiveDonatedEnergy(energy_given);
   to_org->GetPhenotype().IncreaseEnergyReceived(energy_given);
+  GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
   
   //if we are using the push energy method, pass the new energy into the receiver's energy store and recalculate merit
   if(m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) {
@@ -3951,6 +3953,7 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   //Note: could get fancier about fraction of energy to send
   DoEnergyDonatePercent(receiver, m_world->GetConfig().MERIT_GIVEN.Get());
   organism->GetPhenotype().IncDonates();
+  GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
   
   return true;
   
@@ -3970,6 +3973,7 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
   // Could set the data field of the message to be the multiplier
   
   organism->BroadcastMessage(ctx, msg);
+  GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyRequestsMade();
   
   return true;
   
