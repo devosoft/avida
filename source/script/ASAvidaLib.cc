@@ -61,6 +61,8 @@ static void setupNativeObjects()
   REGISTER_S_METHOD(cGenotypeBatch, "IsAligned", IsAligned, bool ());
   REGISTER_S_METHOD(cGenotypeBatch, "IsLineage", IsLineage, bool ());
 
+  tASNativeObject<cResourceHistory>::InitializeMethodRegistrar();
+
   tASNativeObject<cWorld>::InitializeMethodRegistrar();
   
   

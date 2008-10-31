@@ -39,6 +39,7 @@
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
+#include "cResourceHistory.h"
 #include "cWorld.h"
 
 #include "tDataCommandManager.h"
@@ -154,6 +155,17 @@ namespace ASAnalyzeLib {
   }
   
   
+  cResourceHistory* LoadResourceHistory(const cString& filename)
+  {
+    cDriverStatusConduit& conduit = cDriverManager::Status();
+    conduit.NotifyComment(cString("Loading: ") + filename);
+
+    cResourceHistory* resources = new cResourceHistory;
+    if (!resources->LoadFile(filename)) conduit.SignalError("failed to load resource file", 1);
+    
+    return resources;
+  }
+  
 };
 
 
@@ -171,6 +183,7 @@ void RegisterASAnalyzeLib(cASLibrary* lib)
   BIND_FUNCTION(cWorld, "LoadBatch", LoadBatch, cGenotypeBatch* (const cString&));
   BIND_FUNCTION(cWorld, "LoadBatchWithInstSet", LoadBatchWithInstSet, cGenotypeBatch* (const cString&, cInstSet*));
 
+  REGISTER_FUNCTION(LoadResourceHistory, cResourceHistory* (const cString&));
 
 #undef BIND_FUNCTION
 #undef REGISTER_FUNCTION
