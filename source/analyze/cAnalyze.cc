@@ -42,8 +42,8 @@
 #include "cAnalyzeGenotype.h"
 #include "cAnalyzeTreeStats_CumulativeStemminess.h"
 #include "cAnalyzeTreeStats_Gamma.h"
-#include "tAnalyzeJob.h"
 #include "cAvidaContext.h"
+#include "cCPUTestInfo.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cFitnessMatrix.h"
@@ -61,19 +61,20 @@
 #include "cProbSchedule.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
+#include "cResource.h"
 #include "cResourceHistory.h"
 #include "cSchedule.h"
 #include "cSpecies.h"
 #include "cStringIterator.h"
-#include "tDataEntry.h"
-#include "tDataEntryCommand.h"
-#include "tMatrix.h"
 #include "cTestCPU.h"
-#include "cCPUTestInfo.h"
-#include "cResource.h"
-#include "tHashTable.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
+#include "tAnalyzeJob.h"
+#include "tDataCommandManager.h"
+#include "tDataEntry.h"
+#include "tDataEntryCommand.h"
+#include "tHashTable.h"
+#include "tMatrix.h"
 
 #include "defs.h"
 
@@ -912,7 +913,7 @@ void cAnalyze::LoadFile(cString cur_string)
   // Construct a linked list of data types that can be loaded...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  cAnalyzeGenotype::LoadDataCommandList(m_world, input_file.GetFormat(), output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(input_file.GetFormat(), output_list);
   bool id_inc = input_file.GetFormat().HasString("id");
   
   // Setup the genome...
@@ -963,7 +964,7 @@ void cAnalyze::CommandFilter(cString cur_string)
   cString test_value = cur_string.PopWord();
   
   // Get the dynamic command to look up the stat we need.
-  tDataEntryCommand<cAnalyzeGenotype> * stat_command = cAnalyzeGenotype::GetDataCommand(m_world, stat_name);
+  tDataEntryCommand<cAnalyzeGenotype>* stat_command = cAnalyzeGenotype::GetDataCommandManager().GetDataCommand(stat_name);
   
   
   // Check for various possible errors before moving on...
@@ -1915,7 +1916,7 @@ void cAnalyze::CommandDetail(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(cur_string, output_list);
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -1961,7 +1962,7 @@ void cAnalyze::CommandDetailTimeline(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(cur_string, output_list);
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -2150,7 +2151,7 @@ void cAnalyze::CommandDetailAverage(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(cur_string, output_list);
   
   // check if file is already in use.
   bool file_active = m_world->GetDataFileManager().IsOpen(filename);
@@ -2179,7 +2180,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   else cout << "Detailing Batches..." << endl;
   
   // Find its associated command...
-  tDataEntryCommand<cAnalyzeGenotype>* cur_command = cAnalyzeGenotype::GetDataCommand(m_world, keyword);
+  tDataEntryCommand<cAnalyzeGenotype>* cur_command = cAnalyzeGenotype::GetDataCommandManager().GetDataCommand(keyword);
   if (!cur_command) {
     cout << "error: no data entry, unable to detail batches" << endl;
     return;
@@ -2282,7 +2283,7 @@ void cAnalyze::CommandDetailIndex(cString cur_string)
   // Construct a linked list of details needed...
   tList<tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator<tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  cAnalyzeGenotype::LoadDataCommandList(m_world, cStringList(cur_string), output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(cStringList(cur_string), output_list);
   
   
   // Setup the file...
@@ -2381,7 +2382,7 @@ void cAnalyze::CommandHistogram(cString cur_string)
   // Construct a linked list of details needed...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  cAnalyzeGenotype::LoadDataCommandList(m_world, cur_string, output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(cur_string, output_list);
   
   // Determine the file type...
   int file_type = FILE_TYPE_TEXT;
@@ -4645,7 +4646,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   msg.Set("There are %d column args.", arg_list.GetSize());
   m_world->GetDriver().NotifyComment(msg);
   
-  cAnalyzeGenotype::LoadDataCommandList(m_world, arg_list, output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(arg_list, output_list);
   
   m_world->GetDriver().NotifyComment("Args are loaded.");
   
@@ -4905,7 +4906,7 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
   
   cout << "There are " << arg_list.GetSize() << " column args." << endl;
   
-  cAnalyzeGenotype::LoadDataCommandList(m_world, arg_list, output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(arg_list, output_list);
   
   cout << "Args are loaded." << endl;
   
@@ -5249,7 +5250,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
   cStringList arg_list(cur_string);
-  cAnalyzeGenotype::LoadDataCommandList(m_world, arg_list, output_list);
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(arg_list, output_list);
   const int num_traits = output_list.GetSize();
   
   // Setup the map_inst_set with the NULL instruction
@@ -9230,7 +9231,7 @@ cAnalyzeCommandDefBase* cAnalyze::FindAnalyzeCommandDef(const cString& name)
   }
   cAnalyzeCommandDefBase* command_def = lib_it.Get();
   
-  if (command_def == NULL && m_world->GetActionLibrary().Supports(name)) {
+  if (command_def == NULL && cActionLibrary::GetInstance().Supports(name)) {
     command_def = new cAnalyzeCommandAction(name, m_world);
     command_lib.PushRear(command_def);
   }

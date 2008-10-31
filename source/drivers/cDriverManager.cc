@@ -24,41 +24,25 @@
 
 #include "cDriverManager.h"
 
-#include "cActionLibrary.h"
-#include "cAvidaDriver.h"
 #include "cDriverStatusConduit.h"
-#include "cWorldDriver.h"
+#include "cDMObject.h"
 
 #include <cassert>
 #include <cstdlib>
 
 
-cDriverManager* cDriverManager::m_dm = NULL;
-
-cDriverManager::cDriverManager()
-{
-  m_actlib = cActionLibrary::ConstructDefaultActionLibrary();
-}
+cDriverManager* cDriverManager::s_dm = NULL;
 
 cDriverManager::~cDriverManager()
 {
-  cAvidaDriver* adrv;
-  while ((adrv = m_adrvs.Pop())) {
-    delete adrv;
-  }
-  
-  cWorldDriver* wdrv;
-  while ((wdrv = m_wdrvs.Pop())) {
-    delete wdrv;
-  }
-  
-  delete m_actlib;
+  cDMObject* obj;
+  while ((obj = m_objs.Pop())) delete obj;
 }
 
 void cDriverManager::Initialize()
 {
-  if (m_dm == NULL) {
-    m_dm = new cDriverManager();
+  if (s_dm == NULL) {
+    s_dm = new cDriverManager();
     if (atexit(cDriverManager::Destroy)) {
       // Failed to register with atexit, this is bad, very bad.
       exit(-1);
@@ -68,59 +52,37 @@ void cDriverManager::Initialize()
 
 void cDriverManager::Destroy()
 {
-  delete m_dm;
+  delete s_dm;
 }
 
-void cDriverManager::Register(cAvidaDriver* drv)
+void cDriverManager::Register(cDMObject* obj)
 {
-  assert(m_dm);
-  m_dm->m_mutex.Lock();
-  m_dm->m_adrvs.Push(drv);
-  m_dm->m_mutex.Unlock();
+  assert(s_dm);
+  s_dm->m_mutex.Lock();
+  s_dm->m_objs.Push(obj);
+  s_dm->m_mutex.Unlock();
 }
 
-void cDriverManager::Register(cWorldDriver* drv)
+void cDriverManager::Unregister(cDMObject* obj)
 {
-  assert(m_dm);
-  m_dm->m_mutex.Lock();
-  m_dm->m_wdrvs.Push(drv);
-  m_dm->m_mutex.Unlock();
-}
-
-void cDriverManager::Unregister(cAvidaDriver* drv)
-{
-  assert(m_dm);
-  m_dm->m_mutex.Lock();
-  m_dm->m_adrvs.Remove(drv);
-  m_dm->m_mutex.Unlock();
-}
-
-void cDriverManager::Unregister(cWorldDriver* drv)
-{
-  assert(m_dm);
-  m_dm->m_mutex.Lock();
-  m_dm->m_wdrvs.Remove(drv);
-  m_dm->m_mutex.Unlock();
+  assert(s_dm);
+  s_dm->m_mutex.Lock();
+  s_dm->m_objs.Remove(obj);
+  s_dm->m_mutex.Unlock();
 }
 
 cDriverStatusConduit& cDriverManager::Status()
 {
-  cDriverStatusConduit* conduit = m_dm->m_conduit.Get();
+  cDriverStatusConduit* conduit = s_dm->m_conduit.Get();
   if (!conduit) {
     conduit = new cDriverStatusConduit;
-    m_dm->m_conduit.Set(conduit);
+    s_dm->m_conduit.Set(conduit);
   }
   return *conduit;
 }
 
 void cDriverManager::SetConduit(cDriverStatusConduit* conduit)
 {
-  m_dm->m_conduit.Set(conduit);
-}
-
-
-cActionLibrary* cDriverManager::GetActionLibrary()
-{
-  assert(m_dm);
-  return m_dm->m_actlib;
+  assert(s_dm);
+  s_dm->m_conduit.Set(conduit);
 }

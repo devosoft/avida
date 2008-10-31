@@ -745,6 +745,9 @@
 		70B1A7590B7E431F00067486 /* experimental.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = experimental.org; sourceTree = "<group>"; };
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
 		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unit-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70B984220EBB5B7F00A828B1 /* tDMSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDMSingleton.h; sourceTree = "<group>"; };
+		70B9842B0EBB5D4C00A828B1 /* cDMObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDMObject.h; sourceTree = "<group>"; };
+		70B984B40EBB71B500A828B1 /* tDataCommandManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDataCommandManager.h; sourceTree = "<group>"; };
 		70BB2A290E9FA12F008269D2 /* ASAvidaLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaLib.h; sourceTree = "<group>"; };
 		70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAvidaLib.cc; sourceTree = "<group>"; };
 		70BB2ABF0EA4F896008269D2 /* tThreadSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tThreadSpecific.h; sourceTree = "<group>"; };
@@ -984,6 +987,8 @@
 				701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */,
 				701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */,
 				70BB2AC20EA4FF25008269D2 /* cDriverStatusConduit.h */,
+				70B984220EBB5B7F00A828B1 /* tDMSingleton.h */,
+				70B9842B0EBB5D4C00A828B1 /* cDMObject.h */,
 			);
 			path = drivers;
 			sourceTree = "<group>";
@@ -1638,6 +1643,7 @@
 				70F9FD990C4E89C40083B788 /* tAutoRelease.h */,
 				70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */,
 				70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */,
+				70B984B40EBB71B500A828B1 /* tDataCommandManager.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";

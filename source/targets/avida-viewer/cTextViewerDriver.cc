@@ -48,13 +48,13 @@ cTextViewerDriver::cTextViewerDriver(cWorld* world)
   m_view = new cView(world);
   m_view->SetViewMode(world->GetConfig().VIEW_MODE.Get());
 
-  cDriverManager::Register(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Register(this);
   world->SetDriver(this);
 }
 
 cTextViewerDriver::~cTextViewerDriver()
 {
-  cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Unregister(this);
   
   if (m_view != NULL) EndProg(0);
 }

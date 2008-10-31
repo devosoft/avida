@@ -52,9 +52,17 @@ private:
   
   tObjectFactoryNoCase<cAction* (cWorld*, const cString&)> m_factory;
   tDictionary<ClassDescFunction> m_desc_funcs;
+  
+  static cActionLibrary* buildDefaultActionLibrary();
 
-public:
   cActionLibrary() { ; }
+
+  
+public:
+  ~cActionLibrary() { ; }
+  
+  static void Initialize();
+  static cActionLibrary& GetInstance();
   
   template<typename ClassType> bool Register(const cString& key)
   {
@@ -79,8 +87,6 @@ public:
     return "(Not Available)";
   }  
   const cString DescribeAll() const;
-  
-  static cActionLibrary* ConstructDefaultActionLibrary();
 };
 
 

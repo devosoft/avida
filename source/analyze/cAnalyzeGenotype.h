@@ -65,9 +65,7 @@ class cAvidaContext;
 class cInstSet;
 class cTestCPU;
 class cWorld;
-template<class T> class tDataEntry;
-template<class T> class tDataEntryCommand;
-template<class T> class tDictionary;
+template<class T> class tDataCommandManager;
 
 
 class cAnalyzeGenotype;
@@ -225,6 +223,8 @@ private:
   void CheckLand() const;
   void CheckPhenPlast() const;
   void SummarizePhenotypicPlasticity(const cPhenPlastGenotype& pp) const;
+  
+  static tDataCommandManager<cAnalyzeGenotype>* buildDataCommandManager();
 
 
 
@@ -234,11 +234,8 @@ public:
   cAnalyzeGenotype(const cAnalyzeGenotype & _gen);
   ~cAnalyzeGenotype();
   
-  static tDictionary<tDataEntry<cAnalyzeGenotype>*>* BuildDEDict(cWorld* world);
-  static void DestroyDEDict(tDictionary<tDataEntry<cAnalyzeGenotype>*>* dedict);
-  
-  static tDataEntryCommand<cAnalyzeGenotype>* GetDataCommand(cWorld* world, const cString& cmd);
-  static void LoadDataCommandList(cWorld* world, cStringList arg_list, tList<tDataEntryCommand<cAnalyzeGenotype> >& output_list);
+  static void Initialize();
+  static const tDataCommandManager<cAnalyzeGenotype>& GetDataCommandManager();
 
   void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);

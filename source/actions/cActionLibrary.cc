@@ -31,8 +31,10 @@
 #include "PrintActions.h"
 #include "SaveLoadActions.h"
 
+#include "tDMSingleton.h"
 
-cActionLibrary* cActionLibrary::ConstructDefaultActionLibrary()
+
+cActionLibrary* cActionLibrary::buildDefaultActionLibrary()
 {
   cActionLibrary* actlib = new cActionLibrary();
 
@@ -45,6 +47,18 @@ cActionLibrary* cActionLibrary::ConstructDefaultActionLibrary()
   
   return actlib;
 }
+
+
+void cActionLibrary::Initialize()
+{
+  tDMSingleton<cActionLibrary>::Initialize(&cActionLibrary::buildDefaultActionLibrary);
+}
+
+cActionLibrary& cActionLibrary::GetInstance()
+{
+  return tDMSingleton<cActionLibrary>::GetInstance();
+}
+
 
 const cString cActionLibrary::DescribeAll() const
 {

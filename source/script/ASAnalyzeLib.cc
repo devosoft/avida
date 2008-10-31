@@ -41,7 +41,7 @@
 #include "cInitFile.h"
 #include "cWorld.h"
 
-#include "tDataEntryCommand.h"
+#include "tDataCommandManager.h"
 
 
 class cWorld;
@@ -116,7 +116,7 @@ namespace ASAnalyzeLib {
     // Construct a linked list of data types that can be loaded...
     tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
     tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-    cAnalyzeGenotype::LoadDataCommandList(world, input_file.GetFormat(), output_list);
+    cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(input_file.GetFormat(), output_list);
     bool id_inc = input_file.GetFormat().HasString("id");
     
     // Setup the genome...
@@ -168,8 +168,8 @@ void RegisterASAnalyzeLib(cASLibrary* lib)
   BIND_FUNCTION(cWorld, "LoadOrganismWithInstSet", LoadOrganismWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
   BIND_FUNCTION(cWorld, "LoadSequence", LoadSequence, cAnalyzeGenotype* (const cString&));
   BIND_FUNCTION(cWorld, "LoadSequenceWithInstSet", LoadSequenceWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
-  BIND_FUNCTION(cWorld, "LoadBatch", LoadBatch, cAnalyzeGenotype* (const cString&));
-  BIND_FUNCTION(cWorld, "LoadBatchWithInstSet", LoadBatchWithInstSet, cAnalyzeGenotype* (const cString&, cInstSet*));
+  BIND_FUNCTION(cWorld, "LoadBatch", LoadBatch, cGenotypeBatch* (const cString&));
+  BIND_FUNCTION(cWorld, "LoadBatchWithInstSet", LoadBatchWithInstSet, cGenotypeBatch* (const cString&, cInstSet*));
 
 
 #undef BIND_FUNCTION

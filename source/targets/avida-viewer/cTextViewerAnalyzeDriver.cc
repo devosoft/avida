@@ -48,13 +48,13 @@ cTextViewerAnalyzeDriver::cTextViewerAnalyzeDriver(cWorld* world, bool inter)
 {
   m_view = new cAnalyzeView(world);
 
-  cDriverManager::Register(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Register(this);
   world->SetDriver(this);
 }
 
 cTextViewerAnalyzeDriver::~cTextViewerAnalyzeDriver()
 {
-  cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Unregister(this);
 
   if (m_view != NULL) EndProg(0);
 }

@@ -26,6 +26,7 @@
 
 #include "defs.h"
 #include "cActionLibrary.h"
+#include "cAnalyzeGenotype.h"
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
 #include "cString.h"
@@ -41,9 +42,19 @@
 #include <csignal>
 #include <cstdio>
 
+
 using namespace std;
 
+
 namespace Avida {
+  
+void Initialize()
+{
+  cActionLibrary::Initialize();
+  cAnalyzeGenotype::Initialize();
+}
+  
+  
 
 cString GetVersion()
 {
@@ -152,7 +163,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
     // Print out a list of all possibel actions (was events).
     if (cur_arg == "-e" || cur_arg == "-events" || cur_arg == "-actions") {
       cout << endl << "Supported Actions:" << endl;
-      cout << cDriverManager::GetActionLibrary()->DescribeAll() << endl;
+      cout << cActionLibrary::GetInstance().DescribeAll() << endl;
       exit(0);
     }
     

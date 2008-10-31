@@ -1,10 +1,9 @@
 /*
- *  avida.h
+ *  cDMObject.h
  *  Avida
  *
- *  Called "avida.hh" prior to 12/2/05.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
- *  Copyright 1993-2001 California Institute of Technology.
+ *  Created by David on 10/31/08.
+ *  Copyright 2008 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -23,25 +22,14 @@
  *
  */
 
-#ifndef avida_h
-#define avida_h
+#ifndef cDMObject_h
+#define cDMObject_h
 
-class cAvidaConfig;
-class cString;
-class cStringList;
-
-namespace Avida
+class cDMObject
 {
-  void Initialize();
-  
-  cString GetVersion();
-  void PrintVersionBanner();
-  
-  void ProcessArgs(cStringList &argv, cAvidaConfig* cfg);
-  void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg);
-
-  //! This function properly shuts down the Avida program.
-  void Exit(int exit_code);
+public:
+  virtual ~cDMObject() { ; }
 };
+
 
 #endif

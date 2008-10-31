@@ -25,12 +25,8 @@
 #ifndef cDefaultAnalyzeDriver_h
 #define cDefaultAnalyzeDriver_h
 
-#ifndef cAvidaDriver_h
 #include "cAvidaDriver.h"
-#endif
-#ifndef cWorldDriver_h
 #include "cWorldDriver.h"
-#endif
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h

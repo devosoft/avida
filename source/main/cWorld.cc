@@ -59,8 +59,6 @@ cWorld::~cWorld()
   if (m_data_mgr) { m_data_mgr->FlushAll(); }
   delete m_data_mgr; m_data_mgr = NULL;
   
-  cAnalyzeGenotype::DestroyDEDict(m_dedict_genotype);
-
   // Delete Last
   delete m_conf; m_conf = NULL;
 
@@ -80,8 +78,6 @@ void cWorld::Setup()
   m_rng.ResetSeed(rand_seed);
   if (rand_seed != m_rng.GetSeed()) cout << " -> " << m_rng.GetSeed();
   cout << endl;
-  
-  m_actlib = cDriverManager::GetActionLibrary();
   
   m_data_mgr = new cDataFileManager(m_conf->DATA_DIR.Get(), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   if (m_conf->VERBOSITY.Get() > VERBOSE_NORMAL)
@@ -132,9 +128,6 @@ void cWorld::Setup()
   const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
   const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos);
-
-  
-  m_dedict_genotype = cAnalyzeGenotype::BuildDEDict(this);
 }
 
 cAnalyze& cWorld::GetAnalyze()

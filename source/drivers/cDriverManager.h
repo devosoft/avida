@@ -25,36 +25,25 @@
 #ifndef cDriverManager_h
 #define cDriverManager_h
 
-#ifndef tList_h
 #include "tList.h"
-#endif
-#ifndef cMutex_h
 #include "cMutex.h"
-#endif
-#ifndef tThreadSpecific_h
+#include "cDriverStatusConduit.h"
 #include "tThreadSpecific.h"
-#endif
 
-class cActionLibrary;
-class cAvidaDriver;
-class cDriverStatusConduit;
-class cWorldDriver;
+class cDMObject;
 
 
 class cDriverManager
 {
 private:
-  static cDriverManager* m_dm;
+  static cDriverManager* s_dm;
   
-  tList<cAvidaDriver> m_adrvs;
-  tList<cWorldDriver> m_wdrvs;
+  tList<cDMObject> m_objs;
   
   cMutex m_mutex;
-  cActionLibrary* m_actlib;
-  
   tThreadSpecific<cDriverStatusConduit> m_conduit;
   
-  cDriverManager();
+  cDriverManager() { ; }
   ~cDriverManager();
 
   cDriverManager(const cDriverManager&); // @not_implemented
@@ -65,16 +54,11 @@ private:
 public:
   static void Initialize(); // initialize static driver manager.  This method is NOT thread-safe.
 
-  static void Register(cAvidaDriver* drv);
-  static void Register(cWorldDriver* drv);
-
-  static void Unregister(cAvidaDriver* drv);
-  static void Unregister(cWorldDriver* drv);
+  static void Register(cDMObject* obj);
+  static void Unregister(cDMObject* obj);
   
   static cDriverStatusConduit& Status();
   static void SetConduit(cDriverStatusConduit* conduit);
-    
-  static cActionLibrary* GetActionLibrary();
 };
 
 

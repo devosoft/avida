@@ -25,8 +25,8 @@
 #ifndef cDriverStatusConduit_h
 #define cDriverStatusConduit_h
 
-
 class cString;
+
 
 class cDriverStatusConduit
 {

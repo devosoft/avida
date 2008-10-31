@@ -44,8 +44,8 @@
 
 #include "tArray.h"
 #include "tAutoRelease.h"
-#include "tDataEntry.h"
-#include "tDataEntryCommand.h"
+#include "tDataCommandManager.h"
+#include "tDMSingleton.h"w
 
 
 #include <cmath>
@@ -189,9 +189,16 @@ cAnalyzeGenotype::~cAnalyzeGenotype()
 }
 
 
-tDictionary<tDataEntry<cAnalyzeGenotype>*>* cAnalyzeGenotype::BuildDEDict(cWorld* world)
+void cAnalyzeGenotype::Initialize()
 {
-  tDictionary<tDataEntry<cAnalyzeGenotype>*>* dedict = new tDictionary<tDataEntry<cAnalyzeGenotype>*>;
+  tDMSingleton<tDataCommandManager<cAnalyzeGenotype> >::Initialize(&cAnalyzeGenotype::buildDataCommandManager);
+}
+
+
+tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager()
+{
+  tDataCommandManager<cAnalyzeGenotype>* dcm = new tDataCommandManager<cAnalyzeGenotype>;
+  
   // A basic macro to link a keyword to a description and Get and Set methods in cAnalyzeGenotype.
 #define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                \
   {                                                                                               \
@@ -201,7 +208,7 @@ tDictionary<tDataEntry<cAnalyzeGenotype>*>* cAnalyzeGenotype::BuildDEDict(cWorld
     cString html_str = "align=center";                                                            \
     if (hstr_str != "0") html_str = HSTR;                                                         \
                                                                                                   \
-    dedict->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                              \
+    dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                              \
       (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str)); \
   }
 
@@ -286,10 +293,10 @@ tDictionary<tDataEntry<cAnalyzeGenotype>*>* cAnalyzeGenotype::BuildDEDict(cWorld
   ADD_GDATA(int (), 		"total_task_performance_count", "Total Tasks Performed",	GetTotalTaskPerformanceCount, SetNULL, 1, 0, 0);
   
   
-  dedict->Add("task", new tDataEntryOfType<cAnalyzeGenotype, int (int, const cStringList&)>
-              ("task", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskCount, 5));
-  dedict->Add("env_input", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
-              ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
+  dcm->Add("task", new tDataEntryOfType<cAnalyzeGenotype, int (int, const cStringList&)>
+           ("task", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskCount, 5));
+  dcm->Add("env_input", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
+           ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
     
   // The remaining values should actually go in a seperate list called
   // "population_data_list", but for the moment we're going to put them
@@ -301,58 +308,14 @@ tDictionary<tDataEntry<cAnalyzeGenotype>*>* cAnalyzeGenotype::BuildDEDict(cWorld
   ADD_GDATA(int (),     "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
   ADD_GDATA(cString (), "dom_sequence", "Dominant Genotype Sequence",      GetSequence,   SetSequence,   0, "(N/A)", "");
   
-  return dedict;
   
+  return dcm;
 #undef ADD_GDATA
 }
 
-void cAnalyzeGenotype::DestroyDEDict(tDictionary<tDataEntry<cAnalyzeGenotype>*>* dedict)
+const tDataCommandManager<cAnalyzeGenotype>& cAnalyzeGenotype::GetDataCommandManager()
 {
-  tArray<tDataEntry<cAnalyzeGenotype>*> entries;
-  dedict->GetValues(entries);
-  for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
-  delete dedict;
-}
-
-
-
-// Find a data entry bassed on a keyword
-tDataEntryCommand<cAnalyzeGenotype>* cAnalyzeGenotype::GetDataCommand(cWorld* world, const cString& cmd) 
-{
-  cString arg_list = cmd;
-  cString idx = arg_list.Pop(':');
-  cString entry_name = idx.Pop('.');
-  
-  tDataEntry<cAnalyzeGenotype>* data_entry;
-  if (world->GetGenotypeDEDict().Find(entry_name, data_entry)) {
-    return new tDataEntryCommand<cAnalyzeGenotype>(data_entry, idx, arg_list);
-  }
-  
-  cDriverManager::Status().NotifyWarning(cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", *entry_name,
-                                                              *(world->GetGenotypeDEDict().NearMatch(entry_name))));
-  
-  return NULL;
-}
-
-
-// Pass in the arguments for a command and fill out the entries in list format....
-void cAnalyzeGenotype::LoadDataCommandList(cWorld* world, cStringList arg_list,
-                                    tList<tDataEntryCommand<cAnalyzeGenotype> >& output_list)
-{
-  if (arg_list.GetSize() == 0) {
-    // If no args were given, load all of the stats.
-    // @TODO - handle indexed items...  under this scheme only the first task and env_input value will be output    
-
-    tArray<tDataEntry<cAnalyzeGenotype>*> data_entries;
-    world->GetGenotypeDEDict().GetValues(data_entries);
-    for (int i = 0; i < data_entries.GetSize(); i++)
-      output_list.PushRear(new tDataEntryCommand<cAnalyzeGenotype>(data_entries[i]));
-  } else {
-    while (arg_list.GetSize() != 0) {
-      tDataEntryCommand<cAnalyzeGenotype>* cur_command = GetDataCommand(world, arg_list.Pop());
-      if (cur_command) output_list.PushRear(cur_command);
-    }
-  }
+  return tDMSingleton<tDataCommandManager<cAnalyzeGenotype> >::GetInstance();
 }
 
 

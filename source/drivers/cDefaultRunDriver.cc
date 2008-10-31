@@ -48,7 +48,7 @@ using namespace std;
 cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(false), 
       m_fastforward(false),m_last_generation(0),  m_generation_same_update_count(0) 
 {
-  cDriverManager::Register(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Register(this);
   world->SetDriver(this);
   
   // Save this config variable
@@ -58,7 +58,7 @@ cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(fal
 
 cDefaultRunDriver::~cDefaultRunDriver()
 {
-  cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Unregister(this);
   delete m_world;
 }
 

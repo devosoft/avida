@@ -50,6 +50,7 @@ namespace PlatformExpert
     signal(SIGINT, Avida::Exit);
 
     cDriverManager::Initialize();
+    Avida::Initialize();
   }
 
   

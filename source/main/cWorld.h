@@ -47,7 +47,6 @@
 
 #include <cassert>
 
-class cActionLibrary;
 class cAnalyze;
 class cAnalyzeGenotype;
 class cAvidaDriver;
@@ -68,7 +67,6 @@ class cWorld
   tMemTrack<cWorld> mt;
 #endif
 protected:
-  cActionLibrary* m_actlib;
   cAnalyze* m_analyze;
   cAvidaConfig* m_conf;
   cAvidaContext m_ctx;
@@ -80,7 +78,6 @@ protected:
   cPopulation* m_pop;
   cStats* m_stats;
   cWorldDriver* m_driver;
-  tDictionary<tDataEntry<cAnalyzeGenotype>*>* m_dedict_genotype;
 
   cRandom m_rng;
   
@@ -103,7 +100,6 @@ public:
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
   
   // General Object Accessors
-  cActionLibrary& GetActionLibrary() { return *m_actlib; }
   cAnalyze& GetAnalyze();
   cAvidaConfig& GetConfig() { return *m_conf; }
   cAvidaContext& GetDefaultContext() { return m_ctx; }
@@ -115,8 +111,6 @@ public:
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }
   cWorldDriver& GetDriver() { return *m_driver; }
-  
-  const tDictionary<tDataEntry<cAnalyzeGenotype>*>& GetGenotypeDEDict() const { return *m_dedict_genotype; }
   
   // Access to Data File Manager
   std::ofstream& GetDataFileOFStream(const cString& fname) { return m_data_mgr->GetOFStream(fname); }
@@ -139,7 +133,6 @@ public:
   // Save to archive 
   template<class Archive>
   void save(Archive & a, const unsigned int version) const {
-    a.ArkvObj("m_actlib", m_actlib);
     a.ArkvObj("m_analyze", m_analyze);
     a.ArkvObj("m_conf", m_conf);
     a.ArkvObj("m_ctx", m_ctx);
@@ -163,7 +156,6 @@ public:
   // Load from archive 
   template<class Archive>
   void load(Archive & a, const unsigned int version){
-    a.ArkvObj("m_actlib", m_actlib);
     a.ArkvObj("m_analyze", m_analyze);
     a.ArkvObj("m_conf", m_conf);
     a.ArkvObj("m_ctx", m_ctx);

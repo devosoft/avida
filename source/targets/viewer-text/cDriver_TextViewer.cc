@@ -57,7 +57,7 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   // Setup the initial view mode (loaded from avida.cfg)
   m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
     
-  cDriverManager::Register(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Register(this);
   world->SetDriver(this);
 
   // Setup NCURSES...
@@ -98,7 +98,7 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
 
 cDriver_TextViewer::~cDriver_TextViewer()
 {
-  cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Unregister(this);
   delete m_world;
     
   ExitTextViewer(0);

@@ -37,13 +37,13 @@ using namespace std;
 cDefaultAnalyzeDriver::cDefaultAnalyzeDriver(cWorld* world, bool inter)
   : m_world(world), m_interactive(inter)
 {
-  cDriverManager::Register(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Register(this);
   world->SetDriver(this);
 }
 
 cDefaultAnalyzeDriver::~cDefaultAnalyzeDriver()
 {
-  cDriverManager::Unregister(static_cast<cAvidaDriver*>(this));
+  cDriverManager::Unregister(this);
   delete m_world;
 }
 

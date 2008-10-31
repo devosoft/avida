@@ -25,15 +25,12 @@
 #ifndef cDefaultRunDriver_h
 #define cDefaultRunDriver_h
 
-#ifndef cAvidaDriver_h
 #include "cAvidaDriver.h"
-#endif
-#ifndef cWorldDriver_h
 #include "cWorldDriver.h"
-#endif
 
 class cString;
 class cWorld;
+
 
 class cDefaultRunDriver : public cAvidaDriver, public cWorldDriver
 {
