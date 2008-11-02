@@ -153,6 +153,21 @@ cStats::cStats(cWorld* world)
   task_cur_max_quality.SetAll(0);
   task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
+  
+  // Stats for internal resource use
+  task_internal_cur_count.Resize(num_tasks);
+  task_internal_last_count.Resize(num_tasks);
+  task_internal_cur_quality.Resize(num_tasks);
+  task_internal_last_quality.Resize(num_tasks);
+  task_internal_cur_max_quality.Resize(num_tasks);
+  task_internal_last_max_quality.Resize(num_tasks);
+  task_internal_cur_count.SetAll(0);
+  task_internal_last_count.SetAll(0);
+  task_internal_cur_quality.SetAll(0.0);
+  task_internal_last_quality.SetAll(0.0);
+  task_internal_cur_max_quality.SetAll(0.0);
+  task_internal_last_max_quality.SetAll(0.0);
+  
 
 #if INSTRUCTION_COUNT
   sum_exe_inst_array.Resize(m_world->GetNumInstructions());
@@ -344,6 +359,12 @@ void cStats::ZeroTasks()
     task_last_quality[i] = 0;
     task_last_max_quality[i] = 0;
     task_cur_max_quality[i] = 0;
+    task_internal_cur_count[i] = 0;
+    task_internal_cur_quality[i] = 0;
+    task_internal_cur_max_quality[i] = 0;
+    task_internal_last_count[i] = 0;
+    task_internal_last_quality[i] = 0;
+    task_internal_last_max_quality[i] = 0;
   }
 }
 
@@ -496,7 +517,14 @@ void cStats::ProcessUpdate()
   task_cur_max_quality.SetAll(0);
   task_last_max_quality.SetAll(0);
   task_exe_count.SetAll(0);
-
+  
+  task_internal_cur_count.SetAll(0);
+  task_internal_last_count.SetAll(0);
+  task_internal_cur_quality.SetAll(0);
+  task_internal_last_quality.SetAll(0);
+  task_internal_cur_max_quality.SetAll(0);
+  task_internal_last_max_quality.SetAll(0);
+  
   sense_last_count.SetAll(0);
   sense_last_exe_count.SetAll(0);
 
@@ -1214,6 +1242,51 @@ void cStats::PrintSenseExeData(const cString& filename)
     
   for( int i=0; i < sense_last_exe_count.GetSize(); i++ ){
     df.Write(sense_last_exe_count[i], sense_names[i]);
+  }
+  df.Endl();
+}
+
+void cStats::PrintInternalTasksData(const cString& filename)
+{
+	cString file = filename;
+
+	// flag to print both in_tasks.dat and in_taskquality.dat
+	if (filename == "in_tasksq.dat")
+	{
+		file = "in_tasks.dat";
+		PrintInternalTasksQualData("in_taskquality.dat");
+	}
+
+	// print in_tasks.dat
+	cDataFile& df = m_world->GetDataFile(file);
+	df.WriteComment("Avida tasks data: tasks performed with internal resources");
+	df.WriteTimeStamp();
+	df.WriteComment("First column gives the current update, next columns give the number");
+	df.WriteComment("of organisms that have the particular task, performed with internal resources, ");
+	df.WriteComment("as a component of their merit");
+
+	df.Write(m_update,   "Update");
+	for(int i = 0; i < task_internal_last_count.GetSize(); i++) {
+		df.Write(task_internal_last_count[i], task_names[i] );
+	}
+	df.Endl();
+}
+
+void cStats::PrintInternalTasksQualData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida tasks quality data: tasks performed using internal resources");
+  df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, rest give average and max task quality ");
+  df.WriteComment("for those tasks performed using internal resources");
+  df.Write(m_update, "Update");
+  for(int i = 0; i < task_internal_last_count.GetSize(); i++) {
+    double qual = 0.0;
+    if (task_internal_last_count[i] > 0) 
+      qual = task_internal_last_quality[i] / static_cast<double>(task_internal_last_count[i]);
+    df.Write(qual, task_names[i] + " Average");
+    df.Write(task_internal_last_max_quality[i], task_names[i] + " Max");
   }
   df.Endl();
 }

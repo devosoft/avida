@@ -873,7 +873,9 @@ bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs
 
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const tArray<int>& task_count,
-                              const tArray<int>& reaction_count, const tArray<double>& resource_count) const
+                              const tArray<int>& reaction_count, 
+                              const tArray<double>& resource_count, 
+                              tArray<double>& rbins_count) const
 {
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);
@@ -911,8 +913,8 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality, taskctx.GetTaskValue());
 
-    // And lets process it!
-    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, task_quality, task_cnt, i, result);
+    // And let's process it!
+    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, task_quality, task_cnt, i, result);
 
     // Note: the reaction is actually marked as being performed inside DoProcesses.
   }  
@@ -981,8 +983,9 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
 
 
 void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
-                               const tArray<double>& resource_count, const double task_quality,
-                               const int task_count, const int reaction_id, cReactionResult& result) const
+                               const tArray<double>& resource_count, tArray<double>& rbins_count, 
+                               const double task_quality, const int task_count, 
+                               const int reaction_id, cReactionResult& result) const
 {
   const int num_process = process_list.GetSize();
   
@@ -1010,6 +1013,19 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       consumed *= cur_process->GetMaxFraction();
       assert(consumed >= 0.0);
       
+      bool may_use_rbins = m_world->GetConfig().USE_RESOURCE_BINS.Get();
+      bool using_rbins = false;  //default: not using resource bins
+      
+      if (may_use_rbins) {
+      	assert(rbins_count.GetSize() > res_id);
+      }
+      
+      //check to see if we do want to use this resource from a bin instead of the environment
+      if (may_use_rbins && rbins_count[res_id] > consumed && rbins_count[res_id] > 0) {
+        consumed = rbins_count[res_id];
+        using_rbins = true;
+      }
+      
       // Make sure we're not above the maximum consumption.
       if (consumed > max_consumed) consumed = max_consumed;
 
@@ -1026,7 +1042,13 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       consumed = std::min(consumed, resource_count[res_id]);
       
       // Mark in the results the resource consumed.
-      if (cur_process->GetDepletable()) result.Consume(res_id, consumed);
+			if (cur_process->GetDepletable()) {
+      	result.Consume(res_id, consumed, !using_rbins);
+      
+      	//if we consumed resource from an internal resource bin, remove it
+      	if (may_use_rbins && using_rbins)
+      	{rbins_count[res_id] -= consumed;}
+      }
     }
     
     // Mark the reaction as having been performed if we get here.
@@ -1142,7 +1164,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     result.Lethal(cur_process->GetLethal());
     result.Sterilize(cur_process->GetSterilize());
-    }
+    } 
 }
 
 double cEnvironment::GetReactionValue(int& reaction_id)

@@ -60,6 +60,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_interface(NULL)
   , m_lineage_label(-1)
   , m_lineage(NULL)
+  , m_rbins(0)
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -91,6 +92,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_interface(NULL)
   , m_lineage_label(-1)
   , m_lineage(NULL)
+  , m_rbins(0)
   , m_input_pointer(0)
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
@@ -156,8 +158,43 @@ void cOrganism::SetOrgInterface(cOrgInterface* interface)
 {
   delete m_interface;
   m_interface = interface;
+  
+  // initialize m_rbins as soon as the interface is available
+  m_rbins = m_interface->GetResources();
+  m_rbins.SetAll(0.0);
 }
 
+double cOrganism::GetRBinsTotal()
+{
+	double total = 0;
+	for(int i = 0; i < m_rbins.GetSize(); i++)
+	{total += m_rbins[i];}
+	
+	return total;
+}
+
+void cOrganism::SetRBins(const tArray<double>& rbins_in) 
+{ 
+	m_rbins = rbins_in;
+	m_phenotype.SetCurRBinsAvail(rbins_in);
+	//@blw does not change cur_rbins_total
+}
+
+void cOrganism::SetRBin(const int index, const double value) 
+{ 
+	m_rbins[index] = value; 
+	m_phenotype.SetCurRBinAvail(index, value);
+	//@blw does not change cur_rbins_total
+}
+
+void cOrganism::AddToRBin(const int index, const double value) 
+{ 
+	m_rbins[index] += value;
+	m_phenotype.AddToCurRBinAvail(index, value);
+	
+	if(value > 0)
+	{ m_phenotype.AddToCurRBinTotal(index, value); }
+}  
 
 double cOrganism::GetTestFitness(cAvidaContext& ctx)
 {
@@ -288,7 +325,7 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   const tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
   tArray<double> globalAndDeme_res_change = global_res_change + deme_res_change;
   
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, globalAndDeme_res_change, insts_triggered);
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, m_rbins, globalAndDeme_res_change, insts_triggered);
   
   //disassemble global and deme resource counts
   global_res_change = globalAndDeme_res_change.Subset(0, global_res_change.GetSize());
@@ -468,7 +505,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     tArray<int> insts_triggered;
 
     cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, false, completed);
-    m_phenotype.TestOutput(ctx, taskctx, resource_count, res_change, insts_triggered);
+    m_phenotype.TestOutput(ctx, taskctx, resource_count, m_rbins, res_change, insts_triggered);
     m_interface->UpdateResources(res_change);
     
     for (int i = 0; i < insts_triggered.GetSize(); i++) {

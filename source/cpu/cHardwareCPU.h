@@ -206,7 +206,6 @@ protected:
   bool ForkThread(); // Adds a new thread based off of m_cur_thread.
   bool KillThread(); // Kill the current thread!
   
-  
   // ---------- Instruction Helpers -----------
   int FindModifiedRegister(int default_register);
   int FindModifiedNextRegister(int default_register);
@@ -377,6 +376,7 @@ private:
   bool Inst_CopyRegCA(cAvidaContext& ctx);
   bool Inst_CopyRegCB(cAvidaContext& ctx);
   bool Inst_Reset(cAvidaContext& ctx);
+  //bool Inst_LoadVal(cAvidaContext& ctx);
 
   // Single-Argument Math
   bool Inst_ShiftR(cAvidaContext& ctx);
@@ -464,6 +464,8 @@ private:
   bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
+  bool FindModifiedResource(int& start_index, int& end_index);
+  bool Inst_Collect(cAvidaContext& ctx);
   //! Execute the following instruction if all resources are above their min level.
   bool Inst_IfResources(cAvidaContext& ctx);
 

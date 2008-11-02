@@ -1840,7 +1840,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     cHardwareStatusPrinter trace_printer(trace_fp);
     
     // Build the test info for printing.
-    cCPUTestInfo test_info;
+    cCPUTestInfo test_info;  
     test_info.SetTraceExecution(&trace_printer);
     if (use_manual_inputs)
       test_info.UseManualInputs(manual_inputs);

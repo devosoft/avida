@@ -49,6 +49,7 @@ private:
   bool lethal;
   bool sterilize;
   bool active_reaction;
+  bool used_env_resource;
 
   double deme_add_bonus; //!< Additive bonus applied to the deme as a result of this reaction.
   double deme_mult_bonus; //!< Multiplicative bonus applied to the deme as a result of this reaction.
@@ -67,7 +68,7 @@ public:
   bool GetActive() { return active_reaction; }
   bool GetActiveDeme() { return active_deme_reaction; }
 
-  void Consume(int id, double num);
+  void Consume(int id, double num, bool is_env_resource);
   void Produce(int id, double num);
   void Detect(int id, double num);
   void Lethal(bool flag);
@@ -99,6 +100,8 @@ public:
   double GetReactionAddBonus(const int i) { return reaction_add_bonus[i]; }
   double GetMultBonus() { return bonus_mult; }
   tArray<int>& GetInstArray() { return insts_triggered; }
+  bool UsedEnvResource() { return used_env_resource; }
+  bool IsEnvResource() { return used_env_resource; }
   double GetAddDemeBonus() { return deme_add_bonus; }
   double GetMultDemeBonus() { return deme_mult_bonus; }
   double GetAddGermline() { return germline_add; }

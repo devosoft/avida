@@ -43,17 +43,25 @@ cPhenotype::cPhenotype(cWorld* world)
   : m_world(world)
   , initialized(false)
   , cur_task_count(m_world->GetEnvironment().GetNumTasks())
+  , cur_internal_task_count(m_world->GetEnvironment().GetNumTasks())
   , eff_task_count(m_world->GetEnvironment().GetNumTasks())
   , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
   , cur_task_value(m_world->GetEnvironment().GetNumTasks())  
+  , cur_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
+  , cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
+  , cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
   , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
   , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
+  , last_internal_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
   , last_task_value(m_world->GetEnvironment().GetNumTasks())
+  , last_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
+  , last_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
+  , last_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
   , last_sense_count(m_world->GetStats().GetSenseSize())
@@ -105,9 +113,13 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_num_errors           = in_phen.cur_num_errors;                         
   cur_num_donates          = in_phen.cur_num_donates;                       
   cur_task_count           = in_phen.cur_task_count;                
-  eff_task_count           = in_phen.eff_task_count;                 
-  cur_task_quality         = in_phen.cur_task_quality;           
-  cur_task_value           = in_phen.cur_task_value;			 
+  eff_task_count           = in_phen.eff_task_count;
+  cur_internal_task_count  = in_phen.cur_internal_task_count;
+  cur_task_quality         = in_phen.cur_task_quality;    
+  cur_internal_task_quality= in_phen.cur_internal_task_quality;       
+  cur_task_value           = in_phen.cur_task_value;			
+  cur_rbins_total          = in_phen.cur_rbins_total;
+  cur_rbins_avail          = in_phen.cur_rbins_avail;
   cur_reaction_count       = in_phen.cur_reaction_count;            
   cur_reaction_add_reward  = in_phen.cur_reaction_add_reward;     
   cur_inst_count           = in_phen.cur_inst_count;                 
@@ -135,8 +147,12 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_num_errors          = in_phen.last_num_errors; 
   last_num_donates         = in_phen.last_num_donates;
   last_task_count          = in_phen.last_task_count;
+  last_internal_task_count = in_phen.last_internal_task_count;
   last_task_quality        = in_phen.last_task_quality;
+  last_internal_task_quality=in_phen.last_internal_task_quality;
   last_task_value          = in_phen.last_task_value;
+  last_rbins_total         = in_phen.last_rbins_total;
+  last_rbins_avail         = in_phen.last_rbins_avail;
   last_reaction_count      = in_phen.last_reaction_count;
   last_reaction_add_reward = in_phen.last_reaction_add_reward; 
   last_inst_count          = in_phen.last_inst_count;	  
@@ -299,9 +315,13 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
+  cur_internal_task_quality.SetAll(0);
+  cur_rbins_total.SetAll(0);
+  cur_rbins_avail.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -323,8 +343,12 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   last_num_errors           = parent_phenotype.last_num_errors;
   last_num_donates          = parent_phenotype.last_num_donates;
   last_task_count           = parent_phenotype.last_task_count;
+  last_internal_task_count  = parent_phenotype.last_internal_task_count;
   last_task_quality         = parent_phenotype.last_task_quality;
   last_task_value           = parent_phenotype.last_task_value;
+  last_internal_task_quality= parent_phenotype.last_internal_task_quality;
+  last_rbins_total           = parent_phenotype.last_rbins_total;
+  last_rbins_avail           = parent_phenotype.last_rbins_avail;
   last_reaction_count       = parent_phenotype.last_reaction_count;
   last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
   last_inst_count           = parent_phenotype.last_inst_count;
@@ -447,9 +471,13 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
+  cur_internal_task_quality.SetAll(0);
+  cur_rbins_total.SetAll(0);
+  cur_rbins_avail.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -470,8 +498,12 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_num_errors = 0;
   last_num_donates = 0;
   last_task_count.SetAll(0);
+  last_internal_task_count.SetAll(0);
   last_task_quality.SetAll(0);
   last_task_value.SetAll(0);
+  last_internal_task_quality.SetAll(0);
+  last_rbins_total.SetAll(0);
+  last_rbins_avail.SetAll(0);
   last_reaction_count.SetAll(0);
   last_reaction_add_reward.SetAll(0);
   last_inst_count.SetAll(0);
@@ -599,8 +631,12 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
+  last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value           = cur_task_value;
+  last_internal_task_quality= cur_internal_task_quality;
+  last_rbins_total           = cur_rbins_total;
+  last_rbins_avail           = cur_rbins_avail;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -614,9 +650,13 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
+  cur_internal_task_quality.SetAll(0);
+  cur_rbins_total.SetAll(0);
+  cur_rbins_avail.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -742,8 +782,12 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
+  last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value			= cur_task_value;
+  last_internal_task_quality= cur_internal_task_quality;
+  last_rbins_total          = cur_rbins_total;
+  last_rbins_avail          = cur_rbins_avail;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -756,9 +800,13 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
+  cur_internal_task_quality.SetAll(0);
+  cur_rbins_total.SetAll(0);
+  cur_rbins_avail.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -884,7 +932,10 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
+  cur_rbins_total.SetAll(0);
+  cur_rbins_avail.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -906,6 +957,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   last_num_errors          = clone_phenotype.last_num_errors;
   last_num_donates         = clone_phenotype.last_num_donates;
   last_task_count          = clone_phenotype.last_task_count;
+  last_internal_task_count = clone_phenotype.last_internal_task_count;
+  last_rbins_total         = clone_phenotype.last_rbins_total;
+  last_rbins_avail         = clone_phenotype.last_rbins_avail;
   last_reaction_count      = clone_phenotype.last_reaction_count;
   last_reaction_add_reward = clone_phenotype.last_reaction_add_reward;
   last_inst_count          = clone_phenotype.last_inst_count;
@@ -1002,7 +1056,7 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 }
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-			    const tArray<double>& res_in, tArray<double>& res_change,
+			    const tArray<double>& res_in, tArray<double>& rbins_in, tArray<double>& res_change,
 			    tArray<int>& insts_triggered)
 {
   assert(initialized == true);
@@ -1021,7 +1075,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cReactionResult result(num_resources, num_tasks, num_reactions);
 			
   // Run everything through the environment.
-  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in); //NEED different eff_task_count and cur_reaction_count for deme resource
+  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in); //NEED different eff_task_count and cur_reaction_count for deme resource
 
   // If nothing was found, stop here.
   if (found == false) {
@@ -1045,8 +1099,14 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     {
       cur_task_count[i]++;
       eff_task_count[i]++;
+      if(result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
     }
-    if (result.TaskQuality(i) > 0) cur_task_quality[i]+= result.TaskQuality(i) * refract_factor;
+
+    if (result.TaskQuality(i) > 0) 
+    {
+    	cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
+    	if(result.UsedEnvResource() == false) { cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor; }
+    }
     cur_task_value[i] = result.TaskValue(i);
     cur_task_time[i] = cur_update_time; // Find out time from context
   }
@@ -1092,6 +1152,18 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   for (int i = 0; i < res_in.GetSize(); i++) {
     res_change[i] = result.GetProduced(i) - result.GetConsumed(i);
   }
+  
+  // Update rbin stats as necessary
+  if(result.UsedEnvResource() == false)
+  {
+  	double rbin_diff;
+  	for(int i = 0; i < num_resources; i++)
+  	{
+  		rbin_diff = cur_rbins_avail[i] - rbins_in[i];
+  		cur_rbins_avail[i] = rbins_in[i];
+  		if(rbin_diff > 0) { cur_rbins_total[i] += rbin_diff; }
+  	}
+  }
 
   // Save the instructions that should be triggered...
   insts_triggered = result.GetInstArray();
@@ -1111,9 +1183,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   return true;
 }
 
-
-
-
 void cPhenotype::PrintStatus(ostream& fp) const
 {
   fp << "  MeritBase:"
@@ -1127,6 +1196,22 @@ void cPhenotype::PrintStatus(ostream& fp) const
   for (int i = 0; i < cur_task_count.GetSize(); i++)
     fp << " " << cur_task_count[i] << " (" << cur_task_quality[i] << ")";
   fp << endl;
+  
+ 	// if using resoruce bins, print the relevant stats
+ 	if (m_world->GetConfig().USE_RESOURCE_BINS.Get())
+ 	{
+ 		fp << "  Used-Internal-Resources Task Count (Quality):";
+ 		for (int i = 0; i < cur_internal_task_count.GetSize(); i++) {
+ 			fp << " " << cur_internal_task_count[i] << " (" << cur_internal_task_quality[i] << ")";
+ 		}
+ 		fp << endl;
+ 		
+ 		fp << "  Available Internal Resource Bin Contents (Total Ever Collected):";
+ 		for(int i = 0; i < cur_rbins_avail.GetSize(); i++) {
+ 			fp << " " << cur_rbins_avail[i] << " (" << cur_rbins_total[i] << ")";
+ 		}
+ 		fp << endl;
+ 	}
 }
 
 int cPhenotype::CalcSizeMerit() const
@@ -1376,8 +1461,12 @@ void cPhenotype::NewTrial()
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
+  last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
-  last_task_value			= cur_task_value;
+  last_internal_task_quality= cur_internal_task_quality;
+  last_task_value			      = cur_task_value;
+  last_rbins_total          = cur_rbins_total;
+  last_rbins_avail          = cur_rbins_avail;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -1390,9 +1479,13 @@ void cPhenotype::NewTrial()
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
+  cur_internal_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
+  cur_rbins_total.SetAll(0);
+  cur_rbins_avail.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);

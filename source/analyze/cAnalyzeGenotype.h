@@ -135,8 +135,13 @@ private:
   double div_type;
   int mate_id;
   cString executed_flags; // converted into a string
+  tArray<int> inst_executed_counts;
   tArray<int> task_counts;
   tArray<double> task_qualities;
+  tArray<int> internal_task_counts;
+  tArray<double> internal_task_qualities;
+  tArray<double> rbins_total;
+  tArray<double> rbins_avail;
   tArray<int> m_env_inputs;
 
   // Group 3 : Stats requiring parental genotype (Also from test CPUs)
@@ -240,6 +245,8 @@ public:
   void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void PrintTasksQuality(std::ofstream& fp, int min_task = 0, int max_task = -1);
+  void PrintInternalTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
+  void PrintInternalTasksQuality(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void CalcLandscape(cAvidaContext& ctx);
 
   // Set...
@@ -295,6 +302,9 @@ public:
   const cString & GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }
   cString GetAlignmentExecutedFlags() const;
+  const tArray<int>& GetInstExecutedCounts() const { return inst_executed_counts; }
+  int GetInstExecutedCount(int _inst_num) const;
+  cString DescInstExe(int _inst_id) const;
   const cString & GetTag() const { return tag; }
 
   bool GetViable() const { return viable; }

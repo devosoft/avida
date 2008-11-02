@@ -237,6 +237,14 @@ private:
   tArray<double> task_cur_max_quality;
   tArray<double> task_last_max_quality;
   tArray<int> task_exe_count;
+  
+  // Stats for internal resource bins and use of internal resources
+  tArray<int> task_internal_cur_count;
+  tArray<int> task_internal_last_count;
+  tArray<double> task_internal_cur_quality;
+  tArray<double> task_internal_last_quality;
+  tArray<double> task_internal_cur_max_quality;
+  tArray<double> task_internal_last_max_quality;
 
   tArray<double> reaction_count;
   tArray<double> reaction_add_reward;
@@ -569,6 +577,22 @@ public:
   void IncLastSenseExeCount(int res_comb_index, int count) 
     { sense_last_exe_count[res_comb_index]+= count; }
     
+  // internal resource bins and use of internal resources
+  void AddCurInternalTask(int task_num) { task_internal_cur_count[task_num]++; }
+  void AddCurInternalTaskQuality(int task_num, double quality)
+  {
+  	task_internal_cur_quality[task_num] += quality;
+  	if(quality > task_internal_cur_max_quality[task_num])
+  		task_internal_cur_max_quality[task_num] = quality;
+  }
+  void AddLastInternalTask(int task_num) { task_internal_last_count[task_num]++; }
+  void AddLastInternalTaskQuality(int task_num, double quality)
+  {
+  	task_internal_last_quality[task_num] += quality;
+  	if(quality > task_internal_last_max_quality[task_num])
+  		task_internal_last_max_quality[task_num] = quality;
+  }
+    
   void SetReactions(const tArray<double> &_in) { reaction_count = _in; }
   void AddLastReactionAddReward(int _id, double _reward) { reaction_add_reward[_id] += _reward; }
   void ZeroRewards();
@@ -636,6 +660,14 @@ public:
   double GetTaskMaxCurQuality(int task_num) const { return task_cur_max_quality[task_num];}
   double GetTaskMaxLastQuality(int task_num) const { return task_last_max_quality[task_num];}
   int GetTaskExeCount(int task_num) const { return task_exe_count[task_num]; }
+  
+  // internal resource bins and use of internal resources
+  int GetInternalTaskCurCount(int task_num) const { return task_internal_cur_count[task_num]; }
+  double GetInternalTaskCurQuality(int task_num) const { return task_internal_cur_quality[task_num]/(double)task_internal_cur_count[task_num]; }
+  double GetInternalTaskMaxCurQuality(int task_num) const { return task_internal_cur_max_quality[task_num]; }
+  int GetInternalTaskLastCount(int task_num) const { return task_internal_last_count[task_num]; }
+  double GetInternalTaskLastQuality(int task_num) const { return task_internal_last_quality[task_num]/(double)task_internal_last_count[task_num]; }
+  double GetInternalTaskMaxLastQuality(int task_num) const { return task_internal_last_max_quality[task_num]; }
 
   const tArray<double> & GetReactions() const { return reaction_count; }
   const tArray<double> & GetResources() const { return resource_count; }
@@ -737,6 +769,8 @@ public:
   void PrintMarketData(const cString& filename);
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);
+  void PrintInternalTasksData(const cString& filename);
+  void PrintInternalTasksQualData(const cString& filename);
   void PrintSleepData(const cString& filename);
   void PrintCompetitionData(const cString& filename);
   // @WRE: Added event for printing visit counts

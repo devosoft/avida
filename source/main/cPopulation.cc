@@ -698,6 +698,13 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
       delete market_it.Remove();
     }
   }
+  
+  // Return currently stored internal resources to the world
+  if(m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
+  	organism->GetOrgInterface().UpdateResources(organism->GetRBins());
+  }
+  
+  
   // Do the lineage handling
   if (m_world->GetConfig().LOG_LINEAGES.Get()) { m_world->GetClassificationManager().RemoveLineageOrganism(organism); }
   
@@ -3639,6 +3646,19 @@ void cPopulation::UpdateOrganismStats()
         stats.IncTaskExeCount(j, phenotype.GetLastTaskCount()[j]);
       } 
     }
+    
+    // Test what tasks this organism has completed using internal resources.
+    for (int j = 0; j < m_world->GetEnvironment().GetNumTasks(); j++) {
+      if (phenotype.GetCurInternalTaskCount()[j] > 0) {
+        stats.AddCurInternalTask(j);
+        stats.AddCurInternalTaskQuality(j, phenotype.GetCurInternalTaskQuality()[j]);
+      }
+      
+      if (phenotype.GetLastInternalTaskCount()[j] > 0) {
+        stats.AddLastInternalTask(j);
+        stats.AddLastInternalTaskQuality(j, phenotype.GetLastInternalTaskQuality()[j]);
+      } 
+    }    
     
     // Record what add bonuses this organism garnered for different reactions    
     for (int j = 0; j < m_world->GetNumReactions(); j++) {

@@ -93,6 +93,8 @@ STATS_OUT_FILE(PrintGenotypeMap,            genotype_map.m      );
 STATS_OUT_FILE(PrintMarketData,             market.dat          );
 STATS_OUT_FILE(PrintSenseData,              sense.dat           );
 STATS_OUT_FILE(PrintSenseExeData,           sense_exe.dat       );
+STATS_OUT_FILE(PrintInternalTasksData,      in_tasks.dat        );
+STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
@@ -2683,6 +2685,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
+  action_lib->Register<cActionPrintInternalTasksData>("PrintInternalTasksData");
+  action_lib->Register<cActionPrintInternalTasksQualData>("PrintInternalTasksQualData");
   action_lib->Register<cActionPrintSleepData>("PrintSleepData");
   action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
   

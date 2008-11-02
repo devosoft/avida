@@ -411,6 +411,29 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
     df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
                           task_count[i], task_qual[i]));
   }
+  
+  // if resource bins are being used, print relevant information
+  if(m_world->GetConfig().USE_RESOURCE_BINS.Get())  {
+  	df.WriteComment("Tasks Performed Using Internal Resources:");
+  	
+  	const tArray<int>& internal_task_count = test_info.GetTestPhenotype().GetLastInternalTaskCount();
+  	const tArray<double>& internal_task_qual = test_info.GetTestPhenotype().GetLastInternalTaskQuality();
+  	
+  	for (int i = 0; i < task_count.GetSize(); i++) {
+  		df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+  		                      internal_task_count[i], internal_task_qual[i]));
+  	}
+  	
+  	const tArray<double>& rbins_total = test_info.GetTestPhenotype().GetLastRBinsTotal();
+  	const tArray<double>& rbins_avail = test_info.GetTestPhenotype().GetLastRBinsAvail();
+  	
+  	df.WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
+  	for (int i = 0; i < rbins_total.GetSize(); i++) {
+  		df.WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
+  		                      static_cast<const char*>(env.GetResourceLib().GetResource(i)->GetName()),
+  		                      rbins_total[i], rbins_avail[i]));
+  	}
+  }
 
   df.Endl();
   

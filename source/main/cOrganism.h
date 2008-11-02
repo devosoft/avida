@@ -103,7 +103,9 @@ protected:
   int m_lineage_label;                    // a lineages tag; inherited unchanged in offspring
   cLineage* m_lineage;                    // A lineage descriptor... (different from label)
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
- 
+  tArray<double> m_rbins;				          // Holds amount of resources internal to org
+  																				// Note: m_rbins gets its proper size in SetOrgInterface()
+  
 	// Other stats
   cCPUMemory m_child_genome;              // Child genome, while under construction.
 
@@ -181,7 +183,14 @@ public:
 	void SetCCladeLabel( int in_label ) { cclade_id = in_label; };  //@MRR
 	int  GetCCladeLabel() const { return cclade_id; }
 	
-	
+	const tArray<double>& GetRBins() const { return m_rbins; }
+  tArray<double>& GetRBins() { return m_rbins; }
+  double GetRBin(int index) { return m_rbins[index]; }
+  double GetRBinsTotal();
+  void SetRBins(const tArray<double>& rbins_in);
+  void SetRBin(const int index, const double value);
+  void AddToRBin(const int index, const double value);
+
   int GetMaxExecuted() const { return m_max_executed; }
   
   cCPUMemory& ChildGenome() { return m_child_genome; }

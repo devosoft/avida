@@ -135,6 +135,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("set_C=A", &cHardwareCPU::Inst_CopyRegCA),
     tInstLibEntry<tMethod>("set_C=B", &cHardwareCPU::Inst_CopyRegCB),
     tInstLibEntry<tMethod>("reset", &cHardwareCPU::Inst_Reset),
+	//tInstLibEntry<tMethod>("load-val", &cHardwareCPU::Inst_LoadVal),
     
     tInstLibEntry<tMethod>("pop-A", &cHardwareCPU::Inst_PopA),
     tInstLibEntry<tMethod>("pop-B", &cHardwareCPU::Inst_PopB),
@@ -209,16 +210,17 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
     tInstLibEntry<tMethod>("if-resources", &cHardwareCPU::Inst_IfResources, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("collect", &cHardwareCPU::Inst_Collect, nInstFlag::STALL),
 
-    tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-gbg",  &cHardwareCPU::Inst_DonateGreenBeardGene, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-tgb",  &cHardwareCPU::Inst_DonateTrueGreenBeard, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-threshgb",  &cHardwareCPU::Inst_DonateThreshGreenBeard, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
+    tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
+    tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist),
+    tInstLibEntry<tMethod>("donate-gbg",  &cHardwareCPU::Inst_DonateGreenBeardGene),
+    tInstLibEntry<tMethod>("donate-tgb",  &cHardwareCPU::Inst_DonateTrueGreenBeard),
+    tInstLibEntry<tMethod>("donate-threshgb",  &cHardwareCPU::Inst_DonateThreshGreenBeard),
+    tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard),
+    tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL),
+    tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing),
     tInstLibEntry<tMethod>("receive-donated-energy", &cHardwareCPU::Inst_ReceiveDonatedEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-energy", &cHardwareCPU::Inst_DonateEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("request-energy", &cHardwareCPU::Inst_RequestEnergy, nInstFlag::STALL),
@@ -2179,6 +2181,13 @@ bool cHardwareCPU::Inst_Reset(cAvidaContext& ctx)
   return true;
 }
 
+/*bool cHardwareCPU::Inst_LoadVal(cAvidaContext& ctx)
+{
+	const int reg_used = FindModifiedRegister(REG_BX);
+	GetRegister(reg_used) = m_world->GetConfig().INST_LOAD_VALUE.Get();
+	return true;
+}*/
+
 bool cHardwareCPU::Inst_ShiftR(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -3293,6 +3302,129 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   // Note that we are converting <double> resources to <int> register values
 }
 
+/* Convert modifying NOPs to the index of a resource. If there are fewer 
+ * than the number of NOPs required to specify a resource, find the subset 
+ * of resources.  (Motivation: can evolve to be more specific if there is 
+ * an advantage.)
+ *
+ * Mostly ripped from Jeff B.'s DoSense(); meant to be a helper function for
+ * DoSense, Inst_Collect, and anything else that wants to use this type of
+ * resource NOP-specification.
+ * 
+ * This relies on the assumption that m_world.GetNumResources() DOES NOT CHANGE
+ * during the course of a run.  I know of no way that it can, since this is the
+ * number of resources *defined* but I will check before this code goes to any
+ * public branch.
+ *
+ * returns true if successful, false otherwise
+ *
+ * start_index and end_index of resource range are "returned" via their 
+ * respective arguments; any int at all may be passed to these, as it will just 
+ * get overwritten.  (Obviously, if the resource is fully specified, 
+ * start_index == end_index.)
+ */
+
+bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
+{
+  int num_resources = m_world->GetNumResources();
+  
+  //if there are no resources, translation cannot be successful; return false
+  if (num_resources <= 0)
+  {return false;}
+  
+  //calculate the maximum number of NOPs necessary to completely specify a resource
+  int num_nops = GetInstSet().GetNumNops();
+  int max_label_length = (int)(ceil(log((double)num_resources) / log((double)num_nops)));
+  
+  //attempt to read a label of the maximum length
+  ReadLabel(max_label_length);
+  
+  //find the length of the label that was actually read
+  int real_label_length = GetLabel().GetSize();
+  
+  /* find start and end resource indices specified by the label */
+  
+  cCodeLabel start_label = cCodeLabel(GetLabel());
+  cCodeLabel   end_label = cCodeLabel(GetLabel());
+  
+  //fill out any labels that are not maximum length
+  for (int i = 0; i < max_label_length - real_label_length; i++){
+    start_label.AddNop(0);
+    end_label.AddNop(num_nops - 1);
+  }
+  
+  //translate into resource indices
+  start_index = start_label.AsInt(num_nops);
+  end_index   =   end_label.AsInt(num_nops);
+  
+  return true;
+}
+
+bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
+{
+  int start_bin, end_bin, bin_used;
+
+  bool finite_resources_exist = FindModifiedResource(start_bin, end_bin);
+  if(!finite_resources_exist) {return false;}
+
+  if(start_bin == end_bin)  // resource completely specified
+  {bin_used = start_bin;}
+  else
+  {
+    switch (m_world->GetConfig().MULTI_ABSORB_TYPE.Get())
+    {
+      case 0:
+        bin_used = ctx.GetRandom().GetInt(start_bin, end_bin + 1);  // since the max passed to GetInt() will never be returned
+        break;
+      case 1:
+        bin_used = start_bin;
+        break;
+      case 2:
+        bin_used = end_bin;
+        break;
+      case 3:
+        bin_used = -1; // not really, of course!  This just functions as a flag
+        break;
+      default:
+        bin_used = ctx.GetRandom().GetInt(start_bin, end_bin + 1);  // arbitrary choice of the default.  Shouldn't matter, since it shouldn't be needed...
+        break;
+    }
+  }
+
+  // Set up res_change and max total
+  const tArray<double> res_count = organism->GetOrgInterface().GetResources();
+  tArray<double> res_change(res_count.GetSize());
+  res_change.SetAll(0.0);
+  double total = organism->GetRBinsTotal();
+  double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
+
+	// Add resources to rbins if this does not put the organism over the maximum total allowed
+  if(bin_used >= 0)
+  {
+    res_change[bin_used] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
+    if(max < 0 || (total + -1 * res_change[bin_used]) <= max)
+    {organism->AddToRBin(bin_used, -1 * res_change[bin_used]);}
+    else
+    {res_change[bin_used] = 0.0;}
+  }
+  else
+  {
+    int num_bins = end_bin - start_bin;
+    for(int i = start_bin; i <= end_bin; i++)
+    {
+      res_change[i] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get() / num_bins);
+      if(max < 0 || (total + -1 * res_change[i]) <= max)
+      {organism->AddToRBin(i, -1 * res_change[i]);}
+      else
+      {res_change[i] = 0.0;}   
+    }
+  }
+  
+  // Update resource counts to reflect res_change
+  organism->GetOrgInterface().UpdateResources(res_change);
+  
+  return true;
+}
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
 resources present are above the min level for that resource, execute the following
@@ -3322,7 +3454,6 @@ bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
   }
   return true;
 }
-
 
 void cHardwareCPU::DoDonate(cOrganism* to_org)
 {

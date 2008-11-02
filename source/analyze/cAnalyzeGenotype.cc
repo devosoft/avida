@@ -74,8 +74,13 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , gest_time(INT_MAX)
   , fitness(0.0)
   , errors(0)
+  , inst_executed_counts(0)
   , task_counts(0)
   , task_qualities(0)
+  , internal_task_counts(0)
+  , internal_task_qualities(0)
+  , rbins_total(0)
+  , rbins_avail(0)
   , fitness_ratio(0.0)
   , efficiency_ratio(0.0)
   , comp_merit_ratio(0.0)
@@ -122,8 +127,13 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , gest_time(INT_MAX)
   , fitness(0.0)
   , errors(0)
+  , inst_executed_counts(0)
   , task_counts(0)
   , task_qualities(0)
+  , internal_task_counts(0)
+  , internal_task_qualities(0)
+  , rbins_total(0)
+  , rbins_avail(0)
   , fitness_ratio(0.0)
   , efficiency_ratio(0.0)
   , comp_merit_ratio(0.0)
@@ -159,8 +169,13 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
   , gest_time(_gen.gest_time)
   , fitness(_gen.fitness)
   , errors(_gen.errors)
+  , inst_executed_counts(_gen.inst_executed_counts)
   , task_counts(_gen.task_counts)
   , task_qualities(_gen.task_qualities)
+  , internal_task_counts(_gen.internal_task_counts)
+  , internal_task_qualities(_gen.internal_task_qualities)
+  , rbins_total(_gen.rbins_total)
+  , rbins_avail(_gen.rbins_avail)
   , fitness_ratio(_gen.fitness_ratio)
   , efficiency_ratio(_gen.efficiency_ratio)
   , comp_merit_ratio(_gen.comp_merit_ratio)
@@ -287,6 +302,9 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   ADD_GDATA(cString (), "task_list", "List of all tasks performed",     GetTaskList,     SetNULL, 0, "(N/A)", "");
   ADD_GDATA(cString (), "link.tasksites", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
   ADD_GDATA(cString (), "html.sequence",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
+  
+  dcm->Add("inst", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
+              ("inst", &cAnalyzeGenotype::DescInstExe, &cAnalyzeGenotype::GetInstExecutedCount));
   
   // coarse-grained task stats
   ADD_GDATA(int (), 		"total_task_count","# Different Tasks", 		GetTotalTaskCount, SetNULL, 1, 0, 0);
@@ -553,21 +571,26 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   // The most likely phenotype will be assigned to the phenotype stats
   const cPlasticPhenotype* likely_phenotype = recalc_data.GetMostLikelyPhenotype();
   
-  viable         = likely_phenotype->IsViable();
-  m_env_inputs   = likely_phenotype->GetEnvInputs();
-  executed_flags = likely_phenotype->GetExecutedFlags();
-  length         = likely_phenotype->GetGenomeLength();
-  copy_length    = likely_phenotype->GetCopiedSize();
-  exe_length     = likely_phenotype->GetExecutedSize();
-  merit          = likely_phenotype->GetMerit().GetDouble();
-  gest_time      = likely_phenotype->GetGestationTime();
-  fitness        = likely_phenotype->GetFitness();
-  errors         = likely_phenotype->GetLastNumErrors();
-  div_type       = likely_phenotype->GetDivType();
-  mate_id        = likely_phenotype->MateSelectID();
-  task_counts    = likely_phenotype->GetLastTaskCount();
-  task_qualities = likely_phenotype->GetLastTaskQuality();
-  
+  viable                = likely_phenotype->IsViable();
+  m_env_inputs          = likely_phenotype->GetEnvInputs();
+  executed_flags        = likely_phenotype->GetExecutedFlags();
+  inst_executed_counts  = likely_phenotype->GetLastInstCount();
+  length                = likely_phenotype->GetGenomeLength();
+  copy_length           = likely_phenotype->GetCopiedSize();
+  exe_length            = likely_phenotype->GetExecutedSize();
+  merit                 = likely_phenotype->GetMerit().GetDouble();
+  gest_time             = likely_phenotype->GetGestationTime();
+  fitness               = likely_phenotype->GetFitness();
+  errors                = likely_phenotype->GetLastNumErrors();
+  div_type              = likely_phenotype->GetDivType();
+  mate_id               = likely_phenotype->MateSelectID();
+  task_counts           = likely_phenotype->GetLastTaskCount();
+  task_qualities        = likely_phenotype->GetLastTaskQuality();
+  internal_task_counts  = likely_phenotype->GetLastInternalTaskCount();
+  internal_task_qualities = likely_phenotype->GetLastInternalTaskQuality();
+  rbins_total           = likely_phenotype->GetLastRBinsTotal();
+  rbins_avail           = likely_phenotype->GetLastRBinsAvail();
+
   // Setup a new parent stats if we have a parent to work with.
   if (parent_genotype != NULL) {
     fitness_ratio = GetFitness() / parent_genotype->GetFitness();
@@ -600,6 +623,24 @@ void cAnalyzeGenotype::PrintTasksQuality(ofstream& fp, int min_task, int max_tas
   }
 }
 
+void cAnalyzeGenotype::PrintInternalTasks(ofstream& fp, int min_task, int max_task)
+{
+  if (max_task == -1) max_task = internal_task_counts.GetSize();
+
+  for (int i = min_task; i < max_task; i++) {
+    fp << internal_task_counts[i] << " ";
+  }
+}
+
+void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int max_task)
+{
+  if (max_task == -1) max_task = internal_task_counts.GetSize();
+
+  for (int i = min_task; i < max_task; i++) {
+    fp << internal_task_qualities[i] << " ";
+  }
+}
+
 void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
   cGenome new_genome(_sequence);
@@ -620,6 +661,25 @@ cString cAnalyzeGenotype::GetAlignmentExecutedFlags() const
   }
 
   return aligned_executed_flags;
+}
+
+int cAnalyzeGenotype::GetInstExecutedCount(int _inst_num) const
+{
+  if(_inst_num < inst_executed_counts.GetSize() && _inst_num > 0)
+  { return inst_executed_counts[_inst_num]; }
+  
+  // If the instruction is not valid, clearly it has never been executed!
+  return 0;
+}
+
+cString cAnalyzeGenotype::DescInstExe(int _inst_id) const
+{
+  if(_inst_id > inst_executed_counts.GetSize() || _inst_id < 0) return "";
+  
+  cString desc("# Times ");
+  desc += GetInstructionSet().GetName(_inst_id);
+  desc += " Executed";
+  return desc;
 }
 
 int cAnalyzeGenotype::GetKO_DeadCount() const

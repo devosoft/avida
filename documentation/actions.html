@@ -215,6 +215,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#print_instruction_data">print_instruction_data</a><br>
       <a href="#PrintInstructionAbundanceHistogram">PrintInstructionAbundanceHistogram</a><br>
       <a href="#PrintInstructionData">PrintInstructionData</a><br>
+      <a href="#PrintInternalTasksData">PrintInternalTasksData</a><br>
+      <a href="#PrintInternalTasksQualData">PrintInternalTasksQualData</a><br>
       <a href="#print_lineage_counts">print_lineage_counts</a><br>
       <a href="#print_lineage_totals">print_lineage_totals</a><br>
       <a href="#PrintLineageCounts">PrintLineageCounts</a><br>
@@ -2174,6 +2176,27 @@ a single, complete file for each trigger.
   beteween birth and divide. Prior to their first divide, organisms values for their parents.
 
   </p>
+</li>
+<li><p>
+	<strong><a name="PrintInternalTasksData">PrintInternalTasksData</a></strong>
+	<i>[string fname="in_tasks.dat"]</i>
+	</p>
+	<p>
+		Print the number of organisms that have performed each task using internal resources.
+	</p>
+	<p>
+		Note that tasks performed using internal resources are also counted as tasks performed (by <a href="#PrintTasksData">PrintTasksData</a>), so that if you wish to know the number of tasks performed <i>not</i> using internal resources you must do some subtraction:
+		<br><br>
+		(number from PrintTasksData) - (number from PrintInternalTasksData) = number of organisms who have performed this task <i>not</i> using internal resources
+	</p>
+</li>
+<li><p>
+	<strong><a name="PrintInternalTasksQualData">PrintInternalTasksQualData</a></strong>
+	<i>[string fname="in_tasks_quality.dat"]</i>
+	</p>
+	<p>
+		Print the total quality of each task when performed using internal resources.  (See <a href="#PrintTasksQualData">PrintTasksQualData</a> for more about task quality.)
+	</p>
 </li>
 <li><p>
   <strong><a name="print_lineage_counts">print_lineage_counts</a></strong>

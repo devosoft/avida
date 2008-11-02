@@ -117,9 +117,13 @@ private:
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
   tArray<int> cur_task_count;                 // Total times each task was performed
+  tArray<int> cur_internal_task_count;        // Total times each task was performed using internal resources
   tArray<int> eff_task_count;                 // Total times each task was performed (resetable during the life of the organism)
   tArray<double> cur_task_quality;            // Average (total?) quality with which each task was performed
   tArray<double> cur_task_value;              // Value with which this phenotype performs task
+  tArray<double> cur_internal_task_quality;   // Average (total?) quaility with which each task using internal resources was performed
+  tArray<double> cur_rbins_total;              // Total amount of resources collected
+  tArray<double> cur_rbins_avail;              // Total amount of internal resources available
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
@@ -141,8 +145,12 @@ private:
   int last_num_errors;
   int last_num_donates;
   tArray<int> last_task_count;
+  tArray<int> last_internal_task_count;
   tArray<double> last_task_quality;
   tArray<double> last_task_value;
+  tArray<double> last_internal_task_quality;
+  tArray<double> last_rbins_total;
+  tArray<double> last_rbins_avail;
   tArray<int> last_reaction_count;
   tArray<double> last_reaction_add_reward; 
   tArray<int> last_inst_count;	  // Instruction exection counter
@@ -151,7 +159,7 @@ private:
   int last_cpu_cycles_used;
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
-  // 4. Records from this organisms life...
+  // 4. Records from this organism's life...
   int num_divides;       // Total successful divides organism has produced.
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
@@ -263,7 +271,7 @@ public:
   // Input and Output Reaction Tests
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-                  const tArray<double>& res_in, tArray<double>& res_change,
+                  const tArray<double>& res_in, tArray<double>& rbins_in, tArray<double>& res_change,
                   tArray<int>& insts_triggered);
 
   // State saving and loading, and printing...
@@ -311,9 +319,13 @@ public:
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
   int GetCurNumDonates() const { assert(initialized == true); return cur_num_donates; }
   const tArray<int>& GetCurTaskCount() const { assert(initialized == true); return cur_task_count; }
+  const tArray<int>& GetCurInternalTaskCount() const { assert(initialized == true); return cur_internal_task_count; }
   void ClearEffTaskCount() { assert(initialized == true); eff_task_count.SetAll(0); }
   const tArray<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
   const tArray<double> & GetCurTaskValue() const { assert(initialized == true); return cur_task_value; }
+  const tArray<double> & GetCurInternalTaskQuality() const { assert(initialized == true); return cur_internal_task_quality; }
+  const tArray<double>& GetCurRBinsTotal() const { assert(initialized == true); return cur_rbins_total; }
+  const tArray<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
@@ -332,8 +344,12 @@ public:
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
+  const tArray<int>& GetLastInternalTaskCount() const { assert(initialized == true); return last_internal_task_count; }
   const tArray<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const tArray<double>& GetLastTaskValue() const { assert(initialized == true); return last_task_value; }
+  const tArray<double>& GetLastInternalTaskQuality() const { assert(initialized == true); return last_internal_task_quality; }
+  const tArray<double>& GetLastRBinsTotal() const { assert(initialized == true); return last_rbins_total; }
+  const tArray<double>& GetLastRBinsAvail() const { assert(initialized == true); return last_rbins_avail; }
   const tArray<int>& GetLastReactionCount() const { assert(initialized == true); return last_reaction_count; }
   const tArray<double>& GetLastReactionAddReward() const { assert(initialized == true); return last_reaction_add_reward; }
   const tArray<int>& GetLastInstCount() const { assert(initialized == true); return last_inst_count; }
@@ -432,6 +448,13 @@ public:
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
   
+  void SetCurRBinsAvail(const tArray<double>& in_avail) { cur_rbins_avail = in_avail; }
+  void SetCurRbinsTotal(const tArray<double>& in_total) { cur_rbins_total = in_total; }
+  void SetCurRBinAvail(int index, double val) { cur_rbins_avail[index] = val; }
+  void SetCurRBinTotal(int index, double val) { cur_rbins_total[index] = val; }
+  void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }
+  void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
+
   void SetIsDonorCur() { is_donor_cur = true; } 
   void SetIsDonorRand() { SetIsDonorCur(); is_donor_rand = true; }
   void SetIsDonorKin() { SetIsDonorCur(); is_donor_kin = true; }
