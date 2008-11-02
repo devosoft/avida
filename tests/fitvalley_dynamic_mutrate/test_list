@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -s 1 -set CHILD_SIZE_RANGE 1 -set DIVIDE_INS_PROB 0 -set DIVIDE_DEL_PROB 0 -set INST_SET instset-reprosA-B.cfg -set START_CREATURE 10reproAs.org -set BASE_MERIT_METHOD 6 -set WORLD_X 10 -set WORLD_Y 10 -set MERIT_BONUS_INST 2 -set COPY_MUT_PROB .1 -set MERIT_BONUS_EFFECT 1 -set EVENT_FILE events-toggleEvery10.cfg -v2 -set META_COPY_MUT .5 -set META_STD_DEV  .1 -set MUT_RATE_SOURCE 2 -set NUM_DEMES 1 -set FITNESS_VALLEY 1 -set FITNESS_VALLEY_START 5 -set FITNESS_VALLEY_STOP 6 
+args = -s 1 -set CHILD_SIZE_RANGE 1 -set DIVIDE_INS_PROB 0  -set MIN_EXE_LINES 0 -set DIVIDE_DEL_PROB 0 -set INST_SET instset-reprosA-B.cfg -set START_CREATURE 10reproAs.org -set BASE_MERIT_METHOD 6 -set WORLD_X 10 -set WORLD_Y 10 -set MERIT_BONUS_INST 2 -set COPY_MUT_PROB .1 -set MERIT_BONUS_EFFECT 1 -set EVENT_FILE events-toggleEvery10.cfg -v2 -set META_COPY_MUT .5 -set META_STD_DEV  .1 -set MUT_RATE_SOURCE 2 -set NUM_DEMES 1 -set FITNESS_VALLEY 1 -set FITNESS_VALLEY_START 5 -set FITNESS_VALLEY_STOP 6 
 
 app = %(default_app)s
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)

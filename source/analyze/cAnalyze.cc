@@ -1442,139 +1442,73 @@ void cAnalyze::FindClade(cString cur_string)
 void cAnalyze::FindLastCommonAncestor(cString cur_string)
 {  
 
-/*
   // Assumes that the current batch contains a population and all of its common ancestors
   // Finds the last common ancestor among all current organisms that are still alive,
   // i.e. have an update_died of -1.
 
   cout << "Finding last common ancestor of batch " << cur_batch << endl;
   
-  // Make a list of alive organisms
-  tListPlus<cAnalyzeGenotype> alive_list;
-  {
-    tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-    cAnalyzeGenotype * test_genotype = NULL;
-    while ((test_genotype = batch_it.Next()) != NULL) {
-      if (test_genotype->GetUpdateDead() == -1) {
-        alive_list.Push(test_genotype);
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  Connecting genotypes to parents. " << endl;
+  }
+  
+  // Connect each genotype to its parent.
+  tListIterator<cAnalyzeGenotype> child_it(batch[cur_batch].List());
+  cAnalyzeGenotype * on_child = NULL;
+  while ((on_child = child_it.Next()) != NULL) {
+    tListIterator<cAnalyzeGenotype> parent_it(batch[cur_batch].List());
+    cAnalyzeGenotype * on_parent = NULL;
+    while ((on_parent = parent_it.Next()) != NULL) {
+      if (on_child->GetParentID() == on_parent->GetID()) {
+        on_child->LinkParent(on_parent);
+        break;
       }
     }
   }
-  
-  if (m_world->GetVerbosity() >= VERBOSE_ON) {
-    cout << "  Number of genotypes that are alive: " << alive_list.GetSize() << endl;
-    cout << "  Number of ancestor genotypes: " << batch[cur_batch].List().GetSize() << endl;
-  }
-    
-  // Extract the lineage of the first alive organism.
-  // The LCA must be among these genotypes. The approach is to step back one ancestor
-  // at a time, collect all of its descendants, and then check to see if there are
-  // andy alive organisms that have not been collected yet.
-  
-  // find the lineage of the first genotype...
-  cAnalyzeGenotype * first_alive_genotype = alive_list.Pop();
-  tListPlus<cAnalyzeGenotype> master_lineage;
-  {
-    master_lineage.Push(first_alive_genotype);
-    int next_id = first_alive_genotype->GetParentID();
-    bool found = true;
-    while (found == true) {
-      found = false;
-      
-      tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-      cAnalyzeGenotype * found_gen = NULL;
-      while ((found_gen = batch_it.Next()) != NULL) {
-        if (found_gen->GetID() == next_id) {
-          master_lineage.Push(found_gen);
-          next_id = found_gen->GetParentID();
-          found = true;
-          break;
-        }
-      }
-    }
-  }
- 
-  if (m_world->GetVerbosity() >= VERBOSE_ON) {
-    cout << "  Size of master lineage: " << master_lineage.GetSize() << endl;
-  }
-    
-  tListIterator<cAnalyzeGenotype> master_lineage_batch_it(master_lineage);
-  
-  while ((collect_genotype = master_lineage_batch_it.Next()) != NULL) {
-    
-    // collect all children of the current lineage genotype
-    tListPlus<cAnalyzeGenotype> collect_genotype_list;
-    collect_genotype_list.PushRear(collect_genotype);
-    tListIterator<cAnalyzeGenotype> collect_batch_it(collect_genotype_list);
-    
-    next_collect_genotype_list;
-    
-    int current_id = alive_genotype->GetID();
-    int parent_id = alive_genotype->GetParentID();
-    bool found_parent = true;
-    bool found_in_master_lineage = false;
-    while (found_parent == true) {
-        
-      // Check to see if this id is among those in the first lineage.       
-      tListIterator<cAnalyzeGenotype> master_lineage_batch_it(master_lineage);
-      cAnalyzeGenotype * master_lineage_genotype;
-      while ((master_lineage_genotype = master_lineage_batch_it.Next()) != NULL) {
-        if (master_lineage_genotype->GetID() == current_id) break;
-      }
 
-      found_in_master_lineage = master_lineage_genotype != NULL;
-      if (found_in_master_lineage) {
-        
-        // Remove anything in the master lineage that is past this point.
-        // as it is younger than the new most recent common ancestor
-        while ((master_lineage_genotype = master_lineage_batch_it.Next()) != NULL) {
-          master_lineage_batch_it.Remove();
-        }
-        
-        // We can also stop looking at ancestors of the current alive_genotype
-        if (found_in_master_lineage) break;
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  Finding earliest genotype. " << endl;
+  }
+  
+  // Find the genotype without a parent (there should only be one)
+  tListIterator<cAnalyzeGenotype> first_lca_it(batch[cur_batch].List());
+  cAnalyzeGenotype * lca = NULL;
+  cAnalyzeGenotype * test_lca = NULL;
+  while ((test_lca = first_lca_it.Next()) != NULL) {
+    if (!test_lca->GetParent()) {
+      // It is an error to get two genotypes without a parent
+      if (lca != NULL) {
+        cout << "Error: More than one genotype does not have a parent. " << endl;
+        cout << "Genotype 1: " << test_lca->GetID() << endl;
+        cout << "Genotype 2: " << lca->GetID() << endl;
+        return;
       }
-      
-      // Find the ancestor of the current organism in the alive_genotype lineage
-      found_parent = false;      
-      tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-      cAnalyzeGenotype * test_genotype = NULL;
-      while ((test_genotype = batch_it.Next()) != NULL) {
-        if (test_genotype->GetID() == parent_id) {
-          parent_id = test_genotype->GetParentID();
-          current_id = test_genotype->GetID();
-          found_parent = true;
-          break;
-        }
-      }
-    }
-    
-    // Warn if we did not find a common ancestor at all.
-    if (!found_in_master_lineage) { 
-      cout << "  Warning! Did not find common ancestor between two organisms. " << endl;
-    }
-    
-    if (m_world->GetVerbosity() >= VERBOSE_ON) {
-      cout << "  Size of master lineage: " << master_lineage.GetSize() << endl;
+      lca = test_lca;
     }
   }
   
-  // The first one left in this lineage is the one we want to save.
-  cAnalyzeGenotype * last_common_ancestor = master_lineage.Pop();
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    cout << "  Following children to last common ancestor. " << endl;
+  }
+  
+  // Follow the children from this parent until we find a genotype with 
+  // more than one child. This is the last common ancestor.
+  while (lca->GetChildList().GetSize() == 1) {
+    lca = lca->GetChildList().Pop();
+  }
   
   // Delete everything else.
   tListIterator<cAnalyzeGenotype> delete_batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * delete_genotype = NULL;
   while ((delete_genotype = delete_batch_it.Next()) != NULL) {
-    if (delete_genotype->GetID() != last_common_ancestor->GetID()) {
-      delete batch[cur_batch].List().Pop();
+    if (delete_genotype->GetID() != lca->GetID()) {
+      delete delete_genotype;
     }
   }
   
   // And fill it back in with the good stuff.
-  batch[cur_batch].List().PushRear(last_common_ancestor);
-
-  */
+  batch[cur_batch].List().Clear();
+  batch[cur_batch].List().PushRear(lca);
 }
 
 

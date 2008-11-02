@@ -2692,11 +2692,7 @@ void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
 }
 
 bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
-{
-  // const bool viable = Divide_CheckViable(ctx, div_point, child_size);
-  // these checks should be done, but currently they make some assumptions
-  // that crash when evaluating this kind of organism -- JEB
-  
+{ 
   // check if repro can replace an existing organism
   if(m_world->GetConfig().REPRO_METHOD.Get() == 0 && organism->IsNeighborCellOccupied())
     return false;
@@ -2705,15 +2701,8 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   // Setup child
   cCPUMemory& child_genome = organism->ChildGenome();
-  child_genome = m_memory;
-  organism->GetPhenotype().SetLinesCopied(m_memory.GetSize());
+  child_genome = organism->GetGenome();
 
-  int lines_executed = 0;
-  for ( int i = 0; i < m_memory.GetSize(); i++ ) {
-    if ( m_memory.FlagExecuted(i)) lines_executed++;
-  }
-  organism->GetPhenotype().SetLinesExecuted(lines_executed);
-  
   // Do transposon movement and copying before other mutations
   Divide_DoTransposons(ctx);
   
@@ -2728,6 +2717,10 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   }
   
   Divide_DoMutations(ctx);
+  
+  // Check viability
+  bool viable = Divide_CheckViable(ctx, organism->GetGenome().GetSize(), organism->ChildGenome().GetSize(), 1);
+  if (!viable) { return false; }
   
   // Many tests will require us to run the offspring through a test CPU;
   // this is, for example, to see if mutations need to be reverted or if

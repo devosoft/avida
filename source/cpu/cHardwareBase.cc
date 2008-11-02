@@ -58,7 +58,7 @@ int cHardwareBase::GetExecutedSize(const int parent_size)
   return executed_size;
 }
 
-bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size)
+bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, bool using_repro)
 {
   // Make sure the organism is okay with dividing now...
   if (organism->Divide_CheckViable() == false) return false; // (divide fails)
@@ -80,6 +80,21 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     return false; // (divide fails)
   }
   
+  // Absolute minimum and maximum child/parent size limits -- @JEB
+  const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+  const int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
+  if ( (min_genome_size && (child_size < min_genome_size)) || (max_genome_size && (child_size > max_genome_size)) ) {
+    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+                    cStringUtil::Stringf("Invalid absolute offspring length (%d)",child_size));
+    return false; // (divide fails)
+  }
+  
+  if ( (min_genome_size && (parent_size < min_genome_size)) || (max_genome_size && (parent_size > max_genome_size)) ) {
+    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+                    cStringUtil::Stringf("Invalid absolute post-divide length (%d)",parent_size));
+    return false; // (divide fails)
+  }
+  
   // Count the number of lines executed in the parent, and make sure the
   // specified fraction has been reached.
   
@@ -90,15 +105,22 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
                     cStringUtil::Stringf("Too few executed lines (%d < %d)", executed_size, min_exe_lines));
     return false; // (divide fails)
   }
-	
-  const int copied_size = GetCopiedSize(parent_size, child_size);
-  const int min_copied = static_cast<int>(child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
-  if (copied_size < min_copied) {
-    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-                    cStringUtil::Stringf("Too few copied commands (%d < %d)", copied_size, min_copied));
-    return false; // (divide fails)
-  }
   
+  // Repro organisms mark their entire genomes as copied
+  int copied_size = parent_size;
+  if (!using_repro) {
+    // Normal organisms check to see how much was copied
+    copied_size = GetCopiedSize(parent_size, child_size); // Fails for REPRO organisms
+    const int min_copied = static_cast<int>(child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
+  
+    if (copied_size < min_copied) {
+
+      organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+                      cStringUtil::Stringf("Too few copied commands (%d < %d)", copied_size, min_copied));
+      return false; // (divide fails)
+    }
+  }
+   
   // Save the information we collected here...
   cPhenotype& phenotype = organism->GetPhenotype();
   phenotype.SetLinesExecuted(executed_size);
