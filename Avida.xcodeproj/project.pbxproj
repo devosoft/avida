@@ -206,6 +206,7 @@
 		70BB2A2B0E9FA12F008269D2 /* ASAvidaLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */; };
 		70BB2AE20EA5303F008269D2 /* cDriverStatusConduit.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2AC60EA52BD9008269D2 /* cDriverStatusConduit.cc */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
+		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
@@ -842,6 +843,7 @@
 		70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-logging.h"; sourceTree = "<group>"; };
 		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
+		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
 		70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConstBurstSchedule.h; sourceTree = "<group>"; };
 		70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cConstBurstSchedule.cc; sourceTree = "<group>"; };
 		70F7DAEF09290468009E311D /* cClassificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cClassificationManager.h; sourceTree = "<group>"; };
@@ -1029,6 +1031,7 @@
 				7054A1B309A810CB00038658 /* cAnalyzeJobWorker.h */,
 				7054A1B409A810CB00038658 /* cAnalyzeJobWorker.cc */,
 				707AEF8C09EA8B2D001AEA89 /* cAnalyzeCommandAction.h */,
+				70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */,
 			);
 			path = analyze;
 			sourceTree = "<group>";
@@ -2056,6 +2059,7 @@
 				70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */,
 				70BB2AE20EA5303F008269D2 /* cDriverStatusConduit.cc in Sources */,
 				709A1EEC0EB6C42D006090AF /* cResourceHistory.cc in Sources */,
+				70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

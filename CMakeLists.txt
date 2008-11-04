@@ -125,6 +125,7 @@ SET(ANALYZE_SOURCES
   ${ANALYZE_DIR}/cAnalyzeTreeStats_Gamma.cc
   ${ANALYZE_DIR}/cAnalyzeJobQueue.cc
   ${ANALYZE_DIR}/cAnalyzeJobWorker.cc
+  ${ANALYZE_DIR}/cGenotypeBatch.cc
   ${ANALYZE_DIR}/cMutationalNeighborhood.cc
 )
 SOURCE_GROUP(analyze FILES ${ANALYZE_SOURCES})

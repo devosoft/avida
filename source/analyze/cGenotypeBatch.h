@@ -39,25 +39,28 @@ class cAnalyzeGenotype;
 
 class cGenotypeBatch {
 private:
-  tListPlus<cAnalyzeGenotype> genotype_list;
-  cString name;
-  bool is_lineage;
-  bool is_aligned;
-private:
-  // disabled copy constructor.
-  cGenotypeBatch(const cGenotypeBatch &);
+  tListPlus<cAnalyzeGenotype> m_list;
+  cString m_name;
+  bool m_is_lineage;
+  bool m_is_aligned;
+  
+  cGenotypeBatch(const cGenotypeBatch&); // @not_implemented
+  cGenotypeBatch& operator=(const cGenotypeBatch&); // @not_implemented
+
 public:
-  cGenotypeBatch() : name(""), is_lineage(false), is_aligned(false) { ; }
+  cGenotypeBatch() : m_name(""), m_is_lineage(false), m_is_aligned(false) { ; }
   ~cGenotypeBatch() { ; }
 
-  tListPlus<cAnalyzeGenotype> & List() { return genotype_list; }
-  cString& Name() { return name; }
-  const cString& GetName() { return name; }
-  bool IsLineage() { return is_lineage; }
-  bool IsAligned() { return is_aligned; }
+  tListPlus<cAnalyzeGenotype>& List() { return m_list; }
+  cString& Name() { return m_name; }
+  const cString& GetName() { return m_name; }
+  bool IsLineage() { return m_is_lineage; }
+  bool IsAligned() { return m_is_aligned; }
 
-  void SetLineage(bool _val=true) { is_lineage = _val; }
-  void SetAligned(bool _val=true) { is_aligned = _val; }
+  void SetLineage(bool _val = true) { m_is_lineage = _val; }
+  void SetAligned(bool _val = true) { m_is_aligned = _val; }
+  
+  cAnalyzeGenotype* PopGenotype(const cString& desc);
 };
 
 
