@@ -360,9 +360,42 @@ public:
   explicit tListPlus(const tList<T>& in_list) : tList<T>(in_list) { ; }
   explicit tListPlus(const tListPlus& in_list) : tList<T>(in_list) { ; }
   
+  
+  
+  template<typename V> T* FindValue(V (T::*fun)() const, V value)
+  {
+    tListNode<T>* node;
+    if (FindNode(fun, value, node)) return node->data;
+    return NULL;
+  }
+  
+  template<typename V> T* PopValue(V (T::*fun)() const, V value)
+  {
+    tListNode<T>* node;
+    if (FindNode(fun, value, node)) return RemoveNode(node);
+    return NULL;
+  }
+  
+  template<typename V> T* FindMax(V (T::*fun)() const)
+  {
+    tListNode<T>* node;
+    if (FindMax(fun, node)) return node->data;
+    return NULL;
+  }
+  
+  template<typename V> T* PopMax(V (T::*fun)() const)
+  {
+    tListNode<T>* node;
+    if (FindMax(fun, node)) return RemoveNode(node);
+    return NULL;
+  }
+  
+  
   // Find by summing values until a specified total is reached.  
   T* FindSummedValue(int sum, int (T::*fun)() const)
   {
+    if (this->size == 0) return NULL;
+    
     int total = 0;
     tListNode<T>* test = this->root.next;
     while (test != &(this->root) && total < sum) {
@@ -372,49 +405,6 @@ public:
     return test->data;
   }
   
-  T* PopIntValue(int (T::*fun)() const, int value)
-  {
-    tListNode<T>* test = this->root.next;
-    while (test != &(this->root)) {
-      if ( (test->data->*fun)() == value) return RemoveNode(test);
-      test = test->next;
-    }
-    return NULL;
-  }
-  
-  T* PopIntMax(int (T::*fun)() const)
-  { 
-    if (this->size == 0) return NULL;
-    tListNode<T>* test = this->root.next;
-    tListNode<T>* best = test;
-    int max_val = (test->data->*fun)();
-    while (test != &(this->root)) {
-      const int cur_val = (test->data->*fun)();
-      if ( cur_val > max_val ) {
-        max_val = cur_val;
-        best = test;
-      }
-      test = test->next;
-    }
-    return RemoveNode(best);
-  }
-  
-  T* PopDoubleMax(double (T::*fun)() const)
-  {
-    if (this->size == 0) return NULL;
-    tListNode<T>* test = this->root.next;
-    tListNode<T>* best = test;
-    double max_val = (test->data->*fun)();
-    while (test != &(this->root)) {
-      const double cur_val = (test->data->*fun)();
-      if ( cur_val > max_val ) {
-        max_val = cur_val;
-        best = test;
-      }
-      test = test->next;
-    }
-    return RemoveNode(best);
-  }
   
   int Count(int (T::*fun)() const)
   {
@@ -425,6 +415,39 @@ public:
       test = test->next;
     }
     return total;
+  }
+  
+  
+private:  
+  template<typename V> bool FindNode(V (T::*fun)() const, V value, tListNode<T>*& node)
+  {
+    node = this->root.next;
+    while (node != &(this->root)) {
+      if ((node->data->*fun)() == value) return true;
+      node = node->next;
+    }
+    
+    return false;
+  }
+  
+
+  template<typename V> bool FindMax(V (T::*fun)() const, tListNode<T>*& best)
+  {
+    if (this->size == 0) return false;
+    
+    tListNode<T>* test = this->root.next;
+    best = test;
+    V max_val = (test->data->*fun)();
+    while (test != &(this->root)) {
+      const V cur_val = (test->data->*fun)();
+      if (cur_val > max_val) {
+        max_val = cur_val;
+        best = test;
+      }
+      test = test->next;
+    }
+    
+    return true;
   }
 };
 

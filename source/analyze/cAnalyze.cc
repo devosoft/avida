@@ -8769,16 +8769,15 @@ cAnalyzeGenotype * cAnalyze::PopGenotype(cString gen_desc, int batch_id)
   
   cAnalyzeGenotype * found_gen = NULL;
   if (gen_desc == "num_cpus")
-    found_gen = gen_list.PopIntMax(&cAnalyzeGenotype::GetNumCPUs);
+    found_gen = gen_list.PopMax(&cAnalyzeGenotype::GetNumCPUs);
   else if (gen_desc == "total_cpus")
-    found_gen = gen_list.PopIntMax(&cAnalyzeGenotype::GetTotalCPUs);
+    found_gen = gen_list.PopMax(&cAnalyzeGenotype::GetTotalCPUs);
   else if (gen_desc == "merit")
-    found_gen = gen_list.PopDoubleMax(&cAnalyzeGenotype::GetMerit);
+    found_gen = gen_list.PopMax(&cAnalyzeGenotype::GetMerit);
   else if (gen_desc == "fitness")
-    found_gen = gen_list.PopDoubleMax(&cAnalyzeGenotype::GetFitness);
+    found_gen = gen_list.PopMax(&cAnalyzeGenotype::GetFitness);
   else if (gen_desc.IsNumeric(0))
-    found_gen = gen_list.PopIntValue(&cAnalyzeGenotype::GetID,
-                                     gen_desc.AsInt());
+    found_gen = gen_list.PopValue(&cAnalyzeGenotype::GetID, gen_desc.AsInt());
   else if (gen_desc == "random") {
     int gen_pos = random.GetUInt(gen_list.GetSize());
     found_gen = gen_list.PopPos(gen_pos);

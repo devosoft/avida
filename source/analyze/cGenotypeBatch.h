@@ -36,11 +36,14 @@
 // cGenotypeBatch      : Collection of cAnalyzeGenotypes
 
 class cAnalyzeGenotype;
+class cRandom;
 
 class cGenotypeBatch {
 private:
   tListPlus<cAnalyzeGenotype> m_list;
   cString m_name;
+  cAnalyzeGenotype* m_lineage_head;
+  cAnalyzeGenotype* m_clade_head;
   bool m_is_lineage;
   bool m_is_aligned;
   
@@ -48,19 +51,51 @@ private:
   cGenotypeBatch& operator=(const cGenotypeBatch&); // @not_implemented
 
 public:
-  cGenotypeBatch() : m_name(""), m_is_lineage(false), m_is_aligned(false) { ; }
+  cGenotypeBatch() : m_name(""), m_lineage_head(NULL), m_clade_head(NULL), m_is_lineage(false), m_is_aligned(false) { ; }
   ~cGenotypeBatch() { ; }
 
   tListPlus<cAnalyzeGenotype>& List() { return m_list; }
   cString& Name() { return m_name; }
   const cString& GetName() { return m_name; }
-  bool IsLineage() { return m_is_lineage; }
+  
+  int GetSize() { return m_list.GetSize(); }
+  
+  bool IsLineage() { return m_is_lineage || (m_lineage_head); }
+  bool IsClade() { return (m_clade_head); }
   bool IsAligned() { return m_is_aligned; }
 
   void SetLineage(bool _val = true) { m_is_lineage = _val; }
   void SetAligned(bool _val = true) { m_is_aligned = _val; }
   
-  cAnalyzeGenotype* PopGenotype(const cString& desc);
+  void MergeWith(cGenotypeBatch* batch) { m_list.Append(batch->m_list); }
+  
+  cAnalyzeGenotype* FindGenotypeNumCPUs();
+  cAnalyzeGenotype* PopGenotypeNumCPUs();
+  cAnalyzeGenotype* FindGenotypeTotalCPUs();
+  cAnalyzeGenotype* PopGenotypeTotalCPUs();
+  cAnalyzeGenotype* FindGenotypeMetabolicRate();
+  cAnalyzeGenotype* PopGenotypeMetabolicRate();
+  cAnalyzeGenotype* FindGenotypeFitness();
+  cAnalyzeGenotype* PopGenotypeFitness();
+  cAnalyzeGenotype* FindGenotypeID(int gid);
+  cAnalyzeGenotype* PopGenotypeID(int gid);
+  cAnalyzeGenotype* FindGenotypeRandom(cRandom& rng);
+  cAnalyzeGenotype* PopGenotypeRandom(cRandom& rng);
+  inline cAnalyzeGenotype* FindGenotypeRandom(cRandom* rng) { return FindGenotypeRandom(*rng); }
+  inline cAnalyzeGenotype* PopGenotypeRandom(cRandom* rng) { return PopGenotypeRandom(*rng); }
+  
+  cGenotypeBatch* FindLineage(cAnalyzeGenotype* end_genotype);
+  cGenotypeBatch* FindLineage(int end_genotype_id);
+
+  cGenotypeBatch* FindClade(cAnalyzeGenotype* start_genotype);
+  cGenotypeBatch* FindClade(int start_genotype_id);
+  
+  void RemoveClade(cAnalyzeGenotype* start_genotype);
+  void RemoveClade(int start_genotype_id);
+
+  
+private:
+  inline void clearFlags() { m_is_lineage = false; m_is_aligned = false; }
 };
 
 
