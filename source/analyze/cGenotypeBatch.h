@@ -52,11 +52,11 @@ private:
 
 public:
   cGenotypeBatch() : m_name(""), m_lineage_head(NULL), m_clade_head(NULL), m_is_lineage(false), m_is_aligned(false) { ; }
-  ~cGenotypeBatch() { ; }
+  ~cGenotypeBatch();
 
   tListPlus<cAnalyzeGenotype>& List() { return m_list; }
   cString& Name() { return m_name; }
-  const cString& GetName() { return m_name; }
+  const cString& GetName() const { return m_name; }
   
   int GetSize() { return m_list.GetSize(); }
   
@@ -69,26 +69,26 @@ public:
   
   void MergeWith(cGenotypeBatch* batch) { m_list.Append(batch->m_list); }
   
-  cAnalyzeGenotype* FindGenotypeNumCPUs();
+  cAnalyzeGenotype* FindGenotypeNumCPUs() const;
   cAnalyzeGenotype* PopGenotypeNumCPUs();
-  cAnalyzeGenotype* FindGenotypeTotalCPUs();
+  cAnalyzeGenotype* FindGenotypeTotalCPUs() const;
   cAnalyzeGenotype* PopGenotypeTotalCPUs();
-  cAnalyzeGenotype* FindGenotypeMetabolicRate();
+  cAnalyzeGenotype* FindGenotypeMetabolicRate() const;
   cAnalyzeGenotype* PopGenotypeMetabolicRate();
-  cAnalyzeGenotype* FindGenotypeFitness();
+  cAnalyzeGenotype* FindGenotypeFitness() const;
   cAnalyzeGenotype* PopGenotypeFitness();
-  cAnalyzeGenotype* FindGenotypeID(int gid);
+  cAnalyzeGenotype* FindGenotypeID(int gid) const;
   cAnalyzeGenotype* PopGenotypeID(int gid);
-  cAnalyzeGenotype* FindGenotypeRandom(cRandom& rng);
+  cAnalyzeGenotype* FindGenotypeRandom(cRandom& rng) const;
   cAnalyzeGenotype* PopGenotypeRandom(cRandom& rng);
-  inline cAnalyzeGenotype* FindGenotypeRandom(cRandom* rng) { return FindGenotypeRandom(*rng); }
+  inline cAnalyzeGenotype* FindGenotypeRandom(cRandom* rng) const { return FindGenotypeRandom(*rng); }
   inline cAnalyzeGenotype* PopGenotypeRandom(cRandom* rng) { return PopGenotypeRandom(*rng); }
   
-  cGenotypeBatch* FindLineage(cAnalyzeGenotype* end_genotype);
-  cGenotypeBatch* FindLineage(int end_genotype_id);
+  cGenotypeBatch* FindLineage(cAnalyzeGenotype* end_genotype) const;
+  cGenotypeBatch* FindLineage(int end_genotype_id) const;
 
-  cGenotypeBatch* FindClade(cAnalyzeGenotype* start_genotype);
-  cGenotypeBatch* FindClade(int start_genotype_id);
+  cGenotypeBatch* FindClade(cAnalyzeGenotype* start_genotype) const;
+  cGenotypeBatch* FindClade(int start_genotype_id) const;
   
   void RemoveClade(cAnalyzeGenotype* start_genotype);
   void RemoveClade(int start_genotype_id);

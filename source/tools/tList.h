@@ -362,7 +362,7 @@ public:
   
   
   
-  template<typename V> T* FindValue(V (T::*fun)() const, V value)
+  template<typename V> T* FindValue(V (T::*fun)() const, V value) const
   {
     tListNode<T>* node;
     if (FindNode(fun, value, node)) return node->data;
@@ -376,7 +376,7 @@ public:
     return NULL;
   }
   
-  template<typename V> T* FindMax(V (T::*fun)() const)
+  template<typename V> T* FindMax(V (T::*fun)() const) const
   {
     tListNode<T>* node;
     if (FindMax(fun, node)) return node->data;
@@ -392,7 +392,7 @@ public:
   
   
   // Find by summing values until a specified total is reached.  
-  T* FindSummedValue(int sum, int (T::*fun)() const)
+  T* FindSummedValue(int sum, int (T::*fun)() const) const
   {
     if (this->size == 0) return NULL;
     
@@ -406,7 +406,7 @@ public:
   }
   
   
-  int Count(int (T::*fun)() const)
+  int Count(int (T::*fun)() const) const
   {
     int total = 0;
     tListNode<T> * test = this->root.next;
@@ -419,7 +419,7 @@ public:
   
   
 private:  
-  template<typename V> bool FindNode(V (T::*fun)() const, V value, tListNode<T>*& node)
+  template<typename V> bool FindNode(V (T::*fun)() const, V value, tListNode<T>*& node) const
   {
     node = this->root.next;
     while (node != &(this->root)) {
@@ -431,7 +431,7 @@ private:
   }
   
 
-  template<typename V> bool FindMax(V (T::*fun)() const, tListNode<T>*& best)
+  template<typename V> bool FindMax(V (T::*fun)() const, tListNode<T>*& best) const
   {
     if (this->size == 0) return false;
     

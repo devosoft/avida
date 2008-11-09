@@ -29,6 +29,7 @@
 #include "cASCPPParameter_NativeObjectSupport.h"
 #include "cASLibrary.h"
 
+#include "cAnalyzeGenotype.h"
 #include "cAvidaConfig.h"
 #include "cDefaultRunDriver.h"
 #include "cGenotypeBatch.h"
@@ -45,6 +46,10 @@ static void setupNativeObjects()
   tASNativeObject<CLASS>::RegisterMethod(new tASNativeObjectMethodConst<CLASS, SIGNATURE>(&CLASS::METHOD), NAME);
 
   
+  tASNativeObject<cAnalyzeGenotype>::InitializeMethodRegistrar();
+  REGISTER_C_METHOD(cAnalyzeGenotype, "Name", GetName, const cString& ());
+
+  
   tASNativeObject<cAvidaConfig>::InitializeMethodRegistrar();
   REGISTER_C_METHOD(cAvidaConfig, "Get", GetAsString, cString (const cString&));
   REGISTER_C_METHOD(cAvidaConfig, "HasEntry", HasEntry, bool (const cString&));
@@ -57,9 +62,27 @@ static void setupNativeObjects()
 
   
   tASNativeObject<cGenotypeBatch>::InitializeMethodRegistrar();
-  REGISTER_S_METHOD(cGenotypeBatch, "Name", GetName, const cString& ());
+  REGISTER_C_METHOD(cGenotypeBatch, "Name", GetName, const cString& ());
+  REGISTER_S_METHOD(cGenotypeBatch, "GetSize", GetSize, int ());
   REGISTER_S_METHOD(cGenotypeBatch, "IsAligned", IsAligned, bool ());
   REGISTER_S_METHOD(cGenotypeBatch, "IsLineage", IsLineage, bool ());
+  REGISTER_S_METHOD(cGenotypeBatch, "MergeWith", MergeWith, void (cGenotypeBatch*));
+  REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeNumCPUs", FindGenotypeNumCPUs, cAnalyzeGenotype* ());
+  REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeNumCPUs", PopGenotypeNumCPUs, cAnalyzeGenotype* ());
+  REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeTotalCPUs", FindGenotypeTotalCPUs, cAnalyzeGenotype* ());
+  REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeTotalCPUs", PopGenotypeTotalCPUs, cAnalyzeGenotype* ());
+  REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeMetabolicRate", FindGenotypeMetabolicRate, cAnalyzeGenotype* ());
+  REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeMetabolicRate", PopGenotypeMetabolicRate, cAnalyzeGenotype* ());
+  REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeFitness", FindGenotypeFitness, cAnalyzeGenotype* ());
+  REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeFitness", PopGenotypeFitness, cAnalyzeGenotype* ());
+  REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeID", FindGenotypeID, cAnalyzeGenotype* (int));
+  REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeID", PopGenotypeID, cAnalyzeGenotype* (int));
+//  REGISTER_C_METHOD(cGenotypeBatch, "FindGenotypeRandom", FindGenotypeRandom, cAnalyzeGenotype* (cRandom*));
+//  REGISTER_S_METHOD(cGenotypeBatch, "PopGenotypeRandom", PopGenotypeRandom, cAnalyzeGenotype* (cRandom*));
+  REGISTER_C_METHOD(cGenotypeBatch, "FindLineage", FindLineage, cGenotypeBatch* (cAnalyzeGenotype*));
+  REGISTER_C_METHOD(cGenotypeBatch, "FindClade", FindClade, cGenotypeBatch* (cAnalyzeGenotype*));
+  REGISTER_S_METHOD(cGenotypeBatch, "RemoveClade", RemoveClade, void (cAnalyzeGenotype*));
+  
 
   tASNativeObject<cResourceHistory>::InitializeMethodRegistrar();
 

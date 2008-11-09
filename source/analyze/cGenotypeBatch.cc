@@ -31,9 +31,17 @@
 #include "tSmartArray.h"
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindGenotypeNumCPUs()
+cGenotypeBatch::~cGenotypeBatch()
 {
-  return m_list.FindMax(&cAnalyzeGenotype::GetNumCPUs);
+  tListIterator<cAnalyzeGenotype> it(m_list);
+  cAnalyzeGenotype* genotype = NULL;
+  while ((genotype = it.Next())) delete genotype;
+}
+
+
+cAnalyzeGenotype* cGenotypeBatch::FindGenotypeNumCPUs() const
+{
+  return new cAnalyzeGenotype(*(m_list.FindMax(&cAnalyzeGenotype::GetNumCPUs)));
 }
 
 cAnalyzeGenotype* cGenotypeBatch::PopGenotypeNumCPUs()
@@ -43,9 +51,9 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeNumCPUs()
 }
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindGenotypeTotalCPUs()
+cAnalyzeGenotype* cGenotypeBatch::FindGenotypeTotalCPUs() const
 {
-  return m_list.FindMax(&cAnalyzeGenotype::GetTotalCPUs);
+  return new cAnalyzeGenotype(*(m_list.FindMax(&cAnalyzeGenotype::GetTotalCPUs)));
 }
 
 cAnalyzeGenotype* cGenotypeBatch::PopGenotypeTotalCPUs()
@@ -55,9 +63,9 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeTotalCPUs()
 }
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindGenotypeMetabolicRate()
+cAnalyzeGenotype* cGenotypeBatch::FindGenotypeMetabolicRate() const
 {
-  return m_list.FindMax(&cAnalyzeGenotype::GetMerit);
+  return new cAnalyzeGenotype(*(m_list.FindMax(&cAnalyzeGenotype::GetMerit)));
 }
 
 cAnalyzeGenotype* cGenotypeBatch::PopGenotypeMetabolicRate()
@@ -67,9 +75,9 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeMetabolicRate()
 }
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindGenotypeFitness()
+cAnalyzeGenotype* cGenotypeBatch::FindGenotypeFitness() const
 {
-  return m_list.FindMax(&cAnalyzeGenotype::GetFitness);
+  return new cAnalyzeGenotype(*(m_list.FindMax(&cAnalyzeGenotype::GetFitness)));
 }
 
 cAnalyzeGenotype* cGenotypeBatch::PopGenotypeFitness()
@@ -79,9 +87,9 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeFitness()
 }
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindGenotypeID(int gid)
+cAnalyzeGenotype* cGenotypeBatch::FindGenotypeID(int gid) const
 {
-  return m_list.FindValue(&cAnalyzeGenotype::GetID, gid);
+  return new cAnalyzeGenotype(*(m_list.FindValue(&cAnalyzeGenotype::GetID, gid)));
 }
 
 cAnalyzeGenotype* cGenotypeBatch::PopGenotypeID(int gid)
@@ -91,11 +99,11 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeID(int gid)
 }
 
 
-cAnalyzeGenotype* cGenotypeBatch::FindGenotypeRandom(cRandom& rng)
+cAnalyzeGenotype* cGenotypeBatch::FindGenotypeRandom(cRandom& rng) const
 {
   if (m_list.GetSize() == 0) return NULL;
   
-  return m_list.GetPos(rng.GetUInt(m_list.GetSize()));
+  return new cAnalyzeGenotype(*(m_list.GetPos(rng.GetUInt(m_list.GetSize()))));
 }
 
 cAnalyzeGenotype* cGenotypeBatch::PopGenotypeRandom(cRandom& rng)
@@ -107,20 +115,21 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeRandom(cRandom& rng)
 }
 
 
-cGenotypeBatch* cGenotypeBatch::FindLineage(cAnalyzeGenotype* end_genotype)
+cGenotypeBatch* cGenotypeBatch::FindLineage(cAnalyzeGenotype* end_genotype) const
 {
   if ((end_genotype)) return FindLineage(end_genotype->GetID());
   
   return new cGenotypeBatch;
 }
 
-cGenotypeBatch* cGenotypeBatch::FindLineage(int end_genotype_id)
+cGenotypeBatch* cGenotypeBatch::FindLineage(int end_genotype_id) const
 {
   cGenotypeBatch* batch = new cGenotypeBatch;
   cAnalyzeGenotype* found_gen = FindGenotypeID(end_genotype_id);
   
   while ((found_gen)) {
     batch->m_list.Push(found_gen);
+    batch->m_lineage_head = found_gen;
     found_gen = FindGenotypeID(found_gen->GetParentID());
   }
   
@@ -130,14 +139,14 @@ cGenotypeBatch* cGenotypeBatch::FindLineage(int end_genotype_id)
 }
 
 
-cGenotypeBatch* cGenotypeBatch::FindClade(cAnalyzeGenotype* start_genotype)
+cGenotypeBatch* cGenotypeBatch::FindClade(cAnalyzeGenotype* start_genotype) const
 {
   if ((start_genotype)) return FindClade(start_genotype->GetID());
   
   return new cGenotypeBatch;
 }
 
-cGenotypeBatch* cGenotypeBatch::FindClade(int start_genotype_id)
+cGenotypeBatch* cGenotypeBatch::FindClade(int start_genotype_id) const
 {
   cGenotypeBatch* batch = new cGenotypeBatch;
   tList<cAnalyzeGenotype> list(m_list);
@@ -146,6 +155,7 @@ cGenotypeBatch* cGenotypeBatch::FindClade(int start_genotype_id)
  
   if ((found_gen)) {
     batch->m_list.Push(found_gen);
+    batch->m_clade_head = found_gen;
     scan_list.Push(found_gen->GetID());
   }
   
@@ -158,7 +168,7 @@ cGenotypeBatch* cGenotypeBatch::FindClade(int start_genotype_id)
       if (found_gen->GetParentID() == parent_id) {
         it.Remove();
         scan_list.Push(found_gen->GetID());
-        batch->m_list.Push(found_gen);
+        batch->m_list.Push(new cAnalyzeGenotype(*found_gen));
       }
     }
   }
@@ -174,6 +184,37 @@ void cGenotypeBatch::RemoveClade(cAnalyzeGenotype* start_genotype)
 
 void cGenotypeBatch::RemoveClade(int start_genotype_id)
 {
-  // @TODO - implement remove clade
+  if (m_is_lineage) {
+    tListIterator<cAnalyzeGenotype> it(m_list);
+    cAnalyzeGenotype* genotype = NULL;
+    
+    while ((genotype = it.Next())) {
+      if (genotype->GetID() == start_genotype_id) {
+        it.Remove();
+        delete genotype;
+        break;
+      }
+    }
+    while ((genotype = it.Next())) { it.Remove(); delete genotype; }
+  } else {
+    tSmartArray<int> scan_list;
+    cAnalyzeGenotype* found_gen = PopGenotypeID(start_genotype_id);
+    
+    if ((found_gen)) scan_list.Push(found_gen->GetID());
+    
+    while (scan_list.GetSize()) {
+      int parent_id = scan_list.Pop();
+      
+      // Seach for all of the offspring of this genotype...
+      tListIterator<cAnalyzeGenotype> it(m_list);
+      while ((found_gen = it.Next()) != NULL) {
+        if (found_gen->GetParentID() == parent_id) {
+          it.Remove();
+          scan_list.Push(found_gen->GetID());
+          delete found_gen;
+        }
+      }
+    }
+  }
 }
 

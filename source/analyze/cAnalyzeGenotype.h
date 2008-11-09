@@ -297,9 +297,9 @@ public:
 
   // Accessors...
   const cGenome & GetGenome() const { return genome; }
-  const cString & GetName() const { return name; }
-  const cInstSet & GetInstructionSet() const { return m_inst_set; }
-  const cString & GetAlignedSequence() const { return aligned_sequence; }
+  const cString& GetName() const { return name; }
+  const cInstSet& GetInstructionSet() const { return m_inst_set; }
+  const cString& GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }
   cString GetAlignmentExecutedFlags() const;
   const tArray<int>& GetInstExecutedCounts() const { return inst_executed_counts; }
