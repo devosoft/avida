@@ -465,8 +465,10 @@ private:
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
   bool FindModifiedResource(int& start_index, int& end_index);
+  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
   bool Inst_Collect(cAvidaContext& ctx);
-  //! Execute the following instruction if all resources are above their min level.
+  bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
+  bool Inst_CollectNoInternalAdd(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
   bool Inst_IfResources(cAvidaContext& ctx);
 
   void DoDonate(cOrganism * to_org);

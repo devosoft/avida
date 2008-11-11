@@ -111,6 +111,12 @@ and by preceding this whole mess with an ampersand ('&amp;') we get the pointer
 to the location in memory that the method resides.
 </p>
 <p>
+<b>IMPORTANT:</b> If your instruction interacts with the population, resources,
+or IO, make sure to flag the instruction for speculative stall by adding a third
+ argument, <i>nInstFlags::STALL</i>.  For an example, look at the 'h-divide'
+ instruction.
+</p>
+<p>
 Compile again, and you should have your instruction ready for use.
 </p>
 

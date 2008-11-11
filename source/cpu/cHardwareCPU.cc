@@ -211,6 +211,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
     tInstLibEntry<tMethod>("if-resources", &cHardwareCPU::Inst_IfResources, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect", &cHardwareCPU::Inst_Collect, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("collect-no-env-remove", &cHardwareCPU::Inst_CollectNoEnvRemove),
+    tInstLibEntry<tMethod>("collect-no-internal-add", &cHardwareCPU::Inst_CollectNoInternalAdd, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -3303,11 +3305,6 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
  * Mostly ripped from Jeff B.'s DoSense(); meant to be a helper function for
  * DoSense, Inst_Collect, and anything else that wants to use this type of
  * resource NOP-specification.
- * 
- * This relies on the assumption that m_world.GetNumResources() DOES NOT CHANGE
- * during the course of a run.  I know of no way that it can, since this is the
- * number of resources *defined* but I will check before this code goes to any
- * public branch.
  *
  * returns true if successful, false otherwise
  *
@@ -3319,7 +3316,7 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
 
 bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
 {
-  int num_resources = m_world->GetNumResources();
+  int num_resources = organism->GetOrgInterface().GetResources().GetSize();
   
   //if there are no resources, translation cannot be successful; return false
   if (num_resources <= 0)
@@ -3353,7 +3350,13 @@ bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
   return true;
 }
 
-bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
+/* Helper function to reduce code redundancy in the Inst_Collect variations.
+ * Does all the heavy lifting of external resource collection.  Use env_remove
+ * to specify whether the collected resources should be removed from the
+ * environment, and internal_add to specify whether the collected resources
+ * should be added to the organism's internal resources.
+ */
+bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add)
 {
   int start_bin, end_bin, bin_used;
 
@@ -3376,7 +3379,7 @@ bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
         bin_used = end_bin;
         break;
       case 3:
-        bin_used = -1; // not really, of course!  This just functions as a flag
+        bin_used = -1; // not really, of course!  This just functions as a flag to say we are using a range.
         break;
       default:
         bin_used = ctx.GetRandom().GetInt(start_bin, end_bin + 1);  // arbitrary choice of the default.  Shouldn't matter, since it shouldn't be needed...
@@ -3391,13 +3394,20 @@ bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
   double total = organism->GetRBinsTotal();
   double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
 
-	// Add resources to rbins if this does not put the organism over the maximum total allowed
+	/* Remove resource(s) from environment if env_remove is set;
+   * add resource(s) to internal resource bins if internal_add is set
+   * (and this would not fill the bin beyond max).
+   */
   if(bin_used >= 0)
   {
     res_change[bin_used] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
-    if(max < 0 || (total + -1 * res_change[bin_used]) <= max)
+    
+    if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
     {organism->AddToRBin(bin_used, -1 * res_change[bin_used]);}
     else
+    {res_change[bin_used] = 0.0;}
+    
+    if(!env_remove)
     {res_change[bin_used] = 0.0;}
   }
   else
@@ -3406,10 +3416,13 @@ bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
     for(int i = start_bin; i <= end_bin; i++)
     {
       res_change[i] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get() / num_bins);
-      if(max < 0 || (total + -1 * res_change[i]) <= max)
+      if(internal_add && (max < 0 || (total + -1 * res_change[i]) <= max))
       {organism->AddToRBin(i, -1 * res_change[i]);}
       else
       {res_change[i] = 0.0;}   
+      
+      if(!env_remove)
+      {res_change[i] = 0.0;}
     }
   }
   
@@ -3417,6 +3430,29 @@ bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
   organism->GetOrgInterface().UpdateResources(res_change);
   
   return true;
+}
+
+/* Takes resource(s) from the environment and adds them to the internal resource
+ * bins of the organism.
+ */
+bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
+{
+  return DoCollect(ctx, true, true);
+}
+
+/* Like Inst_Collect, but the collected resources are not removed from the
+ * environment.
+ */
+bool cHardwareCPU::Inst_CollectNoEnvRemove(cAvidaContext& ctx)
+{
+  return DoCollect(ctx, false, true);
+}
+
+/* Like Inst_Collect, but the collected resources are not added to the organism.
+ */
+bool cHardwareCPU::Inst_CollectNoInternalAdd(cAvidaContext& ctx)
+{
+  return DoCollect(ctx, true, false);
 }
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
