@@ -89,6 +89,8 @@ public:
   inline cAnalyzeGenotype* FindOrganismRandom(cRandom* rng) const { return FindOrganismRandom(*rng); }
   inline cAnalyzeGenotype* PopOrganismRandom(cRandom* rng) { return PopOrganismRandom(*rng); }
   
+  cAnalyzeGenotype* FindLastCommonAncestor();
+  
   cGenotypeBatch* FindLineage(cAnalyzeGenotype* end_genotype) const;
   cGenotypeBatch* FindLineage(int end_genotype_id) const;
 

@@ -145,6 +145,50 @@ cAnalyzeGenotype* cGenotypeBatch::PopOrganismRandom(cRandom& rng)
 }
 
 
+cAnalyzeGenotype* cGenotypeBatch::FindLastCommonAncestor()
+{
+  // Assumes that the batch contains a population and all of its common ancestors
+  // Finds the last common ancestor among all current organisms that are still alive,
+  // i.e. have an update_died of -1.
+  
+  // Connect each genotype to its parent.
+  tListIterator<cAnalyzeGenotype> it(m_list);
+  tListIterator<cAnalyzeGenotype> parent_it(m_list);
+  cAnalyzeGenotype* on_child = NULL;
+  while ((on_child = it.Next())) {
+    parent_it.Reset();
+    cAnalyzeGenotype* on_parent = NULL;
+    while ((on_parent = parent_it.Next())) {
+      if (on_child->GetParentID() == on_parent->GetID()) {
+        on_child->LinkParent(on_parent);
+        break;
+      }
+    }
+  }
+    
+  // Find the genotype without a parent (there should only be one)
+  it.Reset();
+  cAnalyzeGenotype* lca = NULL;
+  cAnalyzeGenotype* test_lca = NULL;
+  while ((test_lca = it.Next())) {
+    if (!test_lca->GetParent()) {
+      // It is an error to get two genotypes without a parent
+      if (lca) return NULL;
+      lca = test_lca;
+    }
+  }
+  
+  // Follow the children from this parent until we find a genotype with more than one child.
+  // This is the last common ancestor.
+  while (lca->GetChildList().GetSize() == 1) {
+    lca = lca->GetChildList().Pop();
+  }
+  
+  return new cAnalyzeGenotype(*lca);
+}
+
+
+
 cGenotypeBatch* cGenotypeBatch::FindLineage(cAnalyzeGenotype* end_genotype) const
 {
   if ((end_genotype)) return FindLineage(end_genotype->GetID());
