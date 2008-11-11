@@ -115,6 +115,36 @@ cAnalyzeGenotype* cGenotypeBatch::PopGenotypeRandom(cRandom& rng)
 }
 
 
+cAnalyzeGenotype* cGenotypeBatch::FindOrganismRandom(cRandom& rng) const
+{
+  if (m_list.GetSize() == 0) return NULL;
+  
+  int num_orgs = m_list.Count(&cAnalyzeGenotype::GetNumCPUs);
+  while (true) {
+    cAnalyzeGenotype* genotype = m_list.FindSummedValue(rng.GetUInt(num_orgs), &cAnalyzeGenotype::GetNumCPUs);
+    if (genotype->GetNumCPUs()) return new cAnalyzeGenotype(*genotype);
+  }
+  
+  return NULL;
+}
+
+cAnalyzeGenotype* cGenotypeBatch::PopOrganismRandom(cRandom& rng)
+{
+  if (m_list.GetSize() == 0) return NULL;
+
+  int num_orgs = m_list.Count(&cAnalyzeGenotype::GetNumCPUs);
+  while (true) {
+    cAnalyzeGenotype* genotype = m_list.FindSummedValue(rng.GetUInt(num_orgs), &cAnalyzeGenotype::GetNumCPUs);
+    if (genotype->GetNumCPUs()) {
+      genotype->SetNumCPUs(genotype->GetNumCPUs() - 1);
+      return new cAnalyzeGenotype(*genotype);
+    }
+  }
+  
+  return m_list.PopPos(rng.GetUInt(m_list.GetSize()));
+}
+
+
 cGenotypeBatch* cGenotypeBatch::FindLineage(cAnalyzeGenotype* end_genotype) const
 {
   if ((end_genotype)) return FindLineage(end_genotype->GetID());
@@ -216,5 +246,36 @@ void cGenotypeBatch::RemoveClade(int start_genotype_id)
       }
     }
   }
+}
+
+
+void cGenotypeBatch::PruneExtinctGenotypes()
+{
+  cAnalyzeGenotype* genotype = NULL;
+  tListIterator<cAnalyzeGenotype> it(m_list);
+  
+  while ((genotype = it.Next())) {
+    if (genotype->GetNumCPUs() == 0) {
+      it.Remove();
+      delete genotype;
+    }
+  }
+  
+  clearFlags();
+}
+
+void cGenotypeBatch::PruneNonViableGenotypes()
+{
+  cAnalyzeGenotype* genotype = NULL;
+  tListIterator<cAnalyzeGenotype> it(m_list);
+  
+  while ((genotype = it.Next())) {
+    if (!genotype->GetViable()) {
+      it.Remove();
+      delete genotype;
+    }
+  }
+  
+  clearFlags();
 }
 

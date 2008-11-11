@@ -84,6 +84,11 @@ public:
   inline cAnalyzeGenotype* FindGenotypeRandom(cRandom* rng) const { return FindGenotypeRandom(*rng); }
   inline cAnalyzeGenotype* PopGenotypeRandom(cRandom* rng) { return PopGenotypeRandom(*rng); }
   
+  cAnalyzeGenotype* FindOrganismRandom(cRandom& rng) const;
+  cAnalyzeGenotype* PopOrganismRandom(cRandom& rng);
+  inline cAnalyzeGenotype* FindOrganismRandom(cRandom* rng) const { return FindOrganismRandom(*rng); }
+  inline cAnalyzeGenotype* PopOrganismRandom(cRandom* rng) { return PopOrganismRandom(*rng); }
+  
   cGenotypeBatch* FindLineage(cAnalyzeGenotype* end_genotype) const;
   cGenotypeBatch* FindLineage(int end_genotype_id) const;
 
@@ -92,10 +97,13 @@ public:
   
   void RemoveClade(cAnalyzeGenotype* start_genotype);
   void RemoveClade(int start_genotype_id);
+  
+  void PruneExtinctGenotypes();
+  void PruneNonViableGenotypes();
 
   
 private:
-  inline void clearFlags() { m_is_lineage = false; m_is_aligned = false; }
+  inline void clearFlags() { m_lineage_head = NULL; m_is_lineage = false; m_clade_head = NULL; m_is_aligned = false; }
 };
 
 
