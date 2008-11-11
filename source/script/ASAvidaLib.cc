@@ -82,6 +82,7 @@ static void setupNativeObjects()
 //  REGISTER_C_METHOD(cGenotypeBatch, "FindOrganismRandom", FindOrganismRandom, cAnalyzeGenotype* (cRandom*));
 //  REGISTER_S_METHOD(cGenotypeBatch, "PopOrganismRandom", PopOrganismRandom, cAnalyzeGenotype* (cRandom*));
   REGISTER_C_METHOD(cGenotypeBatch, "FindLineage", FindLineage, cGenotypeBatch* (cAnalyzeGenotype*));
+  REGISTER_C_METHOD(cGenotypeBatch, "FindSexLineage", FindSexLineage, cGenotypeBatch* (cAnalyzeGenotype*, bool));
   REGISTER_C_METHOD(cGenotypeBatch, "FindClade", FindClade, cGenotypeBatch* (cAnalyzeGenotype*));
   REGISTER_S_METHOD(cGenotypeBatch, "RemoveClade", RemoveClade, void (cAnalyzeGenotype*));
   REGISTER_S_METHOD(cGenotypeBatch, "PruneExtinctGenotypes", PruneExtinctGenotypes, void ());

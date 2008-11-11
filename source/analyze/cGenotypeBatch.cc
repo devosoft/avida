@@ -162,8 +162,108 @@ cGenotypeBatch* cGenotypeBatch::FindLineage(int end_genotype_id) const
     batch->m_lineage_head = found_gen;
     found_gen = FindGenotypeID(found_gen->GetParentID());
   }
+    
+  return batch;
+}
+
+
+cGenotypeBatch* cGenotypeBatch::FindSexLineage(cAnalyzeGenotype* end_genotype, bool use_genome_size) const
+{
+  if ((end_genotype)) return FindSexLineage(end_genotype->GetID(), use_genome_size);
   
-  batch->m_is_lineage = true;
+  return new cGenotypeBatch;
+}
+
+cGenotypeBatch* cGenotypeBatch::FindSexLineage(int end_genotype_id, bool use_genome_size) const
+{
+  cGenotypeBatch* batch = new cGenotypeBatch;
+  cAnalyzeGenotype* found_gen = FindGenotypeID(end_genotype_id);
+  
+  if (!found_gen) return batch;
+
+  
+  cAnalyzeGenotype* gen_p1 = NULL;
+  cAnalyzeGenotype* gen_p2 = NULL;
+  
+  // Construct a list of genotypes found...  
+  tListPlus<cAnalyzeGenotype> src_list(m_list);
+  tListPlus<cAnalyzeGenotype>& trgt_list = batch->m_list;
+  trgt_list.Push(found_gen);
+  int next_id1 = found_gen->GetParentID();
+  int next_id2 = found_gen->GetParent2ID();
+  
+  bool found_p1 = true;
+  bool found_p2 = true;
+  
+  while (found_p1 && found_p2) {
+    found_p1 = false;
+    found_p2 = false;
+    
+    // Look for the secondary parent first....
+    tListIterator<cAnalyzeGenotype> src_it(src_list);
+    while ((gen_p2 = src_it.Next())) {
+      if (gen_p2->GetID() == next_id2) {
+        src_it.Remove();
+        trgt_list.Push(new cAnalyzeGenotype(*gen_p2));
+        found_p2 = true;
+        break;
+      }
+    }
+    
+    // Secondary parent may have already been found
+    if (!found_p2) {
+      tListIterator<cAnalyzeGenotype> trgt_it(trgt_list);
+      while ((gen_p2 = trgt_it.Next())) {
+        if (gen_p2->GetID() == next_id2) {
+          found_p2 = true;
+          break;
+        }
+      }
+    }
+    
+    // If the secondary parent still has not been found, proceed no further
+    if (!found_p2) break;
+    
+    // Next, look for the primary parent...
+    src_it.Reset();
+    while ((gen_p1 = src_it.Next())) {
+      if (gen_p1->GetID() == next_id1) {
+        src_it.Remove();
+        trgt_list.Push(new cAnalyzeGenotype(*gen_p1));
+        
+        // if finding lineages by parental length, may have to swap 
+        if (use_genome_size && gen_p1->GetLength() < gen_p2->GetLength()) { 
+          cAnalyzeGenotype* temp = gen_p1; 
+          gen_p1 = gen_p2; 
+          gen_p2 = temp; 
+        }
+        next_id1 = gen_p1->GetParentID();
+        next_id2 = gen_p2->GetParent2ID();
+        found_p1 = true;
+        break;
+      }
+    }
+    
+    // If the primary parent was not found, it may already have been placed in the target list as a secondary parent... 
+    if (!found_p1) {
+      tListIterator<cAnalyzeGenotype> trgt_it(trgt_list);
+      while ((gen_p1 = trgt_it.Next()) != NULL) {
+        if (gen_p1->GetID() == next_id1) {
+          // Don't move to found list, since its already there, but update to the next ids.
+          // if finding lineages by parental length, may have to swap
+          if (use_genome_size && gen_p1->GetLength() < gen_p2->GetLength()) {
+            cAnalyzeGenotype* temp = gen_p1;
+            gen_p1 = gen_p2;
+            gen_p2 = temp;
+          }
+          next_id1 = gen_p1->GetParentID();
+          next_id2 = gen_p1->GetParent2ID();
+          found_p1 = true;
+          break;
+        }
+      }
+    }    
+  }
   
   return batch;
 }

@@ -92,6 +92,9 @@ public:
   cGenotypeBatch* FindLineage(cAnalyzeGenotype* end_genotype) const;
   cGenotypeBatch* FindLineage(int end_genotype_id) const;
 
+  cGenotypeBatch* FindSexLineage(cAnalyzeGenotype* end_genotype, bool use_genome_size = false) const;
+  cGenotypeBatch* FindSexLineage(int end_genotype_id, bool use_genome_size = false) const;
+
   cGenotypeBatch* FindClade(cAnalyzeGenotype* start_genotype) const;
   cGenotypeBatch* FindClade(int start_genotype_id) const;
   
