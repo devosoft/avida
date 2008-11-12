@@ -246,11 +246,10 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
   resource_initial[id] = initial;
   if (in_geometry == nGeometry::GLOBAL) {
     resource_count[id] = initial;
-    spatial_resource_count[id].RateAll(0);
   } else {
     resource_count[id] = 0;
-    spatial_resource_count[id].RateAll
-                              (initial/spatial_resource_count[id].GetSize());
+    spatial_resource_count[id].SetInitial(initial / spatial_resource_count[id].GetSize());
+    spatial_resource_count[id].RateAll(spatial_resource_count[id].GetInitial());
   }
   spatial_resource_count[id].StateAll();  
   decay_rate[id] = decay;
@@ -492,26 +491,17 @@ void cResourceCount::DoUpdates() const
   }
 }
 
-void cResourceCount::ReinitializeResources(double additional_resource){
-  cSpatialResCount src;
-  double c_curr_amount;
-  double c_initial_amount;
-  double c_new_amount;
-
+void cResourceCount::ReinitializeResources(double additional_resource)
+{
   for(int i = 0; i < resource_name.GetSize(); i++) {
-    Set(i, resource_initial[i]+additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
+    Set(i, resource_initial[i] + additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
 
     // Additionally, set any initial values given by the CELL command
-    src = GetSpatialResource(i);
-    for(int j = 0; j < src.GetSize(); j++) {
-      c_initial_amount = src.Element(j).GetInitial();
-      if(c_initial_amount > 0) {
-        c_curr_amount = spatial_resource_count[i].GetAmount(j);
-        c_new_amount = c_curr_amount + c_initial_amount + additional_resource;
-        spatial_resource_count[i].SetCellAmount(j, c_new_amount);
-      }
+    spatial_resource_count[i].ResetResourceCounts();
+    if (additional_resource != 0.0) {
+      spatial_resource_count[i].RateAll(additional_resource);
+      spatial_resource_count[i].StateAll();
     }
 
   } //End going through the resources
-
-} //End ReinitializeResources()
+}

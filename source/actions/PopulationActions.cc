@@ -1692,6 +1692,7 @@ class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompet
     }
 };
 
+
 /* This Action will check if any demes have met the critera to be replicated
    and do so.  There are several bases this can be checked on:
 

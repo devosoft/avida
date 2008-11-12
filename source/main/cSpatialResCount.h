@@ -43,7 +43,9 @@ class cSpatialResCount
 {
 private:
   tArray<cSpatialCountElem> grid;
-  double xdiffuse, xgravity, ydiffuse, ygravity;
+  double m_initial;
+  double xdiffuse, ydiffuse;
+  double xgravity, ygravity;
   int    inflowX1, inflowX2, inflowY1, inflowY2;
   int    outflowX1, outflowX2, outflowY1, outflowY2;
   int    geometry;
@@ -62,10 +64,10 @@ public:
   void SetPointers();
   void CheckRanges();
   void SetCellList(tArray<cCellResource> *in_cell_list_ptr);
-  int GetSize() { return grid.GetSize(); }
-  int GetX() { return world_x; }
-  int GetY() { return world_y; }
-  int GetCellListSize() { return cell_list_ptr->GetSize(); }
+  int GetSize() const { return grid.GetSize(); }
+  int GetX() const { return world_x; }
+  int GetY() const { return world_y; }
+  int GetCellListSize() const { return cell_list_ptr->GetSize(); }
   cSpatialCountElem& Element(int x) { return grid[x]; }
   void Rate(int x, double ratein) const;
   void Rate(int x, int y, double ratein) const;
@@ -82,6 +84,8 @@ public:
   void Sink(double percent) const;
   void CellOutflow() const;
   void SetCellAmount(int cell_id, double res);
+  void SetInitial(double initial) { m_initial = initial; }
+  double GetInitial() const { return m_initial; }
   void SetGeometry(int in_geometry) { geometry = in_geometry; }
   void SetXdiffuse(double in_xdiffuse) { xdiffuse = in_xdiffuse; }
   void SetXgravity(double in_xgravity) { xgravity = in_xgravity; }
@@ -95,6 +99,8 @@ public:
   void SetOutflowX2(int in_outflowX2) { outflowX2 = in_outflowX2; }
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
+  
+  void ResetResourceCounts();
 };
 
 

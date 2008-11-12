@@ -37,6 +37,7 @@ cSpatialCountElem::cSpatialCountElem(double initamount)
 {
   amount = initamount;
   delta = 0.0;
+  initial = initamount;
   elempt.Resize(MAXFLOWPTS);
   xdist.Resize(MAXFLOWPTS);
   ydist.Resize(MAXFLOWPTS);
@@ -49,6 +50,7 @@ cSpatialCountElem::cSpatialCountElem()
 {
   amount = 0.0;
   delta = 0.0;
+  initial = 0.0;
   elempt.Resize(MAXFLOWPTS);
   xdist.Resize(MAXFLOWPTS);
   ydist.Resize(MAXFLOWPTS);

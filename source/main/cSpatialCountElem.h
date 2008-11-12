@@ -54,6 +54,8 @@ public:
                          int, int, double);
   void SetInitial(double init) { initial = init; }
   double GetInitial() { return initial; }
+  
+  inline void ResetResourceCount(double res_initial) { amount = res_initial + initial; }
 };
 
 

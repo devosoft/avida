@@ -2803,7 +2803,7 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
   int update = m_world->GetStats().GetUpdate();
   
   for(int i = 0; i < m_world->GetPopulation().GetNumDemes(); i++) {
-    cString tmpfilename = cStringUtil::Stringf( "deme_%07i_spacial_energy.m", i);  // moved here for easy movie making
+    cString tmpfilename = cStringUtil::Stringf( "deme_%07i_spatial_energy.m", i);  // moved here for easy movie making
     cDataFile& df = m_world->GetDataFile(tmpfilename);
     cString UpdateStr = cStringUtil::Stringf( "deme_%07i_energy_%07i = [ ...", i, update );
     df.WriteRaw(UpdateStr);
@@ -2827,15 +2827,15 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
 }
 
 // Write spatial data to a file that can easily be read into Matlab
-void cPopulation::PrintDemeSpatialResData( cResourceCount res, const int i, const int deme_id) const {
+void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id) const {
   const char* tmpResName = res.GetResName(i);
-  cString tmpfilename = cStringUtil::Stringf( "deme_spacial_resource_%s.m", tmpResName );
+  cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
   cDataFile& df = m_world->GetDataFile(tmpfilename);
   cString UpdateStr = cStringUtil::Stringf( "deme_%07i_%s_%07i = [ ...", deme_id, static_cast<const char*>(res.GetResName(i)), m_world->GetStats().GetUpdate() );
   
   df.WriteRaw(UpdateStr);
   
-  cSpatialResCount sp_res = res.GetSpatialResource(i);
+  const cSpatialResCount& sp_res = res.GetSpatialResource(i);
   int gridsize = sp_res.GetSize();
   int xsize = m_world->GetConfig().WORLD_X.Get();
   
@@ -2849,7 +2849,7 @@ void cPopulation::PrintDemeSpatialResData( cResourceCount res, const int i, cons
 // Write spatial energy data to a file that can easily be read into Matlab
 void cPopulation::PrintDemeSpatialSleepData() const {
   int cellID = 0;
-  cString tmpfilename = "deme_spacial_sleep.m";
+  cString tmpfilename = "deme_spatial_sleep.m";
   cDataFile& df = m_world->GetDataFile(tmpfilename);
   int update = m_world->GetStats().GetUpdate();
   

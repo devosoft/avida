@@ -238,7 +238,7 @@ public:
   void PrintDemeMutationRate();
   void PrintDemeReceiver();
   void PrintDemeResource();
-  void PrintDemeSpatialResData(cResourceCount res, const int i, const int deme_id) const;
+  void PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id) const;
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
