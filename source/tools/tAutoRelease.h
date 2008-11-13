@@ -46,7 +46,8 @@ public:
   inline bool IsNull() const { return !(m_value); }
   
   //! Access the contents
-  inline T& operator*() { return *m_value; }
+  inline T* operator->() const { return m_value; }
+  inline T& operator*() const { return *m_value; }
   
   //! Take control of the contents
   inline T* Release() { T* value = m_value; m_value = NULL; return value; }

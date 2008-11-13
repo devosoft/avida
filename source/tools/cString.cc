@@ -34,24 +34,24 @@ using namespace std;
 
 // ** class cStringData **
 // -- Constructors --
-cString::cStringData::cStringData(int in_size) : m_refs(1), m_size(in_size), m_data(new char[m_size + 1])
+cString::cStringData::cStringData(int in_size) : m_size(in_size), m_data(new char[m_size + 1])
 {
   assert(m_data != NULL); // Memory Allocation Error: Out of Memory
   m_data[0] = '\0';
   m_data[m_size] = '\0';
 }
 
-cString::cStringData::cStringData(int in_size, const char* in) : m_refs(1), m_size(in_size), m_data(new char[m_size + 1])
+cString::cStringData::cStringData(int in_size, const char* in) : m_size(in_size), m_data(new char[m_size + 1])
 {
   assert(m_data != NULL); // Memory Allocation Error: Out of Memory
   for (short i = 0; i < m_size; i++) m_data[i] = in[i];
   m_data[m_size] = '\0';
 }
 
-cString::cStringData::cStringData(const cStringData& in) : m_refs(1), m_size(in.GetSize()), m_data(new char[m_size + 1])
+cString::cStringData::cStringData(const cStringData& in) : cRCObject(*this), m_size(in.GetSize()), m_data(new char[m_size + 1])
 {
   assert(m_data != NULL); // Memory Allocation Error: Out of Memory
-  for (short i = 0; i < m_size; i++)  m_data[i] = in[i];
+  for (int i = 0; i < m_size; i++)  m_data[i] = in[i];
   m_data[m_size] = '\0';
 }
 
@@ -605,8 +605,8 @@ cString & cString::AppendStr(const int in_size, const char * in)
   assert (in_size == 0 || in != NULL); // NULL input string
   
   // Allocate a new string
-  cStringData * new_value = new cStringData(GetSize()+in_size);
-  assert (new_value != NULL);       // Memory Allocation Error: Out of Memory
+  tRCPtr<cStringData> new_value(new cStringData(GetSize() + in_size));
+  assert (new_value);       // Memory Allocation Error: Out of Memory
   for(int i=0; i<GetSize(); ++i ) { // Copy self up to pos
     (*new_value)[i] = this->operator[](i);
   }
@@ -614,7 +614,7 @@ cString & cString::AppendStr(const int in_size, const char * in)
     assert(in[i] != '\0');          // Input String Contains '\\0' or too Short
     (*new_value)[i+GetSize()] = in[i];
   }
-  TakeValue(new_value);             // Reassing data to new data
+  value = new_value;             // Reassign data to new data
   return(*this);
 }
 
@@ -637,8 +637,8 @@ cString & cString::InsertStr(const int in_size, const char * in,
   
   // Allocate a new string
   const int new_size = GetSize() + in_size - excise;
-  cStringData * new_value = new cStringData(new_size);
-  assert (new_value != NULL);  // Memory Allocation Error: Out of Memory
+  tRCPtr<cStringData> new_value(new cStringData(new_size));
+  assert (new_value);  // Memory Allocation Error: Out of Memory
   
   for(int i = 0; i < pos; ++i ){             // Copy self up to pos
     (*new_value)[i] = this->operator[](i);
@@ -651,8 +651,8 @@ cString & cString::InsertStr(const int in_size, const char * in,
     (*new_value)[i+in_size-excise] = this->operator[](i);
   }
   
-  TakeValue(new_value);                      // Reassing data to new data
-  return(*this);
+  value = new_value;                      // Reassign data to new data
+  return *this;
 }
 
 
@@ -671,8 +671,8 @@ cString cString::EjectStr(int pos, int excise )
   
   // Allocate a new string
   const int new_size = GetSize() - excise;
-  cStringData * new_value = new cStringData(new_size);
-  assert (new_value != NULL);  // Memory Allocation Error: Out of Memory
+  tRCPtr<cStringData> new_value(new cStringData(new_size));
+  assert (new_value);  // Memory Allocation Error: Out of Memory
   
   for(int i = 0; i < pos; i++){             // Copy self up to pos
     (*new_value)[i] = this->operator[](i);
@@ -681,7 +681,7 @@ cString cString::EjectStr(int pos, int excise )
     (*new_value)[i-excise] = this->operator[](i);
   }
   
-  TakeValue(new_value);                      // Reassing data to new data
+  value = new_value;                      // Reassign data to new data
   return out_string;
 }
 
