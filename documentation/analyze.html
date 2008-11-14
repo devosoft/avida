@@ -6,7 +6,7 @@
 <body>
 
 <div class="revision">
-Revised 2006-09-03 DMB
+Revised 2007-07-01 CAO
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -370,7 +370,7 @@ save information generated in analyze mode.
   format indicates the layout of columns in the file.  If the filename
   specified ends in <kbd>.html</kbd>, html formatting will be used instead of
   plain text.  For the format, see the section on
-  <a href="#OUTPUT_FORMATS">Output Formats</a> below.
+  <a href="#GENOTYPE_STATS">Genotype Statistics</a> below.
 </dd>
 <dt><strong>
   DETAIL_TIMELINE [<span class="cmdargopt">file='detail_timeline.dat'</span>] 
@@ -573,13 +573,14 @@ specified in the environment configuration file.
 
 
 <p>&nbsp;</p>
-<h2><a name="OUTPUT_FORMATS">Output Formats</a></h2>
+<h2><a name="GENOTYPE_STATS">Genotype Statistics</a></h2>
 
 <p>
-Several commands (such as DETAIL and MAP) require format parameters
-to specify what genotypic features should be output.  Before the
-such commands are used, other collection functions may need to be
-run.
+    Avida analyze mode recognizes several keywords that correspond to information about genotypes.
+    Several commands (such as DETAIL and MAP) require the use of these as format parameters
+    to specify what genotypic features should be output.  Others (such as FILTER) use them to identify
+    specific genotypes that possess certain qualities.  Before these commands are used, other
+    processing functions may need to be run.
 </p>
 <p>
 Allowable formats after a normal load (assuming these values were available
@@ -590,17 +591,21 @@ from the input file to be loaded in) are:
 <tr>
   <td width="33%"><strong>id</strong> (Genome ID)</td>
   <td width="33%"><strong>parent_id</strong> (Parent ID)</td>
-  <td width="33%"><strong>num_cpus</strong> (Number of CPUs)</td>
+  <td width="33%"><strong>parent2_id</strong> (Second Parent ID in sexual genotypes)</td>
 </tr>
 <tr>
+  <td width="33%"><strong>num_cpus</strong> (Number of CPUs)</td>
   <td><strong>total_cpus</strong> (Total CPUs Ever)</td>
   <td><strong>length</strong> (Genome Length)</td>
-  <td><strong>update_born</strong> (Update Born)</td>
 </tr>
 <tr>
+  <td><strong>update_born</strong> (Update Born)</td>
   <td><strong>update_dead</strong> (Update Dead)</td>
   <td><strong>depth</strong> (Tree Depth)</td>
+</tr>
+<tr>
   <td><strong>sequence</strong> (Genome Sequence)</td>
+  <td><strong>task_list</strong> (List of all tasks performed)</td>
 </tr>
 </table>
 </div>
@@ -625,6 +630,12 @@ After a RECALCULATE (or RECALC), these additional formats become available:
   <td><strong>efficiency</strong> (Replication Efficiency)</td>
   <td><strong>fitness</strong> (Fitness)</td>
   <td><strong>div_type</strong> (Divide type used; 1 is default)</td>
+</tr>
+<tr>
+  <td><strong>mate_id</strong> (Mate Selection ID Number 
+  	(sexual genotypes))</td>
+  <td><strong>executed_flags</strong> (Executed Flags)</td>
+	<td><strong>task_order</strong> (Task Performance Order)</td>
 </tr>
 <tr>
   <td><strong>task.n</strong> (# of times task number n is done)</td>
@@ -652,14 +663,17 @@ additional formats:
 <table width="95%">
 <tr>
   <td width="50%"><strong>parent_dist</strong> (Parent Distance)</td>
+  <td width="50%"><strong>ancestor_dist</strong> (Ancestor Distance)</td>
+</tr>
+<tr>
   <td width="50%"><strong>comp_merit_ratio</strong>, (Computational Merit Ratio with parent)</td>
-</tr>
-<tr>
   <td><strong>efficiency_ratio</strong> (Replication Efficiency Ratio with parent)</td>
-  <td><strong>fitness_ratio</strong> (Fitness Ratio with parent)</td>
 </tr>
 <tr>
+  <td><strong>fitness_ratio</strong> (Fitness Ratio with parent)</td>
   <td><strong>parent_muts</strong> (Mutations from Parent)</td>
+</tr>
+<tr>
   <td><strong>html.sequence</strong> (Genome Sequence in Color; html format)</td>
 </tr>
 </table>

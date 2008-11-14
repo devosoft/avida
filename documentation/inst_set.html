@@ -5,9 +5,7 @@
 </head>
 <body>
 
-<div class="revision">
-Revised 2006-09-05 DMB
-</div>
+<div class="revision">Revised 2007-03-20 BEB</div>
 
 <p><a href="index.html">Return to the Index</a></p>
 <hr />
@@ -22,7 +20,7 @@ that instruction set, each of which is followed by a series of numbers that
 define how that instruction should be used.  The exact format is as follows:
 </p>
 <p>
-<code>inst-name redundancy cost ft_cost prob_fail</code>
+<code>inst-name redundancy cost ft_cost energy_cost prob_fail</code>
 </p>
 
 
@@ -50,13 +48,17 @@ define how that instruction should be used.  The exact format is as follows:
   executed.  This is used to lower the diversity of instructions 
   inside an organism.  The default value here is 0.
 </dd>
-<dt><strong>prob_fail</strong></dt>
+<dt><strong>energy_cost</strong></dt>
+<dd>
+  The number of Energy units required to execute this instruction. Zero is the default if this value is not specified.
+</dd>
+<dt><strong>prob_fail</strong>	
 <dd>
   The probability of this instruction not working properly.  If an
   instruction fails it will simply do nothing, but still cost the
   CPU cycles to execute.  The defailt probability of failure is zero.
 </dd>
-</dl>
+		</dl>
 
 <p>
 Normally only the first column of numbers is used in the file.
@@ -300,6 +302,10 @@ the organism will turn one cell in the appropriate direction (left or right).
 If a label is present, it will keep turning in that direction until either
 it has made a full 360 degree turn, or else it finds an organism that
 possesses the complement label.
+
+<h3><code>rotate-label</code></h3>
+
+Rotates the calling organism to the direction specified by the label that follows.  If no label is present the organisms rotates to face south.
 
 <h3><code>div-asex</code></h3>
 Same as h-divide (added for symetry with the divide-sex). 
