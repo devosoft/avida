@@ -4111,7 +4111,7 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   }
   
   //Note: could get fancier about fraction of energy to send
-  DoEnergyDonatePercent(receiver, m_world->GetConfig().MERIT_GIVEN.Get());
+  DoEnergyDonatePercent(receiver, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
   organism->GetPhenotype().IncDonates();
   GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
   
