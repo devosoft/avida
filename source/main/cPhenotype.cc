@@ -161,6 +161,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_child_germline_propensity = in_phen.last_child_germline_propensity;
   total_energy_donated     = in_phen.total_energy_donated;
   total_energy_received    = in_phen.total_energy_received;
+  total_energy_applied     = in_phen.total_energy_applied;
 
   // 4. Records from this organisms life...
   num_divides              = in_phen.num_divides;      
@@ -222,11 +223,13 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   parent_sex              = in_phen.parent_sex;      
   parent_cross_num        = in_phen.parent_cross_num; 
   
+  is_energy_requestor     = in_phen.is_energy_requestor;
   is_energy_donor         = in_phen.is_energy_donor;
   is_energy_receiver      = in_phen.is_energy_receiver;
   has_used_donated_energy = in_phen.has_used_donated_energy;
   total_energy_donated    = in_phen.total_energy_donated;
   total_energy_received   = in_phen.total_energy_received;
+  total_energy_applied    = in_phen.total_energy_applied;
 
   // 6. Child information...
   copy_true               = in_phen.copy_true;       
@@ -417,11 +420,13 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   to_die = false;
   to_delete = false;
 
+  is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;
   has_used_donated_energy = false;
   total_energy_donated = 0.0;
-  total_energy_received = 0.0;  
+  total_energy_received = 0.0; 
+  total_energy_applied = 0.0;
 
   // Setup child info...
   copy_true          = false;
@@ -570,11 +575,13 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   to_die = false;
   to_delete = false;
   
+  is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;
   has_used_donated_energy = false;
   total_energy_donated = 0.0;
   total_energy_received = 0.0;
+  total_energy_applied = 0.0;
 
   // Setup child info...
   copy_true         = false;
@@ -1028,6 +1035,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   parent_cross_num    = clone_phenotype.cross_num;
   to_die = false;
   to_delete = false;
+  is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;
   has_used_donated_energy = false;
@@ -1542,6 +1550,7 @@ void cPhenotype::NewTrial()
   is_receiver_threshgb = false;
   is_receiver_quanta_threshgb_last = is_receiver_quanta_threshgb;
   is_receiver_quanta_threshgb = false;
+  is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;
   (void) is_modifier;

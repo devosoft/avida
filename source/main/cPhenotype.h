@@ -192,6 +192,7 @@ private:
   bool is_donor_threshgb_last;// Did this org's parent threshgbg_donate? 
   bool is_donor_quanta_threshgb;  // Has this organism quanta_threshgb_donated (true green beard)? 
   bool is_donor_quanta_threshgb_last;// Did this org's parent quanta_threshgbg_donate? 
+  bool is_energy_requestor; // Has this organism requested energy?
   bool is_energy_donor; // Has this organism donated energy?
   bool is_energy_receiver;  // Has this organism received an energy donation?
   bool has_used_donated_energy; // Has the organism actively used an energy donation?
@@ -389,6 +390,7 @@ public:
   bool IsDonorThreshGbLast() const { assert(initialized == true); return is_donor_threshgb_last; }
   bool IsDonorQuantaThreshGb() const { assert(initialized == true); return is_donor_quanta_threshgb; }
   bool IsDonorQuantaThreshGbLast() const { assert(initialized == true); return is_donor_quanta_threshgb_last; }
+  bool IsEnergyRequestor() const { assert(initialized == true); return is_energy_requestor; }
   bool IsEnergyDonor() const { assert(initialized == true); return is_energy_donor; }
   bool IsEnergyReceiver() const { assert(initialized == true); return is_energy_receiver; }
   bool HasUsedEnergyDonation() const { assert(initialized == true); return has_used_donated_energy; }
@@ -447,6 +449,9 @@ public:
   void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
+  double GetAmountEnergyDonated() { return total_energy_donated; }
+  double GetAmountEnergyReceived() { return total_energy_received; }
+  double GetAmountEnergyApplied() { return total_energy_applied; }
   
   void SetCurRBinsAvail(const tArray<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const tArray<double>& in_total) { cur_rbins_total = in_total; }
@@ -472,6 +477,7 @@ public:
   void SetIsReceiverTrueGb() { SetIsReceiver(); is_receiver_truegb = true; } 
   void SetIsReceiverThreshGb() { SetIsReceiver(); is_receiver_threshgb = true; } 
   void SetIsReceiverQuantaThreshGb() { SetIsReceiver(); is_receiver_quanta_threshgb = true; } 
+  void SetIsEnergyRequestor() { is_energy_requestor = true; }
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
   void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }

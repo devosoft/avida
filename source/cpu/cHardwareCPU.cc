@@ -4106,14 +4106,14 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   cOrganism* receiver = msg->GetSender();
 
   // If the requestor no longer exists, should the donor still lose energy???
-  if( (receiver == NULL) && (receiver->IsDead()) ) {
+  if( (receiver == NULL) || (receiver->IsDead()) ) {
     return false;
   }
   
-  //Note: could get fancier about fraction of energy to send
   DoEnergyDonatePercent(receiver, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
   organism->GetPhenotype().IncDonates();
   GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
+  GetOrganism()->GetPhenotype().SetIsEnergyDonor();
   
   return true;
   
@@ -4134,6 +4134,7 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
   
   organism->BroadcastMessage(ctx, msg);
   GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyRequestsMade();
+  GetOrganism()->GetPhenotype().SetIsEnergyRequestor();
   
   return true;
   

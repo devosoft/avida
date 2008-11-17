@@ -36,6 +36,7 @@
 #include "cStats.h"
 #include "cWorld.h"
 #include "cOrganism.h"
+#include "cEnvironment.h"
 
 #include <map>
 #include <set>
@@ -1630,6 +1631,49 @@ protected:
 };
 
 
+/*! Compete demes based on the number of times they've completed the echo task.
+    Fitness is 2^#echos
+ */
+class cActionCompeteDemesEcho : public cAbstractCompeteDemes {
+public:
+  //! Constructor.
+  cActionCompeteDemesEcho(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) { }
+  
+	//! Destructor.
+	virtual ~cActionCompeteDemesEcho() { }
+	
+  //! Description of this event.
+  static const cString GetDescription() { return "No Arguments"; }
+	
+  virtual double Fitness(const cDeme& deme) {
+    int num_echos = 0;
+    const int num_task = m_world->GetEnvironment().GetNumTasks();
+
+    for(int i=0; i < deme.GetSize(); i++) {
+      int cur_cell = deme.GetCellID(i);
+      
+      // Since we only count echos from living organisms, this also creates a pressure
+      // for all of the organisms to stay alive
+      if (m_world->GetPopulation().GetCell(cur_cell).IsOccupied() == false) continue;
+      
+      cPhenotype & phenotype = m_world->GetPopulation().GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      
+      for (int j = 0; j < num_task; j++) {        
+        if( (strcasecmp(m_world->GetEnvironment().GetTask(j).GetName(), "echo") == 0) &&
+           (phenotype.GetLastTaskCount()[j] > 0) ) {
+          cout << "BDCDEBUG: got a match!!!!" <<endl;
+          num_echos++;
+        }
+      }
+      
+    }
+    
+    return (double) (2^num_echos);
+  } 
+  
+}; //End cActionCompeteDemesEcho
+
+
 /*! Compete demes based on the ability of their constituent organisms
  to synchronize their flashes to a common period, and yet distribute themselves
  throughout phase-space (phase desynchronization).
@@ -2393,6 +2437,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
 	action_lib->Register<cActionSynchronization>("Synchronization");
 	action_lib->Register<cActionDesynchronization>("Desynchronization");
+  action_lib->Register<cActionCompeteDemesEcho>("CompeteDemesEcho");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");

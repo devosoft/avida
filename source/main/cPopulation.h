@@ -229,6 +229,7 @@ public:
   // Deme-related stats methods
   void PrintDemeAllStats();
   void PrintDemeTestamentStats(const cString& filename);
+  void PrintDemeEnergySharingStats();
   void PrintDemeDonor();
   void PrintDemeFitness();
   void PrintDemeGestationTime();

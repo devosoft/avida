@@ -2559,6 +2559,50 @@ void cPopulation::PrintDemeTestamentStats(const cString& filename) {
   stats.SumEnergyTestamentToNeighborOrganisms().Clear();
 }
 
+
+// Print some stats about the energy sharing behavior of each deme
+void cPopulation::PrintDemeEnergySharingStats() {
+  //TODO: BDC: move this from covering the population to per deme or deme average
+  const int num_demes = deme_array.GetSize();
+  cStats& stats = m_world->GetStats();
+  cDataFile & df_donor = m_world->GetDataFile("deme_energy_sharing.dat");
+  df_donor.WriteComment("Average energy donation statistics for each deme in population");
+  df_donor.WriteTimeStamp();
+  df_donor.Write(stats.GetUpdate(), "update");
+  
+  int num_requestors = 0;
+  int num_donors = 0;
+  int num_receivers = 0;
+  double amount_donated = 0.0;
+  double amount_received = 0.0;
+  double amount_applied = 0.0;  
+  
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    const cDeme & cur_deme = deme_array[deme_id];
+    
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) continue;
+      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+      if(phenotype.IsEnergyRequestor()) num_requestors++;
+      if(phenotype.IsEnergyDonor()) num_donors++;
+      if(phenotype.IsEnergyReceiver()) num_receivers++;
+      amount_donated += phenotype.GetAmountEnergyDonated();
+      amount_received += phenotype.GetAmountEnergyReceived();
+      amount_applied += phenotype.GetAmountEnergyApplied();
+    }
+  }
+  df_donor.Write(num_requestors/num_demes, "Average number of organisms that have requested energy");
+  df_donor.Write(num_donors/num_demes, "Average umber of organisms that have donated energy");
+  df_donor.Write(num_receivers/num_demes, "Average number of organisms that have received energy");
+  df_donor.Write(amount_donated/num_demes, "Average total amount of energy donated");
+  df_donor.Write(amount_received/num_demes, "Average total amount of energy received");
+  df_donor.Write(amount_applied/num_demes, "Average total amount of donated energy applied");
+  df_donor.Endl();  
+  
+}
+
+
 void cPopulation::PrintDemeDonor() {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
