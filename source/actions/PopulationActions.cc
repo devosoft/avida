@@ -1661,8 +1661,7 @@ public:
       for (int j = 0; j < num_task; j++) {        
         if( (strcasecmp(m_world->GetEnvironment().GetTask(j).GetName(), "echo") == 0) &&
            (phenotype.GetLastTaskCount()[j] > 0) ) {
-          cout << "BDCDEBUG: got a match!!!!" <<endl;
-          num_echos++;
+          num_echos += phenotype.GetLastTaskCount()[j];
         }
       }
       
