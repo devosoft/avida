@@ -846,6 +846,7 @@ public:
   void PrintDemeOrgTasksData(const cString& filename);
   void PrintDemeOrgTasksExeData(const cString& filename);
   void PrintDemeOrgReactionData(const cString& filename);
+  void PrintDemeCurrentTaskExeData(const cString& filename);
   void PrintPerDemeGenPerFounderData(const cString& filename);
 
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }

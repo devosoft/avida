@@ -1526,6 +1526,42 @@ private:
 	int _replace; //!< Number of cell datas that will be replaced on successful consensus.
 };
 
+/*!	This class competes demes based on the total number of times that a
+ *	given task has been completed by an organism in the deme since the
+ *  deme was initialized. This action takes one integer parameter representing
+ *	the number of the task that is to be used for competition. If no parameter 
+ *	is supplied, the class uses the first task defined in the environment file
+ *	to compete the demes.
+ */
+class cActionCompeteDemesByTaskCount : public cAbstractCompeteDemes {
+private:
+	int _task_num;	// the task num to use when calculating fitness,
+						// defaults to 0 (the first task)
+public:
+	cActionCompeteDemesByTaskCount(cWorld* world, const cString& args) 
+			: cAbstractCompeteDemes(world, args) {
+		if (args.GetSize() > 0) {
+			cString largs(args);
+			_task_num = largs.PopWord().AsInt();
+			assert(_task_num >= 0);
+			assert(_task_num < m_world->GetEnvironment().GetNumTasks());
+		} else {
+			_task_num = 0;
+		}
+	}
+	~cActionCompeteDemesByTaskCount() {}
+
+	static const cString GetDescription() { 
+		return "Competes demes according to the number of times a given task has been completed within that deme"; 
+	}
+
+	virtual double Fitness(const cDeme& deme) {
+		double fitness = deme.GetCurTaskExeCount()[_task_num]^2;///deme.GetInjectedCount());
+    if (fitness == 0.0) fitness = 0.1;
+    return fitness;
+	}
+};
+
 
 /*! Send an artificial flash to a single organism in each deme in the population
  at a specified period.
@@ -1630,47 +1666,6 @@ protected:
 	}
 };
 
-
-/*! Compete demes based on the number of times they've completed the echo task.
-    Fitness is 2^#echos
- */
-class cActionCompeteDemesEcho : public cAbstractCompeteDemes {
-public:
-  //! Constructor.
-  cActionCompeteDemesEcho(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) { }
-  
-	//! Destructor.
-	virtual ~cActionCompeteDemesEcho() { }
-	
-  //! Description of this event.
-  static const cString GetDescription() { return "No Arguments"; }
-	
-  virtual double Fitness(const cDeme& deme) {
-    int num_echos = 0;
-    const int num_task = m_world->GetEnvironment().GetNumTasks();
-
-    for(int i=0; i < deme.GetSize(); i++) {
-      int cur_cell = deme.GetCellID(i);
-      
-      // Since we only count echos from living organisms, this also creates a pressure
-      // for all of the organisms to stay alive
-      if (m_world->GetPopulation().GetCell(cur_cell).IsOccupied() == false) continue;
-      
-      cPhenotype & phenotype = m_world->GetPopulation().GetCell(cur_cell).GetOrganism()->GetPhenotype();
-      
-      for (int j = 0; j < num_task; j++) {        
-        if( (strcasecmp(m_world->GetEnvironment().GetTask(j).GetName(), "echo") == 0) &&
-           (phenotype.GetLastTaskCount()[j] > 0) ) {
-          num_echos += phenotype.GetLastTaskCount()[j];
-        }
-      }
-      
-    }
-    
-    return (double) (2^num_echos);
-  } 
-  
-}; //End cActionCompeteDemesEcho
 
 
 /*! Compete demes based on the ability of their constituent organisms
@@ -2436,7 +2431,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
 	action_lib->Register<cActionSynchronization>("Synchronization");
 	action_lib->Register<cActionDesynchronization>("Desynchronization");
-  action_lib->Register<cActionCompeteDemesEcho>("CompeteDemesEcho");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");
@@ -2449,6 +2443,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionConnectCells>("ConnectCells");
   action_lib->Register<cActionDisconnectCells>("DisconnectCells");
   action_lib->Register<cActionSwapCells>("SwapCells");
+
+  action_lib->Register<cActionCompeteDemesByTaskCount>("CompeteDemesByTaskCount");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");

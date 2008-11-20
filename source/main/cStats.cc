@@ -1750,6 +1750,27 @@ void cStats::PrintDemeOrgTasksExeData(const cString& filename){
   df.Endl();
 }
 
+void cStats::PrintDemeCurrentTaskExeData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida deme current task exe data");
+	df.WriteTimeStamp();
+	df.WriteComment("First column gives update number, next columns give the number");
+	df.WriteComment("of times a given task has been executed in a given deme by");
+	df.WriteComment("some organism in that deme.");
+
+	const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+	df.Write(m_update, "Update");
+	for (int deme_num=0; deme_num < m_world->GetPopulation().GetNumDemes(); ++deme_num) {
+		cDeme& deme = m_world->GetPopulation().GetDeme(deme_num);
+		for (int task_num=0; task_num < num_tasks; task_num++) {
+			df.Write(	deme.GetCurTaskExeCount()[task_num], 
+						cStringUtil::Stringf("%i.", deme_num)+task_names[task_num]);
+		}
+	}
+
+	df.Endl();
+}
+
 void cStats::PrintDemeOrgReactionData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme org reactions data");
