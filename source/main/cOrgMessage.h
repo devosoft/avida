@@ -27,7 +27,6 @@
 
 class cOrganism;
 
-
 /*! This class encapsulates two unsigned integers that are sent as a "message"
 between connected organisms within an Avida population.  The label and data fields
 are these two integers, while the sending and receiving organisms are represented by
@@ -39,14 +38,11 @@ class cOrgMessage
 {
 public:
   //! Constructor that takes a pointer to the sending organism.
-  cOrgMessage(cOrganism* sender) : m_pSender(sender), m_pReceiver(0), m_data(0), m_label(0) 
-  {
-    assert(m_pSender);
-  }
+  cOrgMessage(cOrganism* sender);
   
   cOrganism* GetSender() const { return m_pSender; }
   cOrganism* GetReceiver() const { return m_pReceiver; }
-  void SetReceiver(cOrganism* recvr) { m_pReceiver = recvr; }
+  void SetReceiver(cOrganism* recvr);
   
   unsigned int GetData() const { return m_data; }
   unsigned int GetLabel() const { return m_label; }
@@ -54,9 +50,16 @@ public:
   void SetData(unsigned int data) { m_data = data; }
   void SetLabel(unsigned int label) { m_label = label; }
 
+  int GetSenderCellID() const { return m_senderCellID; }
+  int GetSenderOrgID() const { return m_senderOrgID; }
+
+  int GetReceiverCellID() const { return m_receiverCellID; }
+  int GetReceiverOrgID() const { return m_receiverOrgID; }
+
 private:
   //! Default constructor is only used internally, to support message predicates.
-  cOrgMessage() : m_pSender(0), m_pReceiver(0), m_data(0), m_label(0)
+  cOrgMessage() : m_pSender(0), m_pReceiver(0), m_data(0), m_label(0), m_senderOrgID(0),
+	  m_senderCellID(0), m_receiverOrgID(0), m_receiverCellID(0)
   {
   }
   
@@ -64,6 +67,18 @@ private:
   cOrganism* m_pReceiver;
   unsigned int m_data;
   unsigned int m_label;
+
+  //! ID of the organism that sent this message
+  int m_senderOrgID;
+
+  //! ID of the cell that the sending organism occupied when this message was sent
+  int m_senderCellID;
+
+  //! ID of the organism that received this message
+  int m_receiverOrgID;
+
+  //! ID of the cell that the receiving organism occupied when this message was sent
+  int m_receiverCellID;
 };
 
 

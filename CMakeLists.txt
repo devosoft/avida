@@ -234,6 +234,7 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cMxCodeArray.cc
   ${MAIN_DIR}/cOrganism.cc
+  ${MAIN_DIR}/cOrgMessage.cc
   ${MAIN_DIR}/cPhenotype.cc
   ${MAIN_DIR}/cPhenPlastGenotype.cc
   ${MAIN_DIR}/cPlasticPhenotype.cc

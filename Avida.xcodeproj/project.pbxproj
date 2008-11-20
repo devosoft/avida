@@ -213,6 +213,7 @@
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
 		B516AF840C91E2D400023D53 /* cDemeCellEvent.cc in Sources */ = {isa = PBXBuildFile; fileRef = B516AF790C91E24600023D53 /* cDemeCellEvent.cc */; };
+		D7FB16D60ED62684002E939E /* cOrgMessage.cc in Sources */ = {isa = PBXBuildFile; fileRef = D7FB16D50ED62684002E939E /* cOrgMessage.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -871,6 +872,7 @@
 		B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenPlastGenotype.cc; sourceTree = "<group>"; };
 		B516AF790C91E24600023D53 /* cDemeCellEvent.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = cDemeCellEvent.cc; path = source/main/cDemeCellEvent.cc; sourceTree = SOURCE_ROOT; };
 		B516AF7A0C91E24600023D53 /* cDemeCellEvent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cDemeCellEvent.h; path = source/main/cDemeCellEvent.h; sourceTree = SOURCE_ROOT; };
+		D7FB16D50ED62684002E939E /* cOrgMessage.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrgMessage.cc; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = avida.cc; sourceTree = "<group>"; };
 		DCC31547076253A4008F7A48 /* cCycleCheck.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCycleCheck.cc; sourceTree = "<group>"; };
@@ -1444,6 +1446,7 @@
 				709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */,
 				709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */,
 				B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */,
+				D7FB16D50ED62684002E939E /* cOrgMessage.cc */,
 				B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */,
 				B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */,
 				B4FA25820C5EB6510086D4B5 /* cPlasticPhenotype.h */,
@@ -2070,6 +2073,7 @@
 				709A1EEC0EB6C42D006090AF /* cResourceHistory.cc in Sources */,
 				70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */,
 				70211A5E0ECBD531004A293A /* cRCObject.cc in Sources */,
+				D7FB16D60ED62684002E939E /* cOrgMessage.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
