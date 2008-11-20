@@ -196,6 +196,7 @@ private:
   bool is_energy_donor; // Has this organism donated energy?
   bool is_energy_receiver;  // Has this organism received an energy donation?
   bool has_used_donated_energy; // Has the organism actively used an energy donation?
+  bool has_open_energy_request; // Does the organism have an energy request that hasn't been answered?
   int num_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
   int num_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
   int num_quanta_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
@@ -394,6 +395,7 @@ public:
   bool IsEnergyDonor() const { assert(initialized == true); return is_energy_donor; }
   bool IsEnergyReceiver() const { assert(initialized == true); return is_energy_receiver; }
   bool HasUsedEnergyDonation() const { assert(initialized == true); return has_used_donated_energy; }
+  bool HasOpenEnergyRequest() const { assert(initialized == true); return has_open_energy_request; }
   bool IsReceiver() const { assert(initialized == true); return is_receiver; }
   bool IsReceiverLast() const { assert(initialized == true); return is_receiver_last; }
   bool IsReceiverRand() const { assert(initialized == true); return is_receiver_rand; }
@@ -481,6 +483,8 @@ public:
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
   void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
+  void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
+  void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }
   
   void SetCurBonus(double _bonus) { cur_bonus = _bonus; }
   void SetCurBonusInstCount(int _num_bonus_inst) {bonus_instruction_count = _num_bonus_inst;}

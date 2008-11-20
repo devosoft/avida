@@ -227,6 +227,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   is_energy_donor         = in_phen.is_energy_donor;
   is_energy_receiver      = in_phen.is_energy_receiver;
   has_used_donated_energy = in_phen.has_used_donated_energy;
+  has_open_energy_request = in_phen.has_open_energy_request;
   total_energy_donated    = in_phen.total_energy_donated;
   total_energy_received   = in_phen.total_energy_received;
   total_energy_applied    = in_phen.total_energy_applied;
@@ -424,6 +425,7 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   is_energy_donor = false;
   is_energy_receiver = false;
   has_used_donated_energy = false;
+  has_open_energy_request = false;
   total_energy_donated = 0.0;
   total_energy_received = 0.0; 
   total_energy_applied = 0.0;
@@ -579,6 +581,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_energy_donor = false;
   is_energy_receiver = false;
   has_used_donated_energy = false;
+  has_open_energy_request = false;
   total_energy_donated = 0.0;
   total_energy_received = 0.0;
   total_energy_applied = 0.0;
@@ -1039,6 +1042,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_energy_donor = false;
   is_energy_receiver = false;
   has_used_donated_energy = false;
+  has_open_energy_request = false;
 
   // Setup child info...
   copy_true          = false;

@@ -225,8 +225,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing),
     tInstLibEntry<tMethod>("receive-donated-energy", &cHardwareCPU::Inst_ReceiveDonatedEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-energy", &cHardwareCPU::Inst_DonateEnergy, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced", &cHardwareCPU::Inst_DonateEnergyFaced, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-to-most-needy", &cHardwareCPU::Inst_RotateToMostNeedy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("request-energy", &cHardwareCPU::Inst_RequestEnergy, nInstFlag::STALL),
-    
+    tInstLibEntry<tMethod>("request-energy-on", &cHardwareCPU::Inst_RequestEnergyFlagOn, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("request-energy-off", &cHardwareCPU::Inst_RequestEnergyFlagOff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0, nInstFlag::STALL),
 
@@ -375,9 +378,14 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Energy level detection
 	  tInstLibEntry<tMethod>("if-energy-low", &cHardwareCPU::Inst_IfEnergyLow, nInstFlag::STALL),
 	  tInstLibEntry<tMethod>("if-energy-not-low", &cHardwareCPU::Inst_IfEnergyNotLow, nInstFlag::STALL),
+	  tInstLibEntry<tMethod>("if-faced-energy-low", &cHardwareCPU::Inst_IfFacedEnergyLow, nInstFlag::STALL),
+	  tInstLibEntry<tMethod>("if-faced-energy-not-low", &cHardwareCPU::Inst_IfFacedEnergyNotLow, nInstFlag::STALL),
   	tInstLibEntry<tMethod>("if-energy-high", &cHardwareCPU::Inst_IfEnergyHigh, nInstFlag::STALL),
   	tInstLibEntry<tMethod>("if-energy-not-high", &cHardwareCPU::Inst_IfEnergyNotHigh, nInstFlag::STALL),
-  	tInstLibEntry<tMethod>("if-energy-med", &cHardwareCPU::Inst_IfEnergyMed, nInstFlag::STALL),	  
+  	tInstLibEntry<tMethod>("if-faced-energy-high", &cHardwareCPU::Inst_IfFacedEnergyHigh, nInstFlag::STALL),
+  	tInstLibEntry<tMethod>("if-faced-energy-not-high", &cHardwareCPU::Inst_IfFacedEnergyNotHigh, nInstFlag::STALL),
+  	tInstLibEntry<tMethod>("if-energy-med", &cHardwareCPU::Inst_IfEnergyMed, nInstFlag::STALL),	 
+  	tInstLibEntry<tMethod>("if-faced-energy-med", &cHardwareCPU::Inst_IfFacedEnergyMed, nInstFlag::STALL),	  
 	  tInstLibEntry<tMethod>("if-energy-in-buffer", &cHardwareCPU::Inst_IfEnergyInBuffer, nInstFlag::STALL),
 	  tInstLibEntry<tMethod>("if-energy-not-in-buffer", &cHardwareCPU::Inst_IfEnergyNotInBuffer, nInstFlag::STALL),
 	  
@@ -4112,12 +4120,80 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   
   DoEnergyDonatePercent(receiver, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
   organism->GetPhenotype().IncDonates();
-  GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
-  GetOrganism()->GetPhenotype().SetIsEnergyDonor();
+  organism->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
+  organism->GetPhenotype().SetIsEnergyDonor();
   
   return true;
   
 } //End Inst_DonateEnergy()
+
+
+//Donate a fraction of organism's energy to faced organism.
+bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext& ctx)
+{
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+
+  cOrganism * neighbor = organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_PCT.Get() == 1) )
+    {
+      DoEnergyDonatePercent(neighbor, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
+      organism->GetPhenotype().IncDonates();
+      organism->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
+      organism->GetPhenotype().SetIsEnergyDonor();
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced()
+
+
+// Rotate to face the most energy needy neighbor
+bool cHardwareCPU::Inst_RotateToMostNeedy(cAvidaContext& ctx)
+{
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cPopulation& pop = m_world->GetPopulation();
+  cPopulationCell& mycell = pop.GetCell(organism->GetCellID());
+  
+  double min_energy = m_world->GetConfig().ENERGY_CAP.Get();
+  int num_rotations = 0;
+  cOrganism *neighbor;
+  double neighbor_energy;
+
+  // Look at the energy levels of neighbors
+  for(int i = 0; i < mycell.ConnectionList().GetSize(); i++) {
+    mycell.ConnectionList().CircNext();
+    neighbor = organism->GetNeighbor();
+        
+    // If this neighbor is alive and has a request for energy or we're allowing pushing of energy, look at it
+    if ( (neighbor != NULL) && (!neighbor->IsDead()) &&
+         ((neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1)) ) {
+      neighbor_energy = neighbor->GetPhenotype().GetStoredEnergy();
+      
+      if( (neighbor_energy > 0) && (neighbor_energy < min_energy) ) {
+        num_rotations = i;
+      }
+    }
+    
+  }
+    
+  //Rotate to face the most needy neighbor
+  for(int i = 0; i < num_rotations; i++) {
+    mycell.ConnectionList().CircNext();
+  }
+  
+  return true;
+  
+} //End Inst_RotateToMostNeedy()
 
 
 //Broadcast a request for energy
@@ -4133,12 +4209,38 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
   // Could set the data field of the message to be the multiplier
   
   organism->BroadcastMessage(ctx, msg);
-  GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyRequestsMade();
-  GetOrganism()->GetPhenotype().SetIsEnergyRequestor();
+  organism->GetOrgInterface().GetDeme()->IncEnergyRequestsMade();
+  organism->GetPhenotype().SetIsEnergyRequestor();
   
   return true;
   
 } //End Inst_RequestEnergy()
+
+
+//Set the request energy flag
+bool cHardwareCPU::Inst_RequestEnergyFlagOn(cAvidaContext& ctx)
+{
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  organism->GetOrgInterface().GetDeme()->IncEnergyRequestsMade();
+  organism->GetPhenotype().SetIsEnergyRequestor();
+  organism->GetPhenotype().SetHasOpenEnergyRequest();
+  return true;
+} //End Inst_RequestEnergyFlagOn()
+
+
+//Set the request energy flag to off
+bool cHardwareCPU::Inst_RequestEnergyFlagOff(cAvidaContext& ctx)
+{
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  organism->GetPhenotype().ClearHasOpenEnergyRequest();
+  return true;
+} //End Inst_RequestEnergyFlagOff()
 
 
 bool cHardwareCPU::Inst_SearchF(cAvidaContext& ctx)
@@ -4941,6 +5043,50 @@ bool cHardwareCPU::Inst_IfEnergyNotLow(cAvidaContext& ctx) {
 } //End Inst_IfEnergyNotLow()
 
 
+/* Execute the next instruction if the faced organism's energy level is low */
+bool cHardwareCPU::Inst_IfFacedEnergyLow(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Get faced neighbor
+  cOrganism * neighbor = organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ){
+    // Note: these instructions should probably also make sure the returned energy level is not -1.
+    if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_LOW) {
+      IP().Advance();
+    }    
+  }  
+	
+  return true;
+	
+} //End Inst_IfFacedEnergyLow()
+
+
+/* Execute the next instruction if the faced organism's energy level is low */
+bool cHardwareCPU::Inst_IfFacedEnergyNotLow(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Get faced neighbor
+  cOrganism * neighbor = organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    // Note: these instructions should probably also make sure the returned energy level is not -1.
+    if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_LOW) {
+      IP().Advance();
+    }    
+  }  
+	
+  return true;
+	
+} //End Inst_IfFacedEnergyNotLow()
+
+
 /* Execute the next instruction if the organism's energy level is high */
 bool cHardwareCPU::Inst_IfEnergyHigh(cAvidaContext& ctx) {
 	
@@ -4973,6 +5119,50 @@ bool cHardwareCPU::Inst_IfEnergyNotHigh(cAvidaContext& ctx) {
 } //End Inst_IfEnergyNotHigh()
 
 
+/* Execute the next instruction if the faced organism's energy level is high */
+bool cHardwareCPU::Inst_IfFacedEnergyHigh(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Get faced neighbor
+  cOrganism * neighbor = organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    // Note: these instructions should probably also make sure the returned energy level is not -1.
+    if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_HIGH) {
+      IP().Advance();
+    }    
+  }  
+	
+  return true;
+	
+} //End Inst_IfFacedEnergyHigh()
+
+
+/* Execute the next instruction if the faced organism's energy level is not high */
+bool cHardwareCPU::Inst_IfFacedEnergyNotHigh(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Get faced neighbor
+  cOrganism * neighbor = organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    // Note: these instructions should probably also make sure the returned energy level is not -1.
+    if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_HIGH) {
+      IP().Advance();
+    }    
+  }  
+	
+  return true;
+	
+} //End Inst_IfFacedEnergyNotHigh()
+
+
 /* Execute the next instruction if the organism's energy level is medium */
 bool cHardwareCPU::Inst_IfEnergyMed(cAvidaContext& ctx) {
 
@@ -4987,6 +5177,28 @@ bool cHardwareCPU::Inst_IfEnergyMed(cAvidaContext& ctx) {
   return true;
 	
 } //End Inst_IfEnergyMed()
+
+
+/* Execute the next instruction if the faced organism's energy level is medium */
+bool cHardwareCPU::Inst_IfFacedEnergyMed(cAvidaContext& ctx) {
+  
+  if(organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Get faced neighbor
+  cOrganism * neighbor = organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    // Note: these instructions should probably also make sure the returned energy level is not -1.
+    if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_MEDIUM) {
+      IP().Advance();
+    }    
+  }  
+	
+  return true;
+	
+} //End Inst_IfFacedEnergyMed()
 
 
 /* Execute the next instruction if the organism has received energy */

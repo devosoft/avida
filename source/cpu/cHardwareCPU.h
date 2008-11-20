@@ -485,8 +485,11 @@ private:
   bool Inst_DonateFacing(cAvidaContext& ctx);
   bool Inst_ReceiveDonatedEnergy(cAvidaContext& ctx);
   bool Inst_DonateEnergy(cAvidaContext& ctx);
+  bool Inst_DonateEnergyFaced(cAvidaContext& ctx);
+  bool Inst_RotateToMostNeedy(cAvidaContext& ctx);
   bool Inst_RequestEnergy(cAvidaContext& ctx);
-
+  bool Inst_RequestEnergyFlagOn(cAvidaContext& ctx);
+  bool Inst_RequestEnergyFlagOff(cAvidaContext& ctx);
 
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);
@@ -590,9 +593,14 @@ private:
 
   bool Inst_IfEnergyLow(cAvidaContext& ctx);
   bool Inst_IfEnergyNotLow(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyLow(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyNotLow(cAvidaContext& ctx);
   bool Inst_IfEnergyHigh(cAvidaContext& ctx);
   bool Inst_IfEnergyNotHigh(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyHigh(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyNotHigh(cAvidaContext& ctx);
   bool Inst_IfEnergyMed(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyMed(cAvidaContext& ctx);
   bool Inst_IfEnergyInBuffer(cAvidaContext& ctx);
   bool Inst_IfEnergyNotInBuffer(cAvidaContext& ctx);
 	
