@@ -29,6 +29,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <deque>
 
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
@@ -349,7 +350,10 @@ public:
 
   // -------- Messaging support --------
 public:
-  typedef std::vector<cOrgMessage> message_list_type; //!< Container-type for cOrgMessages.
+  // Use a deque instead of vector for amortized constant-time removal
+  // from the front of the list, to efficiently support message list
+  // size caps
+  typedef std::deque<cOrgMessage> message_list_type; //!< Container-type for cOrgMessages.
   
   //! Called when this organism attempts to send a message.
   bool SendMessage(cAvidaContext& ctx, cOrgMessage& msg);
@@ -370,6 +374,7 @@ protected:
   struct cMessagingSupport
   {
     cMessagingSupport() : retrieve_index(0) { }
+
     message_list_type sent; //!< List of all messages sent by this organism.
     message_list_type received; //!< List of all messages received by this organism.
     message_list_type::size_type retrieve_index; //!< Index of next message that can be retrieved.

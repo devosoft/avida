@@ -469,6 +469,9 @@ public:
   CONFIG_ADD_GROUP(ORGANISM_MESSAGING_GROUP, "Organism Message-Based Communication");
   CONFIG_ADD_VAR(MESSAGE_TYPE, int, 0, "Messaging Style. 0=Receiver Facing, 1=Broadcast");
   CONFIG_ADD_VAR(MESSAGE_BCAST_RADIUS, int, 1, "Broadcast message radius (cells)");
+  CONFIG_ADD_VAR(ORGANISMS_REMEMBER_MESSAGES, bool, 1, "Does an organism remember all messages it has sent or received? 0=false, 1=true (default)");
+  CONFIG_ADD_VAR(MESSAGE_QUEUE_SIZE, int, -1, "Maximum number of unretrieved messages an organism can store (-1 for no limit is the default)");
+  CONFIG_ADD_VAR(MESSAGE_QUEUE_BEHAVIOR_WHEN_FULL, int, 0, "0 = Drop incoming message (default), 1 = Drop oldest unretrieved message");
 
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");

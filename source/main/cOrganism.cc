@@ -711,16 +711,19 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
 	m_interface->GetDeme()->IncMessageSent();
   // If we're able to succesfully send the message...
   if(m_interface->SendMessage(msg)) {
-    // save it...
-    m_msg->sent.push_back(msg);
+    // If we're remembering messages
+    if (m_world->GetConfig().ORGANISMS_REMEMBER_MESSAGES.Get()) {
+      // save it...
+      m_msg->sent.push_back(msg);
+      // and set the receiver-pointer of this message to NULL.  We don't want to
+      // walk this list later thinking that the receivers are still around.
+      m_msg->sent.back().SetReceiver(0);
+    }
     // stat-tracking...
     m_world->GetStats().SentMessage(msg);
 		m_interface->GetDeme()->MessageSuccessfullySent();
     // check to see if we've performed any tasks...
     DoOutput(ctx);
-    // and set the receiver-pointer of this message to NULL.  We don't want to
-    // walk this list later thinking that the receivers are still around.
-    m_msg->sent.back().SetReceiver(0);
     return true;
   }
 	m_interface->GetDeme()->messageSendFailed();
@@ -736,12 +739,14 @@ bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg)
  
   // If we're able to succesfully send the message...
   if(m_interface->BroadcastMessage(msg)) {
-    // save it...
-    m_msg->sent.push_back(msg);
-    // and set the receiver-pointer of this message to NULL.  We don't want to
-    // walk this list later thinking that the receivers are still around.
-    // Also, a broadcast message may have >1 receiver
-    m_msg->sent.back().SetReceiver(0);
+    // If we're remembering messages
+    if (m_world->GetConfig().ORGANISMS_REMEMBER_MESSAGES.Get()) {
+      // save it...
+      m_msg->sent.push_back(msg);
+      // and set the receiver-pointer of this message to NULL.  We don't want to
+      // walk this list later thinking that the receivers are still around.
+      m_msg->sent.back().SetReceiver(0);
+    }
     // stat-tracking...  NOTE: this has receiver not specified, so may be a problem for predicates
     m_world->GetStats().SentMessage(msg);
     // check to see if we've performed any tasks...NOTE: this has receiver not specified, so may be a problem for tasks that care
@@ -756,8 +761,42 @@ bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg)
 void cOrganism::ReceiveMessage(cOrgMessage& msg)
 {
   InitMessaging();
-  msg.SetReceiver(this);    
-  m_msg->received.push_back(msg);
+  msg.SetReceiver(this);
+  int msg_queue_size = m_world->GetConfig().MESSAGE_QUEUE_SIZE.Get();
+  // are message queues unbounded?
+  if (msg_queue_size >= 0) {
+    // if the message queue size is zero, the incoming message is always dropped
+    if (msg_queue_size == 0) {
+      return;
+    }
+
+    // how many messages in the queue?
+    int num_unretrieved_msgs = m_msg->received.size()-m_msg->retrieve_index;
+    if (num_unretrieved_msgs == msg_queue_size) {
+      // look up message queue behavior
+      int bhvr = m_world->GetConfig().MESSAGE_QUEUE_BEHAVIOR_WHEN_FULL.Get();
+      if (bhvr == 0) {
+        // drop incoming message
+        return;
+      } else if (bhvr == 1 ) {
+        // drop the oldest unretrieved message
+        m_msg->received.erase(m_msg->received.begin()+m_msg->retrieve_index);
+      } else {
+        assert(false);
+        cerr << "ERROR: MESSAGE_QUEUE_BEHAVIOR_WHEN_FULL was set to " << bhvr << "," << endl;
+        cerr << "legal values are:" << endl;
+        cerr << "\t0: drop incoming message if message queue is full (default)" << endl;
+        cerr << "\t1: drop oldest unretrieved message if message queue is full" << endl;
+
+        // TODO: is there a more gracefull way to fail?
+        exit(1);
+      }
+    } // end if message queue is full
+    m_msg->received.push_back(msg);
+  } else {
+    // unbounded message queues
+    m_msg->received.push_back(msg);
+  }
 }
 
 
@@ -765,11 +804,23 @@ const cOrgMessage* cOrganism::RetrieveMessage()
 {
   InitMessaging();
 
-  if(m_msg->retrieve_index < m_msg->received.size()) {
+  assert(m_msg->retrieve_index <= m_msg->received.size());
+
+  // Return null if no new messages have been received
+  if (m_msg->retrieve_index == m_msg->received.size())
+    return 0;
+
+  if (m_world->GetConfig().ORGANISMS_REMEMBER_MESSAGES.Get()) {
+    // Return the next unretrieved message and incrememt retrieve_index
     return &m_msg->received.at(m_msg->retrieve_index++);
+  } else {
+    // Not remembering messages, return the front of the message queue.
+    // Notice that retrieve_index will always equal 0 if
+    // ORGANISMS_REMEMBER_MESSAGES is false.
+    const cOrgMessage* msg = &m_msg->received.front();
+    m_msg->received.pop_front();
+    return msg;
   }
-  
-  return 0;
 }
 
 
