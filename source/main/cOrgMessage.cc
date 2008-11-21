@@ -41,7 +41,7 @@ void cOrgMessage::SetReceiver(cOrganism *recvr)
 		m_receiverOrgID = recvr->GetID();
 		m_receiverCellID = recvr->GetCellID();
 	} else {
-		m_receiverOrgID = 0;
-		m_receiverCellID = 0; // should this be -1?
+		m_receiverOrgID = -1;
+		m_receiverCellID = -1;
 	}
 }

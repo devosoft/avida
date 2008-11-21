@@ -3557,6 +3557,9 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
   double energy_given = cur_energy * frac_energy_given;
   
   //update energy store and merit of donor
+#ifdef DEBUG_ENERGY_DONATION
+  cout << "  donating " << energy_given << " energy to organism " << to_org->GetID() << endl;
+#endif
   organism->GetPhenotype().ReduceEnergy(energy_given);
   organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
   double senderMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
@@ -4085,14 +4088,25 @@ bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext& ctx)
 {
   if(organism->GetCellID() < 0) {
     return false;
-  }	
+  }
+#ifdef DEBUG_ENERGY_DONATION
+  cout << "organism " << organism->GetCellID() << " receiving donated energy (if any)" << endl;
+#endif
   
   if(organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
+#ifdef DEBUG_ENERGY_DONATION
+    cout << "  received " << organism->GetPhenotype().GetEnergyInBufferAmount() << endl;
+#endif
     organism->GetPhenotype().ApplyDonatedEnergy();
     organism->GetPhenotype().SetHasUsedDonatedEnergy();
     double receiverMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy() * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
     organism->UpdateMerit(receiverMerit);
   }
+#ifdef DEBUG_ENERGY_DONATION
+  else {
+    cout << "  no energy to receive!" << endl;
+  }
+#endif
   
   return true;
   
@@ -4104,21 +4118,50 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
 {
   if(organism->GetCellID() < 0) {
     return false;
-  }	
-  
+  }
+#ifdef DEBUG_ENERGY_DONATION
+  cout << "organism " << organism->GetCellID() << " donating energy..." << endl;
+#endif
+
   const cOrgMessage* msg = organism->RetrieveMessage();
   if(msg == 0) {
+#ifdef DEBUG_ENERGY_DONATION
+    cout << "  no energy requests" << endl;
+#endif
     return false;
   }
-    
+  
+  /* MJM - by this point, the pointer returned by GetSender() may no longer
+   * be any good. Instead, we should use the cell and organism ID of the
+   * message sender to get hold of the sender (if it still exists and hasn't moved)
+   */
+  /*
   cOrganism* receiver = msg->GetSender();
 
   // If the requestor no longer exists, should the donor still lose energy???
   if( (receiver == NULL) || (receiver->IsDead()) ) {
     return false;
   }
+  */
+  cPopulationCell senderCell = m_world->GetPopulation().GetCell(msg->GetSenderCellID());
+  if (!senderCell.IsOccupied()) {
+#ifdef DEBUG_ENERGY_DONATION
+    cout << "  requestor has died!" << endl;
+#endif
+	  // the organism that made the request is gone, we can't donate...
+	  return false;
+  }
+  cOrganism* energyReceiver = senderCell.GetOrganism();
+  if (energyReceiver->GetID() != msg->GetSenderOrgID()) {
+#ifdef DEBUG_ENERGY_DONATION
+    cout << "  requestor has been replaced!" << endl;
+#endif
+	  // some other organism has occupied this cell since the msg was sent,
+	  // we can't donate...
+	  return false;
+  }
   
-  DoEnergyDonatePercent(receiver, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
+  DoEnergyDonatePercent(energyReceiver, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
   organism->GetPhenotype().IncDonates();
   organism->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
   organism->GetPhenotype().SetIsEnergyDonor();
@@ -4201,11 +4244,14 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
 {
   if(organism->GetCellID() < 0) {
     return false;
-  }	
+  }
+#ifdef DEBUG_ENERGY_DONATION
+  cout << "organism " << organism->GetCellID() << " requesting energy!" << endl;
+#endif
     
   //TODO: BDC: somehow use nop modifiers to pick a multiplier for the amount of energy to request
   
-  cOrgMessage msg = cOrgMessage(organism);
+  cOrgMessage msg(organism);
   // Could set the data field of the message to be the multiplier
   
   organism->BroadcastMessage(ctx, msg);

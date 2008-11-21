@@ -1771,6 +1771,23 @@ void cStats::PrintDemeCurrentTaskExeData(const cString& filename) {
 	df.Endl();
 }
 
+void cStats::PrintCurrentTaskCounts(const cString& filename) {
+  ofstream& fp = m_world->GetDataFileOFStream(filename);
+  fp << "Update " << m_world->GetStats().GetUpdate() << ":" << endl;
+  for (int y = 0; y < m_world->GetPopulation().GetWorldY(); y++) {
+    for (int x = 0; x < m_world->GetPopulation().GetWorldX(); x++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(y * m_world->GetPopulation().GetWorldX() + x);
+      if (cell.IsOccupied()) {
+        fp << cell.GetOrganism()->GetPhenotype().GetCurTaskCount()[0] << "\t";
+      } else {
+        fp << "---\t";
+      }
+    }
+    fp << endl;
+  }
+  fp << endl;
+}
+
 void cStats::PrintDemeOrgReactionData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme org reactions data");

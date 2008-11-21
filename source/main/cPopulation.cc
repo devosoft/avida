@@ -70,6 +70,10 @@
 #include <cmath>
 #include <climits>
 
+/* MJM - required to build under Visual Studio 2005.
+ * Fixes error "'numeric_limits' is not a member of 'std'" */
+#include <limits>
+
 using namespace std;
 
 
@@ -1166,7 +1170,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
       }
     }
   }
-  
+
   //re-inject demes with count of 1 back into self
   for(int i = 0; i < (int)deme_counts.size(); i++) {
     if(deme_counts[i] == 1)
@@ -1437,7 +1441,13 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     
     // All done with the germline manipulation; seed each deme.
     SeedDeme(source_deme, source_deme.GetGermline().GetLatest());
-    SeedDeme(target_deme, target_deme.GetGermline().GetLatest());
+
+    /* MJM - source and target deme could be the same!
+     * Seeding the same deme twice probably shouldn't happen.
+     */
+    if (source_deme.GetDemeID() != target_deme.GetDemeID()) {
+      SeedDeme(target_deme, target_deme.GetGermline().GetLatest());
+    }
     
   } else if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
     // @JEB -- New germlines using cGenotype
