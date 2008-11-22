@@ -61,21 +61,21 @@ int cHardwareBase::GetExecutedSize(const int parent_size)
 bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, bool using_repro)
 {
   // Make sure the organism is okay with dividing now...
-  if (organism->Divide_CheckViable() == false) return false; // (divide fails)
+  if (m_organism->Divide_CheckViable() == false) return false; // (divide fails)
   
   // Make sure that neither parent nor child will be below the minimum size.  
-  const int genome_size = organism->GetGenome().GetSize();
+  const int genome_size = m_organism->GetGenome().GetSize();
   const double size_range = m_world->GetConfig().CHILD_SIZE_RANGE.Get();
   const int min_size = Max(MIN_CREATURE_SIZE, static_cast<int>(genome_size / size_range));
   const int max_size = Min(MAX_CREATURE_SIZE, static_cast<int>(genome_size * size_range));
   
   if (child_size < min_size || child_size > max_size) {
-    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
                     cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
     return false; // (divide fails)
   }
   if (parent_size < min_size || parent_size > max_size) {
-    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
                     cStringUtil::Stringf("Invalid post-divide length (%d)",parent_size));
     return false; // (divide fails)
   }
@@ -84,13 +84,13 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
   const int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
   if ( (min_genome_size && (child_size < min_genome_size)) || (max_genome_size && (child_size > max_genome_size)) ) {
-    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
                     cStringUtil::Stringf("Invalid absolute offspring length (%d)",child_size));
     return false; // (divide fails)
   }
   
   if ( (min_genome_size && (parent_size < min_genome_size)) || (max_genome_size && (parent_size > max_genome_size)) ) {
-    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
                     cStringUtil::Stringf("Invalid absolute post-divide length (%d)",parent_size));
     return false; // (divide fails)
   }
@@ -101,7 +101,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   const int executed_size = GetExecutedSize(parent_size);
   const int min_exe_lines = static_cast<int>(parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
   if (executed_size < min_exe_lines) {
-    organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
                     cStringUtil::Stringf("Too few executed lines (%d < %d)", executed_size, min_exe_lines));
     return false; // (divide fails)
   }
@@ -114,15 +114,14 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     const int min_copied = static_cast<int>(child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
   
     if (copied_size < min_copied) {
-
-      organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+      m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
                       cStringUtil::Stringf("Too few copied commands (%d < %d)", copied_size, min_copied));
       return false; // (divide fails)
     }
   }
    
   // Save the information we collected here...
-  cPhenotype& phenotype = organism->GetPhenotype();
+  cPhenotype& phenotype = m_organism->GetPhenotype();
   phenotype.SetLinesExecuted(executed_size);
   phenotype.SetLinesCopied(copied_size);
   
@@ -135,11 +134,11 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     bool sterilize = false;
     
     if (fitness_ratio < nHardware::FITNESS_NEUTRAL_MIN) {
-      if (ctx.GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
+      if (ctx.GetRandom().P(m_organism->GetSterilizeNeg())) sterilize = true;
     } else if (fitness_ratio <= nHardware::FITNESS_NEUTRAL_MAX) {
-      if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
+      if (ctx.GetRandom().P(m_organism->GetSterilizeNeut())) sterilize = true;
     } else {
-      if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
+      if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
     }
     
     if (sterilize) {
@@ -160,11 +159,9 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
 unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier, const int maxmut)
 {
   int totalMutations = 0;
-  //cerr << "Maxmut: " << maxmut << endl;
-//  sCPUStats& cpu_stats = organism->CPUStats();
-  cCPUMemory& child_genome = organism->ChildGenome();
+  cCPUMemory& child_genome = m_organism->ChildGenome();
   
-  organism->GetPhenotype().SetDivType(mut_multiplier);
+  m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
   // @JEB Divide Slip Mutations
   // As if the read head jumped from one random position of the child
@@ -172,7 +169,7 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   // This can cause large deletions or tandem duplications.
   // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
   // Limited to once per divide and NOT COUNTED.
-  if ( organism->TestDivideSlip(ctx) )
+  if (m_organism->TestDivideSlip(ctx))
   {
     cGenome child_copy = cGenome(child_genome);
     
@@ -253,55 +250,46 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   }
   
   // Divide Mutations
-  if (organism->TestDivideMut(ctx) && totalMutations < maxmut) {
+  if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
-//    ++cpu_stats.mut_stats.divide_mut_count;
     totalMutations++;
-    //cerr << "Mutating HERE!!!! BAD!!!!!" << endl;
   }
   
   // Divide Insertions
-  if (organism->TestDivideIns(ctx) && child_genome.GetSize() < MAX_CREATURE_SIZE && totalMutations < maxmut) {
+  if (m_organism->TestDivideIns(ctx) && child_genome.GetSize() < MAX_CREATURE_SIZE && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
     child_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
-//    ++cpu_stats.mut_stats.divide_insert_mut_count;
     totalMutations++;
   }
   
   // Divide Deletions
-  if (organism->TestDivideDel(ctx) && child_genome.GetSize() > MIN_CREATURE_SIZE && totalMutations < maxmut) {
+  if (m_organism->TestDivideDel(ctx) && child_genome.GetSize() > MIN_CREATURE_SIZE && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome.Remove(mut_line);
-//    ++cpu_stats.mut_stats.divide_delete_mut_count;
     totalMutations++;
   }
   
   // Divide Mutations (per site)
-  if (organism->GetDivMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetDivMutProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
-                                                  organism->GetDivMutProb() / mut_multiplier);
+                                                  m_organism->GetDivMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if (num_mut > 0 && totalMutations < maxmut) {
       for (int i = 0; i < num_mut && totalMutations < maxmut; i++) {
         int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
         child_genome[site] = m_inst_set->GetRandomInst(ctx);
-//        ++cpu_stats.mut_stats.div_mut_count;
         totalMutations++;
       }
     }
-  }/*
-  else if(organism->GetDivMutProb() == 0.0){
-    cerr << "*******************DivMutProb NOT SET" << organism->GetID() << "****************" << endl;
-  }*/
-  
+  }
 
   
   // Need to come back and fix tese last two - per site instructions
   // Insert Mutations (per site)
-  if (organism->GetInsMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetInsMutProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  organism->GetInsMutProb());
+                                                  m_organism->GetInsMutProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if (num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE) {
       num_mut = MAX_CREATURE_SIZE - child_genome.GetSize();
@@ -318,7 +306,6 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
       // Actually do the mutations (in reverse sort order)
       for (int i = num_mut-1; i >= 0; i--) {
         child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
-//        cpu_stats.mut_stats.insert_mut_count++;
         totalMutations++; //Unlike the others we can't be sure this was done only on divide -- AWC 06/29/06
       }
     }
@@ -326,9 +313,9 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   
   // Delete Mutations (per site)
-  if (organism->GetDelMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetDelMutProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  organism->GetDelMutProb());
+                                                  m_organism->GetDelMutProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
       num_mut = child_genome.GetSize() - MIN_CREATURE_SIZE;
@@ -346,9 +333,9 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   
   // Uniform Mutations on Divide
-  if (organism->GetUniformMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetUniformMutProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
-                                                  organism->GetUniformMutProb() / mut_multiplier);
+                                                  m_organism->GetUniformMutProb() / mut_multiplier);
     
     // If we have lines to mutate...
     if (num_mut > 0 && totalMutations < maxmut) {
@@ -378,28 +365,15 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   
   // Mutations in the parent's genome
-  if (organism->GetParentMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetParentMutProb() > 0 && totalMutations < maxmut) {
     for (int i = 0; i < GetMemory().GetSize(); i++) {
-      if (organism->TestParentMut(ctx)) {
+      if (m_organism->TestParentMut(ctx)) {
         GetMemory()[i] = m_inst_set->GetRandomInst(ctx);
-//        cpu_stats.mut_stats.parent_mut_line_count++;
         totalMutations++; //Unlike the others we can't be sure this was done only on divide -- AWC 06/29/06
         
       }
     }
   }
-  
-  // Count up mutated lines
-//  for (int i = 0; i < GetMemory().GetSize(); i++) {
-//    if (GetMemory().FlagPointMut(i)) {
-//      cpu_stats.mut_stats.point_mut_line_count++;
-//    }
-//  }
-//  for (int i = 0; i < child_genome.GetSize(); i++) {
-//    if (child_genome.FlagCopyMut(i)) {
-//      cpu_stats.mut_stats.copy_mut_line_count++;
-//    }
-//  }
   
   return totalMutations;
 }
@@ -412,32 +386,25 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 {
   int maxmut = pointmut;
   int totalMutations = 0;
-  //cerr << "Maxmut: " << maxmut << endl;
-//  sCPUStats& cpu_stats = organism->CPUStats();
-  cCPUMemory& child_genome = organism->ChildGenome();
+  cCPUMemory& child_genome = m_organism->ChildGenome();
   
-  organism->GetPhenotype().SetDivType(mut_multiplier);
+  m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
   // Divide Mutations
   if (totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
     child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
-//    ++cpu_stats.mut_stats.divide_mut_count;
     totalMutations++;
-    //cerr << "Mutating HERE!!!! BAD!!!!!" << endl;
   }
    
   // Divide Mutations (per site)
-  if (organism->GetDivMutProb() > 0 && totalMutations < maxmut) {
-    //int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
-    //                                              organism->GetDivMutProb() / mut_multiplier);
+  if (m_organism->GetDivMutProb() > 0 && totalMutations < maxmut) {
     int num_mut = pointmut;
     // If we have lines to mutate...
     if (num_mut > 0 && totalMutations < maxmut) {
       for (int i = 0; i < num_mut && totalMutations < maxmut; i++) {
         int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
         child_genome[site] = m_inst_set->GetRandomInst(ctx);
-//        ++cpu_stats.mut_stats.div_mut_count;
         totalMutations++;
         cerr << "Resampling here " << totalMutations << endl;
       }
@@ -455,12 +422,12 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
  */
 bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
 {
-  cPhenotype & phenotype = organism->GetPhenotype();
-  phenotype.CopyTrue() = ( organism->ChildGenome() == organism->GetGenome() );
+  cPhenotype & phenotype = m_organism->GetPhenotype();
+  phenotype.CopyTrue() = ( m_organism->ChildGenome() == m_organism->GetGenome() );
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
-  if (organism->GetTestOnDivide() == false) return false;
+  if (m_organism->GetTestOnDivide() == false) return false;
 	
   // If this was a perfect copy, then we don't need to worry about any other
   // tests...  Theoretically, we need to worry about the parent changing,
@@ -468,14 +435,14 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   // this won't be an issue.
   if (phenotype.CopyTrue() == true) return false;
 	
-  const double parent_fitness = organism->GetTestFitness(ctx);
-  const double neut_min = parent_fitness * (1.0 - organism->GetNeutralMin());//nHardware::FITNESS_NEUTRAL_MIN;
-    const double neut_max = parent_fitness * (1.0 + organism->GetNeutralMax());//nHardware::FITNESS_NEUTRAL_MAX;
+  const double parent_fitness = m_organism->GetTestFitness(ctx);
+  const double neut_min = parent_fitness * (1.0 - m_organism->GetNeutralMin());
+    const double neut_max = parent_fitness * (1.0 + m_organism->GetNeutralMax());
       
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
       cCPUTestInfo test_info;
       test_info.UseRandomInputs();
-      testcpu->TestGenome(ctx, test_info, organism->ChildGenome());
+      testcpu->TestGenome(ctx, test_info, m_organism->ChildGenome());
       const double child_fitness = test_info.GetGenotypeFitness();
       delete testcpu;
       
@@ -483,33 +450,33 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
       bool sterilize = false;
       
       // If implicit mutations are turned off, make sure this won't spawn one.
-      if (organism->GetFailImplicit() == true) {
+      if (m_organism->GetFailImplicit() == true) {
         if (test_info.GetMaxDepth() > 0) sterilize = true;
       }
       
       if (child_fitness == 0.0) {
         // Fatal mutation... test for reversion.
-        if (ctx.GetRandom().P(organism->GetRevertFatal())) revert = true;
-        if (ctx.GetRandom().P(organism->GetSterilizeFatal())) sterilize = true;
+        if (ctx.GetRandom().P(m_organism->GetRevertFatal())) revert = true;
+        if (ctx.GetRandom().P(m_organism->GetSterilizeFatal())) sterilize = true;
       } else if (child_fitness < neut_min) {
-        if (ctx.GetRandom().P(organism->GetRevertNeg())) revert = true;
-        if (ctx.GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
+        if (ctx.GetRandom().P(m_organism->GetRevertNeg())) revert = true;
+        if (ctx.GetRandom().P(m_organism->GetSterilizeNeg())) sterilize = true;
       } else if (child_fitness <= neut_max) {
-        if (ctx.GetRandom().P(organism->GetRevertNeut())) revert = true;
-        if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
+        if (ctx.GetRandom().P(m_organism->GetRevertNeut())) revert = true;
+        if (ctx.GetRandom().P(m_organism->GetSterilizeNeut())) sterilize = true;
       } else {
-        if (ctx.GetRandom().P(organism->GetRevertPos())) revert = true;
-        if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
+        if (ctx.GetRandom().P(m_organism->GetRevertPos())) revert = true;
+        if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
       }
       
       // Ideally, we won't have reversions and sterilizations turned on at the
       // same time, but if we do, give revert the priority.
       if (revert == true) {
-        organism->ChildGenome() = organism->GetGenome();
+        m_organism->ChildGenome() = m_organism->GetGenome();
       }
       
       if (sterilize == true) {
-        organism->GetPhenotype().ChildFertile() = false;
+        m_organism->GetPhenotype().ChildFertile() = false;
       }
       
       return (!sterilize) && revert;
@@ -522,12 +489,12 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
  */
 bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
 {
-  cPhenotype & phenotype = organism->GetPhenotype();
-  phenotype.CopyTrue() = ( organism->ChildGenome() == organism->GetGenome() );
+  cPhenotype & phenotype = m_organism->GetPhenotype();
+  phenotype.CopyTrue() = (m_organism->ChildGenome() == m_organism->GetGenome());
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
-  if (organism->GetTestOnDivide() == false) return false;
+  if (m_organism->GetTestOnDivide() == false) return false;
 	
   // If this was a perfect copy, then we don't need to worry about any other
   // tests...  Theoretically, we need to worry about the parent changing,
@@ -535,14 +502,14 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   // this won't be an issue.
   if (phenotype.CopyTrue() == true) return false;
 	
-  const double parent_fitness = organism->GetTestFitness(ctx);
-  const double neut_min = parent_fitness * (1.0 - organism->GetNeutralMin());//nHardware::FITNESS_NEUTRAL_MIN;
-  const double neut_max = parent_fitness * (1.0 + organism->GetNeutralMax());//nHardware::FITNESS_NEUTRAL_MAX;
+  const double parent_fitness = m_organism->GetTestFitness(ctx);
+  const double neut_min = parent_fitness * (1.0 - m_organism->GetNeutralMin());
+  const double neut_max = parent_fitness * (1.0 + m_organism->GetNeutralMax());
       
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  testcpu->TestGenome(ctx, test_info, organism->ChildGenome());
+  testcpu->TestGenome(ctx, test_info, m_organism->ChildGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
   delete testcpu;
   
@@ -550,38 +517,37 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   bool sterilize = false;
     
   // If implicit mutations are turned off, make sure this won't spawn one.
-  if (organism->GetFailImplicit() > 0) {
+  if (m_organism->GetFailImplicit() > 0) {
     if (test_info.GetMaxDepth() > 0) sterilize = true;
   }
 
-  if(organism->GetFailImplicit() > 1 && !test_info.IsViable()){
-    //if (test_info.GetMaxDepth() > 0) sterilize = true;
+  if (m_organism->GetFailImplicit() > 1 && !test_info.IsViable()) {
     sterilize = true;
   }
   
   if (child_fitness == 0.0) {
     // Fatal mutation... test for reversion.
-    if (ctx.GetRandom().P(organism->GetRevertFatal())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizeFatal())) sterilize = true;
+    if (ctx.GetRandom().P(m_organism->GetRevertFatal())) revert = true;
+    if (ctx.GetRandom().P(m_organism->GetSterilizeFatal())) sterilize = true;
   } else if (child_fitness < neut_min) {
-    if (ctx.GetRandom().P(organism->GetRevertNeg())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizeNeg())) sterilize = true;
+    if (ctx.GetRandom().P(m_organism->GetRevertNeg())) revert = true;
+    if (ctx.GetRandom().P(m_organism->GetSterilizeNeg())) sterilize = true;
   } else if (child_fitness <= neut_max) {
-    if (ctx.GetRandom().P(organism->GetRevertNeut())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizeNeut())) sterilize = true;
+    if (ctx.GetRandom().P(m_organism->GetRevertNeut())) revert = true;
+    if (ctx.GetRandom().P(m_organism->GetSterilizeNeut())) sterilize = true;
   } else {
-    if (ctx.GetRandom().P(organism->GetRevertPos())) revert = true;
-    if (ctx.GetRandom().P(organism->GetSterilizePos())) sterilize = true;
+    if (ctx.GetRandom().P(m_organism->GetRevertPos())) revert = true;
+    if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
   }
   
   // Ideally, we won't have reversions and sterilizations turned on at the
   // same time, but if we do, give revert the priority.
   if (revert == true) {
-    organism->ChildGenome() = organism->GetGenome();
+    m_organism->ChildGenome() = m_organism->GetGenome();
   }
   
   if (sterilize == true) {
-    organism->GetPhenotype().ChildFertile() = false;
+    m_organism->GetPhenotype().ChildFertile() = false;
   }
   
   return (!sterilize) && revert;
@@ -597,7 +563,6 @@ int cHardwareBase::PointMutate(cAvidaContext& ctx, const double mut_rate)
     memory[pos] = m_inst_set->GetRandomInst(ctx);
     memory.SetFlagMutated(pos);
     memory.SetFlagPointMut(pos);
-//    organism->CPUStats().mut_stats.point_mut_count++;
   }
   
   return num_muts;
@@ -692,7 +657,7 @@ bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger)
 bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head)
 {
   // Collect information about mutations from the organism.
-  cLocalMutations& mut_info = organism->GetLocalMutations();
+  cLocalMutations& mut_info = m_organism->GetLocalMutations();
   const tList<cMutation>& mut_list = mut_info.GetMutationLib().GetMutationList(trigger);
 	
   // If we have no mutations for this trigger, stop here.
@@ -700,7 +665,7 @@ bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& 
   bool has_mutation = false;
 	
   // Determine what memory this mutation will be affecting.
-  cCPUMemory& target_mem = (trigger == nMutation::TRIGGER_DIVIDE) ? organism->ChildGenome() : GetMemory();
+  cCPUMemory& target_mem = (trigger == nMutation::TRIGGER_DIVIDE) ? m_organism->ChildGenome() : GetMemory();
 	
   // Loop through all mutations associated with this trigger and test them.
   tConstListIterator<cMutation> mut_it(mut_list);
@@ -789,12 +754,12 @@ cHeadCPU cHardwareBase::FindLabelFull(const cCodeLabel& label)
 
 tBuffer<int>& cHardwareBase::GetInputBuf() 
 { 
-  return organism->GetInputBuf();
+  return m_organism->GetInputBuf();
 }
 
 tBuffer<int>& cHardwareBase::GetOutputBuf() 
 { 
-  return organism->GetOutputBuf(); 
+  return m_organism->GetOutputBuf(); 
 }
 
 
@@ -807,13 +772,13 @@ bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
 void cHardwareBase::CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)         
 {  
   //Dividing a dead organism causes all kinds of problems
-  if (organism->IsDead()) return;
+  if (m_organism->IsDead()) return;
 
-  if( (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
-   || (m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() && (organism->GetPhenotype().GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get()))
-   || (m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() && (organism->GetPhenotype().GetCurBonus() >= m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get()))
-   || (m_world->GetConfig().IMPLICIT_REPRO_END.Get() && exec_last_inst )
-   || (m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get() && ( organism->GetPhenotype().GetStoredEnergy() >= m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get())) )
+  if( (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() && (m_organism->GetPhenotype().GetTimeUsed() >= m_world->GetConfig().IMPLICIT_REPRO_TIME.Get()))
+   || (m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() && (m_organism->GetPhenotype().GetCPUCyclesUsed() >= m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get()))
+   || (m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() && (m_organism->GetPhenotype().GetCurBonus() >= m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get()))
+   || (m_world->GetConfig().IMPLICIT_REPRO_END.Get() && exec_last_inst)
+   || (m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get() && (m_organism->GetPhenotype().GetStoredEnergy() >= m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get())) )
   {
     Inst_Repro(ctx);
   }
@@ -827,28 +792,27 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
   return false;
 }
 
-bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx) {
-/*  double energy_req = inst_energy_cost[IP().GetNextInst().GetOp()]
-                        * cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy() * organism->GetPhenotype().GetEnergyUsageRatio() * 2.0, m_world)
-                        / 100.0; //compensate by factor of 100
-*/
-  organism->GetPhenotype().DoubleEnergyUsage();
-  double newOrgMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
-  organism->UpdateMerit(newOrgMerit);
+bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx)
+{
+  m_organism->GetPhenotype().DoubleEnergyUsage();
+  double newOrgMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  m_organism->UpdateMerit(newOrgMerit);
   return true;
 }
 
-bool cHardwareBase::Inst_HalfEnergyUsage(cAvidaContext& ctx) {
-  organism->GetPhenotype().HalfEnergyUsage();
-  double newOrgMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
-  organism->UpdateMerit(newOrgMerit);
+bool cHardwareBase::Inst_HalfEnergyUsage(cAvidaContext& ctx)
+{
+  m_organism->GetPhenotype().HalfEnergyUsage();
+  double newOrgMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  m_organism->UpdateMerit(newOrgMerit);
   return true;
 }
 
-bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx) {
-  organism->GetPhenotype().DefaultEnergyUsage();
-  double newOrgMerit = cMerit::EnergyToMerit(organism->GetPhenotype().GetStoredEnergy()  * organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
-  organism->UpdateMerit(newOrgMerit);
+bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
+{
+  m_organism->GetPhenotype().DefaultEnergyUsage();
+  double newOrgMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  m_organism->UpdateMerit(newOrgMerit);
   return true;
 }
 
@@ -861,15 +825,15 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
-    double energy_req = inst_energy_cost[cur_inst.GetOp()] * (organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-    int cellID = organism->GetCellID();
+    double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
+    int cellID = m_organism->GetCellID();
     
     if((cellID != -1) && (energy_req > 0.0)) { // guard against running in the test cpu.
 
-      if (organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
-        inst_energy_cost[cur_inst.GetOp()] = 0;
+      if (m_organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
+        m_inst_energy_cost[cur_inst.GetOp()] = 0;
         // subtract energy used from current org energy.
-        organism->GetPhenotype().ReduceEnergy(energy_req);  
+        m_organism->GetPhenotype().ReduceEnergy(energy_req);  
         
         // tracking sleeping organisms
         cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
@@ -879,19 +843,19 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
           if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
             pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
           }
-          organism->SetSleeping(true);
-          organism->GetOrgInterface().GetDeme()->IncSleepingCount();
+          m_organism->SetSleeping(true);
+          m_organism->GetOrgInterface().GetDeme()->IncSleepingCount();
         }
       } else {
-        organism->GetPhenotype().SetToDie();
+        m_organism->GetPhenotype().SetToDie();
         return false;
       }
     }
   }
 
   // If first time cost hasn't been paid off...
-  if (m_has_ft_costs && inst_ft_cost[cur_inst.GetOp()] > 0) {
-    inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
+  if (m_has_ft_costs && m_inst_ft_cost[cur_inst.GetOp()] > 0) {
+    m_inst_ft_cost[cur_inst.GetOp()]--;       // dec cost
     return false;
   }
   
@@ -913,7 +877,7 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   }
 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
-    inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
+    m_inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
   }
 #endif
   return true;
@@ -926,13 +890,13 @@ void cHardwareBase::ResetInstructionCosts()
   const int num_inst_cost = m_inst_set->GetSize();
 
   if (m_has_ft_costs) {
-    inst_ft_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    m_inst_ft_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
   
   if (m_has_energy_costs) {
-    inst_energy_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
+    m_inst_energy_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
   }
 }
 

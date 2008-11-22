@@ -223,31 +223,6 @@ cHardwareExperimental::cHardwareExperimental(cWorld* world, cOrganism* in_organi
 }
 
 
-cHardwareExperimental::cHardwareExperimental(const cHardwareExperimental &hardware_cpu)
-: cHardwareBase(hardware_cpu.m_world, hardware_cpu.organism, hardware_cpu.m_inst_set)
-, m_functions(hardware_cpu.m_functions)
-, m_memory(hardware_cpu.m_memory)
-, m_global_stack(hardware_cpu.m_global_stack)
-, m_threads(hardware_cpu.m_threads)
-, m_thread_id_chart(hardware_cpu.m_thread_id_chart)
-, m_cur_thread(hardware_cpu.m_cur_thread)
-, m_cycle_count(hardware_cpu.m_cycle_count)
-, m_last_output(hardware_cpu.m_last_output)
-, m_mal_active(hardware_cpu.m_mal_active)
-, m_advance_ip(hardware_cpu.m_advance_ip)
-, m_executedmatchstrings(hardware_cpu.m_executedmatchstrings)
-{
-#if INSTRUCTION_COSTS
-  m_inst_cost = hardware_cpu.m_inst_cost;
-  inst_ft_cost = hardware_cpu.inst_ft_cost;
-  inst_energy_cost = hardware_cpu.inst_energy_cost;
-  m_has_costs = hardware_cpu.m_has_costs;
-  m_has_ft_costs = hardware_cpu.m_has_ft_costs;
-  m_has_energy_costs = hardware_cpu.m_has_energy_costs;
-#endif
-}
-
-
 void cHardwareExperimental::Reset()
 {
   m_cycle_count = 0;
@@ -312,15 +287,15 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   assert(!speculative || (speculative && !m_thread_slicing_parallel));
   
   // Mark this organism as running...
-  organism->SetRunning(true);
+  m_organism->SetRunning(true);
   
   if (!speculative && m_spec_die) {
-    organism->Die();
-    organism->SetRunning(false);
+    m_organism->Die();
+    m_organism->SetRunning(false);
     return false;
   }
   
-  cPhenotype& phenotype = organism->GetPhenotype();
+  cPhenotype& phenotype = m_organism->GetPhenotype();
 
   // First instruction - check whether we should be starting at a promoter, when enabled.
   if (phenotype.GetCPUCyclesUsed() == 0 && m_promoters_enabled) PromoterTerminate(ctx);
@@ -347,7 +322,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     
 #if BREAKPOINTS
     if (ip.FlagBreakpoint()) {
-      organism->DoBreakpoint();
+      m_organism->DoBreakpoint();
     }
 #endif
     
@@ -362,7 +337,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
       m_cur_thread = last_thread;
       phenotype.DecCPUCyclesUsed();
       if (!m_no_cpu_cycle_time) phenotype.IncTimeUsed(-1);
-      organism->SetRunning(false);
+      m_organism->SetRunning(false);
       return false;
     }
     
@@ -416,14 +391,14 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   } // Previous was executed once for each thread...
   
   // Kill creatures who have reached their max num of instructions executed
-  const int max_executed = organism->GetMaxExecuted();
+  const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
     if (speculative) m_spec_die = true;
-    else organism->Die();
+    else m_organism->Die();
   }
   if (!speculative && phenotype.GetToDelete()) m_spec_die = true;
   
-  organism->SetRunning(false);
+  m_organism->SetRunning(false);
   CheckImplicitRepro(ctx);
         
   return !m_spec_die;
@@ -438,7 +413,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
-  if (organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
+  if (m_organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
 #endif /* EXECUTION_ERRORS */
   
   // Get a pointer to the corrisponding method...
@@ -450,7 +425,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   
 #if INSTRUCTION_COUNT
   // instruction execution count incremeneted
-  organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
+  m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
 #endif
   
   // And execute it.
@@ -464,7 +439,7 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
 #if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
-    organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
+    m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
 #endif	
   
@@ -475,14 +450,14 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
 void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
 {
   // Mark this organism as running...
-  bool prev_run_state = organism->IsRunning();
-  organism->SetRunning(true);
+  bool prev_run_state = m_organism->IsRunning();
+  m_organism->SetRunning(true);
   
   if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
-  organism->SetRunning(prev_run_state);
+  m_organism->SetRunning(prev_run_state);
 }
 
 
@@ -501,7 +476,7 @@ bool cHardwareExperimental::OK()
 
 void cHardwareExperimental::PrintStatus(ostream& fp)
 {
-  fp << organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "IP:" << IP().GetPosition() << "    ";
   
   
@@ -514,9 +489,9 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
   
   // Add some extra information if additional time costs are used for instructions,
   // leave this out if there are no differences to keep it cleaner
-  if ( organism->GetPhenotype().GetTimeUsed() != organism->GetPhenotype().GetCPUCyclesUsed() )
+  if ( m_organism->GetPhenotype().GetTimeUsed() != m_organism->GetPhenotype().GetCPUCyclesUsed() )
   {
-    fp << "  EnergyUsed:" << organism->GetPhenotype().GetTimeUsed();
+    fp << "  EnergyUsed:" << m_organism->GetPhenotype().GetTimeUsed();
   }
   fp << endl;
   
@@ -689,7 +664,7 @@ void cHardwareExperimental::InjectCode(const cGenome & inject_code, const int li
   for (int i = line_num; i < line_num + inject_size; i++) {
     m_memory.SetFlagInjected(i);
   }
-  organism->GetPhenotype().IsModified() = true;
+  m_organism->GetPhenotype().IsModified() = true;
   
   // Adjust all of the heads to take into account the new mem size.  
   for (int i = 0; i < NUM_HEADS; i++) {    
@@ -889,11 +864,11 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
 {
   // must do divide before second allocate & must allocate positive amount...
   if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
     return false;
   }
   if (allocated_size < 1) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate of %d too small", allocated_size));
     return false;
   }
@@ -903,7 +878,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   
   // Make sure that the new size is in range.
   if (new_size > MAX_CREATURE_SIZE  ||  new_size < MIN_CREATURE_SIZE) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Invalid post-allocate size (%d)",
                                new_size));
     return false;
@@ -911,7 +886,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   
   const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too large (%d > %d)",
                                allocated_size, max_alloc_size));
     return false;
@@ -920,7 +895,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   const int max_old_size =
     (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too small (%d > %d)",
                                old_size, max_old_size));
     return false;
@@ -964,7 +939,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
+  cGenome & child_genome = m_organism->ChildGenome();
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
   // Cut off everything in this memory past the divide point.
@@ -980,8 +955,8 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
 #if INSTRUCTION_COSTS
   // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
 #endif
   
@@ -991,7 +966,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   }
   
   // Activate the child
-  bool parent_alive = organism->ActivateDivide(ctx);
+  bool parent_alive = m_organism->ActivateDivide(ctx);
 
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
@@ -1172,11 +1147,11 @@ bool cHardwareExperimental::Inst_Div(cAvidaContext& ctx)
   sInternalValue& r2 = m_threads[m_cur_thread].reg[op2];
   if (r2.value != 0) {
     if (0 - INT_MAX > r1.value && r2.value == -1)
-      organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
+      m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
       setInternalValue(dreg, r1.value / r2.value, r1, r2);
   } else {
-    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
+    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
   }
   return true;
@@ -1193,7 +1168,7 @@ bool cHardwareExperimental::Inst_Mod(cAvidaContext& ctx)
   if (r2.value != 0) {
     setInternalValue(dreg, r1.value % r2.value, r1, r2);
   } else {
-    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
+    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
   }
   return true;
@@ -1234,13 +1209,13 @@ bool cHardwareExperimental::Inst_TaskIO(cAvidaContext& ctx)
   sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
-  organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
+  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
   
   // Do the "get" component
-  const int value_in = organism->GetNextInput();
+  const int value_in = m_organism->GetNextInput();
   setInternalValue(reg, value_in, true);
-  organism->DoInput(value_in);
+  m_organism->DoInput(value_in);
   
   return true;
 }
@@ -1254,13 +1229,13 @@ bool cHardwareExperimental::Inst_TaskIOExpire(cAvidaContext& ctx)
   // Do the "put" component
   if (reg.env_component && reg.oldest_component < m_last_output) return false;
   
-  organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
+  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;  
   
   // Do the "get" component
-  const int value_in = organism->GetNextInput();
+  const int value_in = m_organism->GetNextInput();
   setInternalValue(reg, value_in, true);
-  organism->DoInput(value_in);
+  m_organism->DoInput(value_in);
   
   return true;
 }
@@ -1271,9 +1246,9 @@ bool cHardwareExperimental::Inst_TaskInput(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_BX);
   
   // Do the "get" component
-  const int value_in = organism->GetNextInput();
+  const int value_in = m_organism->GetNextInput();
   setInternalValue(m_threads[m_cur_thread].reg[reg_used], value_in, true);
-  organism->DoInput(value_in);
+  m_organism->DoInput(value_in);
   
   return true;
 }
@@ -1285,7 +1260,7 @@ bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
   sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
   // Do the "put" component
-  organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
+  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;
   
   return true;
@@ -1299,7 +1274,7 @@ bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
   
   // Do the "put" component
   if (!reg.env_component || reg.oldest_component >= m_last_output) {
-    organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
+    m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
     m_last_output = m_cycle_count;
     return true;
   }
@@ -1345,8 +1320,8 @@ bool cHardwareExperimental::Inst_IfLabel(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
 {
-  organism->GetPhenotype().SetDivideSex(false);
-  organism->GetPhenotype().SetCrossNum(0);
+  m_organism->GetPhenotype().SetDivideSex(false);
+  m_organism->GetPhenotype().SetCrossNum(0);
 
   AdjustHeads();
   const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
@@ -1362,8 +1337,8 @@ bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_HeadDivideSex(cAvidaContext& ctx)  
 { 
-  organism->GetPhenotype().SetDivideSex(true);
-  organism->GetPhenotype().SetCrossNum(1);
+  m_organism->GetPhenotype().SetDivideSex(true);
+  m_organism->GetPhenotype().SetCrossNum(1);
   
   AdjustHeads();
   const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
@@ -1386,7 +1361,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
@@ -1422,7 +1397,6 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   // For the moment, this cannot be nop-modified.
   cHeadCPU& read_head = GetHead(nHardware::HEAD_READ);
   cHeadCPU& write_head = GetHead(nHardware::HEAD_WRITE);
-//  sCPUStats& cpu_stats = organism->CPUStats();
   
   read_head.Adjust();
   write_head.Adjust();
@@ -1430,14 +1404,11 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
-//    cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
   }
-  
-//  cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
@@ -1589,7 +1560,7 @@ bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SenseRegulate(cAvidaContext& ctx)
 {
   unsigned int bits = 0;
-  const tArray<double> & res_count = organism->GetOrgInterface().GetResources();
+  const tArray<double> & res_count = m_organism->GetOrgInterface().GetResources();
   assert (res_count.GetSize() != 0);
   for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
   {
@@ -1629,8 +1600,8 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
     m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
     
     //Setting this makes it harder to do things. You have to be modular.
-    organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
-    organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+    m_organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
+    m_organism->ClearInput();                         // Also clear their input buffers, or they can still claim
     // rewards for numbers no longer in their environment!
   }
   
@@ -1705,7 +1676,7 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
         break;
         
       case 1: // Death to organisms that refuse to use promoters!
-        organism->Die();
+        m_organism->Die();
         break;
         
       default:
@@ -1818,23 +1789,23 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   // that crash when evaluating this kind of organism -- JEB
 
   
-  if (organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
+  if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
+  cGenome & child_genome = m_organism->ChildGenome();
   child_genome = m_memory;
-  organism->GetPhenotype().SetLinesCopied(child_genome.GetSize());
+  m_organism->GetPhenotype().SetLinesCopied(child_genome.GetSize());
 
   int lines_executed = 0;
   for (int i = 0; i < m_memory.GetSize(); i++) if (m_memory.FlagExecuted(i)) lines_executed++;
-  organism->GetPhenotype().SetLinesExecuted(lines_executed);
+  m_organism->GetPhenotype().SetLinesExecuted(lines_executed);
   
   
   // Perform Copy Mutations...
-  if (organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
+  if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
     for (int i = 0; i < m_memory.GetSize(); i++) {
-      if (organism->TestCopyMut(ctx)) child_genome[i] = m_inst_set->GetRandomInst(ctx);
+      if (m_organism->TestCopyMut(ctx)) child_genome[i] = m_inst_set->GetRandomInst(ctx);
     }
   }
   
@@ -1848,8 +1819,8 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
 #if INSTRUCTION_COSTS
   // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
 #endif
   
@@ -1859,7 +1830,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   }
   
   // Activate the child
-  bool parent_alive = organism->ActivateDivide(ctx);
+  bool parent_alive = m_organism->ActivateDivide(ctx);
   
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {

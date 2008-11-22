@@ -240,7 +240,6 @@ protected:
 
 public:
   cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  explicit cHardwareCPU(const cHardwareCPU&);
   ~cHardwareCPU() { ; }
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }

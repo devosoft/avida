@@ -271,11 +271,12 @@ protected:
   void ReadInst(const int in_inst);
 
   
+  cHardwareExperimental(const cHardwareExperimental&); // @not_implemented
   cHardwareExperimental& operator=(const cHardwareExperimental&); // @not_implemented
 
+  
 public:
   cHardwareExperimental(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
-  explicit cHardwareExperimental(const cHardwareExperimental&);
   ~cHardwareExperimental() { ; }
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-experimental.cfg"; }

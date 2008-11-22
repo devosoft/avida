@@ -55,58 +55,39 @@ class cHardwareBase
 {
 protected:
   cWorld* m_world;
-  cOrganism* organism;       // Organism using this hardware.
+  cOrganism* m_organism;     // Organism using this hardware.
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
 
-  // Instruction costs...
+  // --------  Instruction Costs ---------
   int m_inst_cost;
-  tArray<int> inst_ft_cost;
-  tArray<int> inst_energy_cost;
+  tArray<int> m_inst_ft_cost;
+  tArray<int> m_inst_energy_cost;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
   
+  
+  
 
-  virtual int GetExecutedSize(const int parent_size);
-  virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
-  
-  bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, bool using_repro = false);
-
-protected:
-  unsigned Divide_DoExactMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int pointmut = INT_MAX);
-  bool Divide_TestFitnessMeasures1(cAvidaContext& ctx);
-  
-  void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
-  bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-																		cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  
-  virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
-  void ResetInstructionCosts();
-  
-  
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
 
 public:
   cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-    : m_world(world), organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
+    : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
     , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
     , m_has_energy_costs(m_inst_set->HasEnergyCosts())
   {
     m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs);
-    assert(organism != NULL);
+    assert(m_organism != NULL);
   }
   virtual ~cHardwareBase() { ; }
 
   // --------  Organism ---------
-  cOrganism* GetOrganism() { return organism; }
+  cOrganism* GetOrganism() { return m_organism; }
   const cInstSet& GetInstSet() { return *m_inst_set; }
 
   
@@ -192,6 +173,12 @@ public:
   //alarm
   virtual bool Jump_To_Alarm_Label(int jump_label) { return false; }
   
+
+	// -------- Synchronization --------
+  //! Called when the organism that owns this CPU has received a flash from a neighbor.
+  virtual void ReceiveFlash();	
+
+  
 protected:
   // --------  No-Operation Instruction --------
   bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 
@@ -205,10 +192,27 @@ protected:
   bool Inst_HalfEnergyUsage(cAvidaContext& ctx);
   bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
 	
-	// -------- Synchronization --------
-public:
-  //! Called when the organism that owns this CPU has received a flash from a neighbor.
-  virtual void ReceiveFlash();	
+
+
+  virtual int GetExecutedSize(const int parent_size);
+  virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
+  
+  bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, bool using_repro = false);
+  unsigned Divide_DoExactMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int pointmut = INT_MAX);
+  bool Divide_TestFitnessMeasures1(cAvidaContext& ctx);
+  
+  void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
+  bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
+																		cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
+																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
+																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+  
+  virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void ResetInstructionCosts();
+  
+  
 };
 
 

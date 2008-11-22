@@ -341,7 +341,7 @@ void cHardwareGX::Reset()
   {
  
     // And add any programids specified by the "genome."
-    cGenome genome = organism->GetGenome();
+    cGenome genome = m_organism->GetGenome();
     
     // These specify the range of instructions that will be used to create a new
     // programid.  The range of instructions used to create a programid is:
@@ -374,17 +374,17 @@ void cHardwareGX::Reset()
     m_recycle_state = 0.0;
     // Optimization -- don't actually need a programid for the genome in the double implicit model.
     // In the implicit model, we create one genome programid as the first memory space
-    programid_ptr p = new cProgramid(organism->GetGenome(), this);
+    programid_ptr p = new cProgramid(m_organism->GetGenome(), this);
     p->SetReadable(true);
     AddProgramid(p);
   
     // Initialize the promoter state and rates
     m_promoter_update_head.Reset(this,0);
     m_promoter_update_head.Set(0);
-    m_promoter_default_rates.ResizeClear( organism->GetGenome().GetSize() );
-    m_promoter_rates.ResizeClear( organism->GetGenome().GetSize() ); // Initialized in UpdatePromoterRates()
-    m_promoter_states.ResizeClear( organism->GetGenome().GetSize() );
-    m_promoter_occupied_sites.ResizeClear( organism->GetGenome().GetSize() );
+    m_promoter_default_rates.ResizeClear( m_organism->GetGenome().GetSize() );
+    m_promoter_rates.ResizeClear( m_organism->GetGenome().GetSize() ); // Initialized in UpdatePromoterRates()
+    m_promoter_states.ResizeClear( m_organism->GetGenome().GetSize() );
+    m_promoter_occupied_sites.ResizeClear( m_organism->GetGenome().GetSize() );
     
     cInstruction promoter_inst = GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
     do {
@@ -398,7 +398,7 @@ void cHardwareGX::Reset()
     AdjustPromoterRates();
     
     // \todo implement different initial conditions for created executable programids
-    m_promoter_update_head.Set(organism->GetGenome().GetSize() - 1); //So that ++ moves it to position zero
+    m_promoter_update_head.Set(m_organism->GetGenome().GetSize() - 1); //So that ++ moves it to position zero
     ProcessImplicitGeneExpression(1); 
   }
   
@@ -414,7 +414,7 @@ void cHardwareGX::Reset()
   */
 bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
-  cPhenotype& phenotype = organism->GetPhenotype();
+  cPhenotype& phenotype = m_organism->GetPhenotype();
 
   // Turn over programids if using the implicit model
   if ( m_world->GetConfig().IMPLICIT_GENE_EXPRESSION.Get() )
@@ -436,7 +436,7 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
     ProcessImplicitGeneExpression(num_programids);
   }
     
-  organism->SetRunning(true);
+  m_organism->SetRunning(true);
   m_just_divided = false;
   phenotype.IncTimeUsed();
 
@@ -497,18 +497,18 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
   phenotype.IncCPUCyclesUsed(); 
 
   // Kill creatures who have reached their max num of instructions executed.
-  const int max_executed = organism->GetMaxExecuted();
+  const int max_executed = m_organism->GetMaxExecuted();
   if((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
       || phenotype.GetToDie() == true) {
-    organism->Die();
+    m_organism->Die();
   }
   
   // Kill organisms that have no active programids.
   if(m_programids.size() == 0) {
-    organism->Die();
+    m_organism->Die();
   }
   
-  organism->SetRunning(false);
+  m_organism->SetRunning(false);
   CheckImplicitRepro(ctx);
   
   return true;
@@ -529,7 +529,7 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
 //    
 //#if BREAKPOINTS
 //    if (IP().FlagBreakpoint()) {
-//      organism->DoBreakpoint();
+//      m_organism->DoBreakpoint();
 //    }
 //#endif
 //    
@@ -568,13 +568,13 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
 //  } // Previous was executed once for each thread...
 //  
 //  // Kill creatures who have reached their max num of instructions executed
-//  const int max_executed = organism->GetMaxExecuted();
+//  const int max_executed = m_organism->GetMaxExecuted();
 //  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
 //      || phenotype.GetToDie() == true) {
-//    organism->Die();
+//    m_organism->Die();
 //  }
 //  
-//  organism->SetRunning(false);
+//  m_organism->SetRunning(false);
 //}
 
 /*! This method executes one instruction for one programid. */
@@ -585,7 +585,7 @@ bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstructi
   
 #ifdef EXECUTION_ERRORS
   // If there is an execution error, execute a random instruction.
-  if (organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
+  if (m_organism->TestExeErr()) actual_inst = m_inst_set->GetRandomInst(ctx);
 #endif /* EXECUTION_ERRORS */
   
   // Get the index for the instruction.
@@ -596,7 +596,7 @@ bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstructi
   
 #if INSTRUCTION_COUNT
   // instruction execution count incremeneted
-  organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
+  m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
 #endif
 	
   // And execute it.
@@ -605,7 +605,7 @@ bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstructi
 #if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
-    organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
+    m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
 #endif	
   
@@ -616,14 +616,14 @@ bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstructi
 void cHardwareGX::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
 {
   // Mark this organism as running...
-  bool prev_run_state = organism->IsRunning();
-  organism->SetRunning(true);
+  bool prev_run_state = m_organism->IsRunning();
+  m_organism->SetRunning(true);
   
   if (m_tracer != NULL) m_tracer->TraceHardware(*this, true);
   
   SingleProcess_ExecuteInst(ctx, inst);
   
-  organism->SetRunning(prev_run_state);
+  m_organism->SetRunning(prev_run_state);
 }
 
 
@@ -651,7 +651,7 @@ void cHardwareGX::PrintStatus(ostream& fp)
   if (m_current->GetReadable()) fp << " READABLE";
   fp << endl;
 
-  fp << organism->GetPhenotype().GetCPUCyclesUsed() << " ";
+  fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
   fp << "IP:" << IP().GetPosition() << "    ";
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
@@ -956,7 +956,7 @@ void cHardwareGX::InjectCode(const cGenome & inject_code, const int line_num)
 
   AddProgramid(injected);
   
-  organism->GetPhenotype().IsModified() = true;
+  m_organism->GetPhenotype().IsModified() = true;
 }
 
 
@@ -1147,11 +1147,11 @@ bool cHardwareGX::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
 {
   // must do divide before second allocate & must allocate positive amount...
   if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
     return false;
   }
   if (allocated_size < 1) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate of %d too small", allocated_size));
     return false;
   }
@@ -1161,7 +1161,7 @@ bool cHardwareGX::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   
   // Make sure that the new size is in range.
   if (new_size > MAX_CREATURE_SIZE  ||  new_size < MIN_CREATURE_SIZE) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Invalid post-allocate size (%d)",
                                new_size));
     return false;
@@ -1169,7 +1169,7 @@ bool cHardwareGX::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   
   const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too large (%d > %d)",
                                allocated_size, max_alloc_size));
     return false;
@@ -1178,7 +1178,7 @@ bool cHardwareGX::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   const int max_old_size =
     (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too small (%d > %d)",
                                old_size, max_old_size));
     return false;
@@ -1246,7 +1246,7 @@ bool cHardwareGX::Divide_Main(cAvidaContext& ctx)
 //  
 //  // Since the divide will now succeed, set up the information to be sent
 //  // to the new organism
-//  cGenome & child_genome = organism->ChildGenome();
+//  cGenome & child_genome = m_organism->ChildGenome();
 //  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
 //  
 //  // Cut off everything in this memory past the divide point.
@@ -1262,8 +1262,8 @@ bool cHardwareGX::Divide_Main(cAvidaContext& ctx)
 //  
 //#if INSTRUCTION_COSTS
 //  // reset first time instruction costs
-//  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-//    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+//  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+//    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
 //  }
 //#endif
 //  
@@ -1273,7 +1273,7 @@ bool cHardwareGX::Divide_Main(cAvidaContext& ctx)
 //  }
 //  
 //  // Activate the child
-//  bool parent_alive = organism->ActivateDivide(ctx);
+//  bool parent_alive = m_organism->ActivateDivide(ctx);
 //
 //  // Do more work if the parent lives through the birth of the offspring
 //  if (parent_alive) {
@@ -1426,7 +1426,7 @@ bool cHardwareGX::Inst_Call(cAvidaContext& ctx)
   }
   
   // If complement label was not found; record an error.
-  organism->Fault(FAULT_LOC_JUMP, FAULT_TYPE_ERROR,
+  m_organism->Fault(FAULT_LOC_JUMP, FAULT_TYPE_ERROR,
                   "call: no complement label");
   return false;
 }
@@ -1773,7 +1773,7 @@ bool cHardwareGX::Inst_Sqrt(cAvidaContext& ctx)
   const int value = GetRegister(src);
   if (value > 1) GetRegister(dst) = static_cast<int>(sqrt(static_cast<double>(value)));
   else if (value < 0) {
-    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "sqrt: value is negative");
+    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "sqrt: value is negative");
     return false;
   }
   return true;
@@ -1786,7 +1786,7 @@ bool cHardwareGX::Inst_Log(cAvidaContext& ctx)
   const int value = GetRegister(src);
   if (value >= 1) GetRegister(dst) = static_cast<int>(log(static_cast<double>(value)));
   else if (value < 0) {
-    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log: value is negative");
+    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log: value is negative");
     return false;
   }
   return true;
@@ -1799,7 +1799,7 @@ bool cHardwareGX::Inst_Log10(cAvidaContext& ctx)
   const int value = GetRegister(src);
   if (value >= 1) GetRegister(dst) = static_cast<int>(log10(static_cast<double>(value)));
   else if (value < 0) {
-    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log10: value is negative");
+    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "log10: value is negative");
     return false;
   }
   return true;
@@ -1839,11 +1839,11 @@ bool cHardwareGX::Inst_Div(cAvidaContext& ctx)
   const int op2 = REG_CX;
   if (GetRegister(op2) != 0) {
     if (0-INT_MAX > GetRegister(op1) && GetRegister(op2) == -1)
-      organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
+      m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: Float exception");
     else
       GetRegister(dst) = GetRegister(op1) / GetRegister(op2);
   } else {
-    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
+    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "div: dividing by 0");
     return false;
   }
   return true;
@@ -1857,7 +1857,7 @@ bool cHardwareGX::Inst_Mod(cAvidaContext& ctx)
   if (GetRegister(op2) != 0) {
     GetRegister(dst) = GetRegister(op1) % GetRegister(op2);
   } else {
-    organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
+    m_organism->Fault(FAULT_LOC_MATH, FAULT_TYPE_ERROR, "mod: modding by 0");
     return false;
   }
   return true;
@@ -1925,14 +1925,11 @@ bool cHardwareGX::Inst_Copy(cAvidaContext& ctx)
 
   const cHeadCPU from(this, GetRegister(op1));
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
-//  sCPUStats& cpu_stats = organism->CPUStats();
   
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();  // Mark this instruction as mutated...
     to.SetFlagCopyMut();  // Mark this instruction as copy mut...
-                              //organism->GetPhenotype().IsMutated() = true;
-//    cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(from.GetInst());
     to.ClearFlagMutated();  // UnMark
@@ -1940,7 +1937,6 @@ bool cHardwareGX::Inst_Copy(cAvidaContext& ctx)
   }
   
   to.SetFlagCopied();  // Set the copied flag.
-//  cpu_stats.mut_stats.copies_exec++;
   return true;
 }
 
@@ -1965,15 +1961,12 @@ bool cHardwareGX::Inst_WriteInst(cAvidaContext& ctx)
 
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
   const int value = Mod(GetRegister(src), m_inst_set->GetSize());
-//  sCPUStats& cpu_stats = organism->CPUStats();
 
   // Change value on a mutation...
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
-                                  //organism->GetPhenotype().IsMutated() = true;
-//    cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(cInstruction(value));
     to.ClearFlagMutated();     // UnMark
@@ -1981,7 +1974,6 @@ bool cHardwareGX::Inst_WriteInst(cAvidaContext& ctx)
   }
 
   to.SetFlagCopied();  // Set the copied flag.
-//  cpu_stats.mut_stats.copies_exec++;
   return true;
 }
 
@@ -1999,15 +1991,12 @@ bool cHardwareGX::Inst_StackWriteInst(cAvidaContext& ctx)
   const int op1 = REG_AX;
   cHeadCPU to(this, GetRegister(op1) + GetRegister(dst));
   const int value = Mod(StackPop(), m_inst_set->GetSize());
-//  sCPUStats& cpu_stats = organism->CPUStats();
   
   // Change value on a mutation...
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
-                                  //organism->GetPhenotype().IsMutated() = true;
-//    cpu_stats.mut_stats.copy_mut_count++;
   } else {
     to.SetInst(cInstruction(value));
     to.ClearFlagMutated();     // UnMark
@@ -2015,7 +2004,6 @@ bool cHardwareGX::Inst_StackWriteInst(cAvidaContext& ctx)
   }
   
   to.SetFlagCopied();  // Set the copied flag.
-//  cpu_stats.mut_stats.copies_exec++;
   return true;
 }
 
@@ -2029,11 +2017,10 @@ bool cHardwareGX::Inst_Compare(cAvidaContext& ctx)
   cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
   
   // Compare is dangerous -- it can cause mutations!
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     to.SetInst(m_inst_set->GetRandomInst(ctx));
     to.SetFlagMutated();      // Mark this instruction as mutated...
     to.SetFlagCopyMut();      // Mark this instruction as copy mut...
-                                  //organism->GetPhenotype().IsMutated() = true;
   }
   
   GetRegister(dst) = from.GetInst().GetOp() - to.GetInst().GetOp();
@@ -2050,7 +2037,7 @@ bool cHardwareGX::Inst_IfNCpy(cAvidaContext& ctx)
   const cHeadCPU to(this, GetRegister(op2) + GetRegister(op1));
   
   // Allow for errors in this test...
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     if (from.GetInst() != to.GetInst()) IP().Advance();
   } else {
     if (from.GetInst() == to.GetInst()) IP().Advance();
@@ -2090,13 +2077,13 @@ bool cHardwareGX::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
 {
   // Setup child
-  cCPUMemory& child_genome = organism->ChildGenome();
-  child_genome = organism->GetGenome();
-  organism->GetPhenotype().SetLinesCopied(organism->GetGenome().GetSize());
+  cCPUMemory& child_genome = m_organism->ChildGenome();
+  child_genome = m_organism->GetGenome();
+  m_organism->GetPhenotype().SetLinesCopied(m_organism->GetGenome().GetSize());
   
   Divide_DoMutations(ctx);
     
-  bool viable = Divide_CheckViable(ctx, organism->GetGenome().GetSize(), child_genome.GetSize());
+  bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), child_genome.GetSize());
   //if the offspring is not viable (due to splippage mutations), then what do we do?
   if (viable == false) return false;
   
@@ -2107,8 +2094,8 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
   
 #if INSTRUCTION_COSTS
   // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
 #endif
   
@@ -2117,7 +2104,7 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
   }
   
   // Activate the child
-  bool parent_alive = organism->ActivateDivide(ctx);
+  bool parent_alive = m_organism->ActivateDivide(ctx);
 
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
@@ -2130,7 +2117,7 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
 
 bool cHardwareGX::Inst_SpawnDeme(cAvidaContext& ctx)
 {
-  organism->SpawnDeme();
+  m_organism->SpawnDeme();
   return true;
 }
 
@@ -2138,7 +2125,7 @@ bool cHardwareGX::Inst_Kazi(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(0);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0);
   return true;
 }
 
@@ -2146,13 +2133,13 @@ bool cHardwareGX::Inst_Kazi5(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) organism->Kaboom(5);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5);
   return true;
 }
 
 bool cHardwareGX::Inst_Die(cAvidaContext& ctx)
 {
-  organism->Die();
+  m_organism->Die();
   return true; 
 }
 
@@ -2173,11 +2160,11 @@ bool cHardwareGX::Inst_Inject(cAvidaContext& ctx)
   
   // Make sure the creature will still be above the minimum size,
   if (inject_size <= 0) {
-    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
+    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
     return false; // (inject fails)
   }
   if (start_pos < MIN_CREATURE_SIZE) {
-    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
+    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }
   
@@ -2186,7 +2173,7 @@ bool cHardwareGX::Inst_Inject(cAvidaContext& ctx)
   GetMemory().Remove(start_pos, inject_size);
   
   // If we don't have a host, stop here.
-  cOrganism * host_organism = organism->GetNeighbor();
+  cOrganism * host_organism = m_organism->GetNeighbor();
   if (host_organism == NULL) return false;
   
   // Scan for the label to match...
@@ -2194,7 +2181,7 @@ bool cHardwareGX::Inst_Inject(cAvidaContext& ctx)
   
   // If there is no label, abort.
   if (GetLabel().GetSize() == 0) {
-    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
+    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
     return false; // (inject fails)
   }
   
@@ -2203,12 +2190,12 @@ bool cHardwareGX::Inst_Inject(cAvidaContext& ctx)
   
   const bool inject_signal = host_organism->GetHardware().InjectHost(GetLabel(), inject_code);
   if (inject_signal) {
-    organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
+    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
     return false; // Inject failed.
   }
   
   // Set the relevent flags.
-  organism->GetPhenotype().IsModifier() = true;
+  m_organism->GetPhenotype().IsModifier() = true;
   
   return inject_signal;
 }
@@ -2217,8 +2204,8 @@ bool cHardwareGX::Inst_Inject(cAvidaContext& ctx)
 bool cHardwareGX::Inst_InjectRand(cAvidaContext& ctx)
 {
   // Rotate to a random facing and then run the normal inject instruction
-  const int num_neighbors = organism->GetNeighborhoodSize();
-  organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+  m_organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
   Inst_Inject(ctx);
   return true;
 }
@@ -2228,9 +2215,9 @@ bool cHardwareGX::Inst_InjectRand(cAvidaContext& ctx)
 bool cHardwareGX::Inst_TaskGet(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_CX);
-  const int value = organism->GetNextInput(m_current->m_input_pointer);
+  const int value = m_organism->GetNextInput(m_current->m_input_pointer);
   GetRegister(reg_used) = value;
-  organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value);  // Check for tasks completed.
+  m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value);  // Check for tasks completed.
   return true;
 }
 
@@ -2240,33 +2227,33 @@ bool cHardwareGX::Inst_TaskGet(cAvidaContext& ctx)
 bool cHardwareGX::Inst_TaskGet2(cAvidaContext& ctx)
 {
   // Randomize the inputs so they can't save numbers
-  organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
+  m_organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
   m_current->m_input_buf.Clear();
-  //organism->ClearInput();                         // Also clear their input buffers, or they can still claim
+  //m_organism->ClearInput();                         // Also clear their input buffers, or they can still claim
                                                   // rewards for numbers no longer in their environment!
 
   const int reg_used_1 = FindModifiedRegister(REG_BX);
   const int reg_used_2 = FindNextRegister(reg_used_1);
   
-  const int value1 = organism->GetNextInput(m_current->m_input_pointer);;
+  const int value1 = m_organism->GetNextInput(m_current->m_input_pointer);;
   GetRegister(reg_used_1) = value1;
-  organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value1); 
+  m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value1); 
   
-  const int value2 = organism->GetNextInput(m_current->m_input_pointer);;
+  const int value2 = m_organism->GetNextInput(m_current->m_input_pointer);;
   GetRegister(reg_used_2) = value2;
-  organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value2); 
+  m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value2); 
   
   // Clear the task number
-  organism->GetPhenotype().ClearEffTaskCount();
+  m_organism->GetPhenotype().ClearEffTaskCount();
   
   return true;
 }
 
 bool cHardwareGX::Inst_TaskStackGet(cAvidaContext& ctx)
 {
-  const int value = organism->GetNextInput(m_current->m_input_pointer);
+  const int value = m_organism->GetNextInput(m_current->m_input_pointer);
   StackPush(value);
-  organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value); 
+  m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value); 
   return true;
 }
 
@@ -2274,7 +2261,7 @@ bool cHardwareGX::Inst_TaskStackLoad(cAvidaContext& ctx)
 {
   // @DMB - TODO: this should look at the input_size...
   for (int i = 0; i < 3; i++) 
-    StackPush( organism->GetNextInput(m_current->m_input_pointer) );
+    StackPush( m_organism->GetNextInput(m_current->m_input_pointer) );
   return true;
 }
 
@@ -2283,14 +2270,14 @@ bool cHardwareGX::Inst_TaskPut(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_BX);
   const int value = GetRegister(reg_used);
   GetRegister(reg_used) = 0;
-  organism->DoOutput(ctx, value);
+  m_organism->DoOutput(ctx, value);
   return true;
 }
 
 bool cHardwareGX::Inst_TaskPutResetInputs(cAvidaContext& ctx)
 {
   bool return_value = Inst_TaskPut(ctx);          // Do a normal put
-  organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
+  m_organism->GetOrgInterface().ResetInputs(ctx);   // Now re-randomize the inputs this organism sees
   m_current->m_input_buf.Clear();               // Also clear their input buffers, or they can still claim
                                                   // rewards for numbers no longer in their environment!
   return return_value;
@@ -2302,19 +2289,19 @@ bool cHardwareGX::Inst_TaskIO(cAvidaContext& ctx)
   
   // Do the "put" component
   const int value_out = GetRegister(reg_used);
-  organism->DoOutput(ctx, m_current->m_input_buf, m_current->m_output_buf, value_out);  // Check for tasks completed.
+  m_organism->DoOutput(ctx, m_current->m_input_buf, m_current->m_output_buf, value_out);  // Check for tasks completed.
   
   // Do the "get" component
-  const int value_in = organism->GetNextInput(m_current->m_input_pointer);
+  const int value_in = m_organism->GetNextInput(m_current->m_input_pointer);
   GetRegister(reg_used) = value_in;
-  organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value_in);  // Check for tasks completed.
+  m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value_in);  // Check for tasks completed.
   return true;
 }
 
 bool cHardwareGX::Inst_TaskIO_DecayBonus(cAvidaContext& ctx)
 {
   (void) Inst_TaskIO(ctx);  
-  organism->GetPhenotype().SetCurBonus(organism->GetPhenotype().GetCurBonus() * 0.99);
+  m_organism->GetPhenotype().SetCurBonus(m_organism->GetPhenotype().GetCurBonus() * 0.99);
   return true;
 }
 
@@ -2323,14 +2310,14 @@ bool cHardwareGX::Inst_TaskIO_Feedback(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_BX);
 
   //check cur_bonus before the output
-  double preOutputBonus = organism->GetPhenotype().GetCurBonus();
+  double preOutputBonus = m_organism->GetPhenotype().GetCurBonus();
   
   // Do the "put" component
   const int value_out = GetRegister(reg_used);
-  organism->DoOutput(ctx, m_current->m_input_buf, m_current->m_output_buf, value_out);  // Check for tasks completed.
+  m_organism->DoOutput(ctx, m_current->m_input_buf, m_current->m_output_buf, value_out);  // Check for tasks completed.
   
   //check cur_merit after the output
-  double postOutputBonus = organism->GetPhenotype().GetCurBonus(); 
+  double postOutputBonus = m_organism->GetPhenotype().GetCurBonus(); 
   
   //push the effect of the IO on merit (+,0,-) to the active stack
   if (preOutputBonus > postOutputBonus){
@@ -2348,9 +2335,9 @@ bool cHardwareGX::Inst_TaskIO_Feedback(cAvidaContext& ctx)
   }
   
   // Do the "get" component
-  const int value_in = organism->GetNextInput(m_current->m_input_pointer);
+  const int value_in = m_organism->GetNextInput(m_current->m_input_pointer);
   GetRegister(reg_used) = value_in;
-  organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value_in);  // Check for tasks completed.
+  m_organism->DoInput(m_current->m_input_buf, m_current->m_output_buf, value_in);  // Check for tasks completed.
   return true;
 }
 
@@ -2358,7 +2345,7 @@ bool cHardwareGX::Inst_MatchStrings(cAvidaContext& ctx)
 {
 	if (m_executedmatchstrings)
 		return false;
-	organism->DoOutput(ctx, 357913941);
+	m_organism->DoOutput(ctx, 357913941);
 	m_executedmatchstrings = true;
 	return true;
 }
@@ -2368,7 +2355,7 @@ bool cHardwareGX::Inst_Sell(cAvidaContext& ctx)
 	int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
 	int send_value = GetRegister(REG_BX);
 	int sell_price = m_world->GetConfig().SELL_PRICE.Get();
-	organism->SellValue(send_value, search_label, sell_price);
+	m_organism->SellValue(send_value, search_label, sell_price);
 	return true;
 }
 
@@ -2376,14 +2363,14 @@ bool cHardwareGX::Inst_Buy(cAvidaContext& ctx)
 {
 	int search_label = GetLabel().AsInt(3) % MARKET_SIZE;
 	int buy_price = m_world->GetConfig().BUY_PRICE.Get();
-	GetRegister(REG_BX) = organism->BuyValue(search_label, buy_price);
+	GetRegister(REG_BX) = m_organism->BuyValue(search_label, buy_price);
 	return true;
 }
 
 bool cHardwareGX::Inst_Send(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  organism->SendValue(GetRegister(reg_used));
+  m_organism->SendValue(GetRegister(reg_used));
   GetRegister(reg_used) = 0;
   return true;
 }
@@ -2391,7 +2378,7 @@ bool cHardwareGX::Inst_Send(cAvidaContext& ctx)
 bool cHardwareGX::Inst_Receive(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  GetRegister(reg_used) = organism->ReceiveValue();
+  GetRegister(reg_used) = m_organism->ReceiveValue();
   return true;
 }
 
@@ -2414,8 +2401,8 @@ bool cHardwareGX::DoSense(cAvidaContext& ctx, int conversion_method, double base
 {
   // Returns the log2 amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const tArray<double> res_count = organism->GetOrgInterface().GetResources() + 
-    organism->GetOrgInterface().GetDemeResources(organism->GetOrgInterface().GetDemeID());
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources() + 
+    m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID());
 
   // Arbitrarily set to BX since the conditionals use this directly.
   int reg_to_set = REG_BX;
@@ -2504,7 +2491,7 @@ bool cHardwareGX::DoSense(cAvidaContext& ctx, int conversion_method, double base
     on *= num_nops;
   }
   sensed_index+= GetLabel().AsInt(num_nops);
-  organism->GetPhenotype().IncSenseCount(sensed_index);
+  m_organism->GetPhenotype().IncSenseCount(sensed_index);
   
   return true; 
 
@@ -2518,12 +2505,12 @@ void cHardwareGX::DoDonate(cOrganism* to_org)
   const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
   const double merit_received = m_world->GetConfig().MERIT_RECEIVED.Get();
 
-  double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
+  double cur_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
   cur_merit -= merit_given;
   if(cur_merit < 0) cur_merit=0; 
 
   // Plug the current merit back into this organism and notify the scheduler.
-  organism->UpdateMerit(cur_merit);
+  m_organism->UpdateMerit(cur_merit);
   
   // Update the merit of the organism being donated to...
   double other_merit = to_org->GetPhenotype().GetMerit().GetDouble();
@@ -2534,18 +2521,18 @@ void cHardwareGX::DoDonate(cOrganism* to_org)
 bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
 {
   
-  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
-  organism->GetPhenotype().IncDonates();
-  organism->GetPhenotype().SetIsDonorRand();
+  m_organism->GetPhenotype().IncDonates();
+  m_organism->GetPhenotype().SetIsDonorRand();
 
   // Turn to a random neighbor, get it, and turn back...
-  int neighbor_id = ctx.GetRandom().GetInt(organism->GetNeighborhoodSize());
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
-  cOrganism * neighbor = organism->GetNeighbor();
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+  int neighbor_id = ctx.GetRandom().GetInt(m_organism->GetNeighborhoodSize());
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
   
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
@@ -2569,43 +2556,43 @@ bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
 
 bool cHardwareGX::Inst_DonateKin(cAvidaContext& ctx)
 {
-  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
   
-  organism->GetPhenotype().IncDonates();
-  organism->GetPhenotype().SetIsDonorKin();
+  m_organism->GetPhenotype().IncDonates();
+  m_organism->GetPhenotype().SetIsDonorKin();
 
 
   // Find the target as the first Kin found in the neighborhood.
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
   
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
-  cOrganism * neighbor = organism->GetNeighbor();
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
   
   // If there is no max distance, just take the random neighbor we're facing.
   const int max_dist = m_world->GetConfig().MAX_DONATE_KIN_DIST.Get();
   if (max_dist != -1) {
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
-    cGenotype* genotype = organism->GetGenotype();
+    cGenotype* genotype = m_organism->GetGenotype();
     while (neighbor_id < max_id) {
-      neighbor = organism->GetNeighbor();
+      neighbor = m_organism->GetNeighbor();
       if (neighbor != NULL &&
           genotype->GetPhyloDistance(neighbor->GetGenotype()) <= max_dist) {
         found = true;
         break;
       }
-      organism->Rotate(1);
+      m_organism->Rotate(1);
       neighbor_id++;
     }
     if (found == false) neighbor = NULL;
   }
   
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
   
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL){
@@ -2617,20 +2604,20 @@ bool cHardwareGX::Inst_DonateKin(cAvidaContext& ctx)
 
 bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
 {
-  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
-  organism->GetPhenotype().IncDonates();
-  organism->GetPhenotype().SetIsDonorEdit();
+  m_organism->GetPhenotype().IncDonates();
+  m_organism->GetPhenotype().SetIsDonorEdit();
   
   // Find the target as the first Kin found in the neighborhood.
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
   
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
-  cOrganism* neighbor = organism->GetNeighbor();
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism* neighbor = m_organism->GetNeighbor();
   
   // If there is no max edit distance, take the random neighbor we're facing.
   const int max_dist = m_world->GetConfig().MAX_DONATE_EDIT_DIST.Get();
@@ -2638,24 +2625,24 @@ bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
     while (neighbor_id < max_id) {
-      neighbor = organism->GetNeighbor();
+      neighbor = m_organism->GetNeighbor();
       int edit_dist = max_dist + 1;
       if (neighbor != NULL) {
-        edit_dist = cGenomeUtil::FindEditDistance(organism->GetGenome(),
+        edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),
                                                   neighbor->GetGenome());
       }
       if (edit_dist <= max_dist) {
         found = true;
         break;
       }
-      organism->Rotate(1);
+      m_organism->Rotate(1);
       neighbor_id++;
     }
     if (found == false) neighbor = NULL;
   }
   
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
   
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL){
@@ -2670,9 +2657,9 @@ bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
   //this donates to organisms that have this instruction anywhere
   //in their genome (see Dawkins 1976, The Selfish Gene, for 
   //the history of the theory and the name 'green beard'
-  cPhenotype & phenotype = organism->GetPhenotype();
+  cPhenotype & phenotype = m_organism->GetPhenotype();
 
-  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
@@ -2682,12 +2669,12 @@ bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
   // Find the target as the first match found in the neighborhood.
 
   //get the neighborhood size
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
 
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
-  cOrganism * neighbor = organism->GetNeighbor();
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
 
   int max_id = neighbor_id + num_neighbors;
  
@@ -2696,7 +2683,7 @@ bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 
   // rotate through orgs in neighborhood  
   while (neighbor_id < max_id) {
-      neighbor = organism->GetNeighbor();
+      neighbor = m_organism->GetNeighbor();
 
       //if neighbor exists, do they have the green beard gene?
       if (neighbor != NULL) {
@@ -2719,14 +2706,14 @@ bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
     	break;
       }
   
-      organism->Rotate(1);
+      m_organism->Rotate(1);
       neighbor_id++;
   }
 
     if (found == false) neighbor = NULL;
 
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
 
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -2745,9 +2732,9 @@ bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
   //(see Dawkins 1976, The Selfish Gene, for 
   //the history of the theory and the name 'green beard'
   //  cout << "i am about to donate to a green beard" << endl;
-  cPhenotype & phenotype = organism->GetPhenotype();
+  cPhenotype & phenotype = m_organism->GetPhenotype();
 
-  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
@@ -2757,12 +2744,12 @@ bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
   // Find the target as the first match found in the neighborhood.
 
   //get the neighborhood size
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
 
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
-  cOrganism * neighbor = organism->GetNeighbor();
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
 
   int max_id = neighbor_id + num_neighbors;
  
@@ -2771,7 +2758,7 @@ bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
 
   // rotate through orgs in neighborhood  
   while (neighbor_id < max_id) {
-      neighbor = organism->GetNeighbor();
+      neighbor = m_organism->GetNeighbor();
       //if neighbor exists, AND if their parent attempted to donate,
       if (neighbor != NULL && neighbor->GetPhenotype().IsDonorTrueGbLast()) {
           const cGenome & neighbor_genome = neighbor->GetGenome();
@@ -2793,14 +2780,14 @@ bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
     	break;
       }
   
-      organism->Rotate(1);
+      m_organism->Rotate(1);
       neighbor_id++;
   }
 
     if (found == false) neighbor = NULL;
 
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
 
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -2820,9 +2807,9 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
   //(see Dawkins 1976, The Selfish Gene, for 
   //the history of the theory and the name 'green beard'
   //  cout << "i am about to donate to a green beard" << endl;
-  cPhenotype & phenotype = organism->GetPhenotype();
+  cPhenotype & phenotype = m_organism->GetPhenotype();
 
-  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
@@ -2834,12 +2821,12 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
   // Find the target as the first match found in the neighborhood.
 
   //get the neighborhood size
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
 
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
-  cOrganism * neighbor = organism->GetNeighbor();
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
 
   int max_id = neighbor_id + num_neighbors;
  
@@ -2848,7 +2835,7 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 
   // rotate through orgs in neighborhood  
   while (neighbor_id < max_id) {
-      neighbor = organism->GetNeighbor();
+      neighbor = m_organism->GetNeighbor();
       //if neighbor exists, AND if their parent attempted to donate >= threshhold,
       if (neighbor != NULL && neighbor->GetPhenotype().GetNumThreshGbDonationsLast()>= m_world->GetConfig().MIN_GB_DONATE_THRESHOLD.Get() ) {
           const cGenome & neighbor_genome = neighbor->GetGenome();
@@ -2870,14 +2857,14 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
     	break;
       }
   
-      organism->Rotate(1);
+      m_organism->Rotate(1);
       neighbor_id++;
   }
 
     if (found == false) neighbor = NULL;
 
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
 
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -2905,7 +2892,7 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
   // (see Dawkins 1976, The Selfish Gene, for 
   // the history of the theory and the name 'green beard'
   //  cout << "i am about to donate to a green beard" << endl;
-  cPhenotype & phenotype = organism->GetPhenotype();
+  cPhenotype & phenotype = m_organism->GetPhenotype();
 
   if (phenotype.GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
@@ -2920,12 +2907,12 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
   // Find the target as the first match found in the neighborhood.
 
   //get the neighborhood size
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
 
   // Turn to face a random neighbor
   int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(1);
-  cOrganism * neighbor = organism->GetNeighbor();
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
 
   int max_id = neighbor_id + num_neighbors;
  
@@ -2943,7 +2930,7 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
   //cout << " quanta thresh=  " << quanta_donate_thresh;
   // rotate through orgs in neighborhood  
   while (neighbor_id < max_id) {
-      neighbor = organism->GetNeighbor();
+      neighbor = m_organism->GetNeighbor();
       //if neighbor exists, AND if their parent attempted to donate >= threshhold,
       if (neighbor != NULL &&
 	  neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() >= quanta_donate_thresh) {
@@ -2967,14 +2954,14 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
     	break;
       }
   
-      organism->Rotate(1);
+      m_organism->Rotate(1);
       neighbor_id++;
   }
 
     if (found == false) neighbor = NULL;
 
   // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) organism->Rotate(-1);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
 
   // Donate only if we have found a close enough relative...
   if (neighbor != NULL) {
@@ -2991,22 +2978,22 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
 
 bool cHardwareGX::Inst_DonateNULL(cAvidaContext& ctx)
 {
-  if (organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
     return false;
   }
 
-  organism->GetPhenotype().IncDonates();
-  organism->GetPhenotype().SetIsDonorNull();
+  m_organism->GetPhenotype().IncDonates();
+  m_organism->GetPhenotype().SetIsDonorNull();
   
   // This is a fake donate command that causes the organism to lose merit,
   // but no one else to gain any.
   
   const double merit_given = m_world->GetConfig().MERIT_GIVEN.Get();
-  double cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
+  double cur_merit = m_organism->GetPhenotype().GetMerit().GetDouble();
   cur_merit -= merit_given;
   
   // Plug the current merit back into this organism and notify the scheduler.
-  organism->UpdateMerit(cur_merit);
+  m_organism->UpdateMerit(cur_merit);
   
   return true;
 }
@@ -3041,7 +3028,7 @@ bool cHardwareGX::Inst_MemSize(cAvidaContext& ctx)
 
 bool cHardwareGX::Inst_RotateL(cAvidaContext& ctx)
 {
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
   
   // If this organism has no neighbors, ignore rotate.
   if (num_neighbors == 0) return false;
@@ -3049,7 +3036,7 @@ bool cHardwareGX::Inst_RotateL(cAvidaContext& ctx)
   ReadLabel();
   
   // Always rotate at least once.
-  organism->Rotate(-1);
+  m_organism->Rotate(-1);
   
   // If there is no label, then the one rotation was all we want.
   if (!GetLabel().GetSize()) return true;
@@ -3057,27 +3044,27 @@ bool cHardwareGX::Inst_RotateL(cAvidaContext& ctx)
   // Rotate until a complement label is found (or all have been checked).
   GetLabel().Rotate(1, NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
-    cOrganism* neighbor = organism->GetNeighbor();
+    cOrganism* neighbor = m_organism->GetNeighbor();
     
     if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
     
     // Otherwise keep rotating...
-    organism->Rotate(-1);
+    m_organism->Rotate(-1);
   }
   return true;
 }
 
 bool cHardwareGX::Inst_RotateR(cAvidaContext& ctx)
 {
-  const int num_neighbors = organism->GetNeighborhoodSize();
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
   
-  // If this organism has no neighbors, ignore rotate.
+  // If this m_organism has no neighbors, ignore rotate.
   if (num_neighbors == 0) return false;
   
   ReadLabel();
   
   // Always rotate at least once.
-  organism->Rotate(1);
+  m_organism->Rotate(1);
   
   // If there is no label, then the one rotation was all we want.
   if (!GetLabel().GetSize()) return true;
@@ -3085,12 +3072,12 @@ bool cHardwareGX::Inst_RotateR(cAvidaContext& ctx)
   // Rotate until a complement label is found (or all have been checked).
   GetLabel().Rotate(1, NUM_NOPS);
   for (int i = 1; i < num_neighbors; i++) {
-    cOrganism* neighbor = organism->GetNeighbor();
+    cOrganism* neighbor = m_organism->GetNeighbor();
     
     if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
     
     // Otherwise keep rotating...
-    organism->Rotate(1);
+    m_organism->Rotate(1);
   }
   return true;
 }
@@ -3099,15 +3086,15 @@ bool cHardwareGX::Inst_SetCopyMut(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   const int new_mut_rate = Max(GetRegister(reg_used), 1 );
-  organism->SetCopyMutProb(static_cast<double>(new_mut_rate) / 10000.0);
+  m_organism->SetCopyMutProb(static_cast<double>(new_mut_rate) / 10000.0);
   return true;
 }
 
 bool cHardwareGX::Inst_ModCopyMut(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  const double new_mut_rate = organism->GetCopyMutProb() + static_cast<double>(GetRegister(reg_used)) / 10000.0;
-  if (new_mut_rate > 0.0) organism->SetCopyMutProb(new_mut_rate);
+  const double new_mut_rate = m_organism->GetCopyMutProb() + static_cast<double>(GetRegister(reg_used)) / 10000.0;
+  if (new_mut_rate > 0.0) m_organism->SetCopyMutProb(new_mut_rate);
   return true;
 }
 
@@ -3116,7 +3103,7 @@ bool cHardwareGX::Inst_ModCopyMut(cAvidaContext& ctx)
 bool cHardwareGX::Inst_ZeroEnergyUsed(cAvidaContext& ctx)
 {
   // Typically, this instruction should be triggered by a REACTION
-  organism->GetPhenotype().SetTimeUsed(0); 
+  m_organism->GetPhenotype().SetTimeUsed(0); 
   return true;  
 }
 
@@ -3197,7 +3184,6 @@ bool cHardwareGX::Inst_HeadRead(cAvidaContext& ctx)
   
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
   GetHead(head_id).Adjust();
-//  sCPUStats & cpu_stats = organism->CPUStats();
   
     // <--- GX addition
   if ( !m_programids[GetHead(head_id).GetMemSpace()]->GetReadable() ) return false;
@@ -3205,16 +3191,14 @@ bool cHardwareGX::Inst_HeadRead(cAvidaContext& ctx)
   
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
-//    cpu_stats.mut_stats.copy_mut_count++;  // @CAO, hope this is good!
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
   GetRegister(dst) = read_inst;
   ReadInst(read_inst);
   
-//  cpu_stats.mut_stats.copies_exec++;  // @CAO, this too..
   GetHead(head_id).Advance();
   return true;
 }
@@ -3247,7 +3231,6 @@ bool cHardwareGX::Inst_HeadCopy(cAvidaContext& ctx)
   // For the moment, this cannot be nop-modified.
   cHeadCPU& read_head = GetHead(nHardware::HEAD_READ);
   cHeadCPU& write_head = GetHead(nHardware::HEAD_WRITE);
-//  sCPUStats& cpu_stats = organism->CPUStats();
   
   read_head.Adjust();
   write_head.Adjust();
@@ -3255,14 +3238,11 @@ bool cHardwareGX::Inst_HeadCopy(cAvidaContext& ctx)
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
-  if (organism->TestCopyMut(ctx)) {
+  if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx);
-//    cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
   }
-  
-//  cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
@@ -3277,7 +3257,6 @@ bool cHardwareGX::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
   // For the moment, this cannot be nop-modified.
   cHeadCPU & read_head = GetHead(nHardware::HEAD_READ);
   cHeadCPU & write_head = GetHead(nHardware::HEAD_WRITE);
-//  sCPUStats & cpu_stats = organism->CPUStats();
   
   read_head.Adjust();
   write_head.Adjust();
@@ -3285,15 +3264,11 @@ bool cHardwareGX::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
   ReadInst(read_inst.GetOp());
-  if ( ctx.GetRandom().P(organism->GetCopyMutProb() / reduction) ) {
+  if ( ctx.GetRandom().P(m_organism->GetCopyMutProb() / reduction) ) {
     read_inst = m_inst_set->GetRandomInst(ctx);
-//    cpu_stats.mut_stats.copy_mut_count++; 
     write_head.SetFlagMutated();
     write_head.SetFlagCopyMut();
-    //organism->GetPhenotype().IsMutated() = true;
   }
-  
-//  cpu_stats.mut_stats.copies_exec++;
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
@@ -3608,13 +3583,13 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
   
   bool ret = true;
   // Normal h-copy, unless a deletion occured
-  if (!organism->TestDelMut(ctx)) {
+  if (!m_organism->TestDelMut(ctx)) {
       // Normal h-copy
     ret = Inst_HeadCopy(ctx);
   }
   
   // Divide Insertion
-  if (organism->TestInsMut(ctx)) {
+  if (m_organism->TestInsMut(ctx)) {
     write.GetMemory().Insert(write.GetPosition(), GetInstSet().GetRandomInst(ctx));
     // Advance the write head;
     write++;
@@ -3678,8 +3653,8 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   m_reset_inputs = true;
 
   //This stuff is usually set by Divide_CheckViable, leaving it zero causes problems
-  organism->GetPhenotype().SetLinesExecuted(1);
-  organism->GetPhenotype().SetLinesCopied(1);
+  m_organism->GetPhenotype().SetLinesExecuted(1);
+  m_organism->GetPhenotype().SetLinesCopied(1);
   
   // Let's make sure that things seem sane.
   cHeadProgramid& read = GetHead(nHardware::HEAD_READ); // The parent.
@@ -3800,7 +3775,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   
   // Ok, we're good to go.  We have to create the offspring's genome and delete the
   // offspring's programids from m_programids.
-  cCPUMemory& child_genome = organism->ChildGenome();
+  cCPUMemory& child_genome = m_organism->ChildGenome();
   child_genome.Resize(1);
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS) std::cout << "-=OFFSPRING=-" << endl;
   for(programid_list::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
@@ -3824,7 +3799,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   }
     
   // Activate the child
-  organism->ActivateDivide(ctx);
+  m_organism->ActivateDivide(ctx);
 
   // Mother viability checks could go here.  
   m_just_divided = true;
@@ -3844,11 +3819,11 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
   // Modified Allocate_Main()
     // must do divide before second allocate & must allocate positive amount...
   if (m_world->GetConfig().REQUIRE_ALLOCATE.Get() && m_mal_active == true) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR, "Allocate already active");
     return false;
   }
   if (allocated_size < 1) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate of %d too small", allocated_size));
     return false;
   }
@@ -3856,7 +3831,7 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
   
   const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too large (%d > %d)",
                                allocated_size, max_alloc_size));
     return false;
@@ -3865,7 +3840,7 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
   const int max_old_size =
     (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
-    organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
+    m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too small (%d > %d)",
                                old_size, max_old_size));
     return false;
@@ -3910,12 +3885,12 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
   int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
 
   // Make sure this divide will produce a viable offspring.
-  const bool viable = Divide_CheckViable(ctx, organism->GetGenome().GetSize(), child_end);
+  const bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), child_end);
   if (viable == false) return false;
 
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = organism->ChildGenome();
+  cGenome & child_genome = m_organism->ChildGenome();
   child_genome = m_programids[write_head.GetMemSpace()]->GetMemory();
   child_genome = cGenomeUtil::Crop(child_genome, 0, child_end);
 
@@ -3930,8 +3905,8 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
   
 #if INSTRUCTION_COSTS
   // reset first time instruction costs
-  for (int i = 0; i < inst_ft_cost.GetSize(); i++) {
-    inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
 #endif
   
@@ -3941,7 +3916,7 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
   }
   
   // Activate the child
-  bool parent_alive = organism->ActivateDivide(ctx);
+  bool parent_alive = m_organism->ActivateDivide(ctx);
 
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
