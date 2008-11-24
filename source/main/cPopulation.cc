@@ -1532,39 +1532,6 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // to rotate its heritable merit to its current merit.
   if (target_successfully_seeded) target_deme.UpdateDemeMerit(source_deme);
   source_deme.UpdateDemeMerit();
-  /*
-  bool source_deme_resource_reset(true), target_deme_resource_reset(true);
-  switch(m_world->GetConfig().DEMES_RESET_RESOURCES.Get()) {
-    case 0:
-      // reset resource in both demes
-      source_deme_resource_reset = target_deme_resource_reset = true;
-      break;
-    case 1:
-      // reset resource only in target deme
-      source_deme_resource_reset = false;
-      target_deme_resource_reset = true;
-      break;
-    case 2:
-      // do not reset either deme resource
-      source_deme_resource_reset = target_deme_resource_reset = false;
-      break;
-    default:
-      cout << "Undefined value " << m_world->GetConfig().DEMES_RESET_RESOURCES.Get() << " for DEMES_RESET_RESOURCES\n";
-      exit(1);
-  }
-    
-  // Reset both demes, in case they have any cleanup work to do.
-  // Must reset target first for stats to be correctly updated!
-  if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
-    // Transfer energy from source to target if we're using the energy model.
-    if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset, offspring_deme_energy);
-    source_deme.DivideReset(source_deme, source_deme_resource_reset, parent_deme_energy);
-  } else {
-    // Default; reset both source and target.
-    if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset);
-    source_deme.DivideReset(source_deme, source_deme_resource_reset);
-  }
-  */
   
   // do our post-replication stats tracking.
   m_world->GetStats().DemePostReplication(source_deme, target_deme);
