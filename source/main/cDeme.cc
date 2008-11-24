@@ -446,6 +446,25 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
   }
 }
 
+double cDeme::GetCellEnergy(int absolute_cell_id) const {
+  assert(cell_ids[0] <= absolute_cell_id);
+  assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
+
+  double total_energy = 0.0;
+  int relative_cell_id = GetRelativeCellID(absolute_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  
+  // sum all energy resources
+  for(int i = 0; i < energy_res_ids.GetSize(); i++) {
+    if(cell_resources[energy_res_ids[i]] > 0.0) {
+      total_energy += cell_resources[energy_res_ids[i]];
+      cell_resources[energy_res_ids[i]] *= -1.0;
+    }
+  }
+
+  return total_energy;
+}
+
 double cDeme::GetAndClearCellEnergy(int absolute_cell_id) {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
@@ -577,7 +596,7 @@ double cDeme::CalculateTotalEnergy() const {
       cPhenotype& phenotype = organism->GetPhenotype();
       energy_sum += phenotype.GetStoredEnergy();
     } else {
-      double energy_in_cell = cell.UptakeCellEnergy(1.0);
+      double energy_in_cell = GetCellEnergy(cellid);
       energy_sum += energy_in_cell * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get();
     }
   }

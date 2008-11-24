@@ -234,6 +234,7 @@ public:
   void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
   void ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id);
+  double GetCellEnergy(int absolute_cell_id) const;
   double GetAndClearCellEnergy(int absolute_cell_id);
   void GiveBackCellEnergy(int absolute_cell_id, double value);
   void SetupDemeRes(int id, cResource * res, int verbosity);

@@ -1562,6 +1562,49 @@ public:
 	}
 };
 
+class cActionCompeteDemesByTaskCountAndEfficiency : public cAbstractCompeteDemes {
+private:
+  double _initial_deme_energy;
+	int _task_num;	// the task num to use when calculating fitness,
+						// defaults to 0 (the first task)
+public:
+	cActionCompeteDemesByTaskCountAndEfficiency(cWorld* world, const cString& args) 
+			: cAbstractCompeteDemes(world, args) {
+  	cString largs(args);
+    if (largs.GetSize() == 0) {
+      cerr << "CompeteDemesByTaskCountAndEfficiency must be given an initial deme energy amount" << endl;
+      exit(1);
+    }
+
+    _initial_deme_energy = largs.PopWord().AsDouble();
+    cout << "initial deme energy = " << _initial_deme_energy << endl;
+    assert(_initial_deme_energy > 0);
+
+		if (largs.GetSize() > 1) {
+			_task_num = largs.PopWord().AsInt();
+			assert(_task_num >= 0);
+			assert(_task_num < m_world->GetEnvironment().GetNumTasks());
+		} else {
+			_task_num = 0;
+		}
+	}
+	~cActionCompeteDemesByTaskCountAndEfficiency() {}
+
+	static const cString GetDescription() { 
+		return "Competes demes according to the number of times a given task has been completed within that deme and the efficiency with which it was done"; 
+	}
+
+	virtual double Fitness(const cDeme& deme) {
+    double energy_used = _initial_deme_energy - deme.CalculateTotalEnergy();
+		double fitness = 
+      pow(deme.GetCurTaskExeCount()[_task_num] * (_initial_deme_energy/energy_used),2);
+    if (fitness == 0.0) fitness = 0.1;
+    cout  << "Deme " << deme.GetID() << ": used " << energy_used << " energy" 
+          << " fitness=" << fitness << endl;
+    return fitness;
+	}
+};
+
 
 /*! Send an artificial flash to a single organism in each deme in the population
  at a specified period.
@@ -2445,6 +2488,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSwapCells>("SwapCells");
 
   action_lib->Register<cActionCompeteDemesByTaskCount>("CompeteDemesByTaskCount");
+  action_lib->Register<cActionCompeteDemesByTaskCountAndEfficiency>("CompeteDemesByTaskCountAndEfficiency");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
