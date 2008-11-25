@@ -331,6 +331,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-divide0.001", &cHardwareCPU::Inst_HeadDivide0_001, nInstFlag::STALL),
     
     // High-level instructions
+		tInstLibEntry<tMethod>("repro_deme", &cHardwareCPU::Inst_ReproDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-sex", &cHardwareCPU::Inst_ReproSex, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-A", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
@@ -2644,6 +2645,20 @@ void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
       child_genome.Insert(mut_line, transposon_inst);
     }
   }
+}
+
+
+// Inst_ReproDeme replicates a deme using cPopulation::ReplicateDeme.
+// It is similar to Inst_SpawnDeme, but the implementation of Inst_SpawnDeme doesn't contain many new deme-level replication features
+bool cHardwareCPU::Inst_ReproDeme(cAvidaContext& ctx) {
+	
+	cDeme* sourceDeme = m_organism->GetOrgInterface().GetDeme();
+	if(sourceDeme == NULL)
+		return false; // in test CPU
+	
+	// this function will become to depend on a predicate, but I am still thinking of how to do this (BEB)
+	m_world->GetPopulation().ReplicateDeme(*sourceDeme);
+	return true;
 }
 
 bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)

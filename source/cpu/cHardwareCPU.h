@@ -429,6 +429,7 @@ private:
   bool Inst_InjectRand(cAvidaContext& ctx);
   bool Inst_InjectThread(cAvidaContext& ctx);
   bool Inst_Transposon(cAvidaContext& ctx);
+	bool Inst_ReproDeme(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
   bool Inst_ReproSex(cAvidaContext& ctx);
   bool Inst_TaskPutRepro(cAvidaContext& ctx);

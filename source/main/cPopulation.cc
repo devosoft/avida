@@ -1528,6 +1528,41 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     target_successfully_seeded = SeedDeme(source_deme, target_deme);
   }
   
+	
+	// split energy from parent deme evenly among orgs in child deme
+	if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 0) {
+		assert(source_deme.GetOrgCount() > 0 && target_deme.GetOrgCount() > 0);
+		if(offspring_deme_energy < 0.0)
+			offspring_deme_energy = 0.0;
+		if(parent_deme_energy < 0.0)
+			parent_deme_energy = 0.0;	
+	 
+		// split deme energy evenly between organisms in source deme
+		for (int i=0; i < source_deme.GetSize(); i++) {
+			int cellid = source_deme.GetCellID(i);
+			cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+			if(cell.IsOccupied()) {
+				cOrganism* organism = cell.GetOrganism();
+				cPhenotype& phenotype = organism->GetPhenotype();
+				phenotype.SetEnergy(phenotype.GetStoredEnergy() + parent_deme_energy/static_cast<double>(source_deme.GetOrgCount()));
+				phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+			}
+		}
+		
+		// split deme energy evenly between organisms in target deme
+		for (int i=0; i < target_deme.GetSize(); i++) {
+			int cellid = target_deme.GetCellID(i);
+			cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+			if(cell.IsOccupied()) {
+				cOrganism* organism = cell.GetOrganism();
+				cPhenotype& phenotype = organism->GetPhenotype();
+				phenotype.SetEnergy(phenotype.GetStoredEnergy() + offspring_deme_energy/static_cast<double>(target_deme.GetOrgCount()));
+				phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+			}
+		}		
+	}
+
+	
   // The source's merit must be transferred to the target, and then the source has
   // to rotate its heritable merit to its current merit.
   if (target_successfully_seeded) target_deme.UpdateDemeMerit(source_deme);

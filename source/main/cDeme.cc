@@ -230,27 +230,9 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   // Handle energy model
   if (m_world->GetConfig().ENERGY_ENABLED.Get())
   {
-    assert(cur_org_count>0);
-    
     total_energy_testament = 0.0;
     
-    if(m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 0) {
-      total_org_energy = deme_energy;
-      if(total_org_energy < 0.0)
-        total_org_energy = 0.0;
-      
-      // split deme energy evenly between organisms in deme
-      for (int i=0; i<GetSize(); i++) {
-        int cellid = GetCellID(i);
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-        if(cell.IsOccupied()) {
-          cOrganism* organism = cell.GetOrganism();
-          cPhenotype& phenotype = organism->GetPhenotype();
-          phenotype.SetEnergy(phenotype.GetStoredEnergy() + total_org_energy/static_cast<double>(cur_org_count));
-          phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
-        }
-      }
-    } else if(m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 1) {
+    if(m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 1) {
       // split deme energy evenly between cell in deme
       additional_resource = deme_energy;  // spacial resource handles resource division
     }
