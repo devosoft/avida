@@ -1577,7 +1577,7 @@ public:
     }
 
     _initial_deme_energy = largs.PopWord().AsDouble();
-    cout << "initial deme energy = " << _initial_deme_energy << endl;
+//    cout << "initial deme energy = " << _initial_deme_energy << endl;
     assert(_initial_deme_energy > 0);
 
 		if (largs.GetSize() > 1) {
@@ -1599,8 +1599,8 @@ public:
 		double fitness = 
       pow(deme.GetCurTaskExeCount()[_task_num] * (_initial_deme_energy/energy_used),2);
     if (fitness == 0.0) fitness = 0.1;
-    cout  << "Deme " << deme.GetID() << ": used " << energy_used << " energy" 
-          << " fitness=" << fitness << endl;
+//    cout  << "Deme " << deme.GetID() << ": used " << energy_used << " energy" 
+//          << " fitness=" << fitness << endl;
     return fitness;
 	}
 };
