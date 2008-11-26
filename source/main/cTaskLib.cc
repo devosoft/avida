@@ -2862,13 +2862,13 @@ double cTaskLib::Task_CommNot(cTaskContext& ctx) const
 
 double cTaskLib::Task_NetSend(cTaskContext& ctx) const
 {
-  return 1.0 * ctx.GetNetCompleted();
+  return 1.0 * ctx.GetOrganism()->NetCompleted();
 }
 
 
 double cTaskLib::Task_NetReceive(cTaskContext& ctx) const
 {
-  if (ctx.NetIsValid()) return 1.0;
+  if (ctx.GetOrganism()->NetIsValid()) return 1.0;
   return 0.0;
 }
 

@@ -258,29 +258,31 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)
 {
-  doOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
+  if (m_net) m_net->valid = false;
+  doOutput(ctx, m_input_buf, m_output_buf, on_divide);
 }
 
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   m_output_buf.Add(value);
-  doOutput(ctx, m_input_buf, m_output_buf, false, NetValidate(ctx, value));
+  NetValidate(ctx, value);
+  doOutput(ctx, m_input_buf, m_output_buf, false);
 }
 
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
   output_buffer.Add(value);
-  doOutput(ctx, input_buffer, output_buffer, false, NetValidate(ctx, value));
+  NetValidate(ctx, value);
+  doOutput(ctx, input_buffer, output_buffer, false);
 }
 
 
 void cOrganism::doOutput(cAvidaContext& ctx, 
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
-                         const bool on_divide,
-                         const bool net_valid)
+                         const bool on_divide)
 {
   const int deme_id = m_interface->GetDemeID();
   const tArray<double> & global_resource_count = m_interface->GetResources();
@@ -325,7 +327,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
   cTaskContext taskctx(this, input_buffer, output_buffer, other_input_list, other_output_list,
-                       m_hardware->GetExtendedMemory(), net_valid, 0, on_divide, received_messages_point);
+                       m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
                        
   //combine global and deme resource counts
   const tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
@@ -434,24 +436,23 @@ bool cOrganism::NetReceive(int& value)
   return true;
 }
 
-bool cOrganism::NetValidate(cAvidaContext& ctx, int value)
+void cOrganism::NetValidate(cAvidaContext& ctx, int value)
 {
-  if(!m_net) return false;
+  if (!m_net) return;
 
-  assert(m_net);
+  m_net->valid = false;
   
-  if (0xFFFF0000 & value) return false;
+  if (0xFFFF0000 & value) return;
   
   for (int i = 0; i < m_net->received.GetSize(); i++) {
     cOrgSinkMessage* msg = m_net->received[i];
     if (!msg->GetValidated() && (msg->GetOriginalValue() & 0xFFFF) == value) {
       msg->SetValidated();
       assert(m_interface);
-      return m_interface->NetRemoteValidate(ctx, msg);
+      m_net->valid = m_interface->NetRemoteValidate(ctx, msg);
+      break;
     }
   }
-    
-  return false;
 }
 
 bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
@@ -469,7 +470,9 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
   }
   if (!found) return false;
 
-  int completed = 0;
+  m_net->valid = false;
+  int& completed = m_net->completed;
+  completed = 0;
   while (m_net->last_seq < m_net->seq.GetSize() && m_net->seq[m_net->last_seq].GetReceived()) {
     completed++;
     m_net->last_seq++;
@@ -512,7 +515,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     tArray<int> insts_triggered;
 
     cTaskContext taskctx(this, m_input_buf, m_output_buf, other_input_list, other_output_list,
-                         m_hardware->GetExtendedMemory(), false, completed);
+                         m_hardware->GetExtendedMemory());
     m_phenotype.TestOutput(ctx, taskctx, resource_count, m_rbins, res_change, insts_triggered);
     m_interface->UpdateResources(res_change);
     

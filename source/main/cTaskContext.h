@@ -51,8 +51,6 @@ private:
   const tList<tBuffer<int> >& m_other_input_buffers;
   const tList<tBuffer<int> >& m_other_output_buffers;
   const tArray<int>& m_ext_mem;
-  bool m_net_valid;
-  int m_net_completed;
   tBuffer<int>* m_received_messages;
   int m_logic_id;
   bool m_on_divide;
@@ -68,7 +66,7 @@ private:
 public:
   cTaskContext(cOrganism* organism, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
-               const tArray<int>& ext_mem, bool in_net_valid, int in_net_completed, bool in_on_divide = false,
+               const tArray<int>& ext_mem, bool in_on_divide = false,
                tBuffer<int>* in_received_messages = NULL)
     : m_organism(organism)
     , m_input_buffer(inputs)
@@ -76,8 +74,6 @@ public:
     , m_other_input_buffers(other_inputs)
     , m_other_output_buffers(other_outputs)
     , m_ext_mem(ext_mem)
-    , m_net_valid(in_net_valid)
-    , m_net_completed(in_net_completed)
     , m_received_messages(in_received_messages)
     , m_logic_id(0)
     , m_on_divide(in_on_divide)
@@ -93,8 +89,6 @@ public:
   inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return m_other_input_buffers; }
   inline const tList<tBuffer<int> >& GetNeighborhoodOutputBuffers() { return m_other_output_buffers; }
   inline const tArray<int>& GetExtendedMemory() const { return m_ext_mem; }
-  inline bool NetIsValid() const { return m_net_valid; }
-  inline int GetNetCompleted() const { return m_net_completed; }
   inline tBuffer<int>* GetReceivedMessages() { return m_received_messages; }
   inline int GetLogicId() const { return m_logic_id; }
   inline void SetLogicId(int v) { m_logic_id = v; }

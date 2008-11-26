@@ -143,8 +143,10 @@ private:
     tSmartArray<cOrgSourceMessage> sent;
     tSmartArray<cOrgSeqMessage> seq; 
     int last_seq;
+    bool valid;
+    int completed;
     
-    cNetSupport() : last_seq(0) { ; }
+    cNetSupport() : last_seq(0), valid(false), completed(0) { ; }
     ~cNetSupport();
   };
   cNetSupport* m_net;
@@ -302,9 +304,11 @@ public:
   void NetSend(cAvidaContext& ctx, int value);
   cOrgSinkMessage* NetPop() { return m_net->pending.PopRear(); }
   bool NetReceive(int& value);
-  bool NetValidate(cAvidaContext& ctx, int value);
+  void NetValidate(cAvidaContext& ctx, int value);
   bool NetRemoteValidate(cAvidaContext& ctx, int value);
   int NetLast() { return m_net->last_seq; }
+  bool NetIsValid() { if (m_net) return m_net->valid; else return false; }
+  int NetCompleted() { if (m_net) return m_net->completed; else return 0; }
 
   
   // --------  Parasite Interactions  --------
@@ -478,8 +482,7 @@ private:
   void initialize(cAvidaContext& ctx);
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
-  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, 
-                tBuffer<int>& output_buffer, const bool on_divide, const bool net_valid);
+  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
 };
 
 
