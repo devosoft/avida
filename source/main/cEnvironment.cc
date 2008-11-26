@@ -751,8 +751,11 @@ bool cEnvironment::LoadStateGrid(cString desc)
   schema.AddEntry("states", 0, cArgSchema::SCHEMA_STRING);
   schema.AddEntry("grid", 1, cArgSchema::SCHEMA_STRING);
 
+  // Load the Arguments
   tList<cString> errors;
   tAutoRelease<cArgContainer> args(cArgContainer::Load(desc, schema, &errors));
+  
+  // Check for errors loading the arguments
   if (args.IsNull() || errors.GetSize() > 0) {
     cString* err_str;
     while ((err_str = errors.Pop()) != NULL) {
@@ -762,6 +765,7 @@ bool cEnvironment::LoadStateGrid(cString desc)
     return false;
   }
   
+  // Extract and validate the arguments
   int width = args->GetInt(0);
   int height = args->GetInt(1);
   int initx = args->GetInt(2);
@@ -774,40 +778,55 @@ bool cEnvironment::LoadStateGrid(cString desc)
   }
   
 
-  cString temp;
+  // Load the states
+  cString statename;
+  cString statesensestr;
 
   tArray<cString> states;
+  tArray<int> state_sense;
   cString statestr = args->GetString(0);
   statestr.Trim();
   while (statestr.GetSize()) {
-    temp = statestr.Pop(',');
-    temp.Trim();
+    statesensestr = statestr.Pop(',');
+    statename = statesensestr.Pop('=');
+    statename.Trim();
+    
+    // Check for duplicate state definition
     for (int i = 0; i < states.GetSize(); i++) {
-      if (temp == states[i]) {
+      if (statename == states[i]) {
         cerr << "error: duplicate state identifier for state grid " << name << endl;
         return false;
       }
     }
-    states.Push(temp);
+    
+    // Add state to the collection
+    states.Push(statename);
+    
+    // Determing the value returned when sense operations are run on this state
+    int state_sense_value = states.GetSize(); // Default value is the order in which the states are loaded
+    if (statesensestr.GetSize()) state_sense_value = statesensestr.AsInt();
+    state_sense.Push(state_sense_value);
   }
   if (states.GetSize() == 0) {
     cerr << "error: no states defined for state grid " << name << endl;
     return false;
   }
   
+  // Load the state grid itself
   tArray<int> grid(width * height);
   cString gridstr = args->GetString(1);
   int cell = 0;
   while (gridstr.GetSize() && cell < grid.GetSize()) {
-    temp = gridstr.Pop(',');
-    temp.Trim();
+    statename = gridstr.Pop(',');
+    statename.Trim();
     for (int i = 0; i < states.GetSize(); i++) {
-      if (temp == states[i]) {
+      if (statename == states[i]) {
         grid[cell++] = i;
         break;
       }
     }
-    cerr << "error: state identifier undefined for cell (" << (cell / width) << ", " << (cell % width) << ") in state grid " << name << endl;
+    cerr << "error: state identifier undefined for cell (" << (cell / width) << ", "
+         << (cell % width) << ") in state grid " << name << endl;
     return false;
   }
   if (cell != (grid.GetSize() - 1) || gridstr.GetSize() > 0) {
@@ -815,7 +834,7 @@ bool cEnvironment::LoadStateGrid(cString desc)
     return false;
   }
   
-  m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, grid));
+  m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
   
   return true;
 }

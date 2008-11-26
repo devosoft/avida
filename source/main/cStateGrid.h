@@ -39,6 +39,7 @@ private:
   int m_init_y;
   int m_init_facing;
   tArray<cString> m_states;
+  tArray<int> m_sense_values;
   tArray<int> m_grid;
   
   cStateGrid(); // @not_implemented
@@ -46,18 +47,29 @@ private:
   cStateGrid& operator=(const cStateGrid&); // @not_implemented
   
 public:
-  cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states, const tArray<int>& grid)
-    : m_name(name), m_w(w), m_h(h), m_init_x(x), m_init_y(y), m_init_facing(f), m_states(states), m_grid(grid) { ; }
+  inline cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states,
+                    const tArray<int>& sense_values, const tArray<int>& grid);
   ~cStateGrid() { ; }
   
-  int GetWidth() const { return m_w; }
-  int GetHeight() const { return m_h; }
-  int GetInitialX() const { return m_init_x; }
-  int GetInitialY() const { return m_init_y; }
-  int GetInitialFacing() const { return m_init_facing; }
-  int GetNumStates() const { return m_states.GetSize(); }
+  inline int GetWidth() const { return m_w; }
+  inline int GetHeight() const { return m_h; }
+  inline int GetInitialX() const { return m_init_x; }
+  inline int GetInitialY() const { return m_init_y; }
+  inline int GetInitialFacing() const { return m_init_facing; }
+  inline int GetNumStates() const { return m_states.GetSize(); }
   
-  int GetStateAt(int x, int y) const { return m_grid[x * m_w + y]; }
+  inline int GetStateAt(int x, int y) const { return m_grid[x * m_w + y]; }
+  inline int SenseStateAt(int x, int y) const { return m_sense_values[GetStateAt(x, y)]; }
 };
+
+
+inline cStateGrid::cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states,
+                  const tArray<int>& sense_values, const tArray<int>& grid)
+  : m_name(name), m_w(w), m_h(h), m_init_x(x), m_init_y(y), m_init_facing(f), m_states(states)
+  , m_sense_values(sense_values), m_grid(grid)
+{
+  assert(states.GetSize() == sense_values.GetSize());
+}
+
 
 #endif

@@ -4542,8 +4542,10 @@ bool cHardwareCPU::Inst_SGRotateR(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SGSense(cAvidaContext& ctx)
 {
-  // @TODO - state grid sense instruction
-  return true;
+  const cStateGrid& sg = m_organism->GetStateGrid();
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]);
+  return true; 
 }
 
 // @WRE addition for movement
