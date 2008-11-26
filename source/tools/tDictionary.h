@@ -65,8 +65,8 @@ public:
   inline tDictionary(int in_hash_size) : m_hash(in_hash_size) { ; }
   
   // The following methods just call the encapsulated tHashTable
-  inline bool OK() { return m_hash.OK(); }
-  inline int GetSize() { return m_hash.GetSize(); }
+  inline bool OK() const { return m_hash.OK(); }
+  inline int GetSize() const { return m_hash.GetSize(); }
   inline void Add(const cString& name, T data) { m_hash.Add(name, data); }
   inline void SetValue(const cString& name, T data) { m_hash.SetValue(name, data); }
   inline bool HasEntry(const cString& name) const { return m_hash.HasEntry(name); }

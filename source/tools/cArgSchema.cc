@@ -76,6 +76,30 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, int def)
   return true;
 }
 
+bool cArgSchema::AddEntry(cString in_name, int in_idx, int upper, int lower)
+{
+  if (AddEntry(in_name, in_idx, SCHEMA_INT)) {
+    m_ints[in_idx]->has_range_limits = true;
+    m_ints[in_idx]->r_l_int = lower;
+    m_ints[in_idx]->r_u_int = upper;
+    return true;
+  }
+  
+  return false;
+}
+
+bool cArgSchema::AddEntry(cString in_name, int in_idx, int upper, int lower, int def)
+{
+  if (AddEntry(in_name, in_idx, def)) {
+    m_ints[in_idx]->has_range_limits = true;
+    m_ints[in_idx]->r_l_int = lower;
+    m_ints[in_idx]->r_u_int = upper;
+    return true;
+  }
+  
+  return false;
+}
+
 bool cArgSchema::AddEntry(cString in_name, int in_idx, double def)
 {
   AdjustArgName(in_name);
@@ -88,6 +112,30 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, double def)
   m_doubles[in_idx] = entry;
   
   return true;
+}
+
+bool cArgSchema::AddEntry(cString in_name, int in_idx, double upper, double lower)
+{
+  if (AddEntry(in_name, in_idx, SCHEMA_DOUBLE)) {
+    m_ints[in_idx]->has_range_limits = true;
+    m_ints[in_idx]->r_l_double = lower;
+    m_ints[in_idx]->r_u_double = upper;
+    return true;
+  }
+  
+  return false;
+}
+
+bool cArgSchema::AddEntry(cString in_name, int in_idx, double upper, double lower, double def)
+{
+  if (AddEntry(in_name, in_idx, def)) {
+    m_ints[in_idx]->has_range_limits = true;
+    m_ints[in_idx]->r_l_double = lower;
+    m_ints[in_idx]->r_u_double = upper;
+    return true;
+  }
+  
+  return false;
 }
 
 bool cArgSchema::AddEntry(cString in_name, int in_idx, const cString& def)

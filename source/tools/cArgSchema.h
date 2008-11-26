@@ -47,16 +47,26 @@ private:
       double def_double;
       cString* def_string;
     };
+    bool has_range_limits;
+    union {
+      int r_l_int;
+      double r_l_double;
+    };
+    union {
+      int r_u_int;
+      double r_u_double;
+    };
+    
     
     sArgSchemaEntry() { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, tType in_type)  // Required Argument (supplied type)
       : name(in_name), type(in_type), index(in_idx), optional(false) { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, int def)        // Optional Int Argument
-      : name(in_name), type(SCHEMA_INT), index(in_idx), optional(true), def_int(def) { ; }
+      : name(in_name), type(SCHEMA_INT), index(in_idx), optional(true), def_int(def), has_range_limits(false) { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, double def)     // Optional Double Argument
-      : name(in_name), type(SCHEMA_DOUBLE), index(in_idx), optional(true), def_double(def) { ; }
+      : name(in_name), type(SCHEMA_DOUBLE), index(in_idx), optional(true), def_double(def), has_range_limits(false) { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, cString* def)   // Optional String Argument
-      : name(in_name), type(SCHEMA_STRING), index(in_idx), optional(true), def_string(def) { ; }
+      : name(in_name), type(SCHEMA_STRING), index(in_idx), optional(true), def_string(def), has_range_limits(false) { ; }
     ~sArgSchemaEntry() { if (type == SCHEMA_STRING && optional) delete def_string; }  // Cleanup string object
   };
   
@@ -83,10 +93,14 @@ public:
   char GetValueSeparator() const { return m_sep_value; }
   bool IsCaseSensitive() const { return m_case_sensitive; }
   
-  bool AddEntry(cString in_name, int in_idx, tType in_type);       // Required Argument (supplied type)
-  bool AddEntry(cString in_name, int in_idx, int def);             // Optional Int Argument
-  bool AddEntry(cString in_name, int in_idx, double def);          // Optional Double Argument
-  bool AddEntry(cString in_name, int in_idx, const cString& def);  // Optional String Argument
+  bool AddEntry(cString in_name, int in_idx, tType in_type);                  // Required Argument (supplied type)
+  bool AddEntry(cString in_name, int in_idx, int def);                         // Optional Int Argument
+  bool AddEntry(cString in_name, int in_idx, int lower, int upper);           // Required Int Argument (with range limits)
+  bool AddEntry(cString in_name, int in_idx, int lower, int upper, int def);  // Optional Int Argument (with range limits)
+  bool AddEntry(cString in_name, int in_idx, double def);                     // Optional Double Argument
+  bool AddEntry(cString in_name, int in_idx, double lower, double upper);     // Required Double Argument (with range limits)
+  bool AddEntry(cString in_name, int in_idx, double lower, double upper, double def); // Optional Double (with range limits)
+  bool AddEntry(cString in_name, int in_idx, const cString& def);             // Optional String Argument
   
   bool FindEntry(const cString& in_name, tType& ret_type, int& ret_idx) const;
   
@@ -104,7 +118,10 @@ public:
   
   inline bool GetIntName(int i, cString& name) const;
   inline bool GetDoubleName(int i, cString& name) const;
-  inline bool GetStringName(int i, cString& name) const;  
+  inline bool GetStringName(int i, cString& name) const;
+  
+  inline bool ValidateInt(int i, int v) const;
+  inline bool ValidateDouble(int i, double v) const;
 };
 
 
@@ -176,5 +193,26 @@ inline bool cArgSchema::GetStringName(int i, cString& name) const
   }
   return false;
 }
+
+inline bool cArgSchema::ValidateInt(int i, int v) const
+{
+  if (i < m_ints.GetSize() && m_ints[i] &&
+      (!m_ints[i]->has_range_limits || (v <= m_ints[i]->r_u_int && v >= m_ints[i]->r_l_int))) {
+    return true;
+  }
+  
+  return false;
+}
+
+inline bool cArgSchema::ValidateDouble(int i, double v) const
+{
+  if (i < m_doubles.GetSize() && m_doubles[i] &&
+      (!m_doubles[i]->has_range_limits || (v <= m_doubles[i]->r_u_double && v >= m_doubles[i]->r_l_double))) {
+    return true;
+  }
+  
+  return false;
+}
+
 
 #endif

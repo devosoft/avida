@@ -29,6 +29,7 @@ to organisms doing certain tasks).  */
 
 #include "cEnvironment.h"
 
+#include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cEnvReqs.h"
 #include "cHardwareManager.h"
@@ -47,6 +48,9 @@ to organisms doing certain tasks).  */
 #include "cTaskEntry.h"
 #include "cTools.h"
 #include "cWorld.h"
+#include "tAutoRelease.h"
+
+
 #include <iostream>
 #include <algorithm>
 
@@ -731,7 +735,88 @@ bool cEnvironment::LoadMutation(cString desc)
 
 bool cEnvironment::LoadStateGrid(cString desc)
 {
-  // @TODO - state grid load line
+  // First component is the name
+  cString name = desc.Pop(':');
+  
+  cArgSchema schema(':','=');
+  
+  // Integer Arguments
+  schema.AddEntry("width", 0, 0, INT_MAX);
+  schema.AddEntry("height", 1, 0, INT_MAX);
+  schema.AddEntry("initx", 2, 0, INT_MAX);
+  schema.AddEntry("inity", 3, 0, INT_MAX);
+  schema.AddEntry("initfacing", 4, 0, 7);
+
+  // String Arguments
+  schema.AddEntry("states", 0, cArgSchema::SCHEMA_STRING);
+  schema.AddEntry("grid", 1, cArgSchema::SCHEMA_STRING);
+
+  tList<cString> errors;
+  tAutoRelease<cArgContainer> args(cArgContainer::Load(desc, schema, &errors));
+  if (args.IsNull() || errors.GetSize() > 0) {
+    cString* err_str;
+    while ((err_str = errors.Pop()) != NULL) {
+      cerr << "error: " << *err_str << endl;
+      delete err_str;
+    }
+    return false;
+  }
+  
+  int width = args->GetInt(0);
+  int height = args->GetInt(1);
+  int initx = args->GetInt(2);
+  int inity = args->GetInt(3);
+  int initfacing = args->GetInt(4);
+
+  if (initx >= width || inity >= height) {
+    cerr << "error: initx and inity must not exceed (width - 1) and (height - 1)" << endl;
+    return false;
+  }
+  
+
+  cString temp;
+
+  tArray<cString> states;
+  cString statestr = args->GetString(0);
+  statestr.Trim();
+  while (statestr.GetSize()) {
+    temp = statestr.Pop(',');
+    temp.Trim();
+    for (int i = 0; i < states.GetSize(); i++) {
+      if (temp == states[i]) {
+        cerr << "error: duplicate state identifier for state grid " << name << endl;
+        return false;
+      }
+    }
+    states.Push(temp);
+  }
+  if (states.GetSize() == 0) {
+    cerr << "error: no states defined for state grid " << name << endl;
+    return false;
+  }
+  
+  tArray<int> grid(width * height);
+  cString gridstr = args->GetString(1);
+  int cell = 0;
+  while (gridstr.GetSize() && cell < grid.GetSize()) {
+    temp = gridstr.Pop(',');
+    temp.Trim();
+    for (int i = 0; i < states.GetSize(); i++) {
+      if (temp == states[i]) {
+        grid[cell++] = i;
+        break;
+      }
+    }
+    cerr << "error: state identifier undefined for cell (" << (cell / width) << ", " << (cell % width) << ") in state grid " << name << endl;
+    return false;
+  }
+  if (cell != (grid.GetSize() - 1) || gridstr.GetSize() > 0) {
+    cerr << "error: grid definition size mismatch for state grid " << name << endl;
+    return false;
+  }
+  
+  m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, grid));
+  
   return true;
 }
 

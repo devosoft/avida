@@ -38,7 +38,7 @@ private:
   int m_init_x;
   int m_init_y;
   int m_init_facing;
-  int m_num_states;
+  tArray<cString> m_states;
   tArray<int> m_grid;
   
   cStateGrid(); // @not_implemented
@@ -46,8 +46,8 @@ private:
   cStateGrid& operator=(const cStateGrid&); // @not_implemented
   
 public:
-  cStateGrid(const cString& name, int w, int h, int x, int y, int facing, int num_states, const tArray<int>& grid)
-    : m_name(name), m_w(w), m_h(h), m_init_x(x), m_init_y(y), m_init_facing(facing), m_num_states(num_states), m_grid(grid) { ; }
+  cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states, const tArray<int>& grid)
+    : m_name(name), m_w(w), m_h(h), m_init_x(x), m_init_y(y), m_init_facing(f), m_states(states), m_grid(grid) { ; }
   ~cStateGrid() { ; }
   
   int GetWidth() const { return m_w; }
@@ -55,7 +55,7 @@ public:
   int GetInitialX() const { return m_init_x; }
   int GetInitialY() const { return m_init_y; }
   int GetInitialFacing() const { return m_init_facing; }
-  int GetNumStates() const { return m_num_states; }
+  int GetNumStates() const { return m_states.GetSize(); }
   
   int GetStateAt(int x, int y) const { return m_grid[x * m_w + y]; }
 };
