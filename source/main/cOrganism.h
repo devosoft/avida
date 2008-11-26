@@ -227,23 +227,33 @@ public:
   
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
+  int GetID() { return m_id; }
+
+  int GetCellID() { return m_interface->GetCellID(); }
+  int GetDemeID() { return m_interface->GetDemeID(); }
+  cDeme* GetDeme() { return m_interface->GetDeme(); }
+  
+  int GetCellData() { return m_interface->GetCellData(); }
+  void SetCellData(const int data) { m_interface->SetCellData(data); }  
+  
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
   int GetNeighborCellContents() const { return m_interface->GetNeighborCellContents(); }
   void Rotate(int direction) { m_interface->Rotate(direction); }
+  
   void DoBreakpoint() { m_interface->Breakpoint(); }
+  
+  int GetInputAt(int i) { return m_interface->GetInputAt(i); }
   int GetNextInput() { return m_interface->GetInputAt(m_input_pointer); }
-  int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); } //@JEB alternate for GX
+  int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); }
   tBuffer<int>& GetInputBuf() { return m_input_buf; }
   tBuffer<int>& GetOutputBuf() { return m_output_buf; }
   void Die() { m_interface->Die(); m_is_dead = true; }
   void Kaboom(int dist) { m_interface->Kaboom(dist);}
   void SpawnDeme() { m_interface->SpawnDeme(); }
-  int GetCellID() { return m_interface->GetCellID(); }
   int GetDebugInfo() { return m_interface->Debug(); }
-  int GetID() { return m_id; }
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
@@ -261,8 +271,6 @@ public:
   int GetNumTaskCellsReached() const { return m_interface->GetNumTaskCellsReached(); }
   void AddReachedTaskCell() { m_interface->AddReachedTaskCell(); }
 
-  int GetCellData() { return m_interface->GetCellData(); }
-  void SetCellData(const int data) { m_interface->SetCellData(data); }  
 
   
   // --------  Input and Output Methods  --------

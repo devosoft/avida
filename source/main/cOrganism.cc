@@ -324,8 +324,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
-  cTaskContext taskctx(m_interface, input_buffer, output_buffer, other_input_list, other_output_list,
-                       m_hardware->GetExtendedMemory(), net_valid, 0, on_divide, received_messages_point, this);
+  cTaskContext taskctx(this, input_buffer, output_buffer, other_input_list, other_output_list,
+                       m_hardware->GetExtendedMemory(), net_valid, 0, on_divide, received_messages_point);
                        
   //combine global and deme resource counts
   const tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
@@ -511,7 +511,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     tArray<double> res_change(resource_count.GetSize());
     tArray<int> insts_triggered;
 
-    cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list,
+    cTaskContext taskctx(this, m_input_buf, m_output_buf, other_input_list, other_output_list,
                          m_hardware->GetExtendedMemory(), false, completed);
     m_phenotype.TestOutput(ctx, taskctx, resource_count, m_rbins, res_change, insts_triggered);
     m_interface->UpdateResources(res_change);

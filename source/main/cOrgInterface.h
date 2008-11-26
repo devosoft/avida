@@ -71,13 +71,16 @@ public:
   virtual void SetPrevTaskCellID(int in_id) = 0;
 
   virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome) = 0;
+  
   virtual cOrganism* GetNeighbor() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
   virtual int GetNumNeighbors() = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;
+  
   virtual void Breakpoint() = 0;
+  
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const tArray<int>& GetInputs() const = 0;

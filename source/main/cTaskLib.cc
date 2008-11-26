@@ -2031,7 +2031,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   int maxscore = 0;
   
   // add all valid inputs into the value map
-  for (int i = 0; i < size; i++) valmap.Add(ctx.GetInputAt(i), -1);
+  for (int i = 0; i < size; i++) valmap.Add(ctx.GetOrganism()->GetInputAt(i), -1);
   
   int span_start = -1;
   int span_end = stored;
@@ -2103,7 +2103,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     for (int i = 0; i < size; i++) {
       int idx;
       // if input was not observed
-      if (valmap.Find(ctx.GetInputAt(i), idx) && idx == -1) {
+      if (valmap.Find(ctx.GetOrganism()->GetInputAt(i), idx) && idx == -1) {
         maxscore += count; // add to the maximum move count
         score += count; // missing values, scored as maximally out of order
         count++; // increment observed count
@@ -2899,20 +2899,18 @@ double cTaskLib::Task_MoveNotUpGradient(cTaskContext& ctx) const {
 }
 
 double cTaskLib::Task_MoveToRightSide(cTaskContext& ctx) const {	
-  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
-  std::pair<int, int> location = deme.GetCellPosition(ctx.GetOrgInterface()->GetCellID());
+  cDeme* deme = ctx.GetOrganism()->GetDeme();
+  std::pair<int, int> location = deme->GetCellPosition(ctx.GetOrganism()->GetCellID());
   
-  if(location.first == m_world->GetConfig().WORLD_X.Get()-1)
-    return 1.0;
+  if (location.first == m_world->GetConfig().WORLD_X.Get() - 1) return 1.0;
   return 0.0;
 }
 
 double cTaskLib::Task_MoveToLeftSide(cTaskContext& ctx) const {
-  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
-  std::pair<int, int> location = deme.GetCellPosition(ctx.GetOrgInterface()->GetCellID());
+  cDeme* deme = ctx.GetOrganism()->GetDeme();
+  std::pair<int, int> location = deme->GetCellPosition(ctx.GetOrganism()->GetCellID());
   
-  if(location.first == 0)
-    return 1.0;
+  if (location.first == 0) return 1.0;
   return 0.0;
 }
 
@@ -2930,30 +2928,31 @@ double cTaskLib::Task_Move(cTaskContext& ctx) const
 double cTaskLib::Task_MoveToTarget(cTaskContext& ctx) const
 //Note - a generic version of this is now at - Task_MoveToMovementEvent
 {
-  cOrgInterface* iface = ctx.GetOrgInterface();
+  cOrganism* org = ctx.GetOrganism();
+  
+  if (org->GetCellID() == -1) return 0.0;		
 	
-  if(ctx.GetOrganism()->GetCellID() == -1) {
-    return 0.0;		
-  }
-	
-  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
-  int celldata = m_world->GetPopulation().GetCell(iface->GetCellID()).GetCellData();
-
-  int current_cell = deme.GetRelativeCellID(iface->GetCellID());
-  int prev_target = deme.GetRelativeCellID(iface->GetPrevTaskCellID());
+  cDeme* deme = org->GetDeme();
+  assert(deme);
+  
+  int cell_data = org->GetCellData();
+  if (cell_data <= 0) return 0.0;
+  
+  int current_cell = deme->GetRelativeCellID(org->GetCellID());
+  int prev_target = deme->GetRelativeCellID(org->GetPrevTaskCellID());
   
   // If the organism is currently on a target cell, see which target cell it previously
   // visited.  Since we want them to move back and forth, only reward if we are on
   // a different target cell.
 
-  if(celldata > 1) 
+  if (cell_data > 1) 
   {
     if (current_cell == prev_target) {
       // At some point, we may want to return a fraction
       return 0;
     } else {
-      iface->AddReachedTaskCell();
-      iface->SetPrevTaskCellID(current_cell);
+      org->AddReachedTaskCell();
+      org->SetPrevTaskCellID(current_cell);
       return 1.0;
     }
   }
@@ -2962,97 +2961,93 @@ double cTaskLib::Task_MoveToTarget(cTaskContext& ctx) const
 
 } //End cTaskLib::TaskMoveToTarget()
 
-double cTaskLib::Task_MoveToMovementEvent(cTaskContext& ctx) const {
+double cTaskLib::Task_MoveToMovementEvent(cTaskContext& ctx) const
+{
+  cOrganism* org = ctx.GetOrganism();
+  
+  if (org->GetCellID() == -1) return 0.0;		
 	
-  if(ctx.GetOrganism()->GetCellID() == -1) {
-    return 0.0;		
-  }	
-	
-  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
-  int cell_data = m_world->GetPopulation().GetCell(ctx.GetOrgInterface()->GetCellID()).GetCellData();
-  cOrgInterface* iface = ctx.GetOrgInterface();
-
-  if(cell_data <= 0)
-    return 0.0;
+  cDeme* deme = org->GetDeme();
+  assert(deme);
+  
+  int cell_data = org->GetCellData();
+  if (cell_data <= 0) return 0.0;
     
-  for(int i = 0; i < deme.GetNumMovementPredicates(); i++) {
-      if(deme.GetMovPredicate(i)->GetEvent(0)->GetEventID() == cell_data) {
-        iface->AddReachedTaskCell();
-        iface->SetPrevTaskCellID(cell_data);
-        return 1.0;
-      }
+  for (int i = 0; i < deme->GetNumMovementPredicates(); i++) {
+    if (deme->GetMovPredicate(i)->GetEvent(0)->GetEventID() == cell_data) {
+      org->AddReachedTaskCell();
+      org->SetPrevTaskCellID(cell_data);
+      return 1.0;
+    }
   }
   return 0.0;
 }
 
 
-double cTaskLib::Task_MoveBetweenMovementEvent(cTaskContext& ctx) const {
-	
-  if(ctx.GetOrganism()->GetCellID() == -1) {
-    return 0.0;		
-  }	
-	
-  cDeme& deme = m_world->GetPopulation().GetDeme(ctx.GetOrgInterface()->GetDemeID());
-  int cell_data = m_world->GetPopulation().GetCell(ctx.GetOrgInterface()->GetCellID()).GetCellData();
-  cOrgInterface* iface = ctx.GetOrgInterface();
-  int prev_target = deme.GetRelativeCellID(iface->GetPrevTaskCellID());
+double cTaskLib::Task_MoveBetweenMovementEvent(cTaskContext& ctx) const
+{	
+  cOrganism* org = ctx.GetOrganism();
 
-//  int cellid = ctx.GetOrgInterface()->GetCellID();
+  if (org->GetCellID() == -1) return 0.0;
+	
+  cDeme* deme = org->GetDeme();
+  assert(deme);
+
+  int cell_data = org->GetCellData();
+  
+  int prev_target = deme->GetRelativeCellID(org->GetPrevTaskCellID());
 
   // NOTE: as of now, orgs aren't rewarded if they touch a target more than
   //   once in a row.  Could be useful in the future to have fractional reward
   //   or something.
-  if( (cell_data <= 0) || (cell_data == prev_target) )
-    return 0.0;
+  if ( (cell_data <= 0) || (cell_data == prev_target) ) return 0.0;
     
-  for(int i = 0; i < deme.GetNumMovementPredicates(); i++) {
-      // NOTE: having problems with calling the GetNumEvents function for some reason.  FIXME
-      //int num_events = deme.GetMovPredicate(i)->GetNumEvents;
-      int num_events = 2;
+  for (int i = 0; i < deme->GetNumMovementPredicates(); i++) {
+    // NOTE: having problems with calling the GetNumEvents function for some reason.  FIXME
+    //int num_events = deme.GetMovPredicate(i)->GetNumEvents;
+    int num_events = 2;
 
-      if(num_events == 1) {
-        if( (deme.GetMovPredicate(i)->GetEvent(0)->IsActive()) &&
-            (deme.GetMovPredicate(i)->GetEvent(0)->GetEventID() == cell_data) ) {
-          iface->AddReachedTaskCell();
-          iface->SetPrevTaskCellID(cell_data);
+    if (num_events == 1) {
+      if ( (deme->GetMovPredicate(i)->GetEvent(0)->IsActive()) &&
+          (deme->GetMovPredicate(i)->GetEvent(0)->GetEventID() == cell_data) ) {
+        org->AddReachedTaskCell();
+        org->SetPrevTaskCellID(cell_data);
+        return 1.0;
+      }
+    } else {
+      for (int j = 0; j < num_events; j++) {
+        cDemeCellEvent* event = deme->GetMovPredicate(i)->GetEvent(j);
+        if( (event != NULL) && (event->IsActive()) && (event->GetEventID() == cell_data) ) {
+          org->AddReachedTaskCell();
+          org->SetPrevTaskCellID(cell_data);
           return 1.0;
         }
-      } else {
-        for(int j = 0; j < num_events; j++) {
-          cDemeCellEvent *event = deme.GetMovPredicate(i)->GetEvent(j);
-          if( (event != NULL) && (event->IsActive()) &&
-              (event->GetEventID() == cell_data) ) {
-            iface->AddReachedTaskCell();
-            iface->SetPrevTaskCellID(cell_data);
-            return 1.0;
-          }
-        }
       }
-
+    }
   }
   return 0.0;
 }
 
-double cTaskLib::Task_MoveToEvent(cTaskContext& ctx) const {
+double cTaskLib::Task_MoveToEvent(cTaskContext& ctx) const
+{
+  cOrganism* org = ctx.GetOrganism();
+  
+  if (org->GetCellID() == -1) return 0.0;
 	
-  if(ctx.GetOrganism()->GetCellID() == -1) {
-    return 0.0;		
-  }	
-	
-  cDeme* deme = ctx.GetOrganism()->GetOrgInterface().GetDeme();
-  int cell_data = ctx.GetOrganism()->GetOrgInterface().GetCellData();
-  if(cell_data <= 0)
-    return 0.0;
+  cDeme* deme = org->GetDeme();
+  assert(deme);
+  
+  int cell_data = org->GetCellData();
+  if (cell_data <= 0) return 0.0;
     
-  for(int i = 0; i < deme->GetNumEvents(); i++) {
-    if(deme->GetCellEvent(i)->GetEventID() == cell_data)
-      return 1.0;
+  for (int i = 0; i < deme->GetNumEvents(); i++) {
+    if (deme->GetCellEvent(i)->GetEventID() == cell_data) return 1.0;
   }
   return 0.0;
 }
 
-double cTaskLib::Task_EventKilled(cTaskContext& ctx) const {
-  if(ctx.GetOrganism()->GetEventKilled())
-    return 1.0;
+double cTaskLib::Task_EventKilled(cTaskContext& ctx) const
+{
+  if (ctx.GetOrganism()->GetEventKilled()) return 1.0;
   return 0.0;
 }

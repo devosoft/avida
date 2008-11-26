@@ -45,7 +45,7 @@ class cTaskState;
 class cTaskContext
 {
 private:
-  cOrgInterface* m_interface;
+  cOrganism* m_organism;
   const tBuffer<int>& m_input_buffer;
   const tBuffer<int>& m_output_buffer;
   const tList<tBuffer<int> >& m_other_input_buffers;
@@ -64,15 +64,13 @@ private:
   cTaskEntry* m_task_entry;
   tHashTable<void*, cTaskState*>* m_task_states;
   
-  cOrganism* m_org;
-  
   
 public:
-  cTaskContext(cOrgInterface* interface, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
+  cTaskContext(cOrganism* organism, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
                const tArray<int>& ext_mem, bool in_net_valid, int in_net_completed, bool in_on_divide = false,
-               tBuffer<int>* in_received_messages = NULL, cOrganism* org = NULL)
-    : m_interface(interface)
+               tBuffer<int>* in_received_messages = NULL)
+    : m_organism(organism)
     , m_input_buffer(inputs)
     , m_output_buffer(outputs)
     , m_other_input_buffers(other_inputs)
@@ -85,13 +83,11 @@ public:
     , m_on_divide(in_on_divide)
     , m_task_entry(NULL)
     , m_task_states(NULL)
-    , m_org(org)
   {
 	  m_task_value = 0;
   }
   
-  inline cOrgInterface* GetOrgInterface() { return m_interface; }
-  inline int GetInputAt(int index) { return m_interface->GetInputAt(index); }
+  inline cOrganism* GetOrganism() { return m_organism; }
   inline const tBuffer<int>& GetInputBuffer() { return m_input_buffer; }
   inline const tBuffer<int>& GetOutputBuffer() { return m_output_buffer; }
   inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return m_other_input_buffers; }
@@ -108,9 +104,7 @@ public:
   
   inline void SetTaskEntry(cTaskEntry* in_entry) { m_task_entry = in_entry; }
   inline cTaskEntry* GetTaskEntry() { return m_task_entry; }
-  
-  inline cOrganism* GetOrganism() { return m_org; }
-  
+    
   inline void SetTaskStates(tHashTable<void*, cTaskState*>* states) { m_task_states = states; }
   
   inline cTaskState* GetTaskState()
