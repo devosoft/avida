@@ -218,6 +218,10 @@ protected:
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
   
+
+  void internalReset();
+  
+  
   int GetCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
@@ -244,7 +248,6 @@ public:
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
 
-  void Reset();
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 
@@ -513,9 +516,13 @@ private:
   bool Inst_GetCellPosition(cAvidaContext& ctx);
   bool Inst_GetCellPositionX(cAvidaContext& ctx);
   bool Inst_GetCellPositionY(cAvidaContext& ctx);
+  
+  bool Inst_SGMove(cAvidaContext& ctx);
+  bool Inst_SGRotateL(cAvidaContext& ctx);
+  bool Inst_SGRotateR(cAvidaContext& ctx);
+  bool Inst_SGSense(cAvidaContext& ctx);
 
   bool Inst_GetDistanceFromDiagonal(cAvidaContext& ctx);
-  // @WRE additions for movement
   bool Inst_Tumble(cAvidaContext& ctx);
   bool Inst_Move(cAvidaContext& ctx);
   bool Inst_MoveToEvent(cAvidaContext& ctx);

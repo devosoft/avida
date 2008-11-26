@@ -146,7 +146,7 @@ cHardwareSMT::cHardwareSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_m
   Reset();                            // Setup the rest of the hardware...
 }
 
-void cHardwareSMT::Reset()
+void cHardwareSMT::internalReset()
 {
   // Setup the memory...
   m_mem_array.Resize(1);
@@ -166,10 +166,6 @@ void cHardwareSMT::Reset()
   for(int i = 0; i < NUM_STACKS; i++) {
 		Stack(i).Clear();
 	}
-	
-  ResetInstructionCosts();
-  
-  m_organism->NetReset();
 }
 
 void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space)

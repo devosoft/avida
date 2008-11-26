@@ -39,6 +39,7 @@
 #include "cOrgSinkMessage.h"
 #include "cPopulationCell.h"
 #include "cPopulation.h"
+#include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
 #include "cTools.h"
@@ -65,6 +66,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
   , m_received_messages(RECEIVED_MESSAGES_SIZE)
+  , m_cur_sg(0)
   , m_sent_value(0)
   , m_sent_active(false)
   , m_test_receive_pos(0)
@@ -97,6 +99,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_input_buf(world->GetEnvironment().GetInputSize())
   , m_output_buf(world->GetEnvironment().GetOutputSize())
   , m_received_messages(RECEIVED_MESSAGES_SIZE)
+  , m_cur_sg(0)
   , m_sent_value(0)
   , m_sent_active(false)
   , m_test_receive_pos(0)
@@ -134,8 +137,9 @@ void cOrganism::initialize(cAvidaContext& ctx)
   }
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
-  m_id = m_world->GetStats().GetTotCreatures();  
+  m_id = m_world->GetStats().GetTotCreatures();
 }
+
 
 
 cOrganism::~cOrganism()
@@ -163,6 +167,8 @@ void cOrganism::SetOrgInterface(cOrgInterface* interface)
   m_rbins = m_interface->GetResources();
   m_rbins.SetAll(0.0);
 }
+
+const cStateGrid& cOrganism::GetStateGrid() const { return m_world->GetEnvironment().GetStateGrid(m_cur_sg); }
 
 double cOrganism::GetRBinsTotal()
 {
@@ -252,25 +258,25 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)
 {
-  DoOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
+  doOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
 }
 
 
 void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   m_output_buf.Add(value);
-  DoOutput(ctx, m_input_buf, m_output_buf, false, NetValidate(ctx, value));
+  doOutput(ctx, m_input_buf, m_output_buf, false, NetValidate(ctx, value));
 }
 
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
   output_buffer.Add(value);
-  DoOutput(ctx, input_buffer, output_buffer, false, NetValidate(ctx, value));
+  doOutput(ctx, input_buffer, output_buffer, false, NetValidate(ctx, value));
 }
 
 
-void cOrganism::DoOutput(cAvidaContext& ctx, 
+void cOrganism::doOutput(cAvidaContext& ctx, 
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
                          const bool on_divide,
@@ -318,14 +324,15 @@ void cOrganism::DoOutput(cAvidaContext& ctx,
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
   
-  cTaskContext taskctx(m_interface, input_buffer, output_buffer, other_input_list, 
-                       other_output_list, net_valid, 0, on_divide, received_messages_point, this);
+  cTaskContext taskctx(m_interface, input_buffer, output_buffer, other_input_list, other_output_list,
+                       m_hardware->GetExtendedMemory(), net_valid, 0, on_divide, received_messages_point, this);
                        
   //combine global and deme resource counts
   const tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
   tArray<double> globalAndDeme_res_change = global_res_change + deme_res_change;
   
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, m_rbins, globalAndDeme_res_change, insts_triggered);
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, m_rbins, globalAndDeme_res_change,
+                                               insts_triggered);
   
   //disassemble global and deme resource counts
   global_res_change = globalAndDeme_res_change.Subset(0, global_res_change.GetSize());
@@ -504,7 +511,8 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     tArray<double> res_change(resource_count.GetSize());
     tArray<int> insts_triggered;
 
-    cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list, false, completed);
+    cTaskContext taskctx(m_interface, m_input_buf, m_output_buf, other_input_list, other_output_list,
+                         m_hardware->GetExtendedMemory(), false, completed);
     m_phenotype.TestOutput(ctx, taskctx, resource_count, m_rbins, res_change, insts_triggered);
     m_interface->UpdateResources(res_change);
     
@@ -517,8 +525,21 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
   return true;
 }
 
-void cOrganism::NetReset()
+void cOrganism::HardwareReset()
 {
+  if (m_world->GetEnvironment().GetNumStateGrids() > 0) {
+    m_cur_sg = 0; // @TODO - state grid select current
+    
+    const cStateGrid& sg = GetStateGrid();
+    
+    tArray<int> sg_state(3 + sg.GetNumStates(), 0);
+    sg_state[0] = sg.GetInitialX();
+    sg_state[1] = sg.GetInitialY();
+    sg_state[2] = sg.GetInitialFacing();
+    
+    m_hardware->SetupExtendedMemory(sg_state);
+  }
+
   if (m_net) {
     while (m_net->pending.GetSize()) delete m_net->pending.Pop();
     for (int i = 0; i < m_net->received.GetSize(); i++) delete m_net->received[i];

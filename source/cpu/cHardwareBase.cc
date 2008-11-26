@@ -48,6 +48,27 @@
 #include "functions.h"
 
 
+void cHardwareBase::Reset()
+{
+  m_organism->HardwareReset();
+
+  m_inst_cost = 0;
+  
+  const int num_inst_cost = m_inst_set->GetSize();
+  
+  if (m_has_ft_costs) {
+    m_inst_ft_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  }
+  
+  if (m_has_energy_costs) {
+    m_inst_energy_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
+  }
+
+  internalReset();
+}
+
 int cHardwareBase::GetExecutedSize(const int parent_size)
 {
   int executed_size = 0;
@@ -883,22 +904,6 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   return true;
 }
 
-void cHardwareBase::ResetInstructionCosts()
-{
-  m_inst_cost = 0;
-
-  const int num_inst_cost = m_inst_set->GetSize();
-
-  if (m_has_ft_costs) {
-    m_inst_ft_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
-  }
-  
-  if (m_has_energy_costs) {
-    m_inst_energy_cost.Resize(num_inst_cost);
-    for (int i = 0; i < num_inst_cost; i++) m_inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
-  }
-}
 
 //! Called when the organism that owns this CPU has received a flash from a neighbor.
 void cHardwareBase::ReceiveFlash() {

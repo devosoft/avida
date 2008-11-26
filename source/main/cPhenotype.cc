@@ -1138,7 +1138,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   
   // Update deme merit (guard against running in the test CPU, where there is
   // no deme object.  Don't touch deme merit if there is no deme frac component.
-  cDeme* deme = taskctx.GetOrganism()->GetOrgInterface().GetDeme();
+  cDeme* deme = taskctx.GetOrgInterface()->GetDeme();
   if(deme) {
   
     if (result.GetActiveDeme()) {

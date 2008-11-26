@@ -223,7 +223,7 @@ cHardwareExperimental::cHardwareExperimental(cWorld* world, cOrganism* in_organi
 }
 
 
-void cHardwareExperimental::Reset()
+void cHardwareExperimental::internalReset()
 {
   m_cycle_count = 0;
   m_last_output = 0;
@@ -240,8 +240,6 @@ void cHardwareExperimental::Reset()
   m_mal_active = false;
   m_executedmatchstrings = false;
   
-  ResetInstructionCosts();
-
   // Promoter model
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get()) {
     m_promoter_index = -1; // Meaning the last promoter was nothing

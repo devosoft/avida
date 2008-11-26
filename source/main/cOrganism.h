@@ -85,12 +85,13 @@ class cInstSet;
 class cLineage;
 class cOrgSinkMessage;
 class cSaleItem;
+class cStateGrid;
 
 
 
 class cOrganism
 {
-protected:
+private:
   cWorld* m_world;
   cHardwareBase* m_hardware;              // The actual machinery running this organism.
   cGenotype* m_genotype;                  // Information about organisms with this genome.
@@ -116,6 +117,8 @@ protected:
   tBuffer<int> m_output_buf;
   tBuffer<int> m_received_messages;
   tList<tListNode<cSaleItem> > m_sold_items;
+  
+  int m_cur_sg;
 
   // Communication
   int m_sent_value;         // What number is this org sending?
@@ -147,8 +150,6 @@ protected:
   cNetSupport* m_net;
   
   
-  void initialize(cAvidaContext& ctx);
-  
   cOrganism(); // @not_implemented
   cOrganism(const cOrganism&); // @not_implemented
   cOrganism& operator=(const cOrganism&); // @not_implemented
@@ -158,6 +159,19 @@ public:
   cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome, cInstSet* inst_set);
   ~cOrganism();
 
+  // --------  Support Methods  --------
+  double GetTestFitness(cAvidaContext& ctx);
+  double CalcMeritRatio();
+  
+  void HardwareReset();
+  
+  void PrintStatus(std::ostream& fp, const cString& next_name);
+  void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
+  void Fault(int fault_loc, int fault_type, cString fault_desc="");
+  
+  void NewTrial();
+  
+  
   // --------  Accessor Methods  --------
   void SetGenotype(cGenotype* in_genotype) { m_genotype = in_genotype; }
   cGenotype* GetGenotype() const { return m_genotype; }
@@ -207,7 +221,10 @@ public:
   bool GetPheromoneStatus() { return m_pher_drop; }
   void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }
   void SetPheromone(bool newval) { m_pher_drop = newval; }
+  
+  const cStateGrid& GetStateGrid() const;
 
+  
   // --------  cOrgInterface Methods  --------
   cHardwareBase& GetHardware() { return *m_hardware; }
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
@@ -247,6 +264,7 @@ public:
   int GetCellData() { return m_interface->GetCellData(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
 
+  
   // --------  Input and Output Methods  --------
   void DoInput(const int value);
   void DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);
@@ -259,18 +277,13 @@ public:
   void DoOutput(cAvidaContext& ctx, const int value);
   //! Check tasks based on the passed-in IO buffers and value (on_divide=false).
   void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);  
-
-
-protected:
-  /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
-  void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, 
-                tBuffer<int>& output_buffer, const bool on_divide, const bool net_valid);
-
-public:
+  
+  
   void ClearInput() { m_input_buf.Clear(); }
   void ResetInput() {m_input_pointer = 0; m_input_buf.Clear(); };
   void AddOutput(int val) { m_output_buf.Add(val); }
 
+  
   // --------  Divide Methods  --------
   bool Divide_CheckViable();
   bool ActivateDivide(cAvidaContext& ctx);
@@ -284,7 +297,6 @@ public:
   bool NetValidate(cAvidaContext& ctx, int value);
   bool NetRemoteValidate(cAvidaContext& ctx, int value);
   int NetLast() { return m_net->last_seq; }
-  void NetReset();
 
   
   // --------  Parasite Interactions  --------
@@ -295,16 +307,6 @@ public:
   int GetNumParasites() const { return m_parasites.GetSize(); }
   void ClearParasites();
   
-
-  // --------  Support Methods  --------
-  double GetTestFitness(cAvidaContext& ctx);
-  double CalcMeritRatio();
-  
-  void PrintStatus(std::ostream& fp, const cString& next_name);
-  void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
-  void Fault(int fault_loc, int fault_type, cString fault_desc="");
-
-  void NewTrial();
 
   // --------  Mutation Rate Convenience Methods  --------
   bool TestCopyMut(cAvidaContext& ctx) const { return m_mut_rates.TestCopyMut(ctx); }
@@ -348,11 +350,12 @@ public:
   double GetNeutralMin() const;
   double GetNeutralMax() const;
 
+  
   // -------- Messaging support --------
-public:
   // Use a deque instead of vector for amortized constant-time removal
   // from the front of the list, to efficiently support message list
   // size caps
+public:
   typedef std::deque<cOrgMessage> message_list_type; //!< Container-type for cOrgMessages.
   
   //! Called when this organism attempts to send a message.
@@ -367,7 +370,7 @@ public:
   //! Returns the list of all messages sent by this organism.
   const message_list_type& GetSentMessages() { InitMessaging(); return m_msg->sent; }
   
-protected:
+private:
   /*! Contains all the different data structures needed to support messaging within
   cOrganism.  Inspired by cNetSupport (above), the idea is to minimize impact on
   organisms that DON'T use messaging. */
@@ -398,7 +401,9 @@ public:
     m_gradient_movement = value;
   }
 
+  
   // -------- BDC Movement ---------
+public:
   void Move(cAvidaContext& ctx);
 
   
@@ -410,6 +415,7 @@ public:
   
   void SetEventKilled() { killed_event = true; }
   bool GetEventKilled() { return killed_event; }
+  
   
   // -------- Opinion support --------
   /*  Organisms express an opinion at a given point in time.  We can assume that they
@@ -437,7 +443,7 @@ public:
   //! Return whether this organism has an opinion.
   bool HasOpinion() { InitOpinions(); return m_opinion->opinion_list.size(); }
   
-protected:
+private:
   //! Initialize opinion support.
   inline void InitOpinions() { if(!m_opinion) { m_opinion = new cOpinionSupport(); } }
   //! Container for the data used to support opinions.
@@ -448,6 +454,7 @@ protected:
   cOpinionSupport* m_opinion; //!< Lazily-initialized pointer to the opinion data.
   // -------- End of opinion support --------
 	
+  
 	// -------- Synchronization support --------
 public:
   //! Called when a neighboring organism issues a "flash" instruction.    
@@ -455,6 +462,16 @@ public:
   //! Sends a "flash" to all neighboring organisms.
   void SendFlash(cAvidaContext& ctx);
   // -------- End of synchronization support --------	
+
+
+
+	// -------- Internal Support Methods --------
+private:
+  void initialize(cAvidaContext& ctx);
+  
+  /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
+  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, 
+                tBuffer<int>& output_buffer, const bool on_divide, const bool net_valid);
 };
 
 

@@ -52,6 +52,7 @@ private:
   int m_type;
   int m_cpu_count;
   
+  
   cHardwareManager(); // @not_implemented
   cHardwareManager(const cHardwareManager&); // @not_implemented
   cHardwareManager& operator=(const cHardwareManager&); // @not_implemented

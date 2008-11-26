@@ -178,7 +178,11 @@ protected:
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(const int allocated_size);
 
-	int GetCopiedSize(const int parent_size, const int child_size);
+
+  void internalReset();
+  
+  
+  int GetCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, double mut_multiplier = 1.0);
   void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code);
@@ -200,7 +204,6 @@ public:
   static cInstLib* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-transsmt.cfg"; }
 	
-  void Reset();
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 	

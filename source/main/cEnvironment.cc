@@ -42,6 +42,7 @@ to organisms doing certain tasks).  */
 #include "cReactionRequisite.h"
 #include "cReactionResult.h"
 #include "cResource.h"
+#include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
 #include "cTools.h"
@@ -54,6 +55,12 @@ to organisms doing certain tasks).  */
 #endif
 
 using namespace std;
+
+
+cEnvironment::~cEnvironment()
+{
+  for (int i = 0; i < m_state_grids.GetSize(); i++) delete m_state_grids[i];
+}
 
 
 bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type)
@@ -721,6 +728,14 @@ bool cEnvironment::LoadMutation(cString desc)
   return true;
 }
 
+
+bool cEnvironment::LoadStateGrid(cString desc)
+{
+  // @TODO - state grid load line
+  return true;
+}
+
+
 bool cEnvironment::LoadSetActive(cString desc)
 {
   cString item_type = desc.PopWord(); 
@@ -765,6 +780,7 @@ bool cEnvironment::LoadLine(cString line)
   else if (type == "MUTATION") load_ok = LoadMutation(line);
   else if (type == "SET_ACTIVE") load_ok = LoadSetActive(line);
   else if (type == "CELL") load_ok = LoadCell(line);
+  else if (type == "GRID") load_ok = LoadStateGrid(line);
   else {
     cerr << "Error: Unknown environment keyword '" << type << "." << endl;
     return false;

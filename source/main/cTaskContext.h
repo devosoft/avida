@@ -37,9 +37,6 @@
 #ifndef tHashTable_h
 #include "tHashTable.h"
 #endif
-#ifndef cOrganism_h
-#include "cOrganism.h"
-#endif
 
 class cTaskEntry;
 class cTaskState;
@@ -53,6 +50,7 @@ private:
   const tBuffer<int>& m_output_buffer;
   const tList<tBuffer<int> >& m_other_input_buffers;
   const tList<tBuffer<int> >& m_other_output_buffers;
+  const tArray<int>& m_ext_mem;
   bool m_net_valid;
   int m_net_completed;
   tBuffer<int>* m_received_messages;
@@ -65,19 +63,21 @@ private:
 
   cTaskEntry* m_task_entry;
   tHashTable<void*, cTaskState*>* m_task_states;
-
-  cOrganism* m_organism;
+  
+  cOrganism* m_org;
+  
   
 public:
   cTaskContext(cOrgInterface* interface, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
-               bool in_net_valid, int in_net_completed, bool in_on_divide = false,
-               tBuffer<int>* in_received_messages = NULL, cOrganism* org=0)
+               const tArray<int>& ext_mem, bool in_net_valid, int in_net_completed, bool in_on_divide = false,
+               tBuffer<int>* in_received_messages = NULL, cOrganism* org = NULL)
     : m_interface(interface)
     , m_input_buffer(inputs)
     , m_output_buffer(outputs)
     , m_other_input_buffers(other_inputs)
     , m_other_output_buffers(other_outputs)
+    , m_ext_mem(ext_mem)
     , m_net_valid(in_net_valid)
     , m_net_completed(in_net_completed)
     , m_received_messages(in_received_messages)
@@ -85,16 +85,18 @@ public:
     , m_on_divide(in_on_divide)
     , m_task_entry(NULL)
     , m_task_states(NULL)
-    , m_organism(org)
+    , m_org(org)
   {
 	  m_task_value = 0;
   }
   
+  inline cOrgInterface* GetOrgInterface() { return m_interface; }
   inline int GetInputAt(int index) { return m_interface->GetInputAt(index); }
   inline const tBuffer<int>& GetInputBuffer() { return m_input_buffer; }
   inline const tBuffer<int>& GetOutputBuffer() { return m_output_buffer; }
   inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return m_other_input_buffers; }
   inline const tList<tBuffer<int> >& GetNeighborhoodOutputBuffers() { return m_other_output_buffers; }
+  inline const tArray<int>& GetExtendedMemory() const { return m_ext_mem; }
   inline bool NetIsValid() const { return m_net_valid; }
   inline int GetNetCompleted() const { return m_net_completed; }
   inline tBuffer<int>* GetReceivedMessages() { return m_received_messages; }
@@ -107,9 +109,9 @@ public:
   inline void SetTaskEntry(cTaskEntry* in_entry) { m_task_entry = in_entry; }
   inline cTaskEntry* GetTaskEntry() { return m_task_entry; }
   
+  inline cOrganism* GetOrganism() { return m_org; }
+  
   inline void SetTaskStates(tHashTable<void*, cTaskState*>* states) { m_task_states = states; }
-
-  inline cOrganism* GetOrganism() { return m_organism; }
   
   inline cTaskState* GetTaskState()
   {
@@ -118,7 +120,6 @@ public:
     return ret;
   }
   inline void AddTaskState(cTaskState* value) { m_task_states->Add(m_task_entry, value); }
-  inline cOrgInterface* GetOrgInterface() { return m_interface; }
 };
 
 

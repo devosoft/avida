@@ -68,6 +68,7 @@ class cReactionRequisite;
 template <class T> class tArray;
 class cReactionProcess;
 class cReactionResult;
+class cStateGrid;
 template <class T> class tBuffer;
 class cTaskContext;
 class cWorld;
@@ -95,6 +96,9 @@ private:
   
   unsigned int m_mask;
   
+  tArray<cStateGrid*> m_state_grids;
+  
+  
   static bool ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type);
   static bool AssertInputInt(const cString& input, const cString& name, const cString& type);
   static bool AssertInputDouble(const cString& input, const cString& name, const cString& type);
@@ -107,6 +111,7 @@ private:
   bool LoadCell(cString desc);
   bool LoadReaction(cString desc);
   bool LoadMutation(cString desc);
+  bool LoadStateGrid(cString desc);
 
   bool LoadSetActive(cString desc);
 
@@ -123,7 +128,7 @@ private:
 
 public:
   inline cEnvironment(cWorld* world);
-  inline ~cEnvironment() { ; }
+  ~cEnvironment();
 
   bool Load(const cString& filename);  // Reads the environment from disk.
   bool LoadLine(cString line);  // Reads in a single environment configuration line
@@ -157,6 +162,9 @@ public:
   cReactionLib& GetReactionLib() { return reaction_lib; }
   cMutationRates& GetMutRates() { return mut_rates; }
   
+  int GetNumStateGrids() const { return m_state_grids.GetSize(); }
+  const cStateGrid& GetStateGrid(int sg) const { return *m_state_grids[sg]; }  
+
   int GetInputSize()  const { return m_input_size; };
   int GetOutputSize() const { return m_output_size; };
 

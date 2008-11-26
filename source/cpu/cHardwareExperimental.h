@@ -260,6 +260,10 @@ protected:
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
   
+
+  void internalReset();
+  
+  
   int GetCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
@@ -281,7 +285,6 @@ public:
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-experimental.cfg"; }
 
-  void Reset();
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 

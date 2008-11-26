@@ -170,6 +170,7 @@
 		7023ECDE0C0A44D800362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		7023ECDF0C0A44D900362B9C /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
+		70310E6B0EDD09260044971B /* cStateGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 70310E690EDD09260044971B /* cStateGrid.h */; };
 		70381F810EAD0BD000A97DFD /* ASAnalyzeLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */; };
 		7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
 		7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
@@ -426,6 +427,7 @@
 		702F52A80992F8F600B2B507 /* cSymbolTable.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSymbolTable.cc; sourceTree = "<group>"; };
 		702F52DE0992FD8000B2B507 /* cScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cScriptObject.h; sourceTree = "<group>"; };
 		702F52DF0992FD8000B2B507 /* cScriptObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cScriptObject.cc; sourceTree = "<group>"; };
+		70310E690EDD09260044971B /* cStateGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cStateGrid.h; sourceTree = "<group>"; };
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
 		70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAnalyzeLib.cc; sourceTree = "<group>"; };
 		70381FDB0EAE2A2A00A97DFD /* ASAvidaNativeObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaNativeObjects.h; sourceTree = "<group>"; };
@@ -1533,6 +1535,7 @@
 				7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */,
 				70166B8D0B519CFE009533A5 /* cTaskState.h */,
 				709A1E540EB69DA6006090AF /* cResourceHistory.h */,
+				70310E690EDD09260044971B /* cStateGrid.h */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1718,6 +1721,7 @@
 				2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */,
 				709A1EEB0EB6C42D006090AF /* cOrgMovementPredicate.h in Headers */,
 				70211A5D0ECBD531004A293A /* cRCObject.h in Headers */,
+				70310E6B0EDD09260044971B /* cStateGrid.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

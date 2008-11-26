@@ -47,6 +47,7 @@
 #include "cReactionLib.h"
 #include "cReactionProcess.h"
 #include "cResource.h"
+#include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
 #include "cWorldDriver.h"
@@ -249,7 +250,15 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-cell-y", &cHardwareCPU::Inst_GetCellPositionY),
     tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
 
-    // @WRE additions for movement
+    // State Grid instructions
+    tInstLibEntry<tMethod>("sg-move", &cHardwareCPU::Inst_SGMove),
+    tInstLibEntry<tMethod>("sg-rotate-l", &cHardwareCPU::Inst_SGRotateL),
+    tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareCPU::Inst_SGRotateR),
+    tInstLibEntry<tMethod>("sg-sense", &cHardwareCPU::Inst_SGSense),
+    
+
+    
+    // Movement instructions
     tInstLibEntry<tMethod>("tumble", &cHardwareCPU::Inst_Tumble, nInstFlag::STALL),
     tInstLibEntry<tMethod>("move", &cHardwareCPU::Inst_Move, nInstFlag::STALL),
     tInstLibEntry<tMethod>("move-to-event", &cHardwareCPU::Inst_MoveToEvent, nInstFlag::STALL),
@@ -529,7 +538,7 @@ cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m
 }
 
 
-void cHardwareCPU::Reset()
+void cHardwareCPU::internalReset()
 {
   m_global_stack.Clear();
   
@@ -552,8 +561,6 @@ void cHardwareCPU::Reset()
   m_mal_active = false;
   m_executedmatchstrings = false;
   
-
-  ResetInstructionCosts();
 
   // Promoter model
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
@@ -4457,6 +4464,85 @@ bool cHardwareCPU::Inst_Tumble(cAvidaContext& ctx)
   // tumblelog << organism->GetID() << "," << irot << endl;
   // tumblelog.close();
 
+  return true;
+}
+
+
+
+bool cHardwareCPU::Inst_SGMove(cAvidaContext& ctx)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  
+  const cStateGrid& sg = m_organism->GetStateGrid();
+  
+  int& x = m_ext_mem[0];
+  int& y = m_ext_mem[1];
+  
+  const int facing = m_ext_mem[2];
+  
+  // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
+  switch (facing) {
+    case 0: // N
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    case 1: // NE
+      if (++x == sg.GetWidth()) x = 0;
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+      
+    case 2: // E
+      if (++x == sg.GetWidth()) x = 0;
+      break;
+
+    case 3: // SE
+      if (++x == sg.GetWidth()) x = 0;
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 4: // S
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+
+    case 5: // SW
+      if (--x == -1) x = sg.GetWidth() - 1;
+      if (--y == -1) y = sg.GetHeight() - 1;
+      break;
+      
+    case 6: // W
+      if (--x == -1) x = sg.GetWidth() - 1;
+      break;
+
+    case 7: // NW
+      if (--x == -1) x = sg.GetWidth() - 1;
+      if (++y == sg.GetHeight()) y = 0;
+      break;
+            
+    default:
+      assert(facing >= 0 && facing <= 7);
+  }
+  
+  m_ext_mem[3 + sg.GetStateAt(x, y)]++;
+  return true;
+}
+
+bool cHardwareCPU::Inst_SGRotateL(cAvidaContext& ctx)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  if (--m_ext_mem[2] < 0) m_ext_mem[2] = 7;
+  return true;
+}
+
+bool cHardwareCPU::Inst_SGRotateR(cAvidaContext& ctx)
+{
+  assert(m_ext_mem.GetSize() > 3);
+  if (++m_ext_mem[2] > 7) m_ext_mem[2] = 0;
+  return true;
+}
+
+bool cHardwareCPU::Inst_SGSense(cAvidaContext& ctx)
+{
+  // @TODO - state grid sense instruction
   return true;
 }
 

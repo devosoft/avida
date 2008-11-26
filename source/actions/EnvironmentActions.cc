@@ -28,12 +28,13 @@
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cEnvironment.h"
+#include "cOrganism.h"
+#include "cPhenotype.h"
 #include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cResource.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "cPhenotype.h"
-#include "cPopulationCell.h"
 
 class cActionInjectResource : public cAction
 {

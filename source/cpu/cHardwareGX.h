@@ -294,6 +294,10 @@ protected:
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
   
+
+  void internalReset();
+  
+    
   int GetExecutedSize(const int parent_size);
   int GetCopiedSize(const int parent_size, const int child_size);
   bool Divide_Main(cAvidaContext& ctx);
@@ -309,7 +313,6 @@ public:
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-gx.cfg"; }
 
-  void Reset();
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 

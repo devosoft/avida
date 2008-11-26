@@ -330,7 +330,7 @@ cHardwareGX::~cHardwareGX()
 /*! Reset this cHardwareGX to a known state.  
 Removes all the current cProgramids, and creates new cProgramids from the germ.
 */
-void cHardwareGX::Reset()
+void cHardwareGX::internalReset()
 {
   // Clear the current list of programids.
   std::for_each(m_programids.begin(), m_programids.end(), delete_functor());
@@ -406,7 +406,6 @@ void cHardwareGX::Reset()
   m_mal_active = false;
   m_executedmatchstrings = false;
   
-  ResetInstructionCosts();
 }
 
 /*! In cHardwareGX, SingleProcess is something of a misnomer.  Each time this method

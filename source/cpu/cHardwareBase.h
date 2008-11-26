@@ -59,7 +59,7 @@ protected:
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
 
-  // --------  Instruction Costs ---------
+  // --------  Instruction Costs  ---------
   int m_inst_cost;
   tArray<int> m_inst_ft_cost;
   tArray<int> m_inst_energy_cost;
@@ -68,7 +68,8 @@ protected:
   bool m_has_ft_costs;
   bool m_has_energy_costs;
   
-  
+  // --------  Base Hardware Feature Support  ---------
+  tArray<int> m_ext_mem;
   
 
   cHardwareBase(); // @not_implemented
@@ -86,13 +87,13 @@ public:
   }
   virtual ~cHardwareBase() { ; }
 
-  // --------  Organism ---------
+  // --------  Organism  ---------
   cOrganism* GetOrganism() { return m_organism; }
   const cInstSet& GetInstSet() { return *m_inst_set; }
 
   
   // --------  Core Functionality  --------
-  virtual void Reset() = 0;
+  void Reset();
   virtual bool SingleProcess(cAvidaContext& ctx, bool speculative = false) = 0;
   virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
 
@@ -104,6 +105,7 @@ public:
   virtual bool OK() = 0;
   virtual void PrintStatus(std::ostream& fp) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
+  void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
   
   
   // --------  Stack Manipulation...  --------
@@ -134,6 +136,8 @@ public:
   virtual cCPUMemory& GetMemory(int value) = 0;
   virtual int GetMemSize(int value) const = 0;
   virtual int GetNumMemSpaces() const = 0;
+  
+  const tArray<int>& GetExtendedMemory() const { return m_ext_mem; }
   
   
   // --------  Register Manipulation  --------
@@ -180,6 +184,8 @@ public:
 
   
 protected:
+  virtual void internalReset() = 0;
+  
   // --------  No-Operation Instruction --------
   bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 
   
@@ -210,9 +216,6 @@ protected:
 																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
   
   virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
-  void ResetInstructionCosts();
-  
-  
 };
 
 
