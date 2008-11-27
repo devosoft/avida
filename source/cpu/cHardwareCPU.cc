@@ -516,7 +516,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
+cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
 : cHardwareBase(world, in_organism, in_m_inst_set)
 , m_last_cell_data(false, 0)
 {
@@ -534,7 +534,7 @@ cHardwareCPU::cHardwareCPU(cWorld* world, cOrganism* in_organism, cInstSet* in_m
   m_constituative_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
   
   m_memory = in_organism->GetGenome();  // Initialize memory...
-  Reset();                            // Setup the rest of the hardware...
+  Reset(ctx);                            // Setup the rest of the hardware...
 }
 
 
@@ -1443,7 +1443,7 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
       InheritState(*this);  
     }
 
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   
   return true;
@@ -1533,7 +1533,7 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   // birth.
   bool parent_alive = m_organism->ActivateDivide(ctx);
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   
   return true;
@@ -1624,7 +1624,7 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   // birth.
   bool parent_alive = m_organism->ActivateDivide(ctx);
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   
   return true;
@@ -1715,7 +1715,7 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   // birth.
   bool parent_alive = m_organism->ActivateDivide(ctx);
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   
   return true;
@@ -2716,7 +2716,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   
   //Reset the parent
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   return true;
 }
@@ -7477,7 +7477,7 @@ bool cHardwareCPU::Inst_ResetFlashInfo(cAvidaContext& ctx) {
 
 
 bool cHardwareCPU::Inst_HardReset(cAvidaContext& ctx) {
-  Reset();
+  Reset(ctx);
   m_advance_ip = false;
   return true;
 }

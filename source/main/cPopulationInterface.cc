@@ -25,6 +25,7 @@
 
 #include "cPopulationInterface.h"
 
+#include "cEnvironment.h"
 #include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
@@ -389,4 +390,9 @@ void cPopulationInterface::SendFlash() {
     }
     cell.ConnectionList().CircNext();
   }
+}
+
+int cPopulationInterface::GetStateGridID(cAvidaContext& ctx)
+{
+  return ctx.GetRandom().GetUInt(m_world->GetEnvironment().GetNumStateGrids());
 }

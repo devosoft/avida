@@ -73,6 +73,8 @@ private:
   // Actual CPU resources.
   cResourceCount m_resource_count;
   cResourceCount m_deme_resource_count;
+  
+  
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
   bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);

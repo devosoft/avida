@@ -111,6 +111,8 @@ public:
   void DivideOrgTestamentAmongDeme(double value);
 	//! Send a flash to all neighboring organisms.
   void SendFlash();
+
+  int GetStateGridID(cAvidaContext& ctx);
 };
 
 

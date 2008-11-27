@@ -203,7 +203,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareExperimental::cHardwareExperimental(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
+cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
 : cHardwareBase(world, in_organism, in_m_inst_set)
 {
   /* FIXME:  reorganize storage of m_functions.  -- kgn */
@@ -219,7 +219,7 @@ cHardwareExperimental::cHardwareExperimental(cWorld* world, cOrganism* in_organi
   m_constituative_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
   
   m_memory = in_organism->GetGenome();  // Initialize memory...
-  Reset();                            // Setup the rest of the hardware...
+  Reset(ctx);                            // Setup the rest of the hardware...
 }
 
 
@@ -968,7 +968,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
 
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   
   return true;
@@ -1832,7 +1832,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   
   return true;

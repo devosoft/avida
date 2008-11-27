@@ -311,12 +311,12 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
 /*! Construct a cHardwareGX instance from the passed-in cOrganism.  This amounts to
 creating an initial cProgramid from in_organism's genome.
 */
-cHardwareGX::cHardwareGX(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
+cHardwareGX::cHardwareGX(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
 : cHardwareBase(world, in_organism, in_m_inst_set)
 {
   m_last_unique_id_assigned = 0;
   m_functions = s_inst_slib->GetFunctions();
-  Reset();   // Setup the rest of the hardware...also creates initial programid(s) from genome
+  Reset(ctx);   // Setup the rest of the hardware...also creates initial programid(s) from genome
 }
 
 
@@ -1276,7 +1276,7 @@ bool cHardwareGX::Divide_Main(cAvidaContext& ctx)
 //
 //  // Do more work if the parent lives through the birth of the offspring
 //  if (parent_alive) {
-//    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+//    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
 //  }
 //  
   return true;
@@ -2107,7 +2107,7 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
 
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
 
   m_just_divided = true;
@@ -3919,7 +3919,7 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
 
   // Do more work if the parent lives through the birth of the offspring
   if (parent_alive) {
-    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset();
+    if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
   
   m_just_divided = true;

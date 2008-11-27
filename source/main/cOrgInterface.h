@@ -105,6 +105,8 @@ public:
   virtual bool BcastAlarm(int jump_jabel, int bcast_range) = 0;
   virtual void DivideOrgTestamentAmongDeme(double value) = 0;
 	virtual void SendFlash() = 0;
+  
+  virtual int GetStateGridID(cAvidaContext& ctx) = 0;
 };
 
 #endif

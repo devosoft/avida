@@ -35,6 +35,7 @@
 # endif
 #endif
 
+class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
 class cOrganism;
@@ -62,8 +63,8 @@ public:
   cHardwareManager(cWorld* world);
   ~cHardwareManager() { ; }
   
-  cHardwareBase* Create(cOrganism* in_org, cInstSet* inst_set);
-  inline cHardwareBase* Create(cOrganism* in_org) { return Create(in_org, m_inst_set); }
+  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* in_org, cInstSet* inst_set);
+  inline cHardwareBase* Create(cAvidaContext& ctx, cOrganism* in_org) { return Create(ctx, in_org, m_inst_set); }
   cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
   const cInstSet& GetInstSet() const { return *m_inst_set; }

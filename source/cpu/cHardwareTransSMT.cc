@@ -132,7 +132,7 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareTransSMT::cHardwareTransSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
+cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
 : cHardwareBase(world, in_organism, in_m_inst_set), m_mem_array(1)
 , m_mem_lbls(Pow(NUM_NOPS, MAX_MEMSPACE_LABEL) / MEM_LBLS_HASH_FACTOR)
 , m_thread_lbls(Pow(NUM_NOPS, MAX_THREAD_LABEL) / THREAD_LBLS_HASH_FACTOR)
@@ -142,7 +142,7 @@ cHardwareTransSMT::cHardwareTransSMT(cWorld* world, cOrganism* in_organism, cIns
   m_mem_array[0] = in_organism->GetGenome();  // Initialize memory...
   m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
   m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
-  Reset();                            // Setup the rest of the hardware...
+  Reset(ctx);                            // Setup the rest of the hardware...
 }
 
 void cHardwareTransSMT::internalReset()
@@ -951,7 +951,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   if (parent_alive) { // If the parent is no longer alive, all of this is moot
     switch (m_world->GetConfig().DIVIDE_METHOD.Get()) {
       case DIVIDE_METHOD_SPLIT:
-        Reset();  // This will wipe out all parasites on a divide.
+        Reset(ctx);  // This will wipe out all parasites on a divide.
         break;
       
       case DIVIDE_METHOD_BIRTH:

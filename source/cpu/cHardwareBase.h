@@ -93,7 +93,7 @@ public:
 
   
   // --------  Core Functionality  --------
-  void Reset();
+  void Reset(cAvidaContext& ctx);
   virtual bool SingleProcess(cAvidaContext& ctx, bool speculative = false) = 0;
   virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
 

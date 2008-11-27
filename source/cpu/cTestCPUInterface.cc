@@ -128,3 +128,7 @@ bool cTestCPUInterface::UpdateMerit(double new_merit)
   return false;
 }
 
+int cTestCPUInterface::GetStateGridID(cAvidaContext& ctx)
+{
+  return m_test_info.GetStateGridID();
+}

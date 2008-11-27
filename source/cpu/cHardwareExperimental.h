@@ -280,7 +280,7 @@ protected:
 
   
 public:
-  cHardwareExperimental(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareExperimental() { ; }
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-experimental.cfg"; }

@@ -29,6 +29,7 @@
 #include "cOrgInterface.h"
 #endif
 
+class cCPUTestInfo;
 class cTestCPU;
 
 #ifndef NULL
@@ -39,9 +40,10 @@ class cTestCPUInterface : public cOrgInterface
 {
 private:
   cTestCPU* m_testcpu;
+  cCPUTestInfo& m_test_info;
 
 public:
-  cTestCPUInterface(cTestCPU* testcpu) : m_testcpu(testcpu) { ; }
+  cTestCPUInterface(cTestCPU* testcpu, cCPUTestInfo& test_info) : m_testcpu(testcpu), m_test_info(test_info) { ; }
   virtual ~cTestCPUInterface() { ; }
 
   int GetCellID() { return -1; }
@@ -93,6 +95,8 @@ public:
 	bool BcastAlarm(int jump_label, int bcast_range) { return false; }
   void DivideOrgTestamentAmongDeme(double value) {;}
 	void SendFlash() { }
+  
+  int GetStateGridID(cAvidaContext& ctx);
 };
 
 

@@ -199,7 +199,7 @@ protected:
   cHardwareTransSMT& operator=(const cHardwareTransSMT&); // @not_implemented
   
 public:
-  cHardwareTransSMT(cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareTransSMT() { ; }
   static cInstLib* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-transsmt.cfg"; }

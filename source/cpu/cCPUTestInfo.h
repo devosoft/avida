@@ -128,6 +128,8 @@ public:
   // And just because these are so commonly used...
   double GetGenotypeFitness();
   double GetColonyFitness();
+  
+  int GetStateGridID() const { return 0; } // @TODO - state grid - support setting cCPUTestInfo's state grid id
 };
 
 

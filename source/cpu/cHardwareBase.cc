@@ -48,9 +48,9 @@
 #include "functions.h"
 
 
-void cHardwareBase::Reset()
+void cHardwareBase::Reset(cAvidaContext& ctx)
 {
-  m_organism->HardwareReset();
+  m_organism->HardwareReset(ctx);
 
   m_inst_cost = 0;
   

@@ -1913,7 +1913,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().NewTrial();
+    m_world->GetPopulation().NewTrial(ctx);
   }
 };
 
@@ -1934,7 +1934,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().CompeteOrganisms(m_type, m_parents_survive);
+    m_world->GetPopulation().CompeteOrganisms(ctx, m_type, m_parents_survive);
   }
 };
 

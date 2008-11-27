@@ -34,9 +34,6 @@
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-//#ifndef sCPUStats_h
-//#include "sCPUStats.h"
-//#endif
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
@@ -165,7 +162,7 @@ public:
   double GetTestFitness(cAvidaContext& ctx);
   double CalcMeritRatio();
   
-  void HardwareReset();
+  void HardwareReset(cAvidaContext& ctx);
   
   void PrintStatus(std::ostream& fp, const cString& next_name);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;

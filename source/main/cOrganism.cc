@@ -80,7 +80,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_msg(0)
   , m_opinion(0)
 {
-  m_hardware = m_world->GetHardwareManager().Create(this);
+  m_hardware = m_world->GetHardwareManager().Create(ctx, this);
 
   initialize(ctx);
 }
@@ -113,7 +113,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& in_genome
   , m_msg(0)
   , m_opinion(0)
 {
-  m_hardware = m_world->GetHardwareManager().Create(this, inst_set);
+  m_hardware = m_world->GetHardwareManager().Create(ctx, this, inst_set);
   
   initialize(ctx);
 }
@@ -528,10 +528,11 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
   return true;
 }
 
-void cOrganism::HardwareReset()
+void cOrganism::HardwareReset(cAvidaContext& ctx)
 {
   if (m_world->GetEnvironment().GetNumStateGrids() > 0) {
-    m_cur_sg = 0; // @TODO - state grid select current
+    // Select random state grid in the environment
+    m_cur_sg = m_interface->GetStateGridID(ctx);
     
     const cStateGrid& sg = GetStateGrid();
     

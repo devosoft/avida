@@ -4785,7 +4785,7 @@ void cPopulation::AddEndSleep(int cellID, int end_time) {
 }
 
 // Starts a new trial for each organism in the population
-void cPopulation::NewTrial()
+void cPopulation::NewTrial(cAvidaContext& ctx)
 {
   for (int i=0; i< GetSize(); i++)
   {
@@ -4802,7 +4802,7 @@ void cPopulation::NewTrial()
         p.SetTimeUsed(p.GetTimeUsed() - cell.GetSpeculativeState());
         
         cell.GetOrganism()->NewTrial();
-        cell.GetOrganism()->GetHardware().Reset();
+        cell.GetOrganism()->GetHardware().Reset(ctx);
         
         cell.SetSpeculativeState(0);
       }
@@ -4824,9 +4824,9 @@ void cPopulation::NewTrial()
  equals a time of 1 unit
  */
 
-void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
+void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int parents_survive)
 {
-  NewTrial();
+  NewTrial(ctx);
   
   double total_fitness = 0;
   int num_cells = GetSize();
@@ -5142,7 +5142,7 @@ void cPopulation::CompeteOrganisms(int competition_type, int parents_survive)
   m_world->GetStats().SetCompetitionFitnesses(average_fitness, lowest_fitness, highest_fitness, average_fitness_copied, lowest_fitness_copied, highest_fitness_copied);
   m_world->GetStats().SetCompetitionOrgsReplicated(different_orgs_copied);
   
-  NewTrial();
+  NewTrial(ctx);
 }
 
 /* This routine is designed to change values in the resource count in the 
