@@ -60,7 +60,7 @@ private:
     
     sArgSchemaEntry() { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, tType in_type)  // Required Argument (supplied type)
-      : name(in_name), type(in_type), index(in_idx), optional(false) { ; }
+      : name(in_name), type(in_type), index(in_idx), optional(false), has_range_limits(false) { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, int def)        // Optional Int Argument
       : name(in_name), type(SCHEMA_INT), index(in_idx), optional(true), def_int(def), has_range_limits(false) { ; }
     sArgSchemaEntry(const cString& in_name, int in_idx, double def)     // Optional Double Argument

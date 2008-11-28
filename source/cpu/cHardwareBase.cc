@@ -1,7 +1,7 @@
 /*
  *  cHardwareBase.cc
  *  Avida
- *../RSDN_FI_25ku_basemut_org50_1dist_fixlen_32205
+ *
  *  Called "hardware_base.cc" prior to 11/17/05.
  *  Copyright 1999-2008 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
