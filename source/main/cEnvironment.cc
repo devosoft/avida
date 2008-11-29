@@ -813,15 +813,15 @@ bool cEnvironment::LoadStateGrid(cString desc)
   }
   
   // Load the state grid itself
-  tArray<int> grid(width * height);
+  tArray<int> lgrid(width * height);
   cString gridstr = args->GetString(1);
   int cell = 0;
-  while (gridstr.GetSize() && cell < grid.GetSize()) {
+  while (gridstr.GetSize() && cell < lgrid.GetSize()) {
     statename = gridstr.Pop(',');
     statename.Trim();
     for (int i = 0; i < states.GetSize(); i++) {
       if (statename == states[i]) {
-        grid[cell++] = i;
+        lgrid[cell++] = i;
         break;
       }
     }
@@ -829,9 +829,22 @@ bool cEnvironment::LoadStateGrid(cString desc)
          << (cell % width) << ") in state grid " << name << endl;
     return false;
   }
-  if (cell != (grid.GetSize() - 1) || gridstr.GetSize() > 0) {
+  if (cell != (lgrid.GetSize() - 1) || gridstr.GetSize() > 0) {
     cerr << "error: grid definition size mismatch for state grid " << name << endl;
     return false;
+  }
+  
+  // Invert row ordering so that it is interpreted as the highest indexed row comes first.  i.e. -
+  // | a a |
+  // | b a |
+  // would be a,a,b,a
+  tArray<int> grid(lgrid.GetSize());
+  for (int y = 0; y < height; y++) {
+    int off = y * width;
+    int toff = (height - y - 1) * width; 
+    for (int x = 0; x < width; x++) {
+      grid[off + x] = tgrid[toff + x];
+    }
   }
   
   m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
