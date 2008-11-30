@@ -841,9 +841,9 @@ bool cEnvironment::LoadStateGrid(cString desc)
   tArray<int> grid(lgrid.GetSize());
   for (int y = 0; y < height; y++) {
     int off = y * width;
-    int toff = (height - y - 1) * width; 
+    int loff = (height - y - 1) * width; 
     for (int x = 0; x < width; x++) {
-      grid[off + x] = tgrid[toff + x];
+      grid[off + x] = lgrid[loff + x];
     }
   }
   
