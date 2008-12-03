@@ -35,6 +35,9 @@
 #ifndef tBuffer_h
 #include "tBuffer.h"
 #endif
+#ifndef tSmartArray_h
+#include "tSmartArray.h"
+#endif
 
 using namespace std;
 
@@ -69,7 +72,7 @@ protected:
   bool m_has_energy_costs;
   
   // --------  Base Hardware Feature Support  ---------
-  tArray<int> m_ext_mem;
+  tSmartArray<int> m_ext_mem;
   
 
   cHardwareBase(); // @not_implemented
@@ -137,7 +140,7 @@ public:
   virtual int GetMemSize(int value) const = 0;
   virtual int GetNumMemSpaces() const = 0;
   
-  const tArray<int>& GetExtendedMemory() const { return m_ext_mem; }
+  const tSmartArray<int>& GetExtendedMemory() const { return m_ext_mem; }
   
   
   // --------  Register Manipulation  --------

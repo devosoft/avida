@@ -4522,7 +4522,11 @@ bool cHardwareCPU::Inst_SGMove(cAvidaContext& ctx)
       assert(facing >= 0 && facing <= 7);
   }
   
+  // Increment state observed count
   m_ext_mem[3 + sg.GetStateAt(x, y)]++;
+  
+  // Save this location in the movement history
+  m_ext_mem.Push(sg.GetIDFor(x, y));
   return true;
 }
 

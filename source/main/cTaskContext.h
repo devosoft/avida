@@ -37,6 +37,9 @@
 #ifndef tHashTable_h
 #include "tHashTable.h"
 #endif
+#ifndef tSmartArray_h
+#include "tSmartArray.h"
+#endif
 
 class cTaskEntry;
 class cTaskState;
@@ -50,7 +53,7 @@ private:
   const tBuffer<int>& m_output_buffer;
   const tList<tBuffer<int> >& m_other_input_buffers;
   const tList<tBuffer<int> >& m_other_output_buffers;
-  const tArray<int>& m_ext_mem;
+  const tSmartArray<int>& m_ext_mem;
   tBuffer<int>* m_received_messages;
   int m_logic_id;
   bool m_on_divide;
@@ -66,7 +69,7 @@ private:
 public:
   cTaskContext(cOrganism* organism, const tBuffer<int>& inputs, const tBuffer<int>& outputs,
                const tList<tBuffer<int> >& other_inputs, const tList<tBuffer<int> >& other_outputs,
-               const tArray<int>& ext_mem, bool in_on_divide = false,
+               const tSmartArray<int>& ext_mem, bool in_on_divide = false,
                tBuffer<int>* in_received_messages = NULL)
     : m_organism(organism)
     , m_input_buffer(inputs)
@@ -88,7 +91,7 @@ public:
   inline const tBuffer<int>& GetOutputBuffer() { return m_output_buffer; }
   inline const tList<tBuffer<int> >& GetNeighborhoodInputBuffers() { return m_other_input_buffers; }
   inline const tList<tBuffer<int> >& GetNeighborhoodOutputBuffers() { return m_other_output_buffers; }
-  inline const tArray<int>& GetExtendedMemory() const { return m_ext_mem; }
+  inline const tSmartArray<int>& GetExtendedMemory() const { return m_ext_mem; }
   inline tBuffer<int>* GetReceivedMessages() { return m_received_messages; }
   inline int GetLogicId() const { return m_logic_id; }
   inline void SetLogicId(int v) { m_logic_id = v; }
