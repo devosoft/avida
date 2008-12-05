@@ -29,12 +29,14 @@
 #include "cArgSchema.h"
 #include "cDeme.h"
 #include "cEnvReqs.h"
-#include "tHashTable.h"
 #include "cTaskState.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cOrgMessagePredicate.h"
 #include "cOrgMovementPredicate.h"
+#include "cStateGrid.h"
+#include "tArrayUtils.h"
+#include "tHashTable.h"
 
 #include "platform.h"
 
@@ -355,15 +357,13 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "match_number")
     Load_MatchNumber(name, info, envreqs, errors);
   
+  // Sequence Tasks
   if (name == "sort_inputs")
     Load_SortInputs(name, info, envreqs, errors);
   else if (name == "fibonacci_seq")
     Load_FibonacciSequence(name, info, envreqs, errors);
   
-  // Optimization Tasks
-  if (name == "optimize")
-    Load_Optimize(name, info, envreqs, errors);
-  
+  // Math Tasks
   if (name == "mult")
     Load_Mult(name, info, envreqs, errors);
   else if (name == "div")
@@ -381,6 +381,10 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "cosine")
     Load_Cosine(name, info, envreqs, errors);
   
+  
+  // Optimization Tasks
+  if (name == "optimize")
+    Load_Optimize(name, info, envreqs, errors);
   
   // Communication Tasks
   if (name == "comm_echo")
@@ -422,6 +426,11 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
     NewTask(name, "Moved into cell containing event", &cTaskLib::Task_MoveToEvent);
   else if(name == "event_killed")
     NewTask(name, "Killed event", &cTaskLib::Task_EventKilled);
+  
+  // Optimization Tasks
+  if (name == "sg_path_traversal")
+    Load_SGPathTraversal(name, info, envreqs, errors);  
+  
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -3051,3 +3060,52 @@ double cTaskLib::Task_EventKilled(cTaskContext& ctx) const
   if (ctx.GetOrganism()->GetEventKilled()) return 1.0;
   return 0.0;
 }
+
+
+
+void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+  cArgSchema schema;
+
+  // Integer Arguments
+  schema.AddEntry("pathlen", 0, cArgSchema::SCHEMA_INT);
+  
+  // String Arguments
+  schema.AddEntry("sgname", 0, cArgSchema::SCHEMA_STRING);
+  schema.AddEntry("poison", 1, cArgSchema::SCHEMA_STRING);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  if (args) NewTask(name, "State Grid Path Traversal", &cTaskLib::Task_SGPathTraversal, 0, args);
+}
+
+double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
+{
+  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  const cStateGrid& sg = ctx.GetOrganism()->GetStateGrid();
+
+  if (sg.GetName() != args.GetString(0)) return 0.0;
+
+  int state = sg.GetStateID(args.GetString(1));
+  if (state < 0) return 0.0;
+  
+  const tSmartArray<int>& ext_mem = ctx.GetExtendedMemory();
+  
+  // Build and sort history
+  const int history_offset = 3 + sg.GetNumStates();
+  tArray<int> history(ext_mem.GetSize() - history_offset);
+  for (int i = 0; i < history.GetSize(); i++) history[i] = ext_mem[i + history_offset];
+  tArrayUtils::QSort(history);
+  
+  // Calculate how many unique non-poison cells have been touched
+  int traversed = 0;
+  int last = -1;
+  for (int i = 0; i < history.GetSize(); i++) {
+    if (history[i] == last) continue;
+    last = history[i];
+    if (sg.GetStateAt(last) != state) traversed++;
+  }
+  
+  traversed -= ext_mem[3 + state];
+  
+  return ((double)((traversed >= 0) ? traversed : 0) / (double)args.GetInt(0));
+}  

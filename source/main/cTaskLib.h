@@ -244,15 +244,13 @@ private:  // Direct task related methods
   void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_MatchNumber(cTaskContext& ctx) const;
 
+  // Sequence Tasks
   void Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_SortInputs(cTaskContext& ctx) const;
   void Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_FibonacciSequence(cTaskContext& ctx) const;
-  
-   // Optimization Tasks
-  void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
-  double Task_Optimize(cTaskContext& ctx) const;
 
+  // Math Tasks
   void Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_Mult(cTaskContext& ctx) const;
   void Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
@@ -270,7 +268,11 @@ private:  // Direct task related methods
   void Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_Cosine(cTaskContext& ctx) const;
 
-
+  // Optimization Tasks
+  void Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_Optimize(cTaskContext& ctx) const;
+  
+  
   // Communication Tasks
   double Task_CommEcho(cTaskContext& ctx) const;
   double Task_CommNot(cTaskContext& ctx) const;
@@ -296,6 +298,10 @@ private:  // Direct task related methods
   // movement
   double Task_MoveToEvent(cTaskContext& ctx) const;
   double Task_EventKilled(cTaskContext& ctx) const;
+
+  // State Grid Tasks
+  void Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_SGPathTraversal(cTaskContext& ctx) const;  
 };
 
 
