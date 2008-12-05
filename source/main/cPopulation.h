@@ -243,6 +243,7 @@ public:
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
+	void PrintDemeTotalAvgEnergy();
   
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);

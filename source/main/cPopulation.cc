@@ -2699,6 +2699,23 @@ void cPopulation::PrintDemeFitness() {
   df_fit.Endl();
 }
 
+void cPopulation::PrintDemeTotalAvgEnergy() {
+  cStats& stats = m_world->GetStats();
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df_fit = m_world->GetDataFile("deme_totalAvgEnergy.dat");
+  df_fit.WriteComment("Average energy for demes in the population");
+  df_fit.WriteTimeStamp();
+  df_fit.Write(stats.GetUpdate(), "update");
+	cDoubleSum avg_energy;
+  
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    const cDeme & cur_deme = deme_array[deme_id];    
+		avg_energy.Add(cur_deme.CalculateTotalEnergy());
+	}
+	df_fit.Write(avg_energy.Ave(), "Total Average Energy");
+	df_fit.Endl();
+}
+
 void cPopulation::PrintDemeGestationTime() {
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
