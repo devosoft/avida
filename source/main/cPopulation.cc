@@ -478,7 +478,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() >= 1);
   
-  in_organism->SetOrgInterface(new cPopulationInterface(m_world));
+  in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
   
   // If the organism does not have a genotype, give it one!  No parent
   // information is provided so we must set parents to NULL.

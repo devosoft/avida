@@ -158,10 +158,12 @@ cOrganism::cNetSupport::~cNetSupport()
   for (int i = 0; i < received.GetSize(); i++) delete received[i];
 }
 
-void cOrganism::SetOrgInterface(cOrgInterface* interface)
+void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* interface)
 {
   delete m_interface;
   m_interface = interface;
+  
+  HardwareReset(ctx);
   
   // initialize m_rbins as soon as the interface is available
   m_rbins = m_interface->GetResources();
@@ -530,7 +532,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
 
 void cOrganism::HardwareReset(cAvidaContext& ctx)
 {
-  if (m_world->GetEnvironment().GetNumStateGrids() > 0) {
+  if (m_world->GetEnvironment().GetNumStateGrids() > 0 && m_interface) {
     // Select random state grid in the environment
     m_cur_sg = m_interface->GetStateGridID(ctx);
     
