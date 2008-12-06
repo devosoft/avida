@@ -819,17 +819,21 @@ bool cEnvironment::LoadStateGrid(cString desc)
   while (gridstr.GetSize() && cell < lgrid.GetSize()) {
     statename = gridstr.Pop(',');
     statename.Trim();
+    bool found = false;
     for (int i = 0; i < states.GetSize(); i++) {
       if (statename == states[i]) {
         lgrid[cell++] = i;
+        found = true;
         break;
       }
     }
-    cerr << "error: state identifier undefined for cell (" << (cell / width) << ", "
-         << (cell % width) << ") in state grid " << name << endl;
-    return false;
+    if (!found) {
+      cerr << "error: state identifier undefined for cell (" << (cell / width) << ", "
+           << (cell % width) << ") in state grid " << name << endl;
+      return false;
+    }
   }
-  if (cell != (lgrid.GetSize() - 1) || gridstr.GetSize() > 0) {
+  if (cell != lgrid.GetSize() || gridstr.GetSize() > 0) {
     cerr << "error: grid definition size mismatch for state grid " << name << endl;
     return false;
   }
