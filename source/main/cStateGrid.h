@@ -60,7 +60,7 @@ public:
   inline int GetNumStates() const { return m_states.GetSize(); }
   inline int GetStateID(const cString& state_name) const;
   
-  inline int GetIDFor(int x, int y) const { return (x * m_w + y); }
+  inline int GetIDFor(int x, int y) const { return (y * m_w + x); }
   inline int GetStateAt(int grid_id) const { return m_grid[grid_id]; }
   inline int GetStateAt(int x, int y) const { return m_grid[GetIDFor(x,y)]; }
   inline int SenseStateAt(int x, int y) const { return m_sense_values[GetStateAt(x, y)]; }
