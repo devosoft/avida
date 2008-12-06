@@ -1728,11 +1728,25 @@ void cAnalyze::CommandTrace(cString cur_string)
 {
   cString msg;
   tArray<int> manual_inputs;
+  int sg = 0;
   
   // Process our arguments; manual inputs must be the last arguments
 
   cString directory      = PopDirectory(cur_string.PopWord(), cString("archive/"));           // #1
-  int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;         // #2
+  cString first_arg = cur_string.PopWord();
+  
+  if (first_arg.IsSubstring("sg=", 0)) {
+    first_arg.Pop('=');
+    sg = first_arg.AsInt();
+    if (sg < 0 || sg >= m_world->GetEnvironment().GetNumStateGrids()) {
+      msg.Set("invalid state grid selection");
+      m_world->GetDriver().NotifyWarning(msg);
+      return;
+    }
+    first_arg = cur_string.PopWord();
+  }
+  
+  int use_resources      = (first_arg.GetSize()) ? first_arg.AsInt() : 0;                     // #2
   int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;        // #3
   bool use_random_inputs = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() == 1: false; // #4
   bool use_manual_inputs = false;                                                             // #5+
@@ -1781,6 +1795,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     else
       test_info.UseRandomInputs(use_random_inputs); 
     test_info.SetResourceOptions(use_resources, m_resources, update, m_resource_time_spent_offset);
+    test_info.SetCurrentStateGridID(sg);
 
     if (m_world->GetVerbosity() >= VERBOSE_ON){
       msg = cString("Tracing ") + filename;

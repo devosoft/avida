@@ -65,6 +65,8 @@ private:
 	tArray<int> manual_inputs;  //   if so, use these.
   cHardwareTracer* m_tracer;
   cInstSet* m_inst_set;
+  
+  int m_cur_sg;
 
   // Outputs...
   bool is_viable;         // Is this organism colony forming?
@@ -100,6 +102,8 @@ public:
   void SetInstSet(cInstSet* inst_set = NULL) { m_inst_set = inst_set; }
   void SetResourceOptions(int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0)
     { m_res_method = (eTestCPUResourceMethod)res_method; m_res = res; m_res_update = update; m_res_cpu_cycle_offset = cpu_cycle_offset; }
+  
+  void SetCurrentStateGridID(int sg) { m_cur_sg = sg; }
 
 
   // Input Accessors
@@ -129,7 +133,7 @@ public:
   double GetGenotypeFitness();
   double GetColonyFitness();
   
-  int GetStateGridID() const { return 0; } // @TODO - state grid - support setting cCPUTestInfo's state grid id
+  int GetStateGridID() const { return m_cur_sg; }
 };
 
 
