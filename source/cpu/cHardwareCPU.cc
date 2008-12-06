@@ -838,6 +838,12 @@ void cHardwareCPU::PrintStatus(ostream& fp)
 		  << "  " << m_memory.AsString()
 		  << endl;
       
+  if (m_ext_mem.GetSize()) {
+    fp << "  Ext Mem: " << m_ext_mem[0];
+    for (int i = 1; i < m_ext_mem.GetSize(); i++) fp << ", " << m_ext_mem[i];
+    fp << endl;
+  }
+  
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
   {
     fp << "  Promoters: index=" << m_promoter_index << " offset=" << m_promoter_offset;
