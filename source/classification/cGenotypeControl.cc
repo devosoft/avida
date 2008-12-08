@@ -81,10 +81,11 @@ void cGenotypeControl::Insert(cGenotype & in_genotype, cGenotype * prev_genotype
   }
 
   if (!CheckPos(in_genotype))
-    cerr << "Genotype insertion fail! @MRR -- \n"
+    /*cerr << "Genotype insertion fail! @MRR -- \n"
       << "Best Genotype:    " << best << " " << best->GetNumOrganisms() << " prev: " << best->GetPrev() << "  next: " << best->GetNext() << endl
       << "In Genotype:      " << &in_genotype << " " << in_genotype.GetNumOrganisms() << " prev: " << in_genotype.GetPrev() << "  next: " << in_genotype.GetNext() << endl
       << "Prev Genotype:    " << prev_genotype << " " << prev_genotype->GetNumOrganisms() << " prev: " << prev_genotype->GetPrev() << "  next: " << prev_genotype->GetNext() << endl;
+    */
   size++;
 }
 
