@@ -51,7 +51,9 @@ public:
   int parent_distance;  // Genetic distance from parent genotype
   int gene_depth;       // depth in the phylogenetic tree from ancestor
   int lineage_label;    // Unique label for the lineage of this genotype.
-
+  int exec_born;        // @MRR Number of instruction executions from start
+  int generation_born;  // @MRR Generation genotype created
+  
   int update_deactivated;       // If not, when did it get deactivated?
   cGenotype* parent_genotype;  // Pointer to parent genotype...
   cGenotype* parent2_genotype; // Pointer to secondary parent genotype...

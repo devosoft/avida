@@ -1872,7 +1872,6 @@
 		DCC30C4D0762532C008F7A48 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
-			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 0;
 			mainGroup = DCC30C490762532C008F7A48;
 			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;

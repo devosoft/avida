@@ -169,7 +169,10 @@ private:
   double neutral_metric; // Undergoes drift (gausian 0,1) per generation
   double life_fitness; 	 // Organism fitness during its lifetime, 
 		         // calculated based on merit just before the divide
-
+  int exec_time_born;    // @MRR number of instructions since seed ancestor start
+  double gmu_exec_time_born; //@MRR mutation-rate and gestation time scaled time of birth
+  int birth_update;      // @MRR update *organism* born
+  
   // 5. Status Flags...  (updated at each divide)
   bool to_die;		 // Has organism has triggered something fatal?
   bool to_delete;        // Should this organism be deleted when finished?
@@ -315,6 +318,13 @@ public:
   double GetEnergyBonus() const { assert(initialized == true); return cur_energy_bonus; }
   int GetDiscreteEnergyLevel() const;
   double GetEnergyInBufferAmount() const { return energy_received_buffer; }
+  
+  //@MRR Organism-specific birth tracking
+  double GetGMuExecTimeBorn() const {return gmu_exec_time_born;}
+  int GetExecTimeBorn() const {return exec_time_born;}
+  int GetUpdateBorn() const {return birth_update;}
+  
+  
   
   bool GetToDie() const { assert(initialized == true); return to_die; }
   bool GetToDelete() const { assert(initialized == true); return to_delete; }

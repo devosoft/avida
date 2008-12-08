@@ -133,6 +133,7 @@ void cClassificationManager::AddGenotype(cGenotype* in_genotype, int list_num)
   
   in_genotype->SetSpecies(parent_species);
   if (parent_species != NULL) parent_species->AddGenotype();
+  
 }
 
 
@@ -526,6 +527,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   bool print_depth = false;
   bool print_lineage = false;
   bool print_sequence = false;
+  bool print_exec_time_born = false;
+  bool print_generation_born = false;
   
   cStringList fields(data_fields, ',');
   if (fields.HasString("id") == true) print_id = true;
@@ -543,11 +546,14 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   if (fields.HasString("depth") == true) print_depth = true;
   if (fields.HasString("lineage") == true) print_lineage = true;
   if (fields.HasString("sequence") == true) print_sequence = true;
+  if (fields.HasString("exec_time_born") == true) print_exec_time_born = true;
+  if (fields.HasString("generation_born") == true) print_generation_born = true;
   if (fields.HasString("all") == true) {
     print_id = print_parent_id = print_parent2_id = print_parent_dist = true;
     print_num_cpus = print_total_cpus = print_length = print_merit = true;
     print_gest_time = print_fitness = print_update_born = true;
     print_update_dead = print_depth = print_lineage = print_sequence = true;
+    print_exec_time_born = true; 
   }
   
   // Print all of the header information...
@@ -569,6 +575,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   if (print_depth == true) fp << "depth ";
   if (print_lineage == true) fp << "lineage ";
   if (print_sequence == true) fp << "sequence ";  
+  if (print_exec_time_born == true) fp << "exec_time_born";
+  if (print_generation_born == true) fp << "generation_born";
   fp << endl;
   
   // Print extra information about what data is in this file...
@@ -595,6 +603,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   if (print_depth) fp << "# " << cur_col++ << ": depth in phylogentic tree" << endl;
   if (print_lineage) fp << "# " << cur_col++ << ": lineage label of genotype" << endl;
   if (print_sequence) fp << "# " << cur_col++ << ": genome of genotype" << endl;
+  if (print_exec_time_born) fp << "#" << cur_col++ << ": number of instructions executed at birth since ancestor injection" << endl;
+  if (print_generation_born) fp << "#" << cur_col++ << ": first generation number of genotype" << endl;
   fp << endl;
   
   // Print the current population....
@@ -617,6 +627,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
     if (print_depth)       fp << genotype->GetDepth() << " ";
     if (print_lineage)     fp << genotype->GetLineageLabel() << " "; 
     if (print_sequence)    fp << genotype->GetGenome().AsString() << " ";
+    if (print_exec_time_born) fp << genotype->GetExecTimeBorn() << " ";
+    if (print_generation_born) fp << genotype->GetGenerationBorn() << " ";
     fp << endl;
     m_genotype_ctl->Next(0);
   }
@@ -653,6 +665,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
     if (print_depth)       fp << genotype->GetDepth() << " ";
     if (print_lineage)     fp << genotype->GetLineageLabel() << " "; 
     if (print_sequence)    fp << genotype->GetGenome().AsString() << " ";
+    if (print_exec_time_born)  fp << genotype->GetExecTimeBorn() << " ";
+    if (print_generation_born) fp << genotype->GetGenerationBorn() << " ";
     fp << endl;
     
     // Move to the next genotype...

@@ -525,6 +525,17 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   in_genotype->AddOrganism();
   
+  //@MRR If this is a new genotype, then store it's exec_birth here
+  //Assuming that all new genotypes must go through this function, AddOrganism()
+  //above should increment a new genotype's total organism count to 1
+  //The in_genotype's phenotype should have been set by cPhenotype::SetupOffspring
+  //by this point.
+  if (in_genotype->GetTotalOrganisms() == 1)
+  {
+    in_genotype->SetExecTimeBorn(in_organism->GetPhenotype().GetExecTimeBorn());
+    in_genotype->SetGenerationBorn(in_organism->GetPhenotype().GetGeneration());
+  }
+  
   if (old_genotype != NULL) {
     old_genotype->DecDeferAdjust();
     m_world->GetClassificationManager().AdjustGenotype(*old_genotype);

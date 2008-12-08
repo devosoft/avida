@@ -143,6 +143,8 @@ public:
   void IncDeferAdjust() { defer_adjust++; }
   void DecDeferAdjust() { defer_adjust--; assert(defer_adjust >= 0); }
   void SetLineageLabel(int in_label) { birth_data.lineage_label = in_label; }
+  void SetExecTimeBorn(int in_exec_born) { birth_data.exec_born = in_exec_born;}  //@MRR
+  void SetGenerationBorn(int in_gen_born) {birth_data.generation_born = in_gen_born;} //@MRR
 
   // Setting New Stats
   void AddCopiedSize(int in) { sum_copied_size.Add(in); }
@@ -220,7 +222,9 @@ public:
   bool GetThreshold() const     { return flag_threshold; }
   int GetID() const             { return id_num; }
   char GetSymbol() const        { return symbol; }
-  int GetMapColor() const          { return map_color_id; }
+  int GetMapColor() const       { return map_color_id; }
+  int GetExecTimeBorn() const   { return birth_data.exec_born; }  //@MRR
+  int GetGenerationBorn() const { return birth_data.generation_born; } //@MRR
 
   // Calculate a crude phylogentic distance based off of tracking parents
   // and grand-parents, including sexual tracking.

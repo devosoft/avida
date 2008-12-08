@@ -173,7 +173,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   fault_desc               = in_phen.fault_desc;    
   neutral_metric           = in_phen.neutral_metric; 
   life_fitness             = in_phen.life_fitness; 	
-                        
+  exec_time_born           = in_phen.exec_time_born;
+  birth_update             = in_phen.birth_update;
   
   // 5. Status Flags...  (updated at each divide)
   to_die                  = in_phen.to_die;		 
@@ -371,7 +372,9 @@ void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
   fault_desc      = "";
   neutral_metric  = parent_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
   life_fitness    = fitness; 
-
+  exec_time_born  = parent_phenotype.exec_time_born;  //@MRR treating offspring and parent as siblings; already set in DivideReset
+  birth_update    = parent_phenotype.birth_update;    
+  
   num_thresh_gb_donations = 0;
   num_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
   num_quanta_thresh_gb_donations = 0;
@@ -526,7 +529,9 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   age             = 0;
   fault_desc      = "";
   neutral_metric  = 0;
-  life_fitness    = 0; 
+  life_fitness    = 0;
+  exec_time_born  = 0;
+  birth_update     = m_world->GetStats().GetUpdate();
 
   num_thresh_gb_donations = 0;
   num_thresh_gb_donations_last = 0;
@@ -683,6 +688,8 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   fault_desc      = "";
   (void) neutral_metric;
   life_fitness = fitness; 
+  exec_time_born += gestation_time;  //@MRR Treating organism as sibling
+  birth_update = m_world->GetStats().GetUpdate();   
 
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -839,6 +846,8 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   (void) fault_desc;
   (void) neutral_metric;
   life_fitness = fitness; 
+  exec_time_born += gestation_time;  //@MRR See DivideReset 
+  birth_update  = m_world->GetStats().GetUpdate();
 
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -988,6 +997,8 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   fault_desc      = "";
   neutral_metric  = clone_phenotype.neutral_metric + m_world->GetRandom().GetRandNormal();
   life_fitness    = fitness; 
+  exec_time_born  = 0;
+  birth_update    = m_world->GetStats().GetUpdate();
 
   num_thresh_gb_donations_last = clone_phenotype.num_thresh_gb_donations_last;
   num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
@@ -1515,6 +1526,7 @@ void cPhenotype::NewTrial()
   fault_desc      = "";
   (void) neutral_metric;
   life_fitness = fitness; 
+  
 
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
