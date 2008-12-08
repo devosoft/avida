@@ -855,7 +855,7 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
 	
 	
   // Insert Mutations (per site)
-  if(m_organism->GetInsMutProb() > 0){
+  if(m_organism->GetDivInsProb() > 0){
     int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
 																					 m_organism->GetInjectInsProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
@@ -880,7 +880,7 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
 	
 	
   // Delete Mutations (per site)
-  if( m_organism->GetDelMutProb() > 0 ){
+  if( m_organism->GetDivDelProb() > 0 ){
     int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
 																					 m_organism->GetInjectDelProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE

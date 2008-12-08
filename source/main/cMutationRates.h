@@ -43,6 +43,9 @@ private:
   // ...during an instruction copy...
   struct sCopyMuts {
     double mut_prob;
+    double ins_prob;
+    double del_prob;
+    double uniform_prob;
     double slip_prob;
   };
   sCopyMuts copy;
@@ -53,10 +56,12 @@ private:
     double del_prob;        // Per site
     double mut_prob;        // Per site
     double uniform_prob;
+    double slip_prob;
     double divide_mut_prob;     // Max one per divide
     double divide_ins_prob;     // Max one per divide
     double divide_del_prob;     // Max one per divide
     double divide_slip_prob;     // Max one per divide
+    double divide_uniform_prob;
     double parent_mut_prob;
   };
   sDivideMuts divide;
@@ -107,35 +112,61 @@ public:
     return change;
   }
 
-  double GetCopyMutProb() const      { return copy.mut_prob; }
-  double GetInsMutProb() const       { return divide.ins_prob; }
-  double GetDelMutProb() const       { return divide.del_prob; }
-  double GetDivMutProb() const       { return divide.mut_prob; }
-  double GetUniformMutProb() const   { return divide.uniform_prob; }
-  double GetDivideMutProb() const    { return divide.divide_mut_prob; }
-  double GetDivideInsProb() const    { return divide.divide_ins_prob; }
-  double GetDivideDelProb() const    { return divide.divide_del_prob; }
-  double GetParentMutProb() const    { return divide.parent_mut_prob; }
-  double GetInjectInsProb() const    { return inject.ins_prob; }
-  double GetInjectDelProb() const    { return inject.del_prob; }
-  double GetInjectMutProb() const    { return inject.mut_prob; }
-  double GetMetaCopyMutProb() const  { return meta.copy_mut_prob; }
-  double GetMetaStandardDev() const  { return meta.standard_dev; }
   
-  void SetCopyMutProb(double in_prob)   { copy.mut_prob          = in_prob; }
-  void SetInsMutProb(double in_prob)    { divide.ins_prob        = in_prob; }
-  void SetDelMutProb(double in_prob)    { divide.del_prob        = in_prob; }
-  void SetDivMutProb(double in_prob)    { divide.mut_prob        = in_prob; }
-  void SetUniformMutProb(double in_prob){ divide.uniform_prob    = in_prob; }
-  void SetDivideMutProb(double in_prob) { divide.divide_mut_prob = in_prob; }
-  void SetDivideInsProb(double in_prob) { divide.divide_ins_prob = in_prob; }
-  void SetDivideDelProb(double in_prob) { divide.divide_del_prob = in_prob; }
-  void SetParentMutProb(double in_prob) { divide.parent_mut_prob = in_prob; }
-  void SetInjectInsProb(double in_prob) { inject.ins_prob        = in_prob; }
-  void SetInjectDelProb(double in_prob) { inject.del_prob        = in_prob; }
-  void SetInjectMutProb(double in_prob) { inject.mut_prob        = in_prob; }
-  void SetMetaCopyMutProb(double in_prob) { meta.copy_mut_prob   = in_prob; }
-  void SetMetaStandardDev(double in_dev) { meta.standard_dev     = in_dev; }
+  double GetCopyMutProb() const       { return copy.mut_prob; }
+  double GetCopyInsProb() const       { return copy.ins_prob; }
+  double GetCopyDelProb() const       { return copy.del_prob; }
+  double GetCopyUniformProb() const   { return copy.uniform_prob; }
+  double GetCopySlipProb() const      { return copy.slip_prob; }
+  
+  double GetDivInsProb() const        { return divide.ins_prob; }
+  double GetDivDelProb() const        { return divide.del_prob; }
+  double GetDivMutProb() const        { return divide.mut_prob; }
+  double GetDivUniformProb() const    { return divide.uniform_prob; }
+  double GetDivSlipProb() const       { return divide.slip_prob; }
+  
+  double GetDivideMutProb() const     { return divide.divide_mut_prob; }
+  double GetDivideInsProb() const     { return divide.divide_ins_prob; }
+  double GetDivideDelProb() const     { return divide.divide_del_prob; }
+  double GetDivideUniformProb() const { return divide.divide_uniform_prob; }
+  double GetDivideSlipProb() const    { return divide.divide_slip_prob; }
+  
+  double GetParentMutProb() const     { return divide.parent_mut_prob; }
+  
+  double GetInjectInsProb() const     { return inject.ins_prob; }
+  double GetInjectDelProb() const     { return inject.del_prob; }
+  double GetInjectMutProb() const     { return inject.mut_prob; }
+  
+  double GetMetaCopyMutProb() const   { return meta.copy_mut_prob; }
+  double GetMetaStandardDev() const   { return meta.standard_dev; }
+  
+  
+  void SetCopyMutProb(double in_prob)       { copy.mut_prob = in_prob; }
+  void SetCopyInsProb(double in_prob)       { copy.ins_prob = in_prob; }
+  void SetCopyDelProb(double in_prob)       { copy.del_prob = in_prob; }
+  void SetCopyUniformProb(double in_prob)   { copy.uniform_prob = in_prob; }
+  void SetCopySlipProb(double in_prob)      { copy.slip_prob = in_prob; }
+  
+  void SetDivMutProb(double in_prob)        { divide.mut_prob = in_prob; }
+  void SetDivInsProb(double in_prob)        { divide.ins_prob = in_prob; }
+  void SetDivDelProb(double in_prob)        { divide.del_prob = in_prob; }
+  void SetDivUniformProb(double in_prob)    { divide.uniform_prob = in_prob; }
+  void SetDivSlipProb(double in_prob)       { divide.slip_prob = in_prob; }
+  
+  void SetDivideMutProb(double in_prob)     { divide.divide_mut_prob = in_prob; }
+  void SetDivideInsProb(double in_prob)     { divide.divide_ins_prob = in_prob; }
+  void SetDivideDelProb(double in_prob)     { divide.divide_del_prob = in_prob; }
+  void SetDivideUniformProb(double in_prob) { divide.divide_del_prob = in_prob; }
+  void SetDivideSlipProb(double in_prob)    { divide.divide_del_prob = in_prob; }
+  
+  void SetParentMutProb(double in_prob)     { divide.parent_mut_prob = in_prob; }
+  
+  void SetInjectInsProb(double in_prob)     { inject.ins_prob        = in_prob; }
+  void SetInjectDelProb(double in_prob)     { inject.del_prob        = in_prob; }
+  void SetInjectMutProb(double in_prob)     { inject.mut_prob        = in_prob; }
+  
+  void SetMetaCopyMutProb(double in_prob)   { meta.copy_mut_prob   = in_prob; }
+  void SetMetaStandardDev(double in_dev)    { meta.standard_dev     = in_dev; }
 };
 
 

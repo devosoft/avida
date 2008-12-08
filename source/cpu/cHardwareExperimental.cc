@@ -254,6 +254,8 @@ void cHardwareExperimental::internalReset()
       }
     }
   }
+  
+  m_io_expire = m_world->GetConfig().IO_EXPIRE.Get();
 }
 
 void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
@@ -1224,9 +1226,9 @@ bool cHardwareExperimental::Inst_TaskIOExpire(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_BX);
   sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
-  // Do the "put" component
-  if (reg.env_component && reg.oldest_component < m_last_output) return false;
+  if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
   
+  // Do the "put" component
   m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
   m_last_output = m_cycle_count;  
   
@@ -1270,14 +1272,13 @@ bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_BX);
   sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
   
-  // Do the "put" component
-  if (!reg.env_component || reg.oldest_component >= m_last_output) {
-    m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
-    m_last_output = m_cycle_count;
-    return true;
-  }
+  if (m_io_expire && reg.env_component && reg.oldest_component < m_last_output) return false;
   
-  return false;
+  // Do the "put" component
+  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
+  m_last_output = m_cycle_count;
+
+  return true;
 }
 
 

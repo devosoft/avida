@@ -308,9 +308,9 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   // Need to come back and fix tese last two - per site instructions
   // Insert Mutations (per site)
-  if (m_organism->GetInsMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetDivInsProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  m_organism->GetInsMutProb());
+                                                  m_organism->GetDivInsProb());
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
     if (num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE) {
       num_mut = MAX_CREATURE_SIZE - child_genome.GetSize();
@@ -334,9 +334,9 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   
   // Delete Mutations (per site)
-  if (m_organism->GetDelMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetDivDelProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  m_organism->GetDelMutProb());
+                                                  m_organism->GetDivDelProb());
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
     if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
       num_mut = child_genome.GetSize() - MIN_CREATURE_SIZE;
@@ -354,9 +354,9 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   
   // Uniform Mutations on Divide
-  if (m_organism->GetUniformMutProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetDivUniformProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
-                                                  m_organism->GetUniformMutProb() / mut_multiplier);
+                                                  m_organism->GetDivUniformProb() / mut_multiplier);
     
     // If we have lines to mutate...
     if (num_mut > 0 && totalMutations < maxmut) {

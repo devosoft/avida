@@ -336,10 +336,10 @@ public:
   void SetCopyMutProb(double _p) { return m_mut_rates.SetCopyMutProb(_p); }
   void SetDivMutProb(double _p) { return m_mut_rates.SetDivMutProb(_p); }
 
-  double GetInsMutProb() const { return m_mut_rates.GetInsMutProb(); }
-  double GetDelMutProb() const { return m_mut_rates.GetDelMutProb(); }
+  double GetDivInsProb() const { return m_mut_rates.GetDivInsProb(); }
+  double GetDivDelProb() const { return m_mut_rates.GetDivDelProb(); }
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
-  double GetUniformMutProb() const { return m_mut_rates.GetUniformMutProb(); }
+  double GetDivUniformProb() const { return m_mut_rates.GetDivUniformProb(); }
   double GetParentMutProb() const { return m_mut_rates.GetParentMutProb();}
 
   double GetInjectInsProb() const { return m_mut_rates.GetInjectInsProb(); }

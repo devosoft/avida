@@ -915,6 +915,34 @@ public:
   }
 };
 
+
+class cActionSetConfig : public cAction
+{
+private:
+  cString m_cvar;
+  cString m_value;
+  
+public:
+  cActionSetConfig(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_cvar = largs.PopWord();
+    if (largs.GetSize()) m_value = largs.PopWord();
+    
+    if (!m_world->GetConfig().HasEntry(m_cvar))
+      m_world->GetDriver().RaiseFatalException(-2, "Config variable specified in SetConfig action exist");
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string config_var> <string value>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetConfig().Set(m_cvar, m_value);
+  }
+};
+
+
+
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionDelayedDemeEvent>("DelayedDemeEvent");
@@ -950,6 +978,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetTaskArgDouble>("SetTaskArgDouble");
   action_lib->Register<cActionSetTaskArgString>("SetTaskArgString");
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
+  
+  action_lib->Register<cActionSetConfig>("SetConfig");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInjectResource>("inject_resource");
