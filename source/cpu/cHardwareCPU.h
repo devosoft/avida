@@ -488,12 +488,15 @@ private:
   bool Inst_DonateFacing(cAvidaContext& ctx);
   bool Inst_ReceiveDonatedEnergy(cAvidaContext& ctx);
   bool Inst_DonateEnergy(cAvidaContext& ctx);
+  bool Inst_UpdateMetabolicRate(cAvidaContext& ctx);
   bool Inst_DonateEnergyFaced(cAvidaContext& ctx);
   bool Inst_RotateToMostNeedy(cAvidaContext& ctx);
   bool Inst_RequestEnergy(cAvidaContext& ctx);
   bool Inst_RequestEnergyFlagOn(cAvidaContext& ctx);
   bool Inst_RequestEnergyFlagOff(cAvidaContext& ctx);
-
+  bool Inst_IncreaseEnergyDonation(cAvidaContext& ctx);
+  bool Inst_DecreaseEnergyDonation(cAvidaContext& ctx);
+  
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);
   bool Inst_MemSize(cAvidaContext& ctx);

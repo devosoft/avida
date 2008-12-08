@@ -226,11 +226,14 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing),
     tInstLibEntry<tMethod>("receive-donated-energy", &cHardwareCPU::Inst_ReceiveDonatedEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-energy", &cHardwareCPU::Inst_DonateEnergy, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("update-metabolic-rate", &cHardwareCPU::Inst_UpdateMetabolicRate, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-energy-faced", &cHardwareCPU::Inst_DonateEnergyFaced, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-most-needy", &cHardwareCPU::Inst_RotateToMostNeedy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("request-energy", &cHardwareCPU::Inst_RequestEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("request-energy-on", &cHardwareCPU::Inst_RequestEnergyFlagOn, nInstFlag::STALL),
     tInstLibEntry<tMethod>("request-energy-off", &cHardwareCPU::Inst_RequestEnergyFlagOff, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("increase-energy-donation", &cHardwareCPU::Inst_IncreaseEnergyDonation, nInstFlag::STALL),    
+    tInstLibEntry<tMethod>("decrease-energy-donation", &cHardwareCPU::Inst_DecreaseEnergyDonation, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0, nInstFlag::STALL),
 
@@ -3488,7 +3491,7 @@ void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
 {
   assert(to_org != NULL);
 
-  const double frac_energy_given = m_world->GetConfig().MERIT_GIVEN.Get();
+  const double frac_energy_given = m_organism->GetFracEnergyDonating();
 
   double cur_energy = m_organism->GetPhenotype().GetStoredEnergy();
   double energy_given = cur_energy * frac_energy_given;
@@ -3526,9 +3529,6 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
   double energy_given = cur_energy * frac_energy_given;
   
   //update energy store and merit of donor
-#ifdef DEBUG_ENERGY_DONATION
-  cout << "  donating " << energy_given << " energy to organism " << to_org->GetID() << endl;
-#endif
   m_organism->GetPhenotype().ReduceEnergy(energy_given);
   m_organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
   double senderMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
@@ -4058,24 +4058,13 @@ bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext& ctx)
   if(m_organism->GetCellID() < 0) {
     return false;
   }
-#ifdef DEBUG_ENERGY_DONATION
-  cout << "organism " << m_organism->GetCellID() << " receiving donated energy (if any)" << endl;
-#endif
   
   if(m_organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
-#ifdef DEBUG_ENERGY_DONATION
-    cout << "  received " << m_organism->GetPhenotype().GetEnergyInBufferAmount() << endl;
-#endif
     m_organism->GetPhenotype().ApplyDonatedEnergy();
     m_organism->GetPhenotype().SetHasUsedDonatedEnergy();
     double receiverMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
     m_organism->UpdateMerit(receiverMerit);
   }
-#ifdef DEBUG_ENERGY_DONATION
-  else {
-    cout << "  no energy to receive!" << endl;
-  }
-#endif
   
   return true;
   
@@ -4088,15 +4077,9 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   if(m_organism->GetCellID() < 0) {
     return false;
   }
-#ifdef DEBUG_ENERGY_DONATION
-  cout << "organism " << m_organism->GetCellID() << " donating energy..." << endl;
-#endif
 
   const cOrgMessage* msg = m_organism->RetrieveMessage();
   if(msg == 0) {
-#ifdef DEBUG_ENERGY_DONATION
-    cout << "  no energy requests" << endl;
-#endif
     return false;
   }
   
@@ -4104,33 +4087,20 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
    * be any good. Instead, we should use the cell and organism ID of the
    * message sender to get hold of the sender (if it still exists and hasn't moved)
    */
-  /*
-  cOrganism* receiver = msg->GetSender();
 
-  // If the requestor no longer exists, should the donor still lose energy???
-  if( (receiver == NULL) || (receiver->IsDead()) ) {
-    return false;
-  }
-  */
   cPopulationCell senderCell = m_world->GetPopulation().GetCell(msg->GetSenderCellID());
   if (!senderCell.IsOccupied()) {
-#ifdef DEBUG_ENERGY_DONATION
-    cout << "  requestor has died!" << endl;
-#endif
 	  // the organism that made the request is gone, we can't donate...
 	  return false;
   }
   cOrganism* energyReceiver = senderCell.GetOrganism();
   if (energyReceiver->GetID() != msg->GetSenderOrgID()) {
-#ifdef DEBUG_ENERGY_DONATION
-    cout << "  requestor has been replaced!" << endl;
-#endif
 	  // some other organism has occupied this cell since the msg was sent,
 	  // we can't donate...
 	  return false;
   }
   
-  DoEnergyDonatePercent(energyReceiver, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
+  DoEnergyDonatePercent(energyReceiver, m_organism->GetFracEnergyDonating());
   m_organism->GetPhenotype().IncDonates();
   m_organism->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
   m_organism->GetPhenotype().SetIsEnergyDonor();
@@ -4138,6 +4108,16 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   return true;
   
 } //End Inst_DonateEnergy()
+
+
+//Update the organism's metabolic rate
+bool cHardwareCPU::Inst_UpdateMetabolicRate(cAvidaContext& ctx)
+{
+  double newmerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  m_organism->UpdateMerit(newmerit);
+  
+  return true;
+} //End Inst_UpdateMetabolocRate()
 
 
 //Donate a fraction of organism's energy to faced organism.
@@ -4152,9 +4132,9 @@ bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext& ctx)
   if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
     
     // If the neighbor has requested energy or if we're allowing push sharing, share energy
-    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_PCT.Get() == 1) )
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
     {
-      DoEnergyDonatePercent(neighbor, m_world->GetConfig().ENERGY_SHARING_PCT.Get());
+      DoEnergyDonatePercent(neighbor, m_organism->GetFracEnergyDonating());
       m_organism->GetPhenotype().IncDonates();
       m_organism->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
       m_organism->GetPhenotype().SetIsEnergyDonor();
@@ -4214,12 +4194,7 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
   if(m_organism->GetCellID() < 0) {
     return false;
   }
-#ifdef DEBUG_ENERGY_DONATION
-  cout << "organism " << m_organism->GetCellID() << " requesting energy!" << endl;
-#endif
-    
-  //TODO: BDC: somehow use nop modifiers to pick a multiplier for the amount of energy to request
-  
+      
   cOrgMessage msg(m_organism);
   // Could set the data field of the message to be the multiplier
   
@@ -4256,6 +4231,32 @@ bool cHardwareCPU::Inst_RequestEnergyFlagOff(cAvidaContext& ctx)
   m_organism->GetPhenotype().ClearHasOpenEnergyRequest();
   return true;
 } //End Inst_RequestEnergyFlagOff()
+
+
+// Increase the amount of energy to be donated
+bool cHardwareCPU::Inst_IncreaseEnergyDonation(cAvidaContext& ctx)
+{
+  double curr_amount = m_organism->GetFracEnergyDonating();
+  double increment = m_world->GetConfig().ENERGY_SHARING_INCREMENT.Get();
+
+  m_organism->SetFracEnergyDonating(min(1.0, curr_amount + increment));  
+  
+  return true;
+  
+} //End Inst_IncreaseEnergyDonation()
+
+
+// Decrease the amount of energy to be donated
+bool cHardwareCPU::Inst_DecreaseEnergyDonation(cAvidaContext& ctx)
+{
+  double curr_amount = m_organism->GetFracEnergyDonating();
+  double increment = m_world->GetConfig().ENERGY_SHARING_INCREMENT.Get();
+  
+  m_organism->SetFracEnergyDonating(max(0.0, curr_amount - increment));  
+  
+  return true;
+  
+} //End Inst_DecreaseEnergyDonation()
 
 
 bool cHardwareCPU::Inst_SearchF(cAvidaContext& ctx)
