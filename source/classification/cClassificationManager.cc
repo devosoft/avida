@@ -575,8 +575,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   if (print_depth == true) fp << "depth ";
   if (print_lineage == true) fp << "lineage ";
   if (print_sequence == true) fp << "sequence ";  
-  if (print_exec_time_born == true) fp << "exec_time_born";
-  if (print_generation_born == true) fp << "generation_born";
+  if (print_exec_time_born == true) fp << "exec_time_born ";
+  if (print_generation_born == true) fp << "generation_born ";
   fp << endl;
   
   // Print extra information about what data is in this file...
@@ -603,9 +603,11 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   if (print_depth) fp << "# " << cur_col++ << ": depth in phylogentic tree" << endl;
   if (print_lineage) fp << "# " << cur_col++ << ": lineage label of genotype" << endl;
   if (print_sequence) fp << "# " << cur_col++ << ": genome of genotype" << endl;
-  if (print_exec_time_born) fp << "#" << cur_col++ << ": number of instructions executed at birth since ancestor injection" << endl;
-  if (print_generation_born) fp << "#" << cur_col++ << ": first generation number of genotype" << endl;
+  if (print_exec_time_born)  fp << "# "  << cur_col++ << ": number of instructions executed at birth since ancestor injection" << endl;
+  if (print_generation_born) fp << "# " << cur_col++ << ": first generation number of genotype" << endl;
   fp << endl;
+  
+  cerr << m_genotype_ctl->GetSize() << " " << print_id << " " << print_generation_born << endl;
   
   // Print the current population....
   m_genotype_ctl->Reset(0);
