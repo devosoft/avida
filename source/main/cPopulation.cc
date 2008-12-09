@@ -3677,7 +3677,7 @@ void cPopulation::UpdateOrganismStats()
   stats.SumMemSize().Clear();
   
   stats.ZeroTasks();
-  stats.ZeroRewards();
+  stats.ZeroReactions();
   
 #if INSTRUCTION_COUNT
   stats.ZeroInst();
@@ -3763,11 +3763,8 @@ void cPopulation::UpdateOrganismStats()
         stats.AddLastTask(j);
         stats.AddLastTaskQuality(j, phenotype.GetLastTaskQuality()[j]);
         stats.IncTaskExeCount(j, phenotype.GetLastTaskCount()[j]);
-      } 
-    }
-    
-    // Test what tasks this organism has completed using internal resources.
-    for (int j = 0; j < m_world->GetEnvironment().GetNumTasks(); j++) {
+      }
+
       if (phenotype.GetCurInternalTaskCount()[j] > 0) {
         stats.AddCurInternalTask(j);
         stats.AddCurInternalTaskQuality(j, phenotype.GetCurInternalTaskQuality()[j]);
@@ -3780,8 +3777,17 @@ void cPopulation::UpdateOrganismStats()
     }    
     
     // Record what add bonuses this organism garnered for different reactions    
-    for (int j = 0; j < m_world->GetNumReactions(); j++) {
-      stats.AddLastReactionAddReward(j, phenotype.GetLastReactionAddReward()[j]);    
+    for (int j = 0; j < m_world->GetEnvironment().GetNumReactions(); j++) {
+      if (phenotype.GetCurReactionCount()[j] > 0) {
+        stats.AddCurReaction(j);
+        stats.AddCurReactionAddReward(j, phenotype.GetCurReactionAddReward()[j]);
+      }
+      
+      if (phenotype.GetLastReactionCount()[j] > 0) {
+        stats.AddLastReaction(j);
+        stats.IncReactionExeCount(j, phenotype.GetLastTaskCount()[j]);
+        stats.AddLastReactionAddReward(j, phenotype.GetLastReactionAddReward()[j]);    
+      }
     }
     
     // Test what resource combinations this creature has sensed

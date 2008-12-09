@@ -1304,10 +1304,15 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     } 
 }
 
-double cEnvironment::GetReactionValue(int& reaction_id)
+const cString& cEnvironment::GetReactionName(int reaction_id) const
+{
+  return reaction_lib.GetReaction(reaction_id)->GetName();
+}
+
+double cEnvironment::GetReactionValue(int reaction_id)
 {
   cReaction* found_reaction = reaction_lib.GetReaction(reaction_id);
-  if (found_reaction == NULL) return false;
+  if (found_reaction == NULL) return 0.0;
   return found_reaction->GetValue();
 }
 
@@ -1387,7 +1392,7 @@ bool cEnvironment::SetReactionTask(const cString& name, const cString& task)
   cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
 
-  for(int i=0; i<m_tasklib.GetSize(); i++)
+  for (int i=0; i<m_tasklib.GetSize(); i++)
   {
     if (m_tasklib.GetTask(i).GetName() == task) 
     {

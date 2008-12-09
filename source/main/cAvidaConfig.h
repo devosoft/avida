@@ -378,8 +378,8 @@ public:
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
 
   CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Mutation rate (per copy)");
-  CONFIG_ADD_VAR(COPY_INS_PROB, double, 0.0075, "Insertion rate (per copy)");
-  CONFIG_ADD_VAR(COPY_DEL_PROB, double, 0.0075, "Deletion rate (per copy)");
+  CONFIG_ADD_VAR(COPY_INS_PROB, double, 0.0, "Insertion rate (per copy)");
+  CONFIG_ADD_VAR(COPY_DEL_PROB, double, 0.0, "Deletion rate (per copy)");
   CONFIG_ADD_VAR(COPY_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per copy)\n- Randomly applies any of the three classes of mutations (ins, del, point).");
   CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
 

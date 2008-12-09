@@ -175,11 +175,18 @@ cStats::cStats(cWorld* world)
 #endif
   inst_names.Resize(m_world->GetNumInstructions());
 
-  reaction_count.Resize( m_world->GetNumReactions() );
-  reaction_count.SetAll(0);
+  const int num_reactions = env.GetNumReactions();
+  m_reaction_cur_count.Resize(num_reactions);
+  m_reaction_last_count.Resize(num_reactions);
+  m_reaction_cur_add_reward.Resize(num_reactions);
+  m_reaction_last_add_reward.Resize(num_reactions);
+  m_reaction_exe_count.Resize(num_reactions);
+  m_reaction_cur_count.SetAll(0);
+  m_reaction_last_count.SetAll(0);
+  m_reaction_cur_add_reward.SetAll(0.0);
+  m_reaction_last_add_reward.SetAll(0.0);
+  m_reaction_exe_count.SetAll(0);
   
-  reaction_add_reward.Resize( m_world->GetNumReactions() );
-  reaction_add_reward.SetAll(0);
 
   resource_count.Resize( m_world->GetNumResources() );
   resource_count.SetAll(0);
@@ -188,10 +195,11 @@ cStats::cStats(cWorld* world)
   resource_geometry.SetAll(nGeometry::GLOBAL);
 
   task_names.Resize(num_tasks);
-  for (int i = 0; i < num_tasks; i++)
-    task_names[i] = env.GetTask(i).GetDesc();
+  for (int i = 0; i < num_tasks; i++) task_names[i] = env.GetTask(i).GetDesc();
   
-  reaction_names.Resize( m_world->GetNumReactions() );
+  reaction_names.Resize(num_reactions);
+  for (int i = 0; i < num_reactions; i++) reaction_names[i] = env.GetReactionName(i);
+  
   resource_names.Resize( m_world->GetNumResources() );
 
   // This block calculates how many slots we need to
@@ -352,25 +360,26 @@ void cStats::SetupPrintDatabase()
 
 void cStats::ZeroTasks()
 {
-  for (int i = 0; i < task_cur_count.GetSize(); i++) {
-    task_cur_count[i] = 0;
-    task_last_count[i] = 0;
-    task_cur_quality[i] = 0;
-    task_last_quality[i] = 0;
-    task_last_max_quality[i] = 0;
-    task_cur_max_quality[i] = 0;
-    task_internal_cur_count[i] = 0;
-    task_internal_cur_quality[i] = 0;
-    task_internal_cur_max_quality[i] = 0;
-    task_internal_last_count[i] = 0;
-    task_internal_last_quality[i] = 0;
-    task_internal_last_max_quality[i] = 0;
-  }
+  task_cur_count.SetAll(0);
+  task_last_count.SetAll(0);
+  task_cur_quality.SetAll(0);
+  task_last_quality.SetAll(0);
+  task_last_max_quality.SetAll(0);
+  task_cur_max_quality.SetAll(0);
+  task_internal_cur_count.SetAll(0);
+  task_internal_cur_quality.SetAll(0);
+  task_internal_cur_max_quality.SetAll(0);
+  task_internal_last_count.SetAll(0);
+  task_internal_last_quality.SetAll(0);
+  task_internal_last_max_quality.SetAll(0);
 }
 
-void cStats::ZeroRewards()
+void cStats::ZeroReactions()
 {
-  reaction_add_reward.SetAll(0);
+  m_reaction_cur_count.SetAll(0);
+  m_reaction_last_count.SetAll(0);
+  m_reaction_cur_add_reward.SetAll(0);
+  m_reaction_last_add_reward.SetAll(0);
 }
 
 
@@ -528,7 +537,11 @@ void cStats::ProcessUpdate()
   sense_last_count.SetAll(0);
   sense_last_exe_count.SetAll(0);
 
-  reaction_add_reward.SetAll(0);
+  m_reaction_cur_count.SetAll(0);
+  m_reaction_last_count.SetAll(0);
+  m_reaction_cur_add_reward.SetAll(0.0);
+  m_reaction_last_add_reward.SetAll(0.0);
+  m_reaction_exe_count.SetAll(0);
 
   dom_merit = 0;
   dom_gestation = 0.0;
@@ -910,7 +923,6 @@ void cStats::PrintTasksExeData(const cString& filename)
   df.Write(m_update,   "Update");
   for (int i = 0; i < task_exe_count.GetSize(); i++) {
     df.Write(task_exe_count[i], task_names[i] );
-    task_exe_count[i] = 0;
   }
   df.Endl();
 }
@@ -942,31 +954,11 @@ void cStats::PrintReactionData(const cString& filename)
   df.WriteComment("First column gives the current update, all further columns give the number");
   df.WriteComment("of currently living organisms each reaction has affected.");
 
-  df.Write(m_update,   "Update");
-  
-  const int num_reactions=m_world->GetEnvironment().GetReactionLib().GetSize();
-  tArray<int> reactions(num_reactions);
-  reactions.SetAll(0);
-  
-  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-    if(cell.IsOccupied()) {
-      const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
-      for(int j=0; j<num_reactions; ++j) {
-        reactions[j] += org_rx[j];
-      }
-    }
-  }
-    
-  for(int i=0; i<num_reactions; ++i) {
-    df.Write(reactions[i], m_world->GetEnvironment().GetReactionLib().GetReaction(i)->GetName());
-  }
-  
-//    df.Write( 0.0, 
-//    df.Write(reaction_count[i], reaction_names[i] );
-//    task_exe_count[i] = 0;
-//  }
-  df.Endl();
+	df.Write(m_update,   "Update");
+	for(int i = 0; i < m_reaction_last_count.GetSize(); i++) {
+		df.Write(m_reaction_last_count[i], reaction_names[i]);
+	}
+	df.Endl();
 }
 
 void cStats::PrintCurrentReactionData(const cString& filename)
@@ -978,31 +970,11 @@ void cStats::PrintCurrentReactionData(const cString& filename)
   df.WriteComment("First column gives the current update, all further columns give the number");
   df.WriteComment("of currently living organisms each reaction has affected.");
 
-  df.Write(m_update,   "Update");
-  
-  const int num_reactions=m_world->GetEnvironment().GetReactionLib().GetSize();
-  tArray<int> reactions(num_reactions);
-  reactions.SetAll(0);
-  
-  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-    if(cell.IsOccupied()) {
-      const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetCurReactionCount();
-      for(int j=0; j<num_reactions; ++j) {
-        reactions[j] += org_rx[j];
-      }
-    }
-  }
-    
-  for(int i=0; i<num_reactions; ++i) {
-    df.Write(reactions[i], m_world->GetEnvironment().GetReactionLib().GetReaction(i)->GetName());
-  }
-  
-//    df.Write( 0.0, 
-//    df.Write(reaction_count[i], reaction_names[i] );
-//    task_exe_count[i] = 0;
-//  }
-  df.Endl();
+	df.Write(m_update,   "Update");
+	for(int i = 0; i < m_reaction_cur_count.GetSize(); i++) {
+		df.Write(m_reaction_cur_count[i], reaction_names[i]);
+	}
+	df.Endl();
 }
 
 
@@ -1016,8 +988,42 @@ void cStats::PrintReactionRewardData(const cString& filename)
   df.WriteComment("currently living organisms have garnered from each reaction.");
 
   df.Write(m_update,   "Update");
-  for (int i = 0; i < reaction_count.GetSize(); i++) {
-    df.Write(reaction_add_reward[i], reaction_names[i] );
+  for (int i = 0; i < m_reaction_last_add_reward.GetSize(); i++) {
+    df.Write(m_reaction_last_add_reward[i], reaction_names[i]);
+  }
+  df.Endl();
+}
+
+
+void cStats::PrintCurrentReactionRewardData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida reaction data");
+  df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the add bonus reward");
+  df.WriteComment("currently living organisms have garnered from each reaction.");
+  
+  df.Write(m_update,   "Update");
+  for (int i = 0; i < m_reaction_cur_add_reward.GetSize(); i++) {
+    df.Write(m_reaction_cur_add_reward[i], reaction_names[i]);
+  }
+  df.Endl();
+}
+
+
+void cStats::PrintReactionExeData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida reaction execution data");
+  df.WriteTimeStamp();
+  df.WriteComment("First column gives the current update, all further columns give the number");
+  df.WriteComment("of times the particular reaction has been triggered this update.");
+  
+  df.Write(m_update,   "Update");
+  for (int i = 0; i < m_reaction_exe_count.GetSize(); i++) {
+    df.Write(m_reaction_exe_count[i], reaction_names[i]);
   }
   df.Endl();
 }

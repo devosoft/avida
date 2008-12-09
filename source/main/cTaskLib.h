@@ -88,12 +88,13 @@ public:
   bool UseNeighborOutput() const { return use_neighbor_output; }
   
   
-private:  // Direct task related methods
-  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0,
-               cArgContainer* args = NULL);
+private:
+  
+  void NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs = 0, cArgContainer* args = NULL);
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
+  
   double Task_Echo(cTaskContext& ctx) const;
   double Task_Add(cTaskContext& ctx) const;
   double Task_Add3(cTaskContext& ctx) const;

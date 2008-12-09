@@ -34,6 +34,7 @@
 		56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E40C3B402A00E2E929 /* viewer-text.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
+		701B5F170EEEF3030073ACB4 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
 		70211A5D0ECBD531004A293A /* cRCObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70211A5B0ECBD531004A293A /* cRCObject.h */; };
 		70211A5E0ECBD531004A293A /* cRCObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70211A5C0ECBD531004A293A /* cRCObject.cc */; };
 		7023EC3A0C0A431B00362B9C /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
@@ -2127,6 +2128,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */,
+				701B5F170EEEF3030073ACB4 /* cPhenPlastGenotype.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

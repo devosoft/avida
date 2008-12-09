@@ -150,11 +150,6 @@ int cWorld::GetNumInstructions()
   return m_hw_mgr->GetInstSet().GetSize();
 }
 
-int cWorld::GetNumReactions()
-{
-  return m_env->GetReactionLib().GetSize();
-}
-
 int cWorld::GetNumResources()
 {
   return m_env->GetResourceLib().GetSize();

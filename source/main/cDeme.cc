@@ -50,7 +50,7 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   _next_merit = 1.0;
   
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-  const int num_reactions = m_world->GetNumReactions();  
+  const int num_reactions = m_world->GetEnvironment().GetNumReactions();  
   
   cur_task_exe_count.Resize(num_tasks);
   cur_task_exe_count.SetAll(0);

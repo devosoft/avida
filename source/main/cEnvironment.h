@@ -153,6 +153,8 @@ public:
   bool UseNeighborInput() const { return m_tasklib.UseNeighborInput(); }
   bool UseNeighborOutput() const { return m_tasklib.UseNeighborOutput(); }
 
+  
+  int GetNumReactions() const { return reaction_lib.GetSize(); }
   const cResourceLib& GetResourceLib() const { return resource_lib; }
   const cReactionLib& GetReactionLib() const { return reaction_lib; }
   const cMutationLib& GetMutationLib() const { return mutation_lib; }
@@ -168,7 +170,8 @@ public:
   int GetInputSize()  const { return m_input_size; };
   int GetOutputSize() const { return m_output_size; };
 
-  double GetReactionValue(int& reaction_id);
+  const cString& GetReactionName(int reaction_id) const;
+  double GetReactionValue(int reaction_id);
   bool SetReactionValue(cAvidaContext& ctx, const cString& name, double value);
   bool SetReactionValueMult(const cString& name, double value_mult);
   bool SetReactionInst(const cString& name, cString inst_name);

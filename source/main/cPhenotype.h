@@ -339,6 +339,7 @@ public:
   const tArray<double>& GetCurRBinsTotal() const { assert(initialized == true); return cur_rbins_total; }
   const tArray<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
+  const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }

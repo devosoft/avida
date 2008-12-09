@@ -122,7 +122,6 @@ public:
   
   // Convenience Accessors
   int GetNumInstructions();
-  int GetNumReactions();
   int GetNumResources();
   inline int GetVerbosity() { return m_conf->VERBOSITY.Get(); }
   inline void SetVerbosity(int v) { m_conf->VERBOSITY.Set(v); }

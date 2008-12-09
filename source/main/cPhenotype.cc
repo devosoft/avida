@@ -286,8 +286,7 @@ bool cPhenotype::OK()
  *     - this is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupOffspring(const cPhenotype & parent_phenotype,
-				const cGenome & _genome)
+void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenome& _genome)
 {
   // Copy divide values from parent, which should already be setup.
   merit           = parent_phenotype.merit;
