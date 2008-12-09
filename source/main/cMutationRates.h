@@ -94,14 +94,24 @@ public:
 
   // Copy muts should always check if they are 0.0 before consulting the random number generator for performance
   bool TestCopyMut(cAvidaContext& ctx) const { return (copy.mut_prob == 0.0) ? false : ctx.GetRandom().P(copy.mut_prob); }
+  bool TestCopyIns(cAvidaContext& ctx) const { return (copy.ins_prob == 0.0) ? false : ctx.GetRandom().P(copy.ins_prob); }
+  bool TestCopyDel(cAvidaContext& ctx) const { return (copy.del_prob == 0.0) ? false : ctx.GetRandom().P(copy.del_prob); }
   bool TestCopySlip(cAvidaContext& ctx) const { return (copy.slip_prob == 0.0) ? false : ctx.GetRandom().P(copy.slip_prob); }
+  bool TestCopyUniform(cAvidaContext& ctx) const
+  {
+    return (copy.uniform_prob == 0.0) ? false : ctx.GetRandom().P(copy.uniform_prob);
+  }
   
-  bool TestInsMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.ins_prob); }
-  bool TestDelMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.del_prob); }
   bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }
   bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }
+  bool TestDivideUniform(cAvidaContext& ctx) const
+  {
+    return (divide.divide_uniform_prob == 0.0) ? false : ctx.GetRandom().P(divide.divide_uniform_prob);
+  }
+
+  
   bool TestParentMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.parent_mut_prob); }
   
   double DoMetaCopyMut(cAvidaContext& ctx) {

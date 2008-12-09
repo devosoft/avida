@@ -3582,13 +3582,13 @@ bool cHardwareGX::Inst_ProgramidCopy(cAvidaContext& ctx)
   
   bool ret = true;
   // Normal h-copy, unless a deletion occured
-  if (!m_organism->TestDelMut(ctx)) {
+  if (!m_organism->TestDivideDel(ctx)) {
       // Normal h-copy
     ret = Inst_HeadCopy(ctx);
   }
   
   // Divide Insertion
-  if (m_organism->TestInsMut(ctx)) {
+  if (m_organism->TestDivideIns(ctx)) {
     write.GetMemory().Insert(write.GetPosition(), GetInstSet().GetRandomInst(ctx));
     // Advance the write head;
     write++;

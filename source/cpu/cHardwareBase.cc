@@ -44,6 +44,7 @@
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "nHardware.h"
+#include "tArrayUtils.h"
 
 #include "functions.h"
 
@@ -180,7 +181,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
 unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier, const int maxmut)
 {
   int totalMutations = 0;
-  cCPUMemory& child_genome = m_organism->ChildGenome();
+  cCPUMemory& offspring_genome = m_organism->ChildGenome();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -192,7 +193,7 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   // Limited to once per divide and NOT COUNTED.
   if (m_organism->TestDivideSlip(ctx))
   {
-    cGenome child_copy = cGenome(child_genome);
+    cGenome child_copy = cGenome(offspring_genome);
     
     //All combinations except beginning to past end allowed
     int from = ctx.GetRandom().GetInt(child_copy.GetSize()+1);
@@ -200,7 +201,7 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
     
     //Resize child genome
     int insertion_length = (from-to);
-    child_genome.Resize( child_genome.GetSize() + insertion_length );
+    offspring_genome.Resize( offspring_genome.GetSize() + insertion_length );
     
     //Fill insertion
     if (insertion_length > 0)
@@ -212,15 +213,15 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
         switch (m_world->GetConfig().SLIP_FILL_MODE.Get())
         {
           case 0:
-          child_genome[from+i] = child_copy[to+i];
+          offspring_genome[from+i] = child_copy[to+i];
           break;
           
           case 1:        
-          child_genome[from+i] = m_inst_set->GetInst("nop-X");
+          offspring_genome[from+i] = m_inst_set->GetInst("nop-X");
           break;
           
           case 2:        
-          child_genome[from+i] = m_inst_set->GetRandomInst(ctx);
+          offspring_genome[from+i] = m_inst_set->GetRandomInst(ctx);
           break;
           
           //Randomized order of instructions
@@ -241,7 +242,7 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
               }
               test++;
             }
-            child_genome[from+i] = child_genome[to+copy_index];
+            offspring_genome[from+i] = offspring_genome[to+copy_index];
             copied_so_far[copy_index] = true;
           }
           break;
@@ -257,7 +258,7 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
     if (insertion_length < 0) insertion_length = 0;
     for (int i=insertion_length; i < child_copy.GetSize() - to; i++) 
     {
-        child_genome[from+i] = child_copy[to+i];
+        offspring_genome[from+i] = child_copy[to+i];
 
     }
 
@@ -266,121 +267,117 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
     {
       cout << "SLIP MUTATION from " << from << " to " << to << endl;
       cout << "Parent: " << child_copy.AsString()   << endl;
-      cout << "Child : " << child_genome.AsString() << endl;
+      cout << "Child : " << offspring_genome.AsString() << endl;
     }
   }
   
+  
+  
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
-    child_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
+    offspring_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
     totalMutations++;
   }
   
   // Divide Insertions
-  if (m_organism->TestDivideIns(ctx) && child_genome.GetSize() < MAX_CREATURE_SIZE && totalMutations < maxmut) {
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-    child_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
+  if (m_organism->TestDivideIns(ctx) && offspring_genome.GetSize() < MAX_CREATURE_SIZE && totalMutations < maxmut) {
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize() + 1);
+    offspring_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
     totalMutations++;
   }
   
   // Divide Deletions
-  if (m_organism->TestDivideDel(ctx) && child_genome.GetSize() > MIN_CREATURE_SIZE && totalMutations < maxmut) {
-    const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize());
-    child_genome.Remove(mut_line);
+  if (m_organism->TestDivideDel(ctx) && offspring_genome.GetSize() > MIN_CREATURE_SIZE && totalMutations < maxmut) {
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
+    offspring_genome.Remove(mut_line);
     totalMutations++;
   }
+
+  // Divide Uniform Mutations
+  if (m_organism->TestDivideUniform(ctx) && totalMutations < maxmut) {
+    if (doUniformMutation(ctx, offspring_genome)) totalMutations++;
+  }
+  
+  
+  
+  
+  
   
   // Divide Mutations (per site)
   if (m_organism->GetDivMutProb() > 0 && totalMutations < maxmut) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), 
                                                   m_organism->GetDivMutProb() / mut_multiplier);
     // If we have lines to mutate...
     if (num_mut > 0 && totalMutations < maxmut) {
       for (int i = 0; i < num_mut && totalMutations < maxmut; i++) {
-        int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
-        child_genome[site] = m_inst_set->GetRandomInst(ctx);
+        int site = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
+        offspring_genome[site] = m_inst_set->GetRandomInst(ctx);
         totalMutations++;
       }
     }
   }
 
   
-  // Need to come back and fix tese last two - per site instructions
   // Insert Mutations (per site)
   if (m_organism->GetDivInsProb() > 0 && totalMutations < maxmut) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  m_organism->GetDivInsProb());
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), m_organism->GetDivInsProb());
+
     // If would make creature to big, insert up to MAX_CREATURE_SIZE
-    if (num_mut + child_genome.GetSize() > MAX_CREATURE_SIZE) {
-      num_mut = MAX_CREATURE_SIZE - child_genome.GetSize();
+    if (num_mut + offspring_genome.GetSize() > MAX_CREATURE_SIZE) {
+      num_mut = MAX_CREATURE_SIZE - offspring_genome.GetSize();
     }
+    
     // If we have lines to insert...
     if (num_mut > 0) {
-      // Build a list of the sites where mutations occured
-      static int mut_sites[MAX_CREATURE_SIZE];
-      for (int i = 0; i < num_mut; i++) {
-        mut_sites[i] = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-      }
-      // Sort the list
-      qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
+      // Build a sorted list of the sites where mutations occured
+      tArray<int> mut_sites(num_mut);
+      for (int i = 0; i < num_mut; i++) mut_sites[i] = ctx.GetRandom().GetUInt(offspring_genome.GetSize() + 1);
+      tArrayUtils::QSort(mut_sites);
+      
       // Actually do the mutations (in reverse sort order)
-      for (int i = num_mut-1; i >= 0; i--) {
-        child_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
-        totalMutations++; //Unlike the others we can't be sure this was done only on divide -- AWC 06/29/06
+      for (int i = mut_sites.GetSize() - 1; i >= 0; i--) {
+        offspring_genome.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
       }
+      
+      totalMutations += num_mut;
     }
   }
   
   
   // Delete Mutations (per site)
   if (m_organism->GetDivDelProb() > 0 && totalMutations < maxmut) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(),
-                                                  m_organism->GetDivDelProb());
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), m_organism->GetDivDelProb());
+    
     // If would make creature too small, delete down to MIN_CREATURE_SIZE
-    if (child_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
-      num_mut = child_genome.GetSize() - MIN_CREATURE_SIZE;
+    if (offspring_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
+      num_mut = offspring_genome.GetSize() - MIN_CREATURE_SIZE;
     }
     
     // If we have lines to delete...
     for (int i = 0; i < num_mut; i++) {
-      int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
-      child_genome.Remove(site);
-//      cpu_stats.mut_stats.delete_mut_count++;
-      totalMutations++;
+      offspring_genome.Remove(ctx.GetRandom().GetUInt(offspring_genome.GetSize()));
     }
+
+    totalMutations += num_mut;
   }
   
   
   
-  // Uniform Mutations on Divide
+  // Uniform Mutations (per site)
   if (m_organism->GetDivUniformProb() > 0 && totalMutations < maxmut) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(child_genome.GetSize(), 
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), 
                                                   m_organism->GetDivUniformProb() / mut_multiplier);
     
     // If we have lines to mutate...
     if (num_mut > 0 && totalMutations < maxmut) {
-      int mutrange = (m_inst_set->GetSize() * 2) + 1;
       for (int i = 0; i < num_mut && totalMutations < maxmut; i++) {
-        int mut = ctx.GetRandom().GetUInt(mutrange);
-        
-        if (mut < m_inst_set->GetSize()) { // point
-          int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
-          child_genome[site] = cInstruction(mut);
-        } else if (mut == m_inst_set->GetSize()) { // delete
-          if (child_genome.GetSize() == MIN_CREATURE_SIZE) continue;
-          int site = ctx.GetRandom().GetUInt(child_genome.GetSize());
-          child_genome.Remove(site);
-        } else { // insert
-          if (child_genome.GetSize() == MAX_CREATURE_SIZE) continue;
-          int site = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
-          child_genome.Insert(site, cInstruction(mut - m_inst_set->GetSize() - 1));
-        }
-                                               
-        totalMutations++;
+        if (doUniformMutation(ctx, offspring_genome)) totalMutations++;
       }
     }
   }
+  
+  
   
   
   
@@ -398,6 +395,35 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   return totalMutations;
 }
+
+
+bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome)
+{
+  int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
+  
+  if (mut < m_inst_set->GetSize()) { // point
+    int site = ctx.GetRandom().GetUInt(genome.GetSize());
+    genome[site] = cInstruction(mut);
+  } else if (mut == m_inst_set->GetSize()) { // delete
+    if (genome.GetSize() == MIN_CREATURE_SIZE) return false;
+    int site = ctx.GetRandom().GetUInt(genome.GetSize());
+    genome.Remove(site);
+  } else { // insert
+    if (genome.GetSize() == MAX_CREATURE_SIZE) return false;
+    int site = ctx.GetRandom().GetUInt(genome.GetSize() + 1);
+    genome.Insert(site, cInstruction(mut - m_inst_set->GetSize() - 1));
+  }
+  
+  return true;
+}
+
+
+bool cHardwareBase::doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome)
+{
+  return true;
+}
+
+
 
 /*
  Return the number of mutations that occur on divide.  AWC 06/29/06

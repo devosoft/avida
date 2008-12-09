@@ -202,6 +202,11 @@ protected:
   bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
 	
 
+  
+  // --------  Mutation Helper Methods --------
+  bool doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome);
+  bool doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome);
+  
 
   virtual int GetExecutedSize(const int parent_size);
   virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
