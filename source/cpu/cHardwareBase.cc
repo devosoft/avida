@@ -185,7 +185,9 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
-  
+  // Divide Slip Mutations - NOT COUNTED.
+  if (m_organism->TestDivideSlip(ctx)) doSlipMutation(ctx, offspring_genome);
+    
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
@@ -211,9 +213,6 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   if (m_organism->TestDivideUniform(ctx) && totalMutations < maxmut) {
     if (doUniformMutation(ctx, offspring_genome)) totalMutations++;
   }
-  
-  // Divide Slip Mutations - NOT COUNTED.
-  if (m_organism->TestDivideSlip(ctx)) doSlipMutation(ctx, offspring_genome);
   
   
   
@@ -294,10 +293,10 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   
   // Slip Mutations (per site) - NOT COUNTED
-  if (m_organism->GetDivSlipProb() > 0 && totalMutations < maxmut) {
+  if (m_organism->GetDivSlipProb() > 0) {
     int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), 
                                                   m_organism->GetDivSlipProb() / mut_multiplier);
-    for (int i = 0; i < num_mut; i++) doUniformMutation(ctx, offspring_genome);
+    for (int i = 0; i < num_mut; i++) doSlipMutation(ctx, offspring_genome);
   }
   
   
