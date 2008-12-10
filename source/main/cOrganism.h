@@ -344,6 +344,8 @@ public:
   double GetDivDelProb() const { return m_mut_rates.GetDivDelProb(); }
   double GetDivMutProb() const { return m_mut_rates.GetDivMutProb(); }
   double GetDivUniformProb() const { return m_mut_rates.GetDivUniformProb(); }
+  double GetDivSlipProb() const { return m_mut_rates.GetDivSlipProb(); }
+
   double GetParentMutProb() const { return m_mut_rates.GetParentMutProb();}
 
   double GetInjectInsProb() const { return m_mut_rates.GetInjectInsProb(); }

@@ -185,93 +185,6 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
-  // @JEB Divide Slip Mutations
-  // As if the read head jumped from one random position of the child
-  // to another random position and continued reading to the end.
-  // This can cause large deletions or tandem duplications.
-  // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
-  // Limited to once per divide and NOT COUNTED.
-  if (m_organism->TestDivideSlip(ctx))
-  {
-    cGenome child_copy = cGenome(offspring_genome);
-    
-    //All combinations except beginning to past end allowed
-    int from = ctx.GetRandom().GetInt(child_copy.GetSize()+1);
-    int to = (from == 0) ? ctx.GetRandom().GetInt(child_copy.GetSize()) : ctx.GetRandom().GetInt(child_copy.GetSize()+1);
-    
-    //Resize child genome
-    int insertion_length = (from-to);
-    offspring_genome.Resize( offspring_genome.GetSize() + insertion_length );
-    
-    //Fill insertion
-    if (insertion_length > 0)
-    {
-      tArray<bool> copied_so_far(insertion_length);
-      copied_so_far.SetAll(false);
-      for (int i=0; i < insertion_length; i++) 
-      {
-        switch (m_world->GetConfig().SLIP_FILL_MODE.Get())
-        {
-          case 0:
-          offspring_genome[from+i] = child_copy[to+i];
-          break;
-          
-          case 1:        
-          offspring_genome[from+i] = m_inst_set->GetInst("nop-X");
-          break;
-          
-          case 2:        
-          offspring_genome[from+i] = m_inst_set->GetRandomInst(ctx);
-          break;
-          
-          //Randomized order of instructions
-          case 3:
-          {
-            int copy_index = m_world->GetRandom().GetInt(insertion_length-i);
-            int test = 0;
-            int passed = copy_index;
-            while (passed >= 0)
-            {
-              if (copied_so_far[test]) 
-              {
-                copy_index++; 
-              }
-              else //this one hasn't been chosen, so we count it.
-              {
-                passed--;
-              }
-              test++;
-            }
-            offspring_genome[from+i] = offspring_genome[to+copy_index];
-            copied_so_far[copy_index] = true;
-          }
-          break;
-          
-          default:
-          cout << "Unknown SLIP_FILL_MODE\n";
-          
-          }
-      }
-    }
-    
-    //Deletion / remaining genome
-    if (insertion_length < 0) insertion_length = 0;
-    for (int i=insertion_length; i < child_copy.GetSize() - to; i++) 
-    {
-        offspring_genome[from+i] = child_copy[to+i];
-
-    }
-
-    
-    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) 
-    {
-      cout << "SLIP MUTATION from " << from << " to " << to << endl;
-      cout << "Parent: " << child_copy.AsString()   << endl;
-      cout << "Child : " << offspring_genome.AsString() << endl;
-    }
-  }
-  
-  
   
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
@@ -299,6 +212,8 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
     if (doUniformMutation(ctx, offspring_genome)) totalMutations++;
   }
   
+  // Divide Slip Mutations - NOT COUNTED.
+  if (m_organism->TestDivideSlip(ctx)) doSlipMutation(ctx, offspring_genome);
   
   
   
@@ -378,6 +293,13 @@ unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multip
   }
   
   
+  // Slip Mutations (per site) - NOT COUNTED
+  if (m_organism->GetDivSlipProb() > 0 && totalMutations < maxmut) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), 
+                                                  m_organism->GetDivSlipProb() / mut_multiplier);
+    for (int i = 0; i < num_mut; i++) doUniformMutation(ctx, offspring_genome);
+  }
+  
   
   
   
@@ -418,8 +340,77 @@ bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome)
 }
 
 
+
+// Slip Mutations
+// As if the read head jumped from one random position of the offspring
+// to another random position and continued reading to the end.
+// This can cause large deletions or tandem duplications.
+// Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
 bool cHardwareBase::doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome)
 {
+  cGenome genome_copy = cGenome(genome);
+  
+  // All combinations except beginning to past end allowed
+  int from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
+  int to = (from == 0) ? ctx.GetRandom().GetInt(genome_copy.GetSize()) : ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
+  
+  // Resize child genome
+  int insertion_length = (from - to);
+  genome.Resize(genome.GetSize() + insertion_length);
+  
+  // Fill insertion
+  if (insertion_length > 0) {
+    tArray<bool> copied_so_far(insertion_length);
+    copied_so_far.SetAll(false);
+    for (int i = 0; i < insertion_length; i++) {
+      switch (m_world->GetConfig().SLIP_FILL_MODE.Get()) {
+        case 0:
+          genome[from + i] = genome_copy[to + i];
+          break;
+          
+        case 1:
+          genome[from + i] = m_inst_set->GetInst("nop-X");
+          break;
+          
+        case 2:
+          genome[from + i] = m_inst_set->GetRandomInst(ctx);
+          break;
+          
+          //Randomized order of instructions
+        case 3:
+        {
+          int copy_index = m_world->GetRandom().GetInt(insertion_length - i);
+          int test = 0;
+          int passed = copy_index;
+          while (passed >= 0) {
+            if (copied_so_far[test]) {
+              copy_index++; 
+            } else { //this one hasn't been chosen, so we count it.
+              passed--;
+            }
+            test++;
+          }
+          genome[from + i] = genome[to + copy_index];
+          copied_so_far[copy_index] = true;
+        }
+          break;
+          
+        default:
+          m_world->GetDriver().RaiseException("Unknown SLIP_FILL_MODE\n");
+      }
+    }
+  }
+  
+  // Deletion / remaining genome
+  if (insertion_length < 0) insertion_length = 0;
+  for (int i = insertion_length; i < genome_copy.GetSize() - to; i++) genome[from + i] = genome_copy[to + i];
+  
+  if (m_world->GetVerbosity() >= VERBOSE_DETAILS) {
+    cout << "SLIP MUTATION from " << from << " to " << to << endl;
+    cout << "Parent: " << genome_copy.AsString()   << endl;
+    cout << "Offspring: " << genome.AsString() << endl;
+  }
+
   return true;
 }
 
