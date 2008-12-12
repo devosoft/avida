@@ -1157,9 +1157,17 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       	assert(rbins_count.GetSize() > res_id);
       }
       
-      //check to see if we do want to use this resource from a bin instead of the environment
-      if (may_use_rbins && rbins_count[res_id] > consumed && rbins_count[res_id] > 0) {
-        consumed = rbins_count[res_id];
+      /* Check to see if we do want to use this resource from a bin instead of the environment:
+       * - Can we use the resource bins?
+       * - Is there anything in the bin for this resource?
+       * - Is the usable fraction in the bin strictly greater than the threshold fraction
+       *   of what we could consume from the outside environment?
+       */
+      if (may_use_rbins && rbins_count[res_id] > 0 && 
+           (m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id]) > 
+           (m_world->GetConfig().ENV_FRACTION_THRESHOLD.Get() * consumed)
+           ) {
+        consumed = m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id];
         using_rbins = true;
       }
       

@@ -491,12 +491,13 @@ public:
   CONFIG_ADD_VAR(BUY_PRICE, int, 0, "price offered by organisms attempting to buy");
   CONFIG_ADD_VAR(SELL_PRICE, int, 0, "price offered by organisms attempting to sell");
   
-  CONFIG_ADD_GROUP(HOARD_RESOURCE_GROUP, "Resource Hoarding Parameters \nDO NOT USE with hardwares other than the \"original\".");
-  CONFIG_ADD_VAR(USE_RESOURCE_BINS, bool, 0, "Use resources stored in resource bins.");
-  CONFIG_ADD_VAR(ABSORB_RESOURCE_FRACTION, double, .0025, "Fraction of available environmental resource an organism absorbs with the collect instruction.");
-  CONFIG_ADD_VAR(MULTI_ABSORB_TYPE, int, 0, "What to do if collect is called on a range of resources.\n 0 = absorb a random resource in the range\n 1 = absorb the first resource in the range\n 2 = absorb the last resource in the range\n 3 = absorb ABSORB_RESOURCE_FRACTION / (# of resources in range) of each resource in the range");
+  CONFIG_ADD_GROUP(HOARD_RESOURCE_GROUP, "Resource Hoarding Parameters");
+  CONFIG_ADD_VAR(USE_RESOURCE_BINS, bool, 0, "Enable resource bin use.  This serves as a guard on most resource hoarding code.");
+  CONFIG_ADD_VAR(ABSORB_RESOURCE_FRACTION, double, .0025, "Fraction of available environmental resource an organism absorbs.");
+  CONFIG_ADD_VAR(MULTI_ABSORB_TYPE, int, 0, "What to do if a collect instruction is called on a range of resources.\n 0 = absorb a random resource in the range\n 1 = absorb the first resource in the range\n 2 = absorb the last resource in the range\n 3 = absorb ABSORB_RESOURCE_FRACTION / (# of resources in range) of each resource in the range");
   CONFIG_ADD_VAR(MAX_TOTAL_STORED, double, -1, "Maximum total amount of all resources an organism can store.\n <0 = no maximum");
   CONFIG_ADD_VAR(USE_STORED_FRACTION, double, 1.0, "The fraction of stored resource to use.");
+  CONFIG_ADD_VAR(ENV_FRACTION_THRESHOLD, double, 1.0, "The fraction of available environmental resource to compare available stored resource to when deciding whether to use stored resource.");
   CONFIG_ADD_VAR(RETURN_STORED_ON_DEATH, bool, 1, "Return an organism's stored resources to the world when it dies?");
   
   CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
