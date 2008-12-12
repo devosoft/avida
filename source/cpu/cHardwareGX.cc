@@ -2701,9 +2701,7 @@ bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
       }
       
       // stop searching through the neighbors if we already found one
-      if (found == true);{
-    	break;
-      }
+      if (found == true) break;
   
       m_organism->Rotate(1);
       neighbor_id++;
@@ -2775,9 +2773,7 @@ bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
       }
       
       // stop searching through the neighbors if we already found one
-      if (found == true);{
-    	break;
-      }
+      if (found == true) break;
   
       m_organism->Rotate(1);
       neighbor_id++;
@@ -2852,9 +2848,7 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
       }
       
       // stop searching through the neighbors if we already found one
-      if (found == true);{
-    	break;
-      }
+      if (found == true) break;
   
       m_organism->Rotate(1);
       neighbor_id++;
@@ -2949,9 +2943,7 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
       }
       
       // stop searching through the neighbors if we already found one
-      if (found == true);{
-    	break;
-      }
+      if (found == true) break;
   
       m_organism->Rotate(1);
       neighbor_id++;
