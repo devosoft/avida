@@ -100,7 +100,7 @@ public:
   virtual bool SingleProcess(cAvidaContext& ctx, bool speculative = false) = 0;
   virtual void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst) = 0;
 
-  unsigned Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int maxmut = INT_MAX);
+  int Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int maxmut = INT_MAX);
   bool Divide_TestFitnessMeasures(cAvidaContext& ctx);
   
   // --------  Helper methods  --------
@@ -205,7 +205,8 @@ protected:
   
   // --------  Mutation Helper Methods --------
   bool doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome);
-  bool doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome);
+  void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
+  void doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome, int from = -1);
   
 
   virtual int GetExecutedSize(const int parent_size);
@@ -226,16 +227,5 @@ protected:
   virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareBase {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

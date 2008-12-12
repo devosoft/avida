@@ -149,6 +149,8 @@ protected:
     
     bool m_promoters_enabled:1;
     bool m_constituative_regulation:1;
+    
+    bool m_slip_read_head:1;
   };
 
   // <-- Promoter model

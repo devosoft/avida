@@ -337,6 +337,11 @@ public:
   bool TestParentMut(cAvidaContext& ctx) const { return m_mut_rates.TestParentMut(ctx); }
   
   double GetCopyMutProb() const { return m_mut_rates.GetCopyMutProb(); }
+  double GetCopyInsProb() const { return m_mut_rates.GetCopyInsProb(); }
+  double GetCopyDelProb() const { return m_mut_rates.GetCopyDelProb(); }
+  double GetCopyUniformProb() const { return m_mut_rates.GetCopyUniformProb(); }
+  double GetCopySlipProb() const { return m_mut_rates.GetCopySlipProb(); }
+
   void SetCopyMutProb(double _p) { return m_mut_rates.SetCopyMutProb(_p); }
   void SetDivMutProb(double _p) { return m_mut_rates.SetDivMutProb(_p); }
 

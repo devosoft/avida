@@ -1154,7 +1154,7 @@ bool cHardwareTransSMT::Inst_HeadWrite(cAvidaContext& ctx)
   active_head.Adjust();
 	
   int value = Stack(src).Pop();
-  if (value < 0 || value >= m_inst_set->GetSize()) value = NOPX;
+  if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
 	
   active_head.SetInst(cInstruction(value));
   active_head.SetFlagCopied();

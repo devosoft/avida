@@ -69,7 +69,6 @@ protected:
   static const int NUM_GLOBAL_STACKS = 1;
   static const int NUM_STACKS = NUM_LOCAL_STACKS + NUM_GLOBAL_STACKS;
   static const int NUM_NOPS = 4;
-  static const int NOPX = 4;
   static const int MAX_MEMSPACE_LABEL = 3;
   static const int MAX_THREAD_LABEL = 3;
 

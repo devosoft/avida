@@ -178,7 +178,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
  Return the number of mutations that occur on divide.  AWC 06/29/06
  Limit the number of mutations that occur to be less than or equal to maxmut (defaults to INT_MAX)
  */
-unsigned cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier, const int maxmut)
+int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier, const int maxmut)
 {
   int totalMutations = 0;
   cCPUMemory& offspring_genome = m_organism->ChildGenome();
@@ -338,6 +338,15 @@ bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome)
   return true;
 }
 
+void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
+{
+  int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
+  
+  if (mut < m_inst_set->GetSize()) head.SetInst(cInstruction(mut));
+  else if (mut == m_inst_set->GetSize()) head.RemoveInst();
+  else head.InsertInst(cInstruction(mut - m_inst_set->GetSize() - 1));
+}
+
 
 
 // Slip Mutations
@@ -345,12 +354,12 @@ bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome)
 // to another random position and continued reading to the end.
 // This can cause large deletions or tandem duplications.
 // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
-bool cHardwareBase::doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome)
+void cHardwareBase::doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome, int from)
 {
   cGenome genome_copy = cGenome(genome);
   
   // All combinations except beginning to past end allowed
-  int from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
+  if (from < 0) from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
   int to = (from == 0) ? ctx.GetRandom().GetInt(genome_copy.GetSize()) : ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
   
   // Resize child genome
@@ -409,8 +418,6 @@ bool cHardwareBase::doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome)
     cout << "Parent: " << genome_copy.AsString()   << endl;
     cout << "Offspring: " << genome.AsString() << endl;
   }
-
-  return true;
 }
 
 
