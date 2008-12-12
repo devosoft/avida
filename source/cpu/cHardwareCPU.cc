@@ -3343,7 +3343,7 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   int start_bin, end_bin, bin_used;
 
   bool finite_resources_exist = FindModifiedResource(start_bin, end_bin);
-  if(!finite_resources_exist) {return false;}
+  if(!finite_resources_exist) {return true;}
 
   if(start_bin == end_bin)  // resource completely specified
   {bin_used = start_bin;}
