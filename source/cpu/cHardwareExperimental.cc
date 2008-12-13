@@ -206,9 +206,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
 : cHardwareBase(world, in_organism, in_m_inst_set)
 {
-  /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
-  /**/
   
   m_spec_die = false;
 
@@ -217,6 +215,8 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
   
   m_promoters_enabled = m_world->GetConfig().PROMOTERS_ENABLED.Get();
   m_constituative_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
+  
+  m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
   m_memory = in_organism->GetGenome();  // Initialize memory...
   Reset(ctx);                            // Setup the rest of the hardware...
@@ -1368,6 +1368,9 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   setInternalValue(m_threads[m_cur_thread].reg[dst], read_inst);
   ReadInst(read_inst);
   
+  if (m_slip_read_head && m_organism->TestCopySlip(ctx))
+    GetHead(head_id).Set(ctx.GetRandom().GetInt(GetHead(head_id).GetMemory().GetSize()));
+  
   GetHead(head_id).Advance();
   return true;
 }
@@ -1385,6 +1388,12 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
   
   active_head.SetInst(cInstruction(value));
   active_head.SetFlagCopied();
+  
+  if (m_organism->TestCopyIns(ctx)) active_head.InsertInst(m_inst_set->GetRandomInst(ctx));
+  if (m_organism->TestCopyDel(ctx)) active_head.RemoveInst();
+  if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, active_head);
+  if (!m_slip_read_head && m_organism->TestCopySlip(ctx)) 
+    doSlipMutation(ctx, active_head.GetMemory(), active_head.GetPosition());
   
   // Advance the head after write...
   active_head++;
@@ -1411,6 +1420,16 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   
   write_head.SetInst(read_inst);
   write_head.SetFlagCopied();  // Set the copied flag...
+  
+  if (m_organism->TestCopyIns(ctx)) write_head.InsertInst(m_inst_set->GetRandomInst(ctx));
+  if (m_organism->TestCopyDel(ctx)) write_head.RemoveInst();
+  if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, write_head);
+  if (m_organism->TestCopySlip(ctx)) {
+    if (m_slip_read_head) {
+      read_head.Set(ctx.GetRandom().GetInt(read_head.GetMemory().GetSize()));
+    } else 
+      doSlipMutation(ctx, write_head.GetMemory(), write_head.GetPosition());
+  }
   
   read_head.Advance();
   write_head.Advance();

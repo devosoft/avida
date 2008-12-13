@@ -56,6 +56,9 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+#ifndef tManagedPointerArray_h
+#include "tManagedPointerArray.h"
+#endif
 #ifndef tInstLib_h
 #include "tInstLib.h"
 #endif
@@ -195,6 +198,8 @@ protected:
     bool m_promoters_enabled:1;
     bool m_constituative_regulation:1;
     
+    bool m_slip_read_head:1;
+
     bool m_io_expire:1;
   };
   
@@ -215,7 +220,7 @@ protected:
     inline int GetRegulatedBitCode() { return m_bit_code ^ m_regulation; }
     inline ~cPromoter() { ; }
   };
-  tArray<cPromoter> m_promoters;
+  tManagedPointerArray<cPromoter> m_promoters;
   // Promoter Model -->
   
   

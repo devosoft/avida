@@ -523,9 +523,7 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 : cHardwareBase(world, in_organism, in_m_inst_set)
 , m_last_cell_data(false, 0)
 {
-  /* FIXME:  reorganize storage of m_functions.  -- kgn */
   m_functions = s_inst_slib->GetFunctions();
-  /**/
   
   m_spec_die = false;
   m_epigenetic_state = false;
@@ -5049,12 +5047,6 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
   
   read_head.Advance();
   write_head.Advance();
-  
-  //Slip mutations
-   if (m_organism->TestCopySlip(ctx)) {
-    
-  }
-  
   return true;
 }
 
