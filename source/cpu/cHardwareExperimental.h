@@ -312,6 +312,7 @@ private:
   
   // --------  Stack Manipulation  --------
   inline sInternalValue stackPop();
+  inline cLocalStack& getStack(int stack_id);
   inline void switchStack();
   
   
@@ -380,16 +381,19 @@ private:
   // Flow Control
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfLess(cAvidaContext& ctx);
+  bool Inst_IfGreaterThanZero(cAvidaContext& ctx);
   bool Inst_IfConsensus(cAvidaContext& ctx);
   bool Inst_IfConsensus24(cAvidaContext& ctx);
   bool Inst_IfLessConsensus(cAvidaContext& ctx);
   bool Inst_IfLessConsensus24(cAvidaContext& ctx);
+  bool Inst_IfStackGreater(cAvidaContext& ctx);
   bool Inst_Label(cAvidaContext& ctx);
     
   // Stack and Register Operations
   bool Inst_Pop(cAvidaContext& ctx);
   bool Inst_Push(cAvidaContext& ctx);
   bool Inst_SwitchStack(cAvidaContext& ctx);
+  bool Inst_SwapStackTop(cAvidaContext& ctx);
   bool Inst_Swap(cAvidaContext& ctx);
 
   // Single-Argument Math
@@ -497,6 +501,23 @@ inline cHardwareExperimental::sInternalValue cHardwareExperimental::stackPop()
 }
 
 
+inline cHardwareExperimental::cLocalStack& cHardwareExperimental::getStack(int stack_id)
+{
+  if (stack_id == 0) {
+    return m_threads[m_cur_thread].stack;
+  } else {
+    return m_global_stack;
+  }
+}
+
+
+inline void cHardwareExperimental::switchStack()
+{
+  m_threads[m_cur_thread].cur_stack++;
+  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
+}
+
+
 inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_thread) const
 {
   sInternalValue value;
@@ -510,13 +531,6 @@ inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_threa
 
   return value.value;
 }
-
-inline void cHardwareExperimental::switchStack()
-{
-  m_threads[m_cur_thread].cur_stack++;
-  if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;
-}
-
 
 inline void cHardwareExperimental::setInternalValue(sInternalValue& dest, int value, bool from_env)
 {

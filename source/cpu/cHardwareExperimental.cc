@@ -99,16 +99,20 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, nInstFlag::DEFAULT, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, nInstFlag::DEFAULT, "Execute next instruction if ?BX? < ?CX?, else skip it"),
+    tInstLibEntry<tMethod>("if-gtr-0", &cHardwareExperimental::Inst_IfGreaterThanZero, nInstFlag::DEFAULT, "Execute next instruction if ?BX? > 0, else skip it"),
 
     tInstLibEntry<tMethod>("if-cons", &cHardwareExperimental::Inst_IfConsensus, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
     tInstLibEntry<tMethod>("if-cons-24", &cHardwareExperimental::Inst_IfConsensus24, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
     tInstLibEntry<tMethod>("if-less-cons", &cHardwareExperimental::Inst_IfLessConsensus, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
     tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
 
+    tInstLibEntry<tMethod>("if-stk-gtr", &cHardwareExperimental::Inst_IfStackGreater, nInstFlag::DEFAULT, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
+
     // Core ALU Operations
     tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, nInstFlag::DEFAULT, "Remove top number from stack and place into ?BX?"),
     tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, nInstFlag::DEFAULT, "Copy number from ?BX? and place it into the stack"),
     tInstLibEntry<tMethod>("swap-stk", &cHardwareExperimental::Inst_SwitchStack, nInstFlag::DEFAULT, "Toggle which stack is currently being used"),
+    tInstLibEntry<tMethod>("swap-stk-top", &cHardwareExperimental::Inst_SwapStackTop, nInstFlag::DEFAULT, "Swap the values at the top of both stacks"),
     tInstLibEntry<tMethod>("swap", &cHardwareExperimental::Inst_Swap, nInstFlag::DEFAULT, "Swap the contents of ?BX? with ?CX?"),
     
     tInstLibEntry<tMethod>("shift-r", &cHardwareExperimental::Inst_ShiftR, nInstFlag::DEFAULT, "Shift bits in ?BX? right by one (divide by two)"),
@@ -985,7 +989,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
 // And the instructions...
 //////////////////////////
 
-bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext& ctx)     // Execute next if bx != ?cx?
+bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext& ctx) // Execute next if bx != ?cx?
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindModifiedNextRegister(op1);
@@ -993,11 +997,18 @@ bool cHardwareExperimental::Inst_IfNEqu(cAvidaContext& ctx)     // Execute next 
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx? < ?cx?
+bool cHardwareExperimental::Inst_IfLess(cAvidaContext& ctx) // Execute next if ?bx? < ?cx?
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindModifiedNextRegister(op1);
   if (GetRegister(op1) >=  GetRegister(op2))  IP().Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_IfGreaterThanZero(cAvidaContext& ctx)  // Execute next if ?bx? > 0
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (GetRegister(op1) <= 0)  IP().Advance();
   return true;
 }
 
@@ -1031,6 +1042,13 @@ bool cHardwareExperimental::Inst_IfLessConsensus24(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_IfStackGreater(cAvidaContext& ctx)
+{
+  int cur_stack = m_threads[m_cur_thread].cur_stack;
+  if (getStack(cur_stack).Peek().value <=  getStack(!cur_stack).Peek().value)  IP().Advance();
+  return true;
+}
+
 bool cHardwareExperimental::Inst_Label(cAvidaContext& ctx)
 {
   ReadLabel();
@@ -1049,16 +1067,21 @@ bool cHardwareExperimental::Inst_Pop(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Push(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    m_threads[m_cur_thread].stack.Push(m_threads[m_cur_thread].reg[reg_used]);
-  } else {
-    m_global_stack.Push(m_threads[m_cur_thread].reg[reg_used]);
-  }
+  getStack(m_threads[m_cur_thread].cur_stack).Push(m_threads[m_cur_thread].reg[reg_used]);
   return true;
 }
 
 
 bool cHardwareExperimental::Inst_SwitchStack(cAvidaContext& ctx) { switchStack(); return true;}
+
+bool cHardwareExperimental::Inst_SwapStackTop(cAvidaContext& ctx)
+{
+  sInternalValue v0 = getStack(0).Pop();
+  sInternalValue v1 = getStack(1).Pop();
+  getStack(0).Push(v1);
+  getStack(1).Push(v0);
+  return true;
+}
 
 bool cHardwareExperimental::Inst_Swap(cAvidaContext& ctx)
 {
