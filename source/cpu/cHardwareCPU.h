@@ -148,7 +148,7 @@ protected:
     bool m_no_cpu_cycle_time:1;
     
     bool m_promoters_enabled:1;
-    bool m_constituative_regulation:1;
+    bool m_constitutive_regulation:1;
     
     bool m_slip_read_head:1;
   };

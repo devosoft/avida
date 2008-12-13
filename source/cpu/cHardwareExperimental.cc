@@ -105,7 +105,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("if-less-cons", &cHardwareExperimental::Inst_IfLessConsensus, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
     tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
 
-
     // Core ALU Operations
     tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, nInstFlag::DEFAULT, "Remove top number from stack and place into ?BX?"),
     tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, nInstFlag::DEFAULT, "Copy number from ?BX? and place it into the stack"),
@@ -214,7 +213,10 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
   
   m_promoters_enabled = m_world->GetConfig().PROMOTERS_ENABLED.Get();
-  m_constituative_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
+  if (m_promoters_enabled) {
+    m_constitutive_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
+    m_no_active_promoter_halt = (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2);
+  }
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
@@ -241,7 +243,7 @@ void cHardwareExperimental::internalReset()
   m_executedmatchstrings = false;
   
   // Promoter model
-  if (m_world->GetConfig().PROMOTERS_ENABLED.Get()) {
+  if (m_promoters_enabled) {
     m_promoter_index = -1; // Meaning the last promoter was nothing
     m_promoter_offset = 0;
     
@@ -345,12 +347,13 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     bool exec = true;
     if (m_has_any_costs) exec = SingleProcess_PayCosts(ctx, cur_inst);
 
-    
-    // Constitutive regulation applied here
-    if (m_constituative_regulation) Inst_SenseRegulate(ctx); 
+    if (m_promoters_enabled) {
+      // Constitutive regulation applied here
+      if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
 
-    // If there are no active promoters and a certain mode is set, then don't execute any further instructions
-    if (m_promoters_enabled && m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2 && m_promoter_index == -1) exec = false;
+      // If there are no active promoters and a certain mode is set, then don't execute any further instructions
+      if (m_no_active_promoter_halt && m_promoter_index == -1) exec = false;
+    }
     
     // Now execute the instruction...
     if (exec == true) {
@@ -520,7 +523,7 @@ void cHardwareExperimental::PrintStatus(ostream& fp)
     fp << " exe_inst=" << m_threads[m_cur_thread].GetPromoterInstExecuted();
     for (int i=0; i<m_promoters.GetSize(); i++)
     {
-      fp << setfill(' ') << setbase(10) << m_promoters[i].m_pos << ":";
+      fp << setfill(' ') << setbase(10) << m_promoters[i].pos << ":";
       fp << "Ox" << setbase(16) << setfill('0') << setw(8) << (m_promoters[i].GetRegulatedBitCode()) << " "; 
     }
     fp << endl;    
@@ -1038,7 +1041,7 @@ bool cHardwareExperimental::Inst_Label(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Pop(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  sInternalValue pop = StackPop();
+  sInternalValue pop = stackPop();
   setInternalValue(m_threads[m_cur_thread].reg[reg_used], pop.value, pop);
   return true;
 }
@@ -1055,7 +1058,7 @@ bool cHardwareExperimental::Inst_Push(cAvidaContext& ctx)
 }
 
 
-bool cHardwareExperimental::Inst_SwitchStack(cAvidaContext& ctx) { SwitchStack(); return true;}
+bool cHardwareExperimental::Inst_SwitchStack(cAvidaContext& ctx) { switchStack(); return true;}
 
 bool cHardwareExperimental::Inst_Swap(cAvidaContext& ctx)
 {
@@ -1540,7 +1543,7 @@ bool cHardwareExperimental::Inst_Regulate(cAvidaContext& ctx)
   const int reg_used = FindModifiedRegister(REG_BX);
   int regulation_code = GetRegister(reg_used);
   
-  for (int i = 0; i < m_promoters.GetSize(); i++) m_promoters[i].m_regulation = regulation_code;
+  for (int i = 0; i < m_promoters.GetSize(); i++) m_promoters[i].regulation = regulation_code;
 
   return true;
 }
@@ -1559,7 +1562,7 @@ bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
     // @DMB - should this always be using the low order bits?
     
     // Look for consensus bit matches over the length of the promoter code
-    int test_p_code = m_promoters[i].m_bit_code;    
+    int test_p_code = m_promoters[i].bit_code;    
     int test_r_code = regulation_promoter;
     int bit_count = 0;
     for (int j = 0; j < m_world->GetConfig().PROMOTER_EXE_LENGTH.Get(); j++) {      
@@ -1568,7 +1571,7 @@ bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
       test_r_code >>= 1;
     }
     
-    if (bit_count >= m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() / 2) m_promoters[i].m_regulation = regulation_code;
+    if (bit_count >= m_world->GetConfig().PROMOTER_EXE_LENGTH.Get() / 2) m_promoters[i].regulation = regulation_code;
   }
   
   return true;
@@ -1589,7 +1592,7 @@ bool cHardwareExperimental::Inst_SenseRegulate(cAvidaContext& ctx)
   
   for (int i=0; i< m_promoters.GetSize();i++)
   {
-    m_promoters[i].m_regulation = bits;
+    m_promoters[i].regulation = bits;
   }
   return true;
 }
@@ -1705,11 +1708,11 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
   } else {
     // We found an active match, offset to just after it.
     // cHeadCPU will do the mod genome size for us
-    IP().Set(m_promoters[m_promoter_index].m_pos + 1);
+    IP().Set(m_promoters[m_promoter_index].pos + 1);
     
     // Put its bit code in BX for the organism to have if option is set
     if (m_world->GetConfig().PROMOTER_TO_REGISTER.Get())
-      setInternalValue(m_threads[m_cur_thread].reg[promoter_reg_used], m_promoters[m_promoter_index].m_bit_code);
+      setInternalValue(m_threads[m_cur_thread].reg[promoter_reg_used], m_promoters[m_promoter_index].bit_code);
   }  
 }
 

@@ -81,7 +81,7 @@ class cHardwareExperimental : public cHardwareBase
 public:
   typedef bool (cHardwareExperimental::*tMethod)(cAvidaContext& ctx);
 
-protected:
+private:
   // --------  Structure Constants  --------
   static const int NUM_REGISTERS = 4;
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
@@ -89,7 +89,12 @@ protected:
   static const int NUM_NOPS = NUM_REGISTERS;
   
   
-  // --------  Data Structures  --------
+  // --------  Static Variables  --------
+  static tInstLib<cHardwareExperimental::tMethod>* s_inst_slib;
+  static tInstLib<cHardwareExperimental::tMethod>* initInstLib(void);
+  
+  
+  // --------  Define Internal Data Structures  --------
   struct sInternalValue
   {
     int value;
@@ -97,7 +102,7 @@ protected:
     // Actual age of this value
     unsigned int originated:15;
     unsigned int from_env:1;
-
+    
     // Age of the oldest component used to create this value
     unsigned int oldest_component:15;
     unsigned int env_component:1;
@@ -105,6 +110,7 @@ protected:
     inline void Clear() { value = 0; originated = 0; from_env = 0, oldest_component = 0; env_component = 0; }
     inline sInternalValue& operator=(const sInternalValue& i);
   };
+  
   
   class cLocalStack
   {
@@ -128,14 +134,14 @@ protected:
     inline void Clear() { for (int i = 0; i < SIZE; i++) m_stack[i].Clear(); }
 #undef SIZE
   };
-    
+
+
   struct cLocalThread
   {
   private:
     int m_id;
     int m_promoter_inst_executed;
     unsigned int m_execurate;
-    
     
   public:
     sInternalValue reg[NUM_REGISTERS];
@@ -158,18 +164,26 @@ protected:
     
     inline unsigned int GetExecurate() const { return m_execurate; }
     inline void UpdateExecurate(int code_len, unsigned int inst_code) { m_execurate <<= code_len; m_execurate |= inst_code; }      
-
+    
     inline int GetPromoterInstExecuted() const { return m_promoter_inst_executed; }
     inline void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     inline void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
   };
-
+  
+  
+  struct cPromoter 
+  {
+  public:
+    int pos;        // position within genome
+    int bit_code;   // bit code of promoter
+    int regulation;
     
-  // --------  Static Variables  --------
-  static tInstLib<cHardwareExperimental::tMethod>* s_inst_slib;
-  static tInstLib<cHardwareExperimental::tMethod>* initInstLib(void);
-
-
+    inline cPromoter(int p = 0, int bc = 0, int reg = 0) : pos(p), bit_code(bc), regulation(reg) { ; }
+    inline int GetRegulatedBitCode() { return bit_code ^ regulation; }
+    inline ~cPromoter() { ; }
+  };
+  
+    
   // --------  Member Variables  --------
   const tMethod* m_functions;
 
@@ -185,7 +199,7 @@ protected:
     unsigned int m_last_output:16;
   };
 
-  // Flags...
+  // Flags
   struct {
     bool m_mal_active:1;         // Has an allocate occured since last divide?
     bool m_advance_ip:1;         // Should the IP advance after this instruction?
@@ -196,7 +210,8 @@ protected:
     bool m_no_cpu_cycle_time:1;
     
     bool m_promoters_enabled:1;
-    bool m_constituative_regulation:1;
+    bool m_constitutive_regulation:1;
+    bool m_no_active_promoter_halt:1;
     
     bool m_slip_read_head:1;
 
@@ -204,82 +219,10 @@ protected:
   };
   
 
-  
-  // <-- Promoter model
-  int m_promoter_index;       //site to begin looking for the next active promoter from
-  int m_promoter_offset;      //bit offset when testing whether a promoter is on
-  
-  struct cPromoter 
-  {
-  public:
-    int m_pos;      //position within genome
-    int m_bit_code; //bit code of promoter
-    int m_regulation; //bit code of promoter
-
-    cPromoter(int pos = 0, int bc = 0, int reg = 0) : m_pos(pos), m_bit_code(bc), m_regulation(reg) { ; }
-    inline int GetRegulatedBitCode() { return m_bit_code ^ m_regulation; }
-    inline ~cPromoter() { ; }
-  };
+  // Promoter model
+  int m_promoter_index;       // site to begin looking for the next active promoter from
+  int m_promoter_offset;      // bit offset when testing whether a promoter is on
   tManagedPointerArray<cPromoter> m_promoters;
-  // Promoter Model -->
-  
-  
-  
-  
-  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
-  
-  // --------  Stack Manipulation...  --------
-  inline sInternalValue StackPop();
-  inline void StackClear();
-  inline void SwitchStack();
-  
-  
-  // --------  Head Manipulation (including IP)  --------
-  cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
-  void AdjustHeads();
-  
-  
-  // --------  Label Manipulation  -------
-  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
-  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
-  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
-  cHeadCPU FindLabelStart(bool mark_executed);
-  cHeadCPU FindLabelForward(bool mark_executed);
-  bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
-  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
-  
-  
-  // --------  Thread Manipulation  -------
-  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
-  bool KillThread(); // Kill the current thread!
-  
-  
-  // ---------- Instruction Helpers -----------
-  int FindModifiedRegister(int default_register);
-  int FindModifiedNextRegister(int default_register);
-  int FindModifiedPreviousRegister(int default_register);
-  int FindModifiedHead(int default_head);
-  int FindNextRegister(int base_reg);
-  
-  bool Allocate_Necro(const int new_size);
-  bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
-  bool Allocate_Default(const int new_size);
-  bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
-  
-
-  void internalReset();
-  
-  
-  int GetCopiedSize(const int parent_size, const int child_size);
-  
-  bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
-
-  void Divide_DoTransposons(cAvidaContext& ctx);
-  
-  void InjectCode(const cGenome& injection, const int line_num);
-  
-  void ReadInst(const int in_inst);
 
   
   cHardwareExperimental(const cHardwareExperimental&); // @not_implemented
@@ -289,21 +232,24 @@ protected:
 public:
   cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareExperimental() { ; }
+  
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-experimental.cfg"; }
 
+
+  // --------  Core Execution Methods  --------
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 
   
-  // --------  Helper methods  --------
+  // --------  Helper Methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
   bool OK();
   void PrintStatus(std::ostream& fp);
 
 
-  // --------  Stack Manipulation...  --------
-  inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
+  // --------  Stack Manipulation  --------
+  inline int GetStack(int depth=0, int stack_id = -1, int in_thread = -1) const;
   inline int GetNumStacks() const { return 2; }
 
 
@@ -352,20 +298,83 @@ public:
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
 
   
-  // Non-Standard Methods
-  
+  // --------  Non-Standard Methods  --------  
   int GetActiveStack() const { return m_threads[m_cur_thread].cur_stack; }
   bool GetMalActive() const   { return m_mal_active; }
   
+
 private:
+  
+  // --------  Core Execution Methods  --------
+  bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
+  void internalReset();
+  
+  
+  // --------  Stack Manipulation  --------
+  inline sInternalValue stackPop();
+  inline void switchStack();
+  
+  
+  // --------  Head Manipulation (including IP)  --------
+  cHeadCPU& GetActiveHead() { return m_threads[m_cur_thread].heads[m_threads[m_cur_thread].cur_head]; }
+  void AdjustHeads();
+  
+  
+  // --------  Label Manipulation  -------
+  const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
+  cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
+  void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
+  cHeadCPU FindLabelStart(bool mark_executed);
+  cHeadCPU FindLabelForward(bool mark_executed);
+  bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
+  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+  
+  
+  // --------  Thread Manipulation  -------
+  bool ForkThread(); // Adds a new thread based off of m_cur_thread.
+  bool KillThread(); // Kill the current thread!
+  
+  
+  // ---------- Instruction Helpers -----------
+  int FindModifiedRegister(int default_register);
+  int FindModifiedNextRegister(int default_register);
+  int FindModifiedPreviousRegister(int default_register);
+  int FindModifiedHead(int default_head);
+  int FindNextRegister(int base_reg);
+  
+  bool Allocate_Necro(const int new_size);
+  bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
+  bool Allocate_Default(const int new_size);
+  bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
+  
+  int GetCopiedSize(const int parent_size, const int child_size);
+  
+  
+  // --------  Division Support  -------
+  bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
+  void Divide_DoTransposons(cAvidaContext& ctx);
+  
+
+  // --------  Parasite Stuff  --------
+  void InjectCode(const cGenome& injection, const int line_num);
+  
   
   // ---------- Utility Functions -----------
   inline unsigned int BitCount(unsigned int value) const;
   inline void setInternalValue(sInternalValue& dest, int value, bool from_env = false);
   inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& src);
   inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2);  
+
+  void ReadInst(const int in_inst);
   
   
+  // ---------- Promoter Helper Functions -----------
+  void PromoterTerminate(cAvidaContext& ctx);
+  int  Numberate(int _pos, int _dir, int _num_bits = 0);
+  bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
+  
+
   // ---------- Instruction Library -----------
 
   // Flow Control
@@ -404,7 +413,7 @@ private:
   bool Inst_TaskOutput(cAvidaContext& ctx);
   bool Inst_TaskOutputExpire(cAvidaContext& ctx);
 
-  // Head-based instructions...
+  // Head-based Instructions
   bool Inst_HeadAlloc(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
@@ -423,7 +432,6 @@ private:
   bool Inst_Goto(cAvidaContext& ctx);
   bool Inst_GotoConsensus(cAvidaContext& ctx);
   bool Inst_GotoConsensus24(cAvidaContext& ctx);
-  
 
   // Promoter Model
   bool Inst_Promoter(cAvidaContext& ctx);
@@ -435,21 +443,14 @@ private:
   bool Inst_SenseRegulate(cAvidaContext& ctx);
   bool Inst_Numberate(cAvidaContext& ctx) { return Do_Numberate(ctx); };
   bool Inst_Numberate24(cAvidaContext& ctx) { return Do_Numberate(ctx, 24); };
-  bool Do_Numberate(cAvidaContext& ctx, int num_bits = 0);
-  
-  // Promoter Helper functions
-  void PromoterTerminate(cAvidaContext& ctx);
-  int  Numberate(int _pos, int _dir, int _num_bits = 0);
-  
-  
-  // Bit consensus functions
+  bool Inst_Execurate(cAvidaContext& ctx);
+  bool Inst_Execurate24(cAvidaContext& ctx);  
+
+  // Bit Consensus
   bool Inst_BitConsensus(cAvidaContext& ctx);
   bool Inst_BitConsensus24(cAvidaContext& ctx);
   
-  bool Inst_Execurate(cAvidaContext& ctx);
-  bool Inst_Execurate24(cAvidaContext& ctx);
-
-
+  // Replication
   bool Inst_Repro(cAvidaContext& ctx);
 };
 
@@ -486,7 +487,7 @@ inline void cHardwareExperimental::ThreadPrev()
   else m_cur_thread--;
 }
 
-inline cHardwareExperimental::sInternalValue cHardwareExperimental::StackPop()
+inline cHardwareExperimental::sInternalValue cHardwareExperimental::stackPop()
 {
   if (m_threads[m_cur_thread].cur_stack == 0) {
     return m_threads[m_cur_thread].stack.Pop();
@@ -510,16 +511,7 @@ inline int cHardwareExperimental::GetStack(int depth, int stack_id, int in_threa
   return value.value;
 }
 
-inline void cHardwareExperimental::StackClear()
-{
-  if (m_threads[m_cur_thread].cur_stack == 0) {
-    m_threads[m_cur_thread].stack.Clear();
-  } else {
-    m_global_stack.Clear();
-  }
-}
-
-inline void cHardwareExperimental::SwitchStack()
+inline void cHardwareExperimental::switchStack()
 {
   m_threads[m_cur_thread].cur_stack++;
   if (m_threads[m_cur_thread].cur_stack > 1) m_threads[m_cur_thread].cur_stack = 0;

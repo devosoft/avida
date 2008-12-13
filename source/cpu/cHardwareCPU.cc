@@ -532,7 +532,7 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   m_no_cpu_cycle_time = m_world->GetConfig().NO_CPU_CYCLE_TIME.Get();
   
   m_promoters_enabled = m_world->GetConfig().PROMOTERS_ENABLED.Get();
-  m_constituative_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
+  m_constitutive_regulation = m_world->GetConfig().CONSTITUTIVE_REGULATION.Get();
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
@@ -679,7 +679,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     if (m_has_any_costs) exec = SingleProcess_PayCosts(ctx, cur_inst);
 
     // Constitutive regulation applied here
-    if (m_constituative_regulation) Inst_SenseRegulate(ctx); 
+    if (m_constitutive_regulation) Inst_SenseRegulate(ctx); 
 
     // If there are no active promoters and a certain mode is set, then don't execute any further instructions
     if (m_promoters_enabled && m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 2 && m_promoter_index == -1) exec = false;
