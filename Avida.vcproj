@@ -345,10 +345,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataEntry.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cDataFile.h"
 				>
 			</File>
@@ -390,6 +386,10 @@
 			</File>
 			<File
 				RelativePath=".\source\drivers\cDriverManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\drivers\cDriverStatusConduit.h"
 				>
 			</File>
 			<File
@@ -653,6 +653,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cOrgMessage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cOrgMessagePredicate.h"
 				>
 			</File>
@@ -709,6 +713,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\cRCObject.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cReaction.h"
 				>
 			</File>
@@ -738,6 +746,10 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cResourceCount.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cResourceHistory.h"
 				>
 			</File>
 			<File
@@ -1173,10 +1185,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cDataEntry.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cDataFile.cc"
 				>
 			</File>
@@ -1218,6 +1226,10 @@
 			</File>
 			<File
 				RelativePath=".\source\drivers\cDriverManager.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\drivers\cDriverStatusConduit.cc"
 				>
 			</File>
 			<File
@@ -1266,6 +1278,10 @@
 			</File>
 			<File
 				RelativePath=".\source\classification\cGenotype_BirthData.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\analyze\cGenotypeBatch.cc"
 				>
 			</File>
 			<File
@@ -1413,6 +1429,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cOrgMessage.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cPhenotype.cc"
 				>
 			</File>
@@ -1449,6 +1469,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\cRCObject.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cReaction.cc"
 				>
 			</File>
@@ -1466,6 +1490,10 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cResourceCount.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cResourceHistory.cc"
 				>
 			</File>
 			<File
