@@ -1405,7 +1405,9 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // used to pass energy to offspring demes (set to zero if energy model is not enabled)
   double source_deme_energy(0.0), deme_energy_decay(0.0), parent_deme_energy(0.0), offspring_deme_energy(0.0);
   if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
-    source_deme_energy = source_deme.CalculateTotalEnergy() + source_deme.GetTotalEnergyTestament();
+		double energyRemainingInSourceDeme = source_deme.CalculateTotalEnergy();
+		source_deme.SetEnergyRemainingInDemeAtReplication(energyRemainingInSourceDeme);
+    source_deme_energy = energyRemainingInSourceDeme + source_deme.GetTotalEnergyTestament();
     m_world->GetStats().SumEnergyTestamentAcceptedByDeme().Add(source_deme.GetTotalEnergyTestament());
     deme_energy_decay = 1.0 - m_world->GetConfig().FRAC_ENERGY_DECAY_AT_DEME_BIRTH.Get();
     parent_deme_energy = source_deme_energy * deme_energy_decay * (1.0 - m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_TO_DEME_AT_BIRTH.Get());
@@ -1437,7 +1439,10 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
 
   // Reset both demes, in case they have any cleanup work to do.
   // Must reset target first for stats to be correctly updated!
-  if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+//		if(m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 0) {
+//			offspring_deme_energy = parent_deme_energy = 0.0;
+//		}
     // Transfer energy from source to target if we're using the energy model.
     if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset, offspring_deme_energy);
     source_deme.DivideReset(source_deme, source_deme_resource_reset, parent_deme_energy);
@@ -1543,34 +1548,38 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
 	// split energy from parent deme evenly among orgs in child deme
 	if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 0) {
 		assert(source_deme.GetOrgCount() > 0 && target_deme.GetOrgCount() > 0);
-		if(offspring_deme_energy < 0.0)
-			offspring_deme_energy = 0.0;
-		if(parent_deme_energy < 0.0)
-			parent_deme_energy = 0.0;	
-	 
-		// split deme energy evenly between organisms in source deme
-		for (int i=0; i < source_deme.GetSize(); i++) {
-			int cellid = source_deme.GetCellID(i);
-			cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-			if(cell.IsOccupied()) {
-				cOrganism* organism = cell.GetOrganism();
-				cPhenotype& phenotype = organism->GetPhenotype();
-				phenotype.SetEnergy(phenotype.GetStoredEnergy() + parent_deme_energy/static_cast<double>(source_deme.GetOrgCount()));
-				phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+		if(offspring_deme_energy > 0.0) {
+			// split deme energy evenly between organisms in target deme
+			double totalEnergyInjectedIntoOrganisms(0.0);
+			for (int i=0; i < target_deme.GetSize(); i++) {
+				int cellid = target_deme.GetCellID(i);
+				cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+				if(cell.IsOccupied()) {
+					cOrganism* organism = cell.GetOrganism();
+					cPhenotype& phenotype = organism->GetPhenotype();
+					phenotype.SetEnergy(phenotype.GetStoredEnergy() + offspring_deme_energy/static_cast<double>(target_deme.GetOrgCount()));
+					phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+					totalEnergyInjectedIntoOrganisms += phenotype.GetStoredEnergy();
+				}
 			}
+			target_deme.SetEnergyInjectedIntoOrganisms(totalEnergyInjectedIntoOrganisms);
 		}
-		
-		// split deme energy evenly between organisms in target deme
-		for (int i=0; i < target_deme.GetSize(); i++) {
-			int cellid = target_deme.GetCellID(i);
-			cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-			if(cell.IsOccupied()) {
-				cOrganism* organism = cell.GetOrganism();
-				cPhenotype& phenotype = organism->GetPhenotype();
-				phenotype.SetEnergy(phenotype.GetStoredEnergy() + offspring_deme_energy/static_cast<double>(target_deme.GetOrgCount()));
-				phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+		if(parent_deme_energy > 0.0) {
+			// split deme energy evenly between organisms in source deme
+			double totalEnergyInjectedIntoOrganisms(0.0);
+			for (int i=0; i < source_deme.GetSize(); i++) {
+				int cellid = source_deme.GetCellID(i);
+				cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+				if(cell.IsOccupied()) {
+					cOrganism* organism = cell.GetOrganism();
+					cPhenotype& phenotype = organism->GetPhenotype();
+					phenotype.SetEnergy(phenotype.GetStoredEnergy() + parent_deme_energy/static_cast<double>(source_deme.GetOrgCount()));
+					phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
+					totalEnergyInjectedIntoOrganisms += phenotype.GetStoredEnergy();
+				}
 			}
-		}		
+			source_deme.SetEnergyInjectedIntoOrganisms(totalEnergyInjectedIntoOrganisms);
+		}
 	}
 
 	
@@ -2720,12 +2729,21 @@ void cPopulation::PrintDemeTotalAvgEnergy() {
   df_fit.WriteTimeStamp();
   df_fit.Write(stats.GetUpdate(), "update");
 	cDoubleSum avg_energy;
+	cDoubleSum avg_injected;
+	cDoubleSum avg_remainAtReplation;
+	avg_energy.Clear();
+	avg_injected.Clear();
+	avg_remainAtReplation.Clear();
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     const cDeme & cur_deme = deme_array[deme_id];    
 		avg_energy.Add(cur_deme.CalculateTotalEnergy());
+		avg_injected.Add(cur_deme.CalculateTotalInitialEnergyResources() + cur_deme.GetEnergyInjectedIntoOrganisms());
+		avg_remainAtReplation.Add(cur_deme.GetEnergyRemainingInDemeAtReplication());
 	}
 	df_fit.Write(avg_energy.Ave(), "Total Average Energy");
+	df_fit.Write(avg_injected.Ave(), "Average Energy Injected");
+	df_fit.Write(avg_remainAtReplation.Ave(), "Average Energy Remaining at Replication");
 	df_fit.Endl();
 }
 
