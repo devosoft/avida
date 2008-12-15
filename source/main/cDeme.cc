@@ -46,6 +46,8 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   birth_count_perslot = 0;
   m_world = world;
   
+	replicateDeme = false;
+	
   _current_merit = 1.0;
   _next_merit = 1.0;
   
@@ -258,6 +260,8 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 	
   consecutiveSuccessfulEventPeriods = 0;
   
+	replicateDeme = false;
+	
   cur_task_exe_count.SetAll(0);
   cur_reaction_count.SetAll(0);
   

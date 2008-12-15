@@ -2673,7 +2673,7 @@ bool cHardwareCPU::Inst_ReproDeme(cAvidaContext& ctx) {
 		return false; // in test CPU
 	
 	// this function will become to depend on a predicate, but I am still thinking of how to do this (BEB)
-	m_world->GetPopulation().ReplicateDeme(*sourceDeme);
+	sourceDeme->ReplicateDeme();
 	return true;
 }
 

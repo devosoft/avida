@@ -2575,7 +2575,9 @@ void cPopulation::CheckImplicitDemeRepro(cDeme& deme) {
   else if (m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get() 
            && (deme.GetBirthCount() >= m_world->GetConfig().DEMES_REPLICATE_BIRTHS.Get())) ReplicateDeme(deme); 
   else if (m_world->GetConfig().DEMES_REPLICATE_ORGS.Get() 
-           && (deme.GetOrgCount() >= m_world->GetConfig().DEMES_REPLICATE_ORGS.Get())) ReplicateDeme(deme);      
+           && (deme.GetOrgCount() >= m_world->GetConfig().DEMES_REPLICATE_ORGS.Get())) ReplicateDeme(deme); 
+	else if(deme.TestReplication())
+		ReplicateDeme(deme); 
 }
 
 // Print out all statistics about individual demes
