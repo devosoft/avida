@@ -925,7 +925,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   return true;
 }
 
-int cHardwareExperimental::GetCopiedSize(const int parent_size, const int child_size)
+int cHardwareExperimental::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
   for (int i = parent_size; i < parent_size + child_size; i++) {

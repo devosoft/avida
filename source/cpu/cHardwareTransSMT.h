@@ -181,7 +181,7 @@ protected:
   void internalReset();
   
   
-  int GetCopiedSize(const int parent_size, const int child_size);
+  int calcCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, double mut_multiplier = 1.0);
   void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code);

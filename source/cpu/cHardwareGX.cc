@@ -1200,7 +1200,7 @@ bool cHardwareGX::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   return true;
 }
 
-int cHardwareGX::GetExecutedSize(const int parent_size)
+int cHardwareGX::calcExecutedSize(const int parent_size)
 {
 /* @JEB - not really relevant to GX
   int executed_size = 0;
@@ -1213,7 +1213,7 @@ int cHardwareGX::GetExecutedSize(const int parent_size)
   return parent_size;
 }
 
-int cHardwareGX::GetCopiedSize(const int parent_size, const int child_size)
+int cHardwareGX::calcCopiedSize(const int parent_size, const int child_size)
 {
   return parent_size;
 

@@ -1394,7 +1394,7 @@ bool cHardwareCPU::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   return true;
 }
 
-int cHardwareCPU::GetCopiedSize(const int parent_size, const int child_size)
+int cHardwareCPU::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
   for (int i = parent_size; i < parent_size + child_size; i++) {

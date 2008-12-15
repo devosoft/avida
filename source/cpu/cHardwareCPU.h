@@ -224,7 +224,7 @@ protected:
   void internalReset();
   
   
-  int GetCopiedSize(const int parent_size, const int child_size);
+  int calcCopiedSize(const int parent_size, const int child_size);
   
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
   bool Divide_MainRS(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1); //AWC 06/29/06

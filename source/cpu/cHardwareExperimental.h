@@ -349,7 +349,7 @@ private:
   bool Allocate_Default(const int new_size);
   bool Allocate_Main(cAvidaContext& ctx, const int allocated_size);
   
-  int GetCopiedSize(const int parent_size, const int child_size);
+  int calcCopiedSize(const int parent_size, const int child_size);
   
   
   // --------  Division Support  -------

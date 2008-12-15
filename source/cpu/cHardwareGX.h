@@ -298,8 +298,8 @@ protected:
   void internalReset();
   
     
-  int GetExecutedSize(const int parent_size);
-  int GetCopiedSize(const int parent_size, const int child_size);
+  int calcExecutedSize(const int parent_size);
+  int calcCopiedSize(const int parent_size, const int child_size);
   bool Divide_Main(cAvidaContext& ctx);
   void InjectCode(const cGenome& injection, const int line_num);
   bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);

@@ -90,6 +90,7 @@ public:
   }
   virtual ~cHardwareBase() { ; }
 
+  
   // --------  Organism  ---------
   cOrganism* GetOrganism() { return m_organism; }
   const cInstSet& GetInstSet() { return *m_inst_set; }
@@ -170,14 +171,17 @@ public:
   virtual bool TriggerMutations(cAvidaContext& ctx, int trigger);
   virtual bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head);
 
+  
   // --------  Input/Output Buffers  --------
   virtual tBuffer<int>& GetInputBuf();
   virtual tBuffer<int>& GetOutputBuf();
   
+  
   // --------  State Transfer  --------
   virtual void InheritState(cHardwareBase& in_hardware){ ; }
   
-  //alarm
+  
+  // --------  Alarm  --------
   virtual bool Jump_To_Alarm_Label(int jump_label) { return false; }
   
 
@@ -187,44 +191,52 @@ public:
 
   
 protected:
+  // --------  Core Execution Methods  --------
+  bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
   virtual void internalReset() = 0;
   
-  // --------  No-Operation Instruction --------
+  
+  // --------  No-Operation Instruction  --------
   bool Inst_Nop(cAvidaContext& ctx);  // A no-operation instruction that does nothing! 
   
-  // -------- Implicit Repro Check/Instruction -------- @JEB
+  
+  // --------  Implicit Repro Check/Instruction  -------- @JEB
   void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);
   virtual bool Inst_Repro(cAvidaContext& ctx);
 
-  // --------  Execution Speed Instruction --------
+  
+  // --------  Execution Speed Instruction  --------
   bool Inst_DoubleEnergyUsage(cAvidaContext& ctx);
   bool Inst_HalfEnergyUsage(cAvidaContext& ctx);
   bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
 	
 
   
-  // --------  Mutation Helper Methods --------
+  // --------  Mutation Helper Methods  --------
   bool doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome);
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
   void doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome, int from = -1);
   
 
-  virtual int GetExecutedSize(const int parent_size);
-  virtual int GetCopiedSize(const int parent_size, const int child_size) = 0;  
+  // --------  Organism Execution Property Calculation  --------
+  virtual int calcExecutedSize(const int parent_size);
+  virtual int calcCopiedSize(const int parent_size, const int child_size) = 0;  
   
+  
+  // --------  Division Support Methods  --------
   bool Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, bool using_repro = false);
   unsigned Divide_DoExactMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int pointmut = INT_MAX);
   bool Divide_TestFitnessMeasures1(cAvidaContext& ctx);
   
+
+  // --------  Mutation Triggers  --------
   void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
   bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
 																		cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
   bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
 																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
-  
-  virtual bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
+																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);  
 };
 
 

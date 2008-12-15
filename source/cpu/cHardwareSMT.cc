@@ -822,7 +822,7 @@ inline int cHardwareSMT::FindComplementStack(int base_stack)
 }
 
 
-int cHardwareSMT::GetCopiedSize(const int parent_size, const int child_size)
+int cHardwareSMT::calcCopiedSize(const int parent_size, const int child_size)
 {
   int copied_size = 0;
   const cCPUMemory& memory = m_mem_array[m_cur_child];
@@ -912,7 +912,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   if (m_mem_array.GetSize() <= mem_space_used) return false;
   	
   // Make sure this divide will produce a viable offspring.
-  m_cur_child = mem_space_used; // save current child memory space for use by dependent functions (e.g. GetCopiedSize())
+  m_cur_child = mem_space_used; // save current child memory space for use by dependent functions (e.g. calcCopiedSize())
   if (!Divide_CheckViable(ctx, m_mem_array[0].GetSize(), write_head_pos)) return false;
   
   // Since the divide will now succeed, set up the information to be sent to the new organism

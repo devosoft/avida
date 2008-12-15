@@ -70,7 +70,7 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   internalReset();
 }
 
-int cHardwareBase::GetExecutedSize(const int parent_size)
+int cHardwareBase::calcExecutedSize(const int parent_size)
 {
   int executed_size = 0;
   const cCPUMemory& memory = GetMemory();
@@ -120,7 +120,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   // Count the number of lines executed in the parent, and make sure the
   // specified fraction has been reached.
   
-  const int executed_size = GetExecutedSize(parent_size);
+  const int executed_size = calcExecutedSize(parent_size);
   const int min_exe_lines = static_cast<int>(parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
   if (executed_size < min_exe_lines) {
     m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
@@ -132,7 +132,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   int copied_size = parent_size;
   if (!using_repro) {
     // Normal organisms check to see how much was copied
-    copied_size = GetCopiedSize(parent_size, child_size); // Fails for REPRO organisms
+    copied_size = calcCopiedSize(parent_size, child_size); // Fails for REPRO organisms
     const int min_copied = static_cast<int>(child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
   
     if (copied_size < min_copied) {
@@ -812,6 +812,7 @@ bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
   return true;
 }
 
+
 // @JEB Check implicit repro conditions -- meant to be called at the end of SingleProcess
 void cHardwareBase::CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)         
 {  
@@ -836,6 +837,7 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
   return false;
 }
 
+
 bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx)
 {
   m_organism->GetPhenotype().DoubleEnergyUsage();
@@ -859,6 +861,7 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
   m_organism->UpdateMerit(newOrgMerit);
   return true;
 }
+
 
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
@@ -929,6 +932,7 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 
 
 //! Called when the organism that owns this CPU has received a flash from a neighbor.
-void cHardwareBase::ReceiveFlash() {
+void cHardwareBase::ReceiveFlash()
+{
   m_world->GetDriver().RaiseFatalException(1, "Method cHardwareBase::ReceiveFlash must be overriden.");
 }
