@@ -233,13 +233,23 @@ m_my_component
 </pre>
 </li>
 <li>
-  All functions should begin with a capital letter followed by lowercase. 
-  Additional words should be signified by capital letters.  Underscores 
-  should only be used to indicate a category of functions.  Examples:
+  All functions and public struct/class methods should begin with a capital
+  letter followed by lowercase.  Additional words should be signified by
+  capital letters.  Underscores should only be used to indicate a category
+  of functions.  Examples:
 <pre>
 Sort() 
 ThisIsMyFunction() 
-Inst_Divide()
+cHardwareCPU::Inst_Divide()
+</pre>
+</li>
+<li>
+  Private and protected struct/class support methods should begin with a
+  lowercase letter. Additional words should be signified by capital letters.
+  Underscores should only be used to indicate a category of functions.  Examples:
+<pre>
+cHardwareBase::doSlipMuation()
+cParser::parseCodeBlock()
 </pre>
 </li>
 <li>
