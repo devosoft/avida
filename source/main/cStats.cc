@@ -1045,8 +1045,8 @@ void cStats::PrintResourceData(const cString& filename)
   // maps for each spatial resource 
   
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (resource_geometry[i] != nGeometry::GLOBAL) {
-      double sum_spa_resource = 0;
+   if (resource_geometry[i] != nGeometry::GLOBAL && resource_geometry[i] != nGeometry::PARTIAL) {
+         double sum_spa_resource = 0;
       for (int j = 0; j < spatial_res_count[i].GetSize(); j++) {
          sum_spa_resource += spatial_res_count[i][j];
       }

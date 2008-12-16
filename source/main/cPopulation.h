@@ -282,6 +282,7 @@ public:
   const tArray<double>& GetCellResources(int cell_id) const { return resource_count.GetCellResources(cell_id); }
   const tArray<double>& GetDemeResources(int deme_id) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(); }
   const tArray<double>& GetDemeCellResources(int deme_id, int cell_id) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id) ); }
+  const tArray< tArray<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
 

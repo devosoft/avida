@@ -128,6 +128,7 @@ const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
   curr_spatial_res_cnt = rc.curr_spatial_res_cnt;
   update_time = rc.update_time;
   spatial_update_time = rc.spatial_update_time;
+  cell_lists = rc.cell_lists;
 
   return *this;
 }
@@ -147,6 +148,7 @@ void cResourceCount::SetSize(int num_resources)
   spatial_resource_count.ResizeClear(num_resources);
   curr_grid_res_cnt.ResizeClear(num_resources);
   curr_spatial_res_cnt.ResizeClear(num_resources);
+  cell_lists.ResizeClear(num_resources);
 
   resource_name.SetAll("");
   resource_initial.SetAll(0.0);
@@ -169,8 +171,8 @@ void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
   assert(resource_count.GetSize() == res.GetSize());
 
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == nGeometry::GLOBAL) {
-      // Set global quantity of resource
+     if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+        // Set global quantity of resource
     } else {
       spatial_resource_count[i].SetCellAmount(cell_id, res[i]);
 
@@ -191,7 +193,7 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
                            int in_inflowY2, int in_outflowX1, 
                            int in_outflowX2, int in_outflowY1, 
                            int in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
-                           int verbosity_level)
+                           tArray<int> *in_cell_id_list_ptr, int verbosity_level)
 {
   assert(id >= 0 && id < resource_count.GetSize());
   assert(initial >= 0.0);
@@ -206,7 +208,11 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
     geo_name = "GRID";
   } else if (in_geometry == nGeometry::TORUS) {
     geo_name = "TORUS";
-  } else {
+  } 
+	else if (in_geometry == nGeometry::PARTIAL) {
+	geo_name = "PARTIAL";
+  }
+  else {
     cerr << "[cResourceCount::Setup] Unknown resource geometry " << in_geometry << ".  Exiting.";
     exit(2);
   }
@@ -246,7 +252,19 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
   resource_initial[id] = initial;
   if (in_geometry == nGeometry::GLOBAL) {
     resource_count[id] = initial;
-  } else {
+	spatial_resource_count[id].RateAll(0);
+  } 
+  else if (in_geometry == nGeometry::PARTIAL) {
+	  resource_count[id]=initial;
+
+	  spatial_resource_count[id].RateAll(0);
+	  // want to set list of cell ids here
+	   cell_lists[id].Resize(in_cell_id_list_ptr->GetSize());
+	  for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++)
+		  cell_lists[id][i] = (*in_cell_id_list_ptr)[i];
+
+  }
+  else {
     resource_count[id] = 0;
     spatial_resource_count[id].SetInitial(initial / spatial_resource_count[id].GetSize());
     spatial_resource_count[id].RateAll(spatial_resource_count[id].GetInitial());
@@ -342,8 +360,8 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id) const
   DoUpdates();
 
   for (int i = 0; i < num_resources; i++) {
-    if (geometry[i] == nGeometry::GLOBAL) {
-      curr_grid_res_cnt[i] = resource_count[i];
+     if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+         curr_grid_res_cnt[i] = resource_count[i];
     } else {
       curr_grid_res_cnt[i] = spatial_resource_count[i].GetAmount(cell_id);
     }
@@ -397,8 +415,8 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
   assert(resource_count.GetSize() == res_change.GetSize());
 
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == nGeometry::GLOBAL) {
-      resource_count[i] += res_change[i];
+  if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
+        resource_count[i] += res_change[i];
       assert(resource_count[i] >= 0.0);
     } else {
       spatial_resource_count[i].Rate(cell_id, res_change[i]);
@@ -418,8 +436,8 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
 double cResourceCount::Get(int id) const
 {
   assert(id < resource_count.GetSize());
-  if(geometry[id] == nGeometry::GLOBAL) {
-    return resource_count[id];
+  if (geometry[id] == nGeometry::GLOBAL || geometry[id]==nGeometry::PARTIAL) {
+      return resource_count[id];
   } //else return spacial resource sum
   return spatial_resource_count[id].SumAll();
 }
@@ -427,8 +445,8 @@ double cResourceCount::Get(int id) const
 void cResourceCount::Set(int id, double new_level)
 {
   assert(id < resource_count.GetSize());
-  if(geometry[id] == nGeometry::GLOBAL) {
-    resource_count[id] = new_level;
+  if (geometry[id] == nGeometry::GLOBAL || geometry[id]==nGeometry::PARTIAL) {
+     resource_count[id] = new_level;
   } else {
     for(int i = 0; i < spatial_resource_count[id].GetSize(); i++) {
       spatial_resource_count[id].SetCellAmount(i, new_level/spatial_resource_count[id].GetSize());
@@ -456,7 +474,7 @@ void cResourceCount::DoUpdates() const
 
   while (num_steps > PRECALC_DISTANCE) {
     for (int i = 0; i < resource_count.GetSize(); i++) {
-      if (geometry[i] == nGeometry::GLOBAL) {
+      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
         resource_count[i] *= decay_precalc(i, PRECALC_DISTANCE);
         resource_count[i] += inflow_precalc(i, PRECALC_DISTANCE);
       }
@@ -465,7 +483,7 @@ void cResourceCount::DoUpdates() const
   }
 
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    if (geometry[i] == nGeometry::GLOBAL) {
+    if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
       resource_count[i] *= decay_precalc(i, num_steps);
       resource_count[i] += inflow_precalc(i, num_steps);
     }
@@ -476,7 +494,7 @@ void cResourceCount::DoUpdates() const
   while (spatial_update_time >= 1.0) { 
     spatial_update_time -= 1.0;
     for (int i = 0; i < resource_count.GetSize(); i++) {
-      if (geometry[i] != nGeometry::GLOBAL) {
+     if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
         spatial_resource_count[i].Source(inflow_rate[i]);
         spatial_resource_count[i].Sink(decay_rate[i]);
         if (spatial_resource_count[i].GetCellListSize() > 0) {

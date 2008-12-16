@@ -109,6 +109,7 @@ public:
   inline int GetReceiveValue();
   inline const tArray<double>& GetResources();
   inline const tArray<double>& GetDemeResources(int deme_id);
+  inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(const tArray<double>& res_change);
@@ -156,6 +157,11 @@ inline const tArray<double>& cTestCPU::GetResources()
 inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id)
 {
     return m_deme_resource_count.GetResources();
+}
+
+inline const tArray< tArray<int> >& cTestCPU::GetCellIdLists()
+{
+	return m_resource_count.GetCellIdLists();
 }
 
 inline void cTestCPU::SetResource(int id, double new_level)

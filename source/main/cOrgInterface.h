@@ -87,6 +87,7 @@ public:
   virtual int Debug() = 0;
   virtual const tArray<double>& GetResources() = 0;
   virtual const tArray<double>& GetDemeResources(int deme_id) = 0;  
+  virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
   virtual void UpdateResources(const tArray<double>& res_change) = 0;
   virtual void UpdateDemeResources(const tArray<double>& res_change) = 0;
   virtual void Die() = 0;

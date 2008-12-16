@@ -57,6 +57,7 @@ private:
   mutable tArray<double> curr_grid_res_cnt;
   mutable tArray< tArray<double> > curr_spatial_res_cnt;
   int verbosity;
+  tArray< tArray<int> > cell_lists;	
 
   // Setup the update process to use lazy evaluation...
   mutable double update_time;     // Portion of an update compleated...
@@ -84,7 +85,7 @@ public:
              int in_inflowX1, int in_inflowX2, int in_inflowY1, int in_inflowY2,
              int in_outflowX1, int in_outflowX2, int in_outflowY1, 
              int in_outflowY, tArray<cCellResource> *in_cell_list_ptr,
-             int verbosity_level);
+             tArray<int> *in_cell_id_list_ptr, int verbosity_level);
              
   int GetResourceCountID(const cString& res_name);
   void SetInflow(const cString& name, const double _inflow);
@@ -98,6 +99,7 @@ public:
   const tArray<double>& GetCellResources(int cell_id) const;
   const tArray<int>& GetResourcesGeometry() const;
   const tArray<tArray<double> >& GetSpatialRes();
+  const tArray<tArray<int> >& GetCellIdLists() const { return cell_lists; }
   void Modify(const tArray<double>& res_change);
   void Modify(int id, double change);
   void ModifyCell(const tArray<double> & res_change, int cell_id);

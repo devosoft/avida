@@ -90,6 +90,7 @@ public:
   int Debug();
   const tArray<double>& GetResources();
   const tArray<double>& GetDemeResources(int deme_id);
+  const tArray< tArray<int> >& GetCellIdLists();
   void UpdateResources(const tArray<double>& res_change);
   void UpdateDemeResources(const tArray<double>& res_change);
   void Die();

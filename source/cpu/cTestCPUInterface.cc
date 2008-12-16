@@ -83,6 +83,11 @@ const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id) {
   return m_testcpu->GetDemeResources(deme_id);
 }
 
+const tArray< tArray<int> >& cTestCPUInterface::GetCellIdLists()
+{
+	return m_testcpu->GetCellIdLists();
+}
+
 void cTestCPUInterface::UpdateResources(const tArray<double>& res_change)
 {
    m_testcpu->ModifyResources(res_change);

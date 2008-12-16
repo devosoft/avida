@@ -416,7 +416,7 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
   const double decay = 1.0 - res->GetOutflow();
   //addjust the resources cell list pointer here if we want CELL env. commands to be replicated in each deme
   
-  deme_resource_count.Setup(id, res->GetName(), res->GetInitial(), 
+    deme_resource_count.Setup(id, res->GetName(), res->GetInitial(), 
                             res->GetInflow(), decay,
                             res->GetGeometry(), res->GetXDiffuse(),
                             res->GetXGravity(), res->GetYDiffuse(), 
@@ -425,7 +425,7 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
                             res->GetInflowY2(), res->GetOutflowX1(), 
                             res->GetOutflowX2(), res->GetOutflowY1(), 
                             res->GetOutflowY2(), res->GetCellListPtr(),
-                            verbosity);
+                            res->GetCellIdListPtr(), verbosity);
   
   if(res->GetEnergyResource()) {
     energy_res_ids.Push(id);

@@ -1908,7 +1908,11 @@ void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReq
 {
   cArgSchema schema;
   schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);
+  schema.AddEntry("partial",0, 0);
+  schema.AddEntry("binary",1,1);
+  schema.AddEntry("pow",0,2.0);
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  envreqs.SetMinOutputs(args->GetString(0).GetSize());
   if (args) NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, args);
 }
 
@@ -1920,23 +1924,40 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
   //  temp_buf.Pop(); // pop the signal value off of the buffer
   
   const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
+  int partial = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int binary = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  double mypow = ctx.GetTaskEntry()->GetArguments().GetDouble(0);
   int string_index;
   int num_matched = 0;
   int test_output;
   int max_num_matched = 0;
-  
-  if (temp_buf.GetNumStored() > 0) {
-    test_output = temp_buf[0];
-    
-    for (int j = 0; j < string_to_match.GetSize(); j++) {  
-      string_index = string_to_match.GetSize() - j - 1; // start with last char in string
-      int k = 1 << j;
-      if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
-          (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
+  int num_real=0;
+
+  if (!binary) {
+    if (temp_buf.GetNumStored() > 0) {
+      test_output = temp_buf[0];
+      
+      for (int j = 0; j < string_to_match.GetSize(); j++) {  
+	string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+	int k = 1 << j;
+	if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+	    (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
+      }
+      max_num_matched = num_matched;
     }
-    max_num_matched = num_matched;
   }
-  
+  else {
+    for (int j = 0; j < string_to_match.GetSize(); j++)
+      {
+        if (string_to_match[j]!='9')
+          num_real++;
+        if (string_to_match[j]=='0' && temp_buf[j]==0 ||
+            string_to_match[j]=='1' && temp_buf[j]==1)
+          num_matched++;
+      }
+    max_num_matched = num_matched;
+
+  }
   bool used_received = false;
   if (ctx.GetReceivedMessages()) {
     tBuffer<int> received(*(ctx.GetReceivedMessages()));
@@ -1961,7 +1982,12 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
   double bonus = 0.0;
   // return value between 0 & 1 representing the percentage of string that was matched
   double base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
-  
+
+  if (partial)
+    {
+      base_bonus=double(max_num_matched)*2/double(num_real) -1;
+    }
+
   if (base_bonus > 0.0) {
     bonus = pow(base_bonus, 2);
     if (used_received)
@@ -1971,6 +1997,7 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
   }
   return bonus;
 }
+
 
 
 void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
@@ -2249,7 +2276,71 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   double Fx = 0.0;
   
   // some of the problems don't need double variables but use the bit string as a bit string
-  if (function==18)
+  // string match, Fx=length - num_matched (0 best, length worst)
+  if (function==20)
+    {
+      const cString& string_to_match = args.GetString(0);
+      int matched=0;
+      for (int i=0; i<args.GetInt(2); i++)
+        {
+          if ((string_to_match[i] == '0' && ctx.GetOutputBuffer()[i]==0)  ||
+              (string_to_match[i] == '1' && ctx.GetOutputBuffer()[i]==1))
+            matched++;
+        }
+      Fx=args.GetInt(2) - matched;
+    }
+  // string with all 1's at beginning until pattern 0101, reward for # 1's
+  else if (function==21)
+    {
+      int numOnes=0;
+      int patFound=0;
+      for (int i=0; i<args.GetInt(2)-4; i++)
+        {
+          if (ctx.GetOutputBuffer()[i]==1)
+            numOnes++;
+          else
+            {
+              if (ctx.GetOutputBuffer()[i+1]==1
+                  && ctx.GetOutputBuffer()[i+2]==0 && ctx.GetOutputBuffer()[i+3]==1)
+                patFound=1;
+              break;
+            }
+        }
+      if (patFound)
+        Fx=args.GetInt(2)-4-numOnes;
+      else
+        Fx=args.GetInt(2);
+    }
+  // simply rewared for number of 1's at beginning of string, maxFx=length of string
+  else if (function==22)
+    {
+      int numOnes=0;
+      for (int i=0; i<args.GetInt(2); i++)
+        {
+          if (ctx.GetOutputBuffer()[i]==1)
+            numOnes++;
+          else
+            break;
+        }
+      Fx=args.GetInt(2)-numOnes;
+    }
+
+  // simply reward for number 0's in string
+  else if (function==23)
+    {
+      int numZeros=0;
+      for (int i=0; i<args.GetInt(2); i++)
+        {
+          if (ctx.GetOutputBuffer()[i]==0)
+            numZeros++;
+          else
+            break;
+        }
+      Fx=args.GetInt(2)-numZeros;
+    }
+
+
+  else if (function==18)
   {
     int tot=0;
     for (int i=0; i<30; i++)

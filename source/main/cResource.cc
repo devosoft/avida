@@ -85,9 +85,18 @@ bool cResource::SetGeometry(cString _geometry)
      } else if (_geometry == "torus") {
           geometry = nGeometry::TORUS;
           return true;
-     } else {
+     } 
+	 else if (_geometry == "partial") {
+          geometry = nGeometry::PARTIAL;
+          return true;
+	 }
+	 else {
           return false;
      }
+}
+void cResource::SetCellIdList(tArray<int>& id_list) {
+	cell_id_list.ResizeClear(id_list.GetSize());
+	cell_id_list=id_list;
 }
 
 /* Set if the resource is going to be accessable by demes */

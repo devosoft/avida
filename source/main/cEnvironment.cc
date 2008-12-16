@@ -369,6 +369,11 @@ bool cEnvironment::LoadResource(cString desc)
           return false;
         }
       }
+	  else if (var_name == "cells")
+	  {
+		  tArray<int> cell_list = cStringUtil::ReturnArray(var_value);
+		  new_resource->SetCellIdList(cell_list);
+	  }
       else if (var_name == "inflowx1" || var_name == "inflowx") {
         if (!AssertInputInt(var_value, "inflowX1", var_type)) return false;
         new_resource->SetInflowX1( var_value.AsInt() );
@@ -1143,40 +1148,44 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     } else {
       // Otherwise we're using a finite resource      
       const int res_id = in_resource->GetID();
-      
-      assert(resource_count[res_id] >= 0);
-      assert(result.GetConsumed(res_id) >= 0);
-      consumed = resource_count[res_id] - result.GetConsumed(res_id);
-      consumed *= cur_process->GetMaxFraction();
-      assert(consumed >= 0.0);
-      
-      bool may_use_rbins = m_world->GetConfig().USE_RESOURCE_BINS.Get();
-      bool using_rbins = false;  //default: not using resource bins
-      
-      if (may_use_rbins) {
-      	assert(rbins_count.GetSize() > res_id);
-      }
-      
-      /* Check to see if we do want to use this resource from a bin instead of the environment:
-       * - Can we use the resource bins?
-       * - Is there anything in the bin for this resource?
-       * - Is the usable fraction in the bin strictly greater than the threshold fraction
-       *   of what we could consume from the outside environment?
-       */
-      if (may_use_rbins && rbins_count[res_id] > 0 && 
-           (m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id]) > 
-           (m_world->GetConfig().ENV_FRACTION_THRESHOLD.Get() * consumed)
-           ) {
-        consumed = m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id];
-        using_rbins = true;
-      }
-      
-      // Make sure we're not above the maximum consumption.
-      if (consumed > max_consumed) consumed = max_consumed;
 
-      assert((task_quality >= 0.0) && (task_quality <= 1.0));
-      consumed *= task_quality;  // modify consumed based on task quality
-      
+	  bool may_use_rbins = m_world->GetConfig().USE_RESOURCE_BINS.Get();
+	  bool using_rbins = false;  //default: not using resource bins
+
+	  // check to see if the value of this resource was set to 0 for this cell
+      if (resource_count[res_id]==0)
+		  consumed=0;
+	  else {
+		  assert(resource_count[res_id] >= 0);
+		  assert(result.GetConsumed(res_id) >= 0);
+		  consumed = resource_count[res_id] - result.GetConsumed(res_id);
+		  consumed *= cur_process->GetMaxFraction();
+		  assert(consumed >= 0.0);
+		 
+		  if (may_use_rbins) {
+			  assert(rbins_count.GetSize() > res_id);
+		  }
+
+		  /* Check to see if we do want to use this resource from a bin instead of the environment:
+		  * - Can we use the resource bins?
+		  * - Is there anything in the bin for this resource?
+		  * - Is the usable fraction in the bin strictly greater than the threshold fraction
+		  *   of what we could consume from the outside environment?
+		  */
+		  if (may_use_rbins && rbins_count[res_id] > 0 && 
+			  (m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id]) > 
+			  (m_world->GetConfig().ENV_FRACTION_THRESHOLD.Get() * consumed)
+			  ) {
+				  consumed = m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id];
+				  using_rbins = true;
+		  }
+
+		  // Make sure we're not above the maximum consumption.
+		  if (consumed > max_consumed) consumed = max_consumed;
+
+		  assert((task_quality >= 0.0) && (task_quality <= 1.0));
+		  consumed *= task_quality;  // modify consumed based on task quality
+	  }
       // Test if we are below the minimum consumption.
       if (consumed < min_consumed) consumed = 0.0;
       
@@ -1194,7 +1203,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       	if (may_use_rbins && using_rbins)
       	{rbins_count[res_id] -= consumed;}
       }
-    }
+	}
     
     // Mark the reaction as having been performed if we get here.
     result.MarkReaction(reaction_id);
@@ -1278,7 +1287,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
           assert(false);  // Should not get here!
           break;
       }
-    }
+	}
     
     // Determine detection events
     cResource* detected = cur_process->GetDetect();
@@ -1309,7 +1318,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     result.Lethal(cur_process->GetLethal());
     result.Sterilize(cur_process->GetSterilize());
-    } 
+	} 
 }
 
 const cString& cEnvironment::GetReactionName(int reaction_id) const

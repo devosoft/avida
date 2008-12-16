@@ -13,7 +13,7 @@
  *  of the License.
  *
  *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty ofcout
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
@@ -291,6 +291,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   const int deme_id = m_interface->GetDemeID();
   const tArray<double> & global_resource_count = m_interface->GetResources();
   const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id);
+  const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
   tList<tBuffer<int> > other_output_list;
@@ -334,9 +335,29 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                        m_hardware->GetExtendedMemory(), on_divide, received_messages_point);
                        
   //combine global and deme resource counts
-  const tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
+  tArray<double> globalAndDeme_resource_count = global_resource_count + deme_resource_count;
   tArray<double> globalAndDeme_res_change = global_res_change + deme_res_change;
   
+  // set any resource amount to 0 if a cell cannot access this resource
+  int cell_id=GetCellID();
+  if (cell_id_lists.GetSize())
+  {
+	  for (int i=0; i<cell_id_lists.GetSize(); i++)
+	  {
+		  // if cell_id_lists have been set then we have to check if this cell is in the list
+		  if (cell_id_lists[i].GetSize()) {
+			  int j;
+			  for (j=0; j<cell_id_lists[i].GetSize(); j++)
+			  {
+				  if (cell_id==cell_id_lists[i][j])
+					  break;
+			  }
+			  if (j==cell_id_lists[i].GetSize())
+				  globalAndDeme_resource_count[i]=0;
+		  }
+	  }
+  }
+
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, m_rbins, globalAndDeme_res_change,
                                                insts_triggered);
   
