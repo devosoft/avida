@@ -745,6 +745,7 @@ public:
   void PrintTasksData(const cString& filename);
   void PrintTasksExeData(const cString& filename);
   void PrintTasksQualData(const cString& filename);
+  void PrintDynamicMaxMinData(const cString& filename);
   void PrintReactionData(const cString& filename);
   void PrintReactionExeData(const cString& filename);
   void PrintCurrentReactionData(const cString& filename);

@@ -2294,7 +2294,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
     {
       int numOnes=0;
       int patFound=0;
-      for (int i=0; i<args.GetInt(2)-4; i++)
+      for (int i=0; i<args.GetInt(2)-3; i++)
         {
           if (ctx.GetOutputBuffer()[i]==1)
             numOnes++;

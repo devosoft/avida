@@ -798,13 +798,21 @@ public:
 	cEnvironment& env = m_world->GetEnvironment();
     for (int j=0; j<env.GetNumTasks(); j++)
 	{
-		double maxFx=0, minFx=10000;
+		double maxFx, minFx;
+		bool first=true;
 		for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) 
 		{
 			 cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
 			if (cell.IsOccupied() == false) continue;
 			const cPhenotype& phen = cell.GetOrganism()->GetPhenotype();
 			double val = phen.GetLastTaskValue()[j];
+			if (first)
+			{
+				minFx=val;
+				maxFx=val;
+				first=false;
+				continue;
+			}
 			if (val < minFx)
 				minFx = val;
 			if (val > maxFx)

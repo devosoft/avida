@@ -123,6 +123,7 @@ STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
+STATS_OUT_FILE(PrintDynamicMaxMinData,		maxmin.dat			);
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -2719,6 +2720,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintInternalTasksQualData>("PrintInternalTasksQualData");
   action_lib->Register<cActionPrintSleepData>("PrintSleepData");
   action_lib->Register<cActionPrintCompetitionData>("PrintCompetitionData");
+  action_lib->Register<cActionPrintDynamicMaxMinData>("PrintDynamicMaxMinData");
   
   // @WRE: Added printing of visit data
   action_lib->Register<cActionPrintCellVisitsData>("PrintCellVisitsData");
