@@ -253,7 +253,7 @@ void cClassificationManager::RemoveGenotype(cGenotype & in_genotype)
     int list_num = FindCRC(in_genotype.GetGenome());
     m_active_genotypes[list_num].Remove(&in_genotype);
     m_genotype_ctl->Remove(in_genotype);
-    in_genotype.Deactivate(m_world->GetStats().GetUpdate());
+    in_genotype.Deactivate(m_world->GetStats().GetUpdate(), m_world->GetStats().GetTotCreatures());
     if (m_world->GetConfig().TRACK_MAIN_LINEAGE.Get()) {
       m_genotype_ctl->InsertHistoric(in_genotype);
     }
@@ -512,50 +512,30 @@ bool cClassificationManager::DumpTextSummary(ofstream& fp)
 bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
                                int historic)
 {
-  bool print_id = false;
-  bool print_parent_id = false;
-  bool print_parent2_id = false;
-  bool print_parent_dist = false;
-  bool print_num_cpus = false;
-  bool print_total_cpus = false;
-  bool print_length = false;
-  bool print_merit = false;
-  bool print_gest_time = false;
-  bool print_fitness = false;
-  bool print_update_born = false;
-  bool print_update_dead = false;
-  bool print_depth = false;
-  bool print_lineage = false;
-  bool print_sequence = false;
-  bool print_exec_time_born = false;
-  bool print_generation_born = false;
   
   cStringList fields(data_fields, ',');
-  if (fields.HasString("id") == true) print_id = true;
-  if (fields.HasString("parent_id") == true) print_parent_id = true;
-  if (fields.HasString("parent2_id") == true) print_parent2_id = true;
-  if (fields.HasString("parent_dist") == true) print_parent_dist = true;
-  if (fields.HasString("num_cpus") == true) print_num_cpus = true;
-  if (fields.HasString("total_cpus") == true) print_total_cpus = true;
-  if (fields.HasString("length") == true) print_length = true;
-  if (fields.HasString("merit") == true) print_merit = true;
-  if (fields.HasString("gest_time") == true) print_gest_time = true;
-  if (fields.HasString("fitness") == true) print_fitness = true;
-  if (fields.HasString("update_born") == true) print_update_born = true;
-  if (fields.HasString("update_dead") == true) print_update_dead = true;
-  if (fields.HasString("depth") == true) print_depth = true;
-  if (fields.HasString("lineage") == true) print_lineage = true;
-  if (fields.HasString("sequence") == true) print_sequence = true;
-  if (fields.HasString("exec_time_born") == true) print_exec_time_born = true;
-  if (fields.HasString("generation_born") == true) print_generation_born = true;
-  if (fields.HasString("all") == true) {
-    print_id = print_parent_id = print_parent2_id = print_parent_dist = true;
-    print_num_cpus = print_total_cpus = print_length = print_merit = true;
-    print_gest_time = print_fitness = print_update_born = true;
-    print_update_dead = print_depth = print_lineage = print_sequence = true;
-    print_exec_time_born = true; 
-  }
+  bool print_all         = fields.HasString("all");
+  bool print_id          = print_all || fields.HasString("id");
+  bool print_parent_id   = print_all || fields.HasString("parent_id");
+  bool print_parent2_id  = print_all || fields.HasString("parent2_id");
+  bool print_parent_dist = print_all || fields.HasString("parent_dist");
+  bool print_num_cpus    = print_all || fields.HasString("num_cpus");
+  bool print_total_cpus  = print_all || fields.HasString("total_cpus");
+  bool print_length      = print_all || fields.HasString("length");
+  bool print_merit       = print_all || fields.HasString("merit");
+  bool print_gest_time   = print_all || fields.HasString("gest_time");
+  bool print_fitness     = print_all || fields.HasString("fitness");
+  bool print_update_born = print_all || fields.HasString("update_born");
+  bool print_update_dead = print_all || fields.HasString("update_dead");
+  bool print_depth       = print_all || fields.HasString("depth");
+  bool print_lineage     = print_all || fields.HasString("lineage");
+  bool print_sequence    = print_all || fields.HasString("sequence");
+  bool print_exec_time_born  = print_all || fields.HasString("exec_time_born") ;
+  bool print_generation_born = print_all || fields.HasString("generation_born");
+  bool print_orgid_born      = print_all || fields.HasString("org_id_born");
+  bool print_orgid_dead      = print_all || fields.HasString("org_id_dead");
   
+ 
   // Print all of the header information...
   fp << "#filetype genotype_data" << endl
     << "#format ";
@@ -577,6 +557,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   if (print_sequence == true) fp << "sequence ";  
   if (print_exec_time_born == true) fp << "exec_time_born ";
   if (print_generation_born == true) fp << "generation_born ";
+  if (print_orgid_born == true) fp << "org_id_born";
+  if (print_orgid_dead == true) fp << "org_id_dead";
   fp << endl;
   
   // Print extra information about what data is in this file...
@@ -605,6 +587,8 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   if (print_sequence) fp << "# " << cur_col++ << ": genome of genotype" << endl;
   if (print_exec_time_born)  fp << "# "  << cur_col++ << ": number of instructions executed at birth since ancestor injection" << endl;
   if (print_generation_born) fp << "# " << cur_col++ << ": first generation number of genotype" << endl;
+  if (print_orgid_born) fp << "# " << cur_col++ << ": organism id at time of birth" << endl;
+  if (print_orgid_dead) fp << "# " << cur_col++ << ": population's maximum organism id at time of death" << endl;
   fp << endl;
   
   cerr << m_genotype_ctl->GetSize() << " " << print_id << " " << print_generation_born << endl;
@@ -629,8 +613,11 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
     if (print_depth)       fp << genotype->GetDepth() << " ";
     if (print_lineage)     fp << genotype->GetLineageLabel() << " "; 
     if (print_sequence)    fp << genotype->GetGenome().AsString() << " ";
-    if (print_exec_time_born) fp << genotype->GetExecTimeBorn() << " ";
+    if (print_exec_time_born)  fp << genotype->GetExecTimeBorn() << " ";
     if (print_generation_born) fp << genotype->GetGenerationBorn() << " ";
+    if (print_orgid_born)      fp << genotype->GetOrgIDAtBirth() << " ";
+    if (print_orgid_dead)      fp << genotype->GetOrgIDAtDeath() << " ";
+    
     fp << endl;
     m_genotype_ctl->Next(0);
   }
@@ -669,6 +656,9 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
     if (print_sequence)    fp << genotype->GetGenome().AsString() << " ";
     if (print_exec_time_born)  fp << genotype->GetExecTimeBorn() << " ";
     if (print_generation_born) fp << genotype->GetGenerationBorn() << " ";
+    if (print_orgid_born)      fp << genotype->GetOrgIDAtBirth() << " ";
+    if (print_orgid_dead)      fp << genotype->GetOrgIDAtDeath() << " ";
+    if (print_orgid_dead)      fp << genotype->GetOrgIDAtDeath() << " ";
     fp << endl;
     
     // Move to the next genotype...

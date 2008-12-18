@@ -535,6 +535,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   {
     in_genotype->SetExecTimeBorn(in_organism->GetPhenotype().GetExecTimeBorn());
     in_genotype->SetGenerationBorn(in_organism->GetPhenotype().GetGeneration());
+    in_genotype->SetOrganismIDAtBirth(in_organism->GetID());
   }
   
   if (old_genotype != NULL) {

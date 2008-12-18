@@ -53,6 +53,8 @@ public:
   int lineage_label;    // Unique label for the lineage of this genotype.
   int exec_born;        // @MRR Number of instruction executions from start
   int generation_born;  // @MRR Generation genotype created
+  int birth_org_id;     // @MRR Organism ID at birth
+  int death_org_id;     // @MRR Highest organism ID at time of death
   
   int update_deactivated;       // If not, when did it get deactivated?
   cGenotype* parent_genotype;  // Pointer to parent genotype...
