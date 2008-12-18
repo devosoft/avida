@@ -103,6 +103,9 @@ void cWeightedIndex::SetWeight(int id, double in_weight)
 
 int cWeightedIndex::FindPosition(double position, int root_id)
 {
+  //if (position >= subtree_weight[root_id]) {
+  //  cout << "BDB: position " << position << "subtree_weight[" << root_id << "] = " << subtree_weight[root_id] << endl;
+  //}
   assert(position < subtree_weight[root_id]);
 
   // First, see if we should just return this node.

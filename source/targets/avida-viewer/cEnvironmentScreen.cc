@@ -153,15 +153,29 @@ void cEnvironmentScreen::UpdateResource()
   Print(res_selection+1, 24, "%7.2f", res_lib.GetResource(res_selection)->GetOutflow());
   Print(res_selection+1, 40, "%7.2f", m_world->GetPopulation().GetResources()[res_selection]);
   
-  // Print all of the information about the current resources.
+  // Print all of the information about the reaction(s) associated with 
+  // current resource.
+
   int offset=0;
   SetBoldColor(COLOR_CYAN);
   for(int i=0; i<rxn_lib.GetSize(); i++) {
     for(int j=0; j<rxn_lib.GetReaction(i)->GetProcesses().GetSize(); j++) {
+      cout << "BDB part 1 " << rxn_lib.GetReaction(i)->GetProcesses().GetPos(j)->GetResource()->GetName() << endl;
+      cout << "BDB part 2 " << res_lib.GetResource(res_selection)->GetName() << endl;
       if(rxn_lib.GetReaction(i)->GetProcesses().GetPos(j)->GetResource()->GetName() == 
          res_lib.GetResource(res_selection)->GetName()) {
-	Print(num_resources + 5 + offset, 2,
-	      rxn_lib.GetReaction(i)->GetName());
+        int reactions = 0;
+        for(int k=0; k<m_world->GetPopulation().GetSize(); ++k) {
+          cPopulationCell& cell = m_world->GetPopulation().GetCell(k);
+          if(cell.IsOccupied()) {
+            const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
+            reactions += org_rx[i];
+          }
+        }
+
+	Print(num_resources + 5 + offset, 2, "%-10s %7d",
+	      static_cast<const char*>(rxn_lib.GetReaction(i)->GetName()),
+              reactions);
 	offset++;
       }
     }
@@ -184,21 +198,36 @@ void cEnvironmentScreen::UpdateReaction()
   // If we have no reactions, stop right here.
   if (num_reactions == 0) return;
 
+  // Find the sum of the reactions
+
+  tArray<int> reactions(num_reactions);
+  reactions.SetAll(0);
+
+  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+    if(cell.IsOccupied()) {
+      const tArray<int>& org_rx = cell.GetOrganism()->GetPhenotype().GetLastReactionCount();
+      for(int j=0; j<num_reactions; ++j) {
+        reactions[j] += org_rx[j];
+      }
+    }
+  }
+
   // For each reaction, print how often it was performed.
   SetBoldColor(COLOR_CYAN);
   for(int i = 0; i < num_reactions; i++) {
-    Print(i+1, 40, "%7.2f", m_world->GetStats().GetReactions()[i]);
+    Print(i+1, 40, "%7d", reactions[i]);
   }
   
   // Highlight the selected reaction.
   SetBoldColor(COLOR_BLUE);
   Print(rxn_selection+1, 1, rxn_lib.GetReaction(rxn_selection)->GetName());
-  Print(rxn_selection+1, 40, "%7.2f", m_world->GetStats().GetReactions()[rxn_selection]);
+  Print(rxn_selection+1, 40, "%7d", reactions[rxn_selection]);
   
   
   // Update header on reaction section.
   SetBoldColor(COLOR_WHITE);
-  Print(rxn_lib.GetSize()+3, 37, "%s", static_cast<const char*>(rxn_lib.GetReaction(rxn_selection)->GetName()));
+  Print(rxn_lib.GetSize()+3, 37, "%-s", static_cast<const char*>(rxn_lib.GetReaction(rxn_selection)->GetName()));
   Print(rxn_lib.GetSize()+3, rxn_lib.GetReaction(rxn_selection)->GetName().GetSize()+37, ":");
   Print(rxn_lib.GetSize()+3, rxn_lib.GetReaction(rxn_selection)->GetName().GetSize()+38, "        ");
   
@@ -215,7 +244,7 @@ void cEnvironmentScreen::UpdateReaction()
 
     // Print info about this resource.
     Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 2,
-	  cur_resource->GetName());
+	  "%-10s", static_cast<const char*>(cur_resource->GetName()));
     Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 13, "%7.2f",
 	  cur_resource->GetInflow());
     Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 25, "%7.2f",

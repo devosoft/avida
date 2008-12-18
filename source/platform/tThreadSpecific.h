@@ -68,8 +68,8 @@ public:
   ~tThreadSpecific() { delete m_value; }
   
   T* Get() { return m_value; }
-  T* Set(T* value) { T* oldvalue = m_value; m_value = value; return oldvalue; }
-  //void Set(T* value) { delete m_value; m_value = value; }
+  //T* Set(T* value) { T* oldvalue = m_value; m_value = value; return oldvalue; }
+  void Set(T* value) { delete m_value; m_value = value; }
 };
 
 #endif
