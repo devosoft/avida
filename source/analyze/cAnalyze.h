@@ -220,7 +220,7 @@ private:
   void LoadResources(cString cur_string);
   void LoadFile(cString cur_string);
   
-  // Reduction
+  // Reduction and Sampling
   void CommandFilter(cString cur_string);
   void FindGenotype(cString cur_string);
   void FindOrganism(cString cur_string);
@@ -232,7 +232,7 @@ private:
   void SampleGenotypes(cString cur_string);
   void KeepTopGenotypes(cString cur_string);
   void TruncateLineage(cString cur_string);
-  
+  void SampleOffspring(cString cur_string);
   
   // Direct Output Commands...
   void CommandPrint(cString cur_string);

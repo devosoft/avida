@@ -29,6 +29,9 @@
 #ifndef nHardware_h
 #include "nHardware.h"
 #endif
+#ifndef cMutationRates_h
+#include "cMutationRates.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -65,6 +68,7 @@ private:
 	tArray<int> manual_inputs;  //   if so, use these.
   cHardwareTracer* m_tracer;
   cInstSet* m_inst_set;
+  cMutationRates m_mut_rates;
   
   int m_cur_sg;
 
@@ -104,7 +108,7 @@ public:
     { m_res_method = (eTestCPUResourceMethod)res_method; m_res = res; m_res_update = update; m_res_cpu_cycle_offset = cpu_cycle_offset; }
   
   void SetCurrentStateGridID(int sg) { m_cur_sg = sg; }
-
+  cMutationRates& MutationRates() { return m_mut_rates; }
 
   // Input Accessors
   int GetGenerationTests() const { return generation_tests; }

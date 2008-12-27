@@ -1694,6 +1694,93 @@ void cAnalyze::TruncateLineage(cString cur_string)
   }  
 }
 
+// JEB: Creates specified number of offspring by running
+// each organism in the test CPU with mutations on.
+void cAnalyze::SampleOffspring(cString cur_string)
+{
+  int number_to_sample = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 1000;
+  
+  // These parameters copied from BatchRecalculate, they could change what kinds of offspring are produced!!
+  tArray<int> manual_inputs;  // Used only if manual inputs are specified  
+  cString msg;                // Holds any information we may want to send the driver to display
+  int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
+  int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;
+  bool use_random_inputs = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() == 1: false;
+  bool use_manual_inputs = false;
+  
+  //Manual inputs will override random input request and must be the last arguments.
+  if (cur_string.CountNumWords() > 0){
+    if (cur_string.CountNumWords() == m_world->GetEnvironment().GetInputSize()){
+      manual_inputs.Resize(m_world->GetEnvironment().GetInputSize());
+      use_random_inputs = false;
+      use_manual_inputs = true;
+      for (int k = 0; cur_string.GetSize(); k++)
+        manual_inputs[k] = cur_string.PopWord().AsInt();
+    } else if (m_world->GetVerbosity() >= VERBOSE_ON){
+      msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
+              cur_string.CountNumWords(), m_world->GetEnvironment().GetInputSize());
+      m_world->GetDriver().NotifyWarning(msg);
+    }
+  }
+  
+  cCPUTestInfo test_info(1); //we only allow one generation of testing! v. important to get proper offspring
+  if (use_manual_inputs)
+    test_info.UseManualInputs(manual_inputs);
+  else
+    test_info.UseRandomInputs(use_random_inputs); 
+  test_info.SetResourceOptions(use_resources, m_resources, update, m_resource_time_spent_offset);
+
+  if (m_world->GetVerbosity() >= VERBOSE_ON) {
+    msg.Set("Sampling %d offspring from each of the %d organisms in batch %d...", number_to_sample, batch[cur_batch].GetSize(), cur_batch);
+    m_world->GetDriver().NotifyComment(msg);
+  } else{ 
+    msg.Set("Sampling offspring...");
+    m_world->GetDriver().NotifyComment(msg);
+  }
+  
+  // Load the mutation rates from the environment.
+  test_info.MutationRates().Copy(m_world->GetEnvironment().GetMutRates());
+  // Copy them into the organism  
+  tListPlus<cAnalyzeGenotype> offspring_list;
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  cAnalyzeGenotype* parent_genotype = NULL;
+
+  cTestCPU * test_cpu = m_world->GetHardwareManager().CreateTestCPU();  
+  while ((parent_genotype = batch_it.Next())) {
+    
+    // We keep a hash with genome strings as keys
+    // to save duplication of the same offspring genotype.
+    // NumCPUs is incremented whenever an offspring is
+    // created more than once from the same parent.
+    tDictionary<cAnalyzeGenotype*> genome_hash;
+    
+    for (int i=0; i<number_to_sample; i++) {
+      test_cpu->TestGenome(m_world->GetDefaultContext(), test_info, parent_genotype->GetGenome());
+      cAnalyzeGenotype * offspring_genotype = NULL;
+      bool found = genome_hash.Find(test_info.GetTestOrganism(0)->ChildGenome().AsString(), offspring_genotype);
+      if (found) {
+        offspring_genotype->SetNumCPUs(offspring_genotype->GetNumCPUs() + 1);
+      }
+      else {
+        cAnalyzeGenotype * offspring_genotype = new cAnalyzeGenotype(m_world, test_info.GetTestOrganism(0)->ChildGenome(), inst_set);
+        offspring_genotype->SetID(parent_genotype->GetID());
+        offspring_genotype->SetNumCPUs(1);
+        offspring_list.Push(offspring_genotype);
+        genome_hash.Add(test_info.GetTestOrganism(0)->ChildGenome().AsString(), offspring_genotype);
+      }
+    }
+    batch_it.Remove();
+    delete parent_genotype;
+  }
+  delete test_cpu;
+    
+  // Fill back in the current batch with the new offspring
+  while (offspring_list.GetSize() > 0) {
+    batch[cur_batch].List().PushRear(offspring_list.Pop());
+  }
+
+}
+
 
 //////////////// Output Commands...
 
@@ -1857,6 +1944,9 @@ void cAnalyze::CommandDetail(cString cur_string)
 {
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Detailing batch " << cur_batch << endl;
   else cout << "Detailing..." << endl;
+  
+  // @JEB return if there are no organisms in the current batch
+  if (batch[cur_batch].GetSize() == 0) return;
   
   // Load in the variables...
   cString filename("detail.dat");
@@ -2204,7 +2294,7 @@ void cAnalyze::CommandDetailBatches(cString cur_string)
   }
   
   delete cur_command;
-  }
+}
 
 
 
@@ -5338,11 +5428,28 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
 // @JEB 9-24-2008
 void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
 {
+  cout << "Analyzing redundancy by changing instruction failure probability..." << endl;
+
   cString filename("analyze_redundancy_by_inst_failure.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
   int replicates = 1000;
   if (cur_string.GetSize() != 0) replicates = cur_string.PopWord().AsInt();
-
+  double log10_start_pr_fail = -4;
+  
+  // add mode
+  int mode = 0; 
+  // 0 = average log2 fitness
+  // 1 = fitness decreased
+  
+  if (cur_string.GetSize() != 0) log10_start_pr_fail = cur_string.PopWord().AsDouble();
+  double log10_end_pr_fail = 0;
+  if (cur_string.GetSize() != 0) log10_end_pr_fail = cur_string.PopWord().AsDouble();
+  if (log10_end_pr_fail > 0) {
+    m_world->GetDriver().NotifyWarning("ANALYZE_REDUNDANCY_BY_INST_FAILURE: End log value greater than 0 set to 0.");
+  }
+  double log10_step_size_pr_fail = 0.1;
+  if (cur_string.GetSize() != 0) log10_step_size_pr_fail = cur_string.PopWord().AsDouble();
+  
   // Output is one line per organism in the current batch with columns.
   cDataFile & df = m_world->GetDataFile(filename);
   df.WriteComment( "Redundancy calculated by changing the probability of instruction failure" );
@@ -5361,16 +5468,26 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
       cout << "  Determining redundancy by instruction failure for " << genotype->GetName() << endl;
     }
     
-     cInstSet modify_inst_set = genotype->GetInstructionSet();
+    cInstSet original_inst_set = genotype->GetInstructionSet();
+    cInstSet modify_inst_set = genotype->GetInstructionSet();
       
     // Modify the instruction set to include the current probability of failure.
+    int num_pr_fail_insts = 0;
     for (int j=0; j<modify_inst_set.GetSize(); j++)
     {
       cString inst_name = modify_inst_set.GetName(j);
       cInstruction inst = modify_inst_set.GetInst(inst_name);
+      if ( original_inst_set.GetProbFail(inst) > 0) {
+        num_pr_fail_insts++;
+      }
       modify_inst_set.SetProbFail(inst, 0);
     }
     genotype->SetInstructionSet(modify_inst_set);
+  
+    // Avoid unintentional use with no instructions having a chance of failure
+    if (num_pr_fail_insts == 0) {
+      m_world->GetDriver().RaiseFatalException(1,"ANALYZE_REDUNDANCY_BY_INST_FAILURE: No instructions have a chance of failure in default instruction set.");
+    }
   
     // Recalculate the baseline fitness
     // May need to calculate multiple times to check for stochastic behavior....
@@ -5385,29 +5502,39 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
       df.Write(baseline_fitness, "fitness");
       
       // Run the organism the specified number of replicates
-      
-      for (double log10_fc=-4.0; log10_fc<=0.0; log10_fc+=0.1)
+      for (double log10_fc=log10_start_pr_fail; log10_fc<=log10_end_pr_fail; log10_fc+=log10_step_size_pr_fail)
       {
         double fc = exp(log10_fc*log(10.0));
         
         // Modify the instruction set to include the current probability of failure.
+        modify_inst_set = genotype->GetInstructionSet();
         for (int j=0; j<modify_inst_set.GetSize(); j++)
         {
           cString inst_name = modify_inst_set.GetName(j);
           cInstruction inst = modify_inst_set.GetInst(inst_name);
-          modify_inst_set.SetProbFail(inst, fc);
+          if ( original_inst_set.GetProbFail(inst) > 0) {
+            modify_inst_set.SetProbFail(inst, fc);
+          }
         }
         genotype->SetInstructionSet(modify_inst_set);
         
         // Recalculate the requested number of times
         double chance = 0;
+        double avg_fitness = 0;
         for (int i=0; i<replicates; i++)
         {
           genotype->Recalculate(m_ctx);
           if (genotype->GetFitness() < baseline_fitness) chance++;
+          avg_fitness += genotype->GetFitness();
         }      
-        s.Set("Inst prob fail %.3g", fc);
-        df.Write(chance/replicates, s);
+        
+        if (mode == 0) {
+          s.Set("Avg fitness when inst prob fail %.3g", fc);
+          df.Write(avg_fitness/replicates, s);
+        } else {
+          s.Set("Fraction of replicates with reduced fitness at inst prob fail %.3g", fc);
+          df.Write(chance/replicates, s);
+        }
       }
       df.Endl();
     }
@@ -6071,6 +6198,7 @@ void cAnalyze::CommandAlign(cString cur_string)
 {
   // Align does not need any args yet.
   (void) cur_string;
+  int perform_slow_alignment = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
   
   cout << "Aligning sequences..." << endl;
   
@@ -6085,7 +6213,7 @@ void cAnalyze::CommandAlign(cString cur_string)
   const int num_sequences = glist.GetSize();
   cString * sequences = new cString[num_sequences];
   
-  // Move through each sequence an update it.
+  // Move through each sequence and update it.
   batch_it.Reset();
   cString diff_info;
   for (int i = 0; i < num_sequences; i++) {
@@ -6096,7 +6224,29 @@ void cAnalyze::CommandAlign(cString cur_string)
     int num_del = 0;
     
     // Compare each string to the previous.
-    cStringUtil::EditDistance(sequences[i], sequences[i-1], diff_info, '_');
+    if (perform_slow_alignment == 0) {
+      cStringUtil::EditDistance(sequences[i], sequences[i-1], diff_info, '_');
+    }
+    else
+    if (perform_slow_alignment == 1) {
+      cStringUtil::GapMinimizingEditDistance(sequences[i], sequences[i-1], diff_info, '_');
+    }
+    else {
+      cString best_diff_info;
+      int min_dist = -1;
+      for (int j=0; j<i; j++) {
+        cString test_diff_info;
+        int test_dist = cStringUtil::GapMinimizingEditDistance(sequences[i], sequences[j], test_diff_info, '_');
+        if (min_dist == -1 || test_dist < min_dist) {
+          min_dist = test_dist;
+          best_diff_info = test_diff_info;
+          if (min_dist == 0) j=i;
+        }
+      }
+      
+       diff_info = best_diff_info;
+    }
+    
     while (diff_info.GetSize() != 0) {
       cString cur_mut = diff_info.Pop(',');
       const char mut_type = cur_mut[0];
@@ -9053,7 +9203,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("LOAD_RESOURCES", &cAnalyze::LoadResources);
   AddLibraryDef("LOAD", &cAnalyze::LoadFile);
   
-  // Reduction commands...
+  // Reduction and sampling commands...
   AddLibraryDef("FILTER", &cAnalyze::CommandFilter);
   AddLibraryDef("FIND_GENOTYPE", &cAnalyze::FindGenotype);
   AddLibraryDef("FIND_ORGANISM", &cAnalyze::FindOrganism);
@@ -9066,7 +9216,8 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("KEEP_TOP", &cAnalyze::KeepTopGenotypes);
   AddLibraryDef("TRUNCATELINEAGE", &cAnalyze::TruncateLineage); // Depricate!
   AddLibraryDef("TRUNCATE_LINEAGE", &cAnalyze::TruncateLineage);
-  
+  AddLibraryDef("SAMPLE_OFFSPRING", &cAnalyze::SampleOffspring);
+
   // Direct output commands...
   AddLibraryDef("PRINT", &cAnalyze::CommandPrint);
   AddLibraryDef("TRACE", &cAnalyze::CommandTrace);

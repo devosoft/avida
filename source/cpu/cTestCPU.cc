@@ -286,6 +286,10 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   
   if (test_info.GetInstSet()) organism = new cOrganism(m_world, ctx, genome, test_info.GetInstSet());
   else organism = new cOrganism(m_world, ctx, genome);
+  
+  // Copy the test mutation rates
+  organism->MutationRates().Copy(test_info.MutationRates());
+  
   test_info.org_array[cur_depth] = organism;
   organism->SetOrgInterface(ctx, new cTestCPUInterface(this, test_info));
   organism->GetPhenotype().SetupInject(genome);

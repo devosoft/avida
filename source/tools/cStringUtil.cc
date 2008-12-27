@@ -154,16 +154,15 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2)
     for (int j = 1; j < size1; j++) {
       // If the values are equal, keep the value in the upper left.
       if (string1[j] == string2[i]) {
-	cur_row[j] = prev_row[j-1];
+        cur_row[j] = prev_row[j-1];
       }
 
       // Otherwise, set the current position the the minimal of the three
       // numbers to the upper right in the chart plus one.
       else {
-	cur_row[j] =
-	  (prev_row[j] < prev_row[j-1]) ? prev_row[j] : prev_row[j-1];
-	if (cur_row[j-1] < cur_row[j]) cur_row[j] = cur_row[j-1];
-	cur_row[j]++;
+        cur_row[j] = (prev_row[j] < prev_row[j-1]) ? prev_row[j] : prev_row[j-1];
+        if (cur_row[j-1] < cur_row[j]) cur_row[j] = cur_row[j-1];
+        cur_row[j]++;
       }
     }
 
@@ -185,6 +184,143 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2)
   return value;
 }
 
+
+int cStringUtil::GapMinimizingEditDistance(const cString & string1, const cString & string2,
+			      cString & info, const char gap)
+{
+  const int size1 = string1.GetSize();
+  const int size2 = string2.GetSize();
+ 
+  if (!size1) return size2;
+  if (!size2) return size1;
+
+  // Note: For both matrices, the first and last cols/rows 
+  // are for alignments to an end gap.
+  tMatrix<double> dist_matrix(size2+2, size1+2);
+
+  // Keep track of changes in a mut_matrix.
+  //  N=None, M=Mutations, I=Insertion, D=Deletion
+  tMatrix<char> mut_matrix(size2+2, size1+2);
+
+  // Initialize the last row and col to record the difference from nothing.
+  for (int i = 0; i < size1+1; i++) {
+    dist_matrix(size2+1,i) = (double) (size1+1 - i);
+    mut_matrix(size2+1,i) = 'I';
+  }
+  for (int i = 0; i < size2+1; i++) {
+    dist_matrix(i,size1+1) = (double) (size2+1 - i);
+    mut_matrix(i,size1+1) = 'D';
+  }
+  mut_matrix(size2+1,size1+1) = 'N';
+  dist_matrix(size2+1,size1+1) = (double) 0;
+  
+  for (int i = size2; i >= 0; i--) {
+    // Move down the cur_row and fill it out.
+    for (int j = size1; j >= 0; j--) {
+      // Otherwise, set the current position to the minimal of the three
+      // numbers above (insertion), to the left (deletion), or upper left
+      // (mutation/match) plus one if the aligned positions do not match.
+      
+      char c1 = (j-1 >= 0) ? string1[j-1] : '\0';
+      char c2 = (i-1 >= 0) ? string2[i-1] : '\0';
+
+      bool matched = (c1 == c2);
+      if (j-1 < 0 && i-1 <= 0) matched = 0;
+      double match_dist = dist_matrix(i+1,j+1) + ((matched) ? 0 : 1);
+      
+      double ins_dist = dist_matrix(i+1,j) + 1;
+      if (mut_matrix(i+1,j) != 'D') ins_dist += 0.0001;
+      double del_dist = dist_matrix(i,j+1) + 1;
+      if (mut_matrix(i,j+1) != 'I') del_dist += 0.0001;
+
+      if (ins_dist <= del_dist && ins_dist <= match_dist) {     // Insertion!
+        dist_matrix(i,j) = ins_dist;
+        mut_matrix(i,j) = 'D';
+      } else if (match_dist <= del_dist) {                       // Mutation!
+        dist_matrix(i,j) = match_dist;
+        mut_matrix(i,j) = (matched) ? 'N' : 'M';        
+
+      } else {                     // Deletion!
+        dist_matrix(i,j) = del_dist;
+        mut_matrix(i,j) = 'I';
+      }
+    }
+  }
+  mut_matrix(size2+1,size1+1) = 'N';
+  dist_matrix(size2+1,size1+1) = (double) 0;
+  
+  /* For debugging, print out matrices
+  for (int i = 0; i <= size2+1; i++) {
+    for (int j = 0; j <=size1+1; j++) {
+      cout << dist_matrix(i,j) << " ";
+    }
+    cout << endl;
+  }
+
+  for (int i = 0; i <= size2+1; i++) {
+    for (int j = 0; j <=size1+1; j++) {
+      cout << mut_matrix(i,j) << " ";
+    }
+  cout << endl;
+  }
+  */
+
+  // Construct the list of changes
+  int pos1 = 0;
+  int pos2 = 0;
+  info = "";
+
+  // We don't start at 0,0 (which would be an initial gap to an initial gap alignment)
+  // Choose whether there are initial gaps.
+  cString mut_string;
+  bool first_time = true;
+  while (pos1 < size1+1 || pos2 < size2+1) {
+    if (mut_matrix(pos2, pos1) == 'N') {     
+      pos1++; pos2++;
+      continue;
+    }
+
+    // There is a mutation here; determine the type...
+    const char old_char = (pos2-1 < size2 && pos2>0) ? string2[pos2-1] : '\0';
+    const char new_char = (pos1-1 < size1 && pos1>0) ? string1[pos1-1] : '\0';
+
+    if (mut_matrix(pos2, pos1) == 'M') {
+      mut_string.Set("M%d%c%c", pos2-1, old_char, new_char);
+      
+      // "Mutations" in the initial column are really alignments
+      // with gaps so we must substitute insertions or deletions.
+      if (pos1==0) {
+          mut_string.Set("D%d%c", pos1, new_char);
+      }
+      if (pos2==0) {
+            mut_string.Set("I%d%c", pos2, new_char);
+      }
+        pos1++; pos2++;
+    }
+    else if (mut_matrix(pos2, pos1) == 'D') {
+      mut_string.Set("D%d%c", pos2-1, old_char);
+      pos2++;
+    }
+    else { // if (mut_matrix(pos2+1, pos1+1) == 'I') {
+      mut_string.Set("I%d%c", pos1-1, new_char);
+      pos1++;
+    }
+  
+    if (first_time) {
+      first_time = false;
+      continue;
+    }
+    
+    /* For debugging, print out mutations found
+    cout << mut_string << endl;
+    */
+    if (info.GetSize() > 0) mut_string.Insert(",");
+    info += mut_string;
+  } 
+
+  // Now that we are done, return the bottom-right corner of the chart.
+  return (int) dist_matrix(0, 0);
+}
 
 int cStringUtil::EditDistance(const cString & string1, const cString & string2,
 			      cString & info, const char gap)
@@ -217,12 +353,12 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
     for (int j = 0; j < size1; j++) {
       // If the values are equal, keep the value in the upper left.
       if (string1[j] == string2[i]) {
-	dist_matrix(i+1,j+1) = dist_matrix(i,j);
-	mut_matrix(i+1,j+1) = 'N';
-	continue; // Move on to next entry...
+        dist_matrix(i+1,j+1) = dist_matrix(i,j);
+        mut_matrix(i+1,j+1) = 'N';
+        continue; // Move on to next entry...
       }
 
-      // Otherwise, set the current position the the minimal of the three
+      // Otherwise, set the current position to the minimal of the three
       // numbers above (insertion), to the left (deletion), or upper left
       // (mutation) in the chart, plus one.
       double mut_dist = dist_matrix(i,j) + 1;
@@ -231,14 +367,14 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
       const double del_dist = dist_matrix(i,j+1) + (string2[i] != gap);
 
       if (mut_dist < ins_dist && mut_dist < del_dist) {  // Mutation!
-	dist_matrix(i+1,j+1) = mut_dist;
-	mut_matrix(i+1,j+1) = 'M';
+        dist_matrix(i+1,j+1) = mut_dist;
+        mut_matrix(i+1,j+1) = 'M';
       } else if (ins_dist < del_dist) {                  // Insertion!
-	dist_matrix(i+1,j+1) = ins_dist;
-	mut_matrix(i+1,j+1) = 'I';
+        dist_matrix(i+1,j+1) = ins_dist;
+        mut_matrix(i+1,j+1) = 'I';
       } else {                                           // Deletion!
-	dist_matrix(i+1,j+1) = del_dist;
-	mut_matrix(i+1,j+1) = 'D';
+        dist_matrix(i+1,j+1) = del_dist;
+        mut_matrix(i+1,j+1) = 'D';
       }
     }
   }
@@ -279,6 +415,8 @@ int cStringUtil::EditDistance(const cString & string1, const cString & string2,
   // Now that we are done, return the bottom-right corner of the chart.
   return (int) dist_matrix(size2, size1);
 }
+
+
 
 const cString & cStringUtil::Convert(const cString& in_string,
 				     const cString& out_string)
