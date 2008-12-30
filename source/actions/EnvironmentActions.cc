@@ -786,43 +786,41 @@ public:
 };
 
 class cActionSetOptimizeMinMax : public cAction
-{
-
-public:
-  cActionSetOptimizeMinMax(cWorld* world, const cString& args) : cAction(world, args) { ; }
-
-  static const cString GetDescription() { return "No Arguments"; }
-
-  void Process(cAvidaContext& ctx)
   {
-	cEnvironment& env = m_world->GetEnvironment();
-    for (int j=0; j<env.GetNumTasks(); j++)
-	{
-		double maxFx, minFx;
-		bool first=true;
-		for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) 
-		{
-			 cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-			if (cell.IsOccupied() == false) continue;
-			const cPhenotype& phen = cell.GetOrganism()->GetPhenotype();
-			double val = phen.GetLastTaskValue()[j];
-			if (first)
-			{
-				minFx=val;
-				maxFx=val;
-				first=false;
-				continue;
-			}
-			if (val < minFx)
-				minFx = val;
-			if (val > maxFx)
-				maxFx = val;
-		}
-		env.GetTask(j).GetArguments().SetDouble(1,maxFx);
-		env.GetTask(j).GetArguments().SetDouble(2,minFx);
-	}
-  }
-};
+    
+  public:
+    cActionSetOptimizeMinMax(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    
+    static const cString GetDescription() { return "No Arguments"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      cEnvironment& env = m_world->GetEnvironment();
+      for (int j = 0; j < env.GetNumTasks(); j++)
+      {
+        double maxFx = 0.0;
+        double minFx = 0.0;
+        bool first = true;
+        
+        for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+          cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+          if (cell.IsOccupied() == false) continue;
+          const cPhenotype& phen = cell.GetOrganism()->GetPhenotype();
+          double val = phen.GetLastTaskValue()[j];
+          if (first) {
+            minFx = val;
+            maxFx = val;
+            first = false;
+            continue;
+          }
+          if (val < minFx) minFx = val;
+          if (val > maxFx) maxFx = val;
+        }
+        env.GetTask(j).GetArguments().SetDouble(1, maxFx);
+        env.GetTask(j).GetArguments().SetDouble(2, minFx);
+      }
+    }
+  };
 
 
 class cActionDelayedDemeEvent : public cAction
