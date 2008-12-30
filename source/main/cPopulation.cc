@@ -1407,7 +1407,9 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // used to pass energy to offspring demes (set to zero if energy model is not enabled)
   double source_deme_energy(0.0), deme_energy_decay(0.0), parent_deme_energy(0.0), offspring_deme_energy(0.0);
   if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
-    source_deme_energy = source_deme.CalculateTotalEnergy() + source_deme.GetTotalEnergyTestament();
+    double energyRemainingInSourceDeme = source_deme.CalculateTotalEnergy(); 
+    source_deme.SetEnergyRemainingInDemeAtReplication(energyRemainingInSourceDeme); 
+    source_deme_energy = energyRemainingInSourceDeme + source_deme.GetTotalEnergyTestament(); 
     m_world->GetStats().SumEnergyTestamentAcceptedByDeme().Add(source_deme.GetTotalEnergyTestament());
     deme_energy_decay = 1.0 - m_world->GetConfig().FRAC_ENERGY_DECAY_AT_DEME_BIRTH.Get();
     parent_deme_energy = source_deme_energy * deme_energy_decay * (1.0 - m_world->GetConfig().FRAC_PARENT_ENERGY_GIVEN_TO_DEME_AT_BIRTH.Get());
@@ -1439,7 +1441,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
 
   // Reset both demes, in case they have any cleanup work to do.
   // Must reset target first for stats to be correctly updated!
-  if(m_world->GetConfig().ENERGY_ENABLED.Get()) {
+  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     // Transfer energy from source to target if we're using the energy model.
     if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset, offspring_deme_energy);
     source_deme.DivideReset(source_deme, source_deme_resource_reset, parent_deme_energy);
@@ -1543,38 +1545,43 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   
 	
 	// split energy from parent deme evenly among orgs in child deme
-	if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 0) {
+	if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().ENERGY_PASSED_ON_DEME_REPLICATION_METHOD.Get() == 0) {
 		assert(source_deme.GetOrgCount() > 0 && target_deme.GetOrgCount() > 0);
-		if(offspring_deme_energy < 0.0)
-			offspring_deme_energy = 0.0;
-		if(parent_deme_energy < 0.0)
-			parent_deme_energy = 0.0;	
-	 
-		// split deme energy evenly between organisms in source deme
-		for (int i=0; i < source_deme.GetSize(); i++) {
-			int cellid = source_deme.GetCellID(i);
-			cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-			if(cell.IsOccupied()) {
-				cOrganism* organism = cell.GetOrganism();
-				cPhenotype& phenotype = organism->GetPhenotype();
-				phenotype.SetEnergy(phenotype.GetStoredEnergy() + parent_deme_energy/static_cast<double>(source_deme.GetOrgCount()));
-				phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
-			}
-		}
-		
-		// split deme energy evenly between organisms in target deme
-		for (int i=0; i < target_deme.GetSize(); i++) {
-			int cellid = target_deme.GetCellID(i);
-			cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-			if(cell.IsOccupied()) {
-				cOrganism* organism = cell.GetOrganism();
-				cPhenotype& phenotype = organism->GetPhenotype();
-				phenotype.SetEnergy(phenotype.GetStoredEnergy() + offspring_deme_energy/static_cast<double>(target_deme.GetOrgCount()));
-				phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world)));
-			}
-		}		
-	}
-
+    if (offspring_deme_energy > 0.0) { 
+      // split deme energy evenly between organisms in target deme 
+      double totalEnergyInjectedIntoOrganisms(0.0); 
+      for (int i=0; i < target_deme.GetSize(); i++) { 
+        int cellid = target_deme.GetCellID(i); 
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid); 
+        if(cell.IsOccupied()) { 
+          cOrganism* organism = cell.GetOrganism(); 
+          cPhenotype& phenotype = organism->GetPhenotype(); 
+          phenotype.SetEnergy(phenotype.GetStoredEnergy() + offspring_deme_energy/static_cast<double>(target_deme.GetOrgCount())); 
+          phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world))); 
+          totalEnergyInjectedIntoOrganisms += phenotype.GetStoredEnergy(); 
+        } 
+      } 
+      target_deme.SetEnergyInjectedIntoOrganisms(totalEnergyInjectedIntoOrganisms); 
+    } 
+    if (parent_deme_energy > 0.0) { 
+      // split deme energy evenly between organisms in source deme 
+      double totalEnergyInjectedIntoOrganisms(0.0); 
+      for (int i=0; i < source_deme.GetSize(); i++) { 
+        int cellid = source_deme.GetCellID(i); 
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid); 
+        if(cell.IsOccupied()) { 
+          cOrganism* organism = cell.GetOrganism(); 
+          cPhenotype& phenotype = organism->GetPhenotype(); 
+          phenotype.SetEnergy(phenotype.GetStoredEnergy() + parent_deme_energy/static_cast<double>(source_deme.GetOrgCount())); 
+          phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world))); 
+          totalEnergyInjectedIntoOrganisms += phenotype.GetStoredEnergy(); 
+        } 
+      } 
+      source_deme.SetEnergyInjectedIntoOrganisms(totalEnergyInjectedIntoOrganisms); 
+    }
+  } 
+  
+  
 	
   // The source's merit must be transferred to the target, and then the source has
   // to rotate its heritable merit to its current merit.
@@ -3587,7 +3594,11 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
     }
   }
   
-  if (cur_org->GetPhenotype().GetToDelete() == true) delete cur_org;
+  double merit = cur_org->GetPhenotype().GetMerit().GetDouble();
+  if (cur_org->GetPhenotype().GetToDelete() == true) {
+    delete cur_org;
+    cur_org = NULL;
+  }
   
   m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
@@ -3598,7 +3609,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
     for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
     
     cDeme & deme = GetDeme(GetCell(cell_id).GetDemeID());
-    deme.IncTimeUsed(cur_org->GetPhenotype().GetMerit().GetDouble());
+    deme.IncTimeUsed(merit);
     CheckImplicitDemeRepro(deme);
   }
   
