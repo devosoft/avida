@@ -262,6 +262,7 @@ public:
   // Find by value
   T* Find(T* _in) const
   {
+		if (size == 0) return NULL;
     tListNode<T>* test = root.next;
     while (test != &root) {
       if ( *(test->data) == *(_in) ) return test->data;
@@ -418,6 +419,7 @@ public:
   }
   
   
+  
 private:  
   template<typename V> bool FindNode(V (T::*fun)() const, V value, tListNode<T>*& node) const
   {
@@ -450,6 +452,12 @@ private:
     return true;
   }
 };
+
+
+
+
+
+
 
 
 

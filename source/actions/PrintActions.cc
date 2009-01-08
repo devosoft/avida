@@ -87,6 +87,7 @@ STATS_OUT_FILE(PrintCurrentReactionData,    cur_reactions.dat   );
 STATS_OUT_FILE(PrintReactionRewardData,     reaction_reward.dat );
 STATS_OUT_FILE(PrintCurrentReactionRewardData,     cur_reaction_reward.dat );
 STATS_OUT_FILE(PrintTimeData,               time.dat            );
+STATS_OUT_FILE(PrintExtendedTimeData,       xtime.dat           );
 STATS_OUT_FILE(PrintMutationRateData,       mutation_rates.dat  );
 STATS_OUT_FILE(PrintDivideMutData,          divide_mut.dat      );
 STATS_OUT_FILE(PrintParasiteData,           parasite.dat        );
@@ -2696,7 +2697,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDominantData>("PrintDominantData");
   action_lib->Register<cActionPrintStatsData>("PrintStatsData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
-	action_lib->Register<cActionPrintMessageData>("PrintMessageData");
+  action_lib->Register<cActionPrintMessageData>("PrintMessageData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
@@ -2708,6 +2709,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintReactionRewardData>("PrintReactionRewardData");
   action_lib->Register<cActionPrintCurrentReactionRewardData>("PrintCurrentReactionRewardData");
   action_lib->Register<cActionPrintTimeData>("PrintTimeData");
+	action_lib->Register<cActionPrintExtendedTimeData>("PrintExtendedTimeData");
   action_lib->Register<cActionPrintMutationRateData>("PrintMutationRateData");
   action_lib->Register<cActionPrintDivideMutData>("PrintDivideMutData");
   action_lib->Register<cActionPrintParasiteData>("PrintParasiteData");
@@ -2740,7 +2742,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
-	action_lib->Register<cActionPrintDemesTotalAvgEnergy>("PrintDemesTotalAvgEnergy");
+  action_lib->Register<cActionPrintDemesTotalAvgEnergy>("PrintDemesTotalAvgEnergy");
   action_lib->Register<cActionPrintDemeEnergySharingStats>("PrintDemeEnergySharingStats");
   action_lib->Register<cActionPrintDemeDonorStats>("PrintDemeDonorStats");
   action_lib->Register<cActionPrintDemeSpacialEnergy>("PrintDemeSpacialEnergyStats");

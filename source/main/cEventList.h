@@ -36,6 +36,8 @@
 # endif
 #endif
 
+#include "tList.h"
+
 
 class cAvidaContext;
 class cString;
@@ -52,9 +54,21 @@ class cEventList
   tMemTrack<cEventList> mt;
 #endif
 public:
-  enum eTriggerType { UPDATE, GENERATION, IMMEDIATE, BIRTHS, UNDEFINED };
+
+  // Event Trigger Type ====================================================================
+  //  UPDATE occurs at the end of an update
+  //  GENERATION occurs at the end of an update for particular values of average generation, 
+  //             as evaluated at an update boundry
+  //  IMMEDIATE occurs at once
+  //  BIRTHS is triggered by values of tot_creatures (total creatures ever) in the stats object
+  //         as evaluated at an update boundary
+  //  UNDEFINED is undefined
+  //  BIRTH_INTERRUPT is triggered by tot_creatures values outside of update boundaries.
+  //                  Some statistical information gathered at the end of an update is not
+  //                  available or is incomplete with this option.
+  enum eTriggerType { UPDATE, GENERATION, IMMEDIATE, BIRTHS, UNDEFINED, BIRTHS_INTERRUPT };
   
-  static const double TRIGGER_BEGIN;
+  static const double TRIGGER_BEGIN;  //Are these unsafely defined? @MRR
   static const double TRIGGER_END;
   static const double TRIGGER_ALL;
   static const double TRIGGER_ONCE;
@@ -91,7 +105,7 @@ private:
     void SetPrev(cEventListEntry* prev) { m_prev = prev; }
     void SetNext(cEventListEntry* next) { m_next = next; }
     
-    void NextInterval() { m_start += m_interval; }
+    void NextInterval(){ m_start += m_interval; }
     void Reset() { m_start = m_original_start; }
     
     // accessors
@@ -114,7 +128,11 @@ private:
   cEventListEntry* m_head;
   cEventListEntry* m_tail;
   int m_num_events;
-
+  
+  tList<double> m_birth_interrupt_queue;
+  
+  void QueueBirthInterruptEvent(double t_val);
+  void DequeueBirthInterruptEvent(double t_val);
 
   void SyncEvent(cEventListEntry* event);
   double GetTriggerValue(eTriggerType trigger) const;
@@ -177,6 +195,24 @@ public:
   void Sync(); // Get all events caught up.
 
   void PrintEventList(std::ostream& os = std::cout);
+  
+  /**
+   * Returns true if a particular org_id (or Stats::tot_creature) value is present
+   * in the interrupt queue.
+   *
+   * @param t_value The value being checked.
+   **/
+  bool CheckBirthInterruptQueue(double t_val);
+  
+  
+  /**
+    * This function is called to process an event outside of an update boundary.
+	* Some data may be missing, inaccurate, or incomplete if processing is required
+	* at the end of an update.
+	* 
+	* @param ctx  Avida context
+	**/
+  void cEventList::ProcessInterrupt(cAvidaContext& ctx);
 };
 
 

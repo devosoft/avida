@@ -105,8 +105,6 @@ void cWorld::Setup()
 	if (m_conf->TRACK_CCLADES.Get() > 0)
 		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
   
-	m_pop = new cPopulation(this);
-        m_pop->InitiatePop();
   
   // Setup Event List
   m_event_list = new cEventList(this);
@@ -114,7 +112,9 @@ void cWorld::Setup()
     cerr << "Error: Unable to load events" << endl;
     Avida::Exit(-1);
   }
-  
+	
+	m_pop = new cPopulation(this);
+  m_pop->InitiatePop();
   
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;

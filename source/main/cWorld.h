@@ -128,6 +128,8 @@ public:
 
   // @DMB - Inherited from cAvidaDriver heritage
   void GetEvents(cAvidaContext& ctx);
+	
+	cEventList* GetEventsList() { return m_event_list; }
 
   // Save to archive 
   template<class Archive>

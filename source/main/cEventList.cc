@@ -76,6 +76,10 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
     }
     
     SyncEvent(entry);
+		
+		if (trigger == BIRTHS_INTERRUPT)  //Operates outside of usual event processing
+			QueueBirthInterruptEvent(start);
+		
     ++m_num_events;
     return true;
   }
@@ -133,6 +137,7 @@ double cEventList::GetTriggerValue(eTriggerType trigger) const
   case GENERATION:
     t_val = m_world->GetStats().SumGeneration().Average();
     break;
+  case BIRTHS_INTERRUPT:
   case BIRTHS:
     t_val = m_world->GetStats().GetTotCreatures();
     break;
@@ -158,8 +163,11 @@ void cEventList::Process(cAvidaContext& ctx)
     if (entry->GetTrigger() == IMMEDIATE) {
       entry->GetAction()->Process(ctx);
       Delete(entry);
-    } else {
-      // Get the value of the appropriate trigger variable
+    } else if (entry->GetTrigger() != BIRTHS_INTERRUPT) {
+      //BIRTHS_INTERRUPT occur outside of update boundaries
+	  //and should not alter the behavior of other events.
+	  
+	  // Get the value of the appropriate trigger varile
       t_val = GetTriggerValue(entry->GetTrigger());
       
       if (t_val != DBL_MAX &&
@@ -187,10 +195,69 @@ void cEventList::Process(cAvidaContext& ctx)
              (entry->GetStart() < entry->GetStop() && entry->GetInterval() < 0)))
             Delete(entry);
       }
-    }  // end condition to do event
-    
+    } 
     entry = next_entry;
   }
+}
+
+
+/*
+   @MRR January 2007
+   I'm adding this method to have events in the population interrupt
+   mid-update to perform an event.  Right now, the only trigger is
+   when a particular value of tot_creatures is reached (BIRTHS).  At that point
+   this method will be called.  Although these events are stored in the
+   same queue as other events, they should not be processed at an
+   update boundary.  A set of events is kept and queried prior to determine
+   when this method should be called.  Some statistic values are not available
+   since they are not processed until the end of an update.
+*/
+void cEventList::ProcessInterrupt(cAvidaContext& ctx)
+{
+	double t_val = 0; // trigger value
+	
+	// Iterate through all entrys in event list
+	cEventListEntry* entry = m_head;
+	while (entry != NULL) {
+		cEventListEntry* next_entry = entry->GetNext();
+		
+		//BIRTHS_INTERRUPT occur outside of update boundaries
+		//and should not alter the behavior of other events.
+		if (entry->GetTrigger() == BIRTHS_INTERRUPT) {
+			
+			// Get the value of the appropriate trigger varile
+			t_val = GetTriggerValue(entry->GetTrigger());
+			
+			if (t_val == entry->GetStart() ) {  //This event *must* happen at this value
+				
+				// Process the Action
+				entry->GetAction()->Process(ctx);
+				
+				// Handle Interval Adjustment
+				if (entry->GetInterval() == TRIGGER_ALL) {
+					// Do Nothing
+				} else if (entry->GetInterval() == TRIGGER_ONCE) {
+					// If it is a onetime thing, remove it...
+					Delete(entry);
+					entry = NULL;
+				} else {
+					// There is an interval.. so add it
+					entry->NextInterval();
+				}
+				
+				// If the event can never happen now... excize it
+				if (entry != NULL && entry->GetStop() != TRIGGER_END &&
+					((entry->GetStart() > entry->GetStop() && entry->GetInterval() > 0) ||
+					 (entry->GetStart() < entry->GetStop() && entry->GetInterval() < 0))){
+					Delete(entry);
+				} else {
+					// We have to add this entry to the BirthInterrupt queue
+					QueueBirthInterruptEvent(entry->GetStart());
+				}
+			}
+		} 
+		entry = next_entry;
+	}
 }
 
 
@@ -257,6 +324,9 @@ void cEventList::PrintEventList(ostream& os)
       case BIRTHS:
         os << "births ";
         break;
+			case BIRTHS_INTERRUPT:
+					os << "birth_interrupt ";
+					break;
       default:
         os << "undefined ";
     }
@@ -280,6 +350,33 @@ void cEventList::PrintEventList(ostream& os)
     os << entry->GetName() << " " << entry->GetArgs() << endl;
     entry = next_entry;
   }
+}
+
+
+// Dequeue a particular birth interrupt event
+void cEventList::DequeueBirthInterruptEvent(double t_val)
+{
+	double* ptr = m_birth_interrupt_queue.Remove(&t_val);
+	if (ptr != NULL) 
+		delete ptr;
+}
+
+
+// Add a birth event trigger time to avoid unnecessary processing
+void cEventList::QueueBirthInterruptEvent(double t_val)
+{
+	//See if the event is already queued; add if not
+	if (m_birth_interrupt_queue.Find(&t_val) == NULL){
+		double* val_ptr = new double(t_val);
+		m_birth_interrupt_queue.PushRear(val_ptr);
+	}
+}
+
+// Check to see whether or not a particular value is in the asynchronous
+// birth queue.
+bool cEventList::CheckBirthInterruptQueue(double t_val)
+{
+	return (m_birth_interrupt_queue.Find(&t_val) != NULL);
 }
 
 
@@ -315,7 +412,10 @@ bool cEventList::AddEventFileFormat(const cString& in_line)
   } else if (cur_word == "b" || cur_word == "births") {
     trigger = BIRTHS;
     cur_word = cur_line.PopWord();
-  } else {
+  } else if (cur_word == "o"  || cur_word == "org_id") {
+    trigger = BIRTHS_INTERRUPT;
+		cur_word = cur_line.PopWord();
+  }else {
     // If Trigger is skipped so assume IMMEDIATE
     trigger = IMMEDIATE;
   }

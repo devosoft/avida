@@ -766,7 +766,8 @@ public:
   void PrintSleepData(const cString& filename);
   void PrintCompetitionData(const cString& filename);
   void PrintCellVisitsData(const cString& filename);
-
+  void PrintExtendedTimeData(const cString& filename);
+  
   // deme predicate stats
   void IncEventCount(int x, int y);
   void IncPredSat(int cell_id);

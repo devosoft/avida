@@ -40,6 +40,7 @@
 #include "cOrgMessagePredicate.h"
 #include "cOrgMovementPredicate.h"
 #include "cReaction.h"
+#include "cEventList.h"
 
 #include "functions.h"
 
@@ -429,6 +430,11 @@ void cStats::CalcFidelity()
 
 void cStats::RecordBirth(int cell_id, int genotype_id, bool breed_true)
 {
+
+	
+	if (m_world->GetEventsList()->CheckBirthInterruptQueue(tot_organisms) == true)
+		m_world->GetEventsList()->ProcessInterrupt(m_world->GetDefaultContext());
+		
   tot_organisms++;
   num_births++;
 
@@ -1137,6 +1143,18 @@ void cStats::PrintTimeData(const cString& filename)
   df.Endl();
 }
 
+
+//@MRR Add additional time information
+void cStats::PrintExtendedTimeData(const cString& filename)
+{
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteTimeStamp();
+	df.Write(m_update, "update");
+	df.Write(avida_time, "avida time");
+	df.Write(num_executed, "num_executed");
+	df.Write(tot_organisms, "num_organisms");
+	df.Endl();
+}
 
 void cStats::PrintMutationRateData(const cString& filename)
 {
