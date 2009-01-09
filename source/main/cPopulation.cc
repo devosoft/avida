@@ -3798,7 +3798,7 @@ void cPopulation::UpdateOrganismStats()
       
       if (phenotype.GetLastReactionCount()[j] > 0) {
         stats.AddLastReaction(j);
-        stats.IncReactionExeCount(j, phenotype.GetLastTaskCount()[j]);
+        stats.IncReactionExeCount(j, phenotype.GetLastReactionCount()[j]);
         stats.AddLastReactionAddReward(j, phenotype.GetLastReactionAddReward()[j]);    
       }
     }
