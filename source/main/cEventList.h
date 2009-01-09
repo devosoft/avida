@@ -212,7 +212,7 @@ public:
 	* 
 	* @param ctx  Avida context
 	**/
-  void cEventList::ProcessInterrupt(cAvidaContext& ctx);
+  void ProcessInterrupt(cAvidaContext& ctx);
 };
 
 
