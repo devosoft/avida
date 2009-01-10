@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "avida.hh" prior to 12/2/05.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology.
  *
  *

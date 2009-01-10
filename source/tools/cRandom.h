@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "random.hh" prior to 12/7/05.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
  *  Copyright 1993-2000 California Institute of Technology
  *
  */

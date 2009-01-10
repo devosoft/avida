@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "mutation_rates.hh" prior to 12/5/05.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *

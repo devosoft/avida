@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "inject_genotype_queue.cc" prior to 11/30/05.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *

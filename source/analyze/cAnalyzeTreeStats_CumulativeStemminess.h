@@ -3,7 +3,7 @@
  *  Avida@vallista
  *
  *  Created by Kaben Nanlohy on 2007.12.03.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License

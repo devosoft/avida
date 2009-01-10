@@ -2,7 +2,7 @@
  *  avida.cc
  *  Avida
  *
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -117,7 +117,7 @@ void PrintVersionBanner()
 
   cout << endl;
 
-  cout << "Copyright (C) 1999-2008 Michigan State University." << endl;
+  cout << "Copyright (C) 1999-2009 Michigan State University." << endl;
   cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl << endl;
   
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "cpu_stack.cc" prior to 11/17/05.
- *  Copyright 1999-2008 Michigan State University. All rights reserved.
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
  *  Copyright 1999-2001 California Institute of Technology.
  *
  *
