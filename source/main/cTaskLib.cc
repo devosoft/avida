@@ -1926,7 +1926,7 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
   const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
   int partial = ctx.GetTaskEntry()->GetArguments().GetInt(0);
   int binary = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-  double mypow = ctx.GetTaskEntry()->GetArguments().GetDouble(0);
+//  double mypow = ctx.GetTaskEntry()->GetArguments().GetDouble(0);
   int string_index;
   int num_matched = 0;
   int test_output;
