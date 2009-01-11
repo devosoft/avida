@@ -1,5 +1,7 @@
 PROJECT(AVIDA)
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+
 # The following three variables must be after the PROJECT statement, otherwise
 # newer versions of cmake will (correctly) use an empty value of
 # PROJECT_BINARY_DIR, since the project didn't exist yet.
