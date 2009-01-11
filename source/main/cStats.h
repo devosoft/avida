@@ -841,6 +841,10 @@ public:
   void PrintDemeCurrentTaskExeData(const cString& filename);
   void PrintCurrentTaskCounts(const cString& filename);
   void PrintPerDemeGenPerFounderData(const cString& filename);
+	void PrintDemeMigrationSuicidePoints(const cString& filename);
+
+	
+
 
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }

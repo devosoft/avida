@@ -386,6 +386,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kazi",	&cHardwareCPU::Inst_Kazi, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kazi5", &cHardwareCPU::Inst_Kazi5, nInstFlag::STALL),
     tInstLibEntry<tMethod>("die", &cHardwareCPU::Inst_Die, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("suicide", &cHardwareCPU::Inst_Suicide, nInstFlag::STALL),		
     tInstLibEntry<tMethod>("relinquishEnergyToFutureDeme", &cHardwareCPU::Inst_RelinquishEnergyToFutureDeme, nInstFlag::STALL),
     tInstLibEntry<tMethod>("relinquishEnergyToNeighborOrganisms", &cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms, nInstFlag::STALL),
     tInstLibEntry<tMethod>("relinquishEnergyToOrganismsInDeme", &cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme, nInstFlag::STALL),
@@ -2798,6 +2799,25 @@ bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
   m_organism->Die();
   return true;
+}
+
+/* Similar to Kazi, this instructon probabilistically causes
+ the organism to die. However, in this case it does so in 
+ order to win points for its deme and it does not take out
+ any other organims. */
+bool  cHardwareCPU::Inst_Suicide(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_AX);
+  double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
+	if (m_organism->GetDeme() == NULL)
+		return false; // in test CPU
+  if ( ctx.GetRandom().P(percentProb) ) {
+		// Add points as determined by config file to the deme.
+		m_organism->GetDeme()->AddNumberOfPoints(m_world->GetConfig().DEMES_PROTECTION_POINTS.Get());
+		m_organism->GetDeme()->AddSuicide();
+		m_organism->Die();
+	}
+	return true;
 }
 
 bool cHardwareCPU::Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx)

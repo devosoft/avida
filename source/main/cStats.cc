@@ -1867,6 +1867,77 @@ void cStats::PrintPerDemeGenPerFounderData(const cString& filename){
   df.Endl();
 }
 
+void cStats::PrintDemeMigrationSuicidePoints(const cString& filename){
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida average stats");
+	df.WriteTimeStamp();
+
+	
+	df.Write(m_update,   "Update");
+	double max_points = 0; 
+	double min_points = -1;
+	double total_points = 0;
+	double temp_points = 0;
+	int max_suicides = 0; 
+	int min_suicides = -1;
+	double total_suicides = 0;
+	int temp_suicides = 0;
+	int max_migrations = 0; 
+	int min_migrations = -1;
+	double total_migrations = 0;
+	int temp_migrations = 0;	
+	int deme_count = 0;
+	
+	
+	for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+		
+		temp_points = deme.GetNumberOfPoints(); 
+		temp_suicides = deme.GetSuicides();
+		temp_migrations = deme.GetMigrationsOut();
+
+		
+		// Calculate Min
+		if ((min_points == -1) || (temp_points < min_points)) {
+			min_points = temp_points;
+		}
+		if ((min_suicides == -1) || (temp_suicides < min_suicides)) { 
+			min_suicides = temp_suicides;
+		}
+		if ((min_migrations == -1) || (temp_migrations < min_migrations)) { 
+			min_migrations = temp_migrations;
+		}
+		
+		// Calculate Max
+		if (temp_points > max_points) max_points = temp_points;
+		if (temp_suicides > max_suicides) max_suicides = temp_suicides;
+		if (temp_migrations > max_migrations) max_migrations = temp_migrations;
+		
+		total_points += temp_points;
+		total_suicides += temp_suicides;
+		total_migrations += temp_migrations;
+
+		
+		if (temp_points > 0) deme_count++;
+	}
+	
+	df.Write((total_points/m_world->GetPopulation().GetNumDemes()), "AveragePoints[avpoints]" );
+	df.Write(min_points, "MinPoints[minpoints]" );
+	df.Write(max_points, "MaxPoints[maxpoints]" );
+	df.Write(deme_count, "DemesWithPoints[demeswithpoints]");
+	df.Write((total_suicides/m_world->GetPopulation().GetNumDemes()), "AverageSuicides[avsuicides]" );
+	df.Write(min_suicides, "MinSuicides[minsuicides]" );
+	df.Write(max_suicides, "MaxSuicides[maxsuicides]" );
+	df.Write((total_migrations/m_world->GetPopulation().GetNumDemes()), "AverageMigrations[avmigrations]" );
+	df.Write(min_migrations, "MinMigrations[minmigrations]" );
+	df.Write(max_migrations, "MaxMigrations[maxmigrations]" );
+	df.Write((total_suicides/total_migrations), "SuicideMigrationRate[suicidemigrationrate]" );
+
+  df.Endl();
+}
+
+
+
 
 void cStats::CompeteDemes(const std::vector<double>& fitness) {
   m_deme_fitness = fitness;

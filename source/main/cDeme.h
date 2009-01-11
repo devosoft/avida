@@ -127,6 +127,13 @@ private:
 
   tVector<cOrgMessagePredicate*> message_pred_list; // Message Predicates
   tVector<cOrgMovementPredicate*> movement_pred_list;  // Movement Predicates
+	
+	// For the points infrastructure
+	double points; 
+	unsigned int migrations_out; 
+	unsigned int migrations_in;
+	unsigned int suicides;
+	
   
 public:
   cDeme() : _id(0), width(0), replicateDeme(false), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
@@ -136,7 +143,7 @@ public:
             eventsTotal(0), eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
             consecutiveSuccessfulEventPeriods(0), sleeping_count(0),
             avg_founder_generation(0.0), generations_per_lifetime(0.0),
-            deme_resource_count(0), m_germline_genotype_id(0) { ; }
+            deme_resource_count(0), m_germline_genotype_id(0), points(0), migrations_out(0), migrations_in(0), suicides(0){ ; }
   ~cDeme() { ; }
 
   void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
@@ -320,6 +327,21 @@ public:
 
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value);
+	
+	// --- Points --- //
+	double GetNumberOfPoints() { return points; }
+	void AddNumberOfPoints(double num_points) { points += num_points; }
+	void SubtractNumberOfPoints(double num_points) { if (num_points > points) points = 0; }
+	int GetMigrationsOut()  { return migrations_out; }
+	int GetMigrationsIn()  { return migrations_in; }
+	int GetSuicides()  { return suicides; }
+	void AddMigrationOut() { migrations_out++; }
+	void AddMigrationIn() { migrations_in++; }
+	void AddSuicide() { suicides++; }
+	void ClearMigrationOut() { migrations_out = 0; }
+	void ClearMigrationIn() { migrations_in = 0; }
+	void ClearSuicides() { suicides = 0; }
+
 	
   void GetSurroundingCellIds(tVector<int> &cells, const int absolute_cell_id, const int radius);
 };

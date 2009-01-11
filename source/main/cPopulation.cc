@@ -3394,7 +3394,9 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
 {
   //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
   int deme_id = parent_cell.GetDemeID();
-  
+	int parent_id = parent_cell.GetDemeID();
+	GetDeme(deme_id).AddMigrationOut();
+
   // Position randomly in any other deme
   if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 0) {  
     
@@ -3457,7 +3459,42 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
     //set the new deme_id
     deme_id = (deme_id + rnd_deme_id + GetNumDemes()) % GetNumDemes();
   }
+	
+	//Proportional-based on a points system (hjg)
+	// The odds of a deme being selected are inversely proportional to the 
+	// number of points it has.
+	else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 3) {
+
+		double total_points = 0;		
+		int num_demes = GetNumDemes(); 
+		
+		// Identify how many points are in the population as a whole.
+		for (int did = 0; did < num_demes; did++) {
+			if (did != parent_id) {
+				total_points +=  (1/(1+GetDeme(did).GetNumberOfPoints()));
+			}
+		}
+		// Select a random number from 0 to 1: 
+		double rand_point = m_world->GetRandom().GetDouble(0, total_points);
+		
+		// Iterate through the demes until you find the appropriate
+		// deme to insert the organism into.
+		double lower_point = 0;
+		double upper_point = 0;
+
+		for (int curr_deme = 0; curr_deme < num_demes; curr_deme++) {
+			if (curr_deme != parent_id){
+				upper_point = lower_point + (1+GetDeme(curr_deme).GetNumberOfPoints()); 
+				if ((lower_point <= rand_point) && (rand_point < upper_point)) {
+					deme_id = curr_deme;
+				}
+				lower_point = upper_point;
+			}
+		}		
+	}
   
+	GetDeme(deme_id).AddMigrationIn();
+
   // TODO the above choice of deme does not respect PREFER_EMPTY
   // i.e., it does not preferentially pick a deme with empty cells if they are 
   // it might make sense for that to happen...

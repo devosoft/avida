@@ -2019,6 +2019,36 @@ public:
   }
 };
 
+
+/* This action decays the number of points a deme has accumulated by 
+ a percentage that is set in the configuration file. (hjg)*/
+class cActionDecayPoints : public cAction
+	{
+	private:
+	public:
+		cActionDecayPoints(cWorld* world, const cString& args) : cAction(world, args)
+		{
+			cString largs(args);
+		}
+		
+		static const cString GetDescription() { return "No Arguments"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			double decay_percent = (double) m_world->GetConfig().POINT_DECAY_PERCENT.Get() / 100;
+			double cur_points = 0;
+			int sub_points = 0;
+			
+			// For each deme, subtract decay_percent of its points.
+			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+				cur_points = m_world->GetPopulation().GetDeme(i).GetNumberOfPoints(); 
+				sub_points = (int) (cur_points * decay_percent); 
+				m_world->GetPopulation().GetDeme(i).SubtractNumberOfPoints(sub_points); 
+			}		
+			
+		}
+	};
+
 class cActionCompeteOrganisms : public cAction
 {
 private:
@@ -2566,6 +2596,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDivideDemes>("DivideDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
+	
+	action_lib->Register<cActionDecayPoints>("DecayPoints");
 
 	action_lib->Register<cActionFlash>("Flash");
 	
