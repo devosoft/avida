@@ -37,6 +37,9 @@
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
+#ifndef cGenotypeData_h
+#include "cGenotypeData.h"
+#endif
 #ifndef cInstSet_h
 #include "cInstSet.h"
 #endif
@@ -45,6 +48,9 @@
 #endif
 #ifndef cPhenPlastGenotype_h
 #include "cPhenPlastGenotype.h"
+#endif
+#ifndef cRWLock_h
+#include "cRWLock.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -58,11 +64,12 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
-
-#include "cGenotypeData.h"
-#include "cRWLock.h"
-#include "tDictionary.h"
+#ifndef tArrayMap_h
+#include "tArrayMap.h"
+#endif
+#ifndef tRCPtr_h
 #include "tRCPtr.h"
+#endif
 
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
@@ -105,7 +112,7 @@ private:
   struct sGenotypeDatastore : public cRCObject
   {
     cRWLock rwlock;
-    tDictionary<cGenotypeData*> dmap;
+    tArrayMap<int, cGenotypeData*> dmap;
     
     sGenotypeDatastore() { ; }
     sGenotypeDatastore(const sGenotypeDatastore& ds) : cRCObject(ds) { ; } // Note that data objects are not copied right now
