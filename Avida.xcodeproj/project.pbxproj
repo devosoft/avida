@@ -32,6 +32,8 @@
 		5629D81C0C3EE26A00C5F152 /* cCoreView_Info.cc in Sources */ = {isa = PBXBuildFile; fileRef = 565121C60C3B055F009CBD3F /* cCoreView_Info.cc */; };
 		56F555E50C3B402A00E2E929 /* cDriver_TextViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */; };
 		56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E40C3B402A00E2E929 /* viewer-text.cc */; };
+		700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */ = {isa = PBXBuildFile; fileRef = 700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */; };
+		700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
 		70211A5D0ECBD531004A293A /* cRCObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70211A5B0ECBD531004A293A /* cRCObject.h */; };
@@ -397,6 +399,8 @@
 		700D9BD90F1A5D33002CC711 /* tAnalyzeJobBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAnalyzeJobBatch.h; sourceTree = "<group>"; };
 		700D9C170F1A7436002CC711 /* tArrayMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayMap.h; sourceTree = "<group>"; };
 		700D9C1A0F1A77EC002CC711 /* tKVPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tKVPair.h; sourceTree = "<group>"; };
+		700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cModularityAnalysis.h; sourceTree = "<group>"; };
+		700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cModularityAnalysis.cc; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
@@ -1051,6 +1055,8 @@
 				70AD4F990F194D2400AA50AC /* cGenotypeData.h */,
 				70AD4F9E0F194DD400AA50AC /* cGenotypeData.cc */,
 				700D9BD90F1A5D33002CC711 /* tAnalyzeJobBatch.h */,
+				700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */,
+				700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */,
 			);
 			path = analyze;
 			sourceTree = "<group>";
@@ -1735,6 +1741,7 @@
 				709A1EEB0EB6C42D006090AF /* cOrgMovementPredicate.h in Headers */,
 				70211A5D0ECBD531004A293A /* cRCObject.h in Headers */,
 				70310E6B0EDD09260044971B /* cStateGrid.h in Headers */,
+				700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2092,6 +2099,7 @@
 				70211A5E0ECBD531004A293A /* cRCObject.cc in Sources */,
 				D7FB16D60ED62684002E939E /* cOrgMessage.cc in Sources */,
 				70AD4FA00F194F4D00AA50AC /* cGenotypeData.cc in Sources */,
+				700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -334,7 +334,7 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
 #undef ADD_GDATA
 }
 
-const tDataCommandManager<cAnalyzeGenotype>& cAnalyzeGenotype::GetDataCommandManager()
+tDataCommandManager<cAnalyzeGenotype>& cAnalyzeGenotype::GetDataCommandManager()
 {
   return tDMSingleton<tDataCommandManager<cAnalyzeGenotype> >::GetInstance();
 }

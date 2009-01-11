@@ -29,6 +29,7 @@
 #include "cAnalyzeGenotype.h"
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
+#include "cModularityAnalysis.h"
 #include "cString.h"
 #include "cStringIterator.h"
 #include "tDictionary.h"
@@ -52,6 +53,7 @@ void Initialize()
 {
   cActionLibrary::Initialize();
   cAnalyzeGenotype::Initialize();
+  cModularityAnalysis::Initialize();
 }
   
   

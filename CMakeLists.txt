@@ -134,6 +134,7 @@ SET(ANALYZE_SOURCES
   ${ANALYZE_DIR}/cAnalyzeJobWorker.cc
   ${ANALYZE_DIR}/cGenotypeBatch.cc
   ${ANALYZE_DIR}/cGenotypeData.cc
+  ${ANALYZE_DIR}/cModularityAnalysis.cc
   ${ANALYZE_DIR}/cMutationalNeighborhood.cc
 )
 SOURCE_GROUP(analyze FILES ${ANALYZE_SOURCES})

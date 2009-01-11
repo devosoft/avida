@@ -254,7 +254,7 @@ public:
   ~cAnalyzeGenotype();
   
   static void Initialize();
-  static const tDataCommandManager<cAnalyzeGenotype>& GetDataCommandManager();
+  static tDataCommandManager<cAnalyzeGenotype>& GetDataCommandManager();
 
   void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
