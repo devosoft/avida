@@ -28,7 +28,6 @@
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
-#include "tAnalyzeJob.h"
 #include "cClassificationManager.h"
 #include "cGenotype.h"
 #include "cGenotypeBatch.h"
@@ -45,7 +44,10 @@
 #include "cString.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
+#include "tAnalyzeJob.h"
+#include "tAnalyzeJobBatch.h"
 #include "tSmartArray.h"
+
 #include "defs.h"
 
 
@@ -186,12 +188,12 @@ public:
         m_world->GetDriver().NotifyComment("Precalculating landscape...");
       }
       
-      cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();      
+      tAnalyzeJobBatch<cAnalyzeGenotype> jobbatch(m_world->GetAnalyze().GetJobQueue());
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
-        jobqueue.AddJob(new tAnalyzeJob<cAnalyzeGenotype>(cur_genotype, &cAnalyzeGenotype::CalcLandscape));
+        jobbatch.AddJob(cur_genotype, &cAnalyzeGenotype::CalcLandscape);
       }
-      jobqueue.Execute();
+      jobbatch.RunBatch();
     }
   }
 };
