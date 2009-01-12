@@ -1062,7 +1062,7 @@ public:
     if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
   }
   
-  static const cString GetDescription() { return "Arguments: [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
+  static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1194,7 +1194,7 @@ public:
       if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
   }
   
-  static const cString GetDescription() { return "Arguments: [string mut_type='copy'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
+  static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
   
   void Process(cAvidaContext& ctx)
   {

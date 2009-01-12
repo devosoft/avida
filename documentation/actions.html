@@ -1224,8 +1224,9 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="ModMutProb">ModMutProb</a></strong>
-  <i>[string mut_type="copy"] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]</i>
+  <i>[string mut_type="COPY_MUT"] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]</i>
   </p>
+    For a list of values for mut_type, see <a href="#SetMutProb">SetMutProb<a/>.
   <p>
   
   </p>
@@ -1322,8 +1323,15 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="SetMutProb">SetMutProb</a></strong>
-  <i>[string mut_type="copy"] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]</i>
+  <i>[string mut_type="COPY_MUT"] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]</i>
   </p>
+    Values for mut_type are POINT, COPY_MUT, COPY_INS, COPY_DEL, COPY_UNIFORM, 
+  COPY_SLIP, DIV_MUT, DIV_INS, DIV_DEL, DIV_UNIFORM, DIV_SLIP, DIVIDE_MUT, 
+  DIVIDE_INS, DIVIDE_DEL, DIVIDE_UNIFORM, DIVIDE_SLIP, PARENT, INJECT_MUT, 
+  INJECT_INS, and INJECT_DEL.  These correspond to their counterparts in avida.cfg.
+  <br>
+  <br>
+  To turn off all mutations, use <a href="#ZeroMuts">ZeroMuts</a>.
   <p>
   
   </p>
