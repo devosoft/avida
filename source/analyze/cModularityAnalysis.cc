@@ -223,14 +223,19 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
 }
 
 #ifdef DEBUG
-#define GET_MD() cModularityData* data = dynamic_cast<cModularityData*>(genotype->GetGenotypeData(tok, MD_ID));
+#define GET_MD() \
+  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken(); \
+  cModularityData* data = dynamic_cast<cModularityData*>(genotype->GetGenotypeData(tok, MD_ID)); \
+  delete tok;
 #else
-#define GET_MD() cModularityData* data = static_cast<cModularityData*>(genotype->GetGenotypeData(tok, MD_ID));
+#define GET_MD() \
+  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken(); \
+  cModularityData* data = static_cast<cModularityData*>(genotype->GetGenotypeData(tok, MD_ID)); \
+  delete tok;
 #endif
 
 cFlexVar cModularityAnalysis::GetTasksDoneFor(const cAnalyzeGenotype* genotype)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data) return cFlexVar(data->tasks_done);
   return cFlexVar(0);
@@ -238,7 +243,6 @@ cFlexVar cModularityAnalysis::GetTasksDoneFor(const cAnalyzeGenotype* genotype)
 
 cFlexVar cModularityAnalysis::GetInstsInvolvedInTasksFor(const cAnalyzeGenotype* genotype)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data) return cFlexVar(data->insts_tasks);
   return cFlexVar(0);
@@ -246,7 +250,6 @@ cFlexVar cModularityAnalysis::GetInstsInvolvedInTasksFor(const cAnalyzeGenotype*
 
 cFlexVar cModularityAnalysis::GetTaskProportionFor(const cAnalyzeGenotype* genotype)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data) return cFlexVar(data->tasks_prop);
   return cFlexVar(0.0);
@@ -254,7 +257,6 @@ cFlexVar cModularityAnalysis::GetTaskProportionFor(const cAnalyzeGenotype* genot
 
 cFlexVar cModularityAnalysis::GetAveTasksPerSiteFor(const cAnalyzeGenotype* genotype)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data) return cFlexVar(data->ave_tasks_per_site);
   return cFlexVar(0.0);
@@ -262,7 +264,6 @@ cFlexVar cModularityAnalysis::GetAveTasksPerSiteFor(const cAnalyzeGenotype* geno
 
 cFlexVar cModularityAnalysis::GetAveSitesPerTaskFor(const cAnalyzeGenotype* genotype)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data) return cFlexVar(data->ave_sites_per_task);
   return cFlexVar(0.0);
@@ -270,7 +271,6 @@ cFlexVar cModularityAnalysis::GetAveSitesPerTaskFor(const cAnalyzeGenotype* geno
 
 cFlexVar cModularityAnalysis::GetPropNonoverlapFor(const cAnalyzeGenotype* genotype)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data) return cFlexVar(data->ave_prop_nonoverlap);
   return cFlexVar(0.0);
@@ -279,7 +279,6 @@ cFlexVar cModularityAnalysis::GetPropNonoverlapFor(const cAnalyzeGenotype* genot
 
 cFlexVar cModularityAnalysis::GetSitesPerTaskFor(const cAnalyzeGenotype* genotype, int idx)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data && idx >= 0 && idx < data->sites_per_task.GetSize()) return cFlexVar(data->sites_per_task[idx]);
   return cFlexVar(0);
@@ -293,7 +292,6 @@ cString cModularityAnalysis::DescSitesPerTask(const cAnalyzeGenotype* genotype, 
 
 cFlexVar cModularityAnalysis::GetSitesInvolvedInXTasksFor(const cAnalyzeGenotype* genotype, int idx)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data && idx >= 0 && idx < data->sites_per_task.GetSize()) return cFlexVar(data->sites_inv_x_tasks[idx]);
   return cFlexVar(0);
@@ -307,7 +305,6 @@ cString cModularityAnalysis::DescSitesInvolvedInXTasks(const cAnalyzeGenotype* g
 
 cFlexVar cModularityAnalysis::GetTaskLengthFor(const cAnalyzeGenotype* genotype, int idx)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data && idx >= 0 && idx < data->sites_per_task.GetSize()) return cFlexVar(data->task_length[idx]);
   return cFlexVar(0);
@@ -321,7 +318,6 @@ cString cModularityAnalysis::DescTaskLength(const cAnalyzeGenotype* genotype, in
 
 cFlexVar cModularityAnalysis::GetAveTaskPositionFor(const cAnalyzeGenotype* genotype, int idx)
 {
-  cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken();
   GET_MD();
   if (data && idx >= 0 && idx < data->sites_per_task.GetSize()) return cFlexVar(data->ave_task_position[idx]);
   return cFlexVar(0.0);
