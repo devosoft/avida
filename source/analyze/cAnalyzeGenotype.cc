@@ -347,6 +347,18 @@ cString cAnalyzeGenotype::DescTask(int task_id) const
 }
 
 
+cAnalyzeGenotype::sGenotypeDatastore::~sGenotypeDatastore()
+{
+  for (tArrayMap<int, cGenotypeData*>::iterator it = dmap.begin(); it != dmap.end(); it++) delete it->Value();
+}
+
+void cAnalyzeGenotype::SetGenotypeData(int data_id, cGenotypeData* data)
+{
+  m_data->rwlock.WriteLock();
+  m_data->dmap.Set(data_id, data);
+  m_data->rwlock.WriteUnlock();
+}
+
 
 int cAnalyzeGenotype::CalcMaxGestation() const
 {

@@ -35,7 +35,7 @@ public:
   inline tKVPair(const K& key, const V& value) : m_key(key), m_value(value) { ; }
   inline tKVPair(const tKVPair& p) : m_key(p.m_key), m_value(p.m_value) { ; }
   
-  inline tKVPair& operator=(const tKVPair& rhs) { m_key = rhs.m_key; m_value = rhs.m_value; }
+  inline tKVPair& operator=(const tKVPair& rhs) { m_key = rhs.m_key; m_value = rhs.m_value; return *this; }
   
   inline K& Key() { return m_key; }
   inline const K& Key() const { return m_key; }

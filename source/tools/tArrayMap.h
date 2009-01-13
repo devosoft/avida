@@ -63,7 +63,7 @@ public:
     return false;
   }
   
-  const ValueType& Get(const KeyType& key, const ValueType& default_value) const
+  const ValueType& Get(const KeyType& key, const ValueType& default_value)
   {
     for (int i = 0; i < m_map.GetSize(); i++) {
       if (m_map[i].Key() == key) return m_map[i].Value();
@@ -101,10 +101,10 @@ public:
   typedef typename tArray<tKVPair<KeyType, ValueType> >::iterator iterator;
   typedef typename tArray<tKVPair<KeyType, ValueType> >::const_iterator const_iterator;
   
-  inline iterator begin() { m_map.begin(); }
-  inline iterator end() { m_map.end(); }
-  inline const_iterator begin() const { m_map.begin(); }
-  inline const_iterator end() const { m_map.end(); }
+  inline iterator begin() { return m_map.begin(); }
+  inline iterator end() { return m_map.end(); }
+  inline const_iterator begin() const { return m_map.begin(); }
+  inline const_iterator end() const { return m_map.end(); }
 };
 
 #endif

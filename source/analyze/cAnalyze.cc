@@ -55,6 +55,7 @@
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cLandscape.h"
+#include "cModularityAnalysis.h"
 #include "cPhenotype.h"
 #include "cPhenPlastGenotype.h"
 #include "cPlasticPhenotype.h"
@@ -70,6 +71,7 @@
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "tAnalyzeJob.h"
+#include "tAnalyzeJobBatch.h"
 #include "tDataCommandManager.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
@@ -4922,6 +4924,23 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   }
 }
 
+void cAnalyze::CommandCalcFunctionalModularity(cString cur_string)
+{
+  cout << "Calculating Functional Modularity..." << endl;
+
+  tList<cModularityAnalysis> mod_list;
+  tAnalyzeJobBatch<cModularityAnalysis> jobbatch(m_jobqueue);
+  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
+  for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
+    cModularityAnalysis* mod = new cModularityAnalysis(cur_genotype);
+    mod_list.Push(mod);
+    jobbatch.AddJob(mod, &cModularityAnalysis::CalcFunctionalModularity);
+  }
+  jobbatch.RunBatch();
+  cModularityAnalysis* mod = NULL;
+  while ((mod = mod_list.Pop())) delete mod;
+}
+
 void cAnalyze::CommandAverageModularity(cString cur_string)
 {
   cout << "Average Modularity calculations" << endl;
@@ -9244,6 +9263,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("MAP", &cAnalyze::CommandMapTasks);  // Deprecated...
   AddLibraryDef("MAP_TASKS", &cAnalyze::CommandMapTasks);
   AddLibraryDef("AVERAGE_MODULARITY", &cAnalyze::CommandAverageModularity);
+  AddLibraryDef("CALC_FUNCTIONAL_MODULARITY", &cAnalyze::CommandCalcFunctionalModularity);
   AddLibraryDef("ANALYZE_REDUNDANCY_BY_INST_FAILURE", &cAnalyze::CommandAnalyzeRedundancyByInstFailure);
   AddLibraryDef("MAP_MUTATIONS", &cAnalyze::CommandMapMutations);
   AddLibraryDef("ANALYZE_COMPLEXITY", &cAnalyze::AnalyzeComplexity);

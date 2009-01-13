@@ -162,13 +162,13 @@ template <class TargetType>
 class tDataEntryProxy<TargetType, cFlexVar ()> : public tDataEntry<TargetType>
 {
 protected:
-  cFlexVar (*DataRetrieval)(TargetType*);
+  cFlexVar (*DataRetrieval)(const TargetType*);
   
 public:
-  tDataEntryProxy(const cString& name,
-                  cFlexVar (*_funR)(TargetType*),
+  tDataEntryProxy(const cString& name, const cString& desc,
+                  cFlexVar (*_funR)(const TargetType*),
                   int compare_type = 0, const cString& null = "0", const cString& html_cell = "align=center")
-  : tDataEntry<TargetType>(name, name, compare_type, null, html_cell), DataRetrieval(_funR) { ; }
+  : tDataEntry<TargetType>(name, desc, compare_type, null, html_cell), DataRetrieval(_funR) { ; }
   
   cFlexVar Get(const TargetType* target, const cFlexVar& idx, const cStringList& args) const
   {
@@ -181,13 +181,13 @@ template <class TargetType, class IdxType>
 class tDataEntryProxy<TargetType, cFlexVar (IdxType)> : public tDataEntry<TargetType>
 {
 protected:
-  cFlexVar (*DataRetrieval)(TargetType*, IdxType);
-  cString (*DescFunction)(TargetType*, IdxType);
+  cFlexVar (*DataRetrieval)(const TargetType*, IdxType);
+  cString (*DescFunction)(const TargetType*, IdxType);
   
 public:
   tDataEntryProxy(const cString& name,
-                  cString (*_funD)(TargetType*, IdxType),
-                  cFlexVar (*_funR)(TargetType*, IdxType),
+                  cString (*_funD)(const TargetType*, IdxType),
+                  cFlexVar (*_funR)(const TargetType*, IdxType),
                   int compare_type = 0, const cString& null = "0", const cString& html_cell = "align=center")
   : tDataEntry<TargetType>(name, name, compare_type, null, html_cell), DataRetrieval(_funR), DescFunction(_funD) { ; }
   
@@ -207,13 +207,13 @@ template <class TargetType, class IdxType>
 class tDataEntryProxy<TargetType, cFlexVar (IdxType, const cStringList&)> : public tDataEntry<TargetType>
 {
 protected:
-  cFlexVar (*DataRetrieval)(TargetType*, IdxType, const cStringList&);
-  cString (*DescFunction)(TargetType*, IdxType);
+  cFlexVar (*DataRetrieval)(const TargetType*, IdxType, const cStringList&);
+  cString (*DescFunction)(const TargetType*, IdxType);
   
 public:
   tDataEntryProxy(const cString& name,
-                  cString (*_funD)(TargetType*, IdxType),
-                  cFlexVar (*_funR)(TargetType*, IdxType, const cStringList&),
+                  cString (*_funD)(const TargetType*, IdxType),
+                  cFlexVar (*_funR)(const TargetType*, IdxType, const cStringList&),
                   int compare_type = 0, const cString& null = "0", const cString& html_cell = "align=center")
   : tDataEntry<TargetType>(name, name, compare_type, null, html_cell), DataRetrieval(_funR), DescFunction(_funD) { ; }
   

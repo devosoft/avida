@@ -103,6 +103,7 @@ public:
 
 class cAnalyzeGenotype
 {
+  friend class ReadToken;
 private:
   cWorld* m_world;
   cGenome genome;            // Full Genome
@@ -112,12 +113,12 @@ private:
   struct sGenotypeDatastore : public cRCObject
   {
     cRWLock rwlock;
-    tArrayMap<int, cGenotypeData*> dmap;
+    mutable tArrayMap<int, cGenotypeData*> dmap;
     
     sGenotypeDatastore() { ; }
     sGenotypeDatastore(const sGenotypeDatastore& ds) : cRCObject(ds) { ; } // Note that data objects are not copied right now
     
-    ~sGenotypeDatastore() { ; }
+    ~sGenotypeDatastore();
   };
   tRCPtr<sGenotypeDatastore> m_data;
   
@@ -255,6 +256,13 @@ public:
   
   static void Initialize();
   static tDataCommandManager<cAnalyzeGenotype>& GetDataCommandManager();
+  
+  class ReadToken;
+  ReadToken* GetReadToken() const { m_data->rwlock.ReadLock(); return new ReadToken(this); }
+
+  void SetGenotypeData(int data_id, cGenotypeData* data);
+  cGenotypeData* GetGenotypeData(ReadToken* tk, int data_id) const { tk->Validate(this); return m_data->dmap.Get(data_id, NULL); }
+  
 
   void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
@@ -305,6 +313,8 @@ public:
   void SetNULL(cString dummy) { (void) dummy; }
 
   // Accessors...
+  cWorld* GetWorld() { return m_world; }
+  
   const cGenome & GetGenome() const { return genome; }
   const cString& GetName() const { return name; }
   const cInstSet& GetInstructionSet() const { return m_inst_set; }
@@ -515,6 +525,25 @@ public:
       return false;
     }
   }
+  
+  
+  class ReadToken
+  {
+    friend class cAnalyzeGenotype;
+  private:
+    const cAnalyzeGenotype* m_ptr;
+
+    ReadToken(const ReadToken&); // @not_implemented
+    ReadToken& operator=(const ReadToken&); // @not_implemented
+
+    inline ReadToken(const cAnalyzeGenotype* ptr) : m_ptr(ptr) { ; }
+    
+    inline void Validate(const cAnalyzeGenotype* ptr) { assert(ptr == m_ptr); }
+    
+  public:
+    ~ReadToken() { m_ptr->m_data->rwlock.ReadUnlock(); }
+  };
+    
 };
 
 #endif

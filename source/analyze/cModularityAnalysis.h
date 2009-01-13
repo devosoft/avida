@@ -34,6 +34,8 @@
 
 class cAvidaContext;
 class cAnalyzeGenotype;
+class cFlexVar;
+class cString;
 
 
 class cModularityAnalysis
@@ -48,21 +50,37 @@ public:
   
   void CalcFunctionalModularity(cAvidaContext& ctx);
   
+  static cFlexVar GetTasksDoneFor(const cAnalyzeGenotype* genotype);
+  static cFlexVar GetInstsInvolvedInTasksFor(const cAnalyzeGenotype* genotype);
+  static cFlexVar GetTaskProportionFor(const cAnalyzeGenotype* genotype);
+  static cFlexVar GetAveTasksPerSiteFor(const cAnalyzeGenotype* genotype);
+  static cFlexVar GetAveSitesPerTaskFor(const cAnalyzeGenotype* genotype);
+  static cFlexVar GetPropNonoverlapFor(const cAnalyzeGenotype* genotype);
+  
+  static cFlexVar GetSitesPerTaskFor(const cAnalyzeGenotype* genotype, int idx);
+  static cString DescSitesPerTask(const cAnalyzeGenotype* genotype, int idx);  
+  static cFlexVar GetSitesInvolvedInXTasksFor(const cAnalyzeGenotype* genotype, int idx);
+  static cString DescSitesInvolvedInXTasks(const cAnalyzeGenotype* genotype, int idx);
+  static cFlexVar GetTaskLengthFor(const cAnalyzeGenotype* genotype, int idx);
+  static cString DescTaskLength(const cAnalyzeGenotype* genotype, int idx);
+  static cFlexVar GetAveTaskPositionFor(const cAnalyzeGenotype* genotype, int idx);
+  static cString DescAveTaskPosition(const cAnalyzeGenotype* genotype, int idx);
+
   
 private:
   class cModularityData : public cGenotypeData
   {
   public:
-    int tasks_done;
-    int insts_tasks;
-    double tasks_prop;
-    double ave_tasks_per_site;
-    double ave_sites_per_task;
-    double ave_prop_nonoverlap;
-    tArray<double> ave_sites_per_task_indv;
-    tArray<double> std_sites_per_task_indv;
-    tArray<double> ave_sites_inv_per_task;
-    tArray<double> ave_task_length;
+    int tasks_done;                           // number of tasks performed by this genotype
+    int insts_tasks;                          // number of instructions involved in task performance
+    double tasks_prop;                        // proportion of sites used in tasks
+    double ave_tasks_per_site;                // average tasks per site
+    double ave_sites_per_task;                // average sites per task
+    double ave_prop_nonoverlap;               // average proportion of nonoverlap
+    tArray<int> sites_per_task;               // number sites used for each task
+    tArray<int> sites_inv_x_tasks;            // Number of sites involved in 0, 1, 2, 3... tasks
+    tArray<int> task_length;                  // Length of each task from first to last instruction
+    tArray<double> ave_task_position;         // Average task position
     
     cModularityData();
   };

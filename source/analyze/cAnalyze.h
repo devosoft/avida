@@ -260,6 +260,7 @@ private:
   // Individual Organism Analysis...
   void CommandFitnessMatrix(cString cur_string);
   void CommandMapTasks(cString cur_string);
+  void CommandCalcFunctionalModularity(cString cur_string);
   void CommandAverageModularity(cString cur_string);
   void CommandAnalyzeModularity(cString cur_string);
   void CommandAnalyzeRedundancyByInstFailure(cString cur_string);
