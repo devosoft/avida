@@ -376,7 +376,9 @@ void cEventList::QueueBirthInterruptEvent(double t_val)
 // birth queue.
 bool cEventList::CheckBirthInterruptQueue(double t_val)
 {
-	return (m_birth_interrupt_queue.Find(&t_val) != NULL);
+	return false;
+	//Disabled for now...
+	//return (m_birth_interrupt_queue.Find(&t_val) != NULL);
 }
 
 
