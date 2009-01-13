@@ -48,7 +48,7 @@ void cModularityAnalysis::Initialize()
   ADD_GDATA("tasks_prop", "Proportion of Sites in Tasks", GetTaskProportionFor, 4);
   ADD_GDATA("ave_tasks_per_site", "Average Number of Tasks Per Site", GetAveTasksPerSiteFor, 6);
   ADD_GDATA("ave_sites_per_task", "Average Number of Sites Per Task", GetAveSitesPerTaskFor, 6);
-  ADD_GDATA("tasks_prop", "Average Proportion of the Non-overlapping Region of a Task", GetTaskProportionFor, 4);
+  ADD_GDATA("ave_prop_nonoverlap", "Average Proportion of the Non-overlapping Region of a Task", GetTaskProportionFor, 4);
   ADD_GDATA_IDX("sites_per_task", DescSitesPerTask, GetSitesPerTaskFor, 1);
   ADD_GDATA_IDX("sites_inv_x_tasks", DescSitesInvolvedInXTasks, GetSitesInvolvedInXTasksFor, 1);
   ADD_GDATA_IDX("task_length", DescTaskLength, GetTaskLengthFor, 4);
@@ -68,7 +68,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   
   // Check if the organism does any tasks
   bool does_tasks = false;
-  const tArray<int>& base_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
+  const tArray<int> base_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();
   const int num_tasks = base_tasks.GetSize();
   for (int i = 0; i < num_tasks; i++) {
     if (base_tasks[i] > 0) {
@@ -111,7 +111,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
           // This is done so that under 'binary' option it marks
           // the task as being influenced by the mutation iff
           // it is completely knocked out, not just decreased
-          if (test_tasks[cur_task] == 0) {
+          if (base_tasks[cur_task] && !test_tasks[cur_task]) {
             // If knocking out an instruction stops the expression of a particular task, mark that in the modularity matrix
             // and add it to two counts
             mod_matrix(cur_task, line_num) = 1;

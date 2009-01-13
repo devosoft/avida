@@ -91,19 +91,19 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* in_org, c
 	
   switch (m_type) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      hw = new cHardwareCPU(ctx, m_world, in_org, m_inst_set);
+      hw = new cHardwareCPU(ctx, m_world, in_org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_SMT:
-      hw = new cHardwareSMT(ctx, m_world, in_org, m_inst_set);
+      hw = new cHardwareSMT(ctx, m_world, in_org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      hw = new cHardwareTransSMT(ctx, m_world, in_org, m_inst_set);
+      hw = new cHardwareTransSMT(ctx, m_world, in_org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      hw = new cHardwareExperimental(ctx, m_world, in_org, m_inst_set);
+      hw = new cHardwareExperimental(ctx, m_world, in_org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_GX:
-      hw = new cHardwareGX(ctx, m_world, in_org, m_inst_set);
+      hw = new cHardwareGX(ctx, m_world, in_org, inst_set);
       break;
     default:
       cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);
