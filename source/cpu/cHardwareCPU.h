@@ -616,6 +616,8 @@ private:
   bool Inst_IfFacedEnergyNotHigh(cAvidaContext& ctx);
   bool Inst_IfEnergyMed(cAvidaContext& ctx);
   bool Inst_IfFacedEnergyMed(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyMore(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyLess(cAvidaContext& ctx);
   bool Inst_IfEnergyInBuffer(cAvidaContext& ctx);
   bool Inst_IfEnergyNotInBuffer(cAvidaContext& ctx);
 	

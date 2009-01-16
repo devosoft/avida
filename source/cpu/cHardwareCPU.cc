@@ -392,16 +392,18 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("relinquishEnergyToOrganismsInDeme", &cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme, nInstFlag::STALL),
 
     // Energy level detection
-	  tInstLibEntry<tMethod>("if-energy-low", &cHardwareCPU::Inst_IfEnergyLow, nInstFlag::STALL),
-	  tInstLibEntry<tMethod>("if-energy-not-low", &cHardwareCPU::Inst_IfEnergyNotLow, nInstFlag::STALL),
-	  tInstLibEntry<tMethod>("if-faced-energy-low", &cHardwareCPU::Inst_IfFacedEnergyLow, nInstFlag::STALL),
-	  tInstLibEntry<tMethod>("if-faced-energy-not-low", &cHardwareCPU::Inst_IfFacedEnergyNotLow, nInstFlag::STALL),
-  	tInstLibEntry<tMethod>("if-energy-high", &cHardwareCPU::Inst_IfEnergyHigh, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-energy-low", &cHardwareCPU::Inst_IfEnergyLow, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-energy-not-low", &cHardwareCPU::Inst_IfEnergyNotLow, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-faced-energy-low", &cHardwareCPU::Inst_IfFacedEnergyLow, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-faced-energy-not-low", &cHardwareCPU::Inst_IfFacedEnergyNotLow, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-energy-high", &cHardwareCPU::Inst_IfEnergyHigh, nInstFlag::STALL),
   	tInstLibEntry<tMethod>("if-energy-not-high", &cHardwareCPU::Inst_IfEnergyNotHigh, nInstFlag::STALL),
   	tInstLibEntry<tMethod>("if-faced-energy-high", &cHardwareCPU::Inst_IfFacedEnergyHigh, nInstFlag::STALL),
   	tInstLibEntry<tMethod>("if-faced-energy-not-high", &cHardwareCPU::Inst_IfFacedEnergyNotHigh, nInstFlag::STALL),
   	tInstLibEntry<tMethod>("if-energy-med", &cHardwareCPU::Inst_IfEnergyMed, nInstFlag::STALL),	 
-  	tInstLibEntry<tMethod>("if-faced-energy-med", &cHardwareCPU::Inst_IfFacedEnergyMed, nInstFlag::STALL),	  
+  	tInstLibEntry<tMethod>("if-faced-energy-med", &cHardwareCPU::Inst_IfFacedEnergyMed, nInstFlag::STALL),	
+  	tInstLibEntry<tMethod>("if-faced-energy-less", &cHardwareCPU::Inst_IfFacedEnergyLess, nInstFlag::STALL),	
+  	tInstLibEntry<tMethod>("if-faced-energy-more", &cHardwareCPU::Inst_IfFacedEnergyMore, nInstFlag::STALL),	    
 	  tInstLibEntry<tMethod>("if-energy-in-buffer", &cHardwareCPU::Inst_IfEnergyInBuffer, nInstFlag::STALL),
 	  tInstLibEntry<tMethod>("if-energy-not-in-buffer", &cHardwareCPU::Inst_IfEnergyNotInBuffer, nInstFlag::STALL),
 	  
@@ -3548,14 +3550,18 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
   assert(losspct <= 1);
     
   double cur_energy = m_organism->GetPhenotype().GetStoredEnergy();
+  const int update_metabolic = m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get();
   double energy_given = cur_energy * frac_energy_given;
   
   //update energy store and merit of donor
   m_organism->GetPhenotype().ReduceEnergy(energy_given);
   m_organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
-  double senderMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
-  m_organism->UpdateMerit(senderMerit);
-  
+	
+  if(update_metabolic == 1) {
+    double senderMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+    m_organism->UpdateMerit(senderMerit);
+  }
+	  
   //apply loss in transfer
   energy_given *= (1 - losspct);
   
@@ -3567,8 +3573,11 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
   //if we are using the push energy method, pass the new energy into the receiver's energy store and recalculate merit
   if(m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) {
     to_org->GetPhenotype().ApplyDonatedEnergy();
-    double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
-    to_org->UpdateMerit(receiverMerit);
+	  
+	  if(update_metabolic == 1) {
+        double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
+        to_org->UpdateMerit(receiverMerit);
+	  }
   }
   
 } //End DoEnergyDonatePercent()
@@ -4076,8 +4085,11 @@ bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext& ctx)
   if(m_organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
     m_organism->GetPhenotype().ApplyDonatedEnergy();
     m_organism->GetPhenotype().SetHasUsedDonatedEnergy();
-    double receiverMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
-    m_organism->UpdateMerit(receiverMerit);
+	 
+	  if(m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get() == 1) {
+        double receiverMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+        m_organism->UpdateMerit(receiverMerit);
+  	}
   }
   
   return true;
@@ -5337,6 +5349,56 @@ bool cHardwareCPU::Inst_IfFacedEnergyMed(cAvidaContext& ctx) {
   return true;
 	
 } //End Inst_IfFacedEnergyMed()
+
+
+/* Execute the next instruction if the faced organism has less energy */
+bool cHardwareCPU::Inst_IfFacedEnergyLess(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Get faced neighbor
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    const double neighbor_energy = neighbor->GetPhenotype().GetStoredEnergy();
+    const double my_energy = m_organism->GetPhenotype().GetStoredEnergy();
+    const double epsilon = m_world->GetConfig().ENERGY_COMPARISON_EPSILON.Get();
+    
+    if(neighbor_energy >= (my_energy * (1 - epsilon))) {
+      IP().Advance();
+    }    
+  }  
+	
+  return true;
+	
+} //End Inst_IfFacedEnergyLess()
+
+
+/* Execute the next instruction if the faced organism has more energy */
+bool cHardwareCPU::Inst_IfFacedEnergyMore(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+	
+  // Get faced neighbor
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    const double neighbor_energy = neighbor->GetPhenotype().GetStoredEnergy();
+    const double my_energy = m_organism->GetPhenotype().GetStoredEnergy();
+    const double epsilon = m_world->GetConfig().ENERGY_COMPARISON_EPSILON.Get();
+
+    if(neighbor_energy <= (my_energy * (1 + epsilon))) {
+      IP().Advance();
+    }    
+  }  
+	
+  return true;
+	
+} //End Inst_IfFacedEnergyMore()
 
 
 /* Execute the next instruction if the organism has received energy */
