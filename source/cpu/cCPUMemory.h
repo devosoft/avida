@@ -47,7 +47,6 @@ private:
 	static const unsigned char MASK_UNUSED   = 0x80; // unused bit
   
   tArray<unsigned char> flag_array;
-  
 
   // A collection of sloppy instructions to perform oft-used functions that
   // will need to be cleaned up after this is run.
@@ -73,6 +72,7 @@ public:
 			genome[i].SetOp(0);
 			flag_array[i] = 0;
 		}
+    m_mutation_steps.Clear();
 	}
   void ClearFlags() { flag_array.SetAll(0); }
   void Reset(int new_size);     // Reset size, clearing contents...

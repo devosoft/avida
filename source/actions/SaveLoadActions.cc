@@ -171,13 +171,19 @@ public:
 class cActionSavePopulation : public cAction
 {
 private:
+  bool m_print_mut_steps;
   cString m_filename;
   
 public:
-  cActionSavePopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  cActionSavePopulation(cWorld* world, const cString& args) : cAction(world, args), m_print_mut_steps(0), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
+    if (m_filename == "mut_steps") {
+      m_print_mut_steps = 1;
+      m_filename = "";    
+      if (largs.GetSize()) m_filename = largs.PopWord();
+    }
   }
   
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
@@ -186,7 +192,7 @@ public:
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("detail-%d.pop", m_world->GetStats().GetUpdate());
-    m_world->GetClassificationManager().DumpDetailedSummary(m_world->GetDataFileOFStream(filename));
+    m_world->GetClassificationManager().DumpDetailedSummary(m_world->GetDataFileOFStream(filename), m_print_mut_steps);
     m_world->GetDataFileManager().Remove(filename);
   }
 };
@@ -264,15 +270,23 @@ class cActionSaveHistoricPopulation : public cAction
 {
 private:
   int m_backdist;
+  bool m_print_mut_steps;
   cString m_filename;
+  
   
 public:
   cActionSaveHistoricPopulation(cWorld* world, const cString& args)
-    : cAction(world, args), m_backdist(-1), m_filename("")
+    : cAction(world, args), m_backdist(-1), m_print_mut_steps(0), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_backdist = largs.PopWord().AsInt();
     if (largs.GetSize()) m_filename = largs.PopWord();
+    if (m_filename == "mut_steps") {
+      m_print_mut_steps = 1;    
+      m_filename = "";    
+      if (largs.GetSize()) m_filename = largs.PopWord();
+    }
+
   }
   
   static const cString GetDescription() { return "Arguments: [int back_dist=-1] [string fname='']"; }
@@ -281,7 +295,7 @@ public:
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("historic-%d.pop", m_world->GetStats().GetUpdate());
-    m_world->GetClassificationManager().DumpHistoricSummary(m_world->GetDataFileOFStream(filename), m_backdist);
+    m_world->GetClassificationManager().DumpHistoricSummary(m_world->GetDataFileOFStream(filename), m_backdist, m_print_mut_steps);
     m_world->GetDataFileManager().Remove(filename);
   }
 };

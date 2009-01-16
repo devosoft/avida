@@ -105,7 +105,7 @@ private:
   // Private Helper Functions
   void AddGenotype(cGenotype* in_genotype, int list_num = -1);
   void AddInjectGenotype(cInjectGenotype* in_inject_genotype, int in_list_num = -1);
-  void DumpDetailHeading(std::ofstream& fp);
+  void DumpDetailHeading(std::ofstream& fp, bool print_mut_steps = false);
   void DumpDetailSexHeading (std::ofstream& fp);
   unsigned int FindCRC(const cGenome& in_genome) const;
   unsigned int FindInjectCRC(const cGenome& in_genome) const;
@@ -155,11 +155,11 @@ public:
   // Genotype Output
   bool DumpTextSummary(std::ofstream& fp);
   bool PrintGenotypes(std::ofstream& fp, cString & data_fields, int historic);
-  bool DumpDetailedSummary(std::ofstream& fp);
+  bool DumpDetailedSummary(std::ofstream& fp, bool print_mut_steps = false);
   bool DumpDetailedSexSummary(std::ofstream& fp);
-  bool DumpHistoricSummary(std::ofstream& fp, int back_dist);
+  bool DumpHistoricSummary(std::ofstream& fp, int back_dist, bool print_mut_steps = false);
   bool DumpHistoricSexSummary(std::ofstream& fp);
-  void DumpDetailedEntry(cGenotype* genotype, std::ofstream& fp);
+  void DumpDetailedEntry(cGenotype* genotype, std::ofstream& fp, bool print_mut_steps = false);
   void DumpDetailedSexEntry(cGenotype* genotype, std::ofstream& fp);
   
   

@@ -295,9 +295,12 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   ADD_GDATA(double (), "phen_likely_freq",   "Freq of Most Likely Phenotype",         GetLikelyFrequency,        SetNULL, 0, 0, 0);
   ADD_GDATA(double (), "phen_likely_fitness","Fitness of Most Likely Phenotype",      GetLikelyFitness,          SetNULL, 0, 0, 0);
   
+  // @JEB There is a difference between these two. parent_muts is based on an alignment. mut_steps is based on recorded mutations during run.
   ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
+  ADD_GDATA(const cString (), "mut_steps", "Mutation Steps from Parent", GetMutSteps,   SetMutSteps,   0, "", "");
+
   ADD_GDATA(const cString& (), "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
-  ADD_GDATA(cString (),        "sequence",    "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
+  ADD_GDATA(cString (),        "sequence", "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
   ADD_GDATA(const cString& (), "alignment", "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
   
   ADD_GDATA(cString (), "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
@@ -328,7 +331,7 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   ADD_GDATA(int (),     "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth,      SetDepth,      0, 0, 0);
   ADD_GDATA(int (),     "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
   ADD_GDATA(cString (), "dom_sequence", "Dominant Genotype Sequence",      GetSequence,   SetSequence,   0, "(N/A)", "");
-  
+
   
   return dcm;
 #undef ADD_GDATA
@@ -612,6 +615,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
     efficiency_ratio = GetEfficiency() / parent_genotype->GetEfficiency();
     comp_merit_ratio = GetCompMerit() / parent_genotype->GetCompMerit();
     parent_dist = cStringUtil::EditDistance(genome.AsString(), parent_genotype->GetGenome().AsString(), parent_muts);
+ 
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
 

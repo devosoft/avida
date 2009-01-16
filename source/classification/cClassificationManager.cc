@@ -669,26 +669,26 @@ bool cClassificationManager::PrintGenotypes(ofstream& fp, cString & data_fields,
   return true;
 }
 
-bool cClassificationManager::DumpDetailedSummary(ofstream& fp)
+bool cClassificationManager::DumpDetailedSummary(ofstream& fp, bool print_mut_steps)
 {
   m_genotype_ctl->Reset(0);
-  DumpDetailHeading(fp);
+  DumpDetailHeading(fp, print_mut_steps);
   for (int i = 0; i < m_genotype_ctl->GetSize(); i++) {
-    DumpDetailedEntry(m_genotype_ctl->Get(0), fp);
+    DumpDetailedEntry(m_genotype_ctl->Get(0), fp, print_mut_steps);
     m_genotype_ctl->Next(0);
   }
   
   return true;
 }
 
-bool cClassificationManager::DumpHistoricSummary(ofstream& fp, int back_dist)
+bool cClassificationManager::DumpHistoricSummary(ofstream& fp, int back_dist, bool print_mut_steps)
 {
   // Calculate the update we should start printing from...
   int start_update = 0;
   if (back_dist > 0) start_update = m_world->GetStats().GetUpdate() - back_dist;
   
   // Loop through all defunct genotypes that we're saving.
-  DumpDetailHeading(fp);
+  DumpDetailHeading(fp, print_mut_steps);
   m_genotype_ctl->ResetHistoric(0);
   for (int i = 0; i < m_genotype_ctl->GetHistoricCount(); i++) {
     // Get the next genotype.  Only print it if its in range...
@@ -697,7 +697,7 @@ bool cClassificationManager::DumpHistoricSummary(ofstream& fp, int back_dist)
       m_genotype_ctl->Next(0);
       continue;
     }
-    DumpDetailedEntry(cur_genotype, fp);
+    DumpDetailedEntry(cur_genotype, fp, print_mut_steps);
     
     // Move to the next genotype...
     m_genotype_ctl->Next(0);
@@ -730,11 +730,12 @@ bool cClassificationManager::DumpHistoricSexSummary(ofstream& fp)
   return true;
 }
 
-void cClassificationManager::DumpDetailHeading (ofstream& fp)
+void cClassificationManager::DumpDetailHeading (ofstream& fp, bool print_mut_steps)
 {
   fp << "#filetype genotype_data" << endl
-  << "#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence" << endl
-  << endl
+  << "#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence";
+  if (print_mut_steps) { fp << " mut_steps"; }
+  fp << endl << endl
   << "#  1: ID" << endl
   << "#  2: parent ID" << endl
   << "#  3: parent distance" << endl
@@ -747,7 +748,9 @@ void cClassificationManager::DumpDetailHeading (ofstream& fp)
   << "# 10: update born" << endl
   << "# 11: update deactivated" << endl
   << "# 12: depth in phylogentic tree" << endl
-  << "# 13: genome of organism" << endl << endl;
+  << "# 13: genome of organism" << endl;
+  if (print_mut_steps) { fp << "# 14: mutation steps from parent" << endl; }
+  fp << endl;  
 }
 
 void cClassificationManager::DumpDetailSexHeading (ofstream& fp)
@@ -771,7 +774,7 @@ void cClassificationManager::DumpDetailSexHeading (ofstream& fp)
   << "# 14: genome of organism" << endl << endl;
 }
 
-void cClassificationManager::DumpDetailedEntry(cGenotype* genotype, ofstream& fp)
+void cClassificationManager::DumpDetailedEntry(cGenotype* genotype, ofstream& fp, bool print_mut_steps)
 {
   fp << genotype->GetID() << " "                //  1
   << genotype->GetParentID() << " "          //  2
@@ -786,8 +789,9 @@ void cClassificationManager::DumpDetailedEntry(cGenotype* genotype, ofstream& fp
   << genotype->GetUpdateBorn() << " "        // 10
   << genotype->GetUpdateDeactivated() << " " // 11
   << genotype->GetDepth() << " "             // 12
-  << genotype->GetGenome().AsString() << " " // 13
-  << endl;
+  << genotype->GetGenome().AsString() << " "; // 13
+  if (print_mut_steps) { fp << genotype->GetGenome().GetMutationSteps().AsString() << " "; } // 14
+  fp << endl;
 }
 
 void cClassificationManager::DumpDetailedSexEntry(cGenotype * genotype, ofstream& fp)

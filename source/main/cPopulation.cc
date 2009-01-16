@@ -403,6 +403,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
         GetCell(target_cells[i]).Rotate(parent_cell);
       }
     }
+    
+    // Purge the mutations since last division
+    parent_organism.ChildGenome().GetMutationSteps().Clear();
   }
   
   // Do any statistics on the parent that just gave birth...

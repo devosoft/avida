@@ -302,6 +302,8 @@ public:
   void SetLineageLabel(int _label) { lineage_label = _label; }
 
   void SetParentMuts(const cString & in_muts) { parent_muts = in_muts; }
+  void SetMutSteps(const cString in_muts) { genome.GetMutationSteps().Set(in_muts); }
+  
   void SetTaskOrder(const cString & in_order) { task_order = in_order; }
 
   // A set of NULL accessors to simplyfy automated accesses.
@@ -352,6 +354,7 @@ public:
   int GetDepth() const { return depth; }
 
   const cString& GetParentMuts() const { return parent_muts; }
+  const cString GetMutSteps() const { const cMutationSteps& ms = genome.GetMutationSteps(); return ms.AsString(); }
 
   // Knockout accessors
   int GetKO_DeadCount() const;

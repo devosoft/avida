@@ -23,6 +23,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		10479F2E0F1BC54B00AF9F6A /* cMutationSteps.cc in Sources */ = {isa = PBXBuildFile; fileRef = 10479F2C0F1BC54B00AF9F6A /* cMutationSteps.cc */; };
 		2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
@@ -371,6 +372,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		10479F2C0F1BC54B00AF9F6A /* cMutationSteps.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationSteps.cc; sourceTree = "<group>"; };
+		10479F2D0F1BC54B00AF9F6A /* cMutationSteps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutationSteps.h; sourceTree = "<group>"; };
 		1097463D0AE9606E00929ED6 /* cDeme.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDeme.cc; sourceTree = "<group>"; };
 		1097463E0AE9606E00929ED6 /* cDeme.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDeme.h; sourceTree = "<group>"; };
 		2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cProbDemeProbSchedule.cc; sourceTree = "<group>"; };
@@ -1374,6 +1377,8 @@
 				70F7DC9F09293E6F009E311D /* cGenotype.h */,
 				70F7DAEF09290468009E311D /* cClassificationManager.h */,
 				70F7DAF009290468009E311D /* cClassificationManager.cc */,
+				10479F2D0F1BC54B00AF9F6A /* cMutationSteps.h */,
+				10479F2C0F1BC54B00AF9F6A /* cMutationSteps.cc */,
 			);
 			path = classification;
 			sourceTree = "<group>";
@@ -2102,6 +2107,7 @@
 				D7FB16D60ED62684002E939E /* cOrgMessage.cc in Sources */,
 				70AD4FA00F194F4D00AA50AC /* cGenotypeData.cc in Sources */,
 				700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */,
+				10479F2E0F1BC54B00AF9F6A /* cMutationSteps.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

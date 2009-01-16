@@ -901,7 +901,7 @@ void cAnalyze::LoadFile(cString cur_string)
   }
   
   const cString filetype = input_file.GetFiletype();
-  if (filetype != "population_data" &&  // Depricated
+  if (filetype != "population_data" &&  // Deprecated
       filetype != "genotype_data") {
     cerr << "Error: Cannot load files of type \"" << filetype << "\"." << endl;
     if (exit_on_error) exit(1);
@@ -6217,7 +6217,6 @@ void cAnalyze::CommandAlign(cString cur_string)
 {
   // Align does not need any args yet.
   (void) cur_string;
-  int perform_slow_alignment = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
   
   cout << "Aligning sequences..." << endl;
   
@@ -6243,28 +6242,7 @@ void cAnalyze::CommandAlign(cString cur_string)
     int num_del = 0;
     
     // Compare each string to the previous.
-    if (perform_slow_alignment == 0) {
-      cStringUtil::EditDistance(sequences[i], sequences[i-1], diff_info, '_');
-    }
-    else
-    if (perform_slow_alignment == 1) {
-      cStringUtil::GapMinimizingEditDistance(sequences[i], sequences[i-1], diff_info, '_');
-    }
-    else {
-      cString best_diff_info;
-      int min_dist = -1;
-      for (int j=0; j<i; j++) {
-        cString test_diff_info;
-        int test_dist = cStringUtil::GapMinimizingEditDistance(sequences[i], sequences[j], test_diff_info, '_');
-        if (min_dist == -1 || test_dist < min_dist) {
-          min_dist = test_dist;
-          best_diff_info = test_diff_info;
-          if (min_dist == 0) j=i;
-        }
-      }
-      
-       diff_info = best_diff_info;
-    }
+    cStringUtil::EditDistance(sequences[i], sequences[i-1], diff_info, '_');
     
     while (diff_info.GetSize() != 0) {
       cString cur_mut = diff_info.Pop(',');

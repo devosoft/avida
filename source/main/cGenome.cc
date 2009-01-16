@@ -35,7 +35,7 @@ cGenome::cGenome(int _size)
 }
 
 cGenome::cGenome(const cGenome & in_genome)
-  : genome(in_genome.GetSize()), active_size(in_genome.GetSize())
+  : genome(in_genome.GetSize()), active_size(in_genome.GetSize()), m_mutation_steps(in_genome.GetMutationSteps())
 {
   for (int i = 0; i < active_size; i++)  genome[i] = in_genome[i];
 }
@@ -84,6 +84,8 @@ void cGenome::operator=(const cGenome & other_genome)
   for (int i = 0; i < active_size; i++) {
     genome[i] = other_genome[i];
   }
+  
+  m_mutation_steps = other_genome.m_mutation_steps;
 }
 
 

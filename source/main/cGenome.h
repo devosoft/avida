@@ -31,6 +31,9 @@
 #ifndef cInstruction_h
 #include "cInstruction.h"
 #endif
+#ifndef cMutationSteps_h
+#include "cMutationSteps.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -48,6 +51,7 @@ class cGenome
 protected:
   tArray<cInstruction> genome;
   int active_size;
+  cMutationSteps m_mutation_steps;
 
 public:
   //! Default constructor.
@@ -74,6 +78,10 @@ public:
    
   int GetSize() const { return active_size; }
   cString AsString() const;
+  
+  cMutationSteps& GetMutationSteps() { return m_mutation_steps; }
+  const cMutationSteps& GetMutationSteps() const { return m_mutation_steps; }
+
 };
 
 
