@@ -1423,6 +1423,11 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   cGenome & child_genome = m_organism->ChildGenome();
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
   
+  // Make sure it is an exact copy at this point (before divide mutations) if required
+  if (m_world->GetConfig().REQUIRE_EXACT_COPY.Get() && (m_organism->GetGenome() != child_genome) ) {
+    return false;
+  }
+  
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
   
