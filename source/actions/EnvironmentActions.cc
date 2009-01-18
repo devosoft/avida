@@ -683,7 +683,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Set(newValue);
+    m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Set(newValue);
   }
 };
 

@@ -72,7 +72,10 @@ bool cMerit::OK() const
 
 double cMerit::EnergyToMerit(const double orgEnergy, cWorld* m_world) {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get() == 1);
-  int inst_2_exc = m_world->GetConfig().NUM_INST_EXC_BEFORE_0_ENERGY.Get();
+	static double FIX_METABOLIC_RATE = m_world->GetConfig().FIX_METABOLIC_RATE.Get();
+	if(FIX_METABOLIC_RATE > 0.0)
+		return 100 * FIX_METABOLIC_RATE;
+  int inst_2_exc = m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Get();
   return 100 * orgEnergy / (inst_2_exc);
 }
 

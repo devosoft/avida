@@ -2639,9 +2639,9 @@ void cPopulation::PrintDemeEnergySharingStats() {
   df_donor.WriteTimeStamp();
   df_donor.Write(stats.GetUpdate(), "update");
   
-  int num_requestors = 0;
-  int num_donors = 0;
-  int num_receivers = 0;
+  double num_requestors = 0;
+  double num_donors = 0;
+  double num_receivers = 0;
   double amount_donated = 0.0;
   double amount_received = 0.0;
   double amount_applied = 0.0;  
@@ -2662,11 +2662,11 @@ void cPopulation::PrintDemeEnergySharingStats() {
     }
   }
   df_donor.Write(num_requestors/num_demes, "Average number of organisms that have requested energy");
-  df_donor.Write(num_donors/num_demes, "Average umber of organisms that have donated energy");
+  df_donor.Write(num_donors/num_demes, "Average number of organisms that have donated energy");
   df_donor.Write(num_receivers/num_demes, "Average number of organisms that have received energy");
-  df_donor.Write(amount_donated/num_demes, "Average total amount of energy donated");
-  df_donor.Write(amount_received/num_demes, "Average total amount of energy received");
-  df_donor.Write(amount_applied/num_demes, "Average total amount of donated energy applied");
+  df_donor.Write(amount_donated/num_demes, "Average total amount of energy donated per deme");
+  df_donor.Write(amount_received/num_demes, "Average total amount of energy received per deme");
+  df_donor.Write(amount_applied/num_demes, "Average total amount of donated energy applied per deme");
   df_donor.Endl();  
   
 }
