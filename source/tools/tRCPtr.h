@@ -46,7 +46,7 @@ public:
   inline T& operator*() const { return *m_ptr; }
   
   template<class S> inline S* operator->() const { return m_ptr; }
-  template<class S> inline S& operator->() const { return *m_ptr; }
+  template<class S> inline S& operator*() const { return *m_ptr; }
   
   template<class S> operator tRCPtr<S>() { return tRCPtr<S>(m_ptr); }
 };

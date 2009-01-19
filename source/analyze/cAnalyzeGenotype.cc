@@ -45,7 +45,7 @@
 #include "tArray.h"
 #include "tAutoRelease.h"
 #include "tDataCommandManager.h"
-#include "tDMSingleton.h"w
+#include "tDMSingleton.h"
 
 
 #include <cmath>
