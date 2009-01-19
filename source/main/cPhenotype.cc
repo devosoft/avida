@@ -1396,6 +1396,7 @@ void cPhenotype::ApplyDonatedEnergy() {
 void cPhenotype::ReceiveDonatedEnergy(const double donation) {
   assert(donation >= 0.0);  
   energy_received_buffer += donation;
+  IncreaseEnergyReceived(donation);
   is_energy_receiver = true;
 } //End ReceiveDonatedEnergy()
 

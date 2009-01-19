@@ -87,8 +87,6 @@ private:
   unsigned int consecutiveSuccessfulEventPeriods;
   int sleeping_count; //!< Number of organisms currently sleeping
   cDoubleSum energyUsage;
-  unsigned int energy_requests_made;
-  unsigned int energy_donations_made;
   
   tArray<int> cur_task_exe_count;
   tArray<int> cur_reaction_count;
@@ -320,10 +318,6 @@ public:
 	unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
 	unsigned int GetMessageDropped() { return MSG_dropped; }
 	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
-  
-  // --- Energy sharing stats --- //
-  void IncEnergyRequestsMade() { energy_requests_made++; }
-  void IncEnergyDonationsMade() { energy_donations_made++; }
 
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value);

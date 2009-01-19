@@ -76,9 +76,6 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   last_org_reaction_count.ResizeClear(num_reactions);
   last_org_reaction_count.SetAll(0);
   
-  energy_requests_made = 0;
-  energy_donations_made = 0;
-  
   // If width is negative, set it to the full number of cells.
   width = in_width;
   if (width < 1) width = cell_ids.GetSize();

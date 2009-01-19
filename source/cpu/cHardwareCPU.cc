@@ -3572,8 +3572,6 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
   
   //place energy into receiver's incoming energy buffer
   to_org->GetPhenotype().ReceiveDonatedEnergy(energy_given);
-  to_org->GetPhenotype().IncreaseEnergyReceived(energy_given);
-  GetOrganism()->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
   
   //if we are using the push energy method, pass the new energy into the receiver's energy store and recalculate merit
   if(m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) {
@@ -4133,7 +4131,6 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   
   DoEnergyDonatePercent(energyReceiver, m_organism->GetFracEnergyDonating());
   m_organism->GetPhenotype().IncDonates();
-  m_organism->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
   m_organism->GetPhenotype().SetIsEnergyDonor();
   
   return true;
@@ -4167,7 +4164,6 @@ bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext& ctx)
     {
       DoEnergyDonatePercent(neighbor, m_organism->GetFracEnergyDonating());
       m_organism->GetPhenotype().IncDonates();
-      m_organism->GetOrgInterface().GetDeme()->IncEnergyDonationsMade();
       m_organism->GetPhenotype().SetIsEnergyDonor();
     }
   }  
@@ -4230,7 +4226,6 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
   // Could set the data field of the message to be the multiplier
   
   m_organism->BroadcastMessage(ctx, msg);
-  m_organism->GetOrgInterface().GetDeme()->IncEnergyRequestsMade();
   m_organism->GetPhenotype().SetIsEnergyRequestor();
   
   return true;
@@ -4245,7 +4240,6 @@ bool cHardwareCPU::Inst_RequestEnergyFlagOn(cAvidaContext& ctx)
     return false;
   }	
   
-  m_organism->GetOrgInterface().GetDeme()->IncEnergyRequestsMade();
   m_organism->GetPhenotype().SetIsEnergyRequestor();
   m_organism->GetPhenotype().SetHasOpenEnergyRequest();
   return true;
