@@ -27,6 +27,7 @@
 #define cHardwareBase_h
 
 #include <cassert>
+#include <climits>
 #include <iostream>
 
 #ifndef cInstSet_h

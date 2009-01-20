@@ -26,6 +26,8 @@
 #ifndef cReactionRequisite_h
 #define cReactionRequisite_h
 
+#include <climits>
+
 #ifndef tList_h
 #include "tList.h"
 #endif
