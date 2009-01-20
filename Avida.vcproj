@@ -457,6 +457,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\analyze\cGenotypeData.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\cpu\cHardwareBase.h"
 				>
 			</File>
@@ -610,6 +614,10 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\cMerit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\analyze\cModularityAnalysis.h"
 				>
 			</File>
 			<File
@@ -1289,6 +1297,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\analyze\cGenotypeData.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\cpu\cHardwareBase.cc"
 				>
 			</File>
@@ -1402,6 +1414,10 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\cMerit.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\analyze\cModularityAnalysis.cc"
 				>
 			</File>
 			<File
