@@ -1658,7 +1658,7 @@ public:
 	}
 
 	virtual double Fitness(const cDeme& deme) {
-		double fitness = deme.GetCurTaskExeCount()[_task_num]^2;///deme.GetInjectedCount());
+		double fitness = pow(deme.GetCurTaskExeCount()[_task_num], 2.0);///deme.GetInjectedCount());
     if (fitness == 0.0) fitness = 0.1;
     return fitness;
 	}
