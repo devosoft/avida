@@ -641,6 +641,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\classification\cMutationSteps.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\cMutex.h"
 				>
 			</File>
@@ -1009,11 +1013,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\analyze\tAnalyzeJobBatch.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\tArgDataEntry.h"
 				>
 			</File>
 			<File
 				RelativePath=".\source\tools\tArray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\tArrayMap.h"
 				>
 			</File>
 			<File
@@ -1053,6 +1065,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\tKVPair.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\tList.h"
 				>
 			</File>
@@ -1070,6 +1086,10 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\tObjectFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\platform\tRLockPtr.h"
 				>
 			</File>
 			<File
@@ -1430,6 +1450,10 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cMutationRates.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\classification\cMutationSteps.cc"
 				>
 			</File>
 			<File
