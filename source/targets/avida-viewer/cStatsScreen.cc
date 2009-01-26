@@ -36,7 +36,7 @@ void cStatsScreen::Draw()
   Print(5, 23, "Age.........:");
 
   Print(8, 11, "Current    Total  Ave Age  Entropy");
-  Print(9,  0, "Creatures:");
+  Print(9,  0, "Organisms:");
   Print(10, 0, "Genotypes:");
   Print(11, 0, "Threshold:");
   Print(12, 0, "Species..:");

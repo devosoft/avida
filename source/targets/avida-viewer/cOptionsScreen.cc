@@ -54,7 +54,7 @@ void cOptionsScreen::Draw()
   PrintOption(Height() - 3, 30, "[CTRL-L] Redraw Screen");
   PrintOption(Height() - 2, 30, "[C]hoose New CPU");
 
-  PrintOption(Height() - 6, 55, "E[x]tract Creature");
+  PrintOption(Height() - 6, 55, "E[x]tract Organism");
   PrintOption(Height() - 5, 55, "[W]rite Soup Clone");
   if (info.GetPauseLevel()) {
     PrintOption(Height() - 4, 55, "Un-[P]ause");
