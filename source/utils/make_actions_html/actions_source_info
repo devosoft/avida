@@ -400,6 +400,34 @@
   environmental settings on the fly.  <b>You should create all resources and 
   reactions in the environment file</b> and only use this file to change these
   resources and reactions. 
+=== Action cAssignRandomCellData ===
+  Assign a random identifier to the data for each cell and save those IDs for 
+  later use, respecting deme boundaries.
+=== Action CompeteDemesByTaskCount ===
+  Competes demes based on the total number of times that a
+  task has been completed by an organism in the deme since the
+  was initialized. This action takes one integer parameter representing
+  number of the task that is to be used for competition. If no parameter
+  supplied, the class uses the first task defined in the environment file
+  compete the demes.
+=== Action DecayPoints ===
+  Decays the number of points a deme has accumulated by
+  a percentage that is set in the configuration file.
+=== InjectDemesRandom ===
+  Injects one or more organisms into all demes in a randomly-chosen cell.
+  <P>*  Note: This gets the genotype from the germline, so germline use is required</P>
+  <p>*  Note: one organism is inserted each time this is called, and it will 
+  stop when the given number of organisms has been injected.</p>
+
+  <p>Parameters:
+    <ul>
+      <li>number of orgs (int): number of organisms to inject into each deme - default 1
+      <li>merit (double): The initial merit of the organism. If set to -1, this is ignored - default -1
+      <li>lineage label (integer): An integer that marks all descendants of this organism  - default 0
+      <li>neutral metric (double):  A double value that randomly drifts over time - default 0
+    </ul>
+  </p>
+
 === Action inject_resource ===
   <font color="red">DEPRECATED</font>
 === Action inject_scaled_resource ===

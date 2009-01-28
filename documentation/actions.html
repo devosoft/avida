@@ -9,7 +9,7 @@
 
 <div class="revision">
 Revised 2006-09-03 DMB
-<br>Generated Tue May 27 15:04:24 2008 by make_actions_html</div>
+<br>Generated Wed Jan 28 15:34:10 2009 by make_actions_html</div>
 
 <p>
 <a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
@@ -59,17 +59,25 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#AnalyzeLandscape">AnalyzeLandscape</a><br>
       <a href="#AnalyzePopulation">AnalyzePopulation</a><br>
       <a href="#apocalypse">apocalypse</a><br>
+      <a href="#AssignRandomCellData">AssignRandomCellData</a><br>
       <a href="#ChangeEnvironment">ChangeEnvironment</a><br>
       <a href="#compete_demes">compete_demes</a><br>
       <a href="#CompeteDemes">CompeteDemes</a><br>
+      <a href="#CompeteDemes_AttackKillAndEnergyConserve">CompeteDemes_AttackKillAndEnergyConserve</a><br>
+      <a href="#CompeteDemesByEnergyDistribution">CompeteDemesByEnergyDistribution</a><br>
+      <a href="#CompeteDemesByTaskCount">CompeteDemesByTaskCount</a><br>
+      <a href="#CompeteDemesByTaskCountAndEfficiency">CompeteDemesByTaskCountAndEfficiency</a><br>
       <a href="#CompeteOrganisms">CompeteOrganisms</a><br>
       <a href="#compete_organisms">compete_organisms</a><br>
       <a href="#connect_cells">connect_cells</a><br>
       <a href="#ConnectCells">ConnectCells</a><br>
       <a href="#copy_deme">copy_deme</a><br>
       <a href="#CopyDeme">CopyDeme</a><br>
+      <a href="#DecayPoints">DecayPoints</a><br>
       <a href="#DelayedDemeEvent">DelayedDemeEvent</a><br>
+      <a href="#DelayedDemeEventsPerSlots">DelayedDemeEventsPerSlots</a><br>
       <a href="#DeletionLandscape">DeletionLandscape</a><br>
+      <a href="#Desynchronization">Desynchronization</a><br>
       <a href="#detail_parasite_pop">detail_parasite_pop</a><br>
       <a href="#detail_pop">detail_pop</a><br>
       <a href="#detail_sex_pop">detail_sex_pop</a><br>
@@ -110,6 +118,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#ExitElapsedTime">ExitElapsedTime</a><br>
       <a href="#exit_if_ave_lineage_label_larger">exit_if_ave_lineage_label_larger</a><br>
       <a href="#exit_if_ave_lineage_label_smaller">exit_if_ave_lineage_label_smaller</a><br>
+      <a href="#Flash">Flash</a><br>
       <a href="#FullLandscape">FullLandscape</a><br>
       <a href="#genetic_distance_pop_dump">genetic_distance_pop_dump</a><br>
       <a href="#HillClimb">HillClimb</a><br>
@@ -120,6 +129,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#inject_all_random_repro">inject_all_random_repro</a><br>
       <a href="#InjectAllRandomRepro">InjectAllRandomRepro</a><br>
       <a href="#InjectDemes">InjectDemes</a><br>
+      <a href="#InjectDemesFromNest">InjectDemesFromNest</a><br>
+      <a href="#InjectDemesRandom">InjectDemesRandom</a><br>
       <a href="#InjectParasite">InjectParasite</a><br>
       <a href="#InjectParasitePair">InjectParasitePair</a><br>
       <a href="#InjectRandom">InjectRandom</a><br>
@@ -134,6 +145,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#InjectSequence">InjectSequence</a><br>
       <a href="#InjectSequenceWDivMutRate">InjectSequenceWDivMutRate</a><br>
       <a href="#InsertionLandscape">InsertionLandscape</a><br>
+      <a href="#IteratedConsensus">IteratedConsensus</a><br>
       <a href="#join_grid_col">join_grid_col</a><br>
       <a href="#join_grid_row">join_grid_row</a><br>
       <a href="#JoinGridCol">JoinGridCol</a><br>
@@ -144,9 +156,9 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#kill_rectangle">kill_rectangle</a><br>
       <a href="#LoadClone">LoadClone</a><br>
       <a href="#load_clone">load_clone</a><br>
-    <td valign="top">
       <a href="#load_dump_file">load_dump_file</a><br>
       <a href="#LoadPopulation">LoadPopulation</a><br>
+    <td valign="top">
       <a href="#ModMutProb">ModMutProb</a><br>
       <a href="#MutationalNeighborhood">MutationalNeighborhood</a><br>
       <a href="#new_trial">new_trial</a><br>
@@ -155,6 +167,9 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#OutflowScaledResource">OutflowScaledResource</a><br>
       <a href="#PairTestLandscape">PairTestLandscape</a><br>
       <a href="#PrecalcLandscape">PrecalcLandscape</a><br>
+      <a href="#Pred_DemeEventMoveBetweenTargets">Pred_DemeEventMoveBetweenTargets</a><br>
+      <a href="#Pred_DemeEventMoveCenter">Pred_DemeEventMoveCenter</a><br>
+      <a href="#Pred_DemeEventNUniqueIndividualsMovedIntoTarget">Pred_DemeEventNUniqueIndividualsMovedIntoTarget</a><br>
       <a href="#PredictNuLandscape">PredictNuLandscape</a><br>
       <a href="#PredictWLandscape">PredictWLandscape</a><br>
       <a href="#print_average_data">print_average_data</a><br>
@@ -162,19 +177,27 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintCCladeCounts">PrintCCladeCounts</a><br>
       <a href="#PrintCCladeFitnessHistogram">PrintCCladeFitnessHistogram</a><br>
       <a href="#PrintCCladeRelativeFitnessHistogram">PrintCCladeRelativeFitnessHistogram</a><br>
+      <a href="#PrintCellData">PrintCellData</a><br>
       <a href="#PrintCellVisitsData">PrintCellVisitsData</a><br>
       <a href="#PrintCompetitionData">PrintCompetitionData</a><br>
       <a href="#print_count_data">print_count_data</a><br>
       <a href="#PrintCountData">PrintCountData</a><br>
+      <a href="#PrintCurrentOpinions">PrintCurrentOpinions</a><br>
       <a href="#PrintCurrentReactionData">PrintCurrentReactionData</a><br>
+      <a href="#PrintCurrentReactionRewardData">PrintCurrentReactionRewardData</a><br>
+      <a href="#PrintCurrentTaskCounts">PrintCurrentTaskCounts</a><br>
       <a href="#print_data">print_data</a><br>
       <a href="#PrintData">PrintData</a><br>
       <a href="#PrintDebug">PrintDebug</a><br>
       <a href="#print_deme_stats">print_deme_stats</a><br>
       <a href="#PrintDemeAllStats">PrintDemeAllStats</a><br>
       <a href="#PrintDemeAverageData">PrintDemeAverageData</a><br>
+      <a href="#PrintDemeCompetitionData">PrintDemeCompetitionData</a><br>
+      <a href="#PrintDemeCurrentTaskExeData">PrintDemeCurrentTaskExeData</a><br>
       <a href="#PrintDemeDonorStats">PrintDemeDonorStats</a><br>
+      <a href="#PrintDemeEnergySharingStats">PrintDemeEnergySharingStats</a><br>
       <a href="#PrintDemeFoundersData">PrintDemeFoundersData</a><br>
+      <a href="#PrintDemeMigrationSuicidePoints">PrintDemeMigrationSuicidePoints</a><br>
       <a href="#PrintDemeOrgReactionData">PrintDemeOrgReactionData</a><br>
       <a href="#PrintDemeOrgTasksData">PrintDemeOrgTasksData</a><br>
       <a href="#PrintDemeOrgTasksExeData">PrintDemeOrgTasksExeData</a><br>
@@ -184,12 +207,15 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintDemeSpacialEnergyStats">PrintDemeSpacialEnergyStats</a><br>
       <a href="#PrintDemeSpacialSleepStats">PrintDemeSpacialSleepStats</a><br>
       <a href="#PrintDemeStats">PrintDemeStats</a><br>
+      <a href="#PrintDemesTotalAvgEnergy">PrintDemesTotalAvgEnergy</a><br>
       <a href="#PrintDemeTasksData">PrintDemeTasksData</a><br>
       <a href="#PrintDemeTasksExeData">PrintDemeTasksExeData</a><br>
+      <a href="#PrintDemeTestamentStats">PrintDemeTestamentStats</a><br>
       <a href="#print_depth_histogram">print_depth_histogram</a><br>
       <a href="#PrintDepthHistogram">PrintDepthHistogram</a><br>
       <a href="#print_detailed_fitness_data">print_detailed_fitness_data</a><br>
       <a href="#PrintDetailedFitnessData">PrintDetailedFitnessData</a><br>
+      <a href="#PrintDetailedSynchronizationData">PrintDetailedSynchronizationData</a><br>
       <a href="#print_divide_mut_data">print_divide_mut_data</a><br>
       <a href="#PrintDivideMutData">PrintDivideMutData</a><br>
       <a href="#print_dom">print_dom</a><br>
@@ -199,8 +225,11 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintDominantGenotype">PrintDominantGenotype</a><br>
       <a href="#PrintDominantParasiteGenotype">PrintDominantParasiteGenotype</a><br>
       <a href="#print_donation_stats">print_donation_stats</a><br>
+      <a href="#PrintDynamicMaxMinData">PrintDynamicMaxMinData</a><br>
       <a href="#print_error_data">print_error_data</a><br>
       <a href="#PrintErrorData">PrintErrorData</a><br>
+      <a href="#PrintExtendedTimeData">PrintExtendedTimeData</a><br>
+      <a href="#PrintFlowRateTuples">PrintFlowRateTuples</a><br>
       <a href="#print_genetic_distance_data">print_genetic_distance_data</a><br>
       <a href="#PrintGeneticDistanceData">PrintGeneticDistanceData</a><br>
       <a href="#PrintGenomicSiteEntropy">PrintGenomicSiteEntropy</a><br>
@@ -224,6 +253,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintLogFitnessHistogram">PrintLogFitnessHistogram</a><br>
       <a href="#print_market_data">print_market_data</a><br>
       <a href="#PrintMarketData">PrintMarketData</a><br>
+      <a href="#PrintMessageData">PrintMessageData</a><br>
       <a href="#print_mutation_rate_data">print_mutation_rate_data</a><br>
       <a href="#PrintMutationRateData">PrintMutationRateData</a><br>
       <a href="#print_number_phenotypes">print_number_phenotypes</a><br>
@@ -231,14 +261,16 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintPerDemeGenPerFounderData">PrintPerDemeGenPerFounderData</a><br>
       <a href="#PrintPerDemeReactionData">PrintPerDemeReactionData</a><br>
       <a href="#PrintPerDemeTasksData">PrintPerDemeTasksData</a><br>
+    <td valign="top">
       <a href="#PrintPerDemeTasksExeData">PrintPerDemeTasksExeData</a><br>
       <a href="#print_phenotype_status">print_phenotype_status</a><br>
       <a href="#PrintPhenotypeData">PrintPhenotypeData</a><br>
       <a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a><br>
-    <td valign="top">
       <a href="#PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a><br>
       <a href="#PrintPopulationDistanceData">PrintPopulationDistanceData</a><br>
+      <a href="#PrintPredicatedMessages">PrintPredicatedMessages</a><br>
       <a href="#PrintReactionData">PrintReactionData</a><br>
+      <a href="#PrintReactionExeData">PrintReactionExeData</a><br>
       <a href="#PrintReactionRewardData">PrintReactionRewardData</a><br>
       <a href="#PrintRelativeFitnessHistogram">PrintRelativeFitnessHistogram</a><br>
       <a href="#print_resource_data">print_resource_data</a><br>
@@ -250,6 +282,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintSpeciesAbundanceHistogram">PrintSpeciesAbundanceHistogram</a><br>
       <a href="#print_stats_data">print_stats_data</a><br>
       <a href="#PrintStatsData">PrintStatsData</a><br>
+      <a href="#PrintSynchronizationData">PrintSynchronizationData</a><br>
       <a href="#print_tasks_data">print_tasks_data</a><br>
       <a href="#print_tasks_exe_data">print_tasks_exe_data</a><br>
       <a href="#print_tasks_qual_data">print_tasks_qual_data</a><br>
@@ -285,6 +318,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#SerialTransfer">SerialTransfer</a><br>
       <a href="#serial_transfer">serial_transfer</a><br>
       <a href="#SetCellResource">SetCellResource</a><br>
+      <a href="#SetConfig">SetConfig</a><br>
       <a href="#SetEnvironmentInputs">SetEnvironmentInputs</a><br>
       <a href="#SetEnvironmentRandomMask">SetEnvironmentRandomMask</a><br>
       <a href="#SetMigrationRate">SetMigrationRate</a><br>
@@ -305,6 +339,9 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#set_resource">set_resource</a><br>
       <a href="#SetResourceInflow">SetResourceInflow</a><br>
       <a href="#SetResourceOutflow">SetResourceOutflow</a><br>
+      <a href="#SetSeasonalResource">SetSeasonalResource</a><br>
+      <a href="#SetSeasonalResource10Kyears_1To_1">SetSeasonalResource10Kyears_1To_1</a><br>
+      <a href="#SetSeasonalResource1Kyears_1To_1">SetSeasonalResource1Kyears_1To_1</a><br>
       <a href="#SetTaskArgDouble">SetTaskArgDouble</a><br>
       <a href="#SetTaskArgInt">SetTaskArgInt</a><br>
       <a href="#SetTaskArgString">SetTaskArgString</a><br>
@@ -316,11 +353,13 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#StopFastForward">StopFastForward</a><br>
       <a href="#swap_cells">swap_cells</a><br>
       <a href="#SwapCells">SwapCells</a><br>
+      <a href="#Synchronization">Synchronization</a><br>
       <a href="#task_snapshot">task_snapshot</a><br>
       <a href="#test_dom">test_dom</a><br>
       <a href="#TestDominant">TestDominant</a><br>
       <a href="#ToggleFitnessValley">ToggleFitnessValley</a><br>
       <a href="#ToggleRewardInstruction">ToggleRewardInstruction</a><br>
+      <a href="#TrackAllMessages">TrackAllMessages</a><br>
       <a href="#VERBOSE">VERBOSE</a><br>
       <a href="#zero_muts">zero_muts</a><br>
       <a href="#ZeroMuts">ZeroMuts</a><br>
@@ -438,7 +477,15 @@ and reaction parameters.
 </li>
 <li><p>
   <strong><a name="DelayedDemeEvent">DelayedDemeEvent</a></strong>
-  <i>&lt;int x1&gt; &lt;int y1&gt; &lt;int x2&gt; &lt;int y2&gt; &lt;int delay&gt; &lt;int duraion&gt;</i>
+  <i>&lt;int x1&gt; &lt;int y1&gt; &lt;int x2&gt; &lt;int y2&gt; &lt;int delay&gt; &lt;int duraion&gt; &lt;bool static_position&gt; &lt;int total_events&gt;</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="DelayedDemeEventsPerSlots">DelayedDemeEventsPerSlots</a></strong>
+  <i>&lt;int x1&gt; &lt;int y1&gt; &lt;int x2&gt; &lt;int y2&gt; &lt;int delay&gt; &lt;int duraion&gt; &lt;bool static_position&gt; &lt;int total_slots_per_deme&gt; &lt;int total_events_per_slot_max&gt; &lt;int total_events_per_slot_min&gt; &lt;int tolal_event_flow_levels&gt;</i>
   </p>
   <p>
   
@@ -501,6 +548,14 @@ and reaction parameters.
 <li><p>
   <strong><a name="SetCellResource">SetCellResource</a></strong>
   <i>&lt;int cell_id&gt; &lt;string res_name&gt; &lt;double res_count&gt;</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="SetConfig">SetConfig</a></strong>
+  <i>&lt;string config_var&gt; &lt;string value&gt;</i>
   </p>
   <p>
   
@@ -685,6 +740,27 @@ and reaction parameters.
   <span class="cmdarg">res_name</span> must already exist as
   a resource in environment file.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="SetSeasonalResource">SetSeasonalResource</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="SetSeasonalResource10Kyears_1To_1">SetSeasonalResource10Kyears_1To_1</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="SetSeasonalResource1Kyears_1To_1">SetSeasonalResource1Kyears_1To_1</a></strong>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -881,6 +957,14 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="AssignRandomCellData">AssignRandomCellData</a></strong>
+  <i>No Arguments</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="compete_demes">compete_demes</a></strong>
   <i>[int type=1]</i>
   </p>
@@ -892,6 +976,44 @@ change the course of the run.  There are a wide variety of these.
 <li><p>
   <strong><a name="CompeteDemes">CompeteDemes</a></strong>
   <i>[int type=1]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="CompeteDemes_AttackKillAndEnergyConserve">CompeteDemes_AttackKillAndEnergyConserve</a></strong>
+  <i>No Arguments</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="CompeteDemesByEnergyDistribution">CompeteDemesByEnergyDistribution</a></strong>
+  <i>Competes demes according to the distribution of energy among the organisms</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="CompeteDemesByTaskCount">CompeteDemesByTaskCount</a></strong>
+  <i>Competes demes according to the number of times a given task has been completed within that deme</i>
+  </p>
+  <p>
+    Competes demes based on the total number of times that a
+  task has been completed by an organism in the deme since the
+  was initialized. This action takes one integer parameter representing
+  number of the task that is to be used for competition. If no parameter
+  supplied, the class uses the first task defined in the environment file
+  compete the demes.
+
+  </p>
+</li>
+<li><p>
+  <strong><a name="CompeteDemesByTaskCountAndEfficiency">CompeteDemesByTaskCountAndEfficiency</a></strong>
+  <i>Competes demes according to the number of times a given task has been completed within that deme and the efficiency with which it was done</i>
   </p>
   <p>
   
@@ -963,6 +1085,22 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="DecayPoints">DecayPoints</a></strong>
+  </p>
+  <p>
+    Decays the number of points a deme has accumulated by
+  a percentage that is set in the configuration file.
+
+  </p>
+</li>
+<li><p>
+  <strong><a name="Desynchronization">Desynchronization</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="DisconnectCells">DisconnectCells</a></strong>
   <i>&lt;int cellA_x&gt; &lt;int cellA_y&gt; &lt;int cellB_x&gt; &lt;int cellB_y&gt;</i>
   </p>
@@ -983,6 +1121,13 @@ change the course of the run.  There are a wide variety of these.
 <li><p>
   <strong><a name="DivideDemes">DivideDemes</a></strong>
   <i>No arguments (yet!)</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="Flash">Flash</a></strong>
   </p>
   <p>
   
@@ -1048,6 +1193,22 @@ change the course of the run.  There are a wide variety of these.
 <li><p>
   <strong><a name="InjectDemes">InjectDemes</a></strong>
   <i>[string fname="START_CREATURE"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="InjectDemesFromNest">InjectDemesFromNest</a></strong>
+  <i>[int num_orgs=1] [int nest_cellid=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="InjectDemesRandom">InjectDemesRandom</a></strong>
+  <i>[int num_orgs=1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]</i>
   </p>
   <p>
   
@@ -1146,6 +1307,14 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="IteratedConsensus">IteratedConsensus</a></strong>
+  <i>[int compete_period=100 [int replace_number=0]]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="join_grid_col">join_grid_col</a></strong>
   <i>[int col_id=-1] [int min_row=0] [int max_row=-1]</i>
   </p>
@@ -1226,7 +1395,6 @@ change the course of the run.  There are a wide variety of these.
   <strong><a name="ModMutProb">ModMutProb</a></strong>
   <i>[string mut_type="COPY_MUT"] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]</i>
   </p>
-    For a list of values for mut_type, see <a href="#SetMutProb">SetMutProb<a/>.
   <p>
   
   </p>
@@ -1248,6 +1416,30 @@ change the course of the run.  There are a wide variety of these.
     Immediately calculates the fitness of each organism in the population, saves this value for use with the CompeteOrganisms
   event, and resets the state of all organisms.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="Pred_DemeEventMoveBetweenTargets">Pred_DemeEventMoveBetweenTargets</a></strong>
+  <i>[int times=1]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="Pred_DemeEventMoveCenter">Pred_DemeEventMoveCenter</a></strong>
+  <i>[int times=1]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="Pred_DemeEventNUniqueIndividualsMovedIntoTarget">Pred_DemeEventNUniqueIndividualsMovedIntoTarget</a></strong>
+  <i>[int numorgs=1]</i>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -1325,13 +1517,6 @@ change the course of the run.  There are a wide variety of these.
   <strong><a name="SetMutProb">SetMutProb</a></strong>
   <i>[string mut_type="COPY_MUT"] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]</i>
   </p>
-    Values for mut_type are POINT, COPY_MUT, COPY_INS, COPY_DEL, COPY_UNIFORM, 
-  COPY_SLIP, DIV_MUT, DIV_INS, DIV_DEL, DIV_UNIFORM, DIV_SLIP, DIVIDE_MUT, 
-  DIVIDE_INS, DIVIDE_DEL, DIVIDE_UNIFORM, DIVIDE_SLIP, PARENT, INJECT_MUT, 
-  INJECT_INS, and INJECT_DEL.  These correspond to their counterparts in avida.cfg.
-  <br>
-  <br>
-  To turn off all mutations, use <a href="#ZeroMuts">ZeroMuts</a>.
   <p>
   
   </p>
@@ -1390,6 +1575,13 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="Synchronization">Synchronization</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="ToggleFitnessValley">ToggleFitnessValley</a></strong>
   <i>No Arguments</i>
   </p>
@@ -1400,6 +1592,13 @@ change the course of the run.  There are a wide variety of these.
 <li><p>
   <strong><a name="ToggleRewardInstruction">ToggleRewardInstruction</a></strong>
   <i>No Arguments</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="TrackAllMessages">TrackAllMessages</a></strong>
   </p>
   <p>
   
@@ -1419,9 +1618,7 @@ change the course of the run.  There are a wide variety of these.
   <i>No Arguments</i>
   </p>
   <p>
-    This event will set all mutation rates to zero.  That is, it will set all
-    cell mutation rates to zero, so that new organisms born will have zero mutation
-    rates.  Current organsims will not be affected, and may still mutate.
+    This event will set all mutation rates to zero.
 
   </p>
 </li>
@@ -1689,6 +1886,13 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintCellData">PrintCellData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="PrintCellVisitsData">PrintCellVisitsData</a></strong>
   <i>[string fname="visits.dat			"]</i>
   </p>
@@ -1725,8 +1929,31 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintCurrentOpinions">PrintCurrentOpinions</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="PrintCurrentReactionData">PrintCurrentReactionData</a></strong>
   <i>[string fname="cur_reactions.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintCurrentReactionRewardData">PrintCurrentReactionRewardData</a></strong>
+  <i>[string fname="cur_reaction_reward.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintCurrentTaskCounts">PrintCurrentTaskCounts</a></strong>
+  <i>[string fname="curr_task_counts.dat"]</i>
   </p>
   <p>
   
@@ -1790,7 +2017,31 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintDemeCompetitionData">PrintDemeCompetitionData</a></strong>
+  <i>[string fname="deme_compete.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeCurrentTaskExeData">PrintDemeCurrentTaskExeData</a></strong>
+  <i>[string fname="	deme_cur_task_exe.dat	"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="PrintDemeDonorStats">PrintDemeDonorStats</a></strong>
+  <i>No Arguments</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeEnergySharingStats">PrintDemeEnergySharingStats</a></strong>
   <i>No Arguments</i>
   </p>
   <p>
@@ -1800,6 +2051,14 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="PrintDemeFoundersData">PrintDemeFoundersData</a></strong>
   <i>[string fname="deme_founders.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeMigrationSuicidePoints">PrintDemeMigrationSuicidePoints</a></strong>
+  <i>[string fname="	deme_mig_suicide_points.dat	"]</i>
   </p>
   <p>
   
@@ -1878,6 +2137,14 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintDemesTotalAvgEnergy">PrintDemesTotalAvgEnergy</a></strong>
+  <i>No Arguments</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="PrintDemeTasksData">PrintDemeTasksData</a></strong>
   <i>[string fname="deme_tasks.dat"]</i>
   </p>
@@ -1888,6 +2155,14 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="PrintDemeTasksExeData">PrintDemeTasksExeData</a></strong>
   <i>[string fname="deme_tasks_exe.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDemeTestamentStats">PrintDemeTestamentStats</a></strong>
+  <i>[string fname="deme_testament.dat"]</i>
   </p>
   <p>
   
@@ -1921,6 +2196,14 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="PrintDetailedFitnessData">PrintDetailedFitnessData</a></strong>
   <i>[int save_max_f_genotype=0] [int print_fitness_histo=0] [double hist_fmax=1] [double hist_fstep=0.1] [string datafn="fitness.dat"] [string histofn="fitness_histos.dat"] [string histotestfn="fitness_histos_testCPU.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintDetailedSynchronizationData">PrintDetailedSynchronizationData</a></strong>
+  <i>[string fname="sync-detail.dat"]</i>
   </p>
   <p>
   
@@ -2011,6 +2294,14 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintDynamicMaxMinData">PrintDynamicMaxMinData</a></strong>
+  <i>[string fname="		maxmin.dat			"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="print_error_data">print_error_data</a></strong>
   <i>[string fname="error.dat"]</i>
   </p>
@@ -2026,6 +2317,21 @@ a single, complete file for each trigger.
   <p>
     Print all of the standard errors of the average population statistics.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintExtendedTimeData">PrintExtendedTimeData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintFlowRateTuples">PrintFlowRateTuples</a></strong>
+  <i>[string fname="flow_rate_tuples.dat"]</i>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -2188,25 +2494,20 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
-	<strong><a name="PrintInternalTasksData">PrintInternalTasksData</a></strong>
-	<i>[string fname="in_tasks.dat"]</i>
-	</p>
-	<p>
-		Print the number of organisms that have performed each task using internal resources.
-	</p>
-	<p>
-		Note that tasks performed using internal resources are also counted as tasks performed (by <a href="#PrintTasksData">PrintTasksData</a>), so that if you wish to know the number of tasks performed <i>not</i> using internal resources you must do some subtraction:
-		<br><br>
-		(number from PrintTasksData) - (number from PrintInternalTasksData) = number of organisms who have performed this task <i>not</i> using internal resources
-	</p>
+  <strong><a name="PrintInternalTasksData">PrintInternalTasksData</a></strong>
+  <i>[string fname="in_tasks.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
 </li>
 <li><p>
-	<strong><a name="PrintInternalTasksQualData">PrintInternalTasksQualData</a></strong>
-	<i>[string fname="in_tasks_quality.dat"]</i>
-	</p>
-	<p>
-		Print the total quality of each task when performed using internal resources.  (See <a href="#PrintTasksQualData">PrintTasksQualData</a> for more about task quality.)
-	</p>
+  <strong><a name="PrintInternalTasksQualData">PrintInternalTasksQualData</a></strong>
+  <i>[string fname="in_tasks_quality.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
 </li>
 <li><p>
   <strong><a name="print_lineage_counts">print_lineage_counts</a></strong>
@@ -2270,6 +2571,14 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="PrintMarketData">PrintMarketData</a></strong>
   <i>[string fname="market.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintMessageData">PrintMessageData</a></strong>
+  <i>[string fname="message.dat"]</i>
   </p>
   <p>
   
@@ -2395,8 +2704,23 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintPredicatedMessages">PrintPredicatedMessages</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="PrintReactionData">PrintReactionData</a></strong>
   <i>[string fname="reactions.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintReactionExeData">PrintReactionExeData</a></strong>
+  <i>[string fname="reactions_exe.dat"]</i>
   </p>
   <p>
   
@@ -2506,6 +2830,13 @@ a single, complete file for each trigger.
   <p>
     Print all of the miscellanous population statistics.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintSynchronizationData">PrintSynchronizationData</a></strong>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
