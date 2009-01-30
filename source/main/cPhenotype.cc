@@ -1390,7 +1390,11 @@ void cPhenotype::ApplyDonatedEnergy() {
     SetEnergy(energy_store + energy_received_buffer);
   }
   
+  IncreaseNumEnergyApplications();
+  SetHasUsedDonatedEnergy();
+  
   energy_received_buffer = 0.0;
+  
 } //End AppplyDonatedEnergy()
 
 
@@ -1398,7 +1402,8 @@ void cPhenotype::ReceiveDonatedEnergy(const double donation) {
   assert(donation >= 0.0);  
   energy_received_buffer += donation;
   IncreaseEnergyReceived(donation);
-  is_energy_receiver = true;
+  SetIsEnergyReceiver();
+  IncreaseNumEnergyReceptions();
 } //End ReceiveDonatedEnergy()
 
 

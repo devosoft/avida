@@ -228,6 +228,13 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-energy", &cHardwareCPU::Inst_DonateEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("update-metabolic-rate", &cHardwareCPU::Inst_UpdateMetabolicRate, nInstFlag::STALL),
     tInstLibEntry<tMethod>("donate-energy-faced", &cHardwareCPU::Inst_DonateEnergyFaced, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced1", &cHardwareCPU::Inst_DonateEnergyFaced1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced2", &cHardwareCPU::Inst_DonateEnergyFaced2, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced5", &cHardwareCPU::Inst_DonateEnergyFaced5, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced10", &cHardwareCPU::Inst_DonateEnergyFaced10, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced20", &cHardwareCPU::Inst_DonateEnergyFaced20, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced50", &cHardwareCPU::Inst_DonateEnergyFaced50, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-energy-faced100", &cHardwareCPU::Inst_DonateEnergyFaced100, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("rotate-to-most-needy", &cHardwareCPU::Inst_RotateToMostNeedy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("request-energy", &cHardwareCPU::Inst_RequestEnergy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("request-energy-on", &cHardwareCPU::Inst_RequestEnergyFlagOn, nInstFlag::STALL),
@@ -406,6 +413,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
   	tInstLibEntry<tMethod>("if-faced-energy-more", &cHardwareCPU::Inst_IfFacedEnergyMore, nInstFlag::STALL),	    
 	  tInstLibEntry<tMethod>("if-energy-in-buffer", &cHardwareCPU::Inst_IfEnergyInBuffer, nInstFlag::STALL),
 	  tInstLibEntry<tMethod>("if-energy-not-in-buffer", &cHardwareCPU::Inst_IfEnergyNotInBuffer, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-energy-level", &cHardwareCPU::Inst_GetEnergyLevel, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-faced-energy-level", &cHardwareCPU::Inst_GetFacedEnergyLevel, nInstFlag::STALL),
 	  
     // Sleep and time
     tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
@@ -3541,49 +3550,63 @@ void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
 }
 
 
+void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given)
+{  
+  assert(to_org != NULL);
+  assert(frac_energy_given >= 0);
+  assert(frac_energy_given <= 1);
+
+  DoEnergyDonateAmount(to_org, m_organism->GetPhenotype().GetStoredEnergy() * frac_energy_given);
+  
+} //End DoEnergyDonatePercent()
+
+
 // The difference between this version and the previous is that this one allows energy to be placed
 // into the recipient's incoming energy buffer and not be applied immediately.  Also, some of the
 // energy may be lost in transfer
-void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given)
+void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
 {
   double losspct = m_world->GetConfig().ENERGY_SHARING_LOSS.Get();
   
   assert(to_org != NULL);
-  assert(frac_energy_given >= 0);
-  assert(frac_energy_given <= 1);
+  assert(amount >= 0);
   assert(losspct >= 0);
   assert(losspct <= 1);
-    
-  double cur_energy = m_organism->GetPhenotype().GetStoredEnergy();
+  
   const int update_metabolic = m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get();
-  double energy_given = cur_energy * frac_energy_given;
+  double energy_given = min(m_organism->GetPhenotype().GetStoredEnergy(), amount);
   
   //update energy store and merit of donor
   m_organism->GetPhenotype().ReduceEnergy(energy_given);
+  m_organism->GetPhenotype().SetIsEnergyDonor();
   m_organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
-	
+  m_organism->GetPhenotype().IncreaseNumEnergyDonations();
+  
+  m_organism->GetDeme()->IncreaseEnergyDonated(energy_given);
+  
   if(update_metabolic == 1) {
     double senderMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
     m_organism->UpdateMerit(senderMerit);
   }
-	  
+  
   //apply loss in transfer
   energy_given *= (1 - losspct);
   
   //place energy into receiver's incoming energy buffer
   to_org->GetPhenotype().ReceiveDonatedEnergy(energy_given);
+  to_org->GetDeme()->IncreaseEnergyReceived(energy_given);   // Harder for phenotype to get the deme, so it's done here
   
   //if we are using the push energy method, pass the new energy into the receiver's energy store and recalculate merit
   if(m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) {
     to_org->GetPhenotype().ApplyDonatedEnergy();
 	  
 	  if(update_metabolic == 1) {
-        double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
-        to_org->UpdateMerit(receiverMerit);
+      double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
+      to_org->UpdateMerit(receiverMerit);
 	  }
   }
   
-} //End DoEnergyDonatePercent()
+} //End DoEnergyDonateAmount()
 
 
 bool cHardwareCPU::Inst_DonateFacing(cAvidaContext& ctx) {
@@ -4087,7 +4110,6 @@ bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext& ctx)
   
   if(m_organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
     m_organism->GetPhenotype().ApplyDonatedEnergy();
-    m_organism->GetPhenotype().SetHasUsedDonatedEnergy();
 	 
 	  if(m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get() == 1) {
         double receiverMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
@@ -4130,8 +4152,6 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
   }
   
   DoEnergyDonatePercent(energyReceiver, m_organism->GetFracEnergyDonating());
-  m_organism->GetPhenotype().IncDonates();
-  m_organism->GetPhenotype().SetIsEnergyDonor();
   
   return true;
   
@@ -4163,14 +4183,166 @@ bool cHardwareCPU::Inst_DonateEnergyFaced(cAvidaContext& ctx)
     if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
     {
       DoEnergyDonatePercent(neighbor, m_organism->GetFracEnergyDonating());
-      m_organism->GetPhenotype().IncDonates();
-      m_organism->GetPhenotype().SetIsEnergyDonor();
     }
   }  
   
   return true;
   
 } //End Inst_DonateEnergyFaced()
+
+
+bool cHardwareCPU::Inst_DonateEnergyFaced1(cAvidaContext& ctx)
+{
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
+    {
+      DoEnergyDonateAmount(neighbor, 1);
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced1()
+
+
+bool cHardwareCPU::Inst_DonateEnergyFaced2(cAvidaContext& ctx)
+{
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
+    {
+      DoEnergyDonateAmount(neighbor, 2);
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced2()
+
+
+bool cHardwareCPU::Inst_DonateEnergyFaced5(cAvidaContext& ctx)
+{
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
+    {
+      DoEnergyDonateAmount(neighbor, 5);
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced5()
+
+
+bool cHardwareCPU::Inst_DonateEnergyFaced10(cAvidaContext& ctx)
+{
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
+    {
+      DoEnergyDonateAmount(neighbor, 10);
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced10()
+
+
+bool cHardwareCPU::Inst_DonateEnergyFaced20(cAvidaContext& ctx)
+{
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
+    {
+      DoEnergyDonateAmount(neighbor, 20);
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced20()
+
+
+bool cHardwareCPU::Inst_DonateEnergyFaced50(cAvidaContext& ctx)
+{
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
+    {
+      DoEnergyDonateAmount(neighbor, 50);
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced50()
+
+
+bool cHardwareCPU::Inst_DonateEnergyFaced100(cAvidaContext& ctx)
+{
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
+    
+    // If the neighbor has requested energy or if we're allowing push sharing, share energy
+    if ( (neighbor->GetPhenotype().HasOpenEnergyRequest()) || (m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) )
+    {
+      DoEnergyDonateAmount(neighbor, 100);
+    }
+  }  
+  
+  return true;
+  
+} //End Inst_DonateEnergyFaced100()
 
 
 // Rotate to face the most energy needy neighbor
@@ -4227,6 +4399,7 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
   
   m_organism->BroadcastMessage(ctx, msg);
   m_organism->GetPhenotype().SetIsEnergyRequestor();
+  m_organism->GetPhenotype().IncreaseNumEnergyRequests();
   
   return true;
   
@@ -4241,7 +4414,9 @@ bool cHardwareCPU::Inst_RequestEnergyFlagOn(cAvidaContext& ctx)
   }	
   
   m_organism->GetPhenotype().SetIsEnergyRequestor();
+  m_organism->GetPhenotype().IncreaseNumEnergyRequests();
   m_organism->GetPhenotype().SetHasOpenEnergyRequest();
+  
   return true;
 } //End Inst_RequestEnergyFlagOn()
 
@@ -5430,6 +5605,40 @@ bool cHardwareCPU::Inst_IfEnergyNotInBuffer(cAvidaContext& ctx) {
   return true;
 	
 } //End Inst_IfEnergyNotInBuffer()
+
+
+bool cHardwareCPU::Inst_GetEnergyLevel(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  const int reg = FindModifiedRegister(REG_BX);
+  GetRegister(reg) = (int) floor(m_organism->GetPhenotype().GetStoredEnergy());
+  
+  return true;
+	
+} //End Inst_GetEnergyLevel()
+
+
+bool cHardwareCPU::Inst_GetFacedEnergyLevel(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if( (neighbor == NULL) || (neighbor->IsDead()) ) {
+    return false;  
+  }
+    
+  const int reg = FindModifiedRegister(REG_BX);
+  GetRegister(reg) = (int) floor(neighbor->GetPhenotype().GetStoredEnergy());
+  
+  return true;
+	
+} //End Inst_GetFacedEnergyLevel()
 
 
 bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {

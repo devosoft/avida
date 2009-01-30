@@ -2642,6 +2642,9 @@ void cPopulation::PrintDemeEnergySharingStats() {
   double num_requestors = 0;
   double num_donors = 0;
   double num_receivers = 0;
+  double num_donations = 0;
+  double num_receptions = 0;
+  double num_applications;
   double amount_donated = 0.0;
   double amount_received = 0.0;
   double amount_applied = 0.0;  
@@ -2656,14 +2659,21 @@ void cPopulation::PrintDemeEnergySharingStats() {
       if(phenotype.IsEnergyRequestor()) num_requestors++;
       if(phenotype.IsEnergyDonor()) num_donors++;
       if(phenotype.IsEnergyReceiver()) num_receivers++;
+      num_donations += phenotype.GetNumEnergyDonations();
+      num_receptions += phenotype.GetNumEnergyReceptions();
+      num_applications += phenotype.GetNumEnergyApplications();
       amount_donated += phenotype.GetAmountEnergyDonated();
       amount_received += phenotype.GetAmountEnergyReceived();
       amount_applied += phenotype.GetAmountEnergyApplied();
     }
   }
+  
   df_donor.Write(num_requestors/num_demes, "Average number of organisms that have requested energy");
   df_donor.Write(num_donors/num_demes, "Average number of organisms that have donated energy");
   df_donor.Write(num_receivers/num_demes, "Average number of organisms that have received energy");
+  df_donor.Write(num_donations/num_demes, "Average number of donations per deme");
+  df_donor.Write(num_receptions/num_demes, "Average number of receipts per deme");
+  df_donor.Write(num_applications/num_demes, "Average number of applications per deme");
   df_donor.Write(amount_donated/num_demes, "Average total amount of energy donated per deme");
   df_donor.Write(amount_received/num_demes, "Average total amount of energy received per deme");
   df_donor.Write(amount_applied/num_demes, "Average total amount of donated energy applied per deme");

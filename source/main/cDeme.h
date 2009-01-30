@@ -88,6 +88,10 @@ private:
   int sleeping_count; //!< Number of organisms currently sleeping
   cDoubleSum energyUsage;
   
+  double total_energy_donated;
+  double total_energy_received;
+  double total_energy_applied;
+  
   tArray<int> cur_task_exe_count;
   tArray<int> cur_reaction_count;
   tArray<int> last_task_exe_count;
@@ -335,6 +339,14 @@ public:
 	void ClearMigrationOut() { migrations_out = 0; }
 	void ClearMigrationIn() { migrations_in = 0; }
 	void ClearSuicides() { suicides = 0; }
+  
+  // --- Energy Sharing --- //
+  double GetEnergyDonated() const { return total_energy_donated; }
+  double GetEnergyReceived() const { return total_energy_received; }
+  double GetEnergyApplied() const { return total_energy_applied; }
+  void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
+  void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
+  void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
 
 	
   void GetSurroundingCellIds(tVector<int> &cells, const int absolute_cell_id, const int radius);

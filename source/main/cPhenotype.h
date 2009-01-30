@@ -114,6 +114,10 @@ private:
   double total_energy_donated;                // Tota amount of energy that has been donated
   double total_energy_received;               // Total amount of energy received through donations
   double total_energy_applied;                // Total amount of received energy applied to energy store
+  int num_energy_requests;                    // Number of times organism has requested energy
+  int num_energy_donations;                   // Number of times energy has been donated
+  int num_energy_receptions;                    // Number of times organism has received energy donations
+  int num_energy_applications;                // Number of times organism has applied donated energy to its energy store
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
   tArray<int> cur_task_count;                 // Total times each task was performed
@@ -462,9 +466,16 @@ public:
   void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
+  void IncreaseNumEnergyRequests() { num_energy_requests++; }
+  void IncreaseNumEnergyDonations() { num_energy_donations++; }
+  void IncreaseNumEnergyApplications() { num_energy_applications++; }
+  void IncreaseNumEnergyReceptions() { num_energy_receptions++; }
   double GetAmountEnergyDonated() { return total_energy_donated; }
   double GetAmountEnergyReceived() { return total_energy_received; }
   double GetAmountEnergyApplied() { return total_energy_applied; }
+  int GetNumEnergyDonations() { return num_energy_donations; }
+  int GetNumEnergyReceptions() { return num_energy_receptions; }
+  int GetNumEnergyApplications() { return num_energy_applications; }
   
   void SetCurRBinsAvail(const tArray<double>& in_avail) { cur_rbins_avail = in_avail; }
   void SetCurRbinsTotal(const tArray<double>& in_total) { cur_rbins_total = in_total; }
