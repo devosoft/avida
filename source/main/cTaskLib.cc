@@ -3166,7 +3166,8 @@ void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, 
   schema.AddEntry("poison", 1, cArgSchema::SCHEMA_STRING);
   
   // Double Arguments
-  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+//  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
+//  schema.AddEntry("base", 1, 2.0);
   
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "State Grid Path Traversal", &cTaskLib::Task_SGPathTraversal, 0, args);
@@ -3204,8 +3205,9 @@ double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
   
   double quality = 0.0;
   
-  double halflife = -1.0 * fabs(args.GetDouble(0));
-  quality = pow(2.0, (double)(args.GetInt(0) - ((traversed >= 0) ? traversed : 0)) / halflife);
+//  double halflife = -1.0 * fabs(args.GetDouble(0));
+//  quality = pow(args.GetDouble(1), (double)(args.GetInt(0) - ((traversed >= 0) ? traversed : 0)) / halflife);
+  quality = (double)((traversed >= 0) ? traversed : 0) / (double)args.GetInt(0);
   
   return quality;
 }  
