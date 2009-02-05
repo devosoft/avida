@@ -427,7 +427,12 @@
       <li>neutral metric (double):  A double value that randomly drifts over time - default 0
     </ul>
   </p>
-
+=== Action SetSeasonalResource ===
+  Sets resource availiblity to seasonal
+=== Action SetSeasonalResource1Kyears_1To_1 ===
+  Sets resource availiblity to seasonal 1 to -1 for 1K years of 365 updates
+=== Action SetSeasonalResource10Kyears_1To_1 ===
+  Sets resource availiblity to seasonal 1 to -1 for 10K years of 365 updates
 === Action inject_resource ===
   <font color="red">DEPRECATED</font>
 === Action inject_scaled_resource ===
