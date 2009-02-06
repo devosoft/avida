@@ -1,0 +1,37 @@
+======== Introduction
+
+This directory contains a bunch of matlab scripts that help with analyzing
+Avida data files.  Many of these scripts assume unix/os x (sorry).
+
+Most of these scripts have comments to help decipher how they work, try, for example "help quick_load" from Matlab's command window.  It would probably be useful to set Matlab's path to point to this directory.
+
+Briefly, here's what each script here does:
+
+exportfig.m: low-level function to export a figure in camera-ready eps format
+find_files.m: recursive search for files
+header_lines.m: retrieve the header lines from an Avida data file
+load_files.m: low-level function to load data files into an array
+newfigure.m: wrapper around figure that makes figures look nice
+quick_load.m: load a series of data files into a structure for analysis
+quick_export.m: a wrapper around exportfig that makes figures look nice
+stderr.m: calculate the standard error of an array
+
+======== How to use quick_load
+
+Quick_load is a Matlab script that I've found useful for dealing with the types of data files that Avida generates (gzip'ed, data from multiple trials, etc.).
+
+In most cases, quick_load can be called with a regular expression that matches the files of interest.  For example, the following command loads all files below the current working directory that match the string "bcast_.*deme_compete".
+
+d = quick_load('"bcast_.*deme_compete"');
+
+NOTE THE USE OF MULTIPLE QUOTES!!!  One of the nice feature of quick_load is that it doesn't care whether the data files are gzip'ed or not.
+
+The return value from this command looks like this:
+d = 
+    filenames: {1x30 cell}
+    fieldnames: {3x1 cell}
+    update: [30x500 double]
+    avgfit: [30x500 double]
+    maxfit: [30x500 double]
+
+If all the header lines of the data file end with [\w+], then quick_load will unpack the array into fieldnames as well.
