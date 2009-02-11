@@ -306,8 +306,13 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   ADD_GDATA(cString (), "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
   ADD_GDATA(cString (), "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, 0, "(N/A)", "");
   ADD_GDATA(cString (), "task_list", "List of all tasks performed",     GetTaskList,     SetNULL, 0, "(N/A)", "");
-  ADD_GDATA(cString (), "link.tasksites", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
-  ADD_GDATA(cString (), "html.sequence",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
+  
+  // @TODO - the following were link.tasksites and html.sequence, respectively.  The period character is now separated as
+  //         an argument passed into the function, thus they are matched as the component before the period.  For now
+  //         I have simply removed the argument part, since there are not any existing name clashes.  However,  in future
+  //         versions we should rename these.
+  ADD_GDATA(cString (), "link", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
+  ADD_GDATA(cString (), "html",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
   
   dcm->Add("inst", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
               ("inst", &cAnalyzeGenotype::DescInstExe, &cAnalyzeGenotype::GetInstExecutedCount));
