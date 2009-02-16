@@ -337,7 +337,9 @@ private:
   bool Inst_IfANotEqB(cAvidaContext& ctx);
   bool Inst_IfBNotEqC(cAvidaContext& ctx);
   bool Inst_IfANotEqC(cAvidaContext& ctx);
-
+  bool Inst_IfGrX(cAvidaContext& ctx);
+  bool Inst_IfEquX(cAvidaContext& ctx);
+  
   bool Inst_JumpF(cAvidaContext& ctx);
   bool Inst_JumpB(cAvidaContext& ctx);
   bool Inst_Call(cAvidaContext& ctx);

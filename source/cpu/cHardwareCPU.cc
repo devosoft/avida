@@ -104,7 +104,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-B!=C", &cHardwareCPU::Inst_IfBNotEqC),
     tInstLibEntry<tMethod>("if-A!=C", &cHardwareCPU::Inst_IfANotEqC),
     tInstLibEntry<tMethod>("if-bit-1", &cHardwareCPU::Inst_IfBit1),
-    
+    tInstLibEntry<tMethod>("if-grt-X", &cHardwareCPU::Inst_IfGrX),
+    tInstLibEntry<tMethod>("if-equ-X", &cHardwareCPU::Inst_IfEquX),
+
     tInstLibEntry<tMethod>("jump-f", &cHardwareCPU::Inst_JumpF),
     tInstLibEntry<tMethod>("jump-b", &cHardwareCPU::Inst_JumpB),
     tInstLibEntry<tMethod>("call", &cHardwareCPU::Inst_Call),
@@ -1880,6 +1882,68 @@ bool cHardwareCPU::Inst_IfBNotEqC(cAvidaContext& ctx)     // Execute next if BX 
 bool cHardwareCPU::Inst_IfANotEqC(cAvidaContext& ctx)     // Execute next if AX != BX
 {
   if (GetRegister(REG_AX) == GetRegister(REG_CX) )  IP().Advance();
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfGrX(cAvidaContext& ctx)       // Execute next if BX > X; X value set according to NOP label
+{
+  // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
+  //    no nop label (default): valueToCompare = 1; nop-A: valueToCompare = -1
+  //                     nop-B: valueToCompare = 2; nop-C: valueToCompare =  4
+  // @LMG 2/13/2009
+  
+  int valueToCompare = 1;
+  
+  if (m_inst_set->IsNop(IP().GetNextInst())) {
+    IP().Advance();    
+    switch (m_inst_set->GetNopMod(IP().GetInst())) {
+        
+      case REG_AX:
+        valueToCompare = -1; break;
+      case REG_BX:
+        valueToCompare =  2; break;
+      case REG_CX:
+        valueToCompare =  4; break;
+      default:
+        valueToCompare =  1; break;
+    }
+    IP().SetFlagExecuted();
+    
+  }
+  
+  if (GetRegister(REG_BX) <= valueToCompare)  IP().Advance();
+  
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfEquX(cAvidaContext& ctx)       // Execute next if BX == X; X value set according to NOP label
+{
+  // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
+  //    no nop label (default): valueToCompare = 1; nop-A: valueToCompare = -1
+  //                     nop-B: valueToCompare = 2; nop-C: valueToCompare =  4
+  // @LMG 2/13/2009
+  
+  int valueToCompare = 1;
+  
+  if (m_inst_set->IsNop(IP().GetNextInst())) {
+    IP().Advance();
+    switch (m_inst_set->GetNopMod(IP().GetInst())) {
+        
+      case REG_AX:
+        valueToCompare = -1; break;
+      case REG_BX:
+        valueToCompare =  2; break;
+      case REG_CX:
+        valueToCompare =  4; break;
+      default:
+        valueToCompare =  1; break;
+    }
+    IP().SetFlagExecuted();
+    
+  }
+  
+  if (GetRegister(REG_BX) != valueToCompare)  IP().Advance();
+  
   return true;
 }
 
