@@ -2556,17 +2556,30 @@ public:
 };
 
 class cActionPrintDemeEnergySharingStats : public cAction
+{
+public:
+  cActionPrintDemeEnergySharingStats(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    
+  static const cString GetDescription() { return "No Arguments"; }
+    
+  void Process(cAvidaContext& ctx)
   {
-  public:
-    cActionPrintDemeEnergySharingStats(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    m_world->GetPopulation().PrintDemeEnergySharingStats();
+  }
+};
+
+class cActionPrintDemeEnergyDistributionStats : public cAction
+{
+public:
+  cActionPrintDemeEnergyDistributionStats(cWorld* world, const cString& args) : cAction(world, args) { ; }
     
-    static const cString GetDescription() { return "No Arguments"; }
+  static const cString GetDescription() { return "No Arguments"; }
     
-    void Process(cAvidaContext& ctx)
-    {
-      m_world->GetPopulation().PrintDemeEnergySharingStats();
-    }
-  };
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().PrintDemeEnergyDistributionStats();
+  }
+};
 
 class cActionPrintDemeDonorStats : public cAction
 {
@@ -2747,6 +2760,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
   action_lib->Register<cActionPrintDemesTotalAvgEnergy>("PrintDemesTotalAvgEnergy");
   action_lib->Register<cActionPrintDemeEnergySharingStats>("PrintDemeEnergySharingStats");
+  action_lib->Register<cActionPrintDemeEnergyDistributionStats>("PrintDemeEnergyDistributionStats");
   action_lib->Register<cActionPrintDemeDonorStats>("PrintDemeDonorStats");
   action_lib->Register<cActionPrintDemeSpacialEnergy>("PrintDemeSpacialEnergyStats");
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
