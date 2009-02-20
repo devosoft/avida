@@ -46,6 +46,7 @@
 #include "cWorld.h"
 #include "cStats.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <utility>
 
