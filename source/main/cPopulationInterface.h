@@ -107,7 +107,7 @@ public:
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
   bool SendMessage(cOrganism* recvr, cOrgMessage& msg);
-  bool BroadcastMessage(cOrgMessage& msg);
+  bool BroadcastMessage(cOrgMessage& msg, int depth);
   bool BcastAlarm(int jump_label, int bcast_range);  
   void DivideOrgTestamentAmongDeme(double value);
 	//! Send a flash to all neighboring organisms.

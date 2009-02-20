@@ -116,6 +116,26 @@ void cPopulationCell::Rotate(cPopulationCell& new_facing)
   }
 }
 
+/*! This method recursively builds a set of cells that neighbor this cell, out to 
+ the given depth.  The set must be passed in by-reference, as calls to this method 
+ must share a common set of already-visited cells.
+ */
+void cPopulationCell::GetNeighboringCells(std::set<cPopulationCell*>& cell_set, int depth) const {
+	typedef std::set<cPopulationCell*> cell_set_t;
+  
+  // For each cell in our connection list...
+  tConstListIterator<cPopulationCell> i(m_connections);
+  while(!i.AtEnd()) {
+		// store the cell pointer, and check to see if we've already visited that cell...
+    cPopulationCell* cell = i.Next();
+		std::pair<cell_set_t::iterator, bool> ins = cell_set.insert(cell);
+		// and if so, recurse to it...
+		if(ins.second && (depth > 1)) {
+			cell->GetNeighboringCells(cell_set, depth-1);
+		}
+	}
+}
+
 /*! These values are chosen so as to make loops on the facing 'easy'.
 111 = NE
 101 = E

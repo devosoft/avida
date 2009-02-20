@@ -781,31 +781,29 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
 }
 
 
-// Broadcast a message - slightly modified version of SendMessage
-bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg)
-{
+/*! Broadcast a message to all organisms out to the given depth. */
+bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth) {
   assert(m_interface);
   InitMessaging();
- 
-  // If we're able to succesfully send the message...
-  if(m_interface->BroadcastMessage(msg)) {
-    // If we're remembering messages
+	
+	if(m_interface->BroadcastMessage(msg, depth)) {
+		// If we're remembering messages
     if (m_world->GetConfig().ORGANISMS_REMEMBER_MESSAGES.Get()) {
       // save it...
       m_msg->sent.push_back(msg);
       // and set the receiver-pointer of this message to NULL.  We don't want to
       // walk this list later thinking that the receivers are still around.
       m_msg->sent.back().SetReceiver(0);
-    }
-    // stat-tracking...  NOTE: this has receiver not specified, so may be a problem for predicates
+    }		
+		// stat-tracking...  NOTE: this has receiver not specified, so may be a problem for predicates
     m_world->GetStats().SentMessage(msg);
     // check to see if we've performed any tasks...NOTE: this has receiver not specified, so may be a problem for tasks that care
     DoOutput(ctx);
     return true;
   }
-  
-  return false;
-} //End BroadcastMessage()
+	
+	return false;
+}
 
 
 void cOrganism::ReceiveMessage(cOrgMessage& msg)
@@ -928,4 +926,41 @@ void cOrganism::SendFlash(cAvidaContext& ctx) {
   m_interface->SendFlash();
   m_world->GetStats().SentFlash(*this);
   DoOutput(ctx);
+}
+
+
+cOrganism::Neighborhood cOrganism::GetNeighborhood() {
+	Neighborhood neighbors;
+	for(int i=0; i<GetNeighborhoodSize(); ++i, Rotate(1)) {
+		if(IsNeighborCellOccupied()) {
+			neighbors.insert(GetNeighbor()->GetID());
+		}
+	}	
+	return neighbors;
+}
+
+
+void cOrganism::LoadNeighborhood() {
+	InitNeighborhood();
+	m_neighborhood->neighbors = GetNeighborhood();
+	m_neighborhood->loaded = true;
+}
+
+
+bool cOrganism::HasNeighborhoodChanged() {
+	InitNeighborhood();
+	// Must have loaded the neighborhood first:
+	if(!m_neighborhood->loaded) return false;
+	
+	// Ok, get the symmetric difference between the old neighborhood and the current neighborhood:
+	Neighborhood symdiff;
+	Neighborhood current = GetNeighborhood();	
+	std::set_symmetric_difference(m_neighborhood->neighbors.begin(),
+																m_neighborhood->neighbors.end(),
+																current.begin(),
+																current.end(),
+																std::insert_iterator<Neighborhood>(symdiff, symdiff.begin()));
+	
+	// If the symmetric difference is empty, then nothing has changed -- return 
+	return !symdiff.empty();
 }

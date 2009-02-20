@@ -27,6 +27,7 @@
 #define cPopulationCell_h
 
 #include <fstream>
+#include <set>
 
 #ifndef cMutationRates_h
 #include "cMutationRates.h"
@@ -95,6 +96,8 @@ public:
   inline cOrganism* GetOrganism() const { return m_organism; }
   inline cHardwareBase* GetHardware() const { return m_hardware; }
   inline tList<cPopulationCell>& ConnectionList() { return m_connections; }
+	//! Recursively build a set of cells that neighbor this one, out to the given depth.
+  void GetNeighboringCells(std::set<cPopulationCell*>& cell_set, int depth) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
   inline void GetPosition(int& x, int& y) { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.

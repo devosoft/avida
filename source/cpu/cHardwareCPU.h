@@ -339,6 +339,21 @@ private:
   bool Inst_IfANotEqC(cAvidaContext& ctx);
   bool Inst_IfGrX(cAvidaContext& ctx);
   bool Inst_IfEquX(cAvidaContext& ctx);
+
+	// Probabilistic ifs.
+	bool Inst_IfP0p125(cAvidaContext& ctx);
+	bool Inst_IfP0p25(cAvidaContext& ctx);
+	bool Inst_IfP0p50(cAvidaContext& ctx);
+	bool Inst_IfP0p75(cAvidaContext& ctx);
+	
+	// If-less-else-if, else, endif
+  cHeadCPU Find(const char* instr);
+  void Else_TopHalf();
+  bool Inst_IfLessEnd(cAvidaContext& ctx);
+  bool Inst_IfNotEqualEnd(cAvidaContext& ctx);
+  bool Inst_IfGrtEquEnd(cAvidaContext& ctx);
+  bool Inst_Else(cAvidaContext& ctx);
+  bool Inst_EndIf(cAvidaContext& ctx);	
   
   bool Inst_JumpF(cAvidaContext& ctx);
   bool Inst_JumpB(cAvidaContext& ctx);
@@ -646,7 +661,7 @@ private:
   bool Inst_Numberate24(cAvidaContext& ctx) { return Do_Numberate(ctx, 24); };
   bool Do_Numberate(cAvidaContext& ctx, int num_bits=0);
 
-    // Helper functions //
+	// Helper functions //
   bool IsActivePromoter();
   void NextPromoter();
   int  Numberate(int _pos, int _dir, int _num_bits = 0);
@@ -663,6 +678,11 @@ private:
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
   bool Inst_RetrieveMessage(cAvidaContext& ctx);
+  bool BroadcastX(cAvidaContext& ctx, int depth);
+  bool Inst_Broadcast1(cAvidaContext& ctx);
+  bool Inst_Broadcast2(cAvidaContext& ctx);
+  bool Inst_Broadcast4(cAvidaContext& ctx);
+  bool Inst_Broadcast8(cAvidaContext& ctx);
   
   //// Alarm ////
   bool Inst_Alarm_MSG_local(cAvidaContext& ctx);
@@ -672,7 +692,6 @@ private:
   bool Inst_Alarm_Label(cAvidaContext& ctx);
   bool Jump_To_Alarm_Label(int jump_label);
 
-  
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
 
@@ -755,6 +774,13 @@ private:
   std::pair<unsigned int, unsigned int> m_flash_info;
   //! Cycle timer; counts the number of cycles this virtual CPU has executed.
   unsigned int m_cycle_counter;	
+		
+	// -------- Neighborhood-sensing support --------
+public:	
+  //! Loads the current neighborhood into the organism's memory.
+  bool Inst_GetNeighborhood(cAvidaContext& ctx);
+	//! Test if the current neighborhood has changed from that in the organism's memory.
+	bool Inst_IfNeighborhoodChanged(cAvidaContext& ctx);
 };
 
 

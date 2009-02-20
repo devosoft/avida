@@ -26,10 +26,11 @@
 #ifndef cOrganism_h
 #define cOrganism_h
 
+#include <deque>
 #include <iostream>
+#include <set>
 #include <string>
 #include <vector>
-#include <deque>
 
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
@@ -384,7 +385,8 @@ public:
   
   //! Called when this organism attempts to send a message.
   bool SendMessage(cAvidaContext& ctx, cOrgMessage& msg);
-  bool BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg);
+	//! Called when this organism attempts to broadcast a message.
+  bool BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth);
   //! Called when this organism has been sent a message.
   void ReceiveMessage(cOrgMessage& msg);
   //! Called when this organism attempts to move a received message into its CPU.
@@ -393,7 +395,9 @@ public:
   const message_list_type& GetReceivedMessages() { InitMessaging(); return m_msg->received; }
   //! Returns the list of all messages sent by this organism.
   const message_list_type& GetSentMessages() { InitMessaging(); return m_msg->sent; }
-  
+	//! Use at your own rish; clear all the message buffers.
+	void FlushMessageBuffers() { InitMessaging(); m_msg->sent.clear(); m_msg->received.clear(); }
+
 private:
   /*! Contains all the different data structures needed to support messaging within
   cOrganism.  Inspired by cNetSupport (above), the idea is to minimize impact on
@@ -487,6 +491,27 @@ public:
   void SendFlash(cAvidaContext& ctx);
   // -------- End of synchronization support --------	
 
+	
+	// -------- Neighborhood support --------
+public:
+	typedef std::set<int> Neighborhood; //!< Typedef for a neighborhood snapshot.
+	//! Get the current neighborhood.
+	Neighborhood GetNeighborhood();
+	//! Loads this organism's current neighborhood into memory.
+	void LoadNeighborhood();
+	//! Has the current neighborhood changed from what is in memory?
+	bool HasNeighborhoodChanged();
+	
+protected:
+	//! Initialize neighborhood support.
+	inline void InitNeighborhood() { if(!m_neighborhood) { m_neighborhood = new cNeighborhoodSupport(); } }
+	//! Container for neighborhood support.
+	struct cNeighborhoodSupport {
+		cNeighborhoodSupport() : loaded(false) { }
+		bool loaded;
+		Neighborhood neighbors;
+	};
+	cNeighborhoodSupport* m_neighborhood; //!< Lazily-initialized pointer to the neighborhood data.
 
 
 	// -------- Internal Support Methods --------

@@ -347,9 +347,6 @@ public:
   void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
-
-	
-  void GetSurroundingCellIds(tVector<int> &cells, const int absolute_cell_id, const int radius);
 };
 
 #endif
