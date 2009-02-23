@@ -3693,6 +3693,7 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
   
   const int update_metabolic = m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get();
   double energy_given = min(m_organism->GetPhenotype().GetStoredEnergy(), amount);
+  double energy_received;
   
   //update energy store and merit of donor
   m_organism->GetPhenotype().ReduceEnergy(energy_given);
@@ -3708,11 +3709,11 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
   }
   
   //apply loss in transfer
-  energy_given *= (1 - losspct);
+  energy_received = energy_given * (1 - losspct);
   
   //place energy into receiver's incoming energy buffer
-  to_org->GetPhenotype().ReceiveDonatedEnergy(energy_given);
-  to_org->GetDeme()->IncreaseEnergyReceived(energy_given);   // Harder for phenotype to get the deme, so it's done here
+  to_org->GetPhenotype().ReceiveDonatedEnergy(energy_received);
+  to_org->GetDeme()->IncreaseEnergyReceived(energy_received);   // Harder for phenotype to get the deme, so it's done here
   
   //if we are using the push energy method, pass the new energy into the receiver's energy store and recalculate merit
   if(m_world->GetConfig().ENERGY_SHARING_METHOD.Get() == 1) {
@@ -3722,6 +3723,24 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
       double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
       to_org->UpdateMerit(receiverMerit);
 	  }
+  }
+  
+  
+  if(m_world->GetConfig().LOG_ENERGY_SHARING.Get() == 1) {    
+    cString tmpfilename = cStringUtil::Stringf("energy_sharing_log.dat");
+    cDataFile& df = m_world->GetDataFile(tmpfilename);
+    
+    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%f,%f,%d,%f,%f", 
+                                             m_world->GetStats().GetUpdate(),
+                                             m_world->GetConfig().ENERGY_SHARING_METHOD.Get(),
+                                             m_organism->GetID(),
+                                             energy_given,
+                                             m_organism->GetPhenotype().GetStoredEnergy(),
+                                             to_org->GetID(),
+                                             energy_received,
+                                             to_org->GetPhenotype().GetStoredEnergy());
+    df.WriteRaw(UpdateStr);
+    
   }
   
 } //End DoEnergyDonateAmount()
