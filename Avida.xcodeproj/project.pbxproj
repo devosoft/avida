@@ -2384,7 +2384,6 @@
 					"-Wno-unused-parameter",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-Wconversion",
 				);
 			};
 			name = Development;
@@ -2417,7 +2416,6 @@
 					"-Wextra",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-Wconversion",
 				);
 			};
 			name = Deployment;
@@ -2541,7 +2539,6 @@
 					"-Wextra",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-Wconversion",
 				);
 			};
 			name = "Deployment-G5";
@@ -2578,7 +2575,6 @@
 					"-Wno-unused-parameter",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-Wconversion",
 				);
 			};
 			name = Profile;
@@ -2713,7 +2709,6 @@
 					"-Wextra",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-Wconversion",
 				);
 			};
 			name = "Deployment-Universal";

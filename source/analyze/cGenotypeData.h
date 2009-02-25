@@ -32,4 +32,11 @@ public:
   virtual ~cGenotypeData() = 0;
 };
 
+enum eGENOTYPE_DATA_IDS
+{
+  GD_MD_ID = 1,
+  
+  GD_DYNAMIC_ID_BASE
+};
+
 #endif

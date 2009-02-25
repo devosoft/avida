@@ -30,7 +30,6 @@
 #include "tDataCommandManager.h"
 #include "tDataEntry.h"
 
-static const int MD_ID = 1;
 
 void cModularityAnalysis::Initialize()
 {
@@ -218,19 +217,19 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     mod_data->sites_inv_x_tasks = sites_inv_x_tasks;
     mod_data->task_length = task_length;
     mod_data->ave_task_position = ave_task_position;
-    m_genotype->SetGenotypeData(MD_ID, mod_data);
+    m_genotype->SetGenotypeData(GD_MD_ID, mod_data);
   }
 }
 
 #ifdef DEBUG
 #define GET_MD() \
   cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken(); \
-  cModularityData* data = dynamic_cast<cModularityData*>(genotype->GetGenotypeData(tok, MD_ID)); \
+  cModularityData* data = dynamic_cast<cModularityData*>(genotype->GetGenotypeData(tok, GD_MD_ID)); \
   delete tok;
 #else
 #define GET_MD() \
   cAnalyzeGenotype::ReadToken* tok = genotype->GetReadToken(); \
-  cModularityData* data = static_cast<cModularityData*>(genotype->GetGenotypeData(tok, MD_ID)); \
+  cModularityData* data = static_cast<cModularityData*>(genotype->GetGenotypeData(tok, GD_MD_ID)); \
   delete tok;
 #endif
 
