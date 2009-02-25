@@ -107,7 +107,7 @@ private:
     unsigned int oldest_component:15;
     unsigned int env_component:1;
     
-    inline sInternalValue() { ; }
+    inline sInternalValue() : value(0) { ; }
     inline void Clear() { value = 0; originated = 0; from_env = 0, oldest_component = 0; env_component = 0; }
     inline sInternalValue& operator=(const sInternalValue& i);
   };

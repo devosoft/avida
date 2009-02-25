@@ -80,17 +80,13 @@ int cString::Compare(const char * in) const
   // -1 (*this<in), 0 (*this==in), 1 (*this>in) ... just like strcmp()
   assert(in!=NULL);  // NULL input string
   int i;
-  for( i = 0;
-      i < GetSize() && in[i]!='\0' && (*this)[i] == in[i];
-      i++ );
+  for (i = 0; i < GetSize() && in[i]!='\0' && (*this)[i] == in[i]; i++) ;
   
-  if( i == GetSize()  &&  in[i] == '\0' ) {
-    return 0;                // *this == in
-  }
+  if (i == GetSize() && in[i] == '\0') return 0;      // *this == in
   
   // They're not equal!
-  if ( i < GetSize() && (*this)[i] > in[i] )  return 1;  // *this > in
-  return -1;                                             // *this < in
+  if (i < GetSize() && (*this)[i] > in[i]) return 1;  // *this > in
+  return -1;                                          // *this < in
 }
 
 bool cString::IsContinueLine()
