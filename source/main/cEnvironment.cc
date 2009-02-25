@@ -24,8 +24,8 @@
  */
 
 /*!  *  Routines to read the environment files that contains information
-about resources and reactions (which allow rewards or punishments
-to organisms doing certain tasks).  */
+ about resources and reactions (which allow rewards or punishments
+ to organisms doing certain tasks).  */
 
 #include "cEnvironment.h"
 
@@ -249,11 +249,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
       new_process->SetMatchString(var_value);
     }
     else if (var_name == "depletable") {
-    if (!AssertInputBool(var_value, "depletable", var_type))
+      if (!AssertInputBool(var_value, "depletable", var_type))
         return false;
-    new_process->SetDepletable(var_value.AsInt());  
+      new_process->SetDepletable(var_value.AsInt());  
     }
-
+    
     else {
       cerr << "Error: Unknown process variable '" << var_name
       << "' in reaction '" << reaction->GetName() << "'" << endl;
@@ -302,10 +302,10 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc)
       if (!AssertInputInt(var_value, "max_count", var_type)) return false;
       new_requisite->SetMaxTaskCount(var_value.AsInt());
     }
-	else if (var_name == "divide_only") {
-		if (!AssertInputInt(var_value, "divide_only", var_type)) return false;
-		new_requisite->SetDivideOnly(var_value.AsInt());
-	}
+    else if (var_name == "divide_only") {
+      if (!AssertInputInt(var_value, "divide_only", var_type)) return false;
+      new_requisite->SetDivideOnly(var_value.AsInt());
+    }
     else {
       cerr << "Error: Unknown requisite variable '" << var_name
       << "' in reaction '" << reaction->GetName() << "'" << endl;
@@ -327,11 +327,11 @@ bool cEnvironment::LoadResource(cString desc)
   while (desc.GetSize() > 0) {
     cString cur_resource = desc.PopWord();
     const cString name = cur_resource.Pop(':');
-
+    
     /* If resource does not already exist create it, however if it already
-       exists (for instance was created as a cell resource) pull it out of
-       the library and modify the existing values */
-
+     exists (for instance was created as a cell resource) pull it out of
+     the library and modify the existing values */
+    
     cResource* new_resource;
     if (! resource_lib.DoesResourceExist(name)) {
       new_resource = resource_lib.AddResource(name);
@@ -369,11 +369,11 @@ bool cEnvironment::LoadResource(cString desc)
           return false;
         }
       }
-	  else if (var_name == "cells")
-	  {
-		  tArray<int> cell_list = cStringUtil::ReturnArray(var_value);
-		  new_resource->SetCellIdList(cell_list);
-	  }
+      else if (var_name == "cells")
+      {
+        tArray<int> cell_list = cStringUtil::ReturnArray(var_value);
+        new_resource->SetCellIdList(cell_list);
+      }
       else if (var_name == "inflowx1" || var_name == "inflowx") {
         if (!AssertInputInt(var_value, "inflowX1", var_type)) return false;
         new_resource->SetInflowX1( var_value.AsInt() );
@@ -469,12 +469,12 @@ bool cEnvironment::LoadResource(cString desc)
 bool cEnvironment::LoadCell(cString desc)
 
 /*****************************************************************************
-  Routine to read in spatial resources loaded in one cell at a time. Syntax:
-
-   CELL resource_name:cell_list[:options]
-
-   where options are initial, inflow and outflow
-*****************************************************************************/
+ Routine to read in spatial resources loaded in one cell at a time. Syntax:
+ 
+ CELL resource_name:cell_list[:options]
+ 
+ where options are initial, inflow and outflow
+ *****************************************************************************/
 
 {
   if (desc.GetSize() == 0) {
@@ -486,10 +486,10 @@ bool cEnvironment::LoadCell(cString desc)
   while (desc.GetSize() > 0) {
     cString cur_resource = desc.PopWord();
     const cString name = cur_resource.Pop(':');
-
+    
     /* if this resource has not been already created go ahead and create it and
-       set some default global values */
-
+     set some default global values */
+    
     if (! resource_lib.DoesResourceExist(name)) {
       this_resource = resource_lib.AddResource(name);
       this_resource->SetInitial(0.0);
@@ -522,7 +522,7 @@ bool cEnvironment::LoadCell(cString desc)
       cString var_name;
       cString var_value;
       const cString var_type = 
-        cStringUtil::Stringf("resource '%s'", static_cast<const char*>(name));
+      cStringUtil::Stringf("resource '%s'", static_cast<const char*>(name));
       
       // Parse this entry.
       if (!ParseSetting(var_entry, var_name, var_value, var_type)) {
@@ -549,7 +549,7 @@ bool cEnvironment::LoadCell(cString desc)
     }
     for (int i=0; i < cell_list.GetSize(); i++) {
       if (cCellResource *CellResourcePtr = 
-            this_resource->GetCellResourcePtr(cell_list[i])) {
+          this_resource->GetCellResourcePtr(cell_list[i])) {
         this_resource->UpdateCellResource(CellResourcePtr,tmp_initial,
                                           tmp_inflow, tmp_outflow);
       } else {
@@ -626,8 +626,8 @@ bool cEnvironment::LoadReaction(cString desc)
     }
     else {
       cerr << "Unknown entry type '" << entry_type
-  	   << "' in reaction '" << name << "'"
-  	   << endl;
+      << "' in reaction '" << name << "'"
+      << endl;
       return false;
     }
   }
@@ -751,11 +751,11 @@ bool cEnvironment::LoadStateGrid(cString desc)
   schema.AddEntry("initx", 2, 0, INT_MAX);
   schema.AddEntry("inity", 3, 0, INT_MAX);
   schema.AddEntry("initfacing", 4, 0, 7);
-
+  
   // String Arguments
   schema.AddEntry("states", 0, cArgSchema::SCHEMA_STRING);
   schema.AddEntry("grid", 1, cArgSchema::SCHEMA_STRING);
-
+  
   // Load the Arguments
   tList<cString> errors;
   tAutoRelease<cArgContainer> args(cArgContainer::Load(desc, schema, &errors));
@@ -776,17 +776,17 @@ bool cEnvironment::LoadStateGrid(cString desc)
   int initx = args->GetInt(2);
   int inity = args->GetInt(3);
   int initfacing = args->GetInt(4);
-
+  
   if (initx >= width || inity >= height) {
     cerr << "error: initx and inity must not exceed (width - 1) and (height - 1)" << endl;
     return false;
   }
   
-
+  
   // Load the states
   cString statename;
   cString statesensestr;
-
+  
   tArray<cString> states;
   tArray<int> state_sense;
   cString statestr = args->GetString(0);
@@ -834,7 +834,7 @@ bool cEnvironment::LoadStateGrid(cString desc)
     }
     if (!found) {
       cerr << "error: state identifier undefined for cell (" << (cell / width) << ", "
-           << (cell % width) << ") in state grid " << name << endl;
+      << (cell % width) << ") in state grid " << name << endl;
       return false;
     }
   }
@@ -895,7 +895,7 @@ bool cEnvironment::LoadSetActive(cString desc)
 bool cEnvironment::LoadLine(cString line) 
 
 /* Routine to read in a line from the enviroment file and hand that line
-   line to the approprate routine to process it.                         */ 
+ line to the approprate routine to process it.                         */ 
 {
   cString type = line.PopWord();      // Determine type of this entry.
   type.ToUpper();                     // Make type case insensitive.
@@ -975,7 +975,7 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
       input_array[0] = (15 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 00001111
       input_array[1] = (51 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 00110011
       input_array[2] = (85 << 24) + ctx.GetRandom().GetUInt(1 << 24);  // 01010101
-
+      
       // And randomize the rest...
       for (int i = 3; i < m_input_size; i++) {
         input_array[i] = ctx.GetRandom().GetUInt(1 << 24);
@@ -999,7 +999,7 @@ void cEnvironment::SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, boo
 void cEnvironment::SwapInputs(cAvidaContext& ctx, tArray<int>& src_input_array, tArray<int>& dest_input_array) const
 {
   tArray<int> tmp_input_array = dest_input_array;
-
+  
   dest_input_array = src_input_array;
   src_input_array = tmp_input_array;  
 }
@@ -1044,20 +1044,20 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) {
       continue;
     }
-
+    
     const double task_quality = m_tasklib.TestOutput(taskctx);
     assert(task_quality >= 0.0);
-	
-
+    
+    
     // If this task wasn't performed, move on to the next one.
     if (task_quality == 0.0) continue;
     
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality, taskctx.GetTaskValue());
-
+    
     // And let's process it!
     DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, task_quality, task_cnt, i, result);
-
+    
     // Note: the reaction is actually marked as being performed inside DoProcesses.
   }  
   
@@ -1070,7 +1070,7 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
                                   int task_count, const tArray<int>& reaction_count, const bool on_divide) const
 {
   const int num_reqs = req_list.GetSize();
-
+  
   // If there are no requisites, there is nothing to meet!
   // (unless this is a check upon dividing, in which case we want the default to be to not check the task
   // and only if the requisite has been added to check it
@@ -1109,8 +1109,8 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     // Have all task counts been met?
     if (task_count < cur_req->GetMinTaskCount()) continue;
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
-
-	// Have divide task reqs been met?
+    
+    // Have divide task reqs been met?
     // If div_type is 0 we only check on IO, if 1 we only check on divide,
     // if 2 we check always
     int div_type = cur_req->GetDivideOnly();
@@ -1148,44 +1148,42 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     } else {
       // Otherwise we're using a finite resource      
       const int res_id = in_resource->GetID();
-
-	  bool may_use_rbins = m_world->GetConfig().USE_RESOURCE_BINS.Get();
-	  bool using_rbins = false;  //default: not using resource bins
-
-	  // check to see if the value of this resource was set to 0 for this cell
-      if (resource_count[res_id]==0)
-		  consumed=0;
-	  else {
-		  assert(resource_count[res_id] >= 0);
-		  assert(result.GetConsumed(res_id) >= 0);
-		  consumed = resource_count[res_id] - result.GetConsumed(res_id);
-		  consumed *= cur_process->GetMaxFraction();
-		  assert(consumed >= 0.0);
-		 
-		  if (may_use_rbins) {
-			  assert(rbins_count.GetSize() > res_id);
-		  }
-
-		  /* Check to see if we do want to use this resource from a bin instead of the environment:
-		  * - Can we use the resource bins?
-		  * - Is there anything in the bin for this resource?
-		  * - Is the usable fraction in the bin strictly greater than the threshold fraction
-		  *   of what we could consume from the outside environment?
-		  */
-		  if (may_use_rbins && rbins_count[res_id] > 0 && 
-			  (m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id]) > 
-			  (m_world->GetConfig().ENV_FRACTION_THRESHOLD.Get() * consumed)
-			  ) {
+      
+      bool may_use_rbins = m_world->GetConfig().USE_RESOURCE_BINS.Get();
+      bool using_rbins = false;  //default: not using resource bins
+      
+      // check to see if the value of this resource was set to 0 for this cell
+      if (resource_count[res_id]==0) {
+        consumed = 0;
+      } else {
+        assert(resource_count[res_id] >= 0);
+        assert(result.GetConsumed(res_id) >= 0);
+        consumed = resource_count[res_id] - result.GetConsumed(res_id);
+        consumed *= cur_process->GetMaxFraction();
+        assert(consumed >= 0.0);
+        
+        if (may_use_rbins) assert(rbins_count.GetSize() > res_id);
+        
+        /* Check to see if we do want to use this resource from a bin instead of the environment:
+         * - Can we use the resource bins?
+         * - Is there anything in the bin for this resource?
+         * - Is the usable fraction in the bin strictly greater than the threshold fraction
+         *   of what we could consume from the outside environment?
+         */
+        if (may_use_rbins && rbins_count[res_id] > 0 && 
+            (m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id]) > 
+            (m_world->GetConfig().ENV_FRACTION_THRESHOLD.Get() * consumed)
+            ) {
 				  consumed = m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id];
 				  using_rbins = true;
-		  }
-
-		  // Make sure we're not above the maximum consumption.
-		  if (consumed > max_consumed) consumed = max_consumed;
-
-		  assert((task_quality >= 0.0) && (task_quality <= 1.0));
-		  consumed *= task_quality;  // modify consumed based on task quality
-	  }
+        }
+        
+        // Make sure we're not above the maximum consumption.
+        if (consumed > max_consumed) consumed = max_consumed;
+        
+        assert((task_quality >= 0.0) && (task_quality <= 1.0));
+        consumed *= task_quality;  // modify consumed based on task quality
+      }
       // Test if we are below the minimum consumption.
       if (consumed < min_consumed) consumed = 0.0;
       
@@ -1198,12 +1196,11 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Mark in the results the resource consumed.
 			if (cur_process->GetDepletable()) {
       	result.Consume(res_id, consumed, !using_rbins);
-      
-      	//if we consumed resource from an internal resource bin, remove it
-      	if (may_use_rbins && using_rbins)
-      	{rbins_count[res_id] -= consumed;}
+        
+      	// if we consumed resource from an internal resource bin, remove it
+      	if (may_use_rbins && using_rbins) rbins_count[res_id] -= consumed;
       }
-	}
+    }
     
     // Mark the reaction as having been performed if we get here.
     result.MarkReaction(reaction_id);
@@ -1214,12 +1211,12 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     {
       // normal bonus
       double deme_bonus = 0;
-       
+      
       // How much of this bonus belongs to the deme, and how much belongs to the organism?
       if (cur_process->GetDemeFraction()) {
         deme_bonus = cur_process->GetDemeFraction() * bonus;
         bonus = (1-cur_process->GetDemeFraction()) * bonus;
-        }
+      }
       
       // Take care of the organism's bonus:
       switch (cur_process->GetType()) {
@@ -1265,13 +1262,13 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
           result.AddBonus( value * (1.0 / decay) * ( exp((task_count-1) * decay) - exp(task_count * decay)), reaction_id );
           break;
         }   
-             
+          
         default:
           assert(false);  // Should not get here!
           break;
       }
     } else {  // if (cur_process->GetIsGermline())
-     // @JEB -- this process changes germline propensities, not bonus
+      // @JEB -- this process changes germline propensities, not bonus
       switch (cur_process->GetType()) {
         case nReaction::PROCTYPE_ADD:
           result.AddGermline(bonus);
@@ -1282,12 +1279,12 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
         case nReaction::PROCTYPE_POW:
           result.MultGermline(pow(2.0, bonus));
           break;
-                  
+          
         default:
           assert(false);  // Should not get here!
           break;
       }
-	}
+    }
     
     // Determine detection events
     cResource* detected = cur_process->GetDetect();
@@ -1336,7 +1333,7 @@ double cEnvironment::GetReactionValue(int reaction_id)
 bool cEnvironment::SetReactionValue(cAvidaContext& ctx, const cString& name, double value)
 {
   const int num_reactions = reaction_lib.GetSize();
-
+  
   // See if this should be applied to all reactions.
   if (name == "ALL") {
     // Loop through all reactions to update their values.
@@ -1345,20 +1342,20 @@ bool cEnvironment::SetReactionValue(cAvidaContext& ctx, const cString& name, dou
       assert(cur_reaction != NULL);
       cur_reaction->ModifyValue(value);
     }
-
+    
     return true;
   }
-
+  
   // See if this should be applied to random reactions.
   if (name.IsSubstring("RANDOM:", 0)) {
     // Determine how many reactions to set.
     const int num_set = name.Substring(7, name.GetSize()-7).AsInt();
     if (num_set > num_reactions) return false;
-
+    
     // Choose the reactions.
     tArray<int> reaction_ids(num_set);
     ctx.GetRandom().Choose(num_reactions, reaction_ids);
-
+    
     // And set them...
     for (int i = 0; i < num_set; i++) {
       cReaction* cur_reaction = reaction_lib.GetReaction(reaction_ids[i]);
@@ -1408,7 +1405,7 @@ bool cEnvironment::SetReactionTask(const cString& name, const cString& task)
 {
   cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
-
+  
   for (int i=0; i<m_tasklib.GetSize(); i++)
   {
     if (m_tasklib.GetTask(i).GetName() == task) 
@@ -1421,29 +1418,29 @@ bool cEnvironment::SetReactionTask(const cString& name, const cString& task)
   // If we didn't find the task, then we need to make a new one
   // @JEB currently, this messes up stat tracking to add a task
   // in the middle of a run.
-/*  
-  // Finish loading in this reaction.
-  cString trigger_info = task;
-	cString trigger = trigger_info.Pop(':');
+  /*  
+   // Finish loading in this reaction.
+   cString trigger_info = task;
+   cString trigger = trigger_info.Pop(':');
+   
+   // Load the task trigger
+   cEnvReqs envreqs;
+   tList<cString> errors;
+   
+   cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, &errors);
+   if (cur_task == NULL || errors.GetSize() > 0) {
+   cString* err_str;
+   while ((err_str = errors.Pop()) != NULL) {
+   cerr << *err_str << endl;
+   delete err_str;
+   }
+   return false;
+   }
+   
+   found_reaction->SetTask(cur_task);      // Attack task to reaction.  
+   return true;
+   */
   
-  // Load the task trigger
-  cEnvReqs envreqs;
-  tList<cString> errors;
-  
-  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, &errors);
-  if (cur_task == NULL || errors.GetSize() > 0) {
-    cString* err_str;
-    while ((err_str = errors.Pop()) != NULL) {
-      cerr << *err_str << endl;
-      delete err_str;
-    }
-    return false;
-  }
-  
-  found_reaction->SetTask(cur_task);      // Attack task to reaction.  
-  return true;
-*/
-
   return false;
 }
 

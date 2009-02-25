@@ -2638,12 +2638,12 @@ void cPopulation::PrintDemeEnergySharingStats() {
   df_donor.WriteTimeStamp();
   df_donor.Write(stats.GetUpdate(), "update");
   
-  double num_requestors = 0;
-  double num_donors = 0;
-  double num_receivers = 0;
-  double num_donations = 0;
-  double num_receptions = 0;
-  double num_applications;
+  double num_requestors = 0.0;
+  double num_donors = 0.0;
+  double num_receivers = 0.0;
+  double num_donations = 0.0;
+  double num_receptions = 0.0;
+  double num_applications = 0.0;
   double amount_donated = 0.0;
   double amount_received = 0.0;
   double amount_applied = 0.0;  
