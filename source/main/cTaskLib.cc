@@ -2078,7 +2078,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     for (int i = 0; i < stored; i++) {
       if (valmap.HasEntry(output[i])) {
         int t_start = i;
-        while (++i < stored && valmap.HasEntry(output[i]));
+        while (++i < stored && valmap.HasEntry(output[i])) ;
         if (span_start == -1 || (i - t_start) > (span_end - span_start)) {
           span_start = t_start;
           span_end = i;
@@ -2090,7 +2090,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     if (span_start == -1) return 0.0;    
   } else { // Scattered
     // search for first valid entry
-    while (++span_start < stored && valmap.HasEntry(output[span_start]));
+    while (++span_start < stored && valmap.HasEntry(output[span_start])) ;
     
     // scanned past the end of the output, nothing to validate
     if (span_start >= stored) return 0.0;

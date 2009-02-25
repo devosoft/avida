@@ -246,11 +246,11 @@ public:
     else if (in_var.GetType() == TYPE_STRING) m_var = new cFlexVar_String( in_var.AsString() );
     return *this;
   }
-  cFlexVar & operator=(int in_value)             { delete m_var; m_var = new cFlexVar_Int(in_value);    return *this; }
-  cFlexVar & operator=(char in_value)            { delete m_var; m_var = new cFlexVar_Char(in_value);   return *this; }
-  cFlexVar & operator=(double in_value)          { delete m_var; m_var = new cFlexVar_Double(in_value); return *this; }
-  cFlexVar & operator=(const cString & in_value) { delete m_var; m_var = new cFlexVar_String(in_value); return *this; }
-  cFlexVar & operator=(char * in_value)          { delete m_var; m_var = new cFlexVar_String(in_value); return *this; }
+  cFlexVar& operator=(int in_value)             { delete m_var; m_var = new cFlexVar_Int(in_value);    return *this; }
+  cFlexVar& operator=(char in_value)            { delete m_var; m_var = new cFlexVar_Char(in_value);   return *this; }
+  cFlexVar& operator=(double in_value)          { delete m_var; m_var = new cFlexVar_Double(in_value); return *this; }
+  cFlexVar& operator=(const cString & in_value) { delete m_var; m_var = new cFlexVar_String(in_value); return *this; }
+  cFlexVar& operator=(const char * in_value)          { delete m_var; m_var = new cFlexVar_String(in_value); return *this; }
 
   // The following macro will forward all of the commands with the associated operator to the internal class.
 #define FORWARD_FLEX_VAR_OP(OP, RETURN_TYPE)                                               \

@@ -105,7 +105,7 @@ const cPlasticPhenotype* cPhenPlastGenotype::GetPlasticPhenotype(int num) const
 {
   assert(num >= 0 && num < (int) m_unique.size() && m_unique.size() > 0);
   UniquePhenotypes::const_iterator it = m_unique.begin();
-  for (int k = 0; k < num; k++, it++);
+  for (int k = 0; k < num; k++, it++) ;
   return static_cast<cPlasticPhenotype*>(*it);
 }
 

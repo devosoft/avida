@@ -65,13 +65,13 @@ const int cString::MAX_LENGTH = MAX_STRING_LENGTH;
 
 // -- Comparisons --
 
-bool cString::operator== (const cString & in) const {
+bool cString::operator==(const cString& in) const {
   // Compares sizes first since we have that info anyway
-  int i=-1;
-  if( GetSize() == in.GetSize() ){
-    for( i=0; i<GetSize() && (*this)[i]==in[i]; ++i );
+  int i = -1;
+  if (GetSize() == in.GetSize()) {
+    for (i = 0; i<GetSize() && (*this)[i] == in[i]; ++i) ;
   }
-  return ( i == GetSize() );  // i == GetSize if all chars matched
+  return (i == GetSize());  // i == GetSize if all chars matched
 }
 
 
