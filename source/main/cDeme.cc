@@ -341,6 +341,9 @@ void cDeme::KillAll()
       m_world->GetPopulation().KillOrganism(cell);
     }
   }
+	// HACK: organism are killed after DivideReset is called.
+	// need clear a deme before it is reset.
+	sleeping_count = 0;  
 }
 
 void cDeme::UpdateStats()
