@@ -431,6 +431,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 	  tInstLibEntry<tMethod>("if-energy-not-in-buffer", &cHardwareCPU::Inst_IfEnergyNotInBuffer, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-energy-level", &cHardwareCPU::Inst_GetEnergyLevel, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-faced-energy-level", &cHardwareCPU::Inst_GetFacedEnergyLevel, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-faced-request-on", &cHardwareCPU::Inst_IfFacedEnergyRequestOn, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("if-faced-request-off", &cHardwareCPU::Inst_IfFacedEnergyRequestOff, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-energy-request-status", &cHardwareCPU::Inst_GetEnergyRequestStatus, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-faced-energy-request-status", &cHardwareCPU::Inst_GetFacedEnergyRequestStatus, nInstFlag::STALL),
+
 	  
     // Sleep and time
     tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
@@ -5776,6 +5781,93 @@ bool cHardwareCPU::Inst_GetFacedEnergyLevel(cAvidaContext& ctx) {
   return true;
 	
 } //End Inst_GetFacedEnergyLevel()
+
+
+bool cHardwareCPU::Inst_IfFacedEnergyRequestOn(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if( (neighbor == NULL) || (neighbor->IsDead()) ) {
+    return false;  
+  }
+  
+  if(neighbor->GetPhenotype().IsEnergyRequestor() == false) {
+    IP().Advance();
+  }
+  
+  return true;
+	
+} //End Inst_IfFacedEnergyRequestOn()
+
+bool cHardwareCPU::Inst_IfFacedEnergyRequestOff(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if( (neighbor == NULL) || (neighbor->IsDead()) ) {
+    return false;  
+  }
+  
+  if(neighbor->GetPhenotype().IsEnergyRequestor() == true) {
+    IP().Advance();
+  }
+  
+  return true;
+	
+} //End Inst_IfFacedEnergyRequestOff()
+
+
+bool cHardwareCPU::Inst_GetEnergyRequestStatus(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  const int reg = FindModifiedRegister(REG_BX);
+  int status = 0;
+  
+  if(m_organism->GetPhenotype().IsEnergyRequestor() == true) {
+    status = 1; 
+  }
+  
+  GetRegister(reg) = status;
+  
+  return true;
+  
+} //End Inst_GetEnergyRequestStatus()
+
+
+bool cHardwareCPU::Inst_GetFacedEnergyRequestStatus(cAvidaContext& ctx) {
+  
+  if(m_organism->GetCellID() < 0) {
+    return false;
+  }	
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  
+  if( (neighbor == NULL) || (neighbor->IsDead()) ) {
+    return false;  
+  }
+  
+  const int reg = FindModifiedRegister(REG_BX);
+  int status = 0;
+  
+  if(neighbor->GetPhenotype().IsEnergyRequestor() == true) {
+    status = 1; 
+  }
+  
+  GetRegister(reg) = status;
+  
+  return true;
+  
+} //End Inst_GetFacedEnergyRequestStatus()
 
 
 bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {

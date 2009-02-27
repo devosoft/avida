@@ -647,6 +647,12 @@ private:
   bool Inst_IfEnergyNotInBuffer(cAvidaContext& ctx);
   bool Inst_GetEnergyLevel(cAvidaContext& ctx);
   bool Inst_GetFacedEnergyLevel(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyRequestOn(cAvidaContext& ctx);
+  bool Inst_IfFacedEnergyRequestOff(cAvidaContext& ctx);
+  bool Inst_GetEnergyRequestStatus(cAvidaContext& ctx);
+  bool Inst_GetFacedEnergyRequestStatus(cAvidaContext& ctx);
+  
+
 	
   bool Inst_Sleep(cAvidaContext& ctx);
   bool Inst_GetUpdate(cAvidaContext& ctx);

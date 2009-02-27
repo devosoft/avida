@@ -2681,7 +2681,9 @@ void cPopulation::PrintDemeEnergySharingStats() {
 } //End PrintDemeEnergySharingStats()
 
 
-// Print some stats about the distribution of energy among organisms in a deme
+// Print some stats about the distribution of energy among the cells in a deme
+// If a cell is occupied, the amount returned is that of the organism in that cell
+// If a cell is not occupied, the amount returned is the amount of energy resource in the cell
 void cPopulation::PrintDemeEnergyDistributionStats() {
   const int num_demes = deme_array.GetSize();
   cStats& stats = m_world->GetStats();
@@ -2694,7 +2696,7 @@ void cPopulation::PrintDemeEnergyDistributionStats() {
   cDoubleSum overall_stddev;
   
   cDataFile & df_dist = m_world->GetDataFile("deme_energy_distribution.dat");
-  comment.Set("Average distribution of energy among organisms in each of %d %d x %d demes", num_demes, m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get()/num_demes);
+  comment.Set("Average distribution of energy among cells in each of %d %d x %d demes", num_demes, m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get()/num_demes);
   df_dist.WriteComment(comment);
   df_dist.WriteTimeStamp();
   df_dist.Write(stats.GetUpdate(), "Update");
@@ -2706,11 +2708,9 @@ void cPopulation::PrintDemeEnergyDistributionStats() {
       
       int cur_cell = cur_deme.GetCellID(i);
       if (cell_array[cur_cell].IsOccupied() == false) {
-        //TODO: BDC: Get energy of cell and add that instead
         deme_energy_distribution.Add(cur_deme.GetCellEnergy(cur_cell));
         continue;
       }
-      //TODO: add 0 for this deme
       
       deme_energy_distribution.Add(GetCell(cur_cell).GetOrganism()->GetPhenotype().GetStoredEnergy());
     }
@@ -2729,6 +2729,56 @@ void cPopulation::PrintDemeEnergyDistributionStats() {
   df_dist.Endl();
   
 } //End PrintDemeEnergyDistributionStats()
+
+
+// Print some stats about the distribution of energy among the organism in a deme
+// If a cell is occupied, the amount returned is that of the organism in that cell
+// If a cell is not occupied, 0 energy is returned for that cell.
+void cPopulation::PrintDemeOrganismEnergyDistributionStats() {
+  const int num_demes = deme_array.GetSize();
+  cStats& stats = m_world->GetStats();
+  cString comment;
+  
+  cDoubleSum deme_energy_distribution;
+  
+  cDoubleSum overall_average;
+  cDoubleSum overall_variance;
+  cDoubleSum overall_stddev;
+  
+  cDataFile & df_dist = m_world->GetDataFile("deme_org_energy_distribution.dat");
+  comment.Set("Average distribution of energy among organisms in each of %d %d x %d demes", num_demes, m_world->GetConfig().WORLD_X.Get(), m_world->GetConfig().WORLD_Y.Get()/num_demes);
+  df_dist.WriteComment(comment);
+  df_dist.WriteTimeStamp();
+  df_dist.Write(stats.GetUpdate(), "Update");
+  
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    const cDeme & cur_deme = deme_array[deme_id];
+    
+    for (int i = 0; i < cur_deme.GetSize(); i++) {
+      
+      int cur_cell = cur_deme.GetCellID(i);
+      if (cell_array[cur_cell].IsOccupied() == false) {
+        deme_energy_distribution.Add(0);
+        continue;
+      }
+      
+      deme_energy_distribution.Add(GetCell(cur_cell).GetOrganism()->GetPhenotype().GetStoredEnergy());
+    }
+    
+    overall_average.Add(deme_energy_distribution.Average());
+    overall_variance.Add(deme_energy_distribution.Variance());
+    overall_stddev.Add(deme_energy_distribution.StdDeviation());
+    deme_energy_distribution.Clear();
+    
+  }
+  
+  df_dist.Write(overall_average.Average(), "Average of Average Energy Level");
+  df_dist.Write(overall_variance.Average(), "Average of Energy Level Variance");
+  df_dist.Write(overall_stddev.Average(), "Average of Energy Level Standard Deviations");
+  
+  df_dist.Endl();
+  
+} //End PrintDemeOrganismEnergyDistributionStats()
 
 
 void cPopulation::PrintDemeDonor() {
