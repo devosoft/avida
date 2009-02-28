@@ -139,12 +139,15 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label, (nInstFlag::DEFAULT | nInstFlag::LABEL)),
     
     tInstLibEntry<tMethod>("h-search", &cHardwareExperimental::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
+    tInstLibEntry<tMethod>("h-search-direct", &cHardwareExperimental::Inst_HeadSearchDirect, nInstFlag::DEFAULT, "Find direct template and move the flow head"),
+    tInstLibEntry<tMethod>("h-search-lbl", &cHardwareExperimental::Inst_HeadSearchLabel, nInstFlag::LABEL, "Find complement template and make with flow head"),
+    tInstLibEntry<tMethod>("h-search-direct-lbl", &cHardwareExperimental::Inst_HeadSearchDirectLabel, nInstFlag::LABEL, "Find direct template and move the flow head"),
+
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
     
     tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into ?CX?"),
     
-    tInstLibEntry<tMethod>("h-search-lbl", &cHardwareExperimental::Inst_HeadSearchLabel, nInstFlag::LABEL, "Find complement template and make with flow head"),
     
     
     // Replication Instructions
@@ -153,6 +156,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("h-divide-sex", &cHardwareExperimental::Inst_HeadDivideSex, (nInstFlag::DEFAULT | nInstFlag::STALL), "Divide code between read and write heads."),
     tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
+    tInstLibEntry<tMethod>("if-label-direct", &cHardwareExperimental::Inst_IfLabelDirect, nInstFlag::DEFAULT, "Execute next if we copied direct match of the attached label"),
 
     tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead, 0, "Read from the read-head, place into ?BX?, advance read-head"),
     tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite, 0, "Write from ?BX? to the write head, advance write-head"),
@@ -1342,6 +1346,13 @@ bool cHardwareExperimental::Inst_IfLabel(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_IfLabelDirect(cAvidaContext& ctx)
+{
+  ReadLabel();
+  if (GetLabel() != GetReadLabel())  IP().Advance();
+  return true;
+}
+
 
 bool cHardwareExperimental::Inst_HeadDivide(cAvidaContext& ctx)
 {
@@ -1479,6 +1490,27 @@ bool cHardwareExperimental::Inst_HeadSearchLabel(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelStart(true);
+  GetHead(nHardware::HEAD_FLOW).Set(found_pos);
+  GetHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_HeadSearchDirect(cAvidaContext& ctx)
+{
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelStart(true);
+  const int search_size = found_pos.GetPosition() - IP().GetPosition();
+  setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
+  setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
+  GetHead(nHardware::HEAD_FLOW).Set(found_pos);
+  GetHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_HeadSearchDirectLabel(cAvidaContext& ctx)
+{
+  ReadLabel();
   cHeadCPU found_pos = FindLabelStart(true);
   GetHead(nHardware::HEAD_FLOW).Set(found_pos);
   GetHead(nHardware::HEAD_FLOW).Advance();

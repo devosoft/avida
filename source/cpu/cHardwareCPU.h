@@ -580,6 +580,7 @@ private:
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_IfLabel(cAvidaContext& ctx);
+  bool Inst_IfLabelDirect(cAvidaContext& ctx);
   bool Inst_IfLabel2(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
   bool Inst_HeadDivideRS(cAvidaContext& ctx); //AWC 06/29/06
@@ -589,6 +590,7 @@ private:
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
   bool Inst_HeadSearch(cAvidaContext& ctx);
+  bool Inst_HeadSearchDirect(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
 
   bool Inst_HeadCopy2(cAvidaContext& ctx);
