@@ -1902,6 +1902,7 @@ public:
       df.Write(parent_sum_tasks_all, "Parent Total Number of Tasks Done");
       df.Write(test_info.GetColonyFitness(), "Genotype Fitness");
       df.Write(organism->GetGenotype()->GetName(), "Genotype Name");
+      df.Write(organism->GetGenotype()->GetID(), "Genotype ID");
       df.Endl();
     }
     
