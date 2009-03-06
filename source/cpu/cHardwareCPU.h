@@ -418,7 +418,6 @@ private:
   bool Inst_Sqrt(cAvidaContext& ctx);
   bool Inst_Log(cAvidaContext& ctx);
   bool Inst_Log10(cAvidaContext& ctx);
-  bool Inst_Minus17(cAvidaContext& ctx);
 
   // Double Argument Math
   bool Inst_Add(cAvidaContext& ctx);
