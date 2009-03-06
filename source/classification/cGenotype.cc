@@ -41,8 +41,9 @@ cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   : m_world(world)
   , genome(1)
   , name("001-no_name")
-  , flag_threshold(false)
-  , is_active(true)
+  , m_flag_threshold(false)
+  , m_is_active(true)
+  , m_track_parent_dist(m_world->GetConfig().TRACK_PARENT_DIST.Get())
   , defer_adjust(0)
   , id_num(in_id)
   , symbol(0)
@@ -154,7 +155,7 @@ void cGenotype::SetParent(cGenotype* parent, cGenotype* parent2)
     birth_data.ancestor_ids[5] = parent2->GetAncestorID(1);    
   }
 
-  birth_data.parent_distance = cGenomeUtil::FindEditDistance(genome, parent->genome);
+  if (m_track_parent_dist) birth_data.parent_distance = cGenomeUtil::FindEditDistance(genome, parent->genome);
   birth_data.parent_species = parent->GetSpecies();
   birth_data.gene_depth = parent->GetDepth() + 1;
   birth_data.lineage_label = parent->GetLineageLabel();

@@ -55,8 +55,12 @@ private:
   cWorld* m_world;
   cGenome genome;
   cString name;
-  bool flag_threshold;
-  bool is_active;      // Is this genotype still alive?
+  
+  struct {
+    bool m_flag_threshold:1;
+    bool m_is_active:1;      // Is this genotype still alive?
+    bool m_track_parent_dist:1;
+  };
   int defer_adjust;    // Don't adjust in the archive until all are cleared.
 
   int id_num;
@@ -205,7 +209,7 @@ public:
     { return birth_data.num_offspring_genotypes; }
   void AddOffspringGenotype() { birth_data.num_offspring_genotypes++; }
   void RemoveOffspringGenotype() { birth_data.num_offspring_genotypes--; }
-  bool GetActive() const { return is_active; }
+  bool GetActive() const { return m_is_active; }
   bool GetDeferAdjust() const { return defer_adjust > 0; }
   int GetUpdateDeactivated() { return birth_data.update_deactivated; }
   void Deactivate(int update, int org_id = -1);
@@ -221,7 +225,7 @@ public:
   cSpecies* GetParentSpecies()  { return birth_data.parent_species; }
   cGenotype* GetNext()          { return next; }
   cGenotype* GetPrev()          { return prev; }
-  bool GetThreshold() const     { return flag_threshold; }
+  bool GetThreshold() const     { return m_flag_threshold; }
   int GetID() const             { return id_num; }
   char GetSymbol() const        { return symbol; }
   int GetMapColor() const       { return map_color_id; }
@@ -270,7 +274,7 @@ inline int cGenotype::RemoveOrganism()
 
 inline void cGenotype::SetThreshold()
 {
-  flag_threshold = true;
+  m_flag_threshold = true;
   if (symbol == '.') symbol = '+';
   if (map_color_id == -2) map_color_id = -1;
 }
@@ -335,7 +339,7 @@ inline int cGenotype::GetTestGenerations(cAvidaContext& ctx) const {
 
 inline void cGenotype::Deactivate(int update, int org_id)
 {
-  is_active = false;
+  m_is_active = false;
   birth_data.update_deactivated = update;
   birth_data.death_org_id = org_id;
 }
