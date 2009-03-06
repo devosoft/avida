@@ -1,0 +1,17 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of organisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+

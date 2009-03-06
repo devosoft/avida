@@ -1,0 +1,139 @@
+# Fri Mar  6 17:39:22 2009
+# Filename........: archive/105-aaaaa.org
+# Update Output...: 30
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# Update Created..: 49415
+# Genotype ID.....: 3852251
+# Parent Gen ID...: -1
+# Tree Depth......: 0
+# Parent Distance.: -1
+# 
+# Generation: 0
+# Merit...........: 3422552064.000000
+# Gestation Time..: 269
+# Fitness.........: 12723241.873606
+# Errors..........: 5
+# Genome Size.....: 105
+# Copied Size.....: 105
+# Executed Size...: 102
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 1 (1.000000)
+# nand 1 (1.000000)
+# and 1 (1.000000)
+# orn 1 (1.000000)
+# or 1 (1.000000)
+# andn 1 (1.000000)
+# nor 1 (1.000000)
+# xor 1 (1.000000)
+# equ 1 (1.000000)
+
+
+h-alloc
+push
+dec
+swap-stk
+push
+nop-B
+h-divide
+IO
+swap
+IO
+swap
+nand
+nand
+if-label
+nand
+nop-C
+IO
+nop-C
+push
+push
+swap
+nop-C
+h-divide
+set-flow
+push
+nand
+nop-C
+sub
+nop-C
+if-label
+nop-A
+h-divide
+h-alloc
+pop
+nop-C
+nop-B
+h-alloc
+IO
+nop-C
+nand
+nop-A
+if-less
+sub
+nand
+nop-C
+nop-A
+if-label
+mov-head
+nop-C
+h-copy
+nop-A
+nand
+nop-C
+h-copy
+nop-C
+IO
+nop-C
+nop-C
+set-flow
+add
+nop-C
+IO
+IO
+IO
+nop-A
+pop
+nand
+h-alloc
+h-copy
+nand
+inc
+h-copy
+add
+sub
+if-label
+add
+swap
+nand
+IO
+nop-C
+IO
+h-copy
+h-search
+h-copy
+nand
+nand
+h-copy
+pop
+nop-C
+nand
+IO
+h-copy
+nand
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+h-copy
+h-copy
+h-copy
+h-copy
+mov-head
+nop-A
+nop-B
