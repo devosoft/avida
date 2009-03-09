@@ -3038,8 +3038,9 @@ bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
   }
   
   // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code( cGenomeUtil::Crop(m_memory, start_pos, end_pos) );
+  cGenome inject_code(cGenomeUtil::Crop(m_memory, start_pos, end_pos));
   m_memory.Remove(start_pos, inject_size);
+  AdjustHeads();
   
   // If we don't have a host, stop here.
   cOrganism * host_organism = m_organism->GetNeighbor();
