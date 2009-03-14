@@ -226,10 +226,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2, nInstFlag::STALL),           // If you add more sense instructions
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
+
     tInstLibEntry<tMethod>("if-resources", &cHardwareCPU::Inst_IfResources, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect", &cHardwareCPU::Inst_Collect, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-no-env-remove", &cHardwareCPU::Inst_CollectNoEnvRemove, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("collect-no-internal-add", &cHardwareCPU::Inst_CollectNoInternalAdd, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("destroy", &cHardwareCPU::Inst_Destroy, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -3495,10 +3496,12 @@ bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
 }
 
 /* Helper function to reduce code redundancy in the Inst_Collect variations.
- * Does all the heavy lifting of external resource collection.  Use env_remove
- * to specify whether the collected resources should be removed from the
- * environment, and internal_add to specify whether the collected resources
- * should be added to the organism's internal resources.
+ * Does all the heavy lifting of external resource collection.
+ *
+ * env_remove   - specifies whether the collected resources should be removed from
+ *                the environment
+ * internal_add - specifies whether the collected resources should be added to 
+ *                the organism's internal resources.
  */
 bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add)
 {
@@ -3592,9 +3595,10 @@ bool cHardwareCPU::Inst_CollectNoEnvRemove(cAvidaContext& ctx)
   return DoCollect(ctx, false, true);
 }
 
-/* Like Inst_Collect, but the collected resources are not added to the organism.
+/* Collects resource from the environment but does not add it to the organism,
+ * effectively destroying it.
  */
-bool cHardwareCPU::Inst_CollectNoInternalAdd(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_Destroy(cAvidaContext& ctx)
 {
   return DoCollect(ctx, true, false);
 }

@@ -486,13 +486,16 @@ private:
   bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
+  
+  // Resources
   bool FindModifiedResource(int& start_index, int& end_index);
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
-  bool Inst_CollectNoInternalAdd(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
-  bool Inst_IfResources(cAvidaContext& ctx);
+  bool Inst_Destroy(cAvidaContext& ctx);  
+  bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
+  // Donation
   void DoDonate(cOrganism * to_org);
   void DoEnergyDonate(cOrganism* to_org);
   void DoEnergyDonatePercent(cOrganism* to_org, const double frac_energy_given);
@@ -549,6 +552,7 @@ private:
   bool Inst_GetCellPositionX(cAvidaContext& ctx);
   bool Inst_GetCellPositionY(cAvidaContext& ctx);
   
+  // State Grid Sensory/Movement
   bool Inst_SGMove(cAvidaContext& ctx);
   bool Inst_SGRotateL(cAvidaContext& ctx);
   bool Inst_SGRotateR(cAvidaContext& ctx);
