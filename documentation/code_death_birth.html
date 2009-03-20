@@ -60,7 +60,7 @@ void <span class="class">cPopulation</span>::<span class="method">KillOrganism</
   <span class="comment">// Alert the scheduler that this cell has a 0 merit.</span>
   <span class="object">schedule</span>-&gt;<span class="method">Adjust</span>(<span class="object">in_cell</span>.<span class="method">GetID</span>(), <span class="class">cMerit</span>(0));
 
-  <span class="comment">// Update the archive (note: genotype adjustment may be defered)</span>
+  <span class="comment">// Update the archive (note: genotype adjustment may be deferred)</span>
   <span class="object">m_world</span>-&gt;<span class="method">GetClassificationManager</span>().<span class="method">AdjustGenotype</span>(*<span class="object">genotype</span>);
 }
 </pre>
@@ -193,7 +193,7 @@ properly reflect the number of organisms alive in the population at any moment.
 <h2>Placing an Offspring in the Population</h2>
 
 <p>
-When an organism gives birth, we must collect some relevent statistics,
+When an organism gives birth, we must collect some relevant statistics,
 which can best be accomplished in the population object.  Then we must
 place the offspring into its own cell in the population.  This is all done
 with the <span class="class">cPopulation</span>::<span class="method">ActivateOffspring</span>
@@ -203,7 +203,7 @@ population interface. As this method is quite long, refer to it in the source
 code in <kbd>cPopulation.cc</kbd> while reading the remainder of this section.
 </p>
 <p>
-The first step in activing an offspring involves performing some book keeping
+The first step in activating an offspring involves performing some book keeping
 on the parent's phenotype via the <span class="method">DivideReset</span>()
 method. After this, the child genome is submitted to the birth chamber.  The
 birth chamber is responsible for handling the details of reproduction, such as
