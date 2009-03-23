@@ -133,6 +133,7 @@ cStats::cStats(cWorld* world)
   , m_spec_total(0)
   , m_spec_num(0)
   , m_spec_waste(0)
+  , num_orgs_killed(0)
   , m_deme_num_repls(0)
 {
   const cEnvironment& env = m_world->GetEnvironment();
@@ -560,6 +561,8 @@ void cStats::ProcessUpdate()
   m_spec_total = 0;
   m_spec_num = 0;
   m_spec_waste = 0;
+  
+  num_orgs_killed = 0;
 }
 
 void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
@@ -2051,3 +2054,16 @@ void cStats::PrintDetailedSynchronizationData(const cString& filename) {
 	
 	m_flash_times.clear();
 }
+
+void cStats::PrintNumOrgsKilledData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Organisms killed using kill actions");
+  df.WriteTimeStamp();
+  df.WriteComment("First column is the current update and the second column lists the number of organisms killed");
+  
+  df.Write(m_update,   "Update");
+  df.Write(num_orgs_killed, "Num Orgs Killed");
+  df.Endl();
+} //End PrintNumOrgsKilledData()

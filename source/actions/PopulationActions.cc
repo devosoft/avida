@@ -2612,6 +2612,103 @@ public:
 };
 
 
+/*
+ Kill organisms in N randomly-chosen cells if the level of the given resource
+ in the chosen cell is below the configured threshold
+ 
+ Parameters:
+ - The number of cells to kill (default: 0)
+ - The name of the resource
+ - The amount of resource below which to execute the kill (default: 0)
+ */
+
+class cActionKillNBelowResourceThreshold : public cAction
+  {
+  private:
+    cString m_resname;
+    int m_numkills;
+    double m_threshold;
+  public:
+    cActionKillNBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numkills(0), m_threshold(0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_numkills = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_resname = largs.PopWord();
+      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+    }
+    
+    static const cString GetDescription() { return "Arguments: [int numkills=0, string resource name, double threshold=0]"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      double level;
+      int target_cell;
+      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+      
+      assert(res_id != -1);
+      
+      for(int i=0; i < m_numkills; i++) {
+        target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
+        level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+        
+        if(level < m_threshold) {
+          m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
+          m_world->GetStats().IncNumOrgsKilled();
+        }
+      }
+      
+    } //End Process()
+  };
+
+
+/*
+ Kill organisms in N randomly-chosen cells if the level of the given resource
+ in the chosen cell is below the configured threshold
+ 
+ Parameters:
+ - The number of cells to kill (default: 0)
+ - The name of the resource
+ - The amount of resource below which to execute the kill (default: 0)
+ */
+
+class cActionKillNAboveResourceThreshold : public cAction
+  {
+  private:
+    cString m_resname;
+    int m_numkills;
+    double m_threshold;
+  public:
+    cActionKillNAboveResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numkills(0), m_threshold(0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_numkills = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_resname = largs.PopWord();
+      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+    }
+    
+    static const cString GetDescription() { return "Arguments: [int numkills=0, string resource name, double threshold=0]"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      double level;
+      int target_cell;
+      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+      
+      assert(res_id != -1);
+      
+      for(int i=0; i < m_numkills; i++) {
+        target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
+        level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+        
+        if(level > m_threshold) {
+          m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
+          m_world->GetStats().IncNumOrgsKilled();
+        }
+      }
+      
+    } //End Process()
+  };
+
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
@@ -2712,4 +2809,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
   action_lib->Register<cActionPred_DemeEventMoveBetweenTargets>("Pred_DemeEventMoveBetweenTargets");
   action_lib->Register<cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget>("Pred_DemeEventNUniqueIndividualsMovedIntoTarget");
+  
+  action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
+  action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
 }

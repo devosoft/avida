@@ -128,6 +128,7 @@ STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
 STATS_OUT_FILE(PrintDynamicMaxMinData,		maxmin.dat			);
+STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -2837,7 +2838,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   // Print Settings
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   
-
+  action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");//ZOOZ
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");

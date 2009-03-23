@@ -326,6 +326,9 @@ private:
   int m_spec_num;
   int m_spec_waste;
   
+  // Number of organisms killed by kill actions
+  int num_orgs_killed;
+  
 
   cStats(); // @not_implemented
   cStats(const cStats&); // @not_implemented
@@ -553,6 +556,8 @@ public:
                      int total_genotypes, double fitness, double lineage_stat1, double lineage_stat2 );
 				
   void IncExecuted() { num_executed++; }
+  
+  void IncNumOrgsKilled() { num_orgs_killed++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
   void AddCurTaskQuality(int task_num, double quality) 
@@ -720,6 +725,8 @@ public:
 
   double GetAveSpeculative() const { return (m_spec_num) ? ((double)m_spec_total / (double)m_spec_num) : 0.0; }
   int GetSpeculativeWaste() const { return m_spec_waste; }
+  
+  int GetNumOrgsKilled() const { return num_orgs_killed; }
 
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -767,6 +774,7 @@ public:
   void PrintCompetitionData(const cString& filename);
   void PrintCellVisitsData(const cString& filename);
   void PrintExtendedTimeData(const cString& filename);
+  void PrintNumOrgsKilledData(const cString& filename);
   
   // deme predicate stats
   void IncEventCount(int x, int y);
