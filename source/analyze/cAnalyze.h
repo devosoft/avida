@@ -316,6 +316,7 @@ private:
   void BatchRecalculate(cString cur_string);
   void BatchRecalculateWithArgs(cString cur_string);
   void BatchRename(cString cur_string);
+  void CloseFile(cString cur_string);
   void PrintStatus(cString cur_string);
   void PrintDebug(cString cur_string);
   void PrintTestInfo(cString cur_string);

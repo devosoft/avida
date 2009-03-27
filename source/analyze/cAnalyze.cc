@@ -8474,6 +8474,12 @@ void cAnalyze::BatchRename(cString cur_string)
   }
 }
 
+void cAnalyze::CloseFile(cString cur_string)
+{
+  m_world->GetDataFileManager().Remove(cur_string.PopWord());
+}
+
+
 void cAnalyze::PrintStatus(cString cur_string)
 {
   // No Args needed...
@@ -9296,6 +9302,7 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("RECALCULATE", &cAnalyze::BatchRecalculate);
   AddLibraryDef("RECALC", &cAnalyze::BatchRecalculateWithArgs);
   AddLibraryDef("RENAME", &cAnalyze::BatchRename);
+  AddLibraryDef("CLOSE_FILE", &cAnalyze::CloseFile);
   AddLibraryDef("STATUS", &cAnalyze::PrintStatus);
   AddLibraryDef("ECHO", &cAnalyze::PrintDebug);
   AddLibraryDef("DEBUG", &cAnalyze::PrintDebug);
