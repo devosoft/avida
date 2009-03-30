@@ -109,13 +109,7 @@ cGenotype* cGenotype::LoadClone(cWorld* world, ifstream& fp)
 
 bool cGenotype::OK()
 {
-  bool ret_value = true;
-
-  // Check the components...
-
-  if (!genome.OK()) ret_value = false;
-
-  // And the statistics
+  // Check statistics
   assert( id_num >= 0 && num_organisms >= 0 && total_organisms >= 0 );
   assert( birth_data.update_born >= -1 && birth_data.parent_distance >= -1 );
   assert( sum_copied_size.Sum() >= 0 && sum_exe_size.Sum() >= 0 );
@@ -125,7 +119,7 @@ bool cGenotype::OK()
   assert( tmp_sum_gestation_time.Sum() >= 0 && tmp_sum_repro_rate.Sum() >= 0 );
   assert( tmp_sum_merit.Sum() >= 0 && tmp_sum_fitness.Sum() >= 0 );
 
-  return ret_value;
+  return true;
 }
 
 void cGenotype::AddMerit(const cMerit & in)

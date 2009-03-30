@@ -210,8 +210,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
-: cHardwareBase(world, in_organism, in_m_inst_set)
+cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism,
+                                             cInstSet* in_inst_set, int inst_set_id)
+: cHardwareBase(world, in_organism, in_inst_set, inst_set_id)
 {
   m_functions = s_inst_slib->GetFunctions();
   
@@ -475,8 +476,6 @@ void cHardwareExperimental::ProcessBonusInst(cAvidaContext& ctx, const cInstruct
 bool cHardwareExperimental::OK()
 {
   bool result = true;
-  
-  if (!m_memory.OK()) result = false;
   
   for (int i = 0; i < m_threads.GetSize(); i++) {
     if (m_threads[i].next_label.OK() == false) result = false;
@@ -950,8 +949,9 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = m_organism->ChildGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  m_organism->OffspringGenome().SetGenome(cGenomeUtil::Crop(m_memory, div_point, div_point+child_size));
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1869,9 +1869,10 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = m_organism->ChildGenome();
-  child_genome = m_memory;
-  m_organism->GetPhenotype().SetLinesCopied(child_genome.GetSize());
+  m_organism->OffspringGenome().SetGenome(m_memory);
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->GetPhenotype().SetLinesCopied(m_memory.GetSize());
 
   int lines_executed = 0;
   for (int i = 0; i < m_memory.GetSize(); i++) if (m_memory.FlagExecuted(i)) lines_executed++;
@@ -1881,7 +1882,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
     for (int i = 0; i < m_memory.GetSize(); i++) {
-      if (m_organism->TestCopyMut(ctx)) child_genome[i] = m_inst_set->GetRandomInst(ctx);
+      if (m_organism->TestCopyMut(ctx)) m_organism->OffspringGenome().GetGenome()[i] = m_inst_set->GetRandomInst(ctx);
     }
   }
   

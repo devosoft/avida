@@ -310,7 +310,7 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.
 
-bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, cOrganism& parent_organism)
+bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism& parent_organism)
 {
   if (m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get() > 0 && GetNumOrganisms() >= m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get())
   {
@@ -327,7 +327,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
   cPhenotype& parent_phenotype = parent_organism.GetPhenotype();
   parent_phenotype.DivideReset(parent_organism.GetGenome());
   
-  birth_chamber.SubmitOffspring(ctx, child_genome, parent_organism, child_array, merit_array);
+  birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, child_array, merit_array);
   
   // First, setup the genotype of all of the offspring.
   cGenotype* parent_genotype = parent_organism.GetGenotype();
@@ -359,8 +359,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     }
     
     // Update the phenotypes of each child....
-    const cGenome & child_genome = child_array[i]->GetGenome();
-    child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype,child_genome);
+    const cGenome& genome = child_array[i]->GetGenome();
+    child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
     // Do lineage tracking for the new organisms.
@@ -405,7 +405,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, cGenome& child_genome, c
     }
     
     // Purge the mutations since last division
-    parent_organism.ChildGenome().GetMutationSteps().Clear();
+    parent_organism.OffspringGenome().GetGenome().GetMutationSteps().Clear();
   }
   
   // Do any statistics on the parent that just gave birth...
@@ -3715,7 +3715,6 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
 {
   assert(step_size > 0.0);
   assert(cell_id < cell_array.GetSize());
-  assert(m_world->GetHardwareManager().SupportsSpeculative());
   
   // If cell_id is negative, no cell could be found -- stop here.
   if (cell_id < 0) return;
@@ -4622,7 +4621,7 @@ void cPopulation::FindEmptyCell(tList<cPopulationCell> & cell_list,
 
 // This function injects a new organism into the population at cell_id based
 // on the genotype passed in.
-void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
+void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -4631,7 +4630,8 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype *new_genotype)
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
-  cOrganism* new_organism = new cOrganism(m_world, ctx, new_genotype->GetGenome());
+  cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, new_genotype->GetGenome()); // @TODO - genotypes need metagenomes
+  cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome);
   
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);  
@@ -4699,7 +4699,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
-  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetGenome());
+  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetMetaGenome());
   
   // Set the genotype...
   new_organism->SetGenotype(orig_org.GetGenotype());
@@ -4737,20 +4737,20 @@ void cPopulation::InjectChild(int cell_id, cOrganism& parent)
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
   // Do mutations on the child genome, but restore it to its current state afterward.
-  cGenome save_child = parent.ChildGenome();
+  cMetaGenome save_child = parent.OffspringGenome();
   parent.GetHardware().Divide_DoMutations(ctx);
-  cGenome child_genome = parent.ChildGenome();
+  cMetaGenome child_genome = parent.OffspringGenome();
   parent.GetHardware().Divide_TestFitnessMeasures(ctx);
-  parent.ChildGenome() = save_child;
+  parent.OffspringGenome() = save_child;
   cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome);
   
   // Set the genotype...
   assert(parent.GetGenotype());  
-  cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotype(child_genome, parent.GetGenotype(), NULL);
+  cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotype(child_genome.GetGenome(), parent.GetGenotype(), NULL);
   new_organism->SetGenotype(new_genotype);
   
   // Setup the phenotype...
-  new_organism->GetPhenotype().SetupOffspring(parent.GetPhenotype(),child_genome);
+  new_organism->GetPhenotype().SetupOffspring(parent.GetPhenotype(),child_genome.GetGenome());
   
   // Prep the cell..
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
@@ -5302,8 +5302,8 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
     org_count[from_cell_id]--;
     org_count[to_cell_id]++;
     
-    cOrganism * organism = GetCell(from_cell_id).GetOrganism();
-    organism->ChildGenome() = organism->GetGenome();
+    cOrganism* organism = GetCell(from_cell_id).GetOrganism();
+    organism->OffspringGenome() = organism->GetMetaGenome();
     if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Injecting Child " << from_cell_id << " to " << to_cell_id << endl;  
     InjectChild( to_cell_id, *organism );  
     
@@ -5316,8 +5316,8 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
     for (int cell_id = 0; cell_id < num_cells; cell_id++) {
       if (!is_init[cell_id])
       {
-        cOrganism * organism = GetCell(cell_id).GetOrganism();
-        organism->ChildGenome() = organism->GetGenome();
+        cOrganism* organism = GetCell(cell_id).GetOrganism();
+        organism->OffspringGenome() = organism->GetMetaGenome();
         if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Re-injecting Self " << cell_id << " to " << cell_id << endl;  
         InjectChild( cell_id, *organism ); 
       }

@@ -38,6 +38,7 @@
 class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
+class cMetaGenome;
 class cOrganism;
 class cWorld;
 
@@ -50,7 +51,6 @@ class cHardwareManager
 private:
   cWorld* m_world;
   cInstSet* m_inst_set;
-  int m_type;
   int m_cpu_count;
   
   
@@ -63,14 +63,11 @@ public:
   cHardwareManager(cWorld* world);
   ~cHardwareManager() { ; }
   
-  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* in_org, cInstSet* inst_set);
-  inline cHardwareBase* Create(cAvidaContext& ctx, cOrganism* in_org) { return Create(ctx, in_org, m_inst_set); }
-  cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
+  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is = NULL);
+  inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
   const cInstSet& GetInstSet() const { return *m_inst_set; }
   cInstSet& GetInstSet() { return *m_inst_set; }
-  
-  bool SupportsSpeculative();
 };
 
 

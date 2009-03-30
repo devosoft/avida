@@ -73,7 +73,7 @@ void cDefaultRunDriver::Run()
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
   void (cPopulation::*ActiveProcessStep)(cAvidaContext& ctx, double step_size, int cell_id) = &cPopulation::ProcessStep;
-  if (m_world->GetHardwareManager().SupportsSpeculative() && m_world->GetConfig().SPECULATIVE.Get() &&
+  if (m_world->GetConfig().SPECULATIVE.Get() &&
       m_world->GetConfig().THREAD_SLICING_METHOD.Get() != 1 && !m_world->GetConfig().IMPLICIT_REPRO_END.Get()) {
     ActiveProcessStep = &cPopulation::ProcessStepSpeculative;
   }

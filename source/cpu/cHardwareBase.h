@@ -60,6 +60,7 @@ class cHardwareBase
 protected:
   cWorld* m_world;
   cOrganism* m_organism;     // Organism using this hardware.
+  int m_inst_set_id;
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
 
@@ -81,8 +82,8 @@ protected:
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
 
 public:
-  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
-    : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
+  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)
+    : m_world(world), m_organism(in_organism), m_inst_set_id(inst_set_id), m_inst_set(inst_set), m_tracer(NULL)
     , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
     , m_has_energy_costs(m_inst_set->HasEnergyCosts())
   {
@@ -90,6 +91,8 @@ public:
     assert(m_organism != NULL);
   }
   virtual ~cHardwareBase() { ; }
+  
+  int GetInstSetID() const { return m_inst_set_id; }
 
   
   // --------  Organism  ---------
@@ -107,6 +110,7 @@ public:
   
   // --------  Helper methods  --------
   virtual int GetType() const = 0;
+  virtual bool SupportsSpeculative() const = 0;
   virtual bool OK() = 0;
   virtual void PrintStatus(std::ostream& fp) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
@@ -214,9 +218,9 @@ protected:
 
   
   // --------  Mutation Helper Methods  --------
-  bool doUniformMutation(cAvidaContext& ctx, cCPUMemory& genome);
+  bool doUniformMutation(cAvidaContext& ctx, cGenome& genome);
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
-  void doSlipMutation(cAvidaContext& ctx, cCPUMemory& genome, int from = -1);
+  void doSlipMutation(cAvidaContext& ctx, cGenome& genome, int from = -1);
   
 
   // --------  Organism Execution Property Calculation  --------
@@ -231,13 +235,13 @@ protected:
   
 
   // --------  Mutation Triggers  --------
-  void TriggerMutations_Body(cAvidaContext& ctx, int type, cCPUMemory& target_memory, cHeadCPU& cur_head);
+  void TriggerMutations_Body(cAvidaContext& ctx, int type, cGenome& target_memory, cHeadCPU& cur_head);
   bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-																		cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+																		cGenome& target_memory, cHeadCPU& cur_head, const double rate);
   bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);
+																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cCPUMemory& target_memory, cHeadCPU& cur_head, const double rate);  
+																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);  
 };
 
 

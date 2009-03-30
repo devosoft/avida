@@ -98,11 +98,7 @@ bool cInjectGenotype::OK()
 {
   bool ret_value = true;
 
-  // Check the components...
-
-  if (!genome.OK()) ret_value = false;
-
-  // And the statistics
+  // Check statistics
   assert( id_num >= 0 && num_injected >= 0 && total_injected >= 0 );
   assert( birth_data.update_born >= -1);
 

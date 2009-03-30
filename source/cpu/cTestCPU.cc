@@ -213,7 +213,8 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome)
 {
   test_info.Clear();
-  TestGenome_Body(ctx, test_info, genome, 0);
+  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
+  TestGenome_Body(ctx, test_info, mg, 0);
 
   return test_info.is_viable;
 }
@@ -222,7 +223,8 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
                           ofstream& out_fp)
 {
   test_info.Clear();
-  TestGenome_Body(ctx, test_info, genome, 0);
+  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
+  TestGenome_Body(ctx, test_info, mg, 0);
 
   ////////////////////////////////////////////////////////////////
   // IsViable() == false
@@ -250,8 +252,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
-                               const cGenome& genome, int cur_depth)
+bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, int cur_depth)
 {
   assert(cur_depth < test_info.generation_tests);
 
@@ -273,8 +274,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
     receive_array[2] = 0x5562eb41;  // 01010101 01100010 11101011 01000001
   }
   
-	if (cur_depth == 0)
-		test_info.used_inputs = input_array;
+	if (cur_depth == 0) test_info.used_inputs = input_array;
 	
   if (cur_depth > test_info.max_depth) test_info.max_depth = cur_depth;
 
@@ -292,7 +292,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   
   test_info.org_array[cur_depth] = organism;
   organism->SetOrgInterface(ctx, new cTestCPUInterface(this, test_info));
-  organism->GetPhenotype().SetupInject(genome);
+  organism->GetPhenotype().SetupInject(genome.GetGenome());
 
   // Run the current organism.
   ProcessGestation(ctx, test_info, cur_depth);
@@ -319,7 +319,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
   // Case 3:  ////////////////////////////////////
   bool is_ancestor = false;
   for (int anc_depth = 0; anc_depth < cur_depth; anc_depth++) {
-    if (organism->ChildGenome() == test_info.org_array[anc_depth]->GetGenome()){
+    if (organism->OffspringGenome().GetGenome() == test_info.org_array[anc_depth]->GetGenome()){
       is_ancestor = true;
       const int cur_cycle = cur_depth - anc_depth;
       if (test_info.max_cycle < cur_cycle) test_info.max_cycle = cur_cycle;
@@ -334,9 +334,9 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info,
 
   // Case 4:  ////////////////////////////////////
   // If we haven't reached maximum depth yet, check out the child.
-  if (cur_depth+1 < test_info.generation_tests) {
-    // Run the child's genome.
-    return TestGenome_Body(ctx, test_info, organism->ChildGenome(), cur_depth+1);
+  if (cur_depth + 1 < test_info.generation_tests) {
+    // Run the offspring's genome.
+    return TestGenome_Body(ctx, test_info, organism->OffspringGenome(), cur_depth + 1);
   }
 
   // All options have failed; just return false.

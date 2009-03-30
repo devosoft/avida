@@ -231,7 +231,7 @@ private:
 
   
 public:
-  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
   ~cHardwareExperimental() { ; }
   
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }
@@ -244,7 +244,8 @@ public:
 
   
   // --------  Helper Methods  --------
-  int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
+  int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
+  bool SupportsSpeculative() const { return true; }
   bool OK();
   void PrintStatus(std::ostream& fp);
 
@@ -355,7 +356,6 @@ private:
   
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
-  void Divide_DoTransposons(cAvidaContext& ctx);
   
 
   // --------  Parasite Stuff  --------

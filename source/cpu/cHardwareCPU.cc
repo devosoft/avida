@@ -565,8 +565,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
-: cHardwareBase(world, in_organism, in_m_inst_set)
+cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id)
+: cHardwareBase(world, in_organism, in_inst_set, inst_set_id)
 , m_last_cell_data(false, 0)
 {
   m_functions = s_inst_slib->GetFunctions();
@@ -841,9 +841,7 @@ void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
 bool cHardwareCPU::OK()
 {
   bool result = true;
-  
-  if (!m_memory.OK()) result = false;
-  
+    
   for (int i = 0; i < m_threads.GetSize(); i++) {
     if (m_threads[i].stack.OK() == false) result = false;
     if (m_threads[i].next_label.OK() == false) result = false;
@@ -1461,8 +1459,10 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = m_organism->ChildGenome();
+  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
   
   // Make sure it is an exact copy at this point (before divide mutations) if required
   if (m_world->GetConfig().REQUIRE_EXACT_COPY.Get() && (m_organism->GetGenome() != child_genome) ) {
@@ -1529,8 +1529,10 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = m_organism->ChildGenome();
+  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1620,8 +1622,10 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = m_organism->ChildGenome();
+  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1711,8 +1715,10 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome & child_genome = m_organism->ChildGenome();
+  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -2789,19 +2795,16 @@ void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
   if (!transposon_in_use) return;
   
   static cInstruction transposon_inst = GetInstSet().GetInst(cStringUtil::Stringf("transposon"));
-  cCPUMemory& child_genome = m_organism->ChildGenome();
+  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
 
   // Count the number of transposons that are marked as executed
   int tr_count = 0;
-  for (int i=0; i < child_genome.GetSize(); i++) 
-  {
-    if (child_genome.FlagExecuted(i) && (child_genome[i] == transposon_inst)) tr_count++;
+  for (int i = 0; i < m_memory.GetSize(); i++) {
+    if (m_memory.FlagExecuted(i) && (m_memory[i] == transposon_inst)) tr_count++;
   }
   
-  for (int i=0; i < tr_count; i++) 
-  {
-    if (ctx.GetRandom().P(0.01))
-    {
+  for (int i = 0; i < tr_count; i++) {
+    if (ctx.GetRandom().P(0.01)) {
       const unsigned int mut_line = ctx.GetRandom().GetUInt(child_genome.GetSize() + 1);
       child_genome.Insert(mut_line, transposon_inst);
     }
@@ -2831,8 +2834,10 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   // Setup child
-  cCPUMemory& child_genome = m_organism->ChildGenome();
+  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome = m_organism->GetGenome();
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
 
   // Do transposon movement and copying before other mutations
   Divide_DoTransposons(ctx);
@@ -2849,7 +2854,7 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   Divide_DoMutations(ctx);
   
   // Check viability
-  bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), m_organism->ChildGenome().GetSize(), 1);
+  bool viable = Divide_CheckViable(ctx, m_organism->GetGenome().GetSize(), m_organism->OffspringGenome().GetSize(), 1);
   if (!viable) { return false; }
   
   // Many tests will require us to run the offspring through a test CPU;

@@ -465,6 +465,7 @@
 		70436B250C36C64000A05ABA /* platform.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		70436B260C36C64000A05ABA /* PlatformExpert.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = PlatformExpert.cc; sourceTree = "<group>"; };
 		70436B270C36C64000A05ABA /* PlatformExpert.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PlatformExpert.h; sourceTree = "<group>"; };
+		70447AA20F8010F100E1BF72 /* cMetaGenome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMetaGenome.h; sourceTree = "<group>"; };
 		7048A95E0EA417CD0087B7BD /* cASNativeObjectMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASNativeObjectMethod.h; sourceTree = "<group>"; };
 		7048A9A40EA431140087B7BD /* cASCPPParameter_NativeObjectSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASCPPParameter_NativeObjectSupport.h; sourceTree = "<group>"; };
 		7049F2D70A66859300640512 /* cHardwareTransSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareTransSMT.cc; sourceTree = "<group>"; };
@@ -1559,6 +1560,7 @@
 				70166B8D0B519CFE009533A5 /* cTaskState.h */,
 				709A1E540EB69DA6006090AF /* cResourceHistory.h */,
 				70310E690EDD09260044971B /* cStateGrid.h */,
+				70447AA20F8010F100E1BF72 /* cMetaGenome.h */,
 			);
 			path = main;
 			sourceTree = "<group>";

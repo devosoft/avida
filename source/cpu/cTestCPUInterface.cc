@@ -29,10 +29,10 @@
 #include "cTestCPU.h"
 
 
-bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome)
+bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome)
 {
   parent->GetPhenotype().TestDivideReset(parent->GetGenome());
-  // @CAO in the future, we probably want to pass this child the test_cpu!
+  // @CAO in the future, we probably want to pass this offspring the test_cpu!
   return true;
 }
 

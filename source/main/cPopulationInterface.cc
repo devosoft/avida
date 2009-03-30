@@ -55,16 +55,16 @@ void cPopulationInterface::SetCellData(const int newData) {
   m_world->GetPopulation().GetCell(m_cell_id).SetCellData(newData);
 }
 
-bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome)
+bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome)
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
-  return m_world->GetPopulation().ActivateOffspring(ctx, child_genome, *parent);
+  return m_world->GetPopulation().ActivateOffspring(ctx, offspring_genome, *parent);
 }
 
-cOrganism * cPopulationInterface::GetNeighbor()
+cOrganism* cPopulationInterface::GetNeighbor()
 {
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
   
   return cell.ConnectionList().GetFirst()->GetOrganism();

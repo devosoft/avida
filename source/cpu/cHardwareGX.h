@@ -187,7 +187,7 @@ public:
     const cCPUMemory& GetMemory() const { return m_memory; }
     
     //! Append this programid's genome to the passed-in genome in linear format (includes tags).
-    void AppendLinearGenome(cCPUMemory& genome);
+    void AppendLinearGenome(cGenome& genome);
 
     //! Print this programid's genome, in linear format.
     void PrintGenome(std::ostream& out);
@@ -307,7 +307,7 @@ protected:
 
 public:
   //! Main constructor for cHardwareGX; called from cHardwareManager for every organism.
-  cHardwareGX(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  cHardwareGX(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
   virtual ~cHardwareGX(); //!< Destructor; removes all cProgramids.
     
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
@@ -319,6 +319,7 @@ public:
   
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_GX; }  
+  bool SupportsSpeculative() const { return false; }
   bool OK();
   void PrintStatus(std::ostream& fp);
 

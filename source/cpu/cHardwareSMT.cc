@@ -133,8 +133,8 @@ tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareSMT::cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_m_inst_set)
-: cHardwareBase(world, in_organism, in_m_inst_set), m_mem_array(1), m_mem_marks(1)
+cHardwareSMT::cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id)
+: cHardwareBase(world, in_organism, in_inst_set, inst_set_id), m_mem_array(1), m_mem_marks(1)
 , m_mem_lbls(Pow(NUM_NOPS, MAX_MEMSPACE_LABEL) / MEM_LBLS_HASH_FACTOR)
 , m_thread_lbls(Pow(NUM_NOPS, MAX_THREAD_LABEL) / THREAD_LBLS_HASH_FACTOR)
 {
@@ -186,6 +186,8 @@ void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space
 // to be as optimized as possible.  This is the heart of avida.
 bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
+  if (speculative) return false;
+
   // Mark this organism as running...
   m_organism->SetRunning(true);
 	
@@ -299,11 +301,7 @@ void cHardwareSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
 }
 
 bool cHardwareSMT::OK()
-{
-  for(int i = 0 ; i < m_mem_array.GetSize(); i++) {
-    if (!m_mem_array[i].OK()) return false;
-  }
-	
+{	
   for (int i = 0; i < m_threads.GetSize(); i++) {
     for(int j=0; j < NUM_LOCAL_STACKS; j++)
 			if (m_threads[i].local_stacks[j].OK() == false) return false;
@@ -917,7 +915,9 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   
   // Since the divide will now succeed, set up the information to be sent to the new organism
   m_mem_array[mem_space_used].Resize(write_head_pos);
-  m_organism->ChildGenome() = m_mem_array[mem_space_used];
+  m_organism->OffspringGenome().SetGenome(m_mem_array[mem_space_used]);
+  m_organism->OffspringGenome().SetHardwareType(GetType());
+  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
 	
   // Handle Divide Mutations...
   Divide_DoMutations(ctx, mut_multiplier);

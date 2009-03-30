@@ -38,6 +38,7 @@ class cAvidaContext;
 class cCodeLabel;
 class cDeme;
 class cGenome;
+class cMetaGenome;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
@@ -70,7 +71,7 @@ public:
   virtual void SetPrevSeenCellID(int in_id) = 0;
   virtual void SetPrevTaskCellID(int in_id) = 0;
 
-  virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, cGenome& child_genome) = 0;
+  virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome) = 0;
   
   virtual cOrganism* GetNeighbor() = 0;
   virtual bool IsNeighborCellOccupied() = 0;

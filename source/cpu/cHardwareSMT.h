@@ -200,8 +200,9 @@ protected:
   cHardwareSMT& operator=(const cHardwareSMT&); // @not_implemented
   
 public:
-  cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
   ~cHardwareSMT() { ; }
+
   static cInstLib* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-smt.cfg"; }
 	
@@ -210,6 +211,7 @@ public:
 	
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_SMT; }
+  bool SupportsSpeculative() const { return false; }
   bool OK();
   void PrintStatus(std::ostream& fp);
 	

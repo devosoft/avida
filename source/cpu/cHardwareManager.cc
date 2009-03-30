@@ -34,18 +34,20 @@
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
+#include "cMetaGenome.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
 #include "tDictionary.h"
 
+
 cHardwareManager::cHardwareManager(cWorld* world)
-: m_world(world), m_type(world->GetConfig().HARDWARE_TYPE.Get()), m_cpu_count(0)
+: m_world(world), m_cpu_count(0)
 {
   cString filename = world->GetConfig().INST_SET.Get();
 
   // Setup the instruction library and collect the default filename
   cString default_filename;
-	switch (m_type)
+	switch (world->GetConfig().HARDWARE_TYPE.Get())
 	{
 		case HARDWARE_TYPE_CPU_ORIGINAL:
       m_inst_set = new cInstSet(world, cHardwareCPU::GetInstLib());
@@ -83,27 +85,30 @@ cHardwareManager::cHardwareManager(cWorld* world)
   }
 }
 
-cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* in_org, cInstSet* inst_set)
+cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is)
 {
-  assert(in_org != NULL);
+  assert(org != NULL);
 	
+  int inst_set_id = (is == NULL) ? 1 : -1;
+  cInstSet* inst_set = (is == NULL) ? m_inst_set : is;
+  
   cHardwareBase* hw = 0;
 	
-  switch (m_type) {
+  switch (mg.GetHardwareType()) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      hw = new cHardwareCPU(ctx, m_world, in_org, inst_set);
+      hw = new cHardwareCPU(ctx, m_world, org, inst_set, inst_set_id);
       break;
     case HARDWARE_TYPE_CPU_SMT:
-      hw = new cHardwareSMT(ctx, m_world, in_org, inst_set);
+      hw = new cHardwareSMT(ctx, m_world, org, inst_set, inst_set_id);
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      hw = new cHardwareTransSMT(ctx, m_world, in_org, inst_set);
+      hw = new cHardwareTransSMT(ctx, m_world, org, inst_set, inst_set_id);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      hw = new cHardwareExperimental(ctx, m_world, in_org, inst_set);
+      hw = new cHardwareExperimental(ctx, m_world, org, inst_set, inst_set_id);
       break;
     case HARDWARE_TYPE_CPU_GX:
-      hw = new cHardwareGX(ctx, m_world, in_org, inst_set);
+      hw = new cHardwareGX(ctx, m_world, org, inst_set, inst_set_id);
       break;
     default:
       cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);
@@ -118,17 +123,4 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* in_org, c
   
   assert(hw != 0);
   return hw;
-}
-
-bool cHardwareManager::SupportsSpeculative()
-{
-  switch (m_type)
-  {
-    case HARDWARE_TYPE_CPU_ORIGINAL:      return true;
-    case HARDWARE_TYPE_CPU_SMT:           return false;
-    case HARDWARE_TYPE_CPU_TRANSSMT:      return false;
-    case HARDWARE_TYPE_CPU_EXPERIMENTAL:  return true;
-    case HARDWARE_TYPE_CPU_GX:            return false;
-    default:                              return false;
-  }
 }

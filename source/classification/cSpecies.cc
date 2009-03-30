@@ -155,7 +155,6 @@ int cSpecies::Compare(const cGenome & test_genome, int max_fail_count)
 bool cSpecies::OK()
 {
   assert(id_num >= 0);  // Species has negative ID value!
-  assert(genome.OK());  // Species genome not registering as OK!
 
   // Assert valid statistics in species.
   assert(total_organisms >= 0 && total_genotypes >= 0 &&

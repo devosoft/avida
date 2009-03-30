@@ -1759,16 +1759,17 @@ void cAnalyze::SampleOffspring(cString cur_string)
     for (int i=0; i<number_to_sample; i++) {
       test_cpu->TestGenome(m_world->GetDefaultContext(), test_info, parent_genotype->GetGenome());
       cAnalyzeGenotype * offspring_genotype = NULL;
-      bool found = genome_hash.Find(test_info.GetTestOrganism(0)->ChildGenome().AsString(), offspring_genotype);
+      bool found = genome_hash.Find(test_info.GetTestOrganism(0)->OffspringGenome().GetGenome().AsString(), offspring_genotype);
       if (found) {
         offspring_genotype->SetNumCPUs(offspring_genotype->GetNumCPUs() + 1);
       }
       else {
-        cAnalyzeGenotype * offspring_genotype = new cAnalyzeGenotype(m_world, test_info.GetTestOrganism(0)->ChildGenome(), inst_set);
+        cAnalyzeGenotype* offspring_genotype =
+          new cAnalyzeGenotype(m_world, test_info.GetTestOrganism(0)->OffspringGenome().GetGenome(), inst_set);
         offspring_genotype->SetID(parent_genotype->GetID());
         offspring_genotype->SetNumCPUs(1);
         offspring_list.Push(offspring_genotype);
-        genome_hash.Add(test_info.GetTestOrganism(0)->ChildGenome().AsString(), offspring_genotype);
+        genome_hash.Add(test_info.GetTestOrganism(0)->OffspringGenome().GetGenome().AsString(), offspring_genotype);
       }
     }
     batch_it.Remove();
@@ -8663,7 +8664,7 @@ void cAnalyze::BatchCompete(cString cur_string)
        parent, if the parent is viable, so that genome of first descendent may
        differ from that of parent.
        */
-      offspring_genome_array[array_pos] = test_info.GetTestOrganism(0)->ChildGenome();
+      offspring_genome_array[array_pos] = test_info.GetTestOrganism(0)->OffspringGenome().GetGenome();
     } else {
       fitness_array[array_pos] = 0.0;
     }

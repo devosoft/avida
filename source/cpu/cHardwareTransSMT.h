@@ -198,8 +198,9 @@ protected:
   cHardwareTransSMT& operator=(const cHardwareTransSMT&); // @not_implemented
   
 public:
-  cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
   ~cHardwareTransSMT() { ; }
+
   static cInstLib* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-transsmt.cfg"; }
 	
@@ -207,7 +208,8 @@ public:
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
 	
   // --------  Helper methods  --------
-  int GetType() const { return HARDWARE_TYPE_CPU_SMT; }
+  int GetType() const { return HARDWARE_TYPE_CPU_TRANSSMT; }
+  bool SupportsSpeculative() const { return false; }
   bool OK();
   void PrintStatus(std::ostream& fp);
 	

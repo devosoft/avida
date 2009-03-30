@@ -46,6 +46,7 @@ class cGenome;
 class cGenotype;
 class cInjectGenotype;
 class cInstSet;
+class cMetaGenome;
 class cResourceCount;
 class cResourceHistory;
 class cWorld;
@@ -77,7 +78,7 @@ private:
   
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
-  bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
+  bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, int cur_depth);
 
   
   cTestCPU(); // @not_implemented
@@ -89,6 +90,7 @@ private:
   void UpdateResources(int cpu_cycles_used);
   inline void SetResourceUpdate(int update, bool exact = true);
   inline void SetResource(int id, double new_level);
+  
 public:
   cTestCPU(cWorld* world);
   ~cTestCPU() { }

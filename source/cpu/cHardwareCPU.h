@@ -245,8 +245,9 @@ protected:
   cHardwareCPU& operator=(const cHardwareCPU&); // @not_implemented
 
 public:
-  cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
+  cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
   ~cHardwareCPU() { ; }
+  
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
 
@@ -256,6 +257,7 @@ public:
   
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_ORIGINAL; }  
+  bool SupportsSpeculative() const { return true; }
   bool OK();
   void PrintStatus(std::ostream& fp);
 

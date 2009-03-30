@@ -49,51 +49,47 @@
 class cGenome
 {
 protected:
-  tArray<cInstruction> genome;
-  int active_size;
+  tArray<cInstruction> m_genome;
+  int m_active_size;
   cMutationSteps m_mutation_steps;
+  
+  
+  virtual void adjustCapacity(int new_size);
+  virtual void prepareInsert(int pos, int num_sites);
+  
 
 public:
-  //! Default constructor.
-  cGenome() { ; }
-  explicit cGenome(int _size); //! Constructor that builds a 'blank' cGenome of the specified size.
-  cGenome(const cGenome& in_genome); //! Copy constructor.
-  cGenome(const cString& in_string); //! Constructor that builds a cGenome from a string.  
-  //! Constructor that takes a range of instructions from which to build a new cGenome.
-  cGenome(cInstruction* begin, cInstruction* end);
+  cGenome() { ; }                                   //! Default constructor
+  explicit cGenome(int _size);                      //! Constructor that builds a 'blank' cGenome of the specified size
+  cGenome(const cGenome& in_genome);                //! Copy constructor
+  cGenome(const cString& in_string);                //! Constructor that builds genome from a string
+  cGenome(cInstruction* begin, cInstruction* end);  //! Constructor that builds genome from a range of instructions  
+  virtual ~cGenome();                               //! Virtual destructor; there are subclasses.
+
+  inline int GetSize() const { return m_active_size; }
+  cString AsString() const;
   
-  virtual ~cGenome(); //! Virtual destructor; there are subclasses.
+  inline cMutationSteps& GetMutationSteps() { return m_mutation_steps; }
+  inline const cMutationSteps& GetMutationSteps() const { return m_mutation_steps; }
+  
+  inline cInstruction& operator[](int idx) { assert(idx >= 0 && idx < m_active_size);  return m_genome[idx]; }
+  inline const cInstruction& operator[](int idx) const { assert(idx >= 0 && idx < m_active_size);  return m_genome[idx]; }
+
+  virtual void Resize(int new_size);
+  virtual void Copy(int to, int from);
+  virtual void Insert(int pos, const cInstruction& inst);
+  virtual void Insert(int pos, const cGenome& genome);
+  virtual void Remove(int pos, int num_sites = 1);
+  virtual void Replace(int pos, int num_sites, const cGenome& genome);
+
+  inline void Append(const cInstruction& in_inst) { Insert(GetSize(), in_inst); }
+  inline void Append(const cGenome& in_genome) { Insert(GetSize(), in_genome); }
 
   virtual void operator=(const cGenome& other_genome);
   virtual bool operator==(const cGenome& other_genome) const;
   virtual bool operator!=(const cGenome& other_genome) const { return !(this->operator==(other_genome)); }
   virtual bool operator<(const cGenome& other_genome) const { return AsString() < other_genome.AsString(); }
-
-  cInstruction& operator[](int index) { assert(index >= 0 && index < active_size);  return genome[index]; }
-  const cInstruction& operator[](int index) const { assert(index >= 0 && index < active_size);  return genome[index]; }
-
-  virtual void Copy(int to, int from);
-
-  bool OK() const;
-   
-  int GetSize() const { return active_size; }
-  cString AsString() const;
   
-  cMutationSteps& GetMutationSteps() { return m_mutation_steps; }
-  const cMutationSteps& GetMutationSteps() const { return m_mutation_steps; }
-
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nGenome {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif
