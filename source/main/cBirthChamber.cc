@@ -26,48 +26,52 @@
 #include "cBirthChamber.h"
 
 #include "cAvidaContext.h"
-#include "tArray.h"
-#include "functions.h"
+#include "cBirthDemeHandler.h"
+#include "cBirthGenomeSizeHandler.h"
+#include "cBirthGlobalHandler.h"
+#include "cBirthGridLocalHandler.h"
+#include "cBirthMateSelectHandler.h"
+#include "cBirthNeighborhoodHandler.h"
 #include "cClassificationManager.h"
-#include "cCPUMemory.h"
 #include "cGenomeUtil.h"
 #include "cGenotype.h"
 #include "cOrganism.h"
 #include "cTools.h"
 #include "cWorld.h"
 #include "cStats.h"
+#include "tArray.h"
+#include "functions.h"
 
 cBirthChamber::cBirthChamber(cWorld* world) : m_world(world)
 {
-  const int num_demes = m_world->GetConfig().NUM_DEMES.Get(); 
-  int num_orgs;
+  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
 
-  num_orgs = m_world->GetConfig().BIOMIMETIC_K.Get();
-  if (0 >= num_orgs) {
-    num_orgs = m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get();
-  }
-
-  local_wait_entry.Resize(num_orgs);
-  deme_wait_entry.Resize(num_demes);
-}
-
-bool cBirthChamber::GetNeighborWaiting(const int & parent_id, int world_x, int world_y)
-{
-  for (int i=-1; i<=1; i++) {
-    for (int j=-1; j<=1; j++) { 
-      const int neighbor_id = GridNeighbor(parent_id, world_x, world_y, i, j);
-      if (local_wait_entry[neighbor_id].update_in >= 0) {
-        return true;
-      }
+  if (m_world->GetConfig().NUM_DEMES.Get() > 1) {
+    // Deme local takes priority, and manages the sub handlers
+    m_selection_handler = new cBirthDemeHandler(m_world, this);    
+  } else if (birth_method < NUM_LOCAL_POSITION_CHILD || birth_method == POSITION_CHILD_PARENT_FACING) { 
+    // ... else check if the birth method is one of the local ones... 
+    if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
+      m_selection_handler = new cBirthGridLocalHandler(m_world, this);
+    } else {
+      m_selection_handler = new cBirthNeighborhoodHandler(m_world, this);
     }
+  } else if (m_world->GetConfig().SAME_LENGTH_SEX.Get() != 0) {
+    // ... else check if recombination must be with organisms of the same length
+    m_selection_handler = new cBirthGenomeSizeHandler(this);
+  } else if (m_world->GetConfig().ALLOW_MATE_SELECTION.Get()) {
+    // ... else check if we have mate selection
+    m_selection_handler = new cBirthMateSelectHandler(this);
+  } else {
+    // If everything failed until this point, use default global.
+    m_selection_handler = new cBirthGlobalHandler(this);
   }
-  return false;
 }
 
-bool cBirthChamber::EvaluateEntry(const cBirthEntry & entry) const
+bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
 {
   // If there is no organism in the entry, return false.
-  if (entry.update_in == -1) return false;
+  if (entry.timestamp == -1) return false;
 
   // If there is an organism, determine if it is still alive.
   const int max_wait_time = m_world->GetConfig().MAX_BIRTH_WAIT_TIME.Get();
@@ -77,30 +81,29 @@ bool cBirthChamber::EvaluateEntry(const cBirthEntry & entry) const
 
   // Otherwise, check if few enough updates have gone by...
   const int cur_update = m_world->GetStats().GetUpdate();
-  const int max_update = entry.update_in + max_wait_time;
+  const int max_update = entry.timestamp + max_wait_time;
 
   if (cur_update > max_update) return false;  // Too many updates...
 
   return true;
 }
 
-int cBirthChamber::PickRandRecGenome(cAvidaContext& ctx, const int& parent_id, int world_x, int world_y)
+void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const
 {
-  bool done = false; 
-  while (done ==false) {
-    int test_neighbor = (int) ctx.GetRandom().GetUInt(9); 
-    int i = test_neighbor / 3 - 1; 
-    int j = test_neighbor % 3 - 1;
-    int test_loc = GridNeighbor(parent_id,world_x, world_y, i, j); 		
-    if (local_wait_entry[test_loc].update_in >= 0) {
-      return test_loc;
-    }
+  cGenotype* parent_genotype = parent->GetGenotype();
+  parent_genotype->IncDeferAdjust();
+  entry.genome = offspring_genome;
+  if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+    entry.energy4Offspring = parent->GetPhenotype().ExtractParentEnergy();
+    entry.merit = parent->GetPhenotype().ConvertEnergyToMerit(entry.energy4Offspring);
+  } else {
+    entry.merit = parent->GetPhenotype().GetMerit();
   }
-
-  return -1;
+  entry.parent_genotype = parent_genotype;
+  entry.timestamp = m_world->GetStats().GetUpdate();  
 }
 
-bool cBirthChamber::RegionSwap(cCPUMemory& genome0, cCPUMemory& genome1, int start0, int end0, int start1, int end1)
+bool cBirthChamber::RegionSwap(cGenome& genome0, cGenome& genome1, int start0, int end0, int start1, int end1)
 {
    assert( start0 >= 0  &&  start0 < genome0.GetSize() );
    assert( end0   >= 0  &&  end0   < genome0.GetSize() );
@@ -136,9 +139,9 @@ bool cBirthChamber::RegionSwap(cCPUMemory& genome0, cCPUMemory& genome1, int sta
    return true;
 }
 
-void cBirthChamber::GenomeSwap(cCPUMemory& genome0, cCPUMemory& genome1, double& merit0, double& merit1)
+void cBirthChamber::GenomeSwap(cGenome& genome0, cGenome& genome1, double& merit0, double& merit1)
 {
-  cCPUMemory genome0_tmp = genome0;
+  cGenome genome0_tmp = genome0;
   genome0 = genome1; 
   genome1 = genome0_tmp; 
 
@@ -163,13 +166,13 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
         
     // set child energy & merit
     child_array[0]->GetPhenotype().SetEnergy(child_energy);
-    merit_array[0] = cMerit::EnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy(), m_world);
+    merit_array[0] = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
   } else {
     merit_array[0] = parent.GetPhenotype().GetMerit();
   }
 
   // Setup the genotype for the child
-  cGenotype * child_genotype = parent.GetGenotype();
+  cGenotype* child_genotype = parent.GetGenotype();
   
   if (parent.GetPhenotype().CopyTrue() == false) {
     // Add this genotype with only one parent since its asexual.
@@ -210,148 +213,9 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
   return true;
 }
 
-cBirthChamber::cBirthEntry* cBirthChamber::FindSexSizeWaiting(const cMetaGenome& offspring_genome, cOrganism& parent)
-{
-  const int child_length = offspring_genome.GetSize();
 
-  // If this is a new largest genome, increase the array size.
-  if (size_wait_entry.GetSize() <= child_length) {
-    size_wait_entry.Resize(child_length + 1);
-  }
 
-  // Determine if we have an offspring of this length waiting already...
-  if ( EvaluateEntry(size_wait_entry[child_length]) == false ) {
-    cGenotype * parent_genotype = parent.GetGenotype();
-    parent_genotype->IncDeferAdjust();
-    size_wait_entry[child_length].genome = offspring_genome;
-    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-      size_wait_entry[child_length].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
-      size_wait_entry[child_length].merit.EnergyToMerit(size_wait_entry[child_length].energy4Offspring, m_world);
-    } else {
-      size_wait_entry[child_length].merit = parent.GetPhenotype().GetMerit();
-    }
-    size_wait_entry[child_length].parent_genotype = parent_genotype;
-    size_wait_entry[child_length].update_in = m_world->GetStats().GetUpdate();
-    return NULL; 				
-  }
-
-  // There is already a child waiting -- do crossover between the two.
-  return &( size_wait_entry[child_length] ); 
-}
-
-cBirthChamber::cBirthEntry* cBirthChamber::FindSexMateSelectWaiting(const cMetaGenome& offspring_genome, cOrganism& parent)
-{
-  const int mate_id = parent.GetPhenotype().MateSelectID();
-
-  // If this is a new largest ID, increase the array size.
-  if (mate_select_wait_entry.GetSize() <= mate_id) {
-    mate_select_wait_entry.Resize(mate_id + 1);
-  }
-
-  // Determine if we have an offspring of this length waiting already...
-  if ( EvaluateEntry(mate_select_wait_entry[mate_id]) == false ) {
-    cGenotype * parent_genotype = parent.GetGenotype();
-    parent_genotype->IncDeferAdjust();
-    mate_select_wait_entry[mate_id].genome = offspring_genome;
-    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-      mate_select_wait_entry[mate_id].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
-      mate_select_wait_entry[mate_id].merit.EnergyToMerit(mate_select_wait_entry[mate_id].energy4Offspring, m_world);
-    } else {
-      mate_select_wait_entry[mate_id].merit = parent.GetPhenotype().GetMerit();
-    }
-    mate_select_wait_entry[mate_id].parent_genotype = parent_genotype;
-    mate_select_wait_entry[mate_id].update_in = m_world->GetStats().GetUpdate();
-    return NULL;
-  }
-
-  // There is already a child waiting -- do crossover between the two.
-  return &( mate_select_wait_entry[mate_id] ); 
-}
-
-cBirthChamber::cBirthEntry* cBirthChamber::FindSexLocalWaiting(cAvidaContext& ctx, const cMetaGenome& offspring_genome,
-                                                               cOrganism& parent)
-{
-  // Collect some info for building the child.
-  const int world_x = m_world->GetConfig().WORLD_X.Get();
-  const int world_y = m_world->GetConfig().WORLD_Y.Get();
-  const int parent_id = parent.GetOrgInterface().GetCellID();
-  
-  // If nothing is waiting, store child locally.
-  if (GetNeighborWaiting(parent_id, world_x, world_y) == false) { 
-    cGenotype * parent_genotype = parent.GetGenotype();
-    parent_genotype->IncDeferAdjust();
-    local_wait_entry[parent_id].genome = offspring_genome;
-    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-      local_wait_entry[parent_id].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
-      local_wait_entry[parent_id].merit.EnergyToMerit(local_wait_entry[parent_id].energy4Offspring, m_world);
-    } else {
-      local_wait_entry[parent_id].merit = parent.GetPhenotype().GetMerit();
-    }
-    local_wait_entry[parent_id].parent_genotype = parent_genotype;
-    local_wait_entry[parent_id].update_in = m_world->GetStats().GetUpdate();
-    return NULL; 				
-  }
-
-  // There is already a child waiting -- do crossover between the two.
-  int found_location = PickRandRecGenome(ctx, parent_id, world_x, world_y);
-  return &( local_wait_entry[found_location] ); 
-}
-
-cBirthChamber::cBirthEntry* cBirthChamber::FindSexDemeWaiting(const cMetaGenome& offspring_genome, cOrganism& parent)
-{
-  // Collect some info for building the child.
-  const int world_x = m_world->GetConfig().WORLD_X.Get();
-  const int world_y = m_world->GetConfig().WORLD_Y.Get();
-  const int num_demes = m_world->GetConfig().NUM_DEMES.Get();
-  const int parent_id = parent.GetOrgInterface().GetCellID();
-  
-  const int parent_deme = (int) parent_id/(world_y*world_x/num_demes);
-
-  // If nothing is waiting, store child locally.
-  if ( EvaluateEntry(deme_wait_entry[parent_deme]) == false ) { 
-    cGenotype * parent_genotype = parent.GetGenotype();
-    parent_genotype->IncDeferAdjust();
-    deme_wait_entry[parent_deme].genome = offspring_genome;
-    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-      deme_wait_entry[parent_deme].energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
-      deme_wait_entry[parent_deme].merit.EnergyToMerit(deme_wait_entry[parent_deme].energy4Offspring, m_world);
-    } else {
-      deme_wait_entry[parent_deme].merit = parent.GetPhenotype().GetMerit();
-    }
-    deme_wait_entry[parent_deme].parent_genotype = parent_genotype;
-    deme_wait_entry[parent_deme].update_in = m_world->GetStats().GetUpdate();
-    return NULL; 				
-  }
-
-  // There is already a child waiting -- do crossover between the two.
-  return &( deme_wait_entry[parent_deme] );
-
-}
-
-cBirthChamber::cBirthEntry* cBirthChamber::FindSexGlobalWaiting(const cMetaGenome& offspring_genome, cOrganism& parent)
-{
-  // If no other child is waiting, store this one.
-  if ( EvaluateEntry(global_wait_entry) == false ) {
-    cGenotype * parent_genotype = parent.GetGenotype();
-    parent_genotype->IncDeferAdjust();
-    global_wait_entry.genome = offspring_genome;
-    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-      global_wait_entry.energy4Offspring = parent.GetPhenotype().ExtractParentEnergy();
-      global_wait_entry.merit.EnergyToMerit(global_wait_entry.energy4Offspring, m_world);
-    } else {
-      global_wait_entry.merit = parent.GetPhenotype().GetMerit();
-    }
-    global_wait_entry.parent_genotype = parent_genotype;
-    global_wait_entry.update_in = m_world->GetStats().GetUpdate();
-    return NULL;
-  }
-
-  // There is already a child waiting -- do crossover between the two.
-
-  return &global_wait_entry;
-}
-
-void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, cCPUMemory& genome0, cCPUMemory& genome1,
+void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
                                          double& merit0, double& merit1)
 {
   double start_frac = ctx.GetRandom().GetDouble();
@@ -380,7 +244,7 @@ void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, cCPUMemory& genome0
   } 
 }
 
-void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, cCPUMemory& genome0, cCPUMemory& genome1,
+void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
                                                double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -415,7 +279,7 @@ void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, cCPUMemory& g
   } 
 }
 
-void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, cCPUMemory& genome0, cCPUMemory& genome1,
+void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
                                                   double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -449,7 +313,7 @@ void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, cCPUMemory
   } 
 }
 
-void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, cCPUMemory& genome0, cCPUMemory& genome1,
+void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
                                                    double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -514,64 +378,35 @@ void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0, c
   child_genotype->IncDeferAdjust();
 }
 
-bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism& parent,
+bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent,
                                     tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
-  cPhenotype& parent_phenotype = parent.GetPhenotype();
+  cPhenotype& parent_phenotype = parent->GetPhenotype();
 
   if (parent_phenotype.DivideSex() == false) {
-    return DoAsexBirth(ctx, offspring_genome, parent, child_array, merit_array);
+    return DoAsexBirth(ctx, offspring_genome, *parent, child_array, merit_array);
   }
 
   // If we make it this far, this must be a sexual or a "waiting" asexual
   // organism (which is the same as sexual with 0 recombination points)
-
-  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
   // Find a waiting entry (locally or globally)
-  cBirthEntry * old_entry = NULL;
-  // First check if the birth method is one of the local ones... 
-  if (birth_method < NUM_LOCAL_POSITION_CHILD ||
-      birth_method == POSITION_CHILD_PARENT_FACING) { 
-    old_entry = FindSexLocalWaiting(ctx, offspring_genome, parent);
-  }
-  // ... then check if population is split into demes
-  else if (birth_method == POSITION_CHILD_DEME_RANDOM) {
-    old_entry = FindSexDemeWaiting(offspring_genome, parent);
-  }
-
-  // If none of the previous conditions were met, it must be global.
-  // ...check if recombination must be with organisms of the same length
-  else if (m_world->GetConfig().SAME_LENGTH_SEX.Get() != 0) {
-    old_entry = FindSexSizeWaiting(offspring_genome, parent);
-  }
-
-  // ...check if we have mate selection
-  else if (parent_phenotype.MateSelectID() >= 0) {
-    old_entry = FindSexMateSelectWaiting(offspring_genome, parent);
-  }
-
-  // If everything failed until this point, use default global.
-  else {
-    old_entry = FindSexGlobalWaiting(offspring_genome, parent);
-  }
+  cBirthEntry* old_entry = m_selection_handler->SelectOffspring(ctx, offspring_genome, parent);
 
   // If we couldn't find a waiting entry, this one was saved -- stop here!
-  if (old_entry == NULL) {
-    return false;
-  }
+  if (old_entry == NULL) return false;
 
   // We have now found a waiting entry.  Mark it no longer waiting and use it.
-  old_entry->update_in = -1;
+  old_entry->timestamp = -1;
 
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || 
       ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
-    return DoPairAsexBirth(ctx, *old_entry, offspring_genome, parent, child_array, merit_array);
+    return DoPairAsexBirth(ctx, *old_entry, offspring_genome, *parent, child_array, merit_array);
   }
   // If we made it this far, RECOMBINATION will happen!
-  cCPUMemory genome0 = old_entry->genome.GetGenome();
-  cCPUMemory genome1 = offspring_genome.GetGenome();
+  cGenome genome0 = old_entry->genome.GetGenome();
+  cGenome genome1 = offspring_genome.GetGenome();
   double meritOrEnergy0;
   double meritOrEnergy1;
 
@@ -617,7 +452,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   const int two_fold_cost = m_world->GetConfig().TWO_FOLD_COST_SEX.Get();
 
   cGenotype* parent0_genotype = old_entry->parent_genotype;
-  cGenotype* parent1_genotype = parent.GetGenotype();
+  cGenotype* parent1_genotype = parent->GetGenotype();
   
   const int hw_type = offspring_genome.GetHardwareType();
   const int inst_set_id = offspring_genome.GetInstSetID();
@@ -630,8 +465,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
       child_array[1]->GetPhenotype().SetEnergy(meritOrEnergy1);
-      meritOrEnergy0 = cMerit::EnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy(), m_world);
-      meritOrEnergy1 = cMerit::EnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy(), m_world);
+      meritOrEnergy0 = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
+      meritOrEnergy1 = child_array[1]->GetPhenotype().ConvertEnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy());
     }
     
     merit_array.Resize(2);
@@ -651,7 +486,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
-        meritOrEnergy0 = cMerit::EnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy(), m_world);
+        meritOrEnergy0 = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
       }
       merit_array[0] = meritOrEnergy0;
 
@@ -662,7 +497,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy1);
-        meritOrEnergy1 = cMerit::EnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy(), m_world);
+        meritOrEnergy1 = child_array[1]->GetPhenotype().ConvertEnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy());
       }
       merit_array[0] = meritOrEnergy1;
 

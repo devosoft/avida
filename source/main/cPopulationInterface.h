@@ -80,6 +80,7 @@ public:
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
+  void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetFacing(); // Returns the facing of this organism.
   int GetNeighborCellContents();
   void Rotate(int direction = 1);

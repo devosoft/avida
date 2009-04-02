@@ -857,24 +857,27 @@ bool cHardwareBase::Inst_Repro(cAvidaContext& ctx)
 
 bool cHardwareBase::Inst_DoubleEnergyUsage(cAvidaContext& ctx)
 {
-  m_organism->GetPhenotype().DoubleEnergyUsage();
-  double newOrgMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  cPhenotype& phenotype = m_organism->GetPhenotype();
+  phenotype.DoubleEnergyUsage();
+  double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
   m_organism->UpdateMerit(newOrgMerit);
   return true;
 }
 
 bool cHardwareBase::Inst_HalfEnergyUsage(cAvidaContext& ctx)
 {
-  m_organism->GetPhenotype().HalfEnergyUsage();
-  double newOrgMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  cPhenotype& phenotype = m_organism->GetPhenotype();
+  phenotype.HalfEnergyUsage();
+  double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
   m_organism->UpdateMerit(newOrgMerit);
   return true;
 }
 
 bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 {
-  m_organism->GetPhenotype().DefaultEnergyUsage();
-  double newOrgMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  cPhenotype& phenotype = m_organism->GetPhenotype();
+  phenotype.DefaultEnergyUsage();
+  double newOrgMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
   m_organism->UpdateMerit(newOrgMerit);
   return true;
 }

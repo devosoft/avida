@@ -323,6 +323,8 @@ public:
   int GetDiscreteEnergyLevel() const;
   double GetEnergyInBufferAmount() const { return energy_received_buffer; }
   
+  double ConvertEnergyToMerit(double energy) const;
+  
   //@MRR Organism-specific birth tracking
   double GetGMuExecTimeBorn() const {return gmu_exec_time_born;}
   int GetExecTimeBorn() const {return exec_time_born;}

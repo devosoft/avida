@@ -594,7 +594,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   // Setup child info...
   copy_true         = false;
   divide_sex        = false;
-  mate_select_id    = 0;
+  mate_select_id    = -1;
   cross_num         = 0;
   child_fertile     = true;
   last_child_fertile = true;
@@ -1431,7 +1431,7 @@ double cPhenotype::ExtractParentEnergy() {
   ReduceEnergy(child_energy - 2*energy_given_at_birth); // 2*energy_given_at_birth: 1 in child_energy & 1 for parent
     
   //TODO: add energy_given_at_birth to Stored_energy
-  cMerit parentMerit = cMerit(cMerit::EnergyToMerit(GetStoredEnergy() * GetEnergyUsageRatio(), m_world));
+  cMerit parentMerit(ConvertEnergyToMerit(GetStoredEnergy() * GetEnergyUsageRatio()));
   SetMerit(parentMerit);
   
   return child_energy;
@@ -1716,3 +1716,14 @@ int cPhenotype::GetDiscreteEnergyLevel() const {
   }			 
 	
 } //End GetDiscreteEnergyLevel()
+
+
+double cPhenotype::ConvertEnergyToMerit(double energy) const
+{
+  assert(m_world->GetConfig().ENERGY_ENABLED.Get() == 1);
+  
+	double FIX_METABOLIC_RATE = m_world->GetConfig().FIX_METABOLIC_RATE.Get();
+	if (FIX_METABOLIC_RATE > 0.0) return 100 * FIX_METABOLIC_RATE;
+  
+  return 100 * energy / m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Get();
+}

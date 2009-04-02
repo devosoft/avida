@@ -310,13 +310,13 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 // Activate the child, given information from the parent.
 // Return true if parent lives through this process.
 
-bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism& parent_organism)
+bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent_organism)
 {
   if (m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get() > 0 && GetNumOrganisms() >= m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get())
   {
     return true;
   }
-  assert(&parent_organism != NULL);
+  assert(parent_organism != NULL);
   
   tArray<cOrganism*> child_array;
   tArray<cMerit> merit_array;
@@ -324,14 +324,14 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the birth chamber
   // or the merit doesn't get passed onto the child correctly
-  cPhenotype& parent_phenotype = parent_organism.GetPhenotype();
-  parent_phenotype.DivideReset(parent_organism.GetGenome());
+  cPhenotype& parent_phenotype = parent_organism->GetPhenotype();
+  parent_phenotype.DivideReset(parent_organism->GetGenome());
   
   birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, child_array, merit_array);
   
   // First, setup the genotype of all of the offspring.
-  cGenotype* parent_genotype = parent_organism.GetGenotype();
-  const int parent_id = parent_organism.GetOrgInterface().GetCellID();
+  cGenotype* parent_genotype = parent_organism->GetGenotype();
+  const int parent_id = parent_organism->GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell& parent_cell = cell_array[parent_id];
   
@@ -351,7 +351,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       child_array[i]->MutationRates().Copy(GetCell(target_cells[i]).MutationRates());
     } else {
       // Update the mutation rates of each child from its parent.
-      child_array[i]->MutationRates().Copy(parent_organism.MutationRates());
+      child_array[i]->MutationRates().Copy(parent_organism->MutationRates());
       // If there is a meta-mutation rate, do tests for it.
       if (child_array[i]->MutationRates().GetMetaCopyMutProb() > 0.0) {
         child_array[i]->MutationRates().DoMetaCopyMut(ctx);
@@ -364,11 +364,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
     // Do lineage tracking for the new organisms.
-    LineageSetupOrganism(child_array[i], parent_organism.GetLineage(),
-                         parent_organism.GetLineageLabel(), parent_genotype);
+    LineageSetupOrganism(child_array[i], parent_organism->GetLineage(),
+                         parent_organism->GetLineageLabel(), parent_genotype);
     
     //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
-    child_array[i]->SetCCladeLabel(parent_organism.GetCCladeLabel());
+    child_array[i]->SetCCladeLabel(parent_organism->GetCCladeLabel());
   }
   
   // If we're not about to kill the parent, do some extra work on it.
@@ -382,7 +382,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
         cCPUTestInfo test_info;
         cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
         test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-        test_cpu->TestGenome(ctx, test_info, parent_organism.GetHardware().GetMemory()); // Use the true genome
+        test_cpu->TestGenome(ctx, test_info, parent_organism->GetHardware().GetMemory()); // Use the true genome
         if (pc_phenotype & 1) { // If we must update the merit
           parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
         }
@@ -405,7 +405,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     }
     
     // Purge the mutations since last division
-    parent_organism.OffspringGenome().GetGenome().GetMutationSteps().Clear();
+    parent_organism->OffspringGenome().GetGenome().GetMutationSteps().Clear();
   }
   
   // Do any statistics on the parent that just gave birth...
@@ -423,7 +423,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     //@JEB - we may want to pass along some state information from parent to child
     if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING) 
          || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
-      child_array[i]->GetHardware().InheritState(parent_organism.GetHardware());
+      child_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
     }
     
     cGenotype* child_genotype = child_array[i]->GetGenotype();
@@ -1560,8 +1560,8 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
           cOrganism* organism = cell.GetOrganism(); 
           cPhenotype& phenotype = organism->GetPhenotype(); 
           phenotype.SetEnergy(phenotype.GetStoredEnergy() + offspring_deme_energy/static_cast<double>(target_deme.GetOrgCount())); 
-          phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world))); 
-          totalEnergyInjectedIntoOrganisms += phenotype.GetStoredEnergy(); 
+          phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio()))); 
+          totalEnergyInjectedIntoOrganisms += phenotype.GetStoredEnergy();
         } 
       } 
       target_deme.SetEnergyInjectedIntoOrganisms(totalEnergyInjectedIntoOrganisms); 
@@ -1576,7 +1576,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
           cOrganism* organism = cell.GetOrganism(); 
           cPhenotype& phenotype = organism->GetPhenotype(); 
           phenotype.SetEnergy(phenotype.GetStoredEnergy() + parent_deme_energy/static_cast<double>(source_deme.GetOrgCount())); 
-          phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio(), m_world))); 
+          phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio()))); 
           totalEnergyInjectedIntoOrganisms += phenotype.GetStoredEnergy(); 
         } 
       } 
@@ -4644,9 +4644,9 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype)
   phenotype.SetupInject(new_genotype->GetGenome());  //TODO  sets merit to lenght of genotype
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-    phenotype.SetMerit(cMerit(cMerit::EnergyToMerit(phenotype.GetStoredEnergy(), m_world)));
+    phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));
   } else {
-    phenotype.SetMerit( cMerit(new_genotype->GetTestMerit(ctx)) );
+    phenotype.SetMerit(cMerit(new_genotype->GetTestMerit(ctx)));
   }
   
   // @CAO are these really needed?

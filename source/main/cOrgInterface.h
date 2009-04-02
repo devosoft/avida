@@ -76,6 +76,7 @@ public:
   virtual cOrganism* GetNeighbor() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
   virtual int GetNumNeighbors() = 0;
+  virtual void GetNeighborhoodCellIDs(tArray<int>& list) = 0;
   virtual int GetFacing() = 0; //!< Returns the facing of this organism.
   virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;

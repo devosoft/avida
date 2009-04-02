@@ -216,8 +216,9 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
     double uptake_energy = UptakeCellEnergy(1.0);
     if(uptake_energy != 0.0) {
       // update energy and merit
-      m_organism->GetPhenotype().ReduceEnergy(-1.0 * uptake_energy);
-      m_organism->GetPhenotype().SetMerit(cMerit(cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world)));
+      cPhenotype& phenotype = m_organism->GetPhenotype();
+      phenotype.ReduceEnergy(-1.0 * uptake_energy);
+      phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio())));
     }
   }
 }

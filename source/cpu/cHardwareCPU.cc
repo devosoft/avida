@@ -3665,21 +3665,23 @@ void cHardwareCPU::DoEnergyDonate(cOrganism* to_org)
   assert(to_org != NULL);
 
   const double frac_energy_given = m_organism->GetFracEnergyDonating();
+  
+  cPhenotype& phenotype = m_organism->GetPhenotype();
 
-  double cur_energy = m_organism->GetPhenotype().GetStoredEnergy();
+  double cur_energy = phenotype.GetStoredEnergy();
   double energy_given = cur_energy * frac_energy_given;
   
   //update energy store and merit of donor
-  m_organism->GetPhenotype().ReduceEnergy(energy_given);
-  m_organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
-  double senderMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  phenotype.ReduceEnergy(energy_given);
+  phenotype.IncreaseEnergyDonated(energy_given);
+  double senderMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
   m_organism->UpdateMerit(senderMerit);
-  m_organism->GetPhenotype().SetIsEnergyDonor();
+  phenotype.SetIsEnergyDonor();
   
   // update energy store and merit of donee
   to_org->GetPhenotype().ReduceEnergy(-1.0*energy_given);
   to_org->GetPhenotype().IncreaseEnergyReceived(energy_given);
-  double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  double receiverMerit = to_org->GetPhenotype().ConvertEnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio());
   to_org->UpdateMerit(receiverMerit);
   to_org->GetPhenotype().SetIsEnergyReceiver();
 }
@@ -3707,21 +3709,23 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
   assert(amount >= 0);
   assert(losspct >= 0);
   assert(losspct <= 1);
+
+  cPhenotype& phenotype = m_organism->GetPhenotype();
   
   const int update_metabolic = m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get();
-  double energy_given = min(m_organism->GetPhenotype().GetStoredEnergy(), amount);
+  double energy_given = min(phenotype.GetStoredEnergy(), amount);
   double energy_received;
   
   //update energy store and merit of donor
-  m_organism->GetPhenotype().ReduceEnergy(energy_given);
-  m_organism->GetPhenotype().SetIsEnergyDonor();
-  m_organism->GetPhenotype().IncreaseEnergyDonated(energy_given);
-  m_organism->GetPhenotype().IncreaseNumEnergyDonations();
+  phenotype.ReduceEnergy(energy_given);
+  phenotype.SetIsEnergyDonor();
+  phenotype.IncreaseEnergyDonated(energy_given);
+  phenotype.IncreaseNumEnergyDonations();
   
   m_organism->GetDeme()->IncreaseEnergyDonated(energy_given);
   
   if(update_metabolic == 1) {
-    double senderMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+    double senderMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
     m_organism->UpdateMerit(senderMerit);
   }
   
@@ -3737,7 +3741,7 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
     to_org->GetPhenotype().ApplyDonatedEnergy();
 	  
 	  if(update_metabolic == 1) {
-      double receiverMerit = cMerit::EnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio(), m_world);
+      double receiverMerit = to_org->GetPhenotype().ConvertEnergyToMerit(to_org->GetPhenotype().GetStoredEnergy() * to_org->GetPhenotype().GetEnergyUsageRatio());
       to_org->UpdateMerit(receiverMerit);
 	  }
   }
@@ -3752,7 +3756,7 @@ void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
                                              m_world->GetConfig().ENERGY_SHARING_METHOD.Get(),
                                              m_organism->GetID(),
                                              energy_given,
-                                             m_organism->GetPhenotype().GetStoredEnergy(),
+                                             phenotype.GetStoredEnergy(),
                                              to_org->GetID(),
                                              energy_received,
                                              to_org->GetPhenotype().GetStoredEnergy());
@@ -4258,16 +4262,17 @@ bool cHardwareCPU::Inst_DonateNULL(cAvidaContext& ctx)
 //Move energy from an organism's received energy buffer into their energy store, recalculate merit
 bool cHardwareCPU::Inst_ReceiveDonatedEnergy(cAvidaContext& ctx)
 {
-  if(m_organism->GetCellID() < 0) {
+  if (m_organism->GetCellID() < 0) {
     return false;
   }
   
-  if(m_organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
-    m_organism->GetPhenotype().ApplyDonatedEnergy();
+  cPhenotype& phenotype = m_organism->GetPhenotype();
+  if (phenotype.GetEnergyInBufferAmount() > 0) {
+    phenotype.ApplyDonatedEnergy();
 	 
-	  if(m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get() == 1) {
-        double receiverMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
-        m_organism->UpdateMerit(receiverMerit);
+	  if (m_world->GetConfig().ENERGY_SHARING_UPDATE_METABOLIC.Get() == 1) {
+      double receiverMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio());
+      m_organism->UpdateMerit(receiverMerit);
   	}
   }
   
@@ -4315,7 +4320,8 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
 //Update the organism's metabolic rate
 bool cHardwareCPU::Inst_UpdateMetabolicRate(cAvidaContext& ctx)
 {
-  double newmerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy()  * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+  cPhenotype& phenotype = m_organism->GetPhenotype();
+  double newmerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy()  * phenotype.GetEnergyUsageRatio());
   m_organism->UpdateMerit(newmerit);
   
   return true;
@@ -5912,10 +5918,12 @@ bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
   }
   m_organism->SetSleeping(false);  //this instruction get executed at the end of a sleep cycle
   GetOrganism()->GetOrgInterface().GetDeme()->DecSleepingCount();
-  if(m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
-    m_organism->GetPhenotype().RefreshEnergy();
-    m_organism->GetPhenotype().ApplyToEnergyStore();
-    double newMerit = cMerit::EnergyToMerit(m_organism->GetPhenotype().GetStoredEnergy() * m_organism->GetPhenotype().GetEnergyUsageRatio(), m_world);
+
+  cPhenotype& phenotype = m_organism->GetPhenotype();
+  if (m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
+    phenotype.RefreshEnergy();
+    phenotype.ApplyToEnergyStore();
+    double newMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio());
     pop.UpdateMerit(cellID, newMerit);
   }
   return true;

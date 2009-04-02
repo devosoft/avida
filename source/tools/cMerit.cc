@@ -9,7 +9,6 @@
  */
 
 #include "cMerit.h"
-#include "cWorld.h"
 
 using namespace std;
 
@@ -68,15 +67,6 @@ bool cMerit::OK() const
   return (test_bits == bits &&
           (test_value <= value * (1 + 1 / UINT_MAX) ||
            test_value >= value / (1 + 1 / UINT_MAX)));
-}
-
-double cMerit::EnergyToMerit(const double orgEnergy, cWorld* m_world) {
-  assert(m_world->GetConfig().ENERGY_ENABLED.Get() == 1);
-	static double FIX_METABOLIC_RATE = m_world->GetConfig().FIX_METABOLIC_RATE.Get();
-	if(FIX_METABOLIC_RATE > 0.0)
-		return 100 * FIX_METABOLIC_RATE;
-  int inst_2_exc = m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Get();
-  return 100 * orgEnergy / (inst_2_exc);
 }
 
 ostream& operator<<(ostream& os, const cMerit& merit)

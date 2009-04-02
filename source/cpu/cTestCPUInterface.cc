@@ -50,6 +50,11 @@ int cTestCPUInterface::GetNumNeighbors()
   return 0;
 }
 
+void cTestCPUInterface::GetNeighborhoodCellIDs(tArray<int>& list)
+{
+  
+}
+
 void cTestCPUInterface::Rotate(int direction)
 {
 }

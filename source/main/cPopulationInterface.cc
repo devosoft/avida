@@ -59,7 +59,7 @@ bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const c
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
-  return m_world->GetPopulation().ActivateOffspring(ctx, offspring_genome, *parent);
+  return m_world->GetPopulation().ActivateOffspring(ctx, offspring_genome, parent);
 }
 
 cOrganism* cPopulationInterface::GetNeighbor()
@@ -81,6 +81,17 @@ int cPopulationInterface::GetNumNeighbors()
   assert(cell.IsOccupied());
   
   return cell.ConnectionList().GetSize();
+}
+
+void cPopulationInterface::GetNeighborhoodCellIDs(tArray<int>& list)
+{
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+  assert(cell.IsOccupied());
+  
+  list.Resize(cell.ConnectionList().GetSize());
+  tConstListIterator<cPopulationCell> it(cell.ConnectionList());
+  int i = 0;
+  while (it.Next() != NULL) list[i++] = it.Get()->GetID();
 }
 
 int cPopulationInterface::GetFacing()

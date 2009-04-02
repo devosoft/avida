@@ -163,7 +163,7 @@ public:
   void InitiatePop();
 
   // Activate the offspring of an organism in the population
-  bool ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism& parent_organism);
+  bool ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent_organism);
   bool ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code);
   
   // Inject an organism from the outside world.
