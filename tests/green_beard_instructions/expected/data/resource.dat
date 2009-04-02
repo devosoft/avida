@@ -1,9 +1,0 @@
-# Avida resource data
-# Fri Dec 12 17:25:43 2008
-# First column gives the current update, all further columns give the quantity
-# of the particular resource at that update.
-#  1: Update
-
-0 
-100 
-200 
