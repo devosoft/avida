@@ -29,6 +29,9 @@
 #ifndef cBirthEntry_h
 #include "cBirthEntry.h"
 #endif
+#ifndef tArrayMap_h
+#include "tArrayMap.h"
+#endif
 
 /**
  * All genome-based organisms must go through the birth chamber, which will
@@ -42,25 +45,22 @@ class cAvidaContext;
 class cBirthSelectionHandler;
 class cGenome;
 class cOrganism;
-template <class T> class tArray;
 class cWorld;
 
 class cBirthChamber
 {
 private:
   cWorld* m_world;
-  cBirthSelectionHandler* m_selection_handler;
+  tArrayMap<int, cBirthSelectionHandler*> m_handler_map;
 
-  tArray<cBirthEntry> m_deme_wait_entry;
 
-  
   cBirthChamber(); // @not_implemented
   cBirthChamber(const cBirthChamber&); // @not_implemented
   cBirthChamber& operator=(const cBirthChamber&); // @not_implemented
   
 
 public:
-  cBirthChamber(cWorld* world);
+  cBirthChamber(cWorld* world) : m_world(world) { ; }
   ~cBirthChamber() { ; }
 
   // Handle manipulations & tests of genome.  Return false if divide process
@@ -72,6 +72,7 @@ public:
   void StoreAsEntry(const cMetaGenome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const;
 
 private:
+  cBirthSelectionHandler* getSelectionHandler(int hw_type);
   
   bool RegionSwap(cGenome& genome0, cGenome& genome1, int start0, int end0, int start1, int end1);
   void GenomeSwap(cGenome& genome0, cGenome& genome1, double& merit0, double& merit1);

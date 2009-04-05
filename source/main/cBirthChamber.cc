@@ -42,30 +42,38 @@
 #include "tArray.h"
 #include "functions.h"
 
-cBirthChamber::cBirthChamber(cWorld* world) : m_world(world)
-{
-  const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
 
-  if (m_world->GetConfig().NUM_DEMES.Get() > 1) {
-    // Deme local takes priority, and manages the sub handlers
-    m_selection_handler = new cBirthDemeHandler(m_world, this);    
-  } else if (birth_method < NUM_LOCAL_POSITION_CHILD || birth_method == POSITION_CHILD_PARENT_FACING) { 
-    // ... else check if the birth method is one of the local ones... 
-    if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
-      m_selection_handler = new cBirthGridLocalHandler(m_world, this);
+cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
+{
+  cBirthSelectionHandler* handler = NULL;
+  if (!m_handler_map.Get(hw_type, handler)) {
+    const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
+    
+    if (m_world->GetConfig().NUM_DEMES.Get() > 1) {
+      // Deme local takes priority, and manages the sub handlers
+      handler = new cBirthDemeHandler(m_world, this);    
+    } else if (birth_method < NUM_LOCAL_POSITION_CHILD || birth_method == POSITION_CHILD_PARENT_FACING) { 
+      // ... else check if the birth method is one of the local ones... 
+      if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
+        handler = new cBirthGridLocalHandler(m_world, this);
+      } else {
+        handler = new cBirthNeighborhoodHandler(m_world, this);
+      }
+    } else if (m_world->GetConfig().SAME_LENGTH_SEX.Get() != 0) {
+      // ... else check if recombination must be with organisms of the same length
+      handler = new cBirthGenomeSizeHandler(this);
+    } else if (m_world->GetConfig().ALLOW_MATE_SELECTION.Get()) {
+      // ... else check if we have mate selection
+      handler = new cBirthMateSelectHandler(this);
     } else {
-      m_selection_handler = new cBirthNeighborhoodHandler(m_world, this);
+      // If everything failed until this point, use default global.
+      handler = new cBirthGlobalHandler(this);
     }
-  } else if (m_world->GetConfig().SAME_LENGTH_SEX.Get() != 0) {
-    // ... else check if recombination must be with organisms of the same length
-    m_selection_handler = new cBirthGenomeSizeHandler(this);
-  } else if (m_world->GetConfig().ALLOW_MATE_SELECTION.Get()) {
-    // ... else check if we have mate selection
-    m_selection_handler = new cBirthMateSelectHandler(this);
-  } else {
-    // If everything failed until this point, use default global.
-    m_selection_handler = new cBirthGlobalHandler(this);
+    
+    m_handler_map.Set(hw_type, handler);
   }
+  
+  return handler;
 }
 
 bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
@@ -88,11 +96,11 @@ bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
   return true;
 }
 
-void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const
+void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring, cOrganism* parent, cBirthEntry& entry) const
 {
   cGenotype* parent_genotype = parent->GetGenotype();
   parent_genotype->IncDeferAdjust();
-  entry.genome = offspring_genome;
+  entry.genome = offspring;
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     entry.energy4Offspring = parent->GetPhenotype().ExtractParentEnergy();
     entry.merit = parent->GetPhenotype().ConvertEnergyToMerit(entry.energy4Offspring);
@@ -151,13 +159,13 @@ void cBirthChamber::GenomeSwap(cGenome& genome0, cGenome& genome1, double& merit
 }
 
 
-bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism& parent,
+bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism& parent,
                                 tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   // This is asexual who doesn't need to wait in the birth chamber
   // just build the child and return.
   child_array.Resize(1);
-  child_array[0] = new cOrganism(m_world, ctx, offspring_genome);
+  child_array[0] = new cOrganism(m_world, ctx, offspring);
   merit_array.Resize(1);
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
@@ -176,7 +184,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
   
   if (parent.GetPhenotype().CopyTrue() == false) {
     // Add this genotype with only one parent since its asexual.
-    child_genotype = m_world->GetClassificationManager().GetGenotype(offspring_genome.GetGenome(), parent.GetGenotype(), NULL);
+    child_genotype = m_world->GetClassificationManager().GetGenotype(offspring.GetGenome(), parent.GetGenotype(), NULL);
   }
 
   child_array[0]->SetGenotype(child_genotype);
@@ -378,20 +386,20 @@ void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0, c
   child_genotype->IncDeferAdjust();
 }
 
-bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent,
+bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent,
                                     tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   cPhenotype& parent_phenotype = parent->GetPhenotype();
 
   if (parent_phenotype.DivideSex() == false) {
-    return DoAsexBirth(ctx, offspring_genome, *parent, child_array, merit_array);
+    return DoAsexBirth(ctx, offspring, *parent, child_array, merit_array);
   }
 
   // If we make it this far, this must be a sexual or a "waiting" asexual
   // organism (which is the same as sexual with 0 recombination points)
   
   // Find a waiting entry (locally or globally)
-  cBirthEntry* old_entry = m_selection_handler->SelectOffspring(ctx, offspring_genome, parent);
+  cBirthEntry* old_entry = getSelectionHandler(offspring.GetHardwareType())->SelectOffspring(ctx, offspring, parent);
 
   // If we couldn't find a waiting entry, this one was saved -- stop here!
   if (old_entry == NULL) return false;
@@ -402,11 +410,11 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || 
       ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
-    return DoPairAsexBirth(ctx, *old_entry, offspring_genome, *parent, child_array, merit_array);
+    return DoPairAsexBirth(ctx, *old_entry, offspring, *parent, child_array, merit_array);
   }
   // If we made it this far, RECOMBINATION will happen!
   cGenome genome0 = old_entry->genome.GetGenome();
-  cGenome genome1 = offspring_genome.GetGenome();
+  cGenome genome1 = offspring.GetGenome();
   double meritOrEnergy0;
   double meritOrEnergy1;
 
@@ -454,8 +462,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   cGenotype* parent0_genotype = old_entry->parent_genotype;
   cGenotype* parent1_genotype = parent->GetGenotype();
   
-  const int hw_type = offspring_genome.GetHardwareType();
-  const int inst_set_id = offspring_genome.GetInstSetID();
+  const int hw_type = offspring.GetHardwareType();
+  const int inst_set_id = offspring.GetInstSetID();
 
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);
@@ -513,3 +521,4 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 
   return true;
 }
+

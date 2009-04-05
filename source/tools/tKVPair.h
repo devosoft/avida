@@ -41,7 +41,7 @@ public:
   inline const K& Key() const { return m_key; }
   
   inline V& Value() { return m_value; }
-  inline const V& Value() const { m_value; }
+  inline const V& Value() const { return m_value; }
   
   inline void Set(const K& key, const V& value) { m_key = key; m_value = value; } 
 };

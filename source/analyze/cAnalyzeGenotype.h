@@ -261,7 +261,7 @@ public:
   ReadToken* GetReadToken() const { m_data->rwlock.ReadLock(); return new ReadToken(this); }
 
   void SetGenotypeData(int data_id, cGenotypeData* data);
-  cGenotypeData* GetGenotypeData(ReadToken* tk, int data_id) const { tk->Validate(this); return m_data->dmap.Get(data_id, NULL); }
+  cGenotypeData* GetGenotypeData(ReadToken* tk, int data_id) const { tk->Validate(this); return m_data->dmap.GetWithDefault(data_id, NULL); }
   
 
   void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);

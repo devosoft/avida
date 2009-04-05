@@ -63,7 +63,7 @@ public:
     return false;
   }
   
-  const ValueType& Get(const KeyType& key, const ValueType& default_value)
+  const ValueType& GetWithDefault(const KeyType& key, const ValueType& default_value)
   {
     for (int i = 0; i < m_map.GetSize(); i++) {
       if (m_map[i].Key() == key) return m_map[i].Value();
