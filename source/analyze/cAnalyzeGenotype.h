@@ -226,6 +226,7 @@ private:
       double  m_likely_frequency;
       double  m_min_fit_frequency;
       double  m_max_fit_frequency;
+      tArray<double> m_task_probabilities;
   };
   mutable cAnalyzePhenPlast* m_phenplast_stats;
   
@@ -389,7 +390,14 @@ public:
   double GetLikelyFrequency()  const { CheckPhenPlast(); return m_phenplast_stats->m_likely_frequency; }
   double GetLikelyFitness()     const { CheckPhenPlast(); return m_phenplast_stats->m_likely_fitness; }
   int    GetNumTrials()         const { CheckPhenPlast(); return m_phenplast_stats->m_recalculate_trials; }
-  
+  double GetTaskProbability(int task_id) const { 
+    if (task_id >= m_world->GetEnvironment().GetNumTasks()) return 0.0;
+    CheckPhenPlast();
+    return m_phenplast_stats->m_task_probabilities[task_id];
+  }
+  cString DescTaskProb(int task_id) const;
+    
+    
   
   double GetFitnessRatio() const { return fitness_ratio; }
   double GetEfficiencyRatio() const { return efficiency_ratio; }
@@ -423,6 +431,7 @@ public:
 	  return task_qualities[task_id];
   }
   const tArray<double>& GetTaskQualities() const { return task_qualities; }
+  
   
   // number of different tasks performed
   int GetTotalTaskCount() const {

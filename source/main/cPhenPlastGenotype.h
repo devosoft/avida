@@ -45,6 +45,9 @@
 #ifndef cWorld_h
 #include "cWorld.h"
 #endif
+#ifndef cEnvironment_h
+#include "cEnvironment.h"
+#endif
 #ifndef cWorldDriver_h
 #include "cWorldDriver.h"
 #endif
@@ -52,6 +55,7 @@
 class cAvidaContext;
 class cTestCPU;
 class cWorld;
+class cEnvironment;
 
 /**
  * This class examines a genotype for evidence of phenotypic plasticity. 
@@ -78,6 +82,9 @@ class cPhenPlastGenotype
     double m_max_fit_freq;
     double m_min_fit_freq;
     double m_min_fitness;
+    tArray<double> m_task_probabilities;
+    
+    
     
     void Process(cCPUTestInfo& test_info, cWorld* world, cAvidaContext& ctx);
 
@@ -99,7 +106,7 @@ class cPhenPlastGenotype
     const cPlasticPhenotype* GetPlasticPhenotype(int num) const;
     const cPlasticPhenotype* GetMostLikelyPhenotype() const;
     const cPlasticPhenotype* GetHighestFitnessPhenotype() const;
-    
+    tArray<double> GetTaskProbabilities() const { return m_task_probabilities; }
     
 };
 

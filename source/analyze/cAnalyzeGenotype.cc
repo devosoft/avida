@@ -326,7 +326,10 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
            ("task", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskCount, 5));
   dcm->Add("env_input", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
            ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
-    
+  dcm->Add("task_prob", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
+           ("task_prob", &cAnalyzeGenotype::DescTaskProb, &cAnalyzeGenotype::GetTaskProbability, 5));
+  
+  
   // The remaining values should actually go in a seperate list called
   // "population_data_list", but for the moment we're going to put them
   // here so that we only need to worry about a single system to load and
@@ -350,8 +353,14 @@ tDataCommandManager<cAnalyzeGenotype>& cAnalyzeGenotype::GetDataCommandManager()
 
 cString cAnalyzeGenotype::DescTask(int task_id) const
 {
-  if (task_id > task_counts.GetSize()) return "";
+  if (task_id > m_world->GetEnvironment().GetNumTasks()) return "";
   return m_world->GetEnvironment().GetTask(task_id).GetDesc();
+}
+
+cString cAnalyzeGenotype::DescTaskProb(int task_id) const
+{
+  if (task_id > m_world->GetEnvironment().GetNumTasks()) return "";
+  return DescTask(task_id) + " (Probability)";
 }
 
 
@@ -555,8 +564,14 @@ void cAnalyzeGenotype::CheckPhenPlast() const
 void cAnalyzeGenotype::SummarizePhenotypicPlasticity(const cPhenPlastGenotype& pp) const
 {
 
-  if (m_phenplast_stats == NULL)
+  if (m_phenplast_stats == NULL){
     m_phenplast_stats = new cAnalyzePhenPlast;
+    cerr << id_num << " " << pp.GetNumPhenotypes();
+    for (int k = 0; k < pp.GetTaskProbabilities().GetSize(); k++){
+      cerr << " " << pp.GetTaskProbabilities()[k];
+    }
+    cerr << endl;
+  }
   m_phenplast_stats->m_recalculate_trials = pp.GetNumTrials();
   m_phenplast_stats->m_max_fitness = pp.GetMaximumFitness();
   m_phenplast_stats->m_avg_fitness = pp.GetAverageFitness();
@@ -567,6 +582,7 @@ void cAnalyzeGenotype::SummarizePhenotypicPlasticity(const cPhenPlastGenotype& p
   m_phenplast_stats->m_min_fit_frequency = pp.GetMinimumFitnessFrequency();
   m_phenplast_stats->m_likely_fitness = pp.GetLikelyFitness();
   m_phenplast_stats->m_num_phenotypes = pp.GetNumPhenotypes();
+  m_phenplast_stats->m_task_probabilities = pp.GetTaskProbabilities();
 }
 
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
