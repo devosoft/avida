@@ -566,11 +566,6 @@ void cAnalyzeGenotype::SummarizePhenotypicPlasticity(const cPhenPlastGenotype& p
 
   if (m_phenplast_stats == NULL){
     m_phenplast_stats = new cAnalyzePhenPlast;
-    cerr << id_num << " " << pp.GetNumPhenotypes();
-    for (int k = 0; k < pp.GetTaskProbabilities().GetSize(); k++){
-      cerr << " " << pp.GetTaskProbabilities()[k];
-    }
-    cerr << endl;
   }
   m_phenplast_stats->m_recalculate_trials = pp.GetNumTrials();
   m_phenplast_stats->m_max_fitness = pp.GetMaximumFitness();
