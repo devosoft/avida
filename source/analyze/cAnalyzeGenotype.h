@@ -226,6 +226,7 @@ private:
       double  m_likely_frequency;
       double  m_min_fit_frequency;
       double  m_max_fit_frequency;
+      double m_viable_probability;
       tArray<double> m_task_probabilities;
   };
   mutable cAnalyzePhenPlast* m_phenplast_stats;
@@ -390,6 +391,7 @@ public:
   double GetLikelyFrequency()  const { CheckPhenPlast(); return m_phenplast_stats->m_likely_frequency; }
   double GetLikelyFitness()     const { CheckPhenPlast(); return m_phenplast_stats->m_likely_fitness; }
   int    GetNumTrials()         const { CheckPhenPlast(); return m_phenplast_stats->m_recalculate_trials; }
+  double GetViableProbability()  const { CheckPhenPlast(); return m_phenplast_stats->m_viable_probability; }
   double GetTaskProbability(int task_id) const { 
     if (task_id >= m_world->GetEnvironment().GetNumTasks()) return 0.0;
     CheckPhenPlast();

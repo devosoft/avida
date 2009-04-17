@@ -294,6 +294,8 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   ADD_GDATA(double (), "phen_avg_fitness",   "Phen Plast Wtd Avg Fitness",            GetAverageFitness,         SetNULL, 0, 0, 0);
   ADD_GDATA(double (), "phen_likely_freq",   "Freq of Most Likely Phenotype",         GetLikelyFrequency,        SetNULL, 0, 0, 0);
   ADD_GDATA(double (), "phen_likely_fitness","Fitness of Most Likely Phenotype",      GetLikelyFitness,          SetNULL, 0, 0, 0);
+  ADD_GDATA(double (), "prob_viable",        "Probability Viable",                    GetViableProbability,      SetNULL, 0, 0, 0);
+  
   
   // @JEB There is a difference between these two. parent_muts is based on an alignment. mut_steps is based on recorded mutations during run.
   ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
@@ -326,8 +328,8 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
            ("task", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskCount, 5));
   dcm->Add("env_input", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
            ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
-  dcm->Add("task_prob", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
-           ("task_prob", &cAnalyzeGenotype::DescTaskProb, &cAnalyzeGenotype::GetTaskProbability, 5));
+  dcm->Add("prob_task", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
+           ("prob_task", &cAnalyzeGenotype::DescTaskProb, &cAnalyzeGenotype::GetTaskProbability, 5));
   
   
   // The remaining values should actually go in a seperate list called
@@ -578,6 +580,7 @@ void cAnalyzeGenotype::SummarizePhenotypicPlasticity(const cPhenPlastGenotype& p
   m_phenplast_stats->m_likely_fitness = pp.GetLikelyFitness();
   m_phenplast_stats->m_num_phenotypes = pp.GetNumPhenotypes();
   m_phenplast_stats->m_task_probabilities = pp.GetTaskProbabilities();
+  m_phenplast_stats->m_viable_probability = pp.GetViableProbability();
 }
 
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)

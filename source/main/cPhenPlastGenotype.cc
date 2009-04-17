@@ -77,6 +77,7 @@ void cPhenPlastGenotype::Process(cCPUTestInfo& test_info, cWorld* world, cAvidaC
   m_max_fit_freq    =   0.0;
   m_min_fit_freq    =   0.0;
   m_phenotypic_entropy = 0.0;
+  m_viable_probability = 0.0;
   m_min_fitness     = (*uit)->GetFitness();
   while(uit != m_unique.end()){
     cPlasticPhenotype* this_phen = static_cast<cPlasticPhenotype*>(*uit);
@@ -98,8 +99,9 @@ void cPhenPlastGenotype::Process(cCPUTestInfo& test_info, cWorld* world, cAvidaC
     m_phenotypic_entropy -= freq * log(freq) / log(2.0);
     
     for (int i = 0; i < num_tasks; i++)
-      m_task_probabilities[i] += freq * ((this_phen->GetLastTaskCount()[i] > 0) ? 1 : 0);
+      m_task_probabilities[i] += (this_phen->GetLastTaskCount()[i] > 0) ? freq : 0;
     
+    m_viable_probability += (this_phen->IsViable() > 0) ? freq : 0;
     ++uit;
   }
   
