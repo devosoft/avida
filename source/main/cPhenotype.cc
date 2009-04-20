@@ -325,8 +325,11 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
-  cur_rbins_total.SetAll(0);
-  cur_rbins_avail.SetAll(0);
+  cur_rbins_total.SetAll(0);  // total resources collected in lifetime
+  // parent's resources have already been halved in DivideReset;
+  // offspring gets that value too.
+  for (int i = 0; i < cur_rbins_avail.GetSize(); i++)
+        cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -670,8 +673,9 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
-  cur_rbins_total.SetAll(0);
-  cur_rbins_avail.SetAll(0);
+  cur_rbins_total.SetAll(0);  // total resources collected in lifetime
+  // resources available are split in half -- the offspring gets the other half
+  for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -822,8 +826,9 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
-  cur_rbins_total.SetAll(0);
-  cur_rbins_avail.SetAll(0);
+  cur_rbins_total.SetAll(0);  // total resources collected in lifetime
+  // resources available are split in half -- the offspring gets the other half
+  for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -1079,7 +1084,7 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 }
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-			    const tArray<double>& res_in, tArray<double>& rbins_in, tArray<double>& res_change,
+			    const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
 			    tArray<int>& insts_triggered)
 {
   assert(initialized == true);
@@ -1175,15 +1180,15 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   for (int i = 0; i < res_in.GetSize(); i++) {
     res_change[i] = result.GetProduced(i) - result.GetConsumed(i);
   }
-  
-  // Update rbin stats as necessary
+
+  // Update rbins as necessary
   if(result.UsedEnvResource() == false)
   {
   	double rbin_diff;
   	for(int i = 0; i < num_resources; i++)
   	{
-  		rbin_diff = cur_rbins_avail[i] - rbins_in[i];
-  		cur_rbins_avail[i] = rbins_in[i];
+  		rbin_diff = result.GetInternalConsumed(i);
+  		cur_rbins_avail[i] -= rbin_diff;
   		if(rbin_diff > 0) { cur_rbins_total[i] += rbin_diff; }
   	}
   }

@@ -315,10 +315,7 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   //         versions we should rename these.
   ADD_GDATA(cString (), "link", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
   ADD_GDATA(cString (), "html",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
-  
-  dcm->Add("inst", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
-              ("inst", &cAnalyzeGenotype::DescInstExe, &cAnalyzeGenotype::GetInstExecutedCount));
-  
+    
   // coarse-grained task stats
   ADD_GDATA(int (), 		"total_task_count","# Different Tasks", 		GetTotalTaskCount, SetNULL, 1, 0, 0);
   ADD_GDATA(int (), 		"total_task_performance_count", "Total Tasks Performed",	GetTotalTaskPerformanceCount, SetNULL, 1, 0, 0);
@@ -328,11 +325,17 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
            ("task", &cAnalyzeGenotype::DescTask, &cAnalyzeGenotype::GetTaskCount, 5));
   dcm->Add("env_input", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
            ("env_input", &cAnalyzeGenotype::DescEnvInput, &cAnalyzeGenotype::GetEnvInput));
+  dcm->Add("inst", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
+           ("inst", &cAnalyzeGenotype::DescInstExe, &cAnalyzeGenotype::GetInstExecutedCount));
+  dcm->Add("r_tot", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
+           ("r_tot", &cAnalyzeGenotype::DescRTot, &cAnalyzeGenotype::GetRBinTotal));
+  dcm->Add("r_avail", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
+           ("r_avail", &cAnalyzeGenotype::DescRAvail, &cAnalyzeGenotype::GetRBinAvail));
   dcm->Add("prob_task", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
            ("prob_task", &cAnalyzeGenotype::DescTaskProb, &cAnalyzeGenotype::GetTaskProbability, 5));
   
   
-  // The remaining values should actually go in a seperate list called
+  // The remaining values should actually go in a separate list called
   // "population_data_list", but for the moment we're going to put them
   // here so that we only need to worry about a single system to load and
   // save genotype information.

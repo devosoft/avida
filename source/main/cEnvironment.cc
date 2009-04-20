@@ -1017,7 +1017,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const tArray<int>& task_count,
                               const tArray<int>& reaction_count, 
                               const tArray<double>& resource_count, 
-                              tArray<double>& rbins_count) const
+                              const tArray<double>& rbins_count) const
 {
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);
@@ -1125,7 +1125,7 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
 
 
 void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
-                               const tArray<double>& resource_count, tArray<double>& rbins_count, 
+                               const tArray<double>& resource_count, const tArray<double>& rbins_count, 
                                const double task_quality, const int task_count, 
                                const int reaction_id, cReactionResult& result) const
 {
@@ -1199,9 +1199,6 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       // Mark in the results the resource consumed.
 			if (cur_process->GetDepletable()) {
       	result.Consume(res_id, consumed, !using_rbins);
-        
-      	// if we consumed resource from an internal resource bin, remove it
-      	if (may_use_rbins && using_rbins) rbins_count[res_id] -= consumed;
       }
     }
     

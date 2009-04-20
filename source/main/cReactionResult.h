@@ -35,6 +35,7 @@ private:
   tArray<double> resources_consumed;
   tArray<double> resources_produced;
   tArray<double> resources_detected;  //Initialize to -1.0
+  tArray<double> internal_resources_consumed;
   tArray<bool> tasks_done;
   tArray<double> tasks_quality;
   tArray<double> tasks_value;
@@ -89,6 +90,7 @@ public:
   double GetConsumed(int id);
   double GetProduced(int id);
   double GetDetected(int id);
+  double GetInternalConsumed(int id);
   bool GetLethal();  
   bool GetSterilize();
   bool ReactionTriggered(int id);
