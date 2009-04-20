@@ -380,9 +380,10 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 	  }
   }
 
-  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, m_phenotype.GetCurRBinsAvail(), 
-                                               globalAndDeme_res_change, insts_triggered);
-  
+  bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
+                                               m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
+                                               insts_triggered);
+ 
   //disassemble global and deme resource counts
   global_res_change = globalAndDeme_res_change.Subset(0, global_res_change.GetSize());
   deme_res_change = globalAndDeme_res_change.Subset(global_res_change.GetSize(), globalAndDeme_res_change.GetSize());
@@ -395,9 +396,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
       m_interface->UpdateMerit(newMerit);
     }
   }
- 
   m_interface->UpdateResources(global_res_change);
-  
+
   //update deme resources
   m_interface->UpdateDemeResources(deme_res_change);  
 

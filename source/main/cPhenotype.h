@@ -343,7 +343,9 @@ public:
   const tArray<double> & GetCurTaskValue() const { assert(initialized == true); return cur_task_value; }
   const tArray<double> & GetCurInternalTaskQuality() const { assert(initialized == true); return cur_internal_task_quality; }
   const tArray<double>& GetCurRBinsTotal() const { assert(initialized == true); return cur_rbins_total; }
+  double GetCurRBinTotal(int index) const { assert(initialized == true); return cur_rbins_total[index]; }
   const tArray<double>& GetCurRBinsAvail() const { assert(initialized == true); return cur_rbins_avail; }
+  double GetCurRBinAvail(int index) const { assert(initialized == true); return cur_rbins_avail[index]; }
   const tArray<int>& GetCurReactionCount() const { assert(initialized == true); return cur_reaction_count;}
   const tArray<double>& GetCurReactionAddReward() const { assert(initialized == true); return cur_reaction_add_reward;}
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
