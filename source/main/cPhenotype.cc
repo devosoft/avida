@@ -1291,6 +1291,16 @@ int cPhenotype::CalcSizeMerit() const
   return out_size;
 } 
 
+double cPhenotype::CalcCurrentMerit() const
+{
+  int merit_base = CalcSizeMerit();
+  
+  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  double bonus = (merit_default_bonus) ? merit_default_bonus : cur_bonus;
+  
+  return merit_base * bonus;  
+}
+
 
 double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation_time, int _cpu_cycles) const
 {

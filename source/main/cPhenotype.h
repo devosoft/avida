@@ -288,6 +288,7 @@ public:
 
   // Some useful methods...
   int CalcSizeMerit() const;
+  double CalcCurrentMerit() const;
   double CalcFitness(double _merit_base, double _bonus, int _gestation_time, int _cpu_cycles) const;
 
   double CalcFitnessRatio() {
