@@ -41,6 +41,7 @@ private:
   tArray<double> tasks_value;
   tArray<bool> reactions_triggered;
   tArray<double> reaction_add_bonus; 
+  tArray<double> task_plasticity;
   double energy_add;
   double bonus_add;
   double bonus_mult;

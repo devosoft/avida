@@ -193,10 +193,8 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
     knockout_stats = new cAnalyzeKnockouts;
     *knockout_stats = *(_gen.knockout_stats);
   }
-  if (_gen.m_phenplast_stats != NULL){
-    m_phenplast_stats = new cAnalyzePhenPlast;
-    *m_phenplast_stats = *(_gen.m_phenplast_stats);
-  }
+  if (_gen.m_phenplast_stats != NULL)
+    m_phenplast_stats = new cPhenPlastSummary(*_gen.m_phenplast_stats);
 }
 
 cAnalyzeGenotype::~cAnalyzeGenotype()
@@ -562,29 +560,11 @@ void cAnalyzeGenotype::CheckPhenPlast() const
     test_info.SetInstSet(&m_inst_set);
     
     cPhenPlastGenotype pp(genome, 1000, test_info, m_world, m_world->GetDefaultContext());
-    SummarizePhenotypicPlasticity(pp);
+    m_phenplast_stats = new cPhenPlastSummary(pp);
   }
 }
 
-void cAnalyzeGenotype::SummarizePhenotypicPlasticity(const cPhenPlastGenotype& pp) const
-{
 
-  if (m_phenplast_stats == NULL){
-    m_phenplast_stats = new cAnalyzePhenPlast;
-  }
-  m_phenplast_stats->m_recalculate_trials = pp.GetNumTrials();
-  m_phenplast_stats->m_max_fitness = pp.GetMaximumFitness();
-  m_phenplast_stats->m_avg_fitness = pp.GetAverageFitness();
-  m_phenplast_stats->m_min_fitness = pp.GetMinimumFitness();
-  m_phenplast_stats->m_phenotypic_entropy = pp.GetPhenotypicEntropy();
-  m_phenplast_stats->m_likely_frequency  = pp.GetMaximumFrequency();
-  m_phenplast_stats->m_max_fit_frequency = pp.GetMaximumFitnessFrequency();
-  m_phenplast_stats->m_min_fit_frequency = pp.GetMinimumFitnessFrequency();
-  m_phenplast_stats->m_likely_fitness = pp.GetLikelyFitness();
-  m_phenplast_stats->m_num_phenotypes = pp.GetNumPhenotypes();
-  m_phenplast_stats->m_task_probabilities = pp.GetTaskProbabilities();
-  m_phenplast_stats->m_viable_probability = pp.GetViableProbability();
-}
 
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
@@ -592,6 +572,7 @@ void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
   m_land->SetDistance(1);
   m_land->Process(ctx);
 }
+
 
 void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, cAnalyzeGenotype* parent_genotype, int num_trials)
 {  
@@ -642,7 +623,11 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   }
 
   // Summarize plasticity information if multiple recalculations performed
-  if (num_trials > 1) SummarizePhenotypicPlasticity(recalc_data);
+  if (num_trials > 1){
+    if (m_phenplast_stats != NULL)
+      delete m_phenplast_stats;
+    m_phenplast_stats = new cPhenPlastSummary(recalc_data);
+  }
 }
 
 

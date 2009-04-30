@@ -557,13 +557,13 @@ Default values are in brackets:
     Determines how to apply the bonus (i.e. the amount of the resource
     absorbed times the value of this process) to change the merit of the
     organism.
-    <br /><em>add</em>: Directly add the bonus to the current merit.
-    <br /><em>mult</em>: Multiply the current merit by the bonus (warning: if
+    <br />&nbsp;&nbsp;&nbsp;<em>add</em>: Directly add the bonus to the current merit.
+    <br />&nbsp;&nbsp;&nbsp;<em>mult</em>: Multiply the current merit by the bonus (warning: if
        the bonus is ever less than one, this will be detrimental!)
-    <br /><em>pow</em>: Multiply the current merit by 2<sup>bonus</sup>.
+    <br />&nbsp;&nbsp;&nbsp;<em>pow</em>: Multiply the current merit by 2<sup>bonus</sup>.
        this is effectively multiplicative, but positive bonuses are
        always beneficial, and negative bonuses are harmful.
-    <br /><em>enzyme</em>: Add bonus * resource / (resource + frac) to the current merit.
+    <br />&nbsp;&nbsp;&nbsp;<em>enzyme</em>: Add bonus * resource / (resource + frac) to the current merit.
     	This is gives a Michaelis-Menten enzyme type reward where bonus is the K<sub>cat</sub>
     	and frac is the K<sub>m</sub>. Does not work with unlimited resources.
   </td>
@@ -621,6 +621,24 @@ Default values are in brackets:
     Whether this resource is consumed by reactions.
   </td>
   <td>true</td>
+</tr>
+<tr>
+  <td class="resall">phenplastbonus</td>
+  <td>
+    Specify how to handle phenotypic plasticity at run-time.
+    This option may significantly slow an Avida experiment.
+    When requested in many of the settings below (*), task
+    bonuses will be adjusted by the plasticity
+    of each organism's genotype.  Requisites will still be
+    honored, making true task completion information ambiguous.
+    <br />&nbsp;&nbsp;&nbsp;<em>default</em>: Do not attempt to use the genotype's task plasticity.
+    <br />&nbsp;&nbsp;&nbsp;*<em>nobonus</em>: Do not give a bonus to non-static tasks.
+    <br />&nbsp;&nbsp;&nbsp;*<em>fracbonus</em>: Scale the bonus by how static the task is.
+    <br />&nbsp;&nbsp;&nbsp;*<em>fullbonus</em>: Always reward a task when it is detected.
+  </td>
+  <td>
+    default
+  </td>
 </tr>
 </table>
 <p>&nbsp;</p>

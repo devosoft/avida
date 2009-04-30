@@ -34,6 +34,9 @@
 #include "cTestCPU.h"
 #include "cTools.h"
 #include "cWorld.h"
+#include "cPhenPlastGenotype.h"
+#include "cPhenPlastSummary.h"
+#include "cAvidaConfig.h"
 
 using namespace std;
 
@@ -49,6 +52,7 @@ cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   , symbol(0)
   , map_color_id(-2)
   , birth_data(in_update_born)
+  , m_phenplast(NULL)
   , num_organisms(0)
   , last_num_organisms(0)
   , total_organisms(0)
@@ -71,6 +75,10 @@ cGenotype::~cGenotype()
 
   next = NULL;
   prev = NULL;
+  
+  if (m_phenplast != NULL)
+    delete m_phenplast;
+
 }
 
 bool cGenotype::SaveClone(ofstream& fp)
@@ -215,6 +223,20 @@ void cGenotype::CalcTestStats(cAvidaContext& ctx) const
   test_data.copied_size = phenotype.GetCopiedSize();
   test_data.colony_fitness = test_info.GetColonyFitness();
   test_data.generations = test_info.GetMaxDepth();
+}
+
+
+double cGenotype::GetTaskPlasticity(cAvidaContext& ctx, int task_id) const{
+  if (m_phenplast == NULL)
+    TestPlasticity(ctx);
+  assert(task_id >= 0 && task_id < m_phenplast->m_task_probabilities.GetSize());
+  return m_phenplast->m_task_probabilities[task_id];
+} 
+
+void cGenotype::TestPlasticity(cAvidaContext& ctx) const{
+  cCPUTestInfo test_info;
+  cPhenPlastGenotype pp(genome, m_world->GetConfig().GENOTYPE_PHENPLAST_CALC.Get(), test_info, m_world, ctx);
+  m_phenplast = new cPhenPlastSummary(pp);
 }
 
 

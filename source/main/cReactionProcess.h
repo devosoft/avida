@@ -42,6 +42,8 @@ using namespace std;
 
 class cResource;
 
+
+
 class cReactionProcess {
 private:
   cResource* resource;  // Resource consumed.
@@ -61,6 +63,7 @@ private:
   bool depletable;       // Does completing consume resource?
                          // (This is not quite redundant with an infinite resource
                          // because it allows the resource level to be sensed @JEB)
+  ePHENPLAST_BONUS_METHOD m_ppmethod;  //@MRR How does one handle phenotypically plastic tasks?
 
   // Resource detection
   cResource * detect;    // Resource Measured
@@ -87,6 +90,7 @@ public:
     , is_germline(false)
     , inst_id(-1)
     , depletable(true)
+    , m_ppmethod(DEFAULT)
     , detect(NULL)
     , detection_threshold(0.0)
     , detection_error(0.0)
@@ -107,6 +111,7 @@ public:
   bool GetLethal() const { return lethal; }
   bool GetSterilize() const { return sterilize; }
   double GetDemeFraction() const { return deme_fraction; }
+  ePHENPLAST_BONUS_METHOD GetPhenPlastBonusMethod() const { return m_ppmethod; }
   bool GetIsGermline() const { return is_germline; }
   cResource* GetDetect() const { return detect; }
   double GetDetectionThreshold() const { return detection_threshold; }
@@ -127,6 +132,7 @@ public:
   void SetSterile(int _in) { sterilize = _in; }
   void SetDemeFraction(double _in) { assert(_in>=0.0); assert(_in<=1.0); deme_fraction = _in; }
   void SetIsGermline(bool _in) { is_germline = _in; }
+  void SetPhenPlastBonusMethod(ePHENPLAST_BONUS_METHOD _in) { m_ppmethod = _in; }
   void SetDetect(cResource* _in) { detect = _in; }
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }

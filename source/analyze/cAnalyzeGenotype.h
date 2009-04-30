@@ -70,7 +70,9 @@
 #ifndef tRCPtr_h
 #include "tRCPtr.h"
 #endif
-
+#ifndef cPhenPlastSummary_h
+#include "cPhenPlastSummary.h"
+#endif
 
 // cAnalyzeGenotype    : Collection of information about loaded genotypes
 
@@ -214,22 +216,7 @@ private:
 
   
   // Group 6: Phenotypic Plasticity
-  class cAnalyzePhenPlast{
-  public:
-      int     m_recalculate_trials;  
-      int     m_num_phenotypes;
-      double  m_min_fitness;
-      double  m_max_fitness;
-      double  m_avg_fitness;
-      double  m_likely_fitness;
-      double  m_phenotypic_entropy;
-      double  m_likely_frequency;
-      double  m_min_fit_frequency;
-      double  m_max_fit_frequency;
-      double m_viable_probability;
-      tArray<double> m_task_probabilities;
-  };
-  mutable cAnalyzePhenPlast* m_phenplast_stats;
+  mutable cPhenPlastSummary* m_phenplast_stats;
   
   int NumCompare(double new_val, double old_val) const {
     if (new_val == old_val) return  0;

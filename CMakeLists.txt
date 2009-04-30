@@ -136,6 +136,7 @@ SET(ANALYZE_SOURCES
   ${ANALYZE_DIR}/cGenotypeData.cc
   ${ANALYZE_DIR}/cModularityAnalysis.cc
   ${ANALYZE_DIR}/cMutationalNeighborhood.cc
+  ${ANALYZE_DIR}/cPhenPlastSummary.h
 )
 SOURCE_GROUP(analyze FILES ${ANALYZE_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${ANALYZE_SOURCES})

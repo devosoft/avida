@@ -46,10 +46,11 @@ class cAvidaContext
 private:
   cRandom* m_rng;
   bool m_analyze;
+  bool m_testing;
   
 public:
-  cAvidaContext(cRandom& rng) : m_rng(&rng), m_analyze(false) { ; }
-  cAvidaContext(cRandom* rng) : m_rng(rng), m_analyze(false) { ; }
+  cAvidaContext(cRandom& rng) : m_rng(&rng), m_analyze(false), m_testing(false) { ; }
+  cAvidaContext(cRandom* rng) : m_rng(rng), m_analyze(false), m_testing(false) { ; }
   ~cAvidaContext() { ; }
   
   void SetRandom(cRandom& rng) { m_rng = &rng; }  
@@ -59,6 +60,10 @@ public:
   void SetAnalyzeMode() { m_analyze = true; }
   void ClearAnalyzeMode() { m_analyze = false; }
   bool GetAnalyzeMode() { return m_analyze; }
+  
+  void SetTestMode()   { m_testing = true; }   //@MRR  Some modifications I've made need to distinguish
+  void ClearTestMode() { m_testing = false; }  //      when we're running a genotype through a test-cpu
+  bool GetTestMode()   { return m_testing; }   //      versus when we're not when dealing with reactions rewards.
 };
 
 #endif

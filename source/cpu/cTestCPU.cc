@@ -212,16 +212,19 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 
 bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome)
 {
+  ctx.SetTestMode();
   test_info.Clear();
   cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
   TestGenome_Body(ctx, test_info, mg, 0);
-
+  ctx.ClearTestMode();
+  
   return test_info.is_viable;
 }
 
 bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome,
                           ofstream& out_fp)
 {
+  ctx.SetTestMode();
   test_info.Clear();
   cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
   TestGenome_Body(ctx, test_info, mg, 0);
@@ -249,6 +252,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
 	 << test_info.max_cycle << " "
 	 << repro_type << endl;
 
+  ctx.ClearTestMode();
   return test_info.is_viable;
 }
 

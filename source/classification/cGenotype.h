@@ -26,6 +26,7 @@
 #ifndef cGenotype_h
 #define cGenotype_h
 
+#include <cassert>
 #include <fstream>
 #ifndef cDoubleSum_h
 #include "cDoubleSum.h"
@@ -43,10 +44,12 @@
 #include "cString.h"
 #endif
 
+
 class cAvidaContext;
 class cMerit;
 class cSpecies;
 class cWorld;
+class cPhenPlastSummary;
 
 class cGenotype {
 private:
@@ -69,7 +72,8 @@ private:
 
   mutable cGenotype_TestData test_data;
   cGenotype_BirthData birth_data;
-
+  mutable cPhenPlastSummary* m_phenplast;
+  
   // Statistical info
 
   int num_organisms;
@@ -136,6 +140,9 @@ public:
   inline int GetTestCopiedSize(cAvidaContext& ctx) const;
   inline double GetTestColonyFitness(cAvidaContext& ctx) const;
   inline int GetTestGenerations(cAvidaContext& ctx) const;
+  double GetTaskPlasticity(cAvidaContext& ctx, int task_id) const;
+  
+  void TestPlasticity(cAvidaContext& ctx) const;
 
   void SetParent(cGenotype* parent, cGenotype* parent2);
   void SetName(cString in_name)     { name = in_name; }

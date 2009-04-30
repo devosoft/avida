@@ -1127,6 +1127,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     {
       cur_task_count[i]++;
       eff_task_count[i]++;
+      //cerr << "eff: " << eff_task_count[i] << endl;
       if(result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
     }
 

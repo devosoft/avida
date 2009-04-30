@@ -172,6 +172,14 @@ enum eINST_CODE_DEFAULT
   INST_CODE_INSTNUM
 };
 
+
+enum ePHENPLAST_BONUS_METHOD{
+  DEFAULT = 0,
+  NO_BONUS,
+  FRAC_BONUS,
+  FULL_BONUS
+};
+
 enum eVerbosity {
   VERBOSE_SILENT = 0,   // No output at all
   VERBOSE_NORMAL,       // Notification at start of commands.
@@ -179,6 +187,8 @@ enum eVerbosity {
   VERBOSE_DETAILS,      // High level of details, as available.
   VERBOSE_DEBUG         // Print Debug Information, as applicable.
 };
+
+
 
 
 #endif
