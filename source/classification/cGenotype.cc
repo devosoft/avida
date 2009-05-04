@@ -53,7 +53,7 @@ cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   , symbol(0)
   , map_color_id(-2)
   , birth_data(in_update_born)
-  , m_phenplast(NULL)
+  , m_phenplast_stats(NULL)
   , num_organisms(0)
   , last_num_organisms(0)
   , total_organisms(0)
@@ -77,8 +77,8 @@ cGenotype::~cGenotype()
   next = NULL;
   prev = NULL;
   
-  if (m_phenplast != NULL)
-    delete m_phenplast;
+  if (m_phenplast_stats != NULL)
+    delete m_phenplast_stats;
 }
 
 bool cGenotype::SaveClone(ofstream& fp)
@@ -226,25 +226,26 @@ void cGenotype::CalcTestStats(cAvidaContext& ctx) const
 }
 
 
+
 double cGenotype::GetTaskProbability(cAvidaContext& ctx, int task_id) const{
-  if (m_phenplast == NULL)
-    TestPlasticity(ctx);
-  assert(task_id >= 0 && task_id < m_phenplast->m_task_probabilities.GetSize());
-  return m_phenplast->m_task_probabilities[task_id];
+  CheckPhenPlast(ctx);
+  assert(task_id >= 0 && task_id < m_phenplast_stats->m_task_probabilities.GetSize());
+  return m_phenplast_stats->m_task_probabilities[task_id];
 } 
 
 tArray<double> cGenotype::GetTaskProbabilities(cAvidaContext& ctx) const{
-  if (m_phenplast == NULL)
+  CheckPhenPlast(ctx);
+  if (m_phenplast_stats == NULL)
     TestPlasticity(ctx);
-  return m_phenplast->m_task_probabilities;
+  return m_phenplast_stats->m_task_probabilities;
 } 
 
 void cGenotype::TestPlasticity(cAvidaContext& ctx) const{
   cCPUTestInfo test_info;
-  if (m_phenplast != NULL)
-    delete m_phenplast; 
+  if (m_phenplast_stats != NULL)
+    delete m_phenplast_stats; 
   cPhenPlastGenotype pp(genome, m_world->GetConfig().GENOTYPE_PHENPLAST_CALC.Get(), test_info, m_world, ctx);
-  m_phenplast = new cPhenPlastSummary(pp);
+  m_phenplast_stats = new cPhenPlastSummary(pp);
 }
 
 

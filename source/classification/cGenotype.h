@@ -40,6 +40,9 @@
 #ifndef cGenotype_TestData_h
 #include "cGenotype_TestData.h"
 #endif
+#ifndef cPhenPlastSummary_h
+#include "cPhenPlastSummary.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -49,7 +52,6 @@ class cAvidaContext;
 class cMerit;
 class cSpecies;
 class cWorld;
-class cPhenPlastSummary;
 
 class cGenotype {
 private:
@@ -72,7 +74,7 @@ private:
 
   mutable cGenotype_TestData test_data;
   cGenotype_BirthData birth_data;
-  mutable cPhenPlastSummary* m_phenplast;
+  mutable cPhenPlastSummary* m_phenplast_stats;
   
   // Statistical info
 
@@ -142,9 +144,21 @@ public:
   inline int GetTestCopiedSize(cAvidaContext& ctx) const;
   inline double GetTestColonyFitness(cAvidaContext& ctx) const;
   inline int GetTestGenerations(cAvidaContext& ctx) const;
+  
+  inline void CheckPhenPlast(cAvidaContext& ctx) const{ if (m_phenplast_stats == NULL) TestPlasticity(ctx);}
+  int    GetNumPhenotypes(cAvidaContext& ctx)     const { CheckPhenPlast(ctx); return m_phenplast_stats->m_num_phenotypes; }
+  double GetPhenotypicEntropy(cAvidaContext& ctx) const { CheckPhenPlast(ctx); return m_phenplast_stats->m_phenotypic_entropy; }
+  double GetMaximumFitness(cAvidaContext& ctx)    const { CheckPhenPlast(ctx); return m_phenplast_stats->m_max_fitness; }
+  double GetMaximumFitnessFrequency(cAvidaContext& ctx) const {CheckPhenPlast(ctx); return m_phenplast_stats->m_min_fit_frequency;}
+  double GetMinimumFitness(cAvidaContext& ctx)     const { CheckPhenPlast(ctx); return m_phenplast_stats->m_min_fitness; }
+  double GetMinimumFitnessFrequency(cAvidaContext& ctx) const {CheckPhenPlast(ctx); return m_phenplast_stats->m_min_fit_frequency;}
+  double GetAverageFitness(cAvidaContext& ctx)     const { CheckPhenPlast(ctx); return m_phenplast_stats->m_avg_fitness; }
+  double GetLikelyFrequency(cAvidaContext& ctx)    const { CheckPhenPlast(ctx); return m_phenplast_stats->m_likely_frequency; }
+  double GetLikelyFitness(cAvidaContext& ctx)      const { CheckPhenPlast(ctx); return m_phenplast_stats->m_likely_fitness; }
+  int    GetNumTrials(cAvidaContext& ctx)          const { CheckPhenPlast(ctx); return m_phenplast_stats->m_recalculate_trials; }
+  double GetViableProbability(cAvidaContext& ctx)  const { CheckPhenPlast(ctx); return m_phenplast_stats->m_viable_probability; }
   double GetTaskProbability(cAvidaContext& ctx, int task_id) const;
   tArray<double> GetTaskProbabilities(cAvidaContext& ctx) const;
-  
   void TestPlasticity(cAvidaContext& ctx) const;
 
   void SetParent(cGenotype* parent, cGenotype* parent2);

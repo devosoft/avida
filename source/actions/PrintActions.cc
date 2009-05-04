@@ -28,6 +28,7 @@
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
+#include "tArrayUtils.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
@@ -1650,7 +1651,7 @@ class cActionPrintTaskProbHistogram : public cAction
   
     void PrintHeader(ofstream& fot){
       fot << "# Task Probability Histogram" << endl
-          << "#format update task_id [0] (0,0.5] (0.5,0.10] ... (0.90,0.95], (0.95, 1.0], [1.0]" << endl;
+          << "#format update task_id [0] (0,0.5] (0.5,0.10] ... (0.90,0.95], (0.95, 1.0], [1.0]" << endl << endl;
       return;
     }
     
@@ -1669,31 +1670,32 @@ class cActionPrintTaskProbHistogram : public cAction
     void Process(cAvidaContext& ctx)
     {
       
-      tMatrix<int> m_bins; //Bins
+      // Setup
+      tMatrix<int> m_bins; // Task, Plasticity bins
       int num_tasks = m_world->GetEnvironment().GetNumTasks();
       m_bins.ResizeClear(num_tasks, 22);  // Bins 0  (0,0.05]  (0.05,0.10] (0.10,0.15] ... (0.90, 0.95] (0.95, 1.0)  1.0
       m_bins.SetAll(0);
-      ofstream& fot = m_world->GetDataFileOFStream(m_filename);
+      ofstream& fot = m_world->GetDataFileOFStream(m_filename);  //Setup output file
       if (m_first_run == true){
         PrintHeader(fot);
         m_first_run = false;
       }
       
-      if (ctx.GetAnalyzeMode()){  //If we're in analyze mode
+      //Select runtime mode
+      if (ctx.GetAnalyzeMode()){  // A N A L Y Z E    M O D E
         tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
         cAnalyzeGenotype* genotype = NULL;
-        while((genotype = batch_it.Next())){
-          tArray<double> task_prob = genotype->GetTaskProbabilities();
-          int weight = (m_weighted) ? genotype->GetNumCPUs() : 1;
-          for (int k = 0; k < task_prob.GetSize(); k++){
-            int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 ) / 5 ) : 21;
-            m_bins(k,bin_id) += weight;
+        while((genotype = batch_it.Next())){                               //For each genotype
+          tArray<double> task_prob = genotype->GetTaskProbabilities();     //    get the taks probabilities
+          int weight = (m_weighted) ? genotype->GetNumCPUs() : 1;          //    get the proper tally weighting
+          for (int k = 0; k < task_prob.GetSize(); k++){                   //    For each task
+            int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 ) / 5 ) : 21;  // find the bin to put it into
+            m_bins(k,bin_id) += weight;                                                   //   ... and tally it
           }
         }
-        fot << -1 << " " << endl;  //In analyze mode, there is no update
-      } else {  //Otherwise, we're in experiment mode
+      } 
+      else {  // E X P E R I M E N T    M O D E  (See above for explination)
         cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
-        cerr << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << endl;
         for (int g = 0; g < m_world->GetClassificationManager().GetGenotypeCount(); g++){
           int weight = (m_weighted) ? genotype->GetNumOrganisms() : 1;
           tArray<double> task_prob = genotype->GetTaskProbabilities(ctx);
@@ -1701,12 +1703,13 @@ class cActionPrintTaskProbHistogram : public cAction
             int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 ) / 5 ) : 21;
             m_bins(k,bin_id) += weight; 
           }
-          genotype = genotype->GetNext();
+          genotype = genotype->GetNext();  // Next gentoype
         }
-      }
-       // End selection of runtime context
+      }// End selection of runtime context
      
+      
       int update = (ctx.GetAnalyzeMode()) ? -1 : m_world->GetStats().GetUpdate();
+      
       //Print out our bins
       for (int t = 0; t < num_tasks; t++){
         fot << update << " " << t << " ";
@@ -1714,9 +1717,155 @@ class cActionPrintTaskProbHistogram : public cAction
           fot << m_bins(t,b) << (  (b != 21) ? " " : "" );
         fot << endl;
       }
-     if (ctx.GetAnalyzeMode())
+     
+      //Cleanup
+      if (ctx.GetAnalyzeMode())
        m_world->GetDataFileManager().Remove(m_filename);     
     } //End Process
+};
+
+
+/* @MRR May 2009
+   This function will print some plasticity information about the genotypes
+   in the population or batch.
+ 
+   Parameters:
+      m_filename  (cString)
+        The output file name
+ */
+class cActionPrintPlasticGenotypeSummary : public cAction
+{
+  private:
+    cString m_filename;
+    bool    m_first_run;
+  
+    void PrintHeader(ofstream& fot)
+    {
+      fot << "# Plastic Genotype Sumary" << endl
+      <<  "#format  update num_genotypes num_plastic_genotypes num_gen_taskplast num_orgs num_plastic_orgs num_org_taskplast median_phenplast_entropy median_taskplast_entropy" << endl
+      <<  "# update" << endl
+      <<  "# num_genotypes              Number of genotypes in the population." << endl
+      <<  "# num_plastic_genotypes      Number of genotypes that show any plasticity." << endl
+      <<  "# num_gen_taskplast          Number of genotypes that show task plasticity." << endl
+      <<  "# num_orgs                   Number of organisms in the population." << endl
+      <<  "# num_plastic_orgs           Number of organisms that show any plasticity." << endl
+      <<  "# num_org_taskplast          Number of organisms that show task plasticity." << endl
+      <<  "# median_phenplast_entropy   Median entropy of plastic genotypes." << endl
+      <<  "# median_taskplast_entropy   Median entropy of task-plastic genotypes." << endl << endl;
+    }
+  
+  inline bool HasPlasticTasks(tArray<double> task_probs){
+    for (int k = 0; k < task_probs.GetSize(); k++)
+      if (task_probs[k] != 0 && task_probs[k] != 1) return true;
+    return false;
+  }
+  
+  public:
+    cActionPrintPlasticGenotypeSummary(cWorld* world, const cString& args)
+      : cAction(world, args)
+    {
+      cString largs(args);
+      m_filename = (largs.GetSize()) ? largs.PopWord() : "genotype_plasticity.dat";
+      m_first_run = true;
+    }
+  
+  static const cString GetDescription() { return "Arguments: [string filename='genotype_plsticity.dat']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    
+    //Setup
+    int num_tasks = m_world->GetEnvironment().GetNumTasks();
+    ofstream& fot = m_world->GetDataFileOFStream(m_filename);
+    if (m_first_run == true){
+      PrintHeader(fot);
+      m_first_run = false;
+    }
+    double median = -1.0;           //Will hold the median phenotypic value (excluding 0.0)
+    double task_median = -1.0;      //Will hold the median phenotypic entropy value of only those genotypes showing task plasticity
+    tArray<double> pp_entropy;      //Will hold the phenotypic entropy values greater than 0.0
+    tArray<double> pp_taskentropy;  //Will hold phenotypic entropy values for only those organisms with task plasticity
+    int num_plast_genotypes = 0;  //Number of plastic genotypes
+    int num_genotypes;            //Number of genotypes in the population
+    int num_orgs = 0;             //Number of organisms in the population
+    int num_plast_orgs = 0;       //Number of plastic organisms in the population
+    int gen_task_plast = 0;       //Number of genotypes with task plasticity
+    int org_task_plast = 0;       //Number of organisms with task plasticity
+    
+    //Collect data using methods from the correct mode
+    if (ctx.GetAnalyzeMode()){  // A N A L Y Z E    M O D E
+      num_genotypes = m_world->GetAnalyze().GetCurrentBatch().GetSize();
+      pp_entropy.ResizeClear(num_genotypes);
+      pp_taskentropy.ResizeClear(num_genotypes);
+      tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+      cAnalyzeGenotype* genotype = NULL;
+      while((genotype = batch_it.Next())){  //For each genotype
+        int num = genotype->GetNumCPUs();   //   find the number of organisms
+        num_orgs += num;                    //   add it to the total number of organisms
+        if (genotype->GetNumPhenotypes() > 1){                     //If the genotype is plastic
+          double entropy = genotype->GetPhenotypicEntropy();       //   get the entropy
+          pp_entropy[num_plast_genotypes++] = entropy;             //   append the entropy to our array
+          num_plast_orgs += num;                                   //   count the organisms as plastic
+          if (HasPlasticTasks(genotype->GetTaskProbabilities())){        // If the genotype has tasks plasticity
+            org_task_plast += num;                                       //    count the organisms belonging to the genotype as plastic
+            pp_taskentropy[gen_task_plast++] = entropy;                  //    append the plastic genotype to the taskentropy array
+          } // End if probabilistic tasks
+        } // End if plastic phenotype
+      } // End looping through genotypes
+    }
+    else {  // E X P E R I M E N T    M O D E    (See above for explination)
+      cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
+      num_genotypes = m_world->GetClassificationManager().GetGenotypeCount();
+      pp_entropy.ResizeClear(num_genotypes);
+      pp_taskentropy.ResizeClear(num_genotypes);
+      for (int g = 0; g < num_genotypes; g++){
+        int num = genotype->GetNumOrganisms();
+        num_orgs += num;
+        if (genotype->GetNumPhenotypes(ctx) > 1){
+          double entropy = genotype->GetPhenotypicEntropy(ctx);
+          pp_entropy[num_plast_genotypes++] = entropy;
+          num_plast_orgs += num;
+          if (HasPlasticTasks(genotype->GetTaskProbabilities(ctx))){
+            org_task_plast += num;
+            pp_taskentropy[gen_task_plast++] = entropy;
+          }
+        }
+        genotype = genotype->GetNext();  //Get next genotype
+      }
+    }// End selection of runtime context
+    
+    // Finish gathering data
+    // The median will be calculated as either -1 (set above) if there is no data
+    //    or as the median if there is an odd number of elements or an average
+    //    of the middle two elements if there is an even number of elements.
+    int update = (ctx.GetAnalyzeMode()) ? -1 : m_world->GetStats().GetUpdate();
+    if (num_plast_genotypes > 0){   //Handle our array of entropies if we need to
+      tArrayUtils::QSort(pp_entropy, 0, num_plast_genotypes-1);
+      int ndx    = num_plast_genotypes / 2;
+      median     = (num_plast_genotypes % 2 == 1) ? pp_entropy[ndx] : (pp_entropy[ndx-1] + pp_entropy[ndx]) / 2.0;
+      if (gen_task_plast > 0){      //Handle our second array of entropies if we need to
+        tArrayUtils::QSort(pp_taskentropy, 0, gen_task_plast-1);
+        ndx    = gen_task_plast / 2;
+        task_median  = (gen_task_plast % 2 == 1) ? pp_taskentropy[ndx] : (pp_taskentropy[ndx-1] + pp_taskentropy[ndx]) / 2.0;
+      }
+    } 
+    
+    //Printing
+    fot << update << " " 
+        << num_genotypes << " "
+        << num_plast_genotypes << " "
+        << gen_task_plast << " "
+        << num_orgs << " "
+        << num_plast_orgs << " "
+        << org_task_plast << " "
+        << median << " "
+        << task_median << endl;
+    
+    //Cleanup
+    if (ctx.GetAnalyzeMode())
+      m_world->GetDataFileManager().Remove(m_filename);  
+  }
+
 };
 
 
@@ -2907,6 +3056,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
   action_lib->Register<cActionPrintPhenotypicPlasticity>("PrintPhenotypicPlasticity");
   action_lib->Register<cActionPrintTaskProbHistogram>("PrintTaskProbHistogram");
+  action_lib->Register<cActionPrintPlasticGenotypeSummary>("PrintPlasticGenotypeSummary");
   
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
