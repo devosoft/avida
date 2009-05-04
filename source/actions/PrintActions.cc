@@ -1686,7 +1686,7 @@ class cActionPrintTaskProbHistogram : public cAction
           tArray<double> task_prob = genotype->GetTaskProbabilities();
           int weight = (m_weighted) ? genotype->GetNumCPUs() : 1;
           for (int k = 0; k < task_prob.GetSize(); k++){
-            int bin_id = (task_prob[k] < 1.0) ? ceil( ( (task_prob[k] * 100 ) / 5 )) : 21;
+            int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 ) / 5 ) : 21;
             m_bins(k,bin_id) += weight;
           }
         }
@@ -1698,7 +1698,7 @@ class cActionPrintTaskProbHistogram : public cAction
           int weight = (m_weighted) ? genotype->GetNumOrganisms() : 1;
           tArray<double> task_prob = genotype->GetTaskProbabilities(ctx);
           for (int k = 0; k < task_prob.GetSize(); k++){
-            int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 )/ 5 )) : 21;
+            int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 ) / 5 ) : 21;
             m_bins(k,bin_id) += weight; 
           }
           genotype = genotype->GetNext();
