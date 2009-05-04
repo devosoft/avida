@@ -40,6 +40,7 @@
 
 using namespace std;
 
+
 cGenotype::cGenotype(cWorld* world, int in_update_born, int in_id)
   : m_world(world)
   , genome(1)
@@ -78,7 +79,6 @@ cGenotype::~cGenotype()
   
   if (m_phenplast != NULL)
     delete m_phenplast;
-
 }
 
 bool cGenotype::SaveClone(ofstream& fp)
@@ -226,15 +226,23 @@ void cGenotype::CalcTestStats(cAvidaContext& ctx) const
 }
 
 
-double cGenotype::GetTaskPlasticity(cAvidaContext& ctx, int task_id) const{
+double cGenotype::GetTaskProbability(cAvidaContext& ctx, int task_id) const{
   if (m_phenplast == NULL)
     TestPlasticity(ctx);
   assert(task_id >= 0 && task_id < m_phenplast->m_task_probabilities.GetSize());
   return m_phenplast->m_task_probabilities[task_id];
 } 
 
+tArray<double> cGenotype::GetTaskProbabilities(cAvidaContext& ctx) const{
+  if (m_phenplast == NULL)
+    TestPlasticity(ctx);
+  return m_phenplast->m_task_probabilities;
+} 
+
 void cGenotype::TestPlasticity(cAvidaContext& ctx) const{
   cCPUTestInfo test_info;
+  if (m_phenplast != NULL)
+    delete m_phenplast; 
   cPhenPlastGenotype pp(genome, m_world->GetConfig().GENOTYPE_PHENPLAST_CALC.Get(), test_info, m_world, ctx);
   m_phenplast = new cPhenPlastSummary(pp);
 }

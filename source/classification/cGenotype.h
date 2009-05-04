@@ -112,6 +112,7 @@ private:
   cDoubleSum tmp_sum_fitness;
 
   
+  
   void CalcTestStats(cAvidaContext& ctx) const;
   
   cGenotype(cWorld* world, int in_update_born, int in_id);
@@ -131,6 +132,7 @@ public:
   void SetGenome(const cGenome & in_genome);
   void SetSpecies(cSpecies * in_species) { species = in_species; }
 
+ 
   // Test CPU info -- only used with limited options on.
   inline bool GetTestViable(cAvidaContext& ctx) const;
   inline double GetTestFitness(cAvidaContext& ctx) const;
@@ -140,7 +142,8 @@ public:
   inline int GetTestCopiedSize(cAvidaContext& ctx) const;
   inline double GetTestColonyFitness(cAvidaContext& ctx) const;
   inline int GetTestGenerations(cAvidaContext& ctx) const;
-  double GetTaskPlasticity(cAvidaContext& ctx, int task_id) const;
+  double GetTaskProbability(cAvidaContext& ctx, int task_id) const;
+  tArray<double> GetTaskProbabilities(cAvidaContext& ctx) const;
   
   void TestPlasticity(cAvidaContext& ctx) const;
 

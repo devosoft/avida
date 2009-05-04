@@ -1627,6 +1627,99 @@ class cActionPrintPhenotypicPlasticity : public cAction
     }
 };
 
+
+/*
+ @MRR May 2009
+ This function will go through all genotypes in the current batch or run-time population
+ and print a task probability histogram for each task in the environment.
+
+ Paramters:
+  m_fillename (cString)
+          The output file
+  m_weighted  (int)
+          Should abundances be weighted by num_cpus
+*/
+
+
+class cActionPrintTaskProbHistogram : public cAction
+{
+  private:
+    cString m_filename;  //Name of the output file
+    bool    m_first_run; //Is this the first time the process is run?
+    bool    m_weighted;  //Weight by num_cpu?
+  
+    void PrintHeader(ofstream& fot){
+      fot << "# Task Probability Histogram" << endl
+          << "#format update task_id [0] (0,0.5] (0.5,0.10] ... (0.90,0.95], (0.95, 1.0], [1.0]" << endl;
+      return;
+    }
+    
+  public:
+    cActionPrintTaskProbHistogram(cWorld* world, const cString& args)
+    : cAction(world, args), m_filename("task_prob_hist.dat")
+    {
+      m_first_run = true;
+      cString largs(args);
+      m_filename = (largs.GetSize()) ? largs.PopWord() : "task_prob_hist.dat";
+      m_weighted = (largs.GetSize()) ? (largs.PopWord().AsInt() != 0) : false;
+    }
+    
+    static const cString GetDescription() { return "Arguments: [filename=pp_histogram.dat] [weightbycpus=0]"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      
+      tMatrix<int> m_bins; //Bins
+      int num_tasks = m_world->GetEnvironment().GetNumTasks();
+      m_bins.ResizeClear(num_tasks, 22);  // Bins 0  (0,0.05]  (0.05,0.10] (0.10,0.15] ... (0.90, 0.95] (0.95, 1.0)  1.0
+      m_bins.SetAll(0);
+      ofstream& fot = m_world->GetDataFileOFStream(m_filename);
+      if (m_first_run == true){
+        PrintHeader(fot);
+        m_first_run = false;
+      }
+      
+      if (ctx.GetAnalyzeMode()){  //If we're in analyze mode
+        tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
+        cAnalyzeGenotype* genotype = NULL;
+        while((genotype = batch_it.Next())){
+          tArray<double> task_prob = genotype->GetTaskProbabilities();
+          int weight = (m_weighted) ? genotype->GetNumCPUs() : 1;
+          for (int k = 0; k < task_prob.GetSize(); k++){
+            int bin_id = (task_prob[k] < 1.0) ? ceil( ( static_cast<int>(task_prob[k] * 100 ) / 5 )) : 21;
+            m_bins(k,bin_id) += weight;
+          }
+        }
+        fot << -1 << " " << endl;  //In analyze mode, there is no update
+      } else {  //Otherwise, we're in experiment mode
+        cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
+        cerr << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << endl;
+        for (int g = 0; g < m_world->GetClassificationManager().GetGenotypeCount(); g++){
+          int weight = (m_weighted) ? genotype->GetNumOrganisms() : 1;
+          tArray<double> task_prob = genotype->GetTaskProbabilities(ctx);
+          for (int k = 0; k < task_prob.GetSize(); k++){
+            int bin_id = (task_prob[k] < 1.0) ? ceil( ( static_cast<int>(task_prob[k] * 100 ) / 5 )) : 21;
+            m_bins(k,bin_id) += weight; 
+          }
+          genotype = genotype->GetNext();
+        }
+      }
+       // End selection of runtime context
+     
+      int update = (ctx.GetAnalyzeMode()) ? -1 : m_world->GetStats().GetUpdate();
+      //Print out our bins
+      for (int t = 0; t < num_tasks; t++){
+        fot << update << " " << t << " ";
+        for (int b = 0; b < 22; b++)
+          fot << m_bins(t,b) << (  (b != 21) ? " " : "" );
+        fot << endl;
+      }
+     if (ctx.GetAnalyzeMode())
+       m_world->GetDataFileManager().Remove(m_filename);     
+    } //End Process
+};
+
+
 /*
  This function goes through all genotypes currently present in the soup,
  and writes into an output file the average Hamming distance between the
@@ -2813,6 +2906,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
   action_lib->Register<cActionPrintPhenotypicPlasticity>("PrintPhenotypicPlasticity");
+  action_lib->Register<cActionPrintTaskProbHistogram>("PrintTaskProbHistogram");
   
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");

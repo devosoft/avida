@@ -158,8 +158,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#load_clone">load_clone</a><br>
       <a href="#load_dump_file">load_dump_file</a><br>
       <a href="#LoadPopulation">LoadPopulation</a><br>
-    <td valign="top">
       <a href="#ModMutProb">ModMutProb</a><br>
+    <td valign="top">
       <a href="#MutationalNeighborhood">MutationalNeighborhood</a><br>
       <a href="#new_trial">new_trial</a><br>
       <a href="#NewTrial">NewTrial</a><br>
@@ -261,9 +261,9 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintPerDemeGenPerFounderData">PrintPerDemeGenPerFounderData</a><br>
       <a href="#PrintPerDemeReactionData">PrintPerDemeReactionData</a><br>
       <a href="#PrintPerDemeTasksData">PrintPerDemeTasksData</a><br>
-    <td valign="top">
       <a href="#PrintPerDemeTasksExeData">PrintPerDemeTasksExeData</a><br>
       <a href="#print_phenotype_status">print_phenotype_status</a><br>
+    <td valign="top">
       <a href="#PrintPhenotypeData">PrintPhenotypeData</a><br>
       <a href="#PrintPhenotypeStatus">PrintPhenotypeStatus</a><br>
       <a href="#PrintPhenotypicPlasticity">PrintPhenotypicPlasticity</a><br>
@@ -288,6 +288,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#print_tasks_qual_data">print_tasks_qual_data</a><br>
       <a href="#PrintTasksData">PrintTasksData</a><br>
       <a href="#PrintTasksExeData">PrintTasksExeData</a><br>
+      <a href="#PrintTaskProbHistogram">PrintTaskProbHistogram</a><br>
       <a href="#PrintTaskSnapshot">PrintTaskSnapshot</a><br>
       <a href="#PrintTasksQualData">PrintTasksQualData</a><br>
       <a href="#print_time_data">print_time_data</a><br>
@@ -2886,6 +2887,14 @@ a single, complete file for each trigger.
   <p>
     Print number of times the particular task has been executed this update.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintTaskProbHistogram">PrintTaskProbHistogram</a></strong>
+  <i>[string fname="task_prob_hist.dat"]  [int weight_by_num_cpus]</i>
+  </p>
+  <p>
+    Count the number of genotypes or organisms (if weighted option is used) that perform each task, binned by the probability of doing the task.
   </p>
 </li>
 <li><p>

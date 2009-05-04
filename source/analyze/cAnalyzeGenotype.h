@@ -385,7 +385,7 @@ public:
     return m_phenplast_stats->m_task_probabilities[task_id];
   }
   cString DescTaskProb(int task_id) const;
-    
+  tArray<double> GetTaskProbabilities() const { CheckPhenPlast(); return m_phenplast_stats->m_task_probabilities; }  
     
   
   double GetFitnessRatio() const { return fitness_ratio; }

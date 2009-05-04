@@ -1171,7 +1171,7 @@ double cEnvironment::GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskct
   }
   if (test_plasticity){  //We have to test for plasticity, so try to get it
     int task_id = taskctx.GetTaskEntry()->GetID();
-    task_prob = taskctx.GetOrganism()->GetGenotype()->GetTaskPlasticity(ctx,task_id);
+    task_prob = taskctx.GetOrganism()->GetGenotype()->GetTaskProbability(ctx,task_id);
   }
   force_mark_task = force_mark_task && (task_prob > 0.0);  //If the task isn't demonstrated, we don't need to worry about marking it.
   return task_prob;
