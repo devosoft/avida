@@ -1195,7 +1195,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     
     ePHENPLAST_BONUS_METHOD pp_meth = cur_process->GetPhenPlastBonusMethod();
     const double task_plasticity_modifier = 
-      (pp_meth == NO_BONUS) ? 0.0 :
+      (pp_meth == NO_BONUS && task_probability != 1.0) ? 0.0 :
       (pp_meth == FRAC_BONUS) ? task_probability : 1.0;
     
     //Phenplast full bonus will use a 1.0 task quality
