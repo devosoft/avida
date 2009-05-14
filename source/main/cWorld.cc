@@ -120,14 +120,16 @@ void cWorld::Setup()
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
   const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
   const bool revert_pos = m_conf->REVERT_BENEFICIAL.Get() > 0.0;
+  const bool revert_taskloss = m_conf->REVERT_TASKLOSS.Get() > 0.0;
   const bool fail_implicit = m_conf->FAIL_IMPLICIT.Get() > 0;
-  m_test_on_div = (revert_fatal || revert_neg || revert_neut || revert_pos || fail_implicit);
+  m_test_on_div = (revert_fatal || revert_neg || revert_neut || revert_pos || revert_taskloss || fail_implicit);
   
   const bool sterilize_fatal = m_conf->STERILIZE_FATAL.Get() > 0.0;
   const bool sterilize_neg = m_conf->STERILIZE_DETRIMENTAL.Get() > 0.0;
   const bool sterilize_neut = m_conf->STERILIZE_NEUTRAL.Get() > 0.0;
   const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
-  m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos);
+  const bool sterilize_taskloss = m_conf->STERILIZE_TASKLOSS.Get() > 0.0;
+  m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 }
 
 cAnalyze& cWorld::GetAnalyze()

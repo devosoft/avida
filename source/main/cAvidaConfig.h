@@ -419,10 +419,12 @@ public:
   CONFIG_ADD_VAR(REVERT_DETRIMENTAL, double, 0.0, "  0.0 to 1.0; Probability of reversion.");
   CONFIG_ADD_VAR(REVERT_NEUTRAL, double, 0.0, "");
   CONFIG_ADD_VAR(REVERT_BENEFICIAL, double, 0.0, "");
+  CONFIG_ADD_VAR(REVERT_TASKLOSS, double, 0.0, "should org be reverted if loses task(s) without gaining other(s)?");
   CONFIG_ADD_VAR(STERILIZE_FATAL, double, 0.0, "Should any mutations clear (kill) the organism?");
   CONFIG_ADD_VAR(STERILIZE_DETRIMENTAL, double, 0.0, "");
   CONFIG_ADD_VAR(STERILIZE_NEUTRAL, double, 0.0, "");
   CONFIG_ADD_VAR(STERILIZE_BENEFICIAL, double, 0.0, "");
+  CONFIG_ADD_VAR(STERILIZE_TASKLOSS, double, 0.0, "");
   CONFIG_ADD_VAR(FAIL_IMPLICIT, int, 0, "Should copies that failed *not* due to mutations\nbe eliminated?");
   CONFIG_ADD_VAR(NEUTRAL_MAX,double, 0.0, "The percent benifical change from parent fitness\nto be considered neutral.");
   CONFIG_ADD_VAR(NEUTRAL_MIN,double, 0.0, "The percent deleterious change from parent fitness\nto be considered neutral.");

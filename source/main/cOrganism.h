@@ -366,11 +366,13 @@ public:
   bool GetRevertNeg() const;
   bool GetRevertNeut() const;
   bool GetRevertPos() const;
+  bool GetRevertTaskLoss() const;
 
   bool GetSterilizeFatal() const;
   bool GetSterilizeNeg() const;
   bool GetSterilizeNeut() const;
   bool GetSterilizePos() const;
+  bool GetSterilizeTaskLoss() const;
   double GetNeutralMin() const;
   double GetNeutralMax() const;
 

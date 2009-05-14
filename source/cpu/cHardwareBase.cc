@@ -498,6 +498,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   if (phenotype.CopyTrue() == true) return false;
 	
   const double parent_fitness = m_organism->GetTestFitness(ctx);
+  const tArray<int>& parenttasks = phenotype.GetCurTaskCount();
   const double neut_min = parent_fitness * (1.0 - m_organism->GetNeutralMin());
     const double neut_max = parent_fitness * (1.0 + m_organism->GetNeutralMax());
       
@@ -530,6 +531,31 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
         if (ctx.GetRandom().P(m_organism->GetRevertPos())) revert = true;
         if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
       }
+      
+	  int RorS = 0;	// 0 = neither, 1 = revert, 2 = sterilize
+	  if (ctx.GetRandom().P(m_organism->GetRevertTaskLoss()))
+		  RorS = 1;
+	  else if (ctx.GetRandom().P(m_organism->GetSterilizeTaskLoss()))
+		  RorS = 2;
+	  // check if child has lost any tasks parent had AND not gained any new tasks
+	  if (RorS) {
+		  const tArray<int>& childtasks = test_info.GetTestPhenotype().GetLastTaskCount();
+		  bool del = false;
+		  bool added = false;
+		  for (int i=0; i<childtasks.GetSize(); i++)
+		  {
+			  if (childtasks[i] > parenttasks[i]) {
+				  added = true;
+				  break;
+			  }
+			  else if (childtasks[i] < parenttasks[i])
+				  del = true;
+		  }
+		  if (RorS == 1) 
+			  revert = (del & !added);
+		  else 
+			  sterilize = (del & !added);
+	  }
       
       // Ideally, we won't have reversions and sterilizations turned on at the
       // same time, but if we do, give revert the priority.
@@ -565,6 +591,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   if (phenotype.CopyTrue() == true) return false;
 	
   const double parent_fitness = m_organism->GetTestFitness(ctx);
+  const tArray<int>& parenttasks = phenotype.GetCurTaskCount();
   const double neut_min = parent_fitness * (1.0 - m_organism->GetNeutralMin());
   const double neut_max = parent_fitness * (1.0 + m_organism->GetNeutralMax());
       
@@ -601,17 +628,42 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
     if (ctx.GetRandom().P(m_organism->GetRevertPos())) revert = true;
     if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
   }
-  
+
+  int RorS = 0;	// 0 = neither, 1 = revert, 2 = sterilize
+  if (ctx.GetRandom().P(m_organism->GetRevertTaskLoss()))
+	  RorS = 1;
+  else if (ctx.GetRandom().P(m_organism->GetSterilizeTaskLoss()))
+	  RorS = 2;
+  // check if child has lost any tasks parent had AND not gained any new tasks
+  if (RorS) {
+	  const tArray<int>& childtasks = test_info.GetTestPhenotype().GetLastTaskCount();
+	  bool del = false;
+	  bool added = false;
+	  for (int i=0; i<childtasks.GetSize(); i++)
+	  {
+		  if (childtasks[i] > parenttasks[i]) {
+			  added = true;
+			  break;
+		  }
+		  else if (childtasks[i] < parenttasks[i])
+			  del = true;
+	  }
+	  if (RorS == 1) 
+		  revert = (del & !added);
+	  else 
+		  sterilize = (del & !added);
+  }
+
   // Ideally, we won't have reversions and sterilizations turned on at the
   // same time, but if we do, give revert the priority.
   if (revert == true) {
-    m_organism->OffspringGenome() = m_organism->GetMetaGenome();
+	  m_organism->OffspringGenome() = m_organism->GetMetaGenome();
   }
-  
+
   if (sterilize == true) {
-    m_organism->GetPhenotype().ChildFertile() = false;
+	  m_organism->GetPhenotype().ChildFertile() = false;
   }
-  
+
   return (!sterilize) && revert;
 }
 
