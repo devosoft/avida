@@ -2013,7 +2013,7 @@ vector<cString> cTaskLib::GetMatchStrings()
 cString cTaskLib::GetMatchString(int x)
 { 
 	cString s; 
-	if (x >= 0 && x < m_strings.size()){
+	if(x >= 0 && x < (int)m_strings.size()){
 		s = m_strings[x]; 
 	} else { 
 		s = cString("");
