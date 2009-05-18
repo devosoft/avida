@@ -43,6 +43,7 @@ class cGenotype;
 class cOrganism;
 class cOrgMovementPredicate;
 class cOrgMessagePredicate;
+class cDemePredicate;
 
 /*! Demes are groups of cells in the population that are somehow bound together
 as a unit.  The deme object is used from within cPopulation to manage these 
@@ -127,6 +128,7 @@ private:
   cMerit _current_merit; //!< Deme merit applied to all organisms living in this deme.
   cMerit _next_merit; //!< Deme merit that will be inherited upon deme replication.
 
+  tVector<cDemePredicate*> deme_pred_list; // Deme Predicates
   tVector<cOrgMessagePredicate*> message_pred_list; // Message Predicates
   tVector<cOrgMovementPredicate*> movement_pred_list;  // Movement Predicates
 	
@@ -298,14 +300,18 @@ public:
   void ReplaceGermline(cGenotype& _in_genotype);
   int GetGermlineGenotypeID() { return m_germline_genotype_id; }
 
-  // --- Message/Movement predicates --- //
+  // --- Deme/Message/Movement predicates --- //
+	bool DemePredSatisfiedPreviously();
   bool MsgPredSatisfiedPreviously();
   bool MovPredSatisfiedPreviously();
+  int GetNumDemePredicates();
   int GetNumMessagePredicates();
   int GetNumMovementPredicates();
+  cDemePredicate* GetDemePredicate(int i);
   cOrgMessagePredicate* GetMsgPredicate(int i);
   cOrgMovementPredicate* GetMovPredicate(int i);
 
+	void AddDemeResourceThresholdPredicate(cString resourceName, cString comparisonOperator, double threasholdValue);
   void AddEventReceivedCenterPred(int times);
   void AddEventReceivedLeftSidePred(int times);
   void AddEventMoveCenterPred(int times);

@@ -34,6 +34,7 @@
 #include "cWorld.h"
 #include "cOrgMessagePredicate.h"
 #include "cOrgMovementPredicate.h"
+#include "cDemePredicate.h"
 
 void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* world)
 {
@@ -269,7 +270,11 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 	
   cur_task_exe_count.SetAll(0);
   cur_reaction_count.SetAll(0);
-  
+
+	//reset remaining deme predicates
+  for (int i = 0; i < deme_pred_list.Size(); i++) {
+    (*deme_pred_list[i]).Reset();
+  }	
   //reset remaining message predicates
   for (int i = 0; i < message_pred_list.Size(); i++) {
     (*message_pred_list[i]).Reset();
@@ -656,6 +661,16 @@ void cDeme::ReplaceGermline(cGenotype& _in_genotype) {
   
 }
 
+bool cDeme::DemePredSatisfiedPreviously() {
+	for(int i = 0; i < deme_pred_list.Size(); i++) {
+    if(deme_pred_list[i]->PreviouslySatisfied()) {
+      deme_pred_list[i]->UpdateStats(m_world->GetStats());
+      return true;
+    }
+  }
+  return false;
+}
+
 bool cDeme::MsgPredSatisfiedPreviously() {
   for(int i = 0; i < message_pred_list.Size(); i++) {
     if(message_pred_list[i]->PreviouslySatisfied()) {
@@ -676,12 +691,21 @@ bool cDeme::MovPredSatisfiedPreviously() {
   return false;
 }
 
+int cDeme::GetNumDemePredicates() {
+  return deme_pred_list.Size();
+}
+
 int cDeme::GetNumMessagePredicates() {
   return message_pred_list.Size();
 }
 
 int cDeme::GetNumMovementPredicates() {
   return movement_pred_list.Size();
+}
+
+cDemePredicate* cDeme::GetDemePredicate(int i) {
+  assert(i < deme_pred_list.Size());
+  return deme_pred_list[i];
 }
 
 cOrgMessagePredicate* cDeme::GetMsgPredicate(int i) {
@@ -692,6 +716,12 @@ cOrgMessagePredicate* cDeme::GetMsgPredicate(int i) {
 cOrgMovementPredicate* cDeme::GetMovPredicate(int i) {
   assert(i < movement_pred_list.Size());
   return movement_pred_list[i];
+}
+
+void cDeme::AddDemeResourceThresholdPredicate(cString resourceName, cString comparisonOperator, double threasholdValue) {
+	cDemeResourceThresholdPredicate* pred = new cDemeResourceThresholdPredicate(resourceName, comparisonOperator, threasholdValue);
+	deme_pred_list.Add(pred);
+	
 }
 
 void cDeme::AddEventReceivedCenterPred(int times) {

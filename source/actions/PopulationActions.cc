@@ -1939,6 +1939,7 @@ class cAbstractCompeteDemes_AttackKillAndEnergyConserve : public cAbstractCompet
     'sat-mov-pred'  - ...demes whose movement predicate was previously satisfied
     'events-killed' ...demes that have killed a certian number of events
     'sat-msg-pred'  - ...demes whose message predicate was previously satisfied
+		'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
 */
 
 class cActionReplicateDemes : public cAction
@@ -1960,6 +1961,7 @@ public:
     else if (in_trigger == "sat-mov-pred") m_rep_trigger = 5;
     else if (in_trigger == "events-killed") m_rep_trigger = 6;
     else if (in_trigger == "sat-msg-pred") m_rep_trigger = 7;
+    else if (in_trigger == "sat-deme-predicate") m_rep_trigger = 8;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;
@@ -2541,6 +2543,34 @@ public:
   }
 };
 
+class cActionPred_DemeResourceThresholdPredicate : public cAction {
+private:
+  cString resourceName;
+	cString comparisonOperator;
+	double threasholdValue;
+	
+public:
+  cActionPred_DemeResourceThresholdPredicate(cWorld* world, const cString& args) : cAction(world, args) {
+    cString largs(args);
+		assert(largs.GetSize() == 3);
+    if (largs.GetSize()) resourceName = largs.PopWord();
+		if (largs.GetSize()) comparisonOperator = largs.PopWord();
+		if (largs.GetSize()) threasholdValue = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: cString resourceName, cString comparisonOperator, double threasholdValue"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+		const int numDemes = pop.GetNumDemes();
+    for (int deme_id = 0; deme_id < numDemes; deme_id++) {
+			pop.GetDeme(deme_id).AddDemeResourceThresholdPredicate(resourceName, comparisonOperator, threasholdValue);
+    }
+  }
+	
+};
+
 /*
  Added predicate to all demes that is satisified when an organism reaches the center of an event
 */
@@ -2774,6 +2804,16 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionCompeteDemesByTaskCountAndEfficiency>("CompeteDemesByTaskCountAndEfficiency");
   action_lib->Register<cActionCompeteDemesByEnergyDistribution>("CompeteDemesByEnergyDistribution");	
 
+/* deme predicate*/
+	action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
+  action_lib->Register<cActionPred_DemeEventMoveBetweenTargets>("Pred_DemeEventMoveBetweenTargets");
+  action_lib->Register<cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget>("Pred_DemeEventNUniqueIndividualsMovedIntoTarget");
+	action_lib->Register<cActionPred_DemeResourceThresholdPredicate>("DemeResourceThresholdPredicate");
+  
+  action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
+  action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
+	
+	
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
   action_lib->Register<cActionInjectRandom>("inject_random");
@@ -2805,11 +2845,4 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionConnectCells>("connect_cells");
   action_lib->Register<cActionDisconnectCells>("disconnect_cells");
   action_lib->Register<cActionSwapCells>("swap_cells");
-
-  action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
-  action_lib->Register<cActionPred_DemeEventMoveBetweenTargets>("Pred_DemeEventMoveBetweenTargets");
-  action_lib->Register<cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget>("Pred_DemeEventNUniqueIndividualsMovedIntoTarget");
-  
-  action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
-  action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
 }

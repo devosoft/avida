@@ -43,10 +43,9 @@
 #include "cStats.h"
 
 
-/*! \brief An STL-compatible predicate on cOrgMessages.  The intent here is to
-provide a straightforward way to track arbitrary messages *wherever* they appear
-in the population.  The most utility can be had from message predicates if they're
-installed into cStats (since every message goes through cStats). */
+/*! \brief An STL-compatible predicate on movement.  The intent here is to
+provide a straightforward way to track arbitrary movement *wherever* they appear
+in the population.  */
 struct cOrgMovementPredicate : public std::unary_function<cOrganism, bool> 
 {
   virtual ~cOrgMovementPredicate() { }

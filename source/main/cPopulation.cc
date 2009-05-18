@@ -1237,6 +1237,7 @@ There are several bases this can be checked on:
 5: 'sat-mov-pred'...demes whose movement predicate was previously satisfied
 6: 'events-killed' ...demes that have killed a certian number of events
 7: 'sat-msg-pred'...demes whose movement predicate was previously satisfied
+8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
 
 */
 
@@ -1305,6 +1306,10 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         if(!(source_deme.MsgPredSatisfiedPreviously())) continue;
         break;
       }
+			case 8: {
+        if(!(source_deme.DemePredSatisfiedPreviously())) continue;
+        break;
+			}
       default: {
         cerr << "ERROR: Invalid replication trigger " << rep_trigger
         << " in cPopulation::ReplicateDemes()" << endl;
