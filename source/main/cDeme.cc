@@ -123,6 +123,14 @@ cOrganism* cDeme::GetOrganism(int pos) const
 
 
 void cDeme::ProcessUpdate() {
+	// test deme predicate
+	for(int i = 0; i < deme_pred_list.Size(); i++) {
+		if(deme_pred_list[i]->GetName() == "cDemeResourceThreshold") {
+			(*deme_pred_list[i])(&deme_resource_count);
+		}
+	}
+	
+	
   energyUsage.Clear();
   
   if(IsEmpty()) {  // deme is not processed if no organisms are present

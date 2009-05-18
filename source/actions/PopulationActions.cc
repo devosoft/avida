@@ -2552,7 +2552,7 @@ private:
 public:
   cActionPred_DemeResourceThresholdPredicate(cWorld* world, const cString& args) : cAction(world, args) {
     cString largs(args);
-		assert(largs.GetSize() == 3);
+		assert(largs.CountNumWords() == 3);
     if (largs.GetSize()) resourceName = largs.PopWord();
 		if (largs.GetSize()) comparisonOperator = largs.PopWord();
 		if (largs.GetSize()) threasholdValue = largs.PopWord().AsDouble();
