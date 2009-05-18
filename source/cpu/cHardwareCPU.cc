@@ -8322,7 +8322,7 @@ bool cHardwareCPU::Inst_DonateFacingString(cAvidaContext& ctx)
 			
 			// sometimes the donation will fail. 
 			// get the probability of failure
-			int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
+			unsigned int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
 			unsigned int rand_num = m_world->GetRandom().GetUInt(0, 100); 
 			// neighbor donates to organism.
 			if (rand_num < prob_fail) { 
@@ -8365,7 +8365,7 @@ bool cHardwareCPU::Inst_DonateFacingRawMaterials(cAvidaContext& ctx)
 			
 			// sometimes the donation will fail. 
 			// get the probability of failure
-			int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
+			unsigned int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
 			unsigned int rand_num = m_world->GetRandom().GetUInt(0, 100); 
 			// neighbor donates to organism.
 			if (rand_num < prob_fail) { 
