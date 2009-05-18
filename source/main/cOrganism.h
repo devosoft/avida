@@ -205,6 +205,7 @@ public:
   void SetRBins(const tArray<double>& rbins_in);
   void SetRBin(const int index, const double value);
   void AddToRBin(const int index, const double value);
+  void IncCollectSpecCount(const int spec_id);
 
   int GetMaxExecuted() const { return m_max_executed; }
   

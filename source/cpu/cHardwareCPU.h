@@ -490,7 +490,7 @@ private:
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
   
   // Resources
-  bool FindModifiedResource(int& start_index, int& end_index);
+  bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);

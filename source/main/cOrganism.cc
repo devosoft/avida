@@ -228,6 +228,12 @@ void cOrganism::AddToRBin(const int index, const double value)
 	{ m_phenotype.AddToCurRBinTotal(index, value); }
 }  
 
+void cOrganism::IncCollectSpecCount(const int spec_id)
+{
+  int current_count = m_phenotype.GetCurCollectSpecCount(spec_id);
+  m_phenotype.SetCurCollectSpecCount(spec_id, current_count + 1);
+}
+
 double cOrganism::GetTestFitness(cAvidaContext& ctx)
 {
   assert(m_interface);

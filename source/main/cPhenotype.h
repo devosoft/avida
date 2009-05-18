@@ -127,8 +127,9 @@ private:
   tArray<double> cur_task_quality;            // Average (total?) quality with which each task was performed
   tArray<double> cur_task_value;              // Value with which this phenotype performs task
   tArray<double> cur_internal_task_quality;   // Average (total?) quaility with which each task using internal resources was performed
-  tArray<double> cur_rbins_total;              // Total amount of resources collected
-  tArray<double> cur_rbins_avail;              // Total amount of internal resources available
+  tArray<double> cur_rbins_total;             // Total amount of resources collected over the organism's life
+  tArray<double> cur_rbins_avail;             // Amount of internal resources available
+  tArray<int> cur_collect_spec_counts; // How many times each nop-specification was used in a collect-type instruction
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
@@ -156,6 +157,7 @@ private:
   tArray<double> last_internal_task_quality;
   tArray<double> last_rbins_total;
   tArray<double> last_rbins_avail;
+  tArray<int> last_collect_spec_counts;
   tArray<int> last_reaction_count;
   tArray<double> last_reaction_add_reward; 
   tArray<int> last_inst_count;	  // Instruction exection counter
@@ -353,6 +355,8 @@ public:
   const tArray<int>& GetCurInstCount() const { assert(initialized == true); return cur_inst_count; }
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
+  const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
+  const int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
   
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
   void  TrialDivideReset(const cGenome & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
@@ -379,6 +383,8 @@ public:
   const tArray<int>& GetLastSenseCount() const { assert(initialized == true); return last_sense_count; }
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
+  const tArray<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
+  const int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
   int GetGeneration() const { assert(initialized == true); return generation; }
@@ -489,6 +495,7 @@ public:
   void SetCurRBinTotal(int index, double val) { cur_rbins_total[index] = val; }
   void AddToCurRBinAvail(int index, double val) { cur_rbins_avail[index] += val; }
   void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
+  void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
 
   void SetIsDonorCur() { is_donor_cur = true; } 
   void SetIsDonorRand() { SetIsDonorCur(); is_donor_rand = true; }

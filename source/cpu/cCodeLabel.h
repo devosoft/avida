@@ -82,6 +82,7 @@ public:
   int AsInt(const int base) const;
   int AsIntGreyCode(const int base) const;
   int AsIntDirect(const int base) const;
+  int AsIntUnique(const int base) const;
   int AsIntAdditivePolynomial(const int base) const;
   int AsIntFib(const int base) const;
   int AsIntPolynomialCoefficent(const int base) const;

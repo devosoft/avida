@@ -51,6 +51,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
   , cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
   , cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
+  , cur_collect_spec_counts(m_world->GetNumResourceSpecs())
   , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
   , cur_sense_count(m_world->GetStats().GetSenseSize())
@@ -63,6 +64,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , last_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
   , last_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
   , last_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
+  , last_collect_spec_counts()
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
   , last_sense_count(m_world->GetStats().GetSenseSize())
@@ -121,6 +123,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_task_value           = in_phen.cur_task_value;			
   cur_rbins_total          = in_phen.cur_rbins_total;
   cur_rbins_avail          = in_phen.cur_rbins_avail;
+  cur_collect_spec_counts  = in_phen.cur_collect_spec_counts;
   cur_reaction_count       = in_phen.cur_reaction_count;            
   cur_reaction_add_reward  = in_phen.cur_reaction_add_reward;     
   cur_inst_count           = in_phen.cur_inst_count;                 
@@ -154,6 +157,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_task_value          = in_phen.last_task_value;
   last_rbins_total         = in_phen.last_rbins_total;
   last_rbins_avail         = in_phen.last_rbins_avail;
+  last_collect_spec_counts = in_phen.last_collect_spec_counts;
   last_reaction_count      = in_phen.last_reaction_count;
   last_reaction_add_reward = in_phen.last_reaction_add_reward; 
   last_inst_count          = in_phen.last_inst_count;	  
@@ -330,6 +334,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   // offspring gets that value too.
   for (int i = 0; i < cur_rbins_avail.GetSize(); i++)
         cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
+  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -355,8 +360,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   last_task_quality         = parent_phenotype.last_task_quality;
   last_task_value           = parent_phenotype.last_task_value;
   last_internal_task_quality= parent_phenotype.last_internal_task_quality;
-  last_rbins_total           = parent_phenotype.last_rbins_total;
-  last_rbins_avail           = parent_phenotype.last_rbins_avail;
+  last_rbins_total          = parent_phenotype.last_rbins_total;
+  last_rbins_avail          = parent_phenotype.last_rbins_avail;
+  last_collect_spec_counts  = parent_phenotype.last_collect_spec_counts;
   last_reaction_count       = parent_phenotype.last_reaction_count;
   last_reaction_add_reward  = parent_phenotype.last_reaction_add_reward;
   last_inst_count           = parent_phenotype.last_inst_count;
@@ -491,6 +497,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);
   cur_rbins_avail.SetAll(0);
+  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -504,7 +511,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   trial_cpu_cycles_used = 0;
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
 
-  // Copy last values from parent
+  // New organism has no parent and so cannot use its last values; initialize as needed
   last_merit_base = genome_length;
   last_bonus      = 1;
   last_cpu_cycles_used = 0;
@@ -517,6 +524,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_internal_task_quality.SetAll(0);
   last_rbins_total.SetAll(0);
   last_rbins_avail.SetAll(0);
+  last_collect_spec_counts.SetAll(0);
   last_reaction_count.SetAll(0);
   last_reaction_add_reward.SetAll(0);
   last_inst_count.SetAll(0);
@@ -653,8 +661,9 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_task_quality         = cur_task_quality;
   last_task_value           = cur_task_value;
   last_internal_task_quality= cur_internal_task_quality;
-  last_rbins_total           = cur_rbins_total;
-  last_rbins_avail           = cur_rbins_avail;
+  last_rbins_total          = cur_rbins_total;
+  last_rbins_avail          = cur_rbins_avail;
+  last_collect_spec_counts  = cur_collect_spec_counts;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -676,6 +685,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   // resources available are split in half -- the offspring gets the other half
   for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
+  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -809,6 +819,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   last_internal_task_quality= cur_internal_task_quality;
   last_rbins_total          = cur_rbins_total;
   last_rbins_avail          = cur_rbins_avail;
+  last_collect_spec_counts  = cur_collect_spec_counts;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -829,6 +840,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   // resources available are split in half -- the offspring gets the other half
   for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
+  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -960,6 +972,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   eff_task_count.SetAll(0);
   cur_rbins_total.SetAll(0);
   cur_rbins_avail.SetAll(0);
+  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);
@@ -984,6 +997,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   last_internal_task_count = clone_phenotype.last_internal_task_count;
   last_rbins_total         = clone_phenotype.last_rbins_total;
   last_rbins_avail         = clone_phenotype.last_rbins_avail;
+  last_collect_spec_counts = clone_phenotype.last_collect_spec_counts;
   last_reaction_count      = clone_phenotype.last_reaction_count;
   last_reaction_add_reward = clone_phenotype.last_reaction_add_reward;
   last_inst_count          = clone_phenotype.last_inst_count;
@@ -1513,6 +1527,7 @@ void cPhenotype::NewTrial()
   last_task_value			      = cur_task_value;
   last_rbins_total          = cur_rbins_total;
   last_rbins_avail          = cur_rbins_avail;
+  last_collect_spec_counts  = cur_collect_spec_counts;
   last_reaction_count       = cur_reaction_count;
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
@@ -1532,6 +1547,7 @@ void cPhenotype::NewTrial()
   cur_task_value.SetAll(0);
   cur_rbins_total.SetAll(0);
   cur_rbins_avail.SetAll(0);
+  cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
   cur_inst_count.SetAll(0);

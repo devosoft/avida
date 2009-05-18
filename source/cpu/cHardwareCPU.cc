@@ -3462,9 +3462,11 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
  * respective arguments; any int at all may be passed to these, as it will just 
  * get overwritten.  (Obviously, if the resource is fully specified, 
  * start_index == end_index.)
+ *
+ * spec_id is the id number of the specification
  */
 
-bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
+bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index, int& spec_id)
 {
   int num_resources = m_organism->GetOrgInterface().GetResources().GetSize();
   
@@ -3481,6 +3483,9 @@ bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
   
   //find the length of the label that was actually read
   int real_label_length = GetLabel().GetSize();
+  
+  // save the specification id
+  spec_id = GetLabel().AsIntUnique(num_nops);
   
   /* find start and end resource indices specified by the label */
   
@@ -3500,8 +3505,9 @@ bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
   return true;
 }
 
-/* Helper function to reduce code redundancy in the Inst_Collect variations.
- * Does all the heavy lifting of external resource collection.
+/* Helper function to reduce code redundancy in the Inst_Collect variations,
+ * including Inst_Destroy.
+ * Does all the heavy lifting of external resource collection/destruction.
  *
  * env_remove   - specifies whether the collected resources should be removed from
  *                the environment
@@ -3510,10 +3516,13 @@ bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index)
  */
 bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add)
 {
-  int start_bin, end_bin, bin_used;
+  int start_bin, end_bin, bin_used, spec_id;
 
-  bool finite_resources_exist = FindModifiedResource(start_bin, end_bin);
+  bool finite_resources_exist = FindModifiedResource(start_bin, end_bin, spec_id);
   if(!finite_resources_exist) {return true;}
+  
+  // Add this specification
+  m_organism->IncCollectSpecCount(spec_id);
 
   if(start_bin == end_bin)  // resource completely specified
   {bin_used = start_bin;}
