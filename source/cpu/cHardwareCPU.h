@@ -704,6 +704,54 @@ private:
   bool Inst_Alarm_MSG_Bit_Cons24_multihop(cAvidaContext& ctx);
   bool Inst_Alarm_Label(cAvidaContext& ctx);
   bool Jump_To_Alarm_Label(int jump_label);
+	
+	
+	// -------- Reputation support --------
+  /* These instructions interact with the "reputation" support in cOrganism.h.  They 
+	 are  based on the donate instructions. However, these instructions donate
+	 "raw materials" rather than merit and will eventually be used to support 
+	 reputation based cooperation.
+	 */ 
+  // Donate a raw material to the neighbor
+  bool Inst_DonateFacingRawMaterials(cAvidaContext& ctx);
+	// Donate a raw material to the neighbor if it is another species
+	bool Inst_DonateFacingRawMaterialsOtherSpecies(cAvidaContext& ctx);
+	// Donate a raw material to the neighbor if it was a prior donor
+	bool Inst_DonateIfDonor(cAvidaContext& ctx);	
+	// Donate a string to the neighbor, if it's reputation is > 0
+	bool Inst_DonateStringIfDonorRep(cAvidaContext& ctx);		
+	// Donate a string to a neighbor
+	bool Inst_DonateFacingString(cAvidaContext& ctx);
+	
+	// Rotate to the organims with the greatest reputation
+	bool Inst_RotateToGreatestReputation(cAvidaContext& ctx);	
+	// Rotate to the organims with the greatest reputation that has a different tag
+	bool Inst_RotateToGreatestReputationWithDifferentTag(cAvidaContext& ctx);	
+	// Rotate to the organims with the greatest reputation that has a different tag
+	bool Inst_RotateToGreatestReputationWithDifferentLineage(cAvidaContext& ctx);		
+	// Rotate to an organim with a different tag
+	bool Inst_RotateToDifferentTag(cAvidaContext& ctx);	
+	// Rotate to the organims with the greatest reputation and donate
+	bool Inst_RotateToGreatestReputationAndDonate(cAvidaContext& ctx);	
+  // Get a neighbor's reputation
+  bool Inst_GetNeighborsReputation(cAvidaContext& ctx);
+  // Get the organism's reputation
+  bool Inst_GetReputation(cAvidaContext& ctx);	
+	// Execute the following instruction if the facing neighbor was a donor
+	bool Inst_IfDonor(cAvidaContext& ctx);
+	// Produce string
+	bool Inst_ProduceString(cAvidaContext& ctx);
+  // Get the organism's raw material level
+  bool Inst_GetAmountOfRawMaterials(cAvidaContext& ctx);
+  // Get the number of raw materials the organism 
+	// has gotten from others
+  bool Inst_GetAmountOfOtherRawMaterials(cAvidaContext& ctx);	
+  // Pretend to donate
+  bool Inst_Pose(cAvidaContext& ctx);
+	
+	// Reputation
+	void ComputeReputation();
+	
 
   //// Placebo ////
   bool Inst_Skip(cAvidaContext& ctx);
@@ -794,6 +842,8 @@ public:
   bool Inst_GetNeighborhood(cAvidaContext& ctx);
 	//! Test if the current neighborhood has changed from that in the organism's memory.
 	bool Inst_IfNeighborhoodChanged(cAvidaContext& ctx);
+	
+	
 };
 
 

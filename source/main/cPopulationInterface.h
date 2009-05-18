@@ -115,6 +115,11 @@ public:
   void SendFlash();
 
   int GetStateGridID(cAvidaContext& ctx);
+	
+	// Reputation
+	void RotateToGreatestReputation();
+	void RotateToGreatestReputationWithDifferentTag(int tag);
+	void RotateToGreatestReputationWithDifferentLineage(int line);	
 };
 
 

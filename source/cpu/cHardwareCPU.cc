@@ -542,6 +542,29 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("get-neighborhood", &cHardwareCPU::Inst_GetNeighborhood, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("if-neighborhood-changed", &cHardwareCPU::Inst_IfNeighborhoodChanged, nInstFlag::STALL),
 		
+		
+		// Reputation instructions
+		
+  	tInstLibEntry<tMethod>("donate-frm", &cHardwareCPU::Inst_DonateFacingRawMaterials, nInstFlag::STALL),
+  	tInstLibEntry<tMethod>("donate-spec", &cHardwareCPU::Inst_DonateFacingRawMaterialsOtherSpecies, nInstFlag::STALL),
+  	tInstLibEntry<tMethod>("donate-if-donor", &cHardwareCPU::Inst_DonateIfDonor, nInstFlag::STALL),		
+  	tInstLibEntry<tMethod>("donate-string", &cHardwareCPU::Inst_DonateFacingString, nInstFlag::STALL),		
+		
+    tInstLibEntry<tMethod>("get-neighbors-reputation", &cHardwareCPU::Inst_GetNeighborsReputation, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-reputation", &cHardwareCPU::Inst_GetReputation, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-raw-mat-amount", &cHardwareCPU::Inst_GetAmountOfRawMaterials, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-other-raw-mat-amount", &cHardwareCPU::Inst_GetAmountOfOtherRawMaterials, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("pose", &cHardwareCPU::Inst_Pose, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("rotate-to-rep", &cHardwareCPU::Inst_RotateToGreatestReputation, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("rotate-to-rep-and-donate", &cHardwareCPU::Inst_RotateToGreatestReputationAndDonate, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("rotate-to-rep-tag", &cHardwareCPU::Inst_RotateToGreatestReputationWithDifferentTag, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("rotate-to-rep-lineage", &cHardwareCPU::Inst_RotateToGreatestReputationWithDifferentLineage, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("rotate-to-tag", &cHardwareCPU::Inst_RotateToDifferentTag, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("if-donor",  &cHardwareCPU::Inst_IfDonor, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("prod-string",  &cHardwareCPU::Inst_ProduceString, nInstFlag::STALL),
+		
+		
+		
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
   };
@@ -8247,3 +8270,378 @@ bool cHardwareCPU::Inst_Broadcast4(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_Broadcast8(cAvidaContext& ctx) {
   return BroadcastX(ctx, 8);
 }
+
+
+
+/* Donate if the neighbor previously donated to the organism. */
+bool cHardwareCPU::Inst_DonateIfDonor(cAvidaContext& ctx)
+{
+  cOrganism * neighbor = m_organism->GetNeighbor();
+	if (neighbor != NULL) {
+		// check if the neighbor was a donor
+		if (m_organism->IsDonor(neighbor->GetID())) {
+			m_world->GetStats().IncDonateToDonor();
+			Inst_DonateFacingRawMaterialsOtherSpecies(ctx);	
+		}
+	}
+	return true;
+}
+
+/* Donate raw materials (of one kind) to a neighbor, but 
+ only if the neighbor is of a different species. If the 
+ instruction fails, there is no consequence. */
+bool cHardwareCPU::Inst_DonateFacingRawMaterialsOtherSpecies(cAvidaContext& ctx) 
+{ 
+	cOrganism * neighbor = m_organism->GetNeighbor();
+	if (neighbor != NULL) {
+		
+		int spec_self =  m_organism->GetLineageLabel();
+		int spec_neighbor = neighbor->GetLineageLabel();
+		
+		if (spec_self != spec_neighbor) {
+			Inst_DonateFacingString(ctx);	
+		}
+	}
+	return true;
+}
+
+/* Donate a string that you have produced to the facing organism */
+bool cHardwareCPU::Inst_DonateFacingString(cAvidaContext& ctx)
+{
+	// Get faced neighbor
+  cOrganism * neighbor = m_organism->GetNeighbor();
+	int cost = m_world->GetConfig().ALT_COST.Get(); 
+	int my_string = m_organism->GetLineageLabel();
+	
+	
+  // Donate only if we have found a neighbor.
+  if (neighbor != NULL) {
+		
+    // Check if the organism has enough of this string on hand.
+		if ((m_organism->GetNumberStringsOnHand(my_string) >= cost) && (neighbor->CanReceiveString(my_string, cost))) { 
+			
+			// sometimes the donation will fail. 
+			// get the probability of failure
+			int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
+			unsigned int rand_num = m_world->GetRandom().GetUInt(0, 100); 
+			// neighbor donates to organism.
+			if (rand_num < prob_fail) { 
+				// EXIT
+				return true; 
+			}
+			
+			
+			m_organism->DonateString(my_string, cost);
+			neighbor->AddOtherRawMaterials(cost, m_organism->GetID()); 
+			neighbor->ReceiveString(my_string, cost, m_organism->GetID()); 
+			neighbor->AddDonatedLineage(m_organism->GetLineageLabel());
+			
+			// track stats
+			m_organism->Donated();
+			
+			ComputeReputation();			
+		}
+  }
+  return true;
+	
+	
+}
+
+/* Donate raw materials to the facing organism. */
+bool cHardwareCPU::Inst_DonateFacingRawMaterials(cAvidaContext& ctx)
+{
+  
+	// Get faced neighbor
+  cOrganism * neighbor = m_organism->GetNeighbor();
+	int cost = m_world->GetConfig().ALT_COST.Get(); 
+	
+	
+  // Donate only if we have found a neighbor.
+  if (neighbor != NULL) {
+		
+    // Subtract raw materials from the organism (currently subtracts 1 resource...)
+		// fails if the organism does not have any more resources
+		if (m_organism->SubtractSelfRawMaterials(cost)) {
+			
+			// sometimes the donation will fail. 
+			// get the probability of failure
+			int prob_fail = m_world->GetConfig().DONATION_FAILURE_PERCENT.Get(); 
+			unsigned int rand_num = m_world->GetRandom().GetUInt(0, 100); 
+			// neighbor donates to organism.
+			if (rand_num < prob_fail) { 
+				// EXIT
+				return true; 
+			}
+			
+			
+			neighbor->AddOtherRawMaterials(cost, m_organism->GetID()); 
+			neighbor->AddDonatedLineage(m_organism->GetLineageLabel());
+			
+			// rotate recipient to face donor 
+			// by rotating until the recipient faces the donor
+			// adding a new comment.
+			if (m_world->GetConfig().ROTATE_ON_DONATE.Get()) {
+				while (neighbor->GetNeighbor() != m_organism) {
+					neighbor->Rotate(1);
+				}
+			}
+			
+			
+			// track stats
+			m_organism->Donated();
+			
+			ComputeReputation();
+			
+		}
+  }
+  return true;
+}  
+
+
+
+
+/* An organism artificially increases its reputation without donating. */
+bool cHardwareCPU::Inst_Pose(cAvidaContext& ctx)
+{
+	// update reputation to include this phony donation.
+	// get the current reputation; increment by 1.	
+	m_organism->SetReputation(m_organism->GetReputation() + 1);
+	
+  return true;
+}
+
+
+
+/*! An organism's reputation is stored as an opinion. This instruction 
+ uses Inst_GetNeighborsOpinion to do the heavy lifting, but includes
+ default behavior suitable for reputations. Specifically, if an 
+ neighbor has no reputation (i.e., it has not donated) or does not
+ exist, then this instruction puts zeros into the registers.
+ */
+bool cHardwareCPU::Inst_GetNeighborsReputation(cAvidaContext& ctx)
+{
+  // Get faced neighbor
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor != NULL) { 
+		const int raw_mat_reg = FindModifiedRegister(REG_AX);
+		GetRegister(raw_mat_reg) = neighbor->GetReputation();	
+	} 
+  return true;
+}
+
+
+/*! An organism's reputation is stored as an opinion. This instruction 
+ uses Inst_GetOpinion to do the heavy lifting, but includes
+ default behavior suitable for reputations. Specifically, if an 
+ organism has no reputation (i.e., it has not donated), then this 
+ instruction puts zeros into the registers.
+ */
+bool cHardwareCPU::Inst_GetReputation(cAvidaContext& ctx)
+{
+	const int opinion_reg = FindModifiedRegister(REG_BX);
+	GetRegister(opinion_reg) = m_organism->GetReputation();
+	return true;
+}
+
+/* Sense the number of raw materials an organism has. Store in
+ ?REG_AX? */
+bool cHardwareCPU::Inst_GetAmountOfRawMaterials(cAvidaContext& ctx)
+{
+	const int raw_mat_reg = FindModifiedRegister(REG_AX);
+	GetRegister(raw_mat_reg) = m_organism->GetNumberStringsOnHand(0);
+	return true;
+}
+
+/* Sense the number of raw materials an organism has. Store in
+ ?REG_BX? */
+bool cHardwareCPU::Inst_GetAmountOfOtherRawMaterials(cAvidaContext& ctx)
+{
+	const int raw_mat_reg = FindModifiedRegister(REG_BX);
+	GetRegister(raw_mat_reg) = m_organism->GetNumberStringsOnHand(1);
+	return true;
+}
+
+
+
+/* Rotate to face the organism with the highest reputation */
+bool cHardwareCPU::Inst_RotateToGreatestReputation(cAvidaContext& ctx) 
+{
+	m_organism->GetOrgInterface().RotateToGreatestReputation();
+	
+	return true;	
+}
+
+/* Rotate to face the organism with the highest reputation that has
+ a different tag. */
+bool cHardwareCPU::Inst_RotateToGreatestReputationWithDifferentTag(cAvidaContext& ctx)
+{
+	m_organism->GetOrgInterface().RotateToGreatestReputationWithDifferentTag(m_organism->GetTagLabel());
+	return true;	
+}
+
+/* Rotate to face the organism with the highest reputation that has
+ a different lineage. */
+bool cHardwareCPU::Inst_RotateToGreatestReputationWithDifferentLineage(cAvidaContext& ctx)
+{
+	m_organism->GetOrgInterface().RotateToGreatestReputationWithDifferentLineage(m_organism->GetLineageLabel());
+	return true;	
+}
+
+
+/* Rotate to face the organism with the highest reputation and then
+ immediately donate */
+bool cHardwareCPU::Inst_RotateToGreatestReputationAndDonate(cAvidaContext& ctx) 
+{
+	Inst_RotateToGreatestReputation(ctx);
+	Inst_DonateFacingRawMaterials(ctx);
+	return true;
+}
+
+
+
+
+bool cHardwareCPU::Inst_RotateToDifferentTag(cAvidaContext& ctx)
+{
+	//get the neighborhood size
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+	
+  // Turn to face a random neighbor
+  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
+	
+  int max_id = neighbor_id + num_neighbors;
+	
+  //we have not found a match yet
+  bool found = false;
+	
+  // rotate through orgs in neighborhood  
+  while (neighbor_id < max_id) {
+		neighbor = m_organism->GetNeighbor();
+		
+		//if neighbor exists, do they have a different tag?
+		if (neighbor != NULL) {
+			if (m_organism->GetTagLabel() != neighbor->GetTagLabel()) found = true;
+			
+		}
+		
+		// stop searching through the neighbors if we already found one
+		if (found == true){
+			break;
+		}
+		
+		m_organism->Rotate(1);
+		neighbor_id++;
+	}
+	
+	return true;
+}
+
+
+
+
+/* Execute the next instruction if the neighbor was a donor. */ 
+bool cHardwareCPU::Inst_IfDonor(cAvidaContext& ctx) 
+{
+	bool donor = false;
+	cOrganism * neighbor = m_organism->GetNeighbor();
+	if (neighbor != NULL) {
+		// check if the neighbor was a donor
+		if (m_organism->IsDonor(neighbor->GetID())) {
+			donor = true;
+		}
+	}
+  if (!donor)  IP().Advance();
+	
+  return true; 
+	
+}
+
+
+void cHardwareCPU::ComputeReputation() 
+{
+	cOrganism * neighbor = m_organism->GetNeighbor();
+	
+	// update reputation to include this donation.
+	// get the current reputation; increment by 1.
+	// includes a concept of standing
+	if (m_world->GetConfig().AUTO_REPUTATION.Get() == 1) {
+		int my_rep = m_organism->GetReputation();
+		m_organism->SetReputation(my_rep +1);
+		// get neighbor reputation
+		int rep = neighbor->GetReputation(); 
+		// if the organism has not yet donated, put it into bad standing
+		if (rep == 0) neighbor->SetReputation(-1);
+	} else if (m_world->GetConfig().AUTO_REPUTATION.Get() == 2) {
+		// reputation is proportional to how much you have donated/received
+		int my_rep = m_organism->GetReputation();
+		m_organism->SetReputation(my_rep +1);
+		// get neighbor reputation
+		int rep = neighbor->GetReputation(); 
+		neighbor->SetReputation(rep-1);
+	} else if (m_world->GetConfig().AUTO_REPUTATION.Get() == 3)  {
+		// set rep to 1, since the organism donated
+		m_organism->SetReputation(1);
+		// get neighbor reputation
+		int rep = neighbor->GetReputation(); 
+		// if the organism has not yet donated, put it into bad standing
+		if (rep == 0) neighbor->SetReputation(-1);		
+	} else if (m_world->GetConfig().AUTO_REPUTATION.Get() == 4) {
+		// Similar to 1, except does not include standing.
+		int my_rep = m_organism->GetReputation();
+		m_organism->SetReputation(my_rep +1);
+	}
+	
+}
+
+
+
+
+/* Check if the string in the organisms buffer corresponds to the 
+ string it is producing. If so, -1 out the buffer and increment the 
+ number of raw materials the organism has. Otherwise, do nothing. */
+bool cHardwareCPU::Inst_ProduceString(cAvidaContext& ctx)
+{
+	
+	int num = 0;
+	int max_num = 0; 
+	int max_string = -1;
+	int string_size = 0;
+	bool val; 
+	
+	m_organism->InitStringMap(); 
+	
+	// Figure out if it has produced any of the strings 
+	std::vector < cString > temp_strings = m_world->GetEnvironment().GetMatchStringsFromTask(); 
+	if (temp_strings.size()) string_size = temp_strings[0].GetSize();
+	for (unsigned int i=0; i < temp_strings.size(); i++){
+		num = m_organism->MatchOutputBuffer(temp_strings[i]); 
+		if (num > max_num) { 
+			max_num = num; 
+			max_string = i; 
+		}
+	}
+	
+	// Determine if it has to produce one in particular. 
+	if (m_world->GetConfig().SPECIALISTS.Get()) { 
+		if (m_organism->GetLineageLabel() != max_string) { 
+			max_num = 0;
+		}
+	}
+	
+	
+	// If still ok, add the raw material and clear the buffer
+	if (max_num == string_size) { 
+		// Indicate organism has produced the string
+		val = m_organism->ProduceString(max_string); 
+		
+		// temp until old code is phased out: 
+		m_organism->AddSelfRawMaterials(1); 
+		
+		// Clear buffer if the organism has received credit for the string
+		if (val) m_organism->SetOutputNegative1(); 
+	}
+	
+	return true;
+}
+

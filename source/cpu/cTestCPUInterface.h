@@ -97,6 +97,10 @@ public:
 	bool BcastAlarm(int jump_label, int bcast_range) { return false; }
   void DivideOrgTestamentAmongDeme(double value) {;}
 	void SendFlash() { }
+	
+	void RotateToGreatestReputation(){ }
+	void RotateToGreatestReputationWithDifferentTag(int tag){ }
+	void RotateToGreatestReputationWithDifferentLineage(int tag){ }	
   
   int GetStateGridID(cAvidaContext& ctx);
 };

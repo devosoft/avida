@@ -175,6 +175,11 @@ public:
    **/
   int GetSize() const { return value->GetSize(); }
 
+	/**
+	 *  Get the string
+	 **/
+	const char* GetData() const { return value->GetData(); }
+
 
   // Comparisons
   int Compare(const char * in) const;  // strcmp like function

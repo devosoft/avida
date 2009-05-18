@@ -356,6 +356,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
     Load_MatchStr(name, info, envreqs, errors);
   else if (name == "match_number")
     Load_MatchNumber(name, info, envreqs, errors);
+	else if (name == "matchprodstr") 
+    Load_MatchProdStr(name, info, envreqs, errors);
+
   
   // Sequence Tasks
   if (name == "sort_inputs")
@@ -419,7 +422,11 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "movetoevent")
     NewTask(name, "Move to a target area", &cTaskLib::Task_MoveToMovementEvent);
   else if (name == "movebetweenevent")
-    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveBetweenMovementEvent);  
+    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveBetweenMovementEvent); 
+	
+	// reputation based tasks
+	else if(name == "perfect_strings") 
+		NewTask(name, "Produce and store perfect strings", &cTaskLib::Task_CreatePerfectStrings);		
 
   // event tasks
   if(name == "move_to_event")
@@ -1998,6 +2005,136 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
   return bonus;
 }
 
+vector<cString> cTaskLib::GetMatchStrings()
+{
+	return m_strings;
+}
+
+cString cTaskLib::GetMatchString(int x)
+{ 
+	cString s; 
+	if (x >= 0 && x < m_strings.size()){
+		s = m_strings[x]; 
+	} else { 
+		s = cString("");
+	}
+	
+	return s;
+	
+}
+
+
+void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+  cArgSchema schema;
+  schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);		
+  schema.AddEntry("partial",0, 0);
+  schema.AddEntry("binary",1,1);
+  schema.AddEntry("pow",0,2.0);
+	schema.AddEntry("tag",2,-1);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  envreqs.SetMinOutputs(args->GetString(0).GetSize());
+	m_strings.push_back(args->GetString(0));
+  if (args) NewTask(name, "MatchProdStr", &cTaskLib::Task_MatchStr, 0, args);
+}
+
+
+double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
+{
+	
+	
+	// These even out the stats tracking.
+	m_world->GetStats().AddTag(ctx.GetTaskEntry()->GetArguments().GetInt(2), 0);
+	m_world->GetStats().AddTag(-1, 0);
+	
+	tBuffer<int> temp_buf(ctx.GetOutputBuffer());
+	
+	const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
+  int partial = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int binary = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  double mypow = ctx.GetTaskEntry()->GetArguments().GetDouble(0);
+  int string_index;
+  int num_matched = 0;
+  int test_output;
+  int max_num_matched = 0;
+  int num_real=0;
+	
+  if (!binary)
+  {
+    if (temp_buf.GetNumStored() > 0) {
+      test_output = temp_buf[0];
+			
+      for (int j = 0; j < string_to_match.GetSize(); j++) {  
+				string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+				int k = 1 << j;
+				if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+						(string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
+      }
+      max_num_matched = num_matched;
+    }
+  }
+  else
+  {
+    for (int j = 0; j < string_to_match.GetSize(); j++)
+    {
+			if (string_to_match[j]!='9')
+				num_real++;
+			if (string_to_match[j]=='0' && temp_buf[j]==0 ||
+					string_to_match[j]=='1' && temp_buf[j]==1)
+				num_matched++;
+    }
+    max_num_matched = num_matched;
+		
+  }
+	
+	// Check if the organism already produced this string. 
+	// If so, it receives a perfect score for this task.
+	int tag = ctx.GetTaskEntry()->GetArguments().GetInt(2);
+	
+	if (m_world->GetConfig().MATCH_ALREADY_PRODUCED.Get()) {
+		int prod = ctx.GetOrganism()->GetNumberStringsProduced(tag); 
+		if (prod) max_num_matched = string_to_match.GetSize();
+	}
+	
+	
+	// Update the organism's tag. 
+	ctx.GetOrganism()->UpdateTag(tag, max_num_matched);
+	if (ctx.GetOrganism()->GetTagLabel() == tag) {
+		ctx.GetOrganism()->SetLineageLabel(ctx.GetTaskEntry()->GetArguments().GetInt(2));
+	} 
+	
+	
+	// Update stats
+	cString name;
+	name = "[produced"; 
+	name += string_to_match;
+	name += "]";
+	m_world->GetStats().AddStringBitsMatchedValue(name, max_num_matched);
+	
+	// if the organism hasn't donated, then zero out its reputation. 
+	if ((ctx.GetOrganism()->GetReputation() > 0) && 
+			(ctx.GetOrganism()->GetNumberOfDonations() == 0)) {
+		ctx.GetOrganism()->SetReputation(0);
+	}
+	
+	
+	
+	double bonus = 0.0;
+	double base_bonus = 0.0; 
+	
+	base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
+	
+  if (partial)
+  {
+    base_bonus=double(max_num_matched)*2/double(num_real) -1;
+  }
+	
+  if (base_bonus > 0.0) {
+    bonus = pow(base_bonus,mypow);
+  }
+  return bonus;
+	
+}
 
 
 void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
@@ -3211,3 +3348,38 @@ double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
   
   return quality;
 }  
+
+
+/* This task provides major points for perfect strings and some points for just
+ storing stuff. */
+double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const {
+	double bonus = 0.0;
+	int min = -1;
+	int temp = 0;
+	for (unsigned int i = 0; i<m_strings.size(); i++) {
+		temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
+		
+		// Figure out what the minimum amount of a string is.
+		if ((min == -1) || (temp < min)){
+			min = temp;
+		}
+	}
+	
+	// Bonus for creating perfect strings!
+	bonus = min; 
+	
+	// Add in some value for just creating stuff
+	for (unsigned int i = 0; i<m_strings.size(); i++) {
+		temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
+		
+		if (temp > min) { 
+			bonus += (temp - min); 
+		}
+	} 
+	
+	// Update stats
+	m_world->GetStats().IncPerfectMatch(min);
+	if (min > 0) m_world->GetStats().IncPerfectMatchOrg();
+	
+	return bonus; 
+}

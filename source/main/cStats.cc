@@ -2067,3 +2067,263 @@ void cStats::PrintNumOrgsKilledData(const cString& filename)
   df.Write(num_orgs_killed, "Num Orgs Killed");
   df.Endl();
 } //End PrintNumOrgsKilledData()
+
+
+/* Print information pertinent to direct reciprocity experiments*/
+void cStats::PrintDirectReciprocityData(const cString& filename){
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+	cDoubleSum donations;
+	cDoubleSum reciprocations; 
+	cDoubleSum donors;
+	cDoubleSum num_donations_received; 
+	
+	cOrganism* org; 
+	
+	int num_alt =0;
+	int num_coop = 0;
+	int num_lin_2 = 0;
+	int num_lin_1 = 0;
+	int total_org = 0;
+	
+	
+	df.WriteComment("Avida organism direct reciprocity information");
+	df.WriteTimeStamp();
+	df.Write(m_update,   "Update [update]");
+	
+	
+  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		org = cell.GetOrganism();
+		
+    if(cell.IsOccupied()) {
+			donations.Add(org->GetNumberOfDonations());
+			num_donations_received.Add(org->GetNumberOfDonationsReceived());
+			reciprocations.Add(org->GetNumberOfReciprocations());
+			donors.Add(org->GetNumberOfDonors());
+			if (org->GetNumberOfDonations() > 0) num_alt++;
+			if ((org->GetNumberOfDonationsReceived() && org->GetNumberOfDonations()) > 0) num_coop++;
+			if (org->GetLineageLabel() == 1) num_lin_1++;
+			if (org->GetLineageLabel() == 2) num_lin_2++;
+			total_org++;
+	  }
+	}
+	
+	df.Write(donations.Average(), "Avg. donations [donation]");
+	df.Write(num_donations_received.Average(), "Avg. donations received [received]");
+	df.Write(donors.Average(), "Avg. number of donor partners [partners]");	
+	df.Write(num_alt, "Number of altruists [altruists]");
+	df.Write(num_coop, "Number of cooperators [cooperators]");
+	df.Write(num_lin_1, "Number of organisms of lineage 1 [lineage1]");
+	df.Write(num_lin_2, "Number of organisms of lineage 2 [lineage2]");
+	df.Write(total_org, "Number of organisms in population [popsize]");
+	
+  df.Endl();
+	
+	
+}
+
+
+/* Print information about the string matching... */
+void cStats::PrintStringMatchData(const cString& filename){
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Avida organism string donation information");
+	df.WriteTimeStamp();
+	df.Write(m_update,   "Update [update]");
+	cOrganism* org; 
+	
+	
+	/*
+	 // Interate through map of information.
+	 map<cString,cDoubleSum>::iterator iter2;   
+	 for(iter2 = m_string_bits_matched.begin(); iter2 != m_string_bits_matched.end(); iter2++ ) {
+	 df.Write(iter2->second.Average(), iter2->first); 
+	 }
+	 
+	 
+	 // Create a map of the current tags in the population .
+	 for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+	 cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+	 org = cell.GetOrganism();
+	 
+	 if(cell.IsOccupied()) {
+	 // Get tag and increment number of orgs. 
+	 m_tags[org->GetTagLabel()]++;
+	 }
+	 }
+	 
+	 // print the tags
+	 map<int, int>::iterator iter;   
+	 stringstream ss; 
+	 for(iter = m_tags.begin(); iter != m_tags.end(); iter++ ) {
+	 ss << iter->first; 
+	 string name = ss.str(); 
+	 df.Write(iter->second, name.c_str()); 
+	 iter->second = 0;
+	 }*/
+	
+	
+	// Print data about strings: 
+	std::map <int, cDoubleSum> m_strings_stored; 
+	std::map <int, cDoubleSum> m_strings_produced; 
+	cDoubleSum total; 
+	int min = -1; 
+	int onhand = 0;
+	int instant_perfect_match = 0;
+	int instant_perfect_match_org = 0;
+	int nothing  =0;
+	int specialists = 0; 
+	int generalists = 0;
+	int type_prod = 0;
+	
+	// Get the number of strings
+	int num = m_world->GetEnvironment().GetNumberOfMatchStrings();
+	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		org = cell.GetOrganism();
+		min = -1; 
+		onhand = 0;
+		type_prod = 0;
+		
+    if(cell.IsOccupied()) {
+			for (int j = 0; j<num; j++) {
+				onhand = org->GetNumberStringsOnHand(j);
+				if ((min == -1) || (onhand < min)){
+					min = onhand;
+				}
+				m_strings_stored[j].Add(onhand); 
+				total.Add(onhand);
+				m_strings_produced[j].Add(org->GetNumberStringsProduced(j)); 
+				
+				if (org->GetNumberStringsProduced(j)) type_prod++;
+				
+			}
+			
+			instant_perfect_match += min;
+			if (min > 0) instant_perfect_match_org++;
+			if (type_prod ==0) nothing++;
+			if (type_prod == 1) specialists++;
+			if (type_prod > 1) generalists++;
+		}
+		
+	}
+	
+	// print the string info
+	for (int k=0; k<num; k++) {
+		string name = m_world->GetEnvironment().GetMatchString(k).GetData(); 
+		name = "produced" + name;
+		df.Write(m_strings_produced[k].Average(), name.c_str()); 
+		
+		name = m_world->GetEnvironment().GetMatchString(k).GetData(); 
+		name = "stored" + name;
+		df.Write(m_strings_stored[k].Average(), name.c_str()); 
+		
+	}
+	df.Write(total.Average(), "totalStoredAverage");
+	
+	// Print number of perfect matches
+	df.Write(m_perfect_match.Sum(), "PerfectMatchStringElapse[ps]"); 
+	m_perfect_match.Clear();
+	// Print number of perfect matches
+	df.Write(m_perfect_match_org.Sum(), "PerfectMatchOrgElapse[pso]"); 
+	m_perfect_match_org.Clear();
+	df.Write(instant_perfect_match, "PerfectMatchStringInstant[psi]"); 
+	// Print number of perfect matches
+	df.Write(instant_perfect_match_org, "PerfectMatchOrgInstant[psoi]"); 
+	df.Write(nothing, "Producednothing[nothing]"); 
+	df.Write(generalists, "Generalists[generalists]"); 
+	df.Write(specialists, "Specialists[specialists]"); 
+	
+	
+  df.Endl();
+}
+
+/* Print information about the reputation... */
+void cStats::PrintReputationData(const cString& filename){
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+	cDoubleSum reputations;
+	cDoubleSum donations;
+	cDoubleSum reciprocations; 
+	cDoubleSum donors;
+	cDoubleSum k;
+	cDoubleSum num_donations_received; 
+	cDoubleSum amount_donations_received;
+	cDoubleSum num_failed_reputation_inc;
+	cDoubleSum own_raw_mat; 
+	cDoubleSum other_raw_mat;
+	
+	
+	// difference between how many an organism donated & how many it received
+	cDoubleSum disparity;
+	
+	cOrganism* org; 
+	int min_rep = 100; 
+	int max_rep = 0;
+	int cur_rep;
+	int num_alt =0;
+	int num_coop = 0;
+	
+	
+	
+	df.WriteComment("Avida organism reputation information -- average donations, min donations, max donations");
+	df.WriteTimeStamp();
+	df.Write(m_update,   "Update [update]");
+	
+	
+  for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		org = cell.GetOrganism();
+		
+    if(cell.IsOccupied()) {
+			cur_rep = org->GetReputation();
+			
+			if (cur_rep < min_rep) min_rep = cur_rep;
+			if (max_rep < cur_rep) max_rep = cur_rep;
+			reputations.Add(cur_rep);
+			donations.Add(org->GetNumberOfDonations());
+			num_donations_received.Add(org->GetNumberOfDonationsReceived());
+			amount_donations_received.Add(org->GetAmountOfDonationsReceived());
+			own_raw_mat.Add(org->GetSelfRawMaterials());
+			other_raw_mat.Add(org->GetOtherRawMaterials());
+			
+			reciprocations.Add(org->GetNumberOfReciprocations());
+			donors.Add(org->GetNumberOfDonors());
+			num_failed_reputation_inc.Add(org->GetFailedReputationIncreases());
+//			k.Add(org->GetK());
+			
+			disparity.Add(org->GetNumberOfDonations() - org->GetOtherRawMaterials()); 
+			
+			if (org->GetNumberOfDonations() > 0) num_alt++;
+			if ((org->GetNumberOfDonationsReceived() && org->GetNumberOfDonations()) > 0) num_coop++;
+			
+			
+	  }
+	}
+	df.Write(reputations.Average(), "Avg. reputation [reputation]");
+	//	df.Write(reputations.StdDeviation(), "Standard Deviation [repstddev]");
+	//	df.Write(min_rep, "Minimum reputation");
+	//	df.Write(max_rep, "Maximum reputation");	
+	df.Write(donations.Average(), "Avg. donations [donation]");
+	//	df.Write(num_donations_received.Average(), "Avg. donations received [received]");
+	//	df.Write(amount_donations_received.Average(), "Avg. number donations received [amount]");
+	//	df.Write(reciprocations.Average(), "Avg. reciprocations [reciprocation]");
+	//	df.Write(disparity.Average(), "Disparity between donations and collections [disparity]");
+	df.Write(donors.Average(), "Avg. number of donor partners [partners]");
+	//	df.Write(num_failed_reputation_inc.Average(), "Avg. number of reputation increase failures [failure]");	
+	//	df.Write(recip_prob_change.Average(), "Avg. change in reciprocation probability [recipprob]");
+	
+	df.Write(num_alt, "Number of altruists [altruists]");
+	df.Write(num_coop, "Number of cooperators [cooperators]");
+	df.Write(own_raw_mat.Average(), "Avg. own raw mat [ownrawmat]");
+	df.Write(other_raw_mat.Average(), "Avg. other raw mat [otherrawmat]");
+	//	df.Write(num_all_strings, "Number of orgs with all strings [allstrings]");
+	
+	//	df.Write(k.Average(), "Avg. k of organisms [k]");
+	//	df.Write(m_donate_to_donor, "Number of donate to donor [donatedonor]");
+	//	df.Write(m_donate_to_facing, "Number of donate to facing [donatefacing]");
+	
+	
+	
+  df.Endl();
+} 

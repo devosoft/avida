@@ -904,7 +904,32 @@ public:
 protected:
   int m_flash_count; //!< Number of flashes that have occured since last PrintSynchronizationData.
 	PopulationFlashes m_flash_times; //!< For tracking flashes that have occurred throughout this population.
+
+// -------- Reputation support ---------
+public: 
+	// Print statistics about reputation
+	void PrintReputationData(const cString& filename);
+	void PrintDirectReciprocityData(const cString& filename);
+	void IncDonateToDonor() { m_donate_to_donor++; } 
+	void IncDonateToFacing() { m_donate_to_facing++; }
+	void PrintStringMatchData(const cString& filename);
+	void AddStringBitsMatchedValue(cString name, int value) { m_string_bits_matched[name].Add(value); }
+	void AddTag(int tag, int value) { m_tags[tag] = m_tags[tag] + value; }
+	void IncPerfectMatch(int amount) { m_perfect_match.Add(amount); }
+	void IncPerfectMatchOrg() { m_perfect_match_org.Add(1); }
+	
+protected: 
+	int m_donate_to_donor; 
+	int m_donate_to_facing;
+	std::map <cString, cDoubleSum> m_string_bits_matched;
+	cDoubleSum m_perfect_match;
+	cDoubleSum m_perfect_match_org;
+	std::map <int, int> m_tags;
+	
+
 };
+
+
 
 
 #ifdef ENABLE_UNIT_TESTS

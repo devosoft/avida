@@ -86,6 +86,15 @@ public:
 
   bool UseNeighborInput() const { return use_neighbor_input; }
   bool UseNeighborOutput() const { return use_neighbor_output; }
+	
+	// Get the strings that parameterize the MatchString tasks
+	vector<cString> GetMatchStrings(); 
+	cString GetMatchString(int x);
+	int GetNumberOfMatchStrings() { return m_strings.size(); } 
+
+private: 
+	// Store the strings used by the MatchString tasks
+	vector<cString> m_strings; 
   
   
 private:
@@ -242,6 +251,8 @@ private:
   // Matching Tasks
   void Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_MatchStr(cTaskContext& ctx) const;
+	void Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+  double Task_MatchProdStr(cTaskContext& ctx) const;
   void Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_MatchNumber(cTaskContext& ctx) const;
 
@@ -303,6 +314,9 @@ private:
   // State Grid Tasks
   void Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
   double Task_SGPathTraversal(cTaskContext& ctx) const;  
+	
+	// reputation
+	double Task_CreatePerfectStrings(cTaskContext& ctx) const; 
 };
 
 

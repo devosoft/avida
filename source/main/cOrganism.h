@@ -31,6 +31,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <map>
 
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
@@ -516,6 +517,120 @@ protected:
 	cNeighborhoodSupport* m_neighborhood; //!< Lazily-initialized pointer to the neighborhood data.
 
 
+  // -------- Reputation support --------	
+public: 
+	// Deduct amount number of self raw materials
+	bool SubtractSelfRawMaterials(int amount); 
+	// Deduct amount number of other raw materials
+	bool SubtractOtherRawMaterials(int amount); 
+	// receive raw materials from others
+	bool AddOtherRawMaterials(int amount, int donor_id);
+	// receive raw materials 
+	bool AddRawMaterials(int amount, int donor_id);
+	// receive raw materials 
+	void AddSelfRawMaterials(int amount) { if (m_self_raw_materials < 10) m_self_raw_materials += amount;}
+	// retrieve the organism's own amount of raw materials
+	int GetSelfRawMaterials() { return m_self_raw_materials; }
+	// retrieve the amount of raw materials collected from others
+	int GetOtherRawMaterials() { return m_other_raw_materials; }
+	// get the organism's reputation
+	int GetReputation(); 
+	// set the organism's reputation
+	void SetReputation(int rep);
+	// update the reputation to be an average on the basis of this new info
+	void SetAverageReputation(int rep);
+	// update the reputation by addint this new information 
+	void AddReputation(int rep) { SetReputation(GetReputation() + rep); }
+	// increment reputation
+	void IncReputation() { SetReputation(GetReputation() + 1); }
+	// get number of donors
+	int GetNumberOfDonors() { return donor_list.size(); }
+	// organism donated
+	void Donated(){m_num_donate++;}
+	// get number of donations
+	int GetNumberOfDonations() { return m_num_donate; }
+	// get number of donations received
+	int GetNumberOfDonationsReceived() { return m_num_donate_received; }
+	// get amout of donations received
+	int GetAmountOfDonationsReceived() { return m_amount_donate_received; }
+	// organism reciprocated
+	void Reciprocated() {m_num_reciprocate++;}
+	// get number of reciprocations
+	int GetNumberOfReciprocations() { return m_num_reciprocate; }
+	// was the organism a donor
+	bool IsDonor(int neighbor_id); 
+	
+	// Check if buffer contains this string; return # bits correct
+	int MatchOutputBuffer(cString string_to_match);
+	
+	// Add a donor
+	void AddDonor(int org_id) { donor_list.insert(org_id); }
+	// Set tag 
+	void SetTag(int new_tag, int bits) { m_tag = make_pair(new_tag, bits); }
+	// Set tag
+	void SetTag(pair < int, int > new_tag)  { m_tag = new_tag; }
+	// Update tag
+	void UpdateTag(int new_tag, int bits); 
+	// Get tag
+	int GetTagLabel() { return m_tag.first; }
+	pair < int, int > GetTag() { return m_tag; }
+	// Get number of failed reputation increases
+	int GetFailedReputationIncreases() { return m_failed_reputation_increases; }
+	
+	// Clear the output buffer
+	void SetOutputNegative1();
+	void AddDonatedLineage(int lin) { donating_lineages.insert(lin); }
+	int GetNumberOfDonatedLineages() { return donating_lineages.size(); }
+	void InitStringMap(); 
+	bool ProduceString(int i);  
+	int GetNumberStringsProduced(int i) { return  m_string_map[i].prod_string; }
+	int GetNumberStringsOnHand(int i) { return m_string_map[i].on_hand; }
+	bool DonateString(int string_tag, int amount); 
+	bool ReceiveString(int string_tag, int amount, int donor_id); 
+	bool CanReceiveString(int string_tag, int amount); 
+	
+protected:
+	// The organism's own raw materials
+	int m_self_raw_materials; 
+	// The raw materials an oranism has collected from others
+	int m_other_raw_materials;
+  // Organisms that have donated to this organism
+	set<int> donor_list;
+	// Strings this organism has received. 
+	set<int> donating_lineages;
+	// number of donations
+	int m_num_donate;
+	// number of donations received
+	int m_num_donate_received;
+	// amount of donations received
+	int m_amount_donate_received;
+	// number of reciprocations
+	int m_num_reciprocate;
+	// reputation minimum for donation/rotation 
+	// based on Nowak89
+	int m_k;
+	// int number of reputation increase failures
+	int m_failed_reputation_increases;
+	std::pair < int, int > m_tag;
+	
+  /*! Contains all the different data structures needed to 
+	 track strings, production of strings, and donation/trade 
+	 of strings. It is inspired by the cMessagingSupport*/
+  struct cStringSupport
+  {
+    cStringSupport() 
+		{ prod_string = 0; received_string = 0; on_hand = 0; }
+		cString m_string; //!< The string being tracked
+		int prod_string; //!< The number of times this string has been produced. 
+		int received_string; //!< The number of times this string has been received.
+		int on_hand; //!< The number of copies of the string this organism has on hand
+  };
+  
+	/* This member variable is a map of tags to strings. It can
+	 be used to track production, consumption, and donation of 
+	 strings. */
+	std::map < int, cStringSupport > m_string_map;
+	
 	// -------- Internal Support Methods --------
 private:
   void initialize(cAvidaContext& ctx);

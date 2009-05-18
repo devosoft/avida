@@ -116,6 +116,8 @@ public:
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(const tArray<double>& res_change);
   cResourceCount& GetResourceCount() { return m_resource_count; }
+	
+
 };
 
 #ifdef ENABLE_UNIT_TESTS

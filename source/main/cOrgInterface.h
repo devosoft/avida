@@ -110,6 +110,10 @@ public:
 	virtual void SendFlash() = 0;
   
   virtual int GetStateGridID(cAvidaContext& ctx) = 0;
+	virtual void RotateToGreatestReputation() =0;
+	virtual void RotateToGreatestReputationWithDifferentTag(int tag) =0;
+	virtual void RotateToGreatestReputationWithDifferentLineage(int line) =0;	
+	
 };
 
 #endif

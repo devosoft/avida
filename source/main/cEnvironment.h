@@ -156,6 +156,9 @@ public:
   const cTaskEntry& GetTask(int id) const { return m_tasklib.GetTask(id); }
   bool UseNeighborInput() const { return m_tasklib.UseNeighborInput(); }
   bool UseNeighborOutput() const { return m_tasklib.UseNeighborOutput(); }
+	vector<cString> GetMatchStringsFromTask() { return m_tasklib.GetMatchStrings(); }
+	cString GetMatchString(int x) { return m_tasklib.GetMatchString(x); }
+	int GetNumberOfMatchStrings() { return m_tasklib.GetNumberOfMatchStrings(); }	
 
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }

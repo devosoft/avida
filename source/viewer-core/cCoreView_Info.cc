@@ -24,7 +24,7 @@
 
 #include "cCoreView_Info.h"
 
-#include "cBitArray.h"
+//#include "cBitArray.h"
 #include "cClassificationManager.h"
 #include "cGenotype.h"
 #include "cPopulation.h"

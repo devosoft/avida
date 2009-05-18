@@ -400,3 +400,177 @@ int cPopulationInterface::GetStateGridID(cAvidaContext& ctx)
 {
   return ctx.GetRandom().GetUInt(m_world->GetEnvironment().GetNumStateGrids());
 }
+
+/* Rotate an organism to face the neighbor with the highest reputation */
+void cPopulationInterface::RotateToGreatestReputation() 
+{
+	
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID());
+	int high_rep=-1; 
+	vector <int> high_rep_orgs;
+	
+	
+	// loop to find the max reputation
+	for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
+		const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
+		// cell->organism, if occupied, check reputation, etc.
+		if (IsNeighborCellOccupied()) {
+			cOrganism* cur_neighbor = faced_cell->GetOrganism();
+			
+			// if it has high reputation	
+			if (cur_neighbor->GetReputation() >= high_rep) {
+				if (cur_neighbor->GetReputation() > high_rep) {
+					high_rep = cur_neighbor->GetReputation();
+					high_rep_orgs.clear();
+				}
+				high_rep_orgs.push_back(cur_neighbor->GetID()); 
+			} 
+		}
+		
+		// check the next neighbor
+		cell.ConnectionList().CircNext();
+	}
+	
+	// Pick an organism to donate to
+	
+	if (high_rep_orgs.size() > 0) {
+		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size()); 
+		int high_org_id = high_rep_orgs[rand_num];
+		
+		for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
+			const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
+			
+			if (IsNeighborCellOccupied()) {
+				
+				cOrganism* cur_neighbor = faced_cell->GetOrganism();
+				
+				// if it has high reputation	
+				if (cur_neighbor->GetID() == high_org_id) {
+					break;
+				}
+			}
+			
+			cell.ConnectionList().CircNext();
+			
+		}
+	}
+	
+}
+
+/* Rotate an organism to face the neighbor with the highest reputation 
+ where the neighbor has a different tag than the organism*/
+void cPopulationInterface::RotateToGreatestReputationWithDifferentTag(int tag) 
+{
+	
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID());
+	int high_rep=-1; 
+	vector <int> high_rep_orgs;
+	
+	// loop to find the max reputation
+	for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
+		const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
+		// cell->organism, if occupied, check reputation, etc.
+		if (IsNeighborCellOccupied()) {
+			cOrganism* cur_neighbor = faced_cell->GetOrganism();
+			
+			// if it has high reputation	
+			if ((cur_neighbor->GetTagLabel() != tag) && (cur_neighbor->GetReputation() >= high_rep)) {
+				if (cur_neighbor->GetReputation() > high_rep) {
+					high_rep = cur_neighbor->GetReputation();
+					high_rep_orgs.clear();
+				}
+				high_rep_orgs.push_back(cur_neighbor->GetID()); 
+			} 
+		}
+		
+		// check the next neighbor
+		cell.ConnectionList().CircNext();
+	}
+	
+	// Pick an organism to donate to
+	
+	if (high_rep_orgs.size() > 0) {
+		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size()); 
+		int high_org_id = high_rep_orgs[rand_num];
+
+		for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
+			const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
+			
+			if (IsNeighborCellOccupied()) {
+				
+				cOrganism* cur_neighbor = faced_cell->GetOrganism();
+				
+				// if it has high reputation	
+				if (cur_neighbor->GetID() == high_org_id) {
+					break;
+				}
+			}
+			
+			cell.ConnectionList().CircNext();
+			
+		}
+		
+		
+		
+	}
+	
+}
+
+/* Rotate an organism to face the neighbor with the highest reputation 
+ where the neighbor has a different tag than the organism*/
+void cPopulationInterface::RotateToGreatestReputationWithDifferentLineage(int line) 
+{
+	
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID());
+	int high_rep=-1; 
+	vector <int> high_rep_orgs;
+	
+	// loop to find the max reputation
+	for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
+		const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
+		// cell->organism, if occupied, check reputation, etc.
+		if (IsNeighborCellOccupied()) {
+			cOrganism* cur_neighbor = faced_cell->GetOrganism();
+			
+			// if it has high reputation	
+			if ((cur_neighbor->GetLineageLabel() != line) && (cur_neighbor->GetReputation() >= high_rep)) {
+				if (cur_neighbor->GetReputation() > high_rep) {
+					high_rep = cur_neighbor->GetReputation();
+					high_rep_orgs.clear();
+				}
+				high_rep_orgs.push_back(cur_neighbor->GetID()); 
+			} 
+		}
+		
+		// check the next neighbor
+		cell.ConnectionList().CircNext();
+	}
+	
+	// Pick an organism to donate to
+	
+	if (high_rep_orgs.size() > 0) {
+		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size()); 
+		int high_org_id = high_rep_orgs[rand_num];
+		
+		for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
+			const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
+			
+			if (IsNeighborCellOccupied()) {
+				
+				cOrganism* cur_neighbor = faced_cell->GetOrganism();
+				
+				// if it has high reputation	
+				if (cur_neighbor->GetID() == high_org_id) {
+					break;
+				}
+			}
+			
+			cell.ConnectionList().CircNext();
+			
+		}
+		
+		
+		
+	}
+	
+}
