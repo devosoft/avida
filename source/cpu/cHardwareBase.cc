@@ -152,6 +152,8 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     const int merit_base = phenotype.CalcSizeMerit();
     const double cur_fitness = merit_base * phenotype.GetCurBonus() / phenotype.GetTimeUsed();
     const double fitness_ratio = cur_fitness / phenotype.GetLastFitness();
+	const tArray<int>& childtasks = phenotype.GetCurTaskCount();
+	const tArray<int>& parenttasks = phenotype.GetLastTaskCount();
     
     bool sterilize = false;
     
@@ -162,9 +164,26 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     } else {
       if (ctx.GetRandom().P(m_organism->GetSterilizePos())) sterilize = true;
     }
-    
-    if (sterilize) {
-      // Don't let this organism have this or any more children!
+
+	// for sterilize task loss *SLG
+	if (ctx.GetRandom().P(m_organism->GetSterilizeTaskLoss()))
+	{
+		bool del = false;
+		bool added = false;
+		for (int i=0; i<childtasks.GetSize(); i++)
+		{
+			if (childtasks[i] > parenttasks[i]) {
+				added = true;
+				break;
+			}
+			else if (childtasks[i] < parenttasks[i])
+				del = true;
+		}
+		sterilize = (del & !added);
+	}
+
+	if (sterilize) {
+		// Don't let this organism have this or any more children!
       phenotype.IsFertile() = false;
       return false;
     }    
