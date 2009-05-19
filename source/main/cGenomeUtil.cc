@@ -48,6 +48,15 @@ int cGenomeUtil::FindInst(const cGenome & gen, const cInstruction & inst,
   return -1;
 }
 
+int cGenomeUtil::CountInst(const cGenome & gen, const cInstruction & inst)
+{
+  int count = 0;
+  for(int i = 0; i < gen.GetSize(); i++) {
+    if (gen[i] == inst) count++;
+  }
+	
+  return count;
+}
 
 int cGenomeUtil::FindOverlap(const cGenome & gen1, const cGenome & gen2,
 			     int offset)

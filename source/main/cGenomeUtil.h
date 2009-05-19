@@ -42,6 +42,8 @@ private:
 public:
   // ========= Detection =========
   static int FindInst(const cGenome& gen, const cInstruction& inst, int start_index = 0);
+	static int CountInst(const cGenome& gen, const cInstruction& inst);
+	
   static bool HasInst(const cGenome& gen, const cInstruction& inst)
   {
     return ( FindInst(gen, inst) >= 0 ) ? true : false;
