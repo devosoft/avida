@@ -80,6 +80,15 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
+  , m_other_raw_materials(0)
+  , m_num_donate(0)
+  , m_num_reciprocate(0)
+  , m_num_donate_received(0)
+  , m_amount_donate_received(0)
+  , m_failed_reputation_increases(0)
+  , m_tag(make_pair(-1, 0))
+
 {
   m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome);
   
@@ -112,6 +121,14 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
+  , m_other_raw_materials(0)
+  , m_num_donate(0)
+  , m_num_reciprocate(0)
+  , m_num_donate_received(0)
+  , m_amount_donate_received(0)
+  , m_failed_reputation_increases(0)
+  , m_tag(make_pair(-1, 0))
 {
   m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome);
 
@@ -171,6 +188,13 @@ void cOrganism::initialize(cAvidaContext& ctx)
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
   m_id = m_world->GetStats().GetTotCreatures();
+	
+	// randomize the amout of raw materials an organism has at its 
+	// disposal.
+	if (m_world->GetConfig().RANDOMIZE_RAW_MATERIAL_AMOUNT.Get()) {
+		int raw_mat = m_world->GetConfig().RAW_MATERIAL_AMOUNT.Get();
+		m_self_raw_materials = m_world->GetRandom().GetUInt(0, raw_mat+1); 
+	}
 }
 
 

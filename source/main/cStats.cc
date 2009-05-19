@@ -135,6 +135,8 @@ cStats::cStats(cWorld* world)
   , m_spec_waste(0)
   , num_orgs_killed(0)
   , m_deme_num_repls(0)
+  , m_donate_to_donor (0)
+  , m_donate_to_facing (0)
 {
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_tasks = env.GetNumTasks();

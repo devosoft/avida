@@ -369,8 +369,22 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     
     //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
     child_array[i]->SetCCladeLabel(parent_organism->GetCCladeLabel());
-  }
-  
+		
+		// If inherited reputation is turned on, set the offspring's reputation 
+		// to that of its parent.
+		if (m_world->GetConfig().INHERIT_REPUTATION.Get() == 1) {
+			child_array[i]->SetReputation(parent_organism->GetReputation()); 
+		} else if (m_world->GetConfig().INHERIT_REPUTATION.Get() == 2) { 
+			child_array[i]->SetTag(parent_organism->GetTag()); 	
+		}else if (m_world->GetConfig().INHERIT_REPUTATION.Get() == 3) { 
+			child_array[i]->SetTag(parent_organism->GetTag()); 
+			child_array[i]->SetReputation(parent_organism->GetReputation()); 
+		}
+		
+	
+	}
+	
+		
   // If we're not about to kill the parent, do some extra work on it.
   if (parent_alive == true) {
     // Reset inputs and re-calculate merit if required
