@@ -2329,3 +2329,94 @@ void cStats::PrintReputationData(const cString& filename){
 	
   df.Endl();
 } 
+
+/* 	
+  Cycle through the population -- count the number of altruists in each bin. 
+  Also average their shaded donations.
+  Check how many prefer the shaded strategy
+ 
+ */
+void cStats::PrintShadedAltruists(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("The number of organisms in different bins of shaded altruism");
+	
+	// Cycle through the population -- count the number of altruists in each bin. 
+	// Also average their shaded donations.
+	// Check how many prefer the shaded strategy
+	
+	//int num_shaded_pref = 0; //!num orgs that prefer shaded
+	int pop = m_world->GetPopulation().GetSize(); //!the population size for convenience
+	int shaded_100 = 0; 
+	int shaded_90 = 0; 
+	int shaded_80 = 0;
+	int shaded_70 = 0;
+	int shaded_60 = 0; 
+	int shaded_50 = 0;
+	int shaded_40 = 0;
+	int shaded_30 = 0;
+	int shaded_20 = 0;
+	int shaded_10 = 0;
+	int shaded_0 = 0;
+	int total_shaded = 0;
+	
+	//int other_donations = 0;
+	int shade_of_gb;
+	cOrganism* org; 
+	
+	
+	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+		shade_of_gb = 0;
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		org = cell.GetOrganism();
+		
+    if(cell.IsOccupied()) {
+			org = cell.GetOrganism();
+			
+			cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
+			const int num_inst = m_world->GetNumInstructions();
+			for (int i = 0; i < num_inst; i++) { 
+				if ((inst_set.GetName(i) == "donate-shadedgb") && 
+						(org->GetPhenotype().GetTestCPUInstCount().GetSize() > 0)) {
+					shade_of_gb = org->GetPhenotype().GetTestCPUInstCount()[i];
+				} 
+			}
+			if (shade_of_gb == 100) shaded_100++;
+			if (shade_of_gb > 90) shaded_90++;
+			if (shade_of_gb > 80) shaded_80++;
+			if (shade_of_gb > 70) shaded_70++;
+			if (shade_of_gb > 60) shaded_60++;
+			if (shade_of_gb > 50)	shaded_50++;
+			if (shade_of_gb > 40)	shaded_40++;
+			if (shade_of_gb > 30)	shaded_30++;
+			if (shade_of_gb > 20)	shaded_20++;
+			if (shade_of_gb > 10)	shaded_10++;
+			if (shade_of_gb > 0) shaded_0++;
+			total_shaded += shade_of_gb;
+		}
+	}
+	
+	float high_alt = (float) shaded_90/pop;
+	float avg_shade = (float) total_shaded/pop;
+	
+	df.WriteComment("Bins of orgs of shaded strategies.");
+	df.WriteTimeStamp();
+	df.Write(m_update,   "Update [update]");	
+	df.Write(pop, "Population [population]");
+	df.Write(shaded_100, "shaded-100 [shaded100]");
+	df.Write(shaded_90, "shaded-90 [shaded90]");
+	df.Write(shaded_80, "shaded-80 [shaded80]");
+	df.Write(shaded_70, "shaded-70 [shaded70]");
+	df.Write(shaded_60, "shaded-60 [shaded60]");
+	df.Write(shaded_50, "shaded-50 [shaded50]");
+	df.Write(shaded_40, "shaded-40 [shaded40]");
+	df.Write(shaded_30, "shaded-30 [shaded30]");
+	df.Write(shaded_20, "shaded-20 [shaded20]");
+	df.Write(shaded_10, "shaded-10 [shaded10]");
+	df.Write(shaded_0, "shaded-0 [shaded0]");
+	df.Write(high_alt, "percent-high-alt [highalt]");
+	df.Write(avg_shade, "avg-shade [avgshade]");
+	df.Endl();
+	
+}
+
+

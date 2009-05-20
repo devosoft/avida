@@ -917,7 +917,8 @@ public:
 	void AddTag(int tag, int value) { m_tags[tag] = m_tags[tag] + value; }
 	void IncPerfectMatch(int amount) { m_perfect_match.Add(amount); }
 	void IncPerfectMatchOrg() { m_perfect_match_org.Add(1); }
-	
+	void PrintShadedAltruists(const cString& filename);
+
 protected: 
 	int m_donate_to_donor; 
 	int m_donate_to_facing;

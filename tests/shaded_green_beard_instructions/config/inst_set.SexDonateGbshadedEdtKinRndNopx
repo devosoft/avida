@@ -27,6 +27,7 @@ if-label   1   # y
 set-flow   1   # z   Move flow-head to address in ?CX? 
 
 donate-threshgb 1
+donate-shadedgb 1
 donate-edt 1
 donate-kin 1
 donate-rnd  1	

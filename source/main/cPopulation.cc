@@ -403,7 +403,10 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
         if (pc_phenotype & 2) {   // If we must update the gestation time
           parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
         }
-        parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
+        if (pc_phenotype & 4) {   // If we must update the last instruction counts
+					parent_phenotype.SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
+				}
+				parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
         delete test_cpu;
       }
     }

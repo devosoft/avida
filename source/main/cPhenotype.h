@@ -179,6 +179,8 @@ private:
   int exec_time_born;    // @MRR number of instructions since seed ancestor start
   double gmu_exec_time_born; //@MRR mutation-rate and gestation time scaled time of birth
   int birth_update;      // @MRR update *organism* born
+	tArray<int> testCPU_inst_count;	  // Instruction exection counter as calculated by Test CPU
+
   
   // 5. Status Flags...  (updated at each divide)
   bool to_die;		 // Has organism has triggered something fatal?
@@ -202,6 +204,8 @@ private:
   bool is_donor_threshgb_last;// Did this org's parent threshgbg_donate? 
   bool is_donor_quanta_threshgb;  // Has this organism quanta_threshgb_donated (true green beard)? 
   bool is_donor_quanta_threshgb_last;// Did this org's parent quanta_threshgbg_donate? 
+	bool is_donor_shadedgb; // Has this organism shaded_gb_donated (true shaded green beard)? 
+	bool is_donor_shadedgb_last; // Did this org's parent shaded_gb_donate? 
   bool is_energy_requestor; // Has this organism requested energy?
   bool is_energy_donor; // Has this organism donated energy?
   bool is_energy_receiver;  // Has this organism received an energy donation?
@@ -211,6 +215,8 @@ private:
   int num_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
   int num_quanta_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
   int num_quanta_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
+	int num_shaded_gb_donations; // Num times this org shaded_gb_donated? 
+	int num_shaded_gb_donations_last; // Num times this org's parent shaded_gb_donated?
   bool is_receiver;      // Has this organism ever received merit donation?
   bool is_receiver_last;      // Did this organism's parent receive a merit donation?
   bool is_receiver_rand; // Has this organism ever received random merit donation?
@@ -225,6 +231,8 @@ private:
   bool is_receiver_threshgb_last;// Did this organism's parent receive a threshgb donation?
   bool is_receiver_quanta_threshgb;// Has this organism ever received a quanta_threshgb donation?
   bool is_receiver_quanta_threshgb_last;// Did this organism's parent receive a quanta_threshgb donation?
+	bool is_receiver_shadedgb; // Has this organism ever received a shaded_gb donation? 
+	bool is_receiver_shadedgb_last; // Did this organism's parent receive a shaded gb donation?
   bool is_modifier;      // Has this organism modified another?
   bool is_modified;      // Has this organism been modified by another?
   bool is_fertile;       // Do we allow this organisms to produce offspring?
@@ -357,7 +365,8 @@ public:
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
   const int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
-  
+	const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
+
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
   void  TrialDivideReset(const cGenome & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
@@ -399,6 +408,8 @@ public:
   int  GetNumThreshGbDonationsLast() const { assert(initialized == true); return num_thresh_gb_donations_last; }
   int  GetNumQuantaThreshGbDonations() const { assert(initialized == true); return num_quanta_thresh_gb_donations; }
   int  GetNumQuantaThreshGbDonationsLast() const { assert(initialized == true); return num_quanta_thresh_gb_donations_last; }
+	int  GetNumShadedGbDonations() const { assert(initialized == true); return num_shaded_gb_donations; }
+  int  GetNumShadedGbDonationsLast() const { assert(initialized == true); return num_shaded_gb_donations_last; }	
 
 
   bool IsInjected() const { assert(initialized == true); return is_injected; }
@@ -418,6 +429,8 @@ public:
   bool IsDonorThreshGbLast() const { assert(initialized == true); return is_donor_threshgb_last; }
   bool IsDonorQuantaThreshGb() const { assert(initialized == true); return is_donor_quanta_threshgb; }
   bool IsDonorQuantaThreshGbLast() const { assert(initialized == true); return is_donor_quanta_threshgb_last; }
+	bool IsDonorShadedGb() const { assert(initialized == true); return is_donor_shadedgb; }
+  bool IsDonorShadedGbLast() const { assert(initialized == true); return is_donor_shadedgb_last; }	
   bool IsEnergyRequestor() const { assert(initialized == true); return is_energy_requestor; }
   bool IsEnergyDonor() const { assert(initialized == true); return is_energy_donor; }
   bool IsEnergyReceiver() const { assert(initialized == true); return is_energy_receiver; }
@@ -437,6 +450,8 @@ public:
   bool IsReceiverThreshGbLast() const { assert(initialized == true); return is_receiver_threshgb_last; }
   bool IsReceiverQuantaThreshGb() const { assert(initialized == true); return is_receiver_quanta_threshgb; }
   bool IsReceiverQuantaThreshGbLast() const { assert(initialized == true); return is_receiver_quanta_threshgb_last; }
+  bool IsReceiverShadedGb() const { assert(initialized == true); return is_receiver_shadedgb; }
+  bool IsReceiverShadedGbLast() const { assert(initialized == true); return is_receiver_shadedgb_last; }
   bool IsModifier() const { assert(initialized == true); return is_modifier; }
   bool IsModified() const { assert(initialized == true); return is_modified; }
   bool IsFertile() const  { assert(initialized == true); return is_fertile; }
@@ -475,6 +490,7 @@ public:
   void SetCrossNum(int _cross_num) { cross_num = _cross_num; }
   void SetToDie() { to_die = true; }
   void SetToDelete() { to_delete = true; }
+	void SetTestCPUInstCount(const tArray<int>& in_counts) { testCPU_inst_count = in_counts; }
   void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
@@ -506,6 +522,7 @@ public:
   void SetIsDonorTrueGb() { SetIsDonorCur(); is_donor_truegb = true; }
   void SetIsDonorThreshGb() { SetIsDonorCur(); is_donor_threshgb = true; }
   void SetIsDonorQuantaThreshGb() { SetIsDonorCur(); is_donor_quanta_threshgb = true; }
+	void SetIsDonorShadedGb() { SetIsDonorCur(); is_donor_shadedgb = true; }
   void SetIsReceiver() { is_receiver = true; } 
   void SetIsReceiverRand() { SetIsReceiver(); is_receiver_rand = true; } 
   void SetIsReceiverKin() { SetIsReceiver(); is_receiver_kin = true; } 
@@ -514,6 +531,7 @@ public:
   void SetIsReceiverTrueGb() { SetIsReceiver(); is_receiver_truegb = true; } 
   void SetIsReceiverThreshGb() { SetIsReceiver(); is_receiver_threshgb = true; } 
   void SetIsReceiverQuantaThreshGb() { SetIsReceiver(); is_receiver_quanta_threshgb = true; } 
+	void SetIsReceiverShadedGb() { SetIsReceiver(); is_receiver_shadedgb = true; } 	
   void SetIsEnergyRequestor() { is_energy_requestor = true; }
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
@@ -529,6 +547,7 @@ public:
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
+  void IncNumShadedGbDonations() { assert(initialized == true); num_shaded_gb_donations++; }	
 
   void IncAge()      { assert(initialized == true); age++; }
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }

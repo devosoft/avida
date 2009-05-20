@@ -133,6 +133,7 @@ STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 
 // reputation
 STATS_OUT_FILE(PrintReputationData,         reputation.dat);
+STATS_OUT_FILE(PrintShadedAltruists,         shadedaltruists.dat);
 STATS_OUT_FILE(PrintDirectReciprocityData,         reciprocity.dat);
 STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
@@ -3144,6 +3145,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintReputationData>("PrintReputationData");
 	action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
   action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
+	action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
 
+	
   action_lib->Register<cActionSetVerbose>("VERBOSE");
 }
