@@ -24,72 +24,80 @@
 
 #include "cMutationSteps.h"
 
-cMutationSteps::cMutationSteps(const cMutationSteps& in_ms) : tList<cMutationStep>()
-{
-  tConstListIterator<cMutationStep> mutation_it(in_ms);
-  while (cMutationStep* mut = mutation_it.Next()) {
-    this->PushRear(mut->copy());
-  }
-}
-
-void cMutationSteps::operator=(const cMutationSteps& in_ms)
-{
-  tConstListIterator<cMutationStep> mutation_it(in_ms);
-  while (cMutationStep* mut = mutation_it.Next()) {
-    this->PushRear(mut->copy());
-  }
-}
-
-cMutationSteps::~cMutationSteps()
-{
-  tListIterator<cMutationStep> mutation_it(*this);
-  while (cMutationStep* mut = mutation_it.Next()) {
-    delete mut;
-  }
-}
-
-void cMutationSteps::Clear()
-{
-  tListIterator<cMutationStep> mutation_it(*this);
-  while (cMutationStep* mut = mutation_it.Next()) {
-    delete mut;
-  }
-  tList<cMutationStep>::Clear();
-}
 
 void cMutationSteps::AddSubstitutionMutation(int _pos, char _from, char _to)
 {
-  cMutationStep* mut = new cSubstitutionMutationStep(_pos, _from, _to);
-  this->PushRear(mut);
+  int idx = m_steps.GetSize();
+  m_steps.Resize(idx + 1);
+  m_steps[idx].step_type = sMutStep::SUB_STEP;
+  m_steps[idx].sub.pos = _pos;
+  m_steps[idx].sub.from = _from;
+  m_steps[idx].sub.to = _to;
 }
 
 void cMutationSteps::AddDeletionMutation(int _pos, char _from)
 {
-  cMutationStep* mut = new cDeletionMutationStep(_pos, _from);
-  this->PushRear(mut);
+  int idx = m_steps.GetSize();
+  m_steps.Resize(idx + 1);
+  m_steps[idx].step_type = sMutStep::DEL_STEP;
+  m_steps[idx].indel.pos = _pos;
+  m_steps[idx].indel.inst = _from;
 }
 
 void cMutationSteps::AddInsertionMutation(int _pos, int _to)
 {
-  cMutationStep* mut = new cInsertionMutationStep(_pos, _to);
-  this->PushRear(mut);
+  int idx = m_steps.GetSize();
+  m_steps.Resize(idx + 1);
+  m_steps[idx].step_type = sMutStep::IN_STEP;
+  m_steps[idx].indel.pos = _pos;
+  m_steps[idx].indel.inst = _to;
 }
 
 void cMutationSteps::AddSlipMutation(int _start, int _end)
 {
-  cMutationStep* mut = new cSlipMutationStep(_start, _end);
-  this->PushRear(mut);
+  int idx = m_steps.GetSize();
+  m_steps.Resize(idx + 1);
+  m_steps[idx].step_type = sMutStep::SLIP_STEP;
+  m_steps[idx].slip.start = _start;
+  m_steps[idx].slip.end = _end;
 }
+
+cString cMutationSteps::sMutStep::AsString() const
+{
+  cString s;
+  
+  switch (step_type) {
+    case SUB_STEP:
+      s.Set("M%c%i%c", sub.from, sub.pos, sub.to);
+      break;
+    case DEL_STEP:
+      s.Set("D%i%c", indel.pos, indel.inst);
+      break;
+    case IN_STEP:
+      s.Set("I%i%c", indel.pos, indel.inst);
+      break;
+    case SLIP_STEP:
+      s.Set("S%i-%i", slip.start, slip.end);
+      break;
+      
+    default:
+      s = "(unknown";
+      break;
+  }
+  return s;
+}
+
 
 cString cMutationSteps::AsString() const
 {
   if (m_loaded_string.GetSize() > 0) return m_loaded_string;
 
   cString return_string;
-  tConstListIterator<cMutationStep> mutation_it(*this);
-  while (cMutationStep* mut = mutation_it.Next()) {
-    if (return_string.GetSize() > 0) { return_string += ","; }
-    return_string += mut->AsString();
+  for (int i = 0; i < m_steps.GetSize(); i++) {
+    if (return_string.GetSize() > 0) return_string += ",";
+    return_string += m_steps[i].AsString();
   }
   return return_string;
 }
+
+

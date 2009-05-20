@@ -29,85 +29,51 @@
 #include "cString.h"
 #endif
 
-#ifndef tList_h
-#include "tList.h"
+#ifndef tSmartArray_h
+#include "tSmartArray.h"
 #endif
 
 
-class cMutationStep {
-public:
-  virtual ~cMutationStep() {};
-  virtual cMutationStep* copy() const = 0;
-  virtual cString AsString() = 0;  
-};
-
-class cSubstitutionMutationStep : public cMutationStep {
-public:
-  int m_pos;
-  char m_from;
-  char m_to;
-  cSubstitutionMutationStep(const cSubstitutionMutationStep& _in) : cMutationStep(), m_pos(_in.m_pos), m_from(_in.m_from), m_to(_in.m_to) {}
-  void operator=(const cSubstitutionMutationStep& _in) { m_pos=_in.m_pos; m_from=_in.m_from; m_to=_in.m_to; };  
-  cSubstitutionMutationStep(int _pos, char _from, char _to) { m_pos = _pos; m_from = _from;  m_to = _to; }
-  ~cSubstitutionMutationStep() {};
-  cMutationStep* copy() const { return new cSubstitutionMutationStep(*this); }
-  cString AsString() { cString s; s.Set("M%c%i%c", m_from, m_pos, m_to); return s; }
-};
-
-class cDeletionMutationStep : public cMutationStep {
-public:
-  int m_pos;
-  char m_from;
-  cDeletionMutationStep(const cDeletionMutationStep& _in) : cMutationStep(), m_pos(_in.m_pos), m_from(_in.m_from) {}
-  void operator=(const cDeletionMutationStep& _in) { m_pos=_in.m_pos; m_from=_in.m_from; };  
-  cDeletionMutationStep(int _pos, char _from) { m_pos = _pos; m_from = _from; }
-  ~cDeletionMutationStep() {};
-  cMutationStep* copy() const { return new cDeletionMutationStep(*this); }
-  cString AsString() { cString s; s.Set("D%i%c", m_pos, m_from); return s; }
-};
-
-class cInsertionMutationStep : public cMutationStep{
-public:
-  int m_pos;
-  char m_to;
-  cInsertionMutationStep(const cInsertionMutationStep& _in) : cMutationStep(), m_pos(_in.m_pos), m_to(_in.m_to) {}
-  void operator=(const cInsertionMutationStep& _in) { m_pos=_in.m_pos; m_to=_in.m_to; };  
-  cInsertionMutationStep(int _pos, int _to) { m_pos = _pos; m_to = _to; };
-  ~cInsertionMutationStep() {};
-  cMutationStep* copy() const { return new cInsertionMutationStep(*this); }
-  cString AsString() { cString s; s.Set("I%i%c", m_pos, m_to); return s; }
-};
-
-class cSlipMutationStep : public cMutationStep {
-public:
-  int m_start;
-  int m_end;
-  cSlipMutationStep(const cSlipMutationStep& _in) : cMutationStep(), m_start(_in.m_start), m_end(_in.m_end) {}
-  void operator=(const cSlipMutationStep& _in) { m_start=_in.m_start; m_end=_in.m_end; };
-  cSlipMutationStep(int _start, int _end) { m_start = _start; m_end = _end; };
-  ~cSlipMutationStep() {};
-  cMutationStep* copy() const { return new cSlipMutationStep(*this); }
-  cString AsString() { cString s; s.Set("S%i-%i", m_start, m_end); return s; }
-};
-
-
-class cMutationSteps : public tList<cMutationStep> {
+class cMutationSteps
+{
 private:
+  struct sMutStep {
+    enum {SUB_STEP, IN_STEP, DEL_STEP, SLIP_STEP} step_type;
+    union {
+      struct {
+        int pos;
+        char from;
+        char to;
+      } sub;
+      struct {
+        int pos;
+        char inst;
+      } indel;
+      struct {
+        int start;
+        int end;
+      } slip;
+    };
+    cString AsString() const;
+  };
+  
+  tSmartArray<sMutStep> m_steps;
   cString m_loaded_string;
+  
 public:
-  cMutationSteps() {};
-  cMutationSteps(const cMutationSteps& in_ms);
-  void operator=(const cMutationSteps& in_ms);
-  ~cMutationSteps();
-  void Clear();  
+  cMutationSteps() : m_steps(0) { ; }
+  cMutationSteps(const cMutationSteps& in_ms) : m_steps(in_ms.m_steps) { ; }
+  void operator=(const cMutationSteps& in_ms) { m_steps = in_ms.m_steps; }
+  ~cMutationSteps() { ; }
+  void Clear() { m_steps.Resize(0); }  
 
   void AddSubstitutionMutation(int _pos, char _from, char _to);
   void AddDeletionMutation(int _pos, char _from);
   void AddInsertionMutation(int _pos, int _to);
   void AddSlipMutation(int _start, int _end);
 
-  void Set(const cString& in_mut_steps) { m_loaded_string = in_mut_steps; }  
-    // need to implement for reading, right now, we fake it.
+  void Set(const cString& in_mut_steps) { m_loaded_string = in_mut_steps; }
+  // need to implement for reading, right now, we fake it.
   cString AsString() const;
 };
 
