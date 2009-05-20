@@ -295,7 +295,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   organism->MutationRates().Copy(test_info.MutationRates());
   
   test_info.org_array[cur_depth] = organism;
-  organism->SetOrgInterface(ctx, new cTestCPUInterface(this, test_info));
+  organism->SetOrgInterface(ctx, new cTestCPUInterface(this, test_info, cur_depth));
   organism->GetPhenotype().SetupInject(genome.GetGenome());
 
   // Run the current organism.

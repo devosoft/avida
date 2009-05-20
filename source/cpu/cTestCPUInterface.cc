@@ -135,7 +135,8 @@ bool cTestCPUInterface::InjectParasite(cOrganism* parent, const cCodeLabel& labe
 
 bool cTestCPUInterface::UpdateMerit(double new_merit)
 {
-  return false;
+  m_test_info.GetTestPhenotype(m_cur_depth).SetMerit(cMerit(new_merit));
+  return true;
 }
 
 int cTestCPUInterface::GetStateGridID(cAvidaContext& ctx)

@@ -1779,7 +1779,6 @@ class cActionPrintPlasticGenotypeSummary : public cAction
   {
     
     //Setup
-    int num_tasks = m_world->GetEnvironment().GetNumTasks();
     ofstream& fot = m_world->GetDataFileOFStream(m_filename);
     if (m_first_run == true){
       PrintHeader(fot);

@@ -41,9 +41,11 @@ class cTestCPUInterface : public cOrgInterface
 private:
   cTestCPU* m_testcpu;
   cCPUTestInfo& m_test_info;
+  int m_cur_depth;
 
 public:
-  cTestCPUInterface(cTestCPU* testcpu, cCPUTestInfo& test_info) : m_testcpu(testcpu), m_test_info(test_info) { ; }
+  cTestCPUInterface(cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_depth)
+    : m_testcpu(testcpu), m_test_info(test_info), m_cur_depth(cur_depth) { ; }
   virtual ~cTestCPUInterface() { ; }
 
   int GetCellID() { return -1; }

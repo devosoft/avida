@@ -83,9 +83,9 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
   , m_other_raw_materials(0)
   , m_num_donate(0)
-  , m_num_reciprocate(0)
   , m_num_donate_received(0)
   , m_amount_donate_received(0)
+  , m_num_reciprocate(0)
   , m_failed_reputation_increases(0)
   , m_tag(make_pair(-1, 0))
 
@@ -124,9 +124,9 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
   , m_other_raw_materials(0)
   , m_num_donate(0)
-  , m_num_reciprocate(0)
   , m_num_donate_received(0)
   , m_amount_donate_received(0)
+  , m_num_reciprocate(0)
   , m_failed_reputation_increases(0)
   , m_tag(make_pair(-1, 0))
 {
