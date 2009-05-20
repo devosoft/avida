@@ -2859,6 +2859,52 @@ class cActionKillNAboveResourceThreshold : public cAction
   };
 
 
+
+
+/*
+ Kill a percentage of organisms in all demes
+ 
+ Parameters:
+ - The percent of living organisms to kill (default: 0)
+ */
+
+class cActionKillDemePercent : public cAction
+  {
+  private:
+    double m_pctkills;
+  public:
+    cActionKillDemePercent(cWorld* world, const cString& args) : cAction(world, args), m_pctkills(0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_pctkills = largs.PopWord().AsDouble();
+      
+      assert(m_pctkills >= 0);
+      assert(m_pctkills <= 1);
+    }
+    
+    static const cString GetDescription() { return "Arguments: [int pctkills=0.0]"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      int target_cell;
+
+      for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
+        for (int c = 0; c < m_world->GetPopulation().GetDeme(d).GetWidth() * m_world->GetPopulation().GetDeme(d).GetHeight(); c++) {
+          target_cell = m_world->GetPopulation().GetDeme(d).GetCellID(c); 
+          
+          if( m_world->GetRandom().GetDouble() < m_pctkills) {
+            m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
+            m_world->GetStats().IncNumOrgsKilled();
+          }
+          
+        } //End iterating through all cells
+        
+      } //End iterating through all demes
+      
+    } //End Process()
+  };
+
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -2966,4 +3012,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionConnectCells>("connect_cells");
   action_lib->Register<cActionDisconnectCells>("disconnect_cells");
   action_lib->Register<cActionSwapCells>("swap_cells");
+  action_lib->Register<cActionKillDemePercent>("KillDemePercent");
 }
