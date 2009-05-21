@@ -24,6 +24,7 @@
 #ifndef cDeme_h
 #define cDeme_h
 
+#include <set>
 #include <vector>
 
 #include "cDemeCellEvent.h"
@@ -59,6 +60,7 @@ private:
 
 	bool replicateDeme;
 	bool treatable;
+  std::set<int> treatment_ages;
 	
 // The following should be moved to cDemePhenotype / cPopulationPhenotype
   int cur_birth_count; //!< Number of organisms that have been born into this deme since reset.
@@ -201,6 +203,9 @@ public:
 	
 	bool isTreatable() const { return treatable; }
 	void setTreatable(bool value) { treatable = value; }
+  void AddTreatmentAge(const int age) { treatment_ages.insert(age); }
+  bool IsTreatableAtAge(const int age);
+  bool IsTreatableNow() { return IsTreatableAtAge(_age); }
 
   int GetSlotFlowRate() const;
   int GetEventsTotal() const { return eventsTotal; }

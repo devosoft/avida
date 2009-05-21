@@ -2869,7 +2869,7 @@ class cActionKillNAboveResourceThreshold : public cAction
  */
 
 class cActionKillDemePercent : public cAction
-  {
+{
   private:
     double m_pctkills;
   public:
@@ -2882,27 +2882,71 @@ class cActionKillDemePercent : public cAction
       assert(m_pctkills <= 1);
     }
     
-    static const cString GetDescription() { return "Arguments: [int pctkills=0.0]"; }
+    static const cString GetDescription() { return "Arguments: [double pctkills=0.0]"; }
     
     void Process(cAvidaContext& ctx)
     {
       int target_cell;
 
       for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
-        for (int c = 0; c < m_world->GetPopulation().GetDeme(d).GetWidth() * m_world->GetPopulation().GetDeme(d).GetHeight(); c++) {
-          target_cell = m_world->GetPopulation().GetDeme(d).GetCellID(c); 
+                
+        if(m_world->GetPopulation().GetDeme(d).IsTreatableNow()) {
+        
+          for (int c = 0; c < m_world->GetPopulation().GetDeme(d).GetWidth() * m_world->GetPopulation().GetDeme(d).GetHeight(); c++) {
+            target_cell = m_world->GetPopulation().GetDeme(d).GetCellID(c); 
           
-          if( m_world->GetRandom().GetDouble() < m_pctkills) {
-            m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
-            m_world->GetStats().IncNumOrgsKilled();
-          }
+            if(ctx.GetRandom().P(m_pctkills)) {
+              m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
+              m_world->GetStats().IncNumOrgsKilled();
+            }
           
-        } //End iterating through all cells
+          } //End iterating through all cells
+           
+        } //End if deme is treatable
         
       } //End iterating through all demes
       
     } //End Process()
-  };
+};
+
+/*
+ Set the ages at which treatable demes can be treated
+ 
+ Parameters:
+ - 1+ age numbers at which a deme may be treated (int)
+ */
+
+class cActionSetDemeTreatmentAges : public cAction
+{
+private:
+  std::set<int> treatment_ages;
+public:
+  static const cString GetDescription() { return "Arguments: <int treatment age>+"; }
+  
+  cActionSetDemeTreatmentAges(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    while (largs.GetSize()) {
+      treatment_ages.insert(largs.PopWord().AsInt());
+    }
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(d);
+      
+      if(deme.isTreatable()) {
+        for (std::set<int>::iterator it = treatment_ages.begin(); it != treatment_ages.end(); it++) {
+          deme.AddTreatmentAge(*it);
+        }
+      }
+      
+    } //End iterating through demes
+    
+  } //End Process()
+  
+};
 
 
 void RegisterPopulationActions(cActionLibrary* action_lib)
@@ -3013,4 +3057,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDisconnectCells>("disconnect_cells");
   action_lib->Register<cActionSwapCells>("swap_cells");
   action_lib->Register<cActionKillDemePercent>("KillDemePercent");
+  action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
 }

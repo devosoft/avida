@@ -853,3 +853,18 @@ int cDeme::GetSlotFlowRate() const {
   //  assert(false); // slots must be of equal size and fit perfectally in deme lifetime
   return 0;
 }
+
+
+// Return whether or not this deme is treatable at the given age (updates).  If a deme is not treatable,
+// this function will always return false.
+bool cDeme::IsTreatableAtAge(const int age) {
+  
+  if(isTreatable()) {
+    set<int>::iterator it;
+    it = treatment_ages.find(age);
+    if(it != treatment_ages.end()) return true;  
+  }
+  
+  return false;
+  
+} //End cDeme::IsTreatableAtAge()
