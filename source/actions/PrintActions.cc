@@ -102,6 +102,10 @@ STATS_OUT_FILE(PrintInternalTasksQualData,  in_tasks_quality.dat);
 STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
+STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat       );
+STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat       );
+STATS_OUT_FILE(PrintDemeTreatableCount,    deme_treatable.dat       );
+
 STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
 STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
 STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
@@ -3014,6 +3018,11 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
+  action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
+  action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
+  action_lib->Register<cActionPrintDemeTreatableCount>("PrintDemeTreatableCount");
+
+	
   action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
   action_lib->Register<cActionPrintDemeFoundersData>("PrintDemeFoundersData");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");

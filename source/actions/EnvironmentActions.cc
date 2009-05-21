@@ -921,6 +921,33 @@ public:
   }
 };
 
+class cActionSetFracDemeTreatable : public cAction {
+private:
+	double factionTreatable; // total number of unique event to create; they may overlab
+	
+public:
+	cActionSetFracDemeTreatable(cWorld* world, const cString& args) : 
+	cAction(world, args), 
+	factionTreatable(0.0)
+	{
+		cString largs(args);
+		if (largs.GetSize()) factionTreatable = largs.PopWord().AsDouble();
+	}
+	
+	static const cString GetDescription() { return "Arguments: <double factionTreatable>"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		cPopulation& pop = m_world->GetPopulation();
+		int numDemes = pop.GetNumDemes();
+		for(int i = 0; i < numDemes; i++) {
+			if(ctx.GetRandom().P(factionTreatable))
+				pop.GetDeme(i).setTreatable(true);
+			else
+				pop.GetDeme(i).setTreatable(false);
+		}
+	}
+};
 
 class cActionSetConfig : public cAction
 {
@@ -951,6 +978,7 @@ public:
 
 void RegisterEnvironmentActions(cActionLibrary* action_lib)
 {
+	action_lib->Register<cActionSetFracDemeTreatable>("SetFracDemeTreatable");
   action_lib->Register<cActionDelayedDemeEvent>("DelayedDemeEvent");
   action_lib->Register<cActionDelayedDemeEventsPerSlots>("DelayedDemeEventsPerSlots");
   action_lib->Register<cActionInjectResource>("InjectResource");

@@ -58,6 +58,7 @@ private:
   int width; //!< Width of this deme.
 
 	bool replicateDeme;
+	bool treatable;
 	
 // The following should be moved to cDemePhenotype / cPopulationPhenotype
   int cur_birth_count; //!< Number of organisms that have been born into this deme since reset.
@@ -140,7 +141,7 @@ private:
 	
   
 public:
-  cDeme() : _id(0), width(0), replicateDeme(false), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
+  cDeme() : _id(0), width(0), replicateDeme(false), treatable(true), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
             _age(0), generation(0), total_org_energy(0.0),
             time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
 						MSG_sendFailed(0), MSG_dropped(0), MSG_SuccessfullySent(0), MSG_sent(0), energyInjectedIntoOrganisms(0.0), energyRemainingInDemeAtReplication(0.0), total_energy_testament(0.0),
@@ -197,6 +198,9 @@ public:
 	
 	bool TestReplication() const { return replicateDeme; }
 	void ReplicateDeme() { replicateDeme = true; }
+	
+	bool isTreatable() const { return treatable; }
+	void setTreatable(bool value) { treatable = value; }
 
   int GetSlotFlowRate() const;
   int GetEventsTotal() const { return eventsTotal; }

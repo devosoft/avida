@@ -135,6 +135,8 @@ cStats::cStats(cWorld* world)
   , m_spec_waste(0)
   , num_orgs_killed(0)
   , m_deme_num_repls(0)
+	, m_deme_num_repls_treatable(0)
+	, m_deme_num_repls_untreatable(0)
   , m_donate_to_donor (0)
   , m_donate_to_facing (0)
 {
@@ -1502,6 +1504,20 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   m_deme_births.Add(source_deme.GetBirthCount());
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
+	
+	if(source_deme.isTreatable()) {
+		++m_deme_num_repls_treatable;
+		m_deme_gestation_time_treatable.Add(source_deme.GetAge());
+		m_deme_births_treatable.Add(source_deme.GetBirthCount());
+		m_deme_merit_treatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
+		m_deme_generation_treatable.Add(source_deme.GetGeneration());		
+	} else {
+		++m_deme_num_repls_untreatable;
+		m_deme_gestation_time_untreatable.Add(source_deme.GetAge());
+		m_deme_births_untreatable.Add(source_deme.GetBirthCount());
+		m_deme_merit_untreatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
+		m_deme_generation_untreatable.Add(source_deme.GetGeneration());
+	}
 }
 
 
@@ -1559,6 +1575,83 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   m_deme_generation.Clear();
 }
 
+/*! Print statistics related to deme replication.  Currently only prints the
+ number of deme replications since the last time PrintDemeReplicationData was
+ invoked.
+ */
+void cStats::PrintDemeTreatableReplicationData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida deme replication data for treatable deme");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+  df.Write(m_deme_num_repls_treatable, "Number of deme replications [numrepl]");
+  df.Write(m_deme_gestation_time_treatable.Average(), "Mean deme gestation time [gesttime]");
+  df.Write(m_deme_births_treatable.Average(), "Mean number of births within replicated demes [numbirths]");
+  df.Write(m_deme_merit_treatable.Average(), "Mean heritable merit of replicated demes [merit]");
+  df.Write(m_deme_generation_treatable.Average(), "Mean generation of replicated demes [generation]");
+  
+  df.Endl();
+  
+  m_deme_num_repls_treatable = 0;
+  m_deme_gestation_time_treatable.Clear();
+  m_deme_births_treatable.Clear();
+  m_deme_merit_treatable.Clear();
+  m_deme_generation_treatable.Clear();
+}
+
+/*! Print statistics related to deme replication.  Currently only prints the
+ number of deme replications since the last time PrintDemeReplicationData was
+ invoked.
+ */
+void cStats::PrintDemeUntreatableReplicationData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida deme replication data for untreatable deme");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+  df.Write(m_deme_num_repls_untreatable, "Number of deme replications [numrepl]");
+  df.Write(m_deme_gestation_time_untreatable.Average(), "Mean deme gestation time [gesttime]");
+  df.Write(m_deme_births_untreatable.Average(), "Mean number of births within replicated demes [numbirths]");
+  df.Write(m_deme_merit_untreatable.Average(), "Mean heritable merit of replicated demes [merit]");
+  df.Write(m_deme_generation_untreatable.Average(), "Mean generation of replicated demes [generation]");
+  
+  df.Endl();
+  
+  m_deme_num_repls_untreatable = 0;
+  m_deme_gestation_time_untreatable.Clear();
+  m_deme_births_untreatable.Clear();
+  m_deme_merit_untreatable.Clear();
+  m_deme_generation_untreatable.Clear();
+}
+
+
+void cStats::PrintDemeTreatableCount(const cString& filename)
+{
+  cPopulation& pop = m_world->GetPopulation();
+	static const int numDemes = pop.GetNumDemes();
+	int treatable(0);
+	int untreatable(0);
+	for(int i = 0; i < numDemes; ++i) {
+		if(pop.GetDeme(i).isTreatable())
+			++treatable;
+		else
+			++untreatable;
+	}
+  
+	cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida deme replication data for untreatable deme");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+  df.Write(treatable, "Number demes treatable");
+  df.Write(untreatable, "Number demes untreatable");
+  df.Write(static_cast<double>(treatable)/static_cast<double>(untreatable), "Treatable:untreatable ratio");
+  
+  df.Endl();
+}
 
 void cStats::PrintGermlineData(const cString& filename)
 {
