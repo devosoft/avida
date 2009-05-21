@@ -2841,23 +2841,23 @@ class cActionKillNAboveResourceThreshold : public cAction
     {
       double level;
       int target_cell;
+      cPopulation& pop = m_world->GetPopulation();
       int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
       
       assert(res_id != -1);
       
       for(int i=0; i < m_numkills; i++) {
-        target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
-        level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+        target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+        level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
         
         if(level > m_threshold) {
-          m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
+          pop.KillOrganism(pop.GetCell(target_cell));
           m_world->GetStats().IncNumOrgsKilled();
         }
       }
       
     } //End Process()
   };
-
 
 
 
@@ -2887,16 +2887,19 @@ class cActionKillDemePercent : public cAction
     void Process(cAvidaContext& ctx)
     {
       int target_cell;
-
-      for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
-                
-        if(m_world->GetPopulation().GetDeme(d).IsTreatableNow()) {
+      cPopulation& pop = m_world->GetPopulation();
+      
+      for (int d = 0; d < pop.GetNumDemes(); d++) {
         
-          for (int c = 0; c < m_world->GetPopulation().GetDeme(d).GetWidth() * m_world->GetPopulation().GetDeme(d).GetHeight(); c++) {
-            target_cell = m_world->GetPopulation().GetDeme(d).GetCellID(c); 
+        cDeme &deme = pop.GetDeme(d);
+                
+        if(deme.IsTreatableNow()) {
+        
+          for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
+            target_cell = deme.GetCellID(c); 
           
             if(ctx.GetRandom().P(m_pctkills)) {
-              m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
+              pop.KillOrganism(pop.GetCell(target_cell));
               m_world->GetStats().IncNumOrgsKilled();
             }
           
@@ -2908,6 +2911,7 @@ class cActionKillDemePercent : public cAction
       
     } //End Process()
 };
+
 
 /*
  Set the ages at which treatable demes can be treated
