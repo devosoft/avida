@@ -947,7 +947,7 @@ public:
 				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
 
 				double killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;
-				cout << count << " " << killprob << endl;
+				// cout << count << " " << killprob << endl;
 
 				// decide if it should be killed or not, based on the kill probability
 				if (ctx.GetRandom().P(killprob)) {
@@ -960,8 +960,6 @@ public:
 		}
 	}
 };
-
-///////////////TOP
 
 /*
  Randomly removes organisms proportional to minimum distance between two instances of the same instruction in its genome.
