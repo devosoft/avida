@@ -58,6 +58,43 @@ int cGenomeUtil::CountInst(const cGenome & gen, const cInstruction & inst)
   return count;
 }
 
+// Returns minimum distance between two instance of inst respecting genome circularity.
+// If only one instance is found then lenght of genome is returned.
+int cGenomeUtil::MinDistBetween(const cGenome& genome, const cInstruction& inst) {
+	const int genomeSize = genome.GetSize();
+	int firstInstance(-1);
+	int secondInstance(-1);
+	int startIndex(0);
+	int minDist(genomeSize);
+
+	while(startIndex < genomeSize) {
+		firstInstance = FindInst(genome, inst, startIndex);
+		startIndex = firstInstance + 1;
+		
+		if(startIndex >= genomeSize)
+			return minDist;
+		
+		secondInstance = FindInst(genome, inst, startIndex);
+	
+		if(firstInstance != -1 and secondInstance != -1) {
+			minDist = min(min(secondInstance-firstInstance, firstInstance+genomeSize-secondInstance), minDist);
+		} else if(secondInstance != -1) {
+			secondInstance = FindInst(genome, inst, 0);
+			if(firstInstance == secondInstance)
+				return minDist;
+			else {
+				assert(secondInstance < firstInstance);
+				minDist = min(secondInstance+genomeSize-firstInstance, minDist);
+			}
+		} else {
+			return minDist;
+		}
+	}
+	assert(false);
+	return -1;
+}
+
+
 int cGenomeUtil::FindOverlap(const cGenome & gen1, const cGenome & gen2,
 			     int offset)
 {

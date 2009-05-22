@@ -895,6 +895,143 @@ public:
 	}
 };
 
+/*
+ Randomly removes organisms proportional to number of a specific instruction in genome.
+ Proportion is based on instruction count weight and exponent.
+ 
+ Parameters:
+ 1. instruction type (string) default: "nand"
+  - The type of instruction in question.
+ 2. weight value multiplied by instruction count
+ 3. exponent applied to weighted instruction count
+ */
+class cAction_TherapyStructuralNumInst : public cAction {
+private:
+	cString m_inst;
+	double m_exprWeight;
+	double m_exponent;
+
+public:
+	cAction_TherapyStructuralNumInst(cWorld* world, const cString& args) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0)
+	{
+		cString largs(args);
+		if (largs.GetSize()) m_inst = largs.PopWord();
+		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
+		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
+	}
+	
+	static const cString GetDescription() { return "Arguments: [cString inst=nand] [double exprWeight=1.0] [double exponent=1.0(linear)]"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		int totalkilled = 0;
+		
+		// for each deme in the population...
+		cPopulation& pop = m_world->GetPopulation();
+		const int numDemes = pop.GetNumDemes();
+		for (int demeCounter = 0; demeCounter < numDemes; ++demeCounter) {
+			cDeme& currentDeme = pop.GetDeme(demeCounter);
+			
+			// if deme treatable?
+			if(currentDeme.IsTreatableNow() == false)
+				continue; //No, go to next deme
+			
+			//Yes
+			for(int cellInDeme = 0; cellInDeme < currentDeme.GetSize(); ++cellInDeme) {
+				cPopulationCell& cell = currentDeme.GetCell(cellInDeme);
+
+				if (cell.IsOccupied() == false)
+					continue;
+				
+				// count the number of target instructions in the genome
+				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+
+				double killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;
+				cout << count << " " << killprob << endl;
+
+				// decide if it should be killed or not, based on the kill probability
+				if (ctx.GetRandom().P(killprob)) {
+					m_world->GetPopulation().KillOrganism(cell);
+					totalkilled++;
+				}
+			}
+		// could keep track of the total number killed for statistics; in testing simply printed it out
+		// cout << "total killed = " << totalkilled << endl;
+		}
+	}
+};
+
+///////////////TOP
+
+/*
+ Randomly removes organisms proportional to minimum distance between two instances of the same instruction in its genome.
+ Proportion is based on instruction count weight and exponent.
+ 
+ Parameters:
+ 1. instruction type (string) default: "nand"
+ - The type of instruction in question.
+ 2. weight value multiplied by instruction count
+ 3. exponent applied to weighted instruction count
+ */
+class cAction_TherapyStructuralRatioDistBetweenNearest : public cAction {
+private:
+	cString m_inst;
+	double m_exprWeight;
+	double m_exponent;
+	
+public:
+	cAction_TherapyStructuralRatioDistBetweenNearest(cWorld* world, const cString& args) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0)
+	{
+		cString largs(args);
+		if (largs.GetSize()) m_inst = largs.PopWord();
+		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
+		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
+	}
+	
+	static const cString GetDescription() { return "Arguments: [cString inst=nand] [double exprWeight=1.0] [double exponent=1.0(linear)]"; }
+	
+	void Process(cAvidaContext& ctx)
+	{
+		int totalkilled = 0;
+		// for each deme in the population...
+		cPopulation& pop = m_world->GetPopulation();
+		const int numDemes = pop.GetNumDemes();
+
+		for (int demeCounter = 0; demeCounter < numDemes; ++demeCounter) {
+			cDeme& currentDeme = pop.GetDeme(demeCounter);
+			
+			// if deme treatable?
+			if(currentDeme.IsTreatableNow() == false)
+				continue; //No, go to next deme
+			
+			//Yes
+			for(int cellInDeme = 0; cellInDeme < currentDeme.GetSize(); ++cellInDeme) {
+				cPopulationCell& cell = currentDeme.GetCell(cellInDeme);
+				
+				if (cell.IsOccupied() == false)
+					continue;
+				
+				// count the number of target instructions in the genome
+				const cGenome& genome = cell.GetOrganism()->GetGenome();
+				const double genomeSize = static_cast<double>(genome.GetSize());
+				int minDist = cGenomeUtil::MinDistBetween(genome, m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+				
+				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));
+				double killprob = (genomeSize - static_cast<double>(ratioNumerator))/genomeSize;
+				// cout<<minDist << " " << killprob<<endl;
+				
+				// decide if it should be killed or not, based on the kill probability
+				if (ctx.GetRandom().P(killprob)) {
+					m_world->GetPopulation().KillOrganism(cell);
+					totalkilled++;
+				}
+			}
+		}
+		// could keep track of the total number killed for statistics; in testing simply printed it out
+		// cout << "total killed = " << totalkilled << endl;
+	}
+};
+
 
 /*
  In avida.cfg, when BASE_MERIT_METHOD is set to 6 (Merit prop. to num times MERIT_BONUS_INST is in genome), 
@@ -2972,6 +3109,12 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionKillInstLimit>("KillInstLimit");
 	action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
+	
+	// Theraputic deme actions
+	action_lib->Register<cAction_TherapyStructuralNumInst>("TherapyStructuralNumInst");
+	action_lib->Register<cAction_TherapyStructuralRatioDistBetweenNearest>("TherapyStructuralRatioDistBetweenNearest");
+	
+	
   action_lib->Register<cActionToggleRewardInstruction>("ToggleRewardInstruction");
   action_lib->Register<cActionToggleFitnessValley>("ToggleFitnessValley");
   action_lib->Register<cActionKillProb>("KillRate");

@@ -860,6 +860,8 @@ int cDeme::GetSlotFlowRate() const {
 bool cDeme::IsTreatableAtAge(const int age) {
   
   if(isTreatable()) {
+		if(treatment_ages.size() == 0) // implies treatable every update
+			return true;
     set<int>::iterator it;
     it = treatment_ages.find(age);
     if(it != treatment_ages.end()) return true;  
