@@ -30,7 +30,8 @@ default:  $(TARGET)
 SRC		= process_map.cc		../../tools/cFile.cc  \
 		../../tools/cInitFile.cc	../../tools/cString.cc  \
 		../../tools/cStringList.cc  ../../tools/cStringIterator.cc  \
-		../../tools/cRandom.cc ../../tools/cStringUtil.o
+		../../tools/cRandom.cc ../../tools/cStringUtil.o \
+		../../tools/cRCObject.cc
 
 ### List Object Files (for each source file there is a object file) ###########
 OBJ	 	= $(SRC:.cc=.o)
