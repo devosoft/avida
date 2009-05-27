@@ -1446,7 +1446,30 @@ void cStats::IncPredSat(int cell_id) {
   relative_pos_pred_sat.ElementAt(pos.first, pos.second)++;
 }
 
+void cStats::AddDemeResourceThresholdPredicate(cString& name) {
+	demeResourceThresholdPredicateMap[name] = 0;
+}
+	
+void cStats::IncDemeResourceThresholdPredicate(cString& name) {
+	++demeResourceThresholdPredicateMap[name];
+}
 
+void cStats::PrintDemeResourceThresholdPredicate(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Avida deme resource threshold predicate data");
+	df.WriteComment("Number of deme reproduced by a specific threshold since last update that data was printed");
+  df.WriteTimeStamp();
+  
+	if(demeResourceThresholdPredicateMap.size() > 0) {
+		df.Write(GetUpdate(), "Update [update]");
+		for(map<cString, int>::iterator iter = demeResourceThresholdPredicateMap.begin(); iter != demeResourceThresholdPredicateMap.end(); ++iter) {
+			df.Write(iter->second, iter->first);
+			iter->second = 0;
+		}
+		df.Endl();
+	}	
+}
 
 /*! This method prints information contained within all active message predicates.
 
@@ -1504,6 +1527,7 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   m_deme_births.Add(source_deme.GetBirthCount());
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
+	m_deme_density.Add(source_deme.GetDensity());
 	
 	if(source_deme.isTreatable()) {
 		++m_deme_num_repls_treatable;
@@ -1511,12 +1535,14 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 		m_deme_births_treatable.Add(source_deme.GetBirthCount());
 		m_deme_merit_treatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
 		m_deme_generation_treatable.Add(source_deme.GetGeneration());		
+		m_deme_density_treatable.Add(source_deme.GetDensity());
 	} else {
 		++m_deme_num_repls_untreatable;
 		m_deme_gestation_time_untreatable.Add(source_deme.GetAge());
 		m_deme_births_untreatable.Add(source_deme.GetBirthCount());
 		m_deme_merit_untreatable.Add(source_deme.GetHeritableDemeMerit().GetDouble());
 		m_deme_generation_untreatable.Add(source_deme.GetGeneration());
+		m_deme_density_untreatable.Add(source_deme.GetDensity());
 	}
 }
 
@@ -1565,7 +1591,8 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_deme_births.Average(), "Mean number of births within replicated demes [numbirths]");
   df.Write(m_deme_merit.Average(), "Mean heritable merit of replicated demes [merit]");
   df.Write(m_deme_generation.Average(), "Mean generation of replicated demes [generation]");
-  
+  df.Write(m_deme_density.Average(), "Mean density of replicated demes [density]");
+	
   df.Endl();
   
   m_deme_num_repls = 0;
@@ -1573,6 +1600,7 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   m_deme_births.Clear();
   m_deme_merit.Clear();
   m_deme_generation.Clear();
+	m_deme_density.Clear();
 }
 
 /*! Print statistics related to deme replication.  Currently only prints the
@@ -1591,6 +1619,7 @@ void cStats::PrintDemeTreatableReplicationData(const cString& filename)
   df.Write(m_deme_births_treatable.Average(), "Mean number of births within replicated demes [numbirths]");
   df.Write(m_deme_merit_treatable.Average(), "Mean heritable merit of replicated demes [merit]");
   df.Write(m_deme_generation_treatable.Average(), "Mean generation of replicated demes [generation]");
+	df.Write(m_deme_density_treatable.Average(), "Mean density of replicated demes [density]");
   
   df.Endl();
   
@@ -1599,6 +1628,7 @@ void cStats::PrintDemeTreatableReplicationData(const cString& filename)
   m_deme_births_treatable.Clear();
   m_deme_merit_treatable.Clear();
   m_deme_generation_treatable.Clear();
+	m_deme_density_treatable.Clear();
 }
 
 /*! Print statistics related to deme replication.  Currently only prints the
@@ -1617,6 +1647,7 @@ void cStats::PrintDemeUntreatableReplicationData(const cString& filename)
   df.Write(m_deme_births_untreatable.Average(), "Mean number of births within replicated demes [numbirths]");
   df.Write(m_deme_merit_untreatable.Average(), "Mean heritable merit of replicated demes [merit]");
   df.Write(m_deme_generation_untreatable.Average(), "Mean generation of replicated demes [generation]");
+	df.Write(m_deme_density_untreatable.Average(), "Mean density of replicated demes [density]");
   
   df.Endl();
   
@@ -1625,6 +1656,7 @@ void cStats::PrintDemeUntreatableReplicationData(const cString& filename)
   m_deme_births_untreatable.Clear();
   m_deme_merit_untreatable.Clear();
   m_deme_generation_untreatable.Clear();
+	m_deme_density_untreatable.Clear();
 }
 
 

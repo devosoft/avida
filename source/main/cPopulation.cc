@@ -2654,6 +2654,21 @@ void cPopulation::PrintDemeTestamentStats(const cString& filename) {
   stats.SumEnergyTestamentToNeighborOrganisms().Clear();
 }
 
+void cPopulation::PrintCurrentMeanDemeDensity(const cString& filename) {	
+	cDoubleSum demeDensity;
+	demeDensity.Clear();
+	const int num_demes = deme_array.GetSize();
+	for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+    const cDeme & cur_deme = deme_array[deme_id];
+		demeDensity.Add(cur_deme.GetDensity());
+	}
+	
+	cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteTimeStamp();
+  df.Write(m_world->GetStats().GetUpdate(), "Update");
+	df.Write(demeDensity.Average(), "Current mean deme density");
+	df.Endl();
+}
 
 // Print some stats about the energy sharing behavior of each deme
 void cPopulation::PrintDemeEnergySharingStats() {
@@ -2674,7 +2689,7 @@ void cPopulation::PrintDemeEnergySharingStats() {
   double amount_received = 0.0;
   double amount_applied = 0.0;  
   
-  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
     const cDeme & cur_deme = deme_array[deme_id];
     
     for (int i = 0; i < cur_deme.GetSize(); i++) {

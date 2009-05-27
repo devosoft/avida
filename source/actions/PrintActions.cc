@@ -123,6 +123,7 @@ STATS_OUT_FILE(PrintDemeMigrationSuicidePoints,	deme_mig_suicide_points.dat	);
 
 STATS_OUT_FILE(PrintCurrentTaskCounts,      curr_task_counts.dat);
 STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
+STATS_OUT_FILE(PrintDemeResourceThresholdPredicate,     deme_resourceThresholdPredicate.dat );
 STATS_OUT_FILE(PrintPredicatedMessages,     messages.dat        );
 STATS_OUT_FILE(PrintCellData,               cell_data.dat       );
 STATS_OUT_FILE(PrintCurrentOpinions,        opinions.dat        );
@@ -158,6 +159,7 @@ public:                                                                         
 POP_OUT_FILE(PrintPhenotypeData,       phenotype_count.dat );
 POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
 POP_OUT_FILE(PrintDemeTestamentStats,  deme_testament.dat  );
+POP_OUT_FILE(PrintCurrentMeanDemeDensity,  deme_currentMeanDensity.dat  );
 
 
 class cActionPrintData : public cAction
@@ -3000,7 +3002,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
   action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");
-  
+	action_lib->Register<cActionPrintCurrentMeanDemeDensity>("PrintCurrentMeanDemeDensity");
+
+	action_lib->Register<cActionPrintDemeResourceThresholdPredicate>("PrintDemeResourceThresholdPredicate");
 	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
 	action_lib->Register<cActionPrintCellData>("PrintCellData");
 	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");

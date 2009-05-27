@@ -320,6 +320,7 @@ private:
   // deme predicate stats
   tMatrix<int> relative_pos_event_count;
   tMatrix<int> relative_pos_pred_sat;
+	std::map<cString, int> demeResourceThresholdPredicateMap;
 
   // Speculative Execution Stats
   int m_spec_total;
@@ -780,6 +781,10 @@ public:
   void IncEventCount(int x, int y);
   void IncPredSat(int cell_id);
   void PrintPredSatFracDump(const cString& filename);
+	
+	void AddDemeResourceThresholdPredicate(cString& name);
+	void IncDemeResourceThresholdPredicate(cString& name);
+	void PrintDemeResourceThresholdPredicate(const cString& filename);
 
   void addOrgLocations(std::vector<std::pair<int, int> >); 
   void PrintDemeRepOrgLocation(const cString& filename);
@@ -869,6 +874,7 @@ protected:
   cDoubleSum m_deme_births; //!< Mean number of births in replicated demes.
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
+	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
   cDoubleSum m_germline_generation; //!< "Generation" accumulator of replicated germlines.
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.
@@ -876,12 +882,14 @@ protected:
   cDoubleSum m_deme_births_treatable; //!< Mean number of births in replicated treatable demes.
   cDoubleSum m_deme_merit_treatable; //!< Mean merit of replicated treatable demes.
   cDoubleSum m_deme_generation_treatable; //!< Mean generation of replicated treatable demes.
+	cDoubleSum m_deme_density_treatable; //!< Mean density of replicated treatable demes.
 
 	int m_deme_num_repls_untreatable; //!< Number of deme replications in untreatable demes since last PrintDemeReplicationData.
   cDoubleSum m_deme_gestation_time_untreatable; //!< Gestation time for untreatable demes - mean age at deme replication.
   cDoubleSum m_deme_births_untreatable; //!< Mean number of births in replicated untreatable demes.
   cDoubleSum m_deme_merit_untreatable; //!< Mean merit of replicated untreatable demes.
-  cDoubleSum m_deme_generation_untreatable; //!< Mean generation of replicated untreatabledemes.
+  cDoubleSum m_deme_generation_untreatable; //!< Mean generation of replicated untreatable demes.
+	cDoubleSum m_deme_density_untreatable; //!< Mean density of replicated untreatable demes.
 	
 	t_founder_map m_deme_founders; //!< Data structure to track the founders of demes.
   

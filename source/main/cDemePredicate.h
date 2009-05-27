@@ -98,7 +98,10 @@ public:
 	void Reset() { previouslySatisfied = false; }
 	bool PreviouslySatisfied() { return previouslySatisfied; }
 	cString GetName() { return cString("cDemeResourceThreshold"); }
-	void UpdateStats(cStats& stats) {;}
+	void UpdateStats(cStats& stats) {
+		cString name = demeResourceName + " " + compareOperator + cStringUtil::Stringf(" %f", resourceThresholdValue);
+		stats.IncDemeResourceThresholdPredicate(name);
+	}
 };
 
 #endif

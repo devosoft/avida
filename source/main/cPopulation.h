@@ -229,6 +229,7 @@ public:
   // Deme-related stats methods
   void PrintDemeAllStats();
   void PrintDemeTestamentStats(const cString& filename);
+	void PrintCurrentMeanDemeDensity(const cString& filename);
   void PrintDemeEnergySharingStats();
   void PrintDemeEnergyDistributionStats();
   void PrintDemeOrganismEnergyDistributionStats();

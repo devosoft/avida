@@ -729,7 +729,9 @@ cOrgMovementPredicate* cDeme::GetMovPredicate(int i) {
 void cDeme::AddDemeResourceThresholdPredicate(cString resourceName, cString comparisonOperator, double threasholdValue) {
 	cDemeResourceThresholdPredicate* pred = new cDemeResourceThresholdPredicate(resourceName, comparisonOperator, threasholdValue);
 	deme_pred_list.Add(pred);
-	
+
+	cString name = resourceName + " " + comparisonOperator + cStringUtil::Stringf(" %f", threasholdValue);
+	m_world->GetStats().AddDemeResourceThresholdPredicate(name);
 }
 
 void cDeme::AddEventReceivedCenterPred(int times) {
