@@ -25,7 +25,9 @@
 #ifndef tArrayUtils_h
 #define tArrayUtils_h
 
-#include "tArray.h"
+template<typename T> class tArray;
+template<typename T> class tManagedPointerArray;
+template<typename T> class tSmartArray;
 
 
 class tArrayUtils
@@ -39,7 +41,7 @@ private:
 
 
 public:
-    
+  
   template<typename T> inline static void QSort(tArray<T>& array) { QSort(array, 0, array.GetSize() - 1); }
   template<typename T> static void QSort(tArray<T>& array, int begin, int end)
   {
@@ -58,7 +60,7 @@ public:
       if (array[l] > pivot)
         l++;
       else
-        swap(array, l, r--);
+        array.Swap(l, r--);
     }
     
     if (array[l] > pivot && array[r] > pivot) {
@@ -66,18 +68,91 @@ public:
     } else if (array[l] > pivot && array[r] <= pivot) {
       l++; r--;
     } else if (array[l] <= pivot && array[r] > pivot) {
-      swap(array, l++, r--);
+      array.Swap(l++, r--);
     } else {
       r = l - 1;
     }
     
-    swap(array, r--, begin);
+    array.Swap(r--, begin);
     QSort(array, begin, r);
     QSort(array, l, end);
   }
+  
+  template<typename T> inline static void QSort(tManagedPointerArray<T>& array) { QSort(array, 0, array.GetSize() - 1); }
+  template<typename T> static void QSort(tManagedPointerArray<T>& array, int begin, int end)
+  {
+    if (end < begin) return;
     
+    if (begin - end <= QUICKSORT_THRESHOLD) {
+      ISort(array, begin, end);
+      return;
+    }
     
-  template<typename T> inline static void ISort(tArray<T>& array) { isort(array, 0, array.GetSize() - 1); }
+    T& pivot = array[begin];
+    int l = begin + 1;
+    int r = end;
+    
+    while (l != r - 1) {
+      if (array[l] > pivot)
+        l++;
+      else
+        array.Swap(l, r--);
+    }
+    
+    if (array[l] > pivot && array[r] > pivot) {
+      l = r + 1;
+    } else if (array[l] > pivot && array[r] <= pivot) {
+      l++; r--;
+    } else if (array[l] <= pivot && array[r] > pivot) {
+      array.Swap(l++, r--);
+    } else {
+      r = l - 1;
+    }
+    
+    array.Swap(r--, begin);
+    QSort(array, begin, r);
+    QSort(array, l, end);
+  }
+  
+  template<typename T> inline static void QSort(tSmartArray<T>& array) { QSort(array, 0, array.GetSize() - 1); }
+  template<typename T> static void QSort(tSmartArray<T>& array, int begin, int end)
+  {
+    if (end < begin) return;
+    
+    if (begin - end <= QUICKSORT_THRESHOLD) {
+      ISort(array, begin, end);
+      return;
+    }
+    
+    T pivot = array[begin];
+    int l = begin + 1;
+    int r = end;
+    
+    while (l != r - 1) {
+      if (array[l] > pivot)
+        l++;
+      else
+        array.Swap(l, r--);
+    }
+    
+    if (array[l] > pivot && array[r] > pivot) {
+      l = r + 1;
+    } else if (array[l] > pivot && array[r] <= pivot) {
+      l++; r--;
+    } else if (array[l] <= pivot && array[r] > pivot) {
+      array.Swap(l++, r--);
+    } else {
+      r = l - 1;
+    }
+    
+    array.Swap(r--, begin);
+    QSort(array, begin, r);
+    QSort(array, l, end);
+  }
+  
+  
+    
+  template<typename T> inline static void ISort(tArray<T>& array) { ISort(array, 0, array.GetSize() - 1); }
   template<typename T> static void ISort(tArray<T>& array, int begin, int end)
   {
     T value;
@@ -95,15 +170,42 @@ public:
       array[j + 1] = value;
     }
   }
-  
-  
-private:
-  
-  template<typename T> inline static void swap(tArray<T>& array, int i, int j)
+
+  template<typename T> inline static void ISort(tManagedPointerArray<T>& array) { ISort(array, 0, array.GetSize() - 1); }
+  template<typename T> static void ISort(tManagedPointerArray<T>& array, int begin, int end)
   {
-    T v = array[i];
-    array[i] = array[j];
-    array[j] = v;
+    T value;
+    int j;
+    
+    // for each entry
+    for (int i = begin + 1; i <= end; i++) {
+      // insert into array starting from the end of our sub-array
+      value = array[i];
+      j = i - 1;
+      while (j >= begin && array[j] < array[j + 1]) {
+        array.Swap(j, j + 1);
+        j--;
+      }
+    }
+  }
+
+  template<typename T> inline static void ISort(tSmartArray<T>& array) { ISort(array, 0, array.GetSize() - 1); }
+  template<typename T> static void ISort(tSmartArray<T>& array, int begin, int end)
+  {
+    T value;
+    int j;
+    
+    // for each entry
+    for (int i = begin + 1; i <= end; i++) {
+      // insert into array starting from the end of our sub-array
+      value = array[i];
+      j = i - 1;
+      while (j >= begin && array[j] < value) {
+        array[j + 1] = array[j];
+        j--;
+      }
+      array[j + 1] = value;
+    }
   }
 };
 

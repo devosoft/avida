@@ -161,7 +161,9 @@ public:
     // set the update if requested
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
-    m_world->GetPopulation().LoadStructuredPopulation(m_filename);
+    if (!m_world->GetPopulation().LoadStructuredPopulation(m_filename)) {
+      m_world->GetDriver().RaiseFatalException(-1, "failed to load structured population");
+    }
   }
 };
 

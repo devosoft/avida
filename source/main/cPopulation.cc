@@ -61,8 +61,10 @@
 #include "cTestCPU.h"
 #include "cCPUTestInfo.h"
 
+#include "tArrayUtils.h"
 #include "tKVPair.h"
 #include "tHashTable.h"
+#include "tManagedPointerArray.h"
 
 
 #include <fstream>
@@ -4297,23 +4299,6 @@ bool cPopulation::LoadClone(ifstream & fp)
   return true;
 }
 
-// This class is needed for the next function
-class cTmpGenotype {
-public:
-  int id_num;
-  int parent_id;
-  int num_cpus;
-  int total_cpus;
-  double merit;
-  int update_born;
-  int update_dead;
-  
-  cGenotype *genotype;
-  
-  bool operator<( const cTmpGenotype rhs ) const {
-    return id_num < rhs.id_num; }
-};	
-
 
 bool cPopulation::LoadDumpFile(cString filename, int update)
 {
@@ -4336,13 +4321,13 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   
   // First, we read in all the genotypes and store them in a list
   
-  vector<cTmpGenotype> genotype_vect;
+  vector<sTmpGenotype> genotype_vect;
   
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
     cString cur_line = input_file.GetLine(line_id);
     
     // Setup the genotype for this line...
-    cTmpGenotype tmp;
+    sTmpGenotype tmp;
     tmp.id_num      = cur_line.PopWord().AsInt();
     tmp.parent_id   = cur_line.PopWord().AsInt();
     /*parent_dist =*/          cur_line.PopWord().AsInt();
@@ -4374,9 +4359,9 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   sort( genotype_vect.begin(), genotype_vect.end() );
   // set the parents correctly
   
-  vector<cTmpGenotype>::const_iterator it = genotype_vect.begin();
+  vector<sTmpGenotype>::const_iterator it = genotype_vect.begin();
   for ( ; it != genotype_vect.end(); it++ ){
-    vector<cTmpGenotype>::const_iterator it2 = it;
+    vector<sTmpGenotype>::const_iterator it2 = it;
     cGenotype *parent = 0;
     // search backwards till we find the parent
     if ( it2 != genotype_vect.begin() )
@@ -4508,9 +4493,121 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
 
 bool cPopulation::LoadStructuredPopulation(const cString& filename)
 {
-  // @TODO - implement structured population dump loading
-  return false;
+  // @TODO - build in support for verifying population dimensions
+  
+  cInitFile input_file(filename);
+  if (!input_file.WasOpened()) {
+    tConstListIterator<cString> err_it(input_file.GetErrors());
+    const cString* errstr = NULL;
+    while ((errstr = err_it.Next())) m_world->GetDriver().RaiseException(*errstr);
+    return false;
+  }
+  
+  // Clear out the population
+  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
+
+  // First, we read in all the genotypes and store them in an array
+  tManagedPointerArray<sTmpGenotype> genotypes(input_file.GetNumLines());
+  const int update = m_world->GetStats().GetUpdate();
+  
+  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
+    cString cur_line = input_file.GetLine(line_id);
+    
+    // Setup the genotype for this line...
+    sTmpGenotype& tmp = genotypes[line_id];
+    tmp.id_num      = cur_line.PopWord().AsInt();
+    tmp.parent_id   = cur_line.PopWord().AsInt();
+    tmp.parent_id2  = cur_line.PopWord().AsInt();    
+    /* parent_dist */ cur_line.PopWord();
+    tmp.num_cpus    = cur_line.PopWord().AsInt();
+    tmp.total_cpus  = cur_line.PopWord().AsInt();
+    /* length */      cur_line.PopWord();
+    tmp.merit 	    = cur_line.PopWord().AsDouble();
+    /* gest_time */   cur_line.PopWord();
+    /* fitness */     cur_line.PopWord();
+    tmp.update_born = cur_line.PopWord().AsInt();
+    tmp.update_dead = cur_line.PopWord().AsInt();
+    /* depth */       cur_line.PopWord();
+    cString name = cStringUtil::Stringf("org-%d", tmp.id_num);
+    cGenome genome(cur_line.PopWord());
+    
+    // Process resident cell ids
+    cString cellstr(cur_line.PopWord());
+    while (cellstr.GetSize()) tmp.cells.Push(cellstr.Pop(',').AsInt());
+    assert(tmp.cells.GetSize() == tmp.num_cpus);
+    
+    // Don't allow birth or death times larger than the current update
+    if (update > tmp.update_born) tmp.update_born = update;
+    if (update > tmp.update_dead) tmp.update_dead = update;
+    
+    tmp.genotype = m_world->GetClassificationManager().GetGenotypeLoaded(genome, tmp.update_born, tmp.id_num);
+    tmp.genotype->SetName(name);
+  }
+  
+  // Sort genotypes in ascending order according to their id_num
+  tArrayUtils::QSort(genotypes);
+  
+  
+  // Set parents correctly
+  for (int gen_i = genotypes.GetSize() - 1; gen_i > 0; gen_i--) {
+    cGenotype* parent1 = NULL;
+    cGenotype* parent2 = NULL;
+    
+    int pid = genotypes[gen_i].parent_id;
+    if (pid != -1) {
+      for (int p_i = gen_i + 1; p_i < genotypes.GetSize(); p_i++) {
+        if (genotypes[p_i].id_num == pid) {
+          parent1 = genotypes[p_i].genotype;
+          break;
+        }
+      }
+    }
+    
+    pid = genotypes[gen_i].parent_id2;
+    if (pid != -1) {
+      for (int p_i = gen_i + 1; p_i < genotypes.GetSize(); p_i++) {
+        if (genotypes[p_i].id_num == pid) {
+          parent2 = genotypes[p_i].genotype;
+          break;
+        }
+      }
+    }    
+    
+    genotypes[gen_i].genotype->SetParent(parent1, parent2);
+  }
+  
+
+  // Process genotypes, inject into organisms as necessary
+  for (int gen_i = genotypes.GetSize() - 1; gen_i > 0; gen_i--) {
+    sTmpGenotype& tmp = genotypes[gen_i];
+    if (tmp.num_cpus == 0) {
+      // historic organism - remove immediately, so that it gets transferred into
+      // the historic database. We change the update temporarily to the
+      // true death time of this organism, so that all stats are correct
+      m_world->GetStats().SetCurrentUpdate(tmp.update_dead);
+      m_world->GetClassificationManager().RemoveGenotype(*tmp.genotype);
+      m_world->GetStats().SetCurrentUpdate(update);
+    } else {
+      // otherwise, we insert as many organisms as we need
+      for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
+        int cell_id = tmp.cells[cell_i];
+        
+        InjectGenotype(cell_id, tmp.genotype);
+        
+        cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
+        if (tmp.merit > 0) phenotype.SetMerit(cMerit(tmp.merit));
+        AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
+        
+        LineageSetupOrganism(GetCell(cell_id).GetOrganism(), NULL, 0, tmp.genotype->GetParentGenotype());
+      }
+    }
+  }
+  sync_events = true;
+  
+  return true;
 }
+
+
 
 
 bool cPopulation::DumpMemorySummary(ofstream& fp)

@@ -32,6 +32,9 @@
 class cTextViewerDriver : public cTextViewerDriver_Base
 {
 private:
+  bool m_pause;
+  bool m_firstupdate;
+  
   cTextViewerDriver();  // not implemented
   
 public:
@@ -40,6 +43,8 @@ public:
   
   void Run();
   
+  void SetPause() { m_pause = true; }
+
   // Driver Actions
   void SignalBreakpoint();
   void SetDone() { m_done = true; }

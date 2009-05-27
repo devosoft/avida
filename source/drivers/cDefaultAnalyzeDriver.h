@@ -61,6 +61,7 @@ public:
   // Driver Actions
   void SignalBreakpoint() { return; }
   void SetDone() { return; }
+  void SetPause() { return; }
   
   void RaiseException(const cString& in_string);
   void RaiseFatalException(int exit_code, const cString& in_string);

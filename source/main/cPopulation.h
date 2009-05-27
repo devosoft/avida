@@ -326,6 +326,30 @@ public:
   
   // Let users change environmental variables durning the run @BDB 22-Feb-2008
   void UpdateResourceCount(const int Verbosity);
+  
+private:
+  struct sTmpGenotype
+  {
+  public:
+    int id_num;
+    int parent_id;
+    int parent_id2;
+    int num_cpus;
+    int total_cpus;
+    double merit;
+    int update_born;
+    int update_dead;
+    tArray<int> cells;
+    
+    cGenotype *genotype;
+    
+    inline sTmpGenotype() : id_num(-1) { ; }
+    inline bool operator<(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }
+    inline bool operator>(const sTmpGenotype& rhs) const { return id_num > rhs.id_num; }
+    inline bool operator<=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
+    inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
+  };  
+  
 };
 
 

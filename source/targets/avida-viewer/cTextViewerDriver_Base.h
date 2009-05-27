@@ -43,6 +43,7 @@ protected:
   cWorld* m_world;
   cView_Base* m_view;
   bool m_done;  // This is set to true when run should finish.
+  bool m_pause;
 
   std::stringstream out_stream;
   std::stringstream err_stream;

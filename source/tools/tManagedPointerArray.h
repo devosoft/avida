@@ -38,7 +38,7 @@
 #include <cassert>
 
 template <class T> class tManagedPointerArray
-{  
+{
 #if USE_tMemTrack
   tMemTrack<tManagedPointerArray<T> > mt;
 #endif
@@ -184,6 +184,21 @@ public:
     Resize(m_size + 1);
     *m_data[m_size - 1] = value;
   }
+  
+  void Swap(int idx1, int idx2)
+  {
+    // Simple pointer swap, rather than deep copy
+    
+    assert(idx1 >= 0);     // Lower Bounds Error
+    assert(idx1 < m_size); // Upper Bounds Error
+    assert(idx2 >= 0);     // Lower Bounds Error
+    assert(idx2 < m_size); // Upper Bounds Error
+    
+    T* v = m_data[idx1];
+    m_data[idx1] = m_data[idx2];
+    m_data[idx2] = v;
+  }
+  
   
   void SetAll(const T& value)
   {
