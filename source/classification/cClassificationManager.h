@@ -158,7 +158,7 @@ public:
   bool DumpDetailedSummary(std::ofstream& fp, bool print_mut_steps = false);
   bool DumpDetailedSexSummary(std::ofstream& fp);
   bool DumpHistoricSummary(std::ofstream& fp, int back_dist, bool print_mut_steps = false);
-  bool DumpHistoricSexSummary(std::ofstream& fp);
+  bool DumpHistoricSexSummary(std::ofstream& fp, bool header = true);
   void DumpDetailedEntry(cGenotype* genotype, std::ofstream& fp, bool print_mut_steps = false);
   void DumpDetailedSexEntry(cGenotype* genotype, std::ofstream& fp);
   

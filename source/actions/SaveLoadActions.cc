@@ -130,6 +130,43 @@ public:
 
 
 /*
+ Sets up a population based on a dump file such as written out by
+ detail_pop. It is also possible to append a history file to the dump
+ file, in order to preserve the history of a previous run.
+ 
+ Parameters:
+   filename (string)
+     The name of the file to open.
+   update (int) *optional*
+     ??
+ */
+class cActionLoadStructuredPopulation : public cAction
+{
+private:
+  cString m_filename;
+  int m_update;
+  
+public:
+  cActionLoadStructuredPopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename(""), m_update(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_update = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    // set the update if requested
+    if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
+    
+    m_world->GetPopulation().LoadStructuredPopulation(m_filename);
+  }
+};
+
+
+/*
  Writes out a line of data for each genotype in the current population. The
  line contains the genome as string, the number of organisms of that genotype,
  and the genotype ID.
@@ -194,6 +231,29 @@ public:
     if (filename == "") filename.Set("detail-%d.pop", m_world->GetStats().GetUpdate());
     m_world->GetClassificationManager().DumpDetailedSummary(m_world->GetDataFileOFStream(filename), m_print_mut_steps);
     m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+class cActionSaveStructuredPopulation : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionSaveStructuredPopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("detail-%d.spop", m_world->GetStats().GetUpdate());
+    m_world->GetPopulation().SaveStructuredPopulation(filename);
   }
 };
 
@@ -339,9 +399,11 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionLoadClone>("LoadClone");
 
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
+  action_lib->Register<cActionLoadStructuredPopulation>("LoadStructuredPopulation");
 
   action_lib->Register<cActionDumpPopulation>("DumpPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
+  action_lib->Register<cActionSaveStructuredPopulation>("SaveStructuredPopulation");
   action_lib->Register<cActionSaveSexPopulation>("SaveSexPopulation");
   action_lib->Register<cActionSaveParasitePopulation>("SaveParasitePopulation");
   action_lib->Register<cActionSaveHistoricPopulation>("SaveHistoricPopulation");

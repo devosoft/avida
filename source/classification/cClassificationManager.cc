@@ -718,10 +718,10 @@ bool cClassificationManager::DumpDetailedSexSummary(ofstream& fp)
   return true;
 }
 
-bool cClassificationManager::DumpHistoricSexSummary(ofstream& fp)
+bool cClassificationManager::DumpHistoricSexSummary(ofstream& fp, bool header)
 {
   m_genotype_ctl->ResetHistoric(0);
-  DumpDetailSexHeading(fp);
+  if (header) DumpDetailSexHeading(fp);
   for (int i = 0; i < m_genotype_ctl->GetHistoricCount(); i++) {
     DumpDetailedSexEntry(m_genotype_ctl->Get(0), fp);
     m_genotype_ctl->Next(0);

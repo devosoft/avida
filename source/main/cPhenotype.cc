@@ -787,7 +787,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if(m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;

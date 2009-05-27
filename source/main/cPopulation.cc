@@ -61,6 +61,10 @@
 #include "cTestCPU.h"
 #include "cCPUTestInfo.h"
 
+#include "tKVPair.h"
+#include "tHashTable.h"
+
+
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -4299,8 +4303,7 @@ public:
 bool cPopulation::LoadDumpFile(cString filename, int update)
 {
   // set the update if requested
-  if ( update >= 0 )
-    m_world->GetStats().SetCurrentUpdate(update);
+  if (update >= 0) m_world->GetStats().SetCurrentUpdate(update);
   
   // Clear out the population
   for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
@@ -4417,6 +4420,81 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   sync_events = true;
   
   return true;
+}
+
+
+bool cPopulation::SaveStructuredPopulation(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteRawComment("#filetype genotype_data");
+  df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells");
+  df.WriteComment("");
+  df.WriteComment("Structured Population Dump");
+  df.WriteTimeStamp();
+  
+  // Build up hash table of all current genotypes and the cells in which the organisms reside
+  tHashTable<int, tKVPair<cGenotype*, tArray<int> >* > genotype_map;
+  
+  for (int i = 0; i < cell_array.GetSize(); i++) {
+    if (cell_array[i].IsOccupied()) {
+      cGenotype* genotype = cell_array[i].GetOrganism()->GetGenotype();
+      tKVPair<cGenotype*, tArray<int> >* map_entry = NULL;
+      if (genotype_map.Find(genotype->GetID(), map_entry)) {
+        map_entry->Value().Push(i);
+      } else {
+        map_entry = new tKVPair<cGenotype*, tArray<int> >(genotype, tArray<int>(0));
+        map_entry->Value().Push(i);
+        genotype_map.Add(genotype->GetID(), map_entry);
+      }
+    }
+  }
+  
+  // Output all current genotypes
+  
+  tArray<tKVPair<cGenotype*, tArray<int> >* > genotype_entries;
+  genotype_map.GetValues(genotype_entries);
+  for (int i = 0; i < genotype_entries.GetSize(); i++) {
+    cGenotype* genotype = genotype_entries[i]->Key();
+    
+    df.Write(genotype->GetID(), "Genotype ID");
+    df.Write(genotype->GetAncestorID(0), "Parent 1 Genotype ID");
+    df.Write(genotype->GetAncestorID(1), "Parent 2 Genotype ID");
+    df.Write(genotype->GetParentDistance(), "Parent Distance");
+    df.Write(genotype->GetNumOrganisms(), "Number of currently living organisms");
+    df.Write(genotype->GetTotalOrganisms(), "Total number of organisms that ever existed");
+    df.Write(genotype->GetLength(), "Genome Length");
+    df.Write(genotype->GetMerit(), "Merit");
+    df.Write(genotype->GetGestationTime(), "Gestation Time");
+    df.Write(genotype->GetFitness(), "Fitness");
+    df.Write(genotype->GetUpdateBorn(), "Update Born");
+    df.Write(genotype->GetUpdateDeactivated(), "Update Deactivated");
+    df.Write(genotype->GetDepth(), "Phylogenetic Depth");
+    df.Write(genotype->GetGenome().AsString(), "Genome Sequence");
+    
+    tArray<int>& cells = genotype_entries[i]->Value();
+    cString cellstr;
+    cellstr.Set("%d", cells[0]);
+    for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
+      cellstr.Set("%s,%d", (const char*)cellstr, cells[cell_i]);
+    }
+    df.Write(cellstr, "Occupied Cell IDs");
+    df.Endl();
+    
+    delete genotype_entries[i];
+  }
+  
+  // Output historic genotypes
+  m_world->GetClassificationManager().DumpHistoricSexSummary(df.GetOFStream(), false);
+  
+  m_world->GetDataFileManager().Remove(filename);
+  return true;
+}
+
+
+bool cPopulation::LoadStructuredPopulation(const cString& filename)
+{
+  // @TODO - implement structured population dump loading
+  return false;
 }
 
 
