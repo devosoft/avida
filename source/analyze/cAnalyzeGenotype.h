@@ -159,6 +159,7 @@ private:
   tArray<double> internal_task_qualities;
   tArray<double> rbins_total;
   tArray<double> rbins_avail;
+  tArray<int> collect_spec_counts;
   tArray<int> m_env_inputs;
 
   // Group 3 : Stats requiring parental genotype (Also from test CPUs)
@@ -458,6 +459,12 @@ public:
     return rbins_avail[resource_id];
   }
   cString DescRAvail(int resource_id) const { return cStringUtil::Stringf("Resource %d Available", resource_id);}
+  
+  int GetRSpec(int spec_id) const {
+    if (spec_id >= collect_spec_counts.GetSize() || spec_id < 0) return -1;
+    return collect_spec_counts[spec_id];
+  }
+  cString DescRSpec(int spec_id) const { return cStringUtil::Stringf("# times specification %d used", spec_id);}
 
   // Comparisons...  Compares a genotype to the "previous" one, which is
   // passed in, in one specified phenotype.
