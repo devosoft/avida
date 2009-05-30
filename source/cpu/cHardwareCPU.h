@@ -433,6 +433,9 @@ private:
   bool Inst_Order(cAvidaContext& ctx);
   bool Inst_Xor(cAvidaContext& ctx);
 
+  // Double Argument Math that are treatable
+	bool Inst_NandTreatable(cAvidaContext& ctx);
+
   // Biological
   bool Inst_Copy(cAvidaContext& ctx);
   bool Inst_ReadInst(cAvidaContext& ctx);

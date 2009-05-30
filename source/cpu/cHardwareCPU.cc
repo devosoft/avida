@@ -188,7 +188,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("and", &cHardwareCPU::Inst_And),
     tInstLibEntry<tMethod>("order", &cHardwareCPU::Inst_Order),
     tInstLibEntry<tMethod>("xor", &cHardwareCPU::Inst_Xor),
-    
+
+		// treatable instructions
+		tInstLibEntry<tMethod>("nand-treatable", &cHardwareCPU::Inst_NandTreatable, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?, fails if deme is treatable"),
+		
     tInstLibEntry<tMethod>("copy", &cHardwareCPU::Inst_Copy),
     tInstLibEntry<tMethod>("read", &cHardwareCPU::Inst_ReadInst),
     tInstLibEntry<tMethod>("write", &cHardwareCPU::Inst_WriteInst),
@@ -2563,6 +2566,19 @@ bool cHardwareCPU::Inst_Nand(cAvidaContext& ctx)
   const int op2 = REG_CX;
   GetRegister(dst) = ~(GetRegister(op1) & GetRegister(op2));
   return true;
+}
+
+bool cHardwareCPU::Inst_NandTreatable(cAvidaContext& ctx)
+{
+/*	
+	if(!m_organism->GetDeme()->isTreatable() && m_world->GetRandom().P(probFail))
+		return true;
+	
+  const int dst = FindModifiedRegister(REG_BX);
+  const int op1 = REG_BX;
+  const int op2 = REG_CX;
+  GetRegister(dst) = ~(GetRegister(op1) & GetRegister(op2));
+  */return true;
 }
 
 bool cHardwareCPU::Inst_Nor(cAvidaContext& ctx)
