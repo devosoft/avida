@@ -2544,4 +2544,40 @@ void cStats::PrintShadedAltruists(const cString& filename) {
 	
 }
 
+/* 	
+ Print data regarding group formation.
+ */
+void cStats::PrintGroupsFormedData(const cString& filename)
+{
+
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("The number of groups, average, max, and min number of orgs in groups");
+	
+	map<int,int> groups = m_world->GetPopulation().GetFormedGroups();
+	
+	map <int,int>::iterator itr;
+	double avg_size = 0.0;
+	double max_size = 0.0;
+	double min_size = 100000000000.0;
+	double active_groups = 0.0;
+	
+	for(itr = groups.begin();itr!=groups.end();itr++) {
+		avg_size += itr->second;
+		if (itr->second > max_size) max_size = itr->second;
+		if (itr->second < min_size) min_size = itr->second;
+		if (itr->second > 0) active_groups++;
+	}
+	
+	avg_size = avg_size / groups.size();
+	df.Write((double)groups.size(), "number of groups [num]");
+	df.Write(avg_size, "average size of groups [avg-size]");
+	df.Write(max_size, "max size of groups [max-size]");
+	df.Write(min_size, "min size of groups [min-size]");
+	df.Write(active_groups, "active groups [act-group]");
+	
+	
+	df.Endl();
+
+	
+}
 

@@ -317,6 +317,10 @@ private:
 	
 	// reputation
 	double Task_CreatePerfectStrings(cTaskContext& ctx) const; 
+	
+	// group formation 
+	void Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+	double Task_FormSpatialGroup(cTaskContext& ctx) const; 
 };
 
 

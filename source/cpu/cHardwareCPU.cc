@@ -567,7 +567,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("if-donor",  &cHardwareCPU::Inst_IfDonor, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("prod-string",  &cHardwareCPU::Inst_ProduceString, nInstFlag::STALL),
 		
-		
+		// Group formation instructions
+		tInstLibEntry<tMethod>("join-group", &cHardwareCPU::Inst_JoinGroup, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, nInstFlag::STALL),
 		
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -8919,3 +8921,41 @@ bool cHardwareCPU::Inst_ProduceString(cAvidaContext& ctx)
 	return true;
 }
 
+//! An organism joins a group by setting it opinion to the group id. 
+bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
+{
+	int opinion;
+	// Check if the org is currently part of a group
+	assert(m_organism != 0);
+  if(m_organism->HasOpinion()) {
+		opinion = m_organism->GetOpinion().first;
+		// subtract org from group
+		m_world->GetPopulation().LeaveGroup(opinion);
+  }
+	
+	
+	// Call the set opinion instruction, which does all the dirty work.
+	Inst_SetOpinion(ctx);
+	
+	// Add org to group count
+	opinion = m_organism->GetOpinion().first;	
+	m_world->GetPopulation().JoinGroup(opinion);
+	return true;
+}
+
+//! Gets the number of organisms in the current organism's group 
+//! and places the value in the ?CX? register
+bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
+{
+	int num_orgs = 0;
+	assert(m_organism != 0);
+	const int num_org_reg = FindModifiedRegister(REG_CX);
+	int opinion;
+	
+  if(m_organism->HasOpinion()) {
+		opinion = m_organism->GetOpinion().first;
+		num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion);
+  }
+	GetRegister(num_org_reg) = num_orgs;
+	return true;
+}

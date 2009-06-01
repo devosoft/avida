@@ -27,6 +27,8 @@
 #define cPopulation_h
 
 #include <fstream>
+#include <map>
+
 
 #ifndef cBirthChamber_h
 #include "cBirthChamber.h"
@@ -112,6 +114,10 @@ private:
  
   // Outside interactions...
   bool sync_events;   // Do we need to sync up the event list with population?
+	
+	// Group formation information
+	std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
+
 
   ///////////////// Private Methods ////////////////////
   void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
@@ -326,7 +332,16 @@ public:
   
   // Let users change environmental variables durning the run @BDB 22-Feb-2008
   void UpdateResourceCount(const int Verbosity);
-  
+	
+	// Adds an organism to a group
+	void JoinGroup(int group_id);
+	// Removes an organism from a group
+	void LeaveGroup(int group_id);
+	// Identifies the number of organisms in a group
+  int NumberOfOrganismsInGroup(int group_id);
+	// Get the group information
+	map<int, int> GetFormedGroups() { return m_groups; }
+	
 private:
   struct sTmpGenotype
   {

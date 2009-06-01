@@ -5604,3 +5604,41 @@ void cPopulation::UpdateResourceCount(const int Verbosity) {
   }
   
 }
+
+
+// Adds an organism to a group
+void  cPopulation::JoinGroup(int group_id)
+{
+	map<int,int>::iterator it;
+	it=m_groups.find(group_id);
+	if (it == m_groups.end()) {
+		m_groups[group_id] = 0;
+	}
+	m_groups[group_id]++;
+	
+}
+
+
+// Removes an organism from a group
+void  cPopulation::LeaveGroup(int group_id)
+{
+	map<int,int>::iterator it;
+	it=m_groups.find(group_id);
+	if (it != m_groups.end()) {
+		m_groups[group_id]--;
+	}
+
+}
+
+// Identifies the number of organisms in a group
+int  cPopulation::NumberOfOrganismsInGroup(int group_id)
+{
+	map<int,int>::iterator it;
+	it=m_groups.find(group_id);
+	int num_orgs = 0;
+	if (it != m_groups.end()) {
+		num_orgs = m_groups[group_id];
+	}
+	return num_orgs;	
+
+}

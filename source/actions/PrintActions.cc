@@ -142,6 +142,10 @@ STATS_OUT_FILE(PrintShadedAltruists,         shadedaltruists.dat);
 STATS_OUT_FILE(PrintDirectReciprocityData,         reciprocity.dat);
 STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
+// group formation 
+STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
+
+
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
 class cAction ## METHOD : public cAction {                                                /*  2 */ \
 private:                                                                                  /*  3 */ \
@@ -3160,6 +3164,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
 	action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
 
+	// Group Formation
+	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
 	
   action_lib->Register<cActionSetVerbose>("VERBOSE");
 }
