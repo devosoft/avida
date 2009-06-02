@@ -438,6 +438,8 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "sg_path_traversal")
     Load_SGPathTraversal(name, info, envreqs, errors);  
   
+	if (name == "form-group")
+    Load_FormSpatialGroup(name, info, envreqs, errors);
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -3383,3 +3385,35 @@ double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const {
 	
 	return bonus; 
 }
+
+
+void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+	cArgSchema schema;
+  
+  // Integer Arguments
+  schema.AddEntry("group_size", 0, 1);
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  if (args) NewTask(name, "FormSpatialGroups", &cTaskLib::Task_FormSpatialGroup, 0, args);
+}
+
+double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
+{
+	int ideal_group_size = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	double reward = 0.0;
+	int group_id = 0; 
+	if (ctx.GetOrganism()->HasOpinion()) {
+		group_id = ctx.GetOrganism()->GetOpinion().first;
+	}
+	int orgs_in_group = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+	
+	if (orgs_in_group < ideal_group_size) {
+		reward = orgs_in_group*orgs_in_group;
+	} else {
+		reward = ideal_group_size*ideal_group_size;
+	}
+	reward = reward / ideal_group_size;
+	return reward;
+}
+

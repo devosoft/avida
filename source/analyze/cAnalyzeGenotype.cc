@@ -82,6 +82,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , internal_task_qualities(0)
   , rbins_total(0)
   , rbins_avail(0)
+  , collect_spec_counts(0)
   , fitness_ratio(0.0)
   , efficiency_ratio(0.0)
   , comp_merit_ratio(0.0)
@@ -136,6 +137,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , internal_task_qualities(0)
   , rbins_total(0)
   , rbins_avail(0)
+  , collect_spec_counts(0)
   , fitness_ratio(0.0)
   , efficiency_ratio(0.0)
   , comp_merit_ratio(0.0)
@@ -179,6 +181,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
   , internal_task_qualities(_gen.internal_task_qualities)
   , rbins_total(_gen.rbins_total)
   , rbins_avail(_gen.rbins_avail)
+  , collect_spec_counts(_gen.collect_spec_counts)
   , fitness_ratio(_gen.fitness_ratio)
   , efficiency_ratio(_gen.efficiency_ratio)
   , comp_merit_ratio(_gen.comp_merit_ratio)
@@ -331,6 +334,8 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
            ("r_avail", &cAnalyzeGenotype::DescRAvail, &cAnalyzeGenotype::GetRBinAvail));
   dcm->Add("prob_task", new tDataEntryOfType<cAnalyzeGenotype, double (int)>
            ("prob_task", &cAnalyzeGenotype::DescTaskProb, &cAnalyzeGenotype::GetTaskProbability, 5));
+  dcm->Add("r_spec", new tDataEntryOfType<cAnalyzeGenotype, int (int)>
+           ("r_spec", &cAnalyzeGenotype::DescRSpec, &cAnalyzeGenotype::GetRSpec));
   
   
   // The remaining values should actually go in a separate list called
@@ -611,6 +616,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   internal_task_qualities = likely_phenotype->GetLastInternalTaskQuality();
   rbins_total           = likely_phenotype->GetLastRBinsTotal();
   rbins_avail           = likely_phenotype->GetLastRBinsAvail();
+  collect_spec_counts   = likely_phenotype->GetLastCollectSpecCounts();
 
   // Setup a new parent stats if we have a parent to work with.
   if (parent_genotype != NULL) {

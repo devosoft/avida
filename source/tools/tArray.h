@@ -167,6 +167,18 @@ public:
     m_data[new_pos] = value;
     return new_pos;
   }
+  
+  void Swap(int idx1, int idx2)
+  {
+    assert(idx1 >= 0);     // Lower Bounds Error
+    assert(idx1 < m_size); // Upper Bounds Error
+    assert(idx2 >= 0);     // Lower Bounds Error
+    assert(idx2 < m_size); // Upper Bounds Error
+
+    T v = m_data[idx1];
+    m_data[idx1] = m_data[idx2];
+    m_data[idx2] = v;
+  }
 
   void SetAll(const T& value)
   {

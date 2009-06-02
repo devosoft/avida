@@ -40,6 +40,14 @@ public:
   void Process(cAvidaContext& ctx) { m_world->GetDriver().SetDone(); }
 };
 
+class cActionPause : public cAction
+{
+public:
+  cActionPause(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  static const cString GetDescription() { return "No Arguments"; }
+  void Process(cAvidaContext& ctx) { m_world->GetDriver().SetPause(); }
+};
+
 class cActionExitAveLineageLabelGreater : public cAction
 {
 private:
@@ -197,6 +205,7 @@ void RegisterDriverActions(cActionLibrary* action_lib)
   action_lib->Register<cActionExitAveGeneration>("ExitAveGeneration");
   action_lib->Register<cActionExitElapsedTime>("ExitElapsedTime");
   action_lib->Register<cActionStopFastForward>("StopFastForward");
+  action_lib->Register<cActionPause>("Pause");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionExit>("exit");

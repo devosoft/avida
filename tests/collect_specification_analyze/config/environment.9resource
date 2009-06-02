@@ -1,0 +1,33 @@
+##############################################################################
+#
+# This is the setup file for the task/resource system.  From here, you can
+# setup the available resources (including their inflow and outflow rates) as
+# well as the reactions that the organisms can trigger by performing tasks.
+#
+# This environmental setup is that of a chemostat with 9 resources, each
+# with a unique task corresponding to them.  All resources have a set inflow
+# of 100, and outflow rate of 0.01, setting their an equilibrium level at
+# 10,000.  Given a maximum population size of 3600 and neighborhood size of
+# 9, the fraction of the resource absorbable in each reaction is simply
+# 9/3600 or 0.0025.
+#
+# For information on how to use this file, see:  doc/environment.html
+# For other sample environments, see:  source/support/config/ 
+#
+##############################################################################
+
+RESOURCE  resNOT:inflow=100:outflow=0.01   resNAND:inflow=100:outflow=0.01
+RESOURCE  resAND:inflow=100:outflow=0.01   resORN:inflow=100:outflow=0.01
+RESOURCE  resOR:inflow=100:outflow=0.01    resANDN:inflow=100:outflow=0.01
+RESOURCE  resNOR:inflow=100:outflow=0.01   resXOR:inflow=100:outflow=0.01
+RESOURCE  resEQU:inflow=100:outflow=0.01
+
+REACTION  NOT  not   process:resource=resNOT:value=1.0:frac=0.0025:max=25
+REACTION  NAND nand  process:resource=resNAND:value=1.0:frac=0.0025:max=25
+REACTION  AND  and   process:resource=resAND:value=2.0:frac=0.0025:max=25
+REACTION  ORN  orn   process:resource=resORN:value=2.0:frac=0.0025:max=25
+REACTION  OR   or    process:resource=resOR:value=4.0:frac=0.0025:max=25
+REACTION  ANDN andn  process:resource=resANDN:value=4.0:frac=0.0025:max=25
+REACTION  NOR  nor   process:resource=resNOR:value=8.0:frac=0.0025:max=25
+REACTION  XOR  xor   process:resource=resXOR:value=8.0:frac=0.0025:max=25
+REACTION  EQU  equ   process:resource=resEQU:value=16.0:frac=0.0025:max=25

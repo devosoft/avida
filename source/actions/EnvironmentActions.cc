@@ -926,18 +926,14 @@ private:
 	double factionTreatable; // total number of unique event to create; they may overlab
 	
 public:
-	cActionSetFracDemeTreatable(cWorld* world, const cString& args) : 
-	cAction(world, args), 
-	factionTreatable(0.0)
-	{
+	cActionSetFracDemeTreatable(cWorld* world, const cString& args) : cAction(world, args), factionTreatable(0.0) {
 		cString largs(args);
 		if (largs.GetSize()) factionTreatable = largs.PopWord().AsDouble();
 	}
 	
 	static const cString GetDescription() { return "Arguments: <double factionTreatable>"; }
 	
-	void Process(cAvidaContext& ctx)
-	{
+	void Process(cAvidaContext& ctx) {
 		cPopulation& pop = m_world->GetPopulation();
 		int numDemes = pop.GetNumDemes();
 		for(int i = 0; i < numDemes; i++) {

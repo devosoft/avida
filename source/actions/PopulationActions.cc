@@ -30,6 +30,7 @@
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
+#include "cIntSum.h"
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -910,14 +911,20 @@ private:
 	cString m_inst;
 	double m_exprWeight;
 	double m_exponent;
+	int m_printUpdate;
+	cIntSum m_totalkilled;
+	cDoubleSum m_killProd;
 
 public:
-	cAction_TherapyStructuralNumInst(cWorld* world, const cString& args) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0)
+	cAction_TherapyStructuralNumInst(cWorld* world, const cString& args) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0), m_printUpdate(100)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_inst = largs.PopWord();
 		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
+		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
+		m_totalkilled.Clear();
+		m_killProd.Clear();
 	}
 	
 	static const cString GetDescription() { return "Arguments: [cString inst=nand] [double exprWeight=1.0] [double exponent=1.0(linear)]"; }
@@ -925,7 +932,9 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
-		
+		cDoubleSum currentKillProb;
+		currentKillProb.Clear();
+
 		// for each deme in the population...
 		cPopulation& pop = m_world->GetPopulation();
 		const int numDemes = pop.GetNumDemes();
@@ -948,15 +957,27 @@ public:
 
 				double killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;
 				// cout << count << " " << killprob << endl;
-
+				currentKillProb.Add(killprob);
 				// decide if it should be killed or not, based on the kill probability
 				if (ctx.GetRandom().P(killprob)) {
 					m_world->GetPopulation().KillOrganism(cell);
-					totalkilled++;
+					++totalkilled;
 				}
 			}
-		// could keep track of the total number killed for statistics; in testing simply printed it out
-		// cout << "total killed = " << totalkilled << endl;
+		}
+		m_totalkilled.Add(totalkilled);
+		m_killProd.Add(currentKillProb.Average());
+			
+		const int update = m_world->GetStats().GetUpdate();
+		if(update % m_printUpdate == 0) {
+			cDataFile& df = m_world->GetDataFile("TherapyStructuralNumInst_kill.dat");
+			df.WriteComment("Number of organisms killed by structural therapy NumInst");
+			df.Write(update, "Update");
+			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
+			df.Write(m_killProd.Average(), "Mean organism kill probablity");
+			df.Endl();
+			m_totalkilled.Clear();
+			m_killProd.Clear();
 		}
 	}
 };
@@ -976,21 +997,29 @@ private:
 	cString m_inst;
 	double m_exprWeight;
 	double m_exponent;
+	int m_printUpdate;
+	cIntSum m_totalkilled;
+	cDoubleSum m_killProd;
 	
 public:
-	cAction_TherapyStructuralRatioDistBetweenNearest(cWorld* world, const cString& args) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0)
+	cAction_TherapyStructuralRatioDistBetweenNearest(cWorld* world, const cString& args) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0), m_printUpdate(100)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_inst = largs.PopWord();
 		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
+		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
+		m_totalkilled.Clear();
+		m_killProd.Clear();
 	}
 	
-	static const cString GetDescription() { return "Arguments: [cString inst=nand] [double exprWeight=1.0] [double exponent=1.0(linear)]"; }
+	static const cString GetDescription() { return "Arguments: [cString inst=nand] [double exprWeight=1.0] [double exponent=1.0(linear)] [int print=100]"; }
 	
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
+		cDoubleSum currentKillProb;
+		currentKillProb.Clear();
 		// for each deme in the population...
 		cPopulation& pop = m_world->GetPopulation();
 		const int numDemes = pop.GetNumDemes();
@@ -1017,16 +1046,28 @@ public:
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));
 				double killprob = (genomeSize - static_cast<double>(ratioNumerator))/genomeSize;
 				// cout<<minDist << " " << killprob<<endl;
-				
+				currentKillProb.Add(killprob);
 				// decide if it should be killed or not, based on the kill probability
 				if (ctx.GetRandom().P(killprob)) {
 					m_world->GetPopulation().KillOrganism(cell);
-					totalkilled++;
+					++totalkilled;
 				}
 			}
 		}
-		// could keep track of the total number killed for statistics; in testing simply printed it out
-		// cout << "total killed = " << totalkilled << endl;
+		m_totalkilled.Add(totalkilled);
+		m_killProd.Add(currentKillProb.Average());
+		
+		const int update = m_world->GetStats().GetUpdate();
+		if(update % m_printUpdate == 0) {
+			cDataFile& df = m_world->GetDataFile("TherapyStructuralRatioDistBetweenNearest_kill.dat");
+			df.WriteComment("Number of organisms killed by structural therapy RatioDistBetweenNearest");
+			df.Write(update, "Update");
+			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
+			df.Write(m_killProd.Average(), "Mean organism kill probablity");
+			df.Endl();
+			m_totalkilled.Clear();
+			m_killProd.Clear();
+		}
 	}
 };
 

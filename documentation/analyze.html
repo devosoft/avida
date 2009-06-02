@@ -644,17 +644,23 @@ After a RECALCULATE (or RECALC), these additional formats become available:
 </tr>
 <tr>
 	<td><strong>total_task_performance_count</strong> (total # of tasks done)</td>
-  <td><strong>inst.n</strong> (# of times instruction number n is done)</td>
+  <td><strong>inst.n</strong> (# of times instruction #n is done)</td>
   <td><strong>r_tot.n</strong> (amount of resource n added to the organism's store in its lifetime)</td>
 </tr>
 <tr>
 	<td><strong>r_avail.n</strong> (amount of resource n in organism's store)</td>
+	<td><strong>r_spec.n</strong> (# of times specification #n is used)</td>
 </tr>
 </table>
 </div>
 
 <p>
 Please note that inst.n is only valid if INSTRUCTION_COUNT is on in defs.h.  It gives a count of 0 if there is no such instruction.
+</p>
+
+<p>
+<b>A note on r_spec.n</b>: This counts nop specifications done by any and all "collect-type" instructions -- that is, any instruction that uses the helper function DoCollect.  If more than one such instruction is included in the instruction set, r_spec.n will include specification counts for both instructions without any differentiation.
+For details on what the specification numbers mean, see cCodeLabel::AsIntUnique.
 </p>
 
 <p>

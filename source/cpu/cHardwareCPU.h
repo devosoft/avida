@@ -433,6 +433,9 @@ private:
   bool Inst_Order(cAvidaContext& ctx);
   bool Inst_Xor(cAvidaContext& ctx);
 
+  // Double Argument Math that are treatable
+	bool Inst_NandTreatable(cAvidaContext& ctx);
+
   // Biological
   bool Inst_Copy(cAvidaContext& ctx);
   bool Inst_ReadInst(cAvidaContext& ctx);
@@ -843,6 +846,15 @@ public:
   bool Inst_GetNeighborhood(cAvidaContext& ctx);
 	//! Test if the current neighborhood has changed from that in the organism's memory.
 	bool Inst_IfNeighborhoodChanged(cAvidaContext& ctx);
+
+	
+// -------- Group Formation Support --------
+public:
+	//! An organism joins a group by setting it opinion to the group id. 
+	bool Inst_JoinGroup(cAvidaContext& ctx);
+	//! Returns the number of organisms in the current organism's group
+	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
+		
 	
 	
 };

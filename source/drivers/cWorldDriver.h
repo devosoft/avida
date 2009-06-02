@@ -49,6 +49,7 @@ public:
   // Driver Actions
   virtual void SignalBreakpoint() = 0;
   virtual void SetDone() = 0;
+  virtual void SetPause() = 0;
 
   virtual void RaiseException(const cString& in_string) = 0;
   virtual void RaiseFatalException(int exit_code, const cString& in_string) = 0;
