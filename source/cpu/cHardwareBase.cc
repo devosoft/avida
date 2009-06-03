@@ -199,6 +199,11 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
  */
 int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier, const int maxmut)
 {
+  int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+  int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
+  if (!max_genome_size || max_genome_size > MAX_CREATURE_SIZE) max_genome_size = MAX_CREATURE_SIZE;
+  if (!min_genome_size || min_genome_size < MIN_CREATURE_SIZE) min_genome_size = MIN_CREATURE_SIZE;
+
   int totalMutations = 0;
   cGenome& offspring_genome = m_organism->OffspringGenome().GetGenome();
   
@@ -217,7 +222,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   }
   
   // Divide Insertions
-  if (m_organism->TestDivideIns(ctx) && offspring_genome.GetSize() < MAX_CREATURE_SIZE && totalMutations < maxmut) {
+  if (m_organism->TestDivideIns(ctx) && offspring_genome.GetSize() < max_genome_size && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize() + 1);
     offspring_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
     offspring_genome.GetMutationSteps().AddInsertionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
@@ -225,7 +230,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   }
   
   // Divide Deletions
-  if (m_organism->TestDivideDel(ctx) && offspring_genome.GetSize() > MIN_CREATURE_SIZE && totalMutations < maxmut) {
+  if (m_organism->TestDivideDel(ctx) && offspring_genome.GetSize() > min_genome_size && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
     offspring_genome.GetMutationSteps().AddDeletionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
     offspring_genome.Remove(mut_line);
@@ -262,9 +267,9 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (m_organism->GetDivInsProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), m_organism->GetDivInsProb());
 
-    // If would make creature too big, insert up to MAX_CREATURE_SIZE
-    if (num_mut + offspring_genome.GetSize() > MAX_CREATURE_SIZE) {
-      num_mut = MAX_CREATURE_SIZE - offspring_genome.GetSize();
+    // If would make creature too big, insert up to max_genome_size
+    if (num_mut + offspring_genome.GetSize() > max_genome_size) {
+      num_mut = max_genome_size - offspring_genome.GetSize();
     }
     
     // If we have lines to insert...
@@ -289,9 +294,9 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (m_organism->GetDivDelProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), m_organism->GetDivDelProb());
     
-    // If would make creature too small, delete down to MIN_CREATURE_SIZE
-    if (offspring_genome.GetSize() - num_mut < MIN_CREATURE_SIZE) {
-      num_mut = offspring_genome.GetSize() - MIN_CREATURE_SIZE;
+    // If would make creature too small, delete down to min_genome_size
+    if (offspring_genome.GetSize() - num_mut < min_genome_size) {
+      num_mut = offspring_genome.GetSize() - min_genome_size;
     }
     
     // If we have lines to delete...
@@ -348,17 +353,22 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 
 bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cGenome& genome)
 {
+
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
   
   if (mut < m_inst_set->GetSize()) { // point
     int site = ctx.GetRandom().GetUInt(genome.GetSize());
     genome[site] = cInstruction(mut);
   } else if (mut == m_inst_set->GetSize()) { // delete
-    if (genome.GetSize() == MIN_CREATURE_SIZE) return false;
+    int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
+    if (!min_genome_size || min_genome_size < MIN_CREATURE_SIZE) min_genome_size = MIN_CREATURE_SIZE;
+    if (genome.GetSize() == min_genome_size) return false;
     int site = ctx.GetRandom().GetUInt(genome.GetSize());
     genome.Remove(site);
   } else { // insert
-    if (genome.GetSize() == MAX_CREATURE_SIZE) return false;
+    int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
+    if (!max_genome_size || max_genome_size > MAX_CREATURE_SIZE) max_genome_size = MAX_CREATURE_SIZE;
+    if (genome.GetSize() == max_genome_size) return false;
     int site = ctx.GetRandom().GetUInt(genome.GetSize() + 1);
     genome.Insert(site, cInstruction(mut - m_inst_set->GetSize() - 1));
   }
