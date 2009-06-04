@@ -29,7 +29,7 @@
 #include "cDeme.h"
 #include "cMerit.h"
 
-// The larger merits cause problems here; things need to be re-thought out.
+// The larger merits cause problems here; avoid very large or very small merits
 
 int cProbSchedule::GetNextID()
 {

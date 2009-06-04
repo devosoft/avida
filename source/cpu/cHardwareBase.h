@@ -67,7 +67,7 @@ protected:
   // --------  Instruction Costs  ---------
   int m_inst_cost;
   tArray<int> m_inst_ft_cost;
-  tArray<int> m_inst_energy_cost;
+  tArray<double> m_inst_energy_cost;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;

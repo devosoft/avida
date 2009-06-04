@@ -346,6 +346,19 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   // Loop through choosing the later placement of each child in the population.
   bool parent_alive = true;  // Will the parent live through this process?
   for (int i = 0; i < child_array.GetSize(); i++) {
+/*		if(merit_array[i].GetDouble() <= 0.0) {
+			// no weaklings!
+			if(child_array.GetSize() > 1) {
+				child_array.Swap(i, child_array.GetSize()-1);
+				child_array = child_array.Subset(0, child_array.GetSize()-2);
+			} else {
+				child_array.ResizeClear(0);
+				break;
+			}
+			--i;
+			continue;
+		}
+	*/	
     target_cells[i] = PositionChild(parent_cell, m_world->GetConfig().ALLOW_PARENT.Get()).GetID();
     
     // If we replaced the parent, make a note of this.
@@ -393,6 +406,12 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 		
   // If we're not about to kill the parent, do some extra work on it.
   if (parent_alive == true) {
+		if(parent_phenotype.GetMerit().GetDouble() <= 0.0) {
+			// no weakling parents either!			
+			parent_organism->GetPhenotype().SetToDie();
+			parent_alive = false;
+		}		
+	
     // Reset inputs and re-calculate merit if required
     if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
       environment.SetupInputs(ctx, parent_cell.m_inputs);
@@ -3732,11 +3751,11 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 {
   assert(step_size > 0.0);
   assert(cell_id < cell_array.GetSize());
-  
+  	
   // If cell_id is negative, no cell could be found -- stop here.
   if (cell_id < 0) return;
   
-  cPopulationCell& cell = GetCell(cell_id);
+	cPopulationCell& cell = GetCell(cell_id);
   assert(cell.IsOccupied()); // Unoccupied cell getting processor time!
   cOrganism* cur_org = cell.GetOrganism();
   

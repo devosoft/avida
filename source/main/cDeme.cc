@@ -281,15 +281,15 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 
 	//reset remaining deme predicates
   for (int i = 0; i < deme_pred_list.Size(); i++) {
-    (*deme_pred_list[i]).Reset();
+    deme_pred_list[i]->Reset();
   }	
   //reset remaining message predicates
   for (int i = 0; i < message_pred_list.Size(); i++) {
-    (*message_pred_list[i]).Reset();
+    message_pred_list[i]->Reset();
   }
   //reset remaining message predicates
   for (int i = 0; i < movement_pred_list.Size(); i++) {
-    (*movement_pred_list[i]).Reset();
+    movement_pred_list[i]->Reset();
   }
   
   if (resetResources) {

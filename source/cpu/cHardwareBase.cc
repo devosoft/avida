@@ -970,17 +970,15 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
 #if INSTRUCTION_COSTS
-
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
     int cellID = m_organism->GetCellID();
-    
+		
     if((cellID != -1) && (energy_req > 0.0)) { // guard against running in the test cpu.
-
       if (m_organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
-        m_inst_energy_cost[cur_inst.GetOp()] = 0;
-        // subtract energy used from current org energy.
+				m_inst_energy_cost[cur_inst.GetOp()] = 0.0;
+				// subtract energy used from current org energy.
         m_organism->GetPhenotype().ReduceEnergy(energy_req);  
         
         // tracking sleeping organisms
@@ -996,7 +994,7 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
         }
       } else {
         m_organism->GetPhenotype().SetToDie();
-        return false;
+				return false; // no more, your died...  (evil laugh)
       }
     }
   }
