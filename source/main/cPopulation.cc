@@ -346,7 +346,14 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   // Loop through choosing the later placement of each child in the population.
   bool parent_alive = true;  // Will the parent live through this process?
   for (int i = 0; i < child_array.GetSize(); i++) {
-/*		if(merit_array[i].GetDouble() <= 0.0) {
+/*		
+		THIS code will remove zero merit orgnaisms, thus never putting them into the scheduler.
+		WARNING: uncommenting this code will break consistancy, but will generalize the solution.
+		Currently, only asexual organisms that use the energy model are removed when they have zero merit.
+		If this code gets added then remove the "if(merit_array[0].GetDouble() <= 0.0)" block from cBirthChamber::DoAsexBirth, 
+			does not break consistancy for test energy_deme_level_res
+ 
+		if(merit_array[i].GetDouble() <= 0.0) {
 			// no weaklings!
 			if(child_array.GetSize() > 1) {
 				child_array.Swap(i, child_array.GetSize()-1);
