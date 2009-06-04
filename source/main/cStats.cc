@@ -2538,7 +2538,7 @@ void cStats::PrintShadedAltruists(const cString& filename) {
 	df.Write(shaded_20, "shaded-20 [shaded20]");
 	df.Write(shaded_10, "shaded-10 [shaded10]");
 	df.Write(shaded_0, "shaded-0 [shaded0]");
-	df.Write(high_alt, "percent-high-alt [highalt]");
+	df.Write(high_alt, "percent-high-alt  [highalt]");
 	df.Write(avg_shade, "avg-shade [avgshade]");
 	df.Endl();
 	
@@ -2557,27 +2557,35 @@ void cStats::PrintGroupsFormedData(const cString& filename)
 	
 	map <int,int>::iterator itr;
 	double avg_size = 0.0;
+	double avg_size_wout_empty = 0.0;
 	double max_size = 0.0;
 	double min_size = 100000000000.0;
 	double active_groups = 0.0;
 	
 	for(itr = groups.begin();itr!=groups.end();itr++) {
-		avg_size += itr->second;
-		if (itr->second > max_size) max_size = itr->second;
-		if (itr->second < min_size) min_size = itr->second;
-		if (itr->second > 0) active_groups++;
+		double cur_size = itr->second;
+		avg_size += cur_size;
+		if (cur_size > max_size) max_size = cur_size;
+		if (cur_size < min_size) min_size = cur_size;
+		if (cur_size > 0) {
+			active_groups++;
+			avg_size_wout_empty += cur_size; 
+		}
 	}
 	
 	avg_size = avg_size / groups.size();
+	avg_size_wout_empty = avg_size_wout_empty / active_groups;
+	df.WriteTimeStamp();
+	df.Write(m_update,   "Update [update]");
 	df.Write((double)groups.size(), "number of groups [num]");
-	df.Write(avg_size, "average size of groups [avg-size]");
-	df.Write(max_size, "max size of groups [max-size]");
-	df.Write(min_size, "min size of groups [min-size]");
-	df.Write(active_groups, "active groups [act-group]");
+	df.Write(avg_size, "average size of groups [avgsize]");
+	df.Write(avg_size_wout_empty, "average size of  non-emptygroups [avgsizene]");
+	df.Write(max_size, "max size of groups [maxsize]");
+	df.Write(min_size, "min size of groups [minsize]");
+	df.Write(active_groups, "active groups [actgroup]");
 	
 	
 	df.Endl();
-
 	
 }
 

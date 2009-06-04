@@ -747,6 +747,12 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   	organism->GetOrgInterface().UpdateResources(organism->GetRBins());
   }
   
+	// make sure the group composition is updated.
+	if(m_world->GetConfig().USE_FORM_GROUPS.Get() && organism->HasOpinion()) 
+	{
+			int opinion = organism->GetOpinion().first;
+			LeaveGroup(opinion);
+	}
   
   // Do the lineage handling
   if (m_world->GetConfig().LOG_LINEAGES.Get()) { m_world->GetClassificationManager().RemoveLineageOrganism(organism); }

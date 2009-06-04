@@ -637,6 +637,10 @@ public:
   CONFIG_ADD_VAR(STRING_AMOUNT_CAP, int, -1, "-1=no cap on string amounts\n#=CAP");
   CONFIG_ADD_VAR(MATCH_ALREADY_PRODUCED, int, 0, "0=off\n1=on");
   
+	
+	CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
+  CONFIG_ADD_VAR(USE_FORM_GROUPS, bool, 0, "Enable organisms to form groups. 0/1 (off/on)");
+
 #endif
   
   inline void Load(const cString& filename) { Load(filename, false); }
