@@ -176,6 +176,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
     child_array[0]->GetPhenotype().SetEnergy(child_energy);
     merit_array[0] = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
 		if(merit_array[0].GetDouble() <= 0.0) {  // do not allow zero merit
+			delete child_array[0];
 			child_array.Resize(0);
 			merit_array.Resize(0);
 			return false;

@@ -417,45 +417,45 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 			// no weakling parents either!			
 			parent_organism->GetPhenotype().SetToDie();
 			parent_alive = false;
-		}		
-	
-    // Reset inputs and re-calculate merit if required
-    if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
-      environment.SetupInputs(ctx, parent_cell.m_inputs);
-      
-      int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
-      if (pc_phenotype) {
-        cCPUTestInfo test_info;
-        cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
-        test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-        test_cpu->TestGenome(ctx, test_info, parent_organism->GetHardware().GetMemory()); // Use the true genome
-        if (pc_phenotype & 1) { // If we must update the merit
-          parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
-        }
-        if (pc_phenotype & 2) {   // If we must update the gestation time
-          parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
-        }
-        if (pc_phenotype & 4) {   // If we must update the last instruction counts
-					parent_phenotype.SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
+		}	else {
+			// Reset inputs and re-calculate merit if required
+			if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
+				environment.SetupInputs(ctx, parent_cell.m_inputs);
+				
+				int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
+				if (pc_phenotype) {
+					cCPUTestInfo test_info;
+					cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+					test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
+					test_cpu->TestGenome(ctx, test_info, parent_organism->GetHardware().GetMemory()); // Use the true genome
+					if (pc_phenotype & 1) { // If we must update the merit
+						parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
+					}
+					if (pc_phenotype & 2) {   // If we must update the gestation time
+						parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
+					}
+					if (pc_phenotype & 4) {   // If we must update the last instruction counts
+						parent_phenotype.SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
+					}
+					parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
+					delete test_cpu;
 				}
-				parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
-        delete test_cpu;
-      }
-    }
-    AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
-    
-    // In a local run, face the child toward the parent. 
-    const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
-    if (birth_method < NUM_LOCAL_POSITION_CHILD ||
-        birth_method == POSITION_CHILD_PARENT_FACING) {
-      for (int i = 0; i < child_array.GetSize(); i++) {
-        GetCell(target_cells[i]).Rotate(parent_cell);
-      }
-    }
-    
-    // Purge the mutations since last division
-    parent_organism->OffspringGenome().GetGenome().GetMutationSteps().Clear();
-  }
+			}
+			AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
+			
+			// In a local run, face the child toward the parent. 
+			const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
+			if (birth_method < NUM_LOCAL_POSITION_CHILD ||
+					birth_method == POSITION_CHILD_PARENT_FACING) {
+				for (int i = 0; i < child_array.GetSize(); i++) {
+					GetCell(target_cells[i]).Rotate(parent_cell);
+				}
+			}
+			
+			// Purge the mutations since last division
+			parent_organism->OffspringGenome().GetGenome().GetMutationSteps().Clear();
+		}
+	}
   
   // Do any statistics on the parent that just gave birth...
   parent_genotype->AddGestationTime( parent_phenotype.GetGestationTime() );
