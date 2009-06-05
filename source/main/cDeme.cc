@@ -844,6 +844,38 @@ void cDeme::AddPheromone(int absolute_cell_id, double value)
   
 } //End AddPheromone()
 
+double cDeme::GetSpatialResource(int rel_cellid, int resource_id) const
+{
+  assert(rel_cellid >= 0);
+  assert(rel_cellid < GetSize());
+  assert(resource_id >= 0);
+  assert(resource_id < deme_resource_count.GetSize());
+  
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(rel_cellid);
+  return cell_resources[resource_id];
+}
+
+void cDeme::AdjustSpatialResource(int rel_cellid, int resource_id, double amount)
+{
+  assert(rel_cellid >= 0);
+  assert(rel_cellid < GetSize());
+  assert(resource_id >= 0);
+  assert(resource_id < deme_resource_count.GetSize());
+  
+  tArray<double> res_change;
+  res_change.Resize(deme_resource_count.GetSize(), 0);
+  res_change[resource_id] = amount;
+  
+  deme_resource_count.ModifyCell(res_change, rel_cellid);
+  
+}
+
+void cDeme::AdjustResource(int resource_id, double amount)
+{
+  double new_amount = deme_resource_count.Get(resource_id) + amount;
+  deme_resource_count.Set(resource_id, new_amount);
+}
+
 int cDeme::GetSlotFlowRate() const {
   vector<pair<int, int> >::const_iterator iter = event_slot_end_points.begin();
   while(iter != event_slot_end_points.end()) {

@@ -207,6 +207,7 @@ public:
   void AddTreatmentAge(const int age) { treatment_ages.insert(age); }
   bool IsTreatableAtAge(const int age);
   bool IsTreatableNow() { return IsTreatableAtAge(_age); }
+  std::set<int> GetTreatmentAges() const { return treatment_ages; }
 
   int GetSlotFlowRate() const;
   int GetEventsTotal() const { return eventsTotal; }
@@ -259,6 +260,9 @@ public:
   int GetAge() const { return _age; }
   
   const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
+  double GetSpatialResource(int rel_cellid, int resource_id) const;
+  void AdjustSpatialResource(int rel_cellid, int resource_id, double amount);
+  void AdjustResource(int resource_id, double amount);
   void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
   void ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id);
