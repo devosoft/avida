@@ -786,8 +786,10 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   // Update count statistics...
   num_organisms--;
   
-  if (deme_array.GetSize() > 0) {
+	// Handle deme updates.
+  if(deme_array.GetSize() > 0) {
     deme_array[in_cell.GetDemeID()].DecOrgCount();
+		deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
   }
   genotype->RemoveOrganism();
   

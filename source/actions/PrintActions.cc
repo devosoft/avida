@@ -107,6 +107,7 @@ STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat  
 STATS_OUT_FILE(PrintDemeTreatableCount,    deme_treatable.dat       );
 
 STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
+STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
 STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
 STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
 STATS_OUT_FILE(PrintPerDemeTasksExeData,    per_deme_tasks_exe.dat  );

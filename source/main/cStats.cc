@@ -2589,3 +2589,11 @@ void cStats::PrintGroupsFormedData(const cString& filename)
 	
 }
 
+/*! Print and reset network statistics.
+ */
+void cStats::PrintDemeNetworkData(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Deme network statistics");
+  df.WriteTimeStamp();
+}

@@ -46,6 +46,12 @@
 #ifndef FATAL_WARNINGS
 #define FATAL_WARNINGS 0
 #endif
+/* By default, Boost is not available.  To enable Boost, either modify your environment,
+ alter your build settings, or change this value -- BUT BE CAREFUL NOT TO CHECK IT IN LIKE THAT!
+ */
+#ifndef BOOST_IS_AVAILABLE
+#define BOOST_IS_AVAILABLE 0
+#endif
 
 // #define SPECIES_TEST
 

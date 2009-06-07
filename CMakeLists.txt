@@ -239,6 +239,8 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cBirthNeighborhoodHandler.cc
   ${MAIN_DIR}/cBirthSelectionHandler.cc
   ${MAIN_DIR}/cDeme.cc
+  ${MAIN_DIR}/cDemeNetwork.cc
+  ${MAIN_DIR}/cDemeTopologyNetwork.cc
   ${MAIN_DIR}/cDemeCellEvent.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc

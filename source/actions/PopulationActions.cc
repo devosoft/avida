@@ -1863,7 +1863,7 @@ public:
 	
   /*! Deme fitness function, to be overriden by specific types of deme competition.
    */
-  virtual double Fitness(const cDeme& deme) = 0;
+  virtual double Fitness(cDeme& deme) = 0;
 };
 
 
@@ -1926,6 +1926,27 @@ public:
 protected:
 	int _compete_period; //!< Period at which demes compete.
 	std::vector<double> _update_fitness; //!< Running sum of returns from Update(cDeme).
+};
+
+
+/*! Competes demes based on the networks they've constructed.
+ */
+class cActionCompeteDemesByNetwork : public cAbstractCompeteDemes {
+public:
+	//! Constructor.
+	cActionCompeteDemesByNetwork(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+	}
+	
+	//! Destructor.
+	virtual ~cActionCompeteDemesByNetwork() { }
+	
+	//! Retrieve this class's description.
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Calculate the current fitness of this deme.
+  virtual double Fitness(cDeme& deme) {
+		return deme.GetNetwork().Fitness();
+	}
 };
 
 
@@ -1999,7 +2020,7 @@ public:
 	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=0]]"; }
 	
 	//! Calculate the current fitness of this deme.
-  virtual double Fitness(const cDeme& deme) {
+  virtual double Fitness(cDeme& deme) {
 		return max_support(deme).first + 1;
 	}
 	
@@ -2070,7 +2091,7 @@ public:
 		return "Competes demes according to the number of times a given task has been completed within that deme"; 
 	}
 	
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
 		double fitness = pow(deme.GetCurTaskExeCount()[_task_num], 2.0);///deme.GetInjectedCount());
     if (fitness == 0.0) fitness = 0.1;
     return fitness;
@@ -2109,7 +2130,7 @@ public:
 		return "Competes demes according to the number of times a given task has been completed within that deme and the efficiency with which it was done"; 
 	}
 	
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
     double energy_used = _initial_deme_energy - deme.CalculateTotalEnergy();
 		double fitness = 
 		pow(deme.GetCurTaskExeCount()[_task_num] * (_initial_deme_energy/energy_used),2);
@@ -2132,7 +2153,7 @@ public:
 		return "Competes demes according to the distribution of energy among the organisms"; 
 	}
 	
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
 		const int numcells = deme.GetSize();
 		
 		double min_energy = -1;
@@ -2224,7 +2245,7 @@ public:
   /*! Calculate the fitness based on how well the organisms in this deme have
 	 synchronized their flashes.
    */
-  virtual double Fitness(const cDeme& deme) {
+  virtual double Fitness(cDeme& deme) {
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -2295,7 +2316,7 @@ public:
   static const cString GetDescription() { return "No Arguments"; }
   
 	//! Calculate fitness based on how well organisms have spread throughout phase-space.
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -2330,7 +2351,7 @@ public:
 	
 	static const cString GetDescription() { return "No Arguments"; }
   
-	double Fitness(const cDeme& deme) {    
+	double Fitness(cDeme& deme) {    
 		double eventsKilled = static_cast<double>(deme.GetEventsKilled());
 		double totalEvents  = static_cast<double>(deme.GetEventsTotal());
 		double energyRemaining = deme.CalculateTotalEnergy();
@@ -3300,6 +3321,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
+	action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
 	action_lib->Register<cActionSynchronization>("Synchronization");
 	action_lib->Register<cActionDesynchronization>("Desynchronization");

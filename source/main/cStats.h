@@ -954,7 +954,18 @@ protected:
 	cDoubleSum m_perfect_match_org;
 	std::map <int, int> m_tags;
 	
-
+// -------- Deme network support --------
+private:
+public:
+	template <typename Network>
+	void NetworkTopology(const Network& network) {
+#if BOOST_IS_AVAILABLE
+#else
+//		world->GetDriver().RaiseFatalException(-1, "Cannot track network statistics without Boost in cStats::NetworkTopology().");
+#endif
+	}
+	//! Print network statistics.
+	void PrintDemeNetworkData(const cString& filename);
 };
 
 

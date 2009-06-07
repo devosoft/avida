@@ -36,6 +36,22 @@
 #include "cOrgMovementPredicate.h"
 #include "cDemePredicate.h"
 
+/*! Constructor
+ */
+cDeme::cDeme() : _id(0), width(0), replicateDeme(false), treatable(false), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
+_age(0), generation(0), total_org_energy(0.0),
+time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
+MSG_sendFailed(0), MSG_dropped(0), MSG_SuccessfullySent(0), MSG_sent(0), energyInjectedIntoOrganisms(0.0), energyRemainingInDemeAtReplication(0.0), total_energy_testament(0.0),
+eventsTotal(0), eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
+consecutiveSuccessfulEventPeriods(0), sleeping_count(0),
+avg_founder_generation(0.0), generations_per_lifetime(0.0),
+deme_resource_count(0), m_germline_genotype_id(0), points(0), migrations_out(0), migrations_in(0), suicides(0), m_network(0) {
+}
+
+cDeme::~cDeme() {
+	if(m_network) delete m_network;
+}
+
 void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* world)
 {
   _id = id;
@@ -236,6 +252,17 @@ void cDeme::ProcessUpdate() {
   ++_age;
 }
 
+
+/*! Called when an organism living in a cell in this deme is about to be killed.
+ 
+ This method is called from cPopulation::KillOrganism().
+ */
+void cDeme::OrganismDeath(cPopulationCell& cell) {
+	// Clean up this deme's network, if we have one.
+	if(IsNetworkInitialized()) { m_network->OrganismDeath(cell); }
+}
+
+
 void cDeme::Reset(bool resetResources, double deme_energy)
 {
   double additional_resource = 0.0;
@@ -295,6 +322,11 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   if (resetResources) {
     deme_resource_count.ReinitializeResources(additional_resource);
   }
+	// Instead of polluting cDemeNetwork with Resets, we're just going to delete it,
+	// and go ahead and rely on lazy initialization to fill this back in.
+	if(m_network) {
+		delete m_network;
+	}
 }
 
 
@@ -904,3 +936,11 @@ bool cDeme::IsTreatableAtAge(const int age) {
   return false;
   
 } //End cDeme::IsTreatableAtAge()
+
+
+/*! Retrieve the network object, initializing it as needed.
+ */
+cDemeNetwork& cDeme::GetNetwork() {
+	InitNetworkCreation(); 
+	return *m_network; 
+}

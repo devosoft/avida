@@ -26,6 +26,8 @@
 		10479F2E0F1BC54B00AF9F6A /* cMutationSteps.cc in Sources */ = {isa = PBXBuildFile; fileRef = 10479F2C0F1BC54B00AF9F6A /* cMutationSteps.cc */; };
 		2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
+		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
+		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -400,6 +402,11 @@
 		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareGX.h; sourceTree = "<group>"; };
 		42490EFE0BE2472800318058 /* cGermline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGermline.h; sourceTree = "<group>"; };
 		42777E5B0C7F123600AFA4ED /* cOrgMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessage.h; sourceTree = "<group>"; };
+		42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeNetwork.cc; sourceTree = "<group>"; };
+		42C27C800FDC22AC00C45B78 /* cDemeNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetwork.h; sourceTree = "<group>"; };
+		42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetworkUtils.h; sourceTree = "<group>"; };
+		42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeTopologyNetwork.cc; sourceTree = "<group>"; };
+		42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeTopologyNetwork.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -1525,6 +1532,11 @@
 				702D4F3908DA61E2007BA469 /* cBirthChamber.h */,
 				1097463D0AE9606E00929ED6 /* cDeme.cc */,
 				1097463E0AE9606E00929ED6 /* cDeme.h */,
+				42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */,
+				42C27C800FDC22AC00C45B78 /* cDemeNetwork.h */,
+				42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */,
+				42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */,
+				42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */,
 				702D4EFC08DA5341007BA469 /* cEnvironment.cc */,
 				702D4EF508DA5328007BA469 /* cEnvironment.h */,
 				70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */,
@@ -2180,6 +2192,8 @@
 				70447CA80F83DB5600E1BF72 /* cBirthMateSelectHandler.cc in Sources */,
 				70447CAC0F83DBC100E1BF72 /* cBirthDemeHandler.cc in Sources */,
 				7020828F0FB9F2DF00637AD6 /* cBitArray.cc in Sources */,
+				42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */,
+				42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
