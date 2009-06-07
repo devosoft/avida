@@ -60,6 +60,10 @@ private:
     double divide_mut_prob;     // Max one per divide
     double divide_ins_prob;     // Max one per divide
     double divide_del_prob;     // Max one per divide
+    double divide_poisson_mut_mean;     // Allows multiple with constant genomic rate
+    double divide_poisson_ins_mean;     // Allows multiple with constant genomic rate
+    double divide_poisson_del_mean;     // Allows multiple with constant genomic rate
+    double divide_poisson_slip_mean;     // Allows multiple with constant genomic rate
     double divide_slip_prob;     // Max one per divide
     double divide_uniform_prob;
     double parent_mut_prob;
@@ -105,6 +109,16 @@ public:
   bool TestDivideMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_mut_prob); }
   bool TestDivideIns(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_ins_prob); }
   bool TestDivideDel(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_del_prob); }
+  
+  unsigned int NumDividePoissonMut(cAvidaContext& ctx) const 
+    { return (divide.divide_poisson_mut_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_mut_mean); }
+  unsigned int NumDividePoissonIns(cAvidaContext& ctx) const 
+    { return (divide.divide_poisson_ins_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_ins_mean); }
+  unsigned int NumDividePoissonDel(cAvidaContext& ctx) const 
+    { return (divide.divide_poisson_del_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_del_mean); }
+ unsigned int NumDividePoissonSlip(cAvidaContext& ctx) const 
+    { return (divide.divide_poisson_slip_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_slip_mean); }
+
   bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }
   bool TestDivideUniform(cAvidaContext& ctx) const
   {

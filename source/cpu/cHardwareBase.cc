@@ -209,9 +209,25 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
+  // @JEB 
+  // All slip mutations should happen first, so that there is a chance
+  // of getting a point mutation within one copy in the same divide.
+ 
   // Divide Slip Mutations - NOT COUNTED.
   if (m_organism->TestDivideSlip(ctx)) doSlipMutation(ctx, offspring_genome);
+ 
+  // Poisson Slip Mutations - NOT COUNTED
+  unsigned int num_poisson_slip = m_organism->NumDividePoissonSlip(ctx);
+  for (unsigned int i = 0; i < num_poisson_slip; i++) { doSlipMutation(ctx, offspring_genome);  }
     
+  // Slip Mutations (per site) - NOT COUNTED
+  if (m_organism->GetDivSlipProb() > 0) {
+    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), 
+                                                  m_organism->GetDivSlipProb() / mut_multiplier);
+    for (int i = 0; i < num_mut; i++) doSlipMutation(ctx, offspring_genome);
+  }
+  
+  
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
@@ -220,6 +236,20 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     offspring_genome.GetMutationSteps().AddSubstitutionMutation(mut_line, before_mutation, offspring_genome[mut_line].GetSymbol());
     totalMutations++;
   }
+    
+  
+  // Poisson Divide Mutations
+  unsigned int num_poisson_mut = m_organism->NumDividePoissonMut(ctx);
+  for (unsigned int i=0; i<num_poisson_mut; i++)
+  {
+    if (totalMutations >= maxmut) break;
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
+    char before_mutation = offspring_genome[mut_line].GetSymbol();
+    offspring_genome[mut_line] = m_inst_set->GetRandomInst(ctx);
+    offspring_genome.GetMutationSteps().AddSubstitutionMutation(mut_line, before_mutation, offspring_genome[mut_line].GetSymbol());
+    totalMutations++;
+  }
+ 
   
   // Divide Insertions
   if (m_organism->TestDivideIns(ctx) && offspring_genome.GetSize() < max_genome_size && totalMutations < maxmut) {
@@ -228,7 +258,21 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     offspring_genome.GetMutationSteps().AddInsertionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
     totalMutations++;
   }
-  
+
+
+  // Poisson Divide Insertions
+  unsigned int num_poisson_ins = m_organism->NumDividePoissonIns(ctx);
+  for (unsigned int i=0; i<num_poisson_ins; i++)
+  {
+    if (offspring_genome.GetSize() >= max_genome_size) break;
+    if (totalMutations >= maxmut) break;
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize() + 1);
+    offspring_genome.Insert(mut_line, m_inst_set->GetRandomInst(ctx));
+    offspring_genome.GetMutationSteps().AddInsertionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
+    totalMutations++;
+  }
+   
+   
   // Divide Deletions
   if (m_organism->TestDivideDel(ctx) && offspring_genome.GetSize() > min_genome_size && totalMutations < maxmut) {
     const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
@@ -237,13 +281,24 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     totalMutations++;
   }
 
+
+  // Poisson Divide Deletions
+  unsigned int num_poisson_del = m_organism->NumDividePoissonDel(ctx);
+  for (unsigned int i=0; i<num_poisson_del; i++)
+  {
+    if (offspring_genome.GetSize() <= min_genome_size) break;
+    if (totalMutations >= maxmut) break;
+    const unsigned int mut_line = ctx.GetRandom().GetUInt(offspring_genome.GetSize());
+    offspring_genome.GetMutationSteps().AddDeletionMutation(mut_line, offspring_genome[mut_line].GetSymbol());
+    offspring_genome.Remove(mut_line);
+    totalMutations++;
+  }
+
+
   // Divide Uniform Mutations
   if (m_organism->TestDivideUniform(ctx) && totalMutations < maxmut) {
     if (doUniformMutation(ctx, offspring_genome)) totalMutations++;
   }
-  
-  
-  
   
   
   // Divide Mutations (per site)
@@ -262,7 +317,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     }
   }
 
-  
   // Insert Mutations (per site)
   if (m_organism->GetDivInsProb() > 0 && totalMutations < maxmut) {
     int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), m_organism->GetDivInsProb());
@@ -323,18 +377,6 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
       }
     }
   }
-  
-  
-  // Slip Mutations (per site) - NOT COUNTED
-  if (m_organism->GetDivSlipProb() > 0) {
-    int num_mut = ctx.GetRandom().GetRandBinomial(offspring_genome.GetSize(), 
-                                                  m_organism->GetDivSlipProb() / mut_multiplier);
-    for (int i = 0; i < num_mut; i++) doSlipMutation(ctx, offspring_genome);
-  }
-  
-  
-  
-  
   
   // Mutations in the parent's genome
   if (m_organism->GetParentMutProb() > 0 && totalMutations < maxmut) {
