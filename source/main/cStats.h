@@ -777,6 +777,7 @@ public:
   void PrintExtendedTimeData(const cString& filename);
   void PrintNumOrgsKilledData(const cString& filename);
   void PrintGroupsFormedData(const cString& filename);
+	void PrintGroupIds(const cString& filename);
   
   // deme predicate stats
   void IncEventCount(int x, int y);

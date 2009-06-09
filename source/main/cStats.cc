@@ -2589,6 +2589,36 @@ void cStats::PrintGroupsFormedData(const cString& filename)
 	
 }
 
+/* 	
+ Print data regarding the ids of used groups.
+ */
+void cStats::PrintGroupIds(const cString& filename)
+{
+	
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("The ids of groups used.");
+	
+	map<int,int> groups = m_world->GetPopulation().GetFormedGroups();
+	
+	map <int,int>::iterator itr;
+
+	df.WriteTimeStamp();
+	
+	for(itr = groups.begin();itr!=groups.end();itr++) {
+		double cur_size = itr->second;
+		if (cur_size > 0) {
+			df.Write(m_update,   "Update [update]");
+			df.Write(itr->first, "group id [groupid]");
+			df.Write(cur_size, "size of groups [grsize]");
+			df.Endl();
+		}
+	}
+	
+	
+	df.Endl();
+	
+}
+
 /*! Print and reset network statistics.
  */
 void cStats::PrintDemeNetworkData(const cString& filename) {

@@ -145,6 +145,7 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
 // group formation 
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
+STATS_OUT_FILE(PrintGroupIds,         groupids.dat);
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -3167,6 +3168,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 	// Group Formation
 	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
+	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
 	
   action_lib->Register<cActionSetVerbose>("VERBOSE");
 }
