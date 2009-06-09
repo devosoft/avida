@@ -569,6 +569,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		
 		// Group formation instructions
 		tInstLibEntry<tMethod>("join-group", &cHardwareCPU::Inst_JoinGroup, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("orgs-in-my-group", &cHardwareCPU::Inst_NumberOrgsInMyGroup, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, nInstFlag::STALL),
 		
     // Must always be the last instruction in the array
@@ -8945,7 +8946,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 
 //! Gets the number of organisms in the current organism's group 
 //! and places the value in the ?CX? register
-bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_NumberOrgsInMyGroup(cAvidaContext& ctx)
 {
 	int num_orgs = 0;
 	assert(m_organism != 0);
@@ -8956,6 +8957,22 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
 		opinion = m_organism->GetOpinion().first;
 		num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion);
   }
+	GetRegister(num_org_reg) = num_orgs;
+	return true;
+}
+
+
+//! Gets the number of organisms in the group of a given id
+//! specified by the ?BX? register and places the value in the ?CX? register
+bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
+{
+	int num_orgs = 0;
+	assert(m_organism != 0);
+	const int group_id = FindModifiedRegister(REG_BX);
+	const int num_org_reg = FindModifiedRegister(REG_CX);
+
+	num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+  
 	GetRegister(num_org_reg) = num_orgs;
 	return true;
 }

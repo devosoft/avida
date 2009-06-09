@@ -853,8 +853,9 @@ public:
 	//! An organism joins a group by setting it opinion to the group id. 
 	bool Inst_JoinGroup(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
-	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
-		
+	bool Inst_NumberOrgsInMyGroup(cAvidaContext& ctx);
+	//! Returns the number of organisms in the current organism's group
+	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);		
 	
 	
 };
