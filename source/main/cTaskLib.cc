@@ -3408,12 +3408,14 @@ double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
 	}
 	int orgs_in_group = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
 	
-	if (orgs_in_group < ideal_group_size) {
+	reward = (1 - ((ideal_group_size - orgs_in_group)*(ideal_group_size - orgs_in_group)))/(ideal_group_size * ideal_group_size);
+	if (reward < 0) reward = 0;
+	/*if (orgs_in_group < ideal_group_size) {
 		reward = orgs_in_group*orgs_in_group;
 	} else {
 		reward = ideal_group_size*ideal_group_size;
 	}
-	reward = reward / ideal_group_size;
+	reward = reward / ideal_group_size;*/
 	return reward;
 }
 
