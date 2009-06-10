@@ -4524,7 +4524,7 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
 		}
 		
 		// stop searching through the neighbors if we already found one
-		if (found == true);{
+		if (found == true) {
     	break;
 		}
 		
