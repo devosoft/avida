@@ -404,6 +404,8 @@ public:
   CONFIG_ADD_VAR(DIVIDE_POISSON_SLIP_MEAN, double, 0.0, "Slip rate (Poisson distributed, per divide)");
 
   CONFIG_ADD_VAR(DIVIDE_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per divide)\n- Randomly applies any of the three classes of mutations (ins, del, point).");
+
+  CONFIG_ADD_VAR(DEATH_PROB, double, 0.0, "Death rate (parent organism, per divide)");
   
   CONFIG_ADD_VAR(INJECT_INS_PROB, double, 0.0, "Insertion rate (per site, applied on inject)");
   CONFIG_ADD_VAR(INJECT_DEL_PROB, double, 0.0, "Deletion rate (per site, applied on inject)");

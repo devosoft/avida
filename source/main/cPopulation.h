@@ -267,7 +267,8 @@ public:
   void ProcessStepSpeculative(cAvidaContext& ctx, double step_size, int cell_id);
 
   // Calculate the statistics from the most recent update.
-  void CalcUpdateStats();
+  void ProcessPostUpdate(cAvidaContext& ctx);
+  void ProcessUpdateCellActions(cAvidaContext& ctx);
 
   // Clear all but a subset of cells...
   void SerialTransfer(int transfer_size, bool ignore_deads);

@@ -388,7 +388,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
       }
     }
   }
-  
+    
   return totalMutations;
 }
 

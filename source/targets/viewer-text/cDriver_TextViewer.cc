@@ -170,7 +170,7 @@ void cDriver_TextViewer::Run()
     
     
     // end of update stats...
-    population.CalcUpdateStats();
+    population.ProcessPostUpdate(ctx);
     
     
     // Setup the viewer for the new update.

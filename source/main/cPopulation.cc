@@ -4224,8 +4224,10 @@ void cPopulation::UpdateDominantParaStats()
   stats.SetDomInjSequence(dom_inj_genotype->GetGenome().AsString());
 }
 
-void cPopulation::CalcUpdateStats()
+void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
+  //ProcessUpdateCellActions(ctx);
+  
   cStats& stats = m_world->GetStats();
   // Reset the Genebank to prepare it for stat collection.
   m_world->GetClassificationManager().UpdateReset();
@@ -4245,6 +4247,15 @@ void cPopulation::CalcUpdateStats()
   // Have stats calculate anything it now can...
   stats.CalcEnergy();
   stats.CalcFidelity();
+  
+  for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate();
+}
+
+void cPopulation::ProcessUpdateCellActions(cAvidaContext& ctx)
+{
+  for (int i = 0; i < cell_array.GetSize(); i++) {
+    if (cell_array[i].MutationRates().TestDeath(ctx)) KillOrganism(cell_array[i]);
+  }
 }
 
 
@@ -5255,7 +5266,7 @@ void cPopulation::NewTrial(cAvidaContext& ctx)
   //is processed, they accurately reflect this trial only...
   cStats& stats = m_world->GetStats();
   stats.ProcessUpdate();
-  CalcUpdateStats();
+  ProcessPostUpdate(ctx);
 }
 
 /*

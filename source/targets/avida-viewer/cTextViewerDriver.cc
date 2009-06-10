@@ -135,7 +135,7 @@ void cTextViewerDriver::Run()
     
     
     // end of update stats...
-    population.CalcUpdateStats();
+    population.ProcessPostUpdate(ctx);
     
     // Setup the viewer for the new update.
     if (m_view->GetStepOrganism() == -1) {
