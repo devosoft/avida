@@ -105,6 +105,13 @@ public:
 	void RotateToGreatestReputationWithDifferentLineage(int tag){ }	
   
   int GetStateGridID(cAvidaContext& ctx);
+	
+	//! Link this organism's cell to the cell it is currently facing.
+	void CreateLinkByFacing(double weight=1.0) { }
+	//! Link this organism's cell to the cell with coordinates (x,y).
+	void CreateLinkByXY(int x, int y, double weight=1.0) { }
+	//! Link this organism's cell to the cell with index idx.
+	void CreateLinkByIndex(int idx, double weight=1.0) { }
 };
 
 

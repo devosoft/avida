@@ -159,6 +159,7 @@ public:
   //! Returns an (x,y) pair for the position of the passed-in cell ID.
   std::pair<int, int> GetCellPosition(int cellid) const;
   cPopulationCell& GetCell(int pos) const;
+	cPopulationCell& GetCell(int x, int y) const;
   cOrganism* GetOrganism(int pos) const;
 
   int GetWidth() const { return width; }

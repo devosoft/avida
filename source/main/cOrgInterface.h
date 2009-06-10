@@ -113,7 +113,10 @@ public:
 	virtual void RotateToGreatestReputation() =0;
 	virtual void RotateToGreatestReputationWithDifferentTag(int tag) =0;
 	virtual void RotateToGreatestReputationWithDifferentLineage(int line) =0;	
-	
+
+	virtual void CreateLinkByFacing(double weight=1.0) = 0;
+	virtual void CreateLinkByXY(int x, int y, double weight=1.0) = 0;
+	virtual void CreateLinkByIndex(int idx, double weight=1.0) = 0;
 };
 
 #endif

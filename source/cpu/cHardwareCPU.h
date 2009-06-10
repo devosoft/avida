@@ -848,7 +848,7 @@ public:
 	bool Inst_IfNeighborhoodChanged(cAvidaContext& ctx);
 
 	
-// -------- Group Formation Support --------
+	// -------- Group Formation Support --------
 public:
 	//! An organism joins a group by setting it opinion to the group id. 
 	bool Inst_JoinGroup(cAvidaContext& ctx);
@@ -856,8 +856,15 @@ public:
 	bool Inst_NumberOrgsInMyGroup(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
 	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);		
-	
-	
+
+	// -------- Network creation support --------
+public:
+	//! Create a link to the currently-faced cell.
+	bool Inst_CreateLinkByFacing(cAvidaContext& ctx);
+	//! Create a link to the cell specified by xy-coordinates.
+	bool Inst_CreateLinkByXY(cAvidaContext& ctx);
+	//! Create a link to the cell specified by index.
+	bool Inst_CreateLinkByIndex(cAvidaContext& ctx);
 };
 
 

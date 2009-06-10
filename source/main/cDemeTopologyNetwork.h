@@ -78,7 +78,7 @@ public:
 	virtual void ProcessUpdate() { }
 	
 	//! Connect u->v with weight w.
-	virtual void Connect(cPopulationCell& u, cPopulationCell& v, double w=0.0);
+	virtual void Connect(cPopulationCell& u, cPopulationCell& v, double w=1.0);
 	
 	//! Called when the organism living in cell u dies.
 	virtual void OrganismDeath(cPopulationCell& u) { }

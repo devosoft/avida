@@ -25,6 +25,7 @@
 
 #include "cPopulationInterface.h"
 
+#include "cDeme.h"
 #include "cEnvironment.h"
 #include "cGenotype.h"
 #include "cHardwareManager.h"
@@ -42,8 +43,16 @@
 #define NULL 0
 #endif
 
-cDeme* cPopulationInterface::GetDeme()
-{
+
+cPopulationCell* cPopulationInterface::GetCell() { 
+	return &m_world->GetPopulation().GetCell(m_cell_id);
+}
+
+cPopulationCell* cPopulationInterface::GetCellFaced() {
+	return &GetCell()->GetCellFaced();
+}
+
+cDeme* cPopulationInterface::GetDeme() {
   return &m_world->GetPopulation().GetDeme(m_deme_id);
 }
 
@@ -568,9 +577,32 @@ void cPopulationInterface::RotateToGreatestReputationWithDifferentLineage(int li
 			cell.ConnectionList().CircNext();
 			
 		}
-		
-		
-		
-	}
-	
+	}	
+}
+
+/*! Link this organism's cell to the cell it is currently facing.
+ */
+void cPopulationInterface::CreateLinkByFacing(double weight) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	cPopulationCell* that_cell = GetCellFaced(); assert(that_cell);
+	deme->GetNetwork().Connect(*this_cell, *that_cell, weight);
+}
+
+/*! Link this organism's cell to the cell with coordinates (x,y).
+ */
+void cPopulationInterface::CreateLinkByXY(int x, int y, double weight) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	cPopulationCell& that_cell = deme->GetCell(x % deme->GetWidth(), y % deme->GetHeight());
+	deme->GetNetwork().Connect(*this_cell, that_cell, weight);
+}
+
+/*! Link this organism's cell to the cell with index idx.
+ */
+void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	cPopulationCell& that_cell = deme->GetCell(idx % deme->GetSize());
+	deme->GetNetwork().Connect(*this_cell, that_cell, weight);
 }

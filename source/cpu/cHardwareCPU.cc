@@ -572,6 +572,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("orgs-in-my-group", &cHardwareCPU::Inst_NumberOrgsInMyGroup, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, nInstFlag::STALL),
 		
+		// Network creation instructions
+		tInstLibEntry<tMethod>("create-link-facing", &cHardwareCPU::Inst_CreateLinkByFacing, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("create-link-xy", &cHardwareCPU::Inst_CreateLinkByXY, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("create-link-index", &cHardwareCPU::Inst_CreateLinkByIndex, nInstFlag::STALL),
+		
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
   };
@@ -8961,7 +8966,6 @@ bool cHardwareCPU::Inst_NumberOrgsInMyGroup(cAvidaContext& ctx)
 	return true;
 }
 
-
 //! Gets the number of organisms in the group of a given id
 //! specified by the ?BX? register and places the value in the ?CX? register
 bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
@@ -8975,4 +8979,31 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
   
 	GetRegister(num_org_reg) = num_orgs;
 	return true;
+}
+
+/*! Create a link to the currently-faced cell.
+ */
+bool cHardwareCPU::Inst_CreateLinkByFacing(cAvidaContext& ctx) {
+	const int wreg = FindModifiedRegister(REG_BX);
+	m_organism->GetOrgInterface().CreateLinkByFacing(GetRegister(wreg));
+	return true;
+}
+
+/*! Create a link to the cell specified by xy-coordinates.
+ */
+bool cHardwareCPU::Inst_CreateLinkByXY(cAvidaContext& ctx) {
+  const int xreg = FindModifiedRegister(REG_BX);
+  const int yreg = FindNextRegister(xreg);
+	const int wreg = FindNextRegister(yreg);
+	m_organism->GetOrgInterface().CreateLinkByXY(GetRegister(xreg), GetRegister(yreg), GetRegister(wreg));
+  return true;
+}
+
+/*! Create a link to the cell specified by index.
+ */
+bool cHardwareCPU::Inst_CreateLinkByIndex(cAvidaContext& ctx) {
+  const int idxreg = FindModifiedRegister(REG_BX);
+	const int wreg = FindNextRegister(idxreg);
+	m_organism->GetOrgInterface().CreateLinkByIndex(GetRegister(idxreg), GetRegister(wreg));
+  return true;
 }

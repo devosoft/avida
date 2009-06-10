@@ -131,6 +131,11 @@ cPopulationCell& cDeme::GetCell(int pos) const
   return m_world->GetPopulation().GetCell(cell_ids[pos]);
 }
 
+cPopulationCell& cDeme::GetCell(int x, int y) const
+{
+	return m_world->GetPopulation().GetCell(GetCellID(x,y));
+}
+
 
 cOrganism* cDeme::GetOrganism(int pos) const
 {
@@ -250,6 +255,9 @@ void cDeme::ProcessUpdate() {
     }
   }
   ++_age;
+	
+	// Let the network process the update too, if we have one.
+	if(IsNetworkInitialized()) { m_network->ProcessUpdate(); }
 }
 
 

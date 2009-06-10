@@ -54,7 +54,7 @@ public:
 	 neighboring cells.  The network's performance is based on its structure (evaluated as a graph).
 	 */
 	enum NetworkType { TOPOLOGY };
-
+	
 	//! Factory method, the only way to create a deme network (pointer is owned by the caller).
 	static cDemeNetwork* DemeNetworkFactory(cWorld* world, cDeme& deme);
 	
@@ -65,7 +65,7 @@ public:
 	virtual void ProcessUpdate() = 0;
 
 	//! Connect u->v with weight w.
-	virtual void Connect(cPopulationCell& u, cPopulationCell& v, double w=0.0) = 0;
+	virtual void Connect(cPopulationCell& u, cPopulationCell& v, double w=1.0) = 0;
 	
 	//! Called when the organism living in cell u dies.
 	virtual void OrganismDeath(cPopulationCell& u) = 0;
