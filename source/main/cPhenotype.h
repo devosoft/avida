@@ -364,7 +364,7 @@ public:
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
-  const int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
+  int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
 	const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
@@ -393,7 +393,7 @@ public:
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
   const tArray<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
-  const int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
+  int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
   int GetGeneration() const { assert(initialized == true); return generation; }
