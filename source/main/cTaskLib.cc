@@ -3400,15 +3400,17 @@ void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr,
 
 double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
 {
-	int ideal_group_size = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
 	double reward = 0.0;
 	int group_id = 0; 
 	if (ctx.GetOrganism()->HasOpinion()) {
 		group_id = ctx.GetOrganism()->GetOpinion().first;
 	}
-	int orgs_in_group = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+	double g = (double) m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+	double num = (t-g) * (t-g);
+	double denom = (t*t);
 	
-	reward = (1 - ((ideal_group_size - orgs_in_group)*(ideal_group_size - orgs_in_group)))/(ideal_group_size * ideal_group_size);
+	reward = 1 - (num/denom);
 	if (reward < 0) reward = 0;
 	/*if (orgs_in_group < ideal_group_size) {
 		reward = orgs_in_group*orgs_in_group;
