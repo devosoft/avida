@@ -587,6 +587,7 @@ IF(AVD_UNIT_TESTS)
   SET(UNIT_TESTS_DIR source/targets/unit-tests)
   SET(UNIT_TESTS_SOURCES
     ${UNIT_TESTS_DIR}/main.cc
+    ${TOOLS_DIR}/cBitArray.cc
   )
   ADD_EXECUTABLE(unit-tests ${UNIT_TESTS_SOURCES})
   INSTALL_TARGETS(/work unit-tests)
