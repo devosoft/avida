@@ -473,7 +473,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 
     // Energy usage
     tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("half-energy-usage", &cHardwareCPU::Inst_HalfEnergyUsage, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("halve-energy-usage", &cHardwareCPU::Inst_HalveEnergyUsage, nInstFlag::STALL),
     tInstLibEntry<tMethod>("default-energy-usage", &cHardwareCPU::Inst_DefaultEnergyUsage, nInstFlag::STALL),
 
     // Messaging

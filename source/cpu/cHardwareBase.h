@@ -212,7 +212,7 @@ protected:
   
   // --------  Execution Speed Instruction  --------
   bool Inst_DoubleEnergyUsage(cAvidaContext& ctx);
-  bool Inst_HalfEnergyUsage(cAvidaContext& ctx);
+  bool Inst_HalveEnergyUsage(cAvidaContext& ctx);
   bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
 	
 

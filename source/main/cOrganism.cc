@@ -428,9 +428,10 @@ void cOrganism::doOutput(cAvidaContext& ctx,
     m_phenotype.RefreshEnergy();
     m_phenotype.ApplyToEnergyStore();
     double newMerit = m_phenotype.ConvertEnergyToMerit(m_phenotype.GetStoredEnergy() * m_phenotype.GetEnergyUsageRatio());
-    if(newMerit != -1) {
-      m_interface->UpdateMerit(newMerit);
-    }
+		m_interface->UpdateMerit(newMerit);
+		if(GetPhenotype().GetMerit().GetDouble() == 0.0) {
+			GetPhenotype().SetToDie();
+		}
   }
   m_interface->UpdateResources(global_res_change);
 

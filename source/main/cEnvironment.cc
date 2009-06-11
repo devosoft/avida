@@ -1270,7 +1270,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     result.MarkReaction(reaction_id);
     
     double bonus = consumed * cur_process->GetValue();
-    
+
     if (!cur_process->GetIsGermline())
     {
       // normal bonus

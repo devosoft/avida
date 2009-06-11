@@ -573,7 +573,7 @@ public:
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
   
   void DoubleEnergyUsage();
-  void HalfEnergyUsage();
+  void HalveEnergyUsage();
   void DefaultEnergyUsage();
   
   void RefreshEnergy();

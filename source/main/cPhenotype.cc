@@ -1401,7 +1401,7 @@ void cPhenotype::DoubleEnergyUsage() {
   executionRatio *= 2.0;
 }
 
-void cPhenotype::HalfEnergyUsage() {
+void cPhenotype::HalveEnergyUsage() {
   executionRatio *= 0.5;
 }
 
@@ -1491,15 +1491,18 @@ double cPhenotype::ExtractParentEnergy() {
   ReduceEnergy(GetStoredEnergy() * frac_energy_decay_at_birth);
   
   // calculate energy to be given to child
-  double child_energy = min(GetStoredEnergy() * frac_parent_energy_given_at_birth + energy_given_at_birth, energy_cap);
-  
+  double child_energy = max(0.0, min(GetStoredEnergy() * frac_parent_energy_given_at_birth + energy_given_at_birth, energy_cap));
+  assert(GetStoredEnergy()>0.0);
   // adjust energy in parent
   ReduceEnergy(child_energy - 2*energy_given_at_birth); // 2*energy_given_at_birth: 1 in child_energy & 1 for parent
     
   //TODO: add energy_given_at_birth to Stored_energy
   cMerit parentMerit(ConvertEnergyToMerit(GetStoredEnergy() * GetEnergyUsageRatio()));
-  SetMerit(parentMerit);
-  
+	if(parentMerit.GetDouble() > 0.0)
+		SetMerit(parentMerit);
+  else
+		SetToDie();
+	
   return child_energy;
 }
 
