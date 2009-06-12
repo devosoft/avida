@@ -3449,7 +3449,7 @@ void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& a
 double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 {
 	double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
-	int des_group_id = (double) ctx.GetTaskEntry()->GetArguments().GetInt(1);
+	int des_group_id = ctx.GetTaskEntry()->GetArguments().GetInt(1);
 
 	double reward = 0.0;
 	int group_id = -1; 
@@ -3475,10 +3475,6 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 		
 	}
 	
-	if (reward < 0) 
-	{
-		int y = 0;
-	}
 
 	return reward;
 }
