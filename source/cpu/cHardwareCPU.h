@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <vector>
 
+
 #ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
@@ -176,6 +177,7 @@ protected:
   int m_epigenetic_saved_reg[NUM_REGISTERS];
   cCPUStack m_epigenetic_saved_stack;
   // Epigenetic State -->
+	
 
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
@@ -963,3 +965,5 @@ inline void cHardwareCPU::SwitchStack()
 }
 
 #endif
+
+

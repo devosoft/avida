@@ -61,6 +61,9 @@
 # endif
 #endif
 
+#include <set>
+
+
 
 class cAvidaContext;
 class cReaction;
@@ -187,6 +190,14 @@ public:
   bool SetReactionTask(const cString& name, const cString& task);
   bool SetResourceInflow(const cString& name, double _inflow );
   bool SetResourceOutflow(const cString& name, double _outflow );
+	
+//--------------- used for spatial group formation
+public: 
+	void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
+	bool IsGroupID(int test_id);
+	
+protected:
+	std::set<int> possible_group_ids;
   
 };
 

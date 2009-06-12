@@ -1524,3 +1524,15 @@ bool cEnvironment::SetResourceOutflow(const cString& name, double _outflow )
   return true;
 }
 
+/* 
+ helper function that checks if this is a valid group id. The ids are specified 
+ in the environment file as tasks.
+ */
+bool cEnvironment::IsGroupID(int test_id) 
+{
+	bool val = false;
+	if (possible_group_ids.find(test_id) != possible_group_ids.end())
+		val = true;
+	return val;
+	
+}

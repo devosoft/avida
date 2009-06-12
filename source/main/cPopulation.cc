@@ -407,6 +407,17 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 			child_array[i]->SetReputation(parent_organism->GetReputation()); 
 		}
 		
+		
+		// If spatial groups are used, put the offspring in the 
+		// parents' group
+		if (m_world->GetConfig().USE_FORM_GROUPS.Get()){
+			assert(parent_organism->HasOpinion());
+			int group = parent_organism->GetOpinion().first;
+			child_array[i]->SetOpinion(group); 
+			JoinGroup(group);
+
+		}
+		
 	
 	}
 	

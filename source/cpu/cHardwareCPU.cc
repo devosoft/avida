@@ -8933,12 +8933,21 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 	int opinion;
 	// Check if the org is currently part of a group
 	assert(m_organism != 0);
+	
+	// check if this is a valid group
+	if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) { 
+		int prop_group_id =   GetRegister(FindModifiedRegister(REG_BX));
+		if (!(m_world->GetEnvironment().IsGroupID(prop_group_id))){
+			return true;
+		}
+	}
+
+	
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
 		// subtract org from group
 		m_world->GetPopulation().LeaveGroup(opinion);
   }
-	
 	
 	// Call the set opinion instruction, which does all the dirty work.
 	Inst_SetOpinion(ctx);
@@ -8981,6 +8990,9 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
 	return true;
 }
 
+
+
+
 /*! Create a link to the currently-faced cell.
  */
 bool cHardwareCPU::Inst_CreateLinkByFacing(cAvidaContext& ctx) {
@@ -9007,3 +9019,5 @@ bool cHardwareCPU::Inst_CreateLinkByIndex(cAvidaContext& ctx) {
 	m_organism->GetOrgInterface().CreateLinkByIndex(GetRegister(idxreg), GetRegister(wreg));
   return true;
 }
+
+

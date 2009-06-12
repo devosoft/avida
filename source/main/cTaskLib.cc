@@ -37,6 +37,7 @@
 #include "cStateGrid.h"
 #include "tArrayUtils.h"
 #include "tHashTable.h"
+#include "cEnvironment.h"
 
 #include "platform.h"
 
@@ -3434,9 +3435,15 @@ void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& a
   // Integer Arguments
   schema.AddEntry("group_size", 0, 1);
   schema.AddEntry("group_id", 1, 1);
+	
+
   
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "FormSpatialGroupWithID", &cTaskLib::Task_FormSpatialGroupWithID, 0, args);
+	
+	// Add this group id to the list in the instructions file. 
+	m_world->GetEnvironment().AddGroupID(args->GetInt(1));
+	
 }
 
 double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
@@ -3466,6 +3473,11 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 			
 		}
 		
+	}
+	
+	if (reward < 0) 
+	{
+		int y = 0;
 	}
 
 	return reward;

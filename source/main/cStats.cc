@@ -2551,7 +2551,7 @@ void cStats::PrintGroupsFormedData(const cString& filename)
 {
 
 	cDataFile& df = m_world->GetDataFile(filename);
-	df.WriteComment("The number of groups, average, max, and min number of orgs in groups");
+	df.WriteComment("Information about the groups joined and used by the organisms");
 	
 	map<int,int> groups = m_world->GetPopulation().GetFormedGroups();
 	
@@ -2561,6 +2561,7 @@ void cStats::PrintGroupsFormedData(const cString& filename)
 	double max_size = 0.0;
 	double min_size = 100000000000.0;
 	double active_groups = 0.0;
+	double groups_per_org = 0.0;
 	
 	for(itr = groups.begin();itr!=groups.end();itr++) {
 		double cur_size = itr->second;
@@ -2573,8 +2574,20 @@ void cStats::PrintGroupsFormedData(const cString& filename)
 		}
 	}
 	
+	cOrganism* org; 
+	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		org = cell.GetOrganism();
+		
+    if(cell.IsOccupied()) {
+			org = cell.GetOrganism();
+			groups_per_org += org->HasOpinion();
+		}	
+	}
+	
 	avg_size = avg_size / groups.size();
 	avg_size_wout_empty = avg_size_wout_empty / active_groups;
+	groups_per_org = groups_per_org / m_world->GetPopulation().GetSize();
 	df.WriteTimeStamp();
 	df.Write(m_update,   "Update [update]");
 	df.Write((double)groups.size(), "number of groups [num]");
@@ -2583,6 +2596,7 @@ void cStats::PrintGroupsFormedData(const cString& filename)
 	df.Write(max_size, "max size of groups [maxsize]");
 	df.Write(min_size, "min size of groups [minsize]");
 	df.Write(active_groups, "active groups [actgroup]");
+	df.Write(groups_per_org, "groups per org life [groupsperorg]");
 	
 	
 	df.Endl();
