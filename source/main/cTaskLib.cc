@@ -3468,8 +3468,12 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 			double num = (t-g) * (t-g);
 			double denom = (t*t);
 			
-			reward = 1 - (num/denom);
-			if (reward < 0) reward = 0;
+			if (denom > 0) {
+				reward = 1 - (num/denom);
+				if (reward < 0) reward = 0;
+			} else {
+				reward = 0;
+			}
 			
 		}
 		
