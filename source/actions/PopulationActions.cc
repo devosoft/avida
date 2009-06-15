@@ -955,7 +955,13 @@ public:
 				// count the number of target instructions in the genome
 				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
 
-				double killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;
+				double killprob;
+				
+				if(m_exponent == -1.0)
+					killprob = min(1.0/(m_exprWeight+ pow(M_E, -count)), 100.0)/100.0;  //sigmoid
+				else
+					killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;  // linear and exponential
+				
 				// cout << count << " " << killprob << endl;
 				currentKillProb.Add(killprob);
 				// decide if it should be killed or not, based on the kill probability
