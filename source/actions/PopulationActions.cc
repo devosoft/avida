@@ -912,6 +912,7 @@ private:
 	double m_exprWeight;
 	double m_exponent;
 	int m_printUpdate;
+	cIntSum m_instCount;
 	cIntSum m_totalkilled;
 	cDoubleSum m_killProd;
 
@@ -923,6 +924,7 @@ public:
 		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
+		m_instCount.Clear();
 		m_totalkilled.Clear();
 		m_killProd.Clear();
 	}
@@ -932,7 +934,9 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
+		cIntSum currentInstCount;
 		cDoubleSum currentKillProb;
+		currentInstCount.Clear();
 		currentKillProb.Clear();
 
 		// for each deme in the population...
@@ -954,15 +958,16 @@ public:
 				
 				// count the number of target instructions in the genome
 				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+				currentInstCount.Add(count);
 
 				double killprob;
-				
 				if(m_exponent == -1.0)
 					killprob = min(1.0/(m_exprWeight+ pow(M_E, -count)), 100.0)/100.0;  //sigmoid
 				else
 					killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;  // linear and exponential
 				
 				// cout << count << " " << killprob << endl;
+				
 				currentKillProb.Add(killprob);
 				// decide if it should be killed or not, based on the kill probability
 				if (ctx.GetRandom().P(killprob)) {
@@ -971,6 +976,7 @@ public:
 				}
 			}
 		}
+		m_instCount.Add(currentInstCount.Average());
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
 			
@@ -979,9 +985,11 @@ public:
 			cDataFile& df = m_world->GetDataFile("TherapyStructuralNumInst_kill.dat");
 			df.WriteComment("Number of organisms killed by structural therapy NumInst");
 			df.Write(update, "Update");
+			df.Write(m_instCount.Average(), "Mean organisms instruction count update since last print");
 			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
 			df.Write(m_killProd.Average(), "Mean organism kill probablity");
 			df.Endl();
+			m_instCount.Clear();
 			m_totalkilled.Clear();
 			m_killProd.Clear();
 		}
@@ -1004,6 +1012,7 @@ private:
 	double m_exprWeight;
 	double m_exponent;
 	int m_printUpdate;
+	cIntSum m_minDist;
 	cIntSum m_totalkilled;
 	cDoubleSum m_killProd;
 	
@@ -1015,6 +1024,7 @@ public:
 		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
+		m_minDist.Clear();
 		m_totalkilled.Clear();
 		m_killProd.Clear();
 	}
@@ -1024,7 +1034,9 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
+		cIntSum currentMinDist;
 		cDoubleSum currentKillProb;
+		currentMinDist.Clear();
 		currentKillProb.Clear();
 		// for each deme in the population...
 		cPopulation& pop = m_world->GetPopulation();
@@ -1048,6 +1060,7 @@ public:
 				const cGenome& genome = cell.GetOrganism()->GetGenome();
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = cGenomeUtil::MinDistBetween(genome, m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+				currentMinDist.Add(minDist);
 				
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));
 				double killprob = (genomeSize - static_cast<double>(ratioNumerator))/genomeSize;
@@ -1060,6 +1073,7 @@ public:
 				}
 			}
 		}
+		m_minDist.Add(currentMinDist.Average());
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
 		
@@ -1068,9 +1082,11 @@ public:
 			cDataFile& df = m_world->GetDataFile("TherapyStructuralRatioDistBetweenNearest_kill.dat");
 			df.WriteComment("Number of organisms killed by structural therapy RatioDistBetweenNearest");
 			df.Write(update, "Update");
+			df.Write(m_minDist.Average(), "Mean minimum distance between instructions organism genome per update since last print");
 			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
 			df.Write(m_killProd.Average(), "Mean organism kill probablity");
 			df.Endl();
+			m_minDist.Clear();
 			m_totalkilled.Clear();
 			m_killProd.Clear();
 		}

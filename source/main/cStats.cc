@@ -1466,6 +1466,7 @@ void cStats::PrintDemeResourceThresholdPredicate(const cString& filename)
 		for(map<cString, int>::iterator iter = demeResourceThresholdPredicateMap.begin(); iter != demeResourceThresholdPredicateMap.end(); ++iter) {
 			df.Write(iter->second, iter->first);
 			iter->second = 0;
+			assert(iter->second == demeResourceThresholdPredicateMap[iter->first]);
 		}
 		df.Endl();
 	}	
