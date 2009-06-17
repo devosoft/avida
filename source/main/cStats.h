@@ -850,7 +850,11 @@ public:
   void PrintDemeFoundersData(const cString& filename);
 
   void PrintPerDemeTasksData(const cString& filename);
+  void PrintPerTreatableDemeTasksData(const cString& filename);
+  void PrintPerUntreatableDemeTasksData(const cString& filename);
   void PrintPerDemeTasksExeData(const cString& filename);
+  void PrintPerTreatableDemeTasksExeData(const cString& filename);
+  void PrintPerUntreatableDemeTasksExeData(const cString& filename);
   void PrintPerDemeReactionData(const cString& filename);
   void PrintDemeTasksData(const cString& filename);
   void PrintDemeTasksExeData(const cString& filename);

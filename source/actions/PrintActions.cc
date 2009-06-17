@@ -110,7 +110,11 @@ STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
 STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
 STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
 STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
+STATS_OUT_FILE(PrintPerTreatableDemeTasksData,       per_treatable_deme_tasks.dat      );
+STATS_OUT_FILE(PrintPerUntreatableDemeTasksData,       per_untreatable_deme_tasks.dat      );
 STATS_OUT_FILE(PrintPerDemeTasksExeData,    per_deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintPerTreatableDemeTasksExeData,    per_treatable_deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintPerUntreatableDemeTasksExeData,    per_untreatable_deme_tasks_exe.dat  );
 STATS_OUT_FILE(PrintPerDemeReactionData,    per_deme_reactions.dat  );
 STATS_OUT_FILE(PrintDemeTasksData,          deme_tasks.dat      );
 STATS_OUT_FILE(PrintDemeTasksExeData,       deme_tasks_exe.dat  );
@@ -3038,7 +3042,11 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
   action_lib->Register<cActionPrintPerDemeTasksData>("PrintPerDemeTasksData");
+  action_lib->Register<cActionPrintPerDemeTasksData>("PrintPerTreatableDemeTasksData");
+  action_lib->Register<cActionPrintPerDemeTasksData>("PrintPerUntreatableDemeTasksData");
   action_lib->Register<cActionPrintPerDemeTasksExeData>("PrintPerDemeTasksExeData");
+  action_lib->Register<cActionPrintPerTreatableDemeTasksExeData>("PrintPerTreatableDemeTasksExeData");
+  action_lib->Register<cActionPrintPerUntreatableDemeTasksExeData>("PrintPerUntreatableDemeTasksExeData");
   action_lib->Register<cActionPrintPerDemeReactionData>("PrintPerDemeReactionData");
   action_lib->Register<cActionPrintDemeTasksData>("PrintDemeTasksData");
   action_lib->Register<cActionPrintDemeTasksExeData>("PrintDemeTasksExeData");
@@ -3050,7 +3058,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
   action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
   action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
-
 	
 
   //Coalescence Clade Actions
