@@ -64,6 +64,9 @@ using namespace std;
 //  const cBitArray & EQUSELF(const cBitArray & array2)
 //  const cBitArray & SHIFTSELF(const int shift_size) const
 
+// Arithmetic:
+//  cBitArray INCREMENTSELF()
+
 // Operator overloads:
 //  cBitArray operator~() const
 //  cBitArray operator&(const cBitArray & ar2) const
@@ -76,6 +79,8 @@ using namespace std;
 //  const cBitArray & operator^=(const cBitArray & ar2)
 //  const cBitArray & operator>>=(const int)
 //  const cBitArray & operator<<=(const int)
+//  cBitArray & operator++()     // prefix ++
+//  cBitArray & operator++(int)  // postfix ++
 
 
 
@@ -208,6 +213,7 @@ public:
   void XOR(const cRawBitArray & array2, const int num_bits);
   void EQU(const cRawBitArray & array2, const int num_bits);
   void SHIFT(const int num_bits, const int shift_size);  // positive numbers for left and negative for right (0 does nothing)
+  void INCREMENT(const int num_bits);
 
   // Fast bool operators where we load all of the inputs and store the
   // results here.
@@ -225,6 +231,7 @@ public:
   void EQU(const cRawBitArray & array1, const cRawBitArray & array2,
 	   const int num_bits);
   void SHIFT(const cRawBitArray & array1, const int num_bits, const int shift_size);
+  void INCREMENT(const cRawBitArray & array1, const int num_bits);  // implemented for completeness, but unused by cBitArray
 };
 
 class cBitArray {
@@ -412,6 +419,11 @@ public:
     return *this;
   }
   
+  cBitArray & INCREMENTSELF() {
+    bit_array.INCREMENT(array_size);
+    return *this;
+  }
+  
 
   // Operator overloads...
   cBitArray operator~() const { return NOT(); }
@@ -425,6 +437,8 @@ public:
   const cBitArray & operator^=(const cBitArray & ar2) { return XORSELF(ar2); }
   const cBitArray & operator<<=(const int shift_size) { return SHIFTSELF(shift_size); }
   const cBitArray & operator>>=(const int shift_size) { return SHIFTSELF(-shift_size); }
+  cBitArray & operator++() { return INCREMENTSELF(); }  // prefix ++
+  cBitArray operator++(int) { cBitArray ans = *this; operator++(); return ans;}  // postfix ++
 
 };
 

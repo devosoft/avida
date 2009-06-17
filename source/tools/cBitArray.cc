@@ -282,6 +282,22 @@ void cRawBitArray::SHIFT(const int num_bits, const int shift_size)
   assert(false); // Should never get here.
 }
 
+void cRawBitArray::INCREMENT(const int num_bits)
+{
+  const int num_fields = GetNumFields(num_bits);
+  int i = 0;
+  for (i = 0; i < num_fields; i++) {
+    bit_fields[i]++;
+    if (bit_fields[i] != 0) { break; }  // no overflow, do not need to increment higher fields
+  }
+  
+  // if highest bit field was incremented, mask out any unused portions of the field so as not to confuse CountBits
+  if (i == num_fields - 1) {
+    unsigned int shift_mask = 0xffffffff >> 32 - (num_bits % 32);
+    bit_fields[num_fields - 1] &= shift_mask;
+  }
+}
+
 
 
 
@@ -390,6 +406,13 @@ void cRawBitArray::SHIFT(const cRawBitArray & array1, const int num_bits, const 
   
   SHIFT(num_bits, shift_size);
 }
+
+void cRawBitArray::INCREMENT(const cRawBitArray & array1, const int num_bits)
+{
+  Copy(array1, num_bits);
+  INCREMENT(num_bits);
+}
+
 
 
 
@@ -650,6 +673,31 @@ int main()
     passed = false;
     cerr << "ERROR in ShiftRight across multiple fields!" << endl;
   }
+  
+  // INCREMENT
+  
+  cRawBitArray bit_array10(1);
+  
+  bit_array10.INCREMENT(1);
+  if (bit_array10.GetBit(0) != true || bit_array10.CountBits(1) != 1) {
+    passed = false;
+    cerr << "ERROR in INCREMENT operation!" << endl;
+  }
+  
+  bit_array10.INCREMENT(1);
+  if (bit_array10.GetBit(0) != false || bit_array10.CountBits(1) != 0) {
+    passed = false;
+    cerr << "ERROR in INCREMENT overflowing last bit field!" << endl;
+  }
+  
+  cRawBitArray bit_array11(33);
+  for (int i = 0; i < 32; i++) { bit_array11.SetBit(i, true); }
+  
+  bit_array11.INCREMENT(33);
+  if (bit_array11.GetBit(32) != 1 || bit_array11.CountBits(33) != 1) {
+    passed = false;
+    cerr << "ERROR in INCREMENT across fields!" << endl;
+  }
 
 //   bit_array4.Print(70);
 //   bit_array5.Print(70);
@@ -697,6 +745,16 @@ int main()
   if ((~ba & ~ba2).CountBits() != 31) {
     passed = false;
     cerr << "ERROR: Chained bitwise operators failed for cBitArray" << endl;
+  }
+  
+  if ((++(~ba & ~ba2)).CountBits() != 30) {
+    passed = false;
+    cerr << "ERROR: prefix ++ failed for cBitArray" << endl;
+  }
+
+  if (((~ba & ~ba2)++).CountBits() != 31) {
+    passed = false;
+    cerr << "ERROR: postfix ++ failed for cBitArray" << endl;
   }
   
   cout << ba << "  " << ba.CountBits() << endl;
