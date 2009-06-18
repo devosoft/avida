@@ -132,6 +132,7 @@ STATS_OUT_FILE(PrintDemeResourceThresholdPredicate,     deme_resourceThresholdPr
 STATS_OUT_FILE(PrintPredicatedMessages,     messages.dat        );
 STATS_OUT_FILE(PrintCellData,               cell_data.dat       );
 STATS_OUT_FILE(PrintCurrentOpinions,        opinions.dat        );
+STATS_OUT_FILE(PrintOpinionsSetPerDeme,     opinions_set.dat    );
 STATS_OUT_FILE(PrintPerDemeGenPerFounderData,   deme_gen_between_founders.dat );
 STATS_OUT_FILE(PrintSynchronizationData,    sync.dat            );
 STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
@@ -3018,6 +3019,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
 	action_lib->Register<cActionPrintCellData>("PrintCellData");
 	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
+	action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
 	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
 	

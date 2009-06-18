@@ -179,8 +179,10 @@ public:
 
   int GetOrgCount() const { return cur_org_count; }
   int GetLastOrgCount() const { return last_org_count; }
-	double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
 
+	double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
+	int GetNumOrgsWithOpinion() const;
+	
   void IncOrgCount() { cur_org_count++; }
   void DecOrgCount() { cur_org_count--; }
 

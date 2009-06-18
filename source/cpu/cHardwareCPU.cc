@@ -525,6 +525,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // These are STALLs because opinions are only relevant with respect to time.
     tInstLibEntry<tMethod>("set-opinion", &cHardwareCPU::Inst_SetOpinion, nInstFlag::STALL),
     tInstLibEntry<tMethod>("get-opinion", &cHardwareCPU::Inst_GetOpinion, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("get-opinionOnly", &cHardwareCPU::Inst_GetOpinionOnly_ZeroIfNone, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("clear-opinion", &cHardwareCPU::Inst_ClearOpinion, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("if-opinion-set", &cHardwareCPU::Inst_IfOpinionSet, nInstFlag::STALL),
 		
 		// Data collection
 		tInstLibEntry<tMethod>("if-cell-data-changed", &cHardwareCPU::Inst_IfCellDataChanged, nInstFlag::STALL),
@@ -8242,6 +8245,35 @@ bool cHardwareCPU::Inst_GetOpinion(cAvidaContext& ctx)
   }
   return true;
 }
+
+bool cHardwareCPU::Inst_GetOpinionOnly_ZeroIfNone(cAvidaContext& ctx)
+{
+	assert(m_organism != 0);
+	const int opinion_reg = FindModifiedRegister(REG_BX);
+  if(m_organism->HasOpinion()) {
+    GetRegister(opinion_reg) = m_organism->GetOpinion().first;
+  } else {
+		GetRegister(opinion_reg) = 0;
+	}
+  return true;
+}
+
+
+bool cHardwareCPU::Inst_ClearOpinion(cAvidaContext& ctx) {
+	assert(m_organism != 0);
+	m_organism->ClearOpinion();
+	return true;
+}
+
+/*! If the organism has an opinion then execute the next instruction, else skip.
+ */
+bool cHardwareCPU::Inst_IfOpinionSet(cAvidaContext& ctx)
+{
+	assert(m_organism != 0);
+  if(!m_organism->HasOpinion()) IP().Advance();
+  return true;
+}
+
 
 
 /*! Collect this cell's data, and place it in ?BX?.  Set the flag indicating that

@@ -962,7 +962,7 @@ public:
 
 				double killprob;
 				if(m_exponent == -1.0)
-					killprob = min(1.0/(m_exprWeight+ pow(M_E, -count)), 100.0)/100.0;  //sigmoid
+					killprob = min(1.0/(m_exprWeight+ exp(-count)), 100.0)/100.0;  //sigmoid
 				else
 					killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;  // linear and exponential
 				

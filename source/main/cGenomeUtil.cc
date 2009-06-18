@@ -51,47 +51,51 @@ int cGenomeUtil::FindInst(const cGenome & gen, const cInstruction & inst,
 int cGenomeUtil::CountInst(const cGenome & gen, const cInstruction & inst)
 {
   int count = 0;
-  for(int i = 0; i < gen.GetSize(); i++) {
-    if (gen[i] == inst) count++;
+  for(int i = 0; i < gen.GetSize(); ++i) {
+    if (gen[i] == inst) ++count;
   }
 	
   return count;
 }
 
 // Returns minimum distance between two instance of inst respecting genome circularity.
-// If only one instance is found then lenght of genome is returned.
+// If zero or one instance is found then 0 is returned.
 int cGenomeUtil::MinDistBetween(const cGenome& genome, const cInstruction& inst) {
 	const int genomeSize = genome.GetSize();
 	int firstInstance(-1);
 	int secondInstance(-1);
 	int startIndex(0);
 	int minDist(genomeSize);
-
+	assert(startIndex < genomeSize);
+	
 	while(startIndex < genomeSize) {
 		firstInstance = FindInst(genome, inst, startIndex);
-		startIndex = firstInstance + 1;
-		
-		if(startIndex >= genomeSize)
-			return minDist;
-		
-		secondInstance = FindInst(genome, inst, startIndex);
-	
-		if(firstInstance != -1 and secondInstance != -1) {
-			minDist = min(min(secondInstance-firstInstance, firstInstance+genomeSize-secondInstance), minDist);
-		} else if(secondInstance != -1) {
-			secondInstance = FindInst(genome, inst, 0);
-			if(firstInstance == secondInstance)
-				return minDist;
-			else {
-				assert(secondInstance < firstInstance);
-				minDist = min(secondInstance+genomeSize-firstInstance, minDist);
-			}
-		} else {
+		if(firstInstance == -1 && startIndex == 0) {
+			// no instance of inst
+			return 0;
+		} else if(firstInstance == -1) {
+			// no more instances
 			return minDist;
 		}
-	}
-	assert(false);
-	return -1;
+		
+		startIndex = firstInstance + 1;
+		secondInstance = FindInst(genome, inst, startIndex);
+		
+		if(secondInstance == -1) {
+			// no instance between startIndex and end
+			// search from begining
+			secondInstance = FindInst(genome, inst, 0);
+			// worst-case this finds same instance of inst as firstInstance
+		}			
+	
+		if(firstInstance != secondInstance) {
+			minDist = min(min(abs(firstInstance-secondInstance), secondInstance+genomeSize-firstInstance), minDist);
+			assert(minDist > 0);
+		} else { // they are equal, so there is only one instance of inst
+			return 0;
+		} 
+	}	
+	return minDist;
 }
 
 

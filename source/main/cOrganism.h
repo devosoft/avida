@@ -481,6 +481,8 @@ public:
   const DatedOpinionList& GetOpinions() { InitOpinions(); return m_opinion->opinion_list; }
   //! Return whether this organism has an opinion.
   bool HasOpinion() { InitOpinions(); return m_opinion->opinion_list.size(); }
+	//! remove all opinions
+	void ClearOpinion() { InitOpinions(); m_opinion->opinion_list.clear(); }
   
 private:
   //! Initialize opinion support.

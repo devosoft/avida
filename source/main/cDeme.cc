@@ -142,6 +142,17 @@ cOrganism* cDeme::GetOrganism(int pos) const
   return GetCell(pos).GetOrganism();
 }
 
+int cDeme::GetNumOrgsWithOpinion() const {
+	int demeSize = GetSize();
+	int count = 0;
+	
+	for(int pos = 0; pos < demeSize; ++pos) {
+		cPopulationCell& cell = GetCell(pos);
+		if(cell.IsOccupied() and cell.GetOrganism()->HasOpinion())
+			++count;
+	}
+	return count;
+}
 
 void cDeme::ProcessUpdate() {
 	// test deme predicate

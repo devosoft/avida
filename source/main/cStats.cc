@@ -1466,7 +1466,7 @@ void cStats::PrintDemeResourceThresholdPredicate(const cString& filename)
 		for(map<cString, int>::iterator iter = demeResourceThresholdPredicateMap.begin(); iter != demeResourceThresholdPredicateMap.end(); ++iter) {
 			df.Write(iter->second, iter->first);
 			iter->second = 0;
-			assert(iter->second == demeResourceThresholdPredicateMap[iter->first]);
+			assert(iter->second == 0 && demeResourceThresholdPredicateMap[iter->first] == 0);
 		}
 		df.Endl();
 	}	
@@ -2225,6 +2225,51 @@ void cStats::PrintCurrentOpinions(const cString& filename) {
 		}
 		df.Endl();
 	}	
+}
+
+void cStats::PrintOpinionsSetPerDeme(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	df.WriteComment("Current fractions of opinions set in deme.");
+	df.WriteComment("This files shows data for both treatable and untreatable demes.");
+	df.WriteTimeStamp();
+	
+	cIntSum    treatableOpinionCounts, untreatableOpinionCounts;
+	cDoubleSum treatableDensityCounts, untreatableDensityCounts;
+	treatableOpinionCounts.Clear();
+	untreatableOpinionCounts.Clear();
+	treatableDensityCounts.Clear();
+	untreatableDensityCounts.Clear();
+	
+	for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+		int demeSize = deme.GetSize();
+		if(deme.isTreatable()) {
+			// accumultate counts for treatable demes 
+			for(int orgID = 0; orgID < demeSize; ++orgID) {
+				treatableOpinionCounts.Add(deme.GetNumOrgsWithOpinion());
+				treatableDensityCounts.Add(deme.GetDensity());
+			}
+		} else {
+			// accumultate counts for untreatable demes 
+			for(int orgID = 0; orgID < demeSize; ++orgID) {
+				untreatableOpinionCounts.Add(deme.GetNumOrgsWithOpinion());
+				untreatableDensityCounts.Add(deme.GetDensity());
+			}
+		}
+	}
+	
+	df.Write(GetUpdate(), "Update [update]");
+	
+	if(treatableOpinionCounts.N() > 0 and untreatableOpinionCounts.N() > 0) {
+		df.Write(treatableOpinionCounts.Average(), "Average number of opinions set in Treatable demes");
+		df.Write(untreatableOpinionCounts.Average(), "Average number of opinions set in Unreatable demes");
+		df.Write(treatableDensityCounts.Average(), "Average density of Treatable demes");
+		df.Write(untreatableDensityCounts.Average(), "Average density of Unreatable demes");
+	} else {
+		df.Write(untreatableOpinionCounts.Average(), "Average number of opinions set in demes");
+		df.Write(untreatableDensityCounts.Average(), "Average density of demes");
+	}
+	df.Endl();
 }
 
 /*! Called when an organism issues a flash instruction.

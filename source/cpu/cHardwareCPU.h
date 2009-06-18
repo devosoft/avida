@@ -802,6 +802,12 @@ public:
   bool Inst_SetOpinion(cAvidaContext& ctx);
   //! Retrieve this organism's current opinion.
   bool Inst_GetOpinion(cAvidaContext& ctx);
+	//! Only get opinion.  If none then reg is set to zero
+	bool Inst_GetOpinionOnly_ZeroIfNone(cAvidaContext& ctx);
+	//! Clear this organism's current opinion.
+  bool Inst_ClearOpinion(cAvidaContext& ctx);
+	//! Execute next instruction is org has an opinion, otherwise skip
+	bool Inst_IfOpinionSet(cAvidaContext& ctx);
 
 	// -------- Cell Data Support --------
 public:

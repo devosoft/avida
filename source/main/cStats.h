@@ -919,6 +919,8 @@ public:
 public:
 	//! Prints the current opinions of all organisms in the population.
 	void PrintCurrentOpinions(const cString& filename);
+	//! Prints the average number of organism with set opinions
+	void PrintOpinionsSetPerDeme(const cString& filename);
 	
 	// -------- Synchronization support --------
 public:
