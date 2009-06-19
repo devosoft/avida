@@ -3788,7 +3788,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   resource_count.Update(step_size);
   
   // Deme specific
-  if (GetNumDemes() > 1)
+  if (GetNumDemes() >= 1)
   {
     for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
     

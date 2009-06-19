@@ -773,8 +773,10 @@ private:
   bool Inst_SenseTarget(cAvidaContext& ctx);
   bool Inst_SenseTargetFaced(cAvidaContext& ctx);
   bool DoSensePheromone(cAvidaContext& ctx, int cellid);
+	bool DoSensePheromoneInDemeGlobal(cAvidaContext& ctx);
   bool Inst_SensePheromone(cAvidaContext& ctx);
   bool Inst_SensePheromoneFaced(cAvidaContext& ctx);
+	bool Inst_SensePheromoneInDemeGlobal(cAvidaContext& ctx);
   bool Inst_Exploit(cAvidaContext& ctx);
   bool Inst_ExploitForward5(cAvidaContext& ctx);
   bool Inst_ExploitForward3(cAvidaContext& ctx);
