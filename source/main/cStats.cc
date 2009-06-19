@@ -1730,6 +1730,7 @@ void cStats::PrintDemeFoundersData(const cString& filename)
   m_deme_founders.clear();
 }
 
+
 void cStats::PrintPerDemeTasksData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
 	df.WriteComment("Avida deme tasks data");
@@ -1740,7 +1741,7 @@ void cStats::PrintPerDemeTasksData(const cString& filename){
 
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
 
-	df.Write(m_update,   "Update");
+	df.Write(m_update, "Update");
   for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
     cDeme& deme = m_world->GetPopulation().GetDeme(i);
     for(int j = 0; j < num_tasks; j++) {
@@ -1750,52 +1751,6 @@ void cStats::PrintPerDemeTasksData(const cString& filename){
   df.Endl();
 }
 
-void cStats::PrintPerTreatableDemeTasksData(const cString& filename) {
-  cDataFile& df = m_world->GetDataFile(filename);
-	df.WriteComment("Avida treatable deme tasks data");
-	df.WriteTimeStamp();
-	df.WriteComment("First column gives the current update, next columns give the number");
-	df.WriteComment("of organisms that have the particular task as a component of their merit");
-	df.WriteComment("in a particular deme");
-  
-  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-  
-	df.Write(m_update,   "Update");
-  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-    cDeme& deme = m_world->GetPopulation().GetDeme(i);
-    
-    if(deme.isTreatable()) {
-      for(int j = 0; j < num_tasks; j++) {
-        df.Write( (deme.GetLastTaskExeCount()[j] > 0), cStringUtil::Stringf("%i.", i) + task_names[j] );
-      }
-    }
-	}
-  df.Endl();
-}
-
-
-void cStats::PrintPerUntreatableDemeTasksData(const cString& filename) {
-  cDataFile& df = m_world->GetDataFile(filename);
-	df.WriteComment("Avida untreatable deme tasks data");
-	df.WriteTimeStamp();
-	df.WriteComment("First column gives the current update, next columns give the number");
-	df.WriteComment("of organisms that have the particular task as a component of their merit");
-	df.WriteComment("in a particular deme");
-  
-  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-  
-	df.Write(m_update,   "Update");
-  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-    cDeme& deme = m_world->GetPopulation().GetDeme(i);
-    
-    if(!deme.isTreatable()) {
-      for(int j = 0; j < num_tasks; j++) {
-        df.Write( (deme.GetLastTaskExeCount()[j] > 0), cStringUtil::Stringf("%i.", i) + task_names[j] );
-      }
-    }
-	}
-  df.Endl();
-}
 
 void cStats::PrintPerDemeTasksExeData(const cString& filename){
   cDataFile& df = m_world->GetDataFile(filename);
@@ -1807,7 +1762,7 @@ void cStats::PrintPerDemeTasksExeData(const cString& filename){
 
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
 
-	df.Write(m_update,   "Update");
+	df.Write(m_update, "Update");
   for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
     cDeme& deme = m_world->GetPopulation().GetDeme(i);
     for(int j = 0; j < num_tasks; j++) {
@@ -1817,51 +1772,89 @@ void cStats::PrintPerDemeTasksExeData(const cString& filename){
   df.Endl();
 }
 
-void cStats::PrintPerTreatableDemeTasksExeData(const cString& filename) {
+
+void cStats::PrintAvgDemeTasksExeData(const cString& filename) {
   cDataFile& df = m_world->GetDataFile(filename);
-	df.WriteComment("Avida treatable deme tasks exe data");
-	df.WriteTimeStamp();
-	df.WriteComment("First column gives the current update, next columns give the number");
-	df.WriteComment("of times a task has contributed to the merit of all organisms");
-	df.WriteComment("in a particular deme");
-  
+  const int num_demes = m_world->GetPopulation().GetNumDemes();
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+  cIntSum tasksum;
   
-	df.Write(m_update,   "Update");
-  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+	df.WriteComment("Avida average deme tasks data");
+	df.WriteTimeStamp();
+  df.WriteComment("First column is the update, remaining columns are the average number of times");
+  df.WriteComment("each task has been executed by the demes");
+  df.WriteComment(cStringUtil::Stringf("Data based on %i demes and %i tasks", num_demes, num_tasks));
+  
+  df.Write(m_update, "Update");
+  
+  for(int t = 0; t < num_tasks; t++) {
+    tasksum.Clear();
     
-    if(deme.isTreatable()) {
-      for(int j = 0; j < num_tasks; j++) {
-        df.Write( deme.GetLastTaskExeCount()[j], cStringUtil::Stringf("%i.", i) + task_names[j] );
-      }
+    for(int d = 0; d < num_demes; d++) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(d);
+      tasksum.Add(deme.GetLastTaskExeCount()[t]);
     }
-	}
-  df.Endl();
+    df.Write(tasksum.Average(), task_names[t]);
+  }
+  df.Endl();  
 }
 
 
-void cStats::PrintPerUntreatableDemeTasksExeData(const cString& filename) {
+void cStats::PrintAvgTreatableDemeTasksExeData(const cString& filename) {
   cDataFile& df = m_world->GetDataFile(filename);
-	df.WriteComment("Avida untreatable deme tasks exe data");
-	df.WriteTimeStamp();
-	df.WriteComment("First column gives the current update, next columns give the number");
-	df.WriteComment("of times a task has contributed to the merit of all organisms");
-	df.WriteComment("in a particular deme");
-  
+  const int num_demes = m_world->GetPopulation().GetNumDemes();
   const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+  cIntSum tasksum;
   
-	df.Write(m_update,   "Update");
-  for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-    cDeme& deme = m_world->GetPopulation().GetDeme(i);
+	df.WriteComment("Avida average tasks data for treatable demes");
+	df.WriteTimeStamp();
+  df.WriteComment("First column is the update, remaining columns are the average number of times");
+  df.WriteComment("each task has been executed by treatable demes");
+  df.WriteComment(cStringUtil::Stringf("Data based on %i demes and %i tasks", num_demes, num_tasks));
+  
+  df.Write(m_update, "Update");
+  
+  for(int t = 0; t < num_tasks; t++) {
+    tasksum.Clear();
     
-    if(!deme.isTreatable()) {
-      for(int j = 0; j < num_tasks; j++) {
-        df.Write( deme.GetLastTaskExeCount()[j], cStringUtil::Stringf("%i.", i) + task_names[j] );
+    for(int d = 0; d < num_demes; d++) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(d);
+      if(deme.isTreatable()) {
+        tasksum.Add(deme.GetLastTaskExeCount()[t]);
       }
     }
-	}
-  df.Endl();
+    df.Write(tasksum.Average(), task_names[t]);
+  }
+  df.Endl();  
+}
+
+
+void cStats::PrintAvgUntreatableDemeTasksExeData(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  const int num_demes = m_world->GetPopulation().GetNumDemes();
+  const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+  cIntSum tasksum;
+  
+	df.WriteComment("Avida average tasks data for untreatable demes");
+	df.WriteTimeStamp();
+  df.WriteComment("First column is the update, remaining columns are the average number of times");
+  df.WriteComment("each task has been executed by untreatable demes");
+  df.WriteComment(cStringUtil::Stringf("Data based on %i demes and %i tasks", num_demes, num_tasks));
+  
+  df.Write(m_update, "Update");
+  
+  for(int t = 0; t < num_tasks; t++) {
+    tasksum.Clear();
+    
+    for(int d = 0; d < num_demes; d++) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(d);
+      if(!deme.isTreatable()) {
+        tasksum.Add(deme.GetLastTaskExeCount()[t]);
+      }
+    }
+    df.Write(tasksum.Average(), task_names[t]);
+  }
+  df.Endl();  
 }
 
 
