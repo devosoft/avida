@@ -3787,13 +3787,15 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
   
-  // Deme specific
+	// these must be done even if there is only one deme.
+	for(int i = 0; i < GetNumDemes(); i++)
+		GetDeme(i).Update(step_size);
+    
+	cDeme & deme = GetDeme(GetCell(cell_id).GetDemeID());
+	deme.IncTimeUsed(merit);
+  
   if (GetNumDemes() >= 1)
   {
-    for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
-    
-    cDeme & deme = GetDeme(GetCell(cell_id).GetDemeID());
-    deme.IncTimeUsed(merit);
     CheckImplicitDemeRepro(deme);
   }
 }
@@ -3854,10 +3856,15 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
 // Loop through all the demes getting stats and doing calculations
 // which must be done on a deme by deme basis.
 void cPopulation::UpdateDemeStats() {
-  
+
+	// these must be updated, even if there is only one deme
+	for(int i = 0; i < GetNumDemes(); i++) {
+    GetDeme(i).UpdateDemeRes();
+  }
+	
   // bail early to save time if there are no demes
   if (GetNumDemes() == 1) return ;
-  
+	
   cStats& stats = m_world->GetStats();
   
   stats.SumDemeAge().Clear();
@@ -4085,12 +4092,6 @@ void cPopulation::UpdateOrganismStats()
   stats.SetResources(resource_count.GetResources());
   stats.SetSpatialRes(resource_count.GetSpatialRes());
   stats.SetResourcesGeometry(resource_count.GetResourcesGeometry());
-  
-  //TODO: update deme resource  (what calls DoOutput)
-  
-  for(int i = 0; i < GetNumDemes(); i++) {
-    GetDeme(i).UpdateDemeRes();
-  }
 }
 
 

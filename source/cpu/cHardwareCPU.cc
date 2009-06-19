@@ -6952,7 +6952,7 @@ bool cHardwareCPU::DoSensePheromone(cAvidaContext& ctx, int cellid)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   int relative_cell_id = deme.GetRelativeCellID(cellid);
 
-  cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   double pher_amount = 0;
 
@@ -6979,7 +6979,7 @@ bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx) {
 	}
 	int reg_to_set = FindModifiedRegister(REG_BX);
   cDeme& deme = m_world->GetPopulation().GetDeme(m_organism->GetDemeID());
-	cResourceCount deme_resource_count = deme.GetDemeResourceCount();
+	const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
 
 	if(deme_resource_count.GetSize() == 0) assert(false); // change to: return false;
 	
