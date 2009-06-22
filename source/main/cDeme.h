@@ -260,6 +260,7 @@ public:
 	void OrganismDeath(cPopulationCell& cell);
   
   const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
+	void SetResource(int id, double new_level) { deme_resource_count.Set(id, new_level); }
   double GetSpatialResource(int rel_cellid, int resource_id) const;
   void AdjustSpatialResource(int rel_cellid, int resource_id, double amount);
   void AdjustResource(int resource_id, double amount);

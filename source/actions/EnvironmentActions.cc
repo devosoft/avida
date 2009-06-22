@@ -153,6 +153,36 @@ public:
   }
 };
 
+class cActionSetDemeResource : public cAction
+	{
+	private:
+		cString m_res_name;
+		double m_res_count;
+		
+	public:
+		cActionSetDemeResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
+		{
+			cString largs(args);
+			if (largs.GetSize()) m_res_name = largs.PopWord();
+			if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
+		}
+		
+		static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+			if (res != NULL) {
+				cPopulation& pop = m_world->GetPopulation();
+				int numDemes =  pop.GetNumDemes();
+				for(int demeID = 0; demeID < numDemes; ++demeID) {
+					cDeme& deme = pop.GetDeme(demeID);
+					deme.SetResource(res->GetID(), m_res_count);
+				}
+			}
+		}
+	};
+
 class cZeroResources : public cAction
 {
 private:
@@ -981,6 +1011,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
+  action_lib->Register<cActionSetDemeResource>("SetDemeResource");
   action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
