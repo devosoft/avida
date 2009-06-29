@@ -3297,6 +3297,33 @@ public:
 };
 
 
+/*! Diffuse HGT genome fragments.
+ 
+ If HGT is enabled, each cell will gradually (ok, ok - it'll happen quickly) build up
+ a buffer of genome fragments.  This event triggers the diffusion of those fragments.
+ 
+ For right now, we evaluate each cell in order; fix this if we start seeing diffusion
+ artifacts.
+ 
+ The actual code for performing the diffusion lives over in cPopulationCell::DiffuseGenomeFragments().
+ */
+class cActionDiffuseHGTGenomeFragments : public cAction {
+public:
+  static const cString GetDescription() { return "Arguments: <none>"; }
+  
+	//! Constructor.
+  cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args) : cAction(world, args) {
+  }
+  
+	//! Process this event.
+  void Process(cAvidaContext& ctx) {
+		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
+		}
+	}
+};
+
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -3380,6 +3407,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
   action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
 	
+	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
 	
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");

@@ -85,7 +85,7 @@ private:
   bool energy_resource;  // only implemented for spacial resource
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;  
- 
+	bool hgt_metabolize;
   
   cResource(); // @not_implemented
   
@@ -115,7 +115,7 @@ public:
   bool GetEnergyResource() const { return energy_resource; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
-
+	bool GetHGTMetabolize() const { return hgt_metabolize; }
 
   void SetInitial(double _initial) { initial = _initial; }
   void SetInflow (double _inflow ) { inflow  = _inflow; }
@@ -140,6 +140,7 @@ public:
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, 
                           double _inflow, double _outflow);
   void SetCellIdList(tArray<int>& id_list); //SLG partial resources
+	void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }
 };
 
 

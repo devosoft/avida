@@ -118,7 +118,6 @@ private:
 	// Group formation information
 	std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
 
-
   ///////////////// Private Methods ////////////////////
   void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
 
@@ -366,6 +365,12 @@ private:
     inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
   };  
   
+	// -------- HGT support --------
+private:
+	int m_hgt_resid; //!< HGT resource ID.
+public:
+	//! Modify current level of the HGT resource.
+	void AdjustHGTResource(double delta);	
 };
 
 

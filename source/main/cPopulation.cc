@@ -91,6 +91,7 @@ cPopulation::cPopulation(cWorld* world)
 , environment(world->GetEnvironment())
 , num_organisms(0)
 , sync_events(false)
+, m_hgt_resid(-1)
 {
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
@@ -243,6 +244,15 @@ cPopulation::cPopulation(cWorld* world)
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResource * res = resource_lib.GetResource(i);
+
+		// check to see if this is the hgt resource:
+		if(res->GetHGTMetabolize()) {
+			if(m_hgt_resid != -1) {
+				m_world->GetDriver().RaiseFatalException(-1, "Only one HGT resource is currently supported.");
+			}
+			m_hgt_resid = i;
+		}
+		
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
@@ -268,6 +278,11 @@ cPopulation::cPopulation(cWorld* world)
       exit(1);
     }
   }
+	
+	// if HGT is on, make sure there's a resource for it:
+	if(m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
+		m_world->GetDriver().RaiseFatalException(-1, "HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
+	}
   
 }
 
@@ -803,8 +818,14 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
 		deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
   }
   genotype->RemoveOrganism();
-  
   organism->ClearParasites();
+	
+	// If HGT is turned on, this organism's genome needs to be split up into fragments
+	// and deposited in its cell.  We then also have to add the size of this genome to
+	// the HGT resource.
+	if(m_world->GetConfig().ENABLE_HGT.Get()) {
+		in_cell.AddGenomeFragments(organism->GetGenome());
+	}
   
   // And clear it!
   in_cell.RemoveOrganism();
@@ -5698,4 +5719,10 @@ int  cPopulation::NumberOfOrganismsInGroup(int group_id)
 	}
 	return num_orgs;	
 
+}
+
+/*!	Modify current level of the HGT resource.
+ */
+void cPopulation::AdjustHGTResource(double delta) {
+	resource_count.Modify(m_hgt_resid, delta);
 }

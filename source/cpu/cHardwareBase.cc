@@ -1077,3 +1077,22 @@ void cHardwareBase::ReceiveFlash()
 {
   m_world->GetDriver().RaiseFatalException(1, "Method cHardwareBase::ReceiveFlash must be overriden.");
 }
+
+/*! Retrieve a fragment of this organism's genome that extends downstream from the read head.
+ */
+cGenome cHardwareBase::GetGenomeFragment(unsigned int downstream) {
+	cHeadCPU tmp(GetHead(nHardware::HEAD_READ));
+	cGenome fragment(downstream);
+	for(; downstream>0; --downstream, tmp.Advance()) { 
+		fragment.Append(tmp.GetInst());
+	}
+	return fragment;
+}
+
+/*! Insert a genome fragment at the current write head.
+ */
+void cHardwareBase::InsertGenomeFragment(const cGenome& fragment) {
+	cHeadCPU& wh = GetHead(nHardware::HEAD_WRITE);
+	wh.GetMemory().Insert(wh.GetPosition(), fragment);
+	wh.Adjust();
+}

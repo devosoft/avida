@@ -25,6 +25,7 @@
 
 #include "cPopulationCell.h"
 
+#include "cDoubleSum.h"
 #include "nHardware.h"
 #include "cOrganism.h"
 #include "cTools.h"
@@ -33,6 +34,9 @@
 #include "cEnvironment.h"
 #include "cPopulation.h"
 #include "cDeme.h"
+
+#include <cmath>
+#include <iterator>
 
 using namespace std;
 
@@ -46,6 +50,7 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   , m_deme_id(in_cell.m_deme_id)
   , m_cell_data(in_cell.m_cell_data)
   , m_spec_state(in_cell.m_spec_state)
+  , m_hgt(0)
 {
   // Copy the mutation rates into a new structure
   m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
@@ -54,29 +59,45 @@ cPopulationCell::cPopulationCell(const cPopulationCell& in_cell)
   tConstListIterator<cPopulationCell> conn_it(in_cell.m_connections);
   cPopulationCell* test_cell;
   while ((test_cell = const_cast<cPopulationCell*>(conn_it.Next()))) m_connections.PushRear(test_cell);
+	
+	// copy the hgt information, if needed.
+	if(in_cell.m_hgt) {
+		InitHGTSupport();
+		*m_hgt = *in_cell.m_hgt;
+	}
 }
 
 void cPopulationCell::operator=(const cPopulationCell& in_cell)
 {
-  m_world = in_cell.m_world;
-  m_organism = in_cell.m_organism;
-  m_hardware = in_cell.m_hardware;
-  m_inputs = in_cell.m_inputs;
-  m_cell_id = in_cell.m_cell_id;
-  m_deme_id = in_cell.m_deme_id;
-  m_cell_data = in_cell.m_cell_data;
-  m_spec_state = in_cell.m_spec_state;
+	if(this != &in_cell) {
+		m_world = in_cell.m_world;
+		m_organism = in_cell.m_organism;
+		m_hardware = in_cell.m_hardware;
+		m_inputs = in_cell.m_inputs;
+		m_cell_id = in_cell.m_cell_id;
+		m_deme_id = in_cell.m_deme_id;
+		m_cell_data = in_cell.m_cell_data;
+		m_spec_state = in_cell.m_spec_state;
 
-  // Copy the mutation rates, constructing the structure as necessary
-  if (m_mut_rates == NULL)
-    m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
-  else
-    m_mut_rates->Copy(*in_cell.m_mut_rates);
+		// Copy the mutation rates, constructing the structure as necessary
+		if (m_mut_rates == NULL)
+			m_mut_rates = new cMutationRates(*in_cell.m_mut_rates);
+		else
+			m_mut_rates->Copy(*in_cell.m_mut_rates);
 
-  // Copy the connection list
-  tConstListIterator<cPopulationCell> conn_it(in_cell.m_connections);
-  cPopulationCell* test_cell;
-  while ((test_cell = const_cast<cPopulationCell*>(conn_it.Next()))) m_connections.PushRear(test_cell);
+		// Copy the connection list
+		tConstListIterator<cPopulationCell> conn_it(in_cell.m_connections);
+		cPopulationCell* test_cell;
+		while ((test_cell = const_cast<cPopulationCell*>(conn_it.Next()))) m_connections.PushRear(test_cell);
+		
+		// copy hgt information, if needed.
+		delete m_hgt;
+		m_hgt = 0;
+		if(in_cell.m_hgt) {
+			InitHGTSupport();
+			*m_hgt = *in_cell.m_hgt;
+		}
+	}
 }
 
 void cPopulationCell::Setup(cWorld* world, int in_id, const cMutationRates& in_rates, int x, int y)
@@ -254,4 +275,88 @@ bool cPopulationCell::OK()
 {
   // Nothing for the moment...
   return true;
+}
+
+/*! Diffuse genome fragments from this cell to its neighbors.
+ 
+ NOTE: This method is for OUTGOING diffusion only.
+ 
+ There are many possible ways in which genome fragments could be diffused.  We'll
+ put in the framework to support those other mechanisms, but we're not going to 
+ worry about this until we need it.  Not terribly interested in recreating an
+ artificial chemistry here...
+ */
+void cPopulationCell::DiffuseGenomeFragments() {
+	InitHGTSupport();
+	
+	switch(m_world->GetConfig().HGT_DIFFUSION_METHOD.Get()) {
+		case 0: { // none
+			break;
+		}
+		default: {
+			m_world->GetDriver().RaiseFatalException(-1, "Unrecognized diffusion type in cPopulationCell::DiffuseGenomeFragments().");
+		}
+	}
+}
+
+/*! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
+ 
+ Split the passed-in genome into fragments according to a normal distribution specified
+ by HGT_FRAGMENT_SIZE_MEAN and HGT_FRAGMENT_SIZE_VARIANCE.  These fragments are added
+ to this cell's fragment list.
+ 
+ As a safety measure, we also remove old fragments to conserve memory.  Specifically, we
+ remove old fragments until at most HGT_MAX_FRAGMENTS_PER_CELL fragments remain.
+ */
+void cPopulationCell::AddGenomeFragments(const cGenome& genome) {
+	assert(genome.GetSize()>0); // oh, sweet sanity.
+	InitHGTSupport();
+
+	m_world->GetPopulation().AdjustHGTResource(genome.GetSize());
+
+	// chop this genome up into pieces, add each to the back of this cell's buffer.
+	int remaining_size=genome.GetSize();
+	const cInstruction* i=&genome[0];
+	do {
+		int fsize = std::min(remaining_size,
+												 (int)floor(m_world->GetRandom().GetRandNormal(m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
+																																			 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get())));
+		m_hgt->fragments.push_back(cGenome(i, i+fsize));
+		i+=fsize;
+		remaining_size-=fsize;
+	} while(remaining_size>0);
+	
+	// pop off the front of this cell's buffer until we have <= HGT_MAX_FRAGMENTS_PER_CELL.
+	while(m_hgt->fragments.size()>(unsigned int)m_world->GetConfig().HGT_MAX_FRAGMENTS_PER_CELL.Get()) {
+		m_world->GetPopulation().AdjustHGTResource(-m_hgt->fragments.front().GetSize());
+		m_hgt->fragments.pop_front();
+	}
+}
+
+/*! Retrieve the number of genome fragments currently found in this cell.
+ */
+unsigned int cPopulationCell::CountGenomeFragments() const {
+	if(IsHGTInitialized()) {
+		return m_hgt->fragments.size();
+	} else {
+		return 0;
+	}
+}
+
+/*! Remove and return a random genome fragment.
+ */
+cGenome cPopulationCell::PopGenomeFragment() {
+	assert(m_hgt!=0);
+	fragment_list_type::iterator i = m_hgt->fragments.begin();
+	std::advance(i, m_world->GetRandom().GetUInt(0, m_hgt->fragments.size()));	
+	cGenome tmp = *i;
+	m_hgt->fragments.erase(i);
+	return tmp;
+}
+
+/*! Retrieve the list of fragments from this cell.
+ */
+cPopulationCell::fragment_list_type& cPopulationCell::GetFragments() {
+	InitHGTSupport();
+	return m_hgt->fragments;
 }

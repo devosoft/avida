@@ -63,7 +63,7 @@ public:
   explicit cGenome(int _size);                      //! Constructor that builds a 'blank' cGenome of the specified size
   cGenome(const cGenome& in_genome);                //! Copy constructor
   cGenome(const cString& in_string);                //! Constructor that builds genome from a string
-  cGenome(cInstruction* begin, cInstruction* end);  //! Constructor that builds genome from a range of instructions  
+  cGenome(const cInstruction* begin, const cInstruction* end);  //! Constructor that builds genome from a range of instructions  
   virtual ~cGenome();                               //! Virtual destructor; there are subclasses.
 
   inline int GetSize() const { return m_active_size; }
@@ -89,7 +89,6 @@ public:
   virtual bool operator==(const cGenome& other_genome) const;
   virtual bool operator!=(const cGenome& other_genome) const { return !(this->operator==(other_genome)); }
   virtual bool operator<(const cGenome& other_genome) const { return AsString() < other_genome.AsString(); }
-  
 };
 
 #endif

@@ -24,6 +24,7 @@
  */
 
 #include "cGenome.h"
+#include <iterator>
 
 
 using namespace std;
@@ -62,11 +63,12 @@ cGenome::cGenome(const cString & in_string)
 It expects STL semantics for an iterator range.  We're avoiding templating this
 (for now).  Refactor if a new range type is needed.
 */
-cGenome::cGenome(cInstruction* begin, cInstruction* end) : m_active_size(0)
+cGenome::cGenome(const cInstruction* begin, const cInstruction* end) : m_active_size(0)
 {
-  m_genome.Resize((end - begin) / sizeof(cInstruction));
-  
-  for (cInstruction* i = begin; i != end; i++, m_active_size++) m_genome[m_active_size] = *i;
+  m_genome.Resize(std::distance(begin,end));
+  for(const cInstruction* i=begin; i!=end; i++, m_active_size++) {
+		m_genome[m_active_size] = *i;
+	}
 }
 
 

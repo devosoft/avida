@@ -321,7 +321,6 @@ public:
   cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
   int GetNumParasites() const { return m_parasites.GetSize(); }
   void ClearParasites();
-  
 
   // --------  Mutation Rate Convenience Methods  --------
   bool TestCopyMut(cAvidaContext& ctx) const { return m_mut_rates.TestCopyMut(ctx); }
@@ -329,7 +328,7 @@ public:
   bool TestCopyDel(cAvidaContext& ctx) const { return m_mut_rates.TestCopyDel(ctx); }
   bool TestCopyUniform(cAvidaContext& ctx) const { return m_mut_rates.TestCopyUniform(ctx); }
   bool TestCopySlip(cAvidaContext& ctx) const { return m_mut_rates.TestCopySlip(ctx); }
-
+	
   bool TestDivideMut(cAvidaContext& ctx) const { return m_mut_rates.TestDivideMut(ctx); }
   bool TestDivideIns(cAvidaContext& ctx) const { return m_mut_rates.TestDivideIns(ctx); }
   bool TestDivideDel(cAvidaContext& ctx) const { return m_mut_rates.TestDivideDel(ctx); }
@@ -647,6 +646,11 @@ private:
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
+	
+	// -------- HGT methods --------
+public:
+	//! Tests for and attempts to perform an insertion of an HGT genome fragment into this organism's genome.
+	bool AttemptHGTInsertion(cAvidaContext& ctx);
 };
 
 

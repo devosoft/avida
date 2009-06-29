@@ -59,6 +59,7 @@
 #ifndef nGeometry_h
 #include "nGeometry.h"
 #endif
+#include "cGenome.h"
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h
@@ -972,6 +973,18 @@ public:
 	}
 	//! Print network statistics.
 	void PrintDemeNetworkData(const cString& filename);
+	
+	// -------- HGT support --------
+private:
+	cDoubleSum m_hgt_metabolized; //!< Total length of metabolized genome fragments.
+	cDoubleSum m_hgt_inserted; //!< Total length of inserted genome fragments.
+public:
+	//! Called when an organism metabolizes a genome fragment.
+	void GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment);
+	//! Called when an organism inserts a genome fragment.
+	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment);
+	//! Print HGT statistics.
+	void PrintHGTData(const cString& filename);
 };
 
 

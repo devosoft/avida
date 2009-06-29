@@ -39,13 +39,13 @@
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
+#include "cGenome.h"
 
 using namespace std;
 
 class cAvidaContext;
 class cCodeLabel;
 class cCPUMemory;
-class cGenome;
 class cHardwareTracer;
 class cHeadCPU;
 class cInjectGenotype;
@@ -193,7 +193,12 @@ public:
 	// -------- Synchronization --------
   //! Called when the organism that owns this CPU has received a flash from a neighbor.
   virtual void ReceiveFlash();	
-
+	
+	// -------- HGT --------
+	//! Retrieve a genome fragment extending downstream from the read head.
+	virtual cGenome GetGenomeFragment(unsigned int downstream);
+	//! Insert a genome fragment at the current write head.
+	virtual void InsertGenomeFragment(const cGenome& fragment);
   
 protected:
   // --------  Core Execution Methods  --------
