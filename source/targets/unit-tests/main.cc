@@ -313,6 +313,22 @@ protected:
     
     bit_array9.SHIFT(66, -65);
     ReportTestResult("Shift Right (multiple bit fields)", (bit_array9.GetBit(0) && bit_array9.CountBits(66) == 1));
+    
+    // INCREMENT
+    
+    cRawBitArray bit_array10(1);
+    
+    bit_array10.INCREMENT(1);
+    ReportTestResult("Increment", (bit_array10.GetBit(0) && bit_array10.CountBits(1) == 1));
+    
+    bit_array10.INCREMENT(1);
+    ReportTestResult("Increment Overflow", (bit_array10.GetBit(0) == false && bit_array10.CountBits(1) == 0));
+    
+    cRawBitArray bit_array11(33);
+    for (int i = 0; i < 32; i++) { bit_array11.SetBit(i, true); }
+    bit_array11.INCREMENT(33);
+    ReportTestResult("Increment (multiple bit fields)", (bit_array11.GetBit(32) == 1 && bit_array11.CountBits(33) == 1));
+    
   }
 };
 
@@ -338,6 +354,8 @@ protected:
     ReportTestResult("operator<<", ((ba << 65).CountBits() == 2));
     ReportTestResult("operator>>", ((ba >> 65).CountBits() == 2));
     ReportTestResult("Chained Bitwise Operations", ((~ba & ~ba2).CountBits() == 31));
+    ReportTestResult("++operator", ((++(~ba & ~ba2)).CountBits() == 30));
+    ReportTestResult("operator++", (((~ba & ~ba2)++).CountBits() == 31));
   }
 };
 

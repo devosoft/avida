@@ -143,9 +143,10 @@ void cRawBitArray::ShiftLeft(const int num_bits, const int shift_size)
   int num_fields = GetNumFields(num_bits);
   int field_shift = shift_size / 32;
   int bit_shift = shift_size % 32;
-      
+  
+  
   // acount for field_shift
-  if(field_shift) {
+  if (field_shift) {
     for (int i = num_fields - 1; i >= field_shift; i--) {
       bit_fields[i] = bit_fields[i - field_shift];
     }
@@ -154,18 +155,19 @@ void cRawBitArray::ShiftLeft(const int num_bits, const int shift_size)
     }
   }
   
+  
   // account for bit_shift
   int temp = 0;
   for (int i = 0; i < num_fields; i++) {
     temp = bit_fields[i] >> (32 - bit_shift);
     bit_fields[i] <<= bit_shift;
-    bit_fields[i - 1] |= temp;  // same as += in this case since lower bit_shift bits of bit_fields[i - 1] are all 0 at this point -- any advantage?  
+    if (i > 0) bit_fields[i - 1] |= temp;  // same as += in this case since lower bit_shift bits of bit_fields[i - 1] are all 0 at this point -- any advantage?  
     //could also check for temp != 0 here before assignment -- would that save any time for sparse arrays, or is it always going to be useless?
   }
   
   // mask out any bits that have left-shifted away, allowing CountBits and CountBits2 to work
   // blw: if CountBits/CountBits2 are fixed, this code should be removed as it will be redundant
-  unsigned int shift_mask = 0xffffffff >> 32 - (num_bits % 32);
+  unsigned int shift_mask = 0xFFFFFFFF >> ((32 - (num_bits % 32)) & 0x1F);
   bit_fields[num_fields - 1] &= shift_mask;
 }
 

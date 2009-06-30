@@ -99,8 +99,7 @@ private:
   const cRawBitArray & operator=(const cRawBitArray & in_array)
     { assert(false); return *this; }
 
-  inline int GetNumFields(const int num_bits) const
-    { return 1 + ((num_bits-1) >> 5); }
+  inline int GetNumFields(const int num_bits) const { return 1 + ((num_bits - 1) >> 5); }
   inline int GetField(const int index) const { return index >> 5; }
   inline int GetFieldPos(const int index) const { return index & 31; }
 public:
