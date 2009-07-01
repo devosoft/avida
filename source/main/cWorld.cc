@@ -161,13 +161,13 @@ int cWorld::GetNumResources()
 // If no nops or no resources, return 0
 int cWorld::GetNumResourceSpecs()
 {
-  int num_resources = (double)GetEnvironment().GetResourceLib().GetSize();
-  int num_nops = (double)GetHardwareManager().GetInstSet().GetNumNops();
+  int num_resources = GetEnvironment().GetResourceLib().GetSize();
+  int num_nops = GetHardwareManager().GetInstSet().GetNumNops();
   
   if (num_resources <= 0 || num_nops <= 0) { return 0; }
   
   double most_nops_needed = ceil(log((double)num_resources)/log((double)num_nops));
-  double numerator = pow(num_nops, most_nops_needed + 1) - 1;
+  double numerator = pow((double)num_nops, most_nops_needed + 1) - 1;
   double denominator = (double)(num_nops - 1);
   return (int)(numerator / denominator);
 }
