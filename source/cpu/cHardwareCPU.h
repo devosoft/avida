@@ -775,9 +775,11 @@ private:
   bool Inst_SenseTargetFaced(cAvidaContext& ctx);
   bool DoSensePheromone(cAvidaContext& ctx, int cellid);
 	bool DoSensePheromoneInDemeGlobal(cAvidaContext& ctx);
+	bool DoSensePheromoneGlobal(cAvidaContext& ctx);
   bool Inst_SensePheromone(cAvidaContext& ctx);
   bool Inst_SensePheromoneFaced(cAvidaContext& ctx);
 	bool Inst_SensePheromoneInDemeGlobal(cAvidaContext& ctx);
+	bool Inst_SensePheromoneGlobal(cAvidaContext& ctx);
   bool Inst_Exploit(cAvidaContext& ctx);
   bool Inst_ExploitForward5(cAvidaContext& ctx);
   bool Inst_ExploitForward3(cAvidaContext& ctx);
@@ -811,6 +813,7 @@ public:
   bool Inst_ClearOpinion(cAvidaContext& ctx);
 	//! Execute next instruction is org has an opinion, otherwise skip
 	bool Inst_IfOpinionSet(cAvidaContext& ctx);
+	bool Inst_IfOpinionNotSet(cAvidaContext& ctx);
 
 	// -------- Cell Data Support --------
 public:

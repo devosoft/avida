@@ -5074,7 +5074,7 @@ void cPopulation::InjectGenome(int cell_id, const cGenome& genome, int lineage_l
   InjectGenotype( cell_id, new_genotype );
 }
 
-
+// Note: cPopulation::SerialTransfer does not respect deme boundaries and only acts on a single population.
 void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads)
 {
   assert(transfer_size > 0);

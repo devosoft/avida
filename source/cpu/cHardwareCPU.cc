@@ -509,6 +509,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-pheromone", &cHardwareCPU::Inst_SensePheromone),
     tInstLibEntry<tMethod>("sense-pheromone-faced", &cHardwareCPU::Inst_SensePheromoneFaced),
     tInstLibEntry<tMethod>("sense-pheromone-inDemeGlobal", &cHardwareCPU::Inst_SensePheromoneInDemeGlobal),
+		tInstLibEntry<tMethod>("sense-pheromone-global", &cHardwareCPU::Inst_SensePheromoneGlobal),
     tInstLibEntry<tMethod>("exploit", &cHardwareCPU::Inst_Exploit, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exploit-forward5", &cHardwareCPU::Inst_ExploitForward5, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exploit-forward3", &cHardwareCPU::Inst_ExploitForward3, nInstFlag::STALL),
@@ -530,6 +531,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("get-opinionOnly", &cHardwareCPU::Inst_GetOpinionOnly_ZeroIfNone, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("clear-opinion", &cHardwareCPU::Inst_ClearOpinion, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("if-opinion-set", &cHardwareCPU::Inst_IfOpinionSet, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("if-opinion-notset", &cHardwareCPU::Inst_IfOpinionNotSet, nInstFlag::STALL),
 		
 		// Data collection
 		tInstLibEntry<tMethod>("if-cell-data-changed", &cHardwareCPU::Inst_IfCellDataChanged, nInstFlag::STALL),
@@ -7009,6 +7011,22 @@ bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx) {
 	return true;
 }
 
+bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx) {
+	int reg_to_set = FindModifiedRegister(REG_BX);
+	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+	
+	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
+	
+	double pher_amount = 0;
+	for (int i = 0; i < resource_count.GetSize(); i++) {
+    if(strncmp(resource_count.GetResName(i), "pheromone", 9) == 0) {
+      pher_amount += resource_count.Get(i);
+    }
+  }
+	GetRegister(reg_to_set) = (int)floor(pher_amount + 0.5);
+	return true;
+}
+
 bool cHardwareCPU::Inst_SensePheromone(cAvidaContext& ctx)
 {
   int cellid = m_organism->GetCellID(); //absolute id of current cell
@@ -7038,6 +7056,10 @@ bool cHardwareCPU::Inst_SensePheromoneFaced(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SensePheromoneInDemeGlobal(cAvidaContext& ctx) {
 	return DoSensePheromoneInDemeGlobal(ctx);
+}
+
+bool cHardwareCPU::Inst_SensePheromoneGlobal(cAvidaContext& ctx) {
+	return DoSensePheromoneGlobal(ctx);
 }
 
 bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
@@ -8312,6 +8334,13 @@ bool cHardwareCPU::Inst_IfOpinionSet(cAvidaContext& ctx)
 {
 	assert(m_organism != 0);
   if(!m_organism->HasOpinion()) IP().Advance();
+  return true;
+}
+
+bool cHardwareCPU::Inst_IfOpinionNotSet(cAvidaContext& ctx)
+{
+	assert(m_organism != 0);
+  if(m_organism->HasOpinion()) IP().Advance();
   return true;
 }
 
