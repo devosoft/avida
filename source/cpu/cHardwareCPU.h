@@ -499,7 +499,8 @@ private:
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
-  bool Inst_Destroy(cAvidaContext& ctx);  
+  bool Inst_Destroy(cAvidaContext& ctx);
+  bool Inst_NopCollect(cAvidaContext& ctx);  
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
   // Donation

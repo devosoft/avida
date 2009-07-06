@@ -234,6 +234,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("collect", &cHardwareCPU::Inst_Collect, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-no-env-remove", &cHardwareCPU::Inst_CollectNoEnvRemove, nInstFlag::STALL),
     tInstLibEntry<tMethod>("destroy", &cHardwareCPU::Inst_Destroy, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("nop-collect", &cHardwareCPU::Inst_NopCollect),
 
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -3504,6 +3505,13 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
  * of resources.  (Motivation: can evolve to be more specific if there is 
  * an advantage.)
  *
+ * @blw
+ * PLEASE NOTE: This does not work well (indeed, will crash) when the number
+ * of resources is not a power of the number of nops.  Until I figure out a 
+ * way to fix the mapping without introducing specification ease bias, please
+ * just put some unused dummy resources in your environment file.  This is a
+ * horrible excuse for a "fix" but it works.
+ *
  * Mostly ripped from Jeff B.'s DoSense(); meant to be a helper function for
  * DoSense, Inst_Collect, and anything else that wants to use this type of
  * resource NOP-specification.
@@ -3667,6 +3675,13 @@ bool cHardwareCPU::Inst_CollectNoEnvRemove(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Destroy(cAvidaContext& ctx)
 {
   return DoCollect(ctx, true, false);
+}
+
+/* A no-op, nop-modified in the same way as the "collect" instructions:
+ * Does not remove resource from environment, does not add resource to organism */
+bool cHardwareCPU::Inst_NopCollect(cAvidaContext& ctx)
+{
+  return DoCollect(ctx, false, false);
 }
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
