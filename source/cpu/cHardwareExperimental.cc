@@ -53,7 +53,6 @@ using namespace std;
 
 static const unsigned int CONSENSUS = (sizeof(int) * 8) / 2;
 static const unsigned int CONSENSUS24 = 12;
-static const unsigned int MASK24 = 0xFFFFFF;
 
 inline unsigned int cHardwareExperimental::BitCount(unsigned int value) const
 {

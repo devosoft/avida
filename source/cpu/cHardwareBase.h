@@ -76,6 +76,14 @@ protected:
   // --------  Base Hardware Feature Support  ---------
   tSmartArray<int> m_ext_mem;
   
+	// -------- Bit masks ---------------
+	static const unsigned int MASK24 = 0xFFFFFF;
+	static const unsigned int MASK20 = 0xFFFFF;
+	static const unsigned int MASK16 = 0xFFFF;
+	static const unsigned int MASK12 = 0xFFF;
+	static const unsigned int MASK8  = 0xFF;
+	static const unsigned int MASK4  = 0xF;
+
 
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented

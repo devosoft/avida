@@ -472,6 +472,13 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-less-cons", &cHardwareCPU::Inst_IfLessConsensus, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
     tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareCPU::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
 
+		// Bit Masking (higher order bit masking is possible, just add the instructions if needed)
+		tInstLibEntry<tMethod>("mask-lower16bits", &cHardwareCPU::Inst_MaskLower16Bits),
+		tInstLibEntry<tMethod>("mask-lower12bits", &cHardwareCPU::Inst_MaskLower12Bits),
+		tInstLibEntry<tMethod>("mask-lower8bits",  &cHardwareCPU::Inst_MaskLower8Bits),
+		tInstLibEntry<tMethod>("mask-lower4bits",  &cHardwareCPU::Inst_MaskLower4Bits),
+		
+		
     // Energy usage
     tInstLibEntry<tMethod>("double-energy-usage", &cHardwareCPU::Inst_DoubleEnergyUsage, nInstFlag::STALL),
     tInstLibEntry<tMethod>("halve-energy-usage", &cHardwareCPU::Inst_HalveEnergyUsage, nInstFlag::STALL),
@@ -6599,7 +6606,6 @@ int cHardwareCPU::Numberate(int _pos, int _dir, int _num_bits)
 //// Copied from cHardwareExperimental -- @JEB
 static const unsigned int CONSENSUS = (sizeof(int) * 8) / 2;
 static const unsigned int CONSENSUS24 = 12;
-static const unsigned int MASK24 = 0xFFFFFF;
 
 inline unsigned int cHardwareCPU::BitCount(unsigned int value) const
 {
@@ -6657,6 +6663,36 @@ bool cHardwareCPU::Inst_IfLessConsensus24(cAvidaContext& ctx)
 
 //// End copied from cHardwareExperimental
 
+
+/* Bit masking instructions */
+
+// masks lower 16 bits in a register
+bool cHardwareCPU::Inst_MaskLower16Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASK16;
+	return true;
+}
+
+// masks lower 12 bits in a register
+bool cHardwareCPU::Inst_MaskLower12Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASK12;
+	return true;
+}
+
+// masks lower 8 bits in a register
+bool cHardwareCPU::Inst_MaskLower8Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASK8;
+	return true;
+}
+
+// masks lower 4 bits in a register
+bool cHardwareCPU::Inst_MaskLower4Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASK4;
+	return true;
+}
 
 /*! Send a message to the organism that is currently faced by this cell,
 where the label field of sent message is from register ?BX?, and the data field
