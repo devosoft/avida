@@ -778,6 +778,68 @@ class cActionKillProb : public cAction
 		}
 	};
 
+/*
+ Kills a fraction of organisms in the population in sequence.
+ 
+ Parameters:
+ fraction killed (double) default: 0.01
+ 
+ */
+class cActionKillFractionInSequence : public cAction
+	{
+	private:
+		double m_killFraction;
+		int m_windowLength;
+		int killIndex;
+		bool applyAction;
+		int updateSinceLastContextSwitch;
+	public:
+		cActionKillFractionInSequence(cWorld* world, const cString& args) : 
+			cAction(world, args), 
+			m_killFraction(0.01), 
+			m_windowLength(1000), 
+			killIndex(0),
+			applyAction(true),
+			updateSinceLastContextSwitch(0)
+		{
+      cString largs(args);
+      if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
+			if (largs.GetSize()) m_windowLength = largs.PopWord().AsInt();
+		}
+		
+		static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			++updateSinceLastContextSwitch;
+
+			if(updateSinceLastContextSwitch >= static_cast<int>(m_windowLength/2.0)) {
+				// switch context
+				applyAction = !applyAction;
+				updateSinceLastContextSwitch = 0;
+				cerr << "applied? " << applyAction<<endl;
+			}
+			
+			if(!applyAction)
+				return;
+			
+			cPopulation& pop = m_world->GetPopulation();
+			const int numOrgsInPop = pop.GetNumOrganisms();
+			int organismsToKill = static_cast<int>(numOrgsInPop * m_killFraction);
+			int oldKillIndex = killIndex;
+						
+			while(organismsToKill > 0) {
+				cPopulationCell& cell = pop.GetCell(killIndex);
+				if (cell.IsOccupied()) {
+					pop.KillOrganism(cell);
+					--organismsToKill;
+				}
+				killIndex = (killIndex + 1) % pop.GetSize();
+				if(killIndex == oldKillIndex)
+					assert(false);  // trying to kill organisms that don't exist
+			}
+		}
+	};
 
 /*
  Randomly removes a certain proportion of the population whose genomes contain a specified
@@ -3343,6 +3405,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionKillInstLimit>("KillInstLimit");
 	action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
+	action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
 	
 	// Theraputic deme actions
 	action_lib->Register<cAction_TherapyStructuralNumInst>("TherapyStructuralNumInst");
