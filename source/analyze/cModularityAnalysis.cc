@@ -57,14 +57,14 @@ void cModularityAnalysis::Initialize()
 void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
 {
   cTestCPU* testcpu = m_genotype->GetWorld()->GetHardwareManager().CreateTestCPU();
-  cCPUTestInfo test_info;
-
+  cCPUTestInfo test_info = m_test_info;
+  
   const cGenome& base_genome = m_genotype->GetGenome();
 
   // Calculate the stats for the genotype we're working with...
   testcpu->TestGenome(ctx, test_info, base_genome);  
   double base_fitness = test_info.GetColonyFitness();
-  
+    
   // Check if the organism does any tasks
   bool does_tasks = false;
   const tArray<int> base_tasks = test_info.GetColonyOrganism()->GetPhenotype().GetLastTaskCount();

@@ -43,7 +43,7 @@ cLandscape::cLandscape(cWorld* world, const cGenome& in_genome, const cInstSet& 
   m_max_trials(0), site_count(NULL)
 {
   Reset(in_genome);
-  test_info.SetInstSet(const_cast<cInstSet*>(&inst_set));
+  m_cpu_test_info.SetInstSet(const_cast<cInstSet*>(&inst_set));
 }
 
 cLandscape::~cLandscape()
@@ -97,9 +97,9 @@ void cLandscape::Reset(const cGenome & in_genome)
 
 double cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome)
 {
-  testcpu->TestGenome(ctx, test_info, in_genome);
+  testcpu->TestGenome(ctx, m_cpu_test_info, in_genome);
   
-  double test_fitness = test_info.GetColonyFitness();
+  double test_fitness = m_cpu_test_info.GetColonyFitness();
   
   total_fitness += test_fitness;
   total_sqr_fitness += test_fitness * test_fitness;
@@ -127,10 +127,10 @@ void cLandscape::ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu)
 {
   // Collect info on base creature.
   
-  testcpu->TestGenome(ctx, test_info, base_genome);
+  testcpu->TestGenome(ctx, m_cpu_test_info, base_genome);
   
-  cPhenotype & phenotype = test_info.GetColonyOrganism()->GetPhenotype();
-  base_fitness = test_info.GetColonyFitness();
+  cPhenotype & phenotype = m_cpu_test_info.GetColonyOrganism()->GetPhenotype();
+  base_fitness = m_cpu_test_info.GetColonyFitness();
   base_merit = phenotype.GetMerit().GetDouble();
   base_gestation = phenotype.GetGestationTime();
   
@@ -190,7 +190,7 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cu
       mod_genome[line_num].SetOp(inst_num);
       if (cur_distance <= 1) {
         ProcessGenome(ctx, testcpu, mod_genome);
-        if (test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
+        if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       } else {
         Process_Body(ctx, testcpu, mod_genome, cur_distance - 1, line_num + 1);
       }
@@ -258,7 +258,7 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
     int cur_inst = base_genome[line_num].GetOp();
     mod_genome.Remove(line_num);
     ProcessGenome(ctx, testcpu, mod_genome);
-    if (test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
+    if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
     mod_genome.Insert(line_num, cInstruction(cur_inst));
   }
   
@@ -283,7 +283,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
       mod_genome.Insert(line_num, cInstruction(inst_num));
       ProcessGenome(ctx, testcpu, mod_genome);
-      if (test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
+      if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       mod_genome.Remove(line_num);
     }
   }
@@ -649,7 +649,7 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
       
       mod_genome[line_num].SetOp(inst_num);
       ProcessGenome(ctx, testcpu, mod_genome);
-      fitness_chart(line_num, inst_num) = test_info.GetColonyFitness();
+      fitness_chart(line_num, inst_num) = m_cpu_test_info.GetColonyFitness();
     }
     
     mod_genome[line_num].SetOp(cur_inst);
@@ -778,8 +778,8 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
     pos_frac = GetProbPos();
     
     // Print the information on the current best.
-    testcpu->TestGenome(ctx, test_info, cur_genome);
-    cPhenotype& colony_phenotype = test_info.GetColonyOrganism()->GetPhenotype();
+    testcpu->TestGenome(ctx, m_cpu_test_info, cur_genome);
+    cPhenotype& colony_phenotype = m_cpu_test_info.GetColonyOrganism()->GetPhenotype();
     df.Write(gen, "Generation");
     df.Write(colony_phenotype.GetMerit().GetDouble(), "Merit");
     df.Write(colony_phenotype.GetGestationTime(), "Gestation Time");
@@ -805,8 +805,8 @@ double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& m
 {
   mod_genome[line1] = mut1;
   mod_genome[line2] = mut2;
-  testcpu->TestGenome(ctx, test_info, mod_genome);
-  double combo_fitness = test_info.GetColonyFitness() / base_fitness;
+  testcpu->TestGenome(ctx, m_cpu_test_info, mod_genome);
+  double combo_fitness = m_cpu_test_info.GetColonyFitness() / base_fitness;
   
   mod_genome[line1] = base_genome[line1];
   mod_genome[line2] = base_genome[line2];

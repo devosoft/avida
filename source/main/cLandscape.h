@@ -51,6 +51,7 @@ class cLandscape
 private:
   cWorld* m_world;
   const cInstSet& inst_set;
+  cCPUTestInfo m_cpu_test_info;
   cGenome base_genome;
   cGenome peak_genome;
   double base_fitness;
@@ -91,7 +92,6 @@ private:
   double total_entropy;
   double complexity;
 
-  cCPUTestInfo test_info;  // Info used for all cpu calculations.
   double neut_min;         // These two variables are a range around the base
   double neut_max;         //   fitness to be counted as neutral mutations.
   tMatrix<double> fitness_chart; // Chart of all one-step mutations.
@@ -128,6 +128,11 @@ public:
   inline void SetTrials(int in_trials) { trials = in_trials; }
   inline void SetMinFound(int min_found) { m_min_found = min_found; }
   inline void SetMaxTrials(int max_trials) { m_max_trials = max_trials; }
+  inline void SetCPUTestInfo(const cCPUTestInfo& in_cpu_test_info) 
+  { 
+      m_cpu_test_info = in_cpu_test_info; 
+      m_cpu_test_info.SetInstSet(const_cast<cInstSet*>(&inst_set));
+  }
 
   void SampleProcess(cAvidaContext& ctx);
   void RandomProcess(cAvidaContext& ctx);

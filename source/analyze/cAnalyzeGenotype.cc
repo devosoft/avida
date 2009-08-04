@@ -56,6 +56,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSe
   , genome(symbol_string)
   , m_inst_set(in_inst_set)
   , name("")
+  , m_cpu_test_info()
   , m_data(new sGenotypeDatastore)
   , aligned_sequence("")
   , tag("")
@@ -111,6 +112,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstS
   , genome(_genome)
   , m_inst_set(in_inst_set)
   , name("")
+  , m_cpu_test_info() 
   , m_data(new sGenotypeDatastore)
   , aligned_sequence("")
   , tag("")
@@ -155,6 +157,7 @@ cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
   , genome(_gen.genome)
   , m_inst_set(_gen.m_inst_set)
   , name(_gen.name)
+  , m_cpu_test_info(_gen.m_cpu_test_info)  
   , m_data(_gen.m_data)
   , aligned_sequence(_gen.aligned_sequence)
   , tag(_gen.tag)
@@ -552,6 +555,7 @@ void cAnalyzeGenotype::CheckLand() const
 {
   if (m_land == NULL) {
     m_land = new cLandscape(m_world, genome, m_inst_set);
+    m_land->SetCPUTestInfo(m_cpu_test_info);
     m_land->SetDistance(1);
     m_land->Process(m_world->GetDefaultContext());
   }
@@ -574,6 +578,7 @@ void cAnalyzeGenotype::CheckPhenPlast() const
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
   if (m_land == NULL) m_land = new cLandscape(m_world, genome, m_inst_set);
+  m_land->SetCPUTestInfo(m_cpu_test_info);
   m_land->SetDistance(1);
   m_land->Process(ctx);
 }

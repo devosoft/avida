@@ -28,6 +28,9 @@
 #ifndef cGenotypeData_h
 #include "cGenotypeData.h"
 #endif
+#ifndef cCPUTestInfo_h
+#include "cCPUTestInfo.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -42,9 +45,9 @@ class cModularityAnalysis
 {
 private:
   cAnalyzeGenotype* m_genotype;
-  
+  cCPUTestInfo m_test_info;
 public:
-  cModularityAnalysis(cAnalyzeGenotype* genotype) : m_genotype(genotype) { ; }
+  cModularityAnalysis(cAnalyzeGenotype* genotype, const cCPUTestInfo& test_info) : m_genotype(genotype), m_test_info(test_info) { ; }
   
   static void Initialize();
   

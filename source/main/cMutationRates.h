@@ -86,11 +86,10 @@ private:
   };
   sMetaMuts meta;
 
-  cMutationRates& operator=(const cMutationRates&); // @not_implemented
-
 public:
   cMutationRates() { Clear(); }
   cMutationRates(const cMutationRates& in_muts) { Copy(in_muts); }
+  cMutationRates& operator=(const cMutationRates& in_muts) { Copy(in_muts); return *this; }
   ~cMutationRates() { ; }
 
   void Setup(cWorld* world);

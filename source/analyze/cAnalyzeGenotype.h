@@ -111,6 +111,7 @@ private:
   cGenome genome;            // Full Genome
   cInstSet& m_inst_set;      // Instruction set used in this genome
   cString name;              // Name, if one was provided in loading
+  cCPUTestInfo m_cpu_test_info; // Use this test info
   
   struct sGenotypeDatastore : public cRCObject
   {
@@ -253,7 +254,8 @@ public:
   void SetGenotypeData(int data_id, cGenotypeData* data);
   cGenotypeData* GetGenotypeData(ReadToken* tk, int data_id) const { tk->Validate(this); return m_data->dmap.GetWithDefault(data_id, NULL); }
   
-
+  void SetCPUTestInfo(cCPUTestInfo& in_cpu_test_info) { m_cpu_test_info = in_cpu_test_info; }
+  
   void Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info = NULL, cAnalyzeGenotype* parent_genotype = NULL, int num_trials = 1);
   void PrintTasks(std::ofstream& fp, int min_task = 0, int max_task = -1);
   void PrintTasksQuality(std::ofstream& fp, int min_task = 0, int max_task = -1);

@@ -4929,11 +4929,14 @@ void cAnalyze::CommandCalcFunctionalModularity(cString cur_string)
 {
   cout << "Calculating Functional Modularity..." << endl;
 
+  cCPUTestInfo test_info;
+  PopCommonCPUTestParameters(m_world, cur_string, test_info, m_resources, m_resource_time_spent_offset);
+
   tList<cModularityAnalysis> mod_list;
   tAnalyzeJobBatch<cModularityAnalysis> jobbatch(m_jobqueue);
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
-    cModularityAnalysis* mod = new cModularityAnalysis(cur_genotype);
+    cModularityAnalysis* mod = new cModularityAnalysis(cur_genotype, test_info);
     mod_list.Push(mod);
     jobbatch.AddJob(mod, &cModularityAnalysis::CalcFunctionalModularity);
   }
@@ -5430,7 +5433,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     double PM = 1.0 - (ave_dist / (double) (base_length * trait_count));
     double ave_sites = ((double) site_count) / (double) trait_count;
     
-    // Write the restults to file...
+    // Write the results to file...
     df.Write(PM,          "Physical Modularity");
     df.Write(trait_count, "Number of traits used in calculation");
     df.Write(ave_sites,   "Average num sites associated with traits");
@@ -9099,6 +9102,38 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
       if (exit_on_error) exit(1);
     }    
   }
+}
+
+
+void cAnalyze::PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info, cResourceHistory* in_resource_history, int in_resource_time_spent_offset)
+{
+  tArray<int> manual_inputs;  // Used only if manual inputs are specified  
+  cString msg;                // Holds any information we may want to send the driver to display
+  int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
+  int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;
+  bool use_random_inputs = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() == 1: false;
+  bool use_manual_inputs = false;
+  
+  //Manual inputs will override random input request and must be the last arguments.
+  if (cur_string.CountNumWords() > 0){
+    if (cur_string.CountNumWords() == in_world->GetEnvironment().GetInputSize()){
+      manual_inputs.Resize(in_world->GetEnvironment().GetInputSize());
+      use_random_inputs = false;
+      use_manual_inputs = true;
+      for (int k = 0; cur_string.GetSize(); k++)
+        manual_inputs[k] = cur_string.PopWord().AsInt();
+    } else if (in_world->GetVerbosity() >= VERBOSE_ON){
+      msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
+              cur_string.CountNumWords(), in_world->GetEnvironment().GetInputSize());
+      in_world->GetDriver().NotifyWarning(msg);
+    }
+  }
+  
+  if (use_manual_inputs)
+    test_info.UseManualInputs(manual_inputs);
+  else
+    test_info.UseRandomInputs(use_random_inputs); 
+  test_info.SetResourceOptions(use_resources, in_resource_history, update, in_resource_time_spent_offset);
 }
 
 

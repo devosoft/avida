@@ -70,6 +70,7 @@ class cAnalyzeCommandDefBase;
 class cAnalyzeFunction;
 class cAnalyzeGenotype;
 class cAnalyzeScreen;
+class cCPUTestInfo;
 class cEnvironment;
 class cInitFile;
 class cInstSet;
@@ -166,7 +167,9 @@ public:
   cAnalyzeJobQueue& GetJobQueue() { return m_jobqueue; }
   
   void AlignCurrentBatch() { CommandAlign(""); }
-
+  
+  static void PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info,
+    cResourceHistory* in_resource_history = NULL, int in_resource_time_spent_offset = 0);
   
 private:
   // Pop specific types of arguments from an arg list.
