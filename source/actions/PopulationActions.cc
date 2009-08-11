@@ -842,6 +842,61 @@ class cActionKillFractionInSequence : public cAction
 	};
 
 /*
+ Kills a fraction of organisms in the population in sequence.
+ 
+ Parameters:
+ fraction killed (double) default: 0.01
+ 
+ */
+class cActionKillFractionInSequence_PopLimit : public cAction
+	{
+	private:
+		double m_killFraction;
+		int m_popSize;
+		int killIndex;
+
+	public:
+		cActionKillFractionInSequence_PopLimit(cWorld* world, const cString& args) : 
+		cAction(world, args), 
+		m_killFraction(0.01), 
+		m_popSize(1000),
+		killIndex(0)
+		{
+      cString largs(args);
+      if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
+			if (largs.GetSize()) m_popSize = largs.PopWord().AsInt();
+		}
+		
+		static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			double avgGestation = m_world->GetStats().GetAveGestation();
+			double instPerUpdate = m_world->GetConfig().AVE_TIME_SLICE.Get();
+			double growthRate = floor(instPerUpdate/avgGestation * 100.0 + 0.5) / 100.0;
+			
+			cPopulation& pop = m_world->GetPopulation();
+			const int numOrgsInPop = pop.GetNumOrganisms();
+			if(numOrgsInPop < m_popSize)
+				return;
+			
+			int organismsToKill = static_cast<int>(numOrgsInPop * growthRate);
+			int oldKillIndex = killIndex;
+			cerr<< "growth rate: " << growthRate << "  kill: " << organismsToKill <<endl;
+			while(organismsToKill > 0) {
+				cPopulationCell& cell = pop.GetCell(killIndex);
+				if (cell.IsOccupied()) {
+					pop.KillOrganism(cell);
+					--organismsToKill;
+				}
+				killIndex = (killIndex + 1) % pop.GetSize();
+				if(killIndex == oldKillIndex)
+					assert(false);  // trying to kill organisms that don't exist
+			}
+		}
+	};
+
+/*
  Randomly removes a certain proportion of the population whose genomes contain a specified
  number (or more) of a certain type of instruction.  E.g., the default is to remove 90% of 
  organisms containing 5 or more nand instructions.
@@ -3406,6 +3461,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
 	action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
+	action_lib->Register<cActionKillFractionInSequence_PopLimit>("KillFractionInSequence_PopLimit");
 	
 	// Theraputic deme actions
 	action_lib->Register<cAction_TherapyStructuralNumInst>("TherapyStructuralNumInst");

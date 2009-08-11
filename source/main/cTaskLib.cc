@@ -1951,10 +1951,10 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
       test_output = temp_buf[0];
       
       for (int j = 0; j < string_to_match.GetSize(); j++) {  
-	string_index = string_to_match.GetSize() - j - 1; // start with last char in string
-	int k = 1 << j;
-	if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
-	    (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
+				string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+				int k = 1 << j;
+				if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+						(string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
       }
       max_num_matched = num_matched;
     }

@@ -146,7 +146,8 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 
   // Prepare the resources
   InitResources(test_info.m_res_method, test_info.m_res, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
-
+	
+	
   // Determine if we're tracing and what we need to print.
   cHardwareTracer* tracer = test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
   std::ostream * tracerStream = NULL;

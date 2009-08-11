@@ -77,12 +77,13 @@ protected:
   tSmartArray<int> m_ext_mem;
   
 	// -------- Bit masks ---------------
-	static const unsigned int MASK24 = 0xFFFFFF;
-	static const unsigned int MASK20 = 0xFFFFF;
-	static const unsigned int MASK16 = 0xFFFF;
-	static const unsigned int MASK12 = 0xFFF;
-	static const unsigned int MASK8  = 0xFF;
-	static const unsigned int MASK4  = 0xF;
+	static const unsigned int MASK_SIGNBIT = 0x7FFFFFFF;	
+	static const unsigned int MASK24       = 0xFFFFFF;
+
+	static const unsigned int MASKOFF_LOWEST16       = 0xFFFF0000;
+	static const unsigned int MASKOFF_LOWEST12       = 0xFFFFF000;
+	static const unsigned int MASKOFF_LOWEST8        = 0xFFFFFF00;
+	static const unsigned int MASKOFF_LOWEST4        = 0xFFFFFFF0;
 
 
   cHardwareBase(); // @not_implemented

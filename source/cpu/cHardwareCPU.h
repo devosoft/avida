@@ -696,10 +696,11 @@ private:
   bool Inst_IfLessConsensus24(cAvidaContext& ctx);
 	
 	// Bit masking instructions
-	bool Inst_MaskLower16Bits(cAvidaContext& ctx);
-	bool Inst_MaskLower12Bits(cAvidaContext& ctx);
-	bool Inst_MaskLower8Bits(cAvidaContext& ctx);
-	bool Inst_MaskLower4Bits(cAvidaContext& ctx);
+	bool Inst_MaskSignBit(cAvidaContext& ctx);
+	bool Inst_MaskOffLower16Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower12Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower8Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower4Bits(cAvidaContext& ctx);
   
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);

@@ -473,10 +473,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareCPU::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
 
 		// Bit Masking (higher order bit masking is possible, just add the instructions if needed)
-		tInstLibEntry<tMethod>("mask-lower16bits", &cHardwareCPU::Inst_MaskLower16Bits),
-		tInstLibEntry<tMethod>("mask-lower12bits", &cHardwareCPU::Inst_MaskLower12Bits),
-		tInstLibEntry<tMethod>("mask-lower8bits",  &cHardwareCPU::Inst_MaskLower8Bits),
-		tInstLibEntry<tMethod>("mask-lower4bits",  &cHardwareCPU::Inst_MaskLower4Bits),
+		tInstLibEntry<tMethod>("mask-signbit", &cHardwareCPU::Inst_MaskSignBit),
+		tInstLibEntry<tMethod>("maskoff-lower16bits", &cHardwareCPU::Inst_MaskOffLower16Bits),
+		tInstLibEntry<tMethod>("maskoff-lower12bits", &cHardwareCPU::Inst_MaskOffLower12Bits),
+		tInstLibEntry<tMethod>("maskoff-lower8bits",  &cHardwareCPU::Inst_MaskOffLower8Bits),
+		tInstLibEntry<tMethod>("maskoff-lower4bits",  &cHardwareCPU::Inst_MaskOffLower4Bits),
 		
 		
     // Energy usage
@@ -6666,31 +6667,38 @@ bool cHardwareCPU::Inst_IfLessConsensus24(cAvidaContext& ctx)
 
 /* Bit masking instructions */
 
-// masks lower 16 bits in a register
-bool cHardwareCPU::Inst_MaskLower16Bits(cAvidaContext& ctx) {
+// masks sign bit in a register
+bool cHardwareCPU::Inst_MaskSignBit(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
-	GetRegister(reg) = GetRegister(reg) & MASK16;
+	GetRegister(reg) = GetRegister(reg) & MASK_SIGNBIT;
+	return true;
+}
+
+// masks lower 16 bits in a register
+bool cHardwareCPU::Inst_MaskOffLower16Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST16;
 	return true;
 }
 
 // masks lower 12 bits in a register
-bool cHardwareCPU::Inst_MaskLower12Bits(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_MaskOffLower12Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
-	GetRegister(reg) = GetRegister(reg) & MASK12;
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST12;
 	return true;
 }
 
 // masks lower 8 bits in a register
-bool cHardwareCPU::Inst_MaskLower8Bits(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_MaskOffLower8Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
-	GetRegister(reg) = GetRegister(reg) & MASK8;
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST8;
 	return true;
 }
 
 // masks lower 4 bits in a register
-bool cHardwareCPU::Inst_MaskLower4Bits(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_MaskOffLower4Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
-	GetRegister(reg) = GetRegister(reg) & MASK4;
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST4;
 	return true;
 }
 
@@ -7049,17 +7057,22 @@ bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx) {
 
 bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx) {
 	int reg_to_set = FindModifiedRegister(REG_BX);
+	
+	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+	
+	const tArray<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(); 
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
-	
+
 	double pher_amount = 0;
-	for (int i = 0; i < resource_count.GetSize(); i++) {
-    if(strncmp(resource_count.GetResName(i), "pheromone", 9) == 0) {
-      pher_amount += resource_count.Get(i);
-    }
-  }
-	GetRegister(reg_to_set) = (int)floor(pher_amount + 0.5);
+	cResource* res = resLib.GetResource("pheromone");
+	
+	if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+		pher_amount += resource_count_array[res->GetID()];
+	}
+			
+	GetRegister(reg_to_set) = static_cast<int>(floor(pher_amount + 0.5));
 	return true;
 }
 
