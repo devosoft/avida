@@ -3441,6 +3441,106 @@ public:
 };
 
 
+/* This action migrates a configurable number of organisms from one deme to another if
+   the level of some global (deme) resource is above the configured threshold.
+ 
+Parameters: 3
+ - name of the resource.  This must be a deme-level global resource.
+ - threshold level for resource.  above this, organisms are migrated.
+ - number of organisms to migrate to a randomly-chosen deme.
+ 
+*/
+
+class cActionMigrateDemes : public cAction
+{
+  private:
+    cString m_res;
+    double m_thresh;
+    int m_numorgs;
+  public:
+    static const cString GetDescription() { return "Arguments: <string resource name><double failure_percent>"; }
+    
+    cActionMigrateDemes(cWorld* world, const cString& args) : cAction(world, args), m_thresh(0), m_numorgs(0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_res = largs.PopWord();
+      if (largs.GetSize()) m_thresh = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
+
+      assert(m_thresh >= 0);
+      assert(m_numorgs >= 0);
+      
+      assert(m_world->GetConfig().NUM_DEMES.Get() > 1);
+      
+      //Speculative execution will not work since we are moving organisms around.
+      assert(m_world->GetConfig().SPECULATIVE.Get() == 0);
+    }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      int src_cellid, dest_cellid;
+      
+      for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
+        cDeme& deme = m_world->GetPopulation().GetDeme(d);
+        int deme_size = deme.GetWidth() * deme.GetHeight();
+        
+        const cResourceCount &res = deme.GetDemeResourceCount();
+        const int resid = res.GetResourceByName(m_res);
+        
+        if(resid == -1) {
+          //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
+          cerr << "Error: Resource \"" << m_res << "\" not defined for this deme" << endl;
+          continue;
+        }
+        
+        if(res.Get(resid) >= m_thresh) {
+          //Set the resource to zero
+          deme.AdjustResource(resid, (-1 * res.Get(resid)));
+          
+          //Pick a deme to move to
+          int target_demeid = m_world->GetRandom().GetInt(0, m_world->GetConfig().NUM_DEMES.Get()-1);
+          cDeme& target_deme = m_world->GetPopulation().GetDeme(target_demeid);
+          int target_deme_size = target_deme.GetWidth() * target_deme.GetHeight();
+          
+          //Migrate up to m_numorgs orgs
+          for(int i = 0; i < m_numorgs; i++) {
+            src_cellid = -1;
+            dest_cellid = -1;
+            
+            int counter = 0;
+            do {
+              src_cellid = m_world->GetRandom().GetInt(0, (deme.GetWidth() * deme.GetHeight())-1);
+              cout << ".";
+              counter++;
+            } while((counter < deme_size) && (!deme.GetCell(src_cellid).IsOccupied()));
+                        
+            counter = 0;
+            do {
+              dest_cellid = m_world->GetRandom().GetInt(0, target_deme_size - 1);
+              counter++;
+            } while((counter < target_deme_size) && (target_deme.GetCell(dest_cellid).IsOccupied())); 
+            
+            if( (src_cellid != -1) && (dest_cellid != -1) ) {
+            
+              m_world->GetPopulation().SwapCells(deme.GetCell(src_cellid), target_deme.GetCell(dest_cellid));
+              m_world->GetPopulation().MoveOrganisms(ctx, deme.GetCell(src_cellid), target_deme.GetCell(dest_cellid));
+              
+              deme.DecOrgCount();
+              target_deme.IncOrgCount();
+            }
+            
+            //migrate the organism from src_cell to dest cell
+          }
+          
+          
+        }
+        
+      } //End iterating through demes
+      
+    }
+};
+
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -3561,4 +3661,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSwapCells>("swap_cells");
   action_lib->Register<cActionKillDemePercent>("KillDemePercent");
   action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
+  action_lib->Register<cActionMigrateDemes>("MigrateDemes");
 }

@@ -229,6 +229,13 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2, nInstFlag::STALL),           // If you add more sense instructions
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
+    
+    tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-resource1", &cHardwareCPU::Inst_SenseResource1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-resource2", &cHardwareCPU::Inst_SenseResource2, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-faced-resource0", &cHardwareCPU::Inst_SenseFacedResource0, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-faced-resource1", &cHardwareCPU::Inst_SenseFacedResource1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-faced-resource2", &cHardwareCPU::Inst_SenseFacedResource2, nInstFlag::STALL),
 
     tInstLibEntry<tMethod>("if-resources", &cHardwareCPU::Inst_IfResources, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect", &cHardwareCPU::Inst_Collect, nInstFlag::STALL),
@@ -263,6 +270,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("request-energy-off", &cHardwareCPU::Inst_RequestEnergyFlagOff, nInstFlag::STALL),
     tInstLibEntry<tMethod>("increase-energy-donation", &cHardwareCPU::Inst_IncreaseEnergyDonation, nInstFlag::STALL),    
     tInstLibEntry<tMethod>("decrease-energy-donation", &cHardwareCPU::Inst_DecreaseEnergyDonation, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-resource0", &cHardwareCPU::Inst_DonateResource0, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-resource1", &cHardwareCPU::Inst_DonateResource1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("donate-resource2", &cHardwareCPU::Inst_DonateResource2, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add1", &cHardwareCPU::Inst_IOBufAdd1, nInstFlag::STALL),
     tInstLibEntry<tMethod>("IObuf-add0", &cHardwareCPU::Inst_IOBufAdd0, nInstFlag::STALL),
 
@@ -3510,6 +3520,57 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
   // Note that we are converting <double> resources to <int> register values
 }
 
+
+bool cHardwareCPU::Inst_SenseResource0(cAvidaContext& ctx)
+{
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 0);
+}
+
+bool cHardwareCPU::Inst_SenseResource1(cAvidaContext& ctx)
+{
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 1);
+}
+
+bool cHardwareCPU::Inst_SenseResource2(cAvidaContext& ctx)
+{
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 2);
+}
+
+bool cHardwareCPU::Inst_SenseFacedResource0(cAvidaContext& ctx)
+{
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 0);
+}
+
+bool cHardwareCPU::Inst_SenseFacedResource1(cAvidaContext& ctx)
+{
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 1);
+}
+
+bool cHardwareCPU::Inst_SenseFacedResource2(cAvidaContext& ctx)
+{
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 2);
+}
+
+
+bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid)
+{
+  assert(resid >= 0);
+  
+  cPopulation& pop = m_world->GetPopulation();
+  
+  const tArray<double> & res_count = pop.GetCellResources(cell_id) +
+  pop.GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id);
+  
+  // Make sure we have the resource requested
+  if (resid >= res_count.GetSize()) return false;
+  
+  GetRegister(reg_to_set) = (int) res_count[resid];
+  
+  return true; 
+  
+}
+
+
 /* Convert modifying NOPs to the index of a resource. If there are fewer 
  * than the number of NOPs required to specify a resource, find the subset 
  * of resources.  (Motivation: can evolve to be more specific if there is 
@@ -3789,7 +3850,7 @@ void cHardwareCPU::DoEnergyDonatePercent(cOrganism* to_org, const double frac_en
 // energy may be lost in transfer
 void cHardwareCPU::DoEnergyDonateAmount(cOrganism* to_org, const double amount)
 {
-  double losspct = m_world->GetConfig().ENERGY_SHARING_LOSS.Get();
+  double losspct = m_world->GetConfig().RESOURCE_SHARING_LOSS.Get();
   
   assert(to_org != NULL);
   assert(amount >= 0);
@@ -4960,6 +5021,110 @@ bool cHardwareCPU::Inst_DecreaseEnergyDonation(cAvidaContext& ctx)
   return true;
   
 } //End Inst_DecreaseEnergyDonation()
+
+
+// Move a fraction of the given resource present at the current cell to the specified cell.
+// Note: This function doesn't work with deme-level resources.
+void cHardwareCPU::DoResourceDonatePercent(const int to_cell, const int resource_id, const double frac_resource_given)
+{
+  assert(to_cell >= 0);
+  assert(resource_id >= 0);
+  assert(frac_resource_given >= 0);
+  assert(frac_resource_given <= 1);
+  
+  const tArray<double> &resources = m_organism->GetOrgInterface().GetResources(); 
+  if(resource_id >= resources.GetSize()) return;
+  
+  const double amount = max(0.0, frac_resource_given * resources[resource_id]);
+  
+  DoResourceDonateAmount(to_cell, resource_id, amount);
+  
+} //End DoResourceDonatePercent()
+
+
+// Donate a portion of the given resource present at the current cell to the specified cell.
+// Note: This function doesn't work with deme-level resources.
+void cHardwareCPU::DoResourceDonateAmount(const int to_cell, const int resource_id, const double amount)
+{  
+  assert(to_cell >= 0);
+  assert(amount >= 0);
+  assert(resource_id >= 0);
+  
+  const tArray<double> &src_resources = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> &dest_resources = m_world->GetPopulation().GetCellResources(to_cell);
+  
+  assert(resource_id < src_resources.GetSize());
+  assert(resource_id < dest_resources.GetSize());
+  
+  const double donation = min(amount, src_resources[resource_id]);
+  const double decay = m_world->GetConfig().RESOURCE_SHARING_LOSS.Get();
+  
+  assert(decay >= 0);
+  assert(decay <= 1);
+  
+  tArray<double> src_change;
+  tArray<double> dest_change;
+  
+  src_change.Resize(src_resources.GetSize(), 0);
+  dest_change.Resize(dest_resources.GetSize(), 0);
+  
+  src_change[resource_id] = -1 * donation;
+  dest_change[resource_id] = (1 - decay) * donation;
+  
+  m_organism->GetOrgInterface().UpdateResources(src_change);
+  m_world->GetPopulation().UpdateCellResources(dest_change, to_cell);
+  
+} //End DoResourceDonateAmount()
+
+
+//Donate a fraction of nop-specified resource at organism's location to cell faced
+bool cHardwareCPU::DonateResourceX(cAvidaContext& ctx, const int res_id)
+{
+  assert(m_organism != 0);
+  assert(res_id >= 0);
+  
+  const double pct = 0.1;
+  
+  int current_cell, faced_cell;
+  
+  current_cell = m_organism->GetCellID();
+	
+  if(current_cell == -1) {
+    return false;
+  }
+  
+  cPopulation& pop = m_world->GetPopulation();
+  faced_cell = pop.GetCell(current_cell).GetCellFaced().GetID();
+  
+  if(faced_cell == -1) {
+    return false;
+  }
+  
+  DoResourceDonatePercent(faced_cell, res_id, pct);
+  
+  return true;
+  
+} //End DonateResourceX()
+
+
+//Donate a fraction of nop-specified resource at organism's location to cell faced
+bool cHardwareCPU::Inst_DonateResource0(cAvidaContext& ctx)
+{
+  return DonateResourceX(ctx ,0);  
+} //End Inst_DonateResource0()
+
+
+//Donate a fraction of nop-specified resource at organism's location to cell faced
+bool cHardwareCPU::Inst_DonateResource1(cAvidaContext& ctx)
+{
+  return DonateResourceX(ctx, 1);
+} //End Inst_DonateResource1()
+
+//Donate a fraction of nop-specified resource at organism's location to cell faced
+bool cHardwareCPU::Inst_DonateResource2(cAvidaContext& ctx)
+{
+  return DonateResourceX(ctx, 2);
+} //End Inst_DonateResource2()
 
 
 bool cHardwareCPU::Inst_SearchF(cAvidaContext& ctx)
