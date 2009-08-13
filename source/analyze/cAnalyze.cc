@@ -105,6 +105,7 @@ cAnalyze::cAnalyze(cWorld* world)
 , m_ctx(world->GetDefaultContext())
 , m_jobqueue(world)
 , m_resources(NULL)
+, m_resource_time_spent_offset(0)
 , interactive_depth(0)
 {
   random.ResetSeed(m_world->GetConfig().RANDOM_SEED.Get());
@@ -427,8 +428,10 @@ void cAnalyze::LoadResources(cString cur_string)
   int words = cur_string.CountNumWords();
   
   cString filename = "resource.dat";
-  if (words >= 1) filename = cur_string.PopWord();
-  if (words >= 2) m_resource_time_spent_offset = cur_string.PopWord().AsInt();
+  if (words >= 1)
+		filename = cur_string.PopWord();
+  if (words >= 2)  // TODO: document this feature!  I would do it, but I don't know what it means. (BEB)
+		m_resource_time_spent_offset = cur_string.PopWord().AsInt();
   
   cout << "Loading Resources from: " << filename << endl;
   
