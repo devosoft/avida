@@ -81,6 +81,9 @@ protected:
 	static const unsigned int MASK24       = 0xFFFFFF;
 
 	static const unsigned int MASKOFF_LOWEST16       = 0xFFFF0000;
+	static const unsigned int MASKOFF_LOWEST15       = 0xFFFF8000;
+	static const unsigned int MASKOFF_LOWEST14       = 0xFFFFC000;
+	static const unsigned int MASKOFF_LOWEST13       = 0xFFFFE000;
 	static const unsigned int MASKOFF_LOWEST12       = 0xFFFFF000;
 	static const unsigned int MASKOFF_LOWEST8        = 0xFFFFFF00;
 	static const unsigned int MASKOFF_LOWEST4        = 0xFFFFFFF0;

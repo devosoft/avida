@@ -712,6 +712,9 @@ private:
 	// Bit masking instructions
 	bool Inst_MaskSignBit(cAvidaContext& ctx);
 	bool Inst_MaskOffLower16Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower15Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower14Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower13Bits(cAvidaContext& ctx);
 	bool Inst_MaskOffLower12Bits(cAvidaContext& ctx);
 	bool Inst_MaskOffLower8Bits(cAvidaContext& ctx);
 	bool Inst_MaskOffLower4Bits(cAvidaContext& ctx);

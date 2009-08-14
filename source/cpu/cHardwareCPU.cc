@@ -485,6 +485,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		// Bit Masking (higher order bit masking is possible, just add the instructions if needed)
 		tInstLibEntry<tMethod>("mask-signbit", &cHardwareCPU::Inst_MaskSignBit),
 		tInstLibEntry<tMethod>("maskoff-lower16bits", &cHardwareCPU::Inst_MaskOffLower16Bits),
+		tInstLibEntry<tMethod>("maskoff-lower15bits", &cHardwareCPU::Inst_MaskOffLower15Bits),
+		tInstLibEntry<tMethod>("maskoff-lower14bits", &cHardwareCPU::Inst_MaskOffLower14Bits),
+		tInstLibEntry<tMethod>("maskoff-lower13bits", &cHardwareCPU::Inst_MaskOffLower13Bits),
 		tInstLibEntry<tMethod>("maskoff-lower12bits", &cHardwareCPU::Inst_MaskOffLower12Bits),
 		tInstLibEntry<tMethod>("maskoff-lower8bits",  &cHardwareCPU::Inst_MaskOffLower8Bits),
 		tInstLibEntry<tMethod>("maskoff-lower4bits",  &cHardwareCPU::Inst_MaskOffLower4Bits),
@@ -6843,6 +6846,27 @@ bool cHardwareCPU::Inst_MaskSignBit(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_MaskOffLower16Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST16;
+	return true;
+}
+
+// masks lower 15 bits in a register
+bool cHardwareCPU::Inst_MaskOffLower15Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST15;
+	return true;
+}
+
+// masks lower 14 bits in a register
+bool cHardwareCPU::Inst_MaskOffLower14Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST14;
+	return true;
+}
+
+// masks lower 13 bits in a register
+bool cHardwareCPU::Inst_MaskOffLower13Bits(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST13;
 	return true;
 }
 
