@@ -342,6 +342,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-label2", &cHardwareCPU::Inst_IfLabel2, 0, "If copied label compl., exec next inst; else SKIP W/NOPS"),
     tInstLibEntry<tMethod>("set-flow", &cHardwareCPU::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
     
+    tInstLibEntry<tMethod>("res-mov-head", &cHardwareCPU::Inst_ResMoveHead, nInstFlag::STALL, "Move head ?IP? to the flow head depending on resource level"),
+    tInstLibEntry<tMethod>("res-jmp-head", &cHardwareCPU::Inst_ResJumpHead, nInstFlag::STALL, "Move head ?IP? by amount in CX register depending on resource level; CX = old pos."),
+    
     tInstLibEntry<tMethod>("h-copy2", &cHardwareCPU::Inst_HeadCopy2),
     tInstLibEntry<tMethod>("h-copy3", &cHardwareCPU::Inst_HeadCopy3),
     tInstLibEntry<tMethod>("h-copy4", &cHardwareCPU::Inst_HeadCopy4),
@@ -5683,6 +5686,47 @@ bool cHardwareCPU::Inst_MoveHead(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_ResMoveHead(cAvidaContext& ctx)
+{
+  const cString& resname = m_world->GetConfig().INST_RES.Get();
+  const double floor = m_world->GetConfig().INST_RES_FLOOR.Get();
+  const double ceil = m_world->GetConfig().INST_RES_CEIL.Get();
+  double current_level=0;
+  
+  assert(floor >= 0);
+  assert(ceil >= 0);
+  assert(ceil >= floor);
+    
+  cPopulation& pop = m_world->GetPopulation();
+  cDeme &deme = pop.GetDeme(pop.GetCell(m_organism->GetCellID()).GetDemeID());
+  
+  const cResourceCount& deme_resources = deme.GetDemeResourceCount();
+  const cResourceCount& resources = pop.GetResourceCount();
+  
+  int resid = deme_resources.GetResourceByName(resname);
+  
+  if(resid >= 0) {
+    current_level = deme_resources.Get(resid);
+  } else if( (resid = resources.GetResourceByName(resname)) >= 0) {
+    current_level = resources.Get(resid);
+  } else {
+    cout << "Error: Cannot find resource '" << resname << "'" << endl;
+    return true;
+  }
+  
+  double current_frac = (current_level - floor) / (ceil - floor);
+  
+  if(ctx.GetRandom().P(current_frac)) {
+    //cout << "Doing move-head with current resource fraction is: " << current_frac << " (floor: " << floor << ") (ceil: " << ceil << ") (level: " << current_level << ")"<<endl;
+
+    return Inst_MoveHead(ctx);
+  } else {
+    //cout << "not doing jump" << endl;
+  }
+  
+  return true;
+}
+
 bool cHardwareCPU::Inst_JumpHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
@@ -5692,6 +5736,44 @@ bool cHardwareCPU::Inst_JumpHead(cAvidaContext& ctx)
   // and then we immediately advance past that first instruction.
   return true;
 }
+
+bool cHardwareCPU::Inst_ResJumpHead(cAvidaContext& ctx)
+{
+  const cString& resname = m_world->GetConfig().INST_RES.Get();
+  const double floor = m_world->GetConfig().INST_RES_FLOOR.Get();
+  const double ceil = m_world->GetConfig().INST_RES_CEIL.Get();
+  double current_level=0;
+  
+  assert(floor >= 0);
+  assert(ceil >= 0);
+  assert(ceil >= floor);
+  
+  cPopulation& pop = m_world->GetPopulation();
+  cDeme &deme = pop.GetDeme(pop.GetCell(m_organism->GetCellID()).GetDemeID());
+  
+  const cResourceCount& deme_resources = deme.GetDemeResourceCount();
+  const cResourceCount& resources = pop.GetResourceCount();
+  
+  int resid = deme_resources.GetResourceByName(resname);
+  
+  if(resid >= 0) {
+    current_level = deme_resources.Get(resid);
+  } else if( (resid = resources.GetResourceByName(resname)) >= 0) {
+    current_level = resources.Get(resid);
+  } else {
+    cout << "Error: Cannot find resource '" << resname << "'" << endl;
+    return true;
+  }
+  
+  double current_frac = (current_level - floor) / (ceil - floor);
+  
+  if(ctx.GetRandom().P(current_frac)) {
+    return Inst_JumpHead(ctx);
+  }
+  
+  return true;
+}
+
 
 bool cHardwareCPU::Inst_GetHead(cAvidaContext& ctx)
 {

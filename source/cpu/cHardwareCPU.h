@@ -603,7 +603,9 @@ private:
   bool Inst_SetHead(cAvidaContext& ctx);
   bool Inst_AdvanceHead(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
+  bool Inst_ResMoveHead(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
+  bool Inst_ResJumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_IfLabel(cAvidaContext& ctx);
   bool Inst_IfLabelDirect(cAvidaContext& ctx);

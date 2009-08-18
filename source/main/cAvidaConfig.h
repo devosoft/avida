@@ -661,6 +661,11 @@ public:
 	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome\nfragments (0=none [default]).");
 	CONFIG_ADD_VAR(HGT_INSERTION_PROB, double, 0.0, "Probability that a genome fragment\nwill be inserted during a copy (default=0.0).");
 	CONFIG_ADD_VAR(HGT_LOOKAHEAD_LENGTH, int, 4, "Number of instructions forward from the\nread head that will be used to calculate\nthe liklihood of HGT.");	
+  
+  CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");
+  CONFIG_ADD_VAR(INST_RES, cString, "", "Resource upon which the execution of certain instruction depends");
+  CONFIG_ADD_VAR(INST_RES_FLOOR, double, 0.0, "Assumed lower level of resource in environment.  Used for probability dist.");
+  CONFIG_ADD_VAR(INST_RES_CEIL, double, 0.0, "Assumed upper level of resource in environment.  Used for probability dist.");
 	
 #endif
   

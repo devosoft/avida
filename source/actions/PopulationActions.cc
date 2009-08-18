@@ -3510,7 +3510,6 @@ class cActionMigrateDemes : public cAction
             int counter = 0;
             do {
               src_cellid = m_world->GetRandom().GetInt(0, (deme.GetWidth() * deme.GetHeight())-1);
-              cout << ".";
               counter++;
             } while((counter < deme_size) && (!deme.GetCell(src_cellid).IsOccupied()));
                         
