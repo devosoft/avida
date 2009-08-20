@@ -490,8 +490,8 @@ public:
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
-    assert(m_outflow < 1.0);
-    assert(m_outflow > 0.0);
+    assert(m_outflow <= 1.0);
+    assert(m_outflow >= 0.0);
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <int outflow>"; }

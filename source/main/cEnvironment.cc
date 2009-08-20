@@ -1067,7 +1067,7 @@ bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs
 
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const tArray<int>& task_count,
-                              const tArray<int>& reaction_count, 
+															tArray<int>& reaction_count, 
                               const tArray<double>& resource_count, 
                               const tArray<double>& rbins_count) const
 {
@@ -1117,6 +1117,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, 
                 task_quality, task_probability, task_cnt, i, result, taskctx);
     
+    if (result.ReactionTriggered(task_id) == true) reaction_count[i]++;
 
     // Note: the reaction is actually marked as being performed inside DoProcesses.
   }  
