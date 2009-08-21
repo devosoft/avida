@@ -89,6 +89,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   // many if block causes problems block nesting depth in Visual Studio.net 2003.
   
   if (name == "echo")      NewTask(name, "Echo", &cTaskLib::Task_Echo);
+  else if (name == "echo_dup")  NewTask(name, "Echo_dup",  &cTaskLib::Task_Echo);
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
   else if (name == "add3")  NewTask(name, "Add3",  &cTaskLib::Task_Add3);  
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
@@ -97,14 +98,23 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   // All 1- and 2-Input Logic Functions
   if (name == "not") NewTask(name, "Not", &cTaskLib::Task_Not);
+  else if (name == "not_dup") NewTask(name, "Not_dup", &cTaskLib::Task_Not);
   else if (name == "nand") NewTask(name, "Nand", &cTaskLib::Task_Nand);
+  else if (name == "nand_dup") NewTask(name, "Nand_dup", &cTaskLib::Task_Nand);
   else if (name == "and") NewTask(name, "And", &cTaskLib::Task_And);
+  else if (name == "and_dup") NewTask(name, "And_dup", &cTaskLib::Task_And);
   else if (name == "orn") NewTask(name, "OrNot", &cTaskLib::Task_OrNot);
+  else if (name == "orn_dup") NewTask(name, "OrNot_dup", &cTaskLib::Task_OrNot);
   else if (name == "or") NewTask(name, "Or", &cTaskLib::Task_Or);
+  else if (name == "or_dup") NewTask(name, "Or_dup", &cTaskLib::Task_Or);
   else if (name == "andn") NewTask(name, "AndNot", &cTaskLib::Task_AndNot);
+  else if (name == "andn_dup") NewTask(name, "AndNot_dup", &cTaskLib::Task_AndNot);
   else if (name == "nor") NewTask(name, "Nor", &cTaskLib::Task_Nor);
+  else if (name == "nor_dup") NewTask(name, "Nor_dup", &cTaskLib::Task_Nor);
   else if (name == "xor") NewTask(name, "Xor", &cTaskLib::Task_Xor);
+  else if (name == "xor_dup") NewTask(name, "Xor_dup", &cTaskLib::Task_Xor);
   else if (name == "equ") NewTask(name, "Equals", &cTaskLib::Task_Equ);
+  else if (name == "equ_dup") NewTask(name, "Equals_dup", &cTaskLib::Task_Equ);
   
   // All 3-Input Logic Functions
   if (name == "logic_3AA")
