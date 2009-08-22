@@ -5737,8 +5737,7 @@ void cPopulation::AdjustHGTResource(double delta) {
  key component of biologically-inspired approaches to group selection (ie, Wilson's 
  and Traulsen's models).
  
- \warning THIS METHOD CHANGES THE ORGANISM POINTERS OF CELLS.  IT'S QUITE POSSIBLY
- DANGEROUS, ESPECIALLY IF STATEFUL.
+ \warning THIS METHOD CHANGES THE ORGANISM POINTERS OF CELLS.
  */
 void cPopulation::MixPopulation() {
 	// Get the list of all organism pointers, including nulls:
@@ -5754,9 +5753,11 @@ void cPopulation::MixPopulation() {
 	// Reset the organism pointers of all cells:
 	for(int i=0; i<cell_array.GetSize(); ++i) {
 		cell_array[i].RemoveOrganism();
-		// Can't insert null, 'cause InsertOrganism asserts.
-		if(population[i] != 0) {
+		if(population[i] == 0) {
+			AdjustSchedule(cell_array[i], cMerit(0));
+		} else {
 			cell_array[i].InsertOrganism(population[i]);
+			AdjustSchedule(cell_array[i], cell_array[i].GetOrganism()->GetPhenotype().GetMerit());
 		}
 	}
 }
