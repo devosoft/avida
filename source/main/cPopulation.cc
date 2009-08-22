@@ -5726,3 +5726,37 @@ int  cPopulation::NumberOfOrganismsInGroup(int group_id)
 void cPopulation::AdjustHGTResource(double delta) {
 	resource_count.Modify(m_hgt_resid, delta);
 }
+
+/*! Mix all organisms in the population.
+ 
+ This method rearranges the relationship between organisms and cells.  Specifically,
+ we take all organisms in the population, and assign them to different randomly-selected
+ cells.
+ 
+ This isn't really useful in a single population run.  However, a mixing stage is a
+ key component of biologically-inspired approaches to group selection (ie, Wilson's 
+ and Traulsen's models).
+ 
+ \warning THIS METHOD CHANGES THE ORGANISM POINTERS OF CELLS.  IT'S QUITE POSSIBLY
+ DANGEROUS, ESPECIALLY IF STATEFUL.
+ */
+void cPopulation::MixPopulation() {
+	// Get the list of all organism pointers, including nulls:
+	std::vector<cOrganism*> population(cell_array.GetSize());
+	for(int i=0; i<cell_array.GetSize(); ++i) {
+		population[i] = cell_array[i].GetOrganism();
+	}
+	
+	// Shuffle them:
+	cRandomStdAdaptor adapted_rng(m_world->GetRandom());
+	std::random_shuffle(population.begin(), population.end(), adapted_rng);
+	
+	// Reset the organism pointers of all cells:
+	for(int i=0; i<cell_array.GetSize(); ++i) {
+		cell_array[i].RemoveOrganism();
+		// Can't insert null, 'cause InsertOrganism asserts.
+		if(population[i] != 0) {
+			cell_array[i].InsertOrganism(population[i]);
+		}
+	}
+}

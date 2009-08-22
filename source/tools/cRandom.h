@@ -24,6 +24,7 @@
 #include <ctime>
 #include <climits>
 #include <cmath>
+#include <iterator>
 
 /**
  * A versatile and fast pseudo random number generator.
@@ -239,6 +240,21 @@ public:
     a.ArkvObj("expRV", expRV);
   }
 };
+
+
+/*! This is an adaptor to make cRandom behave like a proper STL random number
+ generator.
+ */
+struct cRandomStdAdaptor {
+	typedef int argument_type;
+	typedef int result_type;
+	
+	cRandomStdAdaptor(cRandom& rng) : _rng(rng) { }
+	int operator()(int n) { return _rng.GetInt(n); }
+	
+	cRandom& _rng;
+};
+
 
 
 #ifdef ENABLE_UNIT_TESTS

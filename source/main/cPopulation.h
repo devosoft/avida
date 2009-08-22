@@ -370,7 +370,12 @@ private:
 	int m_hgt_resid; //!< HGT resource ID.
 public:
 	//! Modify current level of the HGT resource.
-	void AdjustHGTResource(double delta);	
+	void AdjustHGTResource(double delta);
+	
+	// -------- Population mixing support --------
+public:
+	//! Mix all organisms in the population.
+	void MixPopulation();
 };
 
 

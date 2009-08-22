@@ -2575,6 +2575,9 @@ class cActionReplicateDemes : public cAction
  BASE_CONST_MERIT 0 (Use a base merit of zero, hence all merits = 0)
  
  These settings will make sure that all merit will be set by this action.
+ 
+ FYI: This model is appears to be similar to Traulsen's model of group selection:
+ 
  */
 
 class cActionDivideDemes : public cAction
@@ -2594,6 +2597,25 @@ class cActionDivideDemes : public cAction
 			m_world->GetPopulation().DivideDemes();
 		}
 	};
+
+
+/*! Mix all organisms in the population.
+ 
+ This event, in combination with a method for deme competition, can be used to model
+ the different biologically-inspired approaches to group selection, specifically
+ Wilson's and Traulsen's models.
+*/
+class cActionMixPopulation : public cAction {
+public:
+	cActionMixPopulation(cWorld* world, const cString& args) : cAction(world, args) {
+	}
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	void Process(cAvidaContext& ctx) {
+		m_world->GetPopulation().MixPopulation();
+	}
+};
 
 
 /*
@@ -3586,6 +3608,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDivideDemes>("DivideDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
+  action_lib->Register<cActionMixPopulation>("MixPopulation");
 	
 	action_lib->Register<cActionDecayPoints>("DecayPoints");
 	
