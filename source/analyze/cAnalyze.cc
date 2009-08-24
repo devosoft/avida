@@ -3289,6 +3289,75 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
 }
 
 
+// Calculate Edit Distance stats for all pairs of organisms across the population.
+void cAnalyze::CommandPrintDistances(cString cur_string)
+{
+  cout << "Calculating Edit Distance between all pairs of genotypes." << endl;
+  
+  // Get the maximum distance we care about
+  int dist_threshold = cur_string.PopWord().AsInt();
+  
+  // Get the file name that saves the result 
+  cString filename = cur_string.PopWord();
+  if (filename.IsEmpty()) {
+    filename = "edit_distance.dat";
+  }
+  
+  ofstream & fout = m_world->GetDataFileOFStream(filename);
+  
+  fout << "# All pairs edit distance" << endl;
+  fout << "# 1: Num organism pairs" << endl;
+  fout << "# 2: Mean distance" << endl;
+  fout << "# 3: Max distance" << endl;
+  fout << "# 4: Frac distances above threshold (" << dist_threshold << ")" << endl;
+  fout << endl;
+  
+  // Loop through all pairs of organisms.
+  int dist_total = 0;
+  int dist_max = 0;
+  int pair_count = 0;
+  int threshold_pair_count = 0;
+
+  cAnalyzeGenotype * genotype1 = NULL;
+  cAnalyzeGenotype * genotype2 = NULL;
+  tListIterator<cAnalyzeGenotype> batch_it1(batch[cur_batch].List());
+
+  int watermark = 0;
+  
+  while ((genotype1 = batch_it1.Next()) != NULL) {
+    const int gen1_count = genotype1->GetNumCPUs();
+
+    // Pair this genotype with itself for a distance of 0.
+    pair_count += gen1_count * (gen1_count - 1) / 2;
+
+    // Loop through the other genotypes this one can be paired with.
+    tListIterator<cAnalyzeGenotype> batch_it2(batch_it1);
+    while ((genotype2 = batch_it2.Next()) != NULL) {
+      const int gen2_count = genotype2->GetNumCPUs();
+      const int cur_pairs = gen1_count * gen2_count;
+      const int cur_dist = cGenomeUtil::FindEditDistance(genotype1->GetGenome(), genotype2->GetGenome());      
+      dist_total += cur_pairs * cur_dist;
+      if (cur_dist > dist_max) dist_max = cur_dist;
+      pair_count += cur_pairs;
+      if (cur_dist >= dist_threshold) threshold_pair_count += cur_pairs;
+
+      if (pair_count > watermark) {
+	cout << watermark << endl;
+	watermark += 100000;
+      }
+    }
+  }
+  
+  fout << pair_count << " "
+       << ((double) dist_total) / (double) pair_count << " "
+       << dist_max << " "
+       << ((double) threshold_pair_count) / (double) pair_count << " "
+       << endl;
+
+  return;
+}
+
+
 // Calculate various stats for trees in population.
 void cAnalyze::CommandPrintTreeStats(cString cur_string)
 {
@@ -9275,6 +9344,7 @@ void cAnalyze::SetupCommandDefLibrary()
   // Population analysis commands...
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
+  AddLibraryDef("PRINT_DISTANCES", &cAnalyze::CommandPrintDistances);
   AddLibraryDef("PRINT_TREE_STATS", &cAnalyze::CommandPrintTreeStats);
   AddLibraryDef("PRINT_CUMULATIVE_STEMMINESS", &cAnalyze::CommandPrintCumulativeStemminess);
   AddLibraryDef("PRINT_GAMMA", &cAnalyze::CommandPrintGamma);

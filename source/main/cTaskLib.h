@@ -104,7 +104,11 @@ private:
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
-  
+  // All tasks must be declared here, taking a cTaskContext reference as the sole input and
+  // returning a double between 0.0 and 1.0 indicating the quality of how well the task was
+  // performed.
+
+  // Basic Tasks
   double Task_Echo(cTaskContext& ctx) const;
   double Task_Add(cTaskContext& ctx) const;
   double Task_Add3(cTaskContext& ctx) const;

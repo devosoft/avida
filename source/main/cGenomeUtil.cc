@@ -179,8 +179,12 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
   if (!size1) return size2;
   if (!size2) return size1;
 
+  // Count how many direct matches we have at the front and rear.
+  int match_front = 0;
+  int match_rear = 0;
+
   int * cur_row  = new int[size1];  // The row we are calculating
-  int * prev_row = new int[size1];  // The last row we calculater
+  int * prev_row = new int[size1];  // The last row we calculated
 
   // Initialize the previous row to record the differece from nothing.
   for (int i = 0; i < size1; i++)  prev_row[i] = i + 1;

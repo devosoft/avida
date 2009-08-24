@@ -641,7 +641,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   m_world->GetStats().RecordBirth(target_cell.GetID(), in_genotype->GetID(),
                                   in_organism->GetPhenotype().ParentTrue());
   
-  // @MRR Do coalescence clade set up for new organisms.
+  // @MRR Do coalescence clade setup for new organisms.
   CCladeSetupOrganism(in_organism ); 
   
   //count how many times MERIT_BONUS_INST (rewarded instruction) is in the genome
