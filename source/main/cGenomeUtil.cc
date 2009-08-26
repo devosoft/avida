@@ -175,14 +175,16 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
 {
   const int size1 = gen1.GetSize();
   const int size2 = gen2.GetSize();
+  const int min_size = min(size1, size2);
 
-  if (!size1) return size2;
-  if (!size2) return size1;
+  // If either size is zero, return the other one!
+  if (!min_size) return max(size1, size2);
 
   // Count how many direct matches we have at the front and end.
   int match_front = 0, match_end = 0;
-  while (gen1[match_front] == gen2[match_front]) match_front++;
-  while (gen1[size1 - match_end - 1] == gen2[size2 - match_end - 1]) match_end++;
+  while (match_front < min_size && gen1[match_front] == gen2[match_front]) match_front++;
+  while (match_end < min_size &&
+	 gen1[size1 - match_end - 1] == gen2[size2 - match_end - 1]) match_end++;
 
   // We can ignore the last match_end sites since we know they have distance zero.
   const int test_size1 = size1 - match_front - match_end;
