@@ -464,6 +464,7 @@ class cActionSetDemeResourceInflow : public cAction
       
       assert(m_inflow >= 0);
       assert(m_demeid >= 0);
+      assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
       
     }
     
@@ -530,6 +531,7 @@ class cActionSetDemeResourceOutflow : public cAction
       assert(m_demeid >= 0);
       assert(m_outflow <= 1.0);
       assert(m_outflow >= 0.0);
+      assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
     }
     
     static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <int outflow>"; }

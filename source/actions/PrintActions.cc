@@ -140,6 +140,7 @@ STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
 STATS_OUT_FILE(PrintDynamicMaxMinData,		maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
+STATS_OUT_FILE(PrintMigrationData,      migration.dat);
 
 // reputation
 STATS_OUT_FILE(PrintReputationData,         reputation.dat);
@@ -2901,6 +2902,19 @@ public:
   }
 };
 
+class cActionPrintDemeGlobalResources : public cAction
+  {
+  public:
+    cActionPrintDemeGlobalResources(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    
+    static const cString GetDescription() { return "No Arguments"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      m_world->GetPopulation().PrintDemeGlobalResources();
+    }
+  };
+
 class cActionSaveDemeFounders : public cAction
 {
 private:
@@ -2966,7 +2980,31 @@ public:
   }
 };
 
-
+class cActionPrintNumOrgsInDeme : public cAction
+  {
+  public:
+    cActionPrintNumOrgsInDeme(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    
+    static const cString GetDescription() { return "No Arguments"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      cDataFile & df = m_world->GetDataFile("deme_org_count.dat");
+      df.WriteComment("Avida deme resource data");
+      df.WriteTimeStamp();
+      
+      cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
+      df.WriteRaw(UpdateStr);      
+      
+      for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
+        cDeme& deme = m_world->GetPopulation().GetDeme(d);
+        df.WriteBlockElement(d, 0, 2);
+        df.WriteBlockElement(deme.GetOrgCount(), 1, 2);
+      }
+      
+      df.WriteRaw("];");
+    }
+  };
 
 
 void RegisterPrintActions(cActionLibrary* action_lib)
@@ -3035,6 +3073,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeSpacialEnergy>("PrintDemeSpacialEnergyStats");
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
+  action_lib->Register<cActionPrintDemeGlobalResources>("PrintDemeGlobalResources");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
   action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
@@ -3115,7 +3154,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   // Print Settings
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   
-  action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");//ZOOZ
+  action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
+  action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");
@@ -3184,4 +3224,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 	
   action_lib->Register<cActionSetVerbose>("VERBOSE");
+  
+  action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
 }

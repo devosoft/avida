@@ -134,6 +134,7 @@ cStats::cStats(cWorld* world)
   , m_spec_num(0)
   , m_spec_waste(0)
   , num_orgs_killed(0)
+  , num_migrations(0)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
 	, m_deme_num_repls_untreatable(0)
@@ -567,6 +568,7 @@ void cStats::ProcessUpdate()
   m_spec_waste = 0;
   
   num_orgs_killed = 0;
+  num_migrations = 0;
 }
 
 void cStats::RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
@@ -2328,6 +2330,19 @@ void cStats::PrintNumOrgsKilledData(const cString& filename)
   df.Write(num_orgs_killed, "Num Orgs Killed");
   df.Endl();
 } //End PrintNumOrgsKilledData()
+
+void cStats::PrintMigrationData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Number of migrations made using the migratedemes event");
+  df.WriteTimeStamp();
+  df.WriteComment("First column is the current update and the second column lists the number of migrations made");
+  
+  df.Write(m_update,   "Update");
+  df.Write(num_migrations, "Num Migrations");
+  df.Endl();
+} //End PrintMigrationData()
 
 
 /* Print information pertinent to direct reciprocity experiments*/

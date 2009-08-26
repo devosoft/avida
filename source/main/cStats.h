@@ -331,6 +331,9 @@ private:
   // Number of organisms killed by kill actions
   int num_orgs_killed;
   
+  // Number of migrations that have been made
+  int num_migrations;
+  
 
   cStats(); // @not_implemented
   cStats(const cStats&); // @not_implemented
@@ -560,6 +563,7 @@ public:
   void IncExecuted() { num_executed++; }
   
   void IncNumOrgsKilled() { num_orgs_killed++; }
+  void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
   void AddCurTaskQuality(int task_num, double quality) 
@@ -729,6 +733,7 @@ public:
   int GetSpeculativeWaste() const { return m_spec_waste; }
   
   int GetNumOrgsKilled() const { return num_orgs_killed; }
+  int GetNumMigrations() const { return num_migrations; }
 
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -777,6 +782,7 @@ public:
   void PrintCellVisitsData(const cString& filename);
   void PrintExtendedTimeData(const cString& filename);
   void PrintNumOrgsKilledData(const cString& filename);
+  void PrintMigrationData(const cString& filename);
   void PrintGroupsFormedData(const cString& filename);
 	void PrintGroupIds(const cString& filename);
   

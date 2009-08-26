@@ -3145,6 +3145,39 @@ void cPopulation::PrintDemeResource() {
   df_resources.Endl();
 }
 
+//Write deme global resource levels to a file that can be easily read into Matlab.
+//Each time this runs, a Matlab array is created that contains an array.  Each row in the array contains <deme id> <res level 0> ... <res level n>
+void cPopulation::PrintDemeGlobalResources() {
+  const int num_demes = deme_array.GetSize();
+  cDataFile & df = m_world->GetDataFile("deme_global_resources.dat");
+  df.WriteComment("Avida deme resource data");
+  df.WriteTimeStamp();
+  
+  cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
+  df.WriteRaw(UpdateStr);
+  
+  for (int deme_id = 0; deme_id < num_demes; deme_id++) {
+    cDeme & cur_deme = deme_array[deme_id];
+    cur_deme.UpdateDemeRes();
+    
+    const cResourceCount & res = GetDeme(deme_id).GetDemeResourceCount();
+    const int num_res = res.GetSize();
+    
+    df.WriteBlockElement(deme_id, 0, num_res + 1);
+
+    for(int r = 0; r < num_res; r++) {
+      if(!res.IsSpatial(r)) {
+        df.WriteBlockElement(res.Get(r), r + 1, num_res + 1);
+      }
+      
+    } //End iterating through resources
+        
+  } //End iterating through demes
+  
+  df.WriteRaw("];");
+}
+
+
 // Write spatial energy data to a file that can easily be read into Matlab
 void cPopulation::PrintDemeSpatialEnergyData() const {
   int cellID = 0;

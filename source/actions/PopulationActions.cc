@@ -3553,6 +3553,7 @@ class cActionMigrateDemes : public cAction
             //migrate the organism from src_cell to dest cell
           }
           
+          m_world->GetStats().IncNumMigrations();
           
         }
         
