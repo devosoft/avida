@@ -696,8 +696,6 @@ double cTaskLib::Task_Equ(cTaskContext& ctx) const
   return 0.0;
 }
 
-////////////////////////////////////
-
 double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const {
 	const double resCrossoverLevel = 100;
 
@@ -719,8 +717,6 @@ double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const {
 		pher_amount += resource_count_array[res->GetID()];
 	}
 	
-//	double diff = fabs(resCrossoverLevel - pher_amount);
-//	double reward = pow(diff, 2) * 25;
 	if(pher_amount < resCrossoverLevel)
 		return 1.0;
 	return 0.0;	
@@ -747,15 +743,10 @@ double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const {
 		pher_amount += resource_count_array[res->GetID()];
 	}
 	
-//	double diff = fabs(resCrossoverLevel - pher_amount);
-//	double reward = pow(diff, 2) * 25;
 	if(pher_amount > resCrossoverLevel)
 		return 1.0;
 	return 0.0;	
 }
-
-////////////////////////////////////
-
 
 double cTaskLib::Task_Logic3in_AA(cTaskContext& ctx) const
 {

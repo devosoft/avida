@@ -328,6 +328,8 @@ private:
   bool Inst_If0(cAvidaContext& ctx);
   bool Inst_IfEqu(cAvidaContext& ctx);
   bool Inst_IfNot0(cAvidaContext& ctx);
+	bool Inst_If0_defaultAX(cAvidaContext& ctx);
+	bool Inst_IfNot0_defaultAX(cAvidaContext& ctx);
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfGr0(cAvidaContext& ctx);
   bool Inst_IfGr(cAvidaContext& ctx);
@@ -714,12 +716,19 @@ private:
 	// Bit masking instructions
 	bool Inst_MaskSignBit(cAvidaContext& ctx);
 	bool Inst_MaskOffLower16Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower16Bits_defaultAX(cAvidaContext& ctx);
 	bool Inst_MaskOffLower15Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower15Bits_defaultAX(cAvidaContext& ctx);
 	bool Inst_MaskOffLower14Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower14Bits_defaultAX(cAvidaContext& ctx);
 	bool Inst_MaskOffLower13Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower13Bits_defaultAX(cAvidaContext& ctx);
 	bool Inst_MaskOffLower12Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower12Bits_defaultAX(cAvidaContext& ctx);
 	bool Inst_MaskOffLower8Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower8Bits_defaultAX(cAvidaContext& ctx);
 	bool Inst_MaskOffLower4Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower4Bits_defaultAX(cAvidaContext& ctx);
   
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
@@ -800,12 +809,13 @@ private:
   bool Inst_SenseTarget(cAvidaContext& ctx);
   bool Inst_SenseTargetFaced(cAvidaContext& ctx);
   bool DoSensePheromone(cAvidaContext& ctx, int cellid);
-	bool DoSensePheromoneInDemeGlobal(cAvidaContext& ctx);
-	bool DoSensePheromoneGlobal(cAvidaContext& ctx);
+	bool DoSensePheromoneInDemeGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT);
+	bool DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT);
   bool Inst_SensePheromone(cAvidaContext& ctx);
   bool Inst_SensePheromoneFaced(cAvidaContext& ctx);
 	bool Inst_SensePheromoneInDemeGlobal(cAvidaContext& ctx);
 	bool Inst_SensePheromoneGlobal(cAvidaContext& ctx);
+	bool Inst_SensePheromoneGlobal_defaultAX(cAvidaContext& ctx);
   bool Inst_Exploit(cAvidaContext& ctx);
   bool Inst_ExploitForward5(cAvidaContext& ctx);
   bool Inst_ExploitForward3(cAvidaContext& ctx);

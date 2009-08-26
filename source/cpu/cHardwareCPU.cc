@@ -90,6 +90,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("nop-X", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("if-equ-0", &cHardwareCPU::Inst_If0, 0, "Execute next instruction if ?BX?==0, else skip it"),
     tInstLibEntry<tMethod>("if-not-0", &cHardwareCPU::Inst_IfNot0, 0, "Execute next instruction if ?BX?!=0, else skip it"),
+    tInstLibEntry<tMethod>("if-equ-0-defaultAX", &cHardwareCPU::Inst_If0_defaultAX, 0, "Execute next instruction if ?AX?==0, else skip it"),
+    tInstLibEntry<tMethod>("if-not-0-defaultAX", &cHardwareCPU::Inst_IfNot0_defaultAX, 0, "Execute next instruction if ?AX?!=0, else skip it"),
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareCPU::Inst_IfNEqu, nInstFlag::DEFAULT, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-equ", &cHardwareCPU::Inst_IfEqu, 0, "Execute next instruction if ?BX?==?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-grt-0", &cHardwareCPU::Inst_IfGr0),
@@ -488,12 +490,19 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		// Bit Masking (higher order bit masking is possible, just add the instructions if needed)
 		tInstLibEntry<tMethod>("mask-signbit", &cHardwareCPU::Inst_MaskSignBit),
 		tInstLibEntry<tMethod>("maskoff-lower16bits", &cHardwareCPU::Inst_MaskOffLower16Bits),
+		tInstLibEntry<tMethod>("maskoff-lower16bits-defaultAX", &cHardwareCPU::Inst_MaskOffLower16Bits_defaultAX),
 		tInstLibEntry<tMethod>("maskoff-lower15bits", &cHardwareCPU::Inst_MaskOffLower15Bits),
+		tInstLibEntry<tMethod>("maskoff-lower15bits-defaultAX", &cHardwareCPU::Inst_MaskOffLower15Bits_defaultAX),
 		tInstLibEntry<tMethod>("maskoff-lower14bits", &cHardwareCPU::Inst_MaskOffLower14Bits),
+		tInstLibEntry<tMethod>("maskoff-lower14bits-defaultAX", &cHardwareCPU::Inst_MaskOffLower14Bits_defaultAX),
 		tInstLibEntry<tMethod>("maskoff-lower13bits", &cHardwareCPU::Inst_MaskOffLower13Bits),
+		tInstLibEntry<tMethod>("maskoff-lower13bits-defaultAX", &cHardwareCPU::Inst_MaskOffLower13Bits_defaultAX),
 		tInstLibEntry<tMethod>("maskoff-lower12bits", &cHardwareCPU::Inst_MaskOffLower12Bits),
+		tInstLibEntry<tMethod>("maskoff-lower12bits-defaultAX", &cHardwareCPU::Inst_MaskOffLower12Bits_defaultAX),
 		tInstLibEntry<tMethod>("maskoff-lower8bits",  &cHardwareCPU::Inst_MaskOffLower8Bits),
+		tInstLibEntry<tMethod>("maskoff-lower8bits-defaultAX",  &cHardwareCPU::Inst_MaskOffLower8Bits_defaultAX),
 		tInstLibEntry<tMethod>("maskoff-lower4bits",  &cHardwareCPU::Inst_MaskOffLower4Bits),
+		tInstLibEntry<tMethod>("maskoff-lower4bits-defaultAX",  &cHardwareCPU::Inst_MaskOffLower4Bits_defaultAX),
 		
 		
     // Energy usage
@@ -534,6 +543,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-pheromone-faced", &cHardwareCPU::Inst_SensePheromoneFaced),
     tInstLibEntry<tMethod>("sense-pheromone-inDemeGlobal", &cHardwareCPU::Inst_SensePheromoneInDemeGlobal),
 		tInstLibEntry<tMethod>("sense-pheromone-global", &cHardwareCPU::Inst_SensePheromoneGlobal),
+		tInstLibEntry<tMethod>("sense-pheromone-global-defaultAX", &cHardwareCPU::Inst_SensePheromoneGlobal_defaultAX),
     tInstLibEntry<tMethod>("exploit", &cHardwareCPU::Inst_Exploit, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exploit-forward5", &cHardwareCPU::Inst_ExploitForward5, nInstFlag::STALL),
     tInstLibEntry<tMethod>("exploit-forward3", &cHardwareCPU::Inst_ExploitForward3, nInstFlag::STALL),
@@ -1882,6 +1892,22 @@ bool cHardwareCPU::Inst_If0(cAvidaContext& ctx)          // Execute next if ?bx?
 bool cHardwareCPU::Inst_IfNot0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 { 
   const int reg_used = FindModifiedRegister(REG_BX);
+  if (GetRegister(reg_used) == 0)  IP().Advance();
+  return true;
+}
+
+// Same as Inst_If0, except AX is used by default, not BX
+bool cHardwareCPU::Inst_If0_defaultAX(cAvidaContext& ctx)          // Execute next if ?ax? ==0.
+{
+  const int reg_used = FindModifiedRegister(REG_AX);
+  if (GetRegister(reg_used) != 0)  IP().Advance();
+  return true; 
+}
+
+// Same as Inst_IfNot0, except AX is used by default, not BX
+bool cHardwareCPU::Inst_IfNot0_defaultAX(cAvidaContext& ctx)       // Execute next if ?ax? != 0.
+{ 
+  const int reg_used = FindModifiedRegister(REG_AX);
   if (GetRegister(reg_used) == 0)  IP().Advance();
   return true;
 }
@@ -6924,51 +6950,100 @@ bool cHardwareCPU::Inst_MaskSignBit(cAvidaContext& ctx) {
 	return true;
 }
 
-// masks lower 16 bits in a register
+// masks lower 16 bits in ?BX? register
 bool cHardwareCPU::Inst_MaskOffLower16Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST16;
 	return true;
 }
 
-// masks lower 15 bits in a register
+// masks lower 16 bits in ?AX? register
+bool cHardwareCPU::Inst_MaskOffLower16Bits_defaultAX(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_AX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST16;
+	return true;
+}
+
+// masks lower 15 bits in ?BX? register
 bool cHardwareCPU::Inst_MaskOffLower15Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST15;
 	return true;
 }
 
-// masks lower 14 bits in a register
+// masks lower 15 bits in ?AX? register
+bool cHardwareCPU::Inst_MaskOffLower15Bits_defaultAX(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_AX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST15;
+	return true;
+}
+
+// masks lower 14 bits in ?BX? register
 bool cHardwareCPU::Inst_MaskOffLower14Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST14;
 	return true;
 }
 
-// masks lower 13 bits in a register
+// masks lower 14 bits in ?AX? register
+bool cHardwareCPU::Inst_MaskOffLower14Bits_defaultAX(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_AX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST14;
+	return true;
+}
+
+// masks lower 13 bits in ?BX? register
 bool cHardwareCPU::Inst_MaskOffLower13Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST13;
 	return true;
 }
 
-// masks lower 12 bits in a register
+// masks lower 13 bits in ?AX? register
+bool cHardwareCPU::Inst_MaskOffLower13Bits_defaultAX(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_AX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST13;
+	return true;
+}
+
+// masks lower 12 bits in ?BX? register
 bool cHardwareCPU::Inst_MaskOffLower12Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST12;
 	return true;
 }
 
-// masks lower 8 bits in a register
+// masks lower 12 bits in ?AX? register
+bool cHardwareCPU::Inst_MaskOffLower12Bits_defaultAX(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_AX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST12;
+	return true;
+}
+
+// masks lower 8 bits in ?BX? register
 bool cHardwareCPU::Inst_MaskOffLower8Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST8;
 	return true;
 }
 
-// masks lower 4 bits in a register
+// masks lower 8 bits in ?AX? register
+bool cHardwareCPU::Inst_MaskOffLower8Bits_defaultAX(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_AX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST8;
+	return true;
+}
+
+// masks lower 4 bits in ?BX? register
 bool cHardwareCPU::Inst_MaskOffLower4Bits(cAvidaContext& ctx) {
   const int reg = FindModifiedRegister(REG_BX);
+	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST4;
+	return true;
+}
+
+// masks lower 4 bits in ?AX? register
+bool cHardwareCPU::Inst_MaskOffLower4Bits_defaultAX(cAvidaContext& ctx) {
+  const int reg = FindModifiedRegister(REG_AX);
 	GetRegister(reg) = GetRegister(reg) & MASKOFF_LOWEST4;
 	return true;
 }
@@ -7306,11 +7381,11 @@ bool cHardwareCPU::DoSensePheromone(cAvidaContext& ctx, int cellid)
 
 } //End DoSensePheromone()
 
-bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx) {
+bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT) {
 	if(m_organism->GetCellID() == -1) {
 		return false;
 	}
-	int reg_to_set = FindModifiedRegister(REG_BX);
+	int reg_to_set = FindModifiedRegister(REG_DEFAULT);
   cDeme& deme = m_world->GetPopulation().GetDeme(m_organism->GetDemeID());
 	const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
 
@@ -7326,8 +7401,8 @@ bool cHardwareCPU::DoSensePheromoneInDemeGlobal(cAvidaContext& ctx) {
 	return true;
 }
 
-bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx) {
-	int reg_to_set = FindModifiedRegister(REG_BX);
+bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT) {
+	int reg_to_set = FindModifiedRegister(REG_DEFAULT);
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
@@ -7375,11 +7450,15 @@ bool cHardwareCPU::Inst_SensePheromoneFaced(cAvidaContext& ctx)
 } //End Inst_SensePheromoneFacing()
 
 bool cHardwareCPU::Inst_SensePheromoneInDemeGlobal(cAvidaContext& ctx) {
-	return DoSensePheromoneInDemeGlobal(ctx);
+	return DoSensePheromoneInDemeGlobal(ctx, REG_BX);
 }
 
 bool cHardwareCPU::Inst_SensePheromoneGlobal(cAvidaContext& ctx) {
-	return DoSensePheromoneGlobal(ctx);
+	return DoSensePheromoneGlobal(ctx, REG_BX);
+}
+
+bool cHardwareCPU::Inst_SensePheromoneGlobal_defaultAX(cAvidaContext& ctx) {
+	return DoSensePheromoneGlobal(ctx, REG_AX);
 }
 
 bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
