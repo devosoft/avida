@@ -345,6 +345,9 @@ private:
   bool Inst_IfANotEqC(cAvidaContext& ctx);
   bool Inst_IfGrX(cAvidaContext& ctx);
   bool Inst_IfEquX(cAvidaContext& ctx);
+	
+	bool Inst_IfAboveResLevel(cAvidaContext& ctx);
+	bool Inst_IfNotAboveResLevel(cAvidaContext& ctx);
 
 	// Probabilistic ifs.
 	bool Inst_IfP0p125(cAvidaContext& ctx);
