@@ -110,7 +110,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("if-equ-X", &cHardwareCPU::Inst_IfEquX),
 		
 		tInstLibEntry<tMethod>("if-aboveResLevel", &cHardwareCPU::Inst_IfAboveResLevel),
+		tInstLibEntry<tMethod>("if-aboveResLevel.end", &cHardwareCPU::Inst_IfAboveResLevelEnd),
 		tInstLibEntry<tMethod>("if-notAboveResLevel", &cHardwareCPU::Inst_IfNotAboveResLevel),
+		tInstLibEntry<tMethod>("if-notAboveResLevel.end", &cHardwareCPU::Inst_IfNotAboveResLevelEnd),
 
 		// Probabilistic ifs.
 		tInstLibEntry<tMethod>("if-p-0.125", &cHardwareCPU::Inst_IfP0p125, nInstFlag::STALL),
@@ -2102,6 +2104,30 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx) {
 	return true;
 }
 
+bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx) {
+	const double resCrossoverLevel = 100;
+	
+	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+	
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+	
+	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
+	
+	double pher_amount = 0;
+	cResource* res = resLib.GetResource("pheromone");
+	
+	if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+		pher_amount += resource_count_array[res->GetID()];
+	}
+	
+	if(pher_amount > resCrossoverLevel) {
+		Else_TopHalf();
+	}
+	
+	return true;
+}
+
 bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx) {
 	const double resCrossoverLevel = 100;
 	
@@ -2121,6 +2147,30 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx) {
 	
 	if(pher_amount <= resCrossoverLevel) {
 		IP().Advance();
+	}
+	
+	return true;
+}
+
+bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx) {
+	const double resCrossoverLevel = 100;
+	
+	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+	
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+	
+	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
+	
+	double pher_amount = 0;
+	cResource* res = resLib.GetResource("pheromone");
+	
+	if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+		pher_amount += resource_count_array[res->GetID()];
+	}
+	
+	if(pher_amount <= resCrossoverLevel) {
+		Else_TopHalf();
 	}
 	
 	return true;
