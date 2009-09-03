@@ -239,6 +239,7 @@ private:
   tArray<double> task_last_max_quality;
   tArray<int> task_exe_count;
   tArray<int> new_task_count;
+  tArray<int> new_reaction_count;
   
   // Stats for internal resource bins and use of internal resources
   tArray<int> task_internal_cur_count;
@@ -579,6 +580,7 @@ public:
 	  if (quality > task_last_max_quality[task_num]) task_last_max_quality[task_num] = quality;
   }
   void AddNewTaskCount(int task_num) {new_task_count[task_num]++; }
+  void AddNewReactionCount(int reaction_num) {new_reaction_count[reaction_num]++; }
   void IncTaskExeCount(int task_num, int task_count) { task_exe_count[task_num] += task_count; }
   void ZeroTasks();
   
@@ -763,6 +765,7 @@ public:
   void PrintTasksQualData(const cString& filename);
   void PrintDynamicMaxMinData(const cString& filename);
   void PrintNewTasksData(const cString& filename);
+  void PrintNewReactionData(const cString& filename);
   void PrintReactionData(const cString& filename);
   void PrintReactionExeData(const cString& filename);
   void PrintCurrentReactionData(const cString& filename);

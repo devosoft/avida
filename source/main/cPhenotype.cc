@@ -1194,6 +1194,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   for (int i = 0; i < num_reactions; i++) {
 //    if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;  // moved into cEnvironment::TestOutput to allow reaction requisites to be satisified at the time a reaction is completed
     cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
+	if (result.ReactionTriggered(i) && last_reaction_count[i]==0) 
+		m_world->GetStats().AddNewReactionCount(i); 
   }
 
   // Update the merit bonus
