@@ -36,6 +36,7 @@
 #include "cOrgMovementPredicate.h"
 #include "cDemePredicate.h"
 
+
 /*! Constructor
  */
 cDeme::cDeme() : _id(0), width(0), replicateDeme(false), treatable(false), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
@@ -148,7 +149,7 @@ int cDeme::GetNumOrgsWithOpinion() const {
 	
 	for(int pos = 0; pos < demeSize; ++pos) {
 		cPopulationCell& cell = GetCell(pos);
-		if(cell.IsOccupied() and cell.GetOrganism()->HasOpinion())
+		if(cell.IsOccupied() && cell.GetOrganism()->HasOpinion())
 			++count;
 	}
 	return count;

@@ -80,6 +80,7 @@ STATS_OUT_FILE(PrintMessageData,            message.dat         );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
+STATS_OUT_FILE(PrintNewTasksData,			newtasks.dat		);
 STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
 STATS_OUT_FILE(PrintResourceData,           resource.dat        );
 STATS_OUT_FILE(PrintReactionData,           reactions.dat       );
@@ -3022,6 +3023,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
+  action_lib->Register<cActionPrintNewTasksData>("PrintNewTasksData");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
