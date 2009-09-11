@@ -452,6 +452,7 @@
 		70211A5B0ECBD531004A293A /* cRCObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRCObject.h; sourceTree = "<group>"; };
 		70211A5C0ECBD531004A293A /* cRCObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cRCObject.cc; sourceTree = "<group>"; };
 		70211A6C0ECBDB72004A293A /* tRCPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tRCPtr.h; sourceTree = "<group>"; };
+		70217EAE105AB75500F2789F /* avida_overview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = avida_overview.html; sourceTree = "<group>"; };
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
@@ -1191,6 +1192,7 @@
 			children = (
 				707415C70AA7E4100064A546 /* main.css */,
 				70A33CC00D878407008EF976 /* as_overview.html */,
+				70217EAE105AB75500F2789F /* avida_overview.html */,
 				704D57210AA53F8600207FC1 /* code_standards.html */,
 				707CE7500AA334120022D19C /* analyze.html */,
 				707CE7490AA333060022D19C /* actions.html */,
