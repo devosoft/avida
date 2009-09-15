@@ -168,6 +168,7 @@ public:
   void SetSymbol(char in_symbol) { symbol = in_symbol; }
   void SetMapColor(int in_id) { map_color_id = in_id; }
   inline void SetThreshold();
+  inline void ClearThreshold();
   void IncDeferAdjust() { defer_adjust++; }
   void DecDeferAdjust() { defer_adjust--; assert(defer_adjust >= 0); }
   void SetLineageLabel(int in_label) { birth_data.lineage_label = in_label; }
@@ -302,6 +303,14 @@ inline void cGenotype::SetThreshold()
   if (symbol == '.') symbol = '+';
   if (map_color_id == -2) map_color_id = -1;
 }
+
+inline void cGenotype::ClearThreshold()
+{
+  m_flag_threshold = false;
+  if (symbol == '+') symbol = ',';
+  if (map_color_id == -1) map_color_id = -2;
+}
+
 
 inline void cGenotype::SetBreedStats(cGenotype & daughter)
 {
