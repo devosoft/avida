@@ -3514,15 +3514,10 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   tList<cPopulationCell> found_list;
   
   // First, check if there is an empty organism to work with (always preferred)
-  tList<cPopulationCell> & conn_list = parent_cell.ConnectionList();
+  tList<cPopulationCell>& conn_list = parent_cell.ConnectionList();
   
-  if (m_world->GetConfig().PREFER_EMPTY.Get() == false &&
-      birth_method == POSITION_CHILD_RANDOM) {
-    found_list.Append(conn_list);
-    if (parent_ok == true) found_list.Push(&parent_cell);
-  } else {
-    FindEmptyCell(conn_list, found_list);
-  }
+  if (m_world->GetConfig().PREFER_EMPTY.Get()) FindEmptyCell(conn_list, found_list);
+  
   
   // If we have not found an empty organism, we must use the specified function
   // to determine how to choose among the filled organisms.
@@ -3537,7 +3532,7 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
       case POSITION_CHILD_RANDOM:
         found_list.Append(conn_list);
         if (parent_ok == true) found_list.Push(&parent_cell);
-          break;
+        break;
       case POSITION_CHILD_NEIGHBORHOOD_ENERGY_USED:
         PositionEnergyUsed(parent_cell, found_list, parent_ok);
       case POSITION_CHILD_EMPTY:
