@@ -4309,7 +4309,7 @@ void cPopulation::UpdateDominantParaStats()
 
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
-  //ProcessUpdateCellActions(ctx);
+  ProcessUpdateCellActions(ctx);
   
   cStats& stats = m_world->GetStats();
   // Reset the Genebank to prepare it for stat collection.
