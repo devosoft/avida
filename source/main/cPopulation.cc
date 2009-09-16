@@ -97,7 +97,7 @@ cPopulation::cPopulation(cWorld* world)
   world_x = world->GetConfig().WORLD_X.Get();
   world_y = world->GetConfig().WORLD_Y.Get();
 	world_z = world->GetConfig().WORLD_Z.Get();
-
+  
   int num_demes = m_world->GetConfig().NUM_DEMES.Get();
   const int num_cells = world_x * world_y * world_z;
   const int geometry = world->GetConfig().WORLD_GEOMETRY.Get();
@@ -117,8 +117,8 @@ cPopulation::cPopulation(cWorld* world)
       case nGeometry::TORUS: { cout << "Geometry: Torus" << endl; break; }
       case nGeometry::CLIQUE: { cout << "Geometry: Clique" << endl; break; }
       case nGeometry::HEX: { cout << "Geometry: Hex" << endl; break; }
-	  case nGeometry::LATTICE: { cout << "Geometry: Lattice" << endl; break; }
-	  case nGeometry::PARTIAL: { cout << "Geometry: Partial" << endl; break; }
+      case nGeometry::LATTICE: { cout << "Geometry: Lattice" << endl; break; }
+      case nGeometry::PARTIAL: { cout << "Geometry: Partial" << endl; break; }
       default:
         cout << "Unknown geometry!" << endl;
         assert(false);
@@ -244,7 +244,7 @@ cPopulation::cPopulation(cWorld* world)
   
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResource * res = resource_lib.GetResource(i);
-
+    
 		// check to see if this is the hgt resource:
 		if(res->GetHGTMetabolize()) {
 			if(m_hgt_resid != -1) {
@@ -361,26 +361,26 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   // Loop through choosing the later placement of each child in the population.
   bool parent_alive = true;  // Will the parent live through this process?
   for (int i = 0; i < child_array.GetSize(); i++) {
-/*		
-		THIS code will remove zero merit orgnaisms, thus never putting them into the scheduler.
-		WARNING: uncommenting this code will break consistancy, but will generalize the solution.
-		Currently, only asexual organisms that use the energy model are removed when they have zero merit.
-		If this code gets added then remove the "if(merit_array[0].GetDouble() <= 0.0)" block from cBirthChamber::DoAsexBirth, 
-			does not break consistancy for test energy_deme_level_res
- 
-		if(merit_array[i].GetDouble() <= 0.0) {
-			// no weaklings!
-			if(child_array.GetSize() > 1) {
-				child_array.Swap(i, child_array.GetSize()-1);
-				child_array = child_array.Subset(0, child_array.GetSize()-2);
-			} else {
-				child_array.ResizeClear(0);
-				break;
-			}
-			--i;
-			continue;
-		}
-	*/	
+    /*		
+     THIS code will remove zero merit orgnaisms, thus never putting them into the scheduler.
+     WARNING: uncommenting this code will break consistancy, but will generalize the solution.
+     Currently, only asexual organisms that use the energy model are removed when they have zero merit.
+     If this code gets added then remove the "if(merit_array[0].GetDouble() <= 0.0)" block from cBirthChamber::DoAsexBirth, 
+     does not break consistancy for test energy_deme_level_res
+     
+     if(merit_array[i].GetDouble() <= 0.0) {
+     // no weaklings!
+     if(child_array.GetSize() > 1) {
+     child_array.Swap(i, child_array.GetSize()-1);
+     child_array = child_array.Subset(0, child_array.GetSize()-2);
+     } else {
+     child_array.ResizeClear(0);
+     break;
+     }
+     --i;
+     continue;
+     }
+     */	
     target_cells[i] = PositionChild(parent_cell, m_world->GetConfig().ALLOW_PARENT.Get()).GetID();
     
     // If we replaced the parent, make a note of this.
@@ -430,13 +430,13 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 			int group = parent_organism->GetOpinion().first;
 			child_array[i]->SetOpinion(group); 
 			JoinGroup(group);
-
+      
 		}
 		
-	
+    
 	}
 	
-		
+  
   // If we're not about to kill the parent, do some extra work on it.
   if (parent_alive == true) {
 		if(parent_phenotype.GetMerit().GetDouble() <= 0.0) {
@@ -497,7 +497,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     
     //@JEB - we may want to pass along some state information from parent to child
     if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING) 
-         || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
+        || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
       child_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
     }
     
@@ -524,7 +524,7 @@ bool cPopulation::ActivateParasite(cOrganism& parent, const cCodeLabel& label, c
   
   int num_neighbors = parent.GetNeighborhoodSize();
   cOrganism* target_organism = 
-    parent_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(num_neighbors))->GetOrganism();
+  parent_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(num_neighbors))->GetOrganism();
   
   if (target_organism == NULL) return false;
   
@@ -726,33 +726,33 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, c
     //}
   }
 #endif 
-
-// Set facing in destinatiion cell
-success = 0;
-newFacing = fromFacing;
-for(int i = 0; i < actualNeighborhoodSize; i++) {
-  if (dest_cell.GetFacing() != newFacing) {
-    dest_cell.ConnectionList().CircNext();
-    // cout << "MO: dest_cell facing not yet at " << newFacing << endl;
-  } else {
-    // cout << "MO: dest_cell facing successfully set to " << newFacing << endl;
-    success = 1;
-    break;
+  
+  // Set facing in destinatiion cell
+  success = 0;
+  newFacing = fromFacing;
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    if (dest_cell.GetFacing() != newFacing) {
+      dest_cell.ConnectionList().CircNext();
+      // cout << "MO: dest_cell facing not yet at " << newFacing << endl;
+    } else {
+      // cout << "MO: dest_cell facing successfully set to " << newFacing << endl;
+      success = 1;
+      break;
+    }
   }
-}
-// @DMB this doesn't compile properly -- #ifdef DEBUG
+  // @DMB this doesn't compile properly -- #ifdef DEBUG
 #if 0
-if (!success) {
-  sID = src_cell.GetID();
-  dID = dest_cell.GetID();
-  src_cell.GetPosition(xx1,yy1);
-  dest_cell.GetPosition(xx2,yy2);
-  if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
-    cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set dest_cell facing to " << newFacing << endl;
+  if (!success) {
+    sID = src_cell.GetID();
+    dID = dest_cell.GetID();
+    src_cell.GetPosition(xx1,yy1);
+    dest_cell.GetPosition(xx2,yy2);
+    if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
+      cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set dest_cell facing to " << newFacing << endl;
+    }
   }
-}
 #endif
-
+  
 }
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
@@ -802,8 +802,8 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
 	// make sure the group composition is updated.
 	if(m_world->GetConfig().USE_FORM_GROUPS.Get() && organism->HasOpinion()) 
 	{
-			int opinion = organism->GetOpinion().first;
-			LeaveGroup(opinion);
+    int opinion = organism->GetOpinion().first;
+    LeaveGroup(opinion);
 	}
   
   // Do the lineage handling
@@ -899,7 +899,7 @@ void cPopulation::AddSellValue(const int data, const int label, const int sell_p
   //{
   //	market[pos].Pop();
   //}
-    
+  
   // create sale item
   cSaleItem *new_item = new cSaleItem(data, label, sell_price, org_id, cell_id);
   
@@ -926,7 +926,7 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
   //{
   //	market[pos].Pop();
   //}
-    
+  
   // if there's nothing in the list don't bother with rest
   if (market[label].GetSize() <= 0)
     return 0;
@@ -1002,7 +1002,7 @@ void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
  0: deme fitness = 1 (control, random deme selection)
  1: deme fitness = number of births since last competition (default) 
  2: deme fitness = average organism fitness at the current update (uses parent's fitness, so
-                                                                   does not work with donations)
+ does not work with donations)
  3: deme fitness = average mutation rate at the current update
  4: deme fitness = strong rank selection on (parents) fitness (2^-deme fitness rank)
  5: deme fitness = average organism life (current, not parents) fitness (works with donations)
@@ -1024,7 +1024,7 @@ void cPopulation::CompeteDemes(int competition_type)
       deme_fitness.SetAll(1); 
       break; 
     case 1:     // deme fitness = number of births
-                // Determine the scale for fitness by totaling births across demes.
+      // Determine the scale for fitness by totaling births across demes.
       for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         double cur_fitness = (double) deme_array[deme_id].GetBirthCount();
         deme_fitness[deme_id] = cur_fitness;
@@ -1039,7 +1039,7 @@ void cPopulation::CompeteDemes(int competition_type)
           int cur_cell = cur_deme.GetCellID(i);
           if (cell_array[cur_cell].IsOccupied() == false) continue;
           cPhenotype & phenotype =
-            GetCell(cur_cell).GetOrganism()->GetPhenotype();
+          GetCell(cur_cell).GetOrganism()->GetPhenotype();
           single_deme_fitness.Add(phenotype.GetFitness());
         } 
         deme_fitness[deme_id] = single_deme_fitness.Ave();
@@ -1054,7 +1054,7 @@ void cPopulation::CompeteDemes(int competition_type)
           int cur_cell = cur_deme.GetCellID(i);
           if (cell_array[cur_cell].IsOccupied() == false) continue;
           cPhenotype & phenotype =
-            GetCell(cur_cell).GetOrganism()->GetPhenotype();
+          GetCell(cur_cell).GetOrganism()->GetPhenotype();
           assert(phenotype.GetDivType()>0);
           single_deme_div_type.Add(1/phenotype.GetDivType());
         }
@@ -1063,7 +1063,7 @@ void cPopulation::CompeteDemes(int competition_type)
       }
       break; 
     case 4: 	// deme fitness = 2^(-deme fitness rank) 
-                // first find all the deme fitness values ...
+      // first find all the deme fitness values ...
     {      
       for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         cDoubleSum single_deme_fitness;
@@ -1111,7 +1111,7 @@ void cPopulation::CompeteDemes(int competition_type)
       }
       break; 
     case 6:     // deme fitness = 2^(-deme life fitness rank) (same as 4, but with life fitness)
-                // first find all the deme fitness values ...
+      // first find all the deme fitness values ...
     {
       for (int deme_id = 0; deme_id < num_demes; deme_id++) {
         cDoubleSum single_deme_life_fitness;
@@ -1229,26 +1229,26 @@ void cPopulation::CompeteDemes(int competition_type)
 
 
 /*! Compete all demes with each other based on the given vector of fitness values.
-
-This form of compete demes uses fitness-proportional selection on a vector of deme
-fitnesses for group selection.  It integrates with the various deme replication options
-used in ReplicateDemes.
-
-Note: New deme competition fitness functions are added in PopulationActions.cc by subclassing
-cActionAbstractCompeteDemes and overriding cActionAbstractCompeteDemes::Fitness(cDeme&).  (Don't forget
-to register the action and add it to the events file).
-
-Another note: To mimic the behavior of the other version of CompeteDemes (which is kept around
-for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of 
-each deme.
-*/
+ 
+ This form of compete demes uses fitness-proportional selection on a vector of deme
+ fitnesses for group selection.  It integrates with the various deme replication options
+ used in ReplicateDemes.
+ 
+ Note: New deme competition fitness functions are added in PopulationActions.cc by subclassing
+ cActionAbstractCompeteDemes and overriding cActionAbstractCompeteDemes::Fitness(cDeme&).  (Don't forget
+ to register the action and add it to the events file).
+ 
+ Another note: To mimic the behavior of the other version of CompeteDemes (which is kept around
+ for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of 
+ each deme.
+ */
 void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
   // Each deme must have a fitness:
   assert((int)fitness.size() == deme_array.GetSize());
   
   // Stat-tracking:
   m_world->GetStats().CompeteDemes(fitness);
-
+  
   // This is to facilitate testing.  Obviously we can't do competition if there's
 	// only one deme, but we do want the stat-tracking.
 	if(fitness.size()==1) {
@@ -1275,7 +1275,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
       }
     }
   }
-
+  
   //re-inject demes with count of 1 back into self
   for(int i = 0; i < (int)deme_counts.size(); i++) {
     if(deme_counts[i] == 1)
@@ -1316,19 +1316,19 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
 
 
 /* Check if any demes have met the critera to be replicated and do so.
-There are several bases this can be checked on:
-
-0: 'all'       - ...all non-empty demes in the population.
-1: 'full_deme' - ...demes that have been filled up.
-2: 'corners'   - ...demes with upper left and lower right corners filled.
-3: 'deme-age'  - ...demes who have reached their maximum age
-4: 'birth-count' ...demes that have had a certain number of births.
-5: 'sat-mov-pred'...demes whose movement predicate was previously satisfied
-6: 'events-killed' ...demes that have killed a certian number of events
-7: 'sat-msg-pred'...demes whose movement predicate was previously satisfied
-8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
-
-*/
+ There are several bases this can be checked on:
+ 
+ 0: 'all'       - ...all non-empty demes in the population.
+ 1: 'full_deme' - ...demes that have been filled up.
+ 2: 'corners'   - ...demes with upper left and lower right corners filled.
+ 3: 'deme-age'  - ...demes who have reached their maximum age
+ 4: 'birth-count' ...demes that have had a certain number of births.
+ 5: 'sat-mov-pred'...demes whose movement predicate was previously satisfied
+ 6: 'events-killed' ...demes that have killed a certian number of events
+ 7: 'sat-msg-pred'...demes whose movement predicate was previously satisfied
+ 8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
+ 
+ */
 
 void cPopulation::ReplicateDemes(int rep_trigger)
 {
@@ -1411,7 +1411,7 @@ void cPopulation::ReplicateDemes(int rep_trigger)
 }
 
 /*! ReplicateDeme is a helper method for replicating a source deme.
-*/
+ */
 void cPopulation::ReplicateDeme(cDeme & source_deme)
 {
   // Doesn't make sense to try and replicate a deme that *has no organisms*.
@@ -1473,29 +1473,29 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
       target_id = m_world->GetRandom().GetUInt(num_demes);
     }
   }
-
+  
   // Write some logging information if LOG_DEMES_REPLICATE is set.
   if( (m_world->GetConfig().LOG_DEMES_REPLICATE.Get() == 1) &&
-      (m_world->GetStats().GetUpdate() >= m_world->GetConfig().DEMES_REPLICATE_LOG_START.Get()) ) {
+     (m_world->GetStats().GetUpdate() >= m_world->GetConfig().DEMES_REPLICATE_LOG_START.Get()) ) {
     cString tmpfilename = cStringUtil::Stringf("deme_replication.dat");
     cDataFile& df = m_world->GetDataFile(tmpfilename);
-
+    
     cString UpdateStr = cStringUtil::Stringf("%d,%d,%d",
                                              m_world->GetStats().GetUpdate(),
                                              source_deme.GetDemeID(), target_id);
     df.WriteRaw(UpdateStr);
   }
-
+  
   ReplaceDeme(source_deme, deme_array[target_id]);
 }
 
 /*! ReplaceDeme is a helper method that handles all the different configuration
-options related to the replacement of a target deme by a source.  It works with
-both CompeteDemes and ReplicateDemes (and can be called directly via an event if
-                                      so desired).
-
-@refactor Replace manual mutation with strategy pattern.
-*/
+ options related to the replacement of a target deme by a source.  It works with
+ both CompeteDemes and ReplicateDemes (and can be called directly via an event if
+ so desired).
+ 
+ @refactor Replace manual mutation with strategy pattern.
+ */
 void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme) 
 {
   // Stats tracking; pre-replication hook.
@@ -1515,7 +1515,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   
   bool target_successfully_seeded = true;
   
-
+  
   bool source_deme_resource_reset(true), target_deme_resource_reset(true);
   switch(m_world->GetConfig().DEMES_RESET_RESOURCES.Get()) {
     case 0:
@@ -1535,7 +1535,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
       cout << "Undefined value " << m_world->GetConfig().DEMES_RESET_RESOURCES.Get() << " for DEMES_RESET_RESOURCES\n";
       exit(1);
   }
-
+  
   // Reset both demes, in case they have any cleanup work to do.
   // Must reset target first for stats to be correctly updated!
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
@@ -1547,8 +1547,8 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     if (target_successfully_seeded) target_deme.DivideReset(source_deme, target_deme_resource_reset);
     source_deme.DivideReset(source_deme, source_deme_resource_reset);
   }
-
-
+  
+  
   // Are we using germlines?  If so, we need to mutate the germline to get the
   // genome that we're going to seed the target with.
   if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
@@ -1587,7 +1587,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     
     // All done with the germline manipulation; seed each deme.
     SeedDeme(source_deme, source_deme.GetGermline().GetLatest());
-
+    
     /* MJM - source and target deme could be the same!
      * Seeding the same deme twice probably shouldn't happen.
      */
@@ -1691,12 +1691,12 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
 
 
 /*! Helper method to seed a deme from the given genome.
-If the passed-in deme is populated, all resident organisms are terminated.  The
-deme's germline is left unchanged.
-
-@todo Fix lineage label on injected genomes.
-@todo Different strategies for non-random placement.
-*/
+ If the passed-in deme is populated, all resident organisms are terminated.  The
+ deme's germline is left unchanged.
+ 
+ @todo Fix lineage label on injected genomes.
+ @todo Different strategies for non-random placement.
+ */
 void cPopulation::SeedDeme(cDeme& deme, cGenome& genome) {
   // Kill all the organisms in the deme.
   deme.KillAll();
@@ -1725,9 +1725,9 @@ void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype) {
 }
 
 /*! Helper method to seed a target deme from the organisms in the source deme.
-All organisms in the target deme are terminated, and a subset of the organisms in
-the source will be cloned to the target. Returns whether target deme was successfully seeded.
-*/
+ All organisms in the target deme are terminated, and a subset of the organisms in
+ the source will be cloned to the target. Returns whether target deme was successfully seeded.
+ */
 bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
   cRandom& random = m_world->GetRandom();
   
@@ -1756,7 +1756,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
-                  // being selected more than once).
+          // being selected more than once).
           while((int)xfer.size() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
             int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
             if(cell_array[cellid].IsOccupied()) {
@@ -1817,29 +1817,29 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
        // Debug Code
        cGenotype * original_source_founder_genotype = NULL;
        if (1) {
-         tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
-         if (source_founders.GetSize() > 0) {
-           original_source_founder_genotype = m_world->GetClassificationManager().FindGenotype(source_founders[0]);
-           cout << "Source:" << endl << original_source_founder_genotype->GetGenome().AsString() << endl;
-         }
-         tArray<int>& target_founders = target_deme.GetFounderGenotypeIDs();
-         if (target_founders.GetSize() > 0) {
-           cGenotype * target_founder_genotype = m_world->GetClassificationManager().FindGenotype(target_founders[0]);
-           cout << "Target:" << endl << target_founder_genotype->GetGenome().AsString() << endl;
-         }
+       tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
+       if (source_founders.GetSize() > 0) {
+       original_source_founder_genotype = m_world->GetClassificationManager().FindGenotype(source_founders[0]);
+       cout << "Source:" << endl << original_source_founder_genotype->GetGenome().AsString() << endl;
+       }
+       tArray<int>& target_founders = target_deme.GetFounderGenotypeIDs();
+       if (target_founders.GetSize() > 0) {
+       cGenotype * target_founder_genotype = m_world->GetClassificationManager().FindGenotype(target_founders[0]);
+       cout << "Target:" << endl << target_founder_genotype->GetGenome().AsString() << endl;
+       }
        }
        
        tArray<int>& source_founders = source_deme.GetFounders();
        cerr << "Original source genotype ids:" << endl;
        for(int i=0; i<source_founders.GetSize(); i++) {
-         cerr << source_founders[i] << " ";
+       cerr << source_founders[i] << " ";
        }
        cerr << endl;
        
        tArray<int>& target_founders = target_deme.GetFounders();
        cerr << "Original target genotype ids:" << endl;
        for(int i=0; i<target_founders.GetSize(); i++) {
-         cerr << target_founders[i] << " ";
+       cerr << target_founders[i] << " ";
        }
        cerr << endl;
        
@@ -1847,15 +1847,15 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
        //// Count the number of orgs in each deme.
        int count = 0;
        for(int i=0; i<target_deme.GetSize(); ++i) {
-         int cell_id = target_deme.GetCellID(i);
-         if(cell_array[cell_id].IsOccupied()) count++;
+       int cell_id = target_deme.GetCellID(i);
+       if(cell_array[cell_id].IsOccupied()) count++;
        }
        cout << "Initial orgs in target deme: " << count << endl;
        
        count = 0;
        for(int i=0; i<source_deme.GetSize(); ++i) {
-         int cell_id = source_deme.GetCellID(i);
-         if(cell_array[cell_id].IsOccupied()) count++;
+       int cell_id = source_deme.GetCellID(i);
+       if(cell_array[cell_id].IsOccupied()) count++;
        }
        cout << "Initial orgs in source deme: " << count << endl;     
        */
@@ -1863,7 +1863,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
-                  // being selected more than once).
+          // being selected more than once).
           tArray<cOrganism*> founders; // List of organisms we're going to transfer.
           while(founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
             int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
@@ -1905,7 +1905,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
             int num_chosen_orgs = 0;
             while( ((target_founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get())
                     || (source_founders.GetSize() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()))
-                   && (prospective_founders.GetSize() > 0) ) {
+                  && (prospective_founders.GetSize() > 0) ) {
               
               int chosen_org = random.GetUInt(prospective_founders.GetSize());
               if (num_chosen_orgs % 2 == 0) {
@@ -2169,44 +2169,44 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
        //// Count the number of orgs in each deme.
        count = 0;
        for(int i=0; i<target_deme.GetSize(); ++i) {
-         int cell_id = target_deme.GetCellID(i);
-         if(cell_array[cell_id].IsOccupied()) count++;
+       int cell_id = target_deme.GetCellID(i);
+       if(cell_array[cell_id].IsOccupied()) count++;
        }
        cout << "Final orgs in target deme: " << count << endl;
        
        count = 0;
        for(int i=0; i<source_deme.GetSize(); ++i) {
-         int cell_id = source_deme.GetCellID(i);
-         if(cell_array[cell_id].IsOccupied()) count++;
+       int cell_id = source_deme.GetCellID(i);
+       if(cell_array[cell_id].IsOccupied()) count++;
        }
        cout << "Final orgs in source deme: " << count << endl;
        
        if (1) {
-         tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
-         cGenotype * source_founder_genotype = m_world->GetClassificationManager().FindGenotype(source_founders[0]);
-         tArray<int>& target_founders = target_deme.GetFounderGenotypeIDs();
-         cGenotype * target_founder_genotype = m_world->GetClassificationManager().FindGenotype(target_founders[0]);
-         if (original_source_founder_genotype->GetGenome().AsString() != source_founder_genotype->GetGenome().AsString())
-         {
-           cout << "Original source founder does not equal final source founder!!!!" << endl;
-         }
-         
-         cout << "Source:" << endl << source_founder_genotype->GetGenome().AsString() << endl;
-         cout << "Target:" << endl << target_founder_genotype->GetGenome().AsString() << endl;
+       tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
+       cGenotype * source_founder_genotype = m_world->GetClassificationManager().FindGenotype(source_founders[0]);
+       tArray<int>& target_founders = target_deme.GetFounderGenotypeIDs();
+       cGenotype * target_founder_genotype = m_world->GetClassificationManager().FindGenotype(target_founders[0]);
+       if (original_source_founder_genotype->GetGenome().AsString() != source_founder_genotype->GetGenome().AsString())
+       {
+       cout << "Original source founder does not equal final source founder!!!!" << endl;
+       }
+       
+       cout << "Source:" << endl << source_founder_genotype->GetGenome().AsString() << endl;
+       cout << "Target:" << endl << target_founder_genotype->GetGenome().AsString() << endl;
        }
        
        // Debug
        tArray<int>& new_source_founders = source_deme.GetFounders();
        cerr << "New source genotype ids:" << endl;
        for(int i=0; i<new_source_founders.GetSize(); i++) {
-         cerr << new_source_founders[i] << " ";
+       cerr << new_source_founders[i] << " ";
        }
        cerr << endl;
        
        tArray<int>& new_target_founders = target_deme.GetFounders();
        cerr << "New target genotype ids:" << endl;
        for(int i=0; i<new_target_founders.GetSize(); i++) {
-         cerr << new_target_founders[i] << " ";
+       cerr << new_target_founders[i] << " ";
        }
        cerr << endl;
        */
@@ -2231,7 +2231,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         
         // delete old source organisms ONLY if source was replaced
         if ( (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 0)
-             || (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 1) ) {
+            || (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 1) ) {
           delete old_source_organisms[i];
         }
       }
@@ -2274,7 +2274,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       //}
     }
   }
-
+  
 	return successfully_seeded;
 }
 
@@ -2309,23 +2309,23 @@ void cPopulation::InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenoty
   }
   
   /* It requires much more than this to correctly implement, do later if needed @JEB
-    //Optionally, set the first organism's merit to a constant value
-    //actually, we need to add so the first organism is seeded this way too...
-    if (m_world->GetConfig().DEMES_DEFAULT_MERIT.Get()) {
-      organism->GetPhenotype().SetMerit( cMerit(m_world->GetConfig().DEMES_DEFAULT_MERIT.Get()) );
-      AdjustSchedule(GetCell(_cell_id), organism->GetPhenotype().GetMerit());
-    }
-  */
+   //Optionally, set the first organism's merit to a constant value
+   //actually, we need to add so the first organism is seeded this way too...
+   if (m_world->GetConfig().DEMES_DEFAULT_MERIT.Get()) {
+   organism->GetPhenotype().SetMerit( cMerit(m_world->GetConfig().DEMES_DEFAULT_MERIT.Get()) );
+   AdjustSchedule(GetCell(_cell_id), organism->GetPhenotype().GetMerit());
+   }
+   */
 }
 
 
 /*! Helper method that determines the cell into which an organism will be placed.
-Respects all of the different placement options that are relevant for deme replication.
-
-@param sequence The number of times DemeSelectInjectionCell has been called on this deme
-already.  Used for replicating multiple organisms from the source to the
-target deme in a sensible fashion.
-*/
+ Respects all of the different placement options that are relevant for deme replication.
+ 
+ @param sequence The number of times DemeSelectInjectionCell has been called on this deme
+ already.  Used for replicating multiple organisms from the source to the
+ target deme in a sensible fashion.
+ */
 int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
   int cellid = -1;
   
@@ -2365,8 +2365,8 @@ int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
 
 
 /*! Helper method to perform any post-injection fixups on the organism/cell that
-was injected into a deme.  Handles all the rotation / facing options.
-*/
+ was injected into a deme.  Handles all the rotation / facing options.
+ */
 void cPopulation::DemePostInjection(cDeme& deme, cPopulationCell& cell) {
   assert(cell.GetID() >= deme.GetCellID(0));
   assert(cell.GetID() <= deme.GetCellID(deme.GetSize()-1));
@@ -2423,7 +2423,7 @@ void cPopulation::DivideDemes()
     
     // Setup an array to collect the total number of tasks performed.
     const int num_tasks = cell_array[source_deme.GetCellID(0)].GetOrganism()->
-      GetPhenotype().GetLastTaskCount().GetSize();
+    GetPhenotype().GetLastTaskCount().GetSize();
     tArray<int> tot_tasks(num_tasks);
     tot_tasks.SetAll(0);
     
@@ -2799,7 +2799,7 @@ void cPopulation::PrintDemeEnergyDistributionStats() {
   cString comment;
   
   cDoubleSum deme_energy_distribution;
-
+  
   cDoubleSum overall_average;
   cDoubleSum overall_variance;
   cDoubleSum overall_stddev;
@@ -2809,7 +2809,7 @@ void cPopulation::PrintDemeEnergyDistributionStats() {
   df_dist.WriteComment(comment);
   df_dist.WriteTimeStamp();
   df_dist.Write(stats.GetUpdate(), "Update");
-      
+  
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
     const cDeme & cur_deme = deme_array[deme_id];
     
@@ -2828,7 +2828,7 @@ void cPopulation::PrintDemeEnergyDistributionStats() {
     overall_variance.Add(deme_energy_distribution.Variance());
     overall_stddev.Add(deme_energy_distribution.StdDeviation());
     deme_energy_distribution.Clear();
-  
+    
   }
   
   df_dist.Write(overall_average.Average(), "Average of Average Energy Level");
@@ -3137,8 +3137,8 @@ void cPopulation::PrintDemeResource() {
     for(int j = 0; j < res.GetSize(); j++) {
       const char * tmp = res.GetResName(j);
       df_resources.Write(res.Get(j), cStringUtil::Stringf("Deme %d Resource %s", deme_id, tmp)); //comment);
-	  if((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL && (res.GetResourcesGeometry())[j] != nGeometry::PARTIAL) {
-           PrintDemeSpatialResData(res, j, deme_id);
+      if((res.GetResourcesGeometry())[j] != nGeometry::GLOBAL && (res.GetResourcesGeometry())[j] != nGeometry::PARTIAL) {
+        PrintDemeSpatialResData(res, j, deme_id);
       }
     }
   }
@@ -3164,14 +3164,14 @@ void cPopulation::PrintDemeGlobalResources() {
     const int num_res = res.GetSize();
     
     df.WriteBlockElement(deme_id, 0, num_res + 1);
-
+    
     for(int r = 0; r < num_res; r++) {
       if(!res.IsSpatial(r)) {
         df.WriteBlockElement(res.Get(r), r + 1, num_res + 1);
       }
       
     } //End iterating through resources
-        
+    
   } //End iterating through demes
   
   df.WriteRaw("];");
@@ -3314,7 +3314,7 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
 
 
 /**
-* This function is responsible for adding an organism to a given lineage,
+ * This function is responsible for adding an organism to a given lineage,
  * and setting the organism's lineage label and the lineage pointer.
  **/
 void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int lin_label, cGenotype* parent_genotype)
@@ -3331,7 +3331,7 @@ void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int l
 
 
 /**
-This function will set up coalescence clade information.  If this feature is activated in the configuration,
+ This function will set up coalescence clade information.  If this feature is activated in the configuration,
  a list of coalescence genotype ids must be read in initially.  These are furnished by doing an initial run 
  with the same seed and setup and retrieving information from the final dominant lineage and coalescence points.
  
@@ -3344,19 +3344,19 @@ This function will set up coalescence clade information.  If this feature is act
  **/
 void cPopulation::CCladeSetupOrganism(cOrganism* organism)
 {
-		int gen_id = organism->GetGenotype()->GetID();	
-		if (m_world->GetConfig().TRACK_CCLADES.Get() > 0)
-		{
-                  if (m_world->GetClassificationManager().IsCCladeFounder(gen_id))
-                  {	
-                    organism->SetCCladeLabel(gen_id);
-                  }
-		}
+  int gen_id = organism->GetGenotype()->GetID();	
+  if (m_world->GetConfig().TRACK_CCLADES.Get() > 0)
+  {
+    if (m_world->GetClassificationManager().IsCCladeFounder(gen_id))
+    {	
+      organism->SetCCladeLabel(gen_id);
+    }
+  }
 }
 
 
 /**
-* This function directs which position function should be used.  It
+ * This function directs which position function should be used.  It
  * could have also been done with a function pointer, but the dividing
  * of an organism takes enough time that this will be a negligible addition,
  * and it gives a centralized function to work with.  The parent_ok flag asks
@@ -3371,8 +3371,8 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   
   // @WRE carrying capacity handling
   /* Pick and kill an organism here if needed
-    * and then enter choices for birth method handling.
-    */
+   * and then enter choices for birth method handling.
+   */
   if ((0 < m_world->GetConfig().BIOMIMETIC_K.Get()) &&
       (num_organisms >= m_world->GetConfig().BIOMIMETIC_K.Get())) {
     // Measure temporary variables
@@ -3516,8 +3516,30 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   // First, check if there is an empty organism to work with (always preferred)
   tList<cPopulationCell>& conn_list = parent_cell.ConnectionList();
   
-  if (m_world->GetConfig().PREFER_EMPTY.Get()) FindEmptyCell(conn_list, found_list);
+  const bool prefer_empty = m_world->GetConfig().PREFER_EMPTY.Get();
   
+  if (birth_method == POSITION_CHILD_DISPERSAL && conn_list.GetSize() > 0) {
+    tList<cPopulationCell>* disp_list = &conn_list;
+    
+    // hop through connection lists based on the dispersal rate
+    int hops = m_world->GetRandom().GetRandPoisson(m_world->GetConfig().DISPERSAL_RATE.Get());
+    for (int i = 0; i < hops; i++) {
+      disp_list = &(disp_list->GetPos(m_world->GetRandom().GetUInt(disp_list->GetSize()))->ConnectionList());
+      if (disp_list->GetSize() == 0) break;
+    }
+    
+    // if prefer empty, select an empty cell from the final connection list
+    if (prefer_empty) FindEmptyCell(*disp_list, found_list);
+    
+    // if prefer empty is off, or there are no empty cells, use the whole connection list as possiblities
+    if (found_list.GetSize() == 0) {
+      found_list = *disp_list;
+      // if no hops were taken and ALLOW_PARENT is set, throw the parent cell into the hat for possible selection
+      if (hops == 0 && parent_ok) found_list.Push(&parent_cell);
+    }
+  } else if (prefer_empty) {
+    FindEmptyCell(conn_list, found_list);
+  }
   
   // If we have not found an empty organism, we must use the specified function
   // to determine how to choose among the filled organisms.
@@ -3645,7 +3667,7 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
   int deme_id = parent_cell.GetDemeID();
 	int parent_id = parent_cell.GetDemeID();
 	GetDeme(deme_id).AddMigrationOut();
-
+  
   // Position randomly in any other deme
   if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 0) {  
     
@@ -3713,7 +3735,7 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
 	// The odds of a deme being selected are inversely proportional to the 
 	// number of points it has.
 	else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 3) {
-
+    
 		double total_points = 0;		
 		int num_demes = GetNumDemes(); 
 		
@@ -3730,7 +3752,7 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
 		// deme to insert the organism into.
 		double lower_point = 0;
 		double upper_point = 0;
-
+    
 		for (int curr_deme = 0; curr_deme < num_demes; curr_deme++) {
 			if (curr_deme != parent_id){
 				upper_point = lower_point + (1+GetDeme(curr_deme).GetNumberOfPoints()); 
@@ -3743,7 +3765,7 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
 	}
   
 	GetDeme(deme_id).AddMigrationIn();
-
+  
   // TODO the above choice of deme does not respect PREFER_EMPTY
   // i.e., it does not preferentially pick a deme with empty cells if they are 
   // it might make sense for that to happen...
@@ -3820,7 +3842,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 {
   assert(step_size > 0.0);
   assert(cell_id < cell_array.GetSize());
-  	
+  
   // If cell_id is negative, no cell could be found -- stop here.
   if (cell_id < 0) return;
   
@@ -3839,7 +3861,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
 	// these must be done even if there is only one deme.
 	for(int i = 0; i < GetNumDemes(); i++)
 		GetDeme(i).Update(step_size);
-    
+  
 	cDeme & deme = GetDeme(GetCell(cell_id).GetDemeID());
 	deme.IncTimeUsed(merit);
   
@@ -3905,7 +3927,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
 // Loop through all the demes getting stats and doing calculations
 // which must be done on a deme by deme basis.
 void cPopulation::UpdateDemeStats() {
-
+  
 	// these must be updated, even if there is only one deme
 	for(int i = 0; i < GetNumDemes(); i++) {
     GetDeme(i).UpdateDemeRes();
@@ -4069,7 +4091,7 @@ void cPopulation::UpdateOrganismStats()
         stats.AddLastTaskQuality(j, phenotype.GetLastTaskQuality()[j]);
         stats.IncTaskExeCount(j, phenotype.GetLastTaskCount()[j]);
       }
-
+      
       if (phenotype.GetCurInternalTaskCount()[j] > 0) {
         stats.AddCurInternalTask(j);
         stats.AddCurInternalTaskQuality(j, phenotype.GetCurInternalTaskQuality()[j]);
@@ -4478,7 +4500,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
           break;
         }	
       }
-        while ( it2 != genotype_vect.begin() );
+    while ( it2 != genotype_vect.begin() );
     (*it).genotype->SetParent( parent, NULL );
   }
   
@@ -4488,9 +4510,9 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   it = genotype_vect.begin();
   for ( ; it != genotype_vect.end(); it++ ){
     if ( (*it).num_cpus == 0 ){ // historic organism
-                                // remove immediately, so that it gets transferred into the
-                                // historic database. We change the update temporarily to the
-                                // true death time of this organism, so that all stats are correct.
+      // remove immediately, so that it gets transferred into the
+      // historic database. We change the update temporarily to the
+      // true death time of this organism, so that all stats are correct.
       m_world->GetStats().SetCurrentUpdate( (*it).update_dead );
       m_world->GetClassificationManager().RemoveGenotype( *(*it).genotype );
       m_world->GetStats().SetCurrentUpdate( cur_update );
@@ -4611,7 +4633,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
   
   // Clear out the population
   for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
-
+  
   // First, we read in all the genotypes and store them in an array
   tManagedPointerArray<sTmpGenotype> genotypes(input_file.GetNumLines());
   const int update = m_world->GetStats().GetUpdate();
@@ -4682,7 +4704,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     genotypes[gen_i].genotype->SetParent(parent1, parent2);
   }
   
-
+  
   // Process genotypes, inject into organisms as necessary
   for (int gen_i = genotypes.GetSize() - 1; gen_i > 0; gen_i--) {
     sTmpGenotype& tmp = genotypes[gen_i];
@@ -4730,7 +4752,7 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
     else {
       cGenome & mem = cell_array[i].GetOrganism()->GetHardware().GetMemory();
       fp << mem.GetSize() << " "
-        << mem.AsString() << endl;
+      << mem.AsString() << endl;
     }
   }
   return true;
@@ -4754,7 +4776,7 @@ bool cPopulation::OK()
 
 
 /**
-* This function loads a genome from a given file, and initializes
+ * This function loads a genome from a given file, and initializes
  * a cpu with it.
  *
  * @param filename The name of the file to load.
@@ -4775,7 +4797,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
         cell_id = 0;
     }
   }
-
+  
   InjectGenome(cell_id, genome, lineage_label);
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);
@@ -4990,7 +5012,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype)
   // Log the injection of this organism if LOG_INJECT is set to 1 and
   // the current update number is >= INJECT_LOG_START
   if ( (m_world->GetConfig().LOG_INJECT.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().INJECT_LOG_START.Get()) ){
+      (m_world->GetStats().GetUpdate() >= m_world->GetConfig().INJECT_LOG_START.Get()) ){
     
     cString tmpfilename = cStringUtil::Stringf("injectlog.dat");
     cDataFile& df = m_world->GetDataFile(tmpfilename);
@@ -5097,7 +5119,7 @@ void cPopulation::InjectGenome(int cell_id, const cGenome& genome, int lineage_l
 {
   // Setup the genotype...
   cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotypeInjected(genome, lineage_label);
-
+  
   // The rest is done by InjectGenotype();
   InjectGenotype( cell_id, new_genotype );
 }
@@ -5447,7 +5469,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
       }
       switch (competition_type)
       {
-        //Geometric Mean        
+          //Geometric Mean        
         case 0:
         case 3:
         case 4:    
@@ -5457,7 +5479,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
           { 
             fitness += log(trial_fitnesses[t]); 
           }
-            fitness /= (double)trial_fitnesses.GetSize();
+          fitness /= (double)trial_fitnesses.GetSize();
           fitness = exp( fitness );
           break;
           
@@ -5469,7 +5491,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
           { 
             fitness += log(trial_fitnesses[t]); 
           }       
-            fitness = exp( fitness );
+          fitness = exp( fitness );
           break;
           
           //Geometric Mean of normalized values
@@ -5479,7 +5501,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
           { 
             fitness*=trial_fitnesses[t] / max_trial_fitnesses[t]; 
           }
-            fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
+          fitness = exp( (1.0/((double)trial_fitnesses.GetSize())) * log(fitness) );
           break;
           
           //Arithmetic Mean
@@ -5489,7 +5511,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
           { 
             fitness+=trial_fitnesses[t]; 
           }
-            fitness /= (double)trial_fitnesses.GetSize();
+          fitness /= (double)trial_fitnesses.GetSize();
           break;
           
         default:
@@ -5660,8 +5682,8 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
 }
 
 /* This routine is designed to change values in the resource count in the 
-middle of a run.  This is designed to work with cActionChangeEnvironment
-routine BDB 22-Feb-2008 */
+ middle of a run.  This is designed to work with cActionChangeEnvironment
+ routine BDB 22-Feb-2008 */
 
 void cPopulation::UpdateResourceCount(const int Verbosity) {
   const cResourceLib & resource_lib = environment.GetResourceLib();
@@ -5733,7 +5755,7 @@ void  cPopulation::LeaveGroup(int group_id)
 	if (it != m_groups.end()) {
 		m_groups[group_id]--;
 	}
-
+  
 }
 
 // Identifies the number of organisms in a group
@@ -5746,7 +5768,7 @@ int  cPopulation::NumberOfOrganismsInGroup(int group_id)
 		num_orgs = m_groups[group_id];
 	}
 	return num_orgs;	
-
+  
 }
 
 /*!	Modify current level of the HGT resource.

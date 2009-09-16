@@ -116,7 +116,7 @@ public:
     { return (divide.divide_poisson_ins_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_ins_mean); }
   unsigned int NumDividePoissonDel(cAvidaContext& ctx) const 
     { return (divide.divide_poisson_del_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_del_mean); }
- unsigned int NumDividePoissonSlip(cAvidaContext& ctx) const 
+  unsigned int NumDividePoissonSlip(cAvidaContext& ctx) const 
     { return (divide.divide_poisson_slip_mean == 0.0) ? 0 : ctx.GetRandom().GetRandPoisson(divide.divide_poisson_slip_mean); }
 
   bool TestDivideSlip(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.divide_slip_prob); }

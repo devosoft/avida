@@ -143,6 +143,8 @@ public:
     Append(in_list);
   }
   
+  inline tList& operator=(const tList& list) { Copy(list); return *this; }
+
   void Push(T* _in) {
     tListNode<T>* new_node = new tListNode<T>;
     new_node->data = _in;
