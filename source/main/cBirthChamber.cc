@@ -52,7 +52,7 @@ cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
     if (m_world->GetConfig().NUM_DEMES.Get() > 1) {
       // Deme local takes priority, and manages the sub handlers
       handler = new cBirthDemeHandler(m_world, this);    
-    } else if (birth_method < NUM_LOCAL_POSITION_CHILD || birth_method == POSITION_CHILD_PARENT_FACING) { 
+    } else if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
       // ... else check if the birth method is one of the local ones... 
       if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
         handler = new cBirthGridLocalHandler(m_world, this);

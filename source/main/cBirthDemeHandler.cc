@@ -40,7 +40,7 @@ cBirthDemeHandler::cBirthDemeHandler(cWorld* world, cBirthChamber* bc)
   
   const int birth_method = world->GetConfig().BIRTH_METHOD.Get();
   for (int i = 0; i < num_demes; i++) {
-    if (birth_method < NUM_LOCAL_POSITION_CHILD || birth_method == POSITION_CHILD_PARENT_FACING) { 
+    if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
       // ... else check if the birth method is one of the local ones... 
       if (world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
         m_deme_handlers[i] = new cBirthGridLocalHandler(world, bc);

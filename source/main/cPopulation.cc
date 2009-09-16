@@ -151,7 +151,7 @@ cPopulation::cPopulation(cWorld* world)
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
   if(num_demes > 1) {
-    assert(birth_method != POSITION_CHILD_FULL_SOUP_ELDEST);
+    assert(birth_method != POSITION_OFFSPRING_FULL_SOUP_ELDEST);
   }
 #endif
   
@@ -164,7 +164,7 @@ cPopulation::cPopulation(cWorld* world)
   for(int i=0; i<num_cells; ++i) {
     cell_array[i].Setup(world, i, environment.GetMutRates(), i%world_x, i/world_x);
     // Setup the reaper queue.
-    if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+    if (world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST) {
       reaper_queue.Push(&(cell_array[i]));
     }
   }                         
@@ -381,7 +381,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
      continue;
      }
      */	
-    target_cells[i] = PositionChild(parent_cell, m_world->GetConfig().ALLOW_PARENT.Get()).GetID();
+    target_cells[i] = PositionOffspring(parent_cell, m_world->GetConfig().ALLOW_PARENT.Get()).GetID();
     
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) parent_alive = false;      
@@ -471,8 +471,8 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 			
 			// In a local run, face the child toward the parent. 
 			const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
-			if (birth_method < NUM_LOCAL_POSITION_CHILD ||
-					birth_method == POSITION_CHILD_PARENT_FACING) {
+			if (birth_method < NUM_LOCAL_POSITION_OFFSPRING ||
+					birth_method == POSITION_OFFSPRING_PARENT_FACING) {
 				for (int i = 0; i < child_array.GetSize(); i++) {
 					GetCell(target_cells[i]).Rotate(parent_cell);
 				}
@@ -626,7 +626,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   AdjustSchedule(target_cell, in_organism->GetPhenotype().GetMerit());
   
   // Special handling for certain birth methods.
-  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST) {
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST) {
     reaper_queue.Push(&target_cell);
   }
   
@@ -3363,7 +3363,7 @@ void cPopulation::CCladeSetupOrganism(cOrganism* organism)
  * if it is okay to replace the parent.
  **/
 //@AWC -- This could REALLY stand some functional abstraction...
-cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool parent_ok)
+cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bool parent_ok)
 {
   assert(parent_cell.IsOccupied());
   
@@ -3415,7 +3415,7 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     //set the new deme_id
     deme_id = rnd_deme_id;
     
-    //The rest of this is essentially POSITION_CHILD_DEME_RANDOM
+    //The rest of this is essentially POSITION_OFFSPRING_DEME_RANDOM
     //@JEB: But note that this will not honor PREFER_EMPTY in the new deme.
     const int deme_size = deme_array[deme_id].GetSize();
     
@@ -3446,7 +3446,7 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   // This block should be changed to a switch statment with functions handling 
   // the cases. For now, a bunch of if's that return if they handle.
   
-  if (birth_method == POSITION_CHILD_FULL_SOUP_RANDOM) {
+  if (birth_method == POSITION_OFFSPRING_FULL_SOUP_RANDOM) {
     
     // Look randomly within empty cells first, if requested
     if (m_world->GetConfig().PREFER_EMPTY.Get()) {
@@ -3464,7 +3464,7 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     return GetCell(out_pos);
   }
   
-  if (birth_method == POSITION_CHILD_FULL_SOUP_ELDEST) {
+  if (birth_method == POSITION_OFFSPRING_FULL_SOUP_ELDEST) {
     cPopulationCell * out_cell = reaper_queue.PopRear();
     if (parent_ok == false && out_cell->GetID() == parent_cell.GetID()) {
       out_cell = reaper_queue.PopRear();
@@ -3473,21 +3473,21 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
     return *out_cell;
   }
   
-  if (birth_method == POSITION_CHILD_DEME_RANDOM) {
+  if (birth_method == POSITION_OFFSPRING_DEME_RANDOM) {
     deme_array[parent_cell.GetDemeID()].IncBirthCount();
     return PositionDemeRandom(parent_cell.GetDemeID(), parent_cell, parent_ok);
   }
-  else if (birth_method == POSITION_CHILD_PARENT_FACING) {
+  else if (birth_method == POSITION_OFFSPRING_PARENT_FACING) {
     const int deme_id = parent_cell.GetDemeID();
     deme_array[deme_id].IncBirthCount();
     return parent_cell.GetCellFaced();
   }
-  else if (birth_method == POSITION_CHILD_NEXT_CELL) {
+  else if (birth_method == POSITION_OFFSPRING_NEXT_CELL) {
     int out_cell_id = parent_cell.GetID() + 1;
     if (out_cell_id == cell_array.GetSize()) out_cell_id = 0;
     return GetCell(out_cell_id);
   }
-  else if (birth_method == POSITION_CHILD_FULL_SOUP_ENERGY_USED) {
+  else if (birth_method == POSITION_OFFSPRING_FULL_SOUP_ENERGY_USED) {
     tList<cPopulationCell> found_list;
     int max_time_used = 0;
     for  (int i=0; i < cell_array.GetSize(); i++)
@@ -3518,7 +3518,7 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   
   const bool prefer_empty = m_world->GetConfig().PREFER_EMPTY.Get();
   
-  if (birth_method == POSITION_CHILD_DISPERSAL && conn_list.GetSize() > 0) {
+  if (birth_method == POSITION_OFFSPRING_DISPERSAL && conn_list.GetSize() > 0) {
     tList<cPopulationCell>* disp_list = &conn_list;
     
     // hop through connection lists based on the dispersal rate
@@ -3545,19 +3545,19 @@ cPopulationCell& cPopulation::PositionChild(cPopulationCell& parent_cell, bool p
   // to determine how to choose among the filled organisms.
   if (found_list.GetSize() == 0) {
     switch(birth_method) {
-      case POSITION_CHILD_AGE:
+      case POSITION_OFFSPRING_AGE:
         PositionAge(parent_cell, found_list, parent_ok);
         break;
-      case POSITION_CHILD_MERIT:
+      case POSITION_OFFSPRING_MERIT:
         PositionMerit(parent_cell, found_list, parent_ok);
         break;
-      case POSITION_CHILD_RANDOM:
+      case POSITION_OFFSPRING_RANDOM:
         found_list.Append(conn_list);
         if (parent_ok == true) found_list.Push(&parent_cell);
         break;
-      case POSITION_CHILD_NEIGHBORHOOD_ENERGY_USED:
+      case POSITION_OFFSPRING_NEIGHBORHOOD_ENERGY_USED:
         PositionEnergyUsed(parent_cell, found_list, parent_ok);
-      case POSITION_CHILD_EMPTY:
+      case POSITION_OFFSPRING_EMPTY:
         // Nothing is in list if no empty cells are found...
         break;
     }
@@ -3660,7 +3660,7 @@ void cPopulation::PositionEnergyUsed(cPopulationCell & parent_cell,
   }
 }
 
-// This function handles PositionChild() when there is migration between demes
+// This function handles PositionOffspring() when there is migration between demes
 cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok)
 {
   //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
@@ -3774,7 +3774,7 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
   return PositionDemeRandom(deme_id, parent_cell, parent_ok); 
 }
 
-// This function handles PositionChild() by returning a random cell from the entire deme.
+// This function handles PositionOffspring() by returning a random cell from the entire deme.
 cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok)
 {
   assert((deme_id >=0) && (deme_id < deme_array.GetSize()));
@@ -3806,7 +3806,7 @@ cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& p
 
 // This function updates the list of empty cell ids in the population
 // and returns the number of empty cells found. Used by global PREFER_EMPTY
-// PositionChild() methods. If deme_id is -1 (the default), then operates
+// PositionOffspring() methods. If deme_id is -1 (the default), then operates
 // on the entire population. 
 int cPopulation::UpdateEmptyCellIDArray(int deme_id)
 {
@@ -4791,7 +4791,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
     switch (m_world->GetConfig().BIRTH_METHOD.Get()) {
-      case POSITION_CHILD_FULL_SOUP_ELDEST:
+      case POSITION_OFFSPRING_FULL_SOUP_ELDEST:
         cell_id = reaper_queue.PopRear()->GetID();
       default:
         cell_id = 0;
@@ -4995,7 +4995,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype)
   phenotype.SetGestationTime( new_genotype->GetTestGestationTime(ctx) );
   
   // Prep the cell..
-  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST &&
       cell_array[cell_id].IsOccupied() == true) {
     // Have to manually take this cell out of the reaper Queue.
     reaper_queue.Remove( &(cell_array[cell_id]) );
@@ -5048,7 +5048,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
   new_organism->GetPhenotype().SetupClone(orig_org.GetPhenotype());
   
   // Prep the cell..
-  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST &&
       cell_array[cell_id].IsOccupied() == true) {
     // Have to manually take this cell out of the reaper Queue.
     reaper_queue.Remove( &(cell_array[cell_id]) );
@@ -5093,7 +5093,7 @@ void cPopulation::InjectChild(int cell_id, cOrganism& parent)
   new_organism->GetPhenotype().SetupOffspring(parent.GetPhenotype(),child_genome.GetGenome());
   
   // Prep the cell..
-  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_CHILD_FULL_SOUP_ELDEST &&
+  if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST &&
       cell_array[cell_id].IsOccupied() == true) {
     // Have to manually take this cell out of the reaper Queue.
     reaper_queue.Remove( &(cell_array[cell_id]) );

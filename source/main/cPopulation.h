@@ -122,7 +122,7 @@ private:
   void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
 
   // Methods to place offspring in the population.
-  cPopulationCell& PositionChild(cPopulationCell& parent_cell, bool parent_ok = true);
+  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, bool parent_ok = true);
   void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
