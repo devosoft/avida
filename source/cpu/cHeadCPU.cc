@@ -28,13 +28,13 @@
 #include <cassert>
 
 
-void cHeadCPU::Adjust()
+void cHeadCPU::fullAdjust(int mem_size)
 {
   assert(m_mem_space >= 0);
   // Ensure that m_mem_space is valid
   if (m_mem_space != 0 && m_mem_space >= m_hardware->GetNumMemSpaces()) m_mem_space %= m_hardware->GetNumMemSpaces();
   
-  const int mem_size = GetMemSize();
+  if (mem_size < 0) mem_size = GetMemSize();
   
   // If we are still in range, stop here!
   if (m_position >= 0 && m_position < mem_size) return;

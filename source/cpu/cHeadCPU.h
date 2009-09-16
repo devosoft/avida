@@ -54,6 +54,8 @@ protected:
   cHardwareBase* m_hardware;
   int m_position;
   int m_mem_space;
+  
+  void fullAdjust(int mem_size = -1);
 
   int FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
   int FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
@@ -68,7 +70,8 @@ public:
   inline cCPUMemory& GetMemory() { return m_hardware->GetMemory(m_mem_space); }
   inline int GetMemSize() const { return m_hardware->GetMemSize(m_mem_space); }
   
-  void Adjust();
+  inline void Adjust() { if (m_mem_space != 0 || m_position < 0 || m_position >= GetMemSize()) fullAdjust(); }
+  inline void QuickAdjust(int msize) { if (m_mem_space != 0 || m_position < 0 || m_position >= msize) fullAdjust(msize); }
   inline void Reset(cHardwareBase* hw, int ms = 0) { m_hardware = hw; m_position = 0; m_mem_space = ms; }
   
   inline int GetMemSpace() const { return m_mem_space; }

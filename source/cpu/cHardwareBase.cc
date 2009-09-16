@@ -82,6 +82,8 @@ int cHardwareBase::calcExecutedSize(const int parent_size)
 
 bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size, const int child_size, bool using_repro)
 {
+#define ORG_FAULT(error) if (ctx.OrgFaultReporting()) m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, error)
+  
   // Make sure the organism is okay with dividing now...
   if (m_organism->Divide_CheckViable() == false) return false; // (divide fails)
   
@@ -92,13 +94,11 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   const int max_size = Min(MAX_CREATURE_SIZE, static_cast<int>(genome_size * size_range));
   
   if (child_size < min_size || child_size > max_size) {
-    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-                    cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
+    ORG_FAULT(cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
     return false; // (divide fails)
   }
   if (parent_size < min_size || parent_size > max_size) {
-    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-                    cStringUtil::Stringf("Invalid post-divide length (%d)",parent_size));
+    ORG_FAULT(cStringUtil::Stringf("Invalid post-divide length (%d)",parent_size));
     return false; // (divide fails)
   }
   
@@ -106,14 +106,12 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   const int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
   const int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
   if ( (min_genome_size && (child_size < min_genome_size)) || (max_genome_size && (child_size > max_genome_size)) ) {
-    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-                    cStringUtil::Stringf("Invalid absolute offspring length (%d)",child_size));
+    ORG_FAULT(cStringUtil::Stringf("Invalid absolute offspring length (%d)",child_size));
     return false; // (divide fails)
   }
   
   if ( (min_genome_size && (parent_size < min_genome_size)) || (max_genome_size && (parent_size > max_genome_size)) ) {
-    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-                    cStringUtil::Stringf("Invalid absolute post-divide length (%d)",parent_size));
+    ORG_FAULT(cStringUtil::Stringf("Invalid absolute post-divide length (%d)",parent_size));
     return false; // (divide fails)
   }
   
@@ -123,8 +121,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   const int executed_size = calcExecutedSize(parent_size);
   const int min_exe_lines = static_cast<int>(parent_size * m_world->GetConfig().MIN_EXE_LINES.Get());
   if (executed_size < min_exe_lines) {
-    m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-                    cStringUtil::Stringf("Too few executed lines (%d < %d)", executed_size, min_exe_lines));
+    ORG_FAULT(cStringUtil::Stringf("Too few executed lines (%d < %d)", executed_size, min_exe_lines));
     return false; // (divide fails)
   }
   
@@ -136,8 +133,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
     const int min_copied = static_cast<int>(child_size * m_world->GetConfig().MIN_COPIED_LINES.Get());
   
     if (copied_size < min_copied) {
-      m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-                      cStringUtil::Stringf("Too few copied commands (%d < %d)", copied_size, min_copied));
+      ORG_FAULT(cStringUtil::Stringf("Too few copied commands (%d < %d)", copied_size, min_copied));
       return false; // (divide fails)
     }
   }
@@ -190,6 +186,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   }
   
   return true; // (divide succeeds!)
+#undef ORG_FAULT
 }
 
 

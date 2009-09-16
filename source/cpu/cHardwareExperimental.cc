@@ -328,7 +328,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     m_advance_ip = true;
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
-    ip.Adjust();
+    ip.QuickAdjust(m_memory.GetSize());
     
 #if BREAKPOINTS
     if (ip.FlagBreakpoint()) {
@@ -551,7 +551,7 @@ cHeadCPU cHardwareExperimental::FindLabelStart(bool mark_executed)
   // Make sure the label is of size > 0.
   if (search_label.GetSize() == 0) return ip;
 
-  cCPUMemory& memory = ip.GetMemory();
+  cCPUMemory& memory = m_memory;
   int pos = 0;
   
   while (pos < memory.GetSize()) {
@@ -700,7 +700,7 @@ void cHardwareExperimental::AdjustHeads()
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
     for (int j = 0; j < NUM_HEADS; j++) {
-      m_threads[i].heads[j].Adjust();
+      m_threads[i].heads[j].QuickAdjust(m_memory.GetSize());
     }
   }
 }
@@ -1392,7 +1392,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   const int dst = FindModifiedRegister(REG_BX);
   
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
-  GetHead(head_id).Adjust();
+  GetHead(head_id).QuickAdjust(m_memory.GetSize());
   
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
@@ -1405,7 +1405,7 @@ bool cHardwareExperimental::Inst_HeadRead(cAvidaContext& ctx)
   ReadInst(read_inst);
   
   if (m_slip_read_head && m_organism->TestCopySlip(ctx))
-    GetHead(head_id).Set(ctx.GetRandom().GetInt(GetHead(head_id).GetMemory().GetSize()));
+    GetHead(head_id).Set(ctx.GetRandom().GetInt(m_memory.GetSize()));
   
   GetHead(head_id).Advance();
   return true;
@@ -1417,7 +1417,7 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
   cHeadCPU& active_head = GetHead(head_id);
   
-  active_head.Adjust();
+  active_head.QuickAdjust(m_memory.GetSize());
   
   int value = m_threads[m_cur_thread].reg[src].value;
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
@@ -1429,7 +1429,7 @@ bool cHardwareExperimental::Inst_HeadWrite(cAvidaContext& ctx)
   if (m_organism->TestCopyDel(ctx)) active_head.RemoveInst();
   if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, active_head);
   if (!m_slip_read_head && m_organism->TestCopySlip(ctx)) 
-    doSlipMutation(ctx, active_head.GetMemory(), active_head.GetPosition());
+    doSlipMutation(ctx, m_memory, active_head.GetPosition());
   
   // Advance the head after write...
   active_head++;
@@ -1442,8 +1442,8 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   cHeadCPU& read_head = GetHead(nHardware::HEAD_READ);
   cHeadCPU& write_head = GetHead(nHardware::HEAD_WRITE);
   
-  read_head.Adjust();
-  write_head.Adjust();
+  read_head.QuickAdjust(m_memory.GetSize());
+  write_head.QuickAdjust(m_memory.GetSize());
   
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
@@ -1462,9 +1462,9 @@ bool cHardwareExperimental::Inst_HeadCopy(cAvidaContext& ctx)
   if (m_organism->TestCopyUniform(ctx)) doUniformCopyMutation(ctx, write_head);
   if (m_organism->TestCopySlip(ctx)) {
     if (m_slip_read_head) {
-      read_head.Set(ctx.GetRandom().GetInt(read_head.GetMemory().GetSize()));
+      read_head.Set(ctx.GetRandom().GetInt(m_memory.GetSize()));
     } else 
-      doSlipMutation(ctx, write_head.GetMemory(), write_head.GetPosition());
+      doSlipMutation(ctx, m_memory, write_head.GetPosition());
   }
   
   read_head.Advance();
