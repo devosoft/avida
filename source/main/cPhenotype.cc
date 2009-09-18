@@ -82,7 +82,7 @@ cPhenotype::~cPhenotype()
 }
 
 
-cPhenotype::cPhenotype(const cPhenotype& in_phen)
+cPhenotype::cPhenotype(const cPhenotype& in_phen) : m_reaction_result(NULL)
 {
   *this = in_phen;
 }
