@@ -57,6 +57,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
   , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
+  , m_reaction_result(NULL)
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_internal_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
@@ -77,6 +78,7 @@ cPhenotype::~cPhenotype()
   tArray<cTaskState*> task_states(0);
   m_task_states.GetValues(task_states);
   for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
+  delete m_reaction_result;
 }
 
 
@@ -1150,13 +1152,15 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   const double biomimetic_refractory_period = m_world->GetConfig().BIOMIMETIC_REFRACTORY_PERIOD.Get();
   double refract_factor;
 
-  cReactionResult result(num_resources, num_tasks, num_reactions);
-			
+  if (!m_reaction_result) m_reaction_result = new cReactionResult(num_resources, num_tasks, num_reactions);
+  cReactionResult& result = *m_reaction_result;
+  
   // Run everything through the environment.
   bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in); //NEED different eff_task_count and cur_reaction_count for deme resource
 
   // If nothing was found, stop here.
   if (found == false) {
+    result.Invalidate();
     res_change.SetAll(0.0);
     return false;  // Nothing happened.
   }
@@ -1262,6 +1266,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   if(result.GetSterilize()) {
     is_fertile = false;
   }
+  
+  result.Invalidate();
   return true;
 }
 

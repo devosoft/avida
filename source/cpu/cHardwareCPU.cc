@@ -745,7 +745,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
 {
   assert(!speculative || (speculative && !m_thread_slicing_parallel));
 
-  int last_IP_pos = IP().GetPosition();
+  int last_IP_pos = getIP().GetPosition();
   
   // Mark this organism as running...
   m_organism->SetRunning(true);
@@ -778,7 +778,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     m_advance_ip = true;
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
-    ip.QuickAdjust(m_memory.GetSize());
+    ip.Adjust();
     
 #if BREAKPOINTS
     if (ip.FlagBreakpoint()) {
@@ -827,7 +827,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
       // this allows division conditions to be met even if most instruction executions failed. @JEB
       
       // Mark the instruction as executed
-      IP().SetFlagExecuted();
+      getIP().SetFlagExecuted();
       
       // Add to the promoter inst executed count before executing the inst (in case it is a terminator)
       if (m_promoters_enabled) m_threads[m_cur_thread].IncPromoterInstExecuted();
@@ -934,7 +934,7 @@ bool cHardwareCPU::OK()
 void cHardwareCPU::PrintStatus(ostream& fp)
 {
   fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";
-  fp << "IP:" << IP().GetPosition() << "    ";
+  fp << "IP:" << getIP().GetPosition() << "    ";
   
   for (int i = 0; i < NUM_REGISTERS; i++) {
     fp << static_cast<char>('A' + i) << "X:" << GetRegister(i) << " ";
@@ -949,9 +949,9 @@ void cHardwareCPU::PrintStatus(ostream& fp)
   }
   fp << endl;
   
-  fp << "  R-Head:" << GetHead(nHardware::HEAD_READ).GetPosition() << " "
-    << "W-Head:" << GetHead(nHardware::HEAD_WRITE).GetPosition()  << " "
-    << "F-Head:" << GetHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
+  fp << "  R-Head:" << getHead(nHardware::HEAD_READ).GetPosition() << " "
+    << "W-Head:" << getHead(nHardware::HEAD_WRITE).GetPosition()  << " "
+    << "F-Head:" << getHead(nHardware::HEAD_FLOW).GetPosition()   << "  "
     << "RL:" << GetReadLabel().AsString() << "   "
     << endl;
     
@@ -1001,7 +1001,7 @@ void cHardwareCPU::PrintStatus(ostream& fp)
 
 cHeadCPU cHardwareCPU::FindLabel(int direction)
 {
-  cHeadCPU & inst_ptr = IP();
+  cHeadCPU & inst_ptr = getIP();
   
   // Start up a search head at the position of the instruction pointer.
   cHeadCPU search_head(inst_ptr);
@@ -1271,7 +1271,7 @@ void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
   
   // Adjust all of the heads to take into account the new mem size.  
   for (int i = 0; i < NUM_HEADS; i++) {    
-    if (GetHead(i).GetPosition() > line_num) GetHead(i).Jump(inject_size);
+    if (getHead(i).GetPosition() > line_num) getHead(i).Jump(inject_size);
   }
 }
 
@@ -1290,7 +1290,7 @@ void cHardwareCPU::AdjustHeads()
 {
   for (int i = 0; i < m_threads.GetSize(); i++) {
     for (int j = 0; j < NUM_HEADS; j++) {
-      m_threads[i].heads[j].QuickAdjust(m_memory.GetSize());
+      m_threads[i].heads[j].Adjust();
     }
   }
 }
@@ -1304,7 +1304,7 @@ void cHardwareCPU::AdjustHeads()
 void cHardwareCPU::ReadLabel(int max_size)
 {
   int count = 0;
-  cHeadCPU * inst_ptr = &( IP() );
+  cHeadCPU * inst_ptr = &( getIP() );
   
   GetLabel().Clear();
   
@@ -1378,10 +1378,10 @@ inline int cHardwareCPU::FindModifiedRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
-  if (m_inst_set->IsNop(IP().GetNextInst())) {
-    IP().Advance();
-    default_register = m_inst_set->GetNopMod(IP().GetInst());
-    IP().SetFlagExecuted();
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    getIP().Advance();
+    default_register = m_inst_set->GetNopMod(getIP().GetInst());
+    getIP().SetFlagExecuted();
   }
   return default_register;
 }
@@ -1390,10 +1390,10 @@ inline int cHardwareCPU::FindModifiedNextRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
-  if (m_inst_set->IsNop(IP().GetNextInst())) {
-    IP().Advance();
-    default_register = m_inst_set->GetNopMod(IP().GetInst());
-    IP().SetFlagExecuted();
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    getIP().Advance();
+    default_register = m_inst_set->GetNopMod(getIP().GetInst());
+    getIP().SetFlagExecuted();
   } else {
     default_register = (default_register + 1) % NUM_REGISTERS;
   }
@@ -1404,10 +1404,10 @@ inline int cHardwareCPU::FindModifiedPreviousRegister(int default_register)
 {
   assert(default_register < NUM_REGISTERS);  // Reg ID too high.
   
-  if (m_inst_set->IsNop(IP().GetNextInst())) {
-    IP().Advance();
-    default_register = m_inst_set->GetNopMod(IP().GetInst());
-    IP().SetFlagExecuted();
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    getIP().Advance();
+    default_register = m_inst_set->GetNopMod(getIP().GetInst());
+    getIP().SetFlagExecuted();
   } else {
     default_register = (default_register + NUM_REGISTERS - 1) % NUM_REGISTERS;
   }
@@ -1419,10 +1419,10 @@ inline int cHardwareCPU::FindModifiedHead(int default_head)
 {
   assert(default_head < NUM_HEADS); // Head ID too high.
   
-  if (m_inst_set->IsNop(IP().GetNextInst())) {
-    IP().Advance();
-    default_head = m_inst_set->GetNopMod(IP().GetInst());
-    IP().SetFlagExecuted();
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    getIP().Advance();
+    default_head = m_inst_set->GetNopMod(getIP().GetInst());
+    getIP().SetFlagExecuted();
   }
   return default_head;
 }
@@ -1888,14 +1888,14 @@ void cHardwareCPU::InheritState(cHardwareBase& in_hardware)
 bool cHardwareCPU::Inst_If0(cAvidaContext& ctx)          // Execute next if ?bx? ==0.
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  if (GetRegister(reg_used) != 0)  IP().Advance();
+  if (GetRegister(reg_used) != 0)  getIP().Advance();
   return true; 
 }
 
 bool cHardwareCPU::Inst_IfNot0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 { 
   const int reg_used = FindModifiedRegister(REG_BX);
-  if (GetRegister(reg_used) == 0)  IP().Advance();
+  if (GetRegister(reg_used) == 0)  getIP().Advance();
   return true;
 }
 
@@ -1903,7 +1903,7 @@ bool cHardwareCPU::Inst_IfNot0(cAvidaContext& ctx)       // Execute next if ?bx?
 bool cHardwareCPU::Inst_If0_defaultAX(cAvidaContext& ctx)          // Execute next if ?ax? ==0.
 {
   const int reg_used = FindModifiedRegister(REG_AX);
-  if (GetRegister(reg_used) != 0)  IP().Advance();
+  if (GetRegister(reg_used) != 0)  getIP().Advance();
   return true; 
 }
 
@@ -1911,7 +1911,7 @@ bool cHardwareCPU::Inst_If0_defaultAX(cAvidaContext& ctx)          // Execute ne
 bool cHardwareCPU::Inst_IfNot0_defaultAX(cAvidaContext& ctx)       // Execute next if ?ax? != 0.
 { 
   const int reg_used = FindModifiedRegister(REG_AX);
-  if (GetRegister(reg_used) == 0)  IP().Advance();
+  if (GetRegister(reg_used) == 0)  getIP().Advance();
   return true;
 }
 
@@ -1919,7 +1919,7 @@ bool cHardwareCPU::Inst_IfEqu(cAvidaContext& ctx)      // Execute next if bx == 
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  if (GetRegister(op1) != GetRegister(op2))  IP().Advance();
+  if (GetRegister(op1) != GetRegister(op2))  getIP().Advance();
   return true;
 }
 
@@ -1927,14 +1927,14 @@ bool cHardwareCPU::Inst_IfNEqu(cAvidaContext& ctx)     // Execute next if bx != 
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  if (GetRegister(op1) == GetRegister(op2))  IP().Advance();
+  if (GetRegister(op1) == GetRegister(op2))  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfGr0(cAvidaContext& ctx)       // Execute next if ?bx? ! < 0.
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  if (GetRegister(reg_used) <= 0)  IP().Advance();
+  if (GetRegister(reg_used) <= 0)  getIP().Advance();
   return true;
 }
 
@@ -1942,14 +1942,14 @@ bool cHardwareCPU::Inst_IfGr(cAvidaContext& ctx)       // Execute next if bx > ?
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  if (GetRegister(op1) <= GetRegister(op2))  IP().Advance();
+  if (GetRegister(op1) <= GetRegister(op2))  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfGrEqu0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  if (GetRegister(reg_used) < 0)  IP().Advance();
+  if (GetRegister(reg_used) < 0)  getIP().Advance();
   return true;
 }
 
@@ -1957,14 +1957,14 @@ bool cHardwareCPU::Inst_IfGrEqu(cAvidaContext& ctx)       // Execute next if bx 
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  if (GetRegister(op1) < GetRegister(op2)) IP().Advance();
+  if (GetRegister(op1) < GetRegister(op2)) getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLess0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  if (GetRegister(reg_used) >= 0)  IP().Advance();
+  if (GetRegister(reg_used) >= 0)  getIP().Advance();
   return true;
 }
 
@@ -1972,14 +1972,14 @@ bool cHardwareCPU::Inst_IfLess(cAvidaContext& ctx)       // Execute next if ?bx?
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  if (GetRegister(op1) >=  GetRegister(op2))  IP().Advance();
+  if (GetRegister(op1) >=  GetRegister(op2))  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLsEqu0(cAvidaContext& ctx)       // Execute next if ?bx? != 0.
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  if (GetRegister(reg_used) > 0) IP().Advance();
+  if (GetRegister(reg_used) > 0) getIP().Advance();
   return true;
 }
 
@@ -1987,32 +1987,32 @@ bool cHardwareCPU::Inst_IfLsEqu(cAvidaContext& ctx)       // Execute next if bx 
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  if (GetRegister(op1) >  GetRegister(op2))  IP().Advance();
+  if (GetRegister(op1) >  GetRegister(op2))  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfBit1(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
-  if ((GetRegister(reg_used) & 1) == 0)  IP().Advance();
+  if ((GetRegister(reg_used) & 1) == 0)  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfANotEqB(cAvidaContext& ctx)     // Execute next if AX != BX
 {
-  if (GetRegister(REG_AX) == GetRegister(REG_BX) )  IP().Advance();
+  if (GetRegister(REG_AX) == GetRegister(REG_BX) )  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfBNotEqC(cAvidaContext& ctx)     // Execute next if BX != CX
 {
-  if (GetRegister(REG_BX) == GetRegister(REG_CX) )  IP().Advance();
+  if (GetRegister(REG_BX) == GetRegister(REG_CX) )  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfANotEqC(cAvidaContext& ctx)     // Execute next if AX != BX
 {
-  if (GetRegister(REG_AX) == GetRegister(REG_CX) )  IP().Advance();
+  if (GetRegister(REG_AX) == GetRegister(REG_CX) )  getIP().Advance();
   return true;
 }
 
@@ -2025,9 +2025,9 @@ bool cHardwareCPU::Inst_IfGrX(cAvidaContext& ctx)       // Execute next if BX > 
   
   int valueToCompare = 1;
   
-  if (m_inst_set->IsNop(IP().GetNextInst())) {
-    IP().Advance();    
-    switch (m_inst_set->GetNopMod(IP().GetInst())) {
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    getIP().Advance();    
+    switch (m_inst_set->GetNopMod(getIP().GetInst())) {
         
       case REG_AX:
         valueToCompare = -1; break;
@@ -2038,11 +2038,11 @@ bool cHardwareCPU::Inst_IfGrX(cAvidaContext& ctx)       // Execute next if BX > 
       default:
         valueToCompare =  1; break;
     }
-    IP().SetFlagExecuted();
+    getIP().SetFlagExecuted();
     
   }
   
-  if (GetRegister(REG_BX) <= valueToCompare)  IP().Advance();
+  if (GetRegister(REG_BX) <= valueToCompare)  getIP().Advance();
   
   return true;
 }
@@ -2056,9 +2056,9 @@ bool cHardwareCPU::Inst_IfEquX(cAvidaContext& ctx)       // Execute next if BX =
   
   int valueToCompare = 1;
   
-  if (m_inst_set->IsNop(IP().GetNextInst())) {
-    IP().Advance();
-    switch (m_inst_set->GetNopMod(IP().GetInst())) {
+  if (m_inst_set->IsNop(getIP().GetNextInst())) {
+    getIP().Advance();
+    switch (m_inst_set->GetNopMod(getIP().GetInst())) {
         
       case REG_AX:
         valueToCompare = -1; break;
@@ -2069,11 +2069,11 @@ bool cHardwareCPU::Inst_IfEquX(cAvidaContext& ctx)       // Execute next if BX =
       default:
         valueToCompare =  1; break;
     }
-    IP().SetFlagExecuted();
+    getIP().SetFlagExecuted();
     
   }
   
-  if (GetRegister(REG_BX) != valueToCompare)  IP().Advance();
+  if (GetRegister(REG_BX) != valueToCompare)  getIP().Advance();
   
   return true;
 }
@@ -2096,7 +2096,7 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx) {
 	}
 	
 	if(pher_amount > resCrossoverLevel) {
-		IP().Advance();
+		getIP().Advance();
 	}
 		
 	return true;
@@ -2144,7 +2144,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx) {
 	}
 	
 	if(pher_amount <= resCrossoverLevel) {
-		IP().Advance();
+		getIP().Advance();
 	}
 	
 	return true;
@@ -2176,7 +2176,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx) {
 
 bool cHardwareCPU::Inst_IfP0p125(cAvidaContext& ctx) {
 	if(m_world->GetRandom().P(0.875)) {
-		IP().Advance();
+		getIP().Advance();
 	}
 	return true;
 }
@@ -2184,7 +2184,7 @@ bool cHardwareCPU::Inst_IfP0p125(cAvidaContext& ctx) {
 
 bool cHardwareCPU::Inst_IfP0p25(cAvidaContext& ctx) {
 	if(m_world->GetRandom().P(0.75)) {
-		IP().Advance();
+		getIP().Advance();
 	}
 	return true;
 }
@@ -2192,7 +2192,7 @@ bool cHardwareCPU::Inst_IfP0p25(cAvidaContext& ctx) {
 
 bool cHardwareCPU::Inst_IfP0p50(cAvidaContext& ctx) {
 	if(m_world->GetRandom().P(0.5)) {
-		IP().Advance();
+		getIP().Advance();
 	}
 	return true;
 }
@@ -2200,7 +2200,7 @@ bool cHardwareCPU::Inst_IfP0p50(cAvidaContext& ctx) {
 
 bool cHardwareCPU::Inst_IfP0p75(cAvidaContext& ctx) {
 	if(m_world->GetRandom().P(0.25)) {
-		IP().Advance();
+		getIP().Advance();
 	}
 	return true;
 }
@@ -2257,7 +2257,7 @@ bool cHardwareCPU::Inst_JumpB(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_Call(cAvidaContext& ctx)
 {
   // Put the starting location onto the stack
-  const int location = IP().GetPosition();
+  const int location = getIP().GetPosition();
   StackPush(location);
   
   // Jump to the compliment label (or by the ammount in the bx register)
@@ -2265,13 +2265,13 @@ bool cHardwareCPU::Inst_Call(cAvidaContext& ctx)
   GetLabel().Rotate(1, NUM_NOPS);
   
   if (GetLabel().GetSize() == 0) {
-    IP().Jump(GetRegister(REG_BX));
+    getIP().Jump(GetRegister(REG_BX));
     return true;
   }
   
   const cHeadCPU jump_location(FindLabel(1));
   if (jump_location.GetPosition() != -1) {
-    IP().Set(jump_location);
+    getIP().Set(jump_location);
     return true;
   }
   
@@ -2283,7 +2283,7 @@ bool cHardwareCPU::Inst_Call(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_Return(cAvidaContext& ctx)
 {
-  IP().Set(StackPop());
+  getIP().Set(StackPop());
   return true;
 }
 
@@ -2295,7 +2295,7 @@ bool cHardwareCPU::Inst_Throw(cAvidaContext& ctx)
   //Look for the label directly (no complement)
   ReadLabel();
     
-  cHeadCPU search_head(IP());
+  cHeadCPU search_head(getIP());
   int start_pos = search_head.GetPosition();
   search_head++;
   
@@ -2324,7 +2324,7 @@ bool cHardwareCPU::Inst_Throw(cAvidaContext& ctx)
       // We found a matching catch instruction
       if (match)
       {
-        IP().Set(catch_pos);
+        getIP().Set(catch_pos);
         m_advance_ip = false; // Don't automatically move the IP
                               // so we mark the catch as executed.
         return true;
@@ -2360,7 +2360,7 @@ bool cHardwareCPU::Inst_Goto(cAvidaContext& ctx)
   //Look for an EXACT label match after a 'label' instruction
   ReadLabel();
   
-  cHeadCPU search_head(IP());
+  cHeadCPU search_head(getIP());
   int start_pos = search_head.GetPosition();
   search_head++;
   
@@ -2385,7 +2385,7 @@ bool cHardwareCPU::Inst_Goto(cAvidaContext& ctx)
       // instruction (at the search head now) is also not a NOP
       if ( (size_matched == GetLabel().GetSize()) && !m_inst_set->IsNop(search_head.GetInst()) )
       {
-        IP().Set(label_pos);
+        getIP().Set(label_pos);
         m_advance_ip = false; // Don't automatically move the IP
                               // so we mark the catch as executed.
         return true;
@@ -2431,16 +2431,16 @@ bool cHardwareCPU::Inst_Push(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadPop(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetHead(head_used).Set(StackPop());
+  getHead(head_used).Set(StackPop());
   return true;
 }
 
 bool cHardwareCPU::Inst_HeadPush(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  StackPush(GetHead(head_used).GetPosition());
+  StackPush(getHead(head_used).GetPosition());
   if (head_used == nHardware::HEAD_IP) {
-    GetHead(head_used).Set(GetHead(nHardware::HEAD_FLOW));
+    getHead(head_used).Set(getHead(nHardware::HEAD_FLOW));
     m_advance_ip = false;
   }
   return true;
@@ -2910,9 +2910,9 @@ bool cHardwareCPU::Inst_IfNCpy(cAvidaContext& ctx)
   
   // Allow for errors in this test...
   if (m_organism->TestCopyMut(ctx)) {
-    if (from.GetInst() != to.GetInst()) IP().Advance();
+    if (from.GetInst() != to.GetInst()) getIP().Advance();
   } else {
-    if (from.GetInst() == to.GetInst()) IP().Advance();
+    if (from.GetInst() == to.GetInst()) getIP().Advance();
   }
   return true;
 }
@@ -2980,7 +2980,7 @@ bool cHardwareCPU::Inst_MaxAllocMoveWriteHead(cAvidaContext& ctx)   // Allocate 
                              MAX_CREATURE_SIZE - cur_size);
   if (Allocate_Main(ctx, alloc_size)) {
     GetRegister(dst) = cur_size;
-    GetHead(nHardware::HEAD_WRITE).Set(cur_size);
+    getHead(nHardware::HEAD_WRITE).Set(cur_size);
     return true;
   } else return false;
 }
@@ -3194,9 +3194,8 @@ bool cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx)
       numOcuppiedNeighbors++;
     }
     m_organism->Rotate(1);
-  }  
-  assert(m_organism->GetFacing() == orginalFacing);
-
+  }
+  
   for(int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
     if(m_organism->IsNeighborCellOccupied()) {
       // give energy testament to neighboring organisms
@@ -3204,7 +3203,6 @@ bool cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx)
     }
     m_organism->Rotate(1);
   }
-  assert(m_organism->GetFacing() == orginalFacing);
   m_world->GetStats().SumEnergyTestamentToNeighborOrganisms().Add(stored_energy);
   m_organism->Die();
   return true;
@@ -3231,8 +3229,8 @@ bool cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
 {
   AdjustHeads();
-  const int start_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int start_pos = getHead(nHardware::HEAD_READ).GetPosition();
+  const int end_pos = getHead(nHardware::HEAD_WRITE).GetPosition();
   const int inject_size = end_pos - start_pos;
   
   // Make sure the creature will still be above the minimum size,
@@ -3299,8 +3297,8 @@ bool cHardwareCPU::Inst_InjectRand(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
 {
   AdjustHeads();
-  const int start_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int start_pos = getHead(nHardware::HEAD_READ).GetPosition();
+  const int end_pos = getHead(nHardware::HEAD_WRITE).GetPosition();
   const int inject_size = end_pos - start_pos;
   
   // Make sure the creature will still be above the minimum size,
@@ -3905,7 +3903,7 @@ bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
       const cReactionProcess* proc = processes.Next();
       cResource* res = proc->GetResource(); // Infinite resource == 0.
       if((res != 0) && (resources[res->GetID()] < proc->GetMinNumber())) {
-        IP().Advance();
+        getIP().Advance();
         return true;
       }
     }
@@ -4317,7 +4315,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 			for(int i=0;i<neighbor_genome.GetSize();i++){
 				
 				// ...see if it is donate-gbg
-				if (neighbor_genome[i] == IP().GetInst()) {
+				if (neighbor_genome[i] == getIP().GetInst()) {
 					found = true;
 					break;
 				}
@@ -4637,7 +4635,7 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 				for(int i=0;i<neighbor_genome.GetSize();i++){
 					
 					// ...see if it is donate-threshgb, if so, we found a target
-					if (neighbor_genome[i] == IP().GetInst()) {
+					if (neighbor_genome[i] == getIP().GetInst()) {
 						found = true;
 						break;
 					}
@@ -4734,7 +4732,7 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
 			for(int i=0;i<neighbor_genome.GetSize();i++){
 				
 				// ...see if it is donate-quantagb, if so, we found a target
-				if (neighbor_genome[i] == IP().GetInst()) {
+				if (neighbor_genome[i] == getIP().GetInst()) {
 					found = true;
 					break;
 				}
@@ -5260,7 +5258,7 @@ bool cHardwareCPU::Inst_SearchF(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  const int search_size = FindLabel(1).GetPosition() - IP().GetPosition();
+  const int search_size = FindLabel(1).GetPosition() - getIP().GetPosition();
   GetRegister(REG_BX) = search_size;
   GetRegister(REG_CX) = GetLabel().GetSize();
   return true;
@@ -5270,7 +5268,7 @@ bool cHardwareCPU::Inst_SearchB(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  const int search_size = IP().GetPosition() - FindLabel(-1).GetPosition();
+  const int search_size = getIP().GetPosition() - FindLabel(-1).GetPosition();
   GetRegister(REG_BX) = search_size;
   GetRegister(REG_CX) = GetLabel().GetSize();
   return true;
@@ -5682,7 +5680,6 @@ bool cHardwareCPU::Inst_MoveToEvent(cAvidaContext& ctx)
     }
     m_organism->Rotate(1);
   }
-  assert(m_organism->GetFacing() == orginalFacing);
   Inst_Move(ctx);
   GetRegister(reg_used) = 0;
   return true;
@@ -5696,8 +5693,7 @@ bool cHardwareCPU::Inst_IfNeighborEventInUnoccupiedCell(cAvidaContext& ctx)
     }
     m_organism->Rotate(1);
   }
-  assert(m_organism->GetFacing() == orginalFacing);
-  IP().Advance();
+  getIP().Advance();
   return true;
 }
 
@@ -5706,7 +5702,7 @@ bool cHardwareCPU::Inst_IfFacingEventCell(cAvidaContext& ctx)
   if(m_organism->GetNeighborCellContents() > 0) { 
       return true;
   }
-  IP().Advance();
+  getIP().Advance();
   return true;
 }
 
@@ -5715,14 +5711,14 @@ bool cHardwareCPU::Inst_IfEventInCell(cAvidaContext& ctx)
   if(m_organism->GetCellData() > 0) { 
       return true;
   }
-  IP().Advance();
+  getIP().Advance();
   return true;
 }
 
 // Multi-threading.
 bool cHardwareCPU::Inst_ForkThread(cAvidaContext& ctx)
 {
-  IP().Advance();
+  getIP().Advance();
   if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
   return true;
 }
@@ -5739,12 +5735,12 @@ bool cHardwareCPU::Inst_ForkThreadLabel(cAvidaContext& ctx)
   }
   
   cHeadCPU searchHead = FindLabel(+1);
-  if ( searchHead.GetPosition() != IP().GetPosition() )
+  if ( searchHead.GetPosition() != getIP().GetPosition() )
   {
-    int save_pos = IP().GetPosition();
-    IP().Set(searchHead.GetPosition() + 1);
+    int save_pos = getIP().GetPosition();
+    getIP().Set(searchHead.GetPosition() + 1);
     if (!ForkThread()) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
-    IP().Set( save_pos );
+    getIP().Set( save_pos );
   }
   
   return true;
@@ -5797,7 +5793,7 @@ bool cHardwareCPU::Inst_SetHead(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_AdvanceHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_WRITE);
-  GetHead(head_used).Advance();
+  getHead(head_used).Advance();
   return true;
 }
 
@@ -5805,7 +5801,7 @@ bool cHardwareCPU::Inst_MoveHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
   const int target = nHardware::HEAD_FLOW;
-  GetHead(head_used).Set(GetHead(target));
+  getHead(head_used).Set(getHead(target));
   if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
   return true;
 }
@@ -5854,7 +5850,7 @@ bool cHardwareCPU::Inst_ResMoveHead(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_JumpHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetHead(head_used).Jump(GetRegister(REG_CX) );
+  getHead(head_used).Jump(GetRegister(REG_CX) );
   // @JEB - probably shouldn't advance IP after jumping here?
   // Any negative number jumps to the beginning of the genome (pos 0)
   // and then we immediately advance past that first instruction.
@@ -5902,7 +5898,7 @@ bool cHardwareCPU::Inst_ResJumpHead(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_GetHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
-  GetRegister(REG_CX) = GetHead(head_used).GetPosition();
+  GetRegister(REG_CX) = getHead(head_used).GetPosition();
   return true;
 }
 
@@ -5910,14 +5906,14 @@ bool cHardwareCPU::Inst_IfLabel(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
-  if (GetLabel() != GetReadLabel())  IP().Advance();
+  if (GetLabel() != GetReadLabel())  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfLabelDirect(cAvidaContext& ctx)
 {
   ReadLabel();
-  if (GetLabel() != GetReadLabel())  IP().Advance();
+  if (GetLabel() != GetReadLabel())  getIP().Advance();
   return true;
 }
 
@@ -5928,8 +5924,8 @@ bool cHardwareCPU::Inst_IfLabel2(cAvidaContext& ctx)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   if (GetLabel() != GetReadLabel()) {
-    IP().Advance();
-    if (m_inst_set->IsNop( IP().GetNextInst() ))  IP().Advance();
+    getIP().Advance();
+    if (m_inst_set->IsNop( getIP().GetNextInst() ))  getIP().Advance();
   }
   return true;
 }
@@ -5937,8 +5933,8 @@ bool cHardwareCPU::Inst_IfLabel2(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier)
 {
   AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
   if (child_end == 0) child_end = m_memory.GetSize();
   const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main(ctx, divide_pos, extra_lines, mut_multiplier);
@@ -5960,8 +5956,8 @@ bool cHardwareCPU::Inst_HeadDivide(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadDivideRS(cAvidaContext& ctx)
 {
   AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
   if (child_end == 0) child_end = m_memory.GetSize();
   const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_MainRS(ctx, divide_pos, extra_lines, 1);
@@ -5977,8 +5973,8 @@ bool cHardwareCPU::Inst_HeadDivideRS(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadDivide1RS(cAvidaContext& ctx)
 {
   AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
   if (child_end == 0) child_end = m_memory.GetSize();
   const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main1RS(ctx, divide_pos, extra_lines, 1);
@@ -5994,8 +5990,8 @@ bool cHardwareCPU::Inst_HeadDivide1RS(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadDivide2RS(cAvidaContext& ctx)
 {
   AdjustHeads();
-  const int divide_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  int child_end =  GetHead(nHardware::HEAD_WRITE).GetPosition();
+  const int divide_pos = getHead(nHardware::HEAD_READ).GetPosition();
+  int child_end =  getHead(nHardware::HEAD_WRITE).GetPosition();
   if (child_end == 0) child_end = m_memory.GetSize();
   const int extra_lines = m_memory.GetSize() - child_end;
   bool ret_val = Divide_Main2RS(ctx, divide_pos, extra_lines, 1);
@@ -6069,22 +6065,22 @@ bool cHardwareCPU::Inst_HeadRead(cAvidaContext& ctx)
   const int dst = REG_BX;
   
   const int head_id = FindModifiedHead(nHardware::HEAD_READ);
-  GetHead(head_id).QuickAdjust(m_memory.GetSize());
+  getHead(head_id).Adjust();
   
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
   if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
   } else {
-    read_inst = GetHead(head_id).GetInst().GetOp();
+    read_inst = getHead(head_id).GetInst().GetOp();
   }
   GetRegister(dst) = read_inst;
   ReadInst(read_inst);
   
   if (m_slip_read_head && m_organism->TestCopySlip(ctx))
-    GetHead(head_id).Set(ctx.GetRandom().GetInt(m_memory.GetSize()));
+    getHead(head_id).Set(ctx.GetRandom().GetInt(m_memory.GetSize()));
 
-  GetHead(head_id).Advance();
+  getHead(head_id).Advance();
   return true;
 }
 
@@ -6092,9 +6088,9 @@ bool cHardwareCPU::Inst_HeadWrite(cAvidaContext& ctx)
 {
   const int src = REG_BX;
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
-  cHeadCPU& active_head = GetHead(head_id);
+  cHeadCPU& active_head = getHead(head_id);
   
-  active_head.QuickAdjust(m_memory.GetSize());
+  active_head.Adjust();
   
   int value = GetRegister(src);
   if (value < 0 || value >= m_inst_set->GetSize()) value = 0;
@@ -6117,11 +6113,11 @@ bool cHardwareCPU::Inst_HeadWrite(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
 {
   // For the moment, this cannot be nop-modified.
-  cHeadCPU& read_head = GetHead(nHardware::HEAD_READ);
-  cHeadCPU& write_head = GetHead(nHardware::HEAD_WRITE);
+  cHeadCPU& read_head = getHead(nHardware::HEAD_READ);
+  cHeadCPU& write_head = getHead(nHardware::HEAD_WRITE);
   
-  read_head.QuickAdjust(m_memory.GetSize());
-  write_head.QuickAdjust(m_memory.GetSize());
+  read_head.Adjust();
+  write_head.Adjust();
   
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
@@ -6155,11 +6151,11 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
 bool cHardwareCPU::HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction)
 {
   // For the moment, this cannot be nop-modified.
-  cHeadCPU & read_head = GetHead(nHardware::HEAD_READ);
-  cHeadCPU & write_head = GetHead(nHardware::HEAD_WRITE);
+  cHeadCPU & read_head = getHead(nHardware::HEAD_READ);
+  cHeadCPU & write_head = getHead(nHardware::HEAD_WRITE);
   
-  read_head.QuickAdjust(m_memory.GetSize());
-  write_head.QuickAdjust(m_memory.GetSize());
+  read_head.Adjust();
+  write_head.Adjust();
   
   // Do mutations.
   cInstruction read_inst = read_head.GetInst();
@@ -6203,11 +6199,11 @@ bool cHardwareCPU::Inst_HeadSearch(cAvidaContext& ctx)
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindLabel(0);
-  const int search_size = found_pos.GetPosition() - IP().GetPosition();
+  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
   GetRegister(REG_BX) = search_size;
   GetRegister(REG_CX) = GetLabel().GetSize();
-  GetHead(nHardware::HEAD_FLOW).Set(found_pos);
-  GetHead(nHardware::HEAD_FLOW).Advance();
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
   return true; 
 }
 
@@ -6215,18 +6211,18 @@ bool cHardwareCPU::Inst_HeadSearchDirect(cAvidaContext& ctx)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabel(0);
-  const int search_size = found_pos.GetPosition() - IP().GetPosition();
+  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
   GetRegister(REG_BX) = search_size;
   GetRegister(REG_CX) = GetLabel().GetSize();
-  GetHead(nHardware::HEAD_FLOW).Set(found_pos);
-  GetHead(nHardware::HEAD_FLOW).Advance();
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
   return true; 
 }
 
 bool cHardwareCPU::Inst_SetFlow(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_CX);
-  GetHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
+  getHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
   return true; 
 }
 
@@ -6240,7 +6236,7 @@ bool cHardwareCPU::Inst_IfEnergyLow(cAvidaContext& ctx) {
 	
   // Note: these instructions should probably also make sure the returned energy level is not -1.
   if(m_organism->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_LOW) {
-    IP().Advance();
+    getIP().Advance();
   }
 	
   return true;
@@ -6256,7 +6252,7 @@ bool cHardwareCPU::Inst_IfEnergyNotLow(cAvidaContext& ctx) {
   }	
 	
   if(m_organism->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_LOW) {
-    IP().Advance();
+    getIP().Advance();
   }
 	
   return true;
@@ -6277,7 +6273,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyLow(cAvidaContext& ctx) {
   if ( (neighbor != NULL) && (!neighbor->IsDead()) ){
     // Note: these instructions should probably also make sure the returned energy level is not -1.
     if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_LOW) {
-      IP().Advance();
+      getIP().Advance();
     }    
   }  
 	
@@ -6299,7 +6295,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyNotLow(cAvidaContext& ctx) {
   if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
     // Note: these instructions should probably also make sure the returned energy level is not -1.
     if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_LOW) {
-      IP().Advance();
+      getIP().Advance();
     }    
   }  
 	
@@ -6316,7 +6312,7 @@ bool cHardwareCPU::Inst_IfEnergyHigh(cAvidaContext& ctx) {
   }	
 	
   if(m_organism->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_HIGH) {
-    IP().Advance();
+    getIP().Advance();
   }
 	
   return true;
@@ -6332,7 +6328,7 @@ bool cHardwareCPU::Inst_IfEnergyNotHigh(cAvidaContext& ctx) {
   }	
 	
   if(m_organism->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_HIGH) {
-    IP().Advance();
+    getIP().Advance();
   }
 	
   return true;
@@ -6353,7 +6349,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyHigh(cAvidaContext& ctx) {
   if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
     // Note: these instructions should probably also make sure the returned energy level is not -1.
     if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_HIGH) {
-      IP().Advance();
+      getIP().Advance();
     }    
   }  
 	
@@ -6375,7 +6371,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyNotHigh(cAvidaContext& ctx) {
   if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
     // Note: these instructions should probably also make sure the returned energy level is not -1.
     if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() == cPhenotype::ENERGY_LEVEL_HIGH) {
-      IP().Advance();
+      getIP().Advance();
     }    
   }  
 	
@@ -6392,7 +6388,7 @@ bool cHardwareCPU::Inst_IfEnergyMed(cAvidaContext& ctx) {
   }	
 
   if(m_organism->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_MEDIUM) {
-    IP().Advance();
+    getIP().Advance();
   }
 		
   return true;
@@ -6413,7 +6409,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyMed(cAvidaContext& ctx) {
   if ( (neighbor != NULL) && (!neighbor->IsDead()) ) {
     // Note: these instructions should probably also make sure the returned energy level is not -1.
     if(neighbor->GetPhenotype().GetDiscreteEnergyLevel() != cPhenotype::ENERGY_LEVEL_MEDIUM) {
-      IP().Advance();
+      getIP().Advance();
     }    
   }  
 	
@@ -6438,7 +6434,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyLess(cAvidaContext& ctx) {
     const double epsilon = m_world->GetConfig().ENERGY_COMPARISON_EPSILON.Get();
     
     if(neighbor_energy >= (my_energy * (1 - epsilon))) {
-      IP().Advance();
+      getIP().Advance();
     }    
   }  
 	
@@ -6463,7 +6459,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyMore(cAvidaContext& ctx) {
     const double epsilon = m_world->GetConfig().ENERGY_COMPARISON_EPSILON.Get();
 
     if(neighbor_energy <= (my_energy * (1 + epsilon))) {
-      IP().Advance();
+      getIP().Advance();
     }    
   }  
 	
@@ -6480,7 +6476,7 @@ bool cHardwareCPU::Inst_IfEnergyInBuffer(cAvidaContext& ctx) {
   }	
   
   if(m_organism->GetPhenotype().GetEnergyInBufferAmount() == 0) {
-    IP().Advance();
+    getIP().Advance();
   }
   
   return true;
@@ -6496,7 +6492,7 @@ bool cHardwareCPU::Inst_IfEnergyNotInBuffer(cAvidaContext& ctx) {
   }	
   
   if(m_organism->GetPhenotype().GetEnergyInBufferAmount() > 0) {
-    IP().Advance();
+    getIP().Advance();
   }
   
   return true;
@@ -6551,7 +6547,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyRequestOn(cAvidaContext& ctx) {
   }
   
   if(neighbor->GetPhenotype().IsEnergyRequestor() == false) {
-    IP().Advance();
+    getIP().Advance();
   }
   
   return true;
@@ -6571,7 +6567,7 @@ bool cHardwareCPU::Inst_IfFacedEnergyRequestOff(cAvidaContext& ctx) {
   }
   
   if(neighbor->GetPhenotype().IsEnergyRequestor() == true) {
-    IP().Advance();
+    getIP().Advance();
   }
   
   return true;
@@ -6740,11 +6736,11 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
   // Reset the thread.
   if (m_world->GetConfig().TERMINATION_RESETS.Get())
   {
-    //const int write_head_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
-    //const int read_head_pos = GetHead(nHardware::HEAD_READ).GetPosition();
+    //const int write_head_pos = getHead(nHardware::HEAD_WRITE).GetPosition();
+    //const int read_head_pos = getHead(nHardware::HEAD_READ).GetPosition();
     m_threads[m_cur_thread].Reset(this, m_threads[m_cur_thread].GetID());
-    //GetHead(nHardware::HEAD_WRITE).Set(write_head_pos);
-    //GetHead(nHardware::HEAD_READ).Set(read_head_pos);
+    //getHead(nHardware::HEAD_WRITE).Set(write_head_pos);
+    //getHead(nHardware::HEAD_READ).Set(read_head_pos);
     
     //Setting this makes it harder to do things. You have to be modular.
     m_organism->GetOrgInterface().ResetInputs(ctx);   // Re-randomize the inputs this organism sees
@@ -6793,7 +6789,7 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
     {
       // Set defaults for when no active promoter is found
       m_promoter_index = -1;
-      IP().Set(0);
+      getIP().Set(0);
       GetRegister(reg_used) = 0;
     }
     // Death to organisms that refuse to use promoters!
@@ -6810,7 +6806,7 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
   {
     // We found an active match, offset to just after it.
     // cHeadCPU will do the mod genome size for us
-    IP().Set(m_promoters[m_promoter_index].m_pos + 1);
+    getIP().Set(m_promoters[m_promoter_index].m_pos + 1);
     
     // Put its bit code in BX for the organism to have if option is set
     if ( m_world->GetConfig().PROMOTER_TO_REGISTER.Get() )
@@ -6889,10 +6885,10 @@ bool cHardwareCPU::Do_Numberate(cAvidaContext& ctx, int num_bits)
   const int reg_used = FindModifiedRegister(REG_BX);
   
   // advance the IP now, so that it rests on the beginning of our number
-  IP().Advance();
+  getIP().Advance();
   m_advance_ip = false;
   
-  int num = Numberate(IP().GetPosition(), +1, num_bits);
+  int num = Numberate(getIP().GetPosition(), +1, num_bits);
   GetRegister(reg_used) = num;
   return true;
 }
@@ -7009,14 +7005,14 @@ bool cHardwareCPU::Inst_BitConsensus24(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_IfConsensus(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(REG_BX);
-  if (BitCount(GetRegister(op1)) <  CONSENSUS)  IP().Advance();
+  if (BitCount(GetRegister(op1)) <  CONSENSUS)  getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfConsensus24(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(REG_BX);
-  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  IP().Advance();
+  if (BitCount(GetRegister(op1) & MASK24) <  CONSENSUS24)  getIP().Advance();
   return true;
 }
 
@@ -7024,7 +7020,7 @@ bool cHardwareCPU::Inst_IfLessConsensus(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindModifiedNextRegister(op1);
-  if (BitCount(GetRegister(op1)) >=  BitCount(GetRegister(op2)))  IP().Advance();
+  if (BitCount(GetRegister(op1)) >=  BitCount(GetRegister(op2)))  getIP().Advance();
   return true;
 }
 
@@ -7032,7 +7028,7 @@ bool cHardwareCPU::Inst_IfLessConsensus24(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindModifiedNextRegister(op1);
-  if (BitCount(GetRegister(op1) & MASK24) >=  BitCount(GetRegister(op2) & MASK24))  IP().Advance();
+  if (BitCount(GetRegister(op1) & MASK24) >=  BitCount(GetRegister(op2) & MASK24))  getIP().Advance();
   return true;
 }
 
@@ -7223,14 +7219,14 @@ bool cHardwareCPU::Jump_To_Alarm_Label(int jump_label) {
   
   cInstruction label_inst = GetInstSet().GetInst(cStringUtil::Stringf("alarm-label-")+channel);
   
-  cHeadCPU search_head(IP());
+  cHeadCPU search_head(getIP());
   int start_pos = search_head.GetPosition();
   search_head++;
   
   while (start_pos != search_head.GetPosition()) {
     if (search_head.GetInst() == label_inst) {
       // move IP to here
-      IP().Set(search_head.GetPosition());
+      getIP().Set(search_head.GetPosition());
       m_advance_ip = false; // Don't automatically move the IP
       return true;
     }
@@ -7243,7 +7239,7 @@ bool cHardwareCPU::Jump_To_Alarm_Label(int jump_label) {
 //// Placebo insts ////
 bool cHardwareCPU::Inst_Skip(cAvidaContext& ctx)
 {
-  IP().Advance();
+  getIP().Advance();
   return true;
 }
 
@@ -8623,7 +8619,7 @@ bool cHardwareCPU::Inst_IfTarget(cAvidaContext& ctx)
   int cell_data = m_world->GetPopulation().GetCell(cellid).GetCellData();
 
   if(cell_data == -1) {
-    IP().Advance();
+    getIP().Advance();
   }
 
   return true;
@@ -8641,7 +8637,7 @@ bool cHardwareCPU::Inst_IfNotTarget(cAvidaContext& ctx)
   int cell_data = m_world->GetPopulation().GetCell(cellid).GetCellData();
 
   if(cell_data > 0) {
-    IP().Advance();
+    getIP().Advance();
   }
 
   return true;
@@ -8674,7 +8670,7 @@ bool cHardwareCPU::Inst_IfPheromone(cAvidaContext& ctx)
   }
 
   if(pher_amount == 0) {
-    IP().Advance();
+    getIP().Advance();
   }
 
   return true;
@@ -8708,7 +8704,7 @@ bool cHardwareCPU::Inst_IfNotPheromone(cAvidaContext& ctx)
   }
 
   if(pher_amount > 0) {
-    IP().Advance();
+    getIP().Advance();
   }
 
   return true;
@@ -8830,14 +8826,14 @@ bool cHardwareCPU::Inst_ClearOpinion(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_IfOpinionSet(cAvidaContext& ctx)
 {
 	assert(m_organism != 0);
-  if(!m_organism->HasOpinion()) IP().Advance();
+  if(!m_organism->HasOpinion()) getIP().Advance();
   return true;
 }
 
 bool cHardwareCPU::Inst_IfOpinionNotSet(cAvidaContext& ctx)
 {
 	assert(m_organism != 0);
-  if(m_organism->HasOpinion()) IP().Advance();
+  if(m_organism->HasOpinion()) getIP().Advance();
   return true;
 }
 
@@ -8869,7 +8865,7 @@ bool cHardwareCPU::Inst_IfCellDataChanged(cAvidaContext& ctx)
 	// If we haven't collected cell data yet, or it's the same as the current cell data, advance
 	// the IP:
 	if(!m_last_cell_data.first || (m_last_cell_data.second == m_organism->GetCellData())) {
-		IP().Advance();
+		getIP().Advance();
 	}
 	
 	return true;
@@ -8937,7 +8933,7 @@ bool cHardwareCPU::Inst_Flash(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_IfRecvdFlash(cAvidaContext& ctx) {
   assert(m_organism != 0);
   if(m_flash_info.first == 0) {
-    IP().Advance();
+    getIP().Advance();
   }
   return true;
 }
@@ -9010,19 +9006,19 @@ bool cHardwareCPU::Inst_GetNeighborhood(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_IfNeighborhoodChanged(cAvidaContext& ctx) {
   assert(m_organism != 0);
   if(!m_organism->HasNeighborhoodChanged()) {
-		IP().Advance();
+		getIP().Advance();
 	}
 	
 	return true;
 }
 
 
-/*! Find the first occurence of the passed-in instruction from the IP() forward,
+/*! Find the first occurence of the passed-in instruction from the getIP() forward,
  wrapping around the genome as required.  If the given instruction is not in the
  genome, return the starting position.
  */
 cHeadCPU cHardwareCPU::Find(const char* instr) {
-  cHeadCPU ptr(IP());
+  cHeadCPU ptr(getIP());
   const int current = ptr.GetPosition();
   ptr.Advance();
   while(ptr.GetPosition() != current) {
@@ -9073,13 +9069,13 @@ void cHardwareCPU::Else_TopHalf() {
   // If there isn't an else-clause, try to jump to the endif.
   // Note that the IP is unconditionally advanced *after* this instruction
   // has executed.  If there is no else or endif, advance one instruction.
-  if(else_head.GetPosition() != IP().GetPosition()) {
-    IP().Set(else_head);
-  } else if(endif_head.GetPosition() != IP().GetPosition()) {
-    IP().Set(endif_head);
+  if(else_head.GetPosition() != getIP().GetPosition()) {
+    getIP().Set(else_head);
+  } else if(endif_head.GetPosition() != getIP().GetPosition()) {
+    getIP().Set(endif_head);
   } else {
     // No else or endif.  Advance past the next instruction (as normal).
-    IP().Advance();
+    getIP().Advance();
   }
 }
 
@@ -9090,12 +9086,12 @@ void cHardwareCPU::Else_TopHalf() {
  */
 bool cHardwareCPU::Inst_Else(cAvidaContext& ctx) {
   cHeadCPU endif_head = Find("endif");
-  if(endif_head.GetPosition() != IP().GetPosition()) {
+  if(endif_head.GetPosition() != getIP().GetPosition()) {
     // If the <end-if> is somewhere else, jump to it.
-    IP().Set(endif_head);
+    getIP().Set(endif_head);
   } else {
     // Otherwise, just skip one instruction.
-    IP().Advance();
+    getIP().Advance();
   }
   return true; 
 }
@@ -9432,7 +9428,7 @@ bool cHardwareCPU::Inst_IfDonor(cAvidaContext& ctx)
 			donor = true;
 		}
 	}
-  if (!donor)  IP().Advance();
+  if (!donor)  getIP().Advance();
 	
   return true; 
 	

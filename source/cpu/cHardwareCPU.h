@@ -217,6 +217,17 @@ protected:
   int FindModifiedHead(int default_head);
   int FindNextRegister(int base_reg);
   
+  inline const cHeadCPU& getHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
+  inline cHeadCPU& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
+  inline const cHeadCPU& getHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
+  inline cHeadCPU& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  
+  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  
+  
   bool Allocate_Necro(const int new_size);
   bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
   bool Allocate_Default(const int new_size);

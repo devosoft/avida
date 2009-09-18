@@ -75,6 +75,7 @@ protected:
   
   // --------  Base Hardware Feature Support  ---------
   tSmartArray<int> m_ext_mem;
+  bool m_implicit_repro_active;
   
 	// -------- Bit masks ---------------
 	static const unsigned int MASK_SIGNBIT = 0x7FFFFFFF;	
@@ -94,14 +95,7 @@ protected:
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
 
 public:
-  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)
-    : m_world(world), m_organism(in_organism), m_inst_set_id(inst_set_id), m_inst_set(inst_set), m_tracer(NULL)
-    , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-    , m_has_energy_costs(m_inst_set->HasEnergyCosts())
-  {
-    m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs);
-    assert(m_organism != NULL);
-  }
+  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id);
   virtual ~cHardwareBase() { ; }
   
   int GetInstSetID() const { return m_inst_set_id; }
@@ -223,7 +217,8 @@ protected:
   
   
   // --------  Implicit Repro Check/Instruction  -------- @JEB
-  void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);
+  inline void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false)
+    { if (m_implicit_repro_active) checkImplicitRepro(ctx, exec_last_inst); }
   virtual bool Inst_Repro(cAvidaContext& ctx);
 
   
@@ -259,6 +254,9 @@ protected:
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);  
+
+private:
+  void checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);
 };
 
 

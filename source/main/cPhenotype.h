@@ -84,6 +84,7 @@ template <class T> class tList;
 class cTaskContext;
 class cTaskState;
 class cPhenPlastSummary;
+class cReactionResult;
 
 class cPhenotype
 {
@@ -143,6 +144,9 @@ private:
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
+  
+  cReactionResult* m_reaction_result;
+  
 
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.

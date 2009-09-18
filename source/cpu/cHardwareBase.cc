@@ -49,6 +49,21 @@
 #include "functions.h"
 
 
+cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)
+  : m_world(world), m_organism(in_organism), m_inst_set_id(inst_set_id), m_inst_set(inst_set), m_tracer(NULL)
+  , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
+  , m_has_energy_costs(m_inst_set->HasEnergyCosts())
+{
+  m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs);
+  m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
+                             m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
+                             m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() ||
+                             m_world->GetConfig().IMPLICIT_REPRO_END.Get() ||
+                             m_world->GetConfig().IMPLICIT_REPRO_ENERGY.Get());
+  assert(m_organism != NULL);
+}
+
+
 void cHardwareBase::Reset(cAvidaContext& ctx)
 {
   m_organism->HardwareReset(ctx);
@@ -951,7 +966,7 @@ bool cHardwareBase::Inst_Nop(cAvidaContext& ctx)          // Do Nothing.
 
 
 // @JEB Check implicit repro conditions -- meant to be called at the end of SingleProcess
-void cHardwareBase::CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)         
+void cHardwareBase::checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst)         
 {  
   //Dividing a dead organism causes all kinds of problems
   if (m_organism->IsDead()) return;

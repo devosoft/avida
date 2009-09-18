@@ -32,7 +32,11 @@ void cHeadCPU::fullAdjust(int mem_size)
 {
   assert(m_mem_space >= 0);
   // Ensure that m_mem_space is valid
-  if (m_mem_space != 0 && m_mem_space >= m_hardware->GetNumMemSpaces()) m_mem_space %= m_hardware->GetNumMemSpaces();
+  if (m_mem_space != m_cached_ms) {
+    if (m_mem_space >= m_hardware->GetNumMemSpaces()) m_mem_space %= m_hardware->GetNumMemSpaces();
+    m_cached_ms = m_mem_space;
+    m_memory = &m_hardware->GetMemory(m_mem_space);
+  }
   
   if (mem_size < 0) mem_size = GetMemSize();
   
