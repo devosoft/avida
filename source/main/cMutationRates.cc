@@ -56,7 +56,6 @@ void cMutationRates::Setup(cWorld* world)
   divide.divide_slip_prob = world->GetConfig().DIVIDE_SLIP_PROB.Get();
   
   divide.parent_mut_prob = world->GetConfig().PARENT_MUT_PROB.Get();  
-  divide.death_prob = world->GetConfig().DEATH_PROB.Get();  
   
   inject.ins_prob = world->GetConfig().INJECT_INS_PROB.Get();
   inject.del_prob = world->GetConfig().INJECT_DEL_PROB.Get();
@@ -64,6 +63,8 @@ void cMutationRates::Setup(cWorld* world)
   
   meta.copy_mut_prob = world->GetConfig().META_COPY_MUT.Get();
   meta.standard_dev = world->GetConfig().META_STD_DEV.Get();
+
+  update.death_prob = world->GetConfig().DEATH_PROB.Get();  
 }
 
 void cMutationRates::Clear()
@@ -94,14 +95,14 @@ void cMutationRates::Clear()
   
   divide.parent_mut_prob = 0.0;
 
-  divide.death_prob = 0.0;
-  
   inject.ins_prob = 0.0;
   inject.del_prob = 0.0;
   inject.mut_prob = 0.0;
   
   meta.copy_mut_prob = 0.0;
   meta.standard_dev = 0.0;
+
+  update.death_prob = 0.0;
 }
 
 void cMutationRates::Copy(const cMutationRates& in_muts)
@@ -131,7 +132,6 @@ void cMutationRates::Copy(const cMutationRates& in_muts)
   divide.divide_slip_prob = in_muts.divide.divide_slip_prob;
   
   divide.parent_mut_prob = in_muts.divide.parent_mut_prob;
-  divide.death_prob = in_muts.divide.death_prob;
   
   inject.ins_prob = in_muts.inject.ins_prob;
   inject.del_prob = in_muts.inject.del_prob;
@@ -139,4 +139,6 @@ void cMutationRates::Copy(const cMutationRates& in_muts)
   
   meta.copy_mut_prob = in_muts.meta.copy_mut_prob;
   meta.standard_dev = in_muts.meta.standard_dev;
+
+  update.death_prob = in_muts.update.death_prob;
 }

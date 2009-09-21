@@ -52,22 +52,21 @@ private:
 
   // ...at the divide...
   struct sDivideMuts {
-    double ins_prob;        // Per site
-    double del_prob;        // Per site
-    double mut_prob;        // Per site
-    double uniform_prob;
-    double slip_prob;
-    double divide_mut_prob;     // Max one per divide
-    double divide_ins_prob;     // Max one per divide
-    double divide_del_prob;     // Max one per divide
-    double divide_poisson_mut_mean;     // Allows multiple with constant genomic rate
-    double divide_poisson_ins_mean;     // Allows multiple with constant genomic rate
-    double divide_poisson_del_mean;     // Allows multiple with constant genomic rate
-    double divide_poisson_slip_mean;     // Allows multiple with constant genomic rate
-    double divide_slip_prob;     // Max one per divide
+    double ins_prob;                  // Per site
+    double del_prob;                  // Per site
+    double mut_prob;                  // Per site
+    double uniform_prob;              // Per site
+    double slip_prob;                 // Per site
+    double divide_mut_prob;           // Max one per divide
+    double divide_ins_prob;           // Max one per divide
+    double divide_del_prob;           // Max one per divide
+    double divide_poisson_mut_mean;   // Allows multiple with constant genomic rate
+    double divide_poisson_ins_mean;   // Allows multiple with constant genomic rate
+    double divide_poisson_del_mean;   // Allows multiple with constant genomic rate
+    double divide_poisson_slip_mean;  // Allows multiple with constant genomic rate
+    double divide_slip_prob;          // Max one per divide
     double divide_uniform_prob;
     double parent_mut_prob;
-    double death_prob;
   };
   sDivideMuts divide;
   
@@ -85,6 +84,11 @@ private:
     double standard_dev;   // Standard dev. on meta muts.
   };
   sMetaMuts meta;
+  
+  struct sUpdateMuts {
+    double death_prob;    
+  };
+  sUpdateMuts update;
 
 public:
   cMutationRates() { Clear(); }
@@ -127,7 +131,6 @@ public:
 
   
   bool TestParentMut(cAvidaContext& ctx) const { return ctx.GetRandom().P(divide.parent_mut_prob); }  
-  bool TestDeath(cAvidaContext& ctx) const { return (divide.death_prob == 0.0) ? false : ctx.GetRandom().P(divide.death_prob); }
   
   double DoMetaCopyMut(cAvidaContext& ctx) {
     if (meta.copy_mut_prob == 0.0 || !ctx.GetRandom().P(meta.copy_mut_prob)) return 1.0;
@@ -136,6 +139,8 @@ public:
     copy.mut_prob *= change;
     return change;
   }
+
+  bool TestDeath(cAvidaContext& ctx) const { return (update.death_prob == 0.0) ? false : ctx.GetRandom().P(update.death_prob); }
 
   
   double GetCopyMutProb() const       { return copy.mut_prob; }
@@ -157,7 +162,6 @@ public:
   double GetDivideSlipProb() const    { return divide.divide_slip_prob; }
   
   double GetParentMutProb() const     { return divide.parent_mut_prob; }
-  double GetDeathProb() const   { return divide.death_prob; }
   
   double GetInjectInsProb() const     { return inject.ins_prob; }
   double GetInjectDelProb() const     { return inject.del_prob; }
@@ -166,6 +170,8 @@ public:
   double GetMetaCopyMutProb() const   { return meta.copy_mut_prob; }
   double GetMetaStandardDev() const   { return meta.standard_dev; }
   
+  double GetDeathProb() const         { return update.death_prob; }
+
   
   void SetCopyMutProb(double in_prob)       { copy.mut_prob = in_prob; }
   void SetCopyInsProb(double in_prob)       { copy.ins_prob = in_prob; }
@@ -186,7 +192,6 @@ public:
   void SetDivideSlipProb(double in_prob)    { divide.divide_del_prob = in_prob; }
   
   void SetParentMutProb(double in_prob)     { divide.parent_mut_prob = in_prob; }
-  void SetDeathProb(double in_prob)   { divide.death_prob      = in_prob; }
   
   void SetInjectInsProb(double in_prob)     { inject.ins_prob        = in_prob; }
   void SetInjectDelProb(double in_prob)     { inject.del_prob        = in_prob; }
@@ -194,6 +199,8 @@ public:
   
   void SetMetaCopyMutProb(double in_prob)   { meta.copy_mut_prob   = in_prob; }
   void SetMetaStandardDev(double in_dev)    { meta.standard_dev     = in_dev; }
+
+  void SetDeathProb(double in_prob)         { update.death_prob      = in_prob; }
 };
 
 
