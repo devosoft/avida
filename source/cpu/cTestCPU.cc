@@ -157,8 +157,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   int time_used = m_res_cpu_cycle_offset; // Note: the offset is zero by default if no resources being used @JEB
   
   organism.GetHardware().SetTrace(tracer);
-  while (time_used < time_allocated && organism.GetHardware().GetMemory().GetSize() &&
-         organism.GetPhenotype().GetNumDivides() == 0 && !organism.IsDead())
+  while (time_used < time_allocated && organism.GetPhenotype().GetNumDivides() == 0 && !organism.IsDead())
   {
     time_used++;
     
