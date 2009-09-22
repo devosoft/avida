@@ -353,9 +353,11 @@ private:
     int num_cpus;
     int total_cpus;
     double merit;
+    double gest_time;
     int update_born;
     int update_dead;
     tArray<int> cells;
+    tArray<int> offsets;
     
     cGenotype *genotype;
     

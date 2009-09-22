@@ -4551,27 +4551,38 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
 }
 
 
+struct sOrgInfo {
+  int cell_id;
+  int offset;
+  
+  sOrgInfo() { ; }
+  sOrgInfo(int c, int o) : cell_id(c), offset(o) { ; }
+};
+
 bool cPopulation::SaveStructuredPopulation(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteRawComment("#filetype genotype_data");
-  df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells");
+  df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset");
   df.WriteComment("");
   df.WriteComment("Structured Population Dump");
   df.WriteTimeStamp();
   
   // Build up hash table of all current genotypes and the cells in which the organisms reside
-  tHashTable<int, tKVPair<cGenotype*, tArray<int> >* > genotype_map;
+  tHashTable<int, tKVPair<cGenotype*, tArray<sOrgInfo> >* > genotype_map;
   
   for (int i = 0; i < cell_array.GetSize(); i++) {
     if (cell_array[i].IsOccupied()) {
-      cGenotype* genotype = cell_array[i].GetOrganism()->GetGenotype();
-      tKVPair<cGenotype*, tArray<int> >* map_entry = NULL;
+      cOrganism* org = cell_array[i].GetOrganism();
+      cGenotype* genotype = org->GetGenotype();
+      int offset = org->GetPhenotype().GetCPUCyclesUsed();
+      
+      tKVPair<cGenotype*, tArray<sOrgInfo> >* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->Value().Push(i);
+        map_entry->Value().Push(sOrgInfo(i, offset));
       } else {
-        map_entry = new tKVPair<cGenotype*, tArray<int> >(genotype, tArray<int>(0));
-        map_entry->Value().Push(i);
+        map_entry = new tKVPair<cGenotype*, tArray<sOrgInfo> >(genotype, tArray<sOrgInfo>(0));
+        map_entry->Value().Push(sOrgInfo(i, offset));
         genotype_map.Add(genotype->GetID(), map_entry);
       }
     }
@@ -4579,7 +4590,7 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
   
   // Output all current genotypes
   
-  tArray<tKVPair<cGenotype*, tArray<int> >* > genotype_entries;
+  tArray<tKVPair<cGenotype*, tArray<sOrgInfo> >* > genotype_entries;
   genotype_map.GetValues(genotype_entries);
   for (int i = 0; i < genotype_entries.GetSize(); i++) {
     cGenotype* genotype = genotype_entries[i]->Key();
@@ -4599,13 +4610,17 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     df.Write(genotype->GetDepth(), "Phylogenetic Depth");
     df.Write(genotype->GetGenome().AsString(), "Genome Sequence");
     
-    tArray<int>& cells = genotype_entries[i]->Value();
+    tArray<sOrgInfo>& cells = genotype_entries[i]->Value();
     cString cellstr;
-    cellstr.Set("%d", cells[0]);
+    cString offsetstr;
+    cellstr.Set("%d", cells[0].cell_id);
+    offsetstr.Set("%d", cells[0].offset);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
-      cellstr.Set("%s,%d", (const char*)cellstr, cells[cell_i]);
+      cellstr.Set("%s,%d", (const char*)cellstr, cells[cell_i].cell_id);
+      offsetstr.Set("%s,%d", (const char*)offsetstr, cells[cell_i].offset);
     }
     df.Write(cellstr, "Occupied Cell IDs");
+    df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
     df.Endl();
     
     delete genotype_entries[i];
@@ -4651,7 +4666,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     tmp.total_cpus  = cur_line.PopWord().AsInt();
     /* length */      cur_line.PopWord();
     tmp.merit 	    = cur_line.PopWord().AsDouble();
-    /* gest_time */   cur_line.PopWord();
+    tmp.gest_time   = cur_line.PopWord().AsDouble();
     /* fitness */     cur_line.PopWord();
     tmp.update_born = cur_line.PopWord().AsInt();
     tmp.update_dead = cur_line.PopWord().AsInt();
@@ -4663,6 +4678,11 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     cString cellstr(cur_line.PopWord());
     while (cellstr.GetSize()) tmp.cells.Push(cellstr.Pop(',').AsInt());
     assert(tmp.cells.GetSize() == tmp.num_cpus);
+    
+    // Process gestation time offsets
+    cString offsetstr(cur_line.PopWord());
+    while (offsetstr.GetSize()) tmp.offsets.Push(offsetstr.Pop(',').AsInt());
+    assert(tmp.offsets.GetSize() == tmp.num_cpus);
     
     // Don't allow birth or death times larger than the current update
     if (update > tmp.update_born) tmp.update_born = update;
@@ -4723,7 +4743,20 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
         InjectGenotype(cell_id, tmp.genotype);
         
         cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
+        
+        // Set the phenotype merit from the save file
         if (tmp.merit > 0) phenotype.SetMerit(cMerit(tmp.merit));
+        
+        // Adjust initial merit to account for organism execution at the time the population was saved
+        // - this factors the merit by the fraction of the gestation time remaining
+        // - this will be approximate, since gestation time may vary for each organism, but it should work for many cases
+        double gest_remain = tmp.gest_time - (double)tmp.offsets[cell_i];
+        if (gest_remain > 0.0 && tmp.gest_time > 0.0) {
+          double new_merit = phenotype.GetMerit().GetDouble() * (tmp.gest_time / gest_remain);
+          phenotype.SetMerit(cMerit(new_merit));
+        }
+        
+        // Schedule the organism
         AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
         
         LineageSetupOrganism(GetCell(cell_id).GetOrganism(), NULL, 0, tmp.genotype->GetParentGenotype());
