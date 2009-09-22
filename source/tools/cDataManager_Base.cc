@@ -52,7 +52,6 @@ bool cDataManager_Base::PrintRow(cDataFile& data_file, cString row_entries, char
       }
       data_file.WriteColumnDesc(cur_desc);
     }
-    data_file.FlushComments();
     data_file.Endl();
   }
   
