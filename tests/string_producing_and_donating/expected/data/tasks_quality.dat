@@ -1,0 +1,12 @@
+# Avida tasks quality data
+# Tue Sep 22 16:17:54 2009
+# First column gives the current update, rest give average and max task quality
+#  1: Update
+#  2: MatchProdStr Average
+#  3: MatchProdStr Max
+#  4: MatchProdStr Average
+#  5: MatchProdStr Max
+#  6: Produce and store perfect strings Average
+#  7: Produce and store perfect strings Max
+
+100 0 0 0.25 0.25 0 0 

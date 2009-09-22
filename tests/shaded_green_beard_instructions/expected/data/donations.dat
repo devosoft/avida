@@ -1,0 +1,20 @@
+# Info about organisms giving donations in the population
+# Tue Sep 22 16:17:54 2009
+#  1: update
+#  2: parent made at least one donation
+#  3: parent received at least one donation
+#  4: parent received at least one donation but did not make one
+#  5: parent made at least one edit_donation
+#  6: parent received at least one edit_donation
+#  7: parent received at least one edit_donation but did not make one
+#  8: parent made at least one kin_donation
+#  9: parent received at least one kin_donation
+# 10: parent received at least one kin_donation but did not make one
+# 11: parent made at least one threshgb_donation
+# 12: parent received at least one threshgb_donation
+# 13: parent received at least one threshgb_donation but did not make one
+# 14: parent made at least one quanta_threshgb_donation
+# 15: parent received at least one quanta_threshgb_donation
+# 16: parent received at least one quanta_threshgb_donation but did not make one
+
+100 100 100 0 95 81 5 95 80 2 97 0 0 0 0 0 

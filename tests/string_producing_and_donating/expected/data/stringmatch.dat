@@ -1,0 +1,17 @@
+# Avida organism string donation information
+# Tue Sep 22 16:17:54 2009
+#  1: Update [update]
+#  2: produced0000
+#  3: stored0000
+#  4: produced1111
+#  5: stored1111
+#  6: totalStoredAverage
+#  7: PerfectMatchStringElapse[ps]
+#  8: PerfectMatchOrgElapse[pso]
+#  9: PerfectMatchStringInstant[psi]
+# 10: PerfectMatchOrgInstant[psoi]
+# 11: Producednothing[nothing]
+# 12: Generalists[generalists]
+# 13: Specialists[specialists]
+
+100 0 0 0 0 0 0 0 0 0 110 0 0 

@@ -1,0 +1,20 @@
+# The number of organisms in different bins of shaded altruism
+# Bins of orgs of shaded strategies.
+# Tue Sep 22 16:17:54 2009
+#  1: Update [update]
+#  2: Population [population]
+#  3: shaded-100 [shaded100]
+#  4: shaded-90 [shaded90]
+#  5: shaded-80 [shaded80]
+#  6: shaded-70 [shaded70]
+#  7: shaded-60 [shaded60]
+#  8: shaded-50 [shaded50]
+#  9: shaded-40 [shaded40]
+# 10: shaded-30 [shaded30]
+# 11: shaded-20 [shaded20]
+# 12: shaded-10 [shaded10]
+# 13: shaded-0 [shaded0]
+# 14: percent-high-alt  [highalt]
+# 15: avg-shade [avgshade]
+
+100 100 0 0 0 0 0 0 0 0 0 0 0 0 0 

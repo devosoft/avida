@@ -1,0 +1,36 @@
+# Avida instruction execution data
+# Tue Sep 22 16:17:51 2009
+#  1: Update
+#  2: nop-A
+#  3: nop-B
+#  4: nop-C
+#  5: if-n-equ
+#  6: if-less
+#  7: pop
+#  8: push
+#  9: swap-stk
+# 10: swap
+# 11: shift-r
+# 12: shift-l
+# 13: inc
+# 14: dec
+# 15: add
+# 16: sub
+# 17: nand
+# 18: IO
+# 19: h-alloc
+# 20: h-divide
+# 21: h-copy
+# 22: h-search
+# 23: mov-head
+# 24: jmp-head
+# 25: get-head
+# 26: if-label
+# 27: set-flow
+# 28: kazi
+# 29: kazi5
+# 30: nop-X
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+100 5 15 5 2 2 0 6 7 1 1 0 0 5 0 8 4 2 69 69 6900 142 6898 2 17 6902 2 4 2 5759 
+200 2500 149 203 39 53 48 474 62 40 73 39 63 152 60 139 48 83 410 410 41000 924 39612 48 299 38894 59 116 45 32469 

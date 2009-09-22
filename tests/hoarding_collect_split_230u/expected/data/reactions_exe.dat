@@ -1,0 +1,30 @@
+# Avida reaction execution data
+# Tue Sep 22 16:17:51 2009
+# First column gives the current update, all further columns give the number
+# of times the particular reaction has been triggered this update.
+#  1: Update
+#  2: NAND
+
+0 0 
+10 0 
+20 2 
+30 4 
+40 7 
+50 7 
+60 13 
+70 25 
+80 40 
+90 53 
+100 60 
+110 82 
+120 107 
+130 107 
+140 104 
+150 100 
+160 99 
+170 97 
+180 69 
+190 2 
+200 2 
+210 2 
+220 2 
