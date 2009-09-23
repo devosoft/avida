@@ -808,8 +808,8 @@ void cStats::PrintParasiteData(const cString& filename)
 void cStats::PrintStatsData(const cString& filename)
 {
   const int genotype_change = num_genotypes - num_genotypes_last;
-  const double log_ave_fid = (ave_fidelity > 0) ? -Log(ave_fidelity) : 0.0;
-  const double log_dom_fid = (dom_fidelity > 0) ? -Log(dom_fidelity) : 0.0;
+  const double log_ave_fid = (ave_fidelity > 0.0 && ave_fidelity != 1.0) ? -Log(ave_fidelity) : 0.0;
+  const double log_dom_fid = (dom_fidelity > 0.0 && ave_fidelity != 1.0) ? -Log(dom_fidelity) : 0.0;
 
   cDataFile& df = m_world->GetDataFile(filename);
 
