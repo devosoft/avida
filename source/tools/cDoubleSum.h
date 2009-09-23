@@ -67,17 +67,9 @@ public:
 //      the real Standard Error
 //       sqrt(s2 / (n * (n-1))) : INF_ERR; }
 
-  double Skewness() const { return ( n > 2 ) ?
-       (n*s3 - 3*s2*s1 + 2*s1*s1*s1/n) / ((n-1)*(n-2)) : INF_ERR; }
-     //n*n*(s3/n - 3*s2/n*s1/n + 2*s1/n*s1/n*s1/n)/((n-1)*(n-2)) : INF_ERR; }
-
-  double Kurtosis() const { return ( n > 3 ) ?
-     //n*n*(n+1)*(s4/n - 4*s3/n*s1/n + 6*s2/n*s1/n*s1/n -
-     //3*s1/n*s1/n*s1/n*s1/n)/((n-1)*(n-2)*(n-3)) :
-       (n+1)*(n*s4 - 4*s3*s1 + 6*s2*s1*s1/n - 3*s1*s1*s1/n*s1/n) /
-       ((n-1)*(n-2)*(n-3)) :
-       INF_ERR; }
-
+  double Skewness() const;
+  double Kurtosis() const;
+  
   // Notation Shortcuts
   double Ave() const { return Average(); }
   double Var() const { return Variance(); }
