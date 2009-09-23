@@ -84,6 +84,8 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
     return true;
   }
   
+  cerr << "error: unrecognized event '" << name << "'" << endl; 
+  
   return false;
 }
 
@@ -95,7 +97,7 @@ bool cEventList::LoadEventFile(const cString& filename)
 
   // Loop through the line_list and change the lines to events.
   for (int line_id = 0; line_id < event_file.GetNumLines(); line_id++) {
-    AddEventFileFormat(event_file.GetLine(line_id));
+    if (!AddEventFileFormat(event_file.GetLine(line_id))) return false;
   }
   
   return true;
@@ -417,9 +419,9 @@ bool cEventList::AddEventFileFormat(const cString& in_line)
   } else if (cur_word == "o"  || cur_word == "org_id") {
     trigger = BIRTHS_INTERRUPT;
 		cur_word = cur_line.PopWord();
-  }else {
-    // If Trigger is skipped so assume IMMEDIATE
-    trigger = IMMEDIATE;
+  } else {
+    cerr << "error: unrecognized event trigger '" << cur_word << "'" << endl;
+    return false;
   }
   
   // Do we now have timing specified?
@@ -458,11 +460,9 @@ bool cEventList::AddEventFileFormat(const cString& in_line)
     }
     cur_word = cur_line.PopWord(); // timing provided, so get next word
     
-  } else { // We don't have timing, so assume IMMEDIATE
-    trigger = IMMEDIATE;
-    start = TRIGGER_BEGIN;
-    interval = TRIGGER_ONCE;
-    stop = TRIGGER_END;
+  } else { 
+    cerr << "error: invalid event timing '" << tmp << "'" << endl;
+    return false;
   }
   
   // Get the rest of the info

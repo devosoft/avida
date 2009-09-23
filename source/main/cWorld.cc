@@ -90,7 +90,7 @@ void cWorld::Setup()
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
   if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get())) {
-    cerr << "Error: Unable to load environment" << endl;
+    cerr << "error: unable to load environment" << endl;
     Avida::Exit(-1);
   }
   
@@ -111,7 +111,7 @@ void cWorld::Setup()
   // Setup Event List
   m_event_list = new cEventList(this);
   if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get())) {
-    cerr << "Error: Unable to load events" << endl;
+    cerr << "error: unable to load events" << endl;
     Avida::Exit(-1);
   }
 	
