@@ -1,0 +1,20 @@
+# Avida reaction data
+# Fri Sep 25 11:47:04 2009
+# First column gives the current update, all further columns give the number
+# of currently living organisms each reaction has affected.
+#  1: Update
+#  2: ECHO_pre
+#  3: ECHO
+#  4: NAND
+
+0 0 0 0 
+1 0 0 0 
+2 2 2 2 
+3 2 2 2 
+4 2 2 2 
+5 3 3 3 
+6 4 4 4 
+7 4 4 4 
+8 6 6 6 
+9 8 8 6 
+10 10 10 8 
