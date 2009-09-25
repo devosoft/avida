@@ -1117,7 +1117,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, 
                 task_quality, task_probability, task_cnt, i, result, taskctx);
     
-    if (result.ReactionTriggered(task_id) == true) reaction_count[i]++;
+    if (result.ReactionTriggered(i) == true) reaction_count[i]++;
 
     // Note: the reaction is actually marked as being performed inside DoProcesses.
   }  
