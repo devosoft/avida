@@ -44,6 +44,7 @@
 
 #include "functions.h"
 
+#include <algorithm>
 #include <cfloat>
 #include <numeric>
 #include <cmath>
