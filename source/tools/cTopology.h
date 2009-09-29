@@ -178,4 +178,198 @@ void build_lattice(InputIterator begin, InputIterator end, unsigned int x_size, 
 	}
 }
 
+
+/*
+ Builds a random connected network topology for organisms to communicate through.
+ 
+ */
+template< typename InputIterator >
+void build_random_connected_network(InputIterator begin, InputIterator end, unsigned int x_size, unsigned int y_size, cRandom& rng) {
+	
+	// keep track of boundaries for this deme:
+	int offset = begin->GetID();
+	int demeSize = x_size * y_size;
+	
+	// keep track of cells that have been connected already:
+	std::set<int> connected_Cells;
+	
+	InputIterator i, j, random_Connected_Cell;
+	
+	
+	
+	for(i = begin; i != end; ++i) {
+		// select a random cell in this deme to connect to:
+		int targetCellID;
+		do {
+			targetCellID = rng.GetInt(0, demeSize);
+		} while((targetCellID + offset) == i->GetID());
+		
+		j = &begin[targetCellID];
+		
+		// verify no connection exists between i and j:
+		if(i->ConnectionList().FindPtr(j) == NULL) {
+			// create bidirectional connections:
+			i->ConnectionList().Push(j);
+			j->ConnectionList().Push(i);
+			
+			// check if either i or j is connected to the
+			// main graph:
+			if(connected_Cells.count(i->GetID()) == 0 && connected_Cells.count(j->GetID()) == 0) {
+				// neither i nor j is connected to the main graph
+				
+				// check if main network is empty:
+				if(connected_Cells.empty()) {
+					connected_Cells.insert(i->GetID());
+					connected_Cells.insert(j->GetID());
+				} else {
+					// pick some random cell that is connected:
+					int randomIndex = rng.GetInt(0, connected_Cells.size());
+					int counter = 0;
+					int idValue = 0;
+					set<int>::iterator pos;
+					for(pos = connected_Cells.begin(); pos != connected_Cells.end(); ++pos) {
+						if(counter == randomIndex) {
+							idValue = *pos;
+							break;
+						} else {
+							counter++;
+						}
+					}
+					
+					// retrieve the actual cell:
+					random_Connected_Cell = &begin[idValue-offset];
+					
+					// randomly select i or j to connect with main network:
+					int zeroOrOne = rng.GetInt(0,2);
+					
+					if(zeroOrOne) {
+						// connect i to main network:
+						i->ConnectionList().Push(random_Connected_Cell);
+						random_Connected_Cell->ConnectionList().Push(i);
+					} else {
+						// connect j to main network:
+						j->ConnectionList().Push(random_Connected_Cell);
+						random_Connected_Cell->ConnectionList().Push(j);
+					}
+					
+					// add both cells to the main network:
+					// don't care about duplicates...
+					connected_Cells.insert(i->GetID());
+					connected_Cells.insert(j->GetID());
+				}
+				
+			} else {
+				connected_Cells.insert(i->GetID());
+				connected_Cells.insert(j->GetID());
+			}
+		}
+	}
+	
+	
+	// the code above ensures that we have *at the least* a random connected
+	// bidirectional network.
+	// sprinkle additional edges between the cells:
+	
+	// we are going to add random extra edges... note demeSize bound is arbitrary.
+	int extraEdges = rng.GetInt(0, demeSize);
+	int a, b;
+	
+	for(int n = 0; n < extraEdges; ++n) {
+		// must select two random cells from the network:
+		a = rng.GetInt(0,demeSize);
+		b = rng.GetInt(0,demeSize);
+		
+		while(a == b)
+			b = rng.GetInt(0,demeSize);
+		
+		i = &begin[a];
+		j = &begin[b];
+		
+		// check for existing connection between the two:
+		if(i->ConnectionList().FindPtr(j) == NULL) {
+			i->ConnectionList().Push(j);
+			j->ConnectionList().Push(i);
+		}
+	}
+}
+
+
+//! Helper function to connect two cells.
+template <typename InputIterator>
+void connect(InputIterator u, InputIterator v) {
+	assert(u != v);
+	u->ConnectionList().Push(v);
+	v->ConnectionList().Push(u);
+}
+
+//! Helper function to test if two cells are already connected.
+template <typename InputIterator>
+bool edge(InputIterator u, InputIterator v) {
+	assert(u != v);
+	return u->ConnectionList().FindPtr(v) || v->ConnectionList().FindPtr(u);
+}
+
+
+/*! Builds a scale-free network from the given range of cells.
+ 
+ This function is an implementation of the Barab\'asi-Albert "preferential attachment"
+ algorithm for iteratively constructing a scale-free network.
+ 
+ If we think of the population as a graph G, where cells are vertices and connections 
+ are edges, then |E(G)| is the number of edges in the graph and d(u \in V(G)) is the 
+ degree of a vertex in that graph, the algorithm for preferential attachment is defined as:
+ 
+ Input:
+ m = number of edges to be added for each new vertex
+ alpha = "power," the degree to which vertices with large numbers of edges are weighted.
+ zero_appeal = offset to prefer vertices with 0 edges
+ 
+ Initialization:
+ G = a graph, where all nodes have degree >= 1
+ 
+ foreach vertex u to be added to G:
+ foreach vertex v \in G != u, where !e(u,v), and until m edges are added:
+ connect u-v with probability: (d(v)/|E(G)|)^alpha + zero_appeal
+ */
+template <typename InputIterator>
+void build_scale_free(InputIterator begin, InputIterator end, int m, double alpha, double zero_appeal, cRandom& rng) {
+	assert(begin != end);
+	assert(&begin[1] != end); // at least two vertices.
+	// Connect the first and second cells:
+	connect(&begin[0], &begin[1]);
+	// And initialize the edge and vertex counts:
+	int edge_count=1;
+	int vertex_count=2;
+	
+	// Now, for each new vertex (that is, vertices 2+):
+	for(InputIterator u=&begin[2]; u!=end; ++u, ++vertex_count) {
+		// Figure out how many edges we can add:
+		int to_add = std::min(vertex_count, m);
+		int added=0;
+		// Loop through all the vertices currently in the graph:
+		InputIterator v=begin;
+		while(added < to_add) {
+			// If we haven't already connected u and v:
+			if(!edge(u, v)) {
+				// Connect them with P = (d(v)/|E(G)|)^alpha + zero_appeal:
+				double p_edge = (double)v->ConnectionList().GetSize() / edge_count;
+				p_edge = pow(p_edge, alpha) + zero_appeal;
+				// Protect against negative and over-large probabilities:
+				assert(p_edge >= 0.0);
+				p_edge = std::min(p_edge, 1.0);
+				// Probabilistically connect u and v:
+				if(rng.P(p_edge)) {
+					connect(u, v);
+					++edge_count;
+					++added;
+				}
+			}
+			// Loop back around to the beginning - note that u is the current end, 'cause
+			// building this graph is an iterative process.
+			if(++v == u) { v = begin; }
+		}		
+	}
+}
+
+
 #endif

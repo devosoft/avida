@@ -35,7 +35,24 @@
 #include <functional>
 #include <set>
 #include <vector>
+#include <numeric>
 
+
+/*! An STL-compatible adaptable binary function to do fun things with maps. */
+template <typename InputIterator, typename BinaryFunction>
+struct apply2nd {
+	typedef typename InputIterator::value_type::second_type first_argument_type;
+	typedef typename InputIterator::value_type second_argument_type;
+	typedef typename BinaryFunction::result_type result_type;
+	
+	apply2nd() : _op(BinaryFunction()) { }
+	
+	result_type operator()(first_argument_type& x, second_argument_type& y) {
+		return _op(x, y.second);
+	}
+	
+	BinaryFunction _op;
+};
 
 /*! \brief An STL-compatible predicate on cOrgMessages.  The intent here is to
 provide a straightforward way to track arbitrary messages *wherever* they appear
@@ -51,6 +68,49 @@ struct cOrgMessagePredicate : public std::unary_function<cOrgMessage, bool>
   virtual cString GetName() = 0;
   virtual void UpdateStats(cStats& stats) {}
   virtual cDemeCellEvent* GetEvent() { return NULL; }
+};
+
+
+struct cOrgMessagePred_CountDemeMessages : public cOrgMessagePredicate {
+	typedef std::map<int, int> MessageCounts; //!< Typedef to track messages sent per-deme.
+	
+	cOrgMessagePred_CountDemeMessages() { }
+	~cOrgMessagePred_CountDemeMessages() { }
+	
+  virtual bool operator()(const cOrgMessage& msg) {
+		// Make sure we're not running in the test cpu (is that even possible here?):
+		cDeme* deme = msg.GetSender()->GetOrgInterface().GetDeme();
+		if(deme == 0) { return false; }
+		
+		// Now, we're just keeping a count of the messages being sent in each deme.
+		++m_msg_counts[deme->GetID()];		
+		return true;
+	}
+	
+  virtual void Print(int update, std::ostream& out) {
+		out << update << " COUNT " << 
+		std::accumulate(m_msg_counts.begin(), m_msg_counts.end(), 0, apply2nd<MessageCounts::iterator, plus<int> >()) << " ";
+		for(MessageCounts::iterator i=m_msg_counts.begin(); i!=m_msg_counts.end(); ++i) {
+			out << " " << i->second;
+		}
+		out << std::endl;
+	}
+  
+	virtual void Reset() { 
+		m_msg_counts.clear();
+	}
+	
+	// What do these do, and why are they in the base struct?
+  virtual bool PreviouslySatisfied() { return false; }
+  virtual cString GetName() { return "cOrgMessagePred_CountDemeMessages"; }
+  virtual void UpdateStats(cStats& stats) { }
+  virtual cDemeCellEvent* GetEvent() { return NULL; }
+	
+	int GetMessageCount(const cDeme& deme) {
+		return m_msg_counts[deme.GetID()];
+	}
+	
+	MessageCounts m_msg_counts; //!< Map of deme ID to message counts.
 };
 
 

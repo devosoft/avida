@@ -34,8 +34,10 @@ namespace nGeometry {
     TORUS,
     CLIQUE,
     HEX,
-	PARTIAL,
-	LATTICE
+		PARTIAL,
+		LATTICE,
+		RANDOM_CONNECTED,
+		SCALE_FREE
   };
 }
 

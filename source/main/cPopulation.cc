@@ -119,6 +119,9 @@ cPopulation::cPopulation(cWorld* world)
       case nGeometry::HEX: { cout << "Geometry: Hex" << endl; break; }
       case nGeometry::LATTICE: { cout << "Geometry: Lattice" << endl; break; }
       case nGeometry::PARTIAL: { cout << "Geometry: Partial" << endl; break; }
+			case nGeometry::RANDOM_CONNECTED: { cout << "Geometry: Random connected" << endl; break; }
+      case nGeometry::SCALE_FREE: { cout << "Geometry: Scale-free" << endl; break; }
+
       default:
         cout << "Unknown geometry!" << endl;
         assert(false);
@@ -211,6 +214,16 @@ cPopulation::cPopulation(cWorld* world)
         break;
 			case nGeometry::LATTICE:
 				build_lattice(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y, world_z);
+				break;
+			case nGeometry::RANDOM_CONNECTED:
+				build_random_connected_network(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y, m_world->GetRandom());
+				break;
+			case nGeometry::SCALE_FREE:
+				build_scale_free(&cell_array.begin()[i], &cell_array.begin()[i+deme_size],
+													world->GetConfig().SCALE_FREE_M.Get(),
+													world->GetConfig().SCALE_FREE_ALPHA.Get(),
+													world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
+													m_world->GetRandom());
 				break;
       default:
         assert(false);

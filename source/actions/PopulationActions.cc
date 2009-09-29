@@ -1926,23 +1926,43 @@ public:
 	typedef std::vector<int> CellIDList;
   typedef std::map<int, std::set<int> > DataMap;
 	
-  cAssignRandomCellData(cWorld* world, const cString& args) : cAction(world, args) { }
-	
+	//! Constructor.
+	cAssignRandomCellData(cWorld* world, const cString& args) : cAction(world, args), _num_cells(0) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_num_cells = largs.PopWord().AsInt();
+		}		
+	}
+
+	//! Destructor.
 	virtual ~cAssignRandomCellData() { }
   
-  static const cString GetDescription() { return "No Arguments"; }
-  
+	//! Description of this event; only possible argument is the number of cells whose data is to be set.
+  static const cString GetDescription() { return "Arguments: [num_cells=deme_size]"; }
+
+	//! Process this event, setting the requested number of cell's data to a random value.
   virtual void Process(cAvidaContext& ctx) {
-		deme_to_id.clear();
-    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
       cDeme& deme = m_world->GetPopulation().GetDeme(i);
-      for(int j=0; j<deme.GetSize(); ++j) {
+			zero_cell_data(deme);
+			if((_num_cells == 0) || (_num_cells >= deme.GetSize())) {
 				// Assign random data to each cell:
-        int d = m_world->GetRandom().GetInt(INT_MAX);
-        deme.GetCell(j).SetCellData(d);
-				// Save that data by deme in the map:
-        deme_to_id[deme.GetID()].insert(d);
-      }
+				for(int j=0; j<deme.GetSize(); ++j) {
+					int d = m_world->GetRandom().GetInt(INT_MAX);
+					deme.GetCell(j).SetCellData(d);
+					// Save that data by deme in the map:
+					deme_to_id[deme.GetID()].insert(d);
+				}
+			} else {
+				// Assign random data to exactly num_cells cells, with replacement:
+				for(int j=0; j<_num_cells; ++j) {
+					int cell = m_world->GetRandom().GetInt(deme.GetSize());
+					int d = m_world->GetRandom().GetInt(INT_MAX);
+					deme.GetCell(cell).SetCellData(d);
+					// Save that data by deme in the map:
+					deme_to_id[deme.GetID()].insert(d);
+				}
+			}
     }
   }
   
@@ -2002,7 +2022,15 @@ public:
 	}
   
 protected:
+	virtual void zero_cell_data(cDeme& deme) {
+		deme_to_id[deme.GetID()].clear();
+		for(int j=0; j<deme.GetSize(); ++j) {
+			deme.GetCell(j).SetCellData(0);
+		}
+	}
+	
   static std::map<int, std::set<int> > deme_to_id; //!< Map of deme ID -> set of all cell data in that deme.
+	int _num_cells; //!< The number of cells in each deme whose cell-data is to be set.
 };
 
 //! Definition for static data.
@@ -2130,6 +2158,82 @@ public:
   virtual double Fitness(cDeme& deme) {
 		return deme.GetNetwork().Fitness();
 	}
+};
+
+
+/*! This class rewards for data distribution among organisms in a deme.
+ 
+ Specifically, "data" injected into a single cell-data field in the deme should eventually
+ be readable from another cell in the same deme.
+ 
+ For injecting data, we use the AssignRandomCellData event (num_cells=1), and we use opinions
+ to determine when data has reached another cell.
+ 
+ This action does not examine efficiency of distributing data.
+ */
+class cActionDistributeData : public cAbstractCompeteDemes {
+public:
+	cActionDistributeData(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+		world->GetStats().AddMessagePredicate(&m_message_counter);
+	}
+	
+	//! Destructor.
+	virtual ~cActionDistributeData() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Calculate the current fitness of this deme.
+	virtual double Fitness(cDeme& deme) {
+		return pow((double)received_data(deme) + 1.0, 2.0);
+	}
+	
+protected:
+	//! Return how many organisms have received the data, and then set their opinion correctly.	
+	unsigned int received_data(const cDeme& deme) {
+		// What is the data we're trying to distribute in this deme?
+		int data = *cAssignRandomCellData::GetDataInDeme(deme).begin();
+		
+		// How many organisms in this deme are reflecting that piece of data?
+		unsigned int count=0;
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			if((org != 0) && org->HasOpinion() && (org->GetOpinion().first==data)) {
+				++count;
+			}
+		}
+		return count;
+	}
+	
+	cOrgMessagePred_CountDemeMessages m_message_counter;
+};
+
+
+class cActionDistributeDataEfficiently : public cActionDistributeData {
+public:
+	cActionDistributeDataEfficiently(cWorld* world, const cString& args) : cActionDistributeData(world, args) {
+	}
+	
+	//! Destructor.
+	virtual ~cActionDistributeDataEfficiently() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Calculate the current fitness of this deme.
+	virtual double Fitness(cDeme& deme) {
+		// First, get the number that have received the data (and set their opinion):
+		unsigned int received = received_data(deme);
+		
+		// If not everyone has the data yet, we're done:
+		if(received < (unsigned int)deme.GetSize()) {
+			return pow((double)received + 1.0, 2.0);
+		}
+		
+		// Now, reward for reducing the number of messages that were used:
+		// The size of the deme is the theoretical minimum number of messages that could be used.
+		double size = deme.GetSize() * 1000; // Scaled by 1000 (arbitrary) to get the fraction > 1.0.
+		double msg_count = m_message_counter.GetMessageCount(deme);
+		return pow(received + 1.0 + size / msg_count, 2.0);
+	}	
 };
 
 
@@ -3901,6 +4005,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
+	action_lib->Register<cActionDistributeData>("DistributeData");
+	action_lib->Register<cActionDistributeDataEfficiently>("DistributeDataEfficiently");
 	action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
 	action_lib->Register<cActionCountOpinions>("CountOpinions");

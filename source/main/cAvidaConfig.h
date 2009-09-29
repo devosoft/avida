@@ -282,6 +282,9 @@ public:
   CONFIG_ADD_VAR(WORLD_Y, int, 60, "Height of the Avida world");
 	CONFIG_ADD_VAR(WORLD_Z, int, 1, "Depth of the Avida world");
   CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus\n3 = Clique\n4 = Hexagonal grid\n5 = Lattice");
+	CONFIG_ADD_VAR(SCALE_FREE_M, int, 3, "Number of connections to add per cell when using a scale-free geometry.");
+	CONFIG_ADD_VAR(SCALE_FREE_ALPHA, double, 1.0, "Attachment power (1=linear).");
+	CONFIG_ADD_VAR(SCALE_FREE_ZERO_APPEAL, double, 0.0, "Appeal of cells with zero connections.");	
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Original CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution");
