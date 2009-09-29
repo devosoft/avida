@@ -1923,6 +1923,7 @@ class cActionCompeteDemes : public cAction
  */
 class cAssignRandomCellData : public cAction { 
 public:
+	typedef std::vector<int> CellIDList;
   typedef std::map<int, std::set<int> > DataMap;
 	
   cAssignRandomCellData(cWorld* world, const cString& args) : cAction(world, args) { }
@@ -1950,16 +1951,49 @@ public:
     return i->second.find(data) != i->second.end();
   }
 	
-	static void ReplaceCellData(int old_data, int new_data, const cDeme& deme) {
+	static int CellIDFromData(int data, const cDeme& deme) { 
+		for(int i=0; i<deme.GetSize(); ++i) {
+			if(deme.GetCell(i).GetCellData() == data) {
+				return i;
+			}
+		}
+		return -1;
+  }
+	
+	static CellIDList ReplaceCellData(int old_data, int new_data, const cDeme& deme) {
+		CellIDList cell_ids;
 		// Find all cells in the deme that hold the old data, and replace it with the new.
 		for(int i=0; i<deme.GetSize(); ++i) {
 			if(deme.GetCell(i).GetCellData() == old_data) {
 				deme.GetCell(i).SetCellData(new_data);
+				cell_ids.push_back(i);
 			}
 		}
 		// Update the data map.
 		DataMap::iterator i = deme_to_id.find(deme.GetID());
 		i->second.erase(old_data);
+		i->second.insert(new_data);
+		return cell_ids;
+	}
+	
+	//! Replace the cell data in *one* cell.
+	static void ReplaceCellData(cPopulationCell& cell, int new_data, const cDeme& deme) {		
+		CellIDList cell_ids;
+		// Find all cells in the deme that hold the cell's data:
+		for(int i=0; i<deme.GetSize(); ++i) {
+			if(deme.GetCell(i).GetCellData() == cell.GetCellData()) {
+				cell_ids.push_back(i);
+			}
+		}
+		
+		// Only remove the data from the data map if there's exactly one cell with this data:
+		DataMap::iterator i = deme_to_id.find(deme.GetID());
+		if(cell_ids.size() == 1) {
+			i->second.erase(cell.GetCellData());
+		}
+		
+		// Reset the cell's data, and add the new data to the map:
+		cell.SetCellData(new_data);
 		i->second.insert(new_data);
 	}
 	
@@ -2063,11 +2097,14 @@ public:
 			}			
 			m_world->GetPopulation().CompeteDemes(fitness);
 			_update_fitness.clear();
+			Clear();
 		}
 	}
 	
 	//! Called on each action invocation, *including* immediately prior to fitness calculation.
 	virtual double Update(cDeme& deme) = 0;
+	//! Called after demes compete, so that subclasses can clean up any state.
+	virtual void Clear() { }
 	
 protected:
 	int _compete_period; //!< Period at which demes compete.
@@ -2137,7 +2174,28 @@ public:
 			}
 		}		
 		return std::make_pair(support, opinion);
-	}	
+	}
+	
+	/*! Returns a pair (support, have_opinion), where support is the number of organisms
+	 within the deme that have set their opinion to the given value, and have_opinion is the
+	 number of organisms that have set their opinion at all.
+	 */
+	virtual std::pair<unsigned int, int> support(const cDeme& deme, const cOrganism::Opinion opinion) {
+		unsigned int support=0;
+		int have_opinion=0;
+		// For each organism in the deme:
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			// if the org has an opinion, and it's the right value, count it:
+			if((org != 0) && org->HasOpinion()) {
+				++have_opinion;
+				if(org->GetOpinion().first == opinion) {
+					++support;
+				}
+			}
+		}
+		return std::make_pair(support, have_opinion);
+	}
 };
 
 
@@ -2153,22 +2211,49 @@ public:
  */
 class cActionIteratedConsensus : public cAbstractMonitoringCompeteDemes, ConsensusSupport {
 public:
-	cActionIteratedConsensus(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args), _replace(0) {
+	
+	struct state {
+		state(cOrganism::Opinion o) : opinion(o), current(0), max(0) { }
+		void reset() { opinion = 0; current = 0; max = 0; }
+		cOrganism::Opinion opinion;
+		int current;
+		int max;
+	};
+	
+	typedef std::map<int, state> DemeState; //!< To support hold-times for consensus.	
+	
+	//! Constructor.
+	cActionIteratedConsensus(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args),
+	_replace(1), _kill(1), _hold(1), _restrict_range(1), _dont_replace(0) {
 		if(args.GetSize()) {
 			cString largs(args);
-			_replace = largs.PopWord().AsInt();
+			largs.PopWord(); //iterations
+			_replace = largs.PopWord().AsInt(); // how many cell data are replaced on consensus (default 1)
+			if(largs.GetSize()) {
+				_kill = largs.PopWord().AsInt(); // whether to kill the owners of replaced cell data (default 1)
+				if(largs.GetSize()) {
+					_restrict_range = largs.PopWord().AsInt(); // whether replaced cell data is restricted to the range [min, max).
+					if(largs.GetSize()) {
+						_dont_replace = largs.PopWord().AsInt();
+					}
+				}
+			}
 		}
+		
+		// hold time is a configuration option, not an event parameter.
+		_hold = m_world->GetConfig().CONSENSUS_HOLD_TIME.Get();
 	}
 	
 	//! Destructor.
 	virtual ~cActionIteratedConsensus() { }
 	
-	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=0]]"; }
+	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=1 [int kill=1 [int restrict_range=1]]]]"; }
 	
 	//! Calculate the current fitness of this deme.
   virtual double Fitness(cDeme& deme) {
 		return max_support(deme).first + 1;
 	}
+	
 	
 	/*! Determine if the organisms in this deme have reached consensus, and if so,
 	 record that fact and reset so that they can "iterate" (try to reach consensus
@@ -2180,33 +2265,229 @@ public:
 	 greater than zero, we also reset the cell data of other cells, which are
 	 selected at random with replacement.
 	 
+	 If _kill is > 0, we also kill the organisms living in the cells that had their
+	 data replaced - In all cases, the germline is used to repopulate the cell.
+	 
 	 Called during every update (depending on configuration).  Return values are
-	 summed and included in final fitness calculation. */
+	 summed and included in final fitness calculation. 
+	 
+	 The intent behind this version of Update() is that for each consensus round, we
+	 only reward *once* for each level of hold time that is reached.
+	 */
 	virtual double Update(cDeme& deme) {
+		// find the current maximally-supported opinion, and get this deme's
+		// state information
 		std::pair<unsigned int, cOrganism::Opinion> support = max_support(deme);
+		DemeState::iterator st = _state.find(deme.GetID());
 		
-		// Have all organisms in this deme reached consensus?
-		if(support.first == static_cast<unsigned int>(deme.GetSize())) {
-			// Yes; change the cell data for the value that was agreed upon:
-			int min_data = *cAssignRandomCellData::GetDataInDeme(deme).begin();
-			int max_data = *cAssignRandomCellData::GetDataInDeme(deme).rbegin();
-			cAssignRandomCellData::ReplaceCellData(support.second, m_world->GetRandom().GetInt(min_data+1, max_data-1), deme);
-			
-			// Now reset the others:
-			for(int i=0; i<_replace; ++i) {
-				int cell_id = m_world->GetRandom().GetInt(deme.GetSize());
-				int cell_data = deme.GetCell(cell_id).GetCellData();
-				cAssignRandomCellData::ReplaceCellData(cell_data, m_world->GetRandom().GetInt(min_data+1, max_data-1), deme);
+		// if we're not at consensus, set our current time to 0:
+		if(support.first < static_cast<unsigned int>(deme.GetSize())) {
+			if(st != _state.end()) { 
+				st->second.current = 0;
 			}
-			
+			return 0.0;
+		}
+		
+		// ok, we're at consensus - is this the first time?
+		if(st == _state.end()) {
+			// need to add new state information:
+			std::pair<DemeState::iterator, bool> ins = _state.insert(std::make_pair(deme.GetID(), state(support.second)));
+			st = ins.first;
+		} else if(support.second != st->second.opinion) {
+			// is our current opinion different than our last?
+			st->second.opinion = support.second;
+			st->second.current = 0;
+		}
+		
+		// since we're at consensus, unconditionally update this deme's consensus counter:
+		++st->second.current;
+		
+		// has this opinion been held long enough?
+		if(st->second.current >= _hold) {
+			// yes; this is now a "true" consensus.
+			ConsensusReached(deme, support);
+			// erase our state!
+			_state.erase(st);
+			// and reward by the size of the deme.
 			return deme.GetSize();
 		}
+		
+		// if this is a new level of consensus for this round, meaning that we haven't
+		// before held consensus for this length of time, reward by the size of the deme.
+		if(st->second.current > st->second.max) {
+			st->second.max = st->second.current;
+			return deme.GetSize();
+		}
+		
 		return 0.0;
+	}
+	
+	//! Called to reset state after demes compete.
+	virtual void Clear() {
+		_state.clear();
+	}
+	
+protected:
+	
+	//! This method handles the clean-up of a deme once consensus has been reached.
+	void ConsensusReached(cDeme& deme, std::pair<unsigned int, cOrganism::Opinion>& support) {
+		// Record that consensus occurred:
+		m_world->GetStats().ConsensusReached(deme, support.second, cAssignRandomCellData::CellIDFromData(support.second, deme));
+		
+		// Exit early if we're not supposed to touch the cell data.
+		if(_dont_replace) {
+			return;
+		}
+		
+		// Now, change the cell data for the value that was agreed upon:
+		int min_data = 0;
+		int max_data = INT_MAX;
+		if(_restrict_range) {
+			min_data = *cAssignRandomCellData::GetDataInDeme(deme).begin() + 1;
+			max_data = *cAssignRandomCellData::GetDataInDeme(deme).rbegin() - 1;
+		}
+		cAssignRandomCellData::CellIDList cell_ids = 
+		cAssignRandomCellData::ReplaceCellData(support.second, m_world->GetRandom().GetInt(min_data, max_data), deme);
+		
+		// Now reset the others:
+		for(int i=1; i<_replace; ++i) {
+			int cell_id = m_world->GetRandom().GetInt(deme.GetSize());
+			int cell_data = deme.GetCell(cell_id).GetCellData();
+			cAssignRandomCellData::CellIDList extra_cell_ids = 
+			cAssignRandomCellData::ReplaceCellData(cell_data, m_world->GetRandom().GetInt(min_data, max_data), deme);
+			cell_ids.insert(cell_ids.end(), extra_cell_ids.begin(), extra_cell_ids.end());
+		}
+		
+		// Ok, if we're going to kill the organisms, do so:
+		if(_kill) {
+			// This is probably only compatible with the "old-style" germline
+			for(cAssignRandomCellData::CellIDList::iterator i=cell_ids.begin(); i!=cell_ids.end(); ++i) {
+				m_world->GetPopulation().KillOrganism(deme.GetCell(*i));
+				m_world->GetPopulation().InjectGenome(*i, deme.GetGermline().GetLatest(), 0);
+				m_world->GetPopulation().DemePostInjection(deme, deme.GetCell(*i));
+			}
+		}		
 	}
 	
 private:
 	int _replace; //!< Number of cell datas that will be replaced on successful consensus.
+	int _kill; //!< Whether organisms are killed (and then reinjected) upon reset.
+	int _hold; //!< The number of updates that a deme must hold consensus for it to be counted.	
+	int _restrict_range; //!< Whether or not new cell data are restricted to be within the range of current cell data.
+	int _dont_replace; //!< For testing - if true, don't reset any cell data.
+	DemeState _state; //!< Map of deme id -> (Opinion, held time) to support stability of consensus.
 };
+
+
+/*! An event to randomly kill an organism within each deme, replacing it with a new organism from the germline.
+ */
+class cActionReplaceFromGermline : public cAction {
+public:
+	cActionReplaceFromGermline(cWorld* world, const cString& args) : cAction(world, args), _p_kill(0.0), _update_cell_data(0) {
+		cString largs(args);
+		if(largs.GetSize()) {
+			_p_kill = largs.PopWord().AsDouble();
+			if(largs.GetSize()) {
+				_update_cell_data = largs.PopWord().AsInt();
+			}
+		}
+	}
+	
+	static const cString GetDescription() { return "Arguments: [double p(kill)=0.0 [int update_cell_data=0]]"; }
+	
+	//! Process this event, looping through each deme, randomly killing organisms, and replacing them from the germline.
+	void Process(cAvidaContext& ctx) {
+		if(_p_kill > 0.0) {
+			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+				if(m_world->GetRandom().P(_p_kill)) {
+					cDeme& deme = m_world->GetPopulation().GetDeme(i);
+					
+					// Pick a cell at random, kill the occupant (if any), reset the cell data, and re-seed from the germline.
+					cPopulationCell& cell = deme.GetCell(m_world->GetRandom().GetInt(deme.GetSize()));
+					
+					if(_update_cell_data) {
+						// There are no restrictions on the ID for this cell:
+						cAssignRandomCellData::ReplaceCellData(cell, m_world->GetRandom().GetInt(INT_MAX), deme);
+					}
+					
+					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
+					m_world->GetPopulation().KillOrganism(cell);
+					m_world->GetPopulation().InjectGenome(cell.GetID(), deme.GetGermline().GetLatest(), 0);
+					m_world->GetPopulation().DemePostInjection(deme, cell);
+				}
+			}
+		}
+	}
+	
+private:
+	double _p_kill; //!< probability that a single individual in each deme will be replaced from the germline.
+	int _update_cell_data; //!< whether to update the cell data of killed individuals.	
+};
+
+
+
+/*! This class rewards a deme based on the number of opinions that have been set
+ to a given value.
+ */
+class cActionCountOpinions : public cAbstractCompeteDemes, ConsensusSupport {
+public:
+	
+	//! Constructor.
+	cActionCountOpinions(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args),
+	_desired(0), _mult(1) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_desired = largs.PopWord().AsInt();
+			if(largs.GetSize()) {
+				_mult = largs.PopWord().AsInt();
+			}			
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionCountOpinions() { }
+	
+	static const cString GetDescription() { return "Arguments: [int desired_opinion=0 [int multiplicity=1]]"; }
+	
+  /*! Fitness function.
+	 
+	 The idea here is that we want to reward each deme based on the number of constituents
+	 that have set their opinion to the desired value.  We're going to set fitness == number
+	 of organisms that have an opinion to get things jumpstarted.
+   */
+  virtual double Fitness(cDeme& deme) {
+		// the number of individuals that have set their opinion to _desired:
+		// s.first == support, s.second == have_opinion
+		std::pair<unsigned int, int> s = support(deme, _desired);
+		
+		// encourage opinion setting:
+		if(s.second < deme.GetSize()) {
+			return s.second + 1; // small reward to help bootstrap.
+		}
+		
+		// it's possible that we'll need to scale these values such that rewards to the
+		// 'left' or 'right' of _mult are proportional to each other.  if so, this might help:
+		//		double leftside_scale = 0.5 * deme.GetSize() / _mult;
+		//		double rightside_scale = 0.5 * deme.GetSize() / (deme.GetSize() - _mult);
+		//		
+		//		double scaled = 0.0;
+		//		if(_mult > s.first) {
+		//			// leftside scaling
+		//			scaled = std::abs(static_cast<double>(_mult - s.first)) * leftside_scale;
+		//		} else if(_mult < s.first) {
+		//			// rightside scaling
+		//			scaled = std::abs(static_cast<double>(_mult - s.first)) * rightside_scale;
+		//		}
+		//		return pow(deme.GetSize() - scaled + 1, 2);
+		
+		return pow(deme.GetSize() - std::abs(static_cast<double>(_mult - s.first)) + 1, 2);
+	}
+	
+private:
+	cOrganism::Opinion _desired; //!< Opinion that will be rewarded.
+	int _mult; //!< Desired multiplicity of the opinion that will be rewarded.
+};
+
 
 /*!	This class competes demes based on the total number of times that a
  *	given task has been completed by an organism in the deme since the
@@ -3596,7 +3877,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
-	
+	action_lib->Register<cActionReplaceFromGermline>("ReplaceFromGermline");
+		
   action_lib->Register<cActionSetMigrationRate>("SetMigrationRate");
   action_lib->Register<cActionSetMutProb>("SetMutProb");
   action_lib->Register<cActionModMutProb>("ModMutProb");
@@ -3621,6 +3903,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
 	action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
+	action_lib->Register<cActionCountOpinions>("CountOpinions");
 	action_lib->Register<cActionSynchronization>("Synchronization");
 	action_lib->Register<cActionDesynchronization>("Desynchronization");
 	

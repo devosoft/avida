@@ -31,6 +31,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 
 #ifndef defs_h
 #include "defs.h"
@@ -43,6 +44,9 @@
 #endif
 #ifndef cIntSum_h
 #include "cIntSum.h"
+#endif
+#ifndef cOrganism_h
+#include "cOrganism.h"
 #endif
 #ifndef cRunningAverage_h
 #include "cRunningAverage.h"
@@ -951,6 +955,27 @@ protected:
   int m_flash_count; //!< Number of flashes that have occured since last PrintSynchronizationData.
 	PopulationFlashes m_flash_times; //!< For tracking flashes that have occurred throughout this population.
 
+	// -------- Consensus support --------
+public:
+	struct ConsensusRecord {
+		ConsensusRecord(int u, int d, cOrganism::Opinion c, int cell) : update(u), deme_id(d), consensus(c), cell_id(cell) {
+		}
+		int update;
+		int deme_id;
+		cOrganism::Opinion consensus;
+		int cell_id;
+	};
+	
+	typedef std::vector<ConsensusRecord> Consensi; //!< Typedef for a map of update -> Consensus records.
+	//! Called when a deme reaches consensus.
+	void ConsensusReached(const cDeme& deme, cOrganism::Opinion consensus, int cellid);
+	//! Print information about demes that have reached consensus.
+	void PrintConsensusData(const cString& filename);
+	//! Print "simple" (summary) consensus information.
+	void PrintSimpleConsensusData(const cString& filename);
+protected:
+	Consensi m_consensi; //!< Tracks when demes have reached consensus.
+	
 // -------- Reputation support ---------
 public: 
 	// Print statistics about reputation

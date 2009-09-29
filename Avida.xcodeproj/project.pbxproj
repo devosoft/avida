@@ -2363,6 +2363,7 @@
 			buildSettings = {
 				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
+				USER_HEADER_SEARCH_PATHS = "source/**";
 			};
 			name = Development;
 		};

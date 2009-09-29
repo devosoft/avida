@@ -144,7 +144,10 @@ private:
    * It assumes that's where you got the genotype from.
    **/
   void InjectGenotype(int cell_id, cGenotype* genotype);
+public:
+	// This needs to be public so it can be used over in PopulationActions.cc...
   void InjectGenome(int cell_id, const cGenome& genome, int lineage_label);
+private:
   void InjectClone(int cell_id, cOrganism& orig_org);
   void InjectChild(int cell_id, cOrganism& parent);
 

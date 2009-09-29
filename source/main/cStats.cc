@@ -2196,8 +2196,6 @@ void cStats::PrintDemeMigrationSuicidePoints(const cString& filename){
 }
 
 
-
-
 void cStats::CompeteDemes(const std::vector<double>& fitness) {
   m_deme_fitness = fitness;
 }
@@ -2215,6 +2213,11 @@ void cStats::PrintDemeCompetitionData(const cString& filename) {
     avg /= m_deme_fitness.size();
   }
   df.Write(avg, "Avg. deme fitness [avgfit]");
+	if(m_deme_fitness.size() > 0) {
+		df.Write(*std::max_element(m_deme_fitness.begin(), m_deme_fitness.end()), "Max. deme fitness [maxfit]");
+	} else {
+		df.Write(0.0, "Max. deme fitness [maxfit]");
+	}
   df.Endl();
   
   m_deme_fitness.clear();
@@ -2244,21 +2247,37 @@ void cStats::PrintCurrentOpinions(const cString& filename) {
 	df.WriteTimeStamp();
 	df.WriteComment("1: Update [update]");
 	df.WriteComment("2: Global cell ID [globalid]");
-	df.WriteComment("3: Current opinion [opinion]");
+	df.WriteComment("3: Current opinion [opinion]");	
+	df.WriteComment("4: Cell ID of opinion [cellid]");
 	df.FlushComments();
-
+	
+	// Build the cell id map:
+	std::map<int,int> data_id_map;
+	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+		const cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		data_id_map[cell.GetCellData()] = cell.GetID();
+	}
+	
 	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
 		const cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
 		df.WriteAnonymous(GetUpdate());
 		df.WriteAnonymous(cell.GetID());
 		if(cell.IsOccupied() && cell.GetOrganism()->HasOpinion()) {
-			df.WriteAnonymous(cell.GetOrganism()->GetOpinion().first);
+			int opinion = cell.GetOrganism()->GetOpinion().first;
+			df.WriteAnonymous(opinion);
+			if(data_id_map.find(opinion) != data_id_map.end()) {
+				df.WriteAnonymous(data_id_map[opinion]);
+			} else {
+				df.WriteAnonymous(-1);
+			}
 		} else {
 			df.WriteAnonymous(0);
+			df.WriteAnonymous(-1);
 		}
 		df.Endl();
 	}	
 }
+
 
 void cStats::PrintOpinionsSetPerDeme(const cString& filename) {
 	cDataFile& df = m_world->GetDataFile(filename);
@@ -2355,6 +2374,49 @@ void cStats::PrintDetailedSynchronizationData(const cString& filename) {
 	
 	m_flash_times.clear();
 }
+
+
+/*! Called when a deme reaches consensus. */
+void cStats::ConsensusReached(const cDeme& deme, cOrganism::Opinion consensus, int cellid) {
+	m_consensi.push_back(ConsensusRecord(GetUpdate(), deme.GetID(), consensus, cellid));
+}
+
+
+/*! Print "simple" consensus information. */
+void cStats::PrintSimpleConsensusData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+  df.WriteComment("Avida consensus data");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+  df.Write((double)m_consensi.size(), "Consensus count [count]");
+  df.Endl();
+	m_consensi.clear();	
+}
+
+
+/*! Print information about demes that have reached consensus. */
+void cStats::PrintConsensusData(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida consensus data");
+  df.WriteTimeStamp();
+	df.WriteColumnDesc("Update [update]");
+	df.WriteColumnDesc("Deme ID [demeid]");
+	df.WriteColumnDesc("Consensus value [consensus]");
+	df.WriteColumnDesc("Cell ID [cellid]");
+	df.FlushComments();
+	
+	for(Consensi::iterator i=m_consensi.begin(); i!=m_consensi.end(); ++i) {
+		df.Write(i->update, "Update [update]");
+		df.Write(i->deme_id, "Deme ID [demeid]");
+		df.Write(i->consensus, "Consensus value [consensus]");
+		df.Write(i->cell_id, "Cell ID [cellid]");
+		df.Endl();		
+	}
+	m_consensi.clear();
+}
+
 
 void cStats::PrintNumOrgsKilledData(const cString& filename)
 {
