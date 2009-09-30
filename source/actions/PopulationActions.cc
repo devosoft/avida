@@ -2300,6 +2300,33 @@ public:
 		}
 		return std::make_pair(support, have_opinion);
 	}
+	
+	/*! Returns the number of organisms that have set an opinion. */
+	int count_opinions(const cDeme& deme) { 
+		int have_opinion=0;
+		// For each organism in the deme:
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			// if the org has an opinion, and it's the right value, count it:
+			if((org != 0) && org->HasOpinion()) {
+				++have_opinion;
+			}
+		}
+		return have_opinion;
+	}
+	
+	/*! Returns the set of organism opinions */
+	std::set<cOrganism::Opinion> unique_opinions(const cDeme& deme) {
+		std::set<cOrganism::Opinion> opinions; 
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			// if the org has an opinion, and it's the right value, count it:
+			if((org != 0) && org->HasOpinion()) {
+				opinions.insert(org->GetOpinion().first);
+			}
+		}
+		return opinions;
+	}	
 };
 
 
@@ -2532,26 +2559,36 @@ private:
 
 /*! This class rewards a deme based on the number of opinions that have been set
  to a given value.
+ 
+ There are three parameters that control this event:
+ desired: the opinion we're counting.
+ multiplicity: the number of times we want this opinion to be in the deme
+ side: the "sidedness" of the fitness function, that is, "to which side of mult is
+ there a fitness cliff?"  If side=-1, the cliff is to the left.  If side=1, the cliff
+ is to the right.  If side=0, there is no cliff.
  */
 class cActionCountOpinions : public cAbstractCompeteDemes, ConsensusSupport {
 public:
 	
 	//! Constructor.
 	cActionCountOpinions(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args),
-	_desired(0), _mult(1) {
+	_desired(0), _mult(1), _side(0) {
 		if(args.GetSize()) {
 			cString largs(args);
 			_desired = largs.PopWord().AsInt();
 			if(largs.GetSize()) {
 				_mult = largs.PopWord().AsInt();
-			}			
+				if(largs.GetSize()) {
+					_side = largs.PopWord().AsInt();
+				}
+			}
 		}		
 	}
 	
 	//! Destructor.
 	virtual ~cActionCountOpinions() { }
 	
-	static const cString GetDescription() { return "Arguments: [int desired_opinion=0 [int multiplicity=1]]"; }
+	static const cString GetDescription() { return "Arguments: [int desired_opinion=0 [int multiplicity=1 [int side=0]]]"; }
 	
   /*! Fitness function.
 	 
@@ -2562,7 +2599,7 @@ public:
   virtual double Fitness(cDeme& deme) {
 		// the number of individuals that have set their opinion to _desired:
 		// s.first == support, s.second == have_opinion
-		std::pair<unsigned int, int> s = support(deme, _desired);
+		std::pair<int, int> s = support(deme, _desired);
 		
 		// encourage opinion setting:
 		if(s.second < deme.GetSize()) {
@@ -2584,12 +2621,240 @@ public:
 		//		}
 		//		return pow(deme.GetSize() - scaled + 1, 2);
 		
-		return pow(deme.GetSize() - std::abs(static_cast<double>(_mult - s.first)) + 1, 2);
+		switch(_side) {
+			case -1: {
+				// fitness cliff to the left of _mult.
+				if(s.first >= _mult) {
+					return pow((double)deme.GetSize() - (s.first - _mult) + 1, 2);					
+				}
+				break;
+			}
+			case 0: {
+				// no fitness cliff.
+				return pow(deme.GetSize() - std::abs(static_cast<double>(_mult - s.first)) + 1, 2);
+			}
+			case 1: {
+				// fitness cliff to the right of _mult.
+				if(s.first <= _mult) {
+					return pow((double)deme.GetSize() - (_mult - s.first) + 1, 2);
+				}
+				break;
+			}
+			default: {
+				assert(false);
+			}
+		}
+		
+		// we only get down here if we fell off the fitness cliff to either side of _mult.
+		// we reward by the size of the deme 'cause all organisms did set their opinion.
+		return deme.GetSize();
 	}
 	
 private:
 	cOrganism::Opinion _desired; //!< Opinion that will be rewarded.
 	int _mult; //!< Desired multiplicity of the opinion that will be rewarded.
+	int _side; //!< "sidedness" of the fitness function (two-sided==0, one-sided left==-1, one-sided right==1).
+};
+
+
+/*! This class rewards a deme based on the number of opinions the deme has. 
+ Specifically, the user defines how many opinions it wants the deme to have (e.g., 5)
+ and the deme then receives rewards for having at least one of those opinions (e.g., 1-5).
+ 
+ There is one parameter that controls this event:
+ opinion_count: number of opinions we want the deme to have. We assume the opinions 
+ start at 1 and continue until the desired count is reached.
+ */
+class cActionCountMultipleOpinions : public cAbstractCompeteDemes, ConsensusSupport {
+public:
+	
+	typedef std::set<cOrganism::Opinion> opinion_set;
+	
+	//! Constructor.
+	cActionCountMultipleOpinions(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+		if(args.GetSize()) {
+			cString largs(args);
+			// Build the set of opinions that we will reward... does not include 0.
+			for(int i=largs.PopWord().AsInt(); i>0; --i) {
+				_rewarded.insert(i);
+			}
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionCountMultipleOpinions() { }
+	
+	static const cString GetDescription() { return "Arguments: [int opinion_count=0]"; }
+	
+  /*! Fitness function.
+	 
+	 The idea here is that we want to reward each deme based the number of opinions
+	 expressed out of the desired set (e.g., for a count of 5 opinions, we want
+	 at least one of 1, 2, 3, 4, 5 -- the others don't count.  
+	 
+	 We're going to set fitness == number of organisms that have an opinion to get 
+	 things jumpstarted.
+   */
+  virtual double Fitness(cDeme& deme) {
+		
+		// How many opinions are set?
+		int ocount = count_opinions(deme);
+		
+		// If not all opinions have been set, just return the number that have.
+		// We want to encourage opinion-setting.
+		if(ocount < deme.GetSize()) {
+			return ocount + 1;
+		}
+		
+		// Ok, great.  Everyone has set an opinion.  Now, reward based on
+		// the size of the intersection between the rewarded opinions and the
+		// unique opinions expressed in the deme.
+		opinion_set intersection;
+		opinion_set unique = unique_opinions(deme);
+		std::set_intersection(unique.begin(), unique.end(), _rewarded.begin(), _rewarded.end(), 
+													std::insert_iterator<opinion_set>(intersection, intersection.begin()));
+		
+		return intersection.size() + ocount + 1;
+	}
+	
+private:
+	opinion_set _rewarded; //!< Set of opinions that are rewarded.
+};
+
+
+
+/*! Compete demes event that evaluates based on 2 tasks (t1 & t2) as follows. 
+ If min <= t1 <= max, then f = 1 + 1 + t2
+ Else, f = 1
+ */
+class cActionDemeBalanceTwoTasks : public cAbstractCompeteDemes {
+public:
+	
+	//! Constructor.
+	cActionDemeBalanceTwoTasks(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args), _min(0), _max(0) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_min = largs.PopWord().AsInt();
+			_max = largs.PopWord().AsInt();
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionDemeBalanceTwoTasks() { }
+	
+	static const cString GetDescription() { return "Two arguments: min and max for not"; }
+	
+  /*! Fitness function.
+	 Functions as described in the comments above.
+	 */
+  virtual double Fitness(cDeme& deme) {
+		
+		float val = 0.0;
+		double performed_t1=0.0;
+		double performed_t2=0.0;
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			if(org != 0) {
+				tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+				assert(reactions.GetSize() > 1);
+				
+				if (reactions[0]) performed_t1++;
+				if (reactions[1]) performed_t2++;
+				
+			}
+		}
+		
+		// return something
+		if ((_min <= performed_t1) && (performed_t1 <= _max)) {
+			val = 2 + performed_t2;
+		} else {
+			val = 1;
+		}
+		return val;
+	}
+	
+protected:
+	int _min; //!< min for task 1 (not)
+	int _max; //!< max for task 1 (not)
+};
+
+/*! Compete demes event that rewards for diversity of reactions that have been
+ performed by the currently living individuals in each deme.
+ */
+class cActionDemeReactionDiversity : public cAbstractCompeteDemes {
+public:
+	
+	//! Constructor.
+	cActionDemeReactionDiversity(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args), _uniq_only(false) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_uniq_only = largs.PopWord().AsInt();
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionDemeReactionDiversity() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+  /*! Fitness function.
+	 Here we reward the deme based on the number of unique reactions that have been
+	 performed by the current individuals.
+	 */
+  virtual double Fitness(cDeme& deme) {
+		std::set<int> uniq_reactions;
+		int performed=0;
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			if(org != 0) {
+				bool performed_rx=false;
+				//				tArray<int> reactions = org->GetPhenotype().GetLastReactionCount();
+				tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+				for(int j=0; j<reactions.GetSize(); ++j) {
+					if(reactions[j] > 0) {
+						uniq_reactions.insert(j);
+						performed_rx = true;
+					}
+				}
+				if(performed_rx) {
+					++performed;
+				}
+			}
+		}
+		
+		if(_uniq_only) {
+			return uniq_reactions.size() + 1.0;
+		} else {
+			if(performed < deme.GetSize()) {
+				return performed + 1.0;
+			} else {
+				return uniq_reactions.size() + deme.GetSize() + 1.0;
+			}
+		} 
+	}
+	
+protected:
+	bool _uniq_only; //!< Whether to reward for uniqueness of reaction only.
+};
+
+
+/*! Unit-fitness compete demes method (use for control runs).
+ */
+class cActionUnitFitness : public cAbstractCompeteDemes {
+public:
+	
+	//! Constructor.
+	cActionUnitFitness(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+	}
+	
+	//! Destructor.
+	virtual ~cActionUnitFitness() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	virtual double Fitness(cDeme& deme) {
+		return 1.0;
+	}
 };
 
 
@@ -2722,7 +2987,6 @@ public:
 		return fitness;
 	}
 };
-
 
 
 /*! Send an artificial flash to a single organism in each deme in the population
@@ -4010,8 +4274,12 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
 	action_lib->Register<cActionCountOpinions>("CountOpinions");
+	action_lib->Register<cActionCountMultipleOpinions>("CountMultipleOpinions");
+	action_lib->Register<cActionDemeReactionDiversity>("DemeReactionDiversity");
+	action_lib->Register<cActionDemeBalanceTwoTasks>("DemeBalanceTwoTasks");
 	action_lib->Register<cActionSynchronization>("Synchronization");
 	action_lib->Register<cActionDesynchronization>("Desynchronization");
+	action_lib->Register<cActionUnitFitness>("UnitFitness");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");

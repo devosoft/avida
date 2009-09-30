@@ -1266,65 +1266,112 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
 	// only one deme, but we do want the stat-tracking.
 	if(fitness.size()==1) {
 		return; 
-	}	
+	}
 	
-  // Now, select the demes to live.  Each deme has a probability to replicate that is
-  // equal to its fitness / total fitness.
-  const double total_fitness = std::accumulate(fitness.begin(), fitness.end(), 0.0);
-  assert(total_fitness > 0.0); // Must have *some* positive fitnesses...
-  std::vector<unsigned int> deme_counts(deme_array.GetSize(), 0); // Number of demes (at index) which should wind up in the next generation.
-  
-  // What we're doing here is summing up the fitnesses until we reach or exceed the target fitness.
-  // Then we're marking that deme as being part of the next generation.
-  for(int i=0; i<deme_array.GetSize(); ++i) {
-    double running_sum = 0.0;
-    double target_sum = m_world->GetRandom().GetDouble(total_fitness);
-    for(int j=0; j<deme_array.GetSize(); ++j) {
-      running_sum += fitness[j];
-      if(running_sum >= target_sum) {
-        // j'th deme will be replicated.
-        ++deme_counts[j];
-        break;
-      }
-    }
-  }
-  
-  //re-inject demes with count of 1 back into self
-  for(int i = 0; i < (int)deme_counts.size(); i++) {
-    if(deme_counts[i] == 1)
-      ReplaceDeme(deme_array[i], deme_array[i]);
-  }
+	// Number of demes (at index) which should wind up in the next generation.
+	std::vector<unsigned int> deme_counts(deme_array.GetSize(), 0);						
 	
-  // Now, while we can find both a source deme (one with a count greater than 1)
-  // and a target deme (one with a count of 0), replace the target with the source.
-  while(true) {
-    int source_id=0;
-    for(; source_id<(int)deme_counts.size(); ++source_id) {
-      if(deme_counts[source_id] > 1) {
-        --deme_counts[source_id];
-        break;
-      }
-    }
-    
-    if(source_id == (int)deme_counts.size()) {
-      break; // All done.
-    }
-    
-    int target_id=0;
-    for(; target_id<(int)deme_counts.size(); ++target_id) {
-      if(deme_counts[target_id] == 0) {
-        ++deme_counts[target_id];
-        break;
-      }
-    }
-    
-    assert(source_id < deme_array.GetSize());
-    assert(target_id < deme_array.GetSize());
-    assert(source_id != target_id);
-    
-    // Replace the target with a copy of the source:
-    ReplaceDeme(deme_array[source_id], deme_array[target_id]);
-  }  
+	// Now, compete all demes based on the competition style.
+	switch(m_world->GetConfig().DEMES_COMPETITION_STYLE.Get()) {
+		case 0: {
+			// Fitness-proportional selection.
+			//
+			// Each deme has a probability equal to its fitness / sum(deme fitnesses)
+			// of proceeding to the next generation.
+			
+			const double total_fitness = std::accumulate(fitness.begin(), fitness.end(), 0.0);
+			assert(total_fitness > 0.0); // Must have *some* positive fitnesses...
+			// What we're doing here is summing up the fitnesses until we reach or exceed the target fitness.
+			// Then we're marking that deme as being part of the next generation.
+			for(int i=0; i<deme_array.GetSize(); ++i) {
+				double running_sum = 0.0;
+				double target_sum = m_world->GetRandom().GetDouble(total_fitness);
+				for(int j=0; j<deme_array.GetSize(); ++j) {
+					running_sum += fitness[j];
+					if(running_sum >= target_sum) {
+						// j'th deme will be replicated.
+						++deme_counts[j];
+						break;
+					}
+				}
+			}			
+			break;
+		}
+		case 1: {
+			// Tournament selection.
+			//
+			// We run NUM_DEMES tournaments of size DEME_TOURNAMENT_SIZE, and select the
+			// **single** winner of the tournament to proceed to the next generation.
+			// Losers of tournaments will be replaced, with no guarantees as to which
+			// deme will ultimately end up replacing them.  (Yes, this means that K==1.)
+						
+			// We need a list of all possible deme_ids so that we can pull samples from it.
+			std::vector<int> deme_ids(deme_array.GetSize());
+			for(int i=0; i<(int)deme_ids.size(); ++i) { deme_ids[i] = i; }
+			
+			// Run the tournaments.
+			for(int i=0; i<m_world->GetConfig().NUM_DEMES.Get(); ++i) {
+				// Which demes are in this tournament?
+				std::vector<int> tournament(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get());
+				sample(deme_ids.begin(), deme_ids.end(), tournament.begin(), tournament.end(), cRandomStdAdaptor(m_world->GetRandom()));
+				
+				// Now, iterate through the fitnesses of each of the tournament players,
+				// capturing the winner's index and fitness.
+				std::pair<int, double> winner(i, 0.0);
+				for(std::vector<int>::iterator j=tournament.begin(); j!=tournament.end(); ++j) {
+					if(fitness[*j] > winner.second) { 
+						winner = std::make_pair(*j, fitness[*j]);
+					}
+				}
+				
+				// We have a winner!  Increment his replication count.
+				++deme_counts[winner.first];				
+			}
+			break;
+		}
+		default: {
+			// should never get here.
+			assert(false);
+		}
+	}
+	
+	// Housekeeping: re-inject demes with count of 1 back into self (energy-related).
+	for(int i = 0; i < (int)deme_counts.size(); i++) {
+		if(deme_counts[i] == 1)
+			ReplaceDeme(deme_array[i], deme_array[i]);
+	}
+	
+	// Ok, the below algorithm relies upon the fact that we have a strict weak ordering
+	// of fitness values for all demes.  We're going to loop through, find demes with a
+	// count greater than one, and insert them into demes with a count of zero.
+	while(true) {
+		int source_id=0;
+		for(; source_id<(int)deme_counts.size(); ++source_id) {
+			if(deme_counts[source_id] > 1) {
+				--deme_counts[source_id];
+				break;
+			}
+		}
+		
+		if(source_id == (int)deme_counts.size()) {
+			break; // All done; we looped through the whole list of counts, and didn't find any > 1.
+		}
+		
+		int target_id=0;
+		for(; target_id<(int)deme_counts.size(); ++target_id) {
+			if(deme_counts[target_id] == 0) {
+				++deme_counts[target_id];
+				break;
+			}
+		}
+		
+		assert(source_id < deme_array.GetSize());
+		assert(target_id < deme_array.GetSize());
+		assert(source_id != target_id);
+		
+		// Replace the target with a copy of the source:
+		ReplaceDeme(deme_array[source_id], deme_array[target_id]);
+	}
 }
 
 

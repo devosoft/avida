@@ -304,6 +304,8 @@ public:
   
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");
+	CONFIG_ADD_VAR(DEMES_COMPETITION_STYLE, int, 0, "Select how the demes compete\n0=Fitness proportional\n1=Tournament");
+  CONFIG_ADD_VAR(DEMES_TOURNAMENT_SIZE, int, 0, "Number of demes that participate in a tournament");
   CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline (default=0).");
   CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Whether to prevent sterile demes from\nreplicating (default=0 or no).");
   CONFIG_ADD_VAR(DEMES_RESET_RESOURCES, int, 0, "Reset resources in demes on replication. \n0 = reset both demes \n1 = reset target deme \n2 = deme resources remain unchanged\n");

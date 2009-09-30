@@ -256,6 +256,17 @@ struct cRandomStdAdaptor {
 };
 
 
+/*! Draw a sample (with replacement) from an input range, copying to the output range.
+ */
+template <typename ForwardIterator, typename OutputIterator, typename RNG>
+void sample(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, OutputIterator olast, RNG rng) {
+	std::size_t range = std::distance(first, last);
+	while(ofirst != olast) {
+		*ofirst = *(first+rng(range));
+		++ofirst;
+	}
+}
+
 
 #ifdef ENABLE_UNIT_TESTS
 namespace nRandom {
