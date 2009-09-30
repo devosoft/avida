@@ -329,6 +329,8 @@ private:
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabelStart(bool mark_executed);
   cHeadCPU FindLabelForward(bool mark_executed);
+  cHeadCPU FindNopSequenceStart(bool mark_executed);
+  cHeadCPU FindNopSequenceForward(bool mark_executed);
   bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -379,6 +381,7 @@ private:
   inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2);  
 
   void ReadInst(const int in_inst);
+  void ReadInst_NoLabel(const int in_inst);
   
   
   // ---------- Promoter Helper Functions -----------
@@ -440,10 +443,13 @@ private:
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
+  bool Inst_HeadCopy_NoLabel(cAvidaContext& ctx);
   bool Inst_HeadSearch(cAvidaContext& ctx);
   bool Inst_HeadSearchLabel(cAvidaContext& ctx);
   bool Inst_HeadSearchDirect(cAvidaContext& ctx);
   bool Inst_HeadSearchDirectLabel(cAvidaContext& ctx);
+  bool Inst_HeadSearchSequence(cAvidaContext& ctx);
+  bool Inst_HeadSearchDirectSequence(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   
   // Goto Variants
