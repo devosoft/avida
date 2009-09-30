@@ -336,7 +336,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-write", &cHardwareCPU::Inst_HeadWrite),
     tInstLibEntry<tMethod>("h-copy", &cHardwareCPU::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("h-search", &cHardwareCPU::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-direct", &cHardwareCPU::Inst_HeadSearch, nInstFlag::DEFAULT, "Find direct template and move the flow head"),
+    tInstLibEntry<tMethod>("h-search-direct", &cHardwareCPU::Inst_HeadSearchDirect, nInstFlag::DEFAULT, "Find direct template and move the flow head"),
     tInstLibEntry<tMethod>("h-push", &cHardwareCPU::Inst_HeadPush),
     tInstLibEntry<tMethod>("h-pop", &cHardwareCPU::Inst_HeadPop),
     tInstLibEntry<tMethod>("set-head", &cHardwareCPU::Inst_SetHead),
@@ -345,7 +345,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("jmp-head", &cHardwareCPU::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?IP? by amount in CX register; CX = old pos."),
     tInstLibEntry<tMethod>("get-head", &cHardwareCPU::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into CX"),
     tInstLibEntry<tMethod>("if-label", &cHardwareCPU::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
-    tInstLibEntry<tMethod>("if-label-direct", &cHardwareCPU::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied direct match of the attached label"),
+    tInstLibEntry<tMethod>("if-label-direct", &cHardwareCPU::Inst_IfLabelDirect, nInstFlag::DEFAULT, "Execute next if we copied direct match of the attached label"),
     tInstLibEntry<tMethod>("if-label2", &cHardwareCPU::Inst_IfLabel2, 0, "If copied label compl., exec next inst; else SKIP W/NOPS"),
     tInstLibEntry<tMethod>("set-flow", &cHardwareCPU::Inst_SetFlow, nInstFlag::DEFAULT, "Set flow-head to position in ?CX?"),
     
@@ -6210,7 +6210,7 @@ bool cHardwareCPU::Inst_HeadSearch(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_HeadSearchDirect(cAvidaContext& ctx)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindLabel(0);
+  cHeadCPU found_pos = FindLabel(1);
   const int search_size = found_pos.GetPosition() - getIP().GetPosition();
   GetRegister(REG_BX) = search_size;
   GetRegister(REG_CX) = GetLabel().GetSize();

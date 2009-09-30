@@ -78,7 +78,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     cNOPEntry("nop-B", REG_BX),
     cNOPEntry("nop-C", REG_CX),
     cNOPEntry("nop-D", REG_DX),
-  };
+
+    cNOPEntry("nop-E", REG_EX),
+    cNOPEntry("nop-F", REG_FX),
+};
   
   static const tInstLibEntry<tMethod> s_f_array[] = {
     /*
@@ -90,7 +93,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
-    
+
+    tInstLibEntry<tMethod>("nop-E", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
+
     tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
 
@@ -1643,7 +1649,7 @@ bool cHardwareExperimental::Inst_HeadSearchLabel(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_HeadSearchDirect(cAvidaContext& ctx)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindLabelStart(true);
+  cHeadCPU found_pos = FindLabelForward(true);
   const int search_size = found_pos.GetPosition() - getIP().GetPosition();
   setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
   setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
@@ -1655,7 +1661,7 @@ bool cHardwareExperimental::Inst_HeadSearchDirect(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_HeadSearchDirectLabel(cAvidaContext& ctx)
 {
   ReadLabel();
-  cHeadCPU found_pos = FindLabelStart(true);
+  cHeadCPU found_pos = FindLabelForward(true);
   getHead(nHardware::HEAD_FLOW).Set(found_pos);
   getHead(nHardware::HEAD_FLOW).Advance();
   return true;
