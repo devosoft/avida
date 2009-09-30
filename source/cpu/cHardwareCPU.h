@@ -262,7 +262,7 @@ public:
   ~cHardwareCPU() { ; }
   
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
+  static cString GetDefaultInstFilename() { return "instset-heads.cfg"; }
 
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
