@@ -819,7 +819,11 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
   assert(m_interface);
   InitMessaging();
 
-	m_interface->GetDeme()->IncMessageSent();
+	cDeme* deme = m_interface->GetDeme();
+	if(deme) {
+		deme->IncMessageSent();
+	}
+	
   // If we're able to succesfully send the message...
   if(m_interface->SendMessage(msg)) {
     // If we're remembering messages
@@ -836,9 +840,13 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
     // check to see if we've performed any tasks...
     DoOutput(ctx);
     return true;
-  }
-	m_interface->GetDeme()->messageSendFailed();
-  return false;
+  } else {
+		// couldn't send the message
+		if(deme) {
+			deme->messageSendFailed();
+		}
+		return false;
+	}
 }
 
 
