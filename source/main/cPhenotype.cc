@@ -1194,6 +1194,21 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     cur_task_value[i] = result.TaskValue(i);
     cur_task_time[i] = cur_update_time; // Find out time from context
   }
+  for (int i = 0; i < num_tasks; i++) {
+	  if (cur_task_count[i] && !last_task_count[i])
+	  {
+		  int prev_num_tasks = 0;
+		  int cur_num_tasks = 0;
+		  for (int j=0; j< num_tasks; j++)
+		  {
+			  if (last_task_count[j]>0)
+				  prev_num_tasks++;
+			  if (cur_task_count[j]>0)
+				  cur_num_tasks++;
+		  }
+		  m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
+	  }
+  }
 
   for (int i = 0; i < num_reactions; i++) {
 //    if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;  // moved into cEnvironment::TestOutput to allow reaction requisites to be satisified at the time a reaction is completed

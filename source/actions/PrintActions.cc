@@ -82,6 +82,7 @@ STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
 STATS_OUT_FILE(PrintNewTasksData,			newtasks.dat		);
 STATS_OUT_FILE(PrintNewReactionData,		newreactions.dat	);
+STATS_OUT_FILE(PrintNewTasksDataPlus,		newtasksplus.dat	);
 STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
 STATS_OUT_FILE(PrintResourceData,           resource.dat        );
 STATS_OUT_FILE(PrintReactionData,           reactions.dat       );
@@ -2182,6 +2183,54 @@ public:
   }
 };
 
+class cActionPrintAveNumTasks : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintAveNumTasks(cWorld* world, const cString& args) : cAction(world, args), m_filename("ave_num_tasks.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cDataFile& df = m_world->GetDataFile(m_filename);  
+    cPopulation& pop = m_world->GetPopulation();
+  
+	int ave_tot_tasks = 0;
+	int num_task_orgs = 0;
+    for (int i = 0; i < pop.GetSize(); i++) {
+      if (pop.GetCell(i).IsOccupied() == false) continue;
+      
+	  cPhenotype& phenotype = pop.GetCell(i).GetOrganism()->GetPhenotype();
+      int num_tasks = m_world->GetEnvironment().GetNumTasks();
+      
+	  int sum_tasks = 0;
+      for (int j = 0; j < num_tasks; j++) 
+        sum_tasks += ( phenotype.GetCurTaskCount()[j] == 0 ) ? 0 : 1;
+	  if (sum_tasks>0) {
+		  ave_tot_tasks += sum_tasks;
+		  num_task_orgs++;
+	  }
+	}
+	double pop_ave = -1;
+	if (num_task_orgs>0)
+		pop_ave = ave_tot_tasks/double(num_task_orgs);
+
+	df.WriteComment("Avida num tasks data");
+    df.WriteTimeStamp();
+    df.WriteComment("First column gives the current update, 2nd column gives the average number of tasks performed");
+    df.WriteComment("by each organism in the current population that performs at least one task ");
+
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+	df.Write(pop_ave, "Ave num tasks done by single org that is doing at least one task");
+	df.Endl();
+  }
+};
+
 
 class cActionPrintViableTasksData : public cAction
 {
@@ -3028,6 +3077,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
   action_lib->Register<cActionPrintNewTasksData>("PrintNewTasksData");
   action_lib->Register<cActionPrintNewReactionData>("PrintNewReactionData");
+  action_lib->Register<cActionPrintNewTasksDataPlus>("PrintNewTasksDataPlus");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
@@ -3141,6 +3191,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
+  action_lib->Register<cActionPrintAveNumTasks>("PrintAveNumTasks");
   action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
   
   action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
