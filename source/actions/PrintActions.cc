@@ -2592,7 +2592,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("grid_fitness.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_fitness-%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
@@ -2623,7 +2623,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("grid_genotype_id.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_genotype_id-%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
@@ -2635,6 +2635,58 @@ public:
       fp << endl;
     }
     m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+class cActionDumpGenotypeColorGrid : public cAction
+{
+private:
+  int m_num_colors;
+  cString m_filename;
+  
+public:
+  cActionDumpGenotypeColorGrid(cWorld* world, const cString& args) : cAction(world, args), m_num_colors(12), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_num_colors = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [int num_colors=12] [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cGenotype** genotype_chart = new cGenotype*[m_num_colors];
+    cGenotype* temp_gen = m_world->GetClassificationManager().GetBestGenotype();
+    for (int i = 0; i < m_num_colors; i++) {
+      if (temp_gen) {
+        genotype_chart[i] = temp_gen;
+        temp_gen = temp_gen->GetNext();
+      } else {
+        genotype_chart[i] = NULL;
+      }
+    }
+    
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_genotype_color-%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        temp_gen = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype() : NULL;
+        if (temp_gen) {
+          int color = 0;
+          for (; color < m_num_colors; color++) if (genotype_chart[color] == temp_gen) break;
+          if (color == m_num_colors && temp_gen->GetThreshold()) color++;
+          fp << (color) << " ";
+        } else {
+          fp << "-1 ";
+        }
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+   
+    delete genotype_chart;
   }
 };
 
@@ -3200,6 +3252,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("DumpGenotypeIDGrid");
+  action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpLineageGrid>("DumpLineageGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
