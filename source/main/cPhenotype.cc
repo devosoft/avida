@@ -1183,7 +1183,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       eff_task_count[i]++;
       //cerr << "eff: " << eff_task_count[i] << endl;
       if(result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
-	  if (last_task_count[i]==0) { m_world->GetStats().AddNewTaskCount(i); }
     }
 
     if (result.TaskQuality(i) > 0) 
@@ -1195,8 +1194,9 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     cur_task_time[i] = cur_update_time; // Find out time from context
   }
   for (int i = 0; i < num_tasks; i++) {
-	  if (cur_task_count[i] && !last_task_count[i])
+	  if (result.TaskDone(i) && !last_task_count[i])
 	  {
+		  m_world->GetStats().AddNewTaskCount(i);
 		  int prev_num_tasks = 0;
 		  int cur_num_tasks = 0;
 		  for (int j=0; j< num_tasks; j++)

@@ -2210,7 +2210,7 @@ public:
       
 	  int sum_tasks = 0;
       for (int j = 0; j < num_tasks; j++) 
-        sum_tasks += ( phenotype.GetCurTaskCount()[j] == 0 ) ? 0 : 1;
+        sum_tasks += ( phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
 	  if (sum_tasks>0) {
 		  ave_tot_tasks += sum_tasks;
 		  num_task_orgs++;
