@@ -37,6 +37,9 @@ pointers.
 class cOrgMessage
 {
 public:
+  //! Default constructor.
+  cOrgMessage();
+	
   //! Constructor that takes a pointer to the sending organism.
   cOrgMessage(cOrganism* sender);
   
@@ -57,12 +60,6 @@ public:
   int GetReceiverOrgID() const { return m_receiverOrgID; }
 
 private:
-  //! Default constructor is only used internally, to support message predicates.
-  cOrgMessage() : m_pSender(0), m_pReceiver(0), m_data(0), m_label(0), m_senderOrgID(0),
-	  m_senderCellID(0), m_receiverOrgID(0), m_receiverCellID(0)
-  {
-  }
-  
   cOrganism* m_pSender;
   cOrganism* m_pReceiver;
   unsigned int m_data;

@@ -31,6 +31,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <utility>
 #include <map>
 
 #ifndef cCPUMemory_h
@@ -387,9 +388,6 @@ public:
 
   
   // -------- Messaging support --------
-  // Use a deque instead of vector for amortized constant-time removal
-  // from the front of the list, to efficiently support message list
-  // size caps
 public:
   typedef std::deque<cOrgMessage> message_list_type; //!< Container-type for cOrgMessages.
   
@@ -400,7 +398,7 @@ public:
   //! Called when this organism has been sent a message.
   void ReceiveMessage(cOrgMessage& msg);
   //! Called when this organism attempts to move a received message into its CPU.
-  const cOrgMessage* RetrieveMessage();
+	std::pair<bool, cOrgMessage> RetrieveMessage();
   //! Returns the list of all messsages received by this organism.
   const message_list_type& GetReceivedMessages() { InitMessaging(); return m_msg->received; }
   //! Returns the list of all messages sent by this organism.
@@ -426,7 +424,9 @@ private:
   cMessagingSupport* m_msg;
   
   //! Called to check for (and initialize) messaging support within this organism.
-  inline void InitMessaging() { if(!m_msg) m_msg = new cMessagingSupport(); }
+  inline void InitMessaging() { if(!m_msg) m_msg = new cMessagingSupport(); }	
+	//! Called as the bottom-half of a successfully sent message.
+	void MessageSent(cAvidaContext& ctx, cOrgMessage& msg);
   // -------- End of messaging support --------
 
   // -------- Movement TEMP --------

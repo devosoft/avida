@@ -485,7 +485,6 @@ public:
   CONFIG_ADD_VAR(TEST_CPU_TIME_MOD, int, 20, "Time allocated in test CPUs (multiple of length)");
   CONFIG_ADD_VAR(TRACK_PARENT_DIST, bool, 0, "Track parent distance during run. This is unnecessary when track main lineage is on.");
   
-  
   CONFIG_ADD_GROUP(LOG_GROUP, "Log Files");
   CONFIG_ADD_VAR(LOG_CREATURES, bool, 0, "0/1 (off/on) toggle to print file.");
   CONFIG_ADD_VAR(LOG_GENOTYPES, int, 0, "0 = off, 1 = print ALL, 2 = print threshold ONLY.");
@@ -506,9 +505,9 @@ public:
   CONFIG_ADD_GROUP(ORGANISM_MESSAGING_GROUP, "Organism Message-Based Communication");
   CONFIG_ADD_VAR(MESSAGE_TYPE, int, 0, "Messaging Style. 0=Receiver Facing, 1=Broadcast");
   CONFIG_ADD_VAR(MESSAGE_BCAST_RADIUS, int, 1, "Broadcast message radius (cells)");
-  CONFIG_ADD_VAR(ORGANISMS_REMEMBER_MESSAGES, bool, 1, "Does an organism remember all messages it has sent or received? 0=false, 1=true (default)");
-  CONFIG_ADD_VAR(MESSAGE_QUEUE_SIZE, int, -1, "Maximum number of unretrieved messages an organism can store (-1 for no limit is the default)");
-  CONFIG_ADD_VAR(MESSAGE_QUEUE_BEHAVIOR_WHEN_FULL, int, 0, "0 = Drop incoming message (default), 1 = Drop oldest unretrieved message");
+  CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, bool, -1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf (default)");
+  CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, bool, -1, "Size of message receive buffer (stores messages that are received); -1=inf (default)");
+	CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
 
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");

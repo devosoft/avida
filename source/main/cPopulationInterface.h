@@ -113,7 +113,6 @@ public:
   bool TestOnDivide();
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
-  bool SendMessage(cOrganism* recvr, cOrgMessage& msg);
   bool BroadcastMessage(cOrgMessage& msg, int depth);
   bool BcastAlarm(int jump_label, int bcast_range);  
   void DivideOrgTestamentAmongDeme(double value);
@@ -133,7 +132,11 @@ public:
 	//! Link this organism's cell to the cell with coordinates (x,y).
 	void CreateLinkByXY(int x, int y, double weight=1.0);
 	//! Link this organism's cell to the cell with index idx.
-	void CreateLinkByIndex(int idx, double weight=1.0);	
+	void CreateLinkByIndex(int idx, double weight=1.0);
+
+protected:
+	//! Internal-use method to consolidate message-sending code.
+	bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
 };
 
 

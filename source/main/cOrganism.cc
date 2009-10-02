@@ -813,131 +813,107 @@ void cOrganism::NewTrial()
   m_output_buf.Clear();
 }
 
+//! Called as the bottom-half of a successfully sent message.
+void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
+	// check to see if we should store it:
+	const int bsize = m_world->GetConfig().MESSAGE_SEND_BUFFER_SIZE.Get();
 
-bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg)
-{
-  assert(m_interface);
-  InitMessaging();
-
-	cDeme* deme = m_interface->GetDeme();
-	if(deme) {
-		deme->IncMessageSent();
-	}
-	
-  // If we're able to succesfully send the message...
-  if(m_interface->SendMessage(msg)) {
-    // If we're remembering messages
-    if (m_world->GetConfig().ORGANISMS_REMEMBER_MESSAGES.Get()) {
-      // save it...
-      m_msg->sent.push_back(msg);
-      // and set the receiver-pointer of this message to NULL.  We don't want to
-      // walk this list later thinking that the receivers are still around.
-      m_msg->sent.back().SetReceiver(0);
-    }
-    // stat-tracking...
-    m_world->GetStats().SentMessage(msg);
-		m_interface->GetDeme()->MessageSuccessfullySent();
-    // check to see if we've performed any tasks...
-    DoOutput(ctx);
-    return true;
-  } else {
-		// couldn't send the message
-		if(deme) {
-			deme->messageSendFailed();
+	if((bsize > 0) || (bsize == -1)) {
+		// yep; store it:
+		m_msg->sent.push_back(msg);
+		// and set the receiver-pointer of this message to NULL.  We don't want to
+		// walk this list later thinking that the receivers are still around.
+		m_msg->sent.back().SetReceiver(0);
+		// now, if our buffer is too large, chop off old messages:
+		if((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
+			while(static_cast<int>(m_msg->sent.size()) > bsize) { m_msg->sent.pop_front(); }
 		}
-		return false;
-	}
+
+		// check to see if we've performed any tasks:
+		DoOutput(ctx);
+	}	
 }
 
 
-/*! Broadcast a message to all organisms out to the given depth. */
-bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth) {
+/*! Send a message to the currently faced organism.  Stat-tracking is done over
+ in cPopulationInterface.  Remember that this code WILL be called from within the
+ test CPU!  (Also, BroadcastMessage funnels down to code in the population interface
+ too, so this way all the message sending code is in the same place.)
+ */
+bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
   assert(m_interface);
   InitMessaging();
-	
-	if(m_interface->BroadcastMessage(msg, depth)) {
-		// If we're remembering messages
-    if (m_world->GetConfig().ORGANISMS_REMEMBER_MESSAGES.Get()) {
-      // save it...
-      m_msg->sent.push_back(msg);
-      // and set the receiver-pointer of this message to NULL.  We don't want to
-      // walk this list later thinking that the receivers are still around.
-      m_msg->sent.back().SetReceiver(0);
-    }		
-		// stat-tracking...  NOTE: this has receiver not specified, so may be a problem for predicates
-    m_world->GetStats().SentMessage(msg);
-    // check to see if we've performed any tasks...NOTE: this has receiver not specified, so may be a problem for tasks that care
-    DoOutput(ctx);
+
+  // if we sent the message:
+  if(m_interface->SendMessage(msg)) {
+		MessageSent(ctx, msg);
     return true;
   }
 	
+	// importantly, m_interface->SendMessage() fails if we're running in the test CPU.
 	return false;
 }
 
 
-void cOrganism::ReceiveMessage(cOrgMessage& msg)
-{
+/*! Broadcast a message to all organisms out to the given depth.
+ */
+bool cOrganism::BroadcastMessage(cAvidaContext& ctx, cOrgMessage& msg, int depth) {
+  assert(m_interface);
   InitMessaging();
-  msg.SetReceiver(this);
-  int msg_queue_size = m_world->GetConfig().MESSAGE_QUEUE_SIZE.Get();
-  // are message queues unbounded?
-  if (msg_queue_size >= 0) {
-    // if the message queue size is zero, the incoming message is always dropped
-    if (msg_queue_size == 0) {
-      return;
-    }
-
-    // how many messages in the queue?
-    int num_unretrieved_msgs = m_msg->received.size()-m_msg->retrieve_index;
-    if (num_unretrieved_msgs == msg_queue_size) {
-      // look up message queue behavior
-      int bhvr = m_world->GetConfig().MESSAGE_QUEUE_BEHAVIOR_WHEN_FULL.Get();
-      if (bhvr == 0) {
-        // drop incoming message
-        return;
-      } else if (bhvr == 1 ) {
-        // drop the oldest unretrieved message
-        m_msg->received.erase(m_msg->received.begin()+m_msg->retrieve_index);
-      } else {
-        assert(false);
-        cerr << "ERROR: MESSAGE_QUEUE_BEHAVIOR_WHEN_FULL was set to " << bhvr << "," << endl;
-        cerr << "legal values are:" << endl;
-        cerr << "\t0: drop incoming message if message queue is full (default)" << endl;
-        cerr << "\t1: drop oldest unretrieved message if message queue is full" << endl;
-
-        // TODO: is there a more gracefull way to fail?
-        exit(1);
-      }
-    } // end if message queue is full
-    m_msg->received.push_back(msg);
-  } else {
-    // unbounded message queues
-    m_msg->received.push_back(msg);
+	
+	// if we broadcasted the message:
+	if(m_interface->BroadcastMessage(msg, depth)) {
+		MessageSent(ctx, msg);
+    return true;
   }
+	
+	// Again, m_interface->BroadcastMessage() fails if we're running in the test CPU.
+	return false;
 }
 
 
-const cOrgMessage* cOrganism::RetrieveMessage()
-{
+/*! Called when this organism receives a message from another.
+ */
+void cOrganism::ReceiveMessage(cOrgMessage& msg) {
   InitMessaging();
+	
+	// don't store more messages than we're configured to.
+	const int bsize = m_world->GetConfig().MESSAGE_RECV_BUFFER_SIZE.Get();
+	if((bsize != -1) && (bsize <= static_cast<int>(m_msg->received.size()))) {
+		switch(m_world->GetConfig().MESSAGE_RECV_BUFFER_BEHAVIOR.Get()) {
+			case 0: // drop oldest message
+				m_msg->received.pop_front();
+				break;
+			case 1: // drop this message
+				return;
+			default: // error
+				m_world->GetDriver().RaiseFatalException(-1, "MESSAGE_RECV_BUFFER_BEHAVIOR is set to an invalid value.");
+				assert(false);
+		}
+	}
 
-  assert(m_msg->retrieve_index <= m_msg->received.size());
+	msg.SetReceiver(this);
+	m_msg->received.push_back(msg);
+}
 
-  // Return null if no new messages have been received
-  if (m_msg->retrieve_index == m_msg->received.size())
-    return 0;
 
-  if (m_world->GetConfig().ORGANISMS_REMEMBER_MESSAGES.Get()) {
-    // Return the next unretrieved message and incrememt retrieve_index
-    return &m_msg->received.at(m_msg->retrieve_index++);
-  } else {
-    // Not remembering messages, return the front of the message queue.
-    // Notice that retrieve_index will always equal 0 if
-    // ORGANISMS_REMEMBER_MESSAGES is false.
-    const cOrgMessage* msg = &m_msg->received.front();
-    m_msg->received.pop_front();
-    return msg;
-  }
+/*! Called to when this organism tries to load its CPU with the contents of a
+ previously-received message.  In a change from previous versions, pop the message
+ off the front.
+ 
+ \return A pair (b, msg): if b is true, then msg was received; if b is false, then msg was not received.
+ */
+std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
+  InitMessaging();
+	std::pair<bool, cOrgMessage> ret = std::make_pair(false, cOrgMessage());	
+	
+	if(m_msg->received.size() > 0) {
+		ret.second = m_msg->received.front();
+		ret.first = true;
+		m_msg->received.pop_front();
+	}
+	
+	return ret;
 }
 
 

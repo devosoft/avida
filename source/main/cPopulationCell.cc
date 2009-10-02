@@ -149,6 +149,7 @@ void cPopulationCell::GetNeighboringCells(std::set<cPopulationCell*>& cell_set, 
   while(!i.AtEnd()) {
 		// store the cell pointer, and check to see if we've already visited that cell...
     cPopulationCell* cell = i.Next();
+		assert(cell != 0); // cells should never be null.
 		std::pair<cell_set_t::iterator, bool> ins = cell_set.insert(cell);
 		// and if so, recurse to it...
 		if(ins.second && (depth > 1)) {

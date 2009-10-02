@@ -284,27 +284,43 @@ bool cPopulationInterface::TestOnDivide()
 }
 
 
-/*! Send a message to the faced organism, failing if this cell does not have 
-neighbors or if the cell currently faced is not occupied. */
-bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
+/*! Internal-use method to consolidate message-sending code.
+ */
+bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell) {
 	static const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
-  if (drop_prob > 0.0 && m_world->GetRandom().P(drop_prob)) {
+  if((drop_prob > 0.0) && m_world->GetRandom().P(drop_prob)) {
+		// message dropped
 		GetDeme()->messageDropped();
-		return false; // message dropped
+		GetDeme()->messageSendFailed();
+		return false;
 	}
 	
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied()); // This organism; sanity.
-  cPopulationCell* rcell = cell.ConnectionList().GetFirst();
-  assert(rcell != NULL); // Cells should never be null.
-
   // Fail if the cell we're facing is not occupied.
-  if(!rcell->IsOccupied())
+  if(!rcell.IsOccupied()) {
+		GetDeme()->messageSendFailed();
     return false;
-  cOrganism* recvr = rcell->GetOrganism();
-  assert(recvr != NULL);
+	}
+	
+	cOrganism* recvr = rcell.GetOrganism();
+  assert(recvr != 0);
   recvr->ReceiveMessage(msg);
+	m_world->GetStats().SentMessage(msg);
+	GetDeme()->IncMessageSent();
+	GetDeme()->MessageSuccessfullySent(); // No idea what the difference is here...
   return true;
+}
+
+
+/*! Send a message to the faced organism, failing if this cell does not have 
+ neighbors or if the cell currently faced is not occupied.
+ */
+bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+	assert(cell.IsOccupied()); // This organism; sanity.
+
+  cPopulationCell* rcell = cell.ConnectionList().GetFirst();
+  assert(rcell != 0); // Cells should never be null.	
+	return SendMessage(msg, *rcell);
 }
 
 
@@ -321,11 +337,9 @@ bool cPopulationInterface::BroadcastMessage(cOrgMessage& msg, int depth) {
 	// Remove this cell from the set!
 	cell_set.erase(&cell);
 	
-	// Now, send a message to each organism living in that set of cells.
+	// Now, send a message towards each cell:
 	for(std::set<cPopulationCell*>::iterator i=cell_set.begin(); i!=cell_set.end(); ++i) {
-		if((*i)->IsOccupied()) {
-			(*i)->GetOrganism()->ReceiveMessage(msg);
-		}
+		SendMessage(msg, **i);
 	}
 	return true;
 }

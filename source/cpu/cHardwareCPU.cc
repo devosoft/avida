@@ -4819,23 +4819,22 @@ bool cHardwareCPU::Inst_DonateEnergy(cAvidaContext& ctx)
     return false;
   }
 
-  const cOrgMessage* msg = m_organism->RetrieveMessage();
-  if(msg == 0) {
-    return false;
-  }
+	std::pair<bool, cOrgMessage> retrieved = m_organism->RetrieveMessage();
+	if(!retrieved.first) {
+		return false;
+	}
   
   /* MJM - by this point, the pointer returned by GetSender() may no longer
    * be any good. Instead, we should use the cell and organism ID of the
    * message sender to get hold of the sender (if it still exists and hasn't moved)
    */
-
-  cPopulationCell senderCell = m_world->GetPopulation().GetCell(msg->GetSenderCellID());
+  cPopulationCell senderCell = m_world->GetPopulation().GetCell(retrieved.second.GetSenderCellID());
   if (!senderCell.IsOccupied()) {
 	  // the organism that made the request is gone, we can't donate...
 	  return false;
   }
   cOrganism* energyReceiver = senderCell.GetOrganism();
-  if (energyReceiver->GetID() != msg->GetSenderOrgID()) {
+  if (energyReceiver->GetID() != retrieved.second.GetSenderOrgID()) {
 	  // some other organism has occupied this cell since the msg was sent,
 	  // we can't donate...
 	  return false;
@@ -7165,15 +7164,16 @@ to its data.
 */
 bool cHardwareCPU::Inst_RetrieveMessage(cAvidaContext& ctx) 
 {
-  const cOrgMessage* msg = m_organism->RetrieveMessage();
-  if(msg == 0)
-    return false;
+	std::pair<bool, cOrgMessage> retrieved = m_organism->RetrieveMessage();
+	if(!retrieved.first) {
+		return false;
+	}
   
   const int label_reg = FindModifiedRegister(REG_BX);
   const int data_reg = FindNextRegister(label_reg);
   
-  GetRegister(label_reg) = msg->GetLabel();
-  GetRegister(data_reg) = msg->GetData();
+  GetRegister(label_reg) = retrieved.second.GetLabel();
+  GetRegister(data_reg) = retrieved.second.GetData();
   return true;
 }
 
