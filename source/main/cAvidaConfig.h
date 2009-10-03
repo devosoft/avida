@@ -503,10 +503,8 @@ public:
   CONFIG_ADD_VAR(NET_STYLE, int, 0, "Communication Style.  0 = Random Next, 1 = Receiver Facing");
 	
   CONFIG_ADD_GROUP(ORGANISM_MESSAGING_GROUP, "Organism Message-Based Communication");
-  CONFIG_ADD_VAR(MESSAGE_TYPE, int, 0, "Messaging Style. 0=Receiver Facing, 1=Broadcast");
-  CONFIG_ADD_VAR(MESSAGE_BCAST_RADIUS, int, 1, "Broadcast message radius (cells)");
-  CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, bool, -1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf (default)");
-  CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, bool, -1, "Size of message receive buffer (stores messages that are received); -1=inf (default)");
+  CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, bool, 1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf, default=1.");
+  CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, bool, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
 	CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
 
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
@@ -549,7 +547,8 @@ public:
   CONFIG_ADD_VAR(ENERGY_THRESH_LOW, double, .33, "Threshold percent below which energy level is considered low.  Requires ENERGY_CAP.");
   CONFIG_ADD_VAR(ENERGY_THRESH_HIGH, double, .75, "Threshold percent above which energy level is considered high.  Requires ENERGY_CAP.");
   CONFIG_ADD_VAR(ENERGY_COMPARISON_EPSILON, double, 0.0, "Percent difference (relative to executing organism) required in energy level comparisons");
-  
+	CONFIG_ADD_VAR(ENERGY_REQUEST_RADIUS, int, 1, "Radius of broadcast energy request messages.");
+	
   CONFIG_ADD_GROUP(ENERGY_SHARING_GROUP, "Energy Sharing Settings");
   CONFIG_ADD_VAR(ENERGY_SHARING_METHOD, int, 0, "Method for sharing energy.  0=receiver must actively receive/request, 1=energy pushed on receiver");
   CONFIG_ADD_VAR(ENERGY_SHARING_PCT, double, 0.0, "Percent of energy to share");
@@ -675,6 +674,11 @@ public:
   CONFIG_ADD_VAR(INST_RES, cString, "", "Resource upon which the execution of certain instruction depends");
   CONFIG_ADD_VAR(INST_RES_FLOOR, double, 0.0, "Assumed lower level of resource in environment.  Used for probability dist.");
   CONFIG_ADD_VAR(INST_RES_CEIL, double, 0.0, "Assumed upper level of resource in environment.  Used for probability dist.");
+	
+	// -------- Opinion-setting config options --------
+	CONFIG_ADD_GROUP(OPINION_GROUP, "Organism opinion settings");
+  CONFIG_ADD_VAR(OPINION_BUFFER_SIZE, int, 1, "Size of the opinion buffer (stores opinions set over the organism's lifetime); -1=inf, default=1, cannot be 0.");
+	
 	
 #endif
   

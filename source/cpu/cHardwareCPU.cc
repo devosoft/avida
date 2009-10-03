@@ -5087,7 +5087,7 @@ bool cHardwareCPU::Inst_RequestEnergy(cAvidaContext& ctx)
   cOrgMessage msg(m_organism);
   // Could set the data field of the message to be the multiplier
   
-  m_organism->BroadcastMessage(ctx, msg, m_world->GetConfig().MESSAGE_BCAST_RADIUS.Get());
+  m_organism->BroadcastMessage(ctx, msg, m_world->GetConfig().ENERGY_REQUEST_RADIUS.Get());
   m_organism->GetPhenotype().SetIsEnergyRequestor();
   m_organism->GetPhenotype().IncreaseNumEnergyRequests();
   

@@ -813,7 +813,9 @@ void cOrganism::NewTrial()
   m_output_buf.Clear();
 }
 
-//! Called as the bottom-half of a successfully sent message.
+
+/*! Called as the bottom-half of a successfully sent message.
+ */
 void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
 	// check to see if we should store it:
 	const int bsize = m_world->GetConfig().MESSAGE_SEND_BUFFER_SIZE.Get();
@@ -824,11 +826,10 @@ void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
 		// and set the receiver-pointer of this message to NULL.  We don't want to
 		// walk this list later thinking that the receivers are still around.
 		m_msg->sent.back().SetReceiver(0);
-		// now, if our buffer is too large, chop off old messages:
-		if((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
-			while(static_cast<int>(m_msg->sent.size()) > bsize) { m_msg->sent.pop_front(); }
+		// if our buffer is too large, chop off old messages:
+		while((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
+			m_msg->sent.pop_front();
 		}
-
 		// check to see if we've performed any tasks:
 		DoOutput(ctx);
 	}	
@@ -944,10 +945,22 @@ void cOrganism::moveIPtoAlarmLabel(int jump_label) {
 /*! Called to set this organism's opinion, which remains valid until a new opinion
  is expressed.
  */
-void cOrganism::SetOpinion(const Opinion& opinion)
-{
+void cOrganism::SetOpinion(const Opinion& opinion) {
   InitOpinions();
-  m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
+	
+	const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
+
+	if(bsize == 0) {
+		m_world->GetDriver().RaiseFatalException(-1, "OPINION_BUFFER_SIZE is set to an invalid value.");
+	}	
+	
+	if((bsize > 0) || (bsize == -1)) {
+		m_opinion->opinion_list.push_back(std::make_pair(opinion, m_world->GetStats().GetUpdate()));
+		// if our buffer is too large, chop off old messages:
+		while((bsize != -1) && (static_cast<int>(m_opinion->opinion_list.size()) > bsize)) {
+			m_opinion->opinion_list.pop_front();
+		}
+	}
 }
 
 

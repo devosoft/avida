@@ -471,7 +471,7 @@ public:
 public:
   typedef int Opinion; //!< Typedef for an opinion.
   typedef std::pair<Opinion, int> DatedOpinion; //!< Typedef for an opinion held at a given update.
-  typedef std::vector<DatedOpinion> DatedOpinionList; //!< Typedef for a list of dated opinions.
+  typedef std::deque<DatedOpinion> DatedOpinionList; //!< Typedef for a list of dated opinions.
   //! Called to set this organism's opinion.
   void SetOpinion(const Opinion& opinion);
   //! Retrieve this organism's current opinion.
