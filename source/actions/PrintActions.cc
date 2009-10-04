@@ -2642,26 +2642,47 @@ class cActionDumpGenotypeColorGrid : public cAction
 {
 private:
   int m_num_colors;
+  int m_threshold;
   cString m_filename;
+  tArray<cGenotype*> m_genotype_chart;
   
 public:
-  cActionDumpGenotypeColorGrid(cWorld* world, const cString& args) : cAction(world, args), m_num_colors(12), m_filename("")
+  cActionDumpGenotypeColorGrid(cWorld* world, const cString& args)
+    : cAction(world, args), m_num_colors(12), m_threshold(10), m_filename(""), m_genotype_chart(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_num_colors = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_filename = largs.PopWord();  
+    if (largs.GetSize()) m_threshold = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    
+    m_genotype_chart.Resize(m_num_colors, NULL);
   }
+  
   static const cString GetDescription() { return "Arguments: [int num_colors=12] [string fname='']"; }
+  
+  
   void Process(cAvidaContext& ctx)
   {
-    cGenotype** genotype_chart = new cGenotype*[m_num_colors];
-    cGenotype* temp_gen = m_world->GetClassificationManager().GetBestGenotype();
+    // Update current entries in the color chart
+    int pos = -1;
     for (int i = 0; i < m_num_colors; i++) {
-      if (temp_gen) {
-        genotype_chart[i] = temp_gen;
-        temp_gen = temp_gen->GetNext();
-      } else {
-        genotype_chart[i] = NULL;
+      if (m_genotype_chart[i]) {
+        pos = m_world->GetClassificationManager().FindPos(*(m_genotype_chart[i]), m_num_colors);
+        if (pos < 0 || pos >= m_num_colors) m_genotype_chart[i] = NULL;
+      }
+    }
+    
+    // Add new entries where possible
+    cGenotype* temp_gen = m_world->GetClassificationManager().GetBestGenotype();
+    for (int i = 0; i < m_threshold && temp_gen; i++, temp_gen = temp_gen->GetNext()) {
+      if (!isInChart(temp_gen)) {
+        // Add to the genotype chart
+        for (int j = 0; j < m_num_colors; j++) {
+          if (m_genotype_chart[j] == NULL) {
+            m_genotype_chart[j] = temp_gen;
+            break;
+          }
+        }
       }
     }
     
@@ -2675,18 +2696,25 @@ public:
         temp_gen = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype() : NULL;
         if (temp_gen) {
           int color = 0;
-          for (; color < m_num_colors; color++) if (genotype_chart[color] == temp_gen) break;
+          for (; color < m_num_colors; color++) if (m_genotype_chart[color] == temp_gen) break;
           if (color == m_num_colors && temp_gen->GetThreshold()) color++;
-          fp << (color) << " ";
+          fp << color << " ";
         } else {
           fp << "-1 ";
         }
       }
       fp << endl;
     }
-    m_world->GetDataFileManager().Remove(filename);
-   
-    delete genotype_chart;
+    m_world->GetDataFileManager().Remove(filename);   
+  }
+  
+private:
+  inline bool isInChart(cGenotype* gen)
+  {
+    for (int i = 0; i < m_num_colors; i++) {
+      if (m_genotype_chart[i] == gen) return true;
+    }
+    return false;    
   }
 };
 

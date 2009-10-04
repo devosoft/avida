@@ -372,6 +372,8 @@ void cStats::SetupPrintDatabase()
   // And a couple of Maximums
   data_manager.Add("max_fitness", "Maximum Fitness in Population", &cStats::GetMaxFitness);
   data_manager.Add("max_merit",   "Maximum Merit in Population",   &cStats::GetMaxMerit);
+
+  data_manager.Add("min_fitness", "Minimum Fitness in Population", &cStats::GetMinFitness);
 }
 
 void cStats::ZeroTasks()
