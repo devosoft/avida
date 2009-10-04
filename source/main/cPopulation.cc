@@ -1243,8 +1243,8 @@ void cPopulation::CompeteDemes(int competition_type)
 
 /*! Compete all demes with each other based on the given vector of fitness values.
  
- This form of compete demes uses fitness-proportional selection on a vector of deme
- fitnesses for group selection.  It integrates with the various deme replication options
+ This form of compete demes supports both fitness-proportional selection and a
+ variant of tournament selection.  It integrates with the various deme replication options
  used in ReplicateDemes.
  
  Note: New deme competition fitness functions are added in PopulationActions.cc by subclassing
@@ -1255,17 +1255,27 @@ void cPopulation::CompeteDemes(int competition_type)
  for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of 
  each deme.
  */
-void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
+void cPopulation::CompeteDemes(std::vector<double>& fitness) {
   // Each deme must have a fitness:
   assert((int)fitness.size() == deme_array.GetSize());
   
+	// To prevent sterile demes from replicating, we're going to replace the fitness
+	// of all sterile demes with 0.
+	if(m_world->GetConfig().DEMES_PREVENT_STERILE.Get()) {
+		for(int i=0; i<deme_array.GetSize(); ++i) {
+			if(deme_array[i].GetBirthCount() == 0) {
+				fitness[i] = 0.0;
+			}
+		}
+	}
+	
   // Stat-tracking:
   m_world->GetStats().CompeteDemes(fitness);
   
   // This is to facilitate testing.  Obviously we can't do competition if there's
 	// only one deme, but we do want the stat-tracking.
 	if(fitness.size()==1) {
-		return; 
+		return;
 	}
 	
 	// Number of demes (at index) which should wind up in the next generation.
@@ -1302,9 +1312,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
 			//
 			// We run NUM_DEMES tournaments of size DEME_TOURNAMENT_SIZE, and select the
 			// **single** winner of the tournament to proceed to the next generation.
-			// Losers of tournaments will be replaced, with no guarantees as to which
-			// deme will ultimately end up replacing them.  (Yes, this means that K==1.)
-						
+			
 			// We need a list of all possible deme_ids so that we can pull samples from it.
 			std::vector<int> deme_ids(deme_array.GetSize());
 			for(int i=0; i<(int)deme_ids.size(); ++i) { deme_ids[i] = i; }
@@ -1317,7 +1325,10 @@ void cPopulation::CompeteDemes(const std::vector<double>& fitness) {
 				
 				// Now, iterate through the fitnesses of each of the tournament players,
 				// capturing the winner's index and fitness.
-				std::pair<int, double> winner(i, 0.0);
+				//
+				// If no deme actually won, meaning no one had fitness greater than 0.0,
+				// then the winner is selected at random from the tournament.
+				std::pair<int, double> winner(tournament[m_world->GetRandom().GetInt(tournament.size())], 0.0);
 				for(std::vector<int>::iterator j=tournament.begin(); j!=tournament.end(); ++j) {
 					if(fitness[*j] > winner.second) { 
 						winner = std::make_pair(*j, fitness[*j]);
