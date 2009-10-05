@@ -2365,9 +2365,24 @@ void cStats::PrintOpinionsSetPerDeme(const cString& filename) {
  
  We do some pretty detailed tracking here in order to support the use of flash
  messages in deme competition.  All flashes are tracked per deme.
+ 
+ Because we're tracking highly detailed information about flashes, if
+ someone forgets to include the print event for synchronization, it's highly
+ likely that Avida will run out of memory (not that this has happened *ahem*).
+ So, the first time this method is called, we check to make sure that at least one
+ of the print events is also called, otherwise we throw an error.
  */
 void cStats::SentFlash(cOrganism& organism) {
-  ++m_flash_count;	
+	static bool event_checked=false;
+	if(!event_checked && (m_world->GetEventsList() != 0)) {
+		if(!m_world->GetEventsList()->IsEventUpcoming("PrintSynchronizationData")
+			 && !m_world->GetEventsList()->IsEventUpcoming("PrintDetailedSynchronizationData")) {
+			m_world->GetDriver().RaiseFatalException(-1, "When using the flash instruction, either the PrintSynchronizationData or PrintDetailedSynchronizationData events must also be used.");
+		}
+		event_checked = true;
+	}
+	
+  ++m_flash_count;
 	if(organism.GetOrgInterface().GetDeme() != 0) {
 		const cDeme* deme = organism.GetOrgInterface().GetDeme();
 		m_flash_times[GetUpdate()][deme->GetID()].push_back(deme->GetRelativeCellID(organism.GetCellID()));

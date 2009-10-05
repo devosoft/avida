@@ -1255,12 +1255,16 @@ void cPopulation::CompeteDemes(int competition_type)
  for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of 
  each deme.
  */
-void cPopulation::CompeteDemes(std::vector<double>& fitness) {
+void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
+	// it's possible that we'll be changing the fitness values of some demes, so make a copy:
+	std::vector<double> fitness(calculated_fitness);
+	
   // Each deme must have a fitness:
   assert((int)fitness.size() == deme_array.GetSize());
   
 	// To prevent sterile demes from replicating, we're going to replace the fitness
-	// of all sterile demes with 0.
+	// of all sterile demes with 0; this effectively makes it impossible for a sterile
+	// deme to be selected via fitness proportional selection.
 	if(m_world->GetConfig().DEMES_PREVENT_STERILE.Get()) {
 		for(int i=0; i<deme_array.GetSize(); ++i) {
 			if(deme_array[i].GetBirthCount() == 0) {
@@ -1313,9 +1317,19 @@ void cPopulation::CompeteDemes(std::vector<double>& fitness) {
 			// We run NUM_DEMES tournaments of size DEME_TOURNAMENT_SIZE, and select the
 			// **single** winner of the tournament to proceed to the next generation.
 			
-			// We need a list of all possible deme_ids so that we can pull samples from it.
-			std::vector<int> deme_ids(deme_array.GetSize());
-			for(int i=0; i<(int)deme_ids.size(); ++i) { deme_ids[i] = i; }
+			// construct a list of all possible deme ids that could participate in a tournament,
+			// pruning out sterile demes:
+			std::vector<int> deme_ids;
+			for(int i=0; i<deme_array.GetSize(); ++i) {
+				if(!m_world->GetConfig().DEMES_PREVENT_STERILE.Get() || (deme_array[i].GetBirthCount() > 0)) {
+					deme_ids.push_back(i);
+				}
+			}
+			
+			// better have more than deme tournament size, otherwise something is *really* screwed up:
+			if(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get() > static_cast<int>(deme_ids.size())) {
+				 m_world->GetDriver().RaiseFatalException(-1, "The number of demes that can participate in a tournament is less than the deme tournament size.");
+			}
 			
 			// Run the tournaments.
 			for(int i=0; i<m_world->GetConfig().NUM_DEMES.Get(); ++i) {

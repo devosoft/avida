@@ -213,6 +213,9 @@ public:
 	* @param ctx  Avida context
 	**/
   void ProcessInterrupt(cAvidaContext& ctx);
+	
+	//! Check to see if an event with the given name is upcoming at some point in the future.
+	bool IsEventUpcoming(const cString& event_name);
 };
 
 

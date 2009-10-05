@@ -471,3 +471,17 @@ bool cEventList::AddEventFileFormat(const cString& in_line)
   
   return AddEvent(trigger, start, interval, stop, name, arg_list);
 }
+
+
+/*! Check to see if an event with the given name is upcoming at some point in the future.
+ */
+bool cEventList::IsEventUpcoming(const cString& event_name) {
+	cEventListEntry* entry = m_head;
+  while(entry != 0) {
+		if(entry->GetName() == event_name) {
+			return true;
+		}
+		entry = entry->GetNext();
+	}
+	return false;
+}
