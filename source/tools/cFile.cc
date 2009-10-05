@@ -80,12 +80,9 @@ bool cFile::Close()
 
 bool cFile::ReadLine(cString & in_string)
 {
-  char cur_line[MAX_STRING_LENGTH];
-  cur_line[0]='\0';
-  fp.getline(cur_line, MAX_STRING_LENGTH);
-  if( fp.bad() ){
-    return false;
-  }
-  in_string = cur_line;
+  std::string linebuf;
+  std::getline(fp, linebuf);
+  if (fp.bad()) return false;
+  in_string = linebuf.c_str();
   return true;
 }

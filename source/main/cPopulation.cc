@@ -4687,8 +4687,8 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     cellstr.Set("%d", cells[0].cell_id);
     offsetstr.Set("%d", cells[0].offset);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
-      cellstr.Set("%s,%d", (const char*)cellstr, cells[cell_i].cell_id);
-      offsetstr.Set("%s,%d", (const char*)offsetstr, cells[cell_i].offset);
+      cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
+      offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
     }
     df.Write(cellstr, "Occupied Cell IDs");
     df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
@@ -4744,7 +4744,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     /* depth */       cur_line.PopWord();
     cString name = cStringUtil::Stringf("org-%d", tmp.id_num);
     cGenome genome(cur_line.PopWord());
-    
+        
     // Process resident cell ids
     cString cellstr(cur_line.PopWord());
     while (cellstr.GetSize()) tmp.cells.Push(cellstr.Pop(',').AsInt());

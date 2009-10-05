@@ -67,10 +67,10 @@ private:
   {
   private:
     cString& string;
-    short index;
+    int index;
 
   public:
-    cCharProxy(cString& _string, short _index) : string(_string), index(_index) { ; }
+    cCharProxy(cString& _string, int _index) : string(_string), index(_index) { ; }
 
     inline cCharProxy& operator=(char c);     // lvalue
     inline cCharProxy& operator+=(char c);    // lvalue
@@ -134,8 +134,6 @@ private:
   };
 
 public:
-  static const int MAX_LENGTH;
-
   cString(const char* in_str = "") : value(new cStringData(strlen(in_str), in_str))
   {
     assert( in_str != NULL );     // NULL input string

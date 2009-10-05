@@ -44,7 +44,7 @@ cString::cStringData::cStringData(int in_size) : m_size(in_size), m_data(new cha
 cString::cStringData::cStringData(int in_size, const char* in) : m_size(in_size), m_data(new char[m_size + 1])
 {
   assert(m_data != NULL); // Memory Allocation Error: Out of Memory
-  for (short i = 0; i < m_size; i++) m_data[i] = in[i];
+  for (int i = 0; i < m_size; i++) m_data[i] = in[i];
   m_data[m_size] = '\0';
 }
 
@@ -58,9 +58,6 @@ cString::cStringData::cStringData(const cStringData& in) : cRCObject(*this), m_s
 
 
 // ** class cString **
-
-// -- Constants --
-const int cString::MAX_LENGTH = MAX_STRING_LENGTH;
 
 
 // -- Comparisons --
@@ -328,7 +325,7 @@ bool cString::IsSubstring(const cString & in_string, int start) const
 cString & cString::Set(const char * fmt, ...)
 {
   va_list argp;
-  char buf[MAX_LENGTH];
+  char buf[MAX_STRING_LENGTH];
   va_start(argp, fmt);
   vsprintf(buf, fmt, argp);
   va_end(argp);
@@ -711,7 +708,7 @@ int cString::FindStr(const char * in, const int in_size, int pos) const
 
 istream & operator >> (istream & in, cString & string)
 {
-  char buf[cString::MAX_LENGTH];
+  char buf[MAX_STRING_LENGTH];
   in>>buf;
   string=buf;
   return in;
