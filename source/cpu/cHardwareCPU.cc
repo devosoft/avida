@@ -180,6 +180,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("inc", &cHardwareCPU::Inst_Inc, nInstFlag::DEFAULT, "Increment ?BX? by one"),
     tInstLibEntry<tMethod>("dec", &cHardwareCPU::Inst_Dec, nInstFlag::DEFAULT, "Decrement ?BX? by one"),
     tInstLibEntry<tMethod>("zero", &cHardwareCPU::Inst_Zero, 0, "Set ?BX? to zero"),
+    tInstLibEntry<tMethod>("all1s", &cHardwareCPU::Inst_All1s, 0, "Set ?BX? to all 1s in bitstring"),
     tInstLibEntry<tMethod>("neg", &cHardwareCPU::Inst_Neg),
     tInstLibEntry<tMethod>("square", &cHardwareCPU::Inst_Square),
     tInstLibEntry<tMethod>("sqrt", &cHardwareCPU::Inst_Sqrt),
@@ -191,10 +192,15 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("div", &cHardwareCPU::Inst_Div, 0, "Divide BX by CX and place the result in ?BX?"),
     tInstLibEntry<tMethod>("mod", &cHardwareCPU::Inst_Mod),
     tInstLibEntry<tMethod>("nand", &cHardwareCPU::Inst_Nand, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("or", &cHardwareCPU::Inst_Or),
     tInstLibEntry<tMethod>("nor", &cHardwareCPU::Inst_Nor),
     tInstLibEntry<tMethod>("and", &cHardwareCPU::Inst_And),
     tInstLibEntry<tMethod>("order", &cHardwareCPU::Inst_Order),
     tInstLibEntry<tMethod>("xor", &cHardwareCPU::Inst_Xor),
+    
+    // Instructions that modify specific bits in the register values
+    tInstLibEntry<tMethod>("setbit", &cHardwareCPU::Inst_Setbit, nInstFlag::DEFAULT, "Set the bit in ?BX? specified by ?BX?'s complement"),
+    tInstLibEntry<tMethod>("clearbit", &cHardwareCPU::Inst_Clearbit, nInstFlag::DEFAULT, "Clear the bit in ?BX? specified by ?BX?'s complement"),
 
 		// treatable instructions
 		tInstLibEntry<tMethod>("nand-treatable", &cHardwareCPU::Inst_NandTreatable, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?, fails if deme is treatable"),
@@ -2608,6 +2614,18 @@ bool cHardwareCPU::Inst_Zero(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_All1s(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  GetRegister(reg_used) = 0;
+  
+  for(int i=0; i< ((int) sizeof(int) * 8); i++) {
+    GetRegister(reg_used) |= 1 << i;
+  }
+    
+  return true;
+}
+
 bool cHardwareCPU::Inst_Neg(cAvidaContext& ctx)
 {
   const int src = FindModifiedRegister(REG_BX);
@@ -2753,6 +2771,15 @@ bool cHardwareCPU::Inst_Nor(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_Or(cAvidaContext& ctx)
+{
+  const int dst = FindModifiedRegister(REG_BX);
+  const int op1 = REG_BX;
+  const int op2 = REG_CX;
+  GetRegister(dst) = (GetRegister(op1) | GetRegister(op2));
+  return true;
+}
+
 bool cHardwareCPU::Inst_And(cAvidaContext& ctx)
 {
   const int dst = FindModifiedRegister(REG_BX);
@@ -2788,6 +2815,33 @@ bool cHardwareCPU::Inst_Xor(cAvidaContext& ctx)
   GetRegister(dst) = GetRegister(op1) ^ GetRegister(op2);
   return true;
 }
+
+// Set the bit in ?BX? specified in its complement register
+bool cHardwareCPU::Inst_Setbit(cAvidaContext& ctx)
+{
+  const int to_set = FindModifiedRegister(REG_BX);
+  const int bit_reg = FindNextRegister(to_set);
+  
+  const int bit_to_set = max(0, GetRegister(bit_reg)) % (sizeof(int) * 8);
+
+  GetRegister(to_set) |= 1 << bit_to_set;
+
+  return true;
+}
+
+// Clear the bit in ?BX? specified in its complement register
+bool cHardwareCPU::Inst_Clearbit(cAvidaContext& ctx)
+{
+  const int to_clear = FindModifiedRegister(REG_BX);
+  const int bit_reg = FindNextRegister(to_clear);
+  
+  const int bit_to_clear = max(0, GetRegister(bit_reg)) % (sizeof(int) * 8);
+    
+  GetRegister(to_clear) &= ~(1 << bit_to_clear);
+  
+  return true;
+}
+
 
 bool cHardwareCPU::Inst_Copy(cAvidaContext& ctx)
 {

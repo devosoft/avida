@@ -3260,6 +3260,7 @@ void cPopulation::PrintDemeGlobalResources() {
   } //End iterating through demes
   
   df.WriteRaw("];");
+  df.Endl();
 }
 
 

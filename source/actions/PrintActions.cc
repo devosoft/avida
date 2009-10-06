@@ -3136,6 +3136,7 @@ class cActionPrintNumOrgsInDeme : public cAction
       }
       
       df.WriteRaw("];");
+      df.Endl();
     }
   };
 

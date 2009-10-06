@@ -433,6 +433,7 @@ private:
   bool Inst_ValPolyC(cAvidaContext& ctx);
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
+  bool Inst_All1s(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
   bool Inst_Not(cAvidaContext& ctx);
   bool Inst_Neg(cAvidaContext& ctx);
@@ -448,10 +449,15 @@ private:
   bool Inst_Div(cAvidaContext& ctx);
   bool Inst_Mod(cAvidaContext& ctx);
   bool Inst_Nand(cAvidaContext& ctx);
+  bool Inst_Or(cAvidaContext& ctx);
   bool Inst_Nor(cAvidaContext& ctx);
   bool Inst_And(cAvidaContext& ctx);
   bool Inst_Order(cAvidaContext& ctx);
   bool Inst_Xor(cAvidaContext& ctx);
+  
+  // Bit-setting instructions
+  bool Inst_Setbit(cAvidaContext& ctx);
+  bool Inst_Clearbit(cAvidaContext& ctx);
 
   // Double Argument Math that are treatable
 	bool Inst_NandTreatable(cAvidaContext& ctx);
