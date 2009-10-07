@@ -281,7 +281,7 @@ public:
   CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
   CONFIG_ADD_VAR(WORLD_Y, int, 60, "Height of the Avida world");
 	CONFIG_ADD_VAR(WORLD_Z, int, 1, "Depth of the Avida world");
-  CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus\n3 = Clique\n4 = Hexagonal grid\n5 = Lattice");
+  CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus\n3 = Clique\n4 = Hexagonal grid\n5 = Partial\n6 = Lattice\n7 = Random connected\n8 = Scale-free");
 	CONFIG_ADD_VAR(SCALE_FREE_M, int, 3, "Number of connections to add per cell when using a scale-free geometry.");
 	CONFIG_ADD_VAR(SCALE_FREE_ALPHA, double, 1.0, "Attachment power (1=linear).");
 	CONFIG_ADD_VAR(SCALE_FREE_ZERO_APPEAL, double, 0.0, "Appeal of cells with zero connections.");	
