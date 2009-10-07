@@ -342,7 +342,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("h-write", &cHardwareCPU::Inst_HeadWrite),
     tInstLibEntry<tMethod>("h-copy", &cHardwareCPU::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("h-search", &cHardwareCPU::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-direct", &cHardwareCPU::Inst_HeadSearchDirect, nInstFlag::DEFAULT, "Find direct template and move the flow head"),
+    tInstLibEntry<tMethod>("h-search-direct", &cHardwareCPU::Inst_HeadSearchDirect, 0, "Find direct template and move the flow head"),
     tInstLibEntry<tMethod>("h-push", &cHardwareCPU::Inst_HeadPush),
     tInstLibEntry<tMethod>("h-pop", &cHardwareCPU::Inst_HeadPop),
     tInstLibEntry<tMethod>("set-head", &cHardwareCPU::Inst_SetHead),
