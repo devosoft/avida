@@ -59,17 +59,12 @@ cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_found(false
   
   tSmartArray<sLine*> lines;
   
-  char cur_line[MAX_STRING_LENGTH];
-  in_stream.getline(cur_line, MAX_STRING_LENGTH);
-  
-  if (!in_stream && !strlen(cur_line)) return;
-  
   int linenum = 1;
-  while (in_stream) {
+  std::string linebuf;
+  while (std::getline(in_stream, linebuf)) {
+    cString cur_line(linebuf.c_str());
     if (cur_line[0] == '#' && cur_line[1] == '!') ProcessCommand(cur_line, lines, m_filename, linenum);
-    else lines.Push(new sLine(cur_line, m_filename, linenum));
-    
-    in_stream.getline(cur_line, MAX_STRING_LENGTH);
+    else lines.Push(new sLine(cur_line, m_filename, linenum));    
     linenum++;
   }
   

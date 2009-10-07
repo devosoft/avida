@@ -28,6 +28,7 @@
 
 #include <fstream>
 #include <set>
+#include <deque>
 
 #ifndef cMutationRates_h
 #include "cMutationRates.h"
@@ -38,6 +39,7 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
+#include "cGenome.h"
 
 class cHardwareBase;
 class cPopulation;
@@ -78,9 +80,11 @@ private:
 
   
 public:
-  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false) { ; }
+	typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
+	
+  cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_hgt(0) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
-  ~cPopulationCell() { delete m_mut_rates; }
+  ~cPopulationCell() { delete m_mut_rates; delete m_hgt; }
 
   void operator=(const cPopulationCell& in_cell);
 
@@ -126,6 +130,31 @@ public:
   double UptakeCellEnergy(double frac_to_uptake);
 
   bool OK();
+	
+	// -------- HGT support --------
+public:
+	typedef std::deque<cGenome> fragment_list_type; //!< Type for the list of genome fragments.
+	//! Diffuse genome fragments from this cell to its neighbors.
+	void DiffuseGenomeFragments();
+	//! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
+	void AddGenomeFragments(const cGenome& genome);
+	//! Retrieve the number of genome fragments currently found in this cell.
+	unsigned int CountGenomeFragments() const;
+	//! Remove and return the front genome fragment.
+	cGenome PopGenomeFragment();
+	//! Retrieve the list of fragments from this cell.
+	fragment_list_type& GetFragments();
+private:
+	//! Contains HGT-related information for this cell.
+	struct HGTSupport {
+		// WARNING: the default operator= is used in cPopulationCell's copy ctor and operator=.
+		fragment_list_type fragments; //!< Fragments located in this cell.
+	};
+	HGTSupport* m_hgt; //!< Lazily-initialized pointer to the HGT support struct.
+	//! Initialize HGT support in this cell.
+	inline void InitHGTSupport() { if(!m_hgt) { m_hgt = new HGTSupport(); } }
+	//! Is HGT initialized?
+	inline bool IsHGTInitialized() const { return m_hgt != 0; }
 };
 
 inline int cPopulationCell::GetInputAt(int& input_pointer)
@@ -133,7 +162,5 @@ inline int cPopulationCell::GetInputAt(int& input_pointer)
   input_pointer %= m_inputs.GetSize();
   return m_inputs[input_pointer++];
 }
-
-
 
 #endif

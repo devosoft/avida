@@ -48,12 +48,17 @@ class cGenome;
 class cInstruction;
 class cString;
 
+
 class cHeadCPU
 {
 protected:
   cHardwareBase* m_hardware;
   int m_position;
   int m_mem_space;
+  int m_cached_ms;
+  cCPUMemory* m_memory;
+  
+  void fullAdjust(int mem_size = -1);
 
   int FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
   int FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
@@ -64,12 +69,12 @@ public:
   inline cHeadCPU(const cHeadCPU& in_cpu_head);
   ~cHeadCPU() { ; }
   
-  inline const cCPUMemory& GetMemory() const { return m_hardware->GetMemory(m_mem_space); }
-  inline cCPUMemory& GetMemory() { return m_hardware->GetMemory(m_mem_space); }
-  inline int GetMemSize() const { return m_hardware->GetMemSize(m_mem_space); }
+  inline const cCPUMemory& GetMemory() const { return *m_memory; }
+  inline cCPUMemory& GetMemory() { return *m_memory; }
+  inline int GetMemSize() const { return m_memory->GetSize(); }
   
-  void Adjust();
-  inline void Reset(cHardwareBase* hw, int ms = 0) { m_hardware = hw; m_position = 0; m_mem_space = ms; }
+  inline void Adjust() { if (m_mem_space != m_cached_ms || m_position < 0 || m_position >= GetMemSize()) fullAdjust(); }
+  inline void Reset(cHardwareBase* hw, int ms = 0) { m_hardware = hw; m_position = 0; m_mem_space = ms; if (hw) Adjust(); }
   
   inline int GetMemSpace() const { return m_mem_space; }
   inline int GetPosition() const { return m_position; }
@@ -125,9 +130,16 @@ public:
 };
 
 
-inline cHeadCPU::cHeadCPU(cHardwareBase* hw, int pos, int ms) : m_hardware(hw), m_position(pos), m_mem_space(ms)
+inline cHeadCPU::cHeadCPU(cHardwareBase* hw, int pos, int ms)
+  : m_hardware(hw), m_position(pos), m_mem_space(ms), m_cached_ms(-1)
 {
-  if (pos || ms) Adjust();
+  if (hw) {
+    if (pos || ms) Adjust();
+    else {
+      m_cached_ms = 0;
+      m_memory = &m_hardware->GetMemory(0);
+    }
+  }
 }
 
 inline cHeadCPU::cHeadCPU(const cHeadCPU& in_cpu_head)
@@ -135,6 +147,8 @@ inline cHeadCPU::cHeadCPU(const cHeadCPU& in_cpu_head)
   m_hardware = in_cpu_head.m_hardware;
   m_position = in_cpu_head.m_position;
   m_mem_space = in_cpu_head.m_mem_space;
+  m_cached_ms = in_cpu_head.m_cached_ms;
+  m_memory = in_cpu_head.m_memory;
 }
 
 inline void cHeadCPU::LoopJump(int jump)

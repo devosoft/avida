@@ -31,6 +31,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 
 #ifndef defs_h
 #include "defs.h"
@@ -43,6 +44,9 @@
 #endif
 #ifndef cIntSum_h
 #include "cIntSum.h"
+#endif
+#ifndef cOrganism_h
+#include "cOrganism.h"
 #endif
 #ifndef cRunningAverage_h
 #include "cRunningAverage.h"
@@ -59,6 +63,7 @@
 #ifndef nGeometry_h
 #include "nGeometry.h"
 #endif
+#include "cGenome.h"
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h
@@ -237,6 +242,10 @@ private:
   tArray<double> task_cur_max_quality;
   tArray<double> task_last_max_quality;
   tArray<int> task_exe_count;
+  tArray<int> new_task_count;
+  tArray<int> prev_task_count;
+  tArray<int> cur_task_count;
+  tArray<int> new_reaction_count;
   
   // Stats for internal resource bins and use of internal resources
   tArray<int> task_internal_cur_count;
@@ -329,6 +338,9 @@ private:
   
   // Number of organisms killed by kill actions
   int num_orgs_killed;
+  
+  // Number of migrations that have been made
+  int num_migrations;
   
 
   cStats(); // @not_implemented
@@ -559,6 +571,7 @@ public:
   void IncExecuted() { num_executed++; }
   
   void IncNumOrgsKilled() { num_orgs_killed++; }
+  void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
   void AddCurTaskQuality(int task_num, double quality) 
@@ -572,6 +585,12 @@ public:
 	  task_last_quality[task_num] += quality; 
 	  if (quality > task_last_max_quality[task_num]) task_last_max_quality[task_num] = quality;
   }
+  void AddNewTaskCount(int task_num) {new_task_count[task_num]++; }
+  void AddOtherTaskCounts(int task_num, int prev_tasks, int cur_tasks) {
+	  prev_task_count[task_num] += prev_tasks; 
+	  cur_task_count[task_num] += cur_tasks;
+  }
+  void AddNewReactionCount(int reaction_num) {new_reaction_count[reaction_num]++; }
   void IncTaskExeCount(int task_num, int task_count) { task_exe_count[task_num] += task_count; }
   void ZeroTasks();
   
@@ -728,6 +747,7 @@ public:
   int GetSpeculativeWaste() const { return m_spec_waste; }
   
   int GetNumOrgsKilled() const { return num_orgs_killed; }
+  int GetNumMigrations() const { return num_migrations; }
 
   // this value gets recorded when a creature with the particular
   // fitness value gets born. It will never change to a smaller value,
@@ -754,6 +774,9 @@ public:
   void PrintTasksExeData(const cString& filename);
   void PrintTasksQualData(const cString& filename);
   void PrintDynamicMaxMinData(const cString& filename);
+  void PrintNewTasksData(const cString& filename);
+  void PrintNewReactionData(const cString& filename);
+  void PrintNewTasksDataPlus(const cString& filename);
   void PrintReactionData(const cString& filename);
   void PrintReactionExeData(const cString& filename);
   void PrintCurrentReactionData(const cString& filename);
@@ -776,7 +799,9 @@ public:
   void PrintCellVisitsData(const cString& filename);
   void PrintExtendedTimeData(const cString& filename);
   void PrintNumOrgsKilledData(const cString& filename);
+  void PrintMigrationData(const cString& filename);
   void PrintGroupsFormedData(const cString& filename);
+	void PrintGroupIds(const cString& filename);
   
   // deme predicate stats
   void IncEventCount(int x, int y);
@@ -850,6 +875,9 @@ public:
 
   void PrintPerDemeTasksData(const cString& filename);
   void PrintPerDemeTasksExeData(const cString& filename);
+  void PrintAvgDemeTasksExeData(const cString& filename);
+  void PrintAvgTreatableDemeTasksExeData(const cString& filename);
+  void PrintAvgUntreatableDemeTasksExeData(const cString& filename);
   void PrintPerDemeReactionData(const cString& filename);
   void PrintDemeTasksData(const cString& filename);
   void PrintDemeTasksExeData(const cString& filename);
@@ -914,6 +942,8 @@ public:
 public:
 	//! Prints the current opinions of all organisms in the population.
 	void PrintCurrentOpinions(const cString& filename);
+	//! Prints the average number of organism with set opinions
+	void PrintOpinionsSetPerDeme(const cString& filename);
 	
 	// -------- Synchronization support --------
 public:
@@ -932,6 +962,27 @@ protected:
   int m_flash_count; //!< Number of flashes that have occured since last PrintSynchronizationData.
 	PopulationFlashes m_flash_times; //!< For tracking flashes that have occurred throughout this population.
 
+	// -------- Consensus support --------
+public:
+	struct ConsensusRecord {
+		ConsensusRecord(int u, int d, cOrganism::Opinion c, int cell) : update(u), deme_id(d), consensus(c), cell_id(cell) {
+		}
+		int update;
+		int deme_id;
+		cOrganism::Opinion consensus;
+		int cell_id;
+	};
+	
+	typedef std::vector<ConsensusRecord> Consensi; //!< Typedef for a map of update -> Consensus records.
+	//! Called when a deme reaches consensus.
+	void ConsensusReached(const cDeme& deme, cOrganism::Opinion consensus, int cellid);
+	//! Print information about demes that have reached consensus.
+	void PrintConsensusData(const cString& filename);
+	//! Print "simple" (summary) consensus information.
+	void PrintSimpleConsensusData(const cString& filename);
+protected:
+	Consensi m_consensi; //!< Tracks when demes have reached consensus.
+	
 // -------- Reputation support ---------
 public: 
 	// Print statistics about reputation
@@ -954,7 +1005,30 @@ protected:
 	cDoubleSum m_perfect_match_org;
 	std::map <int, int> m_tags;
 	
-
+// -------- Deme network support --------
+private:
+public:
+	template <typename Network>
+	void NetworkTopology(const Network& network) {
+#if BOOST_IS_AVAILABLE
+#else
+//		world->GetDriver().RaiseFatalException(-1, "Cannot track network statistics without Boost in cStats::NetworkTopology().");
+#endif
+	}
+	//! Print network statistics.
+	void PrintDemeNetworkData(const cString& filename);
+	
+	// -------- HGT support --------
+private:
+	cDoubleSum m_hgt_metabolized; //!< Total length of metabolized genome fragments.
+	cDoubleSum m_hgt_inserted; //!< Total length of inserted genome fragments.
+public:
+	//! Called when an organism metabolizes a genome fragment.
+	void GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment);
+	//! Called when an organism inserts a genome fragment.
+	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment);
+	//! Print HGT statistics.
+	void PrintHGTData(const cString& filename);
 };
 
 

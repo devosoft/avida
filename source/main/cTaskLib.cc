@@ -37,6 +37,7 @@
 #include "cStateGrid.h"
 #include "tArrayUtils.h"
 #include "tHashTable.h"
+#include "cEnvironment.h"
 
 #include "platform.h"
 
@@ -88,6 +89,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   // many if block causes problems block nesting depth in Visual Studio.net 2003.
   
   if (name == "echo")      NewTask(name, "Echo", &cTaskLib::Task_Echo);
+  else if (name == "echo_dup")  NewTask(name, "Echo_dup",  &cTaskLib::Task_Echo);
   else if (name == "add")  NewTask(name, "Add",  &cTaskLib::Task_Add);
   else if (name == "add3")  NewTask(name, "Add3",  &cTaskLib::Task_Add3);  
   else if (name == "sub")  NewTask(name, "Sub",  &cTaskLib::Task_Sub);
@@ -96,15 +98,28 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   // All 1- and 2-Input Logic Functions
   if (name == "not") NewTask(name, "Not", &cTaskLib::Task_Not);
+  else if (name == "not_dup") NewTask(name, "Not_dup", &cTaskLib::Task_Not);
   else if (name == "nand") NewTask(name, "Nand", &cTaskLib::Task_Nand);
+  else if (name == "nand_dup") NewTask(name, "Nand_dup", &cTaskLib::Task_Nand);
   else if (name == "and") NewTask(name, "And", &cTaskLib::Task_And);
+  else if (name == "and_dup") NewTask(name, "And_dup", &cTaskLib::Task_And);
   else if (name == "orn") NewTask(name, "OrNot", &cTaskLib::Task_OrNot);
+  else if (name == "orn_dup") NewTask(name, "OrNot_dup", &cTaskLib::Task_OrNot);
   else if (name == "or") NewTask(name, "Or", &cTaskLib::Task_Or);
+  else if (name == "or_dup") NewTask(name, "Or_dup", &cTaskLib::Task_Or);
   else if (name == "andn") NewTask(name, "AndNot", &cTaskLib::Task_AndNot);
+  else if (name == "andn_dup") NewTask(name, "AndNot_dup", &cTaskLib::Task_AndNot);
   else if (name == "nor") NewTask(name, "Nor", &cTaskLib::Task_Nor);
+  else if (name == "nor_dup") NewTask(name, "Nor_dup", &cTaskLib::Task_Nor);
   else if (name == "xor") NewTask(name, "Xor", &cTaskLib::Task_Xor);
+  else if (name == "xor_dup") NewTask(name, "Xor_dup", &cTaskLib::Task_Xor);
   else if (name == "equ") NewTask(name, "Equals", &cTaskLib::Task_Equ);
+  else if (name == "equ_dup") NewTask(name, "Equals_dup", &cTaskLib::Task_Equ);
   
+	// resoruce dependent version
+  else if (name == "nand-resourceDependent") NewTask(name, "Nand-resourceDependent", &cTaskLib::Task_Nand_ResourceDependent);
+	else if (name == "nor-resourceDependent") NewTask(name, "Nor-resourceDependent", &cTaskLib::Task_Nor_ResourceDependent);
+	
   // All 3-Input Logic Functions
   if (name == "logic_3AA")
     NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
@@ -440,6 +455,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
 	if (name == "form-group")
     Load_FormSpatialGroup(name, info, envreqs, errors);
+	
+	if (name == "form-group-id")
+    Load_FormSpatialGroupWithID(name, info, envreqs, errors);
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -676,6 +694,58 @@ double cTaskLib::Task_Equ(cTaskContext& ctx) const
   const int logic_id = ctx.GetLogicId();
   if (logic_id == 153 || logic_id == 165 || logic_id == 195) return 1.0;
   return 0.0;
+}
+
+double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const {
+	const double resCrossoverLevel = 100;
+
+	const int logic_id = ctx.GetLogicId();
+  if (!(logic_id == 63 || logic_id == 95 || logic_id == 119))
+		return 0.0;
+		
+	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+	
+	const tArray<double>& resource_count_array =  ctx.GetOrganism()->GetOrgInterface().GetResources(); 
+	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+	
+	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
+	
+	double pher_amount = 0;
+	cResource* res = resLib.GetResource("pheromone");
+	
+	if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+		pher_amount += resource_count_array[res->GetID()];
+	}
+	
+	if(pher_amount < resCrossoverLevel)
+		return 1.0;
+	return 0.0;	
+}
+
+double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const {
+	const double resCrossoverLevel = 100;
+
+	const int logic_id = ctx.GetLogicId();
+  if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))
+		return 0.0;
+	
+	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+	
+	const tArray<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(); 
+	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+	
+	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
+	
+	double pher_amount = 0;
+	cResource* res = resLib.GetResource("pheromone");
+	
+	if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+		pher_amount += resource_count_array[res->GetID()];
+	}
+	
+	if(pher_amount > resCrossoverLevel)
+		return 1.0;
+	return 0.0;	
 }
 
 double cTaskLib::Task_Logic3in_AA(cTaskContext& ctx) const
@@ -1947,10 +2017,10 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
       test_output = temp_buf[0];
       
       for (int j = 0; j < string_to_match.GetSize(); j++) {  
-	string_index = string_to_match.GetSize() - j - 1; // start with last char in string
-	int k = 1 << j;
-	if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
-	    (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
+				string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+				int k = 1 << j;
+				if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+						(string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
       }
       max_num_matched = num_matched;
     }
@@ -3400,20 +3470,82 @@ void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr,
 
 double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
 {
-	int ideal_group_size = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
 	double reward = 0.0;
 	int group_id = 0; 
 	if (ctx.GetOrganism()->HasOpinion()) {
 		group_id = ctx.GetOrganism()->GetOpinion().first;
 	}
-	int orgs_in_group = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+	double g = (double) m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+	double num = (t-g) * (t-g);
+	double denom = (t*t);
 	
-	if (orgs_in_group < ideal_group_size) {
+	reward = 1 - (num/denom);
+	if (reward < 0) reward = 0;
+	/*if (orgs_in_group < ideal_group_size) {
 		reward = orgs_in_group*orgs_in_group;
 	} else {
 		reward = ideal_group_size*ideal_group_size;
 	}
-	reward = reward / ideal_group_size;
+	reward = reward / ideal_group_size;*/
+	return reward;
+}
+
+
+/* Reward organisms for having a given group-id, provided the group is under the 
+ max number of members.*/
+void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+	cArgSchema schema;
+  
+  // Integer Arguments
+  schema.AddEntry("group_size", 0, 1);
+  schema.AddEntry("group_id", 1, 1);
+	
+
+  
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  if (args) NewTask(name, "FormSpatialGroupWithID", &cTaskLib::Task_FormSpatialGroupWithID, 0, args);
+	
+	// Add this group id to the list in the instructions file. 
+	m_world->GetEnvironment().AddGroupID(args->GetInt(1));
+	
+}
+
+double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
+{
+	double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	int des_group_id = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+
+	double reward = 0.0;
+	int group_id = -1; 
+	if (ctx.GetOrganism()->HasOpinion()) {
+		group_id = ctx.GetOrganism()->GetOpinion().first;
+	}
+	
+	// If the organism is in the group...
+	if (group_id == des_group_id) {
+		double g = (double) m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+		// If the population size is less than the max size
+		if (g < t) {
+			reward = 1;
+		} else {
+			
+			double num = (t-g) * (t-g);
+			double denom = (t*t);
+			
+			if (denom > 0) {
+				reward = 1 - (num/denom);
+				if (reward < 0) reward = 0;
+			} else {
+				reward = 0;
+			}
+			
+		}
+		
+	}
+	
+
 	return reward;
 }
 

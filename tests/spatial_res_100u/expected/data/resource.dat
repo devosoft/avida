@@ -1,5 +1,5 @@
 # Avida resource data
-# Fri Mar  6 17:39:30 2009
+# Tue Sep 22 16:17:54 2009
 # First column gives the current update, all further columns give the quantity
 # of the particular resource at that update.
 #  1: Update
@@ -7,7 +7,7 @@
 #  3: ResB
 #  4: ResGlobal
 
-0 20.000000 40.000000 98.591272 
+0 20 40 98.5913 
 10 23.8309 115.548 96.1954 
 20 18.8711 140.33 95.3599 
 30 27.4866 145.19 95.0687 

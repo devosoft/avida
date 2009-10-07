@@ -105,6 +105,7 @@ cAnalyze::cAnalyze(cWorld* world)
 , m_ctx(world->GetDefaultContext())
 , m_jobqueue(world)
 , m_resources(NULL)
+, m_resource_time_spent_offset(0)
 , interactive_depth(0)
 {
   random.ResetSeed(m_world->GetConfig().RANDOM_SEED.Get());
@@ -427,8 +428,10 @@ void cAnalyze::LoadResources(cString cur_string)
   int words = cur_string.CountNumWords();
   
   cString filename = "resource.dat";
-  if (words >= 1) filename = cur_string.PopWord();
-  if (words >= 2) m_resource_time_spent_offset = cur_string.PopWord().AsInt();
+  if (words >= 1)
+		filename = cur_string.PopWord();
+  if (words >= 2)  // TODO: document this feature!  I would do it, but I don't know what it means. (BEB)
+		m_resource_time_spent_offset = cur_string.PopWord().AsInt();
   
   cout << "Loading Resources from: " << filename << endl;
   
@@ -3286,6 +3289,75 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
 }
 
 
+// Calculate Edit Distance stats for all pairs of organisms across the population.
+void cAnalyze::CommandPrintDistances(cString cur_string)
+{
+  cout << "Calculating Edit Distance between all pairs of genotypes." << endl;
+  
+  // Get the maximum distance we care about
+  int dist_threshold = cur_string.PopWord().AsInt();
+  
+  // Get the file name that saves the result 
+  cString filename = cur_string.PopWord();
+  if (filename.IsEmpty()) {
+    filename = "edit_distance.dat";
+  }
+  
+  ofstream & fout = m_world->GetDataFileOFStream(filename);
+  
+  fout << "# All pairs edit distance" << endl;
+  fout << "# 1: Num organism pairs" << endl;
+  fout << "# 2: Mean distance" << endl;
+  fout << "# 3: Max distance" << endl;
+  fout << "# 4: Frac distances above threshold (" << dist_threshold << ")" << endl;
+  fout << endl;
+  
+  // Loop through all pairs of organisms.
+  int dist_total = 0;
+  int dist_max = 0;
+  int pair_count = 0;
+  int threshold_pair_count = 0;
+
+  cAnalyzeGenotype * genotype1 = NULL;
+  cAnalyzeGenotype * genotype2 = NULL;
+  tListIterator<cAnalyzeGenotype> batch_it1(batch[cur_batch].List());
+
+  int watermark = 0;
+  
+  while ((genotype1 = batch_it1.Next()) != NULL) {
+    const int gen1_count = genotype1->GetNumCPUs();
+
+    // Pair this genotype with itself for a distance of 0.
+    pair_count += gen1_count * (gen1_count - 1) / 2;
+
+    // Loop through the other genotypes this one can be paired with.
+    tListIterator<cAnalyzeGenotype> batch_it2(batch_it1);
+    while ((genotype2 = batch_it2.Next()) != NULL) {
+      const int gen2_count = genotype2->GetNumCPUs();
+      const int cur_pairs = gen1_count * gen2_count;
+      const int cur_dist = cGenomeUtil::FindEditDistance(genotype1->GetGenome(), genotype2->GetGenome());      
+      dist_total += cur_pairs * cur_dist;
+      if (cur_dist > dist_max) dist_max = cur_dist;
+      pair_count += cur_pairs;
+      if (cur_dist >= dist_threshold) threshold_pair_count += cur_pairs;
+
+      if (pair_count > watermark) {
+	cout << watermark << endl;
+	watermark += 100000;
+      }
+    }
+  }
+  
+  fout << pair_count << " "
+       << ((double) dist_total) / (double) pair_count << " "
+       << dist_max << " "
+       << ((double) threshold_pair_count) / (double) pair_count << " "
+       << endl;
+
+  return;
+}
+
+
 // Calculate various stats for trees in population.
 void cAnalyze::CommandPrintTreeStats(cString cur_string)
 {
@@ -4929,11 +5001,14 @@ void cAnalyze::CommandCalcFunctionalModularity(cString cur_string)
 {
   cout << "Calculating Functional Modularity..." << endl;
 
+  cCPUTestInfo test_info;
+  PopCommonCPUTestParameters(m_world, cur_string, test_info, m_resources, m_resource_time_spent_offset);
+
   tList<cModularityAnalysis> mod_list;
   tAnalyzeJobBatch<cModularityAnalysis> jobbatch(m_jobqueue);
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
-    cModularityAnalysis* mod = new cModularityAnalysis(cur_genotype);
+    cModularityAnalysis* mod = new cModularityAnalysis(cur_genotype, test_info);
     mod_list.Push(mod);
     jobbatch.AddJob(mod, &cModularityAnalysis::CalcFunctionalModularity);
   }
@@ -5430,7 +5505,7 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
     double PM = 1.0 - (ave_dist / (double) (base_length * trait_count));
     double ave_sites = ((double) site_count) / (double) trait_count;
     
-    // Write the restults to file...
+    // Write the results to file...
     df.Write(PM,          "Physical Modularity");
     df.Write(trait_count, "Number of traits used in calculation");
     df.Write(ave_sites,   "Average num sites associated with traits");
@@ -9102,6 +9177,38 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
 }
 
 
+void cAnalyze::PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info, cResourceHistory* in_resource_history, int in_resource_time_spent_offset)
+{
+  tArray<int> manual_inputs;  // Used only if manual inputs are specified  
+  cString msg;                // Holds any information we may want to send the driver to display
+  int use_resources      = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : 0;
+  int update             = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() : -1;
+  bool use_random_inputs = (cur_string.GetSize()) ? cur_string.PopWord().AsInt() == 1: false;
+  bool use_manual_inputs = false;
+  
+  //Manual inputs will override random input request and must be the last arguments.
+  if (cur_string.CountNumWords() > 0){
+    if (cur_string.CountNumWords() == in_world->GetEnvironment().GetInputSize()){
+      manual_inputs.Resize(in_world->GetEnvironment().GetInputSize());
+      use_random_inputs = false;
+      use_manual_inputs = true;
+      for (int k = 0; cur_string.GetSize(); k++)
+        manual_inputs[k] = cur_string.PopWord().AsInt();
+    } else if (in_world->GetVerbosity() >= VERBOSE_ON){
+      msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
+              cur_string.CountNumWords(), in_world->GetEnvironment().GetInputSize());
+      in_world->GetDriver().NotifyWarning(msg);
+    }
+  }
+  
+  if (use_manual_inputs)
+    test_info.UseManualInputs(manual_inputs);
+  else
+    test_info.UseRandomInputs(use_random_inputs); 
+  test_info.SetResourceOptions(use_resources, in_resource_history, update, in_resource_time_spent_offset);
+}
+
+
 // The following function will print a cell in a table with a background color based on a comparison
 // with its parent (the result of which is passed in as the 'compare' argument).  The cell_flags argument
 // includes any other information you want in the <td> tag; 'null_text' is the text you want to replace a
@@ -9237,6 +9344,7 @@ void cAnalyze::SetupCommandDefLibrary()
   // Population analysis commands...
   AddLibraryDef("PRINT_PHENOTYPES", &cAnalyze::CommandPrintPhenotypes);
   AddLibraryDef("PRINT_DIVERSITY", &cAnalyze::CommandPrintDiversity);
+  AddLibraryDef("PRINT_DISTANCES", &cAnalyze::CommandPrintDistances);
   AddLibraryDef("PRINT_TREE_STATS", &cAnalyze::CommandPrintTreeStats);
   AddLibraryDef("PRINT_CUMULATIVE_STEMMINESS", &cAnalyze::CommandPrintCumulativeStemminess);
   AddLibraryDef("PRINT_GAMMA", &cAnalyze::CommandPrintGamma);

@@ -1,5 +1,5 @@
 # Generic Statistics Data
-# Fri Mar  6 17:39:22 2009
+# Tue Sep 22 16:17:52 2009
 #  1: update
 #  2: average inferiority (energy)
 #  3: ave probability of any mutations in genome
@@ -13,6 +13,6 @@
 # 11: Total number of resamplings this generation
 # 12: Total number of organisms that failed to resample this generation
 
-0 0.000000 0.060763 0.060763 0.062688 0.062688 100 4.605170 0.000000 0 0 0 
+0 0 0.0607631 0.0607631 0.0626876 0.0626876 100 4.60517 0 0 0 0 
 10 -0.877554 0.0607631 0.0607631 0.0626876 0.0626876 -3 3.30145 0 1 0 0 
 20 -11.1908 0.0607631 0.0607631 0.0626876 0.0626876 -3 2.37123 0 1 0 0 

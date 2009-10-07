@@ -67,6 +67,7 @@ cResource::cResource(const cString & _name, int _id)
   , ygravity(0.0)
   , deme_resource(false)
   , energy_resource(false)
+  , hgt_metabolize(false)
 {
 }
 

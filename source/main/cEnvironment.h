@@ -48,9 +48,6 @@
 #ifndef cTaskLib_h
 #include "cTaskLib.h"
 #endif
-#ifndef defs_h
-#include "defs.h"
-#endif
 #ifndef tList_h
 #include "tList.h"
 #endif
@@ -60,6 +57,9 @@
 #  include "tMemTrack.h"
 # endif
 #endif
+
+#include <set>
+
 
 
 class cAvidaContext;
@@ -124,14 +124,14 @@ private:
                    const tArray<double>& resource_count, const tArray<double>& rbin_count,
                    const double task_quality, const double task_probability,
                    const int task_count, const int reaction_id, 
-                   cReactionResult& result) const;
+                   cReactionResult& result, cTaskContext& taskctx) const;
 
   cEnvironment(); // @not_implemented
   cEnvironment(const cEnvironment&); // @not_implemented
   cEnvironment& operator=(const cEnvironment&); // @not_implemented
 
 public:
-  inline cEnvironment(cWorld* world);
+  cEnvironment(cWorld* world);
   ~cEnvironment();
 
   bool Load(const cString& filename);  // Reads the environment from disk.
@@ -148,7 +148,7 @@ public:
                  const tBuffer<int>& outputs, const tArray<double>& resource_count) const;
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
-                  const tArray<int>& task_count, const tArray<int>& reaction_count,
+                  const tArray<int>& task_count, tArray<int>& reaction_count,
                   const tArray<double>& resource_count, const tArray<double>& rbins_count) const;
 
   // Accessors
@@ -187,17 +187,16 @@ public:
   bool SetReactionTask(const cString& name, const cString& task);
   bool SetResourceInflow(const cString& name, double _inflow );
   bool SetResourceOutflow(const cString& name, double _outflow );
+	
+//--------------- used for spatial group formation
+public: 
+	void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
+	bool IsGroupID(int test_id);
+	
+protected:
+	std::set<int> possible_group_ids;
   
 };
-
-
-inline cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),
-  m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_rand(false),
-  m_use_specific_inputs(false), m_specific_inputs(), m_mask(0)
-{
-  mut_rates.Setup(world);
-}
-
 
 
 #ifdef ENABLE_UNIT_TESTS

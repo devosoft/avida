@@ -1,0 +1,44 @@
+<html>
+<head>
+  <title>Avida : Overview</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+
+<div class="revision">
+Revised 2009-09-11 DMB
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<hr />
+
+<div align="center">
+<h1>Overview</h1>
+</div>
+
+<p>
+Avida is a software platform for experiments with self-replicating and evolving computer programs. It provides detailed
+control over experimental settings and protocols, a large array of measurement tools, and sophisticated methods to analyze
+and post-process experimental data.
+</p>
+<p>
+In Avida, each digital organism is a self-contained computing automaton that has the ability to construct new automata.
+The organism is responsible for building the genome (computer program) that will control its offspring automaton, and
+handing that genome to the Avida world. Avida will then construct virtual hardware for the genome to be run on, and
+determine how this new organism should be placed into the population. In a typical Avida experiment, a successful
+organism attempts to make an identical copy of its own genome, and Avida randomly places that copy into the population,
+typically by replacing another member of the population.
+</p>
+<p>
+In principle, the only assumption made about these self-replicating automata in the core Avida software is that their
+initial state can be described by a string of symbols (their genome) and that it is possible through processing these
+symbols to autonomously produce offspring organisms. However, in practice our work has focused on automata with a simple
+von Neumann architecture that operate on an assembly-like language inspired by the Tierra system. Future research projects
+will likely have us implement additional oranism instantiations to allow us to explore additional biological questions.
+</p>
+
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+
+</body>
+</html>

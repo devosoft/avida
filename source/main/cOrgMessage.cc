@@ -25,14 +25,22 @@
 #include "cOrgMessage.h"
 #include "cOrganism.h"
 
-cOrgMessage::cOrgMessage(cOrganism* sender) 
-	: m_pSender(sender), m_pReceiver(0), m_data(0), m_label(0),
-	m_receiverOrgID(0), m_receiverCellID(0)
-{
-    assert(m_pSender);
+
+cOrgMessage::cOrgMessage()
+: m_pSender(0), m_pReceiver(0), m_data(0)
+, m_label(0), m_senderOrgID(0), m_senderCellID(0)
+, m_receiverOrgID(0), m_receiverCellID(0) {
+}
+
+
+cOrgMessage::cOrgMessage(cOrganism* sender)
+: m_pSender(sender), m_pReceiver(0), m_data(0)
+, m_label(0), m_receiverOrgID(0), m_receiverCellID(0) {
+	assert(m_pSender);
 	m_senderCellID = sender->GetCellID();
 	m_senderOrgID = sender->GetID();
 }
+
 
 void cOrgMessage::SetReceiver(cOrganism *recvr)
 {

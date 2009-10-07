@@ -1,11 +1,11 @@
 # Avida resource data
-# Thu Feb  7 16:22:57 2008
+# Tue Sep 22 16:17:50 2009
 # First column gives the current update, all further columns give the quantity
 # of the particular resource at that update.
 #  1: Update
 #  2: sun_light
 
-0 1.000000 
+0 1 
 4 1 
 8 1 
 12 1 

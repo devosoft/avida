@@ -39,13 +39,13 @@
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
+#include "cGenome.h"
 
 using namespace std;
 
 class cAvidaContext;
 class cCodeLabel;
 class cCPUMemory;
-class cGenome;
 class cHardwareTracer;
 class cHeadCPU;
 class cInjectGenotype;
@@ -67,7 +67,7 @@ protected:
   // --------  Instruction Costs  ---------
   int m_inst_cost;
   tArray<int> m_inst_ft_cost;
-  tArray<int> m_inst_energy_cost;
+  tArray<double> m_inst_energy_cost;
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
@@ -75,21 +75,27 @@ protected:
   
   // --------  Base Hardware Feature Support  ---------
   tSmartArray<int> m_ext_mem;
+  bool m_implicit_repro_active;
   
+	// -------- Bit masks ---------------
+	static const unsigned int MASK_SIGNBIT = 0x7FFFFFFF;	
+	static const unsigned int MASK24       = 0xFFFFFF;
+
+	static const unsigned int MASKOFF_LOWEST16       = 0xFFFF0000;
+	static const unsigned int MASKOFF_LOWEST15       = 0xFFFF8000;
+	static const unsigned int MASKOFF_LOWEST14       = 0xFFFFC000;
+	static const unsigned int MASKOFF_LOWEST13       = 0xFFFFE000;
+	static const unsigned int MASKOFF_LOWEST12       = 0xFFFFF000;
+	static const unsigned int MASKOFF_LOWEST8        = 0xFFFFFF00;
+	static const unsigned int MASKOFF_LOWEST4        = 0xFFFFFFF0;
+
 
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
 
 public:
-  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)
-    : m_world(world), m_organism(in_organism), m_inst_set_id(inst_set_id), m_inst_set(inst_set), m_tracer(NULL)
-    , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-    , m_has_energy_costs(m_inst_set->HasEnergyCosts())
-  {
-    m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs);
-    assert(m_organism != NULL);
-  }
+  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id);
   virtual ~cHardwareBase() { ; }
   
   int GetInstSetID() const { return m_inst_set_id; }
@@ -193,7 +199,12 @@ public:
 	// -------- Synchronization --------
   //! Called when the organism that owns this CPU has received a flash from a neighbor.
   virtual void ReceiveFlash();	
-
+	
+	// -------- HGT --------
+	//! Retrieve a genome fragment extending downstream from the read head.
+	virtual cGenome GetGenomeFragment(unsigned int downstream);
+	//! Insert a genome fragment at the current write head.
+	virtual void InsertGenomeFragment(const cGenome& fragment);
   
 protected:
   // --------  Core Execution Methods  --------
@@ -206,13 +217,14 @@ protected:
   
   
   // --------  Implicit Repro Check/Instruction  -------- @JEB
-  void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);
+  inline void CheckImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false)
+    { if (m_implicit_repro_active) checkImplicitRepro(ctx, exec_last_inst); }
   virtual bool Inst_Repro(cAvidaContext& ctx);
 
   
   // --------  Execution Speed Instruction  --------
   bool Inst_DoubleEnergyUsage(cAvidaContext& ctx);
-  bool Inst_HalfEnergyUsage(cAvidaContext& ctx);
+  bool Inst_HalveEnergyUsage(cAvidaContext& ctx);
   bool Inst_DefaultEnergyUsage(cAvidaContext& ctx);
 	
 
@@ -242,6 +254,9 @@ protected:
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);  
+
+private:
+  void checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);
 };
 
 

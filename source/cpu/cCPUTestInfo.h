@@ -61,7 +61,7 @@ class cCPUTestInfo
   friend class cTestCPU;
 private:
   // Inputs...
-  const int generation_tests; // Maximum depth in generations to test
+  int generation_tests; // Maximum depth in generations to test
   bool trace_task_order;      // Should we keep track of ordering of tasks?
   bool use_random_inputs;     // Should we give the organism random inputs?
 	bool use_manual_inputs;     // Do we have inputs that we must use?
@@ -88,11 +88,11 @@ private:
   int m_res_update;
   int m_res_cpu_cycle_offset;
 
-  cCPUTestInfo(const cCPUTestInfo&); // @not_implemented
-  cCPUTestInfo& operator=(const cCPUTestInfo&); // @not_implemented
 
 public:
   cCPUTestInfo(int max_tests=nHardware::TEST_CPU_GENERATIONS);
+  cCPUTestInfo(const cCPUTestInfo&);
+  cCPUTestInfo& operator=(const cCPUTestInfo&);
   ~cCPUTestInfo();
 
   void Clear();

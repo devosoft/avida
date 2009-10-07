@@ -146,7 +146,8 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 
   // Prepare the resources
   InitResources(test_info.m_res_method, test_info.m_res, test_info.m_res_update, test_info.m_res_cpu_cycle_offset);
-
+	
+	
   // Determine if we're tracing and what we need to print.
   cHardwareTracer* tracer = test_info.GetTraceExecution() ? (test_info.GetTracer()) : NULL;
   std::ostream * tracerStream = NULL;
@@ -156,8 +157,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   int time_used = m_res_cpu_cycle_offset; // Note: the offset is zero by default if no resources being used @JEB
   
   organism.GetHardware().SetTrace(tracer);
-  while (time_used < time_allocated && organism.GetHardware().GetMemory().GetSize() &&
-         organism.GetPhenotype().GetNumDivides() == 0 && !organism.IsDead())
+  while (time_used < time_allocated && organism.GetPhenotype().GetNumDivides() == 0 && !organism.IsDead())
   {
     time_used++;
     

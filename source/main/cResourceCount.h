@@ -41,6 +41,9 @@
 #ifndef defs_h
 #include "defs.h"
 #endif
+#ifndef nGeometry_h
+#include "nGeometry.h"
+#endif
 
 class cResourceCount
 {
@@ -98,6 +101,7 @@ public:
   const tArray<double>& GetResources() const;
   const tArray<double>& GetCellResources(int cell_id) const;
   const tArray<int>& GetResourcesGeometry() const;
+  int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
   const tArray<tArray<double> >& GetSpatialRes();
   const tArray<tArray<int> >& GetCellIdLists() const { return cell_lists; }
   void Modify(const tArray<double>& res_change);
@@ -111,6 +115,8 @@ public:
   void ReinitializeResources(double additional_resource);
   double GetInitialResourceValue(int resourceID) const { return resource_initial[resourceID]; }
   const cString& GetResName(int id) const { return resource_name[id]; }
+  bool IsSpatial(int id) const { return ((geometry[id] != nGeometry::GLOBAL) && (geometry[id] != nGeometry::PARTIAL)); }
+  int GetResourceByName(cString name) const;
 };
 
 

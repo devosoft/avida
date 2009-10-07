@@ -118,12 +118,11 @@ private:
 	// Group formation information
 	std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
 
-
   ///////////////// Private Methods ////////////////////
   void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
 
   // Methods to place offspring in the population.
-  cPopulationCell& PositionChild(cPopulationCell& parent_cell, bool parent_ok = true);
+  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, bool parent_ok = true);
   void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
@@ -145,7 +144,10 @@ private:
    * It assumes that's where you got the genotype from.
    **/
   void InjectGenotype(int cell_id, cGenotype* genotype);
+public:
+	// This needs to be public so it can be used over in PopulationActions.cc...
   void InjectGenome(int cell_id, const cGenome& genome, int lineage_label);
+private:
   void InjectClone(int cell_id, cOrganism& orig_org);
   void InjectChild(int cell_id, cOrganism& parent);
 
@@ -195,7 +197,7 @@ public:
   void CompeteDemes(int competition_type);
   
   //! Compete all demes with each other based on the given vector of fitness values.
-  void CompeteDemes(const std::vector<double>& fitness);
+  void CompeteDemes(const std::vector<double>& calculated_fitness);
 
   //! Replicate all demes based on the given replication trigger.
   void ReplicateDemes(int rep_trigger);
@@ -248,6 +250,7 @@ public:
   void PrintDemeMutationRate();
   void PrintDemeReceiver();
   void PrintDemeResource();
+  void PrintDemeGlobalResources();
   void PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id) const;
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
@@ -267,7 +270,8 @@ public:
   void ProcessStepSpeculative(cAvidaContext& ctx, double step_size, int cell_id);
 
   // Calculate the statistics from the most recent update.
-  void CalcUpdateStats();
+  void ProcessPostUpdate(cAvidaContext& ctx);
+  void ProcessUpdateCellActions(cAvidaContext& ctx);
 
   // Clear all but a subset of cells...
   void SerialTransfer(int transfer_size, bool ignore_deads);
@@ -352,9 +356,11 @@ private:
     int num_cpus;
     int total_cpus;
     double merit;
+    double gest_time;
     int update_born;
     int update_dead;
     tArray<int> cells;
+    tArray<int> offsets;
     
     cGenotype *genotype;
     
@@ -365,6 +371,17 @@ private:
     inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
   };  
   
+	// -------- HGT support --------
+private:
+	int m_hgt_resid; //!< HGT resource ID.
+public:
+	//! Modify current level of the HGT resource.
+	void AdjustHGTResource(double delta);
+	
+	// -------- Population mixing support --------
+public:
+	//! Mix all organisms in the population.
+	void MixPopulation();
 };
 
 

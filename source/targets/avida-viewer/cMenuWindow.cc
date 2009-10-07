@@ -67,7 +67,7 @@ int cMenuWindow::Activate(cTextWindow * parent_window)
   num_rows = 1 + (num_options-1) / num_cols;
 
   // @CAO We need to identify if we have a problem fitting everything!)
-  if (num_rows > max_rows) ;
+//  if (num_rows > max_rows) ;
 
   // Determine dimenstions for window
   int win_height = num_rows + 4;

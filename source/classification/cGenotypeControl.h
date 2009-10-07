@@ -42,11 +42,9 @@ private:
   cGenotype* coalescent;
   cGenotype* threads[nGenotype::THREADS];
 
-  cGenotype * historic_list;
+  cGenotype* historic_list;
   int historic_count;
 
-  void Insert(cGenotype & in_genotype, cGenotype * prev_genotype);
-  bool CheckPos(cGenotype & in_genotype);
   
   cGenotypeControl(); // @not_implemented
   cGenotypeControl(const cGenotypeControl&); // @not_implemented
@@ -54,34 +52,36 @@ private:
   
 public:
   cGenotypeControl(cWorld* world);
-  ~cGenotypeControl();
+  ~cGenotypeControl() { ; }
 
   bool OK();
-  void Remove(cGenotype & in_genotype);
-  void Insert(cGenotype & new_genotype);
-  bool Adjust(cGenotype & in_genotype);
+  void Remove(cGenotype& in_genotype);
+  void Insert(cGenotype& new_genotype);
+  bool Adjust(cGenotype& in_genotype);
 
-  void RemoveHistoric(cGenotype & in_genotype);
-  void InsertHistoric(cGenotype & in_genotype);
+  void RemoveHistoric(cGenotype& in_genotype);
+  void InsertHistoric(cGenotype& in_genotype);
   int GetHistoricCount() { return historic_count; }
 
   int UpdateCoalescent();
 
   inline int GetSize() const { return size; }
-  inline cGenotype * GetBest() const { return best; }
-  inline cGenotype * GetCoalescent() const { return coalescent; }
+  inline cGenotype* GetBest() const { return best; }
+  inline cGenotype* GetCoalescent() const { return coalescent; }
 
-  cGenotype * Find(const cGenome & in_genome) const;
-  cGenotype * Find(const int in_genotype_id) const;
-  int FindPos(cGenotype & in_genotype, int max_depth = -1);
+  cGenotype* Find(const cGenome & in_genome) const;
+  cGenotype* Find(const int in_genotype_id) const;
+  int FindPos(cGenotype& in_genotype, int max_depth = -1);
 
-  inline cGenotype * Get(int thread) const { return threads[thread]; }
-  inline cGenotype * Reset(int thread)
-    { return threads[thread] = best; }
-  inline cGenotype * ResetHistoric(int thread)
-    { return threads[thread] = historic_list; }
-  cGenotype * Next(int thread);
-  cGenotype * Prev(int thread);
+  inline cGenotype* Get(int thread) const { return threads[thread]; }
+  inline cGenotype* Reset(int thread) { return threads[thread] = best; }
+  inline cGenotype* ResetHistoric(int thread) { return threads[thread] = historic_list; }
+  cGenotype* Next(int thread);
+  cGenotype* Prev(int thread);
+  
+private:
+  void insert(cGenotype& in_genotype, cGenotype* prev_genotype);
+  bool checkPos(cGenotype& in_genotype);  
 };
 
 

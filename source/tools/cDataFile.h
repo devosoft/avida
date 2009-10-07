@@ -27,6 +27,7 @@
 #define cDataFile_h
 
 #include <fstream>
+#include <sstream>
 
 #ifndef cString_h
 #include "cString.h"
@@ -50,7 +51,7 @@ class cDataFile
 #endif
 private:
   cString m_name;
-  cString m_data;
+  std::ostringstream m_data;
   cString m_descr;
   int num_cols;
   

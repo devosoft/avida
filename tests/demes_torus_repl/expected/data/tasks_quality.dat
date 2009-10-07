@@ -1,5 +1,5 @@
 # Avida tasks quality data
-# Fri Mar  6 17:36:57 2009
+# Tue Sep 22 16:17:50 2009
 # First column gives the current update, rest give average and max task quality
 #  1: Update
 #  2: Not Average
@@ -21,7 +21,7 @@
 # 18: Equals Average
 # 19: Equals Max
 
-0 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 10 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 20 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 30 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

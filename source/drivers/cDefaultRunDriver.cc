@@ -121,13 +121,8 @@ void cDefaultRunDriver::Run()
     }
     
     // end of update stats...
-    population.CalcUpdateStats();
-    
-    // Process the update for each deme.
-    for(int i=0; i<population.GetNumDemes(); ++i) {
-      population.GetDeme(i).ProcessUpdate();
-    }
-    
+    population.ProcessPostUpdate(ctx);
+        
     // No viewer; print out status for this update....
     if (m_world->GetVerbosity() > VERBOSE_SILENT) {
       cout.setf(ios::left);

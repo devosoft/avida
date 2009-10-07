@@ -84,6 +84,7 @@ template <class T> class tList;
 class cTaskContext;
 class cTaskState;
 class cPhenPlastSummary;
+class cReactionResult;
 
 class cPhenotype
 {
@@ -143,6 +144,9 @@ private:
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
+  
+  cReactionResult* m_reaction_result;
+  
 
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
@@ -262,7 +266,7 @@ private:
 
   
 public:
-  cPhenotype() : m_world(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
+  cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
 
   cPhenotype(const cPhenotype&); 
   cPhenotype& operator=(const cPhenotype&); 
@@ -364,7 +368,7 @@ public:
   const tArray<int>& GetCurSenseCount() const { assert(initialized == true); return cur_sense_count; }
   double GetSensedResource(int _in) { assert(initialized == true); return sensed_resources[_in]; }
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
-  const int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
+  int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
 	const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
@@ -393,7 +397,7 @@ public:
   double GetLastFitness() const { assert(initialized == true); return last_fitness; }
   double GetPermanentGermlinePropensity() const { assert(initialized == true); return permanent_germline_propensity; }
   const tArray<int>& GetLastCollectSpecCounts() const { assert(initialized == true); return last_collect_spec_counts; }
-  const int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
+  int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
   int GetGeneration() const { assert(initialized == true); return generation; }
@@ -573,7 +577,7 @@ public:
   bool& IsMultiThread() { assert(initialized == true); return is_multi_thread; }
   
   void DoubleEnergyUsage();
-  void HalfEnergyUsage();
+  void HalveEnergyUsage();
   void DefaultEnergyUsage();
   
   void RefreshEnergy();

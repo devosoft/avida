@@ -108,16 +108,16 @@ void cOptionsScreen::Draw()
   }
 
   switch(info.GetConfig().BIRTH_METHOD.Get()) {
-  case POSITION_CHILD_AGE:
+  case POSITION_OFFSPRING_AGE:
     Print(4, 55, "Replace max age");
     break;
-  case POSITION_CHILD_MERIT:
+  case POSITION_OFFSPRING_MERIT:
     Print(4, 55, "Replace max age/merit");
     break;
-  case POSITION_CHILD_RANDOM:
+  case POSITION_OFFSPRING_RANDOM:
     Print(4, 55, "Replace random");
     break;
-  case POSITION_CHILD_EMPTY:
+  case POSITION_OFFSPRING_EMPTY:
     Print(4, 55, "Place in empty only");
     break;
   }

@@ -56,8 +56,12 @@ bool cResourceHistory::GetResourceCountForUpdate(int update, cResourceCount& rc,
   if (entry == -1) return false;
       
   for (int i = 0; i < rc.GetSize(); i++) {
-    if (entry >= m_entries.GetSize() || i >= m_entries[entry].values.GetSize()) rc.Set(i, 0.0);
-    else rc.Set(i, m_entries[entry].values[i]);
+    if (entry >= m_entries.GetSize() || i >= m_entries[entry].values.GetSize()) {
+			rc.Set(i, 0.0);
+		}
+    else {
+			rc.Set(i, m_entries[entry].values[i]);
+		}
   }
   
   return true;

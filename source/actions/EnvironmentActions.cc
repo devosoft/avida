@@ -153,6 +153,36 @@ public:
   }
 };
 
+class cActionSetDemeResource : public cAction
+	{
+	private:
+		cString m_res_name;
+		double m_res_count;
+		
+	public:
+		cActionSetDemeResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
+		{
+			cString largs(args);
+			if (largs.GetSize()) m_res_name = largs.PopWord();
+			if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
+		}
+		
+		static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+			if (res != NULL) {
+				cPopulation& pop = m_world->GetPopulation();
+				int numDemes =  pop.GetNumDemes();
+				for(int demeID = 0; demeID < numDemes; ++demeID) {
+					cDeme& deme = pop.GetDeme(demeID);
+					deme.SetResource(res->GetID(), m_res_count);
+				}
+			}
+		}
+	};
+
 class cZeroResources : public cAction
 {
 private:
@@ -408,6 +438,47 @@ public:
   }
 };
 
+/* Set the inflow of a given deme.  Currently only works for global (deme) resources.
+ 
+ Parameters:
+ deme id - the deme whose resource to set
+ name - the name of the resource
+ inflow - value to set as amount of resource added
+ 
+ */
+
+class cActionSetDemeResourceInflow : public cAction
+  {
+  private:
+    int m_demeid;
+    cString m_name;
+    double m_inflow;
+    
+  public:
+    cActionSetDemeResourceInflow(cWorld* world, const cString& args) : cAction(world, args), m_demeid(-1), m_name(""), m_inflow(0.0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_demeid = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_name = largs.PopWord();
+      if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
+      
+      assert(m_inflow >= 0);
+      assert(m_demeid >= 0);
+      assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
+      
+    }
+    
+    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <int inflow>"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      m_world->GetEnvironment().SetResourceInflow(m_name, m_inflow);
+      //This doesn't actually update the rate in the population, so...
+      m_world->GetPopulation().GetDeme(m_demeid).GetDemeResources().SetInflow(m_name, m_inflow);
+    }
+  };
+
+
 class cActionSetResourceOutflow : public cAction
 {
 private:
@@ -420,8 +491,8 @@ public:
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
-    assert(m_outflow < 1.0);
-    assert(m_outflow > 0.0);
+    assert(m_outflow <= 1.0);
+    assert(m_outflow >= 0.0);
   }
   
   static const cString GetDescription() { return "Arguments: <string resource_name> <int outflow>"; }
@@ -433,6 +504,47 @@ public:
     m_world->GetPopulation().GetResourceCount().SetDecay(m_name, 1-m_outflow);
   }
 };
+
+/* Set the outflow (decay) of a given deme.  Currently only works for global (deme) resources.
+ 
+Parameters:
+   deme id - the deme whose resource to set
+   name - the name of the resource
+   outflow - value to set as percentage of the resource decayed continuously
+ 
+*/
+
+class cActionSetDemeResourceOutflow : public cAction
+  {
+  private:
+    int m_demeid;
+    cString m_name;
+    double m_outflow;
+    
+  public:
+    cActionSetDemeResourceOutflow(cWorld* world, const cString& args) : cAction(world, args), m_demeid(-1), m_name(""), m_outflow(0.0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_demeid = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_name = largs.PopWord();
+      if (largs.GetSize()) m_outflow = largs.PopWord().AsDouble();
+      assert(m_demeid >= 0);
+      assert(m_outflow <= 1.0);
+      assert(m_outflow >= 0.0);
+      assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
+    }
+    
+    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <int outflow>"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      m_world->GetEnvironment().SetResourceOutflow(m_name, m_outflow);
+      //This doesn't actually update the rate in the population, so...
+      m_world->GetPopulation().GetDeme(m_demeid).GetDemeResources().SetDecay(m_name, 1-m_outflow);
+      
+    }
+  };
+
 
 class cActionSetEnvironmentInputs : public cAction
 {
@@ -981,6 +1093,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectScaledResource>("InjectScaledResource");
   action_lib->Register<cActionOutflowScaledResource>("OutflowScaledResource");
   action_lib->Register<cActionSetResource>("SetResource");
+  action_lib->Register<cActionSetDemeResource>("SetDemeResource");
   action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
@@ -994,6 +1107,8 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
 
   action_lib->Register<cActionSetResourceInflow>("SetResourceInflow");
   action_lib->Register<cActionSetResourceOutflow>("SetResourceOutflow");
+  action_lib->Register<cActionSetDemeResourceInflow>("SetDemeResourceInflow");
+  action_lib->Register<cActionSetDemeResourceOutflow>("SetDemeResourceOutflow");
 
   action_lib->Register<cActionSetEnvironmentInputs>("SetEnvironmentInputs");
   action_lib->Register<cActionSetEnvironmentRandomMask>("SetEnvironmentRandomMask");

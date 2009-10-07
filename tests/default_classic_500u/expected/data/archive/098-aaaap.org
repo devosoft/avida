@@ -1,4 +1,4 @@
-# Fri Mar  6 17:36:42 2009
+# Tue Sep 22 16:17:51 2009
 # Filename........: archive/098-aaaap.org
 # Update Output...: 400
 # Is Viable.......: 1
@@ -14,7 +14,7 @@
 # Merit...........: 95.000000
 # Gestation Time..: 378
 # Fitness.........: 0.251323
-# Errors..........: 1
+# Errors..........: 0
 # Genome Size.....: 98
 # Copied Size.....: 98
 # Executed Size...: 95

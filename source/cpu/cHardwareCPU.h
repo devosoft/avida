@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <vector>
 
+
 #ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
@@ -176,6 +177,7 @@ protected:
   int m_epigenetic_saved_reg[NUM_REGISTERS];
   cCPUStack m_epigenetic_saved_stack;
   // Epigenetic State -->
+	
 
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   
@@ -215,6 +217,17 @@ protected:
   int FindModifiedHead(int default_head);
   int FindNextRegister(int base_reg);
   
+  inline const cHeadCPU& getHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
+  inline cHeadCPU& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
+  inline const cHeadCPU& getHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
+  inline cHeadCPU& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  
+  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  
+  
   bool Allocate_Necro(const int new_size);
   bool Allocate_Random(cAvidaContext& ctx, const int old_size, const int new_size);
   bool Allocate_Default(const int new_size);
@@ -249,7 +262,7 @@ public:
   ~cHardwareCPU() { ; }
   
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }
-  static cString GetDefaultInstFilename() { return "instset-classic.cfg"; }
+  static cString GetDefaultInstFilename() { return "instset-heads.cfg"; }
 
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
@@ -326,6 +339,8 @@ private:
   bool Inst_If0(cAvidaContext& ctx);
   bool Inst_IfEqu(cAvidaContext& ctx);
   bool Inst_IfNot0(cAvidaContext& ctx);
+	bool Inst_If0_defaultAX(cAvidaContext& ctx);
+	bool Inst_IfNot0_defaultAX(cAvidaContext& ctx);
   bool Inst_IfNEqu(cAvidaContext& ctx);
   bool Inst_IfGr0(cAvidaContext& ctx);
   bool Inst_IfGr(cAvidaContext& ctx);
@@ -341,6 +356,11 @@ private:
   bool Inst_IfANotEqC(cAvidaContext& ctx);
   bool Inst_IfGrX(cAvidaContext& ctx);
   bool Inst_IfEquX(cAvidaContext& ctx);
+	
+	bool Inst_IfAboveResLevel(cAvidaContext& ctx);
+	bool Inst_IfAboveResLevelEnd(cAvidaContext& ctx);
+	bool Inst_IfNotAboveResLevel(cAvidaContext& ctx);
+	bool Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx);
 
 	// Probabilistic ifs.
 	bool Inst_IfP0p125(cAvidaContext& ctx);
@@ -413,6 +433,7 @@ private:
   bool Inst_ValPolyC(cAvidaContext& ctx);
   bool Inst_Inc(cAvidaContext& ctx);
   bool Inst_Dec(cAvidaContext& ctx);
+  bool Inst_All1s(cAvidaContext& ctx);
   bool Inst_Zero(cAvidaContext& ctx);
   bool Inst_Not(cAvidaContext& ctx);
   bool Inst_Neg(cAvidaContext& ctx);
@@ -428,10 +449,15 @@ private:
   bool Inst_Div(cAvidaContext& ctx);
   bool Inst_Mod(cAvidaContext& ctx);
   bool Inst_Nand(cAvidaContext& ctx);
+  bool Inst_Or(cAvidaContext& ctx);
   bool Inst_Nor(cAvidaContext& ctx);
   bool Inst_And(cAvidaContext& ctx);
   bool Inst_Order(cAvidaContext& ctx);
   bool Inst_Xor(cAvidaContext& ctx);
+  
+  // Bit-setting instructions
+  bool Inst_Setbit(cAvidaContext& ctx);
+  bool Inst_Clearbit(cAvidaContext& ctx);
 
   // Double Argument Math that are treatable
 	bool Inst_NandTreatable(cAvidaContext& ctx);
@@ -491,13 +517,21 @@ private:
   bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
+  bool DoSenseResourceX(int reg_to_set, int cell_id, int resid);
+  bool Inst_SenseResource0(cAvidaContext& ctx);
+  bool Inst_SenseResource1(cAvidaContext& ctx);
+  bool Inst_SenseResource2(cAvidaContext& ctx);
+  bool Inst_SenseFacedResource0(cAvidaContext& ctx);
+  bool Inst_SenseFacedResource1(cAvidaContext& ctx);
+  bool Inst_SenseFacedResource2(cAvidaContext& ctx);
   
   // Resources
   bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
-  bool Inst_Destroy(cAvidaContext& ctx);  
+  bool Inst_Destroy(cAvidaContext& ctx);
+  bool Inst_NopCollect(cAvidaContext& ctx);  
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
   // Donation
@@ -532,6 +566,13 @@ private:
   bool Inst_RequestEnergyFlagOff(cAvidaContext& ctx);
   bool Inst_IncreaseEnergyDonation(cAvidaContext& ctx);
   bool Inst_DecreaseEnergyDonation(cAvidaContext& ctx);
+  
+  void DoResourceDonatePercent(const int to_cell, const int resource_id, const double frac_resource_given);
+  void DoResourceDonateAmount(const int to_cell, const int resource_id, const double amount);
+  bool DonateResourceX(cAvidaContext& ctx, const int res_id);
+  bool Inst_DonateResource0(cAvidaContext& ctx);
+  bool Inst_DonateResource1(cAvidaContext& ctx);
+  bool Inst_DonateResource2(cAvidaContext& ctx);
   
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);
@@ -586,7 +627,9 @@ private:
   bool Inst_SetHead(cAvidaContext& ctx);
   bool Inst_AdvanceHead(cAvidaContext& ctx);
   bool Inst_MoveHead(cAvidaContext& ctx);
+  bool Inst_ResMoveHead(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
+  bool Inst_ResJumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_IfLabel(cAvidaContext& ctx);
   bool Inst_IfLabelDirect(cAvidaContext& ctx);
@@ -691,6 +734,23 @@ private:
   bool Inst_IfConsensus24(cAvidaContext& ctx);  
   bool Inst_IfLessConsensus(cAvidaContext& ctx);
   bool Inst_IfLessConsensus24(cAvidaContext& ctx);
+	
+	// Bit masking instructions
+	bool Inst_MaskSignBit(cAvidaContext& ctx);
+	bool Inst_MaskOffLower16Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower16Bits_defaultAX(cAvidaContext& ctx);
+	bool Inst_MaskOffLower15Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower15Bits_defaultAX(cAvidaContext& ctx);
+	bool Inst_MaskOffLower14Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower14Bits_defaultAX(cAvidaContext& ctx);
+	bool Inst_MaskOffLower13Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower13Bits_defaultAX(cAvidaContext& ctx);
+	bool Inst_MaskOffLower12Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower12Bits_defaultAX(cAvidaContext& ctx);
+	bool Inst_MaskOffLower8Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower8Bits_defaultAX(cAvidaContext& ctx);
+	bool Inst_MaskOffLower4Bits(cAvidaContext& ctx);
+	bool Inst_MaskOffLower4Bits_defaultAX(cAvidaContext& ctx);
   
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
@@ -771,8 +831,13 @@ private:
   bool Inst_SenseTarget(cAvidaContext& ctx);
   bool Inst_SenseTargetFaced(cAvidaContext& ctx);
   bool DoSensePheromone(cAvidaContext& ctx, int cellid);
+	bool DoSensePheromoneInDemeGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT);
+	bool DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEFAULT);
   bool Inst_SensePheromone(cAvidaContext& ctx);
   bool Inst_SensePheromoneFaced(cAvidaContext& ctx);
+	bool Inst_SensePheromoneInDemeGlobal(cAvidaContext& ctx);
+	bool Inst_SensePheromoneGlobal(cAvidaContext& ctx);
+	bool Inst_SensePheromoneGlobal_defaultAX(cAvidaContext& ctx);
   bool Inst_Exploit(cAvidaContext& ctx);
   bool Inst_ExploitForward5(cAvidaContext& ctx);
   bool Inst_ExploitForward3(cAvidaContext& ctx);
@@ -800,6 +865,13 @@ public:
   bool Inst_SetOpinion(cAvidaContext& ctx);
   //! Retrieve this organism's current opinion.
   bool Inst_GetOpinion(cAvidaContext& ctx);
+	//! Only get opinion.  If none then reg is set to zero
+	bool Inst_GetOpinionOnly_ZeroIfNone(cAvidaContext& ctx);
+	//! Clear this organism's current opinion.
+  bool Inst_ClearOpinion(cAvidaContext& ctx);
+	//! Execute next instruction is org has an opinion, otherwise skip
+	bool Inst_IfOpinionSet(cAvidaContext& ctx);
+	bool Inst_IfOpinionNotSet(cAvidaContext& ctx);
 
 	// -------- Cell Data Support --------
 public:
@@ -848,15 +920,23 @@ public:
 	bool Inst_IfNeighborhoodChanged(cAvidaContext& ctx);
 
 	
-// -------- Group Formation Support --------
+	// -------- Group Formation Support --------
 public:
 	//! An organism joins a group by setting it opinion to the group id. 
 	bool Inst_JoinGroup(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
-	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
-		
-	
-	
+	bool Inst_NumberOrgsInMyGroup(cAvidaContext& ctx);
+	//! Returns the number of organisms in the current organism's group
+	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);		
+
+	// -------- Network creation support --------
+public:
+	//! Create a link to the currently-faced cell.
+	bool Inst_CreateLinkByFacing(cAvidaContext& ctx);
+	//! Create a link to the cell specified by xy-coordinates.
+	bool Inst_CreateLinkByXY(cAvidaContext& ctx);
+	//! Create a link to the cell specified by index.
+	bool Inst_CreateLinkByIndex(cAvidaContext& ctx);
 };
 
 
@@ -955,3 +1035,5 @@ inline void cHardwareCPU::SwitchStack()
 }
 
 #endif
+
+

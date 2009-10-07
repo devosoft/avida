@@ -26,6 +26,8 @@
 		10479F2E0F1BC54B00AF9F6A /* cMutationSteps.cc in Sources */ = {isa = PBXBuildFile; fileRef = 10479F2C0F1BC54B00AF9F6A /* cMutationSteps.cc */; };
 		2A57A3FF0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */; };
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
+		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
+		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -37,6 +39,7 @@
 		700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
+		7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
 		7020828F0FB9F2DF00637AD6 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
 		702082900FB9F2DF00637AD6 /* cBitArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 7020828E0FB9F2DF00637AD6 /* cBitArray.h */; };
 		70211A5D0ECBD531004A293A /* cRCObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70211A5B0ECBD531004A293A /* cRCObject.h */; };
@@ -197,18 +200,20 @@
 		70447CA80F83DB5600E1BF72 /* cBirthMateSelectHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */; };
 		70447CAB0F83DBC100E1BF72 /* cBirthDemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 70447CA90F83DBC100E1BF72 /* cBirthDemeHandler.h */; };
 		70447CAC0F83DBC100E1BF72 /* cBirthDemeHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CAA0F83DBC100E1BF72 /* cBirthDemeHandler.cc */; };
-		7049F3560A66A8F500640512 /* instset-classic.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3520A66A8F500640512 /* instset-classic.cfg */; };
-		7049F3570A66A8F500640512 /* instset-sex-classic.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3530A66A8F500640512 /* instset-sex-classic.cfg */; };
 		7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3540A66A8F500640512 /* instset-smt.cfg */; };
 		7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
-		7049F3700A66AD7E00640512 /* default-classic.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36C0A66AD7E00640512 /* default-classic.org */; };
-		7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36D0A66AD7E00640512 /* default-sex-classic.org */; };
 		7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36E0A66AD7E00640512 /* default-smt.org */; };
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E6770D74C36F008B3CA0 /* AvidaScript.cc */; };
 		7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */; };
 		7050E7D70D7DC979008B3CA0 /* cDirectInterpretASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */; };
+		705B103C1073AEF1002242E6 /* default-gx.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10311073AC1F002242E6 /* default-gx.org */; };
+		705B103D1073AEF1002242E6 /* default-heads-sex.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10321073AC1F002242E6 /* default-heads-sex.org */; };
+		705B103E1073AEF1002242E6 /* default-heads.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10331073AC1F002242E6 /* default-heads.org */; };
+		705B103F1073AF05002242E6 /* instset-gx.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10341073AC1F002242E6 /* instset-gx.cfg */; };
+		705B10401073AF05002242E6 /* instset-heads-sex.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10351073AC1F002242E6 /* instset-heads-sex.cfg */; };
+		705B10411073AF05002242E6 /* instset-heads.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10361073AC1F002242E6 /* instset-heads.cfg */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
@@ -347,17 +352,19 @@
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
+				705B103F1073AF05002242E6 /* instset-gx.cfg in CopyFiles */,
+				705B10401073AF05002242E6 /* instset-heads-sex.cfg in CopyFiles */,
+				705B10411073AF05002242E6 /* instset-heads.cfg in CopyFiles */,
+				705B103C1073AEF1002242E6 /* default-gx.org in CopyFiles */,
+				705B103D1073AEF1002242E6 /* default-heads-sex.org in CopyFiles */,
+				705B103E1073AEF1002242E6 /* default-heads.org in CopyFiles */,
 				700E2996085A1F6000CF158A /* avida in CopyFiles */,
 				7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */,
 				7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */,
 				7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */,
 				7039885009F00D080052ACE7 /* events.cfg in CopyFiles */,
-				7049F3560A66A8F500640512 /* instset-classic.cfg in CopyFiles */,
-				7049F3570A66A8F500640512 /* instset-sex-classic.cfg in CopyFiles */,
 				7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */,
 				7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */,
-				7049F3700A66AD7E00640512 /* default-classic.org in CopyFiles */,
-				7049F3710A66AD7E00640512 /* default-sex-classic.org in CopyFiles */,
 				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
 				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
@@ -400,6 +407,11 @@
 		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareGX.h; sourceTree = "<group>"; };
 		42490EFE0BE2472800318058 /* cGermline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGermline.h; sourceTree = "<group>"; };
 		42777E5B0C7F123600AFA4ED /* cOrgMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessage.h; sourceTree = "<group>"; };
+		42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeNetwork.cc; sourceTree = "<group>"; };
+		42C27C800FDC22AC00C45B78 /* cDemeNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetwork.h; sourceTree = "<group>"; };
+		42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetworkUtils.h; sourceTree = "<group>"; };
+		42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeTopologyNetwork.cc; sourceTree = "<group>"; };
+		42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeTopologyNetwork.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -444,6 +456,7 @@
 		70211A5B0ECBD531004A293A /* cRCObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRCObject.h; sourceTree = "<group>"; };
 		70211A5C0ECBD531004A293A /* cRCObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cRCObject.cc; sourceTree = "<group>"; };
 		70211A6C0ECBDB72004A293A /* tRCPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tRCPtr.h; sourceTree = "<group>"; };
+		70217EAE105AB75500F2789F /* avida_overview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = avida_overview.html; sourceTree = "<group>"; };
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
@@ -503,12 +516,8 @@
 		7048A9A40EA431140087B7BD /* cASCPPParameter_NativeObjectSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASCPPParameter_NativeObjectSupport.h; sourceTree = "<group>"; };
 		7049F2D70A66859300640512 /* cHardwareTransSMT.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareTransSMT.cc; sourceTree = "<group>"; };
 		7049F2D80A66859300640512 /* cHardwareTransSMT.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareTransSMT.h; sourceTree = "<group>"; };
-		7049F3520A66A8F500640512 /* instset-classic.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-classic.cfg"; sourceTree = "<group>"; };
-		7049F3530A66A8F500640512 /* instset-sex-classic.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-sex-classic.cfg"; sourceTree = "<group>"; };
 		7049F3540A66A8F500640512 /* instset-smt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-smt.cfg"; sourceTree = "<group>"; };
 		7049F3550A66A8F500640512 /* instset-transsmt.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "instset-transsmt.cfg"; sourceTree = "<group>"; };
-		7049F36C0A66AD7E00640512 /* default-classic.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-classic.org"; sourceTree = "<group>"; };
-		7049F36D0A66AD7E00640512 /* default-sex-classic.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-sex-classic.org"; sourceTree = "<group>"; };
 		7049F36E0A66AD7E00640512 /* default-smt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-smt.org"; sourceTree = "<group>"; };
 		7049F36F0A66AD7E00640512 /* default-transsmt.org */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "default-transsmt.org"; sourceTree = "<group>"; };
 		704ADBC30A6EEFC300666970 /* DriverActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverActions.h; sourceTree = "<group>"; };
@@ -550,6 +559,36 @@
 		705ABB180A8A6A6000A6A80E /* EnvironmentActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentActions.cc; sourceTree = "<group>"; };
 		705ACD4C0A13FED4002D5BA0 /* PrintActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintActions.h; sourceTree = "<group>"; };
 		705ACD4D0A13FED4002D5BA0 /* PrintActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrintActions.cc; sourceTree = "<group>"; };
+		705B100E1073AB58002242E6 /* environment-2paths.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "environment-2paths.cfg"; sourceTree = "<group>"; };
+		705B100F1073AB58002242E6 /* environment-9resource.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "environment-9resource.cfg"; sourceTree = "<group>"; };
+		705B10101073AB58002242E6 /* environment-all-logic.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "environment-all-logic.cfg"; sourceTree = "<group>"; };
+		705B10111073AB58002242E6 /* environment-cascade.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "environment-cascade.cfg"; sourceTree = "<group>"; };
+		705B10121073AB58002242E6 /* instset-heads-30-parasite.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-30-parasite.cfg"; sourceTree = "<group>"; };
+		705B10131073AB58002242E6 /* instset-heads-32-oldsearch.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-32-oldsearch.cfg"; sourceTree = "<group>"; };
+		705B10141073AB58002242E6 /* instset-no-heads-19-short.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-19-short.cfg"; sourceTree = "<group>"; };
+		705B10151073AB58002242E6 /* instset-no-heads-24.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-24.cfg"; sourceTree = "<group>"; };
+		705B10161073AB58002242E6 /* instset-no-heads-27-no-nops.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-27-no-nops.cfg"; sourceTree = "<group>"; };
+		705B10171073AB58002242E6 /* instset-no-heads-27-parasite-no-inject.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-27-parasite-no-inject.cfg"; sourceTree = "<group>"; };
+		705B10181073AB58002242E6 /* instset-no-heads-28-base.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-28-base.cfg"; sourceTree = "<group>"; };
+		705B10191073AB58002242E6 /* instset-no-heads-28-const.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-28-const.cfg"; sourceTree = "<group>"; };
+		705B101A1073AB58002242E6 /* instset-no-heads-29-memsize.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-29-memsize.cfg"; sourceTree = "<group>"; };
+		705B101B1073AB58002242E6 /* instset-no-heads-29-multithreaded.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-29-multithreaded.cfg"; sourceTree = "<group>"; };
+		705B101C1073AB58002242E6 /* instset-no-heads-31-multithreaded.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-no-heads-31-multithreaded.cfg"; sourceTree = "<group>"; };
+		705B101D1073AB58002242E6 /* organism-heads-15-template.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-15-template.org"; sourceTree = "<group>"; };
+		705B101E1073AB58002242E6 /* organism-heads-50.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-50.org"; sourceTree = "<group>"; };
+		705B101F1073AB58002242E6 /* organism-heads-100.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-100.org"; sourceTree = "<group>"; };
+		705B10201073AB58002242E6 /* organism-heads-multi-birth.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-multi-birth.org"; sourceTree = "<group>"; };
+		705B10211073AB58002242E6 /* organism-heads-parasite-host.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-host.org"; sourceTree = "<group>"; };
+		705B10221073AB58002242E6 /* organism-heads-parasite-host2.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-host2.org"; sourceTree = "<group>"; };
+		705B10231073AB58002242E6 /* organism-heads-parasite-infected.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-infected.org"; sourceTree = "<group>"; };
+		705B10241073AB58002242E6 /* organism-heads-parasite-infected2.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-heads-parasite-infected2.org"; sourceTree = "<group>"; };
+		705B10251073AB58002242E6 /* organism-no-heads.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "organism-no-heads.org"; sourceTree = "<group>"; };
+		705B10311073AC1F002242E6 /* default-gx.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "default-gx.org"; sourceTree = "<group>"; };
+		705B10321073AC1F002242E6 /* default-heads-sex.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "default-heads-sex.org"; sourceTree = "<group>"; };
+		705B10331073AC1F002242E6 /* default-heads.org */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "default-heads.org"; sourceTree = "<group>"; };
+		705B10341073AC1F002242E6 /* instset-gx.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-gx.cfg"; sourceTree = "<group>"; };
+		705B10351073AC1F002242E6 /* instset-heads-sex.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-sex.cfg"; sourceTree = "<group>"; };
+		705B10361073AC1F002242E6 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads.cfg"; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayUtils.h; sourceTree = "<group>"; };
 		706C6F480B83E69D003174C1 /* cSaleItem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSaleItem.h; sourceTree = "<group>"; };
@@ -577,30 +616,6 @@
 		707AF2D509EE8501001AEA89 /* avida.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = avida.cfg; sourceTree = "<group>"; };
 		707AF2D709EE8501001AEA89 /* environment.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cfg; sourceTree = "<group>"; };
 		707AF2D809EE8501001AEA89 /* events.cfg */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = events.cfg; sourceTree = "<group>"; };
-		707AF2DE09EE8501001AEA89 /* environment.2paths */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.2paths; sourceTree = "<group>"; };
-		707AF2DF09EE8501001AEA89 /* environment.9resource */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.9resource; sourceTree = "<group>"; };
-		707AF2E009EE8501001AEA89 /* environment.all_logic */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.all_logic; sourceTree = "<group>"; };
-		707AF2E109EE8501001AEA89 /* environment.cascade */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.cascade; sourceTree = "<group>"; };
-		707AF2E209EE8501001AEA89 /* inst_set.19.short */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.19.short; sourceTree = "<group>"; };
-		707AF2E309EE8501001AEA89 /* inst_set.24.old */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.24.old; sourceTree = "<group>"; };
-		707AF2E409EE8501001AEA89 /* inst_set.26.default */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.26.default; sourceTree = "<group>"; };
-		707AF2E509EE8501001AEA89 /* inst_set.27.multi */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.27.multi; sourceTree = "<group>"; };
-		707AF2E609EE8501001AEA89 /* inst_set.27.no-nop */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "inst_set.27.no-nop"; sourceTree = "<group>"; };
-		707AF2E709EE8501001AEA89 /* inst_set.27.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.27.parasite; sourceTree = "<group>"; };
-		707AF2E809EE8501001AEA89 /* inst_set.28.base */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.28.base; sourceTree = "<group>"; };
-		707AF2E909EE8501001AEA89 /* inst_set.28.const */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.28.const; sourceTree = "<group>"; };
-		707AF2EA09EE8501001AEA89 /* inst_set.29.base_memsize */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.29.base_memsize; sourceTree = "<group>"; };
-		707AF2EB09EE8501001AEA89 /* inst_set.31.multi */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.31.multi; sourceTree = "<group>"; };
-		707AF2EC09EE8501001AEA89 /* inst_set.32.heads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.32.heads; sourceTree = "<group>"; };
-		707AF2ED09EE8501001AEA89 /* inst_set.heads.parasite */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = inst_set.heads.parasite; sourceTree = "<group>"; };
-		707AF2EE09EE8501001AEA89 /* organism.heads.100 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.100; sourceTree = "<group>"; };
-		707AF2EF09EE8501001AEA89 /* organism.heads.15 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.15; sourceTree = "<group>"; };
-		707AF2F009EE8501001AEA89 /* organism.heads.50 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.heads.50; sourceTree = "<group>"; };
-		707AF2F109EE8501001AEA89 /* organism.host */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.host; sourceTree = "<group>"; };
-		707AF2F209EE8501001AEA89 /* organism.host2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.host2; sourceTree = "<group>"; };
-		707AF2F309EE8501001AEA89 /* organism.infected */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected; sourceTree = "<group>"; };
-		707AF2F409EE8501001AEA89 /* organism.infected2 */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.infected2; sourceTree = "<group>"; };
-		707AF2F509EE8501001AEA89 /* organism.noheads */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = organism.noheads; sourceTree = "<group>"; };
 		707CE51D0A9E49A50022D19C /* config.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = config.html; sourceTree = "<group>"; };
 		707CE7490AA333060022D19C /* actions.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = actions.html; sourceTree = "<group>"; };
 		707CE7500AA334120022D19C /* analyze.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = analyze.html; sourceTree = "<group>"; };
@@ -1127,18 +1142,20 @@
 		707AF2D209EE8501001AEA89 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				705B10311073AC1F002242E6 /* default-gx.org */,
+				705B10321073AC1F002242E6 /* default-heads-sex.org */,
+				705B10331073AC1F002242E6 /* default-heads.org */,
+				705B10341073AC1F002242E6 /* instset-gx.cfg */,
+				705B10351073AC1F002242E6 /* instset-heads-sex.cfg */,
+				705B10361073AC1F002242E6 /* instset-heads.cfg */,
 				70B1A7590B7E431F00067486 /* experimental.org */,
 				70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */,
-				7049F36C0A66AD7E00640512 /* default-classic.org */,
-				7049F36D0A66AD7E00640512 /* default-sex-classic.org */,
 				7049F36E0A66AD7E00640512 /* default-smt.org */,
 				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
 				707AF2D309EE8501001AEA89 /* analyze.cfg */,
 				707AF2D509EE8501001AEA89 /* avida.cfg */,
 				707AF2D709EE8501001AEA89 /* environment.cfg */,
 				707AF2D809EE8501001AEA89 /* events.cfg */,
-				7049F3520A66A8F500640512 /* instset-classic.cfg */,
-				7049F3530A66A8F500640512 /* instset-sex-classic.cfg */,
 				7049F3540A66A8F500640512 /* instset-smt.cfg */,
 				7049F3550A66A8F500640512 /* instset-transsmt.cfg */,
 				707AF2DD09EE8501001AEA89 /* misc */,
@@ -1150,30 +1167,30 @@
 		707AF2DD09EE8501001AEA89 /* misc */ = {
 			isa = PBXGroup;
 			children = (
-				707AF2DE09EE8501001AEA89 /* environment.2paths */,
-				707AF2DF09EE8501001AEA89 /* environment.9resource */,
-				707AF2E009EE8501001AEA89 /* environment.all_logic */,
-				707AF2E109EE8501001AEA89 /* environment.cascade */,
-				707AF2E209EE8501001AEA89 /* inst_set.19.short */,
-				707AF2E309EE8501001AEA89 /* inst_set.24.old */,
-				707AF2E409EE8501001AEA89 /* inst_set.26.default */,
-				707AF2E509EE8501001AEA89 /* inst_set.27.multi */,
-				707AF2E609EE8501001AEA89 /* inst_set.27.no-nop */,
-				707AF2E709EE8501001AEA89 /* inst_set.27.parasite */,
-				707AF2E809EE8501001AEA89 /* inst_set.28.base */,
-				707AF2E909EE8501001AEA89 /* inst_set.28.const */,
-				707AF2EA09EE8501001AEA89 /* inst_set.29.base_memsize */,
-				707AF2EB09EE8501001AEA89 /* inst_set.31.multi */,
-				707AF2EC09EE8501001AEA89 /* inst_set.32.heads */,
-				707AF2ED09EE8501001AEA89 /* inst_set.heads.parasite */,
-				707AF2EE09EE8501001AEA89 /* organism.heads.100 */,
-				707AF2EF09EE8501001AEA89 /* organism.heads.15 */,
-				707AF2F009EE8501001AEA89 /* organism.heads.50 */,
-				707AF2F109EE8501001AEA89 /* organism.host */,
-				707AF2F209EE8501001AEA89 /* organism.host2 */,
-				707AF2F309EE8501001AEA89 /* organism.infected */,
-				707AF2F409EE8501001AEA89 /* organism.infected2 */,
-				707AF2F509EE8501001AEA89 /* organism.noheads */,
+				705B100E1073AB58002242E6 /* environment-2paths.cfg */,
+				705B100F1073AB58002242E6 /* environment-9resource.cfg */,
+				705B10101073AB58002242E6 /* environment-all-logic.cfg */,
+				705B10111073AB58002242E6 /* environment-cascade.cfg */,
+				705B10121073AB58002242E6 /* instset-heads-30-parasite.cfg */,
+				705B10131073AB58002242E6 /* instset-heads-32-oldsearch.cfg */,
+				705B10141073AB58002242E6 /* instset-no-heads-19-short.cfg */,
+				705B10151073AB58002242E6 /* instset-no-heads-24.cfg */,
+				705B10161073AB58002242E6 /* instset-no-heads-27-no-nops.cfg */,
+				705B10171073AB58002242E6 /* instset-no-heads-27-parasite-no-inject.cfg */,
+				705B10181073AB58002242E6 /* instset-no-heads-28-base.cfg */,
+				705B10191073AB58002242E6 /* instset-no-heads-28-const.cfg */,
+				705B101A1073AB58002242E6 /* instset-no-heads-29-memsize.cfg */,
+				705B101B1073AB58002242E6 /* instset-no-heads-29-multithreaded.cfg */,
+				705B101C1073AB58002242E6 /* instset-no-heads-31-multithreaded.cfg */,
+				705B101D1073AB58002242E6 /* organism-heads-15-template.org */,
+				705B101E1073AB58002242E6 /* organism-heads-50.org */,
+				705B101F1073AB58002242E6 /* organism-heads-100.org */,
+				705B10201073AB58002242E6 /* organism-heads-multi-birth.org */,
+				705B10211073AB58002242E6 /* organism-heads-parasite-host.org */,
+				705B10221073AB58002242E6 /* organism-heads-parasite-host2.org */,
+				705B10231073AB58002242E6 /* organism-heads-parasite-infected.org */,
+				705B10241073AB58002242E6 /* organism-heads-parasite-infected2.org */,
+				705B10251073AB58002242E6 /* organism-no-heads.org */,
 			);
 			path = misc;
 			sourceTree = "<group>";
@@ -1183,6 +1200,7 @@
 			children = (
 				707415C70AA7E4100064A546 /* main.css */,
 				70A33CC00D878407008EF976 /* as_overview.html */,
+				70217EAE105AB75500F2789F /* avida_overview.html */,
 				704D57210AA53F8600207FC1 /* code_standards.html */,
 				707CE7500AA334120022D19C /* analyze.html */,
 				707CE7490AA333060022D19C /* actions.html */,
@@ -1525,6 +1543,11 @@
 				702D4F3908DA61E2007BA469 /* cBirthChamber.h */,
 				1097463D0AE9606E00929ED6 /* cDeme.cc */,
 				1097463E0AE9606E00929ED6 /* cDeme.h */,
+				42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */,
+				42C27C800FDC22AC00C45B78 /* cDemeNetwork.h */,
+				42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */,
+				42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */,
+				42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */,
 				702D4EFC08DA5341007BA469 /* cEnvironment.cc */,
 				702D4EF508DA5328007BA469 /* cEnvironment.h */,
 				70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */,
@@ -2180,6 +2203,8 @@
 				70447CA80F83DB5600E1BF72 /* cBirthMateSelectHandler.cc in Sources */,
 				70447CAC0F83DBC100E1BF72 /* cBirthDemeHandler.cc in Sources */,
 				7020828F0FB9F2DF00637AD6 /* cBitArray.cc in Sources */,
+				42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */,
+				42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2198,6 +2223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				70B6514F0BEA6FCC002472ED /* main.cc in Sources */,
+				7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2345,6 +2371,7 @@
 			buildSettings = {
 				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
+				USER_HEADER_SEARCH_PATHS = "source/**";
 			};
 			name = Development;
 		};
@@ -2470,7 +2497,6 @@
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
-				GCC_FAST_MATH = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
@@ -2575,7 +2601,6 @@
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_FAST_MATH = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_PPC64 = YES;
 				GCC_MODEL_TUNING = G5;
@@ -2626,7 +2651,6 @@
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_FAST_MATH = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
@@ -2761,7 +2785,6 @@
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_FAST_MATH = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
@@ -2775,7 +2798,7 @@
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
 				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -falign-labels=16 -ftree-loop-linear -fsched-interblock -fgcse-sm -fgcse-las -mmultiple -mstring";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
 					"-Wextra",

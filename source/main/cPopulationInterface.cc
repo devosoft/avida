@@ -25,6 +25,7 @@
 
 #include "cPopulationInterface.h"
 
+#include "cDeme.h"
 #include "cEnvironment.h"
 #include "cGenotype.h"
 #include "cHardwareManager.h"
@@ -42,8 +43,16 @@
 #define NULL 0
 #endif
 
-cDeme* cPopulationInterface::GetDeme()
-{
+
+cPopulationCell* cPopulationInterface::GetCell() { 
+	return &m_world->GetPopulation().GetCell(m_cell_id);
+}
+
+cPopulationCell* cPopulationInterface::GetCellFaced() {
+	return &GetCell()->GetCellFaced();
+}
+
+cDeme* cPopulationInterface::GetDeme() {
   return &m_world->GetPopulation().GetDeme(m_deme_id);
 }
 
@@ -275,27 +284,43 @@ bool cPopulationInterface::TestOnDivide()
 }
 
 
-/*! Send a message to the faced organism, failing if this cell does not have 
-neighbors or if the cell currently faced is not occupied. */
-bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
+/*! Internal-use method to consolidate message-sending code.
+ */
+bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell) {
 	static const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
-  if (drop_prob > 0.0 && m_world->GetRandom().P(drop_prob)) {
+  if((drop_prob > 0.0) && m_world->GetRandom().P(drop_prob)) {
+		// message dropped
 		GetDeme()->messageDropped();
-		return false; // message dropped
+		GetDeme()->messageSendFailed();
+		return false;
 	}
 	
-  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied()); // This organism; sanity.
-  cPopulationCell* rcell = cell.ConnectionList().GetFirst();
-  assert(rcell != NULL); // Cells should never be null.
-
   // Fail if the cell we're facing is not occupied.
-  if(!rcell->IsOccupied())
+  if(!rcell.IsOccupied()) {
+		GetDeme()->messageSendFailed();
     return false;
-  cOrganism* recvr = rcell->GetOrganism();
-  assert(recvr != NULL);
+	}
+	
+	cOrganism* recvr = rcell.GetOrganism();
+  assert(recvr != 0);
   recvr->ReceiveMessage(msg);
+	m_world->GetStats().SentMessage(msg);
+	GetDeme()->IncMessageSent();
+	GetDeme()->MessageSuccessfullySent(); // No idea what the difference is here...
   return true;
+}
+
+
+/*! Send a message to the faced organism, failing if this cell does not have 
+ neighbors or if the cell currently faced is not occupied.
+ */
+bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+	assert(cell.IsOccupied()); // This organism; sanity.
+
+  cPopulationCell* rcell = cell.ConnectionList().GetFirst();
+  assert(rcell != 0); // Cells should never be null.	
+	return SendMessage(msg, *rcell);
 }
 
 
@@ -312,11 +337,9 @@ bool cPopulationInterface::BroadcastMessage(cOrgMessage& msg, int depth) {
 	// Remove this cell from the set!
 	cell_set.erase(&cell);
 	
-	// Now, send a message to each organism living in that set of cells.
+	// Now, send a message towards each cell:
 	for(std::set<cPopulationCell*>::iterator i=cell_set.begin(); i!=cell_set.end(); ++i) {
-		if((*i)->IsOccupied()) {
-			(*i)->GetOrganism()->ReceiveMessage(msg);
-		}
+		SendMessage(msg, **i);
 	}
 	return true;
 }
@@ -568,9 +591,32 @@ void cPopulationInterface::RotateToGreatestReputationWithDifferentLineage(int li
 			cell.ConnectionList().CircNext();
 			
 		}
-		
-		
-		
-	}
-	
+	}	
+}
+
+/*! Link this organism's cell to the cell it is currently facing.
+ */
+void cPopulationInterface::CreateLinkByFacing(double weight) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	cPopulationCell* that_cell = GetCellFaced(); assert(that_cell);
+	deme->GetNetwork().Connect(*this_cell, *that_cell, weight);
+}
+
+/*! Link this organism's cell to the cell with coordinates (x,y).
+ */
+void cPopulationInterface::CreateLinkByXY(int x, int y, double weight) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	cPopulationCell& that_cell = deme->GetCell(x % deme->GetWidth(), y % deme->GetHeight());
+	deme->GetNetwork().Connect(*this_cell, that_cell, weight);
+}
+
+/*! Link this organism's cell to the cell with index idx.
+ */
+void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	cPopulationCell& that_cell = deme->GetCell(idx % deme->GetSize());
+	deme->GetNetwork().Connect(*this_cell, that_cell, weight);
 }

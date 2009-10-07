@@ -57,6 +57,7 @@ cPhenotype::cPhenotype(cWorld* world)
   , cur_sense_count(m_world->GetStats().GetSenseSize())
   , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
   , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
+  , m_reaction_result(NULL)
   , last_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_internal_task_count(m_world->GetEnvironment().GetNumTasks())
   , last_task_quality(m_world->GetEnvironment().GetNumTasks())
@@ -77,10 +78,11 @@ cPhenotype::~cPhenotype()
   tArray<cTaskState*> task_states(0);
   m_task_states.GetValues(task_states);
   for (int i = 0; i < task_states.GetSize(); i++) delete task_states[i];
+  delete m_reaction_result;
 }
 
 
-cPhenotype::cPhenotype(const cPhenotype& in_phen)
+cPhenotype::cPhenotype(const cPhenotype& in_phen) : m_reaction_result(NULL)
 {
   *this = in_phen;
 }
@@ -1150,13 +1152,15 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   const double biomimetic_refractory_period = m_world->GetConfig().BIOMIMETIC_REFRACTORY_PERIOD.Get();
   double refract_factor;
 
-  cReactionResult result(num_resources, num_tasks, num_reactions);
-			
+  if (!m_reaction_result) m_reaction_result = new cReactionResult(num_resources, num_tasks, num_reactions);
+  cReactionResult& result = *m_reaction_result;
+  
   // Run everything through the environment.
   bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in); //NEED different eff_task_count and cur_reaction_count for deme resource
 
   // If nothing was found, stop here.
   if (found == false) {
+    result.Invalidate();
     res_change.SetAll(0.0);
     return false;  // Nothing happened.
   }
@@ -1189,10 +1193,28 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     cur_task_value[i] = result.TaskValue(i);
     cur_task_time[i] = cur_update_time; // Find out time from context
   }
+  for (int i = 0; i < num_tasks; i++) {
+	  if (result.TaskDone(i) && !last_task_count[i])
+	  {
+		  m_world->GetStats().AddNewTaskCount(i);
+		  int prev_num_tasks = 0;
+		  int cur_num_tasks = 0;
+		  for (int j=0; j< num_tasks; j++)
+		  {
+			  if (last_task_count[j]>0)
+				  prev_num_tasks++;
+			  if (cur_task_count[j]>0)
+				  cur_num_tasks++;
+		  }
+		  m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
+	  }
+  }
 
   for (int i = 0; i < num_reactions; i++) {
-    if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;
+//    if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;  // moved into cEnvironment::TestOutput to allow reaction requisites to be satisified at the time a reaction is completed
     cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
+	if (result.ReactionTriggered(i) && last_reaction_count[i]==0) 
+		m_world->GetStats().AddNewReactionCount(i); 
   }
 
   // Update the merit bonus
@@ -1259,6 +1281,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   if(result.GetSterilize()) {
     is_fertile = false;
   }
+  
+  result.Invalidate();
   return true;
 }
 
@@ -1401,7 +1425,7 @@ void cPhenotype::DoubleEnergyUsage() {
   executionRatio *= 2.0;
 }
 
-void cPhenotype::HalfEnergyUsage() {
+void cPhenotype::HalveEnergyUsage() {
   executionRatio *= 0.5;
 }
 
@@ -1491,15 +1515,18 @@ double cPhenotype::ExtractParentEnergy() {
   ReduceEnergy(GetStoredEnergy() * frac_energy_decay_at_birth);
   
   // calculate energy to be given to child
-  double child_energy = min(GetStoredEnergy() * frac_parent_energy_given_at_birth + energy_given_at_birth, energy_cap);
-  
+  double child_energy = max(0.0, min(GetStoredEnergy() * frac_parent_energy_given_at_birth + energy_given_at_birth, energy_cap));
+  assert(GetStoredEnergy()>0.0);
   // adjust energy in parent
   ReduceEnergy(child_energy - 2*energy_given_at_birth); // 2*energy_given_at_birth: 1 in child_energy & 1 for parent
     
   //TODO: add energy_given_at_birth to Stored_energy
   cMerit parentMerit(ConvertEnergyToMerit(GetStoredEnergy() * GetEnergyUsageRatio()));
-  SetMerit(parentMerit);
-  
+	if(parentMerit.GetDouble() > 0.0)
+		SetMerit(parentMerit);
+  else
+		SetToDie();
+	
   return child_energy;
 }
 

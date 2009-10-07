@@ -6,7 +6,7 @@
 <body>
 
 <div class="revision">
-Revised 2006-09-05 DMB
+Revised 2009-09-11 DMB
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -32,7 +32,9 @@ figure below).
 <ul>
 <li>A <strong style="color: #006666">memory</strong> that consists of a sequence
     of instructions, each associated with a set of flags to denote if the
-    instruction has been executed, copied, mutated, etc.</li>
+    instruction has been executed, copied, mutated, etc.  Memory is treated
+    as circular, such that execution will loop back to the first instruction
+    after the last instruction has been executed</li>
 <li>An <strong style="color: #880088">instruction pointer</strong> (IP) that
     indicates the next site in the memory to be executed.</li>
 <li>Three <strong style="color: #FF8888">registers</strong> that can be used

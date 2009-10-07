@@ -85,7 +85,7 @@ private:
   // --------  Structure Constants  --------
   static const int NUM_REGISTERS = 4;
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
-  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX };
+  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
   static const int NUM_NOPS = NUM_REGISTERS;
   
   
@@ -329,6 +329,8 @@ private:
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabelStart(bool mark_executed);
   cHeadCPU FindLabelForward(bool mark_executed);
+  cHeadCPU FindNopSequenceStart(bool mark_executed);
+  cHeadCPU FindNopSequenceForward(bool mark_executed);
   bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -353,6 +355,16 @@ private:
   
   int calcCopiedSize(const int parent_size, const int child_size);
   
+  inline const cHeadCPU& getHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
+  inline cHeadCPU& getHead(int head_id) { return m_threads[m_cur_thread].heads[head_id];}
+  inline const cHeadCPU& getHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
+  inline cHeadCPU& getHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
+  
+  inline const cHeadCPU& getIP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadCPU& getIP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
+  inline const cHeadCPU& getIP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+  inline cHeadCPU& getIP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
+
   
   // --------  Division Support  -------
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
@@ -369,6 +381,7 @@ private:
   inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2);  
 
   void ReadInst(const int in_inst);
+  void ReadInst_NoLabel(const int in_inst);
   
   
   // ---------- Promoter Helper Functions -----------
@@ -430,10 +443,13 @@ private:
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
+  bool Inst_HeadCopy_NoLabel(cAvidaContext& ctx);
   bool Inst_HeadSearch(cAvidaContext& ctx);
   bool Inst_HeadSearchLabel(cAvidaContext& ctx);
   bool Inst_HeadSearchDirect(cAvidaContext& ctx);
   bool Inst_HeadSearchDirectLabel(cAvidaContext& ctx);
+  bool Inst_HeadSearchSequence(cAvidaContext& ctx);
+  bool Inst_HeadSearchDirectSequence(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   
   // Goto Variants

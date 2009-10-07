@@ -523,3 +523,19 @@ void cResourceCount::ReinitializeResources(double additional_resource)
 
   } //End going through the resources
 }
+
+int cResourceCount::GetResourceByName(cString name) const
+{
+  int result = -1;
+  
+  for(int i = 0; i < resource_name.GetSize(); i++)
+  {
+    if(resource_name[i] == name)
+    {
+      result = i;
+    }
+  }
+  
+  return result;
+  
+}

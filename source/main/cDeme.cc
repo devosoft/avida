@@ -36,6 +36,23 @@
 #include "cOrgMovementPredicate.h"
 #include "cDemePredicate.h"
 
+
+/*! Constructor
+ */
+cDeme::cDeme() : _id(0), width(0), replicateDeme(false), treatable(false), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
+_age(0), generation(0), total_org_energy(0.0),
+time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
+MSG_sendFailed(0), MSG_dropped(0), MSG_SuccessfullySent(0), MSG_sent(0), energyInjectedIntoOrganisms(0.0), energyRemainingInDemeAtReplication(0.0), total_energy_testament(0.0),
+eventsTotal(0), eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
+consecutiveSuccessfulEventPeriods(0), sleeping_count(0),
+avg_founder_generation(0.0), generations_per_lifetime(0.0),
+deme_resource_count(0), m_germline_genotype_id(0), points(0), migrations_out(0), migrations_in(0), suicides(0), m_network(0) {
+}
+
+cDeme::~cDeme() {
+	if(m_network) delete m_network;
+}
+
 void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* world)
 {
   _id = id;
@@ -115,12 +132,28 @@ cPopulationCell& cDeme::GetCell(int pos) const
   return m_world->GetPopulation().GetCell(cell_ids[pos]);
 }
 
+cPopulationCell& cDeme::GetCell(int x, int y) const
+{
+	return m_world->GetPopulation().GetCell(GetCellID(x,y));
+}
+
 
 cOrganism* cDeme::GetOrganism(int pos) const
 {
   return GetCell(pos).GetOrganism();
 }
 
+int cDeme::GetNumOrgsWithOpinion() const {
+	int demeSize = GetSize();
+	int count = 0;
+	
+	for(int pos = 0; pos < demeSize; ++pos) {
+		cPopulationCell& cell = GetCell(pos);
+		if(cell.IsOccupied() && cell.GetOrganism()->HasOpinion())
+			++count;
+	}
+	return count;
+}
 
 void cDeme::ProcessUpdate() {
 	// test deme predicate
@@ -234,7 +267,21 @@ void cDeme::ProcessUpdate() {
     }
   }
   ++_age;
+	
+	// Let the network process the update too, if we have one.
+	if(IsNetworkInitialized()) { m_network->ProcessUpdate(); }
 }
+
+
+/*! Called when an organism living in a cell in this deme is about to be killed.
+ 
+ This method is called from cPopulation::KillOrganism().
+ */
+void cDeme::OrganismDeath(cPopulationCell& cell) {
+	// Clean up this deme's network, if we have one.
+	if(IsNetworkInitialized()) { m_network->OrganismDeath(cell); }
+}
+
 
 void cDeme::Reset(bool resetResources, double deme_energy)
 {
@@ -281,20 +328,25 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 
 	//reset remaining deme predicates
   for (int i = 0; i < deme_pred_list.Size(); i++) {
-    (*deme_pred_list[i]).Reset();
+    deme_pred_list[i]->Reset();
   }	
   //reset remaining message predicates
   for (int i = 0; i < message_pred_list.Size(); i++) {
-    (*message_pred_list[i]).Reset();
+    message_pred_list[i]->Reset();
   }
   //reset remaining message predicates
   for (int i = 0; i < movement_pred_list.Size(); i++) {
-    (*movement_pred_list[i]).Reset();
+    movement_pred_list[i]->Reset();
   }
   
   if (resetResources) {
     deme_resource_count.ReinitializeResources(additional_resource);
   }
+	// Instead of polluting cDemeNetwork with Resets, we're just going to delete it,
+	// and go ahead and rely on lazy initialization to fill this back in.
+	if(m_network) {
+		delete m_network;
+	}
 }
 
 
@@ -844,6 +896,38 @@ void cDeme::AddPheromone(int absolute_cell_id, double value)
   
 } //End AddPheromone()
 
+double cDeme::GetSpatialResource(int rel_cellid, int resource_id) const
+{
+  assert(rel_cellid >= 0);
+  assert(rel_cellid < GetSize());
+  assert(resource_id >= 0);
+  assert(resource_id < deme_resource_count.GetSize());
+  
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(rel_cellid);
+  return cell_resources[resource_id];
+}
+
+void cDeme::AdjustSpatialResource(int rel_cellid, int resource_id, double amount)
+{
+  assert(rel_cellid >= 0);
+  assert(rel_cellid < GetSize());
+  assert(resource_id >= 0);
+  assert(resource_id < deme_resource_count.GetSize());
+  
+  tArray<double> res_change;
+  res_change.Resize(deme_resource_count.GetSize(), 0);
+  res_change[resource_id] = amount;
+  
+  deme_resource_count.ModifyCell(res_change, rel_cellid);
+  
+}
+
+void cDeme::AdjustResource(int resource_id, double amount)
+{
+  double new_amount = deme_resource_count.Get(resource_id) + amount;
+  deme_resource_count.Set(resource_id, new_amount);
+}
+
 int cDeme::GetSlotFlowRate() const {
   vector<pair<int, int> >::const_iterator iter = event_slot_end_points.begin();
   while(iter != event_slot_end_points.end()) {
@@ -872,3 +956,11 @@ bool cDeme::IsTreatableAtAge(const int age) {
   return false;
   
 } //End cDeme::IsTreatableAtAge()
+
+
+/*! Retrieve the network object, initializing it as needed.
+ */
+cDemeNetwork& cDeme::GetNetwork() {
+	InitNetworkCreation(); 
+	return *m_network; 
+}

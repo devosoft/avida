@@ -53,6 +53,7 @@ using namespace std;
 //  cBitArray NOR(const cBitArray & array2) const
 //  cBitArray XOR(const cBitArray & array2) const
 //  cBitArray EQU(const cBitArray & array2) const
+//  cBitArray SHIFT(const int shift_size) const   -- positive for left shift, negative for right shift
 
 //  const cBitArray & NOTSELF()
 //  const cBitArray & ANDSELF(const cBitArray & array2)
@@ -61,15 +62,25 @@ using namespace std;
 //  const cBitArray & NORSELF(const cBitArray & array2)
 //  const cBitArray & XORSELF(const cBitArray & array2)
 //  const cBitArray & EQUSELF(const cBitArray & array2)
+//  const cBitArray & SHIFTSELF(const int shift_size) const
+
+// Arithmetic:
+//  cBitArray INCREMENTSELF()
 
 // Operator overloads:
 //  cBitArray operator~() const
 //  cBitArray operator&(const cBitArray & ar2) const
 //  cBitArray operator|(const cBitArray & ar2) const
 //  cBitArray operator^(const cBitArray & ar2) const
+//  cBitArray operator>>(const int) const
+//  cBitArray operator<<(const int) const
 //  const cBitArray & operator&=(const cBitArray & ar2)
 //  const cBitArray & operator|=(const cBitArray & ar2)
 //  const cBitArray & operator^=(const cBitArray & ar2)
+//  const cBitArray & operator>>=(const int)
+//  const cBitArray & operator<<=(const int)
+//  cBitArray & operator++()     // prefix ++
+//  cBitArray & operator++(int)  // postfix ++
 
 
 
@@ -80,7 +91,7 @@ using namespace std;
 
 class cRawBitArray {
 private:
-  int * bit_fields;
+  unsigned int * bit_fields;
   
   // Disallow default copy constructor and operator=
   // (we need to know the number of bits we're working with!)
@@ -88,8 +99,7 @@ private:
   const cRawBitArray & operator=(const cRawBitArray & in_array)
     { assert(false); return *this; }
 
-  inline int GetNumFields(const int num_bits) const
-    { return 1 + ((num_bits-1) >> 5); }
+  inline int GetNumFields(const int num_bits) const { return 1 + ((num_bits - 1) >> 5); }
   inline int GetField(const int index) const { return index >> 5; }
   inline int GetFieldPos(const int index) const { return index & 31; }
 public:
@@ -120,7 +130,7 @@ public:
 
   cRawBitArray(const int num_bits) {
     const int num_fields = GetNumFields(num_bits);
-    bit_fields = new int[ num_fields ];
+    bit_fields = new unsigned int[ num_fields ];
     Zero(num_bits);
   }
 
@@ -168,9 +178,18 @@ public:
   // Other bit-play
   int FindBit1(const int num_bits, const int start_pos) const;
   tArray<int> GetOnes(const int num_bits) const;
+  void ShiftLeft(const int num_bits, const int shift_size); // Helper: call SHIFT with positive number instead
+  void ShiftRight(const int num_bits, const int shift_size); // Helper: call SHIFT with negative number instead
 
   void Print(const int num_bits, ostream & out=cout) const {
     for (int i = 0; i < num_bits; i++) {
+      out << GetBit(i);
+    }
+  }
+  
+  // prints in the accepted human readable low-to-hight = right-to-left format, taking bit 0 as low bit
+  void PrintRightToLeft(const int num_bits, ostream & out=cout) const {
+    for (int i = num_bits - 1; i >= 0; i--) {
       out << GetBit(i);
     }
   }
@@ -192,6 +211,8 @@ public:
   void NOR(const cRawBitArray & array2, const int num_bits);
   void XOR(const cRawBitArray & array2, const int num_bits);
   void EQU(const cRawBitArray & array2, const int num_bits);
+  void SHIFT(const int num_bits, const int shift_size);  // positive numbers for left and negative for right (0 does nothing)
+  void INCREMENT(const int num_bits);
 
   // Fast bool operators where we load all of the inputs and store the
   // results here.
@@ -208,6 +229,8 @@ public:
 	   const int num_bits);
   void EQU(const cRawBitArray & array1, const cRawBitArray & array2,
 	   const int num_bits);
+  void SHIFT(const cRawBitArray & array1, const int num_bits, const int shift_size);
+  void INCREMENT(const cRawBitArray & array1, const int num_bits);  // implemented for completeness, but unused by cBitArray
 };
 
 class cBitArray {
@@ -268,6 +291,7 @@ public:
   
 
   void Print(ostream & out=cout) const { bit_array.Print(array_size, out); }
+  void PrintRightToLeft(ostream & out=cout) const { bit_array.PrintRightToLeft(array_size, out); }
   void PrintOneIDs(ostream & out=cout) const
     { bit_array.PrintOneIDs(array_size, out); }
   void Resize(const int new_size) {
@@ -340,6 +364,13 @@ public:
     out_array.array_size = array_size;
     return out_array;
   }
+  
+  cBitArray SHIFT(const int shift_size) const {
+    cBitArray out_array;
+    out_array.bit_array.SHIFT(bit_array, array_size, shift_size);
+    out_array.array_size = array_size;
+    return out_array;
+  }
 
   const cBitArray & NOTSELF() {
     bit_array.NOT(array_size);
@@ -381,15 +412,32 @@ public:
     bit_array.EQU(array2.bit_array, array_size);
     return *this;
   }
+  
+  const cBitArray & SHIFTSELF(const int shift_size) {
+    bit_array.SHIFT(array_size, shift_size);
+    return *this;
+  }
+  
+  cBitArray & INCREMENTSELF() {
+    bit_array.INCREMENT(array_size);
+    return *this;
+  }
+  
 
   // Operator overloads...
   cBitArray operator~() const { return NOT(); }
   cBitArray operator&(const cBitArray & ar2) const { return AND(ar2); }
   cBitArray operator|(const cBitArray & ar2) const { return OR(ar2); }
   cBitArray operator^(const cBitArray & ar2) const { return XOR(ar2); }
+  cBitArray operator<<(const int shift_size) const { return SHIFT(shift_size); }
+  cBitArray operator>>(const int shift_size) const { return SHIFT(-shift_size); }
   const cBitArray & operator&=(const cBitArray & ar2) { return ANDSELF(ar2); }
   const cBitArray & operator|=(const cBitArray & ar2) { return ORSELF(ar2); }
   const cBitArray & operator^=(const cBitArray & ar2) { return XORSELF(ar2); }
+  const cBitArray & operator<<=(const int shift_size) { return SHIFTSELF(shift_size); }
+  const cBitArray & operator>>=(const int shift_size) { return SHIFTSELF(-shift_size); }
+  cBitArray & operator++() { return INCREMENTSELF(); }  // prefix ++
+  cBitArray operator++(int) { cBitArray ans = *this; operator++(); return ans;}  // postfix ++
 
 };
 

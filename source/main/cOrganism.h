@@ -31,6 +31,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <utility>
 #include <map>
 
 #ifndef cCPUMemory_h
@@ -321,7 +322,6 @@ public:
   cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
   int GetNumParasites() const { return m_parasites.GetSize(); }
   void ClearParasites();
-  
 
   // --------  Mutation Rate Convenience Methods  --------
   bool TestCopyMut(cAvidaContext& ctx) const { return m_mut_rates.TestCopyMut(ctx); }
@@ -329,14 +329,21 @@ public:
   bool TestCopyDel(cAvidaContext& ctx) const { return m_mut_rates.TestCopyDel(ctx); }
   bool TestCopyUniform(cAvidaContext& ctx) const { return m_mut_rates.TestCopyUniform(ctx); }
   bool TestCopySlip(cAvidaContext& ctx) const { return m_mut_rates.TestCopySlip(ctx); }
-
+	
   bool TestDivideMut(cAvidaContext& ctx) const { return m_mut_rates.TestDivideMut(ctx); }
   bool TestDivideIns(cAvidaContext& ctx) const { return m_mut_rates.TestDivideIns(ctx); }
   bool TestDivideDel(cAvidaContext& ctx) const { return m_mut_rates.TestDivideDel(ctx); }
+  
+  unsigned int NumDividePoissonMut(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonMut(ctx); }
+  unsigned int NumDividePoissonIns(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonIns(ctx); }
+  unsigned int NumDividePoissonDel(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonDel(ctx); }
+  unsigned int NumDividePoissonSlip(cAvidaContext& ctx) const { return m_mut_rates.NumDividePoissonSlip(ctx); }
+
   bool TestDivideUniform(cAvidaContext& ctx) const { return m_mut_rates.TestDivideUniform(ctx); }
   bool TestDivideSlip(cAvidaContext& ctx) const { return m_mut_rates.TestDivideSlip(ctx); } 
   
   bool TestParentMut(cAvidaContext& ctx) const { return m_mut_rates.TestParentMut(ctx); }
+  bool TestDeath(cAvidaContext& ctx) const { return m_mut_rates.TestDeath(ctx); }
   
   double GetCopyMutProb() const { return m_mut_rates.GetCopyMutProb(); }
   double GetCopyInsProb() const { return m_mut_rates.GetCopyInsProb(); }
@@ -354,6 +361,7 @@ public:
   double GetDivSlipProb() const { return m_mut_rates.GetDivSlipProb(); }
 
   double GetParentMutProb() const { return m_mut_rates.GetParentMutProb();}
+  double GetDeathProb() const { return m_mut_rates.GetDeathProb();}
 
   double GetInjectInsProb() const { return m_mut_rates.GetInjectInsProb(); }
   double GetInjectDelProb() const { return m_mut_rates.GetInjectDelProb(); }
@@ -380,9 +388,6 @@ public:
 
   
   // -------- Messaging support --------
-  // Use a deque instead of vector for amortized constant-time removal
-  // from the front of the list, to efficiently support message list
-  // size caps
 public:
   typedef std::deque<cOrgMessage> message_list_type; //!< Container-type for cOrgMessages.
   
@@ -393,7 +398,7 @@ public:
   //! Called when this organism has been sent a message.
   void ReceiveMessage(cOrgMessage& msg);
   //! Called when this organism attempts to move a received message into its CPU.
-  const cOrgMessage* RetrieveMessage();
+	std::pair<bool, cOrgMessage> RetrieveMessage();
   //! Returns the list of all messsages received by this organism.
   const message_list_type& GetReceivedMessages() { InitMessaging(); return m_msg->received; }
   //! Returns the list of all messages sent by this organism.
@@ -419,7 +424,9 @@ private:
   cMessagingSupport* m_msg;
   
   //! Called to check for (and initialize) messaging support within this organism.
-  inline void InitMessaging() { if(!m_msg) m_msg = new cMessagingSupport(); }
+  inline void InitMessaging() { if(!m_msg) m_msg = new cMessagingSupport(); }	
+	//! Called as the bottom-half of a successfully sent message.
+	void MessageSent(cAvidaContext& ctx, cOrgMessage& msg);
   // -------- End of messaging support --------
 
   // -------- Movement TEMP --------
@@ -464,7 +471,7 @@ public:
 public:
   typedef int Opinion; //!< Typedef for an opinion.
   typedef std::pair<Opinion, int> DatedOpinion; //!< Typedef for an opinion held at a given update.
-  typedef std::vector<DatedOpinion> DatedOpinionList; //!< Typedef for a list of dated opinions.
+  typedef std::deque<DatedOpinion> DatedOpinionList; //!< Typedef for a list of dated opinions.
   //! Called to set this organism's opinion.
   void SetOpinion(const Opinion& opinion);
   //! Retrieve this organism's current opinion.
@@ -473,6 +480,8 @@ public:
   const DatedOpinionList& GetOpinions() { InitOpinions(); return m_opinion->opinion_list; }
   //! Return whether this organism has an opinion.
   bool HasOpinion() { InitOpinions(); return m_opinion->opinion_list.size(); }
+	//! remove all opinions
+	void ClearOpinion() { InitOpinions(); m_opinion->opinion_list.clear(); }
   
 private:
   //! Initialize opinion support.
@@ -637,6 +646,11 @@ private:
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
+	
+	// -------- HGT methods --------
+public:
+	//! Tests for and attempts to perform an insertion of an HGT genome fragment into this organism's genome.
+	bool AttemptHGTInsertion(cAvidaContext& ctx);
 };
 
 

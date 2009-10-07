@@ -39,14 +39,14 @@ SET(LIBRARY_OUTPUT_PATH
 IF(UNIX)
   IF (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
     SET(COMPILER_WARNING_FLAGS "")
-    SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -OPT:Olimit=0")
+    SET(COMPILER_OPTIMIZATION_FLAGS "-funroll-loops -fstrict-aliasing -OPT:Olimit=0")
   ELSE (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
     IF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
       SET(COMPILER_WARNING_FLAGS "")
-      SET(COMPILER_OPTIMIZATION_FLAGS "")
+      SET(COMPILER_OPTIMIZATION_FLAGS "-funroll-loops -mp1 -pc64")
     ELSE (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
       SET(COMPILER_WARNING_FLAGS "-Wextra -Wno-unknown-pragmas -Wno-trigraphs")
-      SET(COMPILER_OPTIMIZATION_FLAGS "-ffast-math -fno-rtti -funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
+      SET(COMPILER_OPTIMIZATION_FLAGS "-funroll-loops -fstrict-aliasing -ftree-vectorize -fvisibility-inlines-hidden")
     ENDIF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
   ENDIF (CMAKE_CXX_COMPILER MATCHES ".*pathCC.*")
 
@@ -239,6 +239,8 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cBirthNeighborhoodHandler.cc
   ${MAIN_DIR}/cBirthSelectionHandler.cc
   ${MAIN_DIR}/cDeme.cc
+  ${MAIN_DIR}/cDemeNetwork.cc
+  ${MAIN_DIR}/cDemeTopologyNetwork.cc
   ${MAIN_DIR}/cDemeCellEvent.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
@@ -585,6 +587,7 @@ IF(AVD_UNIT_TESTS)
   SET(UNIT_TESTS_DIR source/targets/unit-tests)
   SET(UNIT_TESTS_SOURCES
     ${UNIT_TESTS_DIR}/main.cc
+    ${TOOLS_DIR}/cBitArray.cc
   )
   ADD_EXECUTABLE(unit-tests ${UNIT_TESTS_SOURCES})
   INSTALL_TARGETS(/work unit-tests)
@@ -658,12 +661,14 @@ SET(CFG_FILES
   ${CFG_FILES_DIR}/avida.cfg
   ${CFG_FILES_DIR}/environment.cfg
   ${CFG_FILES_DIR}/events.cfg
-  ${CFG_FILES_DIR}/instset-classic.cfg
-  ${CFG_FILES_DIR}/instset-sex-classic.cfg
+  ${CFG_FILES_DIR}/instset-gx.cfg
+  ${CFG_FILES_DIR}/instset-heads.cfg
+  ${CFG_FILES_DIR}/instset-heads-sex.cfg
   ${CFG_FILES_DIR}/instset-smt.cfg
   ${CFG_FILES_DIR}/instset-transsmt.cfg
-  ${CFG_FILES_DIR}/default-classic.org
-  ${CFG_FILES_DIR}/default-sex-classic.org
+  ${CFG_FILES_DIR}/default-gx.org
+  ${CFG_FILES_DIR}/default-heads.org
+  ${CFG_FILES_DIR}/default-heads-sex.org
   ${CFG_FILES_DIR}/default-smt.org
   ${CFG_FILES_DIR}/default-transsmt.org 
 )

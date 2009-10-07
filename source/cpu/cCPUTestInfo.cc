@@ -25,9 +25,11 @@
 
 #include "cCPUTestInfo.h"
 
+#include "cInstSet.h"
 #include "cHardwareStatusPrinter.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
+#include "cResourceHistory.h"
 
 #include <cassert>
 
@@ -47,6 +49,44 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
 {
   org_array.SetAll(NULL);
   Clear();
+}
+
+cCPUTestInfo::cCPUTestInfo(const cCPUTestInfo& test_info)
+{
+  *this = test_info;
+}
+
+
+cCPUTestInfo& cCPUTestInfo::operator=(const cCPUTestInfo& test_info)
+{
+  generation_tests = test_info.generation_tests;
+  trace_task_order = test_info.trace_task_order;
+  use_random_inputs = test_info.use_random_inputs;
+	use_manual_inputs = test_info.use_manual_inputs;
+  manual_inputs = test_info.manual_inputs; 
+  m_tracer = NULL;
+  if (test_info.m_tracer) {
+    *m_tracer = *test_info.m_tracer;
+  }
+  m_inst_set = NULL;
+  if (test_info.m_inst_set)
+  {
+    *m_inst_set = *test_info.m_inst_set;
+  }
+  m_mut_rates = test_info.m_mut_rates;
+  m_cur_sg = test_info.m_cur_sg;
+  is_viable = test_info.is_viable;
+  max_depth = test_info.max_depth;
+  depth_found = test_info.depth_found;
+  max_cycle = test_info.max_cycle;
+  cycle_to = test_info.cycle_to;
+  used_inputs = test_info.used_inputs; 
+  org_array = test_info.org_array;
+  m_res_method = test_info.m_res_method;
+  m_res = NULL;  //Beware -- Resource history is NOT COPIED.
+  m_res_update = test_info.m_res_update;
+  m_res_cpu_cycle_offset = test_info.m_res_cpu_cycle_offset;
+  return *this;
 }
 
 

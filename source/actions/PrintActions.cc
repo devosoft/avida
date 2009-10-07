@@ -80,6 +80,9 @@ STATS_OUT_FILE(PrintMessageData,            message.dat         );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
+STATS_OUT_FILE(PrintNewTasksData,			newtasks.dat		);
+STATS_OUT_FILE(PrintNewReactionData,		newreactions.dat	);
+STATS_OUT_FILE(PrintNewTasksDataPlus,		newtasksplus.dat	);
 STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
 STATS_OUT_FILE(PrintResourceData,           resource.dat        );
 STATS_OUT_FILE(PrintReactionData,           reactions.dat       );
@@ -107,9 +110,13 @@ STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat  
 STATS_OUT_FILE(PrintDemeTreatableCount,    deme_treatable.dat       );
 
 STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
+STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
 STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
 STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
 STATS_OUT_FILE(PrintPerDemeTasksExeData,    per_deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintAvgDemeTasksExeData,    avg_deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintAvgTreatableDemeTasksExeData, avg_treatable_deme_tasks_exe.dat  );
+STATS_OUT_FILE(PrintAvgUntreatableDemeTasksExeData, avg_untreatable_deme_tasks_exe.dat  );
 STATS_OUT_FILE(PrintPerDemeReactionData,    per_deme_reactions.dat  );
 STATS_OUT_FILE(PrintDemeTasksData,          deme_tasks.dat      );
 STATS_OUT_FILE(PrintDemeTasksExeData,       deme_tasks_exe.dat  );
@@ -126,7 +133,10 @@ STATS_OUT_FILE(PrintGermlineData,           germline.dat        );
 STATS_OUT_FILE(PrintDemeResourceThresholdPredicate,     deme_resourceThresholdPredicate.dat );
 STATS_OUT_FILE(PrintPredicatedMessages,     messages.dat        );
 STATS_OUT_FILE(PrintCellData,               cell_data.dat       );
+STATS_OUT_FILE(PrintConsensusData,          consensus.dat       );
+STATS_OUT_FILE(PrintSimpleConsensusData,    simple_consensus.dat);
 STATS_OUT_FILE(PrintCurrentOpinions,        opinions.dat        );
+STATS_OUT_FILE(PrintOpinionsSetPerDeme,     opinions_set.dat    );
 STATS_OUT_FILE(PrintPerDemeGenPerFounderData,   deme_gen_between_founders.dat );
 STATS_OUT_FILE(PrintSynchronizationData,    sync.dat            );
 STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
@@ -135,6 +145,7 @@ STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
 STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
 STATS_OUT_FILE(PrintDynamicMaxMinData,		maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
+STATS_OUT_FILE(PrintMigrationData,      migration.dat);
 
 // reputation
 STATS_OUT_FILE(PrintReputationData,         reputation.dat);
@@ -144,6 +155,10 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 
 // group formation 
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
+STATS_OUT_FILE(PrintGroupIds,         groupids.dat);
+
+// hgt information
+STATS_OUT_FILE(PrintHGTData, hgt.dat);
 
 
 #define POP_OUT_FILE(METHOD, DEFAULT)                                                     /*  1 */ \
@@ -1704,7 +1719,7 @@ class cActionPrintTaskProbHistogram : public cAction
           tArray<double> task_prob = genotype->GetTaskProbabilities();     //    get the taks probabilities
           int weight = (m_weighted) ? genotype->GetNumCPUs() : 1;          //    get the proper tally weighting
           for (int k = 0; k < task_prob.GetSize(); k++){                   //    For each task
-            int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 ) / 5 ) : 21;  // find the bin to put it into
+            int bin_id = (task_prob[k] < 1.0) ? (int) ceil( ( task_prob[k] * 100 ) / 5 ) : 21;  // find the bin to put it into
             m_bins(k,bin_id) += weight;                                                   //   ... and tally it
           }
         }
@@ -1715,7 +1730,7 @@ class cActionPrintTaskProbHistogram : public cAction
           int weight = (m_weighted) ? genotype->GetNumOrganisms() : 1;
           tArray<double> task_prob = genotype->GetTaskProbabilities(ctx);
           for (int k = 0; k < task_prob.GetSize(); k++){
-            int bin_id = (task_prob[k] < 1.0) ? ceil( ( task_prob[k] * 100 ) / 5 ) : 21;
+            int bin_id = (task_prob[k] < 1.0) ? (int) ceil( ( task_prob[k] * 100 ) / 5 ) : 21;
             m_bins(k,bin_id) += weight; 
           }
           genotype = genotype->GetNext();  // Next gentoype
@@ -2168,6 +2183,54 @@ public:
   }
 };
 
+class cActionPrintAveNumTasks : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionPrintAveNumTasks(cWorld* world, const cString& args) : cAction(world, args), m_filename("ave_num_tasks.dat")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cDataFile& df = m_world->GetDataFile(m_filename);  
+    cPopulation& pop = m_world->GetPopulation();
+  
+	int ave_tot_tasks = 0;
+	int num_task_orgs = 0;
+    for (int i = 0; i < pop.GetSize(); i++) {
+      if (pop.GetCell(i).IsOccupied() == false) continue;
+      
+	  cPhenotype& phenotype = pop.GetCell(i).GetOrganism()->GetPhenotype();
+      int num_tasks = m_world->GetEnvironment().GetNumTasks();
+      
+	  int sum_tasks = 0;
+      for (int j = 0; j < num_tasks; j++) 
+        sum_tasks += ( phenotype.GetLastTaskCount()[j] == 0 ) ? 0 : 1;
+	  if (sum_tasks>0) {
+		  ave_tot_tasks += sum_tasks;
+		  num_task_orgs++;
+	  }
+	}
+	double pop_ave = -1;
+	if (num_task_orgs>0)
+		pop_ave = ave_tot_tasks/double(num_task_orgs);
+
+	df.WriteComment("Avida num tasks data");
+    df.WriteTimeStamp();
+    df.WriteComment("First column gives the current update, 2nd column gives the average number of tasks performed");
+    df.WriteComment("by each organism in the current population that performs at least one task ");
+
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+	df.Write(pop_ave, "Ave num tasks done by single org that is doing at least one task");
+	df.Endl();
+  }
+};
+
 
 class cActionPrintViableTasksData : public cAction
 {
@@ -2529,7 +2592,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("grid_fitness.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_fitness-%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
@@ -2560,7 +2623,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("grid_genotype_id.%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("grid_genotype_id-%d.dat", m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
@@ -2572,6 +2635,86 @@ public:
       fp << endl;
     }
     m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+class cActionDumpGenotypeColorGrid : public cAction
+{
+private:
+  int m_num_colors;
+  int m_threshold;
+  cString m_filename;
+  tArray<cGenotype*> m_genotype_chart;
+  
+public:
+  cActionDumpGenotypeColorGrid(cWorld* world, const cString& args)
+    : cAction(world, args), m_num_colors(12), m_threshold(10), m_filename(""), m_genotype_chart(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_num_colors = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_threshold = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    
+    m_genotype_chart.Resize(m_num_colors, NULL);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int num_colors=12] [string fname='']"; }
+  
+  
+  void Process(cAvidaContext& ctx)
+  {
+    // Update current entries in the color chart
+    int pos = -1;
+    for (int i = 0; i < m_num_colors; i++) {
+      if (m_genotype_chart[i]) {
+        pos = m_world->GetClassificationManager().FindPos(*(m_genotype_chart[i]), m_num_colors);
+        if (pos < 0 || pos >= m_num_colors) m_genotype_chart[i] = NULL;
+      }
+    }
+    
+    // Add new entries where possible
+    cGenotype* temp_gen = m_world->GetClassificationManager().GetBestGenotype();
+    for (int i = 0; i < m_threshold && temp_gen; i++, temp_gen = temp_gen->GetNext()) {
+      if (!isInChart(temp_gen)) {
+        // Add to the genotype chart
+        for (int j = 0; j < m_num_colors; j++) {
+          if (m_genotype_chart[j] == NULL) {
+            m_genotype_chart[j] = temp_gen;
+            break;
+          }
+        }
+      }
+    }
+    
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_genotype_color-%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        temp_gen = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype() : NULL;
+        if (temp_gen) {
+          int color = 0;
+          for (; color < m_num_colors; color++) if (m_genotype_chart[color] == temp_gen) break;
+          if (color == m_num_colors && temp_gen->GetThreshold()) color++;
+          fp << color << " ";
+        } else {
+          fp << "-1 ";
+        }
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);   
+  }
+  
+private:
+  inline bool isInChart(cGenotype* gen)
+  {
+    for (int i = 0; i < m_num_colors; i++) {
+      if (m_genotype_chart[i] == gen) return true;
+    }
+    return false;    
   }
 };
 
@@ -2892,6 +3035,19 @@ public:
   }
 };
 
+class cActionPrintDemeGlobalResources : public cAction
+  {
+  public:
+    cActionPrintDemeGlobalResources(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    
+    static const cString GetDescription() { return "No Arguments"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      m_world->GetPopulation().PrintDemeGlobalResources();
+    }
+  };
+
 class cActionSaveDemeFounders : public cAction
 {
 private:
@@ -2957,7 +3113,32 @@ public:
   }
 };
 
-
+class cActionPrintNumOrgsInDeme : public cAction
+  {
+  public:
+    cActionPrintNumOrgsInDeme(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    
+    static const cString GetDescription() { return "No Arguments"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      cDataFile & df = m_world->GetDataFile("deme_org_count.dat");
+      df.WriteComment("Avida deme resource data");
+      df.WriteTimeStamp();
+      
+      cString UpdateStr = cStringUtil::Stringf( "deme_global_resources_%07i = [ ...", m_world->GetStats().GetUpdate());
+      df.WriteRaw(UpdateStr);      
+      
+      for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
+        cDeme& deme = m_world->GetPopulation().GetDeme(d);
+        df.WriteBlockElement(d, 0, 2);
+        df.WriteBlockElement(deme.GetOrgCount(), 1, 2);
+      }
+      
+      df.WriteRaw("];");
+      df.Endl();
+    }
+  };
 
 
 void RegisterPrintActions(cActionLibrary* action_lib)
@@ -2975,6 +3156,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
+  action_lib->Register<cActionPrintNewTasksData>("PrintNewTasksData");
+  action_lib->Register<cActionPrintNewReactionData>("PrintNewReactionData");
+  action_lib->Register<cActionPrintNewTasksDataPlus>("PrintNewTasksDataPlus");
   action_lib->Register<cActionPrintTasksQualData>("PrintTasksQualData");
   action_lib->Register<cActionPrintResourceData>("PrintResourceData");
   action_lib->Register<cActionPrintReactionData>("PrintReactionData");
@@ -3011,7 +3195,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionPrintDemeResourceThresholdPredicate>("PrintDemeResourceThresholdPredicate");
 	action_lib->Register<cActionPrintPredicatedMessages>("PrintPredicatedMessages");
 	action_lib->Register<cActionPrintCellData>("PrintCellData");
+	action_lib->Register<cActionPrintConsensusData>("PrintConsensusData");
+	action_lib->Register<cActionPrintSimpleConsensusData>("PrintSimpleConsensusData");
 	action_lib->Register<cActionPrintCurrentOpinions>("PrintCurrentOpinions");
+	action_lib->Register<cActionPrintOpinionsSetPerDeme>("PrintOpinionsSetPerDeme");
 	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
 	
@@ -3025,6 +3212,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeSpacialEnergy>("PrintDemeSpacialEnergyStats");
   action_lib->Register<cActionPrintDemeSpacialSleep>("PrintDemeSpacialSleepStats");
   action_lib->Register<cActionPrintDemeResources>("PrintDemeResourceStats");
+  action_lib->Register<cActionPrintDemeGlobalResources>("PrintDemeGlobalResources");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
   action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
@@ -3037,6 +3225,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");
   action_lib->Register<cActionPrintPerDemeTasksData>("PrintPerDemeTasksData");
   action_lib->Register<cActionPrintPerDemeTasksExeData>("PrintPerDemeTasksExeData");
+  action_lib->Register<cActionPrintAvgDemeTasksExeData>("PrintAvgDemeTasksExeData");
+  action_lib->Register<cActionPrintAvgTreatableDemeTasksExeData>("PrintAvgTreatableDemeTasksExeData");
+  action_lib->Register<cActionPrintAvgUntreatableDemeTasksExeData>("PrintAvgUntreatableDemeTasksExeData");
   action_lib->Register<cActionPrintPerDemeReactionData>("PrintPerDemeReactionData");
   action_lib->Register<cActionPrintDemeTasksData>("PrintDemeTasksData");
   action_lib->Register<cActionPrintDemeTasksExeData>("PrintDemeTasksExeData");
@@ -3048,7 +3239,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
   action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
   action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
-
 	
 
   //Coalescence Clade Actions
@@ -3082,6 +3272,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionTestDominant>("TestDominant");
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
+  action_lib->Register<cActionPrintAveNumTasks>("PrintAveNumTasks");
   action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
   
   action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
@@ -3090,6 +3281,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpMemory>("DumpMemory");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeIDGrid>("DumpGenotypeIDGrid");
+  action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpLineageGrid>("DumpLineageGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
@@ -3103,7 +3295,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   // Print Settings
   action_lib->Register<cActionSetVerbose>("SetVerbose");
   
-  action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");//ZOOZ
+  action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
+  action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");
@@ -3166,6 +3359,12 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 	// Group Formation
 	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
+	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
+
+	// hgt
+	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 	
   action_lib->Register<cActionSetVerbose>("VERBOSE");
+  
+  action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
 }

@@ -35,9 +35,10 @@
 #ifndef cWorldDriver_h
 #include "cWorldDriver.h"
 #endif
-#include "cDeme.h"
 
+class cDeme;
 class cPopulation;
+class cPopulationCell;
 class cOrgMessage;
 
 
@@ -61,7 +62,12 @@ public:
   virtual ~cPopulationInterface() { ; }
 
   int GetCellID() { return m_cell_id; }
+	//! Retrieve the cell in which this organism lives.
+	cPopulationCell* GetCell();
+	//! Retrieve the cell currently faced by this organism.
+	cPopulationCell* GetCellFaced();
   int GetDemeID() { return m_deme_id; }
+	//! Retrieve the deme in which this organism lives.
   cDeme* GetDeme();
   void SetCellID(int in_id) { m_cell_id = in_id; }
   void SetDemeID(int in_id) { m_deme_id = in_id; }
@@ -107,7 +113,6 @@ public:
   bool TestOnDivide();
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
-  bool SendMessage(cOrganism* recvr, cOrgMessage& msg);
   bool BroadcastMessage(cOrgMessage& msg, int depth);
   bool BcastAlarm(int jump_label, int bcast_range);  
   void DivideOrgTestamentAmongDeme(double value);
@@ -119,7 +124,19 @@ public:
 	// Reputation
 	void RotateToGreatestReputation();
 	void RotateToGreatestReputationWithDifferentTag(int tag);
-	void RotateToGreatestReputationWithDifferentLineage(int line);	
+	void RotateToGreatestReputationWithDifferentLineage(int line);
+	
+	// -------- Network creation support --------
+	//! Link this organism's cell to the cell it is currently facing.
+	void CreateLinkByFacing(double weight=1.0);
+	//! Link this organism's cell to the cell with coordinates (x,y).
+	void CreateLinkByXY(int x, int y, double weight=1.0);
+	//! Link this organism's cell to the cell with index idx.
+	void CreateLinkByIndex(int idx, double weight=1.0);
+
+protected:
+	//! Internal-use method to consolidate message-sending code.
+	bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
 };
 
 

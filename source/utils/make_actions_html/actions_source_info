@@ -60,6 +60,14 @@
   Print the total quality of each task.  By default a successful task is valued
   as 1.0.  Some tasks, however, can grant partial values and/or special bonuses
   via the quality value.
+=== Action PrintNewTasksData ===
+  Print number of times the particular task has newly appeared in the population since
+  the last time this datum was printed.  Newly appeared is defined as an organism executing 
+  a task that was not executed by its parent.
+=== Action PrintNewReactionData ===
+  Print number of times the particular reaction has newly appeared in the population since
+  the last time this datum was printed.  Newly appeared is defined as an organism triggering
+  a reaction that was not triggered by its parent.
 === Action PrintResourceData ===
   Print the current counts of each resource available to the population.  This uses
   the environment configuration to determine what resources are in use.  Also creates

@@ -51,47 +51,51 @@ int cGenomeUtil::FindInst(const cGenome & gen, const cInstruction & inst,
 int cGenomeUtil::CountInst(const cGenome & gen, const cInstruction & inst)
 {
   int count = 0;
-  for(int i = 0; i < gen.GetSize(); i++) {
-    if (gen[i] == inst) count++;
+  for(int i = 0; i < gen.GetSize(); ++i) {
+    if (gen[i] == inst) ++count;
   }
 	
   return count;
 }
 
 // Returns minimum distance between two instance of inst respecting genome circularity.
-// If only one instance is found then lenght of genome is returned.
+// If zero or one instance is found then 0 is returned.
 int cGenomeUtil::MinDistBetween(const cGenome& genome, const cInstruction& inst) {
 	const int genomeSize = genome.GetSize();
 	int firstInstance(-1);
 	int secondInstance(-1);
 	int startIndex(0);
 	int minDist(genomeSize);
-
+	assert(startIndex < genomeSize);
+	
 	while(startIndex < genomeSize) {
 		firstInstance = FindInst(genome, inst, startIndex);
-		startIndex = firstInstance + 1;
-		
-		if(startIndex >= genomeSize)
-			return minDist;
-		
-		secondInstance = FindInst(genome, inst, startIndex);
-	
-		if(firstInstance != -1 and secondInstance != -1) {
-			minDist = min(min(secondInstance-firstInstance, firstInstance+genomeSize-secondInstance), minDist);
-		} else if(secondInstance != -1) {
-			secondInstance = FindInst(genome, inst, 0);
-			if(firstInstance == secondInstance)
-				return minDist;
-			else {
-				assert(secondInstance < firstInstance);
-				minDist = min(secondInstance+genomeSize-firstInstance, minDist);
-			}
-		} else {
+		if(firstInstance == -1 && startIndex == 0) {
+			// no instance of inst
+			return 0;
+		} else if(firstInstance == -1) {
+			// no more instances
 			return minDist;
 		}
-	}
-	assert(false);
-	return -1;
+		
+		startIndex = firstInstance + 1;
+		secondInstance = FindInst(genome, inst, startIndex);
+		
+		if(secondInstance == -1) {
+			// no instance between startIndex and end
+			// search from begining
+			secondInstance = FindInst(genome, inst, 0);
+			// worst-case this finds same instance of inst as firstInstance
+		}			
+	
+		if(firstInstance != secondInstance) {
+			minDist = min(min(abs(firstInstance-secondInstance), secondInstance+genomeSize-firstInstance), minDist);
+			assert(minDist > 0);
+		} else { // they are equal, so there is only one instance of inst
+			return 0;
+		} 
+	}	
+	return minDist;
 }
 
 
@@ -171,26 +175,40 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
 {
   const int size1 = gen1.GetSize();
   const int size2 = gen2.GetSize();
+  const int min_size = min(size1, size2);
 
-  if (!size1) return size2;
-  if (!size2) return size1;
+  // If either size is zero, return the other one!
+  if (!min_size) return max(size1, size2);
 
-  int * cur_row  = new int[size1];  // The row we are calculating
-  int * prev_row = new int[size1];  // The last row we calculater
+  // Count how many direct matches we have at the front and end.
+  int match_front = 0, match_end = 0;
+  while (match_front < min_size && gen1[match_front] == gen2[match_front]) match_front++;
+  while (match_end < min_size &&
+	 gen1[size1 - match_end - 1] == gen2[size2 - match_end - 1]) match_end++;
+
+  // We can ignore the last match_end sites since we know they have distance zero.
+  const int test_size1 = size1 - match_front - match_end;
+  const int test_size2 = size2 - match_front - match_end;
+
+  if (test_size1 <= 0 || test_size2 <=0) return abs(test_size1 - test_size2);
+
+  // Now match everything else...
+  int * cur_row  = new int[test_size1];  // The row we are calculating
+  int * prev_row = new int[test_size1];  // The last row we calculated
 
   // Initialize the previous row to record the differece from nothing.
-  for (int i = 0; i < size1; i++)  prev_row[i] = i + 1;
+  for (int i = 0; i < test_size1; i++)  prev_row[i] = i + 1;
 
   // Loop through each subsequent character in the test code
-  for (int i = 0; i < size2; i++) {
+  for (int i = 0; i < test_size2; i++) {
     // Initialize the first entry in cur_row.
-    if (gen1[0] == gen2[i]) cur_row[0] = i;
+    if (gen1[match_front] == gen2[match_front + i]) cur_row[0] = i;
     else cur_row[0] = (i < prev_row[0]) ? (i+1) : (prev_row[0] + 1);
 
     // Move down the cur_row and fill it out.
-    for (int j = 1; j < size1; j++) {
+    for (int j = 1; j < test_size1; j++) {
       // If the values are equal, keep the value in the upper left.
-      if (gen1[j] == gen2[i]) {
+      if (gen1[match_front + j] == gen2[match_front + i]) {
 	cur_row[j] = prev_row[j-1];
       }
 
@@ -215,7 +233,7 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
 
   // Now that we are done, return the bottom-right corner of the chart.
 
-  const int value = prev_row[size1 - 1];
+  const int value = prev_row[test_size1 - 1];
 
   delete [] cur_row;
   delete [] prev_row;

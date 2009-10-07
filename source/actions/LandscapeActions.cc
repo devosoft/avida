@@ -165,12 +165,21 @@ private:
  * Precalculates landscape data for use in detail files.  The primary
  * advantage of this is that it supports multithreaded execution, whereas
  * lazy evaluation during detailing will be serialized.
+ * @JEB: This also now supports setting some test CPU info, just manual inputs for now,
+ * (BEWARE: resource settings that are passed are NOT HONORED yet).
 */
 
 class cActionPrecalcLandscape : public cAction  // @parallelized
 {
+private:
+  cCPUTestInfo m_cpu_test_info;
+
 public:
-  cActionPrecalcLandscape(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  cActionPrecalcLandscape(cWorld* world, const cString& in_args) : cAction(world, in_args), m_cpu_test_info() 
+  { 
+    cString args(in_args); 
+    cAnalyze::PopCommonCPUTestParameters(world, args, m_cpu_test_info);
+  }
   
   static const cString GetDescription()
   {
@@ -191,6 +200,7 @@ public:
       tAnalyzeJobBatch<cAnalyzeGenotype> jobbatch(m_world->GetAnalyze().GetJobQueue());
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       for (cAnalyzeGenotype* cur_genotype = batch_it.Next(); cur_genotype; cur_genotype = batch_it.Next()) {
+        cur_genotype->SetCPUTestInfo(m_cpu_test_info);
         jobbatch.AddJob(cur_genotype, &cAnalyzeGenotype::CalcLandscape);
       }
       jobbatch.RunBatch();

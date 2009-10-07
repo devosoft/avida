@@ -54,30 +54,13 @@ public:
   double S3()           const { return s3; }
   double S4()           const { return s4; }
 
-  double Average() const { return ( n > 0 ) ? (s1/n) : 0; }
-
-  double Variance() const { return ( n > 1 ) ?
-      (s2 - s1*s1/n) / (n-1) : INF_ERR; }
-    //n*(s2/n - s1/n*s1/n) / (n-1) : INF_ERR; }
+  double Average() const { return (n > 0.0) ? (s1 / n) : 0.0; }
+  double Variance() const { return (n > 1.0) ? (s2 - s1 * s1 / n) / (n - 1.0) : INF_ERR; }
   double StdDeviation() const { return sqrt(Variance()); }
-  double StdError()  const { return (n > 1) ?
-         sqrt(Variance()/n) : INF_ERR; }
-
-//      old formula, implemented by TCC, not sure how it relates to 
-//      the real Standard Error
-//       sqrt(s2 / (n * (n-1))) : INF_ERR; }
-
-  double Skewness() const { return ( n > 2 ) ?
-       (n*s3 - 3*s2*s1 + 2*s1*s1*s1/n) / ((n-1)*(n-2)) : INF_ERR; }
-     //n*n*(s3/n - 3*s2/n*s1/n + 2*s1/n*s1/n*s1/n)/((n-1)*(n-2)) : INF_ERR; }
-
-  double Kurtosis() const { return ( n > 3 ) ?
-     //n*n*(n+1)*(s4/n - 4*s3/n*s1/n + 6*s2/n*s1/n*s1/n -
-     //3*s1/n*s1/n*s1/n*s1/n)/((n-1)*(n-2)*(n-3)) :
-       (n+1)*(n*s4 - 4*s3*s1 + 6*s2*s1*s1/n - 3*s1*s1*s1/n*s1/n) /
-       ((n-1)*(n-2)*(n-3)) :
-       INF_ERR; }
-
+  double StdError()  const { return (n > 1) ? sqrt(Variance() / n) : INF_ERR; }
+  double Skewness() const;
+  double Kurtosis() const;
+  
   // Notation Shortcuts
   double Ave() const { return Average(); }
   double Var() const { return Variance(); }
@@ -85,7 +68,8 @@ public:
   double Skw() const { return Skewness(); }
 
 
-  void Add(double value, double weight=1){
+  void Add(double value, double weight = 1.0)
+  {
     double w_val = value * weight;
     n += weight;
     s1 += w_val;
@@ -94,7 +78,8 @@ public:
     s4 += w_val * w_val * w_val * w_val;
   }
 
-  void Subtract(double value, double weight=1){
+  void Subtract(double value, double weight = 1.0)
+  {
     double w_val = value * weight;
     n -= weight;
     s1 -= w_val;

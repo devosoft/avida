@@ -29,6 +29,7 @@
 
 #include "cEnvironment.h"
 
+#include "defs.h"
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cEnvReqs.h"
@@ -36,6 +37,8 @@
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "nMutation.h"
+#include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cRandom.h"
 #include "cReaction.h"
 #include "nReaction.h"
@@ -62,6 +65,13 @@
 
 using namespace std;
 
+
+cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),
+m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_rand(false),
+m_use_specific_inputs(false), m_specific_inputs(), m_mask(0)
+{
+  mut_rates.Setup(world);
+}
 
 cEnvironment::~cEnvironment()
 {
@@ -452,13 +462,41 @@ bool cEnvironment::LoadResource(cString desc)
           cerr <<"Error: Energy resources can not be used without the energy model.\n";
         }
       }
+			else if (var_name == "hgt") {
+				// this resource is for HGT -- corresponds to genome fragments present in cells.
+				if(!AssertInputBool(var_value, "hgt", var_type)) return false;
+				new_resource->SetHGTMetabolize(var_value.AsInt());
+			}
       else {
         cerr << "Error: Unknown variable '" << var_name
         << "' in resource '" << name << "'" << endl;
         return false;
       }
     }
-    
+
+    // Prevent misconfiguration of HGT:
+		if(new_resource->GetHGTMetabolize() &&
+			 ((new_resource->GetGeometry() != nGeometry::GLOBAL)
+				|| (new_resource->GetInitial() > 0.0)
+				|| (new_resource->GetInflow() > 0.0)
+				|| (new_resource->GetOutflow() > 0.0)
+				|| (new_resource->GetInflowX1() != -99)
+				|| (new_resource->GetInflowX2() != -99)
+				|| (new_resource->GetInflowY1() != -99)
+				|| (new_resource->GetInflowY2() != -99)
+				|| (new_resource->GetXDiffuse() != 1.0)
+				|| (new_resource->GetXGravity() != 0.0)
+				|| (new_resource->GetYDiffuse() != 1.0)
+				|| (new_resource->GetYGravity() != 0.0)
+				|| (new_resource->GetDemeResource() != false))) {
+			cerr << "Error: misconfigured HGT resource: " << name << endl;
+			return false;
+		}		
+		if(new_resource->GetHGTMetabolize() && !m_world->GetConfig().ENABLE_HGT.Get()) {
+			cerr << "Error: resource configured to use HGT, but HGT not enabled." << endl;
+			return false;
+		}
+
     // If there are valid values for X/Y1's but not for X/Y2's assume that 
     // the user is interested only in one point and set the X/Y2's to the
     // same value as X/Y1's
@@ -1029,7 +1067,7 @@ bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs
 
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const tArray<int>& task_count,
-                              const tArray<int>& reaction_count, 
+															tArray<int>& reaction_count, 
                               const tArray<double>& resource_count, 
                               const tArray<double>& rbins_count) const
 {
@@ -1077,8 +1115,9 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     
     // And let's process it!
     DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, 
-                task_quality, task_probability, task_cnt, i, result);
+                task_quality, task_probability, task_cnt, i, result, taskctx);
     
+    if (result.ReactionTriggered(i) == true) reaction_count[i]++;
 
     // Note: the reaction is actually marked as being performed inside DoProcesses.
   }  
@@ -1182,7 +1221,7 @@ double cEnvironment::GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskct
 void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list,
                                const tArray<double>& resource_count, const tArray<double>& rbins_count, 
                                const double task_quality, const double task_probability, const int task_count, 
-                               const int reaction_id, cReactionResult& result) const
+                               const int reaction_id, cReactionResult& result, cTaskContext& taskctx) const
 {
   const int num_process = process_list.GetSize();
   
@@ -1209,7 +1248,31 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     if (in_resource == NULL) {
       // Test if infinite resource
       consumed = max_consumed * local_task_quality * task_plasticity_modifier;
-    } else {
+			
+    } else if(in_resource->GetHGTMetabolize()) {
+			/* HGT Metabolism
+			 This bit of code is triggered when ENABLE_HGT=1 and a resource has hgt=1.
+			 Here's the idea: Each cell in the environment holds a buffer of genome fragments,
+			 where these fragments are drawn from the remains of organisms that have died.
+			 These remains are a potential source of energy to the current inhabitant of the
+			 cell.  This code metabolizes one of those fragments by pretending that it's just
+			 another resource.  Task quality can be used to control the conversion of fragments
+			 to bonus, but the amount of resource consumed is always equal to the length of the
+			 fragment.
+			 */
+			int cellid = taskctx.GetOrganism()->GetCellID();
+			if(cellid != -1) { // can't do this in the test cpu
+				cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+				if(cell.CountGenomeFragments() > 0) {
+					cGenome fragment = cell.PopGenomeFragment();
+					consumed = local_task_quality * fragment.GetSize();
+					result.Consume(in_resource->GetID(), fragment.GetSize(), true);
+					m_world->GetStats().GenomeFragmentMetabolized(taskctx.GetOrganism(), fragment);
+				}
+			}
+			// if we can't metabolize a fragment, stop here.
+			if(consumed == 0.0) { continue; }
+		} else {
       // Otherwise we're using a finite resource      
       const int res_id = in_resource->GetID();
       
@@ -1265,12 +1328,12 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       	result.Consume(res_id, consumed, !using_rbins);
       }
     }
-    
+	    
     // Mark the reaction as having been performed if we get here.
     result.MarkReaction(reaction_id);
     
     double bonus = consumed * cur_process->GetValue();
-    
+
     if (!cur_process->GetIsGermline())
     {
       // normal bonus
@@ -1524,3 +1587,15 @@ bool cEnvironment::SetResourceOutflow(const cString& name, double _outflow )
   return true;
 }
 
+/* 
+ helper function that checks if this is a valid group id. The ids are specified 
+ in the environment file as tasks.
+ */
+bool cEnvironment::IsGroupID(int test_id) 
+{
+	bool val = false;
+	if (possible_group_ids.find(test_id) != possible_group_ids.end())
+		val = true;
+	return val;
+	
+}

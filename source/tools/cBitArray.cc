@@ -6,7 +6,7 @@ void cRawBitArray::Copy(const cRawBitArray & in_array, const int num_bits)
   if (bit_fields != NULL) {
     delete [] bit_fields;
   }
-  bit_fields = new int[num_fields];
+  bit_fields = new unsigned int[num_fields];
   for (int i = 0; i < num_fields; i++) {
     bit_fields[i] = in_array.bit_fields[i];
   }
@@ -29,9 +29,9 @@ void cRawBitArray::Resize(const int old_bits, const int new_bits)
   const int num_new_fields = GetNumFields(new_bits);
   if (num_old_fields == num_new_fields) {
     // Clear all bits past the new end and stop.
-    int & last_field = bit_fields[num_new_fields - 1];
+    unsigned int & last_field = bit_fields[num_new_fields - 1];
     for (int i = new_bits; i < old_bits; i++) {
-      const int clear_bit = i & 31;
+      const unsigned int clear_bit = i & 31;
       last_field &= ~(1 << clear_bit);
     }
     return;
@@ -39,7 +39,7 @@ void cRawBitArray::Resize(const int old_bits, const int new_bits)
 
   // If we made it this far, we have to change the number of fields.
   // Create the new bit array and copy the old one into it.
-  int * new_bit_fields = new int[ num_new_fields ];
+  unsigned int * new_bit_fields = new unsigned int[ num_new_fields ];
   for (int i = 0; i < num_new_fields && i < num_old_fields; i++) {
     new_bit_fields[i] = bit_fields[i];
   }
@@ -47,7 +47,7 @@ void cRawBitArray::Resize(const int old_bits, const int new_bits)
   // If the old bits are longer, we need to clear the end of the last
   // bit field.
   if (num_old_fields > num_new_fields) {
-    int & last_field = new_bit_fields[num_new_fields - 1];
+    unsigned int & last_field = new_bit_fields[num_new_fields - 1];
     for (int clear_bit=GetFieldPos(new_bits); clear_bit < 32; clear_bit++) {
       last_field &= ~(1 << clear_bit);
     }
@@ -72,7 +72,7 @@ void cRawBitArray::ResizeSloppy(const int new_bits)
   if (bit_fields != NULL) {
     delete [] bit_fields;
   }
-  bit_fields = new int[ new_fields ];
+  bit_fields = new unsigned int[ new_fields ];
 }
 
 void cRawBitArray::ResizeClear(const int new_bits)
@@ -137,6 +137,67 @@ tArray<int> cRawBitArray::GetOnes(const int num_bits) const
   return out_array;
 }
 
+void cRawBitArray::ShiftLeft(const int num_bits, const int shift_size)
+{
+  assert(shift_size > 0);
+  int num_fields = GetNumFields(num_bits);
+  int field_shift = shift_size / 32;
+  int bit_shift = shift_size % 32;
+  
+  
+  // acount for field_shift
+  if (field_shift) {
+    for (int i = num_fields - 1; i >= field_shift; i--) {
+      bit_fields[i] = bit_fields[i - field_shift];
+    }
+    for (int i = field_shift - 1; i >= 0; i--) {
+      bit_fields[i] = 0;
+    }
+  }
+  
+  
+  // account for bit_shift
+  int temp = 0;
+  for (int i = 0; i < num_fields; i++) {
+    temp = bit_fields[i] >> (32 - bit_shift);
+    bit_fields[i] <<= bit_shift;
+    if (i > 0) bit_fields[i - 1] |= temp;  // same as += in this case since lower bit_shift bits of bit_fields[i - 1] are all 0 at this point -- any advantage?  
+    //could also check for temp != 0 here before assignment -- would that save any time for sparse arrays, or is it always going to be useless?
+  }
+  
+  // mask out any bits that have left-shifted away, allowing CountBits and CountBits2 to work
+  // blw: if CountBits/CountBits2 are fixed, this code should be removed as it will be redundant
+  unsigned int shift_mask = 0xFFFFFFFF >> ((32 - (num_bits % 32)) & 0x1F);
+  bit_fields[num_fields - 1] &= shift_mask;
+}
+
+// ALWAYS shifts in zeroes, irrespective of sign bit (since fields are unsigned)
+void cRawBitArray::ShiftRight(const int num_bits, const int shift_size)
+{
+  assert(shift_size > 0);
+  int num_fields = GetNumFields(num_bits);
+  int field_shift = shift_size / 32;
+  int bit_shift = shift_size % 32;
+  
+  // account for field_shift
+  if (field_shift) {
+    for (int i = 0; i < num_fields - field_shift; i++) {
+      bit_fields[i] = bit_fields[i + field_shift];
+    }
+    for(int i = num_fields - field_shift; i < num_fields; i++) {
+      bit_fields[i] = 0;
+    }
+  }
+  
+  // account for bit_shift
+  bit_fields[num_fields - 1] >>= bit_shift;  // drops off right end, may shift in ones if sign bit was set
+  int temp = 0;
+  for (int i = num_fields - 2; i >= 0; i--) {
+    temp = bit_fields[i] << (32 - bit_shift);
+    bit_fields[i] >>= bit_shift;
+    bit_fields[i + 1] |= temp;
+  }
+}
 
 void cRawBitArray::NOT(const int num_bits)
 {
@@ -212,6 +273,30 @@ void cRawBitArray::EQU(const cRawBitArray & array2, const int num_bits)
   const int last_bit = GetFieldPos(num_bits);
   if (last_bit > 0) {
     bit_fields[num_fields - 1] &= (1 << last_bit) - 1;
+  }
+}
+
+void cRawBitArray::SHIFT(const int num_bits, const int shift_size)
+{
+  if (shift_size == 0) return;
+  if (shift_size > 0) { ShiftLeft(num_bits, shift_size); return; }
+  if (shift_size < 0) { ShiftRight(num_bits, -shift_size); return; }
+  assert(false); // Should never get here.
+}
+
+void cRawBitArray::INCREMENT(const int num_bits)
+{
+  const int num_fields = GetNumFields(num_bits);
+  int i = 0;
+  for (i = 0; i < num_fields; i++) {
+    bit_fields[i]++;
+    if (bit_fields[i] != 0) { break; }  // no overflow, do not need to increment higher fields
+  }
+  
+  // if highest bit field was incremented, mask out any unused portions of the field so as not to confuse CountBits
+  if (i == num_fields - 1) {
+    unsigned int shift_mask = 0xffffffff >> 32 - (num_bits % 32);
+    bit_fields[num_fields - 1] &= shift_mask;
   }
 }
 
@@ -314,6 +399,23 @@ void cRawBitArray::EQU(const cRawBitArray & array1, const cRawBitArray & array2,
     bit_fields[num_fields - 1] &= (1 << last_bit) - 1;
   }
 }
+
+void cRawBitArray::SHIFT(const cRawBitArray & array1, const int num_bits, const int shift_size)
+{
+  if (shift_size == 0) return;
+  
+  Copy(array1, num_bits);
+  
+  SHIFT(num_bits, shift_size);
+}
+
+void cRawBitArray::INCREMENT(const cRawBitArray & array1, const int num_bits)
+{
+  Copy(array1, num_bits);
+  INCREMENT(num_bits);
+}
+
+
 
 
 std::ostream & operator << (std::ostream & out, const cBitArray & bit_array)
@@ -499,6 +601,105 @@ int main()
     passed = false;
     cerr << "ERROR in EQU operation!" << endl;
   }
+  
+  // LEFT AND RIGHT SHIFT
+  
+  cRawBitArray bit_array7(32);
+  bit_array7.SetBit(0, true);
+  
+  bit_array7.SHIFT(32, 0);
+  if (bit_array7.GetBit(0) != true || bit_array7.CountBits(32) != 1) {
+    passed = false;
+    cerr << "ERROR when Shifting by zero bits!" << endl;
+  }
+  
+  bit_array7.SHIFT(32, 31);
+  if (bit_array7.GetBit(31) != true || bit_array7.CountBits(32) != 1) {
+    passed = false;
+    cerr << "ERROR in ShiftLeft!" << endl;
+  }
+  
+  bit_array7.SHIFT(32, -31);
+  if (bit_array7.GetBit(0) != true || bit_array7.CountBits(32) != 1)  {
+    passed = false;
+    cerr << "ERROR in ShiftRight with sign bit!" << endl;
+  }
+  
+  bit_array7.SHIFT(32, 30);
+  bit_array7.SHIFT(32, -30);
+  if (bit_array7.GetBit(0) != true || bit_array7.CountBits(32) != 1) {
+    passed = false;
+    cerr << "ERROR in ShiftRight without sign bit!" << endl;
+  }
+
+  bit_array7.SHIFT(32, 32);
+  if (bit_array7.CountBits(32) != 0) {
+    passed = false;
+    cerr << "ERROR in ShiftLeft dropping!" << endl;
+  }
+  
+  bit_array7.SetBit(31, true);
+  bit_array7.SHIFT(32, -32);
+  if(bit_array7.CountBits(32) != 0) {
+    passed = false;
+    cerr << "ERROR in ShiftRight dropping!" << endl;
+  }
+  
+  cRawBitArray bit_array8(34);
+  bit_array8.SetBit(0, true);
+
+  bit_array8.SHIFT(34, 33);
+  if (bit_array8.GetBit(33) != true || bit_array8.CountBits(34) != 1) {
+    passed = false;
+    cerr << "ERROR in ShiftLeft across bit fields!" << endl;
+  }
+  
+  bit_array8.SHIFT(34, -33);
+  if (bit_array8.GetBit(0) != true || bit_array8.CountBits(34) != 1) {
+    passed = false;
+    cerr << "ERROR in ShiftRight accross bit fields!" << endl;
+  }
+  
+  cRawBitArray bit_array9(66);
+  bit_array9.SetBit(0, true);
+  bit_array9.SetBit(32, true);
+  
+  bit_array9.SHIFT(66, 65);
+  if(bit_array9.GetBit(65) != true || bit_array9.CountBits(66) != 1) {
+    passed = false;
+    cerr << "ERROR in ShiftLeft across multiple fields!" << endl;
+  }
+  
+  bit_array9.SHIFT(66, -65);
+  if(bit_array9.GetBit(0) != true || bit_array9.CountBits(66) != 1) {
+    passed = false;
+    cerr << "ERROR in ShiftRight across multiple fields!" << endl;
+  }
+  
+  // INCREMENT
+  
+  cRawBitArray bit_array10(1);
+  
+  bit_array10.INCREMENT(1);
+  if (bit_array10.GetBit(0) != true || bit_array10.CountBits(1) != 1) {
+    passed = false;
+    cerr << "ERROR in INCREMENT operation!" << endl;
+  }
+  
+  bit_array10.INCREMENT(1);
+  if (bit_array10.GetBit(0) != false || bit_array10.CountBits(1) != 0) {
+    passed = false;
+    cerr << "ERROR in INCREMENT overflowing last bit field!" << endl;
+  }
+  
+  cRawBitArray bit_array11(33);
+  for (int i = 0; i < 32; i++) { bit_array11.SetBit(i, true); }
+  
+  bit_array11.INCREMENT(33);
+  if (bit_array11.GetBit(32) != 1 || bit_array11.CountBits(33) != 1) {
+    passed = false;
+    cerr << "ERROR in INCREMENT across fields!" << endl;
+  }
 
 //   bit_array4.Print(70);
 //   bit_array5.Print(70);
@@ -532,10 +733,30 @@ int main()
     passed = false;
     cerr << "ERROR: operator~ failed for cBitArray" << endl;
   }
+  
+  if ((ba << 65).CountBits() != 2) { 
+    passed = false;
+    cerr << "ERROR: operator<< (leftshift) failed for cBitArray" << endl;
+  }
+  
+  if ((ba >> 65).CountBits() != 2) {
+    passed = false;
+    cerr << "ERROR: operator>> (rightshift) failed for cBitArray" << endl;
+  }
 
   if ((~ba & ~ba2).CountBits() != 31) {
     passed = false;
     cerr << "ERROR: Chained bitwise operators failed for cBitArray" << endl;
+  }
+  
+  if ((++(~ba & ~ba2)).CountBits() != 30) {
+    passed = false;
+    cerr << "ERROR: prefix ++ failed for cBitArray" << endl;
+  }
+
+  if (((~ba & ~ba2)++).CountBits() != 31) {
+    passed = false;
+    cerr << "ERROR: postfix ++ failed for cBitArray" << endl;
   }
   
   cout << ba << "  " << ba.CountBits() << endl;

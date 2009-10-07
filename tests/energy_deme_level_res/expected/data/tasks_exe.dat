@@ -1,5 +1,5 @@
 # Avida tasks execution data
-# Thu Feb 26 17:54:02 2009
+# Tue Sep 22 16:17:50 2009
 # First column gives the current update, all further columns give the number
 # of times the particular task has been executed this update.
 #  1: Update
@@ -9,10 +9,10 @@
 10 40 8 
 20 150 30 
 30 308 62 
-40 585 116 
-50 939 183 
-60 965 186 
-70 40 8 
-80 40 8 
-90 40 8 
-100 40 8 
+40 567 114 
+50 943 192 
+60 972 197 
+70 63 14 
+80 216 48 
+90 563 120 
+100 1066 227 

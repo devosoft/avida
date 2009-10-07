@@ -70,6 +70,7 @@ void cTextViewerDriver::Run()
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
   cAvidaContext ctx(m_world->GetRandom());
+  ctx.EnableOrgFaultReporting();
   
   while (!m_done) {
     if (cChangeList* change_list = population.GetChangeList()) {
@@ -135,7 +136,7 @@ void cTextViewerDriver::Run()
     
     
     // end of update stats...
-    population.CalcUpdateStats();
+    population.ProcessPostUpdate(ctx);
     
     // Setup the viewer for the new update.
     if (m_view->GetStepOrganism() == -1) {

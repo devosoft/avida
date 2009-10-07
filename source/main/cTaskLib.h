@@ -43,6 +43,7 @@
 #endif
 
 
+
 class cEnvReqs;
 class cString;
 class cWorld;
@@ -103,7 +104,11 @@ private:
 
   inline double FractionalReward(unsigned int supplied, unsigned int correct);  
 
-  
+  // All tasks must be declared here, taking a cTaskContext reference as the sole input and
+  // returning a double between 0.0 and 1.0 indicating the quality of how well the task was
+  // performed.
+
+  // Basic Tasks
   double Task_Echo(cTaskContext& ctx) const;
   double Task_Add(cTaskContext& ctx) const;
   double Task_Add3(cTaskContext& ctx) const;
@@ -121,6 +126,11 @@ private:
   double Task_Xor(cTaskContext& ctx) const;
   double Task_Equ(cTaskContext& ctx) const;
 
+	// resource dependent
+	double Task_Nand_ResourceDependent(cTaskContext& ctx) const;
+	double Task_Nor_ResourceDependent(cTaskContext& ctx) const;
+			
+	
   // All 3-Input Logic Functions
   double Task_Logic3in_AA(cTaskContext& ctx) const;
   double Task_Logic3in_AB(cTaskContext& ctx) const;
@@ -321,6 +331,8 @@ private:
 	// group formation 
 	void Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
 	double Task_FormSpatialGroup(cTaskContext& ctx) const; 
+	void Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+	double Task_FormSpatialGroupWithID(cTaskContext& ctx) const; 
 };
 
 

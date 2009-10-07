@@ -67,8 +67,10 @@ public:
   cReactionResult(const int num_resources, const int num_tasks, const int num_reactions);
   ~cReactionResult() { ; }
 
-  bool GetActive() { return active_reaction; }
-  bool GetActiveDeme() { return active_deme_reaction; }
+  bool GetActive() const { return active_reaction; }
+  bool GetActiveDeme() const { return active_deme_reaction; }
+  void Invalidate() { active_reaction = false; }
+  
 
   void Consume(int id, double num, bool is_env_resource);
   void Produce(int id, double num);

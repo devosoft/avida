@@ -778,6 +778,123 @@ class cActionKillProb : public cAction
 		}
 	};
 
+/*
+ Kills a fraction of organisms in the population in sequence.
+ 
+ Parameters:
+ fraction killed (double) default: 0.01
+ 
+ */
+class cActionKillFractionInSequence : public cAction
+	{
+	private:
+		double m_killFraction;
+		int m_windowLength;
+		int killIndex;
+		bool applyAction;
+		int updateSinceLastContextSwitch;
+	public:
+		cActionKillFractionInSequence(cWorld* world, const cString& args) : 
+			cAction(world, args), 
+			m_killFraction(0.01), 
+			m_windowLength(1000), 
+			killIndex(0),
+			applyAction(true),
+			updateSinceLastContextSwitch(0)
+		{
+      cString largs(args);
+      if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
+			if (largs.GetSize()) m_windowLength = largs.PopWord().AsInt();
+		}
+		
+		static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			++updateSinceLastContextSwitch;
+
+			if(updateSinceLastContextSwitch >= static_cast<int>(m_windowLength/2.0)) {
+				// switch context
+				applyAction = !applyAction;
+				updateSinceLastContextSwitch = 0;
+				cerr << "applied? " << applyAction<<endl;
+			}
+			
+			if(!applyAction)
+				return;
+			
+			cPopulation& pop = m_world->GetPopulation();
+			const int numOrgsInPop = pop.GetNumOrganisms();
+			int organismsToKill = static_cast<int>(numOrgsInPop * m_killFraction);
+			int oldKillIndex = killIndex;
+						
+			while(organismsToKill > 0) {
+				cPopulationCell& cell = pop.GetCell(killIndex);
+				if (cell.IsOccupied()) {
+					pop.KillOrganism(cell);
+					--organismsToKill;
+				}
+				killIndex = (killIndex + 1) % pop.GetSize();
+				if(killIndex == oldKillIndex)
+					assert(false);  // trying to kill organisms that don't exist
+			}
+		}
+	};
+
+/*
+ Kills a fraction of organisms in the population in sequence.
+ 
+ Parameters:
+ fraction killed (double) default: 0.01
+ 
+ */
+class cActionKillFractionInSequence_PopLimit : public cAction
+	{
+	private:
+		double m_killFraction;
+		int m_popSize;
+		int killIndex;
+
+	public:
+		cActionKillFractionInSequence_PopLimit(cWorld* world, const cString& args) : 
+		cAction(world, args), 
+		m_killFraction(0.01), 
+		m_popSize(1000),
+		killIndex(0)
+		{
+      cString largs(args);
+      if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
+			if (largs.GetSize()) m_popSize = largs.PopWord().AsInt();
+		}
+		
+		static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			double avgGestation = m_world->GetStats().GetAveGestation();
+			double instPerUpdate = m_world->GetConfig().AVE_TIME_SLICE.Get();
+			double growthRate = floor(instPerUpdate/avgGestation * 100.0 + 0.5) / 100.0;
+			
+			cPopulation& pop = m_world->GetPopulation();
+			const int numOrgsInPop = pop.GetNumOrganisms();
+			if(numOrgsInPop < m_popSize)
+				return;
+			
+			int organismsToKill = static_cast<int>(numOrgsInPop * growthRate);
+			int oldKillIndex = killIndex;
+			cerr<< "growth rate: " << growthRate << "  kill: " << organismsToKill <<endl;
+			while(organismsToKill > 0) {
+				cPopulationCell& cell = pop.GetCell(killIndex);
+				if (cell.IsOccupied()) {
+					pop.KillOrganism(cell);
+					--organismsToKill;
+				}
+				killIndex = (killIndex + 1) % pop.GetSize();
+				if(killIndex == oldKillIndex)
+					assert(false);  // trying to kill organisms that don't exist
+			}
+		}
+	};
 
 /*
  Randomly removes a certain proportion of the population whose genomes contain a specified
@@ -912,6 +1029,7 @@ private:
 	double m_exprWeight;
 	double m_exponent;
 	int m_printUpdate;
+	cIntSum m_instCount;
 	cIntSum m_totalkilled;
 	cDoubleSum m_killProd;
 
@@ -923,6 +1041,7 @@ public:
 		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
+		m_instCount.Clear();
 		m_totalkilled.Clear();
 		m_killProd.Clear();
 	}
@@ -932,7 +1051,9 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
+		cIntSum currentInstCount;
 		cDoubleSum currentKillProb;
+		currentInstCount.Clear();
 		currentKillProb.Clear();
 
 		// for each deme in the population...
@@ -954,9 +1075,16 @@ public:
 				
 				// count the number of target instructions in the genome
 				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+				currentInstCount.Add(count);
 
-				double killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;
+				double killprob;
+				if(m_exponent == -1.0)
+					killprob = min(1.0/(m_exprWeight+ exp(-count)), 100.0)/100.0;  //sigmoid
+				else
+					killprob = min(pow(m_exprWeight*count,m_exponent), 100.0)/100.0;  // linear and exponential
+				
 				// cout << count << " " << killprob << endl;
+				
 				currentKillProb.Add(killprob);
 				// decide if it should be killed or not, based on the kill probability
 				if (ctx.GetRandom().P(killprob)) {
@@ -965,6 +1093,7 @@ public:
 				}
 			}
 		}
+		m_instCount.Add(currentInstCount.Average());
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
 			
@@ -973,9 +1102,11 @@ public:
 			cDataFile& df = m_world->GetDataFile("TherapyStructuralNumInst_kill.dat");
 			df.WriteComment("Number of organisms killed by structural therapy NumInst");
 			df.Write(update, "Update");
+			df.Write(m_instCount.Average(), "Mean organisms instruction count update since last print");
 			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
 			df.Write(m_killProd.Average(), "Mean organism kill probablity");
 			df.Endl();
+			m_instCount.Clear();
 			m_totalkilled.Clear();
 			m_killProd.Clear();
 		}
@@ -998,6 +1129,7 @@ private:
 	double m_exprWeight;
 	double m_exponent;
 	int m_printUpdate;
+	cIntSum m_minDist;
 	cIntSum m_totalkilled;
 	cDoubleSum m_killProd;
 	
@@ -1009,6 +1141,7 @@ public:
 		if (largs.GetSize()) m_exprWeight = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_exponent = largs.PopWord().AsDouble();
 		if (largs.GetSize()) m_printUpdate = largs.PopWord().AsInt();
+		m_minDist.Clear();
 		m_totalkilled.Clear();
 		m_killProd.Clear();
 	}
@@ -1018,7 +1151,9 @@ public:
 	void Process(cAvidaContext& ctx)
 	{
 		int totalkilled = 0;
+		cIntSum currentMinDist;
 		cDoubleSum currentKillProb;
+		currentMinDist.Clear();
 		currentKillProb.Clear();
 		// for each deme in the population...
 		cPopulation& pop = m_world->GetPopulation();
@@ -1042,6 +1177,7 @@ public:
 				const cGenome& genome = cell.GetOrganism()->GetGenome();
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = cGenomeUtil::MinDistBetween(genome, m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+				currentMinDist.Add(minDist);
 				
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));
 				double killprob = (genomeSize - static_cast<double>(ratioNumerator))/genomeSize;
@@ -1054,6 +1190,7 @@ public:
 				}
 			}
 		}
+		m_minDist.Add(currentMinDist.Average());
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
 		
@@ -1062,14 +1199,134 @@ public:
 			cDataFile& df = m_world->GetDataFile("TherapyStructuralRatioDistBetweenNearest_kill.dat");
 			df.WriteComment("Number of organisms killed by structural therapy RatioDistBetweenNearest");
 			df.Write(update, "Update");
+			df.Write(m_minDist.Average(), "Mean minimum distance between instructions organism genome per update since last print");
 			df.Write(m_totalkilled.Average(), "Mean organisms killed per update since last print");
 			df.Write(m_killProd.Average(), "Mean organism kill probablity");
 			df.Endl();
+			m_minDist.Clear();
 			m_totalkilled.Clear();
 			m_killProd.Clear();
 		}
 	}
 };
+
+
+/*
+ Decay the given resource in treatable demes over time
+ 
+ Parameters:
+ - The name of resource to decay
+ - How the amount of decay decreases over time ['const', 'lin', 'taper'] -- CASE SENSITIVE!
+   - none: the amount of resource decayed remains constant over time
+   - lin: the amount of resource decayed decreases linearly throughout the duration
+   - taper: retains a slowly-decreasing amount of decay then drops off sharply at the end of the duration
+ - Base amount to be removed.
+ - Duration (how long this resource decay should last.  works only with lin and exp.  none lasts infinitely.)
+ */
+
+class cAction_TherapyDecayDemeResource : public cAction
+  {
+  private:
+    cString m_resname;
+    cString m_decrtype;
+    double m_amount;
+    double m_duration;
+  public:
+    cAction_TherapyDecayDemeResource(cWorld* world, const cString& args) : cAction(world, args), m_amount(0), m_duration(1)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_resname = largs.PopWord();
+      if (largs.GetSize()) m_decrtype = largs.PopWord();
+      if (largs.GetSize()) m_amount = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
+      assert(m_amount >= 0);
+      assert(m_amount <= 1);
+      assert(m_duration >= 1);
+    }
+    
+    static const cString GetDescription() { return "Arguments: [string resource_name=resname, string decrease_type=(none|lin|exp), double amount=0.2]"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      double adjusted_amount;
+      int time_since_treatment;
+      int latest_treatment_age;
+      std::set<int> treatment_ages;
+      int deme_age;
+      
+      //adjusted amount will be something like max(0, 1 - (m_amount * time_since_treatment)) for linear
+            
+      cPopulation& pop = m_world->GetPopulation();
+      
+      for (int d = 0; d < pop.GetNumDemes(); d++) {
+        
+        cDeme &deme = pop.GetDeme(d);
+        deme_age = deme.GetAge();
+        latest_treatment_age = -1;
+        time_since_treatment = INT_MAX;
+        
+        if(deme.isTreatable()) {
+                    
+          treatment_ages = deme.GetTreatmentAges();
+          
+          // Find out the last update at which this treatment was started
+          for (std::set<int>::iterator it = treatment_ages.begin(); it != treatment_ages.end(); it++) {
+            if( (*it < deme_age) && (*it > latest_treatment_age) ) {
+              latest_treatment_age = *it;
+              time_since_treatment = deme_age - latest_treatment_age;
+            }
+          }
+          
+          // If we haven't begun treatment on this deme, or if this treatment is over, skip it.
+          if ((latest_treatment_age == -1) || (time_since_treatment > m_duration)) {
+            continue;
+          }
+                          
+          // Find out how much to decrease the resource by
+          // none - as long as the treatment is ongoing, it is at full force
+          // lin - as the treatment continues, the amount decayed decreases linearly
+          // exp - as treatment continues, the amount decayed decreases exponentially
+          if(m_decrtype == "const") {
+            if(time_since_treatment >= m_duration) {
+              adjusted_amount = 0;
+            } else {
+              adjusted_amount = m_amount;
+            }
+          } else if (m_decrtype == "lin") {
+            adjusted_amount = max(0.0, 1 - (time_since_treatment/m_duration)) * m_amount;
+          } else if (m_decrtype == "taper") {
+            adjusted_amount = max(0.0, 1 - pow(time_since_treatment/m_duration, 2)) * m_amount;
+          } else {
+            adjusted_amount = 0;
+          }
+                    
+          cResourceCount res = deme.GetDemeResourceCount();
+          const int resid = res.GetResourceByName(m_resname);
+          
+          if(resid == -1)
+          {
+            //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
+            cerr << "Error: Resource \"" << m_resname << "\" not defined for this deme" << endl;
+            continue;
+          }
+          
+          if(res.IsSpatial(resid)) {
+            for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
+              deme.AdjustSpatialResource(c, resid, -1 * deme.GetSpatialResource(c, resid) * adjusted_amount); 
+            } //End iterating through all cells
+          }
+          else
+          {
+            deme.AdjustResource(resid, -1 * res.Get(resid) * adjusted_amount);
+          }
+          
+        } //End if deme is treatable
+        
+      } //End iterating through all demes
+      
+    } //End Process()
+    
+  };
 
 
 /*
@@ -1296,7 +1553,7 @@ class cActionSetMutProb : public cAction
 			C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
 			DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
 			D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-			PARENT,
+			PARENT, DEATH,
 			I_MUT, I_INS, I_DEL
 		} m_mut_type;
 		
@@ -1338,6 +1595,7 @@ class cActionSetMutProb : public cAction
 			else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
 			
 			else if (mutstr == "PARENT") m_mut_type = PARENT;
+			else if (mutstr == "DEATH") m_mut_type = DEATH;
 			else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
 			else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
 			else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
@@ -1384,6 +1642,7 @@ class cActionSetMutProb : public cAction
 					case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(m_prob); break;
 						
 					case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+					case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
 					case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(m_prob); break;
 					case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(m_prob); break;
 					case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(m_prob); break;
@@ -1413,6 +1672,7 @@ class cActionSetMutProb : public cAction
 				case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(m_prob); break;
 					
 				case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+				case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(m_prob); break;
 				case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(m_prob); break;
 				case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(m_prob); break;
 				case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(m_prob); break;
@@ -1430,7 +1690,7 @@ class cActionModMutProb : public cAction
 			C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
 			DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
 			D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-			PARENT,
+			PARENT, DEATH,
 			I_MUT, I_INS, I_DEL
 		} m_mut_type;
 		
@@ -1471,6 +1731,7 @@ class cActionModMutProb : public cAction
       else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
 			
       else if (mutstr == "PARENT") m_mut_type = PARENT;
+      else if (mutstr == "DEATH") m_mut_type = DEATH;
       else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
       else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
       else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
@@ -1517,6 +1778,7 @@ class cActionModMutProb : public cAction
 				case D1_SLIP: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
 					
 				case PARENT: prob += m_world->GetConfig().PARENT_MUT_PROB.Get(); break;
+				case DEATH: prob += m_world->GetConfig().DEATH_PROB.Get(); break;
 				case I_MUT: prob += m_world->GetConfig().INJECT_MUT_PROB.Get(); break;
 				case I_INS: prob += m_world->GetConfig().INJECT_INS_PROB.Get(); break;
 				case I_DEL: prob += m_world->GetConfig().INJECT_DEL_PROB.Get(); break;
@@ -1547,6 +1809,7 @@ class cActionModMutProb : public cAction
 					case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(prob); break;
 						
 					case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(prob); break;
+					case DEATH: m_world->GetConfig().DEATH_PROB.Set(prob); break;
 					case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(prob); break;
 					case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(prob); break;
 					case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(prob); break;
@@ -1576,6 +1839,7 @@ class cActionModMutProb : public cAction
 					
 					
 				case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(prob); break;
+				case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(prob); break;
 				case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(prob); break;
 				case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(prob); break;
 				case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(prob); break;
@@ -1659,25 +1923,46 @@ class cActionCompeteDemes : public cAction
  */
 class cAssignRandomCellData : public cAction { 
 public:
+	typedef std::vector<int> CellIDList;
   typedef std::map<int, std::set<int> > DataMap;
 	
-  cAssignRandomCellData(cWorld* world, const cString& args) : cAction(world, args) { }
-	
+	//! Constructor.
+	cAssignRandomCellData(cWorld* world, const cString& args) : cAction(world, args), _num_cells(0) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_num_cells = largs.PopWord().AsInt();
+		}		
+	}
+
+	//! Destructor.
 	virtual ~cAssignRandomCellData() { }
   
-  static const cString GetDescription() { return "No Arguments"; }
-  
+	//! Description of this event; only possible argument is the number of cells whose data is to be set.
+  static const cString GetDescription() { return "Arguments: [num_cells=deme_size]"; }
+
+	//! Process this event, setting the requested number of cell's data to a random value.
   virtual void Process(cAvidaContext& ctx) {
-		deme_to_id.clear();
-    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
       cDeme& deme = m_world->GetPopulation().GetDeme(i);
-      for(int j=0; j<deme.GetSize(); ++j) {
+			zero_cell_data(deme);
+			if((_num_cells == 0) || (_num_cells >= deme.GetSize())) {
 				// Assign random data to each cell:
-        int d = m_world->GetRandom().GetInt(INT_MAX);
-        deme.GetCell(j).SetCellData(d);
-				// Save that data by deme in the map:
-        deme_to_id[deme.GetID()].insert(d);
-      }
+				for(int j=0; j<deme.GetSize(); ++j) {
+					int d = m_world->GetRandom().GetInt(INT_MAX);
+					deme.GetCell(j).SetCellData(d);
+					// Save that data by deme in the map:
+					deme_to_id[deme.GetID()].insert(d);
+				}
+			} else {
+				// Assign random data to exactly num_cells cells, with replacement:
+				for(int j=0; j<_num_cells; ++j) {
+					int cell = m_world->GetRandom().GetInt(deme.GetSize());
+					int d = m_world->GetRandom().GetInt(INT_MAX);
+					deme.GetCell(cell).SetCellData(d);
+					// Save that data by deme in the map:
+					deme_to_id[deme.GetID()].insert(d);
+				}
+			}
     }
   }
   
@@ -1686,16 +1971,49 @@ public:
     return i->second.find(data) != i->second.end();
   }
 	
-	static void ReplaceCellData(int old_data, int new_data, const cDeme& deme) {
+	static int CellIDFromData(int data, const cDeme& deme) { 
+		for(int i=0; i<deme.GetSize(); ++i) {
+			if(deme.GetCell(i).GetCellData() == data) {
+				return i;
+			}
+		}
+		return -1;
+  }
+	
+	static CellIDList ReplaceCellData(int old_data, int new_data, const cDeme& deme) {
+		CellIDList cell_ids;
 		// Find all cells in the deme that hold the old data, and replace it with the new.
 		for(int i=0; i<deme.GetSize(); ++i) {
 			if(deme.GetCell(i).GetCellData() == old_data) {
 				deme.GetCell(i).SetCellData(new_data);
+				cell_ids.push_back(i);
 			}
 		}
 		// Update the data map.
 		DataMap::iterator i = deme_to_id.find(deme.GetID());
 		i->second.erase(old_data);
+		i->second.insert(new_data);
+		return cell_ids;
+	}
+	
+	//! Replace the cell data in *one* cell.
+	static void ReplaceCellData(cPopulationCell& cell, int new_data, const cDeme& deme) {		
+		CellIDList cell_ids;
+		// Find all cells in the deme that hold the cell's data:
+		for(int i=0; i<deme.GetSize(); ++i) {
+			if(deme.GetCell(i).GetCellData() == cell.GetCellData()) {
+				cell_ids.push_back(i);
+			}
+		}
+		
+		// Only remove the data from the data map if there's exactly one cell with this data:
+		DataMap::iterator i = deme_to_id.find(deme.GetID());
+		if(cell_ids.size() == 1) {
+			i->second.erase(cell.GetCellData());
+		}
+		
+		// Reset the cell's data, and add the new data to the map:
+		cell.SetCellData(new_data);
 		i->second.insert(new_data);
 	}
 	
@@ -1704,7 +2022,15 @@ public:
 	}
   
 protected:
+	virtual void zero_cell_data(cDeme& deme) {
+		deme_to_id[deme.GetID()].clear();
+		for(int j=0; j<deme.GetSize(); ++j) {
+			deme.GetCell(j).SetCellData(0);
+		}
+	}
+	
   static std::map<int, std::set<int> > deme_to_id; //!< Map of deme ID -> set of all cell data in that deme.
+	int _num_cells; //!< The number of cells in each deme whose cell-data is to be set.
 };
 
 //! Definition for static data.
@@ -1745,7 +2071,7 @@ public:
 	
   /*! Deme fitness function, to be overriden by specific types of deme competition.
    */
-  virtual double Fitness(const cDeme& deme) = 0;
+  virtual double Fitness(cDeme& deme) = 0;
 };
 
 
@@ -1799,15 +2125,115 @@ public:
 			}			
 			m_world->GetPopulation().CompeteDemes(fitness);
 			_update_fitness.clear();
+			Clear();
 		}
 	}
 	
 	//! Called on each action invocation, *including* immediately prior to fitness calculation.
 	virtual double Update(cDeme& deme) = 0;
+	//! Called after demes compete, so that subclasses can clean up any state.
+	virtual void Clear() { }
 	
 protected:
 	int _compete_period; //!< Period at which demes compete.
 	std::vector<double> _update_fitness; //!< Running sum of returns from Update(cDeme).
+};
+
+
+/*! Competes demes based on the networks they've constructed.
+ */
+class cActionCompeteDemesByNetwork : public cAbstractCompeteDemes {
+public:
+	//! Constructor.
+	cActionCompeteDemesByNetwork(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+	}
+	
+	//! Destructor.
+	virtual ~cActionCompeteDemesByNetwork() { }
+	
+	//! Retrieve this class's description.
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Calculate the current fitness of this deme.
+  virtual double Fitness(cDeme& deme) {
+		return deme.GetNetwork().Fitness();
+	}
+};
+
+
+/*! This class rewards for data distribution among organisms in a deme.
+ 
+ Specifically, "data" injected into a single cell-data field in the deme should eventually
+ be readable from another cell in the same deme.
+ 
+ For injecting data, we use the AssignRandomCellData event (num_cells=1), and we use opinions
+ to determine when data has reached another cell.
+ 
+ This action does not examine efficiency of distributing data.
+ */
+class cActionDistributeData : public cAbstractCompeteDemes {
+public:
+	cActionDistributeData(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+		world->GetStats().AddMessagePredicate(&m_message_counter);
+	}
+	
+	//! Destructor.
+	virtual ~cActionDistributeData() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Calculate the current fitness of this deme.
+	virtual double Fitness(cDeme& deme) {
+		return pow((double)received_data(deme) + 1.0, 2.0);
+	}
+	
+protected:
+	//! Return how many organisms have received the data, and then set their opinion correctly.	
+	unsigned int received_data(const cDeme& deme) {
+		// What is the data we're trying to distribute in this deme?
+		int data = *cAssignRandomCellData::GetDataInDeme(deme).begin();
+		
+		// How many organisms in this deme are reflecting that piece of data?
+		unsigned int count=0;
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			if((org != 0) && org->HasOpinion() && (org->GetOpinion().first==data)) {
+				++count;
+			}
+		}
+		return count;
+	}
+	
+	cOrgMessagePred_CountDemeMessages m_message_counter;
+};
+
+
+class cActionDistributeDataEfficiently : public cActionDistributeData {
+public:
+	cActionDistributeDataEfficiently(cWorld* world, const cString& args) : cActionDistributeData(world, args) {
+	}
+	
+	//! Destructor.
+	virtual ~cActionDistributeDataEfficiently() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Calculate the current fitness of this deme.
+	virtual double Fitness(cDeme& deme) {
+		// First, get the number that have received the data (and set their opinion):
+		unsigned int received = received_data(deme);
+		
+		// If not everyone has the data yet, we're done:
+		if(received < (unsigned int)deme.GetSize()) {
+			return pow((double)received + 1.0, 2.0);
+		}
+		
+		// Now, reward for reducing the number of messages that were used:
+		// The size of the deme is the theoretical minimum number of messages that could be used.
+		double size = deme.GetSize() * 1000; // Scaled by 1000 (arbitrary) to get the fraction > 1.0.
+		double msg_count = m_message_counter.GetMessageCount(deme);
+		return pow(received + 1.0 + size / msg_count, 2.0);
+	}	
 };
 
 
@@ -1852,6 +2278,54 @@ public:
 			}
 		}		
 		return std::make_pair(support, opinion);
+	}
+	
+	/*! Returns a pair (support, have_opinion), where support is the number of organisms
+	 within the deme that have set their opinion to the given value, and have_opinion is the
+	 number of organisms that have set their opinion at all.
+	 */
+	virtual std::pair<unsigned int, int> support(const cDeme& deme, const cOrganism::Opinion opinion) {
+		unsigned int support=0;
+		int have_opinion=0;
+		// For each organism in the deme:
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			// if the org has an opinion, and it's the right value, count it:
+			if((org != 0) && org->HasOpinion()) {
+				++have_opinion;
+				if(org->GetOpinion().first == opinion) {
+					++support;
+				}
+			}
+		}
+		return std::make_pair(support, have_opinion);
+	}
+	
+	/*! Returns the number of organisms that have set an opinion. */
+	int count_opinions(const cDeme& deme) { 
+		int have_opinion=0;
+		// For each organism in the deme:
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			// if the org has an opinion, and it's the right value, count it:
+			if((org != 0) && org->HasOpinion()) {
+				++have_opinion;
+			}
+		}
+		return have_opinion;
+	}
+	
+	/*! Returns the set of organism opinions */
+	std::set<cOrganism::Opinion> unique_opinions(const cDeme& deme) {
+		std::set<cOrganism::Opinion> opinions; 
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			// if the org has an opinion, and it's the right value, count it:
+			if((org != 0) && org->HasOpinion()) {
+				opinions.insert(org->GetOpinion().first);
+			}
+		}
+		return opinions;
 	}	
 };
 
@@ -1868,22 +2342,49 @@ public:
  */
 class cActionIteratedConsensus : public cAbstractMonitoringCompeteDemes, ConsensusSupport {
 public:
-	cActionIteratedConsensus(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args), _replace(0) {
+	
+	struct state {
+		state(cOrganism::Opinion o) : opinion(o), current(0), max(0) { }
+		void reset() { opinion = 0; current = 0; max = 0; }
+		cOrganism::Opinion opinion;
+		int current;
+		int max;
+	};
+	
+	typedef std::map<int, state> DemeState; //!< To support hold-times for consensus.	
+	
+	//! Constructor.
+	cActionIteratedConsensus(cWorld* world, const cString& args) : cAbstractMonitoringCompeteDemes(world, args),
+	_replace(1), _kill(1), _hold(1), _restrict_range(1), _dont_replace(0) {
 		if(args.GetSize()) {
 			cString largs(args);
-			_replace = largs.PopWord().AsInt();
+			largs.PopWord(); //iterations
+			_replace = largs.PopWord().AsInt(); // how many cell data are replaced on consensus (default 1)
+			if(largs.GetSize()) {
+				_kill = largs.PopWord().AsInt(); // whether to kill the owners of replaced cell data (default 1)
+				if(largs.GetSize()) {
+					_restrict_range = largs.PopWord().AsInt(); // whether replaced cell data is restricted to the range [min, max).
+					if(largs.GetSize()) {
+						_dont_replace = largs.PopWord().AsInt();
+					}
+				}
+			}
 		}
+		
+		// hold time is a configuration option, not an event parameter.
+		_hold = m_world->GetConfig().CONSENSUS_HOLD_TIME.Get();
 	}
 	
 	//! Destructor.
 	virtual ~cActionIteratedConsensus() { }
 	
-	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=0]]"; }
+	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=1 [int kill=1 [int restrict_range=1]]]]"; }
 	
 	//! Calculate the current fitness of this deme.
-  virtual double Fitness(const cDeme& deme) {
+  virtual double Fitness(cDeme& deme) {
 		return max_support(deme).first + 1;
 	}
+	
 	
 	/*! Determine if the organisms in this deme have reached consensus, and if so,
 	 record that fact and reset so that they can "iterate" (try to reach consensus
@@ -1895,33 +2396,467 @@ public:
 	 greater than zero, we also reset the cell data of other cells, which are
 	 selected at random with replacement.
 	 
+	 If _kill is > 0, we also kill the organisms living in the cells that had their
+	 data replaced - In all cases, the germline is used to repopulate the cell.
+	 
 	 Called during every update (depending on configuration).  Return values are
-	 summed and included in final fitness calculation. */
+	 summed and included in final fitness calculation. 
+	 
+	 The intent behind this version of Update() is that for each consensus round, we
+	 only reward *once* for each level of hold time that is reached.
+	 */
 	virtual double Update(cDeme& deme) {
+		// find the current maximally-supported opinion, and get this deme's
+		// state information
 		std::pair<unsigned int, cOrganism::Opinion> support = max_support(deme);
+		DemeState::iterator st = _state.find(deme.GetID());
 		
-		// Have all organisms in this deme reached consensus?
-		if(support.first == static_cast<unsigned int>(deme.GetSize())) {
-			// Yes; change the cell data for the value that was agreed upon:
-			int min_data = *cAssignRandomCellData::GetDataInDeme(deme).begin();
-			int max_data = *cAssignRandomCellData::GetDataInDeme(deme).rbegin();
-			cAssignRandomCellData::ReplaceCellData(support.second, m_world->GetRandom().GetInt(min_data+1, max_data-1), deme);
-			
-			// Now reset the others:
-			for(int i=0; i<_replace; ++i) {
-				int cell_id = m_world->GetRandom().GetInt(deme.GetSize());
-				int cell_data = deme.GetCell(cell_id).GetCellData();
-				cAssignRandomCellData::ReplaceCellData(cell_data, m_world->GetRandom().GetInt(min_data+1, max_data-1), deme);
+		// if we're not at consensus, set our current time to 0:
+		if(support.first < static_cast<unsigned int>(deme.GetSize())) {
+			if(st != _state.end()) { 
+				st->second.current = 0;
 			}
-			
+			return 0.0;
+		}
+		
+		// ok, we're at consensus - is this the first time?
+		if(st == _state.end()) {
+			// need to add new state information:
+			std::pair<DemeState::iterator, bool> ins = _state.insert(std::make_pair(deme.GetID(), state(support.second)));
+			st = ins.first;
+		} else if(support.second != st->second.opinion) {
+			// is our current opinion different than our last?
+			st->second.opinion = support.second;
+			st->second.current = 0;
+		}
+		
+		// since we're at consensus, unconditionally update this deme's consensus counter:
+		++st->second.current;
+		
+		// has this opinion been held long enough?
+		if(st->second.current >= _hold) {
+			// yes; this is now a "true" consensus.
+			ConsensusReached(deme, support);
+			// erase our state!
+			_state.erase(st);
+			// and reward by the size of the deme.
 			return deme.GetSize();
 		}
+		
+		// if this is a new level of consensus for this round, meaning that we haven't
+		// before held consensus for this length of time, reward by the size of the deme.
+		if(st->second.current > st->second.max) {
+			st->second.max = st->second.current;
+			return deme.GetSize();
+		}
+		
 		return 0.0;
+	}
+	
+	//! Called to reset state after demes compete.
+	virtual void Clear() {
+		_state.clear();
+	}
+	
+protected:
+	
+	//! This method handles the clean-up of a deme once consensus has been reached.
+	void ConsensusReached(cDeme& deme, std::pair<unsigned int, cOrganism::Opinion>& support) {
+		// Record that consensus occurred:
+		m_world->GetStats().ConsensusReached(deme, support.second, cAssignRandomCellData::CellIDFromData(support.second, deme));
+		
+		// Exit early if we're not supposed to touch the cell data.
+		if(_dont_replace) {
+			return;
+		}
+		
+		// Now, change the cell data for the value that was agreed upon:
+		int min_data = 0;
+		int max_data = INT_MAX;
+		if(_restrict_range) {
+			min_data = *cAssignRandomCellData::GetDataInDeme(deme).begin() + 1;
+			max_data = *cAssignRandomCellData::GetDataInDeme(deme).rbegin() - 1;
+		}
+		cAssignRandomCellData::CellIDList cell_ids = 
+		cAssignRandomCellData::ReplaceCellData(support.second, m_world->GetRandom().GetInt(min_data, max_data), deme);
+		
+		// Now reset the others:
+		for(int i=1; i<_replace; ++i) {
+			int cell_id = m_world->GetRandom().GetInt(deme.GetSize());
+			int cell_data = deme.GetCell(cell_id).GetCellData();
+			cAssignRandomCellData::CellIDList extra_cell_ids = 
+			cAssignRandomCellData::ReplaceCellData(cell_data, m_world->GetRandom().GetInt(min_data, max_data), deme);
+			cell_ids.insert(cell_ids.end(), extra_cell_ids.begin(), extra_cell_ids.end());
+		}
+		
+		// Ok, if we're going to kill the organisms, do so:
+		if(_kill) {
+			// This is probably only compatible with the "old-style" germline
+			for(cAssignRandomCellData::CellIDList::iterator i=cell_ids.begin(); i!=cell_ids.end(); ++i) {
+				m_world->GetPopulation().KillOrganism(deme.GetCell(*i));
+				m_world->GetPopulation().InjectGenome(*i, deme.GetGermline().GetLatest(), 0);
+				m_world->GetPopulation().DemePostInjection(deme, deme.GetCell(*i));
+			}
+		}		
 	}
 	
 private:
 	int _replace; //!< Number of cell datas that will be replaced on successful consensus.
+	int _kill; //!< Whether organisms are killed (and then reinjected) upon reset.
+	int _hold; //!< The number of updates that a deme must hold consensus for it to be counted.	
+	int _restrict_range; //!< Whether or not new cell data are restricted to be within the range of current cell data.
+	int _dont_replace; //!< For testing - if true, don't reset any cell data.
+	DemeState _state; //!< Map of deme id -> (Opinion, held time) to support stability of consensus.
 };
+
+
+/*! An event to randomly kill an organism within each deme, replacing it with a new organism from the germline.
+ */
+class cActionReplaceFromGermline : public cAction {
+public:
+	cActionReplaceFromGermline(cWorld* world, const cString& args) : cAction(world, args), _p_kill(0.0), _update_cell_data(0) {
+		cString largs(args);
+		if(largs.GetSize()) {
+			_p_kill = largs.PopWord().AsDouble();
+			if(largs.GetSize()) {
+				_update_cell_data = largs.PopWord().AsInt();
+			}
+		}
+	}
+	
+	static const cString GetDescription() { return "Arguments: [double p(kill)=0.0 [int update_cell_data=0]]"; }
+	
+	//! Process this event, looping through each deme, randomly killing organisms, and replacing them from the germline.
+	void Process(cAvidaContext& ctx) {
+		if(_p_kill > 0.0) {
+			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+				if(m_world->GetRandom().P(_p_kill)) {
+					cDeme& deme = m_world->GetPopulation().GetDeme(i);
+					
+					// Pick a cell at random, kill the occupant (if any), reset the cell data, and re-seed from the germline.
+					cPopulationCell& cell = deme.GetCell(m_world->GetRandom().GetInt(deme.GetSize()));
+					
+					if(_update_cell_data) {
+						// There are no restrictions on the ID for this cell:
+						cAssignRandomCellData::ReplaceCellData(cell, m_world->GetRandom().GetInt(INT_MAX), deme);
+					}
+					
+					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
+					m_world->GetPopulation().KillOrganism(cell);
+					m_world->GetPopulation().InjectGenome(cell.GetID(), deme.GetGermline().GetLatest(), 0);
+					m_world->GetPopulation().DemePostInjection(deme, cell);
+				}
+			}
+		}
+	}
+	
+private:
+	double _p_kill; //!< probability that a single individual in each deme will be replaced from the germline.
+	int _update_cell_data; //!< whether to update the cell data of killed individuals.	
+};
+
+
+
+/*! This class rewards a deme based on the number of opinions that have been set
+ to a given value.
+ 
+ There are three parameters that control this event:
+ desired: the opinion we're counting.
+ multiplicity: the number of times we want this opinion to be in the deme
+ side: the "sidedness" of the fitness function, that is, "to which side of mult is
+ there a fitness cliff?"  If side=-1, the cliff is to the left.  If side=1, the cliff
+ is to the right.  If side=0, there is no cliff.
+ */
+class cActionCountOpinions : public cAbstractCompeteDemes, ConsensusSupport {
+public:
+	
+	//! Constructor.
+	cActionCountOpinions(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args),
+	_desired(0), _mult(1), _side(0) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_desired = largs.PopWord().AsInt();
+			if(largs.GetSize()) {
+				_mult = largs.PopWord().AsInt();
+				if(largs.GetSize()) {
+					_side = largs.PopWord().AsInt();
+				}
+			}
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionCountOpinions() { }
+	
+	static const cString GetDescription() { return "Arguments: [int desired_opinion=0 [int multiplicity=1 [int side=0]]]"; }
+	
+  /*! Fitness function.
+	 
+	 The idea here is that we want to reward each deme based on the number of constituents
+	 that have set their opinion to the desired value.  We're going to set fitness == number
+	 of organisms that have an opinion to get things jumpstarted.
+   */
+  virtual double Fitness(cDeme& deme) {
+		// the number of individuals that have set their opinion to _desired:
+		// s.first == support, s.second == have_opinion
+		std::pair<int, int> s = support(deme, _desired);
+		
+		// encourage opinion setting:
+		if(s.second < deme.GetSize()) {
+			return s.second + 1; // small reward to help bootstrap.
+		}
+		
+		// it's possible that we'll need to scale these values such that rewards to the
+		// 'left' or 'right' of _mult are proportional to each other.  if so, this might help:
+		//		double leftside_scale = 0.5 * deme.GetSize() / _mult;
+		//		double rightside_scale = 0.5 * deme.GetSize() / (deme.GetSize() - _mult);
+		//		
+		//		double scaled = 0.0;
+		//		if(_mult > s.first) {
+		//			// leftside scaling
+		//			scaled = std::abs(static_cast<double>(_mult - s.first)) * leftside_scale;
+		//		} else if(_mult < s.first) {
+		//			// rightside scaling
+		//			scaled = std::abs(static_cast<double>(_mult - s.first)) * rightside_scale;
+		//		}
+		//		return pow(deme.GetSize() - scaled + 1, 2);
+		
+		switch(_side) {
+			case -1: {
+				// fitness cliff to the left of _mult.
+				if(s.first >= _mult) {
+					return pow((double)deme.GetSize() - (s.first - _mult) + 1, 2);					
+				}
+				break;
+			}
+			case 0: {
+				// no fitness cliff.
+				return pow(deme.GetSize() - std::abs(static_cast<double>(_mult - s.first)) + 1, 2);
+			}
+			case 1: {
+				// fitness cliff to the right of _mult.
+				if(s.first <= _mult) {
+					return pow((double)deme.GetSize() - (_mult - s.first) + 1, 2);
+				}
+				break;
+			}
+			default: {
+				assert(false);
+			}
+		}
+		
+		// we only get down here if we fell off the fitness cliff to either side of _mult.
+		// we reward by the size of the deme 'cause all organisms did set their opinion.
+		return deme.GetSize();
+	}
+	
+private:
+	cOrganism::Opinion _desired; //!< Opinion that will be rewarded.
+	int _mult; //!< Desired multiplicity of the opinion that will be rewarded.
+	int _side; //!< "sidedness" of the fitness function (two-sided==0, one-sided left==-1, one-sided right==1).
+};
+
+
+/*! This class rewards a deme based on the number of opinions the deme has. 
+ Specifically, the user defines how many opinions it wants the deme to have (e.g., 5)
+ and the deme then receives rewards for having at least one of those opinions (e.g., 1-5).
+ 
+ There is one parameter that controls this event:
+ opinion_count: number of opinions we want the deme to have. We assume the opinions 
+ start at 1 and continue until the desired count is reached.
+ */
+class cActionCountMultipleOpinions : public cAbstractCompeteDemes, ConsensusSupport {
+public:
+	
+	typedef std::set<cOrganism::Opinion> opinion_set;
+	
+	//! Constructor.
+	cActionCountMultipleOpinions(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+		if(args.GetSize()) {
+			cString largs(args);
+			// Build the set of opinions that we will reward... does not include 0.
+			for(int i=largs.PopWord().AsInt(); i>0; --i) {
+				_rewarded.insert(i);
+			}
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionCountMultipleOpinions() { }
+	
+	static const cString GetDescription() { return "Arguments: [int opinion_count=0]"; }
+	
+  /*! Fitness function.
+	 
+	 The idea here is that we want to reward each deme based the number of opinions
+	 expressed out of the desired set (e.g., for a count of 5 opinions, we want
+	 at least one of 1, 2, 3, 4, 5 -- the others don't count.  
+	 
+	 We're going to set fitness == number of organisms that have an opinion to get 
+	 things jumpstarted.
+   */
+  virtual double Fitness(cDeme& deme) {
+		
+		// How many opinions are set?
+		int ocount = count_opinions(deme);
+		
+		// If not all opinions have been set, just return the number that have.
+		// We want to encourage opinion-setting.
+		if(ocount < deme.GetSize()) {
+			return ocount + 1;
+		}
+		
+		// Ok, great.  Everyone has set an opinion.  Now, reward based on
+		// the size of the intersection between the rewarded opinions and the
+		// unique opinions expressed in the deme.
+		opinion_set intersection;
+		opinion_set unique = unique_opinions(deme);
+		std::set_intersection(unique.begin(), unique.end(), _rewarded.begin(), _rewarded.end(), 
+													std::insert_iterator<opinion_set>(intersection, intersection.begin()));
+		
+		return intersection.size() + ocount + 1;
+	}
+	
+private:
+	opinion_set _rewarded; //!< Set of opinions that are rewarded.
+};
+
+
+
+/*! Compete demes event that evaluates based on 2 tasks (t1 & t2) as follows. 
+ If min <= t1 <= max, then f = 1 + 1 + t2
+ Else, f = 1
+ */
+class cActionDemeBalanceTwoTasks : public cAbstractCompeteDemes {
+public:
+	
+	//! Constructor.
+	cActionDemeBalanceTwoTasks(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args), _min(0), _max(0) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_min = largs.PopWord().AsInt();
+			_max = largs.PopWord().AsInt();
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionDemeBalanceTwoTasks() { }
+	
+	static const cString GetDescription() { return "Two arguments: min and max for not"; }
+	
+  /*! Fitness function.
+	 Functions as described in the comments above.
+	 */
+  virtual double Fitness(cDeme& deme) {
+		
+		float val = 0.0;
+		double performed_t1=0.0;
+		double performed_t2=0.0;
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			if(org != 0) {
+				tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+				assert(reactions.GetSize() > 1);
+				
+				if (reactions[0]) performed_t1++;
+				if (reactions[1]) performed_t2++;
+				
+			}
+		}
+		
+		// return something
+		if ((_min <= performed_t1) && (performed_t1 <= _max)) {
+			val = 2 + performed_t2;
+		} else {
+			val = 1;
+		}
+		return val;
+	}
+	
+protected:
+	int _min; //!< min for task 1 (not)
+	int _max; //!< max for task 1 (not)
+};
+
+/*! Compete demes event that rewards for diversity of reactions that have been
+ performed by the currently living individuals in each deme.
+ */
+class cActionDemeReactionDiversity : public cAbstractCompeteDemes {
+public:
+	
+	//! Constructor.
+	cActionDemeReactionDiversity(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args), _uniq_only(false) {
+		if(args.GetSize()) {
+			cString largs(args);
+			_uniq_only = largs.PopWord().AsInt();
+		}		
+	}
+	
+	//! Destructor.
+	virtual ~cActionDemeReactionDiversity() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+  /*! Fitness function.
+	 Here we reward the deme based on the number of unique reactions that have been
+	 performed by the current individuals.
+	 */
+  virtual double Fitness(cDeme& deme) {
+		std::set<int> uniq_reactions;
+		int performed=0;
+		for(int i=0; i<deme.GetSize(); ++i) {
+			cOrganism* org = deme.GetOrganism(i);
+			if(org != 0) {
+				bool performed_rx=false;
+				//				tArray<int> reactions = org->GetPhenotype().GetLastReactionCount();
+				tArray<int> reactions = org->GetPhenotype().GetCurReactionCount();
+				for(int j=0; j<reactions.GetSize(); ++j) {
+					if(reactions[j] > 0) {
+						uniq_reactions.insert(j);
+						performed_rx = true;
+					}
+				}
+				if(performed_rx) {
+					++performed;
+				}
+			}
+		}
+		
+		if(_uniq_only) {
+			return uniq_reactions.size() + 1.0;
+		} else {
+			if(performed < deme.GetSize()) {
+				return performed + 1.0;
+			} else {
+				return uniq_reactions.size() + deme.GetSize() + 1.0;
+			}
+		} 
+	}
+	
+protected:
+	bool _uniq_only; //!< Whether to reward for uniqueness of reaction only.
+};
+
+
+/*! Unit-fitness compete demes method (use for control runs).
+ */
+class cActionUnitFitness : public cAbstractCompeteDemes {
+public:
+	
+	//! Constructor.
+	cActionUnitFitness(cWorld* world, const cString& args) : cAbstractCompeteDemes(world, args) {
+	}
+	
+	//! Destructor.
+	virtual ~cActionUnitFitness() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	virtual double Fitness(cDeme& deme) {
+		return 1.0;
+	}
+};
+
 
 /*!	This class competes demes based on the total number of times that a
  *	given task has been completed by an organism in the deme since the
@@ -1952,7 +2887,7 @@ public:
 		return "Competes demes according to the number of times a given task has been completed within that deme"; 
 	}
 	
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
 		double fitness = pow(deme.GetCurTaskExeCount()[_task_num], 2.0);///deme.GetInjectedCount());
     if (fitness == 0.0) fitness = 0.1;
     return fitness;
@@ -1991,7 +2926,7 @@ public:
 		return "Competes demes according to the number of times a given task has been completed within that deme and the efficiency with which it was done"; 
 	}
 	
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
     double energy_used = _initial_deme_energy - deme.CalculateTotalEnergy();
 		double fitness = 
 		pow(deme.GetCurTaskExeCount()[_task_num] * (_initial_deme_energy/energy_used),2);
@@ -2014,7 +2949,7 @@ public:
 		return "Competes demes according to the distribution of energy among the organisms"; 
 	}
 	
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
 		const int numcells = deme.GetSize();
 		
 		double min_energy = -1;
@@ -2052,7 +2987,6 @@ public:
 		return fitness;
 	}
 };
-
 
 
 /*! Send an artificial flash to a single organism in each deme in the population
@@ -2106,7 +3040,7 @@ public:
   /*! Calculate the fitness based on how well the organisms in this deme have
 	 synchronized their flashes.
    */
-  virtual double Fitness(const cDeme& deme) {
+  virtual double Fitness(cDeme& deme) {
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -2177,7 +3111,7 @@ public:
   static const cString GetDescription() { return "No Arguments"; }
   
 	//! Calculate fitness based on how well organisms have spread throughout phase-space.
-	virtual double Fitness(const cDeme& deme) {
+	virtual double Fitness(cDeme& deme) {
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -2212,7 +3146,7 @@ public:
 	
 	static const cString GetDescription() { return "No Arguments"; }
   
-	double Fitness(const cDeme& deme) {    
+	double Fitness(cDeme& deme) {    
 		double eventsKilled = static_cast<double>(deme.GetEventsKilled());
 		double totalEvents  = static_cast<double>(deme.GetEventsTotal());
 		double energyRemaining = deme.CalculateTotalEnergy();
@@ -2290,6 +3224,9 @@ class cActionReplicateDemes : public cAction
  BASE_CONST_MERIT 0 (Use a base merit of zero, hence all merits = 0)
  
  These settings will make sure that all merit will be set by this action.
+ 
+ FYI: This model is appears to be similar to Traulsen's model of group selection:
+ 
  */
 
 class cActionDivideDemes : public cAction
@@ -2309,6 +3246,25 @@ class cActionDivideDemes : public cAction
 			m_world->GetPopulation().DivideDemes();
 		}
 	};
+
+
+/*! Mix all organisms in the population.
+ 
+ This event, in combination with a method for deme competition, can be used to model
+ the different biologically-inspired approaches to group selection, specifically
+ Wilson's and Traulsen's models.
+*/
+class cActionMixPopulation : public cAction {
+public:
+	cActionMixPopulation(cWorld* world, const cString& args) : cAction(world, args) {
+	}
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	void Process(cAvidaContext& ctx) {
+		m_world->GetPopulation().MixPopulation();
+	}
+};
 
 
 /*
@@ -3129,6 +4085,133 @@ public:
 };
 
 
+/*! Diffuse HGT genome fragments.
+ 
+ If HGT is enabled, each cell will gradually (ok, ok - it'll happen quickly) build up
+ a buffer of genome fragments.  This event triggers the diffusion of those fragments.
+ 
+ For right now, we evaluate each cell in order; fix this if we start seeing diffusion
+ artifacts.
+ 
+ The actual code for performing the diffusion lives over in cPopulationCell::DiffuseGenomeFragments().
+ */
+class cActionDiffuseHGTGenomeFragments : public cAction {
+public:
+  static const cString GetDescription() { return "Arguments: <none>"; }
+  
+	//! Constructor.
+  cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args) : cAction(world, args) {
+  }
+  
+	//! Process this event.
+  void Process(cAvidaContext& ctx) {
+		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
+		}
+	}
+};
+
+
+/* This action migrates a configurable number of organisms from one deme to another if
+   the level of some global (deme) resource is above the configured threshold.
+ 
+Parameters: 3
+ - name of the resource.  This must be a deme-level global resource.
+ - threshold level for resource.  above this, organisms are migrated.
+ - number of organisms to migrate to a randomly-chosen deme.
+ 
+*/
+
+class cActionMigrateDemes : public cAction
+{
+  private:
+    cString m_res;
+    double m_thresh;
+    int m_numorgs;
+  public:
+    static const cString GetDescription() { return "Arguments: <string resource name><double failure_percent>"; }
+    
+    cActionMigrateDemes(cWorld* world, const cString& args) : cAction(world, args), m_thresh(0), m_numorgs(0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_res = largs.PopWord();
+      if (largs.GetSize()) m_thresh = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
+
+      assert(m_thresh >= 0);
+      assert(m_numorgs >= 0);
+      
+      assert(m_world->GetConfig().NUM_DEMES.Get() > 1);
+      
+      //Speculative execution will not work since we are moving organisms around.
+      assert(m_world->GetConfig().SPECULATIVE.Get() == 0);
+    }
+    
+    void Process(cAvidaContext& ctx)
+    {
+      int src_cellid, dest_cellid;
+      
+      for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
+        cDeme& deme = m_world->GetPopulation().GetDeme(d);
+        int deme_size = deme.GetWidth() * deme.GetHeight();
+        
+        const cResourceCount &res = deme.GetDemeResourceCount();
+        const int resid = res.GetResourceByName(m_res);
+        
+        if(resid == -1) {
+          //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
+          cerr << "Error: Resource \"" << m_res << "\" not defined for this deme" << endl;
+          continue;
+        }
+        
+        if(res.Get(resid) >= m_thresh) {
+          //Set the resource to zero
+          deme.AdjustResource(resid, (-1 * res.Get(resid)));
+          
+          //Pick a deme to move to
+          int target_demeid = m_world->GetRandom().GetInt(0, m_world->GetConfig().NUM_DEMES.Get()-1);
+          cDeme& target_deme = m_world->GetPopulation().GetDeme(target_demeid);
+          int target_deme_size = target_deme.GetWidth() * target_deme.GetHeight();
+          
+          //Migrate up to m_numorgs orgs
+          for(int i = 0; i < m_numorgs; i++) {
+            src_cellid = -1;
+            dest_cellid = -1;
+            
+            int counter = 0;
+            do {
+              src_cellid = m_world->GetRandom().GetInt(0, (deme.GetWidth() * deme.GetHeight())-1);
+              counter++;
+            } while((counter < deme_size) && (!deme.GetCell(src_cellid).IsOccupied()));
+                        
+            counter = 0;
+            do {
+              dest_cellid = m_world->GetRandom().GetInt(0, target_deme_size - 1);
+              counter++;
+            } while((counter < target_deme_size) && (target_deme.GetCell(dest_cellid).IsOccupied())); 
+            
+            if( (src_cellid != -1) && (dest_cellid != -1) ) {
+            
+              m_world->GetPopulation().SwapCells(deme.GetCell(src_cellid), target_deme.GetCell(dest_cellid));
+              m_world->GetPopulation().MoveOrganisms(ctx, deme.GetCell(src_cellid), target_deme.GetCell(dest_cellid));
+              
+              deme.DecOrgCount();
+              target_deme.IncOrgCount();
+            }
+            
+            //migrate the organism from src_cell to dest cell
+          }
+          
+          m_world->GetStats().IncNumMigrations();
+          
+        }
+        
+      } //End iterating through demes
+      
+    }
+};
+
+
 void RegisterPopulationActions(cActionLibrary* action_lib)
 {
   action_lib->Register<cActionInject>("Inject");
@@ -3148,10 +4231,13 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionKillInstLimit>("KillInstLimit");
 	action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
+	action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
+	action_lib->Register<cActionKillFractionInSequence_PopLimit>("KillFractionInSequence_PopLimit");
 	
 	// Theraputic deme actions
 	action_lib->Register<cAction_TherapyStructuralNumInst>("TherapyStructuralNumInst");
 	action_lib->Register<cAction_TherapyStructuralRatioDistBetweenNearest>("TherapyStructuralRatioDistBetweenNearest");
+  action_lib->Register< cAction_TherapyDecayDemeResource>("TherapyDecayDemeResource");
 	
 	
   action_lib->Register<cActionToggleRewardInstruction>("ToggleRewardInstruction");
@@ -3159,7 +4245,8 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
-	
+	action_lib->Register<cActionReplaceFromGermline>("ReplaceFromGermline");
+		
   action_lib->Register<cActionSetMigrationRate>("SetMigrationRate");
   action_lib->Register<cActionSetMutProb>("SetMutProb");
   action_lib->Register<cActionModMutProb>("ModMutProb");
@@ -3172,6 +4259,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDivideDemes>("DivideDemes");
   action_lib->Register<cActionResetDemes>("ResetDemes");
   action_lib->Register<cActionCopyDeme>("CopyDeme");
+  action_lib->Register<cActionMixPopulation>("MixPopulation");
 	
 	action_lib->Register<cActionDecayPoints>("DecayPoints");
 	
@@ -3181,9 +4269,17 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
+	action_lib->Register<cActionDistributeData>("DistributeData");
+	action_lib->Register<cActionDistributeDataEfficiently>("DistributeDataEfficiently");
+	action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
+	action_lib->Register<cActionCountOpinions>("CountOpinions");
+	action_lib->Register<cActionCountMultipleOpinions>("CountMultipleOpinions");
+	action_lib->Register<cActionDemeReactionDiversity>("DemeReactionDiversity");
+	action_lib->Register<cActionDemeBalanceTwoTasks>("DemeBalanceTwoTasks");
 	action_lib->Register<cActionSynchronization>("Synchronization");
 	action_lib->Register<cActionDesynchronization>("Desynchronization");
+	action_lib->Register<cActionUnitFitness>("UnitFitness");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");
@@ -3210,6 +4306,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
   action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
 	
+	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
 	
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");
@@ -3244,4 +4341,5 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSwapCells>("swap_cells");
   action_lib->Register<cActionKillDemePercent>("KillDemePercent");
   action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
+  action_lib->Register<cActionMigrateDemes>("MigrateDemes");
 }

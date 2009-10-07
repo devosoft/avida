@@ -135,8 +135,7 @@ spatial resources)
 <tr>
   <td class="resall">energy</td>
   <td>
-    Is this an energy resource. Currently, only implemented for
-    spacial resources, and the energy model must be used.
+    Is this an energy resource. The energy model must be used.
     (<em>True</em> or <em>False</em>)
   </td>
   <td>
@@ -566,6 +565,7 @@ Default values are in brackets:
     <br />&nbsp;&nbsp;&nbsp;<em>enzyme</em>: Add bonus * resource / (resource + frac) to the current merit.
     	This is gives a Michaelis-Menten enzyme type reward where bonus is the K<sub>cat</sub>
     	and frac is the K<sub>m</sub>. Does not work with unlimited resources.
+    <br />&nbsp;&nbsp;&nbsp;<em>energy</em>: Add the bonus energy to the organism's energy waiting to be applied buffer.  Bonus energy can be applied on completion of a reaction, execution of the sleep/eat instruction, or when the organisms divides.  See <a href="energy_model.html">Energy Model</a> documentation for more information.
   </td>
   <td>add</td>
 </tr>

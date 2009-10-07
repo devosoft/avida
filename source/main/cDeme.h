@@ -31,6 +31,7 @@
 #include "cGermline.h"
 #include "cPhenotype.h"
 #include "cMerit.h"
+#include "cDemeNetwork.h"
 #include "tArray.h"
 #include "tVector.h"
 #include "cResourceCount.h"
@@ -141,17 +142,12 @@ private:
 	unsigned int migrations_in;
 	unsigned int suicides;
 	
-  
 public:
-  cDeme() : _id(0), width(0), replicateDeme(false), treatable(false), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
-            _age(0), generation(0), total_org_energy(0.0),
-            time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
-						MSG_sendFailed(0), MSG_dropped(0), MSG_SuccessfullySent(0), MSG_sent(0), energyInjectedIntoOrganisms(0.0), energyRemainingInDemeAtReplication(0.0), total_energy_testament(0.0),
-            eventsTotal(0), eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
-            consecutiveSuccessfulEventPeriods(0), sleeping_count(0),
-            avg_founder_generation(0.0), generations_per_lifetime(0.0),
-            deme_resource_count(0), m_germline_genotype_id(0), points(0), migrations_out(0), migrations_in(0), suicides(0){ ; }
-  ~cDeme() { ; }
+	//! Constructor.
+  cDeme();
+	
+	//! Destructor.
+  ~cDeme();
 
   void Setup(int id, const tArray<int>& in_cells, int in_width = -1, cWorld* world = NULL);
 
@@ -163,6 +159,7 @@ public:
   //! Returns an (x,y) pair for the position of the passed-in cell ID.
   std::pair<int, int> GetCellPosition(int cellid) const;
   cPopulationCell& GetCell(int pos) const;
+	cPopulationCell& GetCell(int x, int y) const;
   cOrganism* GetOrganism(int pos) const;
 
   int GetWidth() const { return width; }
@@ -182,8 +179,10 @@ public:
 
   int GetOrgCount() const { return cur_org_count; }
   int GetLastOrgCount() const { return last_org_count; }
-	double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
 
+	double GetDensity() const { return static_cast<double>(cur_org_count) / static_cast<double>(GetSize()); }
+	int GetNumOrgsWithOpinion() const;
+	
   void IncOrgCount() { cur_org_count++; }
   void DecOrgCount() { cur_org_count--; }
 
@@ -207,6 +206,7 @@ public:
   void AddTreatmentAge(const int age) { treatment_ages.insert(age); }
   bool IsTreatableAtAge(const int age);
   bool IsTreatableNow() { return IsTreatableAtAge(_age); }
+  std::set<int> GetTreatmentAges() const { return treatment_ages; }
 
   int GetSlotFlowRate() const;
   int GetEventsTotal() const { return eventsTotal; }
@@ -254,11 +254,17 @@ public:
   // -= Update support =-
   //! Called once, at the end of every update.
   void ProcessUpdate();
-  /*! Returns the age of this deme, updates.  Age is defined as the number of 
-    updates since the last time Reset() was called. */
+  //! Returns the age of this deme in updates, where age is defined as the number of updates since the last time Reset() was called.
   int GetAge() const { return _age; }
+	//! Called when an organism living in a cell in this deme is about to be killed.
+	void OrganismDeath(cPopulationCell& cell);
   
   const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
+  cResourceCount& GetDemeResources() { return deme_resource_count; }
+	void SetResource(int id, double new_level) { deme_resource_count.Set(id, new_level); }
+  double GetSpatialResource(int rel_cellid, int resource_id) const;
+  void AdjustSpatialResource(int rel_cellid, int resource_id, double amount);
+  void AdjustResource(int resource_id, double amount);
   void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
   void ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id);
@@ -363,6 +369,19 @@ public:
   void IncreaseEnergyDonated(double amount) { assert(amount >=0); total_energy_donated += amount; }
   void IncreaseEnergyReceived(double amount) { assert(amount >=0); total_energy_received += amount; }
   void IncreaseEnergyApplied(double amount) { assert(amount >=0); total_energy_applied += amount; }
+	
+	// -= Network creation support =-
+private:
+	//! Lazily-initialized pointer to the network creation support struct.
+	cDemeNetwork* m_network;
+
+	//! Initialize network creation support.
+	inline void InitNetworkCreation() { if(!m_network) m_network = cDemeNetwork::DemeNetworkFactory(m_world, *this); }
+	//! Test for initialization of the network.
+	inline bool IsNetworkInitialized() { return m_network != 0; }
+public:
+	//! Retrieve this deme's network.
+	cDemeNetwork& GetNetwork();
 };
 
 #endif

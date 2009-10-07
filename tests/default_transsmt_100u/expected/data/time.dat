@@ -1,11 +1,11 @@
 # Avida time data
-# Fri Mar  6 17:36:54 2009
+# Tue Sep 22 16:17:48 2009
 #  1: update
 #  2: avida time
 #  3: average generation
 #  4: num_executed?
 
-0 0.000000 0.000000 30 
+0 0 0 30 
 10 0.102041 0 30 
 20 0.204082 1 60 
 30 0.306122 1 60 

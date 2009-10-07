@@ -52,7 +52,7 @@ cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
     if (m_world->GetConfig().NUM_DEMES.Get() > 1) {
       // Deme local takes priority, and manages the sub handlers
       handler = new cBirthDemeHandler(m_world, this);    
-    } else if (birth_method < NUM_LOCAL_POSITION_CHILD || birth_method == POSITION_CHILD_PARENT_FACING) { 
+    } else if (birth_method < NUM_LOCAL_POSITION_OFFSPRING || birth_method == POSITION_OFFSPRING_PARENT_FACING) { 
       // ... else check if the birth method is one of the local ones... 
       if (m_world->GetConfig().LEGACY_GRID_LOCAL_SELECTION.Get()) {
         handler = new cBirthGridLocalHandler(m_world, this);
@@ -175,6 +175,12 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
     // set child energy & merit
     child_array[0]->GetPhenotype().SetEnergy(child_energy);
     merit_array[0] = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
+		if(merit_array[0].GetDouble() <= 0.0) {  // do not allow zero merit
+			delete child_array[0];  // MAKE SURE THIS GETS DONE! Otherwise, memory leak.	
+			child_array.Resize(0);
+			merit_array.Resize(0);
+			return false;
+		}
   } else {
     merit_array[0] = parent.GetPhenotype().GetMerit();
   }

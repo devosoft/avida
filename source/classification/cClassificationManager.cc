@@ -259,6 +259,29 @@ void cClassificationManager::RemoveGenotype(cGenotype & in_genotype)
     }
   }
   
+
+  cSpecies* cur_species = in_genotype.GetSpecies();
+
+  // If this is a threshold genotype we must clean up some threshold stats
+  // right now, since the actual genotype may persist under track main lineage
+  if (in_genotype.GetThreshold()) {
+    m_world->GetStats().RemoveThreshold();
+    in_genotype.ClearThreshold();
+
+    if (cur_species) {
+      cur_species->RemoveThreshold(in_genotype);
+      
+      // If we are out of thresholds, move this species to the inactive
+      // list for now.  Otherwise, just adjust it.
+      if (cur_species->GetNumThreshold() == 0) {
+        m_species_ctl->SetInactive(*cur_species);
+      } else {
+        m_species_ctl->Adjust(*cur_species);
+      }      
+    }
+  }
+  
+  
   // If we are tracking the main lineage, we only want to delete a
   // genotype when all of its decendents have also died out.
   
@@ -318,28 +341,11 @@ void cClassificationManager::RemoveGenotype(cGenotype & in_genotype)
   // threshold genotype, then the species will only be effected if this was
   // the last genotype of that species.
   
-  cSpecies * cur_species = in_genotype.GetSpecies();
   if (cur_species) {
     
     // First, re-adjust the species.
     
     cur_species->RemoveGenotype();
-    
-    // Then, check to see how this species changes if it is a threshold.
-    
-    if (in_genotype.GetThreshold()) {
-      cur_species->RemoveThreshold(in_genotype);
-      
-      // If we are out of thresholds, move this species to the inactive
-      // list for now.  Otherwise, just adjust it.
-      
-      if (cur_species->GetNumThreshold() == 0) {
-        m_species_ctl->SetInactive(*cur_species);
-      }
-      else {
-        m_species_ctl->Adjust(*cur_species);
-      }
-    }
     
     // Finally, remove the species completely if it has no genotypes left.
     
