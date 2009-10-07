@@ -144,11 +144,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label, (nInstFlag::DEFAULT | nInstFlag::LABEL)),
     
     tInstLibEntry<tMethod>("h-search", &cHardwareExperimental::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-direct", &cHardwareExperimental::Inst_HeadSearchDirect, nInstFlag::DEFAULT, "Find direct template and move the flow head"),
-    tInstLibEntry<tMethod>("h-search-lbl", &cHardwareExperimental::Inst_HeadSearchLabel, nInstFlag::LABEL, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-direct-lbl", &cHardwareExperimental::Inst_HeadSearchDirectLabel, nInstFlag::LABEL, "Find direct template and move the flow head"),
-    tInstLibEntry<tMethod>("h-search-seq", &cHardwareExperimental::Inst_HeadSearchSequence, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-direct-seq", &cHardwareExperimental::Inst_HeadSearchDirectSequence, nInstFlag::DEFAULT, "Find direct template and move the flow head"),
+    tInstLibEntry<tMethod>("h-search-nolabel", &cHardwareExperimental::Inst_HeadSearch_NoLabel, 0, "Find complement template and make with flow head"),
+    tInstLibEntry<tMethod>("h-search-noreg", &cHardwareExperimental::Inst_HeadSearch_NoReg, 0, "Find complement template and make with flow head"),
+    tInstLibEntry<tMethod>("h-search-direct", &cHardwareExperimental::Inst_HeadSearch_Direct, 0, "Find direct template and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
     
@@ -162,9 +160,9 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("h-divide", &cHardwareExperimental::Inst_HeadDivide, (nInstFlag::DEFAULT | nInstFlag::STALL), "Divide code between read and write heads."),
     tInstLibEntry<tMethod>("h-divide-sex", &cHardwareExperimental::Inst_HeadDivideSex, (nInstFlag::DEFAULT | nInstFlag::STALL), "Divide code between read and write heads."),
     tInstLibEntry<tMethod>("h-copy", &cHardwareExperimental::Inst_HeadCopy, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
-    tInstLibEntry<tMethod>("h-copy-nolabel", &cHardwareExperimental::Inst_HeadCopy_NoLabel, nInstFlag::DEFAULT, "Copy from read-head to write-head; advance both"),
+    tInstLibEntry<tMethod>("h-copy-nolabel", &cHardwareExperimental::Inst_HeadCopy_NoLabel, 0, "Copy from read-head to write-head; advance both"),
     tInstLibEntry<tMethod>("if-label", &cHardwareExperimental::Inst_IfLabel, nInstFlag::DEFAULT, "Execute next if we copied complement of attached label"),
-    tInstLibEntry<tMethod>("if-label-direct", &cHardwareExperimental::Inst_IfLabelDirect, nInstFlag::DEFAULT, "Execute next if we copied direct match of the attached label"),
+    tInstLibEntry<tMethod>("if-label-direct", &cHardwareExperimental::Inst_IfLabel_Direct, 0, "Execute next if we copied direct match of the attached label"),
 
     tInstLibEntry<tMethod>("h-read", &cHardwareExperimental::Inst_HeadRead, 0, "Read from the read-head, place into ?BX?, advance read-head"),
     tInstLibEntry<tMethod>("h-write", &cHardwareExperimental::Inst_HeadWrite, 0, "Write from ?BX? to the write head, advance write-head"),
@@ -1460,7 +1458,7 @@ bool cHardwareExperimental::Inst_IfLabel(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_IfLabelDirect(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_IfLabel_Direct(cAvidaContext& ctx)
 {
   ReadLabel();
   if (GetLabel() != GetReadLabel())  getIP().Advance();
@@ -1636,7 +1634,20 @@ bool cHardwareExperimental::Inst_HeadSearch(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadSearchLabel(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_HeadSearch_NoLabel(cAvidaContext& ctx)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindNopSequenceStart(true);
+  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
+  setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
+  setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_HeadSearch_NoReg(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -1646,7 +1657,7 @@ bool cHardwareExperimental::Inst_HeadSearchLabel(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadSearchDirect(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_HeadSearch_Direct(cAvidaContext& ctx)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelForward(true);
@@ -1658,39 +1669,6 @@ bool cHardwareExperimental::Inst_HeadSearchDirect(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadSearchDirectLabel(cAvidaContext& ctx)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_HeadSearchSequence(cAvidaContext& ctx)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindNopSequenceStart(true);
-  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
-  setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
-  setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_HeadSearchDirectSequence(cAvidaContext& ctx)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindNopSequenceStart(true);
-  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
-  setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
-  setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
 
 
 bool cHardwareExperimental::Inst_SetFlow(cAvidaContext& ctx)
