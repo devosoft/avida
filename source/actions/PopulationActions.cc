@@ -4069,8 +4069,14 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
               }
               
               current_cell = (world_x * row_adj) + col_adj;
-              pop.KillOrganism(pop.GetCell(current_cell));
-              m_world->GetStats().IncNumOrgsKilled();
+							cPopulationCell& cell = pop.GetCell(current_cell);
+							if (cell.IsOccupied()) {
+								pop.KillOrganism(cell);
+								m_world->GetStats().IncNumOrgsKilled();
+							} else {
+								m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+							}
+
             }
           }
           

@@ -135,6 +135,7 @@ cStats::cStats(cWorld* world)
   , m_spec_num(0)
   , m_spec_waste(0)
   , num_orgs_killed(0)
+	, num_unoccupied_cell_kill_attempts(0)
   , num_migrations(0)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
@@ -579,6 +580,7 @@ void cStats::ProcessUpdate()
   m_spec_waste = 0;
   
   num_orgs_killed = 0;
+	num_unoccupied_cell_kill_attempts = 0;
   num_migrations = 0;
 }
 
@@ -2480,6 +2482,7 @@ void cStats::PrintNumOrgsKilledData(const cString& filename)
   
   df.Write(m_update,   "Update");
   df.Write(num_orgs_killed, "Num Orgs Killed");
+  df.Write(num_unoccupied_cell_kill_attempts, "Num Unoccupied Cell Kill Attempts");
   df.Endl();
 } //End PrintNumOrgsKilledData()
 
