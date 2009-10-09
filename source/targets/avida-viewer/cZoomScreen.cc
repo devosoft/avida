@@ -1377,7 +1377,7 @@ cCoords cZoomScreen::GetSectionCoords(int in_section)
 }
 
 
-char* cZoomScreen::GetSectionName(int in_section)
+const char* cZoomScreen::GetSectionName(int in_section)
 {
   switch (in_section) {
     case ZOOM_SECTION_MEMORY:
@@ -1432,7 +1432,7 @@ void cZoomScreen::SetActiveSection(int in_section)
 
 void cZoomScreen::DoInput(int in_char)
 {
-  cHardwareBase * hardware = NULL;
+  cHardwareBase* hardware = NULL;
   if (info.GetActiveCell()->IsOccupied()) {
     hardware = &(info.GetActiveCell()->GetOrganism()->GetHardware());
   }

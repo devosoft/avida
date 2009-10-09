@@ -389,7 +389,8 @@ public:
   bool Unregister(const cString& key)
   {
     cMutexAutoLock lock(m_mutex);
-    CreateObjectFunction func = m_create_funcs.Remove(key);
+    CreateObjectFunction func = NULL;
+    m_create_funcs.Remove(key, func);
     return (func != NULL);
   }
   

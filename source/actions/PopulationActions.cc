@@ -4036,9 +4036,6 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
       assert(m_threshold >= 0.0);
       assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
       
-      double level;
-      int target_cell, current_cell;
-      int row_adj, col_adj;
       cPopulation& pop = m_world->GetPopulation();
       int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
       
@@ -4046,8 +4043,8 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
       
       for (int i = 0; i < m_numradii; i++) {
 
-        target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-        level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+        int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+        double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
         
         if(level < m_threshold) {
           const int current_row = target_cell / world_x;
@@ -4060,6 +4057,9 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
             for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
               if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
               
+              int row_adj = 0;
+              int col_adj = 0;
+
               if(geometry == nGeometry::TORUS) {
                 row_adj = (row + world_y) % world_y;
                 col_adj = (col + world_x) % world_x;
@@ -4068,7 +4068,7 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
                 col_adj = col;
               }
               
-              current_cell = (world_x * row_adj) + col_adj;
+              int current_cell = (world_x * row_adj) + col_adj;
 							cPopulationCell& cell = pop.GetCell(current_cell);
 							if (cell.IsOccupied()) {
 								pop.KillOrganism(cell);

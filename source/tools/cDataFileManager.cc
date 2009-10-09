@@ -124,7 +124,8 @@ void cDataFileManager::FlushAll()
 
 bool cDataFileManager::Remove(const cString& name)
 {
-  cDataFile* found_file = m_datafiles.Remove(name);
+  cDataFile* found_file = NULL;
+  m_datafiles.Remove(name, found_file);
   if (found_file == NULL) return false;
 
   delete found_file;

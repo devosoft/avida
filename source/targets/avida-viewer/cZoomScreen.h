@@ -105,7 +105,7 @@ private:
 
   cCoords GetSectionCoords(int in_section);
   //cString GetSectionName(int in_section);
-  char* GetSectionName(int in_section);
+  const char* GetSectionName(int in_section);
   void SetActiveSection(int in_section);
 
   void DrawMiniMap();
