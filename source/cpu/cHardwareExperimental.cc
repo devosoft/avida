@@ -211,7 +211,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
 
 	const int def = 0;
-  const int null_inst = 4;
+  const int null_inst = 6;
   
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
