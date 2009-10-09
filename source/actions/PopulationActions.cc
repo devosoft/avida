@@ -3924,6 +3924,7 @@ class cActionKillNBelowResourceThreshold : public cAction
     {
       double level;
       int target_cell;
+      cPopulation& pop = m_world->GetPopulation();
       int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
       
       assert(res_id != -1);
@@ -3933,8 +3934,13 @@ class cActionKillNBelowResourceThreshold : public cAction
         level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
         
         if(level < m_threshold) {
-          m_world->GetPopulation().KillOrganism(m_world->GetPopulation().GetCell(target_cell));
-          m_world->GetStats().IncNumOrgsKilled();
+          cPopulationCell& cell = pop.GetCell(target_cell);
+          if (cell.IsOccupied()) {
+            pop.KillOrganism(cell);
+            m_world->GetStats().IncNumOrgsKilled();
+          } else {
+            m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+          }
         }
       }
       
@@ -3983,8 +3989,13 @@ class cActionKillNAboveResourceThreshold : public cAction
         level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
         
         if(level > m_threshold) {
-          pop.KillOrganism(pop.GetCell(target_cell));
-          m_world->GetStats().IncNumOrgsKilled();
+          cPopulationCell& cell = pop.GetCell(target_cell);
+          if (cell.IsOccupied()) {
+            pop.KillOrganism(cell);
+            m_world->GetStats().IncNumOrgsKilled();
+          } else {
+            m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+          }
         }
       }
       
