@@ -30,6 +30,8 @@
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "functions.h"
+#include <algorithm>
+#include <strings.h>
 
 
 using namespace std;
@@ -239,6 +241,84 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
   delete [] prev_row;
 
   return value;
+}
+
+
+/*! Return all matches of substring within base.
+ 
+ The return value here is somewhat incomplete.  Eventually, the idea is that the
+ list of matches include the starting position of the match, the overall length (extent)
+ of the match, and the cost of the match.  Right now, however, it only includes the cost.
+ 
+ \todo Convert this over to using two rows instead of len(substring)+1 rows (easy, but I'm being lazy).
+ */
+cGenomeUtil::substring_match_list_type cGenomeUtil::FindSubstringMatches(const cGenome& base, const cGenome& substring) {
+	substring_match_list_type ssml(base.GetSize());
+	const int rows=substring.GetSize()+1;
+	const int cols=base.GetSize()+1;
+	int costmat[rows][cols];	
+	bzero(costmat, sizeof(int)*rows*cols);
+	
+	// initialize the first row, first column, and match list starts.
+	for(int i=0; i<rows; ++i) { costmat[i][0] = i; }
+	for(int j=0; j<cols; ++j) { costmat[0][j] = 0; }
+	//	for(int j=0; j<base.GetSize(); ++j) { ssml[j].start = j; ssml[j].extent = 0; }
+		
+	// now do all the rest...
+	for(int i=1; i<rows; ++i) {
+		for(int j=1; j<cols; ++j) {
+			// we're only doing cost at the moment, so we can get away with something simple (i know, i know; space & time, etc., etc.):
+			int l[3] = { costmat[i-1][j-1], costmat[i-1][j], costmat[i][j-1] };
+			costmat[i][j] = *std::min_element(l,l+3) + (substring[i-1] == base[j-1]);
+// if we need to know the relationship among all three elements for tracking extents,
+// then this may be a good starting point:
+// A=above left, B=above, C=left
+//			if(costmat[i-1][j-1] < costmat[i-1][j]) {
+//				// A < B
+//				if(costmat[i-1][j-1] < costmat[i][j-1]) {
+//					// A < C --> A < (B,C)
+//					costmat[i][j] = costmat[i-1][j-1];
+//					++ssml[j-1].extent;
+//				} else {
+//					// A >= C --> C <= (A,B)
+//					costmat[i][j] = costmat[i][j-1];
+//					++ssml[j-1].extent;
+//				}
+//			} else {
+//				// A >= B
+//				if(costmat[i-1][j] < costmat[i][j-1]) {
+//					// B < C --> B <= (A,C)
+//					costmat[i][j] = costmat[i-1][j];
+//					// extent unchanged
+//				} else {
+//					// B >= C --> C <= (A,B)
+//					costmat[i][j] = costmat[i][j-1];
+//					++ssml[j-1].extent;
+//				}
+//			}
+//			
+//			// add the cost of a mismatch:
+//			costmat[i][j] += (substring[j] == base[i]);
+		}
+	}
+	
+	// copy match costs from the last row, skipping the null column (it can't ever be least):
+	for(int j=0; j<base.GetSize(); ++j) {
+		ssml[j].cost = costmat[rows-1][j+1];
+		ssml[j].position = j;
+	}
+	
+	return ssml;
+}
+
+
+/*! Return the best match of substring within base.
+ 
+ \todo Ties for the value of the best match should be broken randomly.
+ */
+cGenomeUtil::substring_match cGenomeUtil::FindBestSubstringMatch(const cGenome& base, const cGenome& substring) {
+	substring_match_list_type ssml = FindSubstringMatches(base, substring);
+	return *std::min_element(ssml.begin(), ssml.end());
 }
 
 

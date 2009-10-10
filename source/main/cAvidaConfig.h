@@ -660,16 +660,16 @@ public:
 	CONFIG_ADD_VAR(DEME_NETWORK_REQUIRES_CONNECTEDNESS, int, 1, "Whether the deme's network must be connected before an actual fitness is calculated.");
 	CONFIG_ADD_VAR(DEME_NETWORK_TOPOLOGY_FITNESS, int, 0, "Network measure used to determine fitness; see cDemeTopologyNetwork.h.");
 	
-	// -------- Horizontal gene transfer config options --------
+	// -------- Horizontal Gene Transfer (HGT) config options --------
 	CONFIG_ADD_GROUP(HGT_GROUP, "Horizontal gene transfer settings");
 	CONFIG_ADD_VAR(ENABLE_HGT, int, 0, "Whether HGT is enabled; 0=false (default),\n 1=true.");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_MEAN, double, 10, "Mean size of fragments (drawn from a normal\ndist., default=10).");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_VARIANCE, double, 2, "Variance of fragments (drawn from a normal\ndist., default=2).");
 	CONFIG_ADD_VAR(HGT_MAX_FRAGMENTS_PER_CELL, int, 100, "Max. allowed number of fragments\nper cell (default=100).");
 	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome\nfragments (0=none [default]).");
-	CONFIG_ADD_VAR(HGT_INSERTION_PROB, double, 0.0, "Probability that a genome fragment\nwill be inserted during a copy (default=0.0).");
-	CONFIG_ADD_VAR(HGT_LOOKAHEAD_LENGTH, int, 4, "Number of instructions forward from the\nread head that will be used to calculate\nthe liklihood of HGT.");	
-  
+	CONFIG_ADD_VAR(HGT_MUTATION_P, double, 0.0, "Probability that an HGT mutation will occur on divide (default=0.0).");
+	CONFIG_ADD_VAR(HGT_INSERTION_MUT_P, double, 0.5, "Probability that an HGT mutation will result in an insertion (default=0.5); replacement if false.");
+
   CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");
   CONFIG_ADD_VAR(INST_RES, cString, "", "Resource upon which the execution of certain instruction depends");
   CONFIG_ADD_VAR(INST_RES_FLOOR, double, 0.0, "Assumed lower level of resource in environment.  Used for probability dist.");

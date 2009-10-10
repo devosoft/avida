@@ -36,11 +36,12 @@
 #include "cWorldDriver.h"
 #endif
 
+class cAvidaContext;
 class cDeme;
+class cGenome;
 class cPopulation;
 class cPopulationCell;
 class cOrgMessage;
-
 
 class cPopulationInterface : public cOrgInterface
 {
@@ -137,6 +138,11 @@ public:
 protected:
 	//! Internal-use method to consolidate message-sending code.
 	bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
+	
+	// -------- HGT support --------
+public:
+	//! Perform an HGT mutation on this offspring.
+	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
 };
 
 

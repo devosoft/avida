@@ -29,6 +29,7 @@
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
+#include <vector>
 
 class cAvidaContext;
 class cInstruction;
@@ -56,6 +57,24 @@ public:
   static int FindBestOffset(const cGenome& gen1, const cGenome& gen2);
   static int FindSlidingDistance(const cGenome& gen1, const cGenome& gen2);
   static int FindEditDistance(const cGenome& gen1, const cGenome& gen2);
+
+	//! Substring match record.
+	struct substring_match {
+		//! Default constructor.
+		substring_match() : position(0), extent(0), cost(0) { }
+		//! Operator< overload.
+		bool operator<(const substring_match& sm) { return cost < sm.cost; }
+		int position; //!< Final position in the base string of this match.
+		int extent; //!< Length of the match in the base string.
+		int cost; //!< Cost (edit distance) of this match.
+	};
+	
+	//! Type for a list of substring matches.
+	typedef std::vector<substring_match> substring_match_list_type;
+	//! Return all matches of substring within base.
+	static substring_match_list_type FindSubstringMatches(const cGenome& base, const cGenome& substring);
+	//! Return the best match of substring within base.
+	static substring_match FindBestSubstringMatch(const cGenome& base, const cGenome& substring);
 
   // ===== Construction methods =====
   static cGenome Crop(const cGenome& genome, int start, int end);

@@ -646,11 +646,6 @@ private:
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
-	
-	// -------- HGT methods --------
-public:
-	//! Tests for and attempts to perform an insertion of an HGT genome fragment into this organism's genome.
-	bool AttemptHGTInsertion(cAvidaContext& ctx);
 };
 
 

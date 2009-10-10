@@ -294,7 +294,7 @@ cPopulation::cPopulation(cWorld* world)
 	
 	// if HGT is on, make sure there's a resource for it:
 	if(m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
-		m_world->GetDriver().RaiseFatalException(-1, "HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
+		m_world->GetDriver().NotifyWarning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
 	}
   
 }
@@ -5893,7 +5893,9 @@ int  cPopulation::NumberOfOrganismsInGroup(int group_id)
 /*!	Modify current level of the HGT resource.
  */
 void cPopulation::AdjustHGTResource(double delta) {
-	resource_count.Modify(m_hgt_resid, delta);
+	if(m_hgt_resid != -1) {
+		resource_count.Modify(m_hgt_resid, delta);
+	}
 }
 
 /*! Mix all organisms in the population.
