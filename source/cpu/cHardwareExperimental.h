@@ -474,6 +474,12 @@ private:
   
   // Replication
   bool Inst_Repro(cAvidaContext& ctx);
+  
+  // State Grid Navigation
+  bool Inst_SGMove(cAvidaContext& ctx);
+  bool Inst_SGRotateL(cAvidaContext& ctx);
+  bool Inst_SGRotateR(cAvidaContext& ctx);
+  bool Inst_SGSense(cAvidaContext& ctx);  
 };
 
 
