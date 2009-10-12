@@ -438,7 +438,7 @@ template <class T>
 class PageHeapAllocator {
  private:
   // How much to allocate from system at a time
-  static const int kAllocIncrement = 128 << 10;
+  static const unsigned int kAllocIncrement = 128 << 10;
 
   // Aligned size of T
   static const size_t kAlignedSize
@@ -842,8 +842,8 @@ inline void TCMalloc_PageHeap::Carve(Span* span, Length n) {
   span->free = 0;
   Event(span, 'A', n);
 
+  ASSERT(((int)span->length - 1) >= 0);
   const unsigned int extra = span->length - n;
-  ASSERT(extra >= 0);
   if (extra > 0) {
     Span* leftover = NewSpan(span->start + n, extra);
     leftover->free = 1;
@@ -1372,7 +1372,7 @@ bool TCMalloc_Central_FreeList::EvictRandomSizeClass(
     }
     race_counter = t;
   }
-  ASSERT(t >= 0);
+//  ASSERT(t >= 0);
   ASSERT(t < kNumClasses);
   if (t == locked_size_class) return false;
   return central_cache[t].ShrinkCache(locked_size_class, force);
