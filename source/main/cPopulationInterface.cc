@@ -659,9 +659,14 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 		// insertion: insert the fragment at the final location of the match:
 		offspring.Insert(ssm.position, *f);
 	} else {
-		// replacement is more complicated... for now, disallow it.
-		assert(false);
-		//		offspring.Replace(std::max(ssm.position-f->GetSize(), 0), f->GetSize(), *f); // pos, number of sites to replace, genom
+		// replacement: replace up to fragment size instructions in the genome.
+
+		// replacement counts forward, so let's get the starting index of where the
+		// fragment needs to go.  *inclusive* of the final match position (so +1), and
+		// a floor at 0.
+		int start = std::max(ssm.position-f->GetSize()+1, 0);
+
+		offspring.Replace(start, ssm.position-start+1, *f);
 	}
 	
 	// resource utilization, cleanup, and stats tracking:
