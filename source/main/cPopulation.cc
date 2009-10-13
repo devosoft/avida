@@ -1282,6 +1282,14 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
 		return;
 	}
 	
+	// to facilitate control runs, sometimes we want to know what the fitness values
+	// are, but we don't want competition to depend on them.
+	if(m_world->GetConfig().DEMES_OVERRIDE_FITNESS.Get()) {
+		for(int i=0; i<static_cast<int>(fitness.size()); ++i) {
+			fitness[i] = 1.0;
+		}		
+	}	
+	
 	// Number of demes (at index) which should wind up in the next generation.
 	std::vector<unsigned int> deme_counts(deme_array.GetSize(), 0);						
 	
