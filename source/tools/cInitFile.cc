@@ -249,7 +249,7 @@ bool cInitFile::Find(cString& in_string, const cString& keyword, int col) const
 }
 
 
-cString cInitFile::ReadString(const cString& name, cString def) const
+cString cInitFile::ReadString(const cString& name, cString def, bool warn_default) const
 {
   // See if we definately can't find the keyword.
   if (name == "") return def;
@@ -257,8 +257,10 @@ cString cInitFile::ReadString(const cString& name, cString def) const
   // Search for the keyword.
   cString cur_line;
   if (Find(cur_line, name, 0) == false) {
-    m_errors.PushRear(new cString(cStringUtil::Stringf("%s not in '%s', defaulting to: %s",
-                                                       (const char*)name, (const char*)m_filename, (const char*)def)));
+    if (warn_default) {
+      m_errors.PushRear(new cString(cStringUtil::Stringf("%s not in '%s', defaulting to: %s",
+                                                         (const char*)name, (const char*)m_filename, (const char*)def)));
+    }
     return def;
   }
 

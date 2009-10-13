@@ -155,6 +155,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   bool flag_review = false;
   bool flag_verbosity = false;    int val_verbosity = 0;
   bool flag_seed = false;         int val_seed = 0;
+  bool flag_warn_default = false;
   
   // Then scan through and process the rest of the args.
   while (arg_num < argc) {
@@ -189,6 +190,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       << "  -set <name> <value>   Override values in avida.cfg" << endl
       << "  -v[ersion]            Prints the version number" << endl
       << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4" << endl
+      << "  -w[arn]               Warn when default config settings are used." << endl
       << endl;
       
       exit(0);
@@ -206,6 +208,8 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       flag_analyze = true;
     } else if (cur_arg == "-interactive" || cur_arg == "-i") {
       flag_interactive = true;
+    } else if (cur_arg == "-warn" || cur_arg == "-w") {
+      flag_warn_default = true;
     } else if (cur_arg == "-load" || cur_arg == "-l") {
       if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
         cerr << "Error: Must include a filename to load from." << endl;
@@ -261,7 +265,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   delete [] args;
 
   // Load configuration file
-  cfg->Load(config_filename, defs, crash_if_not_found);
+  cfg->Load(config_filename, defs, crash_if_not_found, flag_warn_default);
   
 
   // Process Command Line Flags
