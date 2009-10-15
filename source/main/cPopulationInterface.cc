@@ -650,8 +650,22 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	fragment_list_type::iterator f=fragments.begin();
 	std::advance(f, ctx.GetRandom().GetInt(fragments.size()));
 	
-	// find the location within this organism's genome that best matches the selected fragment:
-	cGenomeUtil::substring_match ssm = cGenomeUtil::FindBestSubstringMatch(cell.GetOrganism()->GetGenome(), *f);
+	// need to take circularity of the genome into account.
+	// we can do this by appending the genome with a copy of its first fragment-size
+	// instructions.  handling insertions and replacements gets complicated after this...
+	cGenome circ(offspring);
+	for(int i=0; i<f->GetSize(); ++i) {
+		circ.Append(offspring[i]);
+	}
+	
+	// find the location within the offspring's genome that best matches the selected fragment:
+	cGenomeUtil::substring_match ssm = cGenomeUtil::FindBestSubstringMatch(circ, *f);
+	
+	if(ssm.position > offspring.GetSize()) {
+		// we matched on the circular portion of the genome, so we have to modify the
+		// matched position to reflect this;
+		ssm.position -= offspring.GetSize();
+	} 
 	
 	// there are (currently) two supported types of HGT mutations: insertions & replacements.
 	// which one are we doing?
@@ -660,13 +674,14 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 		offspring.Insert(ssm.position, *f);
 	} else {
 		// replacement: replace up to fragment size instructions in the genome.
-
-		// replacement counts forward, so let's get the starting index of where the
-		// fragment needs to go.  *inclusive* of the final match position (so +1), and
-		// a floor at 0.
-		int start = std::max(ssm.position-f->GetSize()+1, 0);
-
-		offspring.Replace(start, ssm.position-start+1, *f);
+		// note that replacement can wrap around from front->back.  replacement counts
+		// forward, so we have to find the start position first.
+		int start = ssm.position - f->GetSize() + 1;
+		if(start < 0) { start += offspring.GetSize(); }
+		for(int i=0; i<f->GetSize(); ++i) {
+			offspring[start] = (*f)[i];
+			if(++start >= offspring.GetSize()) { start = 0; }
+		}
 	}
 	
 	// resource utilization, cleanup, and stats tracking:
