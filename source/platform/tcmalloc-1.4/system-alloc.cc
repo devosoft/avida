@@ -379,7 +379,7 @@ void* DevMemSysAllocator::Alloc(size_t size, size_t *actual_size,
 
   // check to see if we have any memory left
   if (physmem_limit != 0 &&
-      ((size + extra) > (physmem_limit - physmem_base))) {
+      ((size + extra) > static_cast<unsigned int>(physmem_limit - physmem_base))) {
     failed_ = true;
     return NULL;
   }
