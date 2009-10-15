@@ -1,3 +1,4 @@
+# ---  Setup  ---
 h-alloc    # Allocate space for child
 h-search   # Locate the end of the organism
 nop-C      #
@@ -39,56 +40,8 @@ nop-C      #
 nop-C      #
 nop-C      #
 nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
+
+# ---  Copy Loop  ---
 h-search   # Mark the beginning of the copy loop
 h-copy     # Do the copy
 if-label   # If we're done copying....
