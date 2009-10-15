@@ -149,13 +149,13 @@
 // 2^kKeybits and the values to be less than 2^kValuebits.  The size of
 // the table is controlled by kHashbits, and the type of each entry in
 // the cache is T.  See also the big comment at the top of the file.
-template <int kKeybits, typename T>
+template <unsigned int kKeybits, typename T>
 class PackedCache {
  public:
   typedef uintptr_t K;
   typedef size_t V;
-  static const int kHashbits = 12;
-  static const int kValuebits = 7;
+  static const unsigned int kHashbits = 12;
+  static const unsigned int kValuebits = 7;
   static const bool kUseWholeKeys = kKeybits + kValuebits <= 8 * sizeof(T);
 
   explicit PackedCache(V initial_value) {
@@ -230,8 +230,8 @@ class PackedCache {
         ((KeyToUpper(key) ^ entry) & kUpperMask) == 0;
   }
 
-  static const int kTbits = 8 * sizeof(T);
-  static const int kUpperbits = kUseWholeKeys ? kKeybits : kKeybits - kHashbits;
+  static const unsigned int kTbits = 8 * sizeof(T);
+  static const unsigned int kUpperbits = kUseWholeKeys ? kKeybits : kKeybits - kHashbits;
 
   // For masking a K.
   static const K kKeyMask = N_ONES_(K, kKeybits);
