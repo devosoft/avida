@@ -350,11 +350,21 @@ ELSE(UNIX)
   SET(AVD_ENABLE_TCMALLOC FALSE)
 ENDIF(UNIX)
 IF(AVD_ENABLE_TCMALLOC)
-  SET(TCMALLOC_DIR source/platform/tcmalloc)
+  SET(TCMALLOC_DIR source/platform/tcmalloc-1.4)
   SET(TCMALLOC_SOURCES
+    ${TCMALLOC_DIR}/atomicops-internals-x86.cc
+    ${TCMALLOC_DIR}/central_freelist.cc
+    ${TCMALLOC_DIR}/common.cc
+    ${TCMALLOC_DIR}/internal_logging.cc
+    ${TCMALLOC_DIR}/malloc_extension.cc
+    ${TCMALLOC_DIR}/page_heap.cc
+    ${TCMALLOC_DIR}/span.cc
+    ${TCMALLOC_DIR}/spinlock.cc
+    ${TCMALLOC_DIR}/static_vars.cc
+    ${TCMALLOC_DIR}/sysinfo.cc
     ${TCMALLOC_DIR}/system-alloc.cc
-    ${TCMALLOC_DIR}/tcmalloc-logging.cc
     ${TCMALLOC_DIR}/tcmalloc.cc
+    ${TCMALLOC_DIR}/thread_cache.cc
   )
   ADD_LIBRARY(tcmalloc ${TCMALLOC_SOURCES})
 ENDIF(AVD_ENABLE_TCMALLOC)
@@ -593,64 +603,6 @@ IF(AVD_UNIT_TESTS)
   INSTALL_TARGETS(/work unit-tests)
 ENDIF(AVD_UNIT_TESTS)
 
-OPTION(AVD_TESTSUITES
-  "Enable the testsuites executable.  Running this target will test various low level functionality."
-  OFF
-)
-IF(AVD_TESTSUITES)
-  SET(TESTSUITES_DIR "${PROJECT_SOURCE_DIR}/../extras/source" CACHE PATH
-    "The path to testsuite files."
-  )
-  IF(EXISTS ${TESTSUITES_DIR})
-    SET(TESTSUITES_SOURCES
-      ${TESTSUITES_DIR}/testsuites/nAGenotype.cpp
-      ${TESTSUITES_DIR}/testsuites/nAnalyze.cpp
-      ${TESTSUITES_DIR}/testsuites/nAnalyzeGenotype.cpp
-      ${TESTSUITES_DIR}/testsuites/nAnalyzeTestFixture.cpp
-      ${TESTSUITES_DIR}/testsuites/nChangeList.cpp
-      ${TESTSUITES_DIR}/testsuites/nConsoleCatcher.cpp
-      ${TESTSUITES_DIR}/testsuites/nDataEntry.cpp
-      ${TESTSUITES_DIR}/testsuites/nDataFile.cpp
-      ${TESTSUITES_DIR}/testsuites/nFile.cpp
-      ${TESTSUITES_DIR}/testsuites/nFixedCoords.cpp
-      ${TESTSUITES_DIR}/testsuites/nInitFile.cpp
-      ${TESTSUITES_DIR}/testsuites/nMemTracker.cpp
-      ${TESTSUITES_DIR}/testsuites/nRandom.cpp
-      ${TESTSUITES_DIR}/testsuites/nString.cpp
-      ${TESTSUITES_DIR}/testsuites/nStringList.cpp
-      ${TESTSUITES_DIR}/testsuites/nTemplate.cpp
-      ${TESTSUITES_DIR}/testsuites/nTestDriver.cpp
-      ${TESTSUITES_DIR}/testsuites/nTestLib.cpp
-      ${TESTSUITES_DIR}/testsuites/nTestSettings.cpp
-      ${TESTSUITES_DIR}/testsuites/nTreeStats.cpp
-    )
-    SET(TESTSUITES_TOOL_SOURCES
-      ${TESTSUITES_DIR}/tools/cAnalyzeTestFixture.cpp
-      ${TESTSUITES_DIR}/tools/cConsoleCatcher.cpp
-      ${TESTSUITES_DIR}/tools/cMemTracker.cpp
-      ${TESTSUITES_DIR}/tools/cTestDriver.cpp
-      ${TESTSUITES_DIR}/tools/cTestLib.cpp
-      ${TESTSUITES_DIR}/tools/cTestSettings.cpp
-    )
-    SET(TESTSUITES_MAIN_SOURCES
-      ${TESTSUITES_DIR}/targets/TestAvida/TestAvida.cpp
-    )
-    INCLUDE_DIRECTORIES(${TESTSUITES_DIR}/tools)
-
-    ADD_EXECUTABLE(testsuites ${TESTSUITES_TOOL_SOURCES} ${TESTSUITES_SOURCES} ${TESTSUITES_MAIN_SOURCES})
-    INSTALL_TARGETS(/work testsuites)
-
-    SET(TESTSUITES_LIBS avidacore)  
-    IF(NOT MSVC)
-      LIST(APPEND TESTSUITES_LIBS pthread)
-    ENDIF(NOT MSVC)
-    IF(AVD_ENABLE_TCMALLOC)
-      LIST(APPEND TESTSUITES_LIBS tcmalloc)
-    ENDIF(AVD_ENABLE_TCMALLOC)  
-    TARGET_LINK_LIBRARIES(testsuites ${TESTSUITES_LIBS})
-
-  ENDIF(EXISTS ${TESTSUITES_DIR})
-ENDIF(AVD_TESTSUITES)
 
 # Default Configuration Files
 # - Installed into the work directory alongside selected targets
@@ -673,80 +625,3 @@ SET(CFG_FILES
   ${CFG_FILES_DIR}/default-transsmt.org 
 )
 INSTALL_FILES(/work FILES ${CFG_FILES})
-
-
-
-# Avida-ED Related
-# ------------------------------------------------------------------------------
-
-OPTION(AVD_GUI_PYQT
-	"Enable the PyQt GUI interface. (EXPERIMENTAL)"
-	OFF
-)
-IF(AVD_GUI_PYQT)
-	SET(AVD_PY_BINDINGS ON CACHE BOOL "Avida Python Bindings MUST be built for the PyQt GUI." FORCE)
-  FIND_PROGRAM(PYUIC pyuic DOC "Path to pyuic.  Used to compile python files from .ui files.")
-ENDIF(AVD_GUI_PYQT)
-
-
-# Experimental Boost.Python interface to avida is disabled by default.
-OPTION(AVD_PY_BINDINGS
-  "Enable Python interface to Avida. (EXPERIMENTAL)"
-  OFF
-)
-IF(AVD_PY_BINDINGS)
-  INCLUDE(${PROJECT_SOURCE_DIR}/CMakeModules/avdFindPython.cmake)
-  AVD_FIND_PYTHON(2.4 /Library/Frameworks)
-  SET( BOOST_VERSION "1_32" CACHE STRING "Version of Boost Library to use")
-  FIND_LIBRARY(
-    BOOST_LIBRARY
-    NAMES
-      boost_python-${BOOST_VERSION}
-      boost_python
-    PATHS
-      /usr/local/lib
-    DOC "Path where the Boost Python Library can be found"
-  )
-  FIND_PATH(
-    BOOST_INCLUDE_PATH
-    boost/python/def.hpp
-    /usr/local/include
-    /usr/local/include/boost
-    /usr/local/include/boost-${BOOST_VERSION}
-    DOC "Path where the Boost Python header files can be found"
-  )
-  FIND_PROGRAM(
-    GCCXML
-    gccxml
-    DOC "gccxml must be in the search path specified by your PATH environment variable in order for pyste to operate"
-  )
-  SET(UNIT_TESTS TRUE)
-
-  ADD_SUBDIRECTORY(source/bindings)
-  ADD_SUBDIRECTORY(source/python)
-ENDIF(AVD_PY_BINDINGS)
-
-
-# By default, compile all unit tests of primitive Avida classes.  Tests
-# are run via 'make test' under unix.
-OPTION(AVD_CMAKE_UNIT_TESTS
-  "Enable building primitive unit test suites."
-  OFF
-)
-IF(AVD_CMAKE_UNIT_TESTS)
-  SET(UNIT_TESTS TRUE)
-  INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
-  ADD_DEFINITIONS(-DENABLE_UNIT_TESTS)
-  ADD_DEFINITIONS(-DUSE_tMemTrack=1)
-  ENABLE_TESTING()
-ELSE(AVD_CMAKE_UNIT_TESTS)
-  REMOVE_DEFINITIONS(-DENABLE_UNIT_TESTS)
-  REMOVE_DEFINITIONS(-DUSE_tMemTrack=1)
-ENDIF(AVD_CMAKE_UNIT_TESTS)
-
-
-IF(BUILD_AvidaSupportLibs)
-  IF(EXISTS source/third-party/AvidaSupportLibs/CMakeLists.txt)
-    ADD_SUBDIRECTORY(source/third-party/AvidaSupportLibs)
-  ENDIF(EXISTS source/third-party/AvidaSupportLibs/CMakeLists.txt)
-ENDIF(BUILD_AvidaSupportLibs)

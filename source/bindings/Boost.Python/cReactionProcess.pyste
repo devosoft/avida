@@ -1,4 +1,0 @@
-
-cReactionProcess = Class("cReactionProcess", "cReactionProcess.h")
-
-# vim: set ft=python:

@@ -1,8 +1,8 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -a -set MAX_CONCURRENCY %(cpus)s
-app = %(default_app)s
+args = %(default_app)s 1
+app = tests/heads_perf_1000u/config/rate_runner
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
                          ;  disallow - treat non-zero exit codes as failures
                          ;  allow - all exit codes are acceptable
@@ -12,7 +12,7 @@ createdby = David Bryson ; Who created the test
 email = brysonda@egr.msu.edu ; Email address for the test's creator
 
 [consistency]
-enabled = yes            ; Is this test a consistency test?
+enabled = no            ; Is this test a consistency test?
 long = yes               ; Is this test a long test?
 
 [performance]

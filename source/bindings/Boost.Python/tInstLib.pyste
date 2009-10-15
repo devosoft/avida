@@ -1,4 +1,0 @@
-
-tInstLib = Class("tInstLib", "tInstLib.h")
-
-# vim: set ft=python:

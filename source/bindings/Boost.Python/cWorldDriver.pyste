@@ -1,4 +1,0 @@
-
-cWorldDriver = Class("cWorldDriver", "cWorldDriver.h")
-
-# vim: set ft=python:

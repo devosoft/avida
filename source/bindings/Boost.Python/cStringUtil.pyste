@@ -1,9 +1,0 @@
-
-cStringUtil = Class("cStringUtil", "cStringUtil.h")
-
-# Pyste doesn't grok varargs. @kgn
-exclude(cStringUtil.Stringf)
-# Convert isn't required on Python side. @kgn
-exclude(cStringUtil.Convert)
-
-# vim: set ft=python:

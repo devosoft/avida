@@ -1,4 +1,0 @@
-
-cGenomeUtil = Class("cGenomeUtil", "cGenomeUtil.h")
-
-# vim: set ft=python:

@@ -1,4 +1,0 @@
-
-cMutationLib = Class("cMutationLib", "cMutationLib.h")
-
-# vim: set ft=python:

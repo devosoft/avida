@@ -1,4 +1,0 @@
-
-SaveLoadActions = Class("SaveLoadActions", "SaveLoadActions.h")
-
-# vim: set ft=python:

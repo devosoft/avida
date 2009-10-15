@@ -1,4 +1,0 @@
-
-cFallbackWorldDriver = Class("cFallbackWorldDriver", "cFallbackWorldDriver.h")
-
-# vim: set ft=python:

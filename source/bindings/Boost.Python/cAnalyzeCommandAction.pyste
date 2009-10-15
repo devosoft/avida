@@ -1,4 +1,0 @@
-
-cAnalyzeCommandAction = Class("cAnalyzeCommandAction", "cAnalyzeCommandAction.h")
-
-# vim: set ft=python:

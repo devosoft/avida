@@ -1,4 +1,0 @@
-
-tManagedPointerArray = Class("tManagedPointerArray", "tManagedPointerArray.h")
-
-# vim: set ft=python:

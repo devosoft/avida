@@ -1,4 +1,0 @@
-
-nTemplateTests = Class("nTemplateTests", "nTemplateTests.h")
-
-# vim: set ft=python:

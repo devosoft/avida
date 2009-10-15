@@ -1,4 +1,0 @@
-
-cTestCPUInterface = Class("cTestCPUInterface", "cTestCPUInterface.h")
-
-# vim: set ft=python:

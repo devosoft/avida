@@ -1,4 +1,0 @@
-
-cLandscape = Class("cLandscape", "cLandscape.h")
-
-# vim: set ft=python:

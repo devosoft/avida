@@ -1,4 +1,0 @@
-
-tMatrix = Class("tMatrix", "tMatrix.h")
-
-# vim: set ft=python:

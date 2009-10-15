@@ -1,8 +1,0 @@
-
-Import("cSchedule.pyste")
-
-Include("cMerit.h")
-
-cConstSchedule = Class("cConstSchedule", "cConstSchedule.h")
-
-# vim: set ft=python:

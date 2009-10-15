@@ -1,4 +1,0 @@
-
-cCodeLabel = Class("cCodeLabel", "cCodeLabel.h")
-
-# vim: set ft=python:

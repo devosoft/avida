@@ -1,4 +1,0 @@
-
-cEventListEntry = Class("cEventListEntry", "cEventListEntry.h")
-
-# vim: set ft=python:

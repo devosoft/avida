@@ -1,4 +1,0 @@
-
-AvidaScript = Class("AvidaScript", "AvidaScript.h")
-
-# vim: set ft=python:

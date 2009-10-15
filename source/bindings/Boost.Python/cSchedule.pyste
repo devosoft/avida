@@ -1,9 +1,0 @@
-
-Include("cChangeList.h")
-Include("cMerit.h")
-
-cSchedule = Class("cSchedule", "cSchedule.h")
-
-set_policy(cSchedule.GetChangeList, return_internal_reference())
-
-# vim: set ft=python:

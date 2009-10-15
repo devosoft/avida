@@ -1,4 +1,0 @@
-
-tHashTable = Class("tHashTable", "tHashTable.h")
-
-# vim: set ft=python:

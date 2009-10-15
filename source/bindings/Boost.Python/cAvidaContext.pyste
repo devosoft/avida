@@ -1,4 +1,0 @@
-
-cAvidaContext = Class("cAvidaContext", "cAvidaContext.h")
-
-# vim: set ft=python:

@@ -31,7 +31,6 @@
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
-		5629D81A0C3EE21300C5F152 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		5629D81C0C3EE26A00C5F152 /* cCoreView_Info.cc in Sources */ = {isa = PBXBuildFile; fileRef = 565121C60C3B055F009CBD3F /* cCoreView_Info.cc */; };
 		56F555E50C3B402A00E2E929 /* cDriver_TextViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */; };
 		56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E40C3B402A00E2E929 /* viewer-text.cc */; };
@@ -44,6 +43,20 @@
 		702082900FB9F2DF00637AD6 /* cBitArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 7020828E0FB9F2DF00637AD6 /* cBitArray.h */; };
 		70211A5D0ECBD531004A293A /* cRCObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70211A5B0ECBD531004A293A /* cRCObject.h */; };
 		70211A5E0ECBD531004A293A /* cRCObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70211A5C0ECBD531004A293A /* cRCObject.cc */; };
+		702246DC107FCA900079CD25 /* atomicops-internals-x86.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246B2107FCA590079CD25 /* atomicops-internals-x86.cc */; };
+		702246DD107FCA900079CD25 /* central_freelist.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246B6107FCA590079CD25 /* central_freelist.cc */; };
+		702246DE107FCA900079CD25 /* common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246B9107FCA590079CD25 /* common.cc */; };
+		702246DF107FCA900079CD25 /* internal_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246BB107FCA590079CD25 /* internal_logging.cc */; };
+		702246E0107FCA900079CD25 /* malloc_extension.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246BE107FCA590079CD25 /* malloc_extension.cc */; };
+		702246E4107FCA900079CD25 /* page_heap.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246C6107FCA590079CD25 /* page_heap.cc */; };
+		702246E6107FCA900079CD25 /* span.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246CB107FCA590079CD25 /* span.cc */; };
+		702246E7107FCA900079CD25 /* spinlock.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246CD107FCA590079CD25 /* spinlock.cc */; };
+		702246E9107FCA900079CD25 /* static_vars.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D1107FCA590079CD25 /* static_vars.cc */; };
+		702246EB107FCA900079CD25 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D5107FCA590079CD25 /* system-alloc.cc */; };
+		702246EC107FCA900079CD25 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D8107FCA590079CD25 /* tcmalloc.cc */; settings = {COMPILER_FLAGS = "-fexceptions"; }; };
+		702246ED107FCA900079CD25 /* thread_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D9107FCA590079CD25 /* thread_cache.cc */; };
+		7022479E108620E40079CD25 /* sysinfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7022479C108620E40079CD25 /* sysinfo.cc */; };
+		702247F2108625920079CD25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		7023EC3A0C0A431B00362B9C /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		7023EC3B0C0A431B00362B9C /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		7023EC3C0C0A431B00362B9C /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
@@ -168,7 +181,6 @@
 		7023ECCD0C0A444600362B9C /* cZoomScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC75097AF730002F8733 /* cZoomScreen.cc */; };
 		7023ECCE0C0A444800362B9C /* viewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC78097AF730002F8733 /* viewer.cc */; };
 		7023ECD30C0A447700362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
-		7023ECD40C0A447800362B9C /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		7023ECD70C0A44BF00362B9C /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC57097AF730002F8733 /* main.cc */; };
 		7023ECD80C0A44C400362B9C /* cASLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70731663097C6DF500815164 /* cASLibrary.cc */; };
 		7023ECDA0C0A44C900362B9C /* cLexer.l in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAD21097AF81A002F8733 /* cLexer.l */; };
@@ -176,7 +188,6 @@
 		7023ECDC0C0A44CC00362B9C /* cScriptObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52DF0992FD8000B2B507 /* cScriptObject.cc */; };
 		7023ECDD0C0A44CE00362B9C /* cSymbolTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52A80992F8F600B2B507 /* cSymbolTable.cc */; };
 		7023ECDE0C0A44D800362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
-		7023ECDF0C0A44D900362B9C /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
 		70310E6B0EDD09260044971B /* cStateGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 70310E690EDD09260044971B /* cStateGrid.h */; };
 		70381F810EAD0BD000A97DFD /* ASAnalyzeLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */; };
@@ -204,7 +215,6 @@
 		7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
 		7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36E0A66AD7E00640512 /* default-smt.org */; };
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
-		704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70AA941909D486AE006A24C8 /* libtcmalloc.a */; };
 		7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E6770D74C36F008B3CA0 /* AvidaScript.cc */; };
 		7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */; };
 		7050E7D70D7DC979008B3CA0 /* cDirectInterpretASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */; };
@@ -222,9 +232,6 @@
 		709A1EEC0EB6C42D006090AF /* cResourceHistory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */; };
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
 		70A778390D69D5CA00735F1E /* cDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */; };
-		70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF50209CFB0B400924128 /* system-alloc.cc */; };
-		70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */; };
-		70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCF56309CFBB9500924128 /* tcmalloc.cc */; };
 		70AD4FA00F194F4D00AA50AC /* cGenotypeData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70AD4F9E0F194DD400AA50AC /* cGenotypeData.cc */; };
 		70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */; };
 		70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7590B7E431F00067486 /* experimental.org */; };
@@ -232,6 +239,9 @@
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70BB2A2B0E9FA12F008269D2 /* ASAvidaLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */; };
 		70BB2AE20EA5303F008269D2 /* cDriverStatusConduit.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2AC60EA52BD9008269D2 /* cDriverStatusConduit.cc */; };
+		70C9D5C71086890000472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
+		70C9D5CA1086893100472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
+		70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
@@ -263,12 +273,12 @@
 			remoteGlobalIDString = 7023EC320C0A426900362B9C;
 			remoteInfo = "avida-core";
 		};
-		56F555DC0C3B370100E2E929 /* PBXContainerItemProxy */ = {
+		702247EA108624880079CD25 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 70AA941809D486AE006A24C8;
-			remoteInfo = tcmalloc;
+			remoteGlobalIDString = 7022469C107FC4F10079CD25;
+			remoteInfo = "tcmalloc-1.4";
 		};
 		7023ECA60C0A436000362B9C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -283,20 +293,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7023EC320C0A426900362B9C;
 			remoteInfo = "avida-core";
-		};
-		7023ECD10C0A445B00362B9C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 70AA941809D486AE006A24C8;
-			remoteInfo = tcmalloc;
-		};
-		7023ECE00C0A44DE00362B9C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 70AA941809D486AE006A24C8;
-			remoteInfo = tcmalloc;
 		};
 		7023ECE20C0A44E000362B9C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -326,12 +322,26 @@
 			remoteGlobalIDString = 70B6514B0BEA6FAD002472ED;
 			remoteInfo = "unit-tests";
 		};
-		70DCF67509D4E10500924128 /* PBXContainerItemProxy */ = {
+		70C9D5C5108688FA00472C46 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 70AA941809D486AE006A24C8;
-			remoteInfo = tcmalloc;
+			remoteGlobalIDString = 7022469C107FC4F10079CD25;
+			remoteInfo = "tcmalloc-1.4";
+		};
+		70C9D5C81086891B00472C46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7022469C107FC4F10079CD25;
+			remoteInfo = "tcmalloc-1.4";
+		};
+		70C9D5CB1086894A00472C46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7022469C107FC4F10079CD25;
+			remoteInfo = "tcmalloc-1.4";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -457,6 +467,51 @@
 		70211A5C0ECBD531004A293A /* cRCObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cRCObject.cc; sourceTree = "<group>"; };
 		70211A6C0ECBDB72004A293A /* tRCPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tRCPtr.h; sourceTree = "<group>"; };
 		70217EAE105AB75500F2789F /* avida_overview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = avida_overview.html; sourceTree = "<group>"; };
+		7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libtcmalloc-1.4.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		702246AF107FCA590079CD25 /* atomicops-internals-linuxppc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-linuxppc.h"; sourceTree = "<group>"; };
+		702246B0107FCA590079CD25 /* atomicops-internals-macosx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-macosx.h"; sourceTree = "<group>"; };
+		702246B1107FCA590079CD25 /* atomicops-internals-x86-msvc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-x86-msvc.h"; sourceTree = "<group>"; };
+		702246B2107FCA590079CD25 /* atomicops-internals-x86.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "atomicops-internals-x86.cc"; sourceTree = "<group>"; };
+		702246B3107FCA590079CD25 /* atomicops-internals-x86.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-x86.h"; sourceTree = "<group>"; };
+		702246B4107FCA590079CD25 /* atomicops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomicops.h; sourceTree = "<group>"; };
+		702246B5107FCA590079CD25 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
+		702246B6107FCA590079CD25 /* central_freelist.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = central_freelist.cc; sourceTree = "<group>"; };
+		702246B7107FCA590079CD25 /* central_freelist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = central_freelist.h; sourceTree = "<group>"; };
+		702246B8107FCA590079CD25 /* commandlineflags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = commandlineflags.h; sourceTree = "<group>"; };
+		702246B9107FCA590079CD25 /* common.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cc; sourceTree = "<group>"; };
+		702246BA107FCA590079CD25 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		702246BB107FCA590079CD25 /* internal_logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = internal_logging.cc; sourceTree = "<group>"; };
+		702246BC107FCA590079CD25 /* internal_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal_logging.h; sourceTree = "<group>"; };
+		702246BD107FCA590079CD25 /* linked_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linked_list.h; sourceTree = "<group>"; };
+		702246BE107FCA590079CD25 /* malloc_extension.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = malloc_extension.cc; sourceTree = "<group>"; };
+		702246C4107FCA590079CD25 /* packed-cache-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "packed-cache-inl.h"; sourceTree = "<group>"; };
+		702246C5107FCA590079CD25 /* page_heap_allocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = page_heap_allocator.h; sourceTree = "<group>"; };
+		702246C6107FCA590079CD25 /* page_heap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = page_heap.cc; sourceTree = "<group>"; };
+		702246C7107FCA590079CD25 /* page_heap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = page_heap.h; sourceTree = "<group>"; };
+		702246C8107FCA590079CD25 /* pagemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pagemap.h; sourceTree = "<group>"; };
+		702246CB107FCA590079CD25 /* span.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = span.cc; sourceTree = "<group>"; };
+		702246CC107FCA590079CD25 /* span.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = span.h; sourceTree = "<group>"; };
+		702246CD107FCA590079CD25 /* spinlock.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spinlock.cc; sourceTree = "<group>"; };
+		702246CE107FCA590079CD25 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
+		702246D1107FCA590079CD25 /* static_vars.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = static_vars.cc; sourceTree = "<group>"; };
+		702246D2107FCA590079CD25 /* static_vars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = static_vars.h; sourceTree = "<group>"; };
+		702246D5107FCA590079CD25 /* system-alloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "system-alloc.cc"; sourceTree = "<group>"; };
+		702246D6107FCA590079CD25 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "system-alloc.h"; sourceTree = "<group>"; };
+		702246D7107FCA590079CD25 /* tcmalloc_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcmalloc_guard.h; sourceTree = "<group>"; };
+		702246D8107FCA590079CD25 /* tcmalloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcmalloc.cc; sourceTree = "<group>"; };
+		702246D9107FCA590079CD25 /* thread_cache.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_cache.cc; sourceTree = "<group>"; };
+		702246DA107FCA590079CD25 /* thread_cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_cache.h; sourceTree = "<group>"; };
+		7022475610861B670079CD25 /* thread_annotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_annotations.h; sourceTree = "<group>"; };
+		7022477A10861D390079CD25 /* tcmalloc-platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-platform.h"; sourceTree = "<group>"; };
+		7022479C108620E40079CD25 /* sysinfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sysinfo.cc; sourceTree = "<group>"; };
+		7022479D108620E40079CD25 /* sysinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysinfo.h; sourceTree = "<group>"; };
+		702247AD108621660079CD25 /* malloc_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = malloc_extension.h; sourceTree = "<group>"; };
+		702247D51086236F0079CD25 /* cycleclock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cycleclock.h; sourceTree = "<group>"; };
+		702247D61086236F0079CD25 /* spinlock_linux-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_linux-inl.h"; sourceTree = "<group>"; };
+		702247D71086236F0079CD25 /* spinlock_posix-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_posix-inl.h"; sourceTree = "<group>"; };
+		702247D81086236F0079CD25 /* spinlock_win32-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_win32-inl.h"; sourceTree = "<group>"; };
+		702247DA108623920079CD25 /* linux_syscall_support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linux_syscall_support.h; sourceTree = "<group>"; };
+		702247E3108624160079CD25 /* tcmalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcmalloc.h; sourceTree = "<group>"; };
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
@@ -673,7 +728,6 @@
 		70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASCoreLib.cc; sourceTree = "<group>"; };
 		70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeProbSchedule.cc; sourceTree = "<group>"; };
 		70A778380D69D5C200735F1E /* cDemeProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeProbSchedule.h; sourceTree = "<group>"; };
-		70AA941909D486AE006A24C8 /* libtcmalloc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtcmalloc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		70AD4F990F194D2400AA50AC /* cGenotypeData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGenotypeData.h; sourceTree = "<group>"; };
 		70AD4F9E0F194DD400AA50AC /* cGenotypeData.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeData.cc; sourceTree = "<group>"; };
 		70AE2D360E7DCAA100A520B5 /* cASNativeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASNativeObject.h; sourceTree = "<group>"; };
@@ -904,15 +958,6 @@
 		70DCAD1F097AF81A002F8733 /* AvidaScript.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AvidaScript.h; sourceTree = "<group>"; };
 		70DCAD20097AF81A002F8733 /* cLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLexer.h; sourceTree = "<group>"; };
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
-		70DCF50109CFB0B400924128 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "system-alloc.h"; sourceTree = "<group>"; };
-		70DCF50209CFB0B400924128 /* system-alloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "system-alloc.cc"; sourceTree = "<group>"; };
-		70DCF52809CFB93200924128 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
-		70DCF52E09CFB95600924128 /* pagemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pagemap.h; sourceTree = "<group>"; };
-		70DCF56309CFBB9500924128 /* tcmalloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcmalloc.cc; sourceTree = "<group>"; };
-		70DCF56C09CFBC3F00924128 /* tcmalloc-config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-config.h"; sourceTree = "<group>"; };
-		70DCF57409CFBCA500924128 /* tcmalloc-platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-platform.h"; sourceTree = "<group>"; };
-		70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = "tcmalloc-logging.cc"; sourceTree = "<group>"; };
-		70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-logging.h"; sourceTree = "<group>"; };
 		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
@@ -955,7 +1000,6 @@
 		DCC315C2076253A5008F7A48 /* hist_map2.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_map2.cc; sourceTree = "<group>"; };
 		DCC315C3076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		DCC315C4076253A5008F7A48 /* matlabify.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = matlabify.cc; sourceTree = "<group>"; };
-		DCC315CD076253A5008F7A48 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		DCC315CE076253A5008F7A48 /* environment.rotate */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.rotate; sourceTree = "<group>"; };
 		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
 		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
@@ -969,7 +1013,7 @@
 			files = (
 				5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */,
 				5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */,
-				5629D81A0C3EE21300C5F152 /* libtcmalloc.a in Frameworks */,
+				70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -979,18 +1023,18 @@
 			files = (
 				70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */,
 				7023ECD30C0A447700362B9C /* libavida-core.a in Frameworks */,
-				7023ECD40C0A447800362B9C /* libtcmalloc.a in Frameworks */,
+				70C9D5CA1086893100472C46 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7023EC310C0A426900362B9C /* Frameworks */ = {
+		7022469B107FC4F10079CD25 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		70AA941709D486AE006A24C8 /* Frameworks */ = {
+		7023EC310C0A426900362B9C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1009,7 +1053,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7023ECDE0C0A44D800362B9C /* libavida-core.a in Frameworks */,
-				7023ECDF0C0A44D900362B9C /* libtcmalloc.a in Frameworks */,
+				70C9D5C71086890000472C46 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1017,8 +1061,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				702247F2108625920079CD25 /* libtcmalloc-1.4.a in Frameworks */,
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
-				704C21DC0C28C3980038F1A5 /* libtcmalloc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1076,6 +1120,57 @@
 				701EF27E0BEA5D2300DAE168 /* main.cc */,
 			);
 			path = "unit-tests";
+			sourceTree = "<group>";
+		};
+		70224698107FC4BB0079CD25 /* tcmalloc-1.4 */ = {
+			isa = PBXGroup;
+			children = (
+				702247E3108624160079CD25 /* tcmalloc.h */,
+				702247DA108623920079CD25 /* linux_syscall_support.h */,
+				702247D51086236F0079CD25 /* cycleclock.h */,
+				702247D61086236F0079CD25 /* spinlock_linux-inl.h */,
+				702247D71086236F0079CD25 /* spinlock_posix-inl.h */,
+				702247D81086236F0079CD25 /* spinlock_win32-inl.h */,
+				702247AD108621660079CD25 /* malloc_extension.h */,
+				7022479C108620E40079CD25 /* sysinfo.cc */,
+				7022479D108620E40079CD25 /* sysinfo.h */,
+				7022477A10861D390079CD25 /* tcmalloc-platform.h */,
+				7022475610861B670079CD25 /* thread_annotations.h */,
+				702246AF107FCA590079CD25 /* atomicops-internals-linuxppc.h */,
+				702246B0107FCA590079CD25 /* atomicops-internals-macosx.h */,
+				702246B1107FCA590079CD25 /* atomicops-internals-x86-msvc.h */,
+				702246B2107FCA590079CD25 /* atomicops-internals-x86.cc */,
+				702246B3107FCA590079CD25 /* atomicops-internals-x86.h */,
+				702246B4107FCA590079CD25 /* atomicops.h */,
+				702246B5107FCA590079CD25 /* basictypes.h */,
+				702246B6107FCA590079CD25 /* central_freelist.cc */,
+				702246B7107FCA590079CD25 /* central_freelist.h */,
+				702246B8107FCA590079CD25 /* commandlineflags.h */,
+				702246B9107FCA590079CD25 /* common.cc */,
+				702246BA107FCA590079CD25 /* common.h */,
+				702246BB107FCA590079CD25 /* internal_logging.cc */,
+				702246BC107FCA590079CD25 /* internal_logging.h */,
+				702246BD107FCA590079CD25 /* linked_list.h */,
+				702246BE107FCA590079CD25 /* malloc_extension.cc */,
+				702246C4107FCA590079CD25 /* packed-cache-inl.h */,
+				702246C5107FCA590079CD25 /* page_heap_allocator.h */,
+				702246C6107FCA590079CD25 /* page_heap.cc */,
+				702246C7107FCA590079CD25 /* page_heap.h */,
+				702246C8107FCA590079CD25 /* pagemap.h */,
+				702246CB107FCA590079CD25 /* span.cc */,
+				702246CC107FCA590079CD25 /* span.h */,
+				702246CD107FCA590079CD25 /* spinlock.cc */,
+				702246CE107FCA590079CD25 /* spinlock.h */,
+				702246D1107FCA590079CD25 /* static_vars.cc */,
+				702246D2107FCA590079CD25 /* static_vars.h */,
+				702246D5107FCA590079CD25 /* system-alloc.cc */,
+				702246D6107FCA590079CD25 /* system-alloc.h */,
+				702246D7107FCA590079CD25 /* tcmalloc_guard.h */,
+				702246D8107FCA590079CD25 /* tcmalloc.cc */,
+				702246D9107FCA590079CD25 /* thread_cache.cc */,
+				702246DA107FCA590079CD25 /* thread_cache.h */,
+			);
+			path = "tcmalloc-1.4";
 			sourceTree = "<group>";
 		};
 		70422A1B091B141000A5E67F /* analyze */ = {
@@ -1369,7 +1464,7 @@
 		70DCF4FF09CF81E400924128 /* platform */ = {
 			isa = PBXGroup;
 			children = (
-				70DCF50009CF823500924128 /* tcmalloc */,
+				70224698107FC4BB0079CD25 /* tcmalloc-1.4 */,
 				70436B200C36C64000A05ABA /* cConditionVariable.h */,
 				70436B210C36C64000A05ABA /* cMutex.h */,
 				70436B220C36C64000A05ABA /* cRWLock.h */,
@@ -1383,22 +1478,6 @@
 				700D9CB20F1C55EB002CC711 /* tRLockPtr.h */,
 			);
 			path = platform;
-			sourceTree = "<group>";
-		};
-		70DCF50009CF823500924128 /* tcmalloc */ = {
-			isa = PBXGroup;
-			children = (
-				70DCF57F09CFBD3D00924128 /* tcmalloc-logging.cc */,
-				70DCF58009CFBD3D00924128 /* tcmalloc-logging.h */,
-				70DCF50109CFB0B400924128 /* system-alloc.h */,
-				70DCF50209CFB0B400924128 /* system-alloc.cc */,
-				70DCF52809CFB93200924128 /* spinlock.h */,
-				70DCF52E09CFB95600924128 /* pagemap.h */,
-				70DCF56309CFBB9500924128 /* tcmalloc.cc */,
-				70DCF56C09CFBC3F00924128 /* tcmalloc-config.h */,
-				70DCF57409CFBCA500924128 /* tcmalloc-platform.h */,
-			);
-			path = tcmalloc;
 			sourceTree = "<group>";
 		};
 		70F7D8C8092546DC009E311D /* classification */ = {
@@ -1794,7 +1873,6 @@
 		DCC315C5076253A5008F7A48 /* task_events */ = {
 			isa = PBXGroup;
 			children = (
-				DCC315CD076253A5008F7A48 /* CMakeLists.txt */,
 				DCC315CE076253A5008F7A48 /* environment.rotate */,
 				DCC315D0076253A5008F7A48 /* task_event_gen.cc */,
 				DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */,
@@ -1808,10 +1886,10 @@
 				DCC3164D07626CF3008F7A48 /* avida */,
 				700E2B83085DE50C00CF158A /* avida-viewer */,
 				70DCAD1C097AF7CC002F8733 /* avida-s */,
-				70AA941909D486AE006A24C8 /* libtcmalloc.a */,
 				70B6514C0BEA6FAD002472ED /* unit-tests */,
 				7023EC330C0A426900362B9C /* libavida-core.a */,
 				56F555D00C3B364E00E2E929 /* avida-text */,
+				7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1819,6 +1897,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		70224699107FC4F10079CD25 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7023EC2F0C0A426900362B9C /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1839,13 +1924,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		70AA941509D486AE006A24C8 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1860,7 +1938,7 @@
 			);
 			dependencies = (
 				56F555DB0C3B36FC00E2E929 /* PBXTargetDependency */,
-				56F555DD0C3B370100E2E929 /* PBXTargetDependency */,
+				70C9D5CC1086894A00472C46 /* PBXTargetDependency */,
 			);
 			name = "avida-text";
 			productName = "New Text Viewer";
@@ -1878,13 +1956,30 @@
 			buildRules = (
 			);
 			dependencies = (
+				70C9D5C91086891B00472C46 /* PBXTargetDependency */,
 				7023ECD00C0A445800362B9C /* PBXTargetDependency */,
-				7023ECD20C0A445B00362B9C /* PBXTargetDependency */,
 			);
 			name = "avida-viewer";
 			productName = primitive;
 			productReference = 700E2B83085DE50C00CF158A /* avida-viewer */;
 			productType = "com.apple.product-type.tool";
+		};
+		7022469C107FC4F10079CD25 /* tcmalloc-1.4 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 702246A3107FC5100079CD25 /* Build configuration list for PBXNativeTarget "tcmalloc-1.4" */;
+			buildPhases = (
+				70224699107FC4F10079CD25 /* Headers */,
+				7022469A107FC4F10079CD25 /* Sources */,
+				7022469B107FC4F10079CD25 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "tcmalloc-1.4";
+			productName = "tcmalloc-1.4";
+			productReference = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 		7023EC320C0A426900362B9C /* avida-core */ = {
 			isa = PBXNativeTarget;
@@ -1902,23 +1997,6 @@
 			name = "avida-core";
 			productName = "avida-core";
 			productReference = 7023EC330C0A426900362B9C /* libavida-core.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		70AA941809D486AE006A24C8 /* tcmalloc */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 70AA942509D48715006A24C8 /* Build configuration list for PBXNativeTarget "tcmalloc" */;
-			buildPhases = (
-				70AA941509D486AE006A24C8 /* Headers */,
-				70AA941609D486AE006A24C8 /* Sources */,
-				70AA941709D486AE006A24C8 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = tcmalloc;
-			productName = tcmalloc;
-			productReference = 70AA941909D486AE006A24C8 /* libtcmalloc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		70B6514B0BEA6FAD002472ED /* unit-tests */ = {
@@ -1952,7 +2030,7 @@
 			);
 			dependencies = (
 				7023ECE30C0A44E000362B9C /* PBXTargetDependency */,
-				7023ECE10C0A44DE00362B9C /* PBXTargetDependency */,
+				70C9D5C6108688FA00472C46 /* PBXTargetDependency */,
 			);
 			name = "avida-s";
 			productName = primitive;
@@ -1971,7 +2049,7 @@
 			);
 			dependencies = (
 				7023ECA70C0A436000362B9C /* PBXTargetDependency */,
-				70DCF67609D4E10500924128 /* PBXTargetDependency */,
+				702247EB108624880079CD25 /* PBXTargetDependency */,
 			);
 			name = avida;
 			productName = primitive;
@@ -1997,7 +2075,7 @@
 				700E2AF3085DE50C00CF158A /* avida-viewer */,
 				56F555CF0C3B364E00E2E929 /* avida-text */,
 				7023EC320C0A426900362B9C /* avida-core */,
-				70AA941809D486AE006A24C8 /* tcmalloc */,
+				7022469C107FC4F10079CD25 /* tcmalloc-1.4 */,
 				70B6514B0BEA6FAD002472ED /* unit-tests */,
 			);
 		};
@@ -2067,6 +2145,26 @@
 				7023ECCC0C0A444200362B9C /* cViewInfo.cc in Sources */,
 				7023ECCD0C0A444600362B9C /* cZoomScreen.cc in Sources */,
 				7023ECCE0C0A444800362B9C /* viewer.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7022469A107FC4F10079CD25 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				702246DC107FCA900079CD25 /* atomicops-internals-x86.cc in Sources */,
+				702246DD107FCA900079CD25 /* central_freelist.cc in Sources */,
+				702246DE107FCA900079CD25 /* common.cc in Sources */,
+				702246DF107FCA900079CD25 /* internal_logging.cc in Sources */,
+				702246E0107FCA900079CD25 /* malloc_extension.cc in Sources */,
+				702246E4107FCA900079CD25 /* page_heap.cc in Sources */,
+				702246E6107FCA900079CD25 /* span.cc in Sources */,
+				702246E7107FCA900079CD25 /* spinlock.cc in Sources */,
+				702246E9107FCA900079CD25 /* static_vars.cc in Sources */,
+				702246EB107FCA900079CD25 /* system-alloc.cc in Sources */,
+				702246EC107FCA900079CD25 /* tcmalloc.cc in Sources */,
+				702246ED107FCA900079CD25 /* thread_cache.cc in Sources */,
+				7022479E108620E40079CD25 /* sysinfo.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2208,16 +2306,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		70AA941609D486AE006A24C8 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				70AA941A09D486CA006A24C8 /* system-alloc.cc in Sources */,
-				70AA941B09D486CB006A24C8 /* tcmalloc-logging.cc in Sources */,
-				70AA941C09D486CD006A24C8 /* tcmalloc.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		70B651490BEA6FAD002472ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2264,10 +2352,10 @@
 			target = 7023EC320C0A426900362B9C /* avida-core */;
 			targetProxy = 56F555DA0C3B36FC00E2E929 /* PBXContainerItemProxy */;
 		};
-		56F555DD0C3B370100E2E929 /* PBXTargetDependency */ = {
+		702247EB108624880079CD25 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 70AA941809D486AE006A24C8 /* tcmalloc */;
-			targetProxy = 56F555DC0C3B370100E2E929 /* PBXContainerItemProxy */;
+			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
+			targetProxy = 702247EA108624880079CD25 /* PBXContainerItemProxy */;
 		};
 		7023ECA70C0A436000362B9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2278,16 +2366,6 @@
 			isa = PBXTargetDependency;
 			target = 7023EC320C0A426900362B9C /* avida-core */;
 			targetProxy = 7023ECCF0C0A445800362B9C /* PBXContainerItemProxy */;
-		};
-		7023ECD20C0A445B00362B9C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 70AA941809D486AE006A24C8 /* tcmalloc */;
-			targetProxy = 7023ECD10C0A445B00362B9C /* PBXContainerItemProxy */;
-		};
-		7023ECE10C0A44DE00362B9C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 70AA941809D486AE006A24C8 /* tcmalloc */;
-			targetProxy = 7023ECE00C0A44DE00362B9C /* PBXContainerItemProxy */;
 		};
 		7023ECE30C0A44E000362B9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2309,10 +2387,20 @@
 			target = 70B6514B0BEA6FAD002472ED /* unit-tests */;
 			targetProxy = 7023ED570C0A591100362B9C /* PBXContainerItemProxy */;
 		};
-		70DCF67609D4E10500924128 /* PBXTargetDependency */ = {
+		70C9D5C6108688FA00472C46 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 70AA941809D486AE006A24C8 /* tcmalloc */;
-			targetProxy = 70DCF67509D4E10500924128 /* PBXContainerItemProxy */;
+			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
+			targetProxy = 70C9D5C5108688FA00472C46 /* PBXContainerItemProxy */;
+		};
+		70C9D5C91086891B00472C46 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
+			targetProxy = 70C9D5C81086891B00472C46 /* PBXContainerItemProxy */;
+		};
+		70C9D5CC1086894A00472C46 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
+			targetProxy = 70C9D5CB1086894A00472C46 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2365,6 +2453,51 @@
 				PRODUCT_NAME = "avida-viewer";
 			};
 			name = Deployment;
+		};
+		7022469E107FC4F20079CD25 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				PRODUCT_NAME = "tcmalloc-1.4";
+			};
+			name = Development;
+		};
+		7022469F107FC4F20079CD25 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				PRODUCT_NAME = "tcmalloc-1.4";
+			};
+			name = Deployment;
+		};
+		702246A0107FC4F20079CD25 /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				PRODUCT_NAME = "tcmalloc-1.4";
+			};
+			name = "Deployment-G5";
+		};
+		702246A1107FC4F20079CD25 /* Deployment-Universal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				PRODUCT_NAME = "tcmalloc-1.4";
+			};
+			name = "Deployment-Universal";
+		};
+		702246A2107FC4F20079CD25 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				PRODUCT_NAME = "tcmalloc-1.4";
+			};
+			name = Profile;
 		};
 		7023EC350C0A42BC00362B9C /* Development */ = {
 			isa = XCBuildConfiguration;
@@ -2517,42 +2650,6 @@
 				);
 			};
 			name = Deployment;
-		};
-		70AA942609D48715006A24C8 /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				PRODUCT_NAME = tcmalloc;
-			};
-			name = Development;
-		};
-		70AA942709D48715006A24C8 /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				PRODUCT_NAME = tcmalloc;
-			};
-			name = Deployment;
-		};
-		70AA942809D48715006A24C8 /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				PRODUCT_NAME = tcmalloc;
-			};
-			name = "Deployment-G5";
-		};
-		70AA942909D48715006A24C8 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				PRODUCT_NAME = tcmalloc;
-			};
-			name = Profile;
 		};
 		70B393DC0944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
@@ -2738,15 +2835,6 @@
 			};
 			name = Profile;
 		};
-		E62620990A372B9900C07685 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				PRODUCT_NAME = tcmalloc;
-			};
-			name = "Deployment-Universal";
-		};
 		E626209A0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2835,6 +2923,18 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
 		};
+		702246A3107FC5100079CD25 /* Build configuration list for PBXNativeTarget "tcmalloc-1.4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7022469E107FC4F20079CD25 /* Development */,
+				7022469F107FC4F20079CD25 /* Deployment */,
+				702246A0107FC4F20079CD25 /* Deployment-G5 */,
+				702246A1107FC4F20079CD25 /* Deployment-Universal */,
+				702246A2107FC4F20079CD25 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
 		7023EC340C0A42BC00362B9C /* Build configuration list for PBXNativeTarget "avida-core" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2879,18 +2979,6 @@
 				70B393E00944CA6F0018F09D /* Deployment-G5 */,
 				E626209D0A372B9900C07685 /* Deployment-Universal */,
 				70B393E10944CA6F0018F09D /* Profile */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
-		};
-		70AA942509D48715006A24C8 /* Build configuration list for PBXNativeTarget "tcmalloc" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				70AA942609D48715006A24C8 /* Development */,
-				70AA942709D48715006A24C8 /* Deployment */,
-				70AA942809D48715006A24C8 /* Deployment-G5 */,
-				E62620990A372B9900C07685 /* Deployment-Universal */,
-				70AA942909D48715006A24C8 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;

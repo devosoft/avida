@@ -1,4 +1,0 @@
-
-cSpatialCountElem = Class("cSpatialCountElem", "cSpatialCountElem.h")
-
-# vim: set ft=python:

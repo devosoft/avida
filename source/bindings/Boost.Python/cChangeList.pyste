@@ -1,4 +1,0 @@
-
-cChangeList = Class("cChangeList", "cChangeList.h")
-
-# vim: set ft=python:

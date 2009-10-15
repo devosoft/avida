@@ -1,4 +1,0 @@
-
-cOrgSourceMessage = Class("cOrgSourceMessage", "cOrgSourceMessage.h")
-
-# vim: set ft=python:

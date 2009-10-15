@@ -1,4 +1,0 @@
-
-cTaskLib = Class("cTaskLib", "cTaskLib.h")
-
-# vim: set ft=python:

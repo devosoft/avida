@@ -1,4 +1,0 @@
-
-cResource = Class("cResource", "cResource.h")
-
-# vim: set ft=python:

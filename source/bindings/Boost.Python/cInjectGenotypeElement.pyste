@@ -1,4 +1,0 @@
-
-cInjectGenotypeElement = Class("cInjectGenotypeElement", "cInjectGenotypeElement.h")
-
-# vim: set ft=python:

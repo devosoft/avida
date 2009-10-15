@@ -1,4 +1,0 @@
-
-tDataManager = Class("tDataManager", "tDataManager.h")
-
-# vim: set ft=python:

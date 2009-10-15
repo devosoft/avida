@@ -1,4 +1,0 @@
-
-defs = Class("defs", "defs.h")
-
-# vim: set ft=python:

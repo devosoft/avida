@@ -1,4 +1,0 @@
-
-cWorld = Class("cWorld", "cWorld.h")
-
-# vim: set ft=python:

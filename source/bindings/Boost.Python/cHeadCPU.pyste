@@ -1,4 +1,0 @@
-
-cHeadCPU = Class("cHeadCPU", "cHeadCPU.h")
-
-# vim: set ft=python:

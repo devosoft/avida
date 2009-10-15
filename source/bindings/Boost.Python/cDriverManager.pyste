@@ -1,4 +1,0 @@
-
-cDriverManager = Class("cDriverManager", "cDriverManager.h")
-
-# vim: set ft=python:

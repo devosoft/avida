@@ -1,6 +1,0 @@
-
-Import("cInitFile.pyste")
-
-cGenesis = Class("cGenesis", "cGenesis.h")
-
-# vim: set ft=python:

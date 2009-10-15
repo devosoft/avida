@@ -1,4 +1,0 @@
-
-cAnalyzeFunction = Class("cAnalyzeFunction", "cAnalyzeFunction.h")
-
-# vim: set ft=python:

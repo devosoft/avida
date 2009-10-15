@@ -1,4 +1,0 @@
-
-nGeometry = Class("nGeometry", "nGeometry.h")
-
-# vim: set ft=python:

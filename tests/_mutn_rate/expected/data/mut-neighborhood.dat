@@ -1,0 +1,308 @@
+# IMPORTANT: Mutational Neighborhood is *EXPERIMENTAL*
+# Output data and format is subject to change in future releases.
+#  1: Update/Tree Depth
+#  2: Target Task
+#  3: Base Fitness
+#  4: Base Merit
+#  5: Base Gestation
+#  6: Base Genome Length
+#  7: Base Performs Target Task
+#  8: Total 1-Step Mutants
+#  9: 1-Step Probability Beneficial
+# 10: 1-Step Probability Deleterious
+# 11: 1-Step Probability Neutral
+# 12: 1-Step Probability Lethal
+# 13: 1-Step Average Beneficial Size
+# 14: 1-Step Average Deleterious Size
+# 15: 1-Step Peak Fitness
+# 16: 1-Step Average Fitness
+# 17: 1-Step Average Square Fitness
+# 18: 1-Step Confers Target Task
+# 19: 1-Step Probability Confers Target Task
+# 20: 1-Step Average Size of Target Task Conferral
+# 21: 1-Step Confers Any Task
+# 22: 1-Step Probability Confers Any Task
+# 23: 1-Step Average Size of Any Task Conferral
+# 24: 1-Step Knockout Task
+# 25: 1-Step Probability Knockout Task
+# 26: 1-Step Average Size of Task Knockout
+# 27: Total 1-Step Point Mutants
+# 28: 1-Step Point Probability Beneficial
+# 29: 1-Step Point Probability Deleterious
+# 30: 1-Step Point Probability Neutral
+# 31: 1-Step Point Probability Lethal
+# 32: 1-Step Point Average Beneficial Size
+# 33: 1-Step Point Average Deleterious Size
+# 34: 1-Step Point Peak Fitness
+# 35: 1-Step Point Average Fitness
+# 36: 1-Step Point Average Square Fitness
+# 37: 1-Step Point Total Entropy
+# 38: 1-Step Point Total Complexity
+# 39: 1-Step Point Confers Target Task
+# 40: 1-Step Point Probability Confers Target Task
+# 41: 1-Step Point Average Size of Target Task Conferral
+# 42: 1-Step Point Confers Any Task
+# 43: 1-Step Point Probability Confers Any Task
+# 44: 1-Step Point Average Size of Any Task Conferral
+# 45: 1-Step Point Knockout Task
+# 46: 1-Step Point Probability Knockout Task
+# 47: 1-Step Point Average Size of Task Knockout
+# 48: Total 1-Step Insert Mutants
+# 49: 1-Step Insert Probability Beneficial
+# 50: 1-Step Insert Probability Deleterious
+# 51: 1-Step Insert Probability Neutral
+# 52: 1-Step Insert Probability Lethal
+# 53: 1-Step Insert Average Beneficial Size
+# 54: 1-Step Insert Average Deleterious Size
+# 55: 1-Step Insert Peak Fitness
+# 56: 1-Step Insert Average Fitness
+# 57: 1-Step Insert Average Square Fitness
+# 58: 1-Step Insert Total Entropy
+# 59: 1-Step Insert Total Complexity
+# 60: 1-Step Insert Confers Target Task
+# 61: 1-Step Insert Probability Confers Target Task
+# 62: 1-Step Insert Average Size of Target Task Conferral
+# 63: 1-Step Insert Confers Any Task
+# 64: 1-Step Insert Probability Confers Any Task
+# 65: 1-Step Insert Average Size of Any Task Conferral
+# 66: 1-Step Insert Knockout Task
+# 67: 1-Step Insert Probability Knockout Task
+# 68: 1-Step Insert Average Size of Task Knockout
+# 69: Total 1-Step Delete Mutants
+# 70: 1-Step Delete Probability Beneficial
+# 71: 1-Step Delete Probability Deleterious
+# 72: 1-Step Delete Probability Neutral
+# 73: 1-Step Delete Probability Lethal
+# 74: 1-Step Delete Average Beneficial Size
+# 75: 1-Step Delete Average Deleterious Size
+# 76: 1-Step Delete Peak Fitness
+# 77: 1-Step Delete Average Fitness
+# 78: 1-Step Delete Average Square Fitness
+# 79: 1-Step Delete Total Entropy
+# 80: 1-Step Delete Total Complexity
+# 81: 1-Step Delete Confers Target Task
+# 82: 1-Step Delete Probability Confers Target Task
+# 83: 1-Step Delete Average Size of Target Task Conferral
+# 84: 1-Step Delete Confers Any Task
+# 85: 1-Step Delete Probability Confers Any Task
+# 86: 1-Step Delete Average Size of Any Task Conferral
+# 87: 1-Step Delete Knockout Task
+# 88: 1-Step Delete Probability Knockout Task
+# 89: 1-Step Delete Average Size of Task Knockout
+# 90: Total 2-Step Mutants
+# 91: 2-Step Probability Beneficial
+# 92: 2-Step Probability Deleterious
+# 93: 2-Step Probability Neutral
+# 94: 2-Step Probability Lethal
+# 95: 2-Step Average Beneficial Size
+# 96: 2-Step Average Deleterious Size
+# 97: 2-Step Peak Fitness
+# 98: 2-Step Average Fitness
+# 99: 2-Step Average Square Fitness
+# 100: 2-Step Confers Target Task
+# 101: 2-Step Probability Confers Target Task
+# 102: 2-Step Average Size of Target Task Conferral
+# 103: 2-Step Confers Target - Previous Beneficial
+# 104: 2-Step Prob. Confers Target - Previous Beneficial
+# 105: 2-Step Ave. Size of Previous Beneficial in Target Conferral
+# 106: 2-Step Confers Target - Previous Deleterious
+# 107: 2-Step Prob. Confers Target - Previous Deleterious
+# 108: 2-Step Ave. Size of Previous Deleterious in Target Conferral
+# 109: 2-Step Confers Target - Previous Neutral
+# 110: 2-Step Prob. Confers Target - Previous Neutral
+# 111: 2-Step Confers Target - Previous Lethal
+# 112: 2-Step Prob. Confers Target - Previous Lethal
+# 113: 2-Step Confers Any Task
+# 114: 2-Step Probability Confers Any Task
+# 115: 2-Step Average Size of Any Task Conferral
+# 116: 2-Step Knockout Task
+# 117: 2-Step Probability Knockout Task
+# 118: 2-Step Average Size of Task Knockout
+# 119: Total 2-Step Point Mutants
+# 120: 2-Step Point Probability Beneficial
+# 121: 2-Step Point Probability Deleterious
+# 122: 2-Step Point Probability Neutral
+# 123: 2-Step Point Probability Lethal
+# 124: 2-Step Point Average Beneficial Size
+# 125: 2-Step Point Average Deleterious Size
+# 126: 2-Step Point Peak Fitness
+# 127: 2-Step Point Average Fitness
+# 128: 2-Step Point Average Square Fitness
+# 129: 2-Step Point Total Entropy
+# 130: 2-Step Point Total Complexity
+# 131: 2-Step Point Confers Target Task
+# 132: 2-Step Point Probability Confers Target Task
+# 133: 2-Step Point Average Size of Target Task Conferral
+# 134: 2-Step Point Confers Target - Previous Beneficial
+# 135: 2-Step Point Prob. Confers Target - Previous Beneficial
+# 136: 2-Step Point Ave. Size of Previous Beneficial in Target Conferral
+# 137: 2-Step Point Confers Target - Previous Deleterious
+# 138: 2-Step Point Prob. Confers Target - Previous Deleterious
+# 139: 2-Step Point Ave. Size of Previous Deleterious in Target Conferral
+# 140: 2-Step Point Confers Target - Previous Neutral
+# 141: 2-Step Point Prob. Confers Target - Previous Neutral
+# 142: 2-Step Point Confers Target - Previous Lethal
+# 143: 2-Step Point Prob. Confers Target - Previous Lethal
+# 144: 2-Step Point Confers Any Task
+# 145: 2-Step Point Probability Confers Any Task
+# 146: 2-Step Point Average Size of Any Task Conferral
+# 147: 2-Step Point Knockout Task
+# 148: 2-Step Point Probability Knockout Task
+# 149: 2-Step Point Average Size of Task Knockout
+# 150: Total 2-Step Insert Mutants
+# 151: 2-Step Insert Probability Beneficial
+# 152: 2-Step Insert Probability Deleterious
+# 153: 2-Step Insert Probability Neutral
+# 154: 2-Step Insert Probability Lethal
+# 155: 2-Step Insert Average Beneficial Size
+# 156: 2-Step Insert Average Deleterious Size
+# 157: 2-Step Insert Peak Fitness
+# 158: 2-Step Insert Average Fitness
+# 159: 2-Step Insert Average Square Fitness
+# 160: 2-Step Insert Total Entropy
+# 161: 2-Step Insert Total Complexity
+# 162: 2-Step Insert Confers Target Task
+# 163: 2-Step Insert Probability Confers Target Task
+# 164: 2-Step Insert Average Size of Target Task Conferral
+# 165: 2-Step Insert Confers Target - Previous Beneficial
+# 166: 2-Step Insert Prob. Confers Target - Previous Beneficial
+# 167: 2-Step Insert Ave. Size of Previous Beneficial in Target Conferral
+# 168: 2-Step Insert Confers Target - Previous Deleterious
+# 169: 2-Step Insert Prob. Confers Target - Previous Deleterious
+# 170: 2-Step Insert Ave. Size of Previous Deleterious in Target Conferral
+# 171: 2-Step Insert Confers Target - Previous Neutral
+# 172: 2-Step Insert Prob. Confers Target - Previous Neutral
+# 173: 2-Step Insert Confers Target - Previous Lethal
+# 174: 2-Step Insert Prob. Confers Target - Previous Lethal
+# 175: 2-Step Insert Confers Any Task
+# 176: 2-Step Insert Probability Confers Any Task
+# 177: 2-Step Insert Average Size of Any Task Conferral
+# 178: 2-Step Insert Knockout Task
+# 179: 2-Step Insert Probability Knockout Task
+# 180: 2-Step Insert Average Size of Task Knockout
+# 181: Total 2-Step Delete Mutants
+# 182: 2-Step Delete Probability Beneficial
+# 183: 2-Step Delete Probability Deleterious
+# 184: 2-Step Delete Probability Neutral
+# 185: 2-Step Delete Probability Lethal
+# 186: 2-Step Delete Average Beneficial Size
+# 187: 2-Step Delete Average Deleterious Size
+# 188: 2-Step Delete Peak Fitness
+# 189: 2-Step Delete Average Fitness
+# 190: 2-Step Delete Average Square Fitness
+# 191: 2-Step Delete Total Entropy
+# 192: 2-Step Delete Total Complexity
+# 193: 2-Step Delete Confers Target Task
+# 194: 2-Step Delete Probability Confers Target Task
+# 195: 2-Step Delete Average Size of Target Task Conferral
+# 196: 2-Step Delete Confers Target - Previous Beneficial
+# 197: 2-Step Delete Prob. Confers Target - Previous Beneficial
+# 198: 2-Step Delete Ave. Size of Previous Beneficial in Target Conferral
+# 199: 2-Step Delete Confers Target - Previous Deleterious
+# 200: 2-Step Delete Prob. Confers Target - Previous Deleterious
+# 201: 2-Step Delete Ave. Size of Previous Deleterious in Target Conferral
+# 202: 2-Step Delete Confers Target - Previous Neutral
+# 203: 2-Step Delete Prob. Confers Target - Previous Neutral
+# 204: 2-Step Delete Confers Target - Previous Lethal
+# 205: 2-Step Delete Prob. Confers Target - Previous Lethal
+# 206: 2-Step Delete Confers Any Task
+# 207: 2-Step Delete Probability Confers Any Task
+# 208: 2-Step Delete Average Size of Any Task Conferral
+# 209: 2-Step Delete Knockout Task
+# 210: 2-Step Delete Probability Knockout Task
+# 211: 2-Step Delete Average Size of Task Knockout
+# 212: Total Insert/Point Mutants
+# 213: Insert/Point Probability Beneficial
+# 214: Insert/Point Probability Deleterious
+# 215: Insert/Point Probability Neutral
+# 216: Insert/Point Probability Lethal
+# 217: Insert/Point Average Beneficial Size
+# 218: Insert/Point Average Deleterious Size
+# 219: Insert/Point Peak Fitness
+# 220: Insert/Point Average Fitness
+# 221: Insert/Point Average Square Fitness
+# 222: Insert/Point Total Entropy
+# 223: Insert/Point Total Complexity
+# 224: Insert/Point Confers Target Task
+# 225: Insert/Point Probability Confers Target Task
+# 226: Insert/Point Average Size of Target Task Conferral
+# 227: Insert/Point Confers Target - Previous Beneficial
+# 228: Insert/Point Prob. Confers Target - Previous Beneficial
+# 229: Insert/Point Ave. Size of Previous Beneficial in Target Conferral
+# 230: Insert/Point Confers Target - Previous Deleterious
+# 231: Insert/Point Prob. Confers Target - Previous Deleterious
+# 232: Insert/Point Ave. Size of Previous Deleterious in Target Conferral
+# 233: Insert/Point Confers Target - Previous Neutral
+# 234: Insert/Point Prob. Confers Target - Previous Neutral
+# 235: Insert/Point Confers Target - Previous Lethal
+# 236: Insert/Point Prob. Confers Target - Previous Lethal
+# 237: Insert/Point Confers Any Task
+# 238: Insert/Point Probability Confers Any Task
+# 239: Insert/Point Average Size of Any Task Conferral
+# 240: Insert/Point Knockout Task
+# 241: Insert/Point Probability Knockout Task
+# 242: Insert/Point Average Size of Task Knockout
+# 243: Total Insert/Delete Mutants
+# 244: Insert/Delete Probability Beneficial
+# 245: Insert/Delete Probability Deleterious
+# 246: Insert/Delete Probability Neutral
+# 247: Insert/Delete Probability Lethal
+# 248: Insert/Delete Average Beneficial Size
+# 249: Insert/Delete Average Deleterious Size
+# 250: Insert/Delete Peak Fitness
+# 251: Insert/Delete Average Fitness
+# 252: Insert/Delete Average Square Fitness
+# 253: Insert/Delete Total Entropy
+# 254: Insert/Delete Total Complexity
+# 255: Insert/Delete Confers Target Task
+# 256: Insert/Delete Probability Confers Target Task
+# 257: Insert/Delete Average Size of Target Task Conferral
+# 258: Insert/Delete Confers Target - Previous Beneficial
+# 259: Insert/Delete Prob. Confers Target - Previous Beneficial
+# 260: Insert/Delete Ave. Size of Previous Beneficial in Target Conferral
+# 261: Insert/Delete Confers Target - Previous Deleterious
+# 262: Insert/Delete Prob. Confers Target - Previous Deleterious
+# 263: Insert/Delete Ave. Size of Previous Deleterious in Target Conferral
+# 264: Insert/Delete Confers Target - Previous Neutral
+# 265: Insert/Delete Prob. Confers Target - Previous Neutral
+# 266: Insert/Delete Confers Target - Previous Lethal
+# 267: Insert/Delete Prob. Confers Target - Previous Lethal
+# 268: Insert/Delete Confers Any Task
+# 269: Insert/Delete Probability Confers Any Task
+# 270: Insert/Delete Average Size of Any Task Conferral
+# 271: Insert/Delete Knockout Task
+# 272: Insert/Delete Probability Knockout Task
+# 273: Insert/Delete Average Size of Task Knockout
+# 274: Total Delete/Point Mutants
+# 275: Delete/Point Probability Beneficial
+# 276: Delete/Point Probability Deleterious
+# 277: Delete/Point Probability Neutral
+# 278: Delete/Point Probability Lethal
+# 279: Delete/Point Average Beneficial Size
+# 280: Delete/Point Average Deleterious Size
+# 281: Delete/Point Peak Fitness
+# 282: Delete/Point Average Fitness
+# 283: Delete/Point Average Square Fitness
+# 284: Delete/Point Total Entropy
+# 285: Delete/Point Total Complexity
+# 286: Delete/Point Confers Target Task
+# 287: Delete/Point Probability Confers Target Task
+# 288: Delete/Point Average Size of Target Task Conferral
+# 289: Delete/Point Confers Target - Previous Beneficial
+# 290: Delete/Point Prob. Confers Target - Previous Beneficial
+# 291: Delete/Point Ave. Size of Previous Beneficial in Target Conferral
+# 292: Delete/Point Confers Target - Previous Deleterious
+# 293: Delete/Point Prob. Confers Target - Previous Deleterious
+# 294: Delete/Point Ave. Size of Previous Deleterious in Target Conferral
+# 295: Delete/Point Confers Target - Previous Neutral
+# 296: Delete/Point Prob. Confers Target - Previous Neutral
+# 297: Delete/Point Confers Target - Previous Lethal
+# 298: Delete/Point Prob. Confers Target - Previous Lethal
+# 299: Delete/Point Confers Any Task
+# 300: Delete/Point Probability Confers Any Task
+# 301: Delete/Point Average Size of Any Task Conferral
+# 302: Delete/Point Knockout Task
+# 303: Delete/Point Probability Knockout Task
+# 304: Delete/Point Average Size of Task Knockout
+
+0 8 893.673 98304 110 49 0 2574 0.00815851 0.268842 0.0384615 0.684538 1143.75 166.218 3317.42 88.3898 66981.8 0 0 0 40 0.01554 412.347 606 0.235431 94.5535 1225 0.00653061 0.559184 0.0791837 0.355102 1243.67 164.065 1787.35 170.629 121266 6.83521 42.1648 0 0 0 39 0.0318367 337.858 603 0.492245 94.6554 1300 0.01 0.00461538 0.00153846 0.983846 1082.26 430.429 3317.42 14.1841 18351.6 2.89015 46.1099 0 0 0 1 0.000769231 3317.42 2 0.00153846 83.2566 49 0 0.0204082 0 0.979592 0 55.7037 893.673 1.13681 63.3245 0 49 0 0 0 0 0 0 1 0.0204082 55.7037 3313076 0.000777223 0.105719 0.00197701 0.891527 1056.3 81.7619 1959.72 11.2316 6296.45 1 3.01834e-07 1808.14 0 0 0 2 1 139.961 0 0 0 0 21883 0.00660504 155.66 329290 0.099391 47.7394 735000 0.0017619 0.407668 0.00565714 0.584913 1211.37 67.8439 1959.72 34.8478 18148.1 31.0016 17.9984 1 1.36054e-06 1808.14 0 0 0 2 1 139.961 0 0 0 0 19361 0.0263415 151.554 288722 0.392819 46.6777 861900 6.03318e-05 0.000904977 3.01659e-05 0.999005 901.872 609.854 901.872 0.633274 424.834 2.23018 46.7698 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1176 0 0.0960884 0 0.903912 0 242.387 893.673 23.2906 14293.6 0 49 0 0 0 0 0 0 0 0 0 0 0 0 0 6 0.00510204 193.049 86 0.0731293 83.5355 1592500 0.000604082 0.0173388 9.79592e-05 0.981959 898.618 120.444 904.072 2.71873 1513.69 6.33907 42.6609 0 0 0 0 0 0 0 0 0 0 0 0 0 1352 0.00084898 168.793 21918 0.0137633 29.3656 63700 0.00408163 0.313878 0.0346939 0.647347 901.872 212.007 901.872 101.23 72371.1 15.8509 33.1491 0 0 0 0 0 0 0 0 0 0 0 0 0 1040 0.0163265 213.584 16692 0.262041 89.9661 58800 0.000102041 0.0360544 0 0.963844 900.605 113.868 903.529 4.19736 2010.48 0.597254 48.4027 0 0 0 0 0 0 0 0 0 0 0 0 0 124 0.00210884 165.932 1872 0.0318367 48.436 

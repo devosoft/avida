@@ -1,4 +1,0 @@
-
-cDefaultAnalyzeDriver = Class("cDefaultAnalyzeDriver", "cDefaultAnalyzeDriver.h")
-
-# vim: set ft=python:

@@ -1,4 +1,0 @@
-
-cInstLibBase = Class("cInstLibBase", "cInstLibBase.h")
-
-# vim: set ft=python:

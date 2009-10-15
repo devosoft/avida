@@ -1,4 +1,0 @@
-
-cClassificationManager = Class("cClassificationManager", "cClassificationManager.h")
-
-# vim: set ft=python:

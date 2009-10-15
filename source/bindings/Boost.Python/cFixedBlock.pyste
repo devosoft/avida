@@ -1,4 +1,0 @@
-
-cFixedBlock = Class("cFixedBlock", "cFixedBlock.h")
-
-# vim: set ft=python:
