@@ -1,4 +1,0 @@
-
-cEnvironment = Class("cEnvironment", "cEnvironment.h")
-
-# vim: set ft=python:

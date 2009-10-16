@@ -1,4 +1,0 @@
-
-cPopulationCell = Class("cPopulationCell", "cPopulationCell.h")
-
-# vim: set ft=python:

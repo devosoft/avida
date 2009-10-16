@@ -1,4 +1,0 @@
-
-tArgDataEntry = Class("tArgDataEntry", "tArgDataEntry.h")
-
-# vim: set ft=python:

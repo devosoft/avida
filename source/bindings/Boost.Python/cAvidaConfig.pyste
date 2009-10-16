@@ -1,4 +1,0 @@
-
-cAvidaConfig = Class("cAvidaConfig", "cAvidaConfig.h")
-
-# vim: set ft=python:

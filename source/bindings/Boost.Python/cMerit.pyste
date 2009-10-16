@@ -1,8 +1,0 @@
-
-cMerit = Class("cMerit", "cMerit.h")
-
-exclude(cMerit.operator['<<'])
-# BinaryPrint is not used since it outputs to ostreams.
-exclude(cMerit.BinaryPrint)
-
-# vim: set ft=python:

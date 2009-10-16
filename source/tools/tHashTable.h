@@ -73,6 +73,9 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
+#ifndef BIT_ARRAY_H
+#include "cBitArray.h"
+#endif
 
 #include <cstdlib>
 
@@ -124,6 +127,20 @@ namespace nHashTable {
       out_hash += (unsigned int) key[i];
     return out_hash % table_size;
   }
+  
+  // HASH_TYPE = cBitArray
+  // We hash a bit array by calculating the sum of the squared values of the
+  // positions where bits are on, then modding this number by the size of 
+  // the hash table
+  template<> inline int HashKey<cBitArray>(const cBitArray& key, int table_size)
+  {
+    unsigned int out_hash = 0;
+    for (int i = 0; i < key.GetSize(); i++) {
+      if (key.Get(i)) { out_hash += i*i; }
+    }
+    return out_hash % table_size;
+  }
+  
 }
 
 
@@ -291,17 +308,18 @@ public:
     return false;
   }
   
-  DATA_TYPE Remove(const HASH_TYPE& key) {
+  bool Remove(const HASH_TYPE& key, DATA_TYPE& out_data) {
     // Determine the bin that we are going to be using.
     const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
     
-    DATA_TYPE out_data;
+    bool found = false;
     assert(cell_array[bin] != NULL);
     list_it.Set(cell_array[bin]);
     
     // If we are deleting the first entry in this bin we must clean up...
     if (list_it.Get()->key == key) {
       out_data = list_it.Get()->data;
+      found = true;
       delete list_it.Remove();
       list_it.Next();
       entry_count--;
@@ -318,6 +336,7 @@ public:
       while (list_it.Next() != NULL && list_it.Get()->id == bin) {
         if (list_it.Get()->key == key) {
           out_data = list_it.Get()->data;
+          found = true;
           delete list_it.Remove();
           entry_count--;
           break;
@@ -325,8 +344,41 @@ public:
       }
     }
     
-    return out_data;
+    return found;
   }
+  
+  void Remove(const HASH_TYPE& key) {
+    // Determine the bin that we are going to be using.
+    const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
+    
+    assert(cell_array[bin] != NULL);
+    list_it.Set(cell_array[bin]);
+    
+    // If we are deleting the first entry in this bin we must clean up...
+    if (list_it.Get()->key == key) {
+      delete list_it.Remove();
+      list_it.Next();
+      entry_count--;
+      // See if the next entry is still part of this cell.
+      if (list_it.AtRoot() == false && list_it.Get()->id == bin) {
+        cell_array[bin] = list_it.GetPos();
+      } else {
+        cell_array[bin] = NULL;
+      }
+    }
+    
+    // If it was not the first entry in this cell, keep looking!
+    else {
+      while (list_it.Next() != NULL && list_it.Get()->id == bin) {
+        if (list_it.Get()->key == key) {
+          delete list_it.Remove();
+          entry_count--;
+          break;
+        }
+      }
+    }
+  }
+
   
   void SetTableSize(int _hash) {
     // Create the new table...

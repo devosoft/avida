@@ -1,4 +1,0 @@
-
-cMxCodeArray = Class("cMxCodeArray", "cMxCodeArray.h")
-
-# vim: set ft=python:

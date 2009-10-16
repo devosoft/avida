@@ -1,4 +1,0 @@
-
-cAvidaTriggers = Class("cAvidaTriggers", "cAvidaTriggers.h")
-
-# vim: set ft=python:

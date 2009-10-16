@@ -1,4 +1,0 @@
-
-cSpeciesQueue = Class("cSpeciesQueue", "cSpeciesQueue.h")
-
-# vim: set ft=python:

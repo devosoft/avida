@@ -71,7 +71,8 @@ public:
   inline void SetValue(const cString& name, T data) { m_hash.SetValue(name, data); }
   inline bool HasEntry(const cString& name) const { return m_hash.HasEntry(name); }
   inline bool Find(const cString& name, T& out_data) const { return m_hash.Find(name, out_data); }
-  inline T Remove(const cString& name) { return m_hash.Remove(name); }
+  inline void Remove(const cString& name) { m_hash.Remove(name); }
+  inline bool Remove(const cString& name, T& data) { return m_hash.Remove(name, data); }
   inline void SetHash(int _hash) { m_hash.SetTableSize(_hash); }
   inline void AsLists(tList<cString>& name_list, tList<T>& value_list) const {
     m_hash.AsLists(name_list, value_list);
@@ -151,7 +152,8 @@ public:
   inline bool Find(const cString& name, T& out_data) const {
     cString uname(name); uname.ToUpper(); return m_hash.Find(uname, out_data);
   }
-  inline T Remove(const cString& name) { cString uname(name); uname.ToUpper(); return m_hash.Remove(uname); }
+  inline void Remove(const cString& name) { cString uname(name); uname.ToUpper(); m_hash.Remove(uname); }
+  inline bool Remove(const cString& name, T& data) { cString uname(name); uname.ToUpper(); return m_hash.Remove(uname, data); }
   
 
   // Fast Accessor Methods - Calling method assumes responsibility for UCasing the key

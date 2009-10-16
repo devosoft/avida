@@ -1,4 +1,0 @@
-
-tDataEntry = Class("tDataEntry", "tDataEntry.h")
-
-# vim: set ft=python:

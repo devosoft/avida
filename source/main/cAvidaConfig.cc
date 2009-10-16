@@ -62,7 +62,7 @@ void cAvidaConfig::Load(const cString& filename, bool crash_if_not_found)
 }
 
 
-void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found)
+void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found, bool warn_default)
 {
   // Load the contents from the file.
   cInitFile init_file(filename, mappings);
@@ -103,7 +103,7 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
     while ((cur_entry = entry_it.Next()) != NULL) {
       const cString keyword = cur_entry->GetName();
       const cString default_val = cur_entry->GetDefault();
-      cur_entry->LoadString( init_file.ReadString(keyword, default_val) );
+      cur_entry->LoadString( init_file.ReadString(keyword, default_val, warn_default) );
     }
   }
   

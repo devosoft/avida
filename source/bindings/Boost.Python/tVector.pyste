@@ -1,4 +1,0 @@
-
-tVector = Class("tVector", "tVector.h")
-
-# vim: set ft=python:

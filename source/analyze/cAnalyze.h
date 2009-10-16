@@ -55,6 +55,9 @@
 #ifndef tMatrix_h
 #include "tMatrix.h"
 #endif
+#ifndef tHashTable_h
+#include "tHashTable.h"
+#endif
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h
@@ -170,6 +173,17 @@ public:
   
   static void PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string, cCPUTestInfo& test_info,
     cResourceHistory* in_resource_history = NULL, int in_resource_time_spent_offset = 0);
+    
+  // structure for phenotype statistics, used in CommandPrintPhenotypes
+  struct p_stats {
+    cBitArray phen_id;
+    int cpu_count;
+    int genotype_count;
+    double total_length;
+    double total_gest;
+    int total_task_count;
+    int total_task_performance_count;
+  };
   
 private:
   // Pop specific types of arguments from an arg list.
@@ -199,7 +213,7 @@ private:
   // Batch management...
   int BatchUtil_GetMaxLength(int batch_id = -1);
   
-  // Comamnd helpers...
+  // Command helpers...
   void CommandDetail_Header(std::ostream& fp, int format_type,
                             tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it, int time_step = -1);
   void CommandDetail_Body(std::ostream& fp, int format_type,
@@ -211,6 +225,7 @@ private:
                                tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it);
   void CommandHistogram_Body(std::ostream& fp, int format_type,
                              tListIterator< tDataEntryCommand<cAnalyzeGenotype> >& output_it);
+  static int PStatsComparator(const void * elem1, const void * elem2);  // must be static for qsort to accept it
   
   // Loading methods...
   void LoadOrganism(cString cur_string);

@@ -1,4 +1,0 @@
-
-cFile = Class("cFile", "cFile.h")
-
-# vim: set ft=python:

@@ -437,7 +437,7 @@ private:
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
   bool Inst_IfLabel(cAvidaContext& ctx);
-  bool Inst_IfLabelDirect(cAvidaContext& ctx);
+  bool Inst_IfLabel_Direct(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
   bool Inst_HeadDivideSex(cAvidaContext& ctx);
   bool Inst_HeadRead(cAvidaContext& ctx);
@@ -445,11 +445,9 @@ private:
   bool Inst_HeadCopy(cAvidaContext& ctx);
   bool Inst_HeadCopy_NoLabel(cAvidaContext& ctx);
   bool Inst_HeadSearch(cAvidaContext& ctx);
-  bool Inst_HeadSearchLabel(cAvidaContext& ctx);
-  bool Inst_HeadSearchDirect(cAvidaContext& ctx);
-  bool Inst_HeadSearchDirectLabel(cAvidaContext& ctx);
-  bool Inst_HeadSearchSequence(cAvidaContext& ctx);
-  bool Inst_HeadSearchDirectSequence(cAvidaContext& ctx);
+  bool Inst_HeadSearch_NoLabel(cAvidaContext& ctx);
+  bool Inst_HeadSearch_NoReg(cAvidaContext& ctx);
+  bool Inst_HeadSearch_Direct(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   
   // Goto Variants
@@ -476,6 +474,12 @@ private:
   
   // Replication
   bool Inst_Repro(cAvidaContext& ctx);
+  
+  // State Grid Navigation
+  bool Inst_SGMove(cAvidaContext& ctx);
+  bool Inst_SGRotateL(cAvidaContext& ctx);
+  bool Inst_SGRotateR(cAvidaContext& ctx);
+  bool Inst_SGSense(cAvidaContext& ctx);  
 };
 
 

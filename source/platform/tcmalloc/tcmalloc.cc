@@ -135,7 +135,7 @@ static const size_t kPageMapBigAllocationThreshold = 128 << 20;
 // should keep this value big because various incarnations of Linux
 // have small limits on the number of mmap() regions per
 // address-space.
-static const int kMinSystemAlloc = 1 << (20 - kPageShift);
+static const unsigned int kMinSystemAlloc = 1 << (20 - kPageShift);
 
 // Number of objects to move between a per-thread list and a central
 // list in one shot.  We want this to be not too small so we can
@@ -338,12 +338,12 @@ static int NumMoveSize(size_t size) {
 // Initialize the mapping arrays
 static void InitSizeClasses() {
   // Special initialization for small sizes
-  for (int lg = 0; lg < kAlignShift; lg++) {
+  for (unsigned int lg = 0; lg < kAlignShift; lg++) {
     size_base[lg] = 1;
     size_shift[lg] = kAlignShift;
   }
 
-  int next_class = 1;
+  unsigned int next_class = 1;
   int alignshift = kAlignShift;
   int last_lg = -1;
   for (size_t size = kAlignment; size <= kMaxSize; size += (1 << alignshift)) {
@@ -388,7 +388,7 @@ static void InitSizeClasses() {
 
   // Double-check sizes just to be safe
   for (size_t size = 0; size <= kMaxSize; size++) {
-    const int sc = SizeClass(size);
+    const unsigned int sc = SizeClass(size);
     if (sc == 0) {
       MESSAGE("Bad size class %d for %" PRIuS "\n", sc, size);
       abort();
@@ -438,7 +438,7 @@ template <class T>
 class PageHeapAllocator {
  private:
   // How much to allocate from system at a time
-  static const int kAllocIncrement = 128 << 10;
+  static const unsigned int kAllocIncrement = 128 << 10;
 
   // Aligned size of T
   static const size_t kAlignedSize
@@ -769,7 +769,7 @@ TCMalloc_PageHeap::TCMalloc_PageHeap() : pagemap_(MetaDataAlloc),
                                          free_pages_(0),
                                          system_bytes_(0) {
   DLL_Init(&large_);
-  for (int i = 0; i < kMaxPages; i++) {
+  for (unsigned int i = 0; i < kMaxPages; i++) {
     DLL_Init(&free_[i]);
   }
 }
@@ -842,8 +842,8 @@ inline void TCMalloc_PageHeap::Carve(Span* span, Length n) {
   span->free = 0;
   Event(span, 'A', n);
 
-  const int extra = span->length - n;
-  ASSERT(extra >= 0);
+  ASSERT(((int)span->length - 1) >= 0);
+  const unsigned int extra = span->length - n;
   if (extra > 0) {
     Span* leftover = NewSpan(span->start + n, extra);
     leftover->free = 1;
@@ -1211,7 +1211,7 @@ class TCMalloc_Central_FreeList {
   // just iterates over the sizeclasses but does so without taking a lock.
   // Returns true on success.
   // May temporarily lock a "random" size class.
-  static bool EvictRandomSizeClass(int locked_size_class, bool force);
+  static bool EvictRandomSizeClass(unsigned int locked_size_class, bool force);
 
   // REQUIRES: lock_ is *not* held.
   // Tries to shrink the Cache.  If force is true it will relase objects to
@@ -1363,16 +1363,16 @@ inline void TCMalloc_Central_FreeList::ReleaseToSpans(void* object) {
 }
 
 bool TCMalloc_Central_FreeList::EvictRandomSizeClass(
-    int locked_size_class, bool force) {
-  static int race_counter = 0;
-  int t = race_counter++;  // Updated without a lock, but who cares.
+    unsigned int locked_size_class, bool force) {
+  static unsigned int race_counter = 0;
+  unsigned int t = race_counter++;  // Updated without a lock, but who cares.
   if (t >= kNumClasses) {
     while (t >= kNumClasses) {
       t -= kNumClasses;
     }
     race_counter = t;
   }
-  ASSERT(t >= 0);
+//  ASSERT(t >= 0);
   ASSERT(t < kNumClasses);
   if (t == locked_size_class) return false;
   return central_cache[t].ShrinkCache(locked_size_class, force);
@@ -1586,7 +1586,7 @@ void TCMalloc_ThreadCache::Init(pthread_t tid) {
 
 void TCMalloc_ThreadCache::Cleanup() {
   // Put unused memory back into central cache
-  for (int cl = 0; cl < kNumClasses; ++cl) {
+  for (unsigned int cl = 0; cl < kNumClasses; ++cl) {
     if (list_[cl].length() > 0) {
       ReleaseToCentralCache(cl, list_[cl].length());
     }
@@ -1656,7 +1656,7 @@ inline void TCMalloc_ThreadCache::Scavenge() {
   // pretty soon and the low-water marks will be high on that call.
   //int64 start = CycleClock::Now();
 
-  for (int cl = 0; cl < kNumClasses; cl++) {
+  for (unsigned int cl = 0; cl < kNumClasses; cl++) {
     FreeList* list = &list_[cl];
     const int lowmark = list->lowwatermark();
     if (lowmark > 0) {
@@ -1722,7 +1722,7 @@ void TCMalloc_ThreadCache::InitModule() {
     span_allocator.New(); // Reduce cache conflicts
     stacktrace_allocator.Init();
     DLL_Init(&sampled_objects);
-    for (int i = 0; i < kNumClasses; ++i) {
+    for (unsigned int i = 0; i < kNumClasses; ++i) {
       central_cache[i].Init(i);
     }
     new ((void*)pageheap_memory) TCMalloc_PageHeap;
@@ -1825,7 +1825,7 @@ void TCMalloc_ThreadCache::RecomputeThreadCacheSize() {
 }
 
 void TCMalloc_ThreadCache::Print() const {
-  for (int cl = 0; cl < kNumClasses; ++cl) {
+  for (unsigned int cl = 0; cl < kNumClasses; ++cl) {
     MESSAGE("      %5" PRIuS " : %4d len; %4d lo\n",
             ByteSizeForClass(cl),
             list_[cl].length(),
@@ -2144,7 +2144,7 @@ static void* do_memalign(size_t align, size_t size) {
     // are aligned at powers of two.  We will waste time and space if
     // we miss in the size class array, but that is deemed acceptable
     // since memalign() should be used rarely.
-    int cl = SizeClass(size);
+    unsigned int cl = SizeClass(size);
     while (cl < kNumClasses && ((class_to_size[cl] & (align - 1)) != 0)) {
       cl++;
     }
@@ -2184,7 +2184,7 @@ static void* do_memalign(size_t align, size_t size) {
   }
 
   // Skip trailing portion that we do not need to return
-  const int needed = pages(size);
+  const unsigned int needed = pages(size);
   ASSERT(span->length >= needed);
   if (span->length > needed) {
     Span* trailer = pageheap->Split(span, needed);

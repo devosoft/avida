@@ -1,4 +1,0 @@
-
-cHardwareBase = Class("cHardwareBase", "cHardwareBase.h")
-
-# vim: set ft=python:

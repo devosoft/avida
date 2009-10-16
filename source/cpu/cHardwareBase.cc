@@ -238,7 +238,14 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
                                                   m_organism->GetDivSlipProb() / mut_multiplier);
     for (int i = 0; i < num_mut; i++) doSlipMutation(ctx, offspring_genome);
   }
-  
+	
+	// HGT Mutations - NOT COUNTED
+	// These are location-dependent, hence they are implemented in cPopulationInterface.
+	if(m_world->GetConfig().ENABLE_HGT.Get()
+		 && (m_world->GetConfig().HGT_MUTATION_P.Get() > 0.0)
+		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_MUTATION_P.Get()))) {
+		m_organism->GetOrgInterface().DoHGTMutation(ctx, offspring_genome);
+	}
   
   // Divide Mutations
   if (m_organism->TestDivideMut(ctx) && totalMutations < maxmut) {

@@ -1,4 +1,0 @@
-
-cPhenotype = Class("cPhenotype", "cPhenotype.h")
-
-# vim: set ft=python:

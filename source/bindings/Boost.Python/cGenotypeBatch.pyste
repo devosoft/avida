@@ -1,4 +1,0 @@
-
-cGenotypeBatch = Class("cGenotypeBatch", "cGenotypeBatch.h")
-
-# vim: set ft=python:

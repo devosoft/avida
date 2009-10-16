@@ -1,4 +1,0 @@
-
-cOrganism = Class("cOrganism", "cOrganism.h")
-
-# vim: set ft=python:

@@ -112,6 +112,9 @@ public:
 	void CreateLinkByXY(int x, int y, double weight=1.0) { }
 	//! Link this organism's cell to the cell with index idx.
 	void CreateLinkByIndex(int idx, double weight=1.0) { }
+	
+	//! HGT mutation (does nothing).
+	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
 };
 
 

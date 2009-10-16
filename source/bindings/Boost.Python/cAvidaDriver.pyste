@@ -1,4 +1,0 @@
-
-cAvidaDriver = Class("cAvidaDriver", "cAvidaDriver.h")
-
-# vim: set ft=python:

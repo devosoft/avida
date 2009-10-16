@@ -6194,7 +6194,6 @@ bool cHardwareCPU::Inst_HeadCopy(cAvidaContext& ctx)
     } else 
       doSlipMutation(ctx, m_memory, write_head.GetPosition());
   }
-	m_organism->AttemptHGTInsertion(ctx);
 
   read_head.Advance();
   write_head.Advance();

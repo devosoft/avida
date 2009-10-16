@@ -294,7 +294,7 @@ cPopulation::cPopulation(cWorld* world)
 	
 	// if HGT is on, make sure there's a resource for it:
 	if(m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
-		m_world->GetDriver().RaiseFatalException(-1, "HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
+		m_world->GetDriver().NotifyWarning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
 	}
   
 }
@@ -1281,6 +1281,14 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
 	if(fitness.size()==1) {
 		return;
 	}
+	
+	// to facilitate control runs, sometimes we want to know what the fitness values
+	// are, but we don't want competition to depend on them.
+	if(m_world->GetConfig().DEMES_OVERRIDE_FITNESS.Get()) {
+		for(int i=0; i<static_cast<int>(fitness.size()); ++i) {
+			fitness[i] = 1.0;
+		}		
+	}	
 	
 	// Number of demes (at index) which should wind up in the next generation.
 	std::vector<unsigned int> deme_counts(deme_array.GetSize(), 0);						
@@ -5893,7 +5901,9 @@ int  cPopulation::NumberOfOrganismsInGroup(int group_id)
 /*!	Modify current level of the HGT resource.
  */
 void cPopulation::AdjustHGTResource(double delta) {
-	resource_count.Modify(m_hgt_resid, delta);
+	if(m_hgt_resid != -1) {
+		resource_count.Modify(m_hgt_resid, delta);
+	}
 }
 
 /*! Mix all organisms in the population.

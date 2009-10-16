@@ -1,8 +1,0 @@
-
-Include("cHelpEntry.h")
-
-cHelpManager = Class("cHelpManager", "cHelpManager.h")
-
-set_policy(cHelpManager.FindEntry, return_internal_reference())
-
-# vim: set ft=python:

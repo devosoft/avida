@@ -28,6 +28,7 @@
 #include "cDeme.h"
 #include "cEnvironment.h"
 #include "cGenotype.h"
+#include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cOrgSinkMessage.h"
@@ -38,6 +39,8 @@
 #include "cTestCPU.h"
 
 #include <cassert>
+#include <algorithm>
+#include <iterator>
 
 #ifndef NULL
 #define NULL 0
@@ -619,4 +622,88 @@ void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
 	cPopulationCell* this_cell = GetCell(); assert(this_cell);
 	cPopulationCell& that_cell = deme->GetCell(idx % deme->GetSize());
 	deme->GetNetwork().Connect(*this_cell, that_cell, weight);
+}
+
+
+/*! Perform an HGT mutation on this offspring. 
+ 
+ HGT mutations are location-dependent, hence they are implemented here as opposed to
+ the CPU or organism.
+ 
+ If this method is called, an HGT mutation of some kind is imminent.  All that's left
+ is to actually *do* the mutation.  We only do *one* HGT mutation each time this method
+ is called.
+ 
+ \todo HGT should prefer more similar and older fragments.
+ \todo Enable replacement mutations.
+ */
+void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
+	// get this organism's cell:
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+	
+	// do we have any fragments available?
+	if(cell.CountGenomeFragments() == 0) { return; }
+	
+	// randomly select the genome fragment for HGT:
+	typedef cPopulationCell::fragment_list_type fragment_list_type;
+	fragment_list_type& fragments = cell.GetFragments();
+	fragment_list_type::iterator f=fragments.begin();
+	std::advance(f, ctx.GetRandom().GetInt(fragments.size()));
+	
+	// need to take circularity of the genome into account.
+	// we can do this by appending the genome with a copy of its first fragment-size
+	// instructions.  handling insertions and replacements gets complicated after this...
+	cGenome circ(offspring);
+	for(int i=0; i<f->GetSize(); ++i) {
+		circ.Append(offspring[i]);
+	}
+	
+	// find the location within the offspring's genome that best matches the selected fragment:
+	cGenomeUtil::substring_match ssm = cGenomeUtil::FindBestSubstringMatch(circ, *f);
+	
+	if(ssm.position > offspring.GetSize()) {
+		// we matched on the circular portion of the genome, so we have to modify the
+		// matched position to reflect this;
+		ssm.position -= offspring.GetSize();
+	} 
+	
+	// there are (currently) two supported types of HGT mutations: insertions & replacements.
+	// which one are we doing?
+	if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
+		// insertion: insert the fragment at the final location of the match:
+		offspring.Insert(ssm.position, *f);
+	} else {
+		// replacement: replace up to fragment size instructions in the genome.
+		// note that replacement can wrap around from front->back.  replacement counts
+		// forward, so we have to find the start position first.
+		int start = ssm.position - f->GetSize() + 1;
+		if(start < 0) { start += offspring.GetSize(); }
+		for(int i=0; i<f->GetSize(); ++i) {
+			offspring[start] = (*f)[i];
+			if(++start >= offspring.GetSize()) { start = 0; }
+		}
+	}
+	
+	// resource utilization, cleanup, and stats tracking:
+	m_world->GetPopulation().AdjustHGTResource(-f->GetSize());
+	m_world->GetStats().GenomeFragmentInserted(cell.GetOrganism(), *f);
+	fragments.erase(f);
+	
+	// old code from a previous version of hgt, kept around for reference:
+	//	// calculate the best match for each fragment:
+	//	cGenomeUtil::substring_match_list_type match_list;
+	//	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
+	//		match_list.push_back(cGenomeUtil::FindBestSubstringMatch(cell.GetOrganism()->GetGenome(), *i));
+	//	}	
+	
+	//	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
+	//		int d = std::max(cGenomeUtil::FindHammingDistance(nearby, *i), 1);
+	//		if(m_world->GetRandom().P(m_world->GetConfig().HGT_INSERTION_PROB.Get() / d)) {
+	//			m_hardware->InsertGenomeFragment(*i);
+	//			m_world->GetPopulation().AdjustHGTResource(-i->GetSize());
+	//			m_world->GetStats().GenomeFragmentInserted(this, *i);
+	//			fragments.erase(i);
+	//			return true;
+	//		}
+	//	}
 }

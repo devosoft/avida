@@ -1,4 +1,0 @@
-
-tDataEntryBase = Class("tDataEntryBase", "tDataEntryBase.h")
-
-# vim: set ft=python:

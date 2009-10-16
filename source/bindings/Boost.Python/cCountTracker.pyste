@@ -1,4 +1,0 @@
-
-cCountTracker = Class("cCountTracker", "cCountTracker.h")
-
-# vim: set ft=python:

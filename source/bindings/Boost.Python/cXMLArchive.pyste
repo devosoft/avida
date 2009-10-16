@@ -1,4 +1,0 @@
-
-cXMLArchive = Class("cXMLArchive", "cXMLArchive.h")
-
-# vim: set ft=python:

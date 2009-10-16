@@ -1,6 +1,0 @@
-
-Include("cString.h")
-
-cDefaultMessageDisplay = Class("cDefaultMessageDisplay", "cDefaultMessageDisplay.h")
-
-# vim: set ft=python:

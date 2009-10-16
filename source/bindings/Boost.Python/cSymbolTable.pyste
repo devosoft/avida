@@ -1,4 +1,0 @@
-
-cSymbolTable = Class("cSymbolTable", "cSymbolTable.h")
-
-# vim: set ft=python:

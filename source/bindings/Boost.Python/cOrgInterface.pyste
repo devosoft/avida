@@ -1,4 +1,0 @@
-
-cOrgInterface = Class("cOrgInterface", "cOrgInterface.h")
-
-# vim: set ft=python:

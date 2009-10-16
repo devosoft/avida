@@ -1,6 +1,0 @@
-
-Include("cDataFile.h")
-
-cDataManager_Base = Class("cDataManager_Base", "cDataManager_Base.h")
-
-# vim: set ft=python:

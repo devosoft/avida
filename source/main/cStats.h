@@ -338,6 +338,7 @@ private:
   
   // Number of organisms killed by kill actions
   int num_orgs_killed;
+	int num_unoccupied_cell_kill_attempts;
   
   // Number of migrations that have been made
   int num_migrations;
@@ -571,6 +572,7 @@ public:
   void IncExecuted() { num_executed++; }
   
   void IncNumOrgsKilled() { num_orgs_killed++; }
+	void IncNumUnoccupiedCellAttemptedToKill() { num_unoccupied_cell_kill_attempts++; }
   void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }

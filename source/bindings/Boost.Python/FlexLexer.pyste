@@ -1,4 +1,0 @@
-
-FlexLexer = Class("FlexLexer", "FlexLexer.h")
-
-# vim: set ft=python:

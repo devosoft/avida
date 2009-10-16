@@ -1,4 +1,0 @@
-
-cActionLibrary = Class("cActionLibrary", "cActionLibrary.h")
-
-# vim: set ft=python:

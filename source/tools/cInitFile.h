@@ -133,7 +133,7 @@ public:
    * one to set standard values that are used if the user does not override
    * them.
    **/
-  cString ReadString(const cString& name, cString def = "") const;
+  cString ReadString(const cString& name, cString def = "", bool warn_default = true) const;
   
   /**
    * Looks over all lines loaded into the file, and warns if any of them

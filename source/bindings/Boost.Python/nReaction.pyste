@@ -1,4 +1,0 @@
-
-nReaction = Class("nReaction", "nReaction.h")
-
-# vim: set ft=python:

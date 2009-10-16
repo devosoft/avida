@@ -1,4 +1,0 @@
-
-cHardwareTransSMT = Class("cHardwareTransSMT", "cHardwareTransSMT.h")
-
-# vim: set ft=python:

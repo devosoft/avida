@@ -12,7 +12,7 @@ createdby = David Bryson ; Who created the test
 email = brysonda@egr.msu.edu ; Email address for the test's creator
 
 [consistency]
-enabled = no            ; Is this test a consistency test?
+enabled = yes            ; Is this test a consistency test?
 long = yes               ; Is this test a long test?
 
 [performance]

@@ -42,12 +42,10 @@ int cMenuWindow::Activate(cTextWindow * parent_window)
       max_entry = option_array[i].GetSize();
   }
 
-  const int max_height = parent_window->Height() - 4;
   const int max_width = parent_window->Width() - 4;
   const int min_width = title.GetSize() + 2;
 
   // The minimum number of columns available is determined by the title.
-  const int max_rows = max_height - (title.IsEmpty() ? 0 : 2);
   const int min_cols = min_width / (max_entry + 2);
   const int max_cols = max_width / (max_entry + 2);
 
@@ -66,8 +64,6 @@ int cMenuWindow::Activate(cTextWindow * parent_window)
   // Next, figure out how many rows we need for this to work.
   num_rows = 1 + (num_options-1) / num_cols;
 
-  // @CAO We need to identify if we have a problem fitting everything!)
-//  if (num_rows > max_rows) ;
 
   // Determine dimenstions for window
   int win_height = num_rows + 4;

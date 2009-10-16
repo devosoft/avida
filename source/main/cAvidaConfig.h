@@ -281,7 +281,7 @@ public:
   CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
   CONFIG_ADD_VAR(WORLD_Y, int, 60, "Height of the Avida world");
 	CONFIG_ADD_VAR(WORLD_Z, int, 1, "Depth of the Avida world");
-  CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus\n3 = Clique\n4 = Hexagonal grid\n5 = Lattice");
+  CONFIG_ADD_VAR(WORLD_GEOMETRY, int, 2, "1 = Bounded Grid\n2 = Torus\n3 = Clique\n4 = Hexagonal grid\n5 = Partial\n6 = Lattice\n7 = Random connected\n8 = Scale-free");
 	CONFIG_ADD_VAR(SCALE_FREE_M, int, 3, "Number of connections to add per cell when using a scale-free geometry.");
 	CONFIG_ADD_VAR(SCALE_FREE_ALPHA, double, 1.0, "Attachment power (1=linear).");
 	CONFIG_ADD_VAR(SCALE_FREE_ZERO_APPEAL, double, 0.0, "Appeal of cells with zero connections.");	
@@ -306,6 +306,7 @@ public:
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");
 	CONFIG_ADD_VAR(DEMES_COMPETITION_STYLE, int, 0, "Select how the demes compete\n0=Fitness proportional\n1=Tournament");
   CONFIG_ADD_VAR(DEMES_TOURNAMENT_SIZE, int, 0, "Number of demes that participate in a tournament");
+	CONFIG_ADD_VAR(DEMES_OVERRIDE_FITNESS, int, 0, "Whether the calculated fitness is used\n0=yes (default)\n1=no (all fitnesses=1)");
   CONFIG_ADD_VAR(DEMES_USE_GERMLINE, int, 0, "Whether demes use a distinct germline (default=0).");
   CONFIG_ADD_VAR(DEMES_PREVENT_STERILE, int, 0, "Whether to prevent sterile demes from\nreplicating (default=0 or no).");
   CONFIG_ADD_VAR(DEMES_RESET_RESOURCES, int, 0, "Reset resources in demes on replication. \n0 = reset both demes \n1 = reset target deme \n2 = deme resources remain unchanged\n");
@@ -660,16 +661,16 @@ public:
 	CONFIG_ADD_VAR(DEME_NETWORK_REQUIRES_CONNECTEDNESS, int, 1, "Whether the deme's network must be connected before an actual fitness is calculated.");
 	CONFIG_ADD_VAR(DEME_NETWORK_TOPOLOGY_FITNESS, int, 0, "Network measure used to determine fitness; see cDemeTopologyNetwork.h.");
 	
-	// -------- Horizontal gene transfer config options --------
+	// -------- Horizontal Gene Transfer (HGT) config options --------
 	CONFIG_ADD_GROUP(HGT_GROUP, "Horizontal gene transfer settings");
 	CONFIG_ADD_VAR(ENABLE_HGT, int, 0, "Whether HGT is enabled; 0=false (default),\n 1=true.");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_MEAN, double, 10, "Mean size of fragments (drawn from a normal\ndist., default=10).");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_VARIANCE, double, 2, "Variance of fragments (drawn from a normal\ndist., default=2).");
 	CONFIG_ADD_VAR(HGT_MAX_FRAGMENTS_PER_CELL, int, 100, "Max. allowed number of fragments\nper cell (default=100).");
 	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome\nfragments (0=none [default]).");
-	CONFIG_ADD_VAR(HGT_INSERTION_PROB, double, 0.0, "Probability that a genome fragment\nwill be inserted during a copy (default=0.0).");
-	CONFIG_ADD_VAR(HGT_LOOKAHEAD_LENGTH, int, 4, "Number of instructions forward from the\nread head that will be used to calculate\nthe liklihood of HGT.");	
-  
+	CONFIG_ADD_VAR(HGT_MUTATION_P, double, 0.0, "Probability that an HGT mutation will occur on divide (default=0.0).");
+	CONFIG_ADD_VAR(HGT_INSERTION_MUT_P, double, 0.5, "Probability that an HGT mutation will result in an insertion (default=0.5); replacement if false.");
+
   CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");
   CONFIG_ADD_VAR(INST_RES, cString, "", "Resource upon which the execution of certain instruction depends");
   CONFIG_ADD_VAR(INST_RES_FLOOR, double, 0.0, "Assumed lower level of resource in environment.  Used for probability dist.");
@@ -684,7 +685,7 @@ public:
   
   inline void Load(const cString& filename) { Load(filename, false); }
   void Load(const cString& filename, bool crash_if_not_found);
-  void Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found = false);
+  void Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found = false, bool warn_default = true);
   void Print(const cString& filename);
   void Status();
   void PrintReview();

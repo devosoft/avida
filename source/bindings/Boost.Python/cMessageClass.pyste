@@ -1,6 +1,0 @@
-
-Include("cMessageType.h")
-
-cMessageClass = Class("cMessageClass", "cMessageClass.h")
-
-# vim: set ft=python:

@@ -1,4 +1,0 @@
-
-cMutationalNeighborhood = Class("cMutationalNeighborhood", "cMutationalNeighborhood.h")
-
-# vim: set ft=python:

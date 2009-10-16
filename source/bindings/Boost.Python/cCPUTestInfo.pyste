@@ -1,4 +1,0 @@
-
-cCPUTestInfo = Class("cCPUTestInfo", "cCPUTestInfo.h")
-
-# vim: set ft=python:

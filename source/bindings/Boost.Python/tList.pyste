@@ -1,4 +1,0 @@
-
-tList = Class("tList", "tList.h")
-
-# vim: set ft=python:

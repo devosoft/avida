@@ -1,4 +1,0 @@
-
-cStats = Class("cStats", "cStats.h")
-
-# vim: set ft=python:
