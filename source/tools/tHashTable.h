@@ -73,6 +73,9 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
+#ifndef BIT_ARRAY_H
+#include "cBitArray.h"
+#endif
 
 #include <cstdlib>
 
@@ -124,6 +127,20 @@ namespace nHashTable {
       out_hash += (unsigned int) key[i];
     return out_hash % table_size;
   }
+  
+  // HASH_TYPE = cBitArray
+  // We hash a bit array by calculating the sum of the squared values of the
+  // positions where bits are on, then modding this number by the size of 
+  // the hash table
+  template<> inline int HashKey<cBitArray>(const cBitArray& key, int table_size)
+  {
+    unsigned int out_hash = 0;
+    for (int i = 0; i < key.GetSize(); i++) {
+      if (key.Get(i)) { out_hash += i*i; }
+    }
+    return out_hash % table_size;
+  }
+  
 }
 
 

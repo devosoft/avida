@@ -2591,6 +2591,24 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
 
 ///// Population Analysis Commands ////
 
+// Comparator for p_stat struct: compared by cpu_count
+// Higher cpu_count is considered "less" in order to sort greatest-to-least
+// Furthermore, within the same cpu_count we sort greatest-to-least
+// based on genotype_count
+int cAnalyze::PStatsComparator(const void * elem1, const void * elem2)
+{
+  if (((p_stats*)elem2)->cpu_count > ((p_stats*)elem1)->cpu_count) return 1;
+  if (((p_stats*)elem2)->cpu_count < ((p_stats*)elem1)->cpu_count) return -1;
+  
+  // if the cpu_counts are the same, we'd like to sort greatest-to-least
+  // on genotype_count
+  if (((p_stats*)elem2)->genotype_count > ((p_stats*)elem1)->genotype_count) return 1;
+  if (((p_stats*)elem2)->genotype_count < ((p_stats*)elem1)->genotype_count) return -1;
+  
+  // if they have the same cpu_count and genotype_count, we call them the same
+  return 0;
+}
+
 void cAnalyze::CommandPrintPhenotypes(cString cur_string)
 {
   if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Printing phenotypes in batch "
@@ -2616,41 +2634,59 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   // Setup the phenotype categories...
   const int num_tasks = batch[cur_batch].List().GetFirst()->GetNumTasks();
   const int num_phenotypes = 1 << (num_tasks + 1);
-  tArray<int> phenotype_counts(num_phenotypes);
-  tArray<int> genotype_counts(num_phenotypes);
-  tArray<double> total_length(num_phenotypes);
-  tArray<double> total_gest(num_phenotypes);
-  tArray<int> total_task_count(num_phenotypes);
-  tArray<int> total_task_performance_count(num_phenotypes);
   
-  phenotype_counts.SetAll(0);
-  genotype_counts.SetAll(0);
-  total_length.SetAll(0.0);
-  total_gest.SetAll(0.0);
-  total_task_count.SetAll(0);
-  total_task_performance_count.SetAll(0);
+  tHashTable<cBitArray, p_stats> phenotype_table(HASH_TABLE_SIZE_MEDIUM);
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
-    int phen_id = 0;
+    cBitArray phen_id(num_tasks + 1);  // + 1 because phenotype also depends on viability
+    phen_id.Clear();
     if (genotype->GetViable() == true) phen_id++;
     for (int i = 0; i < num_tasks; i++) {
-      if (genotype->GetTaskCount(i) > 0)  phen_id += 1 << (i+1);
+      if (genotype->GetTaskCount(i) > 0)  phen_id.Set(i + 1, true);  // again, +1 because we used 0th bit for viability
     }
-    phenotype_counts[phen_id] += genotype->GetNumCPUs();
-    genotype_counts[phen_id]++;
-    total_length[phen_id] += genotype->GetNumCPUs() * genotype->GetLength();
-    total_gest[phen_id] += genotype->GetNumCPUs() * genotype->GetGestTime();
-    for (int i = 0; i < num_tasks; i++) {
-    		total_task_count[phen_id] += ((genotype->GetTaskCount(i) > 0) ? 1 : 0);
-    		total_task_performance_count[phen_id] += genotype->GetTaskCount(i);
+    
+    p_stats phenotype_stats;
+    
+    if (phenotype_table.Find(phen_id, phenotype_stats)) {
+      phenotype_stats.cpu_count      += genotype->GetNumCPUs();
+      phenotype_stats.genotype_count += 1;
+      phenotype_stats.total_length   += genotype->GetNumCPUs() * genotype->GetLength();
+      phenotype_stats.total_gest     += genotype->GetNumCPUs() * genotype->GetGestTime();
+      
+      // don't bother tracking these unless asked for
+      if (print_ttc || print_ttpc) {
+        for (int i = 0; i < num_tasks; i++) {
+          phenotype_stats.total_task_count += ((genotype->GetTaskCount(i) > 0) ? 1 : 0);
+          phenotype_stats.total_task_performance_count += genotype->GetTaskCount(i);
+        }
+      }
     }
+    else {
+      phenotype_stats.phen_id        = phen_id;  // this is for ease of printing and sorting
+      phenotype_stats.cpu_count      = genotype->GetNumCPUs();
+      phenotype_stats.genotype_count = 1;
+      phenotype_stats.total_length   = genotype->GetNumCPUs() * genotype->GetLength();
+      phenotype_stats.total_gest     = genotype->GetNumCPUs() * genotype->GetGestTime();
+      
+      phenotype_stats.total_task_count = 0;
+      phenotype_stats.total_task_performance_count = 0;
+      
+      // don't bother actually tracking these unless asked for
+      if (print_ttc || print_ttpc) {
+        for (int i = 0; i < num_tasks; i++) {
+          phenotype_stats.total_task_count += ((genotype->GetTaskCount(i) > 0) ? 1 : 0);
+          phenotype_stats.total_task_performance_count += genotype->GetTaskCount(i);
+        }
+      }
+    }
+    
+    // add to / update table
+    phenotype_table.SetValue(phen_id, phenotype_stats);
   }
-  
-  // Print out the results...
-  
+    
   ofstream& fp = m_world->GetDataFileOFStream(filename);
   
   fp << "# 1: Number of organisms of this phenotype" << endl
@@ -2674,40 +2710,34 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   else { fp << "# 6+: Tasks performed in this phenotype" << endl; }
   fp << endl;
   
-  // @CAO Lets do this inefficiently for the moment, but print out the
-  // phenotypes in order.
+  // Print the phenotypes in order from greatest cpu count to least
+  // Within cpu_count, print in order from greatest genotype count to least
+  tArray<p_stats> phenotype_array;
+  phenotype_table.GetValues(phenotype_array);
+  phenotype_array.MergeSort(&cAnalyze::PStatsComparator);  // sort by cpu_count, greatest to least
   
-  while (true) {
-    // Find the next phenotype to print...
-    int max_count = phenotype_counts[0];
-    int max_position = 0;
-    for (int i = 0; i < num_phenotypes; i++) {
-      if (phenotype_counts[i] > max_count) {
-        max_count = phenotype_counts[i];
-        max_position = i;
-      }
+  for (int i = 0; i < phenotype_array.GetSize(); i++) {
+    fp << phenotype_array[i].cpu_count << " "
+       << phenotype_array[i].genotype_count << " "
+       << phenotype_array[i].total_length / phenotype_array[i].cpu_count << " "
+       << phenotype_array[i].total_gest / phenotype_array[i].cpu_count << " "
+       << phenotype_array[i].phen_id.Get(0) << "  ";  // viability
+      
+    if (print_ttc) { 
+      fp << phenotype_array[i].total_task_count / phenotype_array[i].genotype_count << " "; 
     }
-    
-    if (max_count == 0) break; // we're done!
-    
-    fp << phenotype_counts[max_position] << " "
-      << genotype_counts[max_position] << " "
-      << total_length[max_position] / phenotype_counts[max_position] << " "
-      << total_gest[max_position] / phenotype_counts[max_position] << " "
-      << (max_position & 1) << "  ";
-    if (print_ttc) { fp << total_task_count[max_position] / genotype_counts[max_position] << "  "; }
     if (print_ttpc) { 
-    	fp << total_task_performance_count[max_position] / genotype_counts[max_position] << "  "; 
+      fp << phenotype_array[i].total_task_performance_count / phenotype_array[i].genotype_count << " ";
     }
-    for (int i = 1; i <= num_tasks; i++) {
-      if ((max_position >> i) & 1 > 0) fp << "1 ";
-      else fp << "0 ";
-    }
+    
+    // not using cBitArray::Print because it would print viability bit too
+    for (int j = 1; j <= num_tasks; j++) { fp << phenotype_array[i].phen_id.Get(j) << " "; }
+    
     fp << endl;
-    phenotype_counts[max_position] = 0;
   }
   
   m_world->GetDataFileManager().Remove(filename);
+  
 }
 
 
