@@ -638,8 +638,6 @@ cHeadCPU cHardwareExperimental::FindNopSequenceStart(bool mark_executed)
         }
         return cHeadCPU(this, pos - 1, ip.GetMemSpace());
       }
-      
-      continue; 
     }
     pos++;
   }
