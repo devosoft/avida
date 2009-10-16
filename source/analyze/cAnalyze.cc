@@ -2633,7 +2633,6 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   
   // Setup the phenotype categories...
   const int num_tasks = batch[cur_batch].List().GetFirst()->GetNumTasks();
-  const int num_phenotypes = 1 << (num_tasks + 1);
   
   tHashTable<cBitArray, p_stats> phenotype_table(HASH_TABLE_SIZE_MEDIUM);
   
