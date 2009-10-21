@@ -4149,10 +4149,10 @@ void cPopulation::UpdateOrganismStats()
     stats.SumGeneration().Add(phenotype.GetGeneration());
     stats.SumNeutralMetric().Add(phenotype.GetNeutralMetric());
     stats.SumLineageLabel().Add(organism->GetLineageLabel());
-    stats.SumCopyMutRate().Add(organism->MutationRates().GetCopyMutProb());
-    stats.SumLogCopyMutRate().Add(log(organism->MutationRates().GetCopyMutProb()));
-    stats.SumDivMutRate().Add(organism->MutationRates().GetDivMutProb() / organism->GetPhenotype().GetDivType());
-    stats.SumLogDivMutRate().Add(log(organism->MutationRates().GetDivMutProb() /organism->GetPhenotype().GetDivType()));
+    stats.SumCopyMutRate().Push(organism->MutationRates().GetCopyMutProb());
+    stats.SumLogCopyMutRate().Push(log(organism->MutationRates().GetCopyMutProb()));
+    stats.SumDivMutRate().Push(organism->MutationRates().GetDivMutProb() / organism->GetPhenotype().GetDivType());
+    stats.SumLogDivMutRate().Push(log(organism->MutationRates().GetDivMutProb() /organism->GetPhenotype().GetDivType()));
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     stats.SetGenoMapElement(i, organism->GetGenotype()->GetID());

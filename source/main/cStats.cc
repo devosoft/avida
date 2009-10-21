@@ -1250,17 +1250,17 @@ void cStats::PrintMutationRateData(const cString& filename)
   df.WriteTimeStamp();
 
   df.Write(m_update, "Update");
-  df.Write(sum_copy_mut_rate.Ave(), "Average copy mutation rate");
-  df.Write(sum_copy_mut_rate.Var(), "Variance in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Mean(), "Average copy mutation rate");
+  df.Write(sum_copy_mut_rate.Variance(), "Variance in copy mutation rate");
   df.Write(sum_copy_mut_rate.StdDeviation(), "Standard Deviation in copy mutation rate");
-  df.Write(sum_copy_mut_rate.Skw(), "Skew in copy mutation rate");
-  df.Write(sum_copy_mut_rate.Kur(), "Kurtosis in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Skewness(), "Skew in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Kurtosis(), "Kurtosis in copy mutation rate");
 
-  df.Write(sum_log_copy_mut_rate.Ave(), "Average log(copy mutation rate)");
-  df.Write(sum_log_copy_mut_rate.Var(), "Variance in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Mean(), "Average log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Variance(), "Variance in log(copy mutation rate)");
   df.Write(sum_log_copy_mut_rate.StdDeviation(), "Standard Deviation in log(copy mutation rate)");
-  df.Write(sum_log_copy_mut_rate.Skw(), "Skew in log(copy mutation rate)");
-  df.Write(sum_log_copy_mut_rate.Kur(), "Kurtosis in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Skewness(), "Skew in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Kurtosis(), "Kurtosis in log(copy mutation rate)");
   df.Endl();
 
 }
@@ -1274,17 +1274,17 @@ void cStats::PrintDivideMutData(const cString& filename)
   df.WriteTimeStamp();
 
   df.Write(m_update, "Update");
-  df.Write(sum_div_mut_rate.Ave(), "Average divide mutation rate");
-  df.Write(sum_div_mut_rate.Var(), "Variance in divide mutation rate");
+  df.Write(sum_div_mut_rate.Mean(), "Average divide mutation rate");
+  df.Write(sum_div_mut_rate.Variance(), "Variance in divide mutation rate");
   df.Write(sum_div_mut_rate.StdDeviation(), "Standard Deviation in divide mutation rate");
-  df.Write(sum_div_mut_rate.Skw(), "Skew in divide mutation rate");
-  df.Write(sum_div_mut_rate.Kur(), "Kurtosis in divide mutation rate");
+  df.Write(sum_div_mut_rate.Skewness(), "Skew in divide mutation rate");
+  df.Write(sum_div_mut_rate.Kurtosis(), "Kurtosis in divide mutation rate");
 
-  df.Write(sum_log_div_mut_rate.Ave(), "Average log(divide mutation rate)");
-  df.Write(sum_log_div_mut_rate.Var(), "Variance in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Mean(), "Average log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Variance(), "Variance in log(divide mutation rate)");
   df.Write(sum_log_div_mut_rate.StdDeviation(), "Standard Deviation in log(divide mutation rate)");
-  df.Write(sum_log_div_mut_rate.Skw(), "Skew in log(divide mutation rate)");
-  df.Write(sum_log_div_mut_rate.Kur(), "Kurtosis in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Skewness(), "Skew in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Kurtosis(), "Kurtosis in log(divide mutation rate)");
   df.Endl();
 }
 
