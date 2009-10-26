@@ -248,64 +248,27 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
  
  The return value here is somewhat incomplete.  Eventually, the idea is that the
  list of matches include the starting position of the match, the overall length (extent)
- of the match, and the cost of the match.  Right now, however, it only includes the cost.
- 
- \todo Convert this over to using two rows instead of len(substring)+1 rows (easy, but I'm being lazy).
+ of the match, and the cost of the match.  Right now, however, it only includes the cost
+ and ending position (inclusive). 
  */
 cGenomeUtil::substring_match_list_type cGenomeUtil::FindSubstringMatches(const cGenome& base, const cGenome& substring) {
 	substring_match_list_type ssml(base.GetSize());
 	const int rows=substring.GetSize()+1;
 	const int cols=base.GetSize()+1;
-	int costmat[rows][cols];	
-	bzero(costmat, sizeof(int)*rows*cols);
+	int costmat[2][cols];   
+	int* c=costmat[0]; // current row
+	int* p=costmat[1]; // previous row
+	bzero(costmat, sizeof(int)*2*cols);
 	
-	// initialize the first row, first column, and match list starts.
-	for(int i=0; i<rows; ++i) { costmat[i][0] = i; }
-	for(int j=0; j<cols; ++j) { costmat[0][j] = 0; }
-	//	for(int j=0; j<base.GetSize(); ++j) { ssml[j].start = j; ssml[j].extent = 0; }
-		
-	// now do all the rest...
 	for(int i=1; i<rows; ++i) {
+		c[0] = p[0]+1;
 		for(int j=1; j<cols; ++j) {
-			// we're only doing cost at the moment, so we can get away with something simple (i know, i know; space & time, etc., etc.):
-			int l[3] = { costmat[i-1][j-1], costmat[i-1][j], costmat[i][j-1] };
-			costmat[i][j] = *std::min_element(l,l+3) + (substring[i-1] == base[j-1]);
-// if we need to know the relationship among all three elements for tracking extents,
-// then this may be a good starting point:
-// A=above left, B=above, C=left
-//			if(costmat[i-1][j-1] < costmat[i-1][j]) {
-//				// A < B
-//				if(costmat[i-1][j-1] < costmat[i][j-1]) {
-//					// A < C --> A < (B,C)
-//					costmat[i][j] = costmat[i-1][j-1];
-//					++ssml[j-1].extent;
-//				} else {
-//					// A >= C --> C <= (A,B)
-//					costmat[i][j] = costmat[i][j-1];
-//					++ssml[j-1].extent;
-//				}
-//			} else {
-//				// A >= B
-//				if(costmat[i-1][j] < costmat[i][j-1]) {
-//					// B < C --> B <= (A,C)
-//					costmat[i][j] = costmat[i-1][j];
-//					// extent unchanged
-//				} else {
-//					// B >= C --> C <= (A,B)
-//					costmat[i][j] = costmat[i][j-1];
-//					++ssml[j-1].extent;
-//				}
-//			}
-//			
-//			// add the cost of a mismatch:
-//			costmat[i][j] += (substring[j] == base[i]);
+			int l[3] = {p[j-1], p[j], c[j-1]};
+			c[j] = *std::min_element(l,l+3) + (substring[i-1] != base[j-1]);
+			ssml[j-1].cost = c[j];
+			ssml[j-1].position = j-1;
 		}
-	}
-	
-	// copy match costs from the last row, skipping the null column (it can't ever be least):
-	for(int j=0; j<base.GetSize(); ++j) {
-		ssml[j].cost = costmat[rows-1][j+1];
-		ssml[j].position = j;
+		std::swap(c,p);
 	}
 	
 	return ssml;

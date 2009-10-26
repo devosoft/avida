@@ -635,7 +635,6 @@ void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
  is called.
  
  \todo HGT should prefer more similar and older fragments.
- \todo Enable replacement mutations.
  */
 void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
 	// get this organism's cell:
@@ -670,13 +669,14 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	// there are (currently) two supported types of HGT mutations: insertions & replacements.
 	// which one are we doing?
 	if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
-		// insertion: insert the fragment at the final location of the match:
-		offspring.Insert(ssm.position, *f);
+		// insertion: insert the fragment just after the final location of the match:
+		offspring.Insert(ssm.position+1, *f);
 	} else {
 		// replacement: replace up to fragment size instructions in the genome.
 		// note that replacement can wrap around from front->back.  replacement counts
 		// forward, so we have to find the start position first.
 		int start = ssm.position - f->GetSize() + 1;
+		//int start = ssm.position - ssm.extent + 1; // this isn't turned on yet.
 		if(start < 0) { start += offspring.GetSize(); }
 		for(int i=0; i<f->GetSize(); ++i) {
 			offspring[start] = (*f)[i];
@@ -688,22 +688,4 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	m_world->GetPopulation().AdjustHGTResource(-f->GetSize());
 	m_world->GetStats().GenomeFragmentInserted(cell.GetOrganism(), *f);
 	fragments.erase(f);
-	
-	// old code from a previous version of hgt, kept around for reference:
-	//	// calculate the best match for each fragment:
-	//	cGenomeUtil::substring_match_list_type match_list;
-	//	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
-	//		match_list.push_back(cGenomeUtil::FindBestSubstringMatch(cell.GetOrganism()->GetGenome(), *i));
-	//	}	
-	
-	//	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
-	//		int d = std::max(cGenomeUtil::FindHammingDistance(nearby, *i), 1);
-	//		if(m_world->GetRandom().P(m_world->GetConfig().HGT_INSERTION_PROB.Get() / d)) {
-	//			m_hardware->InsertGenomeFragment(*i);
-	//			m_world->GetPopulation().AdjustHGTResource(-i->GetSize());
-	//			m_world->GetStats().GenomeFragmentInserted(this, *i);
-	//			fragments.erase(i);
-	//			return true;
-	//		}
-	//	}
 }

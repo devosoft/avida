@@ -58,14 +58,23 @@ public:
   static int FindSlidingDistance(const cGenome& gen1, const cGenome& gen2);
   static int FindEditDistance(const cGenome& gen1, const cGenome& gen2);
 
-	//! Substring match record.
+	/*! Substring match record.
+	 
+	 The intent behind a substring match record is that it specifies where (position) a match
+	 between two genomes was found, the length (extent) of that match in the base string,
+	 and the edit distance (cost) of that match.
+	 
+	 The position and extent are inclusive, and describe the matching region in the
+	 base string like so: [position-extent, position]
+	 */
 	struct substring_match {
 		//! Default constructor.
-		substring_match() : position(0), extent(0), cost(0) { }
+		substring_match() : position(0), //extent(0),
+		cost(0) { }
 		//! Operator< overload.
 		bool operator<(const substring_match& sm) { return cost < sm.cost; }
 		int position; //!< Final position in the base string of this match.
-		int extent; //!< Length of the match in the base string.
+		//int extent; //!< Length of the match in the base string.
 		int cost; //!< Cost (edit distance) of this match.
 	};
 	
