@@ -144,10 +144,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Flow Control Instructions
     tInstLibEntry<tMethod>("label", &cHardwareExperimental::Inst_Label, (nInstFlag::DEFAULT | nInstFlag::LABEL)),
     
-    tInstLibEntry<tMethod>("h-search", &cHardwareExperimental::Inst_HeadSearch, nInstFlag::DEFAULT, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-nolabel", &cHardwareExperimental::Inst_HeadSearch_NoLabel, 0, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-noreg", &cHardwareExperimental::Inst_HeadSearch_NoReg, 0, "Find complement template and make with flow head"),
-    tInstLibEntry<tMethod>("h-search-direct", &cHardwareExperimental::Inst_HeadSearch_Direct, 0, "Find direct template and move the flow head"),
+    tInstLibEntry<tMethod>("search-s", &cHardwareExperimental::Inst_SearchS, nInstFlag::DEFAULT, "Find complement template from genome start and move the flow head"),
+    tInstLibEntry<tMethod>("search-f", &cHardwareExperimental::Inst_SearchF, 0, "Find complement template forward and move the flow head"),
+    tInstLibEntry<tMethod>("search-b", &cHardwareExperimental::Inst_SearchB, 0, "Find complement template backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-s-direct", &cHardwareExperimental::Inst_SearchS_Direct, 0, "Find direct template from genome start and move the flow head"),
+    tInstLibEntry<tMethod>("search-s-direct", &cHardwareExperimental::Inst_SearchF_Direct, 0, "Find direct template forward and move the flow head"),
+    tInstLibEntry<tMethod>("search-s-direct", &cHardwareExperimental::Inst_SearchB_Direct, 0, "Find direct template backward and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
     
@@ -696,6 +698,57 @@ cHeadCPU cHardwareExperimental::FindLabelForward(bool mark_executed)
   // Return start point if not found
   return ip;
 }
+
+cHeadCPU cHardwareExperimental::FindLabelBackward(bool mark_executed)
+{
+  cHeadCPU& ip = getIP();
+  const cCodeLabel& search_label = GetLabel();
+  
+  // Make sure the label is of size > 0.
+  if (search_label.GetSize() == 0) return ip;
+  
+  cHeadCPU lpos(ip);
+  cHeadCPU pos(ip);
+  lpos--;
+  
+  while (pos.GetPosition() != ip.GetPosition()) {
+    if (m_inst_set->IsLabel(lpos.GetInst())) { // starting label found
+      pos.Set(lpos.GetPosition());
+      pos++;
+      
+      // Check for direct matched label pattern, can be substring of 'label'ed target
+      // - must match all NOPs in search_label
+      // - extra NOPs in 'label'ed target are ignored
+      int size_matched = 0;
+      while (size_matched < search_label.GetSize() && pos.GetPosition() != ip.GetPosition()) {
+        if (!m_inst_set->IsNop(pos.GetInst()) || search_label[size_matched] != m_inst_set->GetNopMod(pos.GetInst())) break;
+        size_matched++;
+        pos++;
+      }
+      
+      // Check that the label matches and has examined the full sequence of nops following the 'label' instruction
+      if (size_matched == search_label.GetSize()) {
+        pos--;
+        const int found_pos = pos.GetPosition();
+        
+        if (mark_executed) {
+          const int max = m_world->GetConfig().MAX_LABEL_EXE_SIZE.Get() + 1; // Max label + 1 for the label instruction itself
+          for (int i = 0; i < size_matched && i < max; i++, lpos++) lpos.SetFlagExecuted();
+        }
+        
+        // Return Head pointed at last NOP of label sequence
+        return cHeadCPU(this, found_pos, ip.GetMemSpace());
+      }
+    }
+    lpos--;
+  }
+  
+  // Return start point if not found
+  return ip;
+}
+
+
+
 
 cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
 {
@@ -1627,33 +1680,7 @@ bool cHardwareExperimental::Inst_HeadCopy_NoLabel(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadSearch(cAvidaContext& ctx)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelStart(true);
-  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
-  setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
-  setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_HeadSearch_NoLabel(cAvidaContext& ctx)
-{
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindNopSequenceStart(true);
-  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
-  setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
-  setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
-  getHead(nHardware::HEAD_FLOW).Set(found_pos);
-  getHead(nHardware::HEAD_FLOW).Advance();
-  return true;
-}
-
-bool cHardwareExperimental::Inst_HeadSearch_NoReg(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_SearchS(cAvidaContext& ctx)
 {
   ReadLabel();
   GetLabel().Rotate(1, NUM_NOPS);
@@ -1663,13 +1690,49 @@ bool cHardwareExperimental::Inst_HeadSearch_NoReg(cAvidaContext& ctx)
   return true;
 }
 
-bool cHardwareExperimental::Inst_HeadSearch_Direct(cAvidaContext& ctx)
+bool cHardwareExperimental::Inst_SearchS_Direct(cAvidaContext& ctx)
+{
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelStart(true);
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_SearchF(cAvidaContext& ctx)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelForward(true);
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SearchF_Direct(cAvidaContext& ctx)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelForward(true);
-  const int search_size = found_pos.GetPosition() - getIP().GetPosition();
-  setInternalValue(m_threads[m_cur_thread].reg[REG_BX], search_size);
-  setInternalValue(m_threads[m_cur_thread].reg[REG_CX], GetLabel().GetSize());
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SearchB(cAvidaContext& ctx)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelBackward(true);
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SearchB_Direct(cAvidaContext& ctx)
+{
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelBackward(true);
   getHead(nHardware::HEAD_FLOW).Set(found_pos);
   getHead(nHardware::HEAD_FLOW).Advance();
   return true;
