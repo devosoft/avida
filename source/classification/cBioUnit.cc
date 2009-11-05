@@ -24,3 +24,4 @@
 
 #include "cBioUnit.h"
 
+cBioUnit::~cBioUnit() { ; }

@@ -24,3 +24,4 @@
 
 #include "cBioGroup.h"
 
+cBioGroup::~cBioGroup() { ; }

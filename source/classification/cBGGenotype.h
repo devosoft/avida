@@ -1,8 +1,8 @@
 /*
- *  cBioGroup.h
+ *  cBGGenotype.h
  *  Avida
  *
- *  Created by David on 10/7/09.
+ *  Created by David on 11/5/09.
  *  Copyright 2009 Michigan State University. All rights reserved.
  *
  *
@@ -22,27 +22,26 @@
  *
  */
 
-#ifndef cBioGroup_h
-#define cBioGroup_h
+#ifndef cBGGenotype_h
+#define cBGGenotype_h
 
-#ifndef cBioUnit_h
-#include "cBioUnit.h"
+#ifndef cBioGroup_h
+#include "cBioGroup.h"
 #endif
 
-template<typename T> class tArray;
-
-class cBioGroup
+class cBGGenotype : public cBioGroup
 {
+private:
+  cWorld* m_world;
+  
+  cMetaGenome m_genome;
+  cString m_name;
+  
+  
+  cBGGenotype() { ; }
+  
 public:
-  cBioGroup() { ; }
-  virtual ~cBioGroup() = 0;
-  
-  virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroups>* parents = NULL) = 0;
-  virtual void RemoveBioUnit(cBioUnit* bu) = 0;
-  
-
-
-protected:
+  ~cBGGenotype() { ; }
   
 };
 

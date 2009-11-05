@@ -25,11 +25,15 @@
 #ifndef cBioUnit_h
 #define cBioUnit_h
 
+class cMetaGenome;
+
 class cBioUnit
 {
+public:
+  cBioUnit() { ; }
+  virtual ~cBioUnit() = 0;
   
-  
+  virtual cMetaGenome& GetMetaGenome() = 0;
 };
-
 
 #endif

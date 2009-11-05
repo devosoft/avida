@@ -38,6 +38,10 @@
 		700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
+		701E746B10A37967006B6193 /* cBGGenotype.h in Headers */ = {isa = PBXBuildFile; fileRef = 701E746910A37967006B6193 /* cBGGenotype.h */; };
+		701E746C10A37967006B6193 /* cBGGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701E746A10A37967006B6193 /* cBGGenotype.cc */; };
+		701E748410A37DB2006B6193 /* cBioGroupManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 701E748210A37DB2006B6193 /* cBioGroupManager.h */; };
+		701E748510A37DB2006B6193 /* cBioGroupManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701E748310A37DB2006B6193 /* cBioGroupManager.cc */; };
 		7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
 		7020828F0FB9F2DF00637AD6 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
 		702082900FB9F2DF00637AD6 /* cBitArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 7020828E0FB9F2DF00637AD6 /* cBitArray.h */; };
@@ -464,6 +468,10 @@
 		701D9382094CBA69008B845F /* cDriverManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDriverManager.cc; sourceTree = "<group>"; };
 		701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDefaultAnalyzeDriver.h; sourceTree = "<group>"; };
 		701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultAnalyzeDriver.cc; sourceTree = "<group>"; };
+		701E746910A37967006B6193 /* cBGGenotype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBGGenotype.h; sourceTree = "<group>"; };
+		701E746A10A37967006B6193 /* cBGGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBGGenotype.cc; sourceTree = "<group>"; };
+		701E748210A37DB2006B6193 /* cBioGroupManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBioGroupManager.h; sourceTree = "<group>"; };
+		701E748310A37DB2006B6193 /* cBioGroupManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBioGroupManager.cc; sourceTree = "<group>"; };
 		701EF27E0BEA5D2300DAE168 /* main.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		7020828D0FB9F2DF00637AD6 /* cBitArray.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBitArray.cc; sourceTree = "<group>"; };
 		7020828E0FB9F2DF00637AD6 /* cBitArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBitArray.h; sourceTree = "<group>"; };
@@ -1525,6 +1533,10 @@
 				702244B8107D16010079CD25 /* cBioUnit.cc */,
 				702244C1107D168F0079CD25 /* cBioGroup.h */,
 				702244C2107D168F0079CD25 /* cBioGroup.cc */,
+				701E746910A37967006B6193 /* cBGGenotype.h */,
+				701E746A10A37967006B6193 /* cBGGenotype.cc */,
+				701E748210A37DB2006B6193 /* cBioGroupManager.h */,
+				701E748310A37DB2006B6193 /* cBioGroupManager.cc */,
 			);
 			path = classification;
 			sourceTree = "<group>";
@@ -1935,6 +1947,8 @@
 				702082900FB9F2DF00637AD6 /* cBitArray.h in Headers */,
 				702244B9107D16010079CD25 /* cBioUnit.h in Headers */,
 				702244C3107D168F0079CD25 /* cBioGroup.h in Headers */,
+				701E746B10A37967006B6193 /* cBGGenotype.h in Headers */,
+				701E748410A37DB2006B6193 /* cBioGroupManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2319,6 +2333,8 @@
 				42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */,
 				702244BA107D16010079CD25 /* cBioUnit.cc in Sources */,
 				702244C4107D168F0079CD25 /* cBioGroup.cc in Sources */,
+				701E746C10A37967006B6193 /* cBGGenotype.cc in Sources */,
+				701E748510A37DB2006B6193 /* cBioGroupManager.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

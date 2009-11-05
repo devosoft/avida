@@ -65,7 +65,6 @@
 #include "cResource.h"
 #include "cResourceHistory.h"
 #include "cSchedule.h"
-#include "cSpecies.h"
 #include "cStringIterator.h"
 #include "cTestCPU.h"
 #include "cWorld.h"

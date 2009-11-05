@@ -1,8 +1,8 @@
 /*
- *  cBioGroup.h
+ *  cBioGroupManager.cc
  *  Avida
  *
- *  Created by David on 10/7/09.
+ *  Created by David on 11/5/09.
  *  Copyright 2009 Michigan State University. All rights reserved.
  *
  *
@@ -22,28 +22,5 @@
  *
  */
 
-#ifndef cBioGroup_h
-#define cBioGroup_h
+#include "cBioGroupManager.h"
 
-#ifndef cBioUnit_h
-#include "cBioUnit.h"
-#endif
-
-template<typename T> class tArray;
-
-class cBioGroup
-{
-public:
-  cBioGroup() { ; }
-  virtual ~cBioGroup() = 0;
-  
-  virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroups>* parents = NULL) = 0;
-  virtual void RemoveBioUnit(cBioUnit* bu) = 0;
-  
-
-
-protected:
-  
-};
-
-#endif
