@@ -25,6 +25,7 @@
 
 #include "cClassificationManager.h"
 
+#include "cBioGroupManager.h"
 #include "cDataFile.h"
 #include "cGenome.h"
 #include "cGenotype.h"
@@ -70,6 +71,16 @@ cClassificationManager::~cClassificationManager()
   delete m_species_ctl;
   delete m_inject_ctl;
 }
+
+bool cClassificationManager::RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role)
+{
+  // @TODO - verify that this role is not already in use -- maybe hash managers by role
+  m_bgms.Push(bgm);
+  bgm->SetRole(role);
+  
+  return true;
+}
+
 
 void cClassificationManager::UpdateReset()
 {

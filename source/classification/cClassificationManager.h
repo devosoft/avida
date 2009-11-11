@@ -47,29 +47,27 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
 #ifndef tList_h
 #include "tList.h"
 #endif
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-
 class cAvidaContext;
+class cBioGroupManager;
 class cLineage;
 class cOrganism;
 class cWorld;
 
+
 class cClassificationManager
 {
-#if USE_tMemTrack
-  tMemTrack<cClassificationManager> mt;
-#endif
 private:
   cWorld* m_world;
+  
+  tArray<cBioGroupManager*> m_bgms;
+  
   
   // Genotype Structures
   unsigned int m_genotype_count[MAX_CREATURE_SIZE];
@@ -102,19 +100,6 @@ private:
 	std::set<int>  m_cclade_ids;
   
   
-  // Private Helper Functions
-  void AddGenotype(cGenotype* in_genotype, int list_num = -1);
-  void AddInjectGenotype(cInjectGenotype* in_inject_genotype, int in_list_num = -1);
-  void DumpDetailHeading(std::ofstream& fp, bool print_mut_steps = false);
-  void DumpDetailSexHeading (std::ofstream& fp);
-  unsigned int FindCRC(const cGenome& in_genome) const;
-  unsigned int FindInjectCRC(const cGenome& in_genome) const;
-  cString GetLabel(int in_size, int in_num);
-  cString GetInjectLabel(int in_size, int in_num) { return cString("p") + GetLabel(in_size, in_num); }
-  
-  cLineage* AddLineage(double start_fitness, int parent_lin_id, int id = -1, double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
-  void UpdateLineages();
-    
   cClassificationManager(); // @not_implemented
   cClassificationManager(const cClassificationManager&); // @not_implemented
   cClassificationManager& operator=(const cClassificationManager&); // @not_implemented
@@ -124,6 +109,8 @@ public:
   ~cClassificationManager();
 
   void UpdateReset();
+  
+  bool RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role);
   
   
   // Genotype Manipulation
@@ -219,7 +206,22 @@ public:
   // Utility Functions
   bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream & fp);
-  bool OK();  
+  bool OK();
+  
+  
+private:
+  void AddGenotype(cGenotype* in_genotype, int list_num = -1);
+  void AddInjectGenotype(cInjectGenotype* in_inject_genotype, int in_list_num = -1);
+  void DumpDetailHeading(std::ofstream& fp, bool print_mut_steps = false);
+  void DumpDetailSexHeading (std::ofstream& fp);
+  unsigned int FindCRC(const cGenome& in_genome) const;
+  unsigned int FindInjectCRC(const cGenome& in_genome) const;
+  cString GetLabel(int in_size, int in_num);
+  cString GetInjectLabel(int in_size, int in_num) { return cString("p") + GetLabel(in_size, in_num); }
+  
+  cLineage* AddLineage(double start_fitness, int parent_lin_id, int id = -1, double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
+  void UpdateLineages();
+    
 };
 
 

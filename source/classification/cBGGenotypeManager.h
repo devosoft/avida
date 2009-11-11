@@ -1,8 +1,8 @@
 /*
- *  cBioGroupManager.cc
+ *  cBGGenotypeManager.h
  *  Avida
  *
- *  Created by David on 11/5/09.
+ *  Created by David on 11/11/09.
  *  Copyright 2009 Michigan State University. All rights reserved.
  *
  *
@@ -22,6 +22,31 @@
  *
  */
 
-#include "cBioGroupManager.h"
+#ifndef cBGGenotypeManager_h
+#define cBGGenotypeManager_h
 
-cBioGroupManager::~cBioGroupManager() { ; }
+#ifndef cBioGroupManager_h
+#include "cBioGroupManager.h"
+#endif
+
+class cWorld;
+
+
+class cBGGenotypeManager : public cBioGroupManager
+{
+private:
+  cWorld* m_world;
+  
+  
+public:
+  cBGGenotypeManager(cWorld* world);
+  ~cBGGenotypeManager();
+  
+  // cBioGroupManager Interface Methods
+  cBioGroup* ClassifyNewBioUnit(cBioUnit* bu);
+  
+  
+  // Genotype Manager Methods
+};
+
+#endif

@@ -25,6 +25,9 @@
 #ifndef cBioGroup_h
 #define cBioGroup_h
 
+#ifndef defs_h
+#include "defs.h"
+#endif
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
 #endif
@@ -33,17 +36,21 @@ template<typename T> class tArray;
 
 class cBioGroup
 {
+protected:
+  int m_refs;
+  
 public:
-  cBioGroup() { ; }
+  cBioGroup() : m_refs(0) { ; }
   virtual ~cBioGroup() = 0;
   
-  virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroups>* parents = NULL) = 0;
+  virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL) = 0;
   virtual void RemoveBioUnit(cBioUnit* bu) = 0;
   
-
-
-protected:
+  virtual int GetDepth() const = 0;
   
+  int GetReferenceCount() const { return m_refs; }
+  void AddReference() { m_refs++; }
+  void RemoveReference() { m_refs--; }
 };
 
 #endif

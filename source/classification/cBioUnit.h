@@ -26,13 +26,25 @@
 #define cBioUnit_h
 
 class cMetaGenome;
+class cString;
 
 class cBioUnit
 {
 public:
+  enum eUnitSource {
+    ORGANISM_FILE_LOAD,
+    ORGANISM_DIVIDE,
+    PARASITE_FILE_LOAD,
+    PARASITE_INJECT
+  };
+  
+
+public:
   cBioUnit() { ; }
   virtual ~cBioUnit() = 0;
   
+  virtual eUnitSource GetUnitSource() = 0;
+  virtual const cString& GetUnitSourceArgs() = 0;
   virtual cMetaGenome& GetMetaGenome() = 0;
 };
 

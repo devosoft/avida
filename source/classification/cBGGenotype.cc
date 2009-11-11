@@ -24,3 +24,31 @@
 
 #include "cBGGenotype.h"
 
+
+cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
+  : m_mgr(mgr)
+  , m_src(founder->GetUnitSource())
+  , m_genome(founder->GetMetaGenome())
+  , m_name("001-no_name")
+  , m_threshold(false)
+  , m_active(true)
+  , m_id(in_id)
+  , m_update_born(update)
+  , m_update_deactivated(-1)
+  , m_depth(0)
+  , m_active_offspring_genotypes(0)
+{
+  if (parents) {
+    m_parents.Resize(parents->GetSize());
+    for (int i = 0; i < m_parents.GetSize(); i++) {
+      m_parents[i] = (*parents)[i];
+      m_parents[i]->AddReference();
+    }
+  }
+  if (m_parents.GetSize()) m_depth = m_parents[0]->GetDepth() + 1;
+}
+
+cBGGenotype::~cBGGenotype()
+{
+  for (int i = 0; i < m_parents.GetSize(); i++) m_parents[i]->RemoveReference();
+}

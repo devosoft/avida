@@ -1,8 +1,8 @@
 /*
- *  cBioGroupManager.cc
+ *  cBGGenotypeManager.cc
  *  Avida
  *
- *  Created by David on 11/5/09.
+ *  Created by David on 11/11/09.
  *  Copyright 2009 Michigan State University. All rights reserved.
  *
  *
@@ -22,6 +22,5 @@
  *
  */
 
-#include "cBioGroupManager.h"
+#include "cBGGenotypeManager.h"
 
-cBioGroupManager::~cBioGroupManager() { ; }

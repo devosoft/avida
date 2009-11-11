@@ -24,4 +24,10 @@
 
 #include "cBioGroup.h"
 
-cBioGroup::~cBioGroup() { ; }
+#include <cassert>
+
+
+cBioGroup::~cBioGroup()
+{
+  assert(m_refs == 0);
+}

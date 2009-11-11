@@ -28,23 +28,24 @@
 
 #include <cassert>
 #include <fstream>
+
+#ifndef cCountTracker_h
+#include "cCountTracker.h"
+#endif
 #ifndef cDoubleSum_h
 #include "cDoubleSum.h"
 #endif
 #ifndef cGenome_h
 #include "cGenome.h"
 #endif
-#ifndef cGenotype_BirthData_h
-#include "cGenotype_BirthData.h"
-#endif
-#ifndef cGenotype_TestData_h
-#include "cGenotype_TestData.h"
-#endif
 #ifndef cPhenPlastSummary_h
 #include "cPhenPlastSummary.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
+#endif
+#ifndef tArray_h
+#include "tArray.h"
 #endif
 
 
@@ -57,6 +58,57 @@ class cGenotype {
 private:
   friend class cClassificationManager;
 
+  class cBirthData {
+  public:
+    cBirthData(int in_update_born);
+    ~cBirthData() { ; }
+    
+    cCountTracker birth_track;
+    cCountTracker death_track;
+    cCountTracker breed_in_track;
+    cCountTracker breed_true_track;
+    cCountTracker breed_out_track;
+    
+    int update_born;      // Update genotype was first created
+    int parent_distance;  // Genetic distance from parent genotype
+    int gene_depth;       // depth in the phylogenetic tree from ancestor
+    int lineage_label;    // Unique label for the lineage of this genotype.
+    int exec_born;        // @MRR Number of instruction executions from start
+    int generation_born;  // @MRR Generation genotype created
+    int birth_org_id;     // @MRR Organism ID at birth
+    int death_org_id;     // @MRR Highest organism ID at time of death
+    
+    int update_deactivated;       // If not, when did it get deactivated?
+    cGenotype* parent_genotype;  // Pointer to parent genotype...
+    cGenotype* parent2_genotype; // Pointer to secondary parent genotype...
+    cSpecies* parent_species;
+    int num_offspring_genotypes;  // Num offspring genotypes still in memory.
+    
+    // Ancestral IDs.  This array contains all of the information about the
+    // ids of the ancestors.  It will have one entry if this is an asexual
+    // population, otherwise:
+    // [0]=parent1, [1]=parent2, [2]&[3]=grandparents 1, [4]&[5]=grandparents 2
+    tArray<int> ancestor_ids;
+  };  
+
+  class cTestData {
+  public:
+    cTestData() : fitness(-1) { ; }
+    ~cTestData() { ; }
+    
+    bool is_viable;
+    
+    double fitness;
+    double merit;
+    int gestation_time;
+    int executed_size;
+    int copied_size;
+    double colony_fitness;
+    int generations;
+  };
+    
+  
+private:  
   cWorld* m_world;
   cGenome genome;
   cString name;
@@ -72,8 +124,8 @@ private:
   char symbol;
   int map_color_id;
 
-  mutable cGenotype_TestData test_data;
-  cGenotype_BirthData birth_data;
+  mutable cTestData test_data;
+  cBirthData birth_data;
   mutable cPhenPlastSummary* m_phenplast_stats;
   
   // Statistical info
@@ -183,9 +235,9 @@ public:
   void AddGestationTime(int in) { sum_gestation_time.Add(in);
                                        sum_repro_rate.Add(1/(double)in); }
   void AddMerit(const cMerit& in);
-  void RemoveMerit(const cMerit& in);
   void AddFitness(double in) { assert(in >= 0.0); sum_fitness.Add(in); }
-  void RemoveFitness(double in) { assert(in >= 0.0); sum_fitness.Subtract(in); }
+  
+  
 
   //// Properties Native to Genotype ////
   cGenome& GetGenome() { return genome; }
@@ -266,7 +318,6 @@ public:
   inline int AddOrganism();
   inline int RemoveOrganism();
   int AddParasite()         { return ++total_parasites; }
-  void SwapOrganism()       { total_organisms++; }
   int GetNumOrganisms()     { return num_organisms; }
   int GetTotalOrganisms()   { return total_organisms; }
   int GetTotalParasites()   { return total_parasites; }

@@ -81,6 +81,29 @@ cGenotype::~cGenotype()
     delete m_phenplast_stats;
 }
 
+cGenotype::cBirthData::cBirthData(int in_update_born)
+  : update_born(in_update_born)
+  , parent_distance(-1)
+  , gene_depth(0)
+  , exec_born(-1)
+  , generation_born(-1)
+  , birth_org_id(-1)
+  , death_org_id(-1)
+  , update_deactivated(-1)
+  , parent_genotype(NULL)
+  , parent_species(NULL)
+  , num_offspring_genotypes(0)
+{
+  // @CAO: we should do a test to see if we have a sexual population.  For now
+  // we will assume we do.
+  ancestor_ids.Resize(6);
+  ancestor_ids.SetAll(-1);
+}
+
+
+
+
+
 bool cGenotype::SaveClone(ofstream& fp)
 {
   fp << id_num         << " ";
@@ -133,11 +156,6 @@ bool cGenotype::OK()
 void cGenotype::AddMerit(const cMerit & in)
 {
   sum_merit.Add(in.GetDouble());
-}
-
-void cGenotype::RemoveMerit(const cMerit & in)
-{
-  sum_merit.Subtract(in.GetDouble());
 }
 
 void cGenotype::SetParent(cGenotype* parent, cGenotype* parent2)

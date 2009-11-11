@@ -25,7 +25,35 @@
 #ifndef cBioGroupManager_h
 #define cBioGroupManager_h
 
+#ifndef cString_h
+#include "cString.h"
+#endif
 
+class cBioGroup;
+class cBioUnit;
+
+
+class cBioGroupManager
+{
+  friend class cClassificationManager;
+private:
+  cString m_role;
+  
+  
+public:
+  cBioGroupManager() { ; }
+  virtual ~cBioGroupManager() = 0;
+  
+  virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu) = 0;
+  
+  
+protected:
+  inline const cString& GetRole() const { return m_role; }
+  
+  
+private:
+  void SetRole(const cString& role) { m_role = role; }
+};
 
 
 #endif
