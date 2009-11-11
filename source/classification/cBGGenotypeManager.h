@@ -25,17 +25,39 @@
 #ifndef cBGGenotypeManager_h
 #define cBGGenotypeManager_h
 
+#ifndef defs_h
+#include "defs.h"
+#endif
 #ifndef cBioGroupManager_h
 #include "cBioGroupManager.h"
 #endif
+#ifndef tList_h
+#include "tList.h"
+#endif
+#ifndef tManagedPointerArray_h
+#include "tManagedPointerArray.h"
+#endif
 
+class cBGGenotype;
+class cGenome;
 class cWorld;
 
+namespace nBGGenotypeManager {
+  const unsigned int HASH_SIZE = 3203;
+}
 
 class cBGGenotypeManager : public cBioGroupManager
 {
 private:
   cWorld* m_world;
+
+  unsigned int m_sz_count[MAX_CREATURE_SIZE];
+  tList<cBGGenotype> m_active_hash[nBGGenotypeManager::HASH_SIZE];
+  tManagedPointerArray<tList<cBGGenotype> > m_active_sz;
+  tList<cBGGenotype> m_historic;
+  int m_next_id;
+  int m_dom_prev;
+  int m_dom_time;
   
   
 public:
@@ -47,6 +69,12 @@ public:
   
   
   // Genotype Manager Methods
+  cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
+  
+  
+private:
+  unsigned int hashGenome(const cGenome& genome) const;
+  cString nameGenotype(int size, int num) const;
 };
 
 #endif

@@ -28,6 +28,7 @@
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
   : m_mgr(mgr)
   , m_src(founder->GetUnitSource())
+  , m_src_args(founder->GetUnitSourceArgs())
   , m_genome(founder->GetMetaGenome())
   , m_name("001-no_name")
   , m_threshold(false)
@@ -37,6 +38,9 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   , m_update_deactivated(-1)
   , m_depth(0)
   , m_active_offspring_genotypes(0)
+  , m_num_organisms(0)
+  , m_last_num_organisms(0)
+  , m_total_organisms(0)
 {
   if (parents) {
     m_parents.Resize(parents->GetSize());
@@ -51,4 +55,9 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
 cBGGenotype::~cBGGenotype()
 {
   for (int i = 0; i < m_parents.GetSize(); i++) m_parents[i]->RemoveReference();
+}
+
+bool cBGGenotype::Matches(cBioUnit* bu)
+{
+  // @TODO 
 }

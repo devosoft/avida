@@ -47,10 +47,12 @@ class cBGGenotypeManager;
 
 class cBGGenotype : public cBioGroup
 {
+  friend class cBGGenotypeManager;
 private:
   cBGGenotypeManager* m_mgr;
   
   cBioUnit::eUnitSource m_src;
+  cString m_src_args;
   cMetaGenome m_genome;
   cString m_name;
     
@@ -64,6 +66,9 @@ private:
   int m_update_deactivated;
   int m_depth;
   int m_active_offspring_genotypes;
+  int m_num_organisms;
+  int m_last_num_organisms;
+  int m_total_organisms;
   
   tArray<cBioGroup*> m_parents;
   
@@ -72,7 +77,6 @@ private:
   cCountTracker m_breed_in;
   cCountTracker m_breed_true;
   cCountTracker m_breed_out;
-  cCountTracker m_orgs;
 
   cDoubleSum m_copied_size;
   cDoubleSum m_exe_size;
@@ -95,6 +99,12 @@ public:
 
   
   // Genotype Specific Methods
+  bool Matches(cBioUnit* bu);
+  
+  inline const cBioUnit::eUnitSource GetSource() const { return m_src; }
+  inline const cString& GetSourceArgs() const { return m_src_args; }
+  inline const cMetaGenome& GetGenome() const { return m_genome; }
+  
   inline const cString& GetName() const { return m_name; }
   
   inline bool IsThreshold() const { return m_threshold; }
@@ -103,6 +113,8 @@ public:
   inline int GetID() const { return m_id; }
   inline int GetUpdateBorn() const { return m_update_born; }
   inline int GetUpdateDeactivated() const { return m_update_deactivated; }
+  
+  inline int GetNumOrganisms() const { return m_num_organisms; }
   
   void SetThreshold() { m_threshold = true; }
   void ClearThreshold() { m_threshold = false; }
