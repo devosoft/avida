@@ -148,8 +148,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("search-f", &cHardwareExperimental::Inst_SearchF, 0, "Find complement template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-b", &cHardwareExperimental::Inst_SearchB, 0, "Find complement template backward and move the flow head"),
     tInstLibEntry<tMethod>("search-s-direct", &cHardwareExperimental::Inst_SearchS_Direct, 0, "Find direct template from genome start and move the flow head"),
-    tInstLibEntry<tMethod>("search-s-direct", &cHardwareExperimental::Inst_SearchF_Direct, 0, "Find direct template forward and move the flow head"),
-    tInstLibEntry<tMethod>("search-s-direct", &cHardwareExperimental::Inst_SearchB_Direct, 0, "Find direct template backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-f-direct", &cHardwareExperimental::Inst_SearchF_Direct, 0, "Find direct template forward and move the flow head"),
+    tInstLibEntry<tMethod>("search-b-direct", &cHardwareExperimental::Inst_SearchB_Direct, 0, "Find direct template backward and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
     
