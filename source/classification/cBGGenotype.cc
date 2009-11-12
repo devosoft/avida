@@ -24,6 +24,8 @@
 
 #include "cBGGenotype.h"
 
+#include "cBGGenotypeManager.h"
+
 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
   : m_mgr(mgr)
@@ -38,9 +40,9 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   , m_update_deactivated(-1)
   , m_depth(0)
   , m_active_offspring_genotypes(0)
-  , m_num_organisms(0)
+  , m_num_organisms(1)
   , m_last_num_organisms(0)
-  , m_total_organisms(0)
+  , m_total_organisms(1)
 {
   if (parents) {
     m_parents.Resize(parents->GetSize());
@@ -57,7 +59,91 @@ cBGGenotype::~cBGGenotype()
   for (int i = 0; i < m_parents.GetSize(); i++) m_parents[i]->RemoveReference();
 }
 
+cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents)
+{
+  m_births.Inc();
+  
+  if (Matches(bu)) {
+    m_breed_true.Inc();
+    m_total_organisms++;
+    m_num_organisms++;
+    // @TODO - adjust genotype
+    
+    return this;
+  }  
+  
+  m_breed_out.Inc();
+  return m_mgr->ClassifyNewBioUnit(bu, parents);
+}
+
+
+void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
+{
+  m_deaths.Inc();
+  m_num_organisms--;
+  // @TODO - adjust genotype
+}
+
+
 bool cBGGenotype::Matches(cBioUnit* bu)
 {
-  // @TODO 
+  // Handle source branching
+  switch (m_src) {
+    case cBioUnit::SRC_ORGANISM_FILE_LOAD:
+    case cBioUnit::SRC_ORGANISM_DIVIDE:
+      switch (bu->GetUnitSource()) {
+        case cBioUnit::SRC_ORGANISM_FILE_LOAD:
+        case cBioUnit::SRC_ORGANISM_DIVIDE:
+          break;
+          
+        case cBioUnit::SRC_PARASITE_FILE_LOAD:
+        case cBioUnit::SRC_PARASITE_INJECT:
+          return false;
+          break;
+          
+        default:
+          assert(false);
+          break;          
+      }
+      break;
+      
+    case cBioUnit::SRC_PARASITE_FILE_LOAD:
+    case cBioUnit::SRC_PARASITE_INJECT:
+      switch (bu->GetUnitSource()) {
+        case cBioUnit::SRC_ORGANISM_FILE_LOAD:
+        case cBioUnit::SRC_ORGANISM_DIVIDE:
+          return false;
+          break;
+          
+        case cBioUnit::SRC_PARASITE_FILE_LOAD:
+        case cBioUnit::SRC_PARASITE_INJECT:
+          // Verify that the parasite inject label matches
+          if (m_src_args != bu->GetUnitSourceArgs()) return false;
+          break;
+          
+        default:
+          assert(false);
+          break;          
+      }
+      break;
+      
+    default:
+      assert(false);
+      break;
+      
+  }
+  
+  // Compare the genomes
+  return (m_genome == bu->GetMetaGenome());
 }
+
+void cBGGenotype::UpdateReset()
+{
+  m_last_num_organisms = m_num_organisms;
+  m_births.Next();
+  m_deaths.Next();
+  m_breed_out.Next();
+  m_breed_true.Next();
+  m_breed_in.Next();
+}
+

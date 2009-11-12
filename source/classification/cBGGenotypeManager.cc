@@ -31,7 +31,11 @@
 #include "cWorld.h"
 
 
-//const unsigned int cBGGenotypeManager::HASH_SIZE = 3203;
+inline void cBGGenotypeManager::resizeActiveList(int size)
+{
+  if (m_active_sz.GetSize() <= size) m_active_sz.Resize(size + 1);
+}
+
 
 cBioGroup* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu) { return ClassifyNewBioUnit(bu, NULL); }
 
@@ -44,6 +48,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
   while (list_it.Next() != NULL) {
     if (list_it.Get()->Matches(bu)) {
       found = list_it.Get();
+      found->NotifyNewBioUnit(bu);
       break;
     }
   }
@@ -51,6 +56,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
   if (!found) {
     found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
     m_active_hash[list_num].Push(found);
+    resizeActiveList(found->GetNumOrganisms());
     m_active_sz[found->GetNumOrganisms()].Push(found);
     m_world->GetStats().AddGenotype();
   }

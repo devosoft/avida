@@ -75,6 +75,8 @@ public:
 private:
   unsigned int hashGenome(const cGenome& genome) const;
   cString nameGenotype(int size, int num) const;
+  
+  inline void resizeActiveList(int size);
 };
 
 #endif

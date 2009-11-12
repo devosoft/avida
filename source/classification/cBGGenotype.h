@@ -99,8 +99,6 @@ public:
 
   
   // Genotype Specific Methods
-  bool Matches(cBioUnit* bu);
-  
   inline const cBioUnit::eUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
   inline const cMetaGenome& GetGenome() const { return m_genome; }
@@ -118,6 +116,10 @@ public:
   
   void SetThreshold() { m_threshold = true; }
   void ClearThreshold() { m_threshold = false; }
+
+  bool Matches(cBioUnit* bu);
+  inline void NotifyNewBioUnit(cBioUnit* bu) { m_total_organisms++; m_num_organisms++; m_breed_in.Inc(); }
+  void UpdateReset();
 };
 
 #endif
