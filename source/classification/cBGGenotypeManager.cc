@@ -31,12 +31,6 @@
 #include "cWorld.h"
 
 
-inline void cBGGenotypeManager::resizeActiveList(int size)
-{
-  if (m_active_sz.GetSize() <= size) m_active_sz.Resize(size + 1);
-}
-
-
 cBioGroup* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu) { return ClassifyNewBioUnit(bu, NULL); }
 
 cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents)
@@ -63,6 +57,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
   
   return found;
 }
+
 
 
 unsigned int cBGGenotypeManager::hashGenome(const cGenome& genome) const

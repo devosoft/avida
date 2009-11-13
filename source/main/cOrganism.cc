@@ -26,6 +26,7 @@
 #include "cOrganism.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "nHardware.h"
 #include "cEnvironment.h"
 #include "functions.h"
@@ -207,6 +208,9 @@ cOrganism::~cOrganism()
   if(m_net) delete m_net;
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;
+  
+  // Notify all groups that this bio unit has been terminated
+  for (int i = 0; i < m_bio_groups.GetSize(); i++) m_bio_groups[i]->RemoveBioUnit(this);
 }
 
 cOrganism::cNetSupport::~cNetSupport()

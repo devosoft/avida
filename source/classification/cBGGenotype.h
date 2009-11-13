@@ -101,7 +101,7 @@ public:
   // Genotype Specific Methods
   inline const cBioUnit::eUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
-  inline const cMetaGenome& GetGenome() const { return m_genome; }
+  inline const cMetaGenome& GetMetaGenome() const { return m_genome; }
   
   inline const cString& GetName() const { return m_name; }
   

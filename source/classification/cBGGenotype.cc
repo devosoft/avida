@@ -66,8 +66,7 @@ cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* par
   if (Matches(bu)) {
     m_breed_true.Inc();
     m_total_organisms++;
-    m_num_organisms++;
-    // @TODO - adjust genotype
+    m_mgr->AdjustGenotype(this, m_num_organisms++, m_num_organisms);
     
     return this;
   }  
@@ -80,8 +79,7 @@ cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* par
 void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
 {
   m_deaths.Inc();
-  m_num_organisms--;
-  // @TODO - adjust genotype
+  m_mgr->AdjustGenotype(this, m_num_organisms--, m_num_organisms);
 }
 
 

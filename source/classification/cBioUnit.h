@@ -35,7 +35,8 @@ public:
     SRC_ORGANISM_FILE_LOAD,
     SRC_ORGANISM_DIVIDE,
     SRC_PARASITE_FILE_LOAD,
-    SRC_PARASITE_INJECT
+    SRC_PARASITE_INJECT,
+    SRC_TEST_CPU
   };
   
 
@@ -43,9 +44,9 @@ public:
   cBioUnit() { ; }
   virtual ~cBioUnit() = 0;
   
-  virtual eUnitSource GetUnitSource() = 0;
-  virtual const cString& GetUnitSourceArgs() = 0;
-  virtual cMetaGenome& GetMetaGenome() = 0;
+  virtual eUnitSource GetUnitSource() const = 0;
+  virtual const cString& GetUnitSourceArgs() const = 0;
+  virtual const cMetaGenome& GetMetaGenome() const = 0;
 };
 
 #endif

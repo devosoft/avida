@@ -70,7 +70,7 @@ public:
   
   // Genotype Manager Methods
   cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
-  
+  inline void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
   
 private:
   unsigned int hashGenome(const cGenome& genome) const;
@@ -78,5 +78,19 @@ private:
   
   inline void resizeActiveList(int size);
 };
+
+
+
+void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size)
+{
+  m_active_sz[old_size].Remove(genotype);
+  resizeActiveList(new_size);
+  m_active_sz[new_size].Push(genotype);
+}
+
+inline void cBGGenotypeManager::resizeActiveList(int size)
+{
+  if (m_active_sz.GetSize() <= size) m_active_sz.Resize(size + 1);
+}
 
 #endif
