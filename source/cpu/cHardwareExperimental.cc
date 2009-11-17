@@ -1750,7 +1750,6 @@ bool cHardwareExperimental::Inst_SetFlow(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_Goto(cAvidaContext& ctx)
 {
   ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
   cHeadCPU found_pos = FindLabelForward(true);
   getIP().Set(found_pos);
   return true;
