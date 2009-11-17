@@ -562,9 +562,9 @@ Default values are in brackets:
     <br />&nbsp;&nbsp;&nbsp;<em>pow</em>: Multiply the current merit by 2<sup>bonus</sup>.
        this is effectively multiplicative, but positive bonuses are
        always beneficial, and negative bonuses are harmful.
-    <br />&nbsp;&nbsp;&nbsp;<em>enzyme</em>: Add bonus * resource / (resource + frac) to the current merit.
+    <br />&nbsp;&nbsp;&nbsp;<em>enzyme</em>: Add bonus * resource / (resource + ksubm) to the current merit.
     	This is gives a Michaelis-Menten enzyme type reward where bonus is the K<sub>cat</sub>
-    	and frac is the K<sub>m</sub>. Does not work with unlimited resources.
+    	and the K<sub>m</sub> is entered. Does not work with unlimited resources.
     <br />&nbsp;&nbsp;&nbsp;<em>energy</em>: Add the bonus energy to the organism's energy waiting to be applied buffer.  Bonus energy can be applied on completion of a reaction, execution of the sleep/eat instruction, or when the organisms divides.  See <a href="energy_model.html">Energy Model</a> documentation for more information.
   </td>
   <td>add</td>
@@ -638,6 +638,15 @@ Default values are in brackets:
   </td>
   <td>
     default
+  </td>
+</tr>
+<tr>
+  <td class="resall">ksubm</td>
+  <td>
+    K<sub>m</sub> for an enzyme reaction.
+  </td>
+  <td>
+    0.0
   </td>
 </tr>
 </table>

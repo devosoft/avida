@@ -206,6 +206,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
       if (in_frac > 1.0) in_frac = 1.0;
       new_process->SetMaxFraction(in_frac);
     }
+    else if (var_name == "ksubm") {
+      if (!AssertInputDouble(var_value, "ksubm", var_type)) return false;
+      double in_k_sub_m = var_value.AsDouble();
+      new_process->SetKsubM(in_k_sub_m);
+    }
     else if (var_name == "product") {
       cResource* test_resource = resource_lib.GetResource(var_value);
       if (!AssertInputValid(test_resource, "product", var_type, var_value)) {
@@ -1375,7 +1380,8 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
           const int res_id = in_resource->GetID();
           assert(cur_process->GetMaxFraction() != 0);
           assert(resource_count[res_id] != 0);
-          double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
+          // double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetMaxFraction());
+          double reward = cur_process->GetValue() * resource_count[res_id] / (resource_count[res_id] + cur_process->GetKsubM());
           result.AddBonus( reward , reaction_id);
           break;
         }
