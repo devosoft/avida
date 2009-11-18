@@ -43,6 +43,9 @@ public:
   cBioGroup() : m_refs(0) { ; }
   virtual ~cBioGroup() = 0;
   
+  virtual int GetRoleID() const;
+  virtual const cString& GetRole() const;
+  
   virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL) = 0;
   virtual void RemoveBioUnit(cBioUnit* bu) = 0;
   

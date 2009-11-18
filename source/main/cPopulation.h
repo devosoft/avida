@@ -82,6 +82,7 @@ class cSchedule;
 class cSaleItem;
 
 
+
 class cPopulation
 {
 #if USE_tMemTrack
@@ -118,51 +119,13 @@ private:
 	// Group formation information
 	std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
 
-  ///////////////// Private Methods ////////////////////
-  void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
-
-  // Methods to place offspring in the population.
-  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, bool parent_ok = true);
-  void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
-  cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
-  int UpdateEmptyCellIDArray(int deme_id = -1);
-  void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
-
-  // Update statistics collecting...
-  void UpdateDemeStats();
-  void UpdateOrganismStats();
-  void UpdateGenotypeStats();
-  void UpdateSpeciesStats();
-  void UpdateDominantStats();
-  void UpdateDominantParaStats();
-
-  /**
-   * Attention: InjectGenotype does *not* add the genotype to the archive.
-   * It assumes that's where you got the genotype from.
-   **/
-  void InjectGenotype(int cell_id, cGenotype* genotype);
-public:
-	// This needs to be public so it can be used over in PopulationActions.cc...
-  void InjectGenome(int cell_id, const cGenome& genome, int lineage_label);
-private:
-  void InjectClone(int cell_id, cOrganism& orig_org);
-  void InjectChild(int cell_id, cOrganism& parent);
-
-  void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
-  void CCladeSetupOrganism(cOrganism* organism); 
-	
-  // Must be called to activate *any* organism in the population.
-  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
-  
-  inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
+  int m_hgt_resid; //!< HGT resource ID.
   
 
   cPopulation(); // @not_implemented
   cPopulation(const cPopulation&); // @not_implemented
   cPopulation& operator=(const cPopulation&); // @not_implemented
+  
   
 public:
   cPopulation(cWorld* world);
@@ -170,13 +133,14 @@ public:
 
   void InitiatePop();
 
+  void InjectGenome(int cell_id, const cGenome& genome, int lineage_label, eBioUnitSource src);
+
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent_organism);
   bool ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code);
   
   // Inject an organism from the outside world.
-  void Inject(const cGenome& genome, int cell_id = -1, double merit = -1, int lineage_label = 0,
-              double neutral_metric = 0);
+  void Inject(const cGenome& genome, eBioUnitSource src, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0);
   void InjectParasite(const cCodeLabel& label, const cGenome& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
@@ -209,17 +173,14 @@ public:
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme);
   
   //! Helper method that seeds a deme from the given genome.
-  void SeedDeme(cDeme& deme, cGenome& genome);
+  void SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src);
 
   //! Helper method that seeds a deme from the given genotype.
-  void SeedDeme(cDeme& _deme, cGenotype& _genotype);
+  void SeedDeme(cDeme& _deme, cGenotype& _genotype, eBioUnitSource src);
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
   bool SeedDeme(cDeme& source_deme, cDeme& target_deme);
 
-  //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype = NULL);
-  
   //! Helper method that determines the cell into which an organism will be placed during deme replication.
   int DemeSelectInjectionCell(cDeme& deme, int sequence=0);
   
@@ -346,7 +307,56 @@ public:
 	// Get the group information
 	map<int, int> GetFormedGroups() { return m_groups; }
 	
+	// -------- HGT support --------
+	//! Modify current level of the HGT resource.
+	void AdjustHGTResource(double delta);
+	
+	// -------- Population mixing support --------
+	//! Mix all organisms in the population.
+	void MixPopulation();
+
 private:
+  void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
+  
+  // Methods to place offspring in the population.
+  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, bool parent_ok = true);
+  void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
+  cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
+  int UpdateEmptyCellIDArray(int deme_id = -1);
+  void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
+  
+  // Update statistics collecting...
+  void UpdateDemeStats();
+  void UpdateOrganismStats();
+  void UpdateGenotypeStats();
+  void UpdateSpeciesStats();
+  void UpdateDominantStats();
+  void UpdateDominantParaStats();
+  
+  /**
+   * Attention: InjectGenotype does *not* add the genotype to the archive.
+   * It assumes that's where you got the genotype from.
+   **/
+  void InjectGenotype(int cell_id, cGenotype* genotype, eBioUnitSource src);  
+
+  void InjectClone(int cell_id, cOrganism& orig_org);
+  void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
+  
+  //! Helper method that adds a founder organism to a deme, and sets up its phenotype
+  void SeedDeme_InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype = NULL);
+  
+  void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
+  void CCladeSetupOrganism(cOrganism* organism); 
+	
+  // Must be called to activate *any* organism in the population.
+  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
+  
+  inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
+
+
   struct sTmpGenotype
   {
   public:
@@ -370,18 +380,6 @@ private:
     inline bool operator<=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
     inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
   };  
-  
-	// -------- HGT support --------
-private:
-	int m_hgt_resid; //!< HGT resource ID.
-public:
-	//! Modify current level of the HGT resource.
-	void AdjustHGTResource(double delta);
-	
-	// -------- Population mixing support --------
-public:
-	//! Mix all organisms in the population.
-	void MixPopulation();
 };
 
 

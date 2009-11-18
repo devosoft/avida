@@ -26,23 +26,15 @@
 #ifndef tArray_h
 #define tArray_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 #include <cassert>
 
 #ifndef NULL
 #define NULL 0
 #endif
 
+
 template <class T> class tArray
 {
-#if USE_tMemTrack
-  tMemTrack<tArray<T> > mt;
-#endif
 private:
   T* m_data;  // Data Elements
   int m_size; // Number of Elements

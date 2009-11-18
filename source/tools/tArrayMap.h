@@ -72,6 +72,32 @@ public:
     return m_map[m_map.GetSize() - 1].Value();
   }
   
+  ValueType& ValueFor(const KeyType& key)
+  {
+    for (int i = 0; i < m_map.GetSize(); i++) {
+      if (m_map[i].Key() == key) {
+        return m_map[i].Value();
+      }
+    }
+    m_map.Push(tKVPair<KeyType, ValueType>(key));
+    return m_map[m_map.GetSize() - 1].Value();
+  }
+
+  const ValueType& ValueFor(const KeyType& key) const
+  {
+    for (int i = 0; i < m_map.GetSize(); i++) {
+      if (m_map[i].Key() == key) {
+        return m_map[i].Value();
+      }
+    }
+    m_map.Push(tKVPair<KeyType, ValueType>(key));
+    return m_map[m_map.GetSize() - 1].Value();
+  }
+  
+  ValueType& operator[](const KeyType& key) { return ValueFor(key); }
+  const ValueType& operator[](const KeyType& key) const { return ValueFor(key); }
+  
+  
   void Remove(const KeyType& key)
   {
     for (int i = 0; i < m_map.GetSize(); i++) {

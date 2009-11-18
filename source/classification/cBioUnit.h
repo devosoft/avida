@@ -25,28 +25,33 @@
 #ifndef cBioUnit_h
 #define cBioUnit_h
 
+#ifndef defs_h
+#include "defs.h"
+#endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
+class cBioGroup;
 class cMetaGenome;
 class cString;
 
+
 class cBioUnit
 {
-public:
-  enum eUnitSource {
-    SRC_ORGANISM_FILE_LOAD,
-    SRC_ORGANISM_DIVIDE,
-    SRC_PARASITE_FILE_LOAD,
-    SRC_PARASITE_INJECT,
-    SRC_TEST_CPU
-  };
-  
+protected:
+  tArray<cBioGroup*> m_bio_groups;
 
+  
 public:
   cBioUnit() { ; }
-  virtual ~cBioUnit() = 0;
+  virtual ~cBioUnit();
   
-  virtual eUnitSource GetUnitSource() const = 0;
+  virtual eBioUnitSource GetUnitSource() const = 0;
   virtual const cString& GetUnitSourceArgs() const = 0;
   virtual const cMetaGenome& GetMetaGenome() const = 0;
+  
+  void SelfClassify(tArray<tArray<cBioGroup*>*>& parents);
 };
 
 #endif

@@ -51,7 +51,7 @@ class cBGGenotype : public cBioGroup
 private:
   cBGGenotypeManager* m_mgr;
   
-  cBioUnit::eUnitSource m_src;
+  eBioUnitSource m_src;
   cString m_src_args;
   cMetaGenome m_genome;
   cString m_name;
@@ -99,7 +99,7 @@ public:
 
   
   // Genotype Specific Methods
-  inline const cBioUnit::eUnitSource GetSource() const { return m_src; }
+  inline const eBioUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
   inline const cMetaGenome& GetMetaGenome() const { return m_genome; }
   

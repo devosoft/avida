@@ -87,15 +87,23 @@ bool cBGGenotype::Matches(cBioUnit* bu)
 {
   // Handle source branching
   switch (m_src) {
-    case cBioUnit::SRC_ORGANISM_FILE_LOAD:
-    case cBioUnit::SRC_ORGANISM_DIVIDE:
+    case SRC_DEME_GERMLINE:
+    case SRC_DEME_REPLICATE:
+    case SRC_ORGANISM_COMPETE:
+    case SRC_ORGANISM_DIVIDE:
+    case SRC_ORGANISM_FILE_LOAD:
+    case SRC_ORGANISM_RANDOM:
       switch (bu->GetUnitSource()) {
-        case cBioUnit::SRC_ORGANISM_FILE_LOAD:
-        case cBioUnit::SRC_ORGANISM_DIVIDE:
+        case SRC_DEME_GERMLINE:
+        case SRC_DEME_REPLICATE:
+        case SRC_ORGANISM_COMPETE:
+        case SRC_ORGANISM_DIVIDE:
+        case SRC_ORGANISM_FILE_LOAD:
+        case SRC_ORGANISM_RANDOM:
           break;
           
-        case cBioUnit::SRC_PARASITE_FILE_LOAD:
-        case cBioUnit::SRC_PARASITE_INJECT:
+        case SRC_PARASITE_FILE_LOAD:
+        case SRC_PARASITE_INJECT:
           return false;
           break;
           
@@ -105,16 +113,20 @@ bool cBGGenotype::Matches(cBioUnit* bu)
       }
       break;
       
-    case cBioUnit::SRC_PARASITE_FILE_LOAD:
-    case cBioUnit::SRC_PARASITE_INJECT:
+    case SRC_PARASITE_FILE_LOAD:
+    case SRC_PARASITE_INJECT:
       switch (bu->GetUnitSource()) {
-        case cBioUnit::SRC_ORGANISM_FILE_LOAD:
-        case cBioUnit::SRC_ORGANISM_DIVIDE:
+        case SRC_DEME_GERMLINE:
+        case SRC_DEME_REPLICATE:
+        case SRC_ORGANISM_COMPETE:
+        case SRC_ORGANISM_DIVIDE:
+        case SRC_ORGANISM_FILE_LOAD:
+        case SRC_ORGANISM_RANDOM:
           return false;
           break;
           
-        case cBioUnit::SRC_PARASITE_FILE_LOAD:
-        case cBioUnit::SRC_PARASITE_INJECT:
+        case SRC_PARASITE_FILE_LOAD:
+        case SRC_PARASITE_INJECT:
           // Verify that the parasite inject label matches
           if (m_src_args != bu->GetUnitSourceArgs()) return false;
           break;

@@ -37,6 +37,7 @@ class cBioGroupManager
 {
   friend class cClassificationManager;
 private:
+  int m_role_id;
   cString m_role;
   
   
@@ -45,14 +46,13 @@ public:
   virtual ~cBioGroupManager() = 0;
   
   virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu) = 0;
-  
-  
-protected:
+    
+  inline int GetRoleID() const { return m_role_id; }
   inline const cString& GetRole() const { return m_role; }
   
   
 private:
-  void SetRole(const cString& role) { m_role = role; }
+  void SetRole(int role_id, const cString& role) { m_role_id = role_id; m_role = role; }
 };
 
 

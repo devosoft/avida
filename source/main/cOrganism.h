@@ -98,10 +98,9 @@ class cOrganism : public cBioUnit
 private:
   cWorld* m_world;
   cHardwareBase* m_hardware;              // The actual machinery running this organism.
-  tArray<cBioGroup*> m_bio_groups;
   cGenotype* m_genotype;                  // Information about organisms with this genome.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
-  cBioUnit::eUnitSource m_src;
+  eBioUnitSource m_src;
   cString m_src_args;
   const cMetaGenome m_initial_genome;         // Initial genome; can never be changed!
   tArray<cInjectGenotype*> m_parasites;   // List of all parasites associated with this organism.
@@ -163,13 +162,15 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome);
-  cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome);
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set);
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, eBioUnitSource src, const cString& src_args = "");
+  cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
+            eBioUnitSource src, const cString& src_args = "");
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set,
+            eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
   
   // --------  cBioUnit Methods  --------
-  cBioUnit::eUnitSource GetUnitSource() const { return m_src; }
+  eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
   const cMetaGenome& GetMetaGenome() const { return m_initial_genome; }
   

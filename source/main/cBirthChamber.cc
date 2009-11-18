@@ -165,7 +165,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
   // This is asexual who doesn't need to wait in the birth chamber
   // just build the child and return.
   child_array.Resize(1);
-  child_array[0] = new cOrganism(m_world, ctx, offspring);
+  child_array[0] = new cOrganism(m_world, ctx, offspring, SRC_ORGANISM_DIVIDE);
   merit_array.Resize(1);
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
@@ -206,8 +206,8 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
 {
   // Build both child organisms...
   child_array.Resize(2);
-  child_array[0] = new cOrganism(m_world, ctx, old_entry.genome);
-  child_array[1] = new cOrganism(m_world, ctx, new_genome);
+  child_array[0] = new cOrganism(m_world, ctx, old_entry.genome, SRC_ORGANISM_DIVIDE);
+  child_array[1] = new cOrganism(m_world, ctx, new_genome, SRC_ORGANISM_DIVIDE);
 
   // Setup the merits for both children...
   merit_array.Resize(2);
@@ -473,8 +473,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);
-    child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0);
-    child_array[1] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1);
+    child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, SRC_ORGANISM_DIVIDE);
+    child_array[1] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, SRC_ORGANISM_DIVIDE);
     
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
@@ -497,7 +497,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     merit_array.Resize(1);
 
     if (ctx.GetRandom().GetDouble() < 0.5) {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0);
+      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
         meritOrEnergy0 = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
@@ -508,7 +508,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       SetupGenotypeInfo(child_array[0], parent0_genotype, parent1_genotype);
     } 
     else {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1);
+      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy1);
         meritOrEnergy1 = child_array[1]->GetPhenotype().ConvertEnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy());

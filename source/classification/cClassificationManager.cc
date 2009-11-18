@@ -75,8 +75,7 @@ cClassificationManager::~cClassificationManager()
 bool cClassificationManager::RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role)
 {
   // @TODO - verify that this role is not already in use -- maybe hash managers by role
-  m_bgms.Push(bgm);
-  bgm->SetRole(role);
+  bgm->SetRole(m_bgms.Push(bgm), role);
   
   return true;
 }

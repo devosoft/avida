@@ -54,10 +54,13 @@
 using namespace std;
 
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, eBioUnitSource src,
+                     const cString& src_args)
   : m_world(world)
   , m_genotype(NULL)
   , m_phenotype(world)
+  , m_src(src)
+  , m_src_args(src_args)
   , m_initial_genome(genome)
   , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
   , m_interface(NULL)
@@ -95,10 +98,13 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   
   initialize(ctx);
 }
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
+                     eBioUnitSource src, const cString& src_args)
   : m_world(world)
   , m_genotype(NULL)
   , m_phenotype(world)
+  , m_src(src)
+  , m_src_args(src_args)
   , m_initial_genome(hw_type, inst_set_id, genome)
   , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
   , m_interface(NULL)
@@ -136,10 +142,13 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   initialize(ctx);
 }
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set,
+                     eBioUnitSource src, const cString& src_args)
   : m_world(world)
   , m_genotype(NULL)
   , m_phenotype(world)
+  , m_src(src)
+  , m_src_args(src_args)
   , m_initial_genome(genome)
   , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
   , m_interface(NULL)
@@ -207,10 +216,7 @@ cOrganism::~cOrganism()
   delete m_interface;
   if(m_net) delete m_net;
   if(m_msg) delete m_msg;
-  if(m_opinion) delete m_opinion;
-  
-  // Notify all groups that this bio unit has been terminated
-  for (int i = 0; i < m_bio_groups.GetSize(); i++) m_bio_groups[i]->RemoveBioUnit(this);
+  if(m_opinion) delete m_opinion;  
 }
 
 cOrganism::cNetSupport::~cNetSupport()

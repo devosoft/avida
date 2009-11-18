@@ -312,7 +312,7 @@ void cPopulation::InitiatePop() {
         exit(-1);
       }
       if (start_org.GetSize() != 0) {
-        Inject(start_org);
+        Inject(start_org, SRC_ORGANISM_FILE_LOAD);
       }
       else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
     } else {
@@ -1531,7 +1531,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
         if (GetCell(cellid).IsOccupied()) {          
           int lineage = GetCell(cellid).GetOrganism()->GetLineageLabel();
           cGenome genome = GetCell(cellid).GetOrganism()->GetGenome();
-          InjectGenome(cellid, genome, lineage);
+          InjectGenome(cellid, genome, lineage, SRC_DEME_REPLICATE);
         }
       }
     }
@@ -1679,13 +1679,13 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     m_world->GetStats().GermlineReplication(source_deme.GetGermline(), target_deme.GetGermline());
     
     // All done with the germline manipulation; seed each deme.
-    SeedDeme(source_deme, source_deme.GetGermline().GetLatest());
+    SeedDeme(source_deme, source_deme.GetGermline().GetLatest(), SRC_DEME_GERMLINE);
     
     /* MJM - source and target deme could be the same!
      * Seeding the same deme twice probably shouldn't happen.
      */
     if (source_deme.GetDemeID() != target_deme.GetDemeID()) {
-      SeedDeme(target_deme, target_deme.GetGermline().GetLatest());
+      SeedDeme(target_deme, target_deme.GetGermline().GetLatest(), SRC_DEME_GERMLINE);
     }
     
   } else if(m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
@@ -1725,8 +1725,8 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     cGenotype * new_germline_genotype = m_world->GetClassificationManager().GetGenotype(new_genome, germline_genotype, NULL);
     source_deme.ReplaceGermline(*new_germline_genotype);
     target_deme.ReplaceGermline(*new_germline_genotype);
-    SeedDeme(source_deme, *new_germline_genotype);
-    SeedDeme(target_deme, *new_germline_genotype);
+    SeedDeme(source_deme, *new_germline_genotype, SRC_DEME_GERMLINE);
+    SeedDeme(target_deme, *new_germline_genotype, SRC_DEME_GERMLINE);
     
   } else {
     // Not using germlines; things are much simpler.  Seed the target from the source.
@@ -1790,19 +1790,19 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
  @todo Fix lineage label on injected genomes.
  @todo Different strategies for non-random placement.
  */
-void cPopulation::SeedDeme(cDeme& deme, cGenome& genome) {
+void cPopulation::SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src) {
   // Kill all the organisms in the deme.
   deme.KillAll();
   
   // Create the specified number of organisms in the deme.
   for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
     int cellid = DemeSelectInjectionCell(deme, i);
-    InjectGenome(cellid, genome, 0);
+    InjectGenome(cellid, genome, 0, src);
     DemePostInjection(deme, cell_array[cellid]);
   }
 }
 
-void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype) {
+void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype, eBioUnitSource src) {
   // Kill all the organisms in the deme.
   _deme.KillAll();
   _deme.ClearFounders();
@@ -1810,7 +1810,7 @@ void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype) {
   // Create the specified number of organisms in the deme.
   for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
     int cellid = DemeSelectInjectionCell(_deme, i);
-    InjectGenotype(cellid, &_genotype);
+    InjectGenotype(cellid, &_genotype, src);
     DemePostInjection(_deme, cell_array[cellid]);
     _deme.AddFounder(_genotype);
   }
@@ -1889,11 +1889,11 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       int j=0;
       for(std::vector<std::pair<cGenome,int> >::iterator i=xfer.begin(); i!=xfer.end(); ++i, ++j) {
         int cellid = DemeSelectInjectionCell(source_deme, j);
-        InjectGenome(cellid, i->first, i->second);
+        InjectGenome(cellid, i->first, i->second, SRC_DEME_REPLICATE);
         DemePostInjection(source_deme, cell_array[cellid]);
         
         cellid = DemeSelectInjectionCell(target_deme, j);
-        InjectGenome(cellid, i->first, i->second);
+        InjectGenome(cellid, i->first, i->second, SRC_DEME_REPLICATE);
         DemePostInjection(target_deme, cell_array[cellid]);      
         
       }
@@ -2204,7 +2204,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
         int cellid = DemeSelectInjectionCell(target_deme, i);
-        InjectDemeFounder(cellid, *target_founders[i]->GetGenotype(), &target_founders[i]->GetPhenotype());
+        SeedDeme_InjectDemeFounder(cellid, *target_founders[i]->GetGenotype(), &target_founders[i]->GetPhenotype());
         target_deme.AddFounder(*target_founders[i]->GetGenotype(), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
       }
@@ -2222,7 +2222,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         
         for(int i=0; i<source_founders.GetSize(); i++) {
           int cellid = DemeSelectInjectionCell(source_deme, i); 
-          InjectDemeFounder(cellid, *source_founders[i]->GetGenotype(), &source_founders[i]->GetPhenotype());
+          SeedDeme_InjectDemeFounder(cellid, *source_founders[i]->GetGenotype(), &source_founders[i]->GetPhenotype());
           source_deme.AddFounder(*source_founders[i]->GetGenotype(), &source_founders[i]->GetPhenotype());
           DemePostInjection(source_deme, cell_array[cellid]);
         }
@@ -2243,7 +2243,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           int cellid = DemeSelectInjectionCell(source_deme, i);
           //cout << "founder: " << source_founders[i] << endl;
           cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(source_founders[i]);
-          InjectDemeFounder(cellid, *genotype, &source_founder_phenotypes[i]);
+          SeedDeme_InjectDemeFounder(cellid, *genotype, &source_founder_phenotypes[i]);
           DemePostInjection(source_deme, cell_array[cellid]);
         }
         
@@ -2359,7 +2359,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         
         // And inject it into target deme.
         int target_cellid = DemeSelectInjectionCell(target_deme, j++);
-        InjectGenome(target_cellid, genome, lineage);
+        InjectGenome(target_cellid, genome, lineage, SRC_DEME_REPLICATE);
         DemePostInjection(target_deme, cell_array[target_cellid]);
       } 
       //else {
@@ -2371,11 +2371,11 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
 	return successfully_seeded;
 }
 
-void cPopulation::InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype)
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype)
 {
   // phenotype can be NULL
   
-  InjectGenotype(_cell_id, &_genotype);
+  InjectGenotype(_cell_id, &_genotype, SRC_DEME_REPLICATE);
   
   // At this point, the cell had better be occupied...
   assert(GetCell(_cell_id).IsOccupied());
@@ -4513,7 +4513,7 @@ bool cPopulation::LoadClone(ifstream & fp)
     }
     
     assert(genotype_index != -1);
-    InjectGenome(i, genotype_array[genotype_index]->GetGenome(), 0);
+    InjectGenome(i, genotype_array[genotype_index]->GetGenome(), 0, SRC_ORGANISM_FILE_LOAD);
   }
   
   sync_events = true;
@@ -4617,7 +4617,7 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
           soup_full = true;
           break;
         }	  
-        InjectGenotype( current_cell, (*it).genotype );
+        InjectGenotype(current_cell, (*it).genotype, SRC_ORGANISM_FILE_LOAD);
         cPhenotype & phenotype = GetCell(current_cell).GetOrganism()->GetPhenotype();
         if ( (*it).merit > 0) phenotype.SetMerit( cMerit((*it).merit) );
         AdjustSchedule(GetCell(current_cell), phenotype.GetMerit());
@@ -4834,7 +4834,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
       for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
         int cell_id = tmp.cells[cell_i];
         
-        InjectGenotype(cell_id, tmp.genotype);
+        InjectGenotype(cell_id, tmp.genotype, SRC_ORGANISM_FILE_LOAD);
         
         cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
         
@@ -4913,7 +4913,7 @@ bool cPopulation::OK()
  * this organism.
  **/
 
-void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int lineage_label, double neutral)
+void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id, double merit, int lineage_label, double neutral)
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -4925,7 +4925,7 @@ void cPopulation::Inject(const cGenome & genome, int cell_id, double merit, int 
     }
   }
   
-  InjectGenome(cell_id, genome, lineage_label);
+  InjectGenome(cell_id, genome, lineage_label, src);
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);
   
@@ -5088,7 +5088,7 @@ void cPopulation::FindEmptyCell(tList<cPopulationCell> & cell_list,
 
 // This function injects a new organism into the population at cell_id based
 // on the genotype passed in.
-void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype)
+void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype, eBioUnitSource src)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -5098,7 +5098,7 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype)
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
   cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, new_genotype->GetGenome()); // @TODO - genotypes need metagenomes
-  cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome);
+  cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome, src);
   
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);  
@@ -5166,7 +5166,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
-  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetMetaGenome());
+  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetMetaGenome(), SRC_ORGANISM_FILE_LOAD);
   
   // Set the genotype...
   new_organism->SetGenotype(orig_org.GetGenotype());
@@ -5195,9 +5195,9 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
   ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
 }
 
-// This function injects the child genome of an organism into the population at cell_id.
+// This function injects the offspring genome of an organism into the population at cell_id.
 // Takes care of divide mutations.
-void cPopulation::InjectChild(int cell_id, cOrganism& parent)
+void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
@@ -5209,7 +5209,7 @@ void cPopulation::InjectChild(int cell_id, cOrganism& parent)
   cMetaGenome child_genome = parent.OffspringGenome();
   parent.GetHardware().Divide_TestFitnessMeasures(ctx);
   parent.OffspringGenome() = save_child;
-  cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome);
+  cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome, SRC_ORGANISM_COMPETE);
   
   // Set the genotype...
   assert(parent.GetGenotype());  
@@ -5242,13 +5242,12 @@ void cPopulation::InjectChild(int cell_id, cOrganism& parent)
 }
 
 
-void cPopulation::InjectGenome(int cell_id, const cGenome& genome, int lineage_label)
+void cPopulation::InjectGenome(int cell_id, const cGenome& genome, int lineage_label, eBioUnitSource src)
 {
   // Setup the genotype...
   cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotypeInjected(genome, lineage_label);
   
-  // The rest is done by InjectGenotype();
-  InjectGenotype( cell_id, new_genotype );
+  InjectGenotype( cell_id, new_genotype, src);
 }
 
 // Note: cPopulation::SerialTransfer does not respect deme boundaries and only acts on a single population.
@@ -5771,8 +5770,8 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
     
     cOrganism* organism = GetCell(from_cell_id).GetOrganism();
     organism->OffspringGenome() = organism->GetMetaGenome();
-    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Injecting Child " << from_cell_id << " to " << to_cell_id << endl;  
-    InjectChild( to_cell_id, *organism );  
+    if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Injecting Offspring " << from_cell_id << " to " << to_cell_id << endl;  
+    CompeteOrganisms_ConstructOffspring(to_cell_id, *organism);  
     
     is_init[to_cell_id] = true;
   }
@@ -5786,7 +5785,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
         cOrganism* organism = GetCell(cell_id).GetOrganism();
         organism->OffspringGenome() = organism->GetMetaGenome();
         if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Re-injecting Self " << cell_id << " to " << cell_id << endl;  
-        InjectChild( cell_id, *organism ); 
+        CompeteOrganisms_ConstructOffspring(cell_id, *organism); 
       }
     }
   }

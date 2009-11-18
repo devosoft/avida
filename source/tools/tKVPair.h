@@ -32,6 +32,7 @@ private:
   
 public:
   inline tKVPair() { ; }
+  inline tKVPair(const K& key) : m_key(key) { ; }
   inline tKVPair(const K& key, const V& value) : m_key(key), m_value(value) { ; }
   inline tKVPair(const tKVPair& p) : m_key(p.m_key), m_value(p.m_value) { ; }
   
