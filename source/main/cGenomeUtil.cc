@@ -31,10 +31,11 @@
 #include "cInstSet.h"
 #include "functions.h"
 #include <algorithm>
-#include <strings.h>
+// #include <strings.h>
 
 
 using namespace std;
+
 
 
 int cGenomeUtil::FindInst(const cGenome & gen, const cInstruction & inst,
@@ -255,10 +256,12 @@ cGenomeUtil::substring_match_list_type cGenomeUtil::FindSubstringMatches(const c
 	substring_match_list_type ssml(base.GetSize());
 	const int rows=substring.GetSize()+1;
 	const int cols=base.GetSize()+1;
-	int costmat[2][cols];   
-	int* c=costmat[0]; // current row
-	int* p=costmat[1]; // previous row
-	bzero(costmat, sizeof(int)*2*cols);
+	int* c = new int[cols]; // current row
+	int* p = new int[cols]; // previous row
+	for (int j=0; j<cols; ++j) {
+	  c[j] = 0;
+	  p[j] = 0;
+	}
 	
 	for(int i=1; i<rows; ++i) {
 		c[0] = p[0]+1;
@@ -456,4 +459,5 @@ cGenome cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(cAvidaContext
   genome[length] = inst_set.GetInst("repro-sex");
   return genome;
 }
+
 
