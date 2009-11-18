@@ -51,7 +51,10 @@ public:
   virtual const cString& GetUnitSourceArgs() const = 0;
   virtual const cMetaGenome& GetMetaGenome() const = 0;
   
-  void SelfClassify(tArray<tArray<cBioGroup*>*>& parents);
+  const tArray<cBioGroup*>& GetBioGroups() const { return m_bio_groups; }
+  
+  void AddClassification(cBioGroup* bg) { m_bio_groups.Push(bg); }
+  void SelfClassify(const tArray<const tArray<cBioGroup*>*>& parents);
 };
 
 #endif

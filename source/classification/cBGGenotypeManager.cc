@@ -31,6 +31,21 @@
 #include "cWorld.h"
 
 
+cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
+  : m_world(world)
+  , m_next_id(1)
+  , m_dom_prev(-1)
+  , m_dom_time(0)
+{
+  for (int i = 0; i < MAX_CREATURE_SIZE; i++) m_sz_count[i] = 0;
+}
+
+cBGGenotypeManager::~cBGGenotypeManager()
+{
+  // @TODO
+}
+
+
 cBioGroup* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu) { return ClassifyNewBioUnit(bu, NULL); }
 
 cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents)

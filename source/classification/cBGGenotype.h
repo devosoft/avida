@@ -92,6 +92,9 @@ public:
   ~cBGGenotype();
   
   // cBioGroup Interface Methods
+  int GetRoleID() const;
+  const cString& GetRole() const;  
+  
   cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL);
   void RemoveBioUnit(cBioUnit* bu);
   

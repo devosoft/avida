@@ -25,6 +25,7 @@
 
 #include "cClassificationManager.h"
 
+#include "cBGGenotypeManager.h"
 #include "cBioGroupManager.h"
 #include "cDataFile.h"
 #include "cGenome.h"
@@ -63,6 +64,8 @@ cClassificationManager::cClassificationManager(cWorld* world)
     m_genotype_count[i] = 0;
     m_inject_count[i] = 0;
   }
+  
+  RegisterBioGroupManager(new cBGGenotypeManager(world), "genotype");
 }
 
 cClassificationManager::~cClassificationManager()
@@ -78,6 +81,15 @@ bool cClassificationManager::RegisterBioGroupManager(cBioGroupManager* bgm, cons
   bgm->SetRole(m_bgms.Push(bgm), role);
   
   return true;
+}
+
+
+void cClassificationManager::ClassifyNewBioUnit(cBioUnit* bu)
+{
+  for (int i = 0; i < m_bgms.GetSize(); i++) {
+    cBioGroup* group = m_bgms[i]->ClassifyNewBioUnit(bu);
+    if (group) bu->AddClassification(group);
+  }
 }
 
 

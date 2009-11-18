@@ -184,6 +184,10 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
   } else {
     merit_array[0] = parent.GetPhenotype().GetMerit();
   }
+  
+  tArray<const tArray<cBioGroup*>*> pgrps(1);
+  pgrps[0] = &parent.GetBioGroups();
+  child_array[0]->SelfClassify(pgrps);
 
   // Setup the genotype for the child
   cGenotype* child_genotype = parent.GetGenotype();
@@ -380,6 +384,11 @@ void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, cGenome& g
 
 void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0, cGenotype* parent1)
 {
+  tArray<const tArray<cBioGroup*>*> pgrps;
+  if (parent0) pgrps.Push(&parent0->GetBioGroups());
+  if (parent1) pgrps.Push(&parent1->GetBioGroups());
+  organism->SelfClassify(pgrps);
+
   // Setup the genotypes for both children...
   cGenotype* child_genotype =
     m_world->GetClassificationManager().GetGenotype(organism->GetGenome(), parent0, parent1);

@@ -56,6 +56,7 @@
 
 class cAvidaContext;
 class cBioGroupManager;
+class cBioUnit;
 class cLineage;
 class cOrganism;
 class cWorld;
@@ -111,6 +112,8 @@ public:
   void UpdateReset();
   
   bool RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role);
+  
+  void ClassifyNewBioUnit(cBioUnit* bu);
   
   
   // Genotype Manipulation

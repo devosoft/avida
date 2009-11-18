@@ -36,7 +36,7 @@ cBioUnit::~cBioUnit()
 }
 
 
-void cBioUnit::SelfClassify(tArray<tArray<cBioGroup*>*>& parents)
+void cBioUnit::SelfClassify(const tArray<const tArray<cBioGroup*>*>& parents)
 {
   assert(parents.GetSize() > 0);
   

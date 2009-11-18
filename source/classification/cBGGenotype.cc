@@ -59,6 +59,18 @@ cBGGenotype::~cBGGenotype()
   for (int i = 0; i < m_parents.GetSize(); i++) m_parents[i]->RemoveReference();
 }
 
+int cBGGenotype::GetRoleID() const
+{
+  return m_mgr->GetRoleID();
+}
+
+
+const cString& cBGGenotype::GetRole() const
+{
+  return m_mgr->GetRole();
+}
+
+
 cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents)
 {
   m_births.Inc();
