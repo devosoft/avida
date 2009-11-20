@@ -70,6 +70,7 @@ public:
 
   bool ValidBirthEntry(const cBirthEntry& entry) const;
   void StoreAsEntry(const cMetaGenome& offspring_genome, cOrganism* parent, cBirthEntry& entry) const;
+  void ClearEntry(cBirthEntry& entry);
 
 private:
   cBirthSelectionHandler* getSelectionHandler(int hw_type);
@@ -91,7 +92,8 @@ private:
   void DoModularShuffleRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
                                      double& merit0, double& merit1);
   
-  void SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0_genotype, cGenotype* parent1_genotype);
+  void SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0_genotype, const tArray<cBioGroup*>* p0grps,
+                         cGenotype* parent1_genotype = NULL, const tArray<cBioGroup*>* p1grps = NULL);
 };
 
 

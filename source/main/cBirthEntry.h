@@ -32,6 +32,7 @@
 #include "cMetaGenome.h"
 #endif
 
+class cBioGroup;
 class cGenotype;
 
 
@@ -43,8 +44,9 @@ public:
   cMerit merit;
   cGenotype* parent_genotype;
   int timestamp; // -1 if empty
+  tArray<cBioGroup*> groups;
   
-  inline cBirthEntry() : parent_genotype(NULL), timestamp(-1) { ; }
+  inline cBirthEntry() : parent_genotype(NULL), timestamp(-1), groups(NULL) { ; }
 };
 
 #endif
