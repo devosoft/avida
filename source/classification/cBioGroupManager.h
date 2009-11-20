@@ -46,6 +46,8 @@ public:
   virtual ~cBioGroupManager() = 0;
   
   virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu) = 0;
+  
+  virtual void UpdateReset() = 0;
     
   inline int GetRoleID() const { return m_role_id; }
   inline const cString& GetRole() const { return m_role; }

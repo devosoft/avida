@@ -74,6 +74,11 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
 }
 
 
+void cBGGenotypeManager::UpdateReset()
+{
+  // @TODO
+}
+
 
 unsigned int cBGGenotypeManager::hashGenome(const cGenome& genome) const
 {

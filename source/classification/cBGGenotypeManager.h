@@ -67,6 +67,7 @@ public:
   // cBioGroupManager Interface Methods
   cBioGroup* ClassifyNewBioUnit(cBioUnit* bu);
   
+  void UpdateReset();
   
   // Genotype Manager Methods
   cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);

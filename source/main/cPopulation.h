@@ -342,7 +342,7 @@ private:
    **/
   void InjectGenotype(int cell_id, cGenotype* genotype, eBioUnitSource src);  
 
-  void InjectClone(int cell_id, cOrganism& orig_org);
+  void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype

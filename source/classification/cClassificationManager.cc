@@ -95,6 +95,9 @@ void cClassificationManager::ClassifyNewBioUnit(cBioUnit* bu)
 
 void cClassificationManager::UpdateReset()
 {
+  // Notify all bio group managers of the update reset
+  for (int i = 0; i < m_bgms.GetSize(); i++) m_bgms[i]->UpdateReset();
+  
   cGenotype* best_genotype = GetBestGenotype();
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();

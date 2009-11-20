@@ -1216,7 +1216,7 @@ void cPopulation::CompeteDemes(int competition_type)
       int from_cell_id = from_deme.GetCellID(i);
       int to_cell_id = to_deme.GetCellID(i);
       if (cell_array[from_cell_id].IsOccupied() == true) {
-        InjectClone( to_cell_id, *(cell_array[from_cell_id].GetOrganism()) );
+        InjectClone(to_cell_id, *(cell_array[from_cell_id].GetOrganism()), SRC_DEME_COMPETE);
       }
     }
     is_init[to_deme_id] = true;
@@ -1230,7 +1230,7 @@ void cPopulation::CompeteDemes(int competition_type)
     for (int i = 0; i < cur_deme.GetSize(); i++) {
       int cur_cell_id = cur_deme.GetCellID(i);
       if (cell_array[cur_cell_id].IsOccupied() == false) continue;
-      InjectClone( cur_cell_id, *(cell_array[cur_cell_id].GetOrganism()) );
+      InjectClone(cur_cell_id, *(cell_array[cur_cell_id].GetOrganism()), cell_array[cur_cell_id].GetOrganism()->GetUnitSource());
     }
   }
   
@@ -2533,7 +2533,7 @@ void cPopulation::DivideDemes()
       }
       
       // Inject a copy of the odd organisms into the even cells.
-      InjectClone( cell2_id, *org1 );    
+      InjectClone(cell2_id, *org1, SRC_DEME_REPLICATE);
       
       // Kill the organisms in the odd cells.
       KillOrganism( cell_array[cell1_id] );
@@ -2565,7 +2565,7 @@ void cPopulation::ResetDemes()
     for (int i = 0; i < deme_array[deme_id].GetSize(); i++) {
       int cur_cell_id = deme_array[deme_id].GetCellID(i);
       if (cell_array[cur_cell_id].IsOccupied() == false) continue;
-      InjectClone( cur_cell_id, *(cell_array[cur_cell_id].GetOrganism()) );
+      InjectClone(cur_cell_id, *(cell_array[cur_cell_id].GetOrganism()), cell_array[cur_cell_id].GetOrganism()->GetUnitSource());
     }
   }
 }
@@ -2585,7 +2585,7 @@ void cPopulation::CopyDeme(int deme1_id, int deme2_id)
       KillOrganism(cell_array[to_cell]);
       continue;
     }
-    InjectClone( to_cell, *(cell_array[from_cell].GetOrganism()) );    
+    InjectClone(to_cell, *(cell_array[from_cell].GetOrganism()), SRC_DEME_COPY);    
   }
 }
 
@@ -2733,7 +2733,7 @@ void cPopulation::SpawnDeme(int deme1_id, int deme2_id)
   
   // And do the spawning.
   int cell2_id = deme2.GetCellID( random.GetUInt(deme2.GetSize()) );
-  InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()) );    
+  InjectClone( cell2_id, *(cell_array[cell1_id].GetOrganism()), SRC_DEME_SPAWN);    
 }
 
 void cPopulation::AddDemePred(cString type, int times) {
@@ -5100,6 +5100,9 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype, eBioUnitS
   cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, new_genotype->GetGenome()); // @TODO - genotypes need metagenomes
   cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome, src);
   
+  // Classify this new organism
+  m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
+  
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);  
   
@@ -5160,13 +5163,16 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype, eBioUnitS
 // This function injects a new organism into the population at cell_id that
 // is an exact clone of the organism passed in.
 
-void cPopulation::InjectClone(int cell_id, cOrganism& orig_org)
+void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
-  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetMetaGenome(), SRC_ORGANISM_FILE_LOAD);
+  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetMetaGenome(), src);
+
+  // Classify the new organism
+  m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
   
   // Set the genotype...
   new_organism->SetGenotype(orig_org.GetGenotype());
@@ -5210,6 +5216,11 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
   parent.GetHardware().Divide_TestFitnessMeasures(ctx);
   parent.OffspringGenome() = save_child;
   cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome, SRC_ORGANISM_COMPETE);
+  
+  // Classify the offspring
+  tArray<const tArray<cBioGroup*>*> pgrps(1);
+  pgrps[0] = &parent.GetBioGroups();
+  new_organism->SelfClassify(pgrps);  
   
   // Set the genotype...
   assert(parent.GetGenotype());  
