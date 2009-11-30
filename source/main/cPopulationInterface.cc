@@ -658,29 +658,41 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	}
 	
 	// find the location within the offspring's genome that best matches the selected fragment:
-	cGenomeUtil::substring_match ssm = cGenomeUtil::FindBestSubstringMatch(circ, *f);
-	
-	if(ssm.position > offspring.GetSize()) {
-		// we matched on the circular portion of the genome, so we have to modify the
-		// matched position to reflect this;
-		ssm.position -= offspring.GetSize();
-	} 
-	
+	cGenomeUtil::substring_match ssm = cGenomeUtil::FindSubstringMatch(circ, *f);
+
+	// did we match any part of the circular portion of the genome?  if so, adjust
+	// begin & end to suit.
+	if(ssm.begin > offspring.GetSize()) { ssm.begin -= offspring.GetSize(); }
+	if(ssm.end > offspring.GetSize()) { ssm.end -= offspring.GetSize(); }
+
 	// there are (currently) two supported types of HGT mutations: insertions & replacements.
 	// which one are we doing?
 	if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
 		// insertion: insert the fragment just after the final location of the match:
-		offspring.Insert(ssm.position+1, *f);
+		offspring.Insert(ssm.end, *f);
 	} else {
-		// replacement: replace up to fragment size instructions in the genome.
-		// note that replacement can wrap around from front->back.  replacement counts
-		// forward, so we have to find the start position first.
-		int start = ssm.position - f->GetSize() + 1;
-		//int start = ssm.position - ssm.extent + 1; // this isn't turned on yet.
-		if(start < 0) { start += offspring.GetSize(); }
-		for(int i=0; i<f->GetSize(); ++i) {
-			offspring[start] = (*f)[i];
-			if(++start >= offspring.GetSize()) { start = 0; }
+		// replacement: replace [begin,end) instructions in the genome with the fragment.
+		if(ssm.begin <= ssm.end) {
+			// match didn't wrap around the end, things are easy:
+			offspring.Replace(ssm.begin, std::max(ssm.end-ssm.begin, 1), *f);
+		} else {
+			// match wrapped around the end.  two different replacements to do now:
+			// [ssm.begin, offspring.end) and [0, ssm.end).
+						
+			// first, replace the [ssm.begin, offspring.end) region; we'll try to
+			// preserve the size of this region:
+			int tail_size = std::min(offspring.GetSize()-ssm.begin, f->GetSize());
+			cGenome tail(&(*f)[0], &(*f)[0]+tail_size);
+			offspring.Replace(ssm.begin, tail_size, tail);
+			
+			// now, replace the [0, ssm.end) region or remove it if the whole fragment
+			// was already copied in:
+			if(tail_size != f->GetSize()) {
+				cGenome head(&(*f)[0]+tail_size, &(*f)[0]+f->GetSize());
+				offspring.Replace(0, ssm.end, head);
+			} else {
+				offspring.Remove(0, ssm.end);
+			}
 		}
 	}
 	

@@ -60,30 +60,25 @@ public:
 
 	/*! Substring match record.
 	 
-	 The intent behind a substring match record is that it specifies where (position) a match
-	 between two genomes was found, the length (extent) of that match in the base string,
-	 and the edit distance (cost) of that match.
+	 The intent behind a substring match record is that it specifies where a match
+	 between two genomes was found as well as the edit distance (cost) of that match.
 	 
-	 The position and extent are inclusive, and describe the matching region in the
-	 base string like so: [position-extent, position]
+	 The begin, end members follow iterator semantics.  I.e., the matched region in
+	 the base string is [begin, end).  (End points to the element immediately following
+	 the match).
 	 */
 	struct substring_match {
 		//! Default constructor.
-		substring_match() : position(0), //extent(0),
-		cost(0) { }
-		//! Operator< overload.
+		substring_match() : begin(0), end(0), cost(0) { }
+		//! Operator< overload to support std::min_element.
 		bool operator<(const substring_match& sm) { return cost < sm.cost; }
-		int position; //!< Final position in the base string of this match.
-		//int extent; //!< Length of the match in the base string.
+		int begin; //!< Beginning of the substring match.
+		int end; //!< Ending of the substring match.
 		int cost; //!< Cost (edit distance) of this match.
 	};
 	
-	//! Type for a list of substring matches.
-	typedef std::vector<substring_match> substring_match_list_type;
-	//! Return all matches of substring within base.
-	static substring_match_list_type FindSubstringMatches(const cGenome& base, const cGenome& substring);
-	//! Return the best match of substring within base.
-	static substring_match FindBestSubstringMatch(const cGenome& base, const cGenome& substring);
+	//! Find (one of) the best substring matches of substring in base.
+	static substring_match FindSubstringMatch(const cGenome& base, const cGenome& substring);
 
   // ===== Construction methods =====
   static cGenome Crop(const cGenome& genome, int start, int end);

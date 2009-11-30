@@ -31,7 +31,7 @@
 #include "cInstSet.h"
 #include "functions.h"
 #include <algorithm>
-// #include <strings.h>
+#include <string.h>
 
 
 using namespace std;
@@ -245,46 +245,39 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
 }
 
 
-/*! Return all matches of substring within base.
+/*! Find (one of) the best substring matches of substring in base.
  
- The return value here is somewhat incomplete.  Eventually, the idea is that the
- list of matches include the starting position of the match, the overall length (extent)
- of the match, and the cost of the match.  Right now, however, it only includes the cost
- and ending position (inclusive). 
+ The algorithm here is based on the well-known dynamic programming approach to
+ finding a substring match.  Here, it has been extended to track the beginning and
+ ending locations of that match.  Specifically, [begin,end) of the returned substring_match
+ denotes the matched region in the base string.
  */
-cGenomeUtil::substring_match_list_type cGenomeUtil::FindSubstringMatches(const cGenome& base, const cGenome& substring) {
-	substring_match_list_type ssml(base.GetSize());
+cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const cGenome& base, const cGenome& substring) {
 	const int rows=substring.GetSize()+1;
 	const int cols=base.GetSize()+1;
-	int* c = new int[cols]; // current row
-	int* p = new int[cols]; // previous row
-	for (int j=0; j<cols; ++j) {
-	  c[j] = 0;
-	  p[j] = 0;
+	substring_match m[2][cols];
+	substring_match* c=m[0];
+	substring_match* p=m[1];
+	
+	for(int j=1; j<cols; ++j) {
+		p[j].begin = j;
 	}
 	
 	for(int i=1; i<rows; ++i) {
-		c[0] = p[0]+1;
+		c[0].cost = i;
+		c[0].begin = 0;
 		for(int j=1; j<cols; ++j) {
-			int l[3] = {p[j-1], p[j], c[j-1]};
-			c[j] = *std::min_element(l,l+3) + (substring[i-1] != base[j-1]);
-			ssml[j-1].cost = c[j];
-			ssml[j-1].position = j-1;
+			substring_match l[3] = {p[j-1], p[j], c[j-1]};
+			substring_match* s = std::min_element(l,l+3);
+			
+			c[j].begin = s->begin;
+			c[j].end = j;
+			c[j].cost = s->cost + (substring[i-1] != base[j-1]);
 		}
 		std::swap(c,p);
 	}
 	
-	return ssml;
-}
-
-
-/*! Return the best match of substring within base.
- 
- \todo Ties for the value of the best match should be broken randomly.
- */
-cGenomeUtil::substring_match cGenomeUtil::FindBestSubstringMatch(const cGenome& base, const cGenome& substring) {
-	substring_match_list_type ssml = FindSubstringMatches(base, substring);
-	return *std::min_element(ssml.begin(), ssml.end());
+	return *std::min_element(p, p+cols);
 }
 
 
