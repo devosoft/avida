@@ -113,7 +113,7 @@ void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring, cOrganism* parent
   entry.groups = parent->GetBioGroups();
   
   for (int i = 0; i < entry.groups.GetSize(); i++) {
-    entry.groups[i]->AddReference();
+    entry.groups[i]->AddActiveReference();
   }
 }
 
@@ -123,7 +123,7 @@ void cBirthChamber::ClearEntry(cBirthEntry& entry)
   entry.timestamp = -1;
 
   for (int i = 0; i < entry.groups.GetSize(); i++) {
-    entry.groups[i]->RemoveReference();
+    entry.groups[i]->RemoveActiveReference();
   }
 }
 

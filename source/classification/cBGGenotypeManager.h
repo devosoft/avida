@@ -43,7 +43,7 @@ class cGenome;
 class cWorld;
 
 namespace nBGGenotypeManager {
-  const unsigned int HASH_SIZE = 3203;
+  const int HASH_SIZE = 3203;
 }
 
 class cBGGenotypeManager : public cBioGroupManager
@@ -71,23 +71,17 @@ public:
   
   // Genotype Manager Methods
   cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
-  inline void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
+  void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
   
 private:
   unsigned int hashGenome(const cGenome& genome) const;
   cString nameGenotype(int size, int num) const;
   
+  void removeGenotype(cBGGenotype* genotype);
+  
   inline void resizeActiveList(int size);
 };
 
-
-
-void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size)
-{
-  m_active_sz[old_size].Remove(genotype);
-  resizeActiveList(new_size);
-  m_active_sz[new_size].Push(genotype);
-}
 
 inline void cBGGenotypeManager::resizeActiveList(int size)
 {

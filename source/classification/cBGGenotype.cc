@@ -47,8 +47,9 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   if (parents) {
     m_parents.Resize(parents->GetSize());
     for (int i = 0; i < m_parents.GetSize(); i++) {
-      m_parents[i] = (*parents)[i];
-      m_parents[i]->AddReference();
+      // @TODO - is there a better way to handle biogroup -> genotype transformation or a good way to eliminate the need?
+      m_parents[i] = static_cast<cBGGenotype*>((*parents)[i]);
+      m_parents[i]->AddPassiveReference();
     }
   }
   if (m_parents.GetSize()) m_depth = m_parents[0]->GetDepth() + 1;
@@ -56,7 +57,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
 
 cBGGenotype::~cBGGenotype()
 {
-  for (int i = 0; i < m_parents.GetSize(); i++) m_parents[i]->RemoveReference();
+  for (int i = 0; i < m_parents.GetSize(); i++) m_parents[i]->RemovePassiveReference();
 }
 
 int cBGGenotype::GetRoleID() const
@@ -79,7 +80,7 @@ cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* par
     m_breed_true.Inc();
     m_total_organisms++;
     m_mgr->AdjustGenotype(this, m_num_organisms++, m_num_organisms);
-    
+    AddActiveReference();
     return this;
   }  
   
@@ -91,7 +92,8 @@ cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* par
 void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
 {
   m_deaths.Inc();
-  m_mgr->AdjustGenotype(this, m_num_organisms--, m_num_organisms);
+  RemoveActiveReference();
+  m_mgr->AdjustGenotype(this, m_num_organisms--, m_num_organisms);  
 }
 
 

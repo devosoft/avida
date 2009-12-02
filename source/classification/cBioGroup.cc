@@ -29,5 +29,5 @@
 
 cBioGroup::~cBioGroup()
 {
-  assert(m_refs == 0);
+  assert(m_a_refs == 0 && m_p_refs == 0);
 }

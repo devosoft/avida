@@ -70,7 +70,7 @@ private:
   int m_last_num_organisms;
   int m_total_organisms;
   
-  tArray<cBioGroup*> m_parents;
+  tArray<cBGGenotype*> m_parents;
   
   cCountTracker m_births;
   cCountTracker m_deaths;
@@ -119,6 +119,10 @@ public:
   
   void SetThreshold() { m_threshold = true; }
   void ClearThreshold() { m_threshold = false; }
+  
+  void Deactivate() { m_active = false; }
+  
+  inline const tArray<cBGGenotype*> GetParents() const { return m_parents; }
 
   bool Matches(cBioUnit* bu);
   inline void NotifyNewBioUnit(cBioUnit* bu) { m_total_organisms++; m_num_organisms++; m_breed_in.Inc(); }

@@ -37,10 +37,11 @@ template<typename T> class tArray;
 class cBioGroup
 {
 protected:
-  int m_refs;
+  int m_a_refs;
+  int m_p_refs;
   
 public:
-  cBioGroup() : m_refs(0) { ; }
+  cBioGroup() : m_a_refs(0), m_p_refs(0) { ; }
   virtual ~cBioGroup() = 0;
   
   virtual int GetRoleID() const = 0;
@@ -51,9 +52,13 @@ public:
   
   virtual int GetDepth() const = 0;
   
-  int GetReferenceCount() const { return m_refs; }
-  void AddReference() { m_refs++; }
-  void RemoveReference() { m_refs--; }
+  int GetReferenceCount() const { return m_a_refs + m_p_refs; }
+  int GetActiveReferenceCount() const { return m_a_refs; }
+  void AddActiveReference() { m_a_refs++; }
+  void RemoveActiveReference() { m_a_refs--; }
+  int GetPassiveReferenceCount() const { return m_p_refs; }
+  void AddPassiveReference() { m_p_refs++; }
+  void RemovePassiveReference() { m_p_refs--; }
 };
 
 #endif
