@@ -315,13 +315,21 @@ void cPopulationCell::AddGenomeFragments(const cGenome& genome) {
 
 	m_world->GetPopulation().AdjustHGTResource(genome.GetSize());
 
+	// copy & rotate this genome to remove bais for the beginning and end of the genome:
+	cGenome g(genome);
+	g.Rotate(m_world->GetRandom().GetInt(g.GetSize()));
+	
 	// chop this genome up into pieces, add each to the back of this cell's buffer.
-	int remaining_size=genome.GetSize();
-	const cInstruction* i=&genome[0];
+	int remaining_size=g.GetSize();
+	const cInstruction* i=&g[0];
 	do {
-		int fsize = std::min(remaining_size,
-												 (int)floor(m_world->GetRandom().GetRandNormal(m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
-																																			 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get())));
+		int fsize=0;
+		while(!fsize) {
+			fsize = std::min(remaining_size,
+											 static_cast<int>(floor(fabs(m_world->GetRandom().GetRandNormal(m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
+																																											m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get())))));
+		}
+		
 		m_hgt->fragments.push_back(cGenome(i, i+fsize));
 		i+=fsize;
 		remaining_size-=fsize;

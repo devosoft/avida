@@ -2952,7 +2952,9 @@ void cStats::GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragm
 	m_hgt_metabolized.Add(fragment.GetSize());
 }
 
-void cStats::GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment) {
+/*! Called when a fragment is inserted into an offspring's genome via HGT.
+ */
+void cStats::GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location) {
 	m_hgt_inserted.Add(fragment.GetSize());
 }
 

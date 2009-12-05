@@ -67,18 +67,37 @@ public:
 	 the base string is [begin, end).  (End points to the element immediately following
 	 the match).
 	 */
+	//! Substring match record.
 	struct substring_match {
 		//! Default constructor.
-		substring_match() : begin(0), end(0), cost(0) { }
-		//! Operator< overload to support std::min_element.
-		bool operator<(const substring_match& sm) { return cost < sm.cost; }
+		substring_match() : begin(0), end(0), cost(0), size(0) { }
+		//! Initializing constructor.
+		substring_match(int b, int e, int c=0, std::size_t s=0) : begin(b), end(e), cost(c), size(s) { }
+		//! Convenience method to set all values of a substring match.
+		void set(int b, int e, int c, std::size_t s) { begin = b; end = e; cost = c; size = s; }
+		//! Operator< overload.
+		bool operator<(const substring_match& that) const { return cost < that.cost; }
+		//! Operator== overload (to support testing)
+		bool operator==(const substring_match& that) const { 
+			return (begin == that.begin) && (end == that.end) && (cost == that.cost) && (size == that.size);
+		}
+		//! Distance between begin and end.
+		std::size_t distance();
+		//! Resize to n (preserve the absolute distance between begin and end, based around begin).
+		void resize(std::size_t n);
+		//! Rotate around a size of n.
+		void rotate(int r, std::size_t n);
+		
 		int begin; //!< Beginning of the substring match.
 		int end; //!< Ending of the substring match.
 		int cost; //!< Cost (edit distance) of this match.
+		std::size_t size; //!< Size of the base string.
 	};
 	
-	//! Find (one of) the best substring matches of substring in base.
-	static substring_match FindSubstringMatch(const cGenome& base, const cGenome& substring);
+	//! Find (one of) the best matches of substring in base.
+	static substring_match FindSubstringMatch(const cGenome& base, const cGenome& substring);	
+	//! Find (one of) the best unbiased matches of substring in base, respecting genome circularity.
+	static substring_match FindUnbiasedCircularMatch(cAvidaContext& ctx, const cGenome& base, const cGenome& substring);
 
   // ===== Construction methods =====
   static cGenome Crop(const cGenome& genome, int start, int end);

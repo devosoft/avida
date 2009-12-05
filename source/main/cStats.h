@@ -67,6 +67,7 @@
 #include "nGeometry.h"
 #endif
 #include "cGenome.h"
+#include "cGenomeUtil.h"
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h
@@ -1031,7 +1032,7 @@ public:
 	//! Called when an organism metabolizes a genome fragment.
 	void GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment);
 	//! Called when an organism inserts a genome fragment.
-	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment);
+	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location);
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
 };

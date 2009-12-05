@@ -189,6 +189,77 @@ void cGenome::Replace(int pos, int num_sites, const cGenome& genome)
   for (int i = 0; i < genome.GetSize(); i++) m_genome[i + pos] = genome[i];
 }
 
+/*! Replace [begin, end) instructions in this genome with g, respecting genome circularity.
+ 
+ This method replaces [begin,end) instructions in this genome with those in g.  Begin and end
+ follow STL-iterator semantics, which is to say that end "points" to **one past** the last
+ instruction that will be replaced.
+ 
+ Also, circularity of the genome is respected, which means that if end < begin 
+ (the instructions that are being replaced wrap-around the end of the genome), then
+ the replacement will too.
+ 
+ Caveat: if length([begin,end)) != length(g), all size changes are made at end.
+ */
+void cGenome::Replace(const cGenome& g, int begin, int end) {
+	if(begin == end) {
+		// we're actually doing an insertion...
+		Insert(begin, g);
+	} else if(begin < end) {
+		// no wrap-around
+		Replace(begin, end-begin, g);
+	} else {
+		// replacement wraps around the end.  two different replacements to do now:
+		// [begin, size) and [0, end).
+		
+		// first, replace the [begin, size) region of this genome with as much of g
+		// as we can get.
+		int tail_size = std::min(GetSize()-begin, g.GetSize());
+		cGenome tail(&g[0], &g[0]+tail_size);
+		Replace(begin, GetSize()-begin, tail);
+
+		// now, replace the [0, end) region or remove it if the whole fragment
+		// was already copied in:
+		if(tail_size != g.GetSize()) {
+			cGenome head(&g[0]+tail_size, &g[0]+g.GetSize());
+			Replace(0, end, head);
+		} else if(end > 0) {
+			Remove(0, end);
+		}
+	}
+}
+
+/*! Rotate this genome forward n instructions.
+ 
+ "Rotation" in this sense means to move instructions from begin->end, with instructions
+ at the end wrapping around to the beginning.  Specifically, given a genome
+ [0... n... m-n... m], Rotate(n) moves instructions to create [m-n... m, 0... n].
+ 
+ Negative rotation is supported, and moves instructions from the beginning to the end.
+ */
+void cGenome::Rotate(int n) {
+	assert(n < m_active_size);
+	if(n==0) { return; }
+
+	cInstruction* begin = &operator[](0);
+	cInstruction* end = &operator[](0) + GetSize();
+	
+	if(n > 0) {
+		// forward
+		cGenome head(end-n, end);
+		cGenome tail(begin, end-n);
+		head.Append(tail);
+		operator=(head);
+	} else {
+		assert(false);
+		// backward
+		cGenome head(begin, begin-n); // n is < 0, so this is addition.
+		cGenome tail(begin-n, end);
+		tail.Append(head);
+		operator=(tail);
+	}
+}
+
 
 void cGenome::operator=(const cGenome& other_genome)
 {
