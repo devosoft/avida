@@ -4013,6 +4013,7 @@ class cActionKillNAboveResourceThreshold : public cAction
  - The radius of the kill zone (default: 0)
  - The name of the resource
  - The amount of resource below which to execute the kill (default: 0)
+ - The fraction of orgs in the region to kill (1=all, 0.5 leave half) (default: 1) -- useful for controlling density with biofilms
  */
 
 class cActionKillWithinRadiusBelowResourceThreshold : public cAction
@@ -4022,17 +4023,19 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
     int m_radius;
     cString m_resname;
     double m_threshold;
+    double m_kill_density;
   public:
-    cActionKillWithinRadiusBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0)
+    cActionKillWithinRadiusBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
     {
       cString largs(args);
       if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
       if (largs.GetSize()) m_radius = largs.PopWord().AsInt();
       if (largs.GetSize()) m_resname = largs.PopWord();
       if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_kill_density = largs.PopWord().AsDouble();
      }
     
-    static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0]"; }
+    static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]"; }
     
     void Process(cAvidaContext& ctx)
     {
@@ -4045,6 +4048,8 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
       assert(m_radius <= world_x);
       assert(m_radius <= world_y);
       assert(m_threshold >= 0.0);
+      assert(m_kill_density >= 0.0);
+      assert(m_kill_density <= 1.0);
       assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
       
       cPopulation& pop = m_world->GetPopulation();
@@ -4081,7 +4086,9 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
               
               int current_cell = (world_x * row_adj) + col_adj;
 							cPopulationCell& cell = pop.GetCell(current_cell);
-							if (cell.IsOccupied()) {
+              m_world->GetStats().IncNumCellsScannedAtKill();
+
+							if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
 								pop.KillOrganism(cell);
 								m_world->GetStats().IncNumOrgsKilled();
 							} else {

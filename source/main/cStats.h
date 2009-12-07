@@ -343,6 +343,7 @@ private:
   // Number of organisms killed by kill actions
   int num_orgs_killed;
 	int num_unoccupied_cell_kill_attempts;
+  int num_cells_scanned_at_kill;
   
   // Number of migrations that have been made
   int num_migrations;
@@ -577,6 +578,7 @@ public:
   
   void IncNumOrgsKilled() { num_orgs_killed++; }
 	void IncNumUnoccupiedCellAttemptedToKill() { num_unoccupied_cell_kill_attempts++; }
+  void IncNumCellsScannedAtKill() { num_cells_scanned_at_kill++; }
   void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
@@ -753,6 +755,7 @@ public:
   int GetSpeculativeWaste() const { return m_spec_waste; }
   
   int GetNumOrgsKilled() const { return num_orgs_killed; }
+  int GetNumCellsScannedAtKill() const { return num_cells_scanned_at_kill; }
   int GetNumMigrations() const { return num_migrations; }
 
   // this value gets recorded when a creature with the particular
