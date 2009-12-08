@@ -430,6 +430,7 @@ private:
   bool Inst_TaskIOExpire(cAvidaContext& ctx);
   bool Inst_TaskInput(cAvidaContext& ctx);
   bool Inst_TaskOutput(cAvidaContext& ctx);
+  bool Inst_TaskOutputZero(cAvidaContext& ctx);
   bool Inst_TaskOutputExpire(cAvidaContext& ctx);
 
   // Head-based Instructions

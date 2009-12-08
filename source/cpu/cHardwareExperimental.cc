@@ -134,6 +134,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("IO-expire", &cHardwareExperimental::Inst_TaskIOExpire, (nInstFlag::DEFAULT | nInstFlag::STALL), "Output ?BX?, and input new number back into ?BX?, if the number has not yet expired"),
     tInstLibEntry<tMethod>("input", &cHardwareExperimental::Inst_TaskInput, nInstFlag::STALL, "Input new number into ?BX?"),
     tInstLibEntry<tMethod>("output", &cHardwareExperimental::Inst_TaskOutput, nInstFlag::STALL, "Output ?BX?"),
+    tInstLibEntry<tMethod>("output-zero", &cHardwareExperimental::Inst_TaskOutputZero, nInstFlag::STALL, "Output ?BX?"),
     tInstLibEntry<tMethod>("output-expire", &cHardwareExperimental::Inst_TaskOutputExpire, nInstFlag::STALL, "Output ?BX?, as long as the output has not yet expired"),
     
     tInstLibEntry<tMethod>("mult", &cHardwareExperimental::Inst_Mult, 0, "Multiple BX by CX and place the result in ?BX?"),
@@ -1467,6 +1468,20 @@ bool cHardwareExperimental::Inst_TaskOutput(cAvidaContext& ctx)
   return true;
 }
 
+
+bool cHardwareExperimental::Inst_TaskOutputZero(cAvidaContext& ctx)
+{
+  const int reg_used = FindModifiedRegister(REG_BX);
+  sInternalValue& reg = m_threads[m_cur_thread].reg[reg_used];
+  
+  // Do the "put" component
+  m_organism->DoOutput(ctx, reg.value);  // Check for tasks completed.
+  m_last_output = m_cycle_count;
+  
+  setInternalValue(reg, 0);
+  
+  return true;
+}
 
 bool cHardwareExperimental::Inst_TaskOutputExpire(cAvidaContext& ctx)
 {
