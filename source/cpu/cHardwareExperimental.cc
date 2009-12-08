@@ -173,6 +173,8 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     
     tInstLibEntry<tMethod>("repro", &cHardwareExperimental::Inst_Repro, nInstFlag::STALL, "Instantly reproduces the organism"),
 
+    tInstLibEntry<tMethod>("die", &cHardwareExperimental::Inst_Die, nInstFlag::STALL, "Instantly kills the organism"),
+
     
     // Goto Variants
     tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows"),
@@ -2150,6 +2152,14 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   if (parent_alive) {
     if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) Reset(ctx);
   }
+  
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_Die(cAvidaContext& ctx)
+{
+  m_organism->Die();
   
   return true;
 }

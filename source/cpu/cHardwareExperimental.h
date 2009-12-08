@@ -478,6 +478,7 @@ private:
   
   // Replication
   bool Inst_Repro(cAvidaContext& ctx);
+  bool Inst_Die(cAvidaContext& ctx);
   
   // State Grid Navigation
   bool Inst_SGMove(cAvidaContext& ctx);
