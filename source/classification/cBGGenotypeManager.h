@@ -55,6 +55,8 @@ private:
   tList<cBGGenotype> m_active_hash[nBGGenotypeManager::HASH_SIZE];
   tManagedPointerArray<tList<cBGGenotype> > m_active_sz;
   tList<cBGGenotype> m_historic;
+  cBGGenotype* m_coalescent;
+  int m_best;
   int m_next_id;
   int m_dom_prev;
   int m_dom_time;
@@ -78,8 +80,10 @@ private:
   cString nameGenotype(int size, int num) const;
   
   void removeGenotype(cBGGenotype* genotype);
+  void updateCoalescent();  
   
   inline void resizeActiveList(int size);
+  inline cBGGenotype* getBest();
 };
 
 
@@ -87,5 +91,11 @@ inline void cBGGenotypeManager::resizeActiveList(int size)
 {
   if (m_active_sz.GetSize() <= size) m_active_sz.Resize(size + 1);
 }
+
+inline cBGGenotype* cBGGenotypeManager::getBest()
+{
+  return (m_best) ? m_active_sz[m_best].GetLast() : NULL;
+}
+
 
 #endif

@@ -33,6 +33,8 @@
 
 cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
   : m_world(world)
+  , m_coalescent(NULL)
+  , m_best(0)
   , m_next_id(1)
   , m_dom_prev(-1)
   , m_dom_time(0)
@@ -96,6 +98,10 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   // Remove from old size list
   m_active_sz[old_size].Remove(genotype);
 
+  if (old_size == m_best && m_active_sz[old_size].GetSize() == 0) {
+    for (m_best--; m_best > 0; m_best--) if (m_active_sz[m_best].GetSize()) break;
+  }
+  
   // Handle defunct genotypes
   if (new_size == 0 && genotype->GetActiveReferenceCount() == 0) {
     removeGenotype(genotype);
@@ -105,6 +111,7 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   // Add to new size list
   resizeActiveList(new_size);
   m_active_sz[new_size].Push(genotype);
+  if (new_size > m_best) m_best = new_size;
 }
 
 
@@ -154,7 +161,37 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
   const tArray<cBGGenotype*>& parents = genotype->GetParents();
   for (int i = 0; i < parents.GetSize(); i++) {
     parents[i]->RemovePassiveReference();
-    // @TODO - update coalescent?
+    updateCoalescent();
     removeGenotype(parents[i]);
   }
+  
+  m_historic.Remove(genotype);
+  delete genotype;
 }
+
+void cBGGenotypeManager::updateCoalescent()
+{
+  if (m_coalescent && (m_coalescent->GetActiveReferenceCount() > 0 || m_coalescent->GetPassiveReferenceCount() > 1)) return;
+  
+  if (m_best == 0) {
+    m_coalescent = NULL;
+    // m_world->GetStats().SetCoalescentGenotypeDepth(-1);
+    return;
+  }
+  
+  // @TODO - assumes asexual population
+  cBGGenotype* test_gen = getBest();
+  cBGGenotype* found_gen = test_gen;
+  cBGGenotype* parent_gen = (found_gen->GetParents().GetSize()) ? found_gen->GetParents()[0] : NULL;
+
+  while (parent_gen != NULL) {
+    if (test_gen->GetActiveReferenceCount() > 0 || test_gen->GetPassiveReferenceCount() > 1) found_gen = test_gen;
+    
+    test_gen = parent_gen;
+    parent_gen = (found_gen->GetParents().GetSize()) ? found_gen->GetParents()[0] : NULL;
+  }
+  
+  m_coalescent = found_gen;
+  // m_world->GetStats().SetCoalescentGenotypeDepth(m_coalescent->GetDepth());
+}
+

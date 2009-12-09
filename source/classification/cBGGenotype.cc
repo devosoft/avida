@@ -47,7 +47,6 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   if (parents) {
     m_parents.Resize(parents->GetSize());
     for (int i = 0; i < m_parents.GetSize(); i++) {
-      // @TODO - is there a better way to handle biogroup -> genotype transformation or a good way to eliminate the need?
       m_parents[i] = static_cast<cBGGenotype*>((*parents)[i]);
       m_parents[i]->AddPassiveReference();
     }
