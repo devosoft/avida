@@ -26,6 +26,7 @@
 #include "cPopulation.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cCodeLabel.h"
@@ -4722,6 +4723,67 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
   
   // Output historic genotypes
   m_world->GetClassificationManager().DumpHistoricSexSummary(df.GetOFStream(), false);
+  
+  m_world->GetDataFileManager().Remove(filename);
+  return true;
+}
+
+bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteRawComment("#filetype genotype_data");
+  df.WriteRawComment("#format id parents num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset");
+  df.WriteComment("");
+  df.WriteComment("Structured Population Save (BioGroup)");
+  df.WriteTimeStamp();
+  
+  // Build up hash table of all current genotypes and the cells in which the organisms reside
+  tHashTable<int, tKVPair<cBioGroup*, tArray<sOrgInfo> >* > genotype_map;
+  
+  for (int i = 0; i < cell_array.GetSize(); i++) {
+    if (cell_array[i].IsOccupied()) {
+      cOrganism* org = cell_array[i].GetOrganism();
+      cBioGroup* genotype = org->GetBioGroup("genotype");
+      int offset = org->GetPhenotype().GetCPUCyclesUsed();
+      
+      tKVPair<cBioGroup*, tArray<sOrgInfo> >* map_entry = NULL;
+      if (genotype_map.Find(genotype->GetID(), map_entry)) {
+        map_entry->Value().Push(sOrgInfo(i, offset));
+      } else {
+        map_entry = new tKVPair<cBioGroup*, tArray<sOrgInfo> >(genotype, tArray<sOrgInfo>(0));
+        map_entry->Value().Push(sOrgInfo(i, offset));
+        genotype_map.Add(genotype->GetID(), map_entry);
+      }
+    }
+  }
+  
+  // Output all current genotypes
+  
+  tArray<tKVPair<cBioGroup*, tArray<sOrgInfo> >* > genotype_entries;
+  genotype_map.GetValues(genotype_entries);
+  for (int i = 0; i < genotype_entries.GetSize(); i++) {
+    cBioGroup* genotype = genotype_entries[i]->Key();
+    
+    genotype->Save(df);
+    
+    tArray<sOrgInfo>& cells = genotype_entries[i]->Value();
+    cString cellstr;
+    cString offsetstr;
+    cellstr.Set("%d", cells[0].cell_id);
+    offsetstr.Set("%d", cells[0].offset);
+    for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
+      cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
+      offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
+    }
+    df.Write(cellstr, "Occupied Cell IDs");
+    df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
+    df.Endl();
+    
+    delete genotype_entries[i];
+  }
+  
+  // Output historic genotypes
+  m_world->GetClassificationManager().SaveBioGroups("genotype", df);
   
   m_world->GetDataFileManager().Remove(filename);
   return true;

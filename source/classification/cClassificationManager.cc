@@ -92,6 +92,16 @@ void cClassificationManager::ClassifyNewBioUnit(cBioUnit* bu)
   }
 }
 
+void cClassificationManager::SaveBioGroups(const cString& role, cDataFile& df)
+{
+  for (int i = 0; i < m_bgms.GetSize(); i++) {
+    if (m_bgms[i]->GetRole() == role) {
+      m_bgms[i]->SaveBioGroups(df);
+      return;
+    }
+  }
+}
+
 
 void cClassificationManager::UpdateReset()
 {

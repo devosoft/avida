@@ -25,6 +25,8 @@
 #include "cBGGenotype.h"
 
 #include "cBGGenotypeManager.h"
+#include "cDataFile.h"
+#include "cStringUtil.h"
 
 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
@@ -94,6 +96,32 @@ void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
   RemoveActiveReference();
   m_mgr->AdjustGenotype(this, m_num_organisms--, m_num_organisms);  
 }
+
+
+void cBGGenotype::Save(cDataFile& df)
+{
+  df.Write(m_id, "ID");
+  cString parent_str("");
+  if (m_parents.GetSize()) {
+    parent_str += cStringUtil::Stringf("%d", m_parents[0]->GetID());
+    for (int i = 1; i < m_parents.GetSize(); i++) {
+      parent_str += cStringUtil::Stringf(",%d", m_parents[i]->GetID());
+    }
+  }
+  df.Write(parent_str, "Parent ID(s)");
+  df.Write(m_num_organisms, "Number of currently living organisms");
+  df.Write(m_total_organisms, "Total number of organisms that ever existed");
+  df.Write(m_genome.GetGenome().GetSize(), "Genome Length");
+  df.Write(m_merit.Average(), "Average Merit");
+  df.Write(m_gestation_time.Average(), "Average Gestation Time");
+  df.Write(m_fitness.Average(), "Average Fitness");
+  df.Write(m_update_born, "Update Born");
+  df.Write(m_update_deactivated, "Update Deactivated");
+  df.Write(m_depth, "Phylogenetic Depth");
+  df.Write(m_genome.GetGenome().AsString(), "Genome Sequence");
+  
+}
+
 
 
 bool cBGGenotype::Matches(cBioUnit* bu)

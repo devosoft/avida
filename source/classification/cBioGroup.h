@@ -32,7 +32,9 @@
 #include "cBioUnit.h"
 #endif
 
+class cDataFile;
 template<typename T> class tArray;
+
 
 class cBioGroup
 {
@@ -46,11 +48,15 @@ public:
   
   virtual int GetRoleID() const = 0;
   virtual const cString& GetRole() const = 0;
+  virtual int GetID() const = 0;
   
   virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL) = 0;
   virtual void RemoveBioUnit(cBioUnit* bu) = 0;
   
   virtual int GetDepth() const = 0;
+  
+  virtual void Save(cDataFile& df) = 0;
+  
   
   int GetReferenceCount() const { return m_a_refs + m_p_refs; }
   int GetActiveReferenceCount() const { return m_a_refs; }

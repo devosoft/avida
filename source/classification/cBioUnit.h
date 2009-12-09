@@ -52,6 +52,7 @@ public:
   virtual const cMetaGenome& GetMetaGenome() const = 0;
   
   const tArray<cBioGroup*>& GetBioGroups() const { return m_bio_groups; }
+  cBioGroup* GetBioGroup(const cString& role) const;
   
   void AddClassification(cBioGroup* bg) { m_bio_groups.Push(bg); }
   void SelfClassify(const tArray<const tArray<cBioGroup*>*>& parents);

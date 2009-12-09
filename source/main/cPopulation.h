@@ -242,6 +242,7 @@ public:
   bool LoadClone(std::ifstream& fp);
   bool LoadDumpFile(cString filename, int update);
   bool SaveStructuredPopulation(const cString& filename);
+  bool SaveStructuredPopulationBG(const cString& filename);
   bool LoadStructuredPopulation(const cString& filename);
   bool DumpMemorySummary(std::ofstream& fp);
 

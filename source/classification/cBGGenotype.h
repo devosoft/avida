@@ -94,11 +94,14 @@ public:
   // cBioGroup Interface Methods
   int GetRoleID() const;
   const cString& GetRole() const;  
+  int GetID() const { return m_id; }
   
   cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL);
   void RemoveBioUnit(cBioUnit* bu);
   
   int GetDepth() const { return m_depth; }
+  
+  void Save(cDataFile& df);
 
   
   // Genotype Specific Methods
@@ -111,7 +114,6 @@ public:
   inline bool IsThreshold() const { return m_threshold; }
   inline bool IsActive() const { return m_active; }
   
-  inline int GetID() const { return m_id; }
   inline int GetUpdateBorn() const { return m_update_born; }
   inline int GetUpdateDeactivated() const { return m_update_deactivated; }
   

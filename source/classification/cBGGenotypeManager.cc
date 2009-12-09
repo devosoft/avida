@@ -25,6 +25,7 @@
 #include "cBGGenotypeManager.h"
 
 #include "cBGGenotype.h"
+#include "cDataFile.h"
 #include "cGenome.h"
 #include "cStats.h"
 #include "cStringUtil.h"
@@ -64,6 +65,20 @@ void cBGGenotypeManager::UpdateReset()
       while (list_it.Next() != NULL) list_it.Get()->UpdateReset();
     }    
   }
+}
+
+
+void cBGGenotypeManager::SaveBioGroups(cDataFile& df)
+{
+  // @TODO - Just dump historic for now.  Need structure output format to support top down save
+  //         With a structured save (and save params passed through), a "structured population save" could be attained
+  //         by simply calling the bio group save.  As it stands right now, cPopulation must decorate columns with additional
+  //         data about active genotypes, yet the bio group interface really shouldn't know about active/inactive genotypes.
+  //         Thus it is not proper to split bgm save into a save historic and save active.  Right now we'll just make
+  //         cPopulation do the work.
+  
+  tListIterator<cBGGenotype> list_it(m_historic);
+  while (list_it.Next() != NULL) list_it.Get()->Save(df);
 }
 
 

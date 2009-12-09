@@ -57,6 +57,7 @@
 class cAvidaContext;
 class cBioGroupManager;
 class cBioUnit;
+class cDataFile;
 class cLineage;
 class cOrganism;
 class cWorld;
@@ -114,7 +115,9 @@ public:
   bool RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role);
   
   void ClassifyNewBioUnit(cBioUnit* bu);
-  
+
+  void SaveBioGroups(const cString& role, cDataFile& df);
+
   
   // Genotype Manipulation
   cGenotype* GetGenotype(const cGenome& in_genome, cGenotype* parent1, cGenotype* parent2);

@@ -25,6 +25,7 @@
 #include "cBioUnit.h"
 
 #include "cBioGroup.h"
+#include "cString.h"
 #include "tArrayMap.h"
 #include "tArraySet.h"
 
@@ -34,6 +35,13 @@ cBioUnit::~cBioUnit()
   // Notify all groups that this bio unit has been terminated
   for (int i = 0; i < m_bio_groups.GetSize(); i++) m_bio_groups[i]->RemoveBioUnit(this);
 }
+
+cBioGroup* cBioUnit::GetBioGroup(const cString& role) const
+{
+  for (int i = 0; i < m_bio_groups.GetSize(); i++) if (m_bio_groups[i]->GetRole() == role) return m_bio_groups[i];
+  return NULL;
+}
+
 
 
 void cBioUnit::SelfClassify(const tArray<const tArray<cBioGroup*>*>& parents)

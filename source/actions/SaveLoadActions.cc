@@ -260,6 +260,29 @@ public:
 };
 
 
+class cActionSaveStructuredPopulationBG : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionSaveStructuredPopulationBG(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("detail-%d.bgspop", m_world->GetStats().GetUpdate());
+    m_world->GetPopulation().SaveStructuredPopulationBG(filename);
+  }
+};
+
+
 /*
  Like detail_pop, but for sexual populations. 
  Info for both parents is writen out.
@@ -406,6 +429,7 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpPopulation>("DumpPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
   action_lib->Register<cActionSaveStructuredPopulation>("SaveStructuredPopulation");
+  action_lib->Register<cActionSaveStructuredPopulationBG>("SaveStructuredPopulationBG");
   action_lib->Register<cActionSaveSexPopulation>("SaveSexPopulation");
   action_lib->Register<cActionSaveParasitePopulation>("SaveParasitePopulation");
   action_lib->Register<cActionSaveHistoricPopulation>("SaveHistoricPopulation");

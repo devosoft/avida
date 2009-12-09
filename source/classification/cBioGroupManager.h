@@ -31,6 +31,7 @@
 
 class cBioGroup;
 class cBioUnit;
+class cDataFile;
 
 
 class cBioGroupManager
@@ -49,6 +50,8 @@ public:
   
   virtual void UpdateReset() = 0;
     
+  virtual void SaveBioGroups(cDataFile& df) = 0;
+
   inline int GetRoleID() const { return m_role_id; }
   inline const cString& GetRole() const { return m_role; }
   

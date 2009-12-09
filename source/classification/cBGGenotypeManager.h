@@ -71,6 +71,8 @@ public:
   
   void UpdateReset();
   
+  void SaveBioGroups(cDataFile& df);
+  
   // Genotype Manager Methods
   cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
   void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
