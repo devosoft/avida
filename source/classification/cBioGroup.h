@@ -51,6 +51,7 @@ public:
   virtual int GetID() const = 0;
   
   virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL) = 0;
+  virtual void HandleBioUnitGestation(cBioUnit* bu) = 0;
   virtual void RemoveBioUnit(cBioUnit* bu) = 0;
   
   virtual int GetDepth() const = 0;
@@ -60,11 +61,11 @@ public:
   
   int GetReferenceCount() const { return m_a_refs + m_p_refs; }
   int GetActiveReferenceCount() const { return m_a_refs; }
-  void AddActiveReference() { m_a_refs++; }
-  void RemoveActiveReference() { m_a_refs--; }
+  void AddActiveReference() { m_a_refs++; assert(m_a_refs >= 0); }
+  void RemoveActiveReference() { m_a_refs--; assert(m_a_refs >= 0); }
   int GetPassiveReferenceCount() const { return m_p_refs; }
-  void AddPassiveReference() { m_p_refs++; }
-  void RemovePassiveReference() { m_p_refs--; }
+  void AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
+  void RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }
 };
 
 #endif

@@ -26,6 +26,7 @@
 
 #include "cBGGenotypeManager.h"
 #include "cDataFile.h"
+#include "cPhenotype.h"
 #include "cStringUtil.h"
 
 
@@ -46,6 +47,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   , m_last_num_organisms(0)
   , m_total_organisms(1)
 {
+  AddActiveReference();
   if (parents) {
     m_parents.Resize(parents->GetSize());
     for (int i = 0; i < m_parents.GetSize(); i++) {
@@ -58,7 +60,6 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
 
 cBGGenotype::~cBGGenotype()
 {
-  for (int i = 0; i < m_parents.GetSize(); i++) m_parents[i]->RemovePassiveReference();
 }
 
 int cBGGenotype::GetRoleID() const
@@ -80,7 +81,8 @@ cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* par
   if (Matches(bu)) {
     m_breed_true.Inc();
     m_total_organisms++;
-    m_mgr->AdjustGenotype(this, m_num_organisms++, m_num_organisms);
+    m_num_organisms++;
+    m_mgr->AdjustGenotype(this, m_num_organisms - 1, m_num_organisms);
     AddActiveReference();
     return this;
   }  
@@ -89,12 +91,24 @@ cBioGroup* cBGGenotype::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* par
   return m_mgr->ClassifyNewBioUnit(bu, parents);
 }
 
+void cBGGenotype::HandleBioUnitGestation(cBioUnit* bu)
+{
+  const cPhenotype& phenotype = bu->GetPhenotype();
+  
+  m_copied_size.Add(phenotype.GetCopiedSize());
+  m_exe_size.Add(phenotype.GetExecutedSize());
+  m_gestation_time.Add(phenotype.GetGestationTime());
+  m_merit.Add(phenotype.GetMerit().GetDouble());
+  m_fitness.Add(phenotype.GetFitness());
+}
+
 
 void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
 {
   m_deaths.Inc();
   RemoveActiveReference();
-  m_mgr->AdjustGenotype(this, m_num_organisms--, m_num_organisms);  
+  m_num_organisms--;
+  m_mgr->AdjustGenotype(this, m_num_organisms + 1, m_num_organisms);
 }
 
 

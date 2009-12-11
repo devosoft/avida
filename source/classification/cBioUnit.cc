@@ -80,3 +80,8 @@ void cBioUnit::SelfClassify(const tArray<const tArray<cBioGroup*>*>& parents)
     }
   }
 }
+
+void cBioUnit::HandleGestation()
+{
+  for (int i = 0; i < m_bio_groups.GetSize(); i++) m_bio_groups[i]->HandleBioUnitGestation(this);
+}

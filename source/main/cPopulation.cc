@@ -498,6 +498,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 	}
   
   // Do any statistics on the parent that just gave birth...
+  parent_organism->HandleGestation();
   parent_genotype->AddGestationTime( parent_phenotype.GetGestationTime() );
   parent_genotype->AddFitness(       parent_phenotype.GetFitness()       );
   parent_genotype->AddMerit(         parent_phenotype.GetMerit()         );

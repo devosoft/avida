@@ -81,7 +81,6 @@ private:
   cDoubleSum m_copied_size;
   cDoubleSum m_exe_size;
   cDoubleSum m_gestation_time;
-  cDoubleSum m_repro_rate;
   cDoubleSum m_merit;
   cDoubleSum m_fitness;
     
@@ -97,6 +96,7 @@ public:
   int GetID() const { return m_id; }
   
   cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL);
+  void HandleBioUnitGestation(cBioUnit* bu);
   void RemoveBioUnit(cBioUnit* bu);
   
   int GetDepth() const { return m_depth; }
@@ -122,12 +122,12 @@ public:
   void SetThreshold() { m_threshold = true; }
   void ClearThreshold() { m_threshold = false; }
   
-  void Deactivate() { m_active = false; }
+  void Deactivate(int update) { m_active = false; m_update_deactivated = update; }
   
   inline const tArray<cBGGenotype*> GetParents() const { return m_parents; }
 
   bool Matches(cBioUnit* bu);
-  inline void NotifyNewBioUnit(cBioUnit* bu) { m_total_organisms++; m_num_organisms++; m_breed_in.Inc(); }
+  inline void NotifyNewBioUnit(cBioUnit* bu) { m_total_organisms++; m_num_organisms++; m_breed_in.Inc(); AddActiveReference(); }
   void UpdateReset();
 };
 

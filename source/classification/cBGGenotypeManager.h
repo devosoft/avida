@@ -51,7 +51,6 @@ class cBGGenotypeManager : public cBioGroupManager
 private:
   cWorld* m_world;
 
-  unsigned int m_sz_count[MAX_CREATURE_SIZE];
   tList<cBGGenotype> m_active_hash[nBGGenotypeManager::HASH_SIZE];
   tManagedPointerArray<tList<cBGGenotype> > m_active_sz;
   tList<cBGGenotype> m_historic;

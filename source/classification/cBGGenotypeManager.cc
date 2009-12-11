@@ -40,7 +40,6 @@ cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
   , m_dom_prev(-1)
   , m_dom_time(0)
 {
-  for (int i = 0; i < MAX_CREATURE_SIZE; i++) m_sz_count[i] = 0;
 }
 
 cBGGenotypeManager::~cBGGenotypeManager()
@@ -78,7 +77,10 @@ void cBGGenotypeManager::SaveBioGroups(cDataFile& df)
   //         cPopulation do the work.
   
   tListIterator<cBGGenotype> list_it(m_historic);
-  while (list_it.Next() != NULL) list_it.Get()->Save(df);
+  while (list_it.Next() != NULL) {
+    list_it.Get()->Save(df);
+    df.Endl();
+  }
 }
 
 
@@ -161,7 +163,7 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
   if (genotype->IsActive()) {
     int list_num = hashGenome(genotype->GetMetaGenome().GetGenome());
     m_active_hash[list_num].Remove(genotype);
-    genotype->Deactivate();
+    genotype->Deactivate(m_world->GetStats().GetUpdate());
     m_historic.Push(genotype);
   }
   
@@ -203,7 +205,7 @@ void cBGGenotypeManager::updateCoalescent()
     if (test_gen->GetActiveReferenceCount() > 0 || test_gen->GetPassiveReferenceCount() > 1) found_gen = test_gen;
     
     test_gen = parent_gen;
-    parent_gen = (found_gen->GetParents().GetSize()) ? found_gen->GetParents()[0] : NULL;
+    parent_gen = (test_gen->GetParents().GetSize()) ? test_gen->GetParents()[0] : NULL;
   }
   
   m_coalescent = found_gen;
