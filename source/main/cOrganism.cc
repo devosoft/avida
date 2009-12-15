@@ -54,11 +54,11 @@
 using namespace std;
 
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, eBioUnitSource src,
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation, eBioUnitSource src,
                      const cString& src_args)
   : m_world(world)
   , m_genotype(NULL)
-  , m_phenotype(world)
+  , m_phenotype(world, parent_generation)
   , m_src(src)
   , m_src_args(src_args)
   , m_initial_genome(genome)
@@ -99,10 +99,10 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   initialize(ctx);
 }
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
-                     eBioUnitSource src, const cString& src_args)
+                     int parent_generation, eBioUnitSource src, const cString& src_args)
   : m_world(world)
   , m_genotype(NULL)
-  , m_phenotype(world)
+  , m_phenotype(world, parent_generation)
   , m_src(src)
   , m_src_args(src_args)
   , m_initial_genome(hw_type, inst_set_id, genome)
@@ -142,11 +142,11 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   initialize(ctx);
 }
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set,
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set, int parent_generation,
                      eBioUnitSource src, const cString& src_args)
   : m_world(world)
   , m_genotype(NULL)
-  , m_phenotype(world)
+  , m_phenotype(world, parent_generation)
   , m_src(src)
   , m_src_args(src_args)
   , m_initial_genome(genome)

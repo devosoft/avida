@@ -62,6 +62,7 @@ private:
   };
   
   int m_id;
+  int m_generation_born;
   int m_update_born;
   int m_update_deactivated;
   int m_depth;
@@ -127,7 +128,7 @@ public:
   inline const tArray<cBGGenotype*> GetParents() const { return m_parents; }
 
   bool Matches(cBioUnit* bu);
-  inline void NotifyNewBioUnit(cBioUnit* bu) { m_total_organisms++; m_num_organisms++; m_breed_in.Inc(); AddActiveReference(); }
+  void NotifyNewBioUnit(cBioUnit* bu);
   void UpdateReset();
 };
 

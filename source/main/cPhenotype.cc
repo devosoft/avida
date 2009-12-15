@@ -40,7 +40,7 @@
 using namespace std;
 
 
-cPhenotype::cPhenotype(cWorld* world)
+cPhenotype::cPhenotype(cWorld* world, int parent_generation)
   : m_world(world)
   , initialized(false)
   , cur_task_count(m_world->GetEnvironment().GetNumTasks())
@@ -69,7 +69,12 @@ cPhenotype::cPhenotype(cWorld* world)
   , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
   , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
   , last_sense_count(m_world->GetStats().GetSenseSize())
+  , generation(0)
 {
+  if (parent_generation >= 0) {
+    generation = parent_generation;
+    if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
+  }
 }
 
 cPhenotype::~cPhenotype()

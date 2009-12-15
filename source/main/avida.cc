@@ -49,6 +49,22 @@ using namespace std;
 
 namespace Avida {
   
+
+const char* const BioUnitSourceMap[] = {
+  "deme:compete", // SRC_DEME_COMPETE
+  "deme:copy", // SRC_DEME_COPY
+  "deme:germline", // SRC_DEME_GERMLINE
+  "deme:replicate", // SRC_DEME_REPLICATE
+  "deme:spawn", // SRC_DEME_SPAWN
+  "org:compete", // SRC_ORGANISM_COMPETE
+  "org:divide", // SRC_ORGANISM_DIVIDE
+  "org:file_load", // SRC_ORGANISM_FILE_LOAD
+  "org:random", // SRC_ORGANISM_RANDOM
+  "para:file_load", // SRC_PARASITE_FILE_LOAD
+  "para:inject", // SRC_PARASITE_INJECT
+  "testcpu", // SRC_TEST_CPU
+};
+  
 void Initialize()
 {
   cActionLibrary::Initialize();

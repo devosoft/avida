@@ -288,8 +288,8 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   }
   cOrganism* organism = NULL;
   
-  if (test_info.GetInstSet()) organism = new cOrganism(m_world, ctx, genome, test_info.GetInstSet(), SRC_TEST_CPU);
-  else organism = new cOrganism(m_world, ctx, genome, SRC_TEST_CPU);
+  if (test_info.GetInstSet()) organism = new cOrganism(m_world, ctx, genome, test_info.GetInstSet(), -1, SRC_TEST_CPU);
+  else organism = new cOrganism(m_world, ctx, genome, -1, SRC_TEST_CPU);
   
   // Copy the test mutation rates
   organism->MutationRates().Copy(test_info.MutationRates());

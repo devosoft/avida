@@ -39,6 +39,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   , m_threshold(false)
   , m_active(true)
   , m_id(in_id)
+  , m_generation_born(founder->GetPhenotype().GetGeneration())
   , m_update_born(update)
   , m_update_deactivated(-1)
   , m_depth(0)
@@ -115,6 +116,7 @@ void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
 void cBGGenotype::Save(cDataFile& df)
 {
   df.Write(m_id, "ID");
+  df.Write(Avida::BioUnitSourceMap[m_src], "Source");
   cString parent_str("");
   if (m_parents.GetSize()) {
     parent_str += cStringUtil::Stringf("%d", m_parents[0]->GetID());
@@ -129,6 +131,7 @@ void cBGGenotype::Save(cDataFile& df)
   df.Write(m_merit.Average(), "Average Merit");
   df.Write(m_gestation_time.Average(), "Average Gestation Time");
   df.Write(m_fitness.Average(), "Average Fitness");
+  df.Write(m_generation_born, "Generation Born");
   df.Write(m_update_born, "Update Born");
   df.Write(m_update_deactivated, "Update Deactivated");
   df.Write(m_depth, "Phylogenetic Depth");
@@ -142,15 +145,21 @@ bool cBGGenotype::Matches(cBioUnit* bu)
 {
   // Handle source branching
   switch (m_src) {
+    case SRC_DEME_COMPETE:
+    case SRC_DEME_COPY:
     case SRC_DEME_GERMLINE:
     case SRC_DEME_REPLICATE:
+    case SRC_DEME_SPAWN:
     case SRC_ORGANISM_COMPETE:
     case SRC_ORGANISM_DIVIDE:
     case SRC_ORGANISM_FILE_LOAD:
     case SRC_ORGANISM_RANDOM:
       switch (bu->GetUnitSource()) {
+        case SRC_DEME_COMPETE:
+        case SRC_DEME_COPY:
         case SRC_DEME_GERMLINE:
         case SRC_DEME_REPLICATE:
+        case SRC_DEME_SPAWN:
         case SRC_ORGANISM_COMPETE:
         case SRC_ORGANISM_DIVIDE:
         case SRC_ORGANISM_FILE_LOAD:
@@ -171,8 +180,11 @@ bool cBGGenotype::Matches(cBioUnit* bu)
     case SRC_PARASITE_FILE_LOAD:
     case SRC_PARASITE_INJECT:
       switch (bu->GetUnitSource()) {
+        case SRC_DEME_COMPETE:
+        case SRC_DEME_COPY:
         case SRC_DEME_GERMLINE:
         case SRC_DEME_REPLICATE:
+        case SRC_DEME_SPAWN:
         case SRC_ORGANISM_COMPETE:
         case SRC_ORGANISM_DIVIDE:
         case SRC_ORGANISM_FILE_LOAD:
@@ -201,6 +213,16 @@ bool cBGGenotype::Matches(cBioUnit* bu)
   // Compare the genomes
   return (m_genome == bu->GetMetaGenome());
 }
+
+void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)
+{
+  m_breed_in.Inc();
+  m_total_organisms++;
+  m_num_organisms++;
+  m_mgr->AdjustGenotype(this, m_num_organisms - 1, m_num_organisms);
+  AddActiveReference();
+}
+
 
 void cBGGenotype::UpdateReset()
 {

@@ -69,7 +69,7 @@ void cBGGenotypeManager::UpdateReset()
 
 void cBGGenotypeManager::SaveBioGroups(cDataFile& df)
 {
-  // @TODO - Just dump historic for now.  Need structure output format to support top down save
+  // @TODO - Just dump historic for now.  Need structured output format to support top down save
   //         With a structured save (and save params passed through), a "structured population save" could be attained
   //         by simply calling the bio group save.  As it stands right now, cPopulation must decorate columns with additional
   //         data about active genotypes, yet the bio group interface really shouldn't know about active/inactive genotypes.

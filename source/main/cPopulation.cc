@@ -5161,7 +5161,11 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype, eBioUnitS
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
   cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, new_genotype->GetGenome()); // @TODO - genotypes need metagenomes
-  cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome, src);
+  cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome, -1, src);
+  
+  // Setup the phenotype...
+  cPhenotype & phenotype = new_organism->GetPhenotype();
+  phenotype.SetupInject(new_genotype->GetGenome());  //TODO  sets merit to lenght of genotype
   
   // Classify this new organism
   m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
@@ -5171,10 +5175,6 @@ void cPopulation::InjectGenotype(int cell_id, cGenotype* new_genotype, eBioUnitS
   
   // Set the genotype...
   new_organism->SetGenotype(new_genotype);
-  
-  // Setup the phenotype...
-  cPhenotype & phenotype = new_organism->GetPhenotype();
-  phenotype.SetupInject(new_genotype->GetGenome());  //TODO  sets merit to lenght of genotype
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));
@@ -5232,7 +5232,7 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource s
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
-  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetMetaGenome(), src);
+  cOrganism* new_organism = new cOrganism(m_world, ctx, orig_org.GetMetaGenome(), orig_org.GetPhenotype().GetGeneration(), src);
 
   // Classify the new organism
   m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
@@ -5278,7 +5278,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
   cMetaGenome child_genome = parent.OffspringGenome();
   parent.GetHardware().Divide_TestFitnessMeasures(ctx);
   parent.OffspringGenome() = save_child;
-  cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome, SRC_ORGANISM_COMPETE);
+  cOrganism* new_organism = new cOrganism(m_world, ctx, child_genome, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_COMPETE);
   
   // Classify the offspring
   tArray<const tArray<cBioGroup*>*> pgrps(1);

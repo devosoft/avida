@@ -211,5 +211,9 @@ enum eBioUnitSource {
   SRC_TEST_CPU
 };
 
+namespace Avida {
+  extern const char* const BioUnitSourceMap[];
+};
+
 
 #endif

@@ -162,11 +162,12 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, eBioUnitSource src, const cString& src_args = "");
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation,
+            eBioUnitSource src, const cString& src_args = "");
   cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
-            eBioUnitSource src, const cString& src_args = "");
+            int parent_generation, eBioUnitSource src, const cString& src_args = "");
   cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set,
-            eBioUnitSource src, const cString& src_args = "");
+            int parent_generation, eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
   
   // --------  cBioUnit Methods  --------

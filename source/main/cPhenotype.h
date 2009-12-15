@@ -262,7 +262,7 @@ private:
   inline void SetInstSetSize(int inst_set_size);
 
   
-  cPhenotype(cWorld* world);
+  cPhenotype(cWorld* world, int parent_generation);
 
   
 public:
@@ -400,7 +400,7 @@ public:
   int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
-  int GetGeneration() const { assert(initialized == true); return generation; }
+  int GetGeneration() const { return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
   int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
