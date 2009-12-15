@@ -32,41 +32,26 @@
 class cDoubleSum {
 private:
   double s1;  // Sum (x)
-  double s2;  // Sum of squares (x^2)
-  double s3;  // Sum of cubes (x^3)
-  double s4;  // Sum of x^4
+  double s2;  // Sum of squared x (x^2)
   double n;
 
 public:
-  static const double INF_ERR;  // Value Returned by StdError if Infinate
-
   cDoubleSum() { Clear(); }
 
-  void Clear() { s1 = s2 = s3 = s4 = n = 0; }
+  void Clear() { s1 = s2 = n = 0; }
 
   double Count()        const { return n; }
   double N()            const { return n; }
   double Sum()          const { return s1; }
-  double S1()           const { return s1; }
-  double SumOfSquares() const { return s2; }
-  double S2()           const { return s2; }
-  double SumOfCubes()   const { return s3; }
-  double S3()           const { return s3; }
-  double S4()           const { return s4; }
 
   double Average() const { return (n > 0.0) ? (s1 / n) : 0.0; }
-  double Variance() const { return (n > 1.0) ? (s2 - s1 * s1 / n) / (n - 1.0) : INF_ERR; }
+  double Variance() const { return (n > 1.0) ? (s2 - s1 * s1 / n) / (n - 1.0) : 0.0; }
   double StdDeviation() const { return sqrt(Variance()); }
-  double StdError()  const { return (n > 1) ? sqrt(Variance() / n) : INF_ERR; }
-  double Skewness() const;
-  double Kurtosis() const;
+  double StdError()  const { return (n > 1) ? sqrt(Variance() / n) : 0.0; }
   
   // Notation Shortcuts
   double Ave() const { return Average(); }
   double Var() const { return Variance(); }
-  double Kur() const { return Kurtosis(); }
-  double Skw() const { return Skewness(); }
-
 
   void Add(double value, double weight = 1.0)
   {
@@ -74,8 +59,6 @@ public:
     n += weight;
     s1 += w_val;
     s2 += w_val * w_val;
-    s3 += w_val * w_val * w_val;
-    s4 += w_val * w_val * w_val * w_val;
   }
 
   void Subtract(double value, double weight = 1.0)
@@ -84,21 +67,7 @@ public:
     n -= weight;
     s1 -= w_val;
     s2 -= w_val * w_val;
-    s3 -= w_val * w_val * w_val;
-    s4 -= w_val * w_val * w_val * w_val;
   }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nDoubleSum {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

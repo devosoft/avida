@@ -297,6 +297,38 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cBirthDemeHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthGenomeSizeHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthGlobalHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthGridLocalHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthMateSelectHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthNeighborhoodHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthSelectionHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cBitArray.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\cBlockStruct.h"
 				>
 			</File>
@@ -377,7 +409,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cDemeNetwork.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cDemeNetworkUtils.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cDemePredicate.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\cDemeProbSchedule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cDemeTopologyNetwork.h"
 				>
 			</File>
 			<File
@@ -1173,6 +1221,38 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cBirthDemeHandler.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthGenomeSizeHandler.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthGlobalHandler.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthGridLocalHandler.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthMateSelectHandler.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthNeighborhoodHandler.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cBirthSelectionHandler.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cBitArray.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\cBlockStruct.cc"
 				>
 			</File>
@@ -1245,11 +1325,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cDemeNetwork.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\cDemeProbSchedule.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cDoubleSum.cc"
+				RelativePath=".\source\main\cDemeTopologyNetwork.cc"
 				>
 			</File>
 			<File

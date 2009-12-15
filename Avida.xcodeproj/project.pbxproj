@@ -85,7 +85,6 @@
 		7023EC4F0C0A431B00362B9C /* cDefaultMessageDisplay.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */; };
 		7023EC500C0A431B00362B9C /* cDefaultRunDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */; };
 		7023EC510C0A431B00362B9C /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
-		7023EC520C0A431B00362B9C /* cDoubleSum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885308F5FE5800FC65FE /* cDoubleSum.cc */; };
 		7023EC530C0A431B00362B9C /* cDriverManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D9382094CBA69008B845F /* cDriverManager.cc */; };
 		7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFC08DA5341007BA469 /* cEnvironment.cc */; };
 		7023EC550C0A431B00362B9C /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
@@ -449,6 +448,7 @@
 		700D9CB20F1C55EB002CC711 /* tRLockPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tRLockPtr.h; sourceTree = "<group>"; };
 		700E28CF0859FFD700CF158A /* tObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tObjectFactory.h; sourceTree = "<group>"; };
 		700E2B83085DE50C00CF158A /* avida-viewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-viewer"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70100BD7108F8F4F005999F0 /* cRunningStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRunningStats.h; sourceTree = "<group>"; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		701384A10902A16F0087ED2E /* defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
@@ -810,7 +810,6 @@
 		70B0885008F5FE5800FC65FE /* cDataFileManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataFileManager.cc; sourceTree = "<group>"; };
 		70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataManager_Base.cc; sourceTree = "<group>"; };
 		70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultMessageDisplay.cc; sourceTree = "<group>"; };
-		70B0885308F5FE5800FC65FE /* cDoubleSum.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDoubleSum.cc; sourceTree = "<group>"; };
 		70B0887D08F603C600FC65FE /* cFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFile.h; sourceTree = "<group>"; };
 		70B0887F08F603C600FC65FE /* cFixedBlock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFixedBlock.h; sourceTree = "<group>"; };
 		70B0888008F603C600FC65FE /* cFixedCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFixedCoords.h; sourceTree = "<group>"; };
@@ -1824,7 +1823,6 @@
 				70B0885008F5FE5800FC65FE /* cDataFileManager.cc */,
 				70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */,
 				70B0885208F5FE5800FC65FE /* cDefaultMessageDisplay.cc */,
-				70B0885308F5FE5800FC65FE /* cDoubleSum.cc */,
 				70B0884908F5FE4500FC65FE /* cDataFile.h */,
 				70B0884A08F5FE4500FC65FE /* cDataFileManager.h */,
 				70B0884B08F5FE4500FC65FE /* cDataManager_Base.h */,
@@ -1865,6 +1863,7 @@
 				7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */,
 				700D9C170F1A7436002CC711 /* tArrayMap.h */,
 				700D9C1A0F1A77EC002CC711 /* tKVPair.h */,
+				70100BD7108F8F4F005999F0 /* cRunningStats.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -2216,7 +2215,6 @@
 				7023EC4F0C0A431B00362B9C /* cDefaultMessageDisplay.cc in Sources */,
 				7023EC500C0A431B00362B9C /* cDefaultRunDriver.cc in Sources */,
 				7023EC510C0A431B00362B9C /* cDeme.cc in Sources */,
-				7023EC520C0A431B00362B9C /* cDoubleSum.cc in Sources */,
 				7023EC530C0A431B00362B9C /* cDriverManager.cc in Sources */,
 				7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */,
 				7023EC550C0A431B00362B9C /* cEventList.cc in Sources */,

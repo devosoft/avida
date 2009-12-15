@@ -29,12 +29,14 @@
 #include "cGenome.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
+#include "cRandom.h"
 #include "functions.h"
 #include <algorithm>
-#include <strings.h>
+#include <string.h>
 
 
 using namespace std;
+
 
 
 int cGenomeUtil::FindInst(const cGenome & gen, const cInstruction & inst,
@@ -244,81 +246,141 @@ int cGenomeUtil::FindEditDistance(const cGenome & gen1, const cGenome & gen2)
 }
 
 
-/*! Return all matches of substring within base.
- 
- The return value here is somewhat incomplete.  Eventually, the idea is that the
- list of matches include the starting position of the match, the overall length (extent)
- of the match, and the cost of the match.  Right now, however, it only includes the cost.
- 
- \todo Convert this over to using two rows instead of len(substring)+1 rows (easy, but I'm being lazy).
+/*! Distance between begin and end.
  */
-cGenomeUtil::substring_match_list_type cGenomeUtil::FindSubstringMatches(const cGenome& base, const cGenome& substring) {
-	substring_match_list_type ssml(base.GetSize());
-	const int rows=substring.GetSize()+1;
-	const int cols=base.GetSize()+1;
-	int costmat[rows][cols];	
-	bzero(costmat, sizeof(int)*rows*cols);
-	
-	// initialize the first row, first column, and match list starts.
-	for(int i=0; i<rows; ++i) { costmat[i][0] = i; }
-	for(int j=0; j<cols; ++j) { costmat[0][j] = 0; }
-	//	for(int j=0; j<base.GetSize(); ++j) { ssml[j].start = j; ssml[j].extent = 0; }
-		
-	// now do all the rest...
-	for(int i=1; i<rows; ++i) {
-		for(int j=1; j<cols; ++j) {
-			// we're only doing cost at the moment, so we can get away with something simple (i know, i know; space & time, etc., etc.):
-			int l[3] = { costmat[i-1][j-1], costmat[i-1][j], costmat[i][j-1] };
-			costmat[i][j] = *std::min_element(l,l+3) + (substring[i-1] == base[j-1]);
-// if we need to know the relationship among all three elements for tracking extents,
-// then this may be a good starting point:
-// A=above left, B=above, C=left
-//			if(costmat[i-1][j-1] < costmat[i-1][j]) {
-//				// A < B
-//				if(costmat[i-1][j-1] < costmat[i][j-1]) {
-//					// A < C --> A < (B,C)
-//					costmat[i][j] = costmat[i-1][j-1];
-//					++ssml[j-1].extent;
-//				} else {
-//					// A >= C --> C <= (A,B)
-//					costmat[i][j] = costmat[i][j-1];
-//					++ssml[j-1].extent;
-//				}
-//			} else {
-//				// A >= B
-//				if(costmat[i-1][j] < costmat[i][j-1]) {
-//					// B < C --> B <= (A,C)
-//					costmat[i][j] = costmat[i-1][j];
-//					// extent unchanged
-//				} else {
-//					// B >= C --> C <= (A,B)
-//					costmat[i][j] = costmat[i][j-1];
-//					++ssml[j-1].extent;
-//				}
-//			}
-//			
-//			// add the cost of a mismatch:
-//			costmat[i][j] += (substring[j] == base[i]);
-		}
+std::size_t cGenomeUtil::substring_match::distance() {
+	std::size_t d=0;
+	if(begin <= end) {
+		d = end - begin;
+	} else {
+		d = size - begin + end;
 	}
-	
-	// copy match costs from the last row, skipping the null column (it can't ever be least):
-	for(int j=0; j<base.GetSize(); ++j) {
-		ssml[j].cost = costmat[rows-1][j+1];
-		ssml[j].position = j;
-	}
-	
-	return ssml;
+	return d;
 }
 
 
-/*! Return the best match of substring within base.
- 
- \todo Ties for the value of the best match should be broken randomly.
+/*! Resize to n (preserve the absolute distance between begin and end, based around begin).
  */
-cGenomeUtil::substring_match cGenomeUtil::FindBestSubstringMatch(const cGenome& base, const cGenome& substring) {
-	substring_match_list_type ssml = FindSubstringMatches(base, substring);
-	return *std::min_element(ssml.begin(), ssml.end());
+void cGenomeUtil::substring_match::resize(std::size_t n) {
+	// fixup begin and end if they're negative or point beyond the current size
+	if(begin < 0) { begin = size - (-begin) % size; }
+	if(end < 0) { end = size - (-end) % size; }
+	begin %= size;
+	end %= size;
+	
+	// our work is done if there's no change in size...
+	if(size == n) { return; }
+	
+	// if this is triggered, it means that the current begin index would
+	// be truncated by the new, smaller string.
+	assert(begin < static_cast<int>(n));
+	
+	// distance between begin and end:
+	std::size_t d=distance();
+	
+	// if this is triggered, it means that the new size is smaller than the
+	// region described by this match.
+	assert(d < n);
+	
+	size = n;		
+	end = (begin + d) % size;
+}
+
+
+/*! Rotate around a size of n.
+ */
+void cGenomeUtil::substring_match::rotate(int r, std::size_t n) {
+	if(r < 0) {
+		r = -((-r) % n);
+	} else {
+		r %= n;
+	}
+	begin += r;
+	end += r;
+	resize(n); // fixup the indices
+}
+
+
+/*! Find (one of) the best substring matches of substring in base.
+ 
+ The algorithm here is based on the well-known dynamic programming approach to
+ finding a substring match.  Here, it has been extended to track the beginning and
+ ending locations of that match.  Specifically, [begin,end) of the returned substring_match
+ denotes the matched region in the base string.
+ */
+cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const cGenome& base, const cGenome& substring) {
+	const int rows=substring.GetSize()+1;
+	const int cols=base.GetSize()+1;
+	substring_match m[2][cols];
+	substring_match* c=m[0];
+	substring_match* p=m[1];
+	
+	for(int j=1; j<cols; ++j) {
+		p[j].begin = j;
+	}
+	
+	for(int i=1; i<rows; ++i) {
+		c[0].cost = i;
+		for(int j=1; j<cols; ++j) {
+			substring_match l[3] = {p[j-1], p[j], c[j-1]};
+			substring_match* s = &l[0]; // default match is to the upper left.
+			
+			if(substring[i-1] == base[j-1]) {
+				// if the characters match, take the default
+				c[j].cost = s->cost;
+			} else {
+				// otherwise, find the minimum cost, add 1.
+				s = std::min_element(l,l+3);
+				c[j].cost = s->cost + 1;				
+			}
+			
+			// update the beginning and end of the match.
+			c[j].begin = s->begin;
+			c[j].end = j;
+		}
+		std::swap(c,p);
+	}
+	
+	substring_match* min = std::min_element(p, p+cols);
+	min->size = base.GetSize();
+	return *min;
+}
+
+
+/*! Find (one of) the best unbiased matches of substring in base, respecting genome circularity.
+ 
+ Substring matches are inherently biased towards matching near to the left-hand side of the string 
+ (lower indices).  This method removes that bias by rotating the string prior to performing the
+ match.
+ 
+ Genomes in Avida are logically (not physically) circular, but substring matches in general do not 
+ respect circularity.  To respect the logical circularity of genomes in Avida, we append the base
+ string with substring-size instructions from the beginning of the base string.  This guarantees 
+ that circular matches are detected.
+ 
+ The return value here is de-circularfied and de-rotated such that [begin,end) are correct
+ for the base string (note that, due to circularity, begin could be > end).
+ */
+cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContext& ctx, const cGenome& base, const cGenome& substring) {
+	// create a copy of the genome:
+	cGenome circ(base);
+	
+	// rotate it so that we remove bias for matching at the front of the genome:
+	const int rotate = ctx.GetRandom().GetInt(circ.GetSize());
+	circ.Rotate(rotate);
+	
+	// need to take circularity of the genome into account.
+	// we can do this by appending the genome with a copy of its first substring-size instructions.
+	cGenome head(&circ[0],&circ[0]+substring.GetSize());
+	circ.Append(head);
+	
+	// find the location within the circular genome that best matches substring:
+	cGenomeUtil::substring_match location = FindSubstringMatch(circ, substring);	
+	
+	// unwind the resizing & rotation:
+	location.resize(base.GetSize());
+	location.rotate(-rotate, base.GetSize());
+	return location;
 }
 
 
@@ -493,4 +555,5 @@ cGenome cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(cAvidaContext
   genome[length] = inst_set.GetInst("repro-sex");
   return genome;
 }
+
 

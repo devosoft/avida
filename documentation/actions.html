@@ -9,7 +9,7 @@
 
 <div class="revision">
 Revised 2006-09-03 DMB
-<br>Generated Thu Sep  3 20:49:10 2009 by make_actions_html</div>
+<br>Generated Mon Nov 16 13:42:09 2009 by make_actions_html</div>
 
 <p>
 <a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
@@ -74,10 +74,14 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#ConnectCells">ConnectCells</a><br>
       <a href="#copy_deme">copy_deme</a><br>
       <a href="#CopyDeme">CopyDeme</a><br>
+      <a href="#CountMultipleOpinions">CountMultipleOpinions</a><br>
+      <a href="#CountOpinions">CountOpinions</a><br>
       <a href="#DecayPoints">DecayPoints</a><br>
       <a href="#DelayedDemeEvent">DelayedDemeEvent</a><br>
       <a href="#DelayedDemeEventsPerSlots">DelayedDemeEventsPerSlots</a><br>
       <a href="#DeletionLandscape">DeletionLandscape</a><br>
+      <a href="#DemeBalanceTwoTasks">DemeBalanceTwoTasks</a><br>
+      <a href="#DemeReactionDiversity">DemeReactionDiversity</a><br>
       <a href="#DemeResourceThresholdPredicate">DemeResourceThresholdPredicate</a><br>
       <a href="#Desynchronization">Desynchronization</a><br>
       <a href="#detail_parasite_pop">detail_parasite_pop</a><br>
@@ -86,6 +90,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#DiffuseHGTGenomeFragments">DiffuseHGTGenomeFragments</a><br>
       <a href="#DisconnectCells">DisconnectCells</a><br>
       <a href="#disconnect_cells">disconnect_cells</a><br>
+      <a href="#DistributeData">DistributeData</a><br>
+      <a href="#DistributeDataEfficiently">DistributeDataEfficiently</a><br>
       <a href="#DivideDemes">DivideDemes</a><br>
       <a href="#DumpCellDataGrid">DumpCellDataGrid</a><br>
       <a href="#dump_donor_grid">dump_donor_grid</a><br>
@@ -95,6 +101,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#dump_fitness_grid">dump_fitness_grid</a><br>
       <a href="#DumpFitnessGrid">DumpFitnessGrid</a><br>
       <a href="#dump_genotype_grid">dump_genotype_grid</a><br>
+      <a href="#DumpGenotypeColorGrid">DumpGenotypeColorGrid</a><br>
       <a href="#DumpGenotypeIDGrid">DumpGenotypeIDGrid</a><br>
       <a href="#dump_historic_pop">dump_historic_pop</a><br>
       <a href="#dump_historic_sex_pop">dump_historic_sex_pop</a><br>
@@ -164,17 +171,18 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#KillRate">KillRate</a><br>
       <a href="#KillRectangle">KillRectangle</a><br>
       <a href="#kill_rectangle">kill_rectangle</a><br>
+      <a href="#KillWithinRadiusBelowResourceThreshold">KillWithinRadiusBelowResourceThreshold</a><br>
       <a href="#LoadClone">LoadClone</a><br>
       <a href="#load_clone">load_clone</a><br>
       <a href="#load_dump_file">load_dump_file</a><br>
       <a href="#LoadPopulation">LoadPopulation</a><br>
       <a href="#LoadStructuredPopulation">LoadStructuredPopulation</a><br>
       <a href="#MigrateDemes">MigrateDemes</a><br>
+    <td valign="top">
       <a href="#MixPopulation">MixPopulation</a><br>
       <a href="#ModMutProb">ModMutProb</a><br>
       <a href="#MutationalNeighborhood">MutationalNeighborhood</a><br>
       <a href="#new_trial">new_trial</a><br>
-    <td valign="top">
       <a href="#NewTrial">NewTrial</a><br>
       <a href="#outflow_scaled_resource">outflow_scaled_resource</a><br>
       <a href="#OutflowScaledResource">OutflowScaledResource</a><br>
@@ -186,6 +194,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#Pred_DemeEventNUniqueIndividualsMovedIntoTarget">Pred_DemeEventNUniqueIndividualsMovedIntoTarget</a><br>
       <a href="#PredictNuLandscape">PredictNuLandscape</a><br>
       <a href="#PredictWLandscape">PredictWLandscape</a><br>
+      <a href="#PrintAveNumTasks">PrintAveNumTasks</a><br>
       <a href="#print_average_data">print_average_data</a><br>
       <a href="#PrintAverageData">PrintAverageData</a><br>
       <a href="#PrintAvgDemeTasksExeData">PrintAvgDemeTasksExeData</a><br>
@@ -197,6 +206,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintCellData">PrintCellData</a><br>
       <a href="#PrintCellVisitsData">PrintCellVisitsData</a><br>
       <a href="#PrintCompetitionData">PrintCompetitionData</a><br>
+      <a href="#PrintConsensusData">PrintConsensusData</a><br>
       <a href="#print_count_data">print_count_data</a><br>
       <a href="#PrintCountData">PrintCountData</a><br>
       <a href="#PrintCurrentMeanDemeDensity">PrintCurrentMeanDemeDensity</a><br>
@@ -287,13 +297,14 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintMutationRateData">PrintMutationRateData</a><br>
       <a href="#PrintNewReactionData">PrintNewReactionData</a><br>
       <a href="#PrintNewTasksData">PrintNewTasksData</a><br>
+      <a href="#PrintNewTasksDataPlus">PrintNewTasksDataPlus</a><br>
       <a href="#print_number_phenotypes">print_number_phenotypes</a><br>
       <a href="#PrintNumOrgsInDeme">PrintNumOrgsInDeme</a><br>
       <a href="#PrintNumOrgsKilledData">PrintNumOrgsKilledData</a><br>
+    <td valign="top">
       <a href="#PrintOpinionsSetPerDeme">PrintOpinionsSetPerDeme</a><br>
       <a href="#PrintParasiteData">PrintParasiteData</a><br>
       <a href="#PrintPerDemeGenPerFounderData">PrintPerDemeGenPerFounderData</a><br>
-    <td valign="top">
       <a href="#PrintPerDemeReactionData">PrintPerDemeReactionData</a><br>
       <a href="#PrintPerDemeTasksData">PrintPerDemeTasksData</a><br>
       <a href="#PrintPerDemeTasksExeData">PrintPerDemeTasksExeData</a><br>
@@ -314,6 +325,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintSenseData">PrintSenseData</a><br>
       <a href="#PrintSenseExeData">PrintSenseExeData</a><br>
       <a href="#PrintShadedAltruists">PrintShadedAltruists</a><br>
+      <a href="#PrintSimpleConsensusData">PrintSimpleConsensusData</a><br>
       <a href="#PrintSleepData">PrintSleepData</a><br>
       <a href="#print_species_abundance_histogram">print_species_abundance_histogram</a><br>
       <a href="#PrintSpeciesAbundanceHistogram">PrintSpeciesAbundanceHistogram</a><br>
@@ -341,6 +353,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintViableTasksData">PrintViableTasksData</a><br>
       <a href="#RandomLandscape">RandomLandscape</a><br>
       <a href="#rate_kill">rate_kill</a><br>
+      <a href="#ReplaceFromGermline">ReplaceFromGermline</a><br>
       <a href="#replicate_demes">replicate_demes</a><br>
       <a href="#ReplicateDemes">ReplicateDemes</a><br>
       <a href="#reset_demes">reset_demes</a><br>
@@ -408,6 +421,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#ToggleFitnessValley">ToggleFitnessValley</a><br>
       <a href="#ToggleRewardInstruction">ToggleRewardInstruction</a><br>
       <a href="#TrackAllMessages">TrackAllMessages</a><br>
+      <a href="#UnitFitness">UnitFitness</a><br>
       <a href="#VERBOSE">VERBOSE</a><br>
       <a href="#zero_muts">zero_muts</a><br>
       <a href="#ZeroMuts">ZeroMuts</a><br>
@@ -1048,7 +1062,7 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="AssignRandomCellData">AssignRandomCellData</a></strong>
-  <i>No Arguments</i>
+  <i>[num_cells=deme_size]</i>
   </p>
   <p>
   
@@ -1182,12 +1196,40 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="CountMultipleOpinions">CountMultipleOpinions</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="CountOpinions">CountOpinions</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="DecayPoints">DecayPoints</a></strong>
   </p>
   <p>
     Decays the number of points a deme has accumulated by
   a percentage that is set in the configuration file.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="DemeBalanceTwoTasks">DemeBalanceTwoTasks</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="DemeReactionDiversity">DemeReactionDiversity</a></strong>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -1227,6 +1269,20 @@ change the course of the run.  There are a wide variety of these.
   <p>
     <font color="red">DEPRECATED</font>
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="DistributeData">DistributeData</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="DistributeDataEfficiently">DistributeDataEfficiently</a></strong>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -1419,7 +1475,7 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="IteratedConsensus">IteratedConsensus</a></strong>
-  <i>[int compete_period=100 [int replace_number=0]]</i>
+  <i>[int compete_period=100 [int replace_number=1 [int kill=1 [int restrict_range=1]]]]</i>
   </p>
   <p>
   
@@ -1555,6 +1611,14 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="KillWithinRadiusBelowResourceThreshold">KillWithinRadiusBelowResourceThreshold</a></strong>
+  <i>[int numradii=0, int radius=0, string resource name, double threshold=0]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="MigrateDemes">MigrateDemes</a></strong>
   <i>&lt;string resource name&gt;&lt;double failure_percent&gt;</i>
   </p>
@@ -1627,6 +1691,13 @@ change the course of the run.  There are a wide variety of these.
   <p>
     <font color="red">DEPRECATED</font>
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="ReplaceFromGermline">ReplaceFromGermline</a></strong>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -1813,6 +1884,13 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="UnitFitness">UnitFitness</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="zero_muts">zero_muts</a></strong>
   <i>No Arguments</i>
   </p>
@@ -1902,6 +1980,14 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="dump_genotype_grid">dump_genotype_grid</a></strong>
   <i>[string fname=""]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="DumpGenotypeColorGrid">DumpGenotypeColorGrid</a></strong>
+  <i>[int num_colors=12] [string fname=""]</i>
   </p>
   <p>
   
@@ -2028,6 +2114,14 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintAveNumTasks">PrintAveNumTasks</a></strong>
+  <i>[string fname=""]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="print_average_data">print_average_data</a></strong>
   <i>[string fname="average.dat"]</i>
   </p>
@@ -2139,6 +2233,13 @@ a single, complete file for each trigger.
   <p>
     Print out CompeteOrganism statistics. Make the first call after the first set of trials has been completed to get a complete header.
 
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintConsensusData">PrintConsensusData</a></strong>
+  </p>
+  <p>
+  
   </p>
 </li>
 <li><p>
@@ -2948,6 +3049,14 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintNewTasksDataPlus">PrintNewTasksDataPlus</a></strong>
+  <i>[string fname="		newtasksplus.dat	"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="print_number_phenotypes">print_number_phenotypes</a></strong>
   <i>[string fname="phenotype_count.dat"]</i>
   </p>
@@ -3173,6 +3282,13 @@ a single, complete file for each trigger.
 </li>
 <li><p>
   <strong><a name="PrintShadedAltruists">PrintShadedAltruists</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintSimpleConsensusData">PrintSimpleConsensusData</a></strong>
   </p>
   <p>
   

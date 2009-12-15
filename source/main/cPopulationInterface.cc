@@ -28,13 +28,11 @@
 #include "cDeme.h"
 #include "cEnvironment.h"
 #include "cGenotype.h"
-#include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cOrgSinkMessage.h"
 #include "cOrgMessage.h"
 #include "cPopulation.h"
-#include "cPopulationCell.h"
 #include "cStats.h"
 #include "cTestCPU.h"
 
@@ -627,15 +625,12 @@ void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
 
 /*! Perform an HGT mutation on this offspring. 
  
- HGT mutations are location-dependent, hence they are implemented here as opposed to
- the CPU or organism.
+ HGT mutations are location-dependent, hence they are piped through the populatin
+ interface as opposed to being implemented in the CPU or organism.
  
  If this method is called, an HGT mutation of some kind is imminent.  All that's left
  is to actually *do* the mutation.  We only do *one* HGT mutation each time this method
  is called.
- 
- \todo HGT should prefer more similar and older fragments.
- \todo Enable replacement mutations.
  */
 void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
 	// get this organism's cell:
@@ -643,67 +638,79 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	
 	// do we have any fragments available?
 	if(cell.CountGenomeFragments() == 0) { return; }
-	
-	// randomly select the genome fragment for HGT:
-	typedef cPopulationCell::fragment_list_type fragment_list_type;
-	fragment_list_type& fragments = cell.GetFragments();
-	fragment_list_type::iterator f=fragments.begin();
-	std::advance(f, ctx.GetRandom().GetInt(fragments.size()));
-	
-	// need to take circularity of the genome into account.
-	// we can do this by appending the genome with a copy of its first fragment-size
-	// instructions.  handling insertions and replacements gets complicated after this...
-	cGenome circ(offspring);
-	for(int i=0; i<f->GetSize(); ++i) {
-		circ.Append(offspring[i]);
-	}
-	
-	// find the location within the offspring's genome that best matches the selected fragment:
-	cGenomeUtil::substring_match ssm = cGenomeUtil::FindBestSubstringMatch(circ, *f);
-	
-	if(ssm.position > offspring.GetSize()) {
-		// we matched on the circular portion of the genome, so we have to modify the
-		// matched position to reflect this;
-		ssm.position -= offspring.GetSize();
-	} 
-	
-	// there are (currently) two supported types of HGT mutations: insertions & replacements.
-	// which one are we doing?
-	if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
-		// insertion: insert the fragment at the final location of the match:
-		offspring.Insert(ssm.position, *f);
-	} else {
-		// replacement: replace up to fragment size instructions in the genome.
-		// note that replacement can wrap around from front->back.  replacement counts
-		// forward, so we have to find the start position first.
-		int start = ssm.position - f->GetSize() + 1;
-		if(start < 0) { start += offspring.GetSize(); }
-		for(int i=0; i<f->GetSize(); ++i) {
-			offspring[start] = (*f)[i];
-			if(++start >= offspring.GetSize()) { start = 0; }
+
+	// select the fragment and figure out where we're putting it:
+	fragment_list_type::iterator selected;
+	cGenomeUtil::substring_match location;
+	switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
+		case 0: { // random selection
+			HGTRandomFragmentSelection(ctx, offspring, cell.GetFragments(), selected, location);
+			break;
+		}
+		case 1: { // random selection with redundant instruction trimming
+			HGTTrimmedFragmentSelection(ctx, offspring, cell.GetFragments(), selected, location);
+			break;
+		}
+		default: { // error
+			m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
+			break;
 		}
 	}
 	
+	// do the mutation; we currently support insertions and replacements, but this can
+	// be extended in the same way as fragment selection if need be.
+	if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
+		// insert the fragment just after the final location:
+		offspring.Insert(location.end, *selected);
+	} else {
+		// replacement: replace [begin,end) instructions in the genome with the fragment,
+		// respecting circularity.
+		offspring.Replace(*selected, location.begin, location.end);
+	}
+	
 	// resource utilization, cleanup, and stats tracking:
-	m_world->GetPopulation().AdjustHGTResource(-f->GetSize());
-	m_world->GetStats().GenomeFragmentInserted(cell.GetOrganism(), *f);
-	fragments.erase(f);
+	m_world->GetPopulation().AdjustHGTResource(-selected->GetSize());
+	m_world->GetStats().GenomeFragmentInserted(cell.GetOrganism(), *selected, location);
+	cell.GetFragments().erase(selected);
+}
+
+
+/*! Randomly select the fragment used for HGT mutation.
+ */
+void cPopulationInterface::HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
+																											fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																											substring_match& location) {
+	// randomly select the genome fragment for HGT:
+	selected=fragments.begin();
+	std::advance(selected, ctx.GetRandom().GetInt(fragments.size()));
+
+	// find the location within the offspring's genome that best matches the selected fragment:
+	location = cGenomeUtil::FindUnbiasedCircularMatch(ctx, offspring, *selected);
+}
+
+
+/*! Randomly select the fragment used for HGT mutation, trimming redundant instructions.
+ 
+ In this fragment selection method, the fragment itself is selected randomly, but the
+ match location within the genome is calculated on a "trimmed" fragment.  Specifically,
+ the trimmed fragment has all duplicate instructions at its end removed prior to the match.
+ 
+ Mutations to the offspring are still performed using the entire fragment, so this effectively
+ increases the insertion rate.  E.g., hgt(abcde, abcccc) -> abccccde.
+ */
+void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
+																											 fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																											 substring_match& location) {
+	// randomly select the genome fragment for HGT:
+	selected=fragments.begin();
+	std::advance(selected, ctx.GetRandom().GetInt(fragments.size()));
 	
-	// old code from a previous version of hgt, kept around for reference:
-	//	// calculate the best match for each fragment:
-	//	cGenomeUtil::substring_match_list_type match_list;
-	//	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
-	//		match_list.push_back(cGenomeUtil::FindBestSubstringMatch(cell.GetOrganism()->GetGenome(), *i));
-	//	}	
+	// copy the selected fragment, trimming redundant instructions at the end:
+	cGenome trimmed(*selected);
+	while((trimmed.GetSize() >= 2) && (trimmed[trimmed.GetSize()-1] == trimmed[trimmed.GetSize()-2])) {
+		trimmed.Remove(trimmed.GetSize()-1);
+	}
 	
-	//	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
-	//		int d = std::max(cGenomeUtil::FindHammingDistance(nearby, *i), 1);
-	//		if(m_world->GetRandom().P(m_world->GetConfig().HGT_INSERTION_PROB.Get() / d)) {
-	//			m_hardware->InsertGenomeFragment(*i);
-	//			m_world->GetPopulation().AdjustHGTResource(-i->GetSize());
-	//			m_world->GetStats().GenomeFragmentInserted(this, *i);
-	//			fragments.erase(i);
-	//			return true;
-	//		}
-	//	}
+	// find the location within the offspring's genome that best matches the selected fragment:
+	location = cGenomeUtil::FindUnbiasedCircularMatch(ctx, offspring, trimmed);
 }

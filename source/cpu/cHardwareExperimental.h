@@ -329,6 +329,7 @@ private:
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabelStart(bool mark_executed);
   cHeadCPU FindLabelForward(bool mark_executed);
+  cHeadCPU FindLabelBackward(bool mark_executed);
   cHeadCPU FindNopSequenceStart(bool mark_executed);
   cHeadCPU FindNopSequenceForward(bool mark_executed);
   bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
@@ -429,6 +430,7 @@ private:
   bool Inst_TaskIOExpire(cAvidaContext& ctx);
   bool Inst_TaskInput(cAvidaContext& ctx);
   bool Inst_TaskOutput(cAvidaContext& ctx);
+  bool Inst_TaskOutputZero(cAvidaContext& ctx);
   bool Inst_TaskOutputExpire(cAvidaContext& ctx);
 
   // Head-based Instructions
@@ -444,10 +446,12 @@ private:
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
   bool Inst_HeadCopy_NoLabel(cAvidaContext& ctx);
-  bool Inst_HeadSearch(cAvidaContext& ctx);
-  bool Inst_HeadSearch_NoLabel(cAvidaContext& ctx);
-  bool Inst_HeadSearch_NoReg(cAvidaContext& ctx);
-  bool Inst_HeadSearch_Direct(cAvidaContext& ctx);
+  bool Inst_SearchS(cAvidaContext& ctx);
+  bool Inst_SearchS_Direct(cAvidaContext& ctx);
+  bool Inst_SearchF(cAvidaContext& ctx);
+  bool Inst_SearchF_Direct(cAvidaContext& ctx);
+  bool Inst_SearchB(cAvidaContext& ctx);
+  bool Inst_SearchB_Direct(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   
   // Goto Variants
@@ -474,6 +478,7 @@ private:
   
   // Replication
   bool Inst_Repro(cAvidaContext& ctx);
+  bool Inst_Die(cAvidaContext& ctx);
   
   // State Grid Navigation
   bool Inst_SGMove(cAvidaContext& ctx);

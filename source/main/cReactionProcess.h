@@ -52,6 +52,7 @@ private:
   double max_number;     // Max quantity of resource usable.
   double min_number;     // Minimum quantity of resource needed (otherwise 0)
   double max_fraction;   // Max fraction of avaiable resources useable.
+  double k_sub_m;        // k sub m variable needed for enzyme reaction
   cResource* product;    // Output resource.
   double conversion;     // Conversion factor.
   bool lethal;		 // Lethality of reaction
@@ -82,6 +83,7 @@ public:
     , max_number(1.0)
     , min_number(0.0)
     , max_fraction(1.0)
+    , k_sub_m(0.0)
     , product(NULL)
     , conversion(1.0)
     , lethal(0)
@@ -104,6 +106,7 @@ public:
   double GetMaxNumber() const { return max_number; }
   double GetMinNumber() const { return min_number; }
   double GetMaxFraction() const { return max_fraction; }
+  double GetKsubM() const { return k_sub_m; }
   cResource* GetProduct() const { return product; }
   double GetConversion() const { return conversion; }
   int GetInstID() const { return inst_id; }
@@ -124,6 +127,7 @@ public:
   void SetMaxNumber(double _in) { max_number = _in; }
   void SetMinNumber(double _in) { min_number = _in; }
   void SetMaxFraction(double _in) { max_fraction = _in; }
+  void SetKsubM(double _in) { k_sub_m = _in; }
   void SetProduct(cResource* _in) { product = _in; }
   void SetConversion(double _in) { conversion = _in; }
   void SetInstID(int _in) { inst_id = _in; }

@@ -120,7 +120,7 @@ public:
   void Ones(const int num_bits) {
     const int num_fields = GetNumFields(num_bits);
     for (int i = 0; i < num_fields; i++) {
-      bit_fields[i] = -1;
+      bit_fields[i] = ~0;
     }    
     const int last_bit = GetFieldPos(num_bits);
     if (last_bit > 0) {

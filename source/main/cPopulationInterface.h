@@ -35,12 +35,13 @@
 #ifndef cWorldDriver_h
 #include "cWorldDriver.h"
 #endif
+#include "cGenomeUtil.h"
+#include "cPopulationCell.h"
 
 class cAvidaContext;
 class cDeme;
 class cGenome;
 class cPopulation;
-class cPopulationCell;
 class cOrgMessage;
 
 class cPopulationInterface : public cOrgInterface
@@ -141,8 +142,21 @@ protected:
 	
 	// -------- HGT support --------
 public:
+	//! Container type for fragments used during HGT.
+	typedef cPopulationCell::fragment_list_type fragment_list_type;
+	//! Match record, used to indicate the region within a genome that should be mutated.
+	typedef cGenomeUtil::substring_match substring_match;
 	//! Perform an HGT mutation on this offspring.
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
+protected:
+	//! Random selection of the fragment used for HGT mutation.
+	void HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
+																	fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																	substring_match& location);
+	//! Random selection of the fragment used for HGT mutation, with redundant instructions trimmed.
+	void HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
+																	 fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																	 substring_match& location);	
 };
 
 

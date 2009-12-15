@@ -81,6 +81,10 @@ public:
   virtual void Insert(int pos, const cGenome& genome);
   virtual void Remove(int pos, int num_sites = 1);
   virtual void Replace(int pos, int num_sites, const cGenome& genome);
+	//! Replace [begin, end) instructions in this genome with g, respecting genome circularity.
+	virtual void Replace(const cGenome& g, int begin, int end);
+	//! Rotate this genome forward n instructions.
+	virtual void Rotate(int n);
 
   inline void Append(const cInstruction& in_inst) { Insert(GetSize(), in_inst); }
   inline void Append(const cGenome& in_genome) { Insert(GetSize(), in_genome); }

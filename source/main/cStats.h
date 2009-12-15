@@ -51,6 +51,9 @@
 #ifndef cRunningAverage_h
 #include "cRunningAverage.h"
 #endif
+#ifndef cRunningStats_h
+#include "cRunningStats.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -64,6 +67,7 @@
 #include "nGeometry.h"
 #endif
 #include "cGenome.h"
+#include "cGenomeUtil.h"
 
 #if USE_tMemTrack
 # ifndef tMemTrack_h
@@ -116,11 +120,11 @@ private:
   cDoubleSum sum_neutral_metric;
   cDoubleSum sum_lineage_label;
 
-  cDoubleSum sum_copy_mut_rate;
-  cDoubleSum sum_log_copy_mut_rate;
+  cRunningStats sum_copy_mut_rate;
+  cRunningStats sum_log_copy_mut_rate;
 
-  cDoubleSum sum_div_mut_rate;
-  cDoubleSum sum_log_div_mut_rate;
+  cRunningStats sum_div_mut_rate;
+  cRunningStats sum_log_div_mut_rate;
 
   //// By Genotype Sums ////  (Cleared and resummed by population each update)
 
@@ -339,6 +343,7 @@ private:
   // Number of organisms killed by kill actions
   int num_orgs_killed;
 	int num_unoccupied_cell_kill_attempts;
+  int num_cells_scanned_at_kill;
   
   // Number of migrations that have been made
   int num_migrations;
@@ -463,10 +468,10 @@ public:
 
   cDoubleSum& SumNeutralMetric() { return sum_neutral_metric; }
   cDoubleSum& SumLineageLabel()  { return sum_lineage_label; }
-  cDoubleSum& SumCopyMutRate()   { return sum_copy_mut_rate; }
-  cDoubleSum& SumLogCopyMutRate()   { return sum_log_copy_mut_rate; }
-  cDoubleSum& SumDivMutRate()   { return sum_div_mut_rate; }
-  cDoubleSum& SumLogDivMutRate()   { return sum_log_div_mut_rate; }
+  cRunningStats& SumCopyMutRate()   { return sum_copy_mut_rate; }
+  cRunningStats& SumLogCopyMutRate()   { return sum_log_copy_mut_rate; }
+  cRunningStats& SumDivMutRate()   { return sum_div_mut_rate; }
+  cRunningStats& SumLogDivMutRate()   { return sum_log_div_mut_rate; }
 
   cDoubleSum& SumSize()          { return sum_size; }
   cDoubleSum& SumCopySize()      { return sum_copy_size; }
@@ -517,10 +522,10 @@ public:
 
   const cDoubleSum& SumNeutralMetric() const { return sum_neutral_metric; }
   const cDoubleSum& SumLineageLabel() const  { return sum_lineage_label; }
-  const cDoubleSum& SumCopyMutRate() const   { return sum_copy_mut_rate; }
-  const cDoubleSum& SumLogCopyMutRate() const{ return sum_log_copy_mut_rate; }
-  const cDoubleSum& SumDivMutRate() const   { return sum_div_mut_rate; }
-  const cDoubleSum& SumLogDivMutRate() const{ return sum_log_div_mut_rate; }
+  const cRunningStats& SumCopyMutRate() const   { return sum_copy_mut_rate; }
+  const cRunningStats& SumLogCopyMutRate() const{ return sum_log_copy_mut_rate; }
+  const cRunningStats& SumDivMutRate() const   { return sum_div_mut_rate; }
+  const cRunningStats& SumLogDivMutRate() const{ return sum_log_div_mut_rate; }
 
   const cDoubleSum& SumSize() const          { return sum_size; }
   const cDoubleSum& SumCopySize() const      { return sum_copy_size; }
@@ -573,6 +578,7 @@ public:
   
   void IncNumOrgsKilled() { num_orgs_killed++; }
 	void IncNumUnoccupiedCellAttemptedToKill() { num_unoccupied_cell_kill_attempts++; }
+  void IncNumCellsScannedAtKill() { num_cells_scanned_at_kill++; }
   void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
@@ -706,10 +712,10 @@ public:
 
   double GetAveNeutralMetric() const { return sum_neutral_metric.Average(); }
   double GetAveLineageLabel() const  { return sum_lineage_label.Average(); }
-  double GetAveCopyMutRate() const   { return sum_copy_mut_rate.Average(); }
-  double GetAveLogCopyMutRate() const{ return sum_log_copy_mut_rate.Average();}
-  double GetAveDivMutRate() const   { return sum_div_mut_rate.Average(); }
-  double GetAveLogDivMutRate() const{ return sum_log_div_mut_rate.Average();}
+  double GetAveCopyMutRate() const   { return sum_copy_mut_rate.Mean(); }
+  double GetAveLogCopyMutRate() const{ return sum_log_copy_mut_rate.Mean();}
+  double GetAveDivMutRate() const   { return sum_div_mut_rate.Mean(); }
+  double GetAveLogDivMutRate() const{ return sum_log_div_mut_rate.Mean();}
 
   double GetAveGestation() const { return sum_gestation.Average(); }
   double GetAveFitness() const   { return sum_fitness.Average(); }
@@ -749,6 +755,7 @@ public:
   int GetSpeculativeWaste() const { return m_spec_waste; }
   
   int GetNumOrgsKilled() const { return num_orgs_killed; }
+  int GetNumCellsScannedAtKill() const { return num_cells_scanned_at_kill; }
   int GetNumMigrations() const { return num_migrations; }
 
   // this value gets recorded when a creature with the particular
@@ -1028,7 +1035,7 @@ public:
 	//! Called when an organism metabolizes a genome fragment.
 	void GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment);
 	//! Called when an organism inserts a genome fragment.
-	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment);
+	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location);
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
 };

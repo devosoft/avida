@@ -136,6 +136,7 @@ cStats::cStats(cWorld* world)
   , m_spec_waste(0)
   , num_orgs_killed(0)
 	, num_unoccupied_cell_kill_attempts(0)
+  , num_cells_scanned_at_kill(0)
   , num_migrations(0)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
@@ -581,6 +582,7 @@ void cStats::ProcessUpdate()
   
   num_orgs_killed = 0;
 	num_unoccupied_cell_kill_attempts = 0;
+  num_cells_scanned_at_kill = 0;
   num_migrations = 0;
 }
 
@@ -1250,17 +1252,17 @@ void cStats::PrintMutationRateData(const cString& filename)
   df.WriteTimeStamp();
 
   df.Write(m_update, "Update");
-  df.Write(sum_copy_mut_rate.Ave(), "Average copy mutation rate");
-  df.Write(sum_copy_mut_rate.Var(), "Variance in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Mean(), "Average copy mutation rate");
+  df.Write(sum_copy_mut_rate.Variance(), "Variance in copy mutation rate");
   df.Write(sum_copy_mut_rate.StdDeviation(), "Standard Deviation in copy mutation rate");
-  df.Write(sum_copy_mut_rate.Skw(), "Skew in copy mutation rate");
-  df.Write(sum_copy_mut_rate.Kur(), "Kurtosis in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Skewness(), "Skew in copy mutation rate");
+  df.Write(sum_copy_mut_rate.Kurtosis(), "Kurtosis in copy mutation rate");
 
-  df.Write(sum_log_copy_mut_rate.Ave(), "Average log(copy mutation rate)");
-  df.Write(sum_log_copy_mut_rate.Var(), "Variance in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Mean(), "Average log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Variance(), "Variance in log(copy mutation rate)");
   df.Write(sum_log_copy_mut_rate.StdDeviation(), "Standard Deviation in log(copy mutation rate)");
-  df.Write(sum_log_copy_mut_rate.Skw(), "Skew in log(copy mutation rate)");
-  df.Write(sum_log_copy_mut_rate.Kur(), "Kurtosis in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Skewness(), "Skew in log(copy mutation rate)");
+  df.Write(sum_log_copy_mut_rate.Kurtosis(), "Kurtosis in log(copy mutation rate)");
   df.Endl();
 
 }
@@ -1274,17 +1276,17 @@ void cStats::PrintDivideMutData(const cString& filename)
   df.WriteTimeStamp();
 
   df.Write(m_update, "Update");
-  df.Write(sum_div_mut_rate.Ave(), "Average divide mutation rate");
-  df.Write(sum_div_mut_rate.Var(), "Variance in divide mutation rate");
+  df.Write(sum_div_mut_rate.Mean(), "Average divide mutation rate");
+  df.Write(sum_div_mut_rate.Variance(), "Variance in divide mutation rate");
   df.Write(sum_div_mut_rate.StdDeviation(), "Standard Deviation in divide mutation rate");
-  df.Write(sum_div_mut_rate.Skw(), "Skew in divide mutation rate");
-  df.Write(sum_div_mut_rate.Kur(), "Kurtosis in divide mutation rate");
+  df.Write(sum_div_mut_rate.Skewness(), "Skew in divide mutation rate");
+  df.Write(sum_div_mut_rate.Kurtosis(), "Kurtosis in divide mutation rate");
 
-  df.Write(sum_log_div_mut_rate.Ave(), "Average log(divide mutation rate)");
-  df.Write(sum_log_div_mut_rate.Var(), "Variance in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Mean(), "Average log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Variance(), "Variance in log(divide mutation rate)");
   df.Write(sum_log_div_mut_rate.StdDeviation(), "Standard Deviation in log(divide mutation rate)");
-  df.Write(sum_log_div_mut_rate.Skw(), "Skew in log(divide mutation rate)");
-  df.Write(sum_log_div_mut_rate.Kur(), "Kurtosis in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Skewness(), "Skew in log(divide mutation rate)");
+  df.Write(sum_log_div_mut_rate.Kurtosis(), "Kurtosis in log(divide mutation rate)");
   df.Endl();
 }
 
@@ -2483,6 +2485,7 @@ void cStats::PrintNumOrgsKilledData(const cString& filename)
   df.Write(m_update,   "Update");
   df.Write(num_orgs_killed, "Num Orgs Killed");
   df.Write(num_unoccupied_cell_kill_attempts, "Num Unoccupied Cell Kill Attempts");
+  df.Write(num_cells_scanned_at_kill, "Num Cells Scanned By Kill Event");
   df.Endl();
 } //End PrintNumOrgsKilledData()
 
@@ -2952,7 +2955,9 @@ void cStats::GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragm
 	m_hgt_metabolized.Add(fragment.GetSize());
 }
 
-void cStats::GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment) {
+/*! Called when a fragment is inserted into an offspring's genome via HGT.
+ */
+void cStats::GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location) {
 	m_hgt_inserted.Add(fragment.GetSize());
 }
 
