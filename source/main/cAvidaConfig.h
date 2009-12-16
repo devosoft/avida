@@ -150,8 +150,7 @@ private:
     bool use_overide;
     
   public:
-    cBaseConfigEntry(const cString& _name, const cString& _type,
-		     const cString& _def, const cString& _desc);
+    cBaseConfigEntry(const cString& _name, const cString& _type, const cString& _def, const cString& _desc);
     virtual ~cBaseConfigEntry() { ; }
     
     virtual void LoadString(const cString& str_value) = 0;
@@ -175,7 +174,7 @@ private:
     tList<cBaseConfigEntry> entry_list;
   public:
     cBaseConfigGroup(const cString& _name, const cString& _desc)
-      : group_name(_name), description(_desc) { global_group_list.PushRear(this); }
+    : group_name(_name), description(_desc) { global_group_list.PushRear(this); }
     ~cBaseConfigGroup() { ; }
     
     const cString& GetName() const { return group_name; }
@@ -195,7 +194,7 @@ private:
     cString m_description;
     tList<cBaseConfigFormatEntry> m_entry_list;
     cStringList m_value;
-  
+    
   public:
     cBaseConfigCustomFormat(const cString& _name, const cString& _desc)
       : m_format_name(_name), m_description(_desc) { global_format_list.PushRear(this); }
@@ -207,11 +206,11 @@ private:
     const tList<cBaseConfigFormatEntry>& GetEntryList() const { return m_entry_list; }
     
     void AddEntry(cBaseConfigFormatEntry* _entry) { m_entry_list.PushRear(_entry); }
-  
+    
     const cStringList& Get() const { return m_value; }
     void Add(const cString& value) { m_value.PushRear(value); }
   };
-
+  
   // The cConfigFormatEntry class is a bass class for all configuration entries.
   // It is used to manage the various types of entries in a dynamic fashion.
   class cBaseConfigFormatEntry {
@@ -247,8 +246,8 @@ private:
   static tList<cBaseConfigCustomFormat> global_format_list;
   tList<cBaseConfigGroup> m_group_list;
   tList<cBaseConfigCustomFormat> m_format_list;
-
-
+  
+  
 public:
   cAvidaConfig()
   {
@@ -257,7 +256,7 @@ public:
     global_list_mutex.Unlock();
   }
   ~cAvidaConfig() { ; }
-
+  
 #ifdef OVERRIDE_CONFIG
 #include "config_overrides.h"
 #else
@@ -339,7 +338,7 @@ public:
   CONFIG_ADD_VAR(DEMES_PREFER_EMPTY, int, 0, "Give empty demes preference as targets of deme replication?");
   CONFIG_ADD_VAR(DEMES_PROTECTION_POINTS, int, 0, "The number of points a deme receives for each suicide.");
 	CONFIG_ADD_VAR(POINT_DECAY_PERCENT, int, 0, "The percentage of points decayed each time cActionDecayPoints is called.");
-
+  
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced on birth?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood\n11 = Local neighborhood dispersal");
   CONFIG_ADD_VAR(PREFER_EMPTY, int, 1, "Give empty cells preference in offsping placement?");
@@ -355,6 +354,11 @@ public:
   CONFIG_ADD_VAR(GENERATION_INC_METHOD, int, 1, "0 = Only the generation of the child is\n    increased on divide.\n1 = Both the generation of the mother and child are\n    increased on divide (good with DIVIDE_METHOD 1).");
   CONFIG_ADD_VAR(RESET_INPUTS_ON_DIVIDE, int, 0, "Reset environment inputs of parent upon successful divide.");
   CONFIG_ADD_VAR(REPRO_METHOD, int, 1, "Replace existing organism: 1=yes");
+  
+  
+  CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks");
+  CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
+  CONFIG_ADD_VAR(INJECT_PROB_SIGMOID, int, 1, "Inject Probs follow a psuedo-sigmoid path - only works if task probs are turned on");
 	
   CONFIG_ADD_GROUP(RECOMBINATION_GROUP, "Sexual Recombination and Modularity");
   CONFIG_ADD_VAR(RECOMBINATION_PROB, double, 1.0, "probability of recombination in div-sex");
@@ -366,7 +370,7 @@ public:
   CONFIG_ADD_VAR(SAME_LENGTH_SEX, int, 0, "0 = recombine with any genome\n1 = only recombine w/ same length");
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
   CONFIG_ADD_VAR(LEGACY_GRID_LOCAL_SELECTION, bool, 0, "Enable legacy grid local mate selection (ignores population structure)");
-
+  
   CONFIG_ADD_GROUP(DIVIDE_GROUP, "Divide Restrictions");
   CONFIG_ADD_VAR(CHILD_SIZE_RANGE, double, 2.0, "Maximal differential between child and parent sizes.\n(Checked BEFORE mutations applied on divide.)");
   CONFIG_ADD_VAR(MIN_COPIED_LINES, double, 0.5, "Code fraction which must be copied before divide.");
@@ -387,13 +391,13 @@ public:
   
   CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutations");
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
-
+  
   CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Mutation rate (per copy)");
   CONFIG_ADD_VAR(COPY_INS_PROB, double, 0.0, "Insertion rate (per copy)");
   CONFIG_ADD_VAR(COPY_DEL_PROB, double, 0.0, "Deletion rate (per copy)");
   CONFIG_ADD_VAR(COPY_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per copy)\n- Randomly applies any of the three classes of mutations (ins, del, point).");
   CONFIG_ADD_VAR(COPY_SLIP_PROB, double, 0.0, "Slip rate (per copy)");
-
+  
   CONFIG_ADD_VAR(DIV_MUT_PROB, double, 0.0, "Mutation rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_INS_PROB, double, 0.0, "Insertion rate (per site, applied on divide)");
   CONFIG_ADD_VAR(DIV_DEL_PROB, double, 0.0, "Deletion rate (per site, applied on divide)");
@@ -409,9 +413,9 @@ public:
   CONFIG_ADD_VAR(DIVIDE_POISSON_INS_MEAN, double, 0.0, "Insertion rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_DEL_MEAN, double, 0.0, "Deletion rate (Poisson distributed, per divide)");
   CONFIG_ADD_VAR(DIVIDE_POISSON_SLIP_MEAN, double, 0.0, "Slip rate (Poisson distributed, per divide)");
-
+  
   CONFIG_ADD_VAR(DIVIDE_UNIFORM_PROB, double, 0.0, "Uniform mutation probability (per divide)\n- Randomly applies any of the three classes of mutations (ins, del, point).");
-
+  
   CONFIG_ADD_VAR(DEATH_PROB, double, 0.0, "Death rate (parent organism, per divide)");
   
   CONFIG_ADD_VAR(INJECT_INS_PROB, double, 0.0, "Insertion rate (per site, applied on inject)");
@@ -426,7 +430,7 @@ public:
   CONFIG_ADD_VAR(META_STD_DEV, double, 0.0, "Standard deviation of meta mutation size.");
   CONFIG_ADD_VAR(MUT_RATE_SOURCE, int, 1, "1 = Mutation rates determined by environment.\n2 = Mutation rates inherited from parent.");
   CONFIG_ADD_VAR(MIGRATION_RATE, double, 0.0, "Uniform probability of offspring migrating to a new deme.");
- 
+  
   CONFIG_ADD_GROUP(REVERSION_GROUP, "Mutation Reversion\nThese slow down avida a lot, and should be set to 0.0 normally.");
   CONFIG_ADD_VAR(REVERT_FATAL, double, 0.0, "Should any mutations be reverted on birth?");
   CONFIG_ADD_VAR(REVERT_DETRIMENTAL, double, 0.0, "  0.0 to 1.0; Probability of reversion.");
@@ -474,7 +478,7 @@ public:
   CONFIG_ADD_VAR(FASTFORWARD_UPDATES, int, 0, "Fast-forward if the average generation has not changed in this many updates. (0 = off)");
   CONFIG_ADD_VAR(FASTFORWARD_NUM_ORGS, int, 0, "Fast-forward if population is equal to this");
   CONFIG_ADD_VAR(GENOTYPE_PHENPLAST_CALC, int, 100, "Number of times to test a genotype's\nplasticity during runtime.");
-
+  
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
   CONFIG_ADD_VAR(TRACK_MAIN_LINEAGE, int, 1, "Keep all ancestors of the active population?\n0=no, 1=yes, 2=yes,w/sexual population");
   CONFIG_ADD_VAR(THRESHOLD, int, 3, "Number of organisms in a genotype needed for it\n  to be considered viable.");
@@ -507,7 +511,7 @@ public:
   CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, bool, 1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf, default=1.");
   CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, bool, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
 	CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
-
+  
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");
   CONFIG_ADD_VAR(BUY_PRICE, int, 0, "price offered by organisms attempting to buy");
@@ -561,7 +565,7 @@ public:
   CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
   CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");
   CONFIG_ADD_VAR(TRACK_CCLADES_IDS, cString, "coalescence.ids", "File storing coalescence IDs");
-
+  
   CONFIG_ADD_GROUP(GX_GROUP, "Gene Expression CPU Settings");
   CONFIG_ADD_VAR(MAX_PROGRAMIDS, int, 16, "Maximum number of programids an organism can create.");
   CONFIG_ADD_VAR(MAX_PROGRAMID_AGE, int, 2000, "Max number of CPU cycles a programid executes before it is removed.");
@@ -570,7 +574,7 @@ public:
   CONFIG_ADD_VAR(IMPLICIT_TURNOVER_RATE, double, 0.0, "Number of programids recycled per CPU cycle. 0 = OFF");
   CONFIG_ADD_VAR(IMPLICIT_MAX_PROGRAMID_LENGTH, int, 0, "Creation of an executable programid terminates after this many instructions. 0 = disabled");
   //  CONFIG_ADD_VAR(CLEAR_ON_OUTPUT, int, 0, "Reset input buffer every time output called?"); @JEB Not fully implemented
-
+  
   CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
   CONFIG_ADD_VAR(PROMOTERS_ENABLED, int, 0, "Use the promoter/terminator execution scheme.\nCertain instructions must also be included.");
   CONFIG_ADD_VAR(PROMOTER_INST_MAX, int, 0, "Maximum number of instructions to execute before terminating. 0 = off");
@@ -585,7 +589,7 @@ public:
   CONFIG_ADD_VAR(INST_CODE_LENGTH, int, 3, "Instruction binary code length (number of bits)");
   CONFIG_ADD_VAR(INST_CODE_DEFAULT_TYPE, int, 0, "Default value of instruction binary code value.\n0 = All zeros\n1 = Based off the instruction number");
   CONFIG_ADD_VAR(CONSTITUTIVE_REGULATION, int, 0, "Sense a new regulation value before each CPU cycle?");
-
+  
   CONFIG_ADD_GROUP(COLORS_GROUP, "Output colors for when data files are printed in HTML mode.\nThere are two sets of these; the first are for lineages,\nand the second are for mutation tests.");
   CONFIG_ADD_VAR(COLOR_DIFF, cString, "CCCCFF", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_SAME, cString, "FFFFFF", "Color to flag stat that has NOT changed since parent.");
@@ -593,12 +597,12 @@ public:
   CONFIG_ADD_VAR(COLOR_NEG1, cString, "FFCCCC", "Color to flag stat that is minorly worse than parent.");
   CONFIG_ADD_VAR(COLOR_POS1, cString, "CCFFCC", "Color to flag stat that is minorly better than parent.");
   CONFIG_ADD_VAR(COLOR_POS2, cString, "00FF00", "Color to flag stat that is significantly better than parent.");
-
+  
   CONFIG_ADD_VAR(COLOR_MUT_POS,    cString, "00FF00", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_MUT_NEUT,   cString, "FFFFFF", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_MUT_NEG,    cString, "FFFF00", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_MUT_LETHAL, cString, "FF0000", "Color to flag stat that has changed since parent.");
-
+  
   // @WRE: Additions for approaching various features of biological organisms
   CONFIG_ADD_GROUP(BIOMIMETIC_GROUP, "Biomimetic Features Settings");
   CONFIG_ADD_VAR(BIOMIMETIC_REFRACTORY_PERIOD, double, 0.0, "Number of updates affected by refractory period");
@@ -607,7 +611,7 @@ public:
   CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_FACTOR, double, 1.0, "Scale merit bonus due to movement (m<1.0 applies a cost)");
   CONFIG_ADD_VAR(BIOMIMETIC_EVAL_ON_MOVEMENT, int, 0, "Force task evaluation on each movement step");
   CONFIG_ADD_VAR(BIOMIMETIC_K, int, 0, "Carrying capacity in number of organisms");
-
+  
   // BDC: Additions for pheromones
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");
   CONFIG_ADD_VAR(PHEROMONE_ENABLED, bool, 0, "Enable pheromone usage. 0/1 (off/on)");
@@ -631,7 +635,7 @@ public:
 	// -------- Consensus config options --------
   CONFIG_ADD_GROUP(CONSENSUS_GROUP, "Consensus settings");	
 	CONFIG_ADD_VAR(CONSENSUS_HOLD_TIME, int, 1, "Number of updates that consensus must be held for.");
-		
+  
   CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
 	
@@ -664,14 +668,14 @@ public:
 	// -------- Horizontal Gene Transfer (HGT) config options --------
 	CONFIG_ADD_GROUP(HGT_GROUP, "Horizontal gene transfer settings");
 	CONFIG_ADD_VAR(ENABLE_HGT, int, 0, "Whether HGT is enabled; 0=false (default),\n 1=true.");
-	CONFIG_ADD_VAR(HGT_FRAGMENT_SELECTION, int, 0, "Method used to select fragments for HGT mutation (0=random [default]\n1=trimmed selection).");
+	CONFIG_ADD_VAR(HGT_FRAGMENT_SELECTION, int, 0, "Method used to select fragments for HGT mutation (0=random [default]\n1=trimmed selection\n2=random placement).");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_MEAN, double, 10, "Mean size of fragments (drawn from a normal\ndist., default=10).");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_VARIANCE, double, 2, "Variance of fragments (drawn from a normal\ndist., default=2).");
 	CONFIG_ADD_VAR(HGT_MAX_FRAGMENTS_PER_CELL, int, 100, "Max. allowed number of fragments\nper cell (default=100).");
 	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome\nfragments (0=none [default]).");
 	CONFIG_ADD_VAR(HGT_MUTATION_P, double, 0.0, "Probability that an HGT mutation will occur on divide (default=0.0).");
 	CONFIG_ADD_VAR(HGT_INSERTION_MUT_P, double, 0.5, "Probability that an HGT mutation will result in an insertion (default=0.5); replacement if false.");
-	
+
   CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");
   CONFIG_ADD_VAR(INST_RES, cString, "", "Resource upon which the execution of certain instruction depends");
   CONFIG_ADD_VAR(INST_RES_FLOOR, double, 0.0, "Assumed lower level of resource in environment.  Used for probability dist.");

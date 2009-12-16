@@ -276,6 +276,7 @@ public:
 	
   bool OK();
 
+  void Sterilize();
   // Run when being setup *as* and offspring.
   void SetupOffspring(const cPhenotype & parent_phenotype, const cGenome & _genome);
 

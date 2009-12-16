@@ -148,8 +148,9 @@ public:
 	typedef cGenomeUtil::substring_match substring_match;
 	//! Perform an HGT mutation on this offspring.
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
+
 protected:
-	//! Random selection of the fragment used for HGT mutation.
+	//! Random selection of the fragment used for HGT mutation, located at the best match.
 	void HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
 																	fragment_list_type& fragments, fragment_list_type::iterator& selected,
 																	substring_match& location);
@@ -157,6 +158,10 @@ protected:
 	void HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
 																	 fragment_list_type& fragments, fragment_list_type::iterator& selected,
 																	 substring_match& location);	
+	//! Random selection of the fragment used for HGT mutation, located at a random position.
+	void HGTRandomFragmentPlacement(cAvidaContext& ctx, const cGenome& offspring,
+																	fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																	substring_match& location);	
 };
 
 

@@ -46,7 +46,7 @@ using namespace std;
 
 
 cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(false), 
-      m_fastforward(false),m_last_generation(0),  m_generation_same_update_count(0) 
+m_fastforward(false),m_last_generation(0),  m_generation_same_update_count(0) 
 {
   cDriverManager::Register(this);
   world->SetDriver(this);
@@ -110,7 +110,7 @@ void cDefaultRunDriver::Run()
       // Process the update.
       const int UD_size = ave_time_slice * population.GetNumOrganisms();
       const double step_size = 1.0 / (double) UD_size;
-    
+      
       for (int i = 0; i < UD_size; i++) {
         if (population.GetNumOrganisms() == 0) {
           m_done = true;
@@ -122,21 +122,21 @@ void cDefaultRunDriver::Run()
     
     // end of update stats...
     population.ProcessPostUpdate(ctx);
-        
+    
     // No viewer; print out status for this update....
     if (m_world->GetVerbosity() > VERBOSE_SILENT) {
       cout.setf(ios::left);
       cout.setf(ios::showpoint);
       cout << "UD: " << setw(6) << stats.GetUpdate() << "  "
-        << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
-        << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
+      << "Gen: " << setw(9) << setprecision(7) << stats.SumGeneration().Average() << "  "
+      << "Fit: " << setw(9) << setprecision(7) << stats.GetAveFitness() << "  "
       //  << "Energy: " << setw(9) << setprecision(7) << stats.GetAveEnergy() << "  "
-//        << "Merit: " << setw(9) << setprecision(7) << stats.GetAveMerit() << "  "
-        << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  ";
-//        << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  "
-//        << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)UD_size) * 100.0) << "%"
-//        << "Thrd: " << setw(6) << stats.GetNumThreads() << "  "
-//        << "Para: " << stats.GetNumParasites()
+      << "Merit: " << setw(9) << setprecision(7) << stats.GetAveMerit() << "  "
+      << "Orgs: " << setw(6) << population.GetNumOrganisms() << "  "
+      //        << "Spec: " << setw(6) << setprecision(4) << stats.GetAveSpeculative() << "  "
+      //        << "SWst: " << setw(6) << setprecision(4) << (((double)stats.GetSpeculativeWaste() / (double)UD_size) * 100.0) << "%"
+      << "Thrd: " << setw(6) << stats.GetNumThreads() << "  "
+      << "Para: " << stats.GetNumParasites() << "  GenEntr: " << stats.GetEntropy() << "  ";
       if (m_world->GetPopulation().GetNumDemes() > 1) cout << "Demes: " << setw(4) << stats.GetNumOccupiedDemes() << " ";
       cout << endl;
     }
@@ -153,7 +153,7 @@ void cDefaultRunDriver::Run()
     
     // Keep track of changes in generation for fast-forward purposes
     UpdateFastForward(stats.GetGeneration(),stats.GetNumCreatures());
-      
+    
     // Exit conditons...
     if (population.GetNumOrganisms() == 0) m_done = true;
   }
@@ -184,11 +184,11 @@ void cDefaultRunDriver::UpdateFastForward (double inGeneration, int population)
 {
   if (bool(m_population_fastforward_threshold))
   {
-	if (population >= m_population_fastforward_threshold) m_fastforward = true;
-	else m_fastforward = false;
+    if (population >= m_population_fastforward_threshold) m_fastforward = true;
+    else m_fastforward = false;
   }
   if (!m_generation_update_fastforward_threshold) return;
-
+  
   if (inGeneration == m_last_generation)
   {
     m_generation_same_update_count++;

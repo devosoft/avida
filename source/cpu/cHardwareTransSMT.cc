@@ -131,7 +131,7 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
 	
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
- 
+
 cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism,
                                      cInstSet* in_inst_set, int inst_set_id)
 : cHardwareBase(world, in_organism, in_inst_set, inst_set_id), m_mem_array(1)
@@ -159,7 +159,7 @@ void cHardwareTransSMT::internalReset()
   // Reset that single thread.
   m_threads[0].Reset(this, 0);
   m_cur_thread = 0;
-		
+  
   // Reset all stacks (local and global)
   for(int i = 0; i < NUM_STACKS; i++) {
 		Stack(i).Clear();
@@ -200,7 +200,7 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     // Setup the hardware for the next instruction to be executed.
     m_cur_thread++;
     if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
-
+    
     if (!ThreadIsRunning()) continue;
     
     AdvanceIP() = true;
@@ -331,13 +331,13 @@ void cHardwareTransSMT::PrintStatus(ostream& fp)
 	<< endl;
 	
   fp << "  R-Head:(" << GetHead(nHardware::HEAD_READ).GetMemSpace() << ", " 
-		<< GetHead(nHardware::HEAD_READ).GetPosition() << ")  " 
-		<< "W-Head:(" << GetHead(nHardware::HEAD_WRITE).GetMemSpace()  << ", "
-		<< GetHead(nHardware::HEAD_WRITE).GetPosition() << ")  "
-		<< "F-Head:(" << GetHead(nHardware::HEAD_FLOW).GetMemSpace()   << ",  "
-		<< GetHead(nHardware::HEAD_FLOW).GetPosition() << ")  "
-		<< "RL:" << GetReadLabel().AsString() << "   "
-    << endl;
+  << GetHead(nHardware::HEAD_READ).GetPosition() << ")  " 
+  << "W-Head:(" << GetHead(nHardware::HEAD_WRITE).GetMemSpace()  << ", "
+  << GetHead(nHardware::HEAD_WRITE).GetPosition() << ")  "
+  << "F-Head:(" << GetHead(nHardware::HEAD_FLOW).GetMemSpace()   << ",  "
+  << GetHead(nHardware::HEAD_FLOW).GetPosition() << ")  "
+  << "RL:" << GetReadLabel().AsString() << "   "
+  << endl;
 	
   for (int i = 0; i < m_mem_array.GetSize(); i++) {
     const cCPUMemory& mem = m_mem_array[i];
@@ -415,7 +415,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
-                                    const cGenome& search_genome, int pos)
+                                         const cGenome& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -496,7 +496,7 @@ int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Backward(const cCodeLabel & search_label,
-                                     const cGenome & search_genome, int pos)
+                                          const cGenome & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -648,8 +648,11 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 bool cHardwareTransSMT::InjectHost(const cCodeLabel& in_label, const cGenome& inject_code)
 {
   // Inject fails if the memory space is already in use or thread exists
-  if (MemorySpaceExists(in_label) || FindThreadLabel(in_label) != -1) return false;
-
+  if (MemorySpaceExists(in_label) || FindThreadLabel(in_label) != -1) 
+  {
+    return false;
+  }
+  
   // Otherwise create the memory space and copy in the genome
   int mem_space_used = FindMemorySpaceLabel(in_label, -1);
   assert(mem_space_used != -1);
@@ -657,7 +660,7 @@ bool cHardwareTransSMT::InjectHost(const cCodeLabel& in_label, const cGenome& in
   
   // Create a thread for this parasite
   if (!ThreadCreate(in_label, mem_space_used)) return false; // Partially failed injection, could not create thread
-
+  
   return true;
 }
 
@@ -716,7 +719,7 @@ int cHardwareTransSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
   // Add new thread entry
   m_threads.Resize(thread_id + 1);
   m_thread_lbls.Add(hash_key, thread_id);
-    
+  
   // Setup this thread into the current selected memory space (Flow Head)
   m_threads[thread_id].Reset(this, mem_space);
 	
@@ -726,7 +729,7 @@ int cHardwareTransSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
 bool cHardwareTransSMT::ThreadKill(const int thread_id)
 {
   if (thread_id < 1 || thread_id >= m_threads.GetSize()) return false;
-
+  
   // Increment thread, if killing current thread
   if (m_cur_thread == thread_id) ThreadNext();
   
@@ -840,58 +843,49 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
 	
   // Divide Mutations (per site)
-  if(m_organism->GetDivMutProb() > 0){
-    int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(), 
-																					 m_organism->GetInjectMutProb() / mut_multiplier);
-    // If we have lines to mutate...
-    if( num_mut > 0 ){
-      for (int i = 0; i < num_mut; i++) {
-				int site = ctx.GetRandom().GetUInt(injected_code.GetSize());
-				injected_code[site] = m_inst_set->GetRandomInst(ctx);
-      }
-    }
-  }
-	
-	
-  // Insert Mutations (per site)
-  if(m_organism->GetDivInsProb() > 0){
-    int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
-																					 m_organism->GetInjectInsProb());
-    // If would make creature to big, insert up to MAX_CREATURE_SIZE
-    if( num_mut + injected_code.GetSize() > MAX_CREATURE_SIZE ){
-      num_mut = MAX_CREATURE_SIZE - injected_code.GetSize();
-    }
-    // If we have lines to insert...
-    if( num_mut > 0 ){
-      // Build a list of the sites where mutations occured
-      static int mut_sites[MAX_CREATURE_SIZE];
-      for (int i = 0; i < num_mut; i++) {
-				mut_sites[i] = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
-      }
-      // Sort the list
-      qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
-      // Actually do the mutations (in reverse sort order)
-      for(int i = num_mut-1; i >= 0; i--) {
-				injected_code.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
-      }
-    }
-  }
-	
-	
-  // Delete Mutations (per site)
-  if( m_organism->GetDivDelProb() > 0 ){
-    int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
-																					 m_organism->GetInjectDelProb());
-    // If would make creature too small, delete down to MIN_CREATURE_SIZE
-    if (injected_code.GetSize() - num_mut < MIN_CREATURE_SIZE) {
-      num_mut = injected_code.GetSize() - MIN_CREATURE_SIZE;
-    }
-		
-    // If we have lines to delete...
+  int num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(), 
+                                                m_organism->GetInjectMutProb() / mut_multiplier);
+  // If we have lines to mutate...
+  if( num_mut > 0 ){
     for (int i = 0; i < num_mut; i++) {
       int site = ctx.GetRandom().GetUInt(injected_code.GetSize());
-      injected_code.Remove(site);
+      injected_code[site] = m_inst_set->GetRandomInst(ctx);
     }
+  }
+	
+  // Insert Mutations (per site)
+  num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
+                                            m_organism->GetInjectInsProb());
+  // If would make creature to big, insert up to MAX_CREATURE_SIZE
+  if( num_mut + injected_code.GetSize() > MAX_CREATURE_SIZE )
+    num_mut = MAX_CREATURE_SIZE - injected_code.GetSize();
+  // If we have lines to insert...
+  if( num_mut > 0 ){
+    // Build a list of the sites where mutations occured
+    static int mut_sites[MAX_CREATURE_SIZE];
+    for (int i = 0; i < num_mut; i++) {
+      mut_sites[i] = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
+    }
+    // Sort the list
+    qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
+    // Actually do the mutations (in reverse sort order)
+    for(int i = num_mut-1; i >= 0; i--) {
+      injected_code.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));
+    }
+  }
+	
+  // Delete Mutations (per site)
+  num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
+                                            m_organism->GetInjectDelProb());
+  // If would make creature too small, delete down to MIN_CREATURE_SIZE
+  if (injected_code.GetSize() - num_mut < MIN_CREATURE_SIZE) {
+    num_mut = injected_code.GetSize() - MIN_CREATURE_SIZE;
+  }
+  
+  // If we have lines to delete...
+  for (int i = 0; i < num_mut; i++) {
+    int site = ctx.GetRandom().GetUInt(injected_code.GetSize());
+    injected_code.Remove(site);
   }
 	
   // Mutations in the parent's genome
@@ -906,6 +900,7 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
 }
 
 
+
 bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
 {
   const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
@@ -913,7 +908,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   
   // Make sure the memory space we're using exists
   if (m_mem_array.GetSize() <= mem_space_used) return false;
-  	
+  
   // Make sure this divide will produce a viable offspring.
   m_cur_child = mem_space_used; // save current child memory space for use by dependent functions (e.g. calcCopiedSize())
   if (!Divide_CheckViable(ctx, m_mem_array[0].GetSize(), write_head_pos)) return false;
@@ -954,13 +949,13 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
       case DIVIDE_METHOD_SPLIT:
         Reset(ctx);  // This will wipe out all parasites on a divide.
         break;
-      
+        
       case DIVIDE_METHOD_BIRTH:
         // Reset only the calling thread's state
         for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
         for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
         break;
-      
+        
       case DIVIDE_METHOD_OFFSPRING:
       default:
         break;
@@ -1125,11 +1120,15 @@ bool cHardwareTransSMT::Inst_HeadRead(cAvidaContext& ctx)
 	
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
+  
   if (m_organism->TestCopyMut(ctx)) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
+
+  
+  read_inst = GetHead(head_id).GetInst().GetOp();
   Stack(dst).Push(read_inst);
   ReadInst(read_inst);
 	
@@ -1142,7 +1141,7 @@ bool cHardwareTransSMT::Inst_HeadWrite(cAvidaContext& ctx)
 {
   const int head_id = FindModifiedHead(nHardware::HEAD_WRITE);
   const int src = FindModifiedStack(STACK_AX);
-
+  
   cHeadCPU & active_head = GetHead(head_id);
   int mem_space_used = active_head.GetMemSpace();
   
@@ -1451,7 +1450,7 @@ bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext& ctx)
 bool cHardwareTransSMT::Inst_CallFlow(cAvidaContext& ctx)
 {
   const int dst = FindModifiedStack(STACK_AX);
-
+  
   const int location = IP().GetPosition() & 0xFFFF;
   const int mem_space = IP().GetMemSpace() << 8;
   const int ra  = location | mem_space;

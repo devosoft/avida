@@ -651,6 +651,10 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 			HGTTrimmedFragmentSelection(ctx, offspring, cell.GetFragments(), selected, location);
 			break;
 		}
+		case 2: { // random selection and random placement
+			HGTRandomFragmentPlacement(ctx, offspring, cell.GetFragments(), selected, location);
+			break;
+		}
 		default: { // error
 			m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
 			break;
@@ -682,7 +686,7 @@ void cPopulationInterface::HGTRandomFragmentSelection(cAvidaContext& ctx, const 
 																											substring_match& location) {
 	// randomly select the genome fragment for HGT:
 	selected=fragments.begin();
-	std::advance(selected, ctx.GetRandom().GetInt(fragments.size()));
+	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
 
 	// find the location within the offspring's genome that best matches the selected fragment:
 	location = cGenomeUtil::FindUnbiasedCircularMatch(ctx, offspring, *selected);
@@ -703,7 +707,7 @@ void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const
 																											 substring_match& location) {
 	// randomly select the genome fragment for HGT:
 	selected=fragments.begin();
-	std::advance(selected, ctx.GetRandom().GetInt(fragments.size()));
+	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
 	
 	// copy the selected fragment, trimming redundant instructions at the end:
 	cGenome trimmed(*selected);
@@ -714,3 +718,26 @@ void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const
 	// find the location within the offspring's genome that best matches the selected fragment:
 	location = cGenomeUtil::FindUnbiasedCircularMatch(ctx, offspring, trimmed);
 }
+
+
+/*! Random selection of the fragment used for HGT mutation, located at a random position.
+ 
+ Here we select a random fragment and a random location for that fragment within the offspring.
+ The beginning of the fragment location is selected at random, while the end is selected a
+ random distance (up to the length of the selected fragment * 2) instructions away.
+ */
+void cPopulationInterface::HGTRandomFragmentPlacement(cAvidaContext& ctx, const cGenome& offspring,
+																fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																substring_match& location) {
+	// randomly select the genome fragment for HGT:
+	selected=fragments.begin();
+	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
+
+	// select a random location within the offspring's genome for this fragment to be
+	// inserted:
+	location.begin = ctx.GetRandom().GetUInt(offspring.GetSize());
+	location.end = location.begin + ctx.GetRandom().GetUInt(selected->GetSize()*2);
+	location.size = offspring.GetSize();
+	location.resize(offspring.GetSize());
+}
+

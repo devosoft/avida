@@ -122,7 +122,7 @@ cPopulation::cPopulation(cWorld* world)
       case nGeometry::PARTIAL: { cout << "Geometry: Partial" << endl; break; }
 			case nGeometry::RANDOM_CONNECTED: { cout << "Geometry: Random connected" << endl; break; }
       case nGeometry::SCALE_FREE: { cout << "Geometry: Scale-free" << endl; break; }
-
+        
       default:
         cout << "Unknown geometry!" << endl;
         assert(false);
@@ -221,10 +221,10 @@ cPopulation::cPopulation(cWorld* world)
 				break;
 			case nGeometry::SCALE_FREE:
 				build_scale_free(&cell_array.begin()[i], &cell_array.begin()[i+deme_size],
-													world->GetConfig().SCALE_FREE_M.Get(),
-													world->GetConfig().SCALE_FREE_ALPHA.Get(),
-													world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
-													m_world->GetRandom());
+                         world->GetConfig().SCALE_FREE_M.Get(),
+                         world->GetConfig().SCALE_FREE_ALPHA.Get(),
+                         world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
+                         m_world->GetRandom());
 				break;
       default:
         assert(false);
@@ -537,21 +537,103 @@ bool cPopulation::ActivateParasite(cOrganism& parent, const cCodeLabel& label, c
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell& parent_cell = cell_array[ parent_id ];
   
-  int num_neighbors = parent.GetNeighborhoodSize();
-  cOrganism* target_organism = 
-  parent_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(num_neighbors))->GetOrganism();
+  cOrganism* target_organism = NULL;
   
+  if (m_world->GetConfig().BIRTH_METHOD.Get() ==  POSITION_OFFSPRING_FULL_SOUP_RANDOM)
+  {
+	target_organism = GetCell(m_world->GetRandom().GetUInt(cell_array.GetSize())).GetOrganism();
+  }
+  else
+  { 
+	target_organism = 
+		parent_cell.ConnectionList().GetPos(m_world->GetRandom().GetUInt(parent.GetNeighborhoodSize()))->GetOrganism();
+  }
+	      
   if (target_organism == NULL) return false;
   
   cHardwareBase& child_cpu = target_organism->GetHardware();
   
   if (child_cpu.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
+  tArray<int> task_counts = target_organism->GetPhenotype().GetCurTaskCount();
+  
+  int random_int = m_world->GetRandom().GetUInt(100);
+  
+  if (m_world->GetConfig().INJECT_PROB_FROM_TASKS.Get())
+  {
+    
+    int last_task_count = target_organism->GetPhenotype().GetLastTaskCount()[0];
+    int total_count;
+    int task_count = last_task_count;
+    
+    if (task_count < task_counts[0])
+    {  
+      task_count = task_counts[0];
+    }
+    
+    total_count = task_count;
+        
+    if (total_count > 0)
+    {
+      if (m_world->GetConfig().INJECT_PROB_SIGMOID.Get())
+      {
+        switch (total_count) {
+          case 1:
+            if(random_int > 10)
+              return false;
+            break;
+          case  2:
+            if(random_int > 30)
+              return false;
+            break;
+          case 3:
+            if(random_int > 50)
+              return false;
+            break;
+          case 4:
+            if(random_int > 70)
+              return false;
+            break;
+          case 5:
+            if (random_int > 75)
+              return false;
+            break;
+          case 6:
+            if (random_int > 80)
+              return false;
+            break;
+          case  7:
+            if(random_int > 85)
+              return false;
+            break;
+          case 8:
+            if(random_int > 90)
+              return false;
+            break;
+          case 9:
+            if(random_int > 95)
+              return false;
+            break;
+          case 10:
+            break;
+        }
+      }
+      else
+      {
+        if (random_int > (total_count * 10))
+          return false;
+      }
+    }
+    
+    else
+      return false;
+    
+  }
   
   if (target_organism->InjectHost(label, injected_code)) {
     cInjectGenotype* child_genotype = parent_genotype;
     
-    // If the parent genotype is not correct for the child, adjust it.
+	// If the parent genotype is not correct for the child, adjust it.
     if (parent_genotype == NULL || parent_genotype->GetGenome() != injected_code) {
       child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code, parent_genotype);
     }
@@ -560,6 +642,10 @@ bool cPopulation::ActivateParasite(cOrganism& parent, const cCodeLabel& label, c
     child_genotype->AddParasite();
     child_cpu.ThreadSetOwner(child_genotype);
     m_world->GetClassificationManager().AdjustInjectGenotype(*child_genotype);
+	
+	if(m_world->GetConfig().INJECT_STERILIZES_HOST.Get())
+		target_organism->GetPhenotype().Sterilize();
+	
   }
   else
     return false;
@@ -1338,7 +1424,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
 			
 			// better have more than deme tournament size, otherwise something is *really* screwed up:
 			if(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get() > static_cast<int>(deme_ids.size())) {
-				 m_world->GetDriver().RaiseFatalException(-1, "The number of demes that can participate in a tournament is less than the deme tournament size.");
+        m_world->GetDriver().RaiseFatalException(-1, "The number of demes that can participate in a tournament is less than the deme tournament size.");
 			}
 			
 			// Run the tournaments.
@@ -4830,7 +4916,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     /* depth */       cur_line.PopWord();
     cString name = cStringUtil::Stringf("org-%d", tmp.id_num);
     cGenome genome(cur_line.PopWord());
-        
+    
     // Process resident cell ids
     cString cellstr(cur_line.PopWord());
     while (cellstr.GetSize()) tmp.cells.Push(cellstr.Pop(',').AsInt());
