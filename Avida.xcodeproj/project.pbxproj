@@ -911,6 +911,7 @@
 		70C5BC6309059A970028A785 /* cWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cWorld.cc; sourceTree = "<group>"; };
 		70C5BD690905CE5F0028A785 /* cHardwareManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareManager.cc; sourceTree = "<group>"; };
 		70C5BD6A0905CE5F0028A785 /* cHardwareManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareManager.h; sourceTree = "<group>"; };
+		70C8F2F110DABFDF005697AA /* tBufferedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tBufferedList.h; sourceTree = "<group>"; };
 		70CA6EB208DB7F8200068AC2 /* cFitnessMatrix.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFitnessMatrix.cc; sourceTree = "<group>"; };
 		70CA6EB408DB7F8200068AC2 /* cGenome.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenome.cc; sourceTree = "<group>"; };
 		70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cGenomeUtil.cc; sourceTree = "<group>"; };
@@ -1721,6 +1722,7 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				70C8F2F110DABFDF005697AA /* tBufferedList.h */,
 				7020828D0FB9F2DF00637AD6 /* cBitArray.cc */,
 				7020828E0FB9F2DF00637AD6 /* cBitArray.h */,
 				2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */,
