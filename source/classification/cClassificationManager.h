@@ -35,12 +35,6 @@
 #ifndef cGenotypeControl_h
 #include "cGenotypeControl.h"
 #endif
-#ifndef cInjectGenotypeControl_h
-#include "cInjectGenotypeControl.h"
-#endif
-#ifndef cInjectGenotypeQueue_h
-#include "cInjectGenotypeQueue.h"
-#endif
 #ifndef cSpeciesControl_h
 #include "cSpeciesControl.h"
 #endif
@@ -83,14 +77,6 @@ private:
   cSpeciesControl* m_species_ctl;
   int m_species_next_id;
 
-  // InjectGenotype Structures
-  unsigned int m_inject_count[MAX_CREATURE_SIZE];
-  cInjectGenotypeQueue m_active_inject[nInjectGenotype::HASH_SIZE];
-  cInjectGenotypeControl* m_inject_ctl;
-  int m_inject_next_id;
-  int m_inject_dom_time;
-  int m_inject_prev_dom;
-  
   // Lineage Structures
   std::list<cLineage*> m_lineage_list;
   cLineage* m_best_lineage;  // the lineage with the highest average fitness
@@ -156,33 +142,6 @@ public:
   void DumpDetailedSexEntry(cGenotype* genotype, std::ofstream& fp);
   
   
-  // InjectGenotype Manipulation
-  cInjectGenotype* GetInjectGenotype(const cGenome& in_genome, cInjectGenotype* parent_inject_genotype = NULL);
-  cInjectGenotype* FindInjectGenotype(const cGenome& in_genome) const;
-  void RemoveInjectGenotype(cInjectGenotype & in_inject_genotype);
-  void ThresholdInjectGenotype(cInjectGenotype & in_inject_genotype);
-  bool AdjustInjectGenotype(cInjectGenotype & in_inject_genotype);  
-  
-  int GetInjectGenotypeCount() const { return m_inject_ctl->GetSize(); }
-  cInjectGenotype* GetBestInjectGenotype() const { return m_inject_ctl->GetBest(); }
-  cInjectGenotype* GetCoalescentInjectGenotype() const { return m_inject_ctl->GetCoalescent(); }
-  
-  cInjectGenotype* GetInjectGenotype(int thread) const { return m_inject_ctl->Get(thread); }
-  cInjectGenotype* NextInjectGenotype(int thread)
-  {
-    cInjectGenotype* next = m_inject_ctl->Next(thread);
-    return (next == m_inject_ctl->GetBest()) ? NULL : next; 
-  }
-  cInjectGenotype* ResetInjectThread(int thread) { return m_inject_ctl->Reset(thread); }
-  
-  int FindPos(cInjectGenotype& inject, int max_depth = -1) { return m_inject_ctl->FindPos(inject, max_depth); }
-    
-  // InjectGenotype Output
-  bool DumpInjectTextSummary(std::ofstream& fp);
-  bool DumpInjectDetailedSummary(const cString & file, int update);
-  void DumpInjectDetailedEntry(cInjectGenotype * inject_genotype, const cString & file, int update);
-  
-
   // Species Accessors
   cSpecies* GetFirstSpecies() const { return m_species_ctl->GetFirst(); }
   int GetNumSpecies() const { return m_species_ctl->GetSize(); }
@@ -217,13 +176,10 @@ public:
   
 private:
   void AddGenotype(cGenotype* in_genotype, int list_num = -1);
-  void AddInjectGenotype(cInjectGenotype* in_inject_genotype, int in_list_num = -1);
   void DumpDetailHeading(std::ofstream& fp, bool print_mut_steps = false);
   void DumpDetailSexHeading (std::ofstream& fp);
   unsigned int FindCRC(const cGenome& in_genome) const;
-  unsigned int FindInjectCRC(const cGenome& in_genome) const;
   cString GetLabel(int in_size, int in_num);
-  cString GetInjectLabel(int in_size, int in_num) { return cString("p") + GetLabel(in_size, in_num); }
   
   cLineage* AddLineage(double start_fitness, int parent_lin_id, int id = -1, double lineage_stat1 = 0.0, double lineage_stat2 = 0.0);
   void UpdateLineages();

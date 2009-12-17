@@ -266,12 +266,12 @@ int cPopulationInterface::BuyValue(const int label, const int buy_price)
 	return value;
 }
 
-bool cPopulationInterface::InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code)
+bool cPopulationInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cCodeLabel& label, const cGenome& injected_code)
 {
   assert(parent != NULL);
-  assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
+  assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == host);
   
-  return m_world->GetPopulation().ActivateParasite(*parent, label, injected_code);
+  return m_world->GetPopulation().ActivateParasite(host, parent, label, injected_code);
 }
 
 bool cPopulationInterface::UpdateMerit(double new_merit)

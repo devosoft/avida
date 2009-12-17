@@ -70,6 +70,7 @@
 #include "cInstSet.h"
 
 class cAvidaContext;
+class cBioUnit;
 class cCodeLabel;
 class cChangeList;
 class cEnvironment;
@@ -137,7 +138,7 @@ public:
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent_organism);
-  bool ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code);
+  bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cCodeLabel& label, const cGenome& injected_code);
   
   // Inject an organism from the outside world.
   void Inject(const cGenome& genome, eBioUnitSource src, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0);
@@ -335,7 +336,6 @@ private:
   void UpdateGenotypeStats();
   void UpdateSpeciesStats();
   void UpdateDominantStats();
-  void UpdateDominantParaStats();
   
   /**
    * Attention: InjectGenotype does *not* add the genotype to the archive.

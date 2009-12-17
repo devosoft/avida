@@ -89,7 +89,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cCodeLabel& label, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }

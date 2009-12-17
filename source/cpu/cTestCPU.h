@@ -42,9 +42,9 @@
 #endif
 
 class cAvidaContext;
+class cBioGroup;
 class cGenome;
 class cGenotype;
-class cInjectGenotype;
 class cInstSet;
 class cMetaGenome;
 class cResourceCount;
@@ -100,8 +100,7 @@ public:
   
   void PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename,
                    cGenotype* genotype = NULL, int update = -1);
-  void PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_genotype,
-                         const cGenome& genome, cString filename = "", int update = -1);
+  void PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename = "", int update = -1);
 
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);

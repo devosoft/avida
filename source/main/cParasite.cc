@@ -1,9 +1,9 @@
 /*
- *  nInjectGenotype.h
+ *  cParasite.cc
  *  Avida
  *
- *  Created by David on 10/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Created by David on 12/16/09.
+ *  Copyright 2009 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,12 +22,11 @@
  *
  */
 
-#ifndef nInjectGenotype_h
-#define nInjectGenotype_h
+#include "cParasite.h"
 
-namespace nInjectGenotype {
-  const int HASH_SIZE = 307;    // @CAO Is this an optimal number?
-  const int THREADS = 2;  
+cParasite::cParasite(const cMetaGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args)
+  : m_src(src), m_src_args(src_args), m_initial_genome(genome)
+{
+  assert(false);
+  // @TODO - properly construct cPhenotype
 }
-
-#endif

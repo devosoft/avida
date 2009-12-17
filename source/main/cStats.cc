@@ -325,13 +325,6 @@ void cStats::SetupPrintDatabase()
   data_manager.Add("dom_depth",      "Tree Depth of Dominant Genotype",         &cStats::GetDomGeneDepth);
   data_manager.Add("dom_sequence",   "Sequence of Dominant Genotype",           &cStats::GetDomSequence);
 
-  // Dominant Inject Genotype Stats
-  data_manager.Add("dom_inj_size",      "Genome Length of Dominant Parasite",   &cStats::GetDomInjSize);
-  data_manager.Add("dom_inj_ID",        "ID of Dominant Parasite",              &cStats::GetDomInjID);
-  data_manager.Add("dom_inj_name",      "Nameof Dominant Parasite",             &cStats::GetDomInjName);
-  data_manager.Add("dom_inj_births",    "Birth Count of Dominant Parasite",     &cStats::GetDomInjBirths);
-  data_manager.Add("dom_inj_abundance", "Abundance of Dominant Parasite",       &cStats::GetDomInjAbundance);
-  data_manager.Add("dom_inj_sequence",  "Sequence of Dominant Parasite",        &cStats::GetDomInjSequence);
   
   // Current Counts...
   data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
@@ -809,10 +802,11 @@ void cStats::PrintParasiteData(const cString& filename)
 
   df.Write(m_update, "Update");
   df.Write(num_parasites, "Number of Extant Parasites");
-  df.Write(dom_inj_size, "Size of Dominant Parasite Genotype");
-  df.Write(dom_inj_abundance, "Abundance of Dominant Parasite Genotype");
-  df.Write(dom_inj_genotype_id, "Genotype ID of Dominant Parasite Genotype");
-  df.Write(dom_inj_name, "Name of the Dominant Parasite Genotype");
+// @TODO - parasite stats output?
+//  df.Write(dom_inj_size, "Size of Dominant Parasite Genotype");
+//  df.Write(dom_inj_abundance, "Abundance of Dominant Parasite Genotype");
+//  df.Write(dom_inj_genotype_id, "Genotype ID of Dominant Parasite Genotype");
+//  df.Write(dom_inj_name, "Name of the Dominant Parasite Genotype");
   df.Endl();
 }
 

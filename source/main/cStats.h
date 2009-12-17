@@ -77,7 +77,6 @@
 
 
 class cGenotype;
-class cInjectGenotype;
 class cWorld;
 class cOrganism;
 class cOrgMessage;
@@ -198,15 +197,6 @@ private:
   int dom_gene_depth;
   cString dom_sequence;
   int coal_depth;
-
-  // Dominant Parasite
-  cInjectGenotype * dom_inj_genotype;
-  int dom_inj_size;
-  int dom_inj_genotype_id;
-  cString dom_inj_name;
-  int dom_inj_births;
-  int dom_inj_abundance;
-  cString dom_inj_sequence;
 
   int num_births;
   int num_deaths;
@@ -388,14 +378,6 @@ public:
   int GetDomGeneDepth() const { return dom_gene_depth; }
   const cString & GetDomSequence() const { return dom_sequence; }
 
-  cInjectGenotype * GetDomInjGenotype() const { return dom_inj_genotype; }
-  int GetDomInjSize() const { return dom_inj_size; }
-  int GetDomInjID() const { return dom_inj_genotype_id; }
-  const cString & GetDomInjName() const { return dom_inj_name; }
-  int GetDomInjBirths() const { return dom_inj_births; }
-  int GetDomInjAbundance() const { return dom_inj_abundance; }
-  const cString & GetDomInjSequence() const { return dom_inj_sequence; }
-  
   int GetSenseSize() const { return sense_size; }
 
   // Settings...
@@ -417,14 +399,6 @@ public:
   void SetDomAbundance(int in_abund) { dom_abundance = in_abund; }
   void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
   void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
-
-  void SetDomInjGenotype(cInjectGenotype * in_inj_genotype) { dom_inj_genotype = in_inj_genotype; }
-  void SetDomInjSize(int in_inj_size) { dom_inj_size = in_inj_size; }
-  void SetDomInjID(int in_inj_ID) { dom_inj_genotype_id = in_inj_ID; }
-  void SetDomInjName(const cString & in_name) { dom_inj_name = in_name; }
-  void SetDomInjBirths(int in_births) { dom_inj_births = in_births; }
-  void SetDomInjAbundance(int in_inj_abundance) { dom_inj_abundance = in_inj_abundance; }
-  void SetDomInjSequence(const cString & in_inj_sequence) { dom_inj_sequence = in_inj_sequence; }
 
   void SetGenoMapElement(int i, int in_geno) { genotype_map[i] = in_geno; }
   void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}

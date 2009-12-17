@@ -20,7 +20,6 @@ class cGenotype;
 class cPopulation;
 class cPopulationCell;
 class cOrganism;
-class cInjectGenotype;
 
 #define NUM_SYMBOLS 12
 #define SYMBOL_THRESHOLD 10
@@ -68,7 +67,6 @@ private:
   // Symbol information
   cGenotype * genotype_chart[NUM_SYMBOLS];
   cSpecies * species_chart[NUM_SYMBOLS];
-  cInjectGenotype * inject_genotype_chart[NUM_SYMBOLS];
   char symbol_chart[NUM_SYMBOLS];
 
   tArray<char> map;
@@ -76,10 +74,9 @@ private:
 
   inline bool InGenChart(cGenotype * in_gen);
   inline bool InSpeciesChart(cSpecies * in_species);
-  inline bool InInjectGenChart(cInjectGenotype * in_gen);
   void AddGenChart(cGenotype * in_gen);
   void AddSpeciesChart(cSpecies * in_species);
-  void AddInjectGenChart(cInjectGenotype * in_gen);
+
 public:
   cViewInfo(cWorld* world, cView_Base * view);
   ~cViewInfo() { ; }
@@ -106,7 +103,6 @@ public:
   int GetNumSymbols() { return NUM_SYMBOLS; }
   cGenotype * GetGenotype(int index) { return genotype_chart[index]; }
   cSpecies * GetSpecies(int index) { return species_chart[index]; }
-  cInjectGenotype * GetInjectGenotype(int index) { return inject_genotype_chart[index]; }
 
   cPopulationCell * GetActiveCell() { return active_cell; }
 
@@ -159,14 +155,6 @@ inline bool cViewInfo::InSpeciesChart(cSpecies * in_species)
 {
   for (int i = 0; i < NUM_SYMBOLS; i++) {
     if (species_chart[i] == in_species) return true;
-  }
-  return false;
-}
-
-inline bool cViewInfo::InInjectGenChart(cInjectGenotype * in_gen)
-{
-  for (int i = 0; i < NUM_SYMBOLS; i++) {
-    if (inject_genotype_chart[i] == in_gen) return true;
   }
   return false;
 }

@@ -331,9 +331,12 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
+    assert(false);
+    // @TODO - save parasite pop?
+    
     cString filename(m_filename);
     if (filename == "") filename.Set("parasite-%d.pop", m_world->GetStats().GetUpdate());
-    m_world->GetClassificationManager().DumpInjectDetailedSummary(filename, m_world->GetStats().GetUpdate());
+//    m_world->GetClassificationManager().DumpInjectDetailedSummary(filename, m_world->GetStats().GetUpdate());
   }
 };
 

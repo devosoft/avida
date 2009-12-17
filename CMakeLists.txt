@@ -150,9 +150,6 @@ SET(CLASSIFICATION_SOURCES
   ${CLASSIFICATION_DIR}/cGenotype.cc
   ${CLASSIFICATION_DIR}/cGenotype_BirthData.cc
   ${CLASSIFICATION_DIR}/cGenotypeControl.cc
-  ${CLASSIFICATION_DIR}/cInjectGenotype.cc
-  ${CLASSIFICATION_DIR}/cInjectGenotypeControl.cc
-  ${CLASSIFICATION_DIR}/cInjectGenotypeQueue.cc
   ${CLASSIFICATION_DIR}/cLineage.cc
   ${CLASSIFICATION_DIR}/cMutationSteps.cc
   ${CLASSIFICATION_DIR}/cSpecies.cc

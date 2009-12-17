@@ -84,7 +84,6 @@ class cCodeLabel;
 class cEnvironment;
 class cGenotype;
 class cHardwareBase;
-class cInjectGenotype;
 class cInstSet;
 class cLineage;
 class cOrgSinkMessage;
@@ -103,7 +102,7 @@ private:
   eBioUnitSource m_src;
   cString m_src_args;
   const cMetaGenome m_initial_genome;         // Initial genome; can never be changed!
-  tArray<cInjectGenotype*> m_parasites;   // List of all parasites associated with this organism.
+  tArray<cBioUnit*> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cLocalMutations m_mut_info;             // Info about possible mutations;
   cOrgInterface* m_interface;             // Interface back to the population.
@@ -330,10 +329,9 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(const cCodeLabel& label, const cGenome& genome);
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& genome);
-  void AddParasite(cInjectGenotype* cur) { m_parasites.Push(cur); }
-  cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
+  bool InjectParasite(cBioUnit* parent, const cCodeLabel& label, const cGenome& genome);
+  bool InjectHost(cBioUnit* parent, eBioUnitSource src, const cCodeLabel& in_label, const cGenome& genome);
+  void AddParasite(cBioUnit* cur) { m_parasites.Push(cur); }
   int GetNumParasites() const { return m_parasites.GetSize(); }
   void ClearParasites();
 

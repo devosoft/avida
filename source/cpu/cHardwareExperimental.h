@@ -70,7 +70,6 @@
  * @see cCPUMemory, cInstSet
  **/
 
-class cInjectGenotype;
 class cInstLib;
 class cInstSet;
 class cMutation;
@@ -288,8 +287,7 @@ public:
   bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
-  cInjectGenotype* ThreadGetOwner() { return NULL; } // @DMB - cHardwareExperimental does not really implement cInjectGenotype yet
-  void ThreadSetOwner(cInjectGenotype* in_genotype) { return; }
+  cBioUnit* ThreadGetOwner() { return m_organism; } // @TODO - cHardwareExperimental not implement parasites
   
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }

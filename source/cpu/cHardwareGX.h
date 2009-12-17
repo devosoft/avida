@@ -63,7 +63,6 @@
 #include "nHardware.h"
 #include "tBuffer.h"
 
-class cInjectGenotype;
 class cInstLib;
 class cInstSet;
 class cMutation;
@@ -364,8 +363,7 @@ public:
   virtual bool ThreadSelect(const cCodeLabel& in_label) { return false; }
   virtual void ThreadPrev() { }
   virtual void ThreadNext() { }
-  virtual cInjectGenotype* ThreadGetOwner() { return 0; }
-  virtual void ThreadSetOwner(cInjectGenotype* in_genotype) { }
+  virtual cBioUnit* ThreadGetOwner() { return m_organism; } // @TODO - cHardwareGX does not support parasites
   
   virtual int GetNumThreads() const { return -1; }
   virtual int GetCurThread() const { return -1; }

@@ -31,7 +31,6 @@
 #include "cGenome.h"
 #include "cGenotype.h"
 #include "cHardwareManager.h"
-#include "cInjectGenotype.h"
 #include "cLineage.h"
 #include "cOrganism.h"
 #include "cSpecies.h"
@@ -51,10 +50,6 @@ cClassificationManager::cClassificationManager(cWorld* world)
   , m_genotype_prev_dom(-1)
   , m_species_ctl(new cSpeciesControl(world))
   , m_species_next_id(0)
-  , m_inject_ctl(new cInjectGenotypeControl(world))
-  , m_inject_next_id(1)
-  , m_inject_dom_time(0)
-  , m_inject_prev_dom(-1)
   , m_best_lineage(NULL)
   , m_max_fitness_lineage(NULL)
   , m_dominant_lineage(NULL)
@@ -62,7 +57,6 @@ cClassificationManager::cClassificationManager(cWorld* world)
 {
   for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
     m_genotype_count[i] = 0;
-    m_inject_count[i] = 0;
   }
   
   RegisterBioGroupManager(new cBGGenotypeManager(world), "genotype");
@@ -72,7 +66,6 @@ cClassificationManager::~cClassificationManager()
 {
   delete m_genotype_ctl;
   delete m_species_ctl;
-  delete m_inject_ctl;
 }
 
 bool cClassificationManager::RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role)
@@ -127,23 +120,6 @@ void cClassificationManager::UpdateReset()
     }
   }
   
-
-  cInjectGenotype* best_inject_genotype = GetBestInjectGenotype();
-  
-  if (best_inject_genotype) {  // If there is a dominant parasite
-    if (best_inject_genotype->GetID() != m_inject_prev_dom) {
-      m_inject_dom_time = 0;
-      m_inject_prev_dom = best_inject_genotype->GetID();
-    } else {
-      m_inject_dom_time++;
-      if (m_inject_dom_time == m_world->GetConfig().GENOTYPE_PRINT_DOM.Get()) {
-        cString filename;
-        filename.Set("archive/%s", static_cast<const char*>(best_inject_genotype->GetName()));
-        testcpu->PrintInjectGenome(m_world->GetDefaultContext(), best_inject_genotype, best_inject_genotype->GetGenome(), 
-                               filename, m_world->GetStats().GetUpdate());
-      }
-    }
-  }
 
   delete testcpu;
 }
@@ -506,11 +482,6 @@ bool cClassificationManager::SaveClone(ofstream& fp)
     fp << m_genotype_count[i] << " ";
   }
   
-  // Save the numbers of organisms we're up to at each size.
-  fp << MAX_CREATURE_SIZE << " ";
-  for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
-    fp << m_inject_count[i] << " ";
-  }
   return true;
 }
 
@@ -525,12 +496,6 @@ bool cClassificationManager::LoadClone(ifstream & fp)
   assert (max_size <= MAX_CREATURE_SIZE); // MAX_CREATURE_SIZE too small
   for (int i = 0; i < max_size && i < MAX_CREATURE_SIZE; i++) {
     fp >> m_genotype_count[i];
-  }
-  
-  fp >> max_size;
-  assert (max_size <= MAX_CREATURE_SIZE); // MAX_CREATURE_SIZE too small
-  for (int i = 0; i < max_size && i < MAX_CREATURE_SIZE; i++) {
-    fp >> m_inject_count[i];
   }
 
   return true;
@@ -852,128 +817,6 @@ void cClassificationManager::DumpDetailedSexEntry(cGenotype * genotype, ofstream
   << genotype->GetDepth() << " "             // 13
   << genotype->GetGenome().AsString() << " " // 14
   << endl;
-}
-
-
-
-void cClassificationManager::AddInjectGenotype(cInjectGenotype* in_inject_genotype, int in_list_num)
-{
-  assert( in_inject_genotype != 0 );
-  
-  if ( in_list_num < 0 )
-    in_list_num = FindCRC(in_inject_genotype->GetGenome()) % nInjectGenotype::HASH_SIZE;
-  
-  m_active_inject[in_list_num].Insert(*in_inject_genotype);
-  m_inject_ctl->Insert(*in_inject_genotype);
-}
-
-
-cInjectGenotype* cClassificationManager::GetInjectGenotype(const cGenome& in_genome, cInjectGenotype* parent_genotype)
-{
-  int list_num = FindCRC(in_genome) % nInjectGenotype::HASH_SIZE;
-  cInjectGenotype * found_genotype;
-  
-  found_genotype = m_active_inject[list_num].Find(in_genome);
-  
-  if (!found_genotype) {
-    found_genotype = new cInjectGenotype(m_world, m_world->GetStats().GetUpdate(), m_inject_next_id++);
-    found_genotype->SetGenome(in_genome);
-    found_genotype->SetParent(parent_genotype);
-    if(parent_genotype!=NULL)
-    {
-      parent_genotype->SetCanReproduce();
-    }
-    AddInjectGenotype( found_genotype, list_num );
-  }
-  return found_genotype;
-}
-
-cInjectGenotype* cClassificationManager::FindInjectGenotype(const cGenome& in_genome) const
-{
-  int list_num = FindCRC(in_genome) % nInjectGenotype::HASH_SIZE;
-  return m_active_inject[list_num].Find(in_genome);
-}
-
-void cClassificationManager::RemoveInjectGenotype(cInjectGenotype& in_inject_genotype)
-{
-  // If this genotype is still active, mark it no longer active and
-  // take it out of the hash table so it doesn't have any new organisms
-  // assigned to it.
-  
-  if (in_inject_genotype.GetActive() == true) {
-    int list_num = FindCRC(in_inject_genotype.GetGenome()) % nInjectGenotype::HASH_SIZE;
-    m_active_inject[list_num].Remove(in_inject_genotype);
-    m_inject_ctl->Remove(in_inject_genotype);
-    //in_inject_genotype.Deactivate(stats.GetUpdate());
-    if (m_world->GetConfig().TRACK_MAIN_LINEAGE.Get()) {
-      m_inject_ctl->InsertHistoric(in_inject_genotype);
-    }
-  }
-  
-  delete &in_inject_genotype;
-}
-
-void cClassificationManager::ThresholdInjectGenotype(cInjectGenotype& in_inject_genotype)
-{
-  in_inject_genotype.SetName( GetLabel(in_inject_genotype.GetLength(),
-                                       m_inject_count[in_inject_genotype.GetLength()]++) );
-  in_inject_genotype.SetThreshold();
-}
-
-bool cClassificationManager::AdjustInjectGenotype(cInjectGenotype& in_inject_genotype)
-{
-  if (!m_inject_ctl->Adjust(in_inject_genotype)) return false;
-  
-  if ((in_inject_genotype.GetNumInjected() >= m_world->GetConfig().THRESHOLD.Get() ||
-       &in_inject_genotype == m_inject_ctl->GetBest()) &&
-      !(in_inject_genotype.GetThreshold())) {
-    ThresholdInjectGenotype(in_inject_genotype);
-  }
-  
-  return true;
-}
-
-bool cClassificationManager::DumpInjectTextSummary(ofstream& fp)
-{
-  m_inject_ctl->Reset(0);
-  for (int i = 0; i < m_inject_ctl->GetSize(); i++) {
-    cInjectGenotype * genotype = m_inject_ctl->Get(0);
-    fp << genotype->GetGenome().AsString() << " "
-      << genotype->GetNumInjected() << " "
-      << genotype->GetID() << endl;
-    m_inject_ctl->Next(0);
-  }
-  
-  return true;
-}
-
-bool cClassificationManager::DumpInjectDetailedSummary(const cString & file, int update)
-{
-  m_inject_ctl->Reset(0);
-  for (int i = 0; i < m_inject_ctl->GetSize(); i++) {
-    DumpInjectDetailedEntry(m_inject_ctl->Get(0), file, update);
-    m_inject_ctl->Next(0);
-  }
-  return true;
-}
-
-void cClassificationManager::DumpInjectDetailedEntry(cInjectGenotype * genotype, const cString & filename, int update)
-{
-  cDataFile & df = m_world->GetDataFile(filename);
-  
-  df.WriteComment( "Avida parasite dump data" );
-  df.WriteTimeStamp();
-  
-  df.Write( genotype->GetID(),                 "parasite genotype ID");
-  df.Write( genotype->GetName(),              "parasite genotype name");
-  df.Write( genotype->GetParentID(),           "parasite parent ID");
-  df.Write( genotype->GetNumInjected(),        "current number of injected creatures with this genotype");
-  df.Write( genotype->GetTotalInjected(),      "total number of injected creatures with this genotype");
-  df.Write( genotype->GetLength(),             "genotype length");
-  df.Write( genotype->GetUpdateBorn(),         "update this genotype was born");
-  df.Write( genotype->CanReproduce(),          "has this genotype reproduced?");
-  df.Write( genotype->GetGenome().AsString(),  "genome of this genotype");
-  df.Endl();
 }
 
 
@@ -1343,20 +1186,6 @@ unsigned int cClassificationManager::FindCRC(const cGenome & in_genome) const
   }
   
   return total % nGenotype::HASH_SIZE;
-}
-
-
-unsigned int cClassificationManager::FindInjectCRC(const cGenome & in_genome) const
-{
-  unsigned int total = 13;
-  int i;
-  
-  for (i = 0; i < in_genome.GetSize(); i++) {
-    total *= in_genome[i].GetOp() + 10 + i << 6;
-    total += 3;
-  }
-  
-  return total;
 }
 
 

@@ -35,7 +35,6 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
-#include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -452,44 +451,10 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
 }
 
 
-void cTestCPU::PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_genotype,
-                                 const cGenome& genome, cString filename, int update)
+void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename, int update)
 {
-  if (filename == "") filename.Set("p%03d-unnamed", genome.GetSize());
-  
-  // Build the test info for printing.
-  cCPUTestInfo test_info;
-  TestGenome(ctx, test_info, genome);
-  
-  // Open the file...
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  
-  // @CAO Fix!!!!!!
-  if( fp.good() == false ) {
-    cerr << "Unable to open output file '" <<  filename << "'" << endl;
-    return;
-  }
-  
-  // Print the useful info at the top...
-  
-  fp << "# Filename........: " << filename << endl;
-  
-  if (update >= 0) fp << "# Update Output...: " << update << endl;
-  else fp << "# Update Output...: N/A" << endl;
-  
-  
-  if (inject_genotype != NULL) {
-    fp << "# Update Created..: " << inject_genotype->GetUpdateBorn() << endl;
-    fp << "# Genotype ID.....: " << inject_genotype->GetID() << endl;
-    fp << "# Parent Gen ID...: " << inject_genotype->GetParentID() << endl;
-    fp << "# Tree Depth......: " << inject_genotype->GetDepth() << endl;
-  }
-  fp << endl;
-  
-  // Display the genome
-  cGenomeUtil::SaveGenome(fp, test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
-  
-  m_world->GetDataFileManager().Remove(filename);
+  // @TODO - test cpu print bio group
+  assert(false);
 }
 
 

@@ -35,7 +35,6 @@
 #include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrgSinkMessage.h"
 #include "cPopulationCell.h"
@@ -651,14 +650,26 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
 }
 
 
-bool cOrganism::InjectParasite(const cCodeLabel& label, const cGenome& injected_code)
+bool cOrganism::InjectParasite(cBioUnit* parent, const cCodeLabel& label, const cGenome& injected_code)
 {
   assert(m_interface);
-  return m_interface->InjectParasite(this, label, injected_code);
+  return m_interface->InjectParasite(this, parent, label, injected_code);
 }
 
-bool cOrganism::InjectHost(const cCodeLabel& label, const cGenome& injected_code)
+bool cOrganism::InjectHost(cBioUnit* parent, eBioUnitSource src, const cCodeLabel& label, const cGenome& injected_code)
 {
+  cInjectGenotype* child_genotype = parent_genotype;
+  
+  // If the parent genotype is not correct for the child, adjust it.
+  if (parent_genotype == NULL || parent_genotype->GetGenome() != injected_code) {
+    child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code, parent_genotype);
+  }
+  
+  target_organism->AddParasite(child_genotype);
+  child_genotype->AddParasite();
+  child_cpu.ThreadSetOwner(child_genotype);
+  
+  
   return m_hardware->InjectHost(label, injected_code);
 }
 

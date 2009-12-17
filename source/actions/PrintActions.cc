@@ -38,7 +38,6 @@
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHistogram.h"
-#include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenPlastGenotype.h"
@@ -53,6 +52,8 @@
 #include <cmath>
 #include <cerrno>
 #include <map>
+
+class cBioGroup;
 
 
 #define STATS_OUT_FILE(METHOD, DEFAULT)                                                   /*  1 */ \
@@ -496,37 +497,26 @@ public:
 };
 
 /*
- Write the currently dominant injected genotype to disk.
- 
- Parameters:
-   filename (string)
-     The name under which the genotype should be saved. If no
-     filename is given, the genotype is saved into the directory
-     archive, under the name that the archive has associated with
-     this genotype.
+ Write the currently dominant parasite genotype to disk.
 */
 class cActionPrintDominantParasiteGenotype : public cAction
 {
-private:
-  cString m_filename;
-
 public:
-  cActionPrintDominantParasiteGenotype(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  cActionPrintDominantParasiteGenotype(cWorld* world, const cString& args) : cAction(world, args)
   {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: (none)"; }
   
   void Process(cAvidaContext& ctx)
   {
-    cInjectGenotype* dom = m_world->GetClassificationManager().GetBestInjectGenotype();
+    // @TODO - get best parasite?
+    assert(false);
+    //cBioGroup* dom = m_world->GetClassificationManager().GetBestParasite();
+    cBioGroup* dom = NULL;
     if (dom != NULL) {
-      cString filename(m_filename);
-      if (filename == "") filename.Set("archive/%s.para", static_cast<const char*>(dom->GetName()));
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-      testcpu->PrintInjectGenome(ctx, dom, dom->GetGenome(), filename, m_world->GetStats().GetUpdate());
+      testcpu->PrintBioGroup(ctx, dom, "", m_world->GetStats().GetUpdate());
       delete testcpu;
     }
   }
