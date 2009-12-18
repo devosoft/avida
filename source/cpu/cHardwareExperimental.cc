@@ -803,47 +803,6 @@ cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
 }
 
 
-bool cHardwareExperimental::InjectHost(const cCodeLabel & in_label, const cGenome & injection)
-{
-  // Make sure the genome will be below max size after injection.
-  
-  const int new_size = injection.GetSize() + m_memory.GetSize();
-  if (new_size > MAX_CREATURE_SIZE) return false; // (inject fails)
-  
-  const int inject_line = FindLabelFull(in_label).GetPosition();
-  
-  // Abort if no compliment is found.
-  if (inject_line == -1) return false; // (inject fails)
-  
-  // Inject the code!
-  InjectCode(injection, inject_line+1);
-  
-  return true; // (inject succeeds!)
-}
-
-void cHardwareExperimental::InjectCode(const cGenome & inject_code, const int line_num)
-{
-  assert(line_num >= 0);
-  assert(line_num <= m_memory.GetSize());
-  assert(m_memory.GetSize() + inject_code.GetSize() < MAX_CREATURE_SIZE);
-  
-  // Inject the new code.
-  const int inject_size = inject_code.GetSize();
-  m_memory.Insert(line_num, inject_code);
-  
-  // Set instruction flags on the injected code
-  for (int i = line_num; i < line_num + inject_size; i++) {
-    m_memory.SetFlagInjected(i);
-  }
-  m_organism->GetPhenotype().IsModified() = true;
-  
-  // Adjust all of the heads to take into account the new mem size.  
-  for (int i = 0; i < NUM_HEADS; i++) {    
-    if (getHead(i).GetPosition() > line_num) getHead(i).Jump(inject_size);
-  }
-}
-
-
 void cHardwareExperimental::ReadInst(const int in_inst)
 {
   if (m_inst_set->IsLabel(cInstruction(in_inst))) {

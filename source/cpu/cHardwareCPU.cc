@@ -218,8 +218,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("divideRS", &cHardwareCPU::Inst_DivideRS, nInstFlag::STALL),
     tInstLibEntry<tMethod>("c-alloc", &cHardwareCPU::Inst_CAlloc),
     tInstLibEntry<tMethod>("c-divide", &cHardwareCPU::Inst_CDivide, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("inject", &cHardwareCPU::Inst_Inject, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("inject-r", &cHardwareCPU::Inst_InjectRand, nInstFlag::STALL),
     tInstLibEntry<tMethod>("transposon", &cHardwareCPU::Inst_Transposon),
     tInstLibEntry<tMethod>("search-f", &cHardwareCPU::Inst_SearchF),
     tInstLibEntry<tMethod>("search-b", &cHardwareCPU::Inst_SearchB),
@@ -1240,46 +1238,6 @@ cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
   return temp_head;
 }
 
-
-bool cHardwareCPU::InjectHost(const cCodeLabel & in_label, const cGenome & injection)
-{
-  // Make sure the genome will be below max size after injection.
-  
-  const int new_size = injection.GetSize() + m_memory.GetSize();
-  if (new_size > MAX_CREATURE_SIZE) return false; // (inject fails)
-  
-  const int inject_line = FindLabelFull(in_label).GetPosition();
-  
-  // Abort if no compliment is found.
-  if (inject_line == -1) return false; // (inject fails)
-  
-  // Inject the code!
-  InjectCode(injection, inject_line+1);
-  
-  return true; // (inject succeeds!)
-}
-
-void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
-{
-  assert(line_num >= 0);
-  assert(line_num <= m_memory.GetSize());
-  assert(m_memory.GetSize() + inject_code.GetSize() < MAX_CREATURE_SIZE);
-  
-  // Inject the new code.
-  const int inject_size = inject_code.GetSize();
-  m_memory.Insert(line_num, inject_code);
-  
-  // Set instruction flags on the injected code
-  for (int i = line_num; i < line_num + inject_size; i++) {
-    m_memory.SetFlagInjected(i);
-  }
-  m_organism->GetPhenotype().IsModified() = true;
-  
-  // Adjust all of the heads to take into account the new mem size.  
-  for (int i = 0; i < NUM_HEADS; i++) {    
-    if (getHead(i).GetPosition() > line_num) getHead(i).Jump(inject_size);
-  }
-}
 
 
 void cHardwareCPU::ReadInst(const int in_inst)
@@ -3272,128 +3230,9 @@ bool cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme(cAvidaContext& ctx) {
   return true;
 }
 
-// The inject instruction can be used instead of a divide command, paired
-// with an allocate.  Note that for an inject to work, one needs to have a
-// broad range for sizes allowed to be allocated.
-//
-// This command will cut out from read-head to write-head.
-// It will then look at the template that follows the command and inject it
-// into the complement template found in a neighboring organism.
-
-bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int start_pos = getHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = getHead(nHardware::HEAD_WRITE).GetPosition();
-  const int inject_size = end_pos - start_pos;
-  
-  // Make sure the creature will still be above the minimum size,
-  if (inject_size <= 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
-    return false; // (inject fails)
-  }
-  if (start_pos < MIN_CREATURE_SIZE) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
-    return false; // (inject fails)
-  }
-  
-  // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code(cGenomeUtil::Crop(m_memory, start_pos, end_pos));
-  m_memory.Remove(start_pos, inject_size);
-  AdjustHeads();
-  
-  // If we don't have a host, stop here.
-  cOrganism * host_organism = m_organism->GetNeighbor();
-  if (host_organism == NULL) return false;
-  
-  // Scan for the label to match...
-  ReadLabel();
-  
-  // If there is no label, abort.
-  if (GetLabel().GetSize() == 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
-    return false; // (inject fails)
-  }
-  
-  // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  const bool inject_signal = host_organism->GetHardware().InjectHost(GetLabel(), inject_code);
-  if (inject_signal) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
-    return false; // Inject failed.
-  }
-  
-  // Set the relevent flags.
-  m_organism->GetPhenotype().IsModifier() = true;
-  
-  return inject_signal;
-}
 
 
-bool cHardwareCPU::Inst_InjectRand(cAvidaContext& ctx)
-{
-  // Rotate to a random facing and then run the normal inject instruction
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  m_organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
-  Inst_Inject(ctx);
-  return true;
-}
 
-// The inject instruction can be used instead of a divide command, paired
-// with an allocate.  Note that for an inject to work, one needs to have a
-// broad range for sizes allowed to be allocated.
-//
-// This command will cut out from read-head to write-head.
-// It will then look at the template that follows the command and inject it
-// into the complement template found in a neighboring organism.
-
-bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int start_pos = getHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = getHead(nHardware::HEAD_WRITE).GetPosition();
-  const int inject_size = end_pos - start_pos;
-  
-  // Make sure the creature will still be above the minimum size,
-  if (inject_size <= 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
-    return false; // (inject fails)
-  }
-  if (start_pos < MIN_CREATURE_SIZE) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
-    return false; // (inject fails)
-  }
-  
-  // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code( cGenomeUtil::Crop(m_memory, start_pos, end_pos) );
-  m_memory.Remove(start_pos, inject_size);
-  
-  // If we don't have a host, stop here.
-  cOrganism * host_organism = m_organism->GetNeighbor();
-  if (host_organism == NULL) return false;
-  
-  // Scan for the label to match...
-  ReadLabel();
-  
-  // If there is no label, abort.
-  if (GetLabel().GetSize() == 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
-    return false; // (inject fails)
-  }
-  
-  // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  if (host_organism->GetHardware().InjectHost(GetLabel(), inject_code)) {
-    if (ForkThread()) m_organism->GetPhenotype().IsMultiThread() = true;
-  }
-  
-  // Set the relevent flags.
-  m_organism->GetPhenotype().IsModifier() = true;
-  
-  return true;
-}
 
 bool cHardwareCPU::Inst_TaskGet(cAvidaContext& ctx)
 {

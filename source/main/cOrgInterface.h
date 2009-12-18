@@ -36,13 +36,13 @@
 
 class cAvidaContext;
 class cBioUnit;
-class cCodeLabel;
 class cDeme;
 class cGenome;
 class cMetaGenome;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
+class cString;
 template <class T> class tArray;
 
 
@@ -101,7 +101,7 @@ public:
   virtual int ReceiveValue() = 0;
   virtual void SellValue(const int data, const int label, const int sell_price, const int org_id) = 0;
   virtual int BuyValue(const int label, const int buy_price) = 0;
-  virtual bool InjectParasite(cOrganism* host, cBioUnit* parent, const cCodeLabel& label, const cGenome& injected_code) = 0;
+  virtual bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;

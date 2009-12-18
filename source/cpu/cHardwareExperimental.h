@@ -287,7 +287,7 @@ public:
   bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
-  cBioUnit* ThreadGetOwner() { return m_organism; } // @TODO - cHardwareExperimental not implement parasites
+  cBioUnit* ThreadGetOwner() { return m_organism; }
   
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
@@ -295,7 +295,7 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
+  bool ParasiteInfectHost(cBioUnit* bu) { return false; }
 
   
   // --------  Non-Standard Methods  --------  
@@ -369,10 +369,6 @@ private:
   bool Divide_Main(cAvidaContext& ctx, const int divide_point, const int extra_lines=0, double mut_multiplier=1);
   
 
-  // --------  Parasite Stuff  --------
-  void InjectCode(const cGenome& injection, const int line_num);
-  
-  
   // ---------- Utility Functions -----------
   inline unsigned int BitCount(unsigned int value) const;
   inline void setInternalValue(sInternalValue& dest, int value, bool from_env = false);

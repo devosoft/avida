@@ -80,7 +80,6 @@
 
 class cAvidaContext;
 class cBioGroup;
-class cCodeLabel;
 class cEnvironment;
 class cGenotype;
 class cHardwareBase;
@@ -329,9 +328,8 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(cBioUnit* parent, const cCodeLabel& label, const cGenome& genome);
-  bool InjectHost(cBioUnit* parent, eBioUnitSource src, const cCodeLabel& in_label, const cGenome& genome);
-  void AddParasite(cBioUnit* cur) { m_parasites.Push(cur); }
+  bool InjectParasite(cBioUnit* parent, const cString& label, const cGenome& genome);
+  bool ParasiteInfectHost(cBioUnit* parasite);
   int GetNumParasites() const { return m_parasites.GetSize(); }
   void ClearParasites();
 

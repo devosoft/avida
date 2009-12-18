@@ -216,6 +216,7 @@ cOrganism::~cOrganism()
   if(m_net) delete m_net;
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;  
+  for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
 }
 
 cOrganism::cNetSupport::~cNetSupport()
@@ -650,32 +651,23 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
 }
 
 
-bool cOrganism::InjectParasite(cBioUnit* parent, const cCodeLabel& label, const cGenome& injected_code)
+bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const cGenome& injected_code)
 {
   assert(m_interface);
   return m_interface->InjectParasite(this, parent, label, injected_code);
 }
 
-bool cOrganism::InjectHost(cBioUnit* parent, eBioUnitSource src, const cCodeLabel& label, const cGenome& injected_code)
+bool cOrganism::ParasiteInfectHost(cBioUnit* parasite)
 {
-  cInjectGenotype* child_genotype = parent_genotype;
+  if (!m_hardware->ParasiteInfectHost(parasite)) return false;
   
-  // If the parent genotype is not correct for the child, adjust it.
-  if (parent_genotype == NULL || parent_genotype->GetGenome() != injected_code) {
-    child_genotype = m_world->GetClassificationManager().GetInjectGenotype(injected_code, parent_genotype);
-  }
-  
-  target_organism->AddParasite(child_genotype);
-  child_genotype->AddParasite();
-  child_cpu.ThreadSetOwner(child_genotype);
-  
-  
-  return m_hardware->InjectHost(label, injected_code);
+  m_parasites.Push(parasite);
+  return true;
 }
 
 void cOrganism::ClearParasites()
 {
-  for (int i = 0; i < m_parasites.GetSize(); i++) m_parasites[i]->RemoveParasite();
+  for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
   m_parasites.Resize(0);
 }
 

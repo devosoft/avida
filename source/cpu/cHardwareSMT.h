@@ -263,7 +263,7 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& inject_code);
+  bool ParasiteInfectHost(cBioUnit* bu);
 	
   
 private:

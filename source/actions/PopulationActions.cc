@@ -427,7 +427,7 @@ class cActionInjectParasite : public cAction
 	{
 	private:
 		cString m_filename;
-		cCodeLabel m_label;
+		cString m_label;
 		int m_cell_start;
 		int m_cell_end;
 	public:
@@ -435,7 +435,7 @@ class cActionInjectParasite : public cAction
 		{
 			cString largs(args);
 			m_filename = largs.PopWord();
-			m_label.ReadString(largs.PopWord());
+			m_label = largs.PopWord();
 			if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
 			if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
 			
@@ -485,7 +485,7 @@ class cActionInjectParasitePair : public cAction
 	private:
 		cString m_filename_genome;
 		cString m_filename_parasite;
-		cCodeLabel m_label;
+		cString m_label;
 		int m_cell_start;
 		int m_cell_end;
 		double m_merit;
@@ -498,7 +498,7 @@ class cActionInjectParasitePair : public cAction
 			cString largs(args);
 			m_filename_genome = largs.PopWord();
 			m_filename_parasite = largs.PopWord();
-			m_label.ReadString(largs.PopWord());
+			m_label = largs.PopWord();
 			if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
 			if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
 			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();

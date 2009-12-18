@@ -173,7 +173,7 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  virtual bool InjectHost(const cCodeLabel& in_label, const cGenome& injection) = 0;
+  virtual bool ParasiteInfectHost(cBioUnit* bu) = 0;
   
     
   // --------  Mutation  --------

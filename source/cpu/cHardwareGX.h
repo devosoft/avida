@@ -300,7 +300,6 @@ protected:
   int calcExecutedSize(const int parent_size);
   int calcCopiedSize(const int parent_size, const int child_size);
   bool Divide_Main(cAvidaContext& ctx);
-  void InjectCode(const cGenome& injection, const int line_num);
   bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);
   void ReadInst(const int in_inst);
 
@@ -361,16 +360,16 @@ public:
   /* cHardwareGX does not support threads (at least, not as in other CPUs). */
   virtual bool ThreadSelect(const int thread_id) { return false; }
   virtual bool ThreadSelect(const cCodeLabel& in_label) { return false; }
-  virtual void ThreadPrev() { }
-  virtual void ThreadNext() { }
-  virtual cBioUnit* ThreadGetOwner() { return m_organism; } // @TODO - cHardwareGX does not support parasites
+  virtual void ThreadPrev() { ; }
+  virtual void ThreadNext() { ; }
+  virtual cBioUnit* ThreadGetOwner() { return m_organism; }
   
-  virtual int GetNumThreads() const { return -1; }
+  virtual int GetNumThreads() const { return 1; }
   virtual int GetCurThread() const { return -1; }
   virtual int GetCurThreadID() const { return -1; }
  
    // --------  Parasite Stuff  --------
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
+  bool ParasiteInfectHost(cBioUnit* bu) { return false; }
 
 
   // --------  Input/Output Buffers  --------
@@ -488,8 +487,6 @@ private:
   bool Inst_Allocate(cAvidaContext& ctx);
   bool Inst_CAlloc(cAvidaContext& ctx);
   bool Inst_MaxAlloc(cAvidaContext& ctx);
-  bool Inst_Inject(cAvidaContext& ctx);
-  bool Inst_InjectRand(cAvidaContext& ctx);
   
   bool Inst_Repro(cAvidaContext& ctx);
 

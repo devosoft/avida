@@ -46,6 +46,7 @@
 #include "cIntegratedSchedule.h"
 #include "cLineage.h"
 #include "cOrganism.h"
+#include "cParasite.h"
 #include "cPhenotype.h"
 #include "cPopulationCell.h"
 #include "cProbSchedule.h"
@@ -523,7 +524,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   return parent_alive;
 }
 
-bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cCodeLabel& label, const cGenome& injected_code)
+bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code)
 {
   assert(parent != NULL);
   
@@ -608,10 +609,21 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cCod
   
   
   // Attempt actual parasite injection
-  if (!target_organism->InjectHost(parent, SRC_PARASITE_INJECT, label, injected_code)) return false;
-
   
-  // Handle post injection actions
+  cMetaGenome mg(parent->GetMetaGenome().GetHardwareType(), parent->GetMetaGenome().GetInstSetID(), injected_code);
+  cParasite* parasite = new cParasite(mg, parent->GetPhenotype().GetGeneration(), SRC_PARASITE_INJECT, label);
+  
+  if (!target_organism->ParasiteInfectHost(parasite)) {
+    delete parasite;
+    return false;
+  }
+
+  // Classify the parasite
+  tArray<const tArray<cBioGroup*>*> pgrps(1);
+  pgrps[0] = &parent->GetBioGroups();
+  parasite->SelfClassify(pgrps);
+  
+  // Handle post injection actions  
   if (m_world->GetConfig().INJECT_STERILIZES_HOST.Get()) target_organism->GetPhenotype().Sterilize();
   
   return true;
@@ -883,7 +895,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
 		deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
   }
   genotype->RemoveOrganism();
-  organism->ClearParasites();
 	
 	// If HGT is turned on, this organism's genome needs to be split up into fragments
 	// and deposited in its cell.  We then also have to add the size of this genome to
@@ -5078,15 +5089,19 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
   }
 }
 
-void cPopulation::InjectParasite(const cCodeLabel& label, const cGenome& injected_code, int cell_id)
+void cPopulation::InjectParasite(const cString& label, const cGenome& injected_code, int cell_id)
 {
   cOrganism* target_organism = cell_array[cell_id].GetOrganism();
-  
   if (target_organism == NULL) return;
   
-  if (target_organism->GetHardware().GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return;
+  cMetaGenome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSetID(), injected_code);
+  cParasite* parasite = new cParasite(mg, 0, SRC_PARASITE_FILE_LOAD, label);
   
-  target_organism->InjectHost(NULL, SRC_PARASITE_FILE_LOAD, label, injected_code);
+  if (target_organism->ParasiteInfectHost(parasite)) {
+    m_world->GetClassificationManager().ClassifyNewBioUnit(parasite);
+  } else {
+    delete parasite;
+  }
 }
 
 
