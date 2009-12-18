@@ -551,7 +551,10 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
 
   
   // Pre-check target hardware
-  if (target_organism->GetHardware().GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
+  const cHardwareBase& hw = target_organism->GetHardware();
+  if (hw.GetType() != parent.GetMetaGenome().GetHardwareType() ||
+      hw.GetInstSetID() != parent.GetMetaGenome().GetInstSetID() ||
+      hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
 
   // Handle probabilistic inject failure
