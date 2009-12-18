@@ -44,6 +44,10 @@
 #include <numeric>
 #include <algorithm>
 
+#ifndef cDoubleSum_h
+#include "cDoubleSum.h"
+#endif
+
 /*
  Injects a single organism into the population.
  
@@ -4105,6 +4109,137 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
     } //End Process()
   };
 
+
+/*
+ Kill all organisms within a given radius of a randomly-chosen cell if the MEAN level
+ of the given resource selected neighborhood is below the given threshold.  Currently
+ only works for toruses and bounded grids.
+ 
+ Parameters:
+ - The number of kill radii to use (default: 0)
+ - The radius of the kill zone (default: 0)
+ - The name of the resource
+ - The amount of resource below which to execute the kill (default: 0)
+ - The fraction of orgs in the region to kill (1=all, 0.5 leave half) (default: 1) -- useful for controlling density with biofilms
+ */
+
+class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
+  {
+  private:
+    int m_numradii;
+    int m_radius;
+    cString m_resname;
+    double m_threshold;
+    double m_kill_density;
+  public:
+    cActionKillWithinRadiusMeanBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_radius = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_resname = largs.PopWord();
+      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_kill_density = largs.PopWord().AsDouble();
+    }
+    
+    static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+			const int world_x = m_world->GetPopulation().GetWorldX();
+			const int world_y = m_world->GetPopulation().GetWorldY();
+      const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+      
+      assert(m_numradii >= 0);
+      assert(m_radius >= 0);
+      assert(m_radius <= world_x);
+      assert(m_radius <= world_y);
+      assert(m_threshold >= 0.0);
+      assert(m_kill_density >= 0.0);
+      assert(m_kill_density <= 1.0);
+      assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
+      
+      cDoubleSum resourcesum;
+      
+      cPopulation& pop = m_world->GetPopulation();
+      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+      
+      assert(res_id != -1);
+      
+      for (int i = 0; i < m_numradii; i++) {
+        
+        int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+        resourcesum.Clear();
+        
+        const int current_row = target_cell / world_x;
+        const int current_col = target_cell % world_x;
+        
+        for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
+          
+          if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
+          
+          for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
+            if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
+            
+            int row_adj = 0;
+            int col_adj = 0;
+            
+            if(geometry == nGeometry::TORUS) {
+              row_adj = (row + world_y) % world_y;
+              col_adj = (col + world_x) % world_x;
+            } else if(geometry == nGeometry::GRID) {
+              row_adj = row;
+              col_adj = col;
+            }
+            
+            int current_cell = (world_x * row_adj) + col_adj;
+            resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));            
+          }
+        }
+        
+        if(resourcesum.Average() < m_threshold) {
+          for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
+            
+            if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
+            
+            for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
+              if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
+              
+              int row_adj = 0;
+              int col_adj = 0;
+              
+              if(geometry == nGeometry::TORUS) {
+                row_adj = (row + world_y) % world_y;
+                col_adj = (col + world_x) % world_x;
+              } else if(geometry == nGeometry::GRID) {
+                row_adj = row;
+                col_adj = col;
+              }
+              
+              int current_cell = (world_x * row_adj) + col_adj;
+              cPopulationCell& cell = pop.GetCell(current_cell);
+              m_world->GetStats().IncNumCellsScannedAtKill();
+              
+              if( (cell.IsOccupied())  && (ctx.GetRandom().P(m_kill_density)) ) {
+                pop.KillOrganism(cell);
+                m_world->GetStats().IncNumOrgsKilled();
+              } else {
+                m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+              }
+              
+            }
+          }
+          
+        }
+        
+      } //End iterating through kill zones
+
+        
+      
+    } //End Process()
+  };
+
+
 /*
  Kill organisms within a given radius of a randomly-chosen cell if the level
  of the given resource in the chosen cells are below the given threshold.  Currently
@@ -4515,6 +4650,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
   action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThreshold>("KillWithinRadiusBelowResourceThreshold");
+  action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
 	action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
 	
 	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
