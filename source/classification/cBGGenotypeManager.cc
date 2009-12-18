@@ -44,7 +44,8 @@ cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
 
 cBGGenotypeManager::~cBGGenotypeManager()
 {
-  // @TODO
+  assert(m_historic.GetSize() == 0);
+  assert(m_best == 0);
 }
 
 
@@ -170,7 +171,7 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
   if (genotype->IsThreshold()) {
     // @TODO handle threshold removal
     // m_world->GetStats().RemoveThreshold();
-    // genotype->ClearThreshold();
+    genotype->ClearThreshold();
   }
   
   if (genotype->GetPassiveReferenceCount()) return;
@@ -196,7 +197,7 @@ void cBGGenotypeManager::updateCoalescent()
     return;
   }
   
-  // @TODO - assumes asexual population
+  // @TODO - update coalescent assumes asexual population
   cBGGenotype* test_gen = getBest();
   cBGGenotype* found_gen = test_gen;
   cBGGenotype* parent_gen = (found_gen->GetParents().GetSize()) ? found_gen->GetParents()[0] : NULL;

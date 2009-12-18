@@ -81,7 +81,7 @@ private:
   cString nameGenotype(int size, int num) const;
   
   void removeGenotype(cBGGenotype* genotype);
-  void updateCoalescent();  
+  void updateCoalescent();
   
   inline void resizeActiveList(int size);
   inline cBGGenotype* getBest();
