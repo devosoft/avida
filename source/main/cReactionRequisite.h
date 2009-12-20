@@ -41,6 +41,8 @@ private:
   tList<cReaction> prior_noreaction_list;
   int min_task_count;
   int max_task_count;
+  int min_tot_reaction_count;
+  int max_tot_reaction_count;
   int divide_only;
 
 
@@ -48,7 +50,8 @@ private:
   cReactionRequisite& operator=(const cReactionRequisite&);
 
 public:
-  cReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX), divide_only(0) { ; }
+  cReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX), divide_only(0), 
+	  min_tot_reaction_count(0), max_tot_reaction_count(INT_MAX) { ; }
   ~cReactionRequisite() { ; }
 
   const tList<cReaction>& GetReactions() const { return prior_reaction_list; }
@@ -56,6 +59,8 @@ public:
   int GetMinTaskCount() const { return min_task_count; }
   int GetMaxTaskCount() const { return max_task_count; }
   int GetDivideOnly() const { return divide_only; }
+  int GetMinTotReactionCount() const { return min_tot_reaction_count; }
+  int GetMaxTotReactionCount() const { return max_tot_reaction_count; }
 
   void AddReaction(cReaction* in_reaction) {
     prior_reaction_list.PushRear(in_reaction);
@@ -66,6 +71,8 @@ public:
   void SetMinTaskCount(int min) { min_task_count = min; }
   void SetMaxTaskCount(int max) { max_task_count = max; }
   void SetDivideOnly(int div) { divide_only = div; }
+  void SetMinTotReactionCount(int min) { min_tot_reaction_count = min; }
+  void SetMaxTotReactionCount(int max) { max_tot_reaction_count = max; }
 
   /*
   added to satisfy Boost.Python; the semantics are fairly useless --

@@ -335,6 +335,14 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc)
       if (!AssertInputInt(var_value, "divide_only", var_type)) return false;
       new_requisite->SetDivideOnly(var_value.AsInt());
     }
+	else if (var_name == "min_tot_count") {
+	  if (!AssertInputInt(var_value, "min_tot_count", var_type)) return false;
+	  new_requisite->SetMinTotReactionCount(var_value.AsInt());
+    }
+	else if (var_name == "max_tot_count") {
+	  if (!AssertInputInt(var_value, "max_tot_count", var_type)) return false;
+	  new_requisite->SetMaxTotReactionCount(var_value.AsInt());
+    }
     else {
       cerr << "Error: Unknown requisite variable '" << var_name
       << "' in reaction '" << reaction->GetName() << "'" << endl;
@@ -1177,6 +1185,14 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     // Have all task counts been met?
     if (task_count < cur_req->GetMinTaskCount()) continue;
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
+
+	// Have all total reaction counts been met?
+	int tot_reactions = 0;
+	for (int i=0; i<reaction_count.GetSize(); i++)
+		tot_reactions += reaction_count[i];
+	if (tot_reactions < cur_req->GetMinTotReactionCount()) continue;
+	if (tot_reactions >= cur_req->GetMaxTotReactionCount()) continue;
+
     
     // Have divide task reqs been met?
     // If div_type is 0 we only check on IO, if 1 we only check on divide,
