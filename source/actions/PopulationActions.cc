@@ -3933,78 +3933,33 @@ class cActionKillNBelowResourceThreshold : public cAction
       
       assert(res_id != -1);
       
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
       for(int i=0; i < m_numkills; i++) {
         target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
         level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+        cells_scanned++;
         
         if(level < m_threshold) {
           cPopulationCell& cell = pop.GetCell(target_cell);
           if (cell.IsOccupied()) {
             pop.KillOrganism(cell);
-            m_world->GetStats().IncNumOrgsKilled();
+            orgs_killed++;
           } else {
-            m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+            cells_empty++;
           }
         }
       }
       
-    } //End Process()
-  };
-
-
-/*
- Kill organisms in N randomly-chosen cells if the level of the given resource
- in the chosen cell is above the configured threshold
- 
- Parameters:
- - The number of cells to kill (default: 0)
- - The name of the resource
- - The amount of resource above which to execute the kill (default: 0)
- */
-
-class cActionKillNAboveResourceThreshold : public cAction
-  {
-  private:
-    cString m_resname;
-    int m_numkills;
-    double m_threshold;
-  public:
-    cActionKillNAboveResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numkills(0), m_threshold(0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_numkills = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_resname = largs.PopWord();
-      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
-    }
-    
-    static const cString GetDescription() { return "Arguments: [int numkills=0, string resource name, double threshold=0]"; }
-    
-    void Process(cAvidaContext& ctx)
-    {
-      double level;
-      int target_cell;
-      cPopulation& pop = m_world->GetPopulation();
-      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
-      
-      assert(res_id != -1);
-      
-      for(int i=0; i < m_numkills; i++) {
-        target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-        level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
-        
-        if(level > m_threshold) {
-          cPopulationCell& cell = pop.GetCell(target_cell);
-          if (cell.IsOccupied()) {
-            pop.KillOrganism(cell);
-            m_world->GetStats().IncNumOrgsKilled();
-          } else {
-            m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
-          }
-        }
-      }
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
       
     } //End Process()
   };
+
 
 
 /*
@@ -4061,6 +4016,10 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
       
       assert(res_id != -1);
       
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
       for (int i = 0; i < m_numradii; i++) {
 
         int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
@@ -4077,6 +4036,7 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
             for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
               if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
               
+              cells_scanned++;
               int row_adj = 0;
               int col_adj = 0;
 
@@ -4090,21 +4050,24 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
               
               int current_cell = (world_x * row_adj) + col_adj;
 							cPopulationCell& cell = pop.GetCell(current_cell);
-              m_world->GetStats().IncNumCellsScannedAtKill();
 
 							if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
 								pop.KillOrganism(cell);
-								m_world->GetStats().IncNumOrgsKilled();
+								orgs_killed++;
 							} else {
-								m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+								cells_empty++;
 							}
 
             }
           }
           
         }  // End if level at cell is below threshold
-        
+                
       } //End iterating through kill zones
+      
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
       
     } //End Process()
   };
@@ -4166,6 +4129,10 @@ class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
       
       assert(res_id != -1);
       
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
       for (int i = 0; i < m_numradii; i++) {
         
         int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
@@ -4218,13 +4185,13 @@ class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
               
               int current_cell = (world_x * row_adj) + col_adj;
               cPopulationCell& cell = pop.GetCell(current_cell);
-              m_world->GetStats().IncNumCellsScannedAtKill();
+              cells_scanned++;
               
               if( (cell.IsOccupied())  && (ctx.GetRandom().P(m_kill_density)) ) {
                 pop.KillOrganism(cell);
-                m_world->GetStats().IncNumOrgsKilled();
+                orgs_killed++;
               } else {
-                m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+                cells_empty++;
               }
               
             }
@@ -4234,7 +4201,9 @@ class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
         
       } //End iterating through kill zones
 
-        
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
       
     } //End Process()
   };
@@ -4292,6 +4261,10 @@ public:
 		int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
 		
 		assert(res_id != -1);
+    
+    long cells_scanned = 0;
+    long orgs_killed = 0;
+    long cells_empty = 0;
 		
 		for (int i = 0; i < m_numradii; i++) {
 			
@@ -4319,21 +4292,26 @@ public:
 					
 					int current_cell = (world_x * row_adj) + col_adj;
 					cPopulationCell& cell = pop.GetCell(current_cell);
-					m_world->GetStats().IncNumCellsScannedAtKill();
+					cells_scanned++;
 					
 					double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell);
 					
 					if(level < m_threshold) {
 						if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
 							pop.KillOrganism(cell);
-							m_world->GetStats().IncNumOrgsKilled();
+							orgs_killed++;
 						} else {
-							m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+							cells_empty++;
 						}
 					}
 				}
 			}
 		}
+    
+    m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+    m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+    m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+    
 	}
 };
 
@@ -4365,25 +4343,38 @@ class cActionKillDemePercent : public cAction
       int target_cell;
       cPopulation& pop = m_world->GetPopulation();
       
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
       for (int d = 0; d < pop.GetNumDemes(); d++) {
         
         cDeme &deme = pop.GetDeme(d);
                 
         if(deme.IsTreatableNow()) {
-        
           for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
+            cells_scanned++;
             target_cell = deme.GetCellID(c); 
+            cPopulationCell& cell = pop.GetCell(target_cell);
           
             if(ctx.GetRandom().P(m_pctkills)) {
-              pop.KillOrganism(pop.GetCell(target_cell));
-              m_world->GetStats().IncNumOrgsKilled();
-            }
+              if(cell.IsOccupied()) {
+                pop.KillOrganism(pop.GetCell(target_cell));
+                orgs_killed++;
+              } else {
+                cells_empty++; 
+              }
+            }      
           
           } //End iterating through all cells
            
         } //End if deme is treatable
         
       } //End iterating through all demes
+      
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
       
     } //End Process()
 };
@@ -4648,7 +4639,6 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionPred_DemeResourceThresholdPredicate>("DemeResourceThresholdPredicate");
   
   action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
-  action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThreshold>("KillWithinRadiusBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
 	action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
