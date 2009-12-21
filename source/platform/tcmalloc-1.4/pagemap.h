@@ -201,8 +201,8 @@ template <int BITS>
 class TCMalloc_PageMap3 {
  private:
   // How many bits should we consume at each interior level
-  static const int INTERIOR_BITS = (BITS + 2) / 3; // Round-up
-  static const int INTERIOR_LENGTH = 1 << INTERIOR_BITS;
+  static const unsigned int INTERIOR_BITS = (BITS + 2) / 3; // Round-up
+  static const unsigned int INTERIOR_LENGTH = 1 << INTERIOR_BITS;
 
   // How many bits should we consume at leaf level
   static const int LEAF_BITS = BITS - 2*INTERIOR_BITS;

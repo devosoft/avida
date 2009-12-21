@@ -146,9 +146,13 @@ LIST(APPEND ALL_INC_DIRS ${ANALYZE_DIR})
 # The classification directory
 SET(CLASSIFICATION_DIR ${PROJECT_SOURCE_DIR}/source/classification)
 SET(CLASSIFICATION_SOURCES
+  ${CLASSIFICATION_DIR}/cBGGenotype.cc
+  ${CLASSIFICATION_DIR}/cBGGenotypeManager.cc
+  ${CLASSIFICATION_DIR}/cBioGroup.cc
+  ${CLASSIFICATION_DIR}/cBioGroupManager.cc
+  ${CLASSIFICATION_DIR}/cBioUnit.cc
   ${CLASSIFICATION_DIR}/cClassificationManager.cc
   ${CLASSIFICATION_DIR}/cGenotype.cc
-  ${CLASSIFICATION_DIR}/cGenotype_BirthData.cc
   ${CLASSIFICATION_DIR}/cGenotypeControl.cc
   ${CLASSIFICATION_DIR}/cLineage.cc
   ${CLASSIFICATION_DIR}/cMutationSteps.cc
@@ -247,11 +251,13 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cInstruction.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cLocalMutations.cc
+  ${MAIN_DIR}/cMetaGenome.cc
   ${MAIN_DIR}/cMutationLib.cc
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cMxCodeArray.cc
   ${MAIN_DIR}/cOrganism.cc
   ${MAIN_DIR}/cOrgMessage.cc
+  ${MAIN_DIR}/cParasite.cc
   ${MAIN_DIR}/cPhenotype.cc
   ${MAIN_DIR}/cPhenPlastGenotype.cc
   ${MAIN_DIR}/cPlasticPhenotype.cc
