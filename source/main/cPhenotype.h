@@ -262,11 +262,10 @@ private:
   inline void SetInstSetSize(int inst_set_size);
 
   
-  cPhenotype(cWorld* world, int parent_generation);
-
-  
 public:
   cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
+  cPhenotype(cWorld* world, int parent_generation);
+
 
   cPhenotype(const cPhenotype&); 
   cPhenotype& operator=(const cPhenotype&); 

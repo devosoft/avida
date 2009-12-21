@@ -614,7 +614,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   // Attempt actual parasite injection
   
   cMetaGenome mg(parent->GetMetaGenome().GetHardwareType(), parent->GetMetaGenome().GetInstSetID(), injected_code);
-  cParasite* parasite = new cParasite(mg, parent->GetPhenotype().GetGeneration(), SRC_PARASITE_INJECT, label);
+  cParasite* parasite = new cParasite(m_world, mg, parent->GetPhenotype().GetGeneration(), SRC_PARASITE_INJECT, label);
   
   if (!target_organism->ParasiteInfectHost(parasite)) {
     delete parasite;
@@ -5126,7 +5126,7 @@ void cPopulation::InjectParasite(const cString& label, const cGenome& injected_c
   if (target_organism == NULL) return;
   
   cMetaGenome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSetID(), injected_code);
-  cParasite* parasite = new cParasite(mg, 0, SRC_PARASITE_FILE_LOAD, label);
+  cParasite* parasite = new cParasite(m_world, mg, 0, SRC_PARASITE_FILE_LOAD, label);
   
   if (target_organism->ParasiteInfectHost(parasite)) {
     m_world->GetClassificationManager().ClassifyNewBioUnit(parasite);

@@ -38,6 +38,7 @@
 #include "cString.h"
 #endif
 
+class cWorld;
 
 
 class cParasite : public cBioUnit
@@ -55,7 +56,7 @@ private:
   
 
 public:
-  cParasite(const cMetaGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
+  cParasite(cWorld* world, const cMetaGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
   ~cParasite() { ; }
   
   // --------  cBioUnit Methods  --------
