@@ -213,7 +213,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
+  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
   TestGenome_Body(ctx, test_info, mg, 0);
   ctx.ClearTestMode();
   
@@ -225,7 +225,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
+  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
   TestGenome_Body(ctx, test_info, mg, 0);
 
   ////////////////////////////////////////////////////////////////

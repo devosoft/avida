@@ -87,7 +87,6 @@ public:
     return tmp;
   }
   
-  bool Good() const { return (m_data != NULL); }
   int GetSize() const { return m_size; }
 
   void ResizeClear(const int in_size)

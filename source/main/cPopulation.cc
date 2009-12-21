@@ -552,8 +552,8 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   
   // Pre-check target hardware
   const cHardwareBase& hw = target_organism->GetHardware();
-  if (hw.GetType() != parent.GetMetaGenome().GetHardwareType() ||
-      hw.GetInstSetID() != parent.GetMetaGenome().GetInstSetID() ||
+  if (hw.GetType() != parent->GetMetaGenome().GetHardwareType() ||
+      hw.GetInstSetID() != parent->GetMetaGenome().GetInstSetID() ||
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
 
@@ -4778,45 +4778,72 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
   return true;
 }
 
+
+struct sGroupInfo {
+  cBioGroup* bg;
+  tArray<sOrgInfo> orgs;
+  bool parasite;
+  
+  sGroupInfo(cBioGroup* in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
+};
+
 bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteRawComment("#filetype genotype_data");
-  df.WriteRawComment("#format id parents num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset");
-  df.WriteComment("");
-  df.WriteComment("Structured Population Save (BioGroup)");
+  df.SetFileType("genotype_data");
+  df.WriteComment("Structured Population Save");
   df.WriteTimeStamp();
   
   // Build up hash table of all current genotypes and the cells in which the organisms reside
-  tHashTable<int, tKVPair<cBioGroup*, tArray<sOrgInfo> >* > genotype_map;
+  tHashTable<int, sGroupInfo*> genotype_map;
   
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    if (cell_array[i].IsOccupied()) {
-      cOrganism* org = cell_array[i].GetOrganism();
-      cBioGroup* genotype = org->GetBioGroup("genotype");
-      int offset = org->GetPhenotype().GetCPUCyclesUsed();
+  for (int cell = 0; cell < cell_array.GetSize(); cell++) {
+    if (cell_array[cell].IsOccupied()) {
+      cOrganism* org = cell_array[cell].GetOrganism();
       
-      tKVPair<cBioGroup*, tArray<sOrgInfo> >* map_entry = NULL;
+      // Handle any parasites
+      const tArray<cBioUnit*>& parasites = org->GetParasites();
+      for (int p = 0; p < parasites.GetSize(); p++) {
+        cBioGroup* pg = parasites[p]->GetBioGroup("genotype");
+        if (pg == NULL) continue;
+
+        sGroupInfo* map_entry = NULL;
+        if (genotype_map.Find(pg->GetID(), map_entry)) {
+          map_entry->orgs.Push(sOrgInfo(cell, 0));
+        } else {
+          map_entry = new sGroupInfo(pg, true);
+          map_entry->orgs.Push(sOrgInfo(cell, 0));
+          genotype_map.Add(pg->GetID(), map_entry);
+        }        
+      }
+      
+      
+      // Handle the organism itself
+      cBioGroup* genotype = org->GetBioGroup("genotype");
+      if (genotype == NULL) continue;
+
+      int offset = org->GetPhenotype().GetCPUCyclesUsed();
+
+      sGroupInfo* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->Value().Push(sOrgInfo(i, offset));
+        map_entry->orgs.Push(sOrgInfo(cell, offset));
       } else {
-        map_entry = new tKVPair<cBioGroup*, tArray<sOrgInfo> >(genotype, tArray<sOrgInfo>(0));
-        map_entry->Value().Push(sOrgInfo(i, offset));
+        map_entry = new sGroupInfo(genotype);
+        map_entry->orgs.Push(sOrgInfo(cell, offset));
         genotype_map.Add(genotype->GetID(), map_entry);
       }
     }
   }
   
   // Output all current genotypes
-  
-  tArray<tKVPair<cBioGroup*, tArray<sOrgInfo> >* > genotype_entries;
+  tArray<sGroupInfo*> genotype_entries;
   genotype_map.GetValues(genotype_entries);
   for (int i = 0; i < genotype_entries.GetSize(); i++) {
-    cBioGroup* genotype = genotype_entries[i]->Key();
+    cBioGroup* genotype = genotype_entries[i]->bg;
     
     genotype->Save(df);
     
-    tArray<sOrgInfo>& cells = genotype_entries[i]->Value();
+    tArray<sOrgInfo>& cells = genotype_entries[i]->orgs;
     cString cellstr;
     cString offsetstr;
     cellstr.Set("%d", cells[0].cell_id);
@@ -4825,8 +4852,9 @@ bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
       offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
     }
-    df.Write(cellstr, "Occupied Cell IDs");
-    df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
+    df.Write(cellstr, "Occupied Cell IDs", "cells");
+    if (genotype_entries[i]->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
+    else df.Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
     df.Endl();
     
     delete genotype_entries[i];

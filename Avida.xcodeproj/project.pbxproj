@@ -34,6 +34,7 @@
 		5629D81C0C3EE26A00C5F152 /* cCoreView_Info.cc in Sources */ = {isa = PBXBuildFile; fileRef = 565121C60C3B055F009CBD3F /* cCoreView_Info.cc */; };
 		56F555E50C3B402A00E2E929 /* cDriver_TextViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555DF0C3B402A00E2E929 /* cDriver_TextViewer.cc */; };
 		56F555E70C3B402A00E2E929 /* viewer-text.cc in Sources */ = {isa = PBXBuildFile; fileRef = 56F555E40C3B402A00E2E929 /* viewer-text.cc */; };
+		700B6D4110DFFDD000A1F8F1 /* cMetaGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700B6D4010DFFDD000A1F8F1 /* cMetaGenome.cc */; };
 		700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */ = {isa = PBXBuildFile; fileRef = 700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */; };
 		700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
@@ -439,6 +440,7 @@
 		7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cTestCPUInterface.cc; sourceTree = "<group>"; };
 		7005A70909BA0FBE0007E16E /* cOrgInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgInterface.h; sourceTree = "<group>"; };
 		700AE91B09DB65F200A073FD /* cTaskContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskContext.h; sourceTree = "<group>"; };
+		700B6D4010DFFDD000A1F8F1 /* cMetaGenome.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMetaGenome.cc; sourceTree = "<group>"; };
 		700D9BD90F1A5D33002CC711 /* tAnalyzeJobBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAnalyzeJobBatch.h; sourceTree = "<group>"; };
 		700D9C170F1A7436002CC711 /* tArrayMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayMap.h; sourceTree = "<group>"; };
 		700D9C1A0F1A77EC002CC711 /* tKVPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tKVPair.h; sourceTree = "<group>"; };
@@ -1718,6 +1720,7 @@
 				BBDE4FF80FC1B06600CC6170 /* cDemePredicate.h */,
 				7090F57310D956A400ECFBA1 /* cParasite.h */,
 				7090F57410D956A400ECFBA1 /* cParasite.cc */,
+				700B6D4010DFFDD000A1F8F1 /* cMetaGenome.cc */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -2309,6 +2312,7 @@
 				701E748510A37DB2006B6193 /* cBioGroupManager.cc in Sources */,
 				70B547FD10AB22920013E999 /* cBGGenotypeManager.cc in Sources */,
 				7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */,
+				700B6D4110DFFDD000A1F8F1 /* cMetaGenome.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

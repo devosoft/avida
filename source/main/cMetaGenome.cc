@@ -1,8 +1,8 @@
 /*
- *  cParasite.cc
+ *  cMetaGenome.cc
  *  Avida
  *
- *  Created by David on 12/16/09.
+ *  Created by David on 12/21/09.
  *  Copyright 2009 Michigan State University. All rights reserved.
  *
  *
@@ -22,10 +22,14 @@
  *
  */
 
-#include "cParasite.h"
+#include "cMetaGenome.h"
 
-cParasite::cParasite(const cMetaGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args)
-  : m_src(src), m_src_args(src_args), m_initial_genome(genome)
+#include "cDataFile.h"
+
+
+void cMetaGenome::Save(cDataFile& df)
 {
-  // @TODO - properly construct cPhenotype
+  df.Write(m_hw_type, "Hardware Type ID", "hw_type");
+  df.Write(m_inst_set_id, "Inst Set ID" , "inst_set");
+  df.Write(m_genome.AsString(), "Genome Sequence", "sequence");
 }

@@ -115,28 +115,31 @@ void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
 
 void cBGGenotype::Save(cDataFile& df)
 {
-  df.Write(m_id, "ID");
-  df.Write(Avida::BioUnitSourceMap[m_src], "Source");
-  cString parent_str("");
+  
+  df.Write(m_id, "ID", "id");
+  df.Write(Avida::BioUnitSourceMap[m_src], "Source", "src");
+  df.Write(m_src_args, "Source Args", "src_args");
+
+  cString str("");
   if (m_parents.GetSize()) {
-    parent_str += cStringUtil::Stringf("%d", m_parents[0]->GetID());
+    str += cStringUtil::Stringf("%d", m_parents[0]->GetID());
     for (int i = 1; i < m_parents.GetSize(); i++) {
-      parent_str += cStringUtil::Stringf(",%d", m_parents[i]->GetID());
+      str += cStringUtil::Stringf(",%d", m_parents[i]->GetID());
     }
   }
-  df.Write(parent_str, "Parent ID(s)");
-  df.Write(m_num_organisms, "Number of currently living organisms");
-  df.Write(m_total_organisms, "Total number of organisms that ever existed");
-  df.Write(m_genome.GetGenome().GetSize(), "Genome Length");
-  df.Write(m_merit.Average(), "Average Merit");
-  df.Write(m_gestation_time.Average(), "Average Gestation Time");
-  df.Write(m_fitness.Average(), "Average Fitness");
-  df.Write(m_generation_born, "Generation Born");
-  df.Write(m_update_born, "Update Born");
-  df.Write(m_update_deactivated, "Update Deactivated");
-  df.Write(m_depth, "Phylogenetic Depth");
-  df.Write(m_genome.GetGenome().AsString(), "Genome Sequence");
+  df.Write(str, "Parent ID(s)", "parents");
   
+  df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
+  df.Write(m_total_organisms, "Total number of organisms that ever existed", "total_units");
+  df.Write(m_genome.GetGenome().GetSize(), "Genome Length", "length");
+  df.Write(m_merit.Average(), "Average Merit", "merit");
+  df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
+  df.Write(m_fitness.Average(), "Average Fitness", "fitness");
+  df.Write(m_generation_born, "Generation Born", "gen_born");
+  df.Write(m_update_born, "Update Born", "update_born");
+  df.Write(m_update_deactivated, "Update Deactivated", "update_deactivated");
+  df.Write(m_depth, "Phylogenetic Depth", "depth");
+  m_genome.Save(df);
 }
 
 
