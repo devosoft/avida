@@ -154,6 +154,15 @@ private:
   };
   cNetSupport* m_net;
   
+  mutable struct sTestData
+  {
+    double fitness;
+    double merit;
+    double colony_fitness;
+
+    sTestData() : fitness(-1) { ; }
+  } m_test_data;
+  
   
   cOrganism(); // @not_implemented
   cOrganism(const cOrganism&); // @not_implemented
@@ -175,7 +184,9 @@ public:
   
 
   // --------  Support Methods  --------
-  double GetTestFitness(cAvidaContext& ctx);
+  inline double GetTestFitness(cAvidaContext& ctx) const;
+  inline double GetTestMerit(cAvidaContext& ctx) const;
+  inline double GetTestColonyFitness(cAvidaContext& ctx) const;
   double CalcMeritRatio();
   
   void HardwareReset(cAvidaContext& ctx);
@@ -271,7 +282,6 @@ public:
   void Die() { m_interface->Die(); m_is_dead = true; }
   void Kaboom(int dist) { m_interface->Kaboom(dist);}
   void SpawnDeme() { m_interface->SpawnDeme(); }
-  int GetDebugInfo() { return m_interface->Debug(); }
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
@@ -657,8 +667,25 @@ private:
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
+  
+  void calcTestData(cAvidaContext& ctx) const;
 };
 
+
+inline double cOrganism::GetTestFitness(cAvidaContext& ctx) const {
+  if (m_test_data.fitness == -1) calcTestData(ctx);
+  return m_test_data.fitness;
+}
+
+inline double cOrganism::GetTestMerit(cAvidaContext& ctx) const {
+  if (m_test_data.fitness == -1) calcTestData(ctx);
+  return m_test_data.merit;
+}
+
+inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
+  if (m_test_data.fitness == -1) calcTestData(ctx);
+  return m_test_data.colony_fitness;
+}
 
 #endif
 

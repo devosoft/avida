@@ -2034,11 +2034,11 @@ public:
       
       // now output
       
-      sum_fitness += cur_genotype->GetTestFitness(ctx) * num_orgs;
+      sum_fitness += cur_genotype->GetFitness() * num_orgs;
       sum_num_organisms += num_orgs;
       
       df.Write(cur_genotype->GetName(), "Genotype Name");
-      df.Write(cur_genotype->GetTestFitness(ctx), "Fitness (test-cpu)");
+      df.Write(cur_genotype->GetFitness(), "Fitness");
       df.Write(num_orgs, "Abundance");
       df.Write(cGenomeUtil::FindHammingDistance(reference_genome, genome), "Hamming distance to reference");
       df.Write(cGenomeUtil::FindEditDistance(reference_genome, genome), "Levenstein distance to reference");
@@ -2245,7 +2245,7 @@ public:
     
     for (int i = 0; i < pop.GetSize(); i++) {
       if (!pop.GetCell(i).IsOccupied()) continue;
-      if (pop.GetCell(i).GetOrganism()->GetGenotype()->GetTestFitness(ctx) > 0.0) {
+      if (pop.GetCell(i).GetOrganism()->GetTestFitness(ctx) > 0.0) {
         cPhenotype& phenotype = pop.GetCell(i).GetOrganism()->GetPhenotype();
         for (int j = 0; j < num_tasks; j++) if (phenotype.GetCurTaskCount()[j] > 0) tasks[j]++;
       }
@@ -2264,44 +2264,6 @@ public:
   }
 };
 
-
-class cActionPrintTreeDepths : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionPrintTreeDepths(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();  
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("tree_depth.%d.dat", m_world->GetStats().GetUpdate());
-    cDataFile& df = m_world->GetDataFile(filename);
-    
-    //    cPopulation& pop = m_world->GetPopulation();
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-    
-    cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
-    for (int i = 0; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
-      df.Write(genotype->GetID(), "Genotype ID");
-      df.Write(genotype->GetTestFitness(ctx), "Fitness");
-      df.Write(genotype->GetNumOrganisms(), "Abundance");
-      df.Write(genotype->GetDepth(), "Tree Depth");
-      df.Endl();
-      
-      // ...and advance to the next genotype...
-      genotype = genotype->GetNext();
-    }
-    
-    m_world->GetDataFileManager().Remove(filename);
-    delete testcpu;
-  }
-};
 
 
 class cActionCalcConsensus : public cAction
@@ -3263,7 +3225,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintTaskSnapshot>("PrintTaskSnapshot");
   action_lib->Register<cActionPrintViableTasksData>("PrintViableTasksData");
   action_lib->Register<cActionPrintAveNumTasks>("PrintAveNumTasks");
-  action_lib->Register<cActionPrintTreeDepths>("PrintTreeDepths");
   
   action_lib->Register<cActionPrintGenomicSiteEntropy>("PrintGenomicSiteEntropy");
   
@@ -3331,7 +3292,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionTestDominant>("test_dom");
   action_lib->Register<cActionPrintTaskSnapshot>("task_snapshot");
   action_lib->Register<cActionPrintViableTasksData>("print_viable_tasks_data");
-  action_lib->Register<cActionPrintTreeDepths>("print_tree_depths");
 
   action_lib->Register<cActionDumpMemory>("dump_memory");
   action_lib->Register<cActionDumpFitnessGrid>("dump_fitness_grid");

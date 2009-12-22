@@ -907,9 +907,11 @@ cLineage* cClassificationManager::GetLineage(cAvidaContext& ctx, cGenotype* chil
   
   if (parent_genotype != NULL) {
     assert( parent_genotype->GetNumOrganisms() > 0 );
-    parent_fitness = parent_genotype->GetTestColonyFitness(ctx);
+// @TODO    parent_fitness = parent_genotype->GetTestColonyFitness(ctx);
+    parent_fitness = parent_genotype->GetFitness();
   }
-  double child_fitness = child_genotype->GetTestColonyFitness(ctx);
+// @TODO  double child_fitness = child_genotype->GetTestColonyFitness(ctx);
+  double child_fitness = child_genotype->GetFitness();
   cLineage * child_lineage = parent_lineage;
   bool create_lineage = false;
   double lineage_stat1 = child_fitness;
@@ -963,10 +965,12 @@ cLineage* cClassificationManager::GetLineage(cAvidaContext& ctx, cGenotype* chil
         break;
       case 4: // new lineage whenever a new child exceeds the
               // fitness of the dominant creature (and the fitness of its own lineage)
-        if (child_fitness > m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness(ctx)
+// @TODO        if (child_fitness > m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness(ctx)
+        if (child_fitness > m_world->GetClassificationManager().GetBestGenotype()->GetFitness()
             && child_fitness > parent_lineage->GetMaxFitness() ){
           create_lineage = true;
-          lineage_stat1=m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness(ctx);
+// @TODO          lineage_stat1=m_world->GetClassificationManager().GetBestGenotype()->GetTestColonyFitness(ctx);
+          lineage_stat1=m_world->GetClassificationManager().GetBestGenotype()->GetFitness();
           lineage_stat2=parent_lineage->GetMaxFitness();
         }
         break;

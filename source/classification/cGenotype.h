@@ -91,22 +91,7 @@ private:
     tArray<int> ancestor_ids;
   };  
 
-  class cTestData {
-  public:
-    cTestData() : fitness(-1) { ; }
-    ~cTestData() { ; }
-    
-    bool is_viable;
-    
-    double fitness;
-    double merit;
-    int gestation_time;
-    int executed_size;
-    int copied_size;
-    double colony_fitness;
-    int generations;
-  };
-    
+   
   
 private:  
   cWorld* m_world;
@@ -124,7 +109,6 @@ private:
   char symbol;
   int map_color_id;
 
-  mutable cTestData test_data;
   cBirthData birth_data;
   mutable cPhenPlastSummary* m_phenplast_stats;
   
@@ -187,15 +171,6 @@ public:
   void SetSpecies(cSpecies * in_species) { species = in_species; }
 
  
-  // Test CPU info -- only used with limited options on.
-  inline bool GetTestViable(cAvidaContext& ctx) const;
-  inline double GetTestFitness(cAvidaContext& ctx) const;
-  inline double GetTestMerit(cAvidaContext& ctx) const;
-  inline int GetTestGestationTime(cAvidaContext& ctx) const;
-  inline int GetTestExecutedSize(cAvidaContext& ctx) const;
-  inline int GetTestCopiedSize(cAvidaContext& ctx) const;
-  inline double GetTestColonyFitness(cAvidaContext& ctx) const;
-  inline int GetTestGenerations(cAvidaContext& ctx) const;
   
   inline void CheckPhenPlast(cAvidaContext& ctx) const{ if (m_phenplast_stats == NULL) TestPlasticity(ctx);}
   int    GetNumPhenotypes(cAvidaContext& ctx)     const { CheckPhenPlast(ctx); return m_phenplast_stats->m_num_phenotypes; }
@@ -372,53 +347,6 @@ inline void cGenotype::SetBreedStats(cGenotype & daughter)
     birth_data.breed_out_track.Inc();
     daughter.birth_data.breed_in_track.Inc();
   }
-}
-
-inline bool cGenotype::GetTestViable(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.is_viable;
-}
-
-
-inline double cGenotype::GetTestFitness(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.fitness;
-}
-
-
-inline double cGenotype::GetTestMerit(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.merit;
-}
-
-
-inline int cGenotype::GetTestGestationTime(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.gestation_time;
-}
-
-
-inline int cGenotype::GetTestExecutedSize(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.executed_size;
-}
-
-
-inline int cGenotype::GetTestCopiedSize(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.copied_size;
-}
-
-
-inline double cGenotype::GetTestColonyFitness(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.colony_fitness;
-}
-
-
-inline int cGenotype::GetTestGenerations(cAvidaContext& ctx) const {
-  if (test_data.fitness == -1) CalcTestStats(ctx);
-  return test_data.generations;
 }
 
 inline void cGenotype::Deactivate(int update, int org_id)

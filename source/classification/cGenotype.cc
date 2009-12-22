@@ -223,26 +223,6 @@ void cGenotype::SetGenome(const cGenome & in_genome)
   name.Set("%03d-no_name", genome.GetSize());
 }
 
-void cGenotype::CalcTestStats(cAvidaContext& ctx) const
-{
-  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-
-  cCPUTestInfo test_info;
-  testcpu->TestGenome(ctx, test_info, genome);
-  test_data.is_viable = test_info.IsViable();
-  delete testcpu;
-
-  // Setup all possible test values.
-  cPhenotype & phenotype = test_info.GetTestPhenotype();
-  test_data.fitness = test_info.GetGenotypeFitness();
-  test_data.merit = phenotype.GetMerit().GetDouble();
-  test_data.gestation_time = phenotype.GetGestationTime();
-  test_data.executed_size = phenotype.GetExecutedSize();
-  test_data.copied_size = phenotype.GetCopiedSize();
-  test_data.colony_fitness = test_info.GetColonyFitness();
-  test_data.generations = test_info.GetMaxDepth();
-}
-
 
 
 double cGenotype::GetTaskProbability(cAvidaContext& ctx, int task_id) const{

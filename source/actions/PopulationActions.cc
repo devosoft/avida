@@ -2494,7 +2494,7 @@ protected:
 			// This is probably only compatible with the "old-style" germline
 			for(cAssignRandomCellData::CellIDList::iterator i=cell_ids.begin(); i!=cell_ids.end(); ++i) {
 				m_world->GetPopulation().KillOrganism(deme.GetCell(*i));
-				m_world->GetPopulation().InjectGenome(*i, deme.GetGermline().GetLatest(), 0, SRC_DEME_GERMLINE);
+				m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
 				m_world->GetPopulation().DemePostInjection(deme, deme.GetCell(*i));
 			}
 		}		
@@ -2543,7 +2543,7 @@ public:
 					
 					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
 					m_world->GetPopulation().KillOrganism(cell);
-					m_world->GetPopulation().InjectGenome(cell.GetID(), deme.GetGermline().GetLatest(), 0, SRC_DEME_GERMLINE);
+					m_world->GetPopulation().InjectGenome(cell.GetID(), SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
 					m_world->GetPopulation().DemePostInjection(deme, cell);
 				}
 			}

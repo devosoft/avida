@@ -134,7 +134,7 @@ public:
 
   void InitiatePop();
 
-  void InjectGenome(int cell_id, const cGenome& genome, int lineage_label, eBioUnitSource src);
+  void InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, int lineage_label = 0);
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent_organism);
@@ -337,12 +337,6 @@ private:
   void UpdateSpeciesStats();
   void UpdateDominantStats();
   
-  /**
-   * Attention: InjectGenotype does *not* add the genotype to the archive.
-   * It assumes that's where you got the genotype from.
-   **/
-  void InjectGenotype(int cell_id, cGenotype* genotype, eBioUnitSource src);  
-
   void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   

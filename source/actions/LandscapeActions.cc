@@ -1071,7 +1071,7 @@ public:
         df.Write(orgdata->GetCellID(), "Cell ID");
         df.Write(name, "Organism Name");
         df.Write(genotype->GetLength(),"Genome Length");
-        df.Write(genotype->GetTestFitness(ctx), "Fitness (test-cpu)");
+        df.Write(organism->GetTestFitness(ctx), "Fitness (test-cpu)");
         df.Write(phenotype.GetFitness(), "Fitness (actual)");
         df.Write(genotype->GetBreedTrue(), "Breed True");
         df.Write(organism->GetLineageLabel(), "Lineage Label");

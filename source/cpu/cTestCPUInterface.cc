@@ -24,7 +24,6 @@
 
 #include "cTestCPUInterface.h"
 
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cTestCPU.h"
 
@@ -72,11 +71,6 @@ void cTestCPUInterface::ResetInputs(cAvidaContext& ctx)
 const tArray<int>& cTestCPUInterface::GetInputs() const
 {
   return m_testcpu->GetInputs();
-}
-
-int cTestCPUInterface::Debug()
-{
-  return -1;
 }
 
 const tArray<double>& cTestCPUInterface::GetResources()

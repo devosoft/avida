@@ -70,7 +70,8 @@ void cLineage::AddCreature(cAvidaContext& ctx, cGenotype* genotype)
   //     m_genotype_map[ genotype ] += 1;
   // if we didn't want to count how often we add a new genotype
 
-  double fitness = genotype->GetTestColonyFitness(ctx);
+// @TODO  double fitness = genotype->GetTestColonyFitness(ctx);
+  double fitness = genotype->GetFitness();
 
   // adjust the current maximum fitness
   if (fitness > m_max_fitness) m_max_fitness = fitness;
@@ -104,7 +105,8 @@ bool cLineage::RemoveCreature(cAvidaContext& ctx, cGenotype* genotype)
   // and adjust the average fitness
   m_ave_fitness_changed = true;
 
-  double fitness = genotype->GetTestColonyFitness(ctx);
+// @TODO  double fitness = genotype->GetTestColonyFitness(ctx);
+  double fitness = genotype->GetFitness();
 
   // did we reach zero?
   if ((*cur).second == 0) {
@@ -140,7 +142,8 @@ void cLineage::CalcCurrentFitness(cAvidaContext& ctx) const
   // we calculate the average fitness as well, since it is so easy.
   m_ave_fitness = 0;
   for (; it!=m_genotype_map.end(); it++) {
-    double fitness = (*it).first->GetTestColonyFitness(ctx);
+// @TODO    double fitness = (*it).first->GetTestColonyFitness(ctx);
+    double fitness = (*it).first->GetFitness();
     if (fitness > m_max_fitness) m_max_fitness = fitness;
     if (fitness > m_max_fitness_ever) m_max_fitness_ever = fitness;
     m_ave_fitness += fitness * (*it).second;

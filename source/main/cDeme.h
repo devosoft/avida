@@ -161,6 +161,8 @@ public:
   cPopulationCell& GetCell(int pos) const;
 	cPopulationCell& GetCell(int x, int y) const;
   cOrganism* GetOrganism(int pos) const;
+  
+  std::vector<int> GetGenotypeIDs();
 
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }

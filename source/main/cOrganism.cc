@@ -32,7 +32,6 @@
 #include "functions.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
@@ -268,12 +267,23 @@ void cOrganism::IncCollectSpecCount(const int spec_id)
   m_phenotype.SetCurCollectSpecCount(spec_id, current_count + 1);
 }
 
-double cOrganism::GetTestFitness(cAvidaContext& ctx)
+void cOrganism::calcTestData(cAvidaContext& ctx) const
 {
-  assert(m_interface);
-  return m_genotype->GetTestFitness(ctx);
-}
+  cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   
+  cCPUTestInfo test_info;
+  testcpu->TestGenome(ctx, test_info, m_initial_genome.GetGenome());
+  delete testcpu;
+  
+  // Setup all possible test values.
+  cPhenotype & phenotype = test_info.GetTestPhenotype();
+  m_test_data.fitness = test_info.GetGenotypeFitness();
+  m_test_data.merit = phenotype.GetMerit().GetDouble();
+  m_test_data.colony_fitness = test_info.GetColonyFitness();
+}
+
+
+
 int cOrganism::ReceiveValue()
 {
   assert(m_interface);

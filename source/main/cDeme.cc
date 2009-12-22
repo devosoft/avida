@@ -143,6 +143,22 @@ cOrganism* cDeme::GetOrganism(int pos) const
   return GetCell(pos).GetOrganism();
 }
 
+std::vector<int> cDeme::GetGenotypeIDs()
+{
+  std::vector<int> genotype_ids;
+  for (int i = 0; i < GetSize(); i++) {
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) genotype_ids.push_back(cell.GetOrganism()->GetGenotype()->GetID());
+  }
+
+  //assert(genotype_ids.size()>0); // How did we get to replication otherwise?
+  //@JEB some germline methods can result in empty source demes if they didn't produce a germ)
+  
+  return genotype_ids;
+}
+
+
+
 int cDeme::GetNumOrgsWithOpinion() const {
 	int demeSize = GetSize();
 	int count = 0;

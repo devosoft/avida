@@ -27,7 +27,6 @@
 
 #include "cDataFile.h"
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
@@ -64,7 +63,6 @@ cStats::cStats(cWorld* world)
   , dom_fidelity(0.0)
   , ave_fidelity(0.0)
   , max_viable_fitness(0)
-  , dom_genotype(NULL)
   , dom_merit(0)
   , dom_gestation(0)
   , dom_repro_rate(0)
@@ -1630,16 +1628,7 @@ lose the ancestral deme founders.
 */
 void cStats::DemePostReplication(cDeme& source_deme, cDeme& target_deme)
 {
-  std::vector<int> genotype_ids;
-  for(int i=0; i<target_deme.GetSize(); ++i) {
-    cPopulationCell& cell = target_deme.GetCell(i);
-    if(cell.IsOccupied()) {
-      genotype_ids.push_back(cell.GetOrganism()->GetGenotype()->GetID());  
-    }
-  }
-  //assert(genotype_ids.size()>0); // How did we get to replication otherwise?
-  //@JEB some germline methods can result in empty source demes if they didn't produce a germ)
-  m_deme_founders[target_deme.GetID()] = genotype_ids;
+  m_deme_founders[target_deme.GetID()] = target_deme.GetGenotypeIDs();
 }
 
 

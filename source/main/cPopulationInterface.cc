@@ -27,7 +27,6 @@
 
 #include "cDeme.h"
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cOrgSinkMessage.h"
@@ -140,13 +139,6 @@ void cPopulationInterface::ResetInputs(cAvidaContext& ctx)
 const tArray<int>& cPopulationInterface::GetInputs() const
 {
   return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
-}
-
-int cPopulationInterface::Debug()
-{
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
-  return cell.GetOrganism()->GetGenotype()->GetID();
 }
 
 const tArray<double> & cPopulationInterface::GetResources()

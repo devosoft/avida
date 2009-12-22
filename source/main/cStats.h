@@ -76,7 +76,6 @@
 #endif
 
 
-class cGenotype;
 class cWorld;
 class cOrganism;
 class cOrgMessage;
@@ -171,7 +170,6 @@ private:
   double max_viable_fitness;
 
   // Dominant Genotype
-  cGenotype * dom_genotype;
   double dom_merit;
   double dom_gestation;
   double dom_repro_rate;
@@ -359,7 +357,6 @@ public:
   int GetSubUpdate() const { return sub_update; }
   double GetGeneration() const { return SumGeneration().Average(); }
 
-  cGenotype* GetDomGenotype() const { return dom_genotype; }
   double GetDomMerit() const { return dom_merit; }
   double GetDomGestation() const { return dom_gestation; }
   double GetDomReproRate() const { return dom_repro_rate; }
@@ -381,7 +378,6 @@ public:
   int GetSenseSize() const { return sense_size; }
 
   // Settings...
-  void SetDomGenotype(cGenotype * in_gen) { dom_genotype = in_gen; }
   void SetDomMerit(double in_merit) { dom_merit = in_merit; }
   void SetDomGestation(double in_gest) { dom_gestation = in_gest; }
   void SetDomReproRate(double in_rate) { dom_repro_rate = in_rate; }
