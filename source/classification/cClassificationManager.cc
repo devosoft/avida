@@ -68,10 +68,13 @@ cClassificationManager::~cClassificationManager()
   delete m_species_ctl;
 }
 
-bool cClassificationManager::RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role)
+bool cClassificationManager::RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role,
+                                                     const tArray<cString>* dependencies)
 {
   // @TODO - verify that this role is not already in use -- maybe hash managers by role
   bgm->SetRole(m_bgms.Push(bgm), role);
+  
+  // @TODO - properly handle bio group dependencies
   
   return true;
 }

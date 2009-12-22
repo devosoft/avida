@@ -98,7 +98,7 @@ public:
 
   void UpdateReset();
   
-  bool RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role);
+  bool RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role, const tArray<cString>* dependencies = NULL);
   
   void ClassifyNewBioUnit(cBioUnit* bu);
 

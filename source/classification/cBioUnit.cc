@@ -27,7 +27,7 @@
 #include "cBioGroup.h"
 #include "cString.h"
 #include "tArrayMap.h"
-#include "tArraySet.h"
+#include "tArrayUtils.h"
 
 
 cBioUnit::~cBioUnit()
@@ -60,7 +60,6 @@ void cBioUnit::SelfClassify(const tArray<const tArray<cBioGroup*>*>& parents)
     }
   } else {
     // Handle Sexual Organisms (multi-parent)
-    tArraySet<int> group_roles;
     tArrayMap<int, tArray<cBioGroup*> > parent_groups;
     
     // Sort groups into sets of parental groups by role_id
@@ -68,10 +67,15 @@ void cBioUnit::SelfClassify(const tArray<const tArray<cBioGroup*>*>& parents)
       for (int g = 0; g < parents[p]->GetSize(); g++) {
         cBioGroup* group = (*parents[p])[g];
         parent_groups[group->GetRoleID()].Push(group);
-        group_roles.Add(group->GetRoleID());
       }
     }
-     
+    
+    // Get the distinct set of group roles
+    tArray<int> group_roles = parent_groups.GetKeys();
+    
+    // Handle group dependencies - right now this simply means ordered by role id
+    tArrayUtils::QSort(group_roles);
+    
     // Classify this bio unit with all distinct parental group roles
     for (int r = 0; r < group_roles.GetSize(); r++) {
       tArray<cBioGroup*>& pgrps = parent_groups[r];

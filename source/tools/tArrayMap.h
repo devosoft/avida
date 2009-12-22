@@ -97,6 +97,12 @@ public:
   ValueType& operator[](const KeyType& key) { return ValueFor(key); }
   const ValueType& operator[](const KeyType& key) const { return ValueFor(key); }
   
+  tArray<KeyType> GetKeys() const
+  {
+    tArray<KeyType> keys(m_map.GetSize());
+    for (int i = 0; i < m_map.GetSize(); i++) keys[i] = m_map[i].Key();
+    return keys;
+  }  
   
   void Remove(const KeyType& key)
   {
