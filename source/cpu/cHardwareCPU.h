@@ -754,6 +754,7 @@ private:
   
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
+	bool SendMessage(cAvidaContext& ctx, int messageType = 0);
   bool Inst_RetrieveMessage(cAvidaContext& ctx);
   bool BroadcastX(cAvidaContext& ctx, int depth);
   bool Inst_Broadcast1(cAvidaContext& ctx);

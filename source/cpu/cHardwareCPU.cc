@@ -7200,10 +7200,14 @@ is from register ~?BX?.
 */
 bool cHardwareCPU::Inst_SendMessage(cAvidaContext& ctx)
 {
+	return SendMessage(ctx);
+}
+
+bool cHardwareCPU::SendMessage(cAvidaContext& ctx, int messageType) {
   const int label_reg = FindModifiedRegister(REG_BX);
   const int data_reg = FindNextRegister(label_reg);
   
-  cOrgMessage msg = cOrgMessage(m_organism);
+  cOrgMessage msg = cOrgMessage(m_organism, messageType);
   msg.SetLabel(GetRegister(label_reg));
   msg.SetData(GetRegister(data_reg));
   return m_organism->SendMessage(ctx, msg);
