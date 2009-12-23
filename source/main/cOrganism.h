@@ -405,6 +405,7 @@ public:
   const message_list_type& GetSentMessages() { InitMessaging(); return m_msg->sent; }
 	//! Use at your own rish; clear all the message buffers.
 	void FlushMessageBuffers() { InitMessaging(); m_msg->sent.clear(); m_msg->received.clear(); }
+	int PeekAtNextMessageType() { InitMessaging(); return m_msg->received.front().GetMessageType(); }
 
 private:
   /*! Contains all the different data structures needed to support messaging within

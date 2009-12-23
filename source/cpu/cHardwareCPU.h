@@ -119,7 +119,6 @@ protected:
     int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
     void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
-    
   };
 
     
@@ -208,6 +207,7 @@ protected:
   
   // --------  Thread Manipulation  -------
   bool ForkThread(); // Adds a new thread based off of m_cur_thread.
+  bool InterruptThread(int interruptType); // Create a new thread that interrupts the current thread
   bool KillThread(); // Kill the current thread!
   
   // ---------- Instruction Helpers -----------

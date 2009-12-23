@@ -895,6 +895,9 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 
 	msg.SetReceiver(this);
 	m_msg->received.push_back(msg);
+	
+	//TODO: perform context switch
+	// need config option for depth of saved context stack
 }
 
 

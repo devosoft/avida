@@ -89,7 +89,9 @@ protected:
 	static const unsigned int MASKOFF_LOWEST8        = 0xFFFFFF00;
 	static const unsigned int MASKOFF_LOWEST4        = 0xFFFFFFF0;
 
-
+  // interrupt types
+  enum interruptTypes {MSG_INTERRUPT = 0, MOVE_INTERRUPT};
+	
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
@@ -254,6 +256,9 @@ protected:
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);  
+
+  // interrupt current thread
+  void InterruptThread(int interruptType) {;}
 
 private:
   void checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);

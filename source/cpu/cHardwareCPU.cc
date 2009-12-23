@@ -1349,6 +1349,82 @@ bool cHardwareCPU::ForkThread()
   return true;
 }
 
+bool cHardwareCPU::InterruptThread(int interruptType) {
+  //Will interrupt be successful? i.e. is head instuction present?
+  cString handlerHeadInstructionString;
+	
+  switch (interruptType) {
+      case MSG_INTERRUPT: {
+      int messageType = GetOrganism()->PeekAtNextMessageType();
+      if(messageType == 0) {
+        handlerHeadInstructionString.Set("msg-handler");
+      } else {
+        handlerHeadInstructionString.Set("msg-handler-type%d", messageType);
+      }
+			
+      //			if(initializeInterruptState(msgHandlerString)) {
+      //				IP().Retreat();
+      //				Inst_RetrieveMessage(m_world->GetDefaultContext());
+      //				IP().Advance();
+      //			}
+      break;
+    }
+    case MOVE_INTERRUPT:
+      //			if(initializeInterruptState("moved-handler")) {
+      //				; // perform movement interrupt initialization here
+      //			}
+      break;
+    default:
+			cerr <<  "Unknown intrerrupt type " << interruptType << "  Exitting.\n\n";
+      exit(-1);
+      break;
+  }
+	
+  const cInstruction label_inst = GetInstSet().GetInst(handlerHeadInstructionString);
+
+  cHeadCPU search_head(IP());
+  int start_pos = search_head.GetPosition();
+  search_head++;
+	
+  while (start_pos != search_head.GetPosition()) {
+    if (search_head.GetInst() == label_inst) {  // found handlerHeadInstructionString
+      search_head++;  // one instruction past instruction
+    }
+  }
+	
+  if(start_pos == search_head.GetPosition()) {
+    return false; // no instruction denoting start of interrupt handler
+  }
+	
+	
+	// thread stuff
+  const int num_threads = m_threads.GetSize();
+  if (num_threads == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
+  
+  // Make room for the new thread.
+  m_threads.Resize(num_threads + 1);
+  
+  // Find the first free bit in m_thread_id_chart to determine the new
+  // thread id.
+  int new_id = 0;
+  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
+  m_threads[num_threads].SetID(new_id);
+  m_thread_id_chart |= (1 << new_id);
+  
+	
+  // interrupt stuff	
+  m_threads[num_threads].Reset(this,new_id);
+  
+  m_cur_thread = num_threads;
+  // move all heads to one past beginning
+	
+  // set all heads to same spot
+  for(int i = 0; i < NUM_HEADS; i++) {
+    GetHead(i,new_id).Set(search_head.GetPosition());
+  }
+  return true;
+}
+
 
 bool cHardwareCPU::KillThread()
 {
@@ -1372,6 +1448,8 @@ bool cHardwareCPU::KillThread()
   m_threads.Resize(m_threads.GetSize() - 1);
   
   if (m_cur_thread > kill_thread) m_cur_thread--;
+	
+	//TODO: it interrupt enabled and more messages to process then reinterrupt
   
   return true;
 }
