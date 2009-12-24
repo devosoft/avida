@@ -1357,6 +1357,9 @@ int cPhenotype::CalcSizeMerit() const
     else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {out_size = genome_length - (bonus_instruction_count -1);}
     else {out_size = 1;}  //the extra 1 point in all these case is so the orgs are not jilted by the scheduler        
     break;
+  case BASE_MERIT_GESTATION_TIME:
+    out_size = cpu_cycles_used;
+    break;
   case BASE_MERIT_CONST:
   default:
     out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();

@@ -3171,6 +3171,8 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   // Setup child
   cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome = m_organism->GetGenome();
+  
+  
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
 
@@ -3186,6 +3188,10 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
     }
   }
   
+  //Need to clear the mutation steps, so that only most recent are there...
+  child_genome.GetMutationSteps().Clear();
+  
+  //Perform divide mutations...
   Divide_DoMutations(ctx);
   
   // Check viability
