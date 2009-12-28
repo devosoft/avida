@@ -371,6 +371,9 @@ public:
   virtual int GetCurThread() const { return -1; }
   virtual int GetCurThreadID() const { return -1; }
  
+  // interrupt current thread
+  bool InterruptThread(int interruptType) { return false; }
+
    // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
 

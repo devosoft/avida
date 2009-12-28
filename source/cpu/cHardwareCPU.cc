@@ -538,15 +538,15 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("alarm-label-low", &cHardwareCPU::Inst_Alarm_Label),
 
     // Interrupt
+    tInstLibEntry<tMethod>("send-msg-interrupt-type0", &cHardwareCPU::Inst_SendMessageInterruptType0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("send-msg-interrupt-type1", &cHardwareCPU::Inst_SendMessageInterruptType1, nInstFlag::STALL),
     tInstLibEntry<tMethod>("send-msg-interrupt-type2", &cHardwareCPU::Inst_SendMessageInterruptType1, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("msg-handler", &cHardwareCPU::Inst_MSG_Handler),
-		tInstLibEntry<tMethod>("msg-handler-type1", &cHardwareCPU::Inst_MSG_Handler),
-		tInstLibEntry<tMethod>("msg-handler-type2", &cHardwareCPU::Inst_MSG_Handler),
-//    tInstLibEntry<tMethod>("moved-handler", &cHardwareCPU::Inst_Moved_Handler),
-		tInstLibEntry<tMethod>("end-handler", &cHardwareCPU::Inst_End_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type0", &cHardwareCPU::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type1", &cHardwareCPU::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type2", &cHardwareCPU::Inst_START_Handler),
+    tInstLibEntry<tMethod>("moved-handler", &cHardwareCPU::Inst_START_Handler),
+    tInstLibEntry<tMethod>("end-handler", &cHardwareCPU::Inst_End_Handler),
     
-
     // Placebo instructions
     tInstLibEntry<tMethod>("skip", &cHardwareCPU::Inst_Skip),
 
@@ -786,9 +786,16 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   // timestep, adjust the number of instructions executed accordingly.
   const int num_inst_exec = m_thread_slicing_parallel ? num_threads : 1;
   
+  const bool isInterruptEnabled = m_world->GetConfig().INTERRUPT_ENABLED.Get();
+  
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
-    int last_thread = m_cur_thread++;
+    int last_thread = m_cur_thread;
+    
+    if (!isInterruptEnabled) {
+      m_cur_thread++;
+    } // else INTERRUPT_ENABLED is true and only current thread is processed.
+    
     if (m_cur_thread >= num_threads) m_cur_thread = 0;
     
     m_advance_ip = true;
@@ -1363,25 +1370,11 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
   cString handlerHeadInstructionString;
 	
   switch (interruptType) {
-      case MSG_INTERRUPT: {
-      int messageType = GetOrganism()->PeekAtNextMessageType();
-      if(messageType == 0) {
-        handlerHeadInstructionString.Set("msg-handler");
-      } else {
-        handlerHeadInstructionString.Set("msg-handler-type%d", messageType);
-      }
-			
-      //			if(initializeInterruptState(msgHandlerString)) {
-      //				IP().Retreat();
-      //				Inst_RetrieveMessage(m_world->GetDefaultContext());
-      //				IP().Advance();
-      //			}
+    case MSG_INTERRUPT:
+      handlerHeadInstructionString.Set("msg-handler-type%d", GetOrganism()->PeekAtNextMessageType());
       break;
-    }
     case MOVE_INTERRUPT:
-      //			if(initializeInterruptState("moved-handler")) {
-      //				; // perform movement interrupt initialization here
-      //			}
+      handlerHeadInstructionString.Set("moved-handler");
       break;
     default:
 			cerr <<  "Unknown intrerrupt type " << interruptType << "  Exitting.\n\n";
@@ -1398,7 +1391,9 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
   while (start_pos != search_head.GetPosition()) {
     if (search_head.GetInst() == label_inst) {  // found handlerHeadInstructionString
       search_head++;  // one instruction past instruction
+      break;
     }
+    search_head++;
   }
 	
   if(start_pos == search_head.GetPosition()) {
@@ -1428,6 +1423,20 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
   for(int i = 0; i < NUM_HEADS; i++) {
     GetHead(i,new_id).Set(search_head.GetPosition());
   }
+  
+  switch (interruptType) {
+    case MSG_INTERRUPT:
+      IP().Retreat();
+      Inst_RetrieveMessage(m_world->GetDefaultContext());
+      IP().Advance();
+      break;
+    case MOVE_INTERRUPT:
+      // do nothing extra
+      break;      
+  }
+  
+  m_organism->GetOrgInterface().GetDeme()->IncOrgInterruptedCount();
+  
   return true;
 }
 
@@ -7291,6 +7300,12 @@ bool cHardwareCPU::Inst_SendMessage(cAvidaContext& ctx)
 	return SendMessage(ctx);
 }
 
+// Same as cHardwareCPU::Inst_SendMessage.  Added for clearity
+bool cHardwareCPU::Inst_SendMessageInterruptType0(cAvidaContext& ctx)
+{
+	return SendMessage(ctx, 0);
+}
+
 bool cHardwareCPU::Inst_SendMessageInterruptType1(cAvidaContext& ctx)
 {
 	return SendMessage(ctx, 1);
@@ -7302,7 +7317,7 @@ bool cHardwareCPU::Inst_SendMessageInterruptType2(cAvidaContext& ctx)
 }
 
 // jumps one instruction passed end-handler
-bool cHardwareCPU::Inst_MSG_Handler(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_START_Handler(cAvidaContext& ctx) {
 	m_advance_ip = false;
 	//Jump 1 instruction passed msg-handler
 	cInstruction label_inst = GetInstSet().GetInst("end-handler");
@@ -7324,8 +7339,9 @@ bool cHardwareCPU::Inst_MSG_Handler(cAvidaContext& ctx) {
 }
 
 bool cHardwareCPU::Inst_End_Handler(cAvidaContext& ctx) {
-  KillThread(); // return false if one thread exists or max threads has been reached... this is OK.
-  // previous thread is now restored
+  if(KillThread()) { // return false if one thread exists or max threads has been reached... this is OK.
+    m_organism->GetOrgInterface().GetDeme()->DecOrgInterruptedCount();
+  } // previous thread is now restored
   
   // if interrupt enabled and more messages to process then reinterrupt
   if (m_organism->GetReceivedMessages().size() > 0) {

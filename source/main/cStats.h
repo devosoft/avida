@@ -778,6 +778,7 @@ public:
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
 	void PrintMessageData(const cString& filename);
+  void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);
   void PrintTasksData(const cString& filename);
   void PrintTasksExeData(const cString& filename);

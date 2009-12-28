@@ -260,7 +260,9 @@ public:
   int GetCurThread() const { return m_cur_thread; }
   int GetCurThreadID() const { return m_cur_thread; }
   
-  
+  // interrupt current thread
+  bool InterruptThread(int interruptType) { return false; }
+
   // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& inject_code);
 	

@@ -26,6 +26,7 @@
 #include "cOrganism.h"
 
 #include "cAvidaContext.h"
+#include "cHeadCPU.h"
 #include "nHardware.h"
 #include "cEnvironment.h"
 #include "functions.h"
@@ -895,22 +896,16 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 
 	msg.SetReceiver(this);
 	m_msg->received.push_back(msg);
-	
-	//TODO: perform context switch
-	// need config option for depth of saved context stack
-  
-  // if(INTERRUPT_ENABLED) {
+	  
+  if (m_world->GetConfig().INTERRUPT_ENABLED.Get()) {
     // if preempt running interrupt thread and #thread < max_threads
+//    if (m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get() && m_world->GetConfig().MAX_CPU_THREADS.Get() >= m_hardware->GetNumThreads()) {
       // then create new thread and load its registers
-
-      // hardware->IP().Retreat();
-      // hardware->Inst_RetrieveMessage(m_world->GetDefaultContext());
-      // hardware->IP().Advance();
-    
-    // else // cannot preempt
+      m_hardware->InterruptThread(cHardwareBase::MSG_INTERRUPT);
+//    }
+    // else cannot preempt!
       // do nothing since message is already buffered.  It will get processed later.
-    
-  
+  }
 }
 
 
@@ -938,6 +933,16 @@ void cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
   DoOutput(ctx);
+  
+  if (m_world->GetConfig().INTERRUPT_ENABLED.Get()) {
+    // if preempt running interrupt thread and #thread < max_threads
+    if (m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get() && m_world->GetConfig().MAX_CPU_THREADS.Get() >= m_hardware->GetNumThreads()) {
+      // then create new thread and load its registers
+      m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
+    }
+    // else cannot preempt!
+    // do nothing since message is already buffered.  It will get processed later.
+  }
 } //End cOrganism::Move()
 
 bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range) {

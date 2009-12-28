@@ -88,9 +88,6 @@ protected:
 	static const unsigned int MASKOFF_LOWEST12       = 0xFFFFF000;
 	static const unsigned int MASKOFF_LOWEST8        = 0xFFFFFF00;
 	static const unsigned int MASKOFF_LOWEST4        = 0xFFFFFFF0;
-
-  // interrupt types
-  enum interruptTypes {MSG_INTERRUPT = 0, MOVE_INTERRUPT};
 	
   cHardwareBase(); // @not_implemented
   cHardwareBase(const cHardwareBase&); // @not_implemented
@@ -100,14 +97,16 @@ public:
   cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id);
   virtual ~cHardwareBase() { ; }
   
-  int GetInstSetID() const { return m_inst_set_id; }
+  // interrupt types
+  enum interruptTypes {MSG_INTERRUPT = 0, MOVE_INTERRUPT};
 
+  int GetInstSetID() const { return m_inst_set_id; }
   
   // --------  Organism  ---------
   cOrganism* GetOrganism() { return m_organism; }
   const cInstSet& GetInstSet() { return *m_inst_set; }
 
-  
+
   // --------  Core Functionality  --------
   void Reset(cAvidaContext& ctx);
   virtual bool SingleProcess(cAvidaContext& ctx, bool speculative = false) = 0;
@@ -174,6 +173,9 @@ public:
   virtual int GetCurThread() const = 0;
   virtual int GetCurThreadID() const = 0;
   
+  // interrupt current thread
+  virtual bool InterruptThread(int interruptType) = 0; // only implemented in cHardwareCPU
+
   
   // --------  Parasite Stuff  --------
   virtual bool InjectHost(const cCodeLabel& in_label, const cGenome& injection) = 0;
@@ -256,9 +258,6 @@ protected:
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
 																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);  
-
-  // interrupt current thread
-  void InterruptThread(int interruptType) {;}
 
 private:
   void checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);

@@ -763,11 +763,10 @@ private:
   bool Inst_Broadcast8(cAvidaContext& ctx);
   
   // Active messaging //
+  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
-  bool Inst_MSG_Handler(cAvidaContext& ctx);
-  bool Inst_MSG_Handler_Type1(cAvidaContext& ctx);
-  bool Inst_MSG_Handler_Type2(cAvidaContext& ctx);
+  bool Inst_START_Handler(cAvidaContext& ctx);
   bool Inst_End_Handler(cAvidaContext& ctx);
   
   //// Alarm ////

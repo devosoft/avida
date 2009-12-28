@@ -867,7 +867,7 @@ void cStats::PrintCountData(const cString& filename)
 void cStats::PrintMessageData(const cString& filename) {
 	cDataFile& df = m_world->GetDataFile(filename);
 	
-  df.WriteComment( "Number of organsism to organisms messages\n" );
+  df.WriteComment( "Number of organism to organism messages\n" );
   
   df.Write( GetUpdate(), "update" );
   
@@ -886,10 +886,31 @@ void cStats::PrintMessageData(const cString& filename) {
 		totalMessagesFailed  += pop.GetDeme(i).GetMessageSendFailed();
 	}
 	
-	df.Write(totalMessagesSent, "Totlal messages sent");
+	df.Write(totalMessagesSent, "Total messages sent");
 	df.Write(totalMessagesSuccessfullySent, "Sent successfully");
 	df.Write(totalMessagesDropped, "Dropped");
 	df.Write(totalMessagesFailed, "Failed");
+	
+  df.Endl();
+}
+
+void cStats::PrintInterruptData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+  df.WriteComment( "Total number of organisms interrupted\n" );
+  
+  df.Write( GetUpdate(), "update" );
+  
+  cPopulation& pop = m_world->GetPopulation();
+  int numDemes = pop.GetNumDemes();
+  
+	unsigned int totalOrgsInterrupted(0);
+	
+	for( int i=0; i < numDemes; i++ ){
+		totalOrgsInterrupted += pop.GetDeme(i).GetOrgInterruptedCount();
+	}
+	
+	df.Write(totalOrgsInterrupted, "Total organisms interrupted");
 	
   df.Endl();
 }
