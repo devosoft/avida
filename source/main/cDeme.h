@@ -345,11 +345,6 @@ public:
 	unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
 	unsigned int GetMessageDropped() { return MSG_dropped; }
 	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
-
-  // --- Organism Interrupted Stats --- //
-  void IncOrgInterruptedCount() { ++numOrgsInterruted; }
-  void DecOrgInterruptedCount() { --numOrgsInterruted; }
-  int GetOrgInterruptedCount() { return numOrgsInterruted; }
   
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value);

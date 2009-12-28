@@ -129,8 +129,9 @@ private:
 
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
-  bool m_is_sleeping;      // Is this organisms sleeping?
+  bool m_is_sleeping;      // Is this organism sleeping?
   bool m_is_dead;          // Is this organism dead?
+  bool m_is_interrupted;   // Is this organism interrupted?
 
   bool killed_event;
   
@@ -220,6 +221,9 @@ public:
   bool IsSleeping() { return m_is_sleeping; }
   
   bool IsDead() { return m_is_dead; }
+  
+  void SetInterrupted(bool value) { m_is_interrupted = value; }
+  bool IsInterrupted() { return m_is_interrupted; }
   
   bool GetPheromoneStatus() { return m_pher_drop; }
   void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }

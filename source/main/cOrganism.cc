@@ -77,6 +77,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_is_dead(false)
+  , m_is_interrupted(false)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -118,6 +119,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_is_dead(false)
+  , m_is_interrupted(false)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -159,6 +161,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_is_dead(false)
+  , m_is_interrupted(false)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -899,12 +902,11 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 	  
   if (m_world->GetConfig().INTERRUPT_ENABLED.Get()) {
     // if preempt running interrupt thread and #thread < max_threads
-//    if (m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get() && m_world->GetConfig().MAX_CPU_THREADS.Get() >= m_hardware->GetNumThreads()) {
+    if (!IsInterrupted() || m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get()) {
       // then create new thread and load its registers
       m_hardware->InterruptThread(cHardwareBase::MSG_INTERRUPT);
-//    }
-    // else cannot preempt!
-      // do nothing since message is already buffered.  It will get processed later.
+    }
+    // Else cannot preempt! Do nothing since message is already buffered.  It will get processed later.
   }
 }
 
@@ -928,7 +930,6 @@ std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
 	return ret;
 }
 
-
 void cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
@@ -936,7 +937,7 @@ void cOrganism::Move(cAvidaContext& ctx)
   
   if (m_world->GetConfig().INTERRUPT_ENABLED.Get()) {
     // if preempt running interrupt thread and #thread < max_threads
-    if (m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get() && m_world->GetConfig().MAX_CPU_THREADS.Get() >= m_hardware->GetNumThreads()) {
+    if (!IsInterrupted() || m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get()) {
       // then create new thread and load its registers
       m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
     }

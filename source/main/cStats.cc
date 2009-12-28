@@ -28,6 +28,7 @@
 #include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cGenotype.h"
+#include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
@@ -905,13 +906,23 @@ void cStats::PrintInterruptData(const cString& filename) {
   int numDemes = pop.GetNumDemes();
   
 	unsigned int totalOrgsInterrupted(0);
+  unsigned int totalThreads(0);
 	
-	for( int i=0; i < numDemes; i++ ){
-		totalOrgsInterrupted += pop.GetDeme(i).GetOrgInterruptedCount();
-	}
+	for( int i = 0; i < numDemes; ++i ){
+    const cDeme & cur_deme = m_world->GetPopulation().GetDeme(i);;
+    for (int j = 0; j < cur_deme.GetSize(); ++j) {
+      cPopulationCell& cur_cell = cur_deme.GetCell(j);
+      if (cur_cell.IsOccupied() == false) {
+        continue;
+      } else if (cur_cell.GetOrganism()->IsInterrupted()) {
+        ++totalOrgsInterrupted;
+        totalThreads += cur_cell.GetOrganism()->GetHardware().GetNumThreads();
+      }
+    }
+  }
 	
 	df.Write(totalOrgsInterrupted, "Total organisms interrupted");
-	
+	df.Write(totalThreads, "Total threads");
   df.Endl();
 }
 

@@ -540,10 +540,16 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     // Interrupt
     tInstLibEntry<tMethod>("send-msg-interrupt-type0", &cHardwareCPU::Inst_SendMessageInterruptType0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("send-msg-interrupt-type1", &cHardwareCPU::Inst_SendMessageInterruptType1, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("send-msg-interrupt-type2", &cHardwareCPU::Inst_SendMessageInterruptType1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type2", &cHardwareCPU::Inst_SendMessageInterruptType2, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type3", &cHardwareCPU::Inst_SendMessageInterruptType3, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type4", &cHardwareCPU::Inst_SendMessageInterruptType4, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type5", &cHardwareCPU::Inst_SendMessageInterruptType5, nInstFlag::STALL),
     tInstLibEntry<tMethod>("msg-handler-type0", &cHardwareCPU::Inst_START_Handler),
     tInstLibEntry<tMethod>("msg-handler-type1", &cHardwareCPU::Inst_START_Handler),
     tInstLibEntry<tMethod>("msg-handler-type2", &cHardwareCPU::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type3", &cHardwareCPU::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type4", &cHardwareCPU::Inst_START_Handler),
+    tInstLibEntry<tMethod>("msg-handler-type5", &cHardwareCPU::Inst_START_Handler),
     tInstLibEntry<tMethod>("moved-handler", &cHardwareCPU::Inst_START_Handler),
     tInstLibEntry<tMethod>("end-handler", &cHardwareCPU::Inst_End_Handler),
     
@@ -963,11 +969,15 @@ void cHardwareCPU::PrintStatus(ostream& fp)
     fp << setbase(16) << "[0x" << GetRegister(i) << "]  " << setbase(10);
   }
   
+  if (m_organism->IsInterrupted()) {
+    fp << "  Interrupted";
+  }
+  
   // Add some extra information if additional time costs are used for instructions,
   // leave this out if there are no differences to keep it cleaner
   if ( m_organism->GetPhenotype().GetTimeUsed() != m_organism->GetPhenotype().GetCPUCyclesUsed() )
   {
-    fp << "  EnergyUsed:" << m_organism->GetPhenotype().GetTimeUsed();
+    fp << "  EnergyUsed:" << m_organism->GetPhenotype().GetTimeUsed(); // this is not energy that is used by the energy model
   }
   fp << endl;
   
@@ -1435,7 +1445,7 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
       break;      
   }
   
-  m_organism->GetOrgInterface().GetDeme()->IncOrgInterruptedCount();
+  m_organism->SetInterrupted(true);
   
   return true;
 }
@@ -7301,20 +7311,13 @@ bool cHardwareCPU::Inst_SendMessage(cAvidaContext& ctx)
 }
 
 // Same as cHardwareCPU::Inst_SendMessage.  Added for clearity
-bool cHardwareCPU::Inst_SendMessageInterruptType0(cAvidaContext& ctx)
-{
-	return SendMessage(ctx, 0);
-}
+bool cHardwareCPU::Inst_SendMessageInterruptType0(cAvidaContext& ctx) { return SendMessage(ctx, 0); }
 
-bool cHardwareCPU::Inst_SendMessageInterruptType1(cAvidaContext& ctx)
-{
-	return SendMessage(ctx, 1);
-}
-
-bool cHardwareCPU::Inst_SendMessageInterruptType2(cAvidaContext& ctx)
-{
-	return SendMessage(ctx, 2);
-}
+bool cHardwareCPU::Inst_SendMessageInterruptType1(cAvidaContext& ctx) { return SendMessage(ctx, 1); }
+bool cHardwareCPU::Inst_SendMessageInterruptType2(cAvidaContext& ctx) { return SendMessage(ctx, 2); }
+bool cHardwareCPU::Inst_SendMessageInterruptType3(cAvidaContext& ctx) { return SendMessage(ctx, 3); }
+bool cHardwareCPU::Inst_SendMessageInterruptType4(cAvidaContext& ctx) { return SendMessage(ctx, 4); }
+bool cHardwareCPU::Inst_SendMessageInterruptType5(cAvidaContext& ctx) { return SendMessage(ctx, 5); }
 
 // jumps one instruction passed end-handler
 bool cHardwareCPU::Inst_START_Handler(cAvidaContext& ctx) {
@@ -7340,7 +7343,7 @@ bool cHardwareCPU::Inst_START_Handler(cAvidaContext& ctx) {
 
 bool cHardwareCPU::Inst_End_Handler(cAvidaContext& ctx) {
   if(KillThread()) { // return false if one thread exists or max threads has been reached... this is OK.
-    m_organism->GetOrgInterface().GetDeme()->DecOrgInterruptedCount();
+    m_organism->SetInterrupted(false);
   } // previous thread is now restored
   
   // if interrupt enabled and more messages to process then reinterrupt

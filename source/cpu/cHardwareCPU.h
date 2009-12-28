@@ -766,6 +766,9 @@ private:
   bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
   bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
   bool Inst_START_Handler(cAvidaContext& ctx);
   bool Inst_End_Handler(cAvidaContext& ctx);
   
