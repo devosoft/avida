@@ -504,10 +504,14 @@ public:
   CONFIG_ADD_VAR(NET_STYLE, int, 0, "Communication Style.  0 = Random Next, 1 = Receiver Facing");
 	
   CONFIG_ADD_GROUP(ORGANISM_MESSAGING_GROUP, "Organism Message-Based Communication");
-  CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, bool, 1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf, default=1.");
-  CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, bool, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
+  CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, int, 1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf, default=1.");
+  CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, int, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
 	CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
 
+  CONFIG_ADD_GROUP(MESSAGING_INTERRUPT_GROUP, "Active Message Communication");
+  CONFIG_ADD_VAR(INTERRUPT_ENABLED, bool, 0, "Enable interruption of organism execution. 0/1 (off/on)");
+  CONFIG_ADD_VAR(INTERRUPT_PREEMPTION_ENABLED, bool, 0, "Enables preemption of currently executing interrupts. 0/1 (off/on)");
+  
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");
   CONFIG_ADD_VAR(BUY_PRICE, int, 0, "price offered by organisms attempting to buy");

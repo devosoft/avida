@@ -537,6 +537,15 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("alarm-label-high", &cHardwareCPU::Inst_Alarm_Label),
     tInstLibEntry<tMethod>("alarm-label-low", &cHardwareCPU::Inst_Alarm_Label),
 
+    // Interrupt
+    tInstLibEntry<tMethod>("send-msg-interrupt-type1", &cHardwareCPU::Inst_SendMessageInterruptType1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("send-msg-interrupt-type2", &cHardwareCPU::Inst_SendMessageInterruptType1, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("msg-handler", &cHardwareCPU::Inst_MSG_Handler),
+		tInstLibEntry<tMethod>("msg-handler-type1", &cHardwareCPU::Inst_MSG_Handler),
+		tInstLibEntry<tMethod>("msg-handler-type2", &cHardwareCPU::Inst_MSG_Handler),
+//    tInstLibEntry<tMethod>("moved-handler", &cHardwareCPU::Inst_Moved_Handler),
+		tInstLibEntry<tMethod>("end-handler", &cHardwareCPU::Inst_End_Handler),
+    
 
     // Placebo instructions
     tInstLibEntry<tMethod>("skip", &cHardwareCPU::Inst_Skip),
@@ -1414,11 +1423,8 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
 	
   // interrupt stuff	
   m_threads[num_threads].Reset(this,new_id);
-  
   m_cur_thread = num_threads;
-  // move all heads to one past beginning
-	
-  // set all heads to same spot
+  // move all heads to one past beginning of interrupt
   for(int i = 0; i < NUM_HEADS; i++) {
     GetHead(i,new_id).Set(search_head.GetPosition());
   }
@@ -1449,8 +1455,6 @@ bool cHardwareCPU::KillThread()
   
   if (m_cur_thread > kill_thread) m_cur_thread--;
 	
-	//TODO: it interrupt enabled and more messages to process then reinterrupt
-  
   return true;
 }
 
@@ -7286,6 +7290,50 @@ bool cHardwareCPU::Inst_SendMessage(cAvidaContext& ctx)
 {
 	return SendMessage(ctx);
 }
+
+bool cHardwareCPU::Inst_SendMessageInterruptType1(cAvidaContext& ctx)
+{
+	return SendMessage(ctx, 1);
+}
+
+bool cHardwareCPU::Inst_SendMessageInterruptType2(cAvidaContext& ctx)
+{
+	return SendMessage(ctx, 2);
+}
+
+// jumps one instruction passed end-handler
+bool cHardwareCPU::Inst_MSG_Handler(cAvidaContext& ctx) {
+	m_advance_ip = false;
+	//Jump 1 instruction passed msg-handler
+	cInstruction label_inst = GetInstSet().GetInst("end-handler");
+	
+	cHeadCPU search_head(IP());
+	int start_pos = search_head.GetPosition();
+	search_head++;
+	
+	while (start_pos != search_head.GetPosition()) {
+		if (search_head.GetInst() == label_inst) {
+			// move IP to here
+			search_head++;
+			IP().Set(search_head.GetPosition());
+			return true;
+		}
+		search_head++;
+	}
+	return false;
+}
+
+bool cHardwareCPU::Inst_End_Handler(cAvidaContext& ctx) {
+  KillThread(); // return false if one thread exists or max threads has been reached... this is OK.
+  // previous thread is now restored
+  
+  // if interrupt enabled and more messages to process then reinterrupt
+  if (m_organism->GetReceivedMessages().size() > 0) {
+    InterruptThread(MSG_INTERRUPT);
+  }
+  return true;
+}
+
 
 bool cHardwareCPU::SendMessage(cAvidaContext& ctx, int messageType) {
   const int label_reg = FindModifiedRegister(REG_BX);

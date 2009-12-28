@@ -898,6 +898,19 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 	
 	//TODO: perform context switch
 	// need config option for depth of saved context stack
+  
+  // if(INTERRUPT_ENABLED) {
+    // if preempt running interrupt thread and #thread < max_threads
+      // then create new thread and load its registers
+
+      // hardware->IP().Retreat();
+      // hardware->Inst_RetrieveMessage(m_world->GetDefaultContext());
+      // hardware->IP().Advance();
+    
+    // else // cannot preempt
+      // do nothing since message is already buffered.  It will get processed later.
+    
+  
 }
 
 
