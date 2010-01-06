@@ -3984,8 +3984,6 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
     
     if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
     {m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]);}
-    else
-    {res_change[bin_used] = 0.0;}
     
     if(!env_remove)
     {res_change[bin_used] = 0.0;}
@@ -3998,8 +3996,6 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
       res_change[i] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get() / num_bins);
       if(internal_add && (max < 0 || (total + -1 * res_change[i]) <= max))
       {m_organism->AddToRBin(i, -1 * res_change[i]);}
-      else
-      {res_change[i] = 0.0;}   
       
       if(!env_remove)
       {res_change[i] = 0.0;}
