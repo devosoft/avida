@@ -834,8 +834,6 @@ void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
 		while((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
 			m_msg->sent.pop_front();
 		}
-		// check to see if we've performed any tasks:
-		DoOutput(ctx);
 	}	
 }
 
@@ -849,6 +847,8 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
   assert(m_interface);
   InitMessaging();
 
+  // check to see if we've performed any tasks:
+  DoOutput(ctx);
   // if we sent the message:
   if(m_interface->SendMessage(msg)) {
 		MessageSent(ctx, msg);
