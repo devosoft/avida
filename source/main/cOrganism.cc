@@ -847,14 +847,15 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
   assert(m_interface);
   InitMessaging();
 
+  m_output_buf.Add(msg.GetData());
   // check to see if we've performed any tasks:
   DoOutput(ctx);
+
   // if we sent the message:
   if(m_interface->SendMessage(msg)) {
 		MessageSent(ctx, msg);
     return true;
   }
-	
 	// importantly, m_interface->SendMessage() fails if we're running in the test CPU.
 	return false;
 }
