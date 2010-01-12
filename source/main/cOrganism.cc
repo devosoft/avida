@@ -78,6 +78,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_is_sleeping(false)
   , m_is_dead(false)
   , m_is_interrupted(false)
+  , m_interruptMsgType(-1)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -120,6 +121,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   , m_is_sleeping(false)
   , m_is_dead(false)
   , m_is_interrupted(false)
+  , m_interruptMsgType(-1)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -162,6 +164,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_is_sleeping(false)
   , m_is_dead(false)
   , m_is_interrupted(false)
+  , m_interruptMsgType(-1)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -847,9 +850,8 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
   assert(m_interface);
   InitMessaging();
 
-  m_output_buf.Add(msg.GetData());
   // check to see if we've performed any tasks:
-  DoOutput(ctx);
+  DoOutput(ctx, static_cast<int>(msg.GetData()));
 
   // if we sent the message:
   if(m_interface->SendMessage(msg)) {

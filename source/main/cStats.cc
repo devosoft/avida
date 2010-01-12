@@ -907,22 +907,29 @@ void cStats::PrintInterruptData(const cString& filename) {
   
 	unsigned int totalOrgsInterrupted(0);
   unsigned int totalThreads(0);
-	
+	const int NUM_INTERRUPT_MSG_TYPES = 10;
+  int interruptTypeCounts[NUM_INTERRUPT_MSG_TYPES] = {0};
+    
 	for( int i = 0; i < numDemes; ++i ){
     const cDeme & cur_deme = m_world->GetPopulation().GetDeme(i);;
     for (int j = 0; j < cur_deme.GetSize(); ++j) {
       cPopulationCell& cur_cell = cur_deme.GetCell(j);
+      cOrganism* org = cur_cell.GetOrganism();
       if (cur_cell.IsOccupied() == false) {
         continue;
-      } else if (cur_cell.GetOrganism()->IsInterrupted()) {
+      } else if (org->IsInterrupted()) {
         ++totalOrgsInterrupted;
-        totalThreads += cur_cell.GetOrganism()->GetHardware().GetNumThreads();
+        totalThreads += org->GetHardware().GetNumThreads();
+        ++interruptTypeCounts[org->getInterruptMsgType()];
       }
     }
   }
 	
 	df.Write(totalOrgsInterrupted, "Total organisms interrupted");
 	df.Write(totalThreads, "Total threads");
+  for (int i = 0; i < NUM_INTERRUPT_MSG_TYPES; ++i) {
+    df.Write(interruptTypeCounts[i], "Interrupt Counts");
+  }
   df.Endl();
 }
 
