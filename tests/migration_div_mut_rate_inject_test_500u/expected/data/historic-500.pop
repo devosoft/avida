@@ -1,0 +1,126 @@
+#filetype genotype_data
+#format id parent_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence
+
+#  1: ID
+#  2: parent ID
+#  3: parent distance
+#  4: number of organisms currently alive
+#  5: total number of organisms that ever existed
+#  6: length of genome
+#  7: merit
+#  8: gestation time
+#  9: fitness
+# 10: update born
+# 11: update deactivated
+# 12: depth in phylogentic tree
+# 13: genome of organism
+
+1735 1328 -1 0 1 100 1.83084e+09 1410 1.29847e+06 453 499 11 rlzavcsorxmpotgascspyizczzdafjskgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1679 1075 -1 0 1 100 3.57585e+06 1449 2467.81 440 497 11 rwzavcsoxhbbotgascspynayzsdafjsmxeqaupqchcqbbpfcqppqlcftybbpoicoctqcrpccyqpbeppgpcdqoctrchyohycasvab 
+1912 1903 -1 0 1 100 15538.5 1404 11.0673 493 496 3 rfzavcrzdkaptbyzyugcmhsqkmufcdpnzmuiapbyhuqcgtpieueoypcmneuffbpqboyprfhnlqebifppypgpctqpgqbptycasvab 
+1846 3 -1 0 1 100 1.41842e+10 1380.35 1.02758e+07 480 492 1 rfzavcrzdkaptbyzyugchhsqkmufbdpnzmuiapiyhuqcgtpieueoypcgneuffbpqboyerfhnlqebifppypgpctqpgqbptycasvab 
+1674 1002 -1 0 1 100 3.98459e+08 1415 281596 440 486 11 rwzavcsoxhkbotgascspynzyzsdafjsmxeqauoqchjqbapfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1767 1330 -1 0 1 100 6.44245e+09 1415 4.55297e+06 461 483 13 rozavcsoxhksotgaocspgnzyzsdafjlmxeqaudqchcqbppfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1841 3 -1 0 1 100 9.17654e+11 1477 6.21296e+08 479 481 1 rfzavcrzdkaptbysyugchhsqkmyfbbpnzmuiaciyaiqcgtpieueoypcgneuffbpqboyerfhnlqebifppypgpctqpgybptycasvab 
+1694 253 -1 0 1 100 190 1430 0.132867 442 474 10 rwzavcsoxhkbotgascspynzyzsdafjsmxeqauoqchcqbppfcpppqlcftybbpoicoctqcrpccyqpbechgpcdqoctrchyohycasvab 
+1797 3 -1 0 1 100 5.87298e+13 1481.67 3.96377e+10 468 474 1 rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiapiyauqcgtpieueoypcgneuffbpqboyerfhnlqebifppypgpctqpgqbrtycasvab 
+1806 1797 -1 0 1 100 106.829 1503 0.0710771 470 472 2 rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiapiyauqcgtpieueoypcgneuffbpxboyerfhnlqebifppypgpctqpgqbrtycasvab 
+1164 544 -1 0 12 100 5.55006e+09 1419 3.91125e+06 321 467 11 rwzavcsoxhkbotgasmspynzyzidafjsmxeqauoqchcqbppfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1298 1075 -1 0 1 100 215.955 1473 0.146609 350 466 11 rwzavcsoxhybotgascspynayzsdafjsmxeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccrqpbeppgpcdqoctrchyohycasvab 
+463 383 -1 0 1 100 285585 1346.36 212.116 155 463 6 rfzavczzdkaptbyzyugchmsqkmsubbppzfuiapisauqcgtpieueoypcgnemffbpqboyerbhnbqebifppypgpctqpgqbptycasvab 
+1749 1715 -1 0 1 100 1.32647e+06 1444.5 918.289 455 461 16 rfzavcdzdkcptnypnuqcchdqkmrfobpnimumuphsauqcgtpieuezypcgneuofbnqblyecfnndjedlfppypgpctqpgqbptycasvab 
+1467 1247 -1 0 1 100 164026 1389 118.089 391 460 11 rfzavcrzdkcatbypyugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgneuffbeqbmyecfhnlqebifppfpgpctqpgqbptycasvab 
+762 526 -1 0 1 100 2.14517e+07 1449 14804.5 227 454 10 rlzavcsorjmpotgaycspynzczsdafjsxgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqppecpgpcdqoctrchyohycasvab 
+1381 1238 -1 0 1 100 162243 1412 114.903 371 451 12 rfzavcrzdkcptyypzugcchdqkmrfbbpnimuduphsauqcgtpieuezypcgneuofbeqbmyecfnnljeblfppypgpctqpgqbptycasvab 
+1551 933 -1 0 1 100 2.77503e+09 1418 1.957e+06 411 450 12 rwzavcsoxhksotgascspynzyzsdufjbmxeqauoqchcqbppfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1653 1616 -1 0 1 100 1.29794e+06 1409 921.18 436 450 14 rfzavcdzdkcptnypzugcchdqkmrfbbpnimuduphsauqcgtpieuezypcgneuofbnqblyecfnndjeblfppypgpctqpgqbptycasvab 
+1666 1653 -1 0 1 100 480.301 1403 0.342338 438 449 15 rfzavcdzdkcptnypzugcchdqomrfbbpnimuduphsauqcgtpieuezypcgneuyfbnqblyecfnndjeblqppypgpctqpgqbptycasvab 
+1183 506 -1 0 3 100 5.48555e+09 1415.33 3.8766e+06 324 447 11 rwzavcsoxhksotgaocspgnzyzsdafjlmxeqauoqchcqbppfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1564 1040 -1 0 1 100 95 1431 0.0663871 414 442 13 rwzavcsoxhkbotgasxspynzyzidafjsmxeqauoqchcqbppfcpppqlcftybbphicoctqcrpccyqpbecpgpcdqoctrphyohycasvab 
+1616 1381 -1 0 1 100 1.29794e+06 1409 921.18 428 442 13 rfzavcdzdkcptyypzugcchdqkmrfbbpnimuduphsauqcgtpieuezypcgneuofbnqblyecfnnljeblfppypgpctqpgqbptycasvab 
+1030 804 -1 0 1 100 36086.2 1445 24.9731 287 441 5 rfzavcrzdkcptbycfufchxzqkmyfbbpnqmuiupisauqcgtpieueoypcgneuffbeqboyerfhnlqhbifppypgpctqpgqbptycasvab 
+1665 1616 -1 0 1 100 2.59588e+06 1409 1842.36 438 441 14 rfzavcdzdkcptyypzugcchdqkmrfbbpnimuduphsauqcgtpieuenypcgneuofbnqblyecfnnljebdfppypgpctqprqbptycasvab 
+1478 1002 -1 0 1 100 5.55006e+09 1426 3.89205e+06 396 440 11 rwzavcsoxhkbotgascspynzyzsdafjsmxeqauoqchjqbppfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchbohycasvab 
+1259 1247 -1 0 1 100 164026 1390 118.004 342 430 11 rfzavcrydkcatbypzugcchdqkxrflxpnzmuwuphshuqcgtpieuezypcgneuffbeqbmyecfhnlqebifpdfpgpctqpgqbptycasvab 
+1367 1336 -1 0 1 100 94208 1430 65.8797 366 429 12 rfzavcrzikcptmyczkgcchdqklrfbxpnzmuiuphsauqcgtgieuezyrcgnexffbelboyekqynlqewhfppypgpctqpgqbptycasvab 
+1504 1490 -1 0 1 100 1.31221e+06 1416 926.699 401 429 13 rizavcrzikcptbyczugcchdqklufcxpnzmuicshaauqcgtpieuezyrcgnexffbeqboyekfynlqefyfppypgpctqpgqbptycasvab 
+1556 1467 -1 0 1 100 41006.4 1389 29.5223 413 424 12 rfzavcrzdkcatbypyugcchdqkmrfbbpnzmuwgphsauqcgtpieuezypcgfeuffbeqbmyecfhnlqebifppfpgpctqpgqbptycasvab 
+1569 463 -1 0 1 100 5.24882e+06 1380 3803.49 415 421 7 rfzavczzdkaptbyzyugchmsqkmsubbppzfuiapdsauqcgtpieueoypcgnemffbpqboyerbhnbqebifppypghctqpgqbptycasvab 
+1310 1154 -1 0 1 100 105.68 1485 0.0711652 353 420 11 rfzavcrzikcptbyczugcchdqklrfbypnzmuiuphsauqrgtpieuezyrcgnexffbeqboyekfynlqewyfppypgpctqpgqbptycasvab 
+1568 1497 -1 0 1 100 26760.1 1426 18.7658 415 417 14 rizavcrzikcgtbyczugcchdqklufcxpnzmuiushaauqcgtpieuezyrcgnexffbeqbonekfynlqewffppypgpctqpgqbptycasvab 
+1497 1490 -1 0 1 100 1.31221e+06 1417 926.045 400 415 13 rizavcrzikcgtbyczugcchdqklufcxpnzmuiushaauqcgtpieuezyrcgnexffbeqboyekfynlqewyfppypgpctqpgqbptycasvab 
+1154 1136 -1 0 2 100 1.31221e+06 1417 926.045 318 403 10 rfzavcrzikcptbyczugcchdqklrfbxpnzmuiuphsauqcgtpieuezyrcgnexffbeqboyekfynlqewyfppypgpctqpgqbptycasvab 
+1214 1211 -1 0 1 100 13233 1378 9.60305 333 401 10 rwzavcrzdkcptbyczugcchdqkmrfbbpnzmuwupesauqcgtpieuezypcgneufqbesboyecjhnlqebifppypgpctqpgqbptycasvab 
+1490 1483 -1 0 1 100 1.31221e+06 1417 926.045 398 401 12 rizavcrzikcptbyczugcchdqklufcxpnzmuiushaauqcgtpieuezyrcgnexffbeqboyekfynlqewyfppypgpctqpgqbptycasvab 
+1247 1186 -1 0 1 100 164026 1389 118.089 341 401 10 rfzavcrzdkcatbypzugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgneuffbeqbmyecfhnlqebifppfpgpctqpgqbptycasvab 
+1483 1154 -1 0 1 100 1.31221e+06 1417 926.045 397 400 11 rizavcrzikcptbyczugcchdqklufcxpnzmuiuphaauqcgtpieuezyrcgnexffbeqboyekfynlqewyfppypgpctqpgqbptycasvab 
+1389 1156 -1 0 1 100 661.618 1431 0.462347 374 398 14 rwzavcsoxhkbotgasxspynzypidafjsmxeqauoqchcqbppfcpppqlcftybbpoicoctqcrpccyqpbncpgpcdqoctrphyofycasvab 
+981 544 -1 0 5 100 2.77503e+09 1418 1.957e+06 276 386 11 rwzavcsoxhkbotgascspynzyzidafjsmxeqauoqchcqbppfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrphyohycasvab 
+1099 190 -1 0 1 100 7.96918e+08 1414 563591 304 386 9 rwzavcsoxhmbytgascspynayzsdafjsmxeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpcryqpbecpgpcdqoctrchyohycasvab 
+1238 1229 -1 0 1 100 324486 1403 231.28 338 378 11 rfzavcrzdkcptbypzugcchdqkmrfbbpnimuduphsauqcgtpieuezypcgneuofbeqbmyecfhnljeblfppypgpctqpgqbptycasvab 
+1353 463 -1 0 1 100 2.13621e+06 1347.38 1585.07 363 378 7 rfzavczzdkaptbyzyugchmsqkmsunbppzfuiapigauqcgtpieueoypcgnemffbpqboyerbhnbqebifppypepctqpgqbptycasvab 
+1059 798 -1 0 1 100 1942.32 1401 1.38638 295 377 5 rfzavcrzdkcptbycfugchhsqkmyfibpazmuiapisauqcgtlieueoypcgneuffbeqboyjrfhnlqebifppydgpctqpgqbptycasvab 
+1386 1353 -1 0 1 100 145.509 1819 0.0799938 373 375 8 rfzavczzdklptbyzyugchmsqkmsulbppzfuiapigauqcotpidueoypcgnemffbpqboyerbhxbqebifppypepctqpgqbptycasvab 
+1336 1154 -1 0 1 100 251319 1437.67 174.81 360 375 11 rfzavcrzikcptmyczkgcchdqklrfbxpnzmuiuphsauqcgtpieuezyrcgnexffbelboyekfynlqewhfppypgpctqpgqbptycasvab 
+429 383 -1 0 1 100 11904 1380 8.62609 144 367 6 rfzavczznkaptbyzyugchhsqkmsubbppzfuiapisauqcgtpieueoypcgnemffbpqboyerfhnbqebifppypgpltqpgqbptycasvab 
+1227 1217 -1 0 1 100 2562.9 1355 1.89144 336 361 10 rfzavcrzdkcptbyczugcchdqkmrrbbunzmuwuphsauqcgtpiewezypcgyebffbeqboyecfbnlqebifppypgpmtqpgqbptycasvab 
+1022 798 -1 0 1 100 1.27292e+08 1377 92441.2 285 352 5 rfzavcrzdkcptbycfugcchsqkmyfibpazmuiapisauqcgtpieueoypcgneuffbeqboyerfhmlqebifppypgpctqpgqbptycasvab 
+1217 1074 -1 0 1 100 184320 1344 137.143 334 350 9 rfzavcrzdkcptbyczugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgnebffbeqboyecfhnlqebifppypgpctqpgqbptycasvab 
+1292 1244 -1 0 1 100 1.66137e+08 1412 117660 348 349 10 rfzavcrzdkcitbyczugcchdqkmrfbbpnzmuwuphsauqcgtpieuexypcgneeffoeqboyecfhnlqebifppypgpctqpgqbptycasvab 
+1293 1292 -1 0 1 100 1.66137e+08 1412 117660 348 349 11 rfzavcrzdkcitbycsugcchdqkmrfbbpnzmuwuphbauqcgtpieuexypcgneeffoeqbayecfhnlqebifppypgpctqpgqbptycasvab 
+1244 1074 -1 0 1 100 1.66137e+08 1412 117660 340 348 9 rfzavcrzdkcptbyczugcchdqkmrfbbpnzmuwuphsauqcgtpieuexypcgneeffoeqboyecfhnlqebifppypgpctqpgqbptycasvab 
+1278 1074 -1 0 1 100 3842.41 1378 2.78839 345 346 9 rfzavcrzdkcptbyczugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgneuffbeqboyecfhnlqebifppypgpctqpgqbftycasvab 
+1074 1026 -1 0 1 100 5.1937e+08 1378 376902 297 345 8 rfzavcrzdkcptbyczugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgneuffbeqboyecfhnlqebifppypgpctqpgqbptycasvab 
+1232 1229 -1 0 1 100 95 1469 0.0646698 338 344 11 rfzavcrzdkcptbypzugcchdqkmrfbbpnzmuwuphsauqcgtpyeuezypcgneuffbeqbmyecfhnlqeblfppypglctqpgqbptycasvab 
+1249 1074 -1 0 1 100 7.47146e+08 1377 542590 341 343 9 rfzavcrzdkcptbyczugcchdqkmrfbbenzmuwuphsauqcgtpieuezypcgneuffbeqboyecfhnlqebifppypgpctqpgqbptycasvab 
+1186 1074 -1 0 1 100 5.51597e+08 1380 399708 324 341 9 rfzavcrzdkcptbypzugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgneuffbeqbmyecfhnlqebifppypgpctqpgqbptycasvab 
+1229 1186 -1 0 1 100 7.6375e+08 1380 553442 336 339 10 rfzavcrzdkcptbypzugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgneuffbeqbmyecfhnlqeblfppypgpctqpgqbptycasvab 
+973 887 -1 0 1 100 109.126 1473 0.0740844 274 338 6 rfzavcrzdkcptbycfugchhzqkmrfbbpnzmuiupisauqcgtpseueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqbktycasvab 
+1211 1074 -1 0 1 100 81121.4 1378 58.8689 332 337 9 rfzavcrzdkcptbyczugcchdqkmrfbbpnzmuwuphsauqcgtpieuezypcgneuffbeqboyecjhnlqebifppypgpctqpgqbptycasvab 
+1104 1026 -1 0 1 100 5.45601e+08 1378 395937 305 328 8 rfzavcrzdkcptbyczugcchdqklrfbbpnzmuiuphsauqcgtpieuezypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+777 675 -1 0 3 100 2.83345e+09 1484 1.90933e+06 230 326 12 rwzavcsoxhkbotgascspynzyzsdafjsmheqauoqchcqbppfcpppqlcftobbnoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+190 99 -1 0 8 100 1.90232e+09 1412 1.34725e+06 86 324 8 rwzavcsoxhmbotgascspynayzsdafjsmxeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1136 1104 -1 0 1 100 1.4177e+10 1369 1.03557e+07 312 318 9 rfzavcrzdkcptbyczugcchdqklrfbxpnzmuiuphsauqcgtpieuezypcgneuffbeqboyerfynlqebyfppypgpctqpgqbptycasvab 
+979 544 -1 0 1 100 445.695 1479 0.301349 276 317 11 rwzavcsoxhkbotgascspynzyzidafjsmxeqauoqchcqbppfcpppqlcftqbbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+1026 911 -1 0 1 100 5.35109e+08 1378 388323 286 308 7 rfzavcrzdkcptbyczugcchdqkmrfbbpnzmuiuphsauqcgtpieuezypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+547 253 -1 0 4 100 2.77503e+09 1418 1.957e+06 175 300 10 rwzavcsoxhkbotgascspynzyzsdafjsmxeqauoqchcqbppfcpppqlcftybbnoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+798 552 -1 0 1 100 5.09166e+08 1377 369765 232 297 4 rfzavcrzdkcptbycfugchhsqkmyfibpazmuiapisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+942 777 -1 0 1 100 8191.51 1465 5.59147 268 295 13 rwzavcsoxhkbotgascspynzyzsdafjsmheqauoqchcqbppfcpppqlcftobbnoicoctqcrpccyqpbecpgpcdqocthxhyohycasvab 
+1015 798 -1 0 1 100 10251.6 1377 7.44488 283 293 5 rfzavcrzdkcptbycfugchhsqkmyfibpazmuiapisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppyngpctqpgqbptycasvab 
+911 887 -1 0 1 100 5.59591e+08 1378 406089 261 288 6 rfzavcrzdkcptbycfugcchdqkmrfbbpnzmuiuphsauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+804 552 -1 0 2 100 1.1383e+09 1379 825454 233 287 4 rfzavcrzdkcptbycfugchhzqkmyfbbpnzmuiupisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+883 877 -1 0 1 100 105.68 1370 0.0771389 254 287 7 rhzavcrhdkcptbycvugchhzqkmyfbbpnzmuiupisauqcgtpieueojpcyneuafbeqboyerfnnlqebifppypgpctqpgqbptycasvab 
+995 804 -1 0 1 100 242.789 1412 0.171947 280 282 5 rfzavcrzdkcptbycfugchhzqkmyfbbpnzmuiupisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqoptycasvab 
+729 253 -1 0 1 100 149001 1419 105.004 218 281 10 rwzavcsoxhkbotgascspynzyzgdaujsmxeqauoqchcqbppfcpipqlcftybbuoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+887 804 -1 0 2 100 1.08168e+09 1379 784393 255 276 5 rfzavcrzdkcptbycfugchhzqkmrfbbpnzmuiupisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+960 911 -1 0 1 100 89 1378 0.0645864 271 275 7 rfzavcrzdkcptiycfugcchdqkmrubbpnzmuiuphsauqcgtpieyeoypcgneuffbeqboderfhnlqebifppypxpctqpgqbptycasvab 
+810 190 -1 0 1 100 194560 1405 138.477 236 269 9 rwzavcsoxhmbotgascspynayzsdafjsmxeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccybpbecpgpcdqoctrchyohycasvab 
+865 804 -1 0 1 100 3.02332e+09 1370 2.2068e+06 249 257 5 rfzavcrzdkcptbycfugchhzqkmyfbbpnzmuiupisauqcgtpieueoypcyneuafbeqboyerfnnlqebifppypgpctqpgqbptycasvab 
+877 865 -1 0 1 100 4.03109e+09 1370 2.9424e+06 253 255 6 rhzavcrhdkcptbycvugchhzqkmyfbbpnzmuiupisauqcgtpieueoypcyneuafbeqboyerfnnlqebifppypgpctqpgqbptycasvab 
+552 266 -1 0 2 100 1.15141e+09 1378 835564 176 239 3 rfzavcrzdkcptbycfugchhsqkmyfbbpnzmuiapisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+775 552 -1 0 1 100 8.30683e+08 1378 602818 230 239 4 rfzavcrzdkeptbycfugchhsqkmyfbbpnzuuiapisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctppgqbptycasvab 
+675 547 -1 0 1 100 2.77503e+09 1418 1.957e+06 205 233 11 rwzavcsoxhkbotgascspynzyzsdafjsmheqauoqchcqbppfcpppqlcftybbnoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+139 54 -1 0 10 100 1.27507e+09 1410.6 903904 75 189 8 rwzavcsorpmpotgascspynzczsdafjsxgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+58 33 -1 0 6 100 8.72415e+08 1410.8 618566 56 180 5 rwzavcsoxhmbotgdscspyizczsdafjsmgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+266 107 -1 0 1 100 1.1097e+09 1378 805300 106 177 2 rfzavcrzdkaptbycfugchhsqkmyfbbpnzmuiapisauqcgtpieueoypcgneuffbeqboyerfhnlqebifppypgpctqpgqbptycasvab 
+517 350 -1 0 1 100 8.05811e+09 1346.5 5.98449e+06 167 172 5 rfzavcdzdkaptbyzyugchhsqkmsubbppzmuiapishuqcgtpieueoypcgneyffbpqboyerfhnbqebifppypgpctqpgqbptycasvab 
+350 291 -1 0 3 100 3.25866e+10 1346.34 2.42039e+07 124 170 4 rfzavczzdkaptbyzyugchhsqkmsubbppzmuiapisauqcgtpieueoypcgneyffbpqboyerfhnbqebifppypgpctqpgqbptycasvab 
+383 350 -1 0 2 100 3.25866e+10 1346.39 2.4203e+07 132 166 5 rfzavczzdkaptbyzyugchhsqkmsubbppzfuiapisauqcgtpieueoypcgnemffbpqboyerfhnbqebifppypgpctqpgqbptycasvab 
+38 33 -1 0 6 100 1.23273e+09 1408.62 875332 51 153 5 rwzavcsoxhmbotgascspynzczsdafjsxgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+203 190 -1 0 3 100 23038.9 1423 16.1904 90 135 9 rwzavcsoxhmbotgascspynayzsdafjsmxeqauppchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+54 47 -1 0 10 100 1.19538e+09 1410 847785 55 132 7 rwzavcsorhmpotgascspynzczsdafjsxgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+291 247 -1 0 2 100 3.25866e+10 1346.35 2.42037e+07 111 127 3 rfzavcrzdkaptbyzyugchhsqkmsubbpnzmuiapisauqcgtpieueoypcgneyffbpqboyerfhnbqebifppypgpctqpgqbptycasvab 
+247 107 -1 0 1 100 3.29409e+10 1347.43 2.44472e+07 102 113 2 rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiapisauqcgtpieueoypcgneuffbpqboyerfhnbqebifppypgpctqpgqbptycasvab 
+256 107 -1 0 1 100 5.73534e+10 1380.43 4.15475e+07 103 111 2 rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiapisauqcgtpiereoypcgneuffbpqboyerfhnlqebifppypgpctqpgqbptycasvab 
+147 99 -1 0 2 100 1.59384e+09 1413 1.12798e+06 76 108 8 rwzavcsoxhkbotgascspynzyzsdafjsmxeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+107 3 -1 0 2 100 7.64711e+10 1380.35 5.54005e+07 67 107 1 rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiapisauqcgtpieueoypcgneuffbpqboyerfhnlqebifppypgpctqpgqbptycasvab 
+99 74 -1 0 11 100 2.4254e+09 1413 1.71649e+06 66 97 7 rwzavcsoxhmbotgascspynzyzsdafjsmxeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+35 33 -1 0 5 100 8.05306e+08 1411 570734 51 95 5 rwzavcsoxhmbotgascspynzczsdafjsmpeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+74 35 -1 0 1 100 7.96918e+08 1411 564789 59 71 6 rwzavcsoxhmbotgascspynzczsdafjsmxeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+17 3 -1 0 1 100 3.00697e+16 1432 2.09984e+13 47 63 1 rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiauiyauqcgtpiedeoypcgneuffbpqboeerfhnlqebofppypgpctqpgqbptycasvab 
+33 27 -1 0 4 100 1.3448e+09 1407.62 955616 50 57 4 rwzavcsoxhmbotgascspynzczsdafjsmgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+47 38 -1 0 1 100 1.19538e+09 1408.5 848788 53 57 6 rwzavcsonhmbotgascspynzczsdafjsxgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+34 17 -1 0 1 100 107.978 1477 0.0731061 50 56 2 rfzavcrzdkaptbyzyugchhsqkmyfbbpnzmuiauiyauqcgtpiedeoypcgneuffbpqboeeifhnlqbbofppypgpctqpgqbptycasvab 
+11 4 -1 0 3 100 7.22699e+06 1352 5345.4 44 51 2 rwzavcsoxhmbotiascspynzczsdafjsmgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyahycasvab 
+27 11 -1 0 1 100 4.02653e+08 1411 285367 49 50 3 rwzavcsoxhmbotiascspynzczsdafjsmgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyohycasvab 
+4 2 -1 0 5 100 8.33883e+06 1352 6167.77 40 47 1 rwzavcsoxhmbotiascspynzczsdaujsmgeqaupqchcqbbpfcpppqlcftybbpoicoctqcrpccyqpbecpgpcdqoctrchyahycasvab 
