@@ -4161,6 +4161,7 @@ class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
             
             int current_cell = (world_x * row_adj) + col_adj;
             resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));            
+            cells_scanned++;
           }
         }
         
@@ -4185,7 +4186,6 @@ class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
               
               int current_cell = (world_x * row_adj) + col_adj;
               cPopulationCell& cell = pop.GetCell(current_cell);
-              cells_scanned++;
               
               if( (cell.IsOccupied())  && (ctx.GetRandom().P(m_kill_density)) ) {
                 pop.KillOrganism(cell);
