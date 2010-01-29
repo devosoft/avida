@@ -297,6 +297,7 @@ public:
   
   // interrupt current thread
   bool InterruptThread(int interruptType) { return false; }
+  int GetThreadMessageTriggerType(int _index) { return -1; }
 
   // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);

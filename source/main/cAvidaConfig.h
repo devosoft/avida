@@ -508,9 +508,8 @@ public:
   CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, int, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
 	CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
 
-  CONFIG_ADD_GROUP(MESSAGING_INTERRUPT_GROUP, "Active Message Communication");
-  CONFIG_ADD_VAR(INTERRUPT_ENABLED, bool, 0, "Enable interruption of organism execution. 0/1 (off/on)");
-  CONFIG_ADD_VAR(INTERRUPT_PREEMPTION_ENABLED, bool, 0, "Enables preemption of currently executing interrupts. 0/1 (off/on)");
+  CONFIG_ADD_GROUP(ACTIVE_MESSAGING_GROUP, "Active Message Communication");
+  CONFIG_ADD_VAR(ACTIVE_MESSAGES_ENABLED, int, 0, "Enable active messages. \n0 = off\n2 = message creates parallel thread");
   
   CONFIG_ADD_GROUP(BUY_SELL_GROUP, "Buying and Selling Parameters");
   CONFIG_ADD_VAR(SAVE_RECEIVED, bool, 0, "Enable storage of all inputs bought from other orgs");

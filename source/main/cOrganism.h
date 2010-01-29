@@ -131,8 +131,6 @@ private:
   bool m_is_running;       // Does this organism have the CPU?
   bool m_is_sleeping;      // Is this organism sleeping?
   bool m_is_dead;          // Is this organism dead?
-  bool m_is_interrupted;   // Is this organism interrupted?
-  int m_interruptMsgType;  // Msg type that interruted organism 
 
   bool killed_event;
   
@@ -223,9 +221,7 @@ public:
   
   bool IsDead() { return m_is_dead; }
   
-  void SetInterrupted(bool value, int interruptMsgType = -1) { m_is_interrupted = value; m_interruptMsgType = interruptMsgType; }
-  bool IsInterrupted() { return m_is_interrupted; }
-  int getInterruptMsgType() { return m_interruptMsgType; }
+  bool IsInterrupted();
   
   bool GetPheromoneStatus() { return m_pher_drop; }
   void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }

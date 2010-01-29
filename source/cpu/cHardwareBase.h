@@ -175,7 +175,8 @@ public:
   
   // interrupt current thread
   virtual bool InterruptThread(int interruptType) = 0; // only implemented in cHardwareCPU
-
+  virtual int GetThreadMessageTriggerType(int _index) = 0;
+  
   
   // --------  Parasite Stuff  --------
   virtual bool InjectHost(const cCodeLabel& in_label, const cGenome& injection) = 0;

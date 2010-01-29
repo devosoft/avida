@@ -97,6 +97,7 @@ protected:
   private:
     int m_id;
     int m_promoter_inst_executed;
+    int m_messageTriggerType;
   public:
     int reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
@@ -119,6 +120,8 @@ protected:
     int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
     void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
+    void setMessageTriggerType(int value) { m_messageTriggerType = value; }
+    int getMessageTriggerType() { return m_messageTriggerType; }
   };
 
     
@@ -321,6 +324,7 @@ public:
   int GetCurThread() const      { return m_cur_thread; }
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   const cLocalThread& GetThread(int _index) const { return m_threads[_index]; }
+  int GetThreadMessageTriggerType(int _index) { return m_threads[_index].getMessageTriggerType(); }
   
   // --------  Parasite Stuff  --------
   bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);

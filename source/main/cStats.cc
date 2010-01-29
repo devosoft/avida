@@ -919,8 +919,11 @@ void cStats::PrintInterruptData(const cString& filename) {
         continue;
       } else if (org->IsInterrupted()) {
         ++totalOrgsInterrupted;
-        totalThreads += org->GetHardware().GetNumThreads();
-        ++interruptTypeCounts[org->getInterruptMsgType()];
+        int numThreadsInOrg = org->GetHardware().GetNumThreads();
+        totalThreads += numThreadsInOrg;
+        for(int k = 0; k< numThreadsInOrg; ++k) {
+          ++interruptTypeCounts[org->GetHardware().GetThreadMessageTriggerType(k)];
+        }
       }
     }
   }

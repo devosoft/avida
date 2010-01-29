@@ -77,8 +77,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_is_dead(false)
-  , m_is_interrupted(false)
-  , m_interruptMsgType(-1)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -120,8 +118,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_is_dead(false)
-  , m_is_interrupted(false)
-  , m_interruptMsgType(-1)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -163,8 +159,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_is_running(false)
   , m_is_sleeping(false)
   , m_is_dead(false)
-  , m_is_interrupted(false)
-  , m_interruptMsgType(-1)
   , killed_event(false)
   , m_net(NULL)
   , m_msg(0)
@@ -902,14 +896,10 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 
 	msg.SetReceiver(this);
 	m_msg->received.push_back(msg);
-	  
-  if (m_world->GetConfig().INTERRUPT_ENABLED.Get()) {
-    // if preempt running interrupt thread and #thread < max_threads
-    if (!IsInterrupted() || m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get()) {
-      // then create new thread and load its registers
-      m_hardware->InterruptThread(cHardwareBase::MSG_INTERRUPT);
-    }
-    // Else cannot preempt! Do nothing since message is already buffered.  It will get processed later.
+  
+  if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
+    // then create new thread and load its registers
+    m_hardware->InterruptThread(cHardwareBase::MSG_INTERRUPT);
   }
 }
 
@@ -938,14 +928,9 @@ void cOrganism::Move(cAvidaContext& ctx)
   assert(m_interface);
   DoOutput(ctx);
   
-  if (m_world->GetConfig().INTERRUPT_ENABLED.Get()) {
-    // if preempt running interrupt thread and #thread < max_threads
-    if (!IsInterrupted() || m_world->GetConfig().INTERRUPT_PREEMPTION_ENABLED.Get()) {
-      // then create new thread and load its registers
-      m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
-    }
-    // else cannot preempt!
-    // do nothing since message is already buffered.  It will get processed later.
+  if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
+    // then create new thread and load its registers
+    m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
   }
 } //End cOrganism::Move()
 
@@ -1255,4 +1240,11 @@ bool cOrganism::CanReceiveString(int string_tag, int amount)
 	}
 	return val;
 	
+}
+
+bool cOrganism::IsInterrupted() {
+  for(int k = 0; k< GetHardware().GetNumThreads(); ++k)
+    if(GetHardware().GetThreadMessageTriggerType(k) != -1)
+      return true;
+  return false;
 }
