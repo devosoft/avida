@@ -144,6 +144,9 @@ public:
 	cGenome PopGenomeFragment();
 	//! Retrieve the list of fragments from this cell.
 	fragment_list_type& GetFragments();
+	//! Clear all fragments from this cell, adjust resources as required.
+	void ClearFragments();
+
 private:
 	//! Contains HGT-related information for this cell.
 	struct HGTSupport {

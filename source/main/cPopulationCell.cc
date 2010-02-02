@@ -326,8 +326,8 @@ void cPopulationCell::AddGenomeFragments(const cGenome& genome) {
 		int fsize=0;
 		while(!fsize) {
 			fsize = std::min(remaining_size,
-											 static_cast<int>(floor(fabs(m_world->GetRandom().GetRandNormal(m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
-																																											m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get())))));
+							 static_cast<int>(floor(fabs(m_world->GetRandom().GetRandNormal(m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
+																							m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get())))));
 		}
 		
 		m_hgt->fragments.push_back(cGenome(i, i+fsize));
@@ -368,4 +368,14 @@ cGenome cPopulationCell::PopGenomeFragment() {
 cPopulationCell::fragment_list_type& cPopulationCell::GetFragments() {
 	InitHGTSupport();
 	return m_hgt->fragments;
+}
+
+/*!	Clear all fragments from this cell, adjust resources as required.
+ */
+void cPopulationCell::ClearFragments() {
+	InitHGTSupport();
+	for(fragment_list_type::iterator i=m_hgt->fragments.begin(); i!=m_hgt->fragments.end(); ++i) {
+		m_world->GetPopulation().AdjustHGTResource(-i->GetSize());
+	}
+	m_hgt->fragments.clear();
 }

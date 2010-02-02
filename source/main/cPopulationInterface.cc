@@ -636,6 +636,24 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	// get this organism's cell:
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
 	
+	// the hgt source controls where the genetic material for HGT comes from.
+	switch(m_world->GetConfig().HGT_SOURCE.Get()) {
+		case 0: { // source is other genomes, nothing to do here (default)
+			break;
+		}
+		case 1: { // source is the parent (a control)
+			// this is a little hackish, but this is the cleanest way to make sure
+			// that all downstream stuff works right.
+			cell.ClearFragments();
+			cell.AddGenomeFragments(cell.GetOrganism()->GetGenome());
+			break;
+		}
+		default: { // error
+			m_world->GetDriver().RaiseFatalException(1, "HGT_SOURCE is set to an invalid value.");
+			break;
+		}
+	}
+	
 	// do we have any fragments available?
 	if(cell.CountGenomeFragments() == 0) { return; }
 
@@ -682,8 +700,8 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 /*! Randomly select the fragment used for HGT mutation.
  */
 void cPopulationInterface::HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																											fragment_list_type& fragments, fragment_list_type::iterator& selected,
-																											substring_match& location) {
+													  fragment_list_type& fragments, fragment_list_type::iterator& selected,
+													  substring_match& location) {
 	// randomly select the genome fragment for HGT:
 	selected=fragments.begin();
 	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
@@ -703,8 +721,8 @@ void cPopulationInterface::HGTRandomFragmentSelection(cAvidaContext& ctx, const 
  increases the insertion rate.  E.g., hgt(abcde, abcccc) -> abccccde.
  */
 void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																											 fragment_list_type& fragments, fragment_list_type::iterator& selected,
-																											 substring_match& location) {
+													   fragment_list_type& fragments, fragment_list_type::iterator& selected,
+													   substring_match& location) {
 	// randomly select the genome fragment for HGT:
 	selected=fragments.begin();
 	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
@@ -727,8 +745,8 @@ void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const
  random distance (up to the length of the selected fragment * 2) instructions away.
  */
 void cPopulationInterface::HGTRandomFragmentPlacement(cAvidaContext& ctx, const cGenome& offspring,
-																fragment_list_type& fragments, fragment_list_type::iterator& selected,
-																substring_match& location) {
+													  fragment_list_type& fragments, fragment_list_type::iterator& selected,
+													  substring_match& location) {
 	// randomly select the genome fragment for HGT:
 	selected=fragments.begin();
 	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));

@@ -667,6 +667,7 @@ public:
 	// -------- Horizontal Gene Transfer (HGT) config options --------
 	CONFIG_ADD_GROUP(HGT_GROUP, "Horizontal gene transfer settings");
 	CONFIG_ADD_VAR(ENABLE_HGT, int, 0, "Whether HGT is enabled; 0=false (default),\n 1=true.");
+	CONFIG_ADD_VAR(HGT_SOURCE, int, 0, "Source of HGT fragments; 0=dead organisms (default),\n 1=parent.");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SELECTION, int, 0, "Method used to select fragments for HGT mutation (0=random [default]\n1=trimmed selection\n2=random placement).");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_MEAN, double, 10, "Mean size of fragments (drawn from a normal\ndist., default=10).");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_VARIANCE, double, 2, "Variance of fragments (drawn from a normal\ndist., default=2).");
