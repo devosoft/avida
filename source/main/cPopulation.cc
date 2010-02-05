@@ -4657,7 +4657,7 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteRawComment("#filetype genotype_data");
-  df.WriteRawComment("#format id parent_id parent2_id parent_dist lineage num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset");
+  df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset lineage");
   df.WriteComment("");
   df.WriteComment("Structured Population Dump");
   df.WriteTimeStamp();
@@ -4693,7 +4693,6 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     df.Write(genotype->GetAncestorID(0), "Parent 1 Genotype ID");
     df.Write(genotype->GetAncestorID(1), "Parent 2 Genotype ID");
     df.Write(genotype->GetParentDistance(), "Parent Distance");
-    df.Write(genotype->GetLineageLabel(), "Unique Lineage Label");
     df.Write(genotype->GetNumOrganisms(), "Number of currently living organisms");
     df.Write(genotype->GetTotalOrganisms(), "Total number of organisms that ever existed");
     df.Write(genotype->GetLength(), "Genome Length");
@@ -4716,6 +4715,7 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     }
     df.Write(cellstr, "Occupied Cell IDs");
     df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
+    df.Write(genotype->GetLineageLabel(), "Unique Lineage Label");
     df.Endl();
     
     delete genotype_entries[i];
@@ -4757,7 +4757,6 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     tmp.parent_id   = cur_line.PopWord().AsInt();
     tmp.parent_id2  = cur_line.PopWord().AsInt();    
     /* parent_dist */ cur_line.PopWord();
-    /* lineage_label */ cur_line.PopWord();
     tmp.num_cpus    = cur_line.PopWord().AsInt();
     tmp.total_cpus  = cur_line.PopWord().AsInt();
     /* length */      cur_line.PopWord();
