@@ -30,6 +30,7 @@
 #include "cGenome.h"
 #endif
 #include <vector>
+#include <deque>
 
 class cAvidaContext;
 class cInstruction;
@@ -98,7 +99,10 @@ public:
 	static substring_match FindSubstringMatch(const cGenome& base, const cGenome& substring);	
 	//! Find (one of) the best unbiased matches of substring in base, respecting genome circularity.
 	static substring_match FindUnbiasedCircularMatch(cAvidaContext& ctx, const cGenome& base, const cGenome& substring);
-
+	typedef std::deque<cGenome> fragment_list_type; //!< Type for the list of genome fragments.
+	//! Split a genome into a list of fragments, each with the given mean size and variance, and add them to the given fragment list.
+	static void RandomSplit(cAvidaContext& ctx, double mean, double variance, const cGenome& genome, fragment_list_type& fragments);
+	
   // ===== Construction methods =====
   static cGenome Crop(const cGenome& genome, int start, int end);
   static cGenome Cut(const cGenome& genome, int start, int end);

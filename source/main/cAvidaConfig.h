@@ -675,6 +675,7 @@ public:
 	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome\nfragments (0=none [default]).");
 	CONFIG_ADD_VAR(HGT_MUTATION_P, double, 0.0, "Probability that an HGT mutation will occur on divide (default=0.0).");
 	CONFIG_ADD_VAR(HGT_INSERTION_MUT_P, double, 0.5, "Probability that an HGT mutation will result in an insertion (default=0.5); replacement if false.");
+	CONFIG_ADD_VAR(HGT_CONJUGATION_METHOD, int, 0, "Method used to select the receiver of an HGT conjugation (0=faced [default])");
 	
   CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");
   CONFIG_ADD_VAR(INST_RES, cString, "", "Resource upon which the execution of certain instruction depends");

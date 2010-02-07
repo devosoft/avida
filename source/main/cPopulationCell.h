@@ -40,6 +40,7 @@
 #include "tList.h"
 #endif
 #include "cGenome.h"
+#include "cGenomeUtil.h"
 
 class cHardwareBase;
 class cPopulation;
@@ -133,7 +134,7 @@ public:
 	
 	// -------- HGT support --------
 public:
-	typedef std::deque<cGenome> fragment_list_type; //!< Type for the list of genome fragments.
+	typedef cGenomeUtil::fragment_list_type fragment_list_type; //!< Type for the list of genome fragments.
 	//! Diffuse genome fragments from this cell to its neighbors.
 	void DiffuseGenomeFragments();
 	//! Add fragments from the passed-in genome to the HGT fragments contained in this cell.

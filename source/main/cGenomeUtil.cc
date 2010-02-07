@@ -383,6 +383,26 @@ cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContex
 	return location;
 }
 
+void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, const cGenome& genome, fragment_list_type& fragments) {	
+	// rotate this genome to remove bais for the beginning and end of the genome:
+	cGenome g(genome);
+	g.Rotate(ctx.GetRandom().GetInt(g.GetSize()));
+	
+	// chop this genome up into pieces, add each to the back of the fragment list.
+	int remaining_size=g.GetSize();
+	const cInstruction* i=&g[0];
+	do {
+		int fsize=0;
+		while(!fsize) {
+			fsize = std::min(remaining_size, static_cast<int>(floor(fabs(ctx.GetRandom().GetRandNormal(mean, variance)))));
+		}
+		
+		fragments.push_back(cGenome(i, i+fsize));
+		i+=fsize;
+		remaining_size-=fsize;
+	} while(remaining_size>0);
+}
+
 
 cGenome cGenomeUtil::Crop(const cGenome & in_genome, int start, int end)
 {

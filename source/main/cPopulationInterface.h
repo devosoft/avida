@@ -43,6 +43,7 @@ class cDeme;
 class cGenome;
 class cPopulation;
 class cOrgMessage;
+class cOrganism;
 
 class cPopulationInterface : public cOrgInterface
 {
@@ -60,9 +61,12 @@ private:
   cPopulationInterface operator=(const cPopulationInterface&); // @not_implemented
   
 public:
-  cPopulationInterface(cWorld* world) : m_world(world), m_cell_id(-1), m_deme_id(-1) { ; }
-  virtual ~cPopulationInterface() { ; }
+  cPopulationInterface(cWorld* world);
+  virtual ~cPopulationInterface();
 
+	//! Retrieve this organism.
+	cOrganism* GetOrganism();
+	//! Retrieve the ID of this cell.
   int GetCellID() { return m_cell_id; }
 	//! Retrieve the cell in which this organism lives.
 	cPopulationCell* GetCell();
@@ -146,21 +150,33 @@ public:
 	typedef cPopulationCell::fragment_list_type fragment_list_type;
 	//! Match record, used to indicate the region within a genome that should be mutated.
 	typedef cGenomeUtil::substring_match substring_match;
+	//! Called when this organism is the donor during conjugation.
+	void DoHGTDonation(cAvidaContext& ctx);
 	//! Perform an HGT mutation on this offspring.
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
+	
 protected:
 	//! Random selection of the fragment used for HGT mutation, located at the best match.
 	void HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																	fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																	fragment_list_type::iterator& selected,
 																	substring_match& location);
 	//! Random selection of the fragment used for HGT mutation, with redundant instructions trimmed.
 	void HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																	 fragment_list_type& fragments, fragment_list_type::iterator& selected,
+																	 fragment_list_type::iterator& selected,
 																	 substring_match& location);	
 	//! Random selection of the fragment used for HGT mutation, located at a random position.
 	void HGTRandomFragmentPlacement(cAvidaContext& ctx, const cGenome& offspring,
-																	fragment_list_type& fragments, fragment_list_type::iterator& selected,
-																	substring_match& location);	
+																	fragment_list_type::iterator& selected,
+																	substring_match& location);
+	//! Support for stateful HGT mutations.
+	struct HGTSupport {
+		fragment_list_type _pending; //!< HGT fragments that are awaiting an offspring.
+	};
+	HGTSupport* m_hgt_support; //!< Lazily-initialized pointer to HGT data.
+	//! Initialize HGT support.
+	inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
+	//! Called when this organism is the receiver of an HGT donation.
+	void ReceiveHGTDonation(const cGenome& fragment);
 };
 
 

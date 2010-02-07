@@ -4432,18 +4432,61 @@ public:
  */
 class cActionDiffuseHGTGenomeFragments : public cAction {
 public:
-  static const cString GetDescription() { return "Arguments: <none>"; }
+	static const cString GetDescription() { return "Arguments: <none>"; }
+	
+	//! Constructor.
+	cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args) : cAction(world, args) {
+	}
+	
+	//! Process this event.
+	void Process(cAvidaContext& ctx) {
+		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
+		}
+	}
+};
+
+/*! Avidian conjugation.
+ 
+ This event is an approximation of bacterial conjugation.  Behind the scenes, this
+ is implemented as intra-lifetime HGT, and so requires that HGT be enabled.
+ 
+ Each time this event runs, each individual in the population has a configurable
+ probability of being the conjugate "donor."  If so, a genome fragment from that
+ individual is deposited in a buffer in the receiving organism.  When the receiver
+ next replicates, that fragment will be incorporated into its offspring.
+ 
+ \todo I suppose that the fragment could be inserted at runtime, but I fear there
+ would be... complications... to runtime changes to an organism's genome...
+ */
+class cActionConjugate : public cAction {
+public:
+	static const cString GetDescription() { return "Arguments: (prob. of donation)"; }
   
 	//! Constructor.
-  cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args) : cAction(world, args) {
+  cActionConjugate(cWorld* world, const cString& args) : cAction(world, args), m_donation_p(-1.0) {
+		cString largs(args);
+		if(largs.GetSize()) {
+			m_donation_p = largs.PopWord().AsDouble();
+		} 
+		
+		if((m_donation_p < 0.0) || (m_donation_p > 1.0)) {
+			world->GetDriver().RaiseFatalException(-1, "Conjugate event must include probability of donation [0..1].");
+		}
   }
   
 	//! Process this event.
   void Process(cAvidaContext& ctx) {
 		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
+			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();			
+			if(org && (m_donation_p > 0.0) && m_world->GetRandom().P(m_donation_p)) {
+				org->GetOrgInterface().DoHGTDonation(ctx);
+			}
 		}
 	}
+
+private:
+	double m_donation_p; //!< Per-individual probability of being a conjugate donor.
 };
 
 

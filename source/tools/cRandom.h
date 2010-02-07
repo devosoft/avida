@@ -267,6 +267,13 @@ void sample(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, 
 	}
 }
 
+/*! Choose one element at random from the given range.
+ */
+template <typename ForwardIterator, typename RNG>
+ForwardIterator choose(ForwardIterator first, ForwardIterator last, RNG rng) {
+	std::size_t range = std::distance(first, last);
+	return first+rng(range);
+}
 
 #ifdef ENABLE_UNIT_TESTS
 namespace nRandom {

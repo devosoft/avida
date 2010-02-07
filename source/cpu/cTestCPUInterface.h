@@ -113,8 +113,12 @@ public:
 	//! Link this organism's cell to the cell with index idx.
 	void CreateLinkByIndex(int idx, double weight=1.0) { }
 	
+	//! HGT donation (does nothing).
+	void DoHGTDonation(cAvidaContext& ctx) { }
 	//! HGT mutation (does nothing).
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
+	//! Receive HGT donation (does nothing).
+	void ReceiveHGTDonation(const cGenome& fragment) { }
 };
 
 

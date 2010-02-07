@@ -528,7 +528,7 @@ protected:
 	};
 	cNeighborhoodSupport* m_neighborhood; //!< Lazily-initialized pointer to the neighborhood data.
 
-
+	
   // -------- Reputation support --------	
 public: 
 	// Deduct amount number of self raw materials
@@ -642,6 +642,16 @@ protected:
 	 be used to track production, consumption, and donation of 
 	 strings. */
 	std::map < int, cStringSupport > m_string_map;
+
+	
+	// -------- HGT conjugation support --------
+public:
+	//! Called when this individual is the donor organism during conjugation.
+	void DoHGTDonation();
+	
+	
+	
+	
 	
 	// -------- Internal Support Methods --------
 private:
