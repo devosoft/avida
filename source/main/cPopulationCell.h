@@ -103,6 +103,8 @@ public:
   inline tList<cPopulationCell>& ConnectionList() { return m_connections; }
 	//! Recursively build a set of cells that neighbor this one, out to the given depth.
   void GetNeighboringCells(std::set<cPopulationCell*>& cell_set, int depth) const;
+	//! Recursively build a set of occupied cells that neighbor this one, out to the given depth.
+  void GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
   inline void GetPosition(int& x, int& y) { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.

@@ -221,16 +221,16 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
   
   switch(m_world->GetConfig().NET_STYLE.Get())
   {
-			case 1: // Receiver Facing
+		case 1: // Receiver Facing
     {
       cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
       cOrgSinkMessage* msg = NULL;
       if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL) return msg;
     }
-				break;
-				
-			case 0: // Random Next - First Available
-			default:
+			break;
+			
+		case 0: // Random Next - First Available
+		default:
     {
       const int num_neighbors = cell.ConnectionList().GetSize();
       for (int i = 0; i < num_neighbors; i++) {
@@ -241,7 +241,7 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
         if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL ) return msg;
       }
     }
-				break;
+			break;
   }
   
   return NULL;
@@ -647,25 +647,42 @@ void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
  another organism selected from the population.
  */
 void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
+	cPopulationCell* target=0;
+	
 	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
-			case 0: { // faced individual
-				cPopulationCell* faced = GetCellFaced();
-				if(faced->IsOccupied()) {
-					fragment_list_type fragments;
-					cGenomeUtil::RandomSplit(ctx, 
-																	 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
-																	 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-																	 GetOrganism()->GetGenome(),
-																	 fragments);
-					faced->GetOrganism()->GetOrgInterface().ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);
-				}
-				break;
+		case 0: { // faced individual
+			target = GetCellFaced();
+			if(!target->IsOccupied()) {
+				// nothing to do, we're facing an empty cell.
+				return;
 			}
-			default: {
-				m_world->GetDriver().RaiseFatalException(1, "HGT_CONJUGATION_RECV_METHOD is set to an invalid value.");
-				break;
+			break;
+		}
+		case 1: { // selected at random from neighborhood
+			std::set<cPopulationCell*> occupied_cell_set;
+			GetCell()->GetOccupiedNeighboringCells(occupied_cell_set, 1);
+			if(occupied_cell_set.size()==0) {
+				// nothing to do here, there are no neighbors
+				return;
 			}
+			std::set<cPopulationCell*>::iterator selected=occupied_cell_set.begin();
+			std::advance(selected, ctx.GetRandom().GetInt(occupied_cell_set.size()));
+			target = *selected;
+			break;
+		}
+		default: {
+			m_world->GetDriver().RaiseFatalException(1, "HGT_CONJUGATION_METHOD is set to an invalid value.");
+			break;
+		}
 	}
+	assert(target != 0);
+	fragment_list_type fragments;
+	cGenomeUtil::RandomSplit(ctx, 
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
+													 GetOrganism()->GetGenome(),
+													 fragments);
+	target->GetOrganism()->GetOrgInterface().ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);
 }
 
 
@@ -694,20 +711,20 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 		
 		// the hgt source controls where the genetic material for HGT comes from.
 		switch(m_world->GetConfig().HGT_SOURCE.Get()) {
-				case 0: { // source is other genomes, nothing to do here (default)
-					break;
-				}
-				case 1: { // source is the parent (a control)
-					// this is a little hackish, but this is the cleanest way to make sure
-					// that all downstream stuff works right.
-					cell.ClearFragments();
-					cell.AddGenomeFragments(cell.GetOrganism()->GetGenome());
-					break;
-				}
-				default: { // error
-					m_world->GetDriver().RaiseFatalException(1, "HGT_SOURCE is set to an invalid value.");
-					break;
-				}
+			case 0: { // source is other genomes, nothing to do here (default)
+				break;
+			}
+			case 1: { // source is the parent (a control)
+				// this is a little hackish, but this is the cleanest way to make sure
+				// that all downstream stuff works right.
+				cell.ClearFragments();
+				cell.AddGenomeFragments(cell.GetOrganism()->GetGenome());
+				break;
+			}
+			default: { // error
+				m_world->GetDriver().RaiseFatalException(1, "HGT_SOURCE is set to an invalid value.");
+				break;
+			}
 		}
 		
 		// do we have any fragments available?
@@ -726,22 +743,22 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
 		cGenomeUtil::substring_match location;
 		switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
-				case 0: { // random selection
-					HGTRandomFragmentSelection(ctx, offspring, i, location);
-					break;
-				}
-				case 1: { // random selection with redundant instruction trimming
-					HGTTrimmedFragmentSelection(ctx, offspring, i, location);
-					break;
-				}
-				case 2: { // random selection and random placement
-					HGTRandomFragmentPlacement(ctx, offspring, i, location);
-					break;
-				}
-				default: { // error
-					m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
-					break;
-				}
+			case 0: { // random selection
+				HGTRandomFragmentSelection(ctx, offspring, i, location);
+				break;
+			}
+			case 1: { // random selection with redundant instruction trimming
+				HGTTrimmedFragmentSelection(ctx, offspring, i, location);
+				break;
+			}
+			case 2: { // random selection and random placement
+				HGTRandomFragmentPlacement(ctx, offspring, i, location);
+				break;
+			}
+			default: { // error
+				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
+				break;
+			}
 		}
 		
 		// do the mutation; we currently support insertions and replacements, but this can

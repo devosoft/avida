@@ -4459,12 +4459,12 @@ public:
  \todo I suppose that the fragment could be inserted at runtime, but I fear there
  would be... complications... to runtime changes to an organism's genome...
  */
-class cActionConjugate : public cAction {
+class cActionAvidianConjugation : public cAction {
 public:
 	static const cString GetDescription() { return "Arguments: (prob. of donation)"; }
   
 	//! Constructor.
-  cActionConjugate(cWorld* world, const cString& args) : cAction(world, args), m_donation_p(-1.0) {
+  cActionAvidianConjugation(cWorld* world, const cString& args) : cAction(world, args), m_donation_p(-1.0) {
 		cString largs(args);
 		if(largs.GetSize()) {
 			m_donation_p = largs.PopWord().AsDouble();
@@ -4687,6 +4687,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
 	
 	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
+	action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
 	
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");

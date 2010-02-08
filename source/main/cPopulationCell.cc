@@ -158,6 +158,19 @@ void cPopulationCell::GetNeighboringCells(std::set<cPopulationCell*>& cell_set, 
 	}
 }
 
+/*! Recursively build a set of occupied cells that neighbor this one, out to the given depth.
+*/
+void cPopulationCell::GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const {
+	// we'll do this the easy way, and just filter the neighbor set.
+	std::set<cPopulationCell*> cell_set;
+	GetNeighboringCells(cell_set, depth);
+	for(std::set<cPopulationCell*>::iterator i=cell_set.begin(); i!=cell_set.end(); ++i) {
+		if((*i)->IsOccupied()) {
+			occupied_cell_set.insert(*i);
+		}
+	}
+}
+
 /*! These values are chosen so as to make loops on the facing 'easy'.
  111 = NE
  101 = E
