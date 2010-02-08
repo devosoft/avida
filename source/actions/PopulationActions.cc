@@ -3398,7 +3398,8 @@ class cActionSeverGridCol : public cAction
 		int m_min;
 		int m_max;
 	public:
-		cActionSeverGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+		
+     : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
 		{
 			cString largs(args);
 			if (largs.GetSize()) m_id = largs.PopWord().AsInt();
@@ -3464,10 +3465,10 @@ class cActionSeverGridCol : public cAction
  Arguments:
  row_id:  indicates the number of rows above the cut.
  default (or -1) = cut population in half
- min_col: First row to start cutting from
+ min_col: First column to start cutting from
  default = 0
- max_col: Last row to cut to
- default (or -1) = last row in population.
+ max_col: Last column to cut to
+ default (or -1) = last column in population.
  */
 class cActionSeverGridRow : public cAction
 	{
@@ -3615,10 +3616,10 @@ class cActionJoinGridCol : public cAction
  Arguments:
  row_id:  indicates the number of rows abovef the cut.
  default (or -1) = cut population in half
- min_col: First row to start cutting from
+ min_col: First column to start cutting from
  default = 0
- max_col: Last row to cut to
- default (or -1) = last row in population.
+ max_col: Last column to cut to
+ default (or -1) = last column in population.
  */
 class cActionJoinGridRow : public cAction
 	{
