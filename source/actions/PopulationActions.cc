@@ -3398,8 +3398,7 @@ class cActionSeverGridCol : public cAction
 		int m_min;
 		int m_max;
 	public:
-		
-     : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+		cActionSeverGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
 		{
 			cString largs(args);
 			if (largs.GetSize()) m_id = largs.PopWord().AsInt();
@@ -3611,14 +3610,14 @@ class cActionJoinGridCol : public cAction
 
 
 /*
- Remove the connections between cells along a column in an avida grid.
+ Join the connections between cells along a row in an avida grid.
  
  Arguments:
- row_id:  indicates the number of rows abovef the cut.
+ row_id:  indicates the number of rows above the join.
  default (or -1) = cut population in half
  min_col: First column to start cutting from
  default = 0
- max_col: Last column to cut to
+ max_col: Last row to cut to
  default (or -1) = last column in population.
  */
 class cActionJoinGridRow : public cAction
