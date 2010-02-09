@@ -21,6 +21,7 @@
 # endif
 #endif
 
+#include <algorithm>
 #include <ctime>
 #include <climits>
 #include <cmath>
