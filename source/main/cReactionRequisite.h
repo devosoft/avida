@@ -50,8 +50,8 @@ private:
   cReactionRequisite& operator=(const cReactionRequisite&);
 
 public:
-  cReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX), divide_only(0), 
-	  min_tot_reaction_count(0), max_tot_reaction_count(INT_MAX) { ; }
+  cReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX), 
+	  min_tot_reaction_count(0), max_tot_reaction_count(INT_MAX), divide_only(0) { ; }
   ~cReactionRequisite() { ; }
 
   const tList<cReaction>& GetReactions() const { return prior_reaction_list; }

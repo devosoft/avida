@@ -60,7 +60,7 @@
 #include "cTopology.h"
 #include "cTestCPU.h"
 #include "cCPUTestInfo.h"
-
+#include "cRandom.h"
 #include "tArrayUtils.h"
 #include "tKVPair.h"
 #include "tHashTable.h"
@@ -1343,7 +1343,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
 			for(int i=0; i<m_world->GetConfig().NUM_DEMES.Get(); ++i) {
 				// Which demes are in this tournament?
 				std::vector<int> tournament(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get());
-				sample(deme_ids.begin(), deme_ids.end(), tournament.begin(), tournament.end(), cRandomStdAdaptor(m_world->GetRandom()));
+				sample_without_replacement(deme_ids.begin(), deme_ids.end(), tournament.begin(), tournament.end(), cRandomStdAdaptor(m_world->GetRandom()));
 				
 				// Now, iterate through the fitnesses of each of the tournament players,
 				// capturing the winner's index and fitness.

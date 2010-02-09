@@ -25,6 +25,7 @@
 #include <climits>
 #include <cmath>
 #include <iterator>
+#include <vector>
 
 /**
  * A versatile and fast pseudo random number generator.
@@ -259,7 +260,7 @@ struct cRandomStdAdaptor {
 /*! Draw a sample (with replacement) from an input range, copying to the output range.
  */
 template <typename ForwardIterator, typename OutputIterator, typename RNG>
-void sample(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, OutputIterator olast, RNG rng) {
+void sample_with_replacement(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, OutputIterator olast, RNG rng) {
 	std::size_t range = std::distance(first, last);
 	while(ofirst != olast) {
 		*ofirst = *(first+rng(range));
@@ -267,6 +268,54 @@ void sample(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, 
 	}
 }
 
+
+/*! Convenience function to assign increasing values to a range.
+ */
+template <typename ForwardIterator, typename T>
+void iota(ForwardIterator first, ForwardIterator last, T value) {
+	while(first != last) {
+		*first = value;
+		++first;
+		++value;
+	}
+}
+
+
+/*! Draw a sample (without replacement) from an input range, copying to the output range.
+ */
+template <typename ForwardIterator, typename OutputIterator, typename RNG>
+void sample_without_replacement(ForwardIterator first, ForwardIterator last, OutputIterator ofirst, OutputIterator olast, RNG rng) {
+	std::size_t range = std::distance(first, last);
+	std::size_t output_range = std::distance(ofirst, olast);
+	
+	// if our output range is greater in size than our input range, copy the whole thing.
+	if(output_range >= range) {
+		std::copy(first, last, ofirst);
+		return;
+	}
+	
+	std::vector<std::size_t> rmap(range);
+	iota(rmap.begin(), rmap.end(), 0);
+	std::random_shuffle(rmap.begin(), rmap.end());
+	
+	while(ofirst != olast) {
+		*ofirst = *(first + rmap.back());
+		++ofirst;
+		rmap.pop_back();
+	}
+}
+
+/*! Convenience function to draw samples (without replacement) from a range of values.
+ */
+template <typename T, typename OutputIterator, typename RNG>
+void sample_range_without_replacement(T min, T max, OutputIterator ofirst, OutputIterator olast, RNG rng) {
+	std::size_t range = static_cast<std::size_t>(max - min);
+	std::vector<T> input(range);
+	iota(input.begin(), input.end(), min);
+	sample_without_replacement(input.begin(), input.end(), ofirst, olast, rng);
+}
+
+	
 /*! Choose one element at random from the given range.
  */
 template <typename ForwardIterator, typename RNG>
