@@ -156,18 +156,18 @@ public:
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
 	
 protected:
-	//! Random selection of the fragment used for HGT mutation, located at the best match.
-	void HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																	fragment_list_type::iterator& selected,
-																	substring_match& location);
-	//! Random selection of the fragment used for HGT mutation, with redundant instructions trimmed.
-	void HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																	 fragment_list_type::iterator& selected,
-																	 substring_match& location);	
-	//! Random selection of the fragment used for HGT mutation, located at a random position.
-	void HGTRandomFragmentPlacement(cAvidaContext& ctx, const cGenome& offspring,
-																	fragment_list_type::iterator& selected,
-																	substring_match& location);
+	//! Place the fragment at the location of best match.
+	void HGTMatchPlacement(cAvidaContext& ctx, const cGenome& offspring,
+												 fragment_list_type::iterator& selected,
+												 substring_match& location);
+	//! Place the fragment at the location of best match, with redundant instructions trimmed.
+	void HGTTrimmedPlacement(cAvidaContext& ctx, const cGenome& offspring,
+													 fragment_list_type::iterator& selected,
+													 substring_match& location);	
+	//! Place the fragment at a random location.
+	void HGTRandomPlacement(cAvidaContext& ctx, const cGenome& offspring,
+													fragment_list_type::iterator& selected,
+													substring_match& location);
 	//! Support for stateful HGT mutations.
 	struct HGTSupport {
 		fragment_list_type _pending; //!< HGT fragments that are awaiting an offspring.

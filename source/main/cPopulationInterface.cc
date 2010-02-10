@@ -702,7 +702,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	// first, gather up all the fragments that we're going to be inserting into this offspring:
 	fragment_list_type fragments(m_hgt_support->_pending); // these come from conjugation
 	
-	// these come from natural competence (ie, eating the dead):
+	// these come from "natural" competence (ie, eating the dead):
 	if((m_world->GetConfig().HGT_MUTATION_P.Get() > 0.0)
 		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_MUTATION_P.Get()))) {
 		
@@ -744,21 +744,27 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 		cGenomeUtil::substring_match location;
 		switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
 			case 0: { // random selection
-				HGTRandomFragmentSelection(ctx, offspring, i, location);
+				HGTMatchPlacement(ctx, offspring, i, location);
 				break;
 			}
 			case 1: { // random selection with redundant instruction trimming
-				HGTTrimmedFragmentSelection(ctx, offspring, i, location);
+				HGTTrimmedPlacement(ctx, offspring, i, location);
 				break;
 			}
 			case 2: { // random selection and random placement
-				HGTRandomFragmentPlacement(ctx, offspring, i, location);
+				HGTRandomPlacement(ctx, offspring, i, location);
 				break;
 			}
 			default: { // error
 				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
 				break;
 			}
+		}
+		
+		// as a type of control, potentially "scramble" the genome after matching
+		// and prior to insertion to see if the fragment is contributing useful code.		
+		if(m_world->GetConfig().HGT_SCRAMBLE_FRAGMENT.Get()) {
+			cGenomeUtil::RandomShuffle(ctx, *i);
 		}
 		
 		// do the mutation; we currently support insertions and replacements, but this can
@@ -778,26 +784,26 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 }
 
 
-/*! Randomly select the fragment used for HGT mutation.
+/*! Place the fragment at the location of best match.
  */
-void cPopulationInterface::HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																											fragment_list_type::iterator& selected,
-																											substring_match& location) {
+void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const cGenome& offspring,
+																						 fragment_list_type::iterator& selected,
+																						 substring_match& location) {
 	// find the location within the offspring's genome that best matches the selected fragment:
 	location = cGenomeUtil::FindUnbiasedCircularMatch(ctx, offspring, *selected);
 }
 
 
-/*! Randomly select the fragment used for HGT mutation, trimming redundant instructions.
- 
- In this fragment selection method, the fragment itself is selected randomly, but the
+/*! Place the fragment at the location of best match, with redundant instructions trimmed.
+
+ In this fragment selection method, the
  match location within the genome is calculated on a "trimmed" fragment.  Specifically,
  the trimmed fragment has all duplicate instructions at its end removed prior to the match.
  
  Mutations to the offspring are still performed using the entire fragment, so this effectively
  increases the insertion rate.  E.g., hgt(abcde, abcccc) -> abccccde.
  */
-void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
+void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const cGenome& offspring,
 																											 fragment_list_type::iterator& selected,
 																											 substring_match& location) {
 	// copy the selected fragment, trimming redundant instructions at the end:
@@ -811,13 +817,13 @@ void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const
 }
 
 
-/*! Random selection of the fragment used for HGT mutation, located at a random position.
+/*! Place the fragment at a random location.
  
- Here we select a random fragment and a random location for that fragment within the offspring.
+ Here we select a random location for the fragment within the offspring.
  The beginning of the fragment location is selected at random, while the end is selected a
  random distance (up to the length of the selected fragment * 2) instructions away.
  */
-void cPopulationInterface::HGTRandomFragmentPlacement(cAvidaContext& ctx, const cGenome& offspring,
+void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const cGenome& offspring,
 																											fragment_list_type::iterator& selected,
 																											substring_match& location) {
 	// select a random location within the offspring's genome for this fragment to be

@@ -383,6 +383,9 @@ cGenomeUtil::substring_match cGenomeUtil::FindUnbiasedCircularMatch(cAvidaContex
 	return location;
 }
 
+
+/*! Split a genome into a list of fragments, each with the given mean size and variance, and add them to the given fragment list.
+ */
 void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, const cGenome& genome, fragment_list_type& fragments) {	
 	// rotate this genome to remove bais for the beginning and end of the genome:
 	cGenome g(genome);
@@ -403,6 +406,20 @@ void cGenomeUtil::RandomSplit(cAvidaContext& ctx, double mean, double variance, 
 	} while(remaining_size>0);
 }
 
+
+/*! Randomly shuffle the instructions within genome in-place.
+ */
+void cGenomeUtil::RandomShuffle(cAvidaContext& ctx, cGenome& genome) {
+	std::vector<int> idx(static_cast<std::size_t>(genome.GetSize()));
+	iota(idx.begin(), idx.end(), 0);
+	cRandomStdAdaptor rng(ctx.GetRandom());
+	std::random_shuffle(idx.begin(), idx.end(), rng);
+	cGenome shuffled(genome.GetSize());
+	for(int i=0; i<genome.GetSize(); ++i) {
+		shuffled[i] = genome[idx[i]];
+	}
+	genome = shuffled;
+}
 
 cGenome cGenomeUtil::Crop(const cGenome & in_genome, int start, int end)
 {
