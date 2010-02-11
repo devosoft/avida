@@ -775,11 +775,15 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 			}
 			case 2: { // replace the instructions in the fragment with random instructions.
 				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
-				for(int j=0; j<i->GetSize(); ++i) {
+				for(int j=0; j<i->GetSize(); ++j) {
 					(*i)[j] = instset.GetRandomInst(ctx);
 				}
 				break;
 			}
+			default: { // error
+				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_XFORM is set to an invalid value.");
+				break;
+			}				
 		}
 		
 		// do the mutation; we currently support insertions and replacements, but this can
