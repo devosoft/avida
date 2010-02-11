@@ -666,17 +666,17 @@ public:
 	
 	// -------- Horizontal Gene Transfer (HGT) config options --------
 	CONFIG_ADD_GROUP(HGT_GROUP, "Horizontal gene transfer settings");
-	CONFIG_ADD_VAR(ENABLE_HGT, int, 0, "Whether HGT is enabled; 0=false (default),\n 1=true.");
-	CONFIG_ADD_VAR(HGT_SOURCE, int, 0, "Source of HGT fragments; 0=dead organisms (default),\n 1=parent.");
-	CONFIG_ADD_VAR(HGT_FRAGMENT_SELECTION, int, 0, "Method used to select fragments for HGT mutation (0=random [default]\n1=trimmed selection\n2=random placement).");
-	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_MEAN, double, 10, "Mean size of fragments (drawn from a normal\ndist., default=10).");
-	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_VARIANCE, double, 2, "Variance of fragments (drawn from a normal\ndist., default=2).");
-	CONFIG_ADD_VAR(HGT_MAX_FRAGMENTS_PER_CELL, int, 100, "Max. allowed number of fragments\nper cell (default=100).");
-	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome\nfragments (0=none [default]).");
+	CONFIG_ADD_VAR(ENABLE_HGT, int, 0, "Whether HGT is enabled; 0=false (default),\n1=true.");
+	CONFIG_ADD_VAR(HGT_SOURCE, int, 0, "Source of HGT fragments; 0=dead organisms (default),\n1=parent.");
+	CONFIG_ADD_VAR(HGT_FRAGMENT_SELECTION, int, 0, "Method used to select fragments for HGT mutation; 0=random (default),\n1=trimmed selection\n2=random placement.");
+	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_MEAN, double, 10, "Mean size of fragments (default=10).");
+	CONFIG_ADD_VAR(HGT_FRAGMENT_SIZE_VARIANCE, double, 2, "Variance of fragments (default=2).");
+	CONFIG_ADD_VAR(HGT_MAX_FRAGMENTS_PER_CELL, int, 100, "Max. allowed number of fragments per cell (default=100).");
+	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome fragments; 0=none (default).");
 	CONFIG_ADD_VAR(HGT_MUTATION_P, double, 0.0, "Probability that an HGT mutation will occur on divide (default=0.0).");
-	CONFIG_ADD_VAR(HGT_INSERTION_MUT_P, double, 0.5, "Probability that an HGT mutation will result in an insertion (default=0.5); replacement if false.");
-	CONFIG_ADD_VAR(HGT_CONJUGATION_METHOD, int, 0, "Method used to select the receiver of an HGT conjugation (0=faced [default])");
-	CONFIG_ADD_VAR(HGT_SCRAMBLE_FRAGMENT, int, 0, "Scramble each fragment after match, prior to insertion or replacment; 0=false [default], 1=true.");
+	CONFIG_ADD_VAR(HGT_INSERTION_MUT_P, double, 0.5, "Probability that an HGT mutation will result in an insertion (default=0.5).");
+	CONFIG_ADD_VAR(HGT_CONJUGATION_METHOD, int, 0, "Method used to select the receiver of an HGT conjugation; 0=faced (default),\n1=random from neighborhood.");
+	CONFIG_ADD_VAR(HGT_FRAGMENT_XFORM, int, 0, "Transformation to apply to each fragment prior to incorporation into offspring's genome; 0=none (default),\n1=random shuffle,\n2=replace with random instructions.");
 	
   CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");
   CONFIG_ADD_VAR(INST_RES, cString, "", "Resource upon which the execution of certain instruction depends");

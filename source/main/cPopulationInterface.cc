@@ -36,6 +36,7 @@
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cRandom.h"
+#include "cInstSet.h"
 
 #include <cassert>
 #include <algorithm>
@@ -761,10 +762,24 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 			}
 		}
 		
-		// as a type of control, potentially "scramble" the genome after matching
-		// and prior to insertion to see if the fragment is contributing useful code.		
-		if(m_world->GetConfig().HGT_SCRAMBLE_FRAGMENT.Get()) {
-			cGenomeUtil::RandomShuffle(ctx, *i);
+		// at this stage, we have a fragment and a location we're going to put it.
+		// there are various transformations to this fragment that we could perform,
+		// more as controls than anything else.
+		switch(m_world->GetConfig().HGT_FRAGMENT_XFORM.Get()) {
+			case 0: { // no transformation.
+				break;
+			}
+			case 1: { // random shuffle of the instructions in the fragment.
+				cGenomeUtil::RandomShuffle(ctx, *i);
+				break;
+			}
+			case 2: { // replace the instructions in the fragment with random instructions.
+				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+				for(int j=0; j<i->GetSize(); ++i) {
+					(*i)[j] = instset.GetRandomInst(ctx);
+				}
+				break;
+			}
 		}
 		
 		// do the mutation; we currently support insertions and replacements, but this can
