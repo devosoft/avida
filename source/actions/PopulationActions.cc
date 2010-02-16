@@ -592,6 +592,73 @@ class cActionInjectDemes : public cAction
 		}
 	};
 
+/*! Injects an organism into all demes modulo a given number in the population. 
+ 
+ Parameters:
+ filename (string):
+ The filename of the genotype to load. If this is left empty, or the keyword
+ "START_CREATURE" is given, than the genotype specified in the genesis
+ file under "START_CREATURE" is used.
+ modulo default: 1 -- when the deme number modulo this number is 0, inject org
+ cell ID (integer) default: 0
+ The grid-point into which the organism should be placed.
+ merit (double) default: -1
+ The initial merit of the organism. If set to -1, this is ignored.
+ lineage label (integer) default: 0
+ An integer that marks all descendants of this organism.
+ neutral metric (double) default: 0
+ A double value that randomly drifts over time.
+ */
+class cActionInjectModuloDemes : public cAction
+	{
+	private:
+		cString m_filename;
+		int m_mod_num;
+		double m_merit;
+		int m_lineage_label;
+		double m_neutral_metric;
+	public:
+    cActionInjectModuloDemes(cWorld* world, const cString& args) : cAction(world, args), m_mod_num(1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+		{
+      cString largs(args);
+      if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+			if (largs.GetSize()) m_mod_num = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+      if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+		}
+		
+		static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+			if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+				for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
+					if (i % m_mod_num == 0) {
+							m_world->GetPopulation().Inject(genome,
+																							m_world->GetPopulation().GetDeme(i).GetCellID(0),
+																							m_merit, m_lineage_label, m_neutral_metric);
+							m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+						}
+				}
+			} else {
+				for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+					// WARNING: initial ancestor has already be injected into the population
+					//           calling this will overwrite it.
+					if (i==0 || (i % m_mod_num) ==0){
+						m_world->GetPopulation().Inject(genome,
+																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
+																					m_merit, m_lineage_label, m_neutral_metric);
+						m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+					}
+					
+				}
+			}
+		}
+	};
+
 
 /*! Injects one or more organisms into all demes in the population at a specified cell.
  *  Note: This gets the genotype from the germline, so germline use is required
@@ -4600,6 +4667,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectSequence>("InjectSequence");
   action_lib->Register<cActionInjectSequenceWithDivMutRate>("InjectSequenceWDivMutRate");
   action_lib->Register<cActionInjectDemes>("InjectDemes");
+	action_lib->Register<cActionInjectModuloDemes>("InjectModuloDemes");
   action_lib->Register<cActionInjectDemesFromNest>("InjectDemesFromNest");
   action_lib->Register<cActionInjectDemesRandom>("InjectDemesRandom");
 	
