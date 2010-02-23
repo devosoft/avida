@@ -395,7 +395,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
      }
      */	
     target_cells[i] = PositionOffspring(parent_cell, m_world->GetConfig().ALLOW_PARENT.Get()).GetID();
-    
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) parent_alive = false;      
     
@@ -3756,8 +3755,7 @@ void cPopulation::PositionEnergyUsed(cPopulationCell & parent_cell,
 
 // This function handles PositionOffspring() when there is migration between demes
 cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok)
-{
-  //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
+{ 
   int deme_id = parent_cell.GetDemeID();
 	int parent_id = parent_cell.GetDemeID();
 	GetDeme(deme_id).AddMigrationOut();
@@ -3824,48 +3822,51 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
     //set the new deme_id
     deme_id = (deme_id + rnd_deme_id + GetNumDemes()) % GetNumDemes();
   }
-	
-	//Proportional-based on a points system (hjg)
-	// The odds of a deme being selected are inversely proportional to the 
-	// number of points it has.
-	else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 3) {
-    
-		double total_points = 0;		
-		int num_demes = GetNumDemes(); 
-		
-		// Identify how many points are in the population as a whole.
-		for (int did = 0; did < num_demes; did++) {
-			if (did != parent_id) {
-				total_points +=  (1/(1+GetDeme(did).GetNumberOfPoints()));
-			}
-		}
-		// Select a random number from 0 to 1: 
-		double rand_point = m_world->GetRandom().GetDouble(0, total_points);
-		
-		// Iterate through the demes until you find the appropriate
-		// deme to insert the organism into.
-		double lower_point = 0;
-		double upper_point = 0;
-    
-		for (int curr_deme = 0; curr_deme < num_demes; curr_deme++) {
-			if (curr_deme != parent_id){
-				upper_point = lower_point + (1+GetDeme(curr_deme).GetNumberOfPoints()); 
-				if ((lower_point <= rand_point) && (rand_point < upper_point)) {
-					deme_id = curr_deme;
-				}
-				lower_point = upper_point;
-			}
-		}		
-	}
   
-	GetDeme(deme_id).AddMigrationIn();
+  //Proportional-based on a points system (hjg)
+  // The odds of a deme being selected are inversely proportional to the 
+  // number of points it has.
+  else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 3) {
+    
+    double total_points = 0;		
+    int num_demes = GetNumDemes(); 
+    
+    // Identify how many points are in the population as a whole.
+    for (int did = 0; did < num_demes; did++) {
+      if (did != parent_id) {
+	total_points +=  (1/(1+GetDeme(did).GetNumberOfPoints()));
+      }
+    }
+    // Select a random number from 0 to 1: 
+    double rand_point = m_world->GetRandom().GetDouble(0, total_points);
+    
+    // Iterate through the demes until you find the appropriate
+    // deme to insert the organism into.
+    double lower_point = 0;
+    double upper_point = 0;
+    
+    for (int curr_deme = 0; curr_deme < num_demes; curr_deme++) {
+      if (curr_deme != parent_id){
+	upper_point = lower_point + (1+GetDeme(curr_deme).GetNumberOfPoints()); 
+	if ((lower_point <= rand_point) && (rand_point < upper_point)) {
+	  deme_id = curr_deme;
+	}
+	lower_point = upper_point;
+      }
+    }		
+  }
+  
+  GetDeme(deme_id).AddMigrationIn();
   
   // TODO the above choice of deme does not respect PREFER_EMPTY
   // i.e., it does not preferentially pick a deme with empty cells if they are 
   // it might make sense for that to happen...
   
   // Now return an empty cell from the chosen deme
-  return PositionDemeRandom(deme_id, parent_cell, parent_ok); 
+  
+  cPopulationCell& mig_cell = PositionDemeRandom(deme_id, parent_cell, parent_ok);
+  mig_cell.SetMigrant();
+  return mig_cell;
 }
 
 // This function handles PositionOffspring() by returning a random cell from the entire deme.
@@ -3893,7 +3894,7 @@ cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& p
     out_pos = m_world->GetRandom().GetUInt(deme_size);
     out_cell_id = deme.GetCellID(out_pos);
   }
-  
+
   return GetCell(out_cell_id); 
 }
 
