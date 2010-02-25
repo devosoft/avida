@@ -54,10 +54,10 @@ class cPopulationCell
 
 private:
   cWorld* m_world;
-  
+
   cOrganism* m_organism;                    // The occupent of this cell.
   cHardwareBase* m_hardware;
-  
+
   tList<cPopulationCell> m_connections;  // A list of neighboring cells.
   cMutationRates* m_mut_rates;           // Mutation rates at this cell.
   tArray<int> m_inputs;                 // Environmental Inputs...
@@ -73,16 +73,16 @@ private:
   int m_x; //!< The x-coordinate of the position of this cell in the environment.
   int m_y; //!< The y-coordinate of the position of this cell in the environment.
 
-  // @WRE: Statistic for movement  
+  // @WRE: Statistic for movement
   int m_visits; // The number of times Avidians move into the cell
-  
+
   void InsertOrganism(cOrganism* new_org);
   cOrganism* RemoveOrganism();
 
-  
+
 public:
 	typedef std::set<cPopulationCell*> neighborhood_type; //!< Type for cell neighborhoods.
-	
+
   cPopulationCell() : m_world(NULL), m_organism(NULL), m_hardware(NULL), m_mut_rates(NULL), m_migrant(false), m_hgt(0) { ; }
   cPopulationCell(const cPopulationCell& in_cell);
   ~cPopulationCell() { delete m_mut_rates; delete m_hgt; }
@@ -112,8 +112,8 @@ public:
   inline void IncVisits() { m_visits++; } // @WRE: Increments the visit count for a cell
   inline const cMutationRates& MutationRates() const { assert(m_mut_rates); return *m_mut_rates; }
   inline cMutationRates& MutationRates() { assert(m_mut_rates); return *m_mut_rates; }
-  
-  inline int GetInput(int) const { return m_inputs[m_cell_id]; }
+
+  inline int GetInput(int input_cell) const { return m_inputs[input_cell]; }
   inline const tArray<int>& GetInputs() const { return m_inputs; }
   inline int GetInputAt(int& input_pointer);
   inline int GetInputSize() { return m_inputs.GetSize(); }
@@ -123,7 +123,7 @@ public:
   inline int GetDemeID() const { return m_deme_id; }
   inline int GetCellData() const { return m_cell_data; }
   void SetCellData(const int data) { m_cell_data = data; }
-  
+
   inline int GetSpeculativeState() const { return m_spec_state; }
   inline void SetSpeculativeState(int count) { m_spec_state = count; }
   inline void DecSpeculative() { m_spec_state--; }
@@ -133,7 +133,7 @@ public:
   double UptakeCellEnergy(double frac_to_uptake);
 
   bool OK();
-	
+
 	// -------- HGT support --------
 public:
 	typedef cGenomeUtil::fragment_list_type fragment_list_type; //!< Type for the list of genome fragments.
