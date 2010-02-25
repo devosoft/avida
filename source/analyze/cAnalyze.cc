@@ -6571,7 +6571,7 @@ void cAnalyze::WriteInjectEvents(cString cur_string)
     org_count += cur_count;
     const cGenome & genome = genotype->GetGenome();
     
-    fp << "u 0 inject_sequence "
+    fp << "u 0 InjectSequence "
       << genome.AsString() << " "
       << start_cell << " "
       << start_cell + cur_count << " "
@@ -6655,7 +6655,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
     const cGenome & genome = genotype->GetGenome();
     double cur_merit = start_merit;
     if (cur_merit < 0) cur_merit = genotype->GetMerit();
-    fp << "u 0 inject_sequence "
+    fp << "u 0 InjectSequence "
       << genome.AsString() << " "
       << inject_pos << " "
       << inject_pos + cur_count << " "
@@ -6671,7 +6671,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
     const cGenome & genome = genotype->GetGenome();
     double cur_merit = start_merit;
     if (cur_merit < 0) cur_merit = genotype->GetMerit();
-    fp << "u 0 inject_sequence "
+    fp << "u 0 InjectSequence "
       << genome.AsString() << " "
       << inject_pos << " "
       << inject_pos + cur_count << " "
@@ -6681,8 +6681,8 @@ void cAnalyze::WriteCompetition(cString cur_string)
     inject_pos += cur_count;
   }
   
-  fp << "u 0 sever_grid_row" << grid_side << endl;
-  fp << "u " << join_UD << " join_grid_row " << grid_side << endl;
+  fp << "u 0 SeverGridRow" << grid_side << endl;
+  fp << "u " << join_UD << " JoinGridRow " << grid_side << endl;
 }
 
 
