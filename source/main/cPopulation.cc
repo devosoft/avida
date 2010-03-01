@@ -5122,6 +5122,7 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
 void cPopulation::InjectParasite(const cString& label, const cGenome& injected_code, int cell_id)
 {
   cOrganism* target_organism = cell_array[cell_id].GetOrganism();
+ // target_organism-> target_organism->GetHardware().GetCurThread()
   if (target_organism == NULL) return;
   
   cMetaGenome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSetID(), injected_code);

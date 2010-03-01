@@ -178,6 +178,7 @@ void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_
   next_label.Clear();
   running = true;
   owner = NULL;
+  skipExecution = false;
 }
 
 cBioUnit* cHardwareTransSMT::ThreadGetOwner()
@@ -204,6 +205,11 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     // Setup the hardware for the next instruction to be executed.
     m_cur_thread++;
     if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
+
+	if(m_threads[m_cur_thread].skipExecution)
+		m_cur_thread++;
+	
+	if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
     
     if (!ThreadIsRunning()) continue;
     
@@ -675,7 +681,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
     // Add new thread entry
     m_threads.Resize(thread_id + 1);
     m_thread_lbls.Add(hash_key, thread_id);
-  }
+	}
   
   // Create the memory space and copy in the parasite
   int mem_space = FindMemorySpaceLabel(label, -1);
@@ -686,6 +692,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
   m_threads[thread_id].Reset(this, mem_space);
   m_threads[thread_id].owner = bu;
   
+  m_threads[m_cur_thread].skipExecution = true;
   return true;
 }
 

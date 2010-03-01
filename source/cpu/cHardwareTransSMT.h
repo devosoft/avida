@@ -87,6 +87,7 @@ protected:
     cCPUStack local_stacks[NUM_LOCAL_STACKS];
     
     bool advance_ip;         // Should the IP advance after this instruction?
+	bool skipExecution;
     cCodeLabel read_label;
     cCodeLabel next_label;
     bool running;
