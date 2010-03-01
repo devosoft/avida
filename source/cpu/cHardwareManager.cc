@@ -76,6 +76,8 @@ cHardwareManager::cHardwareManager(cWorld* world)
   if (filename == "" || filename == "-") {
     filename = default_filename;
     cDriverManager::Status().NotifyComment(cString("Using default instruction set: ") + filename);
+    // set INST_SET so that the proper name will show up in the text viewer
+    world->GetConfig().INST_SET.Set(filename);
   }
   
   if (m_world->GetConfig().INST_SET_FORMAT.Get()) {
