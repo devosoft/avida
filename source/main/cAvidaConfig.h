@@ -358,6 +358,7 @@ public:
   
   CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks");
   CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
+  CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles");
   CONFIG_ADD_VAR(INJECT_PROB_SIGMOID, int, 1, "Inject Probs follow a psuedo-sigmoid path - only works if task probs are turned on");
 	
   CONFIG_ADD_GROUP(RECOMBINATION_GROUP, "Sexual Recombination and Modularity");

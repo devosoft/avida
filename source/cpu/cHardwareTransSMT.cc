@@ -206,10 +206,10 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     m_cur_thread++;
     if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
 
-	if(m_threads[m_cur_thread].skipExecution)
-		m_cur_thread++;
+    if(m_threads[m_cur_thread].skipExecution)
+      m_cur_thread++;
 	
-	if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
+    if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
     
     if (!ThreadIsRunning()) continue;
     
@@ -692,7 +692,9 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
   m_threads[thread_id].Reset(this, mem_space);
   m_threads[thread_id].owner = bu;
   
-  m_threads[m_cur_thread].skipExecution = true;
+  if(m_world->GetConfig().INJECT_IS_VIRULENT.Get())
+    m_threads[m_cur_thread].skipExecution = true;
+  
   return true;
 }
 

@@ -434,8 +434,6 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
                                                insts_triggered);
 											   
-  if(task_completed)
-	cout << "task done" << endl;
   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
