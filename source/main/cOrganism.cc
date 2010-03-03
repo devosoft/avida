@@ -772,10 +772,13 @@ bool cOrganism::Divide_CheckViable()
   if (GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
+  const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
   if (required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0) {
-    Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-          cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
-    return false; //  (divide fails)
+    if(immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0){
+      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+            cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
+      return false; //  (divide fails)
+    }
   }
   
   // Make sure the parent is fertile
