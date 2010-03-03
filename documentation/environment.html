@@ -727,6 +727,26 @@ following requisites (in any combination) are possible:
   <td>INT_MAX</td>
 </tr>
 <tr>
+  <td class="resall">min_tot_count</td>
+  <td>
+    This restriction requires that the total number of tasks performed by 
+    the organism must be at least this high before this reaction will trigger.  
+    This (along with max_tot_count) allows the user to provide different 
+    reactions depending on how many tasks an organism performs.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">max_tot_count</td>
+  <td>
+    This restriction places a cap on the number of tasks an organism can do 
+    and still trigger this reaction.  It allows the user to limit the number 
+    of tasks that will be rewarded, as well as (along with min_tot_count) provide 
+    different reactions depending on the number of tasks an organism performs.
+  </td>
+  <td>INT_MAX</td>
+</tr>
+<tr>
   <td class="resall">divide_only</td>
   <td>
     This command decides when a task will be checked, if the value is 0 the task
