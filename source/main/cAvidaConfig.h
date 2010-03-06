@@ -377,6 +377,7 @@ public:
   CONFIG_ADD_VAR(REQUIRED_TASK, int, -1, "Task ID required for successful divide.");
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task.");
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide.");
+  CONFIG_ADD_VAR(IMMUNITY_REACTION, int, -1, "Reaction ID that provides immunity for successful divide.");
   CONFIG_ADD_VAR(REQUIRED_BONUS, double, 0.0, "Required bonus to divide.");
   CONFIG_ADD_VAR(REQUIRE_EXACT_COPY, int, 0, "Require offspring to be an exact copy (only divide mutations allowed).");
   CONFIG_ADD_VAR(IMPLICIT_REPRO_BONUS, int, 0, "Call Inst_Repro to divide upon achieving this bonus. 0 = OFF");  
