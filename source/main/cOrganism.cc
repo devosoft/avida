@@ -739,7 +739,7 @@ bool cOrganism::Divide_CheckViable()
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
 
   if (required_task != -1 && m_phenotype.GetCurTaskCount()[required_task] == 0) { 
-    if (immunity_task==-1 && m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
+    if (immunity_task==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
             cStringUtil::Stringf("Lacks required task (%d)", required_task));
       return false; //  (divide fails)
@@ -751,7 +751,7 @@ bool cOrganism::Divide_CheckViable()
   const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
   const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
   if (required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0)   {
-    if (immunity_reaction != -1 && m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
+    if (immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
       return false; //  (divide fails)
