@@ -762,7 +762,7 @@ bool cOrganism::Divide_CheckViable()
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
 
   if (required_task != -1 && m_phenotype.GetCurTaskCount()[required_task] == 0) { 
-    if (immunity_task==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
+    if (immunity_task ==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
             cStringUtil::Stringf("Lacks required task (%d)", required_task));
       return false; //  (divide fails)
