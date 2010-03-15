@@ -145,23 +145,27 @@ class cActionLoadStructuredPopulation : public cAction
 private:
   cString m_filename;
   int m_update;
+  int m_cellid_offset;
+  int m_lineage_offset;
   
 public:
-  cActionLoadStructuredPopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename(""), m_update(-1)
+  cActionLoadStructuredPopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_update = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cellid_offset = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_lineage_offset = largs.PopWord().AsInt();
   }
   
-  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1]"; }
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1] [int cellid_offset=0] [int lineage_offset=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
     // set the update if requested
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
-    if (!m_world->GetPopulation().LoadStructuredPopulation(m_filename)) {
+    if (!m_world->GetPopulation().LoadStructuredPopulation(m_filename, m_cellid_offset, m_lineage_offset)) {
       m_world->GetDriver().RaiseFatalException(-1, "failed to load structured population");
     }
   }

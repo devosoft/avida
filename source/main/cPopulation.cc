@@ -4730,7 +4730,7 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
 }
 
 
-bool cPopulation::LoadStructuredPopulation(const cString& filename)
+bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_offset, int lineage_offset)
 {
   // @TODO - build in support for verifying population dimensions
   
@@ -4789,7 +4789,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     
     tmp.genotype = m_world->GetClassificationManager().GetGenotypeLoaded(genome, tmp.update_born, tmp.id_num);
     tmp.genotype->SetName(name);
-    tmp.genotype->SetLineageLabel(tmp.lineage_label);
+    tmp.genotype->SetLineageLabel(tmp.lineage_label + lineage_offset);
   }
   
   // Sort genotypes in ascending order according to their id_num
@@ -4838,7 +4838,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     } else {
       // otherwise, we insert as many organisms as we need
       for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
-        int cell_id = tmp.cells[cell_i];
+        int cell_id = tmp.cells[cell_i] + cellid_offset;
         
         InjectGenotype(cell_id, tmp.genotype);
         
