@@ -4780,12 +4780,16 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     while (offsetstr.GetSize()) tmp.offsets.Push(offsetstr.Pop(',').AsInt());
     assert(tmp.offsets.GetSize() == tmp.num_cpus);
     
+    // Lineage label (set to 0 if not given in file)
+    tmp.lineage_label = cur_line.PopWord().AsInt();
+    
     // Don't allow birth or death times larger than the current update
     if (update > tmp.update_born) tmp.update_born = update;
     if (update > tmp.update_dead) tmp.update_dead = update;
     
     tmp.genotype = m_world->GetClassificationManager().GetGenotypeLoaded(genome, tmp.update_born, tmp.id_num);
     tmp.genotype->SetName(name);
+    tmp.genotype->SetLineageLabel(tmp.lineage_label);
   }
   
   // Sort genotypes in ascending order according to their id_num

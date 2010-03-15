@@ -361,6 +361,7 @@ private:
     int update_dead;
     tArray<int> cells;
     tArray<int> offsets;
+    int lineage_label;
     
     cGenotype *genotype;
     

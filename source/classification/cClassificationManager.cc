@@ -178,8 +178,6 @@ cGenotype* cClassificationManager::GetGenotypeInjected(const cGenome& in_genome,
   return found_genotype;
 }
 
-// Add a new genotype that has been injected from the outside to the archive.
-//  Take in a lineage label to track clades.
 cGenotype* cClassificationManager::GetGenotypeLoaded(const cGenome& in_genome, int update_born, int id_num)
 {
   if (id_num >= 0) m_genotype_next_id = id_num;
