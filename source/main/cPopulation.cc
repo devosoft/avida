@@ -4649,9 +4649,10 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
 struct sOrgInfo {
   int cell_id;
   int offset;
+  int lineage_label;
   
   sOrgInfo() { ; }
-  sOrgInfo(int c, int o) : cell_id(c), offset(o) { ; }
+  sOrgInfo(int c, int o, int l) : cell_id(c), offset(o), lineage_label(l) { ; }
 };
 
 bool cPopulation::SaveStructuredPopulation(const cString& filename)
@@ -4671,13 +4672,13 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
       cOrganism* org = cell_array[i].GetOrganism();
       cGenotype* genotype = org->GetGenotype();
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
-      
+      int lineage_label = org->GetLineageLabel();     
       tKVPair<cGenotype*, tArray<sOrgInfo> >* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->Value().Push(sOrgInfo(i, offset));
+        map_entry->Value().Push(sOrgInfo(i, offset, lineage_label));
       } else {
         map_entry = new tKVPair<cGenotype*, tArray<sOrgInfo> >(genotype, tArray<sOrgInfo>(0));
-        map_entry->Value().Push(sOrgInfo(i, offset));
+        map_entry->Value().Push(sOrgInfo(i, offset, lineage_label));
         genotype_map.Add(genotype->GetID(), map_entry);
       }
     }
@@ -4708,15 +4709,18 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     tArray<sOrgInfo>& cells = genotype_entries[i]->Value();
     cString cellstr;
     cString offsetstr;
+    cString lineagestr;
     cellstr.Set("%d", cells[0].cell_id);
     offsetstr.Set("%d", cells[0].offset);
+    lineagestr.Set("%d", cells[0].lineage_label);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
       offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
+      lineagestr += cStringUtil::Stringf(",%d", cells[cell_i].lineage_label);
     }
     df.Write(cellstr, "Occupied Cell IDs");
     df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
-    df.Write(genotype->GetLineageLabel(), "Unique Lineage Label");
+    df.Write(lineagestr, "Lineage Labels");
     df.Endl();
     
     delete genotype_entries[i];
@@ -4733,7 +4737,7 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
 bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_offset, int lineage_offset)
 {
   // @TODO - build in support for verifying population dimensions
-  
+ 
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
     tConstListIterator<cString> err_it(input_file.GetErrors());
@@ -4742,8 +4746,10 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_o
     return false;
   }
   
-  // Clear out the population
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
+  // Clear out the population, unless an offset is being used
+  if (cellid_offset == 0) {
+    for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
+  }
   
   // First, we read in all the genotypes and store them in an array
   tManagedPointerArray<sTmpGenotype> genotypes(input_file.GetNumLines());
@@ -4769,7 +4775,7 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_o
     /* depth */       cur_line.PopWord();
     cString name = cStringUtil::Stringf("org-%d", tmp.id_num);
     cGenome genome(cur_line.PopWord());
-        
+    
     // Process resident cell ids
     cString cellstr(cur_line.PopWord());
     while (cellstr.GetSize()) tmp.cells.Push(cellstr.Pop(',').AsInt());
@@ -4779,17 +4785,19 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_o
     cString offsetstr(cur_line.PopWord());
     while (offsetstr.GetSize()) tmp.offsets.Push(offsetstr.Pop(',').AsInt());
     assert(tmp.offsets.GetSize() == tmp.num_cpus);
-    
-    // Lineage label (set to 0 if not given in file)
-    tmp.lineage_label = cur_line.PopWord().AsInt();
-    
+  
+    // Lineage label (only set if given in file)
+    cString lineagestr(cur_line.PopWord());
+    while (lineagestr.GetSize()) tmp.lineage_labels.Push(lineagestr.Pop(',').AsInt());
+    // @blw preserve compatability with older .spop files that don't have lineage labels
+    assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == tmp.num_cpus);
+
     // Don't allow birth or death times larger than the current update
     if (update > tmp.update_born) tmp.update_born = update;
     if (update > tmp.update_dead) tmp.update_dead = update;
     
     tmp.genotype = m_world->GetClassificationManager().GetGenotypeLoaded(genome, tmp.update_born, tmp.id_num);
     tmp.genotype->SetName(name);
-    tmp.genotype->SetLineageLabel(tmp.lineage_label + lineage_offset);
   }
   
   // Sort genotypes in ascending order according to their id_num
@@ -4839,9 +4847,9 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_o
       // otherwise, we insert as many organisms as we need
       for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
         int cell_id = tmp.cells[cell_i] + cellid_offset;
-        
-        InjectGenotype(cell_id, tmp.genotype);
-        
+      
+        InjectGenotype(cell_id, tmp.genotype); 
+      
         cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
         
         // Set the phenotype merit from the save file
@@ -4859,7 +4867,12 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_o
         // Schedule the organism
         AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
         
-        LineageSetupOrganism(GetCell(cell_id).GetOrganism(), NULL, 0, tmp.genotype->GetParentGenotype());
+        // Set up lineage, including lineage label (0 if not loaded)
+        int lineage_label = 0;
+        if (tmp.lineage_labels.GetSize() != 0) {
+          lineage_label = tmp.lineage_labels[cell_i] + lineage_offset;
+        }
+        LineageSetupOrganism(GetCell(cell_id).GetOrganism(), NULL, lineage_label, tmp.genotype->GetParentGenotype());
       }
     }
   }
