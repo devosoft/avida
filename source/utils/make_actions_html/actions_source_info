@@ -344,6 +344,11 @@
   SavePopulation. It is also possible to append a history file to the
   save file, in order to preserve the history of a previous run.<br>
   <i>update</i> allows user to set the current update number to a new value
+=== Action LoadSexPopulation ===
+  Sets up a sexual population based on a save file such as written out by
+  SaveSexPopulation. It is also possible to append a history file to the
+  save file, in order to preserve the history of a previous run.<br>
+  <i>update</i> allows user to set the current update number to a new value
 === Action DumpPopulation ===
 === Action SavePopulation ===
   Save the genotypes and lots of statistics about the population to the

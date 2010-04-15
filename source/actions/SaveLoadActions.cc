@@ -97,14 +97,14 @@ public:
 
 /*
  Sets up a population based on a dump file such as written out by
- detail_pop. It is also possible to append a history file to the dump
+ SavePopulation. It is also possible to append a history file to the dump
  file, in order to preserve the history of a previous run.
  
  Parameters:
    filename (string)
      The name of the file to open.
    update (int) *optional*
-     ??
+     The update to change to in the running program
  */
 class cActionLoadPopulation : public cAction
 {
@@ -127,6 +127,40 @@ public:
     m_world->GetPopulation().LoadDumpFile(m_filename, m_update);
   }
 };
+
+/*
+ Sets up a sexual population based on a dump file such as written out by
+ SaveSexPopulation. It is also possible to append a history file to the dump
+ file, in order to preserve the history of a previous run.
+
+ Parameters:
+   filename (string)
+     The name of the file to open.
+   update (int) *optional*
+     The update to change to in the running program
+ */
+class cActionLoadSexPopulation : public cAction
+{
+private:
+  cString m_filename;
+  int m_update;
+ 
+public:
+  cActionLoadSexPopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename(""), m_update(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_update = largs.PopWord().AsInt();
+  }
+ 
+  static const cString GetDescription() { return "Arguments: <cString fname> [int update=-1]"; }
+ 
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().LoadDumpFile(m_filename, m_update);
+  }
+};
+
 
 
 /*
@@ -405,6 +439,7 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionLoadClone>("LoadClone");
 
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
+  action_lib->Register<cActionLoadSexPopulation>("LoadSexPopulation");
   action_lib->Register<cActionLoadStructuredPopulation>("LoadStructuredPopulation");
 
   action_lib->Register<cActionDumpPopulation>("DumpPopulation");

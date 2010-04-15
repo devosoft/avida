@@ -280,6 +280,7 @@ public:
   bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream& fp);
   bool LoadDumpFile(cString filename, int update);
+  bool LoadDumpSexFile(cString filename, int update);
   bool SaveStructuredPopulation(const cString& filename);
   bool LoadStructuredPopulation(const cString& filename, int cellid_offset=0, int lineage_offset=0);
   bool DumpMemorySummary(std::ofstream& fp);
