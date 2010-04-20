@@ -199,7 +199,11 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
 			return false;
 		}
   } else {
-    merit_array[0] = parent.GetPhenotype().GetMerit();
+	if(m_world->GetConfig().INHERIT_MERIT.Get())
+		merit_array[0] = parent.GetPhenotype().GetMerit();
+	else
+		merit_array[0] = parent.GetPhenotype().CalcSizeMerit();
+
   }
   
   tArray<const tArray<cBioGroup*>*> pgrps(1);
