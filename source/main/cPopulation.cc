@@ -4523,7 +4523,7 @@ bool cPopulation::LoadClone(ifstream & fp)
 }
 
 
-bool cPopulation::LoadDumpFile(cString filename, int update)
+bool cPopulation::LoadDumpFile(cString filename, int update, bool sexualpop)
 {
   // set the update if requested
   if (update >= 0) m_world->GetStats().SetCurrentUpdate(update);
@@ -4531,7 +4531,11 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   // Clear out the population
   for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
   
-  cout << "Loading: " << filename << endl;
+  if (sexualpop) {
+    cout << "Loading sexual population: " << filename << endl;
+  } else {
+    cout << "Loading asexual population: " << filename << endl;
+  }
   
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
@@ -4553,6 +4557,11 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
     sTmpGenotype tmp;
     tmp.id_num      = cur_line.PopWord().AsInt();
     tmp.parent_id   = cur_line.PopWord().AsInt();
+    if (sexualpop) {
+      tmp.parent_id2   = cur_line.PopWord().AsInt();
+    } else {
+      tmp.parent_id2   = 0;
+    }
     /*parent_dist =*/          cur_line.PopWord().AsInt();
     tmp.num_cpus    = cur_line.PopWord().AsInt();
     tmp.total_cpus  = cur_line.PopWord().AsInt();
@@ -4585,147 +4594,28 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   vector<sTmpGenotype>::const_iterator it = genotype_vect.begin();
   for ( ; it != genotype_vect.end(); it++ ){
     vector<sTmpGenotype>::const_iterator it2 = it;
-    cGenotype *parent = 0;
+    cGenotype *parent = NULL;
+    cGenotype *parent2 = NULL;
+    bool foundparent = false;
+    bool foundparent2;
+    if (sexualpop) {
+      foundparent2 = false;
+    } else {
+      foundparent2 = true;
+    }
     // search backwards till we find the parent
     if ( it2 != genotype_vect.begin() )
       do{
         it2--;
-        if ( (*it).parent_id == (*it2).id_num ){
+        if ( (*it).parent_id == (*it2).id_num && !foundparent){
           parent = (*it2).genotype;
-          break;
+          foundparent = true;
         }	
-      }
-    while ( it2 != genotype_vect.begin() );
-    (*it).genotype->SetParent( parent, NULL );
-  }
-  
-  int cur_update = m_world->GetStats().GetUpdate(); 
-  int current_cell = 0;
-  bool soup_full = false;
-  it = genotype_vect.begin();
-  for ( ; it != genotype_vect.end(); it++ ){
-    if ( (*it).num_cpus == 0 ){ // historic organism
-      // remove immediately, so that it gets transferred into the
-      // historic database. We change the update temporarily to the
-      // true death time of this organism, so that all stats are correct.
-      m_world->GetStats().SetCurrentUpdate( (*it).update_dead );
-      m_world->GetClassificationManager().RemoveGenotype( *(*it).genotype );
-      m_world->GetStats().SetCurrentUpdate( cur_update );
-    }
-    else{ // otherwise, we insert as many organisms as we need
-      for ( int i=0; i<(*it).num_cpus; i++ ){
-        if ( current_cell >= cell_array.GetSize() ){
-          soup_full = true;
-          break;
-        }	  
-        InjectGenotype( current_cell, (*it).genotype );
-        cPhenotype & phenotype = GetCell(current_cell).GetOrganism()->GetPhenotype();
-        if ( (*it).merit > 0) phenotype.SetMerit( cMerit((*it).merit) );
-        AdjustSchedule(GetCell(current_cell), phenotype.GetMerit());
-        
-        int lineage_label = 0;
-        LineageSetupOrganism(GetCell(current_cell).GetOrganism(),
-                             0, lineage_label,
-                             (*it).genotype->GetParentGenotype());
-        current_cell += 1;
-      }
-    }
-    
-    // @DMB - This seems to be debugging output...
-    //    cout << (*it).id_num << " " << (*it).parent_id << " " << (*it).genotype->GetParentID() << " "
-    //         << (*it).genotype->GetNumOffspringGenotypes() << " " << (*it).num_cpus << " " << (*it).genotype->GetNumOrganisms() << endl;
-    
-    if (soup_full) {
-      cout << "Warning: Too many organisms in population file, remainder ignored" << endl;
-      break;
-    }
-  }
-  sync_events = true;
-  
-  return true;
-}
-
-
-bool cPopulation::LoadDumpSexFile(cString filename, int update)
-{
-  // set the update if requested
-  if (update >= 0) m_world->GetStats().SetCurrentUpdate(update);
-  
-  // Clear out the population
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
-  
-  cout << "Loading: " << filename << endl;
-  
-  cInitFile input_file(filename);
-  if (!input_file.WasOpened()) {
-    tConstListIterator<cString> err_it(input_file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    exit(1);
-  }
-  
-  // First, we read in all the genotypes and store them in a list
-  
-  vector<sTmpGenotype> genotype_vect;
-  
-  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
-    cString cur_line = input_file.GetLine(line_id);
-    
-    // Setup the genotype for this line...
-    sTmpGenotype tmp;
-    tmp.id_num      = cur_line.PopWord().AsInt();
-    tmp.parent_id   = cur_line.PopWord().AsInt();
-    tmp.parent_id2   = cur_line.PopWord().AsInt();
-    /*parent_dist =*/          cur_line.PopWord().AsInt();
-    tmp.num_cpus    = cur_line.PopWord().AsInt();
-    tmp.total_cpus  = cur_line.PopWord().AsInt();
-    /*length      =*/          cur_line.PopWord().AsInt();
-    tmp.merit 	    = cur_line.PopWord().AsDouble();
-    /*gest_time   =*/ cur_line.PopWord().AsInt();
-    /*fitness     =*/ cur_line.PopWord().AsDouble();
-    tmp.update_born = cur_line.PopWord().AsInt();
-    tmp.update_dead = cur_line.PopWord().AsInt();
-    /*depth       =*/ cur_line.PopWord().AsInt();
-    cString name = cStringUtil::Stringf("org-%d", tmp.id_num);
-    cGenome genome( cur_line.PopWord() );
-    
-    // we don't allow birth or death times larger than the current update
-    if ( m_world->GetStats().GetUpdate() > tmp.update_born )
-      tmp.update_born = m_world->GetStats().GetUpdate();
-    if ( m_world->GetStats().GetUpdate() > tmp.update_dead )
-      tmp.update_dead = m_world->GetStats().GetUpdate();
-    
-    tmp.genotype = m_world->GetClassificationManager().GetGenotypeLoaded(genome, tmp.update_born, tmp.id_num);
-    tmp.genotype->SetName( name );
-    
-    genotype_vect.push_back( tmp );
-  }
-  
-  // now, we sort them in ascending order according to their id_num
-  sort( genotype_vect.begin(), genotype_vect.end() );
-  // set the parents correctly
-  
-  vector<sTmpGenotype>::const_iterator it = genotype_vect.begin();
-  for ( ; it != genotype_vect.end(); it++ ){
-    vector<sTmpGenotype>::const_iterator it2 = it;
-    cGenotype *parent = 0;
-    cGenotype *parent2 = 0;
-    bool found1 = false;
-    bool found2 = false;
-    // search backwards till we find the parent
-    if ( it2 != genotype_vect.begin() )
-      do{
-        it2--;
-        if ( (*it).parent_id == (*it2).id_num ){
-          parent = (*it2).genotype;
-          found1 = true;
-        }	
-        if ( (*it).parent_id2 == (*it2).id_num ){
+        if ( (*it).parent_id2 == (*it2).id_num && !foundparent2){
           parent2 = (*it2).genotype;
-          found2 = true;
+          foundparent2 = true;
         }	
-        if (found1 && found2) {
+        if (foundparent && foundparent2) {
           break;
         }
       }
@@ -4778,7 +4668,6 @@ bool cPopulation::LoadDumpSexFile(cString filename, int update)
   
   return true;
 }
-
 
 struct sOrgInfo {
   int cell_id;

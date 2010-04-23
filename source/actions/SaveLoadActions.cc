@@ -124,7 +124,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().LoadDumpFile(m_filename, m_update);
+    // Last parameter (false)  tells LoadDumpFile that this is an asexual population dump
+    m_world->GetPopulation().LoadDumpFile(m_filename, m_update, false);
   }
 };
 
@@ -157,7 +158,8 @@ public:
  
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().LoadDumpFile(m_filename, m_update);
+    // Last parameter (true) tells LoadDumpFile that this is a sexual population dump
+    m_world->GetPopulation().LoadDumpFile(m_filename, m_update, true);
   }
 };
 
