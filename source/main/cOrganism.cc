@@ -81,6 +81,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_neighborhood(0)
   , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
   , m_other_raw_materials(0)
   , m_num_donate(0)
@@ -122,6 +123,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_neighborhood(0)
   , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
   , m_other_raw_materials(0)
   , m_num_donate(0)
@@ -163,6 +165,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_neighborhood(0)
 {
   m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome, inst_set);
   
@@ -208,6 +211,7 @@ cOrganism::~cOrganism()
   if(m_net) delete m_net;
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;
+  if(m_neighborhood) delete m_neighborhood;
 }
 
 cOrganism::cNetSupport::~cNetSupport()
