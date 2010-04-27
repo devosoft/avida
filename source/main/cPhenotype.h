@@ -275,6 +275,7 @@ public:
 	
   bool OK();
 
+  void ResetMerit(const cGenome & _cgenome);
   void Sterilize();
   // Run when being setup *as* and offspring.
   void SetupOffspring(const cPhenotype & parent_phenotype, const cGenome & _genome);

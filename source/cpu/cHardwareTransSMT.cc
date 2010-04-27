@@ -844,7 +844,12 @@ inline int cHardwareTransSMT::FindModifiedHead(int default_head)
     if (nop_head < nHardware::NUM_HEADS) default_head = nop_head;
     IP().SetFlagExecuted();
   }
+  
+  if (default_head > 240)
+	cout << "uh oh!" << endl;
+
   return default_head;
+
 }
 
 inline int cHardwareTransSMT::FindNextStack(int default_stack)
@@ -989,6 +994,8 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
         // Reset only the calling thread's state
         for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
         for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
+		if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+			m_organism->GetPhenotype().ResetMerit(m_organism->GetGenome());
         break;
         
       case DIVIDE_METHOD_OFFSPRING:

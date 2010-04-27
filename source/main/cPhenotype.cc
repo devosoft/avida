@@ -642,6 +642,21 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 }
 
 
+void cPhenotype::ResetMerit(const cGenome & _cgenome)
+{
+  int cur_merit_base = CalcSizeMerit();
+  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  if (merit_default_bonus) {
+    cur_bonus = merit_default_bonus;
+  }
+	merit = cur_merit_base * cur_bonus;
+	
+  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+    merit = cur_merit_base;
+
+}
+
+
 /**
  * This function is run whenever an organism executes a successful divide.
  **/
@@ -660,7 +675,10 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
-  merit = cur_merit_base * cur_bonus;
+	merit = cur_merit_base * cur_bonus;
+	
+  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+    merit = cur_merit_base;
   
   SetEnergy(energy_store + cur_energy_bonus);
   m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
@@ -828,7 +846,10 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
     cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
-  
+
+  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+    merit = cur_merit_base;
+
   genome_length   = _genome.GetSize();
   (void) copied_size;                            // Unchanged
   (void) executed_size;                          // Unchanged
