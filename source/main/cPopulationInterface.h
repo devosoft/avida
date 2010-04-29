@@ -152,6 +152,8 @@ public:
 	typedef cGenomeUtil::substring_match substring_match;
 	//! Called when this organism is the donor during conjugation.
 	void DoHGTDonation(cAvidaContext& ctx);
+	//! Called when this organism "requests" an HGT conjugation.
+	void DoHGTConjugation(cAvidaContext& ctx);
 	//! Perform an HGT mutation on this offspring.
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
 	

@@ -115,6 +115,8 @@ public:
 	
 	//! HGT donation (does nothing).
 	void DoHGTDonation(cAvidaContext& ctx) { }
+	//! HGT conjugation (does nothing).
+	void DoHGTConjugation(cAvidaContext& ctx) { }
 	//! HGT mutation (does nothing).
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
 	//! Receive HGT donation (does nothing).

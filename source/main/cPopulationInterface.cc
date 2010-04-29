@@ -687,25 +687,81 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 }
 
 
+/*! Called when this organism "requests" an HGT conjugation.
+ 
+ Technically, organisms don't request an HGT conjugation.  However, this provides
+ an alternative to population-level conjugational events.  Specifically, whenever
+ an organism replicates, there is the possibility that its offspring conjugates
+ with another organism in the population -- that is what we check here.
+ 
+ This method is closely related to HGT donation, except here we're looking for
+ the donatOR, instead of the donatEE.
+ */
+void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
+	cPopulationCell* source=0;
+	
+	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
+		case 0: { // faced individual
+			source = GetCellFaced();
+			if(!source->IsOccupied()) {
+				// nothing to do, we're facing an empty cell.
+				return;
+			}
+			break;
+		}
+		case 1: { // selected at random from neighborhood
+			std::set<cPopulationCell*> occupied_cell_set;
+			GetCell()->GetOccupiedNeighboringCells(occupied_cell_set, 1);
+			if(occupied_cell_set.size()==0) {
+				// nothing to do here, there are no neighbors
+				return;
+			}
+			std::set<cPopulationCell*>::iterator selected=occupied_cell_set.begin();
+			std::advance(selected, ctx.GetRandom().GetInt(occupied_cell_set.size()));
+			source = *selected;
+			break;
+		}
+		default: {
+			m_world->GetDriver().RaiseFatalException(1, "HGT_CONJUGATION_METHOD is set to an invalid value.");
+			break;
+		}
+	}
+	assert(source != 0);
+	fragment_list_type fragments;
+	cGenomeUtil::RandomSplit(ctx, 
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
+													 source->GetOrganism()->GetGenome(),
+													 fragments);
+	ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);	
+}
+
+
 /*! Perform an HGT mutation on this offspring. 
  
  HGT mutations are location-dependent, hence they are piped through the populatin
  interface as opposed to being implemented in the CPU or organism.
- 
- If this method is called, an HGT mutation of some kind is imminent.  All that's left
- is to actually *do* the mutation.  There is the possibility that more than one
- HGT mutation occurs when this method is called.
+
+ There is the possibility that more than one HGT mutation occurs when this method 
  is called.
  */
 void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
 	InitHGTSupport();
 	
 	// first, gather up all the fragments that we're going to be inserting into this offspring:
-	fragment_list_type fragments(m_hgt_support->_pending); // these come from conjugation
+	// these come from a per-replication conjugational event:
+	if((m_world->GetConfig().HGT_CONJUGATION_P.Get() > 0.0)
+		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_CONJUGATION_P.Get()))) {
+		
+	}	
 	
+	// the pending list includes both the fragments selected via the above process,
+	// as well as from population-level conjugational events (see cPopulationActions.cc:cActionAvidianConjugation).
+	fragment_list_type fragments(m_hgt_support->_pending);
+
 	// these come from "natural" competence (ie, eating the dead):
-	if((m_world->GetConfig().HGT_MUTATION_P.Get() > 0.0)
-		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_MUTATION_P.Get()))) {
+	if((m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)
+		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_COMPETENCE_P.Get()))) {
 		
 		// get this organism's cell:
 		cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
