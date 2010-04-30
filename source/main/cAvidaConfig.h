@@ -676,11 +676,8 @@ public:
 	CONFIG_ADD_VAR(HGT_DIFFUSION_METHOD, int, 0, "Method to use for diffusion of genome fragments; 0=none (default).");
 	CONFIG_ADD_VAR(HGT_COMPETENCE_P, double, 0.0, "Probability that an HGT 'natural competence' mutation will occur on divide (default=0.0).");
 	CONFIG_ADD_VAR(HGT_INSERTION_MUT_P, double, 0.0, "Probability that an HGT mutation will result in an insertion (default=0.0).");
-	CONFIG_ADD_VAR(HGT_CONJUGATION_METHOD, int, 0, "Method used to select the receiver of an HGT conjugation; 0=faced (default),\n1=random from neighborhood.");
+	CONFIG_ADD_VAR(HGT_CONJUGATION_METHOD, int, 0, "Method used to select the receiver and/or donor of an HGT conjugation;\n0=random from neighborhood (default);\n1=faced.");
 	CONFIG_ADD_VAR(HGT_CONJUGATION_P, double, 0.0, "Probability that an HGT conjugation mutation will occur on divide (default=0.0).");
-	
-	
-	
 	CONFIG_ADD_VAR(HGT_FRAGMENT_XFORM, int, 0, "Transformation to apply to each fragment prior to incorporation into offspring's genome; 0=none (default),\n1=random shuffle,\n2=replace with random instructions.");
 	
   CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");

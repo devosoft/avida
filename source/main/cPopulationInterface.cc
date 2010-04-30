@@ -651,15 +651,7 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 	cPopulationCell* target=0;
 	
 	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
-		case 0: { // faced individual
-			target = GetCellFaced();
-			if(!target->IsOccupied()) {
-				// nothing to do, we're facing an empty cell.
-				return;
-			}
-			break;
-		}
-		case 1: { // selected at random from neighborhood
+		case 0: { // selected at random from neighborhood
 			std::set<cPopulationCell*> occupied_cell_set;
 			GetCell()->GetOccupiedNeighboringCells(occupied_cell_set, 1);
 			if(occupied_cell_set.size()==0) {
@@ -669,6 +661,14 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 			std::set<cPopulationCell*>::iterator selected=occupied_cell_set.begin();
 			std::advance(selected, ctx.GetRandom().GetInt(occupied_cell_set.size()));
 			target = *selected;
+			break;
+		}
+		case 1: { // faced individual
+			target = GetCellFaced();
+			if(!target->IsOccupied()) {
+				// nothing to do, we're facing an empty cell.
+				return;
+			}
 			break;
 		}
 		default: {
@@ -701,15 +701,7 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 	cPopulationCell* source=0;
 	
 	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
-		case 0: { // faced individual
-			source = GetCellFaced();
-			if(!source->IsOccupied()) {
-				// nothing to do, we're facing an empty cell.
-				return;
-			}
-			break;
-		}
-		case 1: { // selected at random from neighborhood
+		case 0: { // selected at random from neighborhood
 			std::set<cPopulationCell*> occupied_cell_set;
 			GetCell()->GetOccupiedNeighboringCells(occupied_cell_set, 1);
 			if(occupied_cell_set.size()==0) {
@@ -719,6 +711,14 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 			std::set<cPopulationCell*>::iterator selected=occupied_cell_set.begin();
 			std::advance(selected, ctx.GetRandom().GetInt(occupied_cell_set.size()));
 			source = *selected;
+			break;
+		}
+		case 1: { // faced individual
+			source = GetCellFaced();
+			if(!source->IsOccupied()) {
+				// nothing to do, we're facing an empty cell.
+				return;
+			}
 			break;
 		}
 		default: {
@@ -752,12 +752,12 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	// these come from a per-replication conjugational event:
 	if((m_world->GetConfig().HGT_CONJUGATION_P.Get() > 0.0)
 		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_CONJUGATION_P.Get()))) {
-		
+		DoHGTConjugation(ctx);
 	}	
 	
 	// the pending list includes both the fragments selected via the above process,
 	// as well as from population-level conjugational events (see cPopulationActions.cc:cActionAvidianConjugation).
-	fragment_list_type fragments(m_hgt_support->_pending);
+	fragment_list_type& fragments = m_hgt_support->_pending;
 
 	// these come from "natural" competence (ie, eating the dead):
 	if((m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)
@@ -856,6 +856,10 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 		// stats tracking:
 		m_world->GetStats().GenomeFragmentInserted(GetOrganism(), *i, location);
 	}
+	
+	// clean-up; be sure to empty the pending list so that we don't end up doing an HGT
+	// operation multiple times on the same fragment.
+	fragments.clear();
 }
 
 
