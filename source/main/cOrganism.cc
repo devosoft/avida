@@ -394,6 +394,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   
   // Do the testing of tasks performed...
   
+  
   tArray<double> global_res_change(global_resource_count.GetSize());
   global_res_change.SetAll(0.0);
   tArray<double> deme_res_change(deme_resource_count.GetSize());
@@ -434,7 +435,6 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
                                                insts_triggered);
 											   
-  
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double cur_merit = m_phenotype.CalcCurrentMerit();

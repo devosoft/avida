@@ -313,6 +313,8 @@ private:
   bool Inst_CallFlow(cAvidaContext& ctx);       // 45
   bool Inst_CallLabel(cAvidaContext& ctx);      // 46
   bool Inst_Return(cAvidaContext& ctx);         // 47
+  bool Inst_IfGreaterEqual(cAvidaContext& ctx); //48
+  bool Inst_Divide_Erase(cAvidaContext& ctx); //49
   
 };
 

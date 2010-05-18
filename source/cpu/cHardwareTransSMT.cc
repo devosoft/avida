@@ -109,7 +109,9 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("Call-Flow", &cHardwareTransSMT::Inst_CallFlow), // 44
     tInstLibEntry<tMethod>("Call-Label", &cHardwareTransSMT::Inst_CallLabel), // 44
     tInstLibEntry<tMethod>("Return", &cHardwareTransSMT::Inst_Return), // 44
-    
+    tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 23
+    tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 23
+
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
 	
@@ -1152,6 +1154,7 @@ bool cHardwareTransSMT::Inst_Divide(cAvidaContext& ctx)
   return Divide_Main(ctx);
 }
 
+
 //18
 bool cHardwareTransSMT::Inst_HeadRead(cAvidaContext& ctx)
 {
@@ -1542,4 +1545,31 @@ bool cHardwareTransSMT::Inst_Return(cAvidaContext& ctx)
   IP().Set(location, mem_space);
   
   return true;
+}
+
+//48
+bool cHardwareTransSMT::Inst_IfGreaterEqual(cAvidaContext& ctx)      // Execute next if bx >= ?cx?
+{
+  const int op1 = FindModifiedStack(STACK_AX);
+  const int op2 = FindModifiedNextStack(op1);
+  if (Stack(op1).Top() > Stack(op2).Top())  IP().Advance();
+  return true;
+}
+
+bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
+{
+  bool toReturn =  Divide_Main(ctx);
+  if(toReturn)
+    return toReturn;
+  const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
+  
+  if (m_mem_array.GetSize() <= mem_space_used) return false;
+  
+  m_mem_array[mem_space_used] = cGenome("a"); 
+  
+  for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
+  //for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
+  
+  return toReturn;
+  
 }
