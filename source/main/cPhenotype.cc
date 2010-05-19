@@ -176,7 +176,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   total_energy_applied     = in_phen.total_energy_applied;
   
   // 4. Records from this organisms life...
-  num_divides              = in_phen.num_divides;      
+  num_divides              = in_phen.num_divides;   
+  num_divides_failed       = in_phen.num_divides_failed;
   generation               = in_phen.generation;        
   cpu_cycles_used          = in_phen.cpu_cycles_used;   
   time_used                = in_phen.time_used;         
@@ -283,6 +284,7 @@ bool cPhenotype::OK()
   assert(last_num_donates >= 0);
   assert(last_fitness >= 0.0);
   assert(num_divides >= 0);
+  assert(num_divides_filed >= 0);
   assert(generation >= 0);
   assert(cpu_cycles_used >= 0);  
   assert(time_used >= 0);
@@ -385,6 +387,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   
   // Setup other miscellaneous values...
   num_divides     = 0;
+  num_divides_failed = 0;
   generation      = parent_phenotype.generation;
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
@@ -552,6 +555,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   
   // Setup other miscellaneous values...
   num_divides     = 0;
+  num_divides_failed = 0;
   generation      = 0;
   cpu_cycles_used = 0;
   time_used       = 0;
@@ -1065,6 +1069,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   
   // Setup other miscellaneous values...
   num_divides     = 0;
+  num_divides_failed = 0;
   generation      = clone_phenotype.generation;
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
@@ -1460,6 +1465,10 @@ void cPhenotype::HalveEnergyUsage() {
 
 void cPhenotype::DefaultEnergyUsage() {
   executionRatio = 1.0;
+}
+
+void cPhenotype::DivideFailed() {
+  num_divides_failed++;
 }
 
 

@@ -171,6 +171,7 @@ private:
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   // 4. Records from this organism's life...
+  int num_divides_failed; //Number of failed divide events @LZ
   int num_divides;       // Total successful divides organism has produced.
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
@@ -401,6 +402,8 @@ public:
   int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
+  int GetNumDivideFailed() const { assert(initialized == true); return num_divides_failed;}
+
   int GetGeneration() const { return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
@@ -580,6 +583,10 @@ public:
   void DoubleEnergyUsage();
   void HalveEnergyUsage();
   void DefaultEnergyUsage();
+  
+  //LZ
+  void DivideFailed();
+
   
   void RefreshEnergy();
   void ApplyToEnergyStore();

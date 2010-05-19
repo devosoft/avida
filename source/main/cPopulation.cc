@@ -4705,6 +4705,9 @@ struct sOrgInfo {
 
 bool cPopulation::SaveStructuredPopulation(const cString& filename)
 {
+  tHashTable<int, int> sumDivideFailed;
+  tHashTable<int, int> sumDivideSucceeded;
+
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteRawComment("#filetype genotype_data");
   df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset");
@@ -4719,7 +4722,22 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     if (cell_array[i].IsOccupied()) {
       cOrganism* org = cell_array[i].GetOrganism();
       cGenotype* genotype = org->GetGenotype();
+      
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
+      
+      int divFailed = 0;
+      int divSucceeded = 0;
+      
+      if (sumDivideFailed.Find(genotype->GetID(), divFailed))
+        sumDivideFailed.SetValue(genotype->GetID(), divFailed + org->GetPhenotype().GetNumDivideFailed());
+      else
+        sumDivideFailed.SetValue(genotype->GetID(), org->GetPhenotype().GetNumDivideFailed());
+      
+      if (sumDivideSucceeded.Find(genotype->GetID(), divSucceeded))
+        sumDivideSucceeded.SetValue(genotype->GetID(), divSucceeded + org->GetPhenotype().GetNumDivides());
+      else
+        sumDivideSucceeded.SetValue(genotype->GetID(), org->GetPhenotype().GetNumDivides());
+      
       
       tKVPair<cGenotype*, tArray<sOrgInfo> >* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
@@ -4765,6 +4783,17 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     }
     df.Write(cellstr, "Occupied Cell IDs");
     df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
+    
+    int sumFailsForGenotype = 0;
+    int sumSuccForGenotype = 0;
+    int divFailsForGenotype = sumDivideFailed.Find(genotype->GetID(), sumFailsForGenotype);
+    int divSuccForGenotype = sumDivideSucceeded.Find(genotype->GetID(), sumSuccForGenotype);
+
+
+    df.Write(sumFailsForGenotype, "Total Division Failures");
+    df.Write(sumSuccForGenotype, "Total Division Successes");
+    //df.Write(sumFailsForGenotype/(sumFailsForGenotype + sumSuccForGenotype), "Failure");
+    
     df.Endl();
     
     delete genotype_entries[i];
