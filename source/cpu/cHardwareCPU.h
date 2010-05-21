@@ -96,6 +96,7 @@ protected:
   private:
     int m_id;
     int m_promoter_inst_executed;
+    int m_messageTriggerType;
   public:
     int reg[NUM_REGISTERS];
     cHeadCPU heads[NUM_HEADS];
@@ -118,7 +119,8 @@ protected:
     int GetPromoterInstExecuted() { return m_promoter_inst_executed; }
     void IncPromoterInstExecuted() { m_promoter_inst_executed++; }
     void ResetPromoterInstExecuted() { m_promoter_inst_executed = 0; }
-    
+    void setMessageTriggerType(int value) { m_messageTriggerType = value; }
+    int getMessageTriggerType() { return m_messageTriggerType; }
   };
 
     
@@ -207,6 +209,7 @@ protected:
   
   // --------  Thread Manipulation  -------
   bool ForkThread(); // Adds a new thread based off of m_cur_thread.
+  bool InterruptThread(int interruptType); // Create a new thread that interrupts the current thread
   bool KillThread(); // Kill the current thread!
   
   // ---------- Instruction Helpers -----------
@@ -317,6 +320,7 @@ public:
   int GetCurThread() const      { return m_cur_thread; }
   int GetCurThreadID() const    { return m_threads[m_cur_thread].GetID(); }
   const cLocalThread& GetThread(int _index) const { return m_threads[_index]; }
+  int GetThreadMessageTriggerType(int _index) { return m_threads[_index].getMessageTriggerType(); }
   
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu) { return false; }
@@ -747,12 +751,23 @@ private:
   
   //// Messaging ////
   bool Inst_SendMessage(cAvidaContext& ctx);
+	bool SendMessage(cAvidaContext& ctx, int messageType = 0);
   bool Inst_RetrieveMessage(cAvidaContext& ctx);
   bool BroadcastX(cAvidaContext& ctx, int depth);
   bool Inst_Broadcast1(cAvidaContext& ctx);
   bool Inst_Broadcast2(cAvidaContext& ctx);
   bool Inst_Broadcast4(cAvidaContext& ctx);
   bool Inst_Broadcast8(cAvidaContext& ctx);
+  
+  // Active messaging //
+  bool Inst_SendMessageInterruptType0(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType1(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType2(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType3(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType4(cAvidaContext& ctx);
+  bool Inst_SendMessageInterruptType5(cAvidaContext& ctx);
+  bool Inst_START_Handler(cAvidaContext& ctx);
+  bool Inst_End_Handler(cAvidaContext& ctx);
   
   //// Alarm ////
   bool Inst_Alarm_MSG_local(cAvidaContext& ctx);

@@ -61,7 +61,7 @@
 #include "cTopology.h"
 #include "cTestCPU.h"
 #include "cCPUTestInfo.h"
-
+#include "cRandom.h"
 #include "tArrayUtils.h"
 #include "tKVPair.h"
 #include "tHashTable.h"
@@ -396,7 +396,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
      }
      */	
     target_cells[i] = PositionOffspring(parent_cell, m_world->GetConfig().ALLOW_PARENT.Get()).GetID();
-    
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) parent_alive = false;      
     
@@ -1409,7 +1408,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
 			for(int i=0; i<m_world->GetConfig().NUM_DEMES.Get(); ++i) {
 				// Which demes are in this tournament?
 				std::vector<int> tournament(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get());
-				sample(deme_ids.begin(), deme_ids.end(), tournament.begin(), tournament.end(), cRandomStdAdaptor(m_world->GetRandom()));
+				sample_without_replacement(deme_ids.begin(), deme_ids.end(), tournament.begin(), tournament.end(), cRandomStdAdaptor(m_world->GetRandom()));
 				
 				// Now, iterate through the fitnesses of each of the tournament players,
 				// capturing the winner's index and fitness.
@@ -3822,8 +3821,7 @@ void cPopulation::PositionEnergyUsed(cPopulationCell & parent_cell,
 
 // This function handles PositionOffspring() when there is migration between demes
 cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok)
-{
-  //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
+{ 
   int deme_id = parent_cell.GetDemeID();
 	int parent_id = parent_cell.GetDemeID();
 	GetDeme(deme_id).AddMigrationOut();
@@ -3890,48 +3888,51 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
     //set the new deme_id
     deme_id = (deme_id + rnd_deme_id + GetNumDemes()) % GetNumDemes();
   }
-	
-	//Proportional-based on a points system (hjg)
-	// The odds of a deme being selected are inversely proportional to the 
-	// number of points it has.
-	else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 3) {
-    
-		double total_points = 0;		
-		int num_demes = GetNumDemes(); 
-		
-		// Identify how many points are in the population as a whole.
-		for (int did = 0; did < num_demes; did++) {
-			if (did != parent_id) {
-				total_points +=  (1/(1+GetDeme(did).GetNumberOfPoints()));
-			}
-		}
-		// Select a random number from 0 to 1: 
-		double rand_point = m_world->GetRandom().GetDouble(0, total_points);
-		
-		// Iterate through the demes until you find the appropriate
-		// deme to insert the organism into.
-		double lower_point = 0;
-		double upper_point = 0;
-    
-		for (int curr_deme = 0; curr_deme < num_demes; curr_deme++) {
-			if (curr_deme != parent_id){
-				upper_point = lower_point + (1+GetDeme(curr_deme).GetNumberOfPoints()); 
-				if ((lower_point <= rand_point) && (rand_point < upper_point)) {
-					deme_id = curr_deme;
-				}
-				lower_point = upper_point;
-			}
-		}		
-	}
   
-	GetDeme(deme_id).AddMigrationIn();
+  //Proportional-based on a points system (hjg)
+  // The odds of a deme being selected are inversely proportional to the 
+  // number of points it has.
+  else if (m_world->GetConfig().DEMES_MIGRATION_METHOD.Get() == 3) {
+    
+    double total_points = 0;		
+    int num_demes = GetNumDemes(); 
+    
+    // Identify how many points are in the population as a whole.
+    for (int did = 0; did < num_demes; did++) {
+      if (did != parent_id) {
+	total_points +=  (1/(1+GetDeme(did).GetNumberOfPoints()));
+      }
+    }
+    // Select a random number from 0 to 1: 
+    double rand_point = m_world->GetRandom().GetDouble(0, total_points);
+    
+    // Iterate through the demes until you find the appropriate
+    // deme to insert the organism into.
+    double lower_point = 0;
+    double upper_point = 0;
+    
+    for (int curr_deme = 0; curr_deme < num_demes; curr_deme++) {
+      if (curr_deme != parent_id){
+	upper_point = lower_point + (1+GetDeme(curr_deme).GetNumberOfPoints()); 
+	if ((lower_point <= rand_point) && (rand_point < upper_point)) {
+	  deme_id = curr_deme;
+	}
+	lower_point = upper_point;
+      }
+    }		
+  }
+  
+  GetDeme(deme_id).AddMigrationIn();
   
   // TODO the above choice of deme does not respect PREFER_EMPTY
   // i.e., it does not preferentially pick a deme with empty cells if they are 
   // it might make sense for that to happen...
   
   // Now return an empty cell from the chosen deme
-  return PositionDemeRandom(deme_id, parent_cell, parent_ok); 
+  
+  cPopulationCell& mig_cell = PositionDemeRandom(deme_id, parent_cell, parent_ok);
+  mig_cell.SetMigrant();
+  return mig_cell;
 }
 
 // This function handles PositionOffspring() by returning a random cell from the entire deme.
@@ -3959,7 +3960,7 @@ cPopulationCell& cPopulation::PositionDemeRandom(int deme_id, cPopulationCell& p
     out_pos = m_world->GetRandom().GetUInt(deme_size);
     out_cell_id = deme.GetCellID(out_pos);
   }
-  
+
   return GetCell(out_cell_id); 
 }
 
@@ -4572,7 +4573,7 @@ bool cPopulation::LoadClone(ifstream & fp)
 }
 
 
-bool cPopulation::LoadDumpFile(cString filename, int update)
+bool cPopulation::LoadDumpFile(cString filename, int update, bool sexualpop)
 {
   // set the update if requested
   if (update >= 0) m_world->GetStats().SetCurrentUpdate(update);
@@ -4580,7 +4581,11 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   // Clear out the population
   for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
   
-  cout << "Loading: " << filename << endl;
+  if (sexualpop) {
+    cout << "Loading sexual population: " << filename << endl;
+  } else {
+    cout << "Loading asexual population: " << filename << endl;
+  }
   
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
@@ -4602,6 +4607,11 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
     sTmpGenotype tmp;
     tmp.id_num      = cur_line.PopWord().AsInt();
     tmp.parent_id   = cur_line.PopWord().AsInt();
+    if (sexualpop) {
+      tmp.parent_id2   = cur_line.PopWord().AsInt();
+    } else {
+      tmp.parent_id2   = 0;
+    }
     /*parent_dist =*/          cur_line.PopWord().AsInt();
     tmp.num_cpus    = cur_line.PopWord().AsInt();
     tmp.total_cpus  = cur_line.PopWord().AsInt();
@@ -4634,18 +4644,33 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   vector<sTmpGenotype>::const_iterator it = genotype_vect.begin();
   for ( ; it != genotype_vect.end(); it++ ){
     vector<sTmpGenotype>::const_iterator it2 = it;
-    cGenotype *parent = 0;
+    cGenotype *parent = NULL;
+    cGenotype *parent2 = NULL;
+    bool foundparent = false;
+    bool foundparent2;
+    if (sexualpop) {
+      foundparent2 = false;
+    } else {
+      foundparent2 = true;
+    }
     // search backwards till we find the parent
     if ( it2 != genotype_vect.begin() )
       do{
         it2--;
-        if ( (*it).parent_id == (*it2).id_num ){
+        if ( (*it).parent_id == (*it2).id_num && !foundparent){
           parent = (*it2).genotype;
-          break;
+          foundparent = true;
         }	
+        if ( (*it).parent_id2 == (*it2).id_num && !foundparent2){
+          parent2 = (*it2).genotype;
+          foundparent2 = true;
+        }	
+        if (foundparent && foundparent2) {
+          break;
+        }
       }
     while ( it2 != genotype_vect.begin() );
-    (*it).genotype->SetParent( parent, NULL );
+    (*it).genotype->SetParent( parent, parent2 );
   }
   
   int cur_update = m_world->GetStats().GetUpdate(); 
@@ -4694,13 +4719,13 @@ bool cPopulation::LoadDumpFile(cString filename, int update)
   return true;
 }
 
-
 struct sOrgInfo {
   int cell_id;
   int offset;
+  int lineage_label;
   
   sOrgInfo() { ; }
-  sOrgInfo(int c, int o) : cell_id(c), offset(o) { ; }
+  sOrgInfo(int c, int o, int l) : cell_id(c), offset(o), lineage_label(l) { ; }
 };
 
 bool cPopulation::SaveStructuredPopulation(const cString& filename)
@@ -4710,7 +4735,7 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
 
   cDataFile& df = m_world->GetDataFile(filename);
   df.WriteRawComment("#filetype genotype_data");
-  df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset");
+  df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset lineage");
   df.WriteComment("");
   df.WriteComment("Structured Population Dump");
   df.WriteTimeStamp();
@@ -4724,7 +4749,7 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
       cGenotype* genotype = org->GetGenotype();
       
       int offset = org->GetPhenotype().GetCPUCyclesUsed();
-      
+      int lineage_label = org->GetLineageLabel();     
       int divFailed = 0;
       int divSucceeded = 0;
       
@@ -4741,10 +4766,10 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
       
       tKVPair<cGenotype*, tArray<sOrgInfo> >* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->Value().Push(sOrgInfo(i, offset));
+        map_entry->Value().Push(sOrgInfo(i, offset, lineage_label));
       } else {
         map_entry = new tKVPair<cGenotype*, tArray<sOrgInfo> >(genotype, tArray<sOrgInfo>(0));
-        map_entry->Value().Push(sOrgInfo(i, offset));
+        map_entry->Value().Push(sOrgInfo(i, offset, lineage_label));
         genotype_map.Add(genotype->GetID(), map_entry);
       }
     }
@@ -4775,25 +4800,30 @@ bool cPopulation::SaveStructuredPopulation(const cString& filename)
     tArray<sOrgInfo>& cells = genotype_entries[i]->Value();
     cString cellstr;
     cString offsetstr;
+    cString lineagestr;
     cellstr.Set("%d", cells[0].cell_id);
     offsetstr.Set("%d", cells[0].offset);
+    lineagestr.Set("%d", cells[0].lineage_label);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
       offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
+      lineagestr += cStringUtil::Stringf(",%d", cells[cell_i].lineage_label);
     }
     df.Write(cellstr, "Occupied Cell IDs");
     df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
     
     int sumFailsForGenotype = 0;
     int sumSuccForGenotype = 0;
-    int divFailsForGenotype = sumDivideFailed.Find(genotype->GetID(), sumFailsForGenotype);
-    int divSuccForGenotype = sumDivideSucceeded.Find(genotype->GetID(), sumSuccForGenotype);
+//    int divFailsForGenotype = sumDivideFailed.Find(genotype->GetID(), sumFailsForGenotype);
+//    int divSuccForGenotype = sumDivideSucceeded.Find(genotype->GetID(), sumSuccForGenotype);
 
 
     df.Write(sumFailsForGenotype, "Total Division Failures");
     df.Write(sumSuccForGenotype, "Total Division Successes");
     //df.Write(sumFailsForGenotype/(sumFailsForGenotype + sumSuccForGenotype), "Failure");
     
+    df.Write(lineagestr, "Lineage Labels");
+
     df.Endl();
     
     delete genotype_entries[i];
@@ -4837,10 +4867,10 @@ bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
 
         sGroupInfo* map_entry = NULL;
         if (genotype_map.Find(pg->GetID(), map_entry)) {
-          map_entry->orgs.Push(sOrgInfo(cell, 0));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1));
         } else {
           map_entry = new sGroupInfo(pg, true);
-          map_entry->orgs.Push(sOrgInfo(cell, 0));
+          map_entry->orgs.Push(sOrgInfo(cell, 0, -1));
           genotype_map.Add(pg->GetID(), map_entry);
         }        
       }
@@ -4854,10 +4884,10 @@ bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
 
       sGroupInfo* map_entry = NULL;
       if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->orgs.Push(sOrgInfo(cell, offset));
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel()));
       } else {
         map_entry = new sGroupInfo(genotype);
-        map_entry->orgs.Push(sOrgInfo(cell, offset));
+        map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel()));
         genotype_map.Add(genotype->GetID(), map_entry);
       }
     }
@@ -4896,10 +4926,10 @@ bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
 }
 
 
-bool cPopulation::LoadStructuredPopulation(const cString& filename)
+bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_offset, int lineage_offset)
 {
   // @TODO - build in support for verifying population dimensions
-  
+ 
   cInitFile input_file(filename);
   if (!input_file.WasOpened()) {
     tConstListIterator<cString> err_it(input_file.GetErrors());
@@ -4908,8 +4938,10 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     return false;
   }
   
-  // Clear out the population
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
+  // Clear out the population, unless an offset is being used
+  if (cellid_offset == 0) {
+    for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
+  }
   
   // First, we read in all the genotypes and store them in an array
   tManagedPointerArray<sTmpGenotype> genotypes(input_file.GetNumLines());
@@ -4945,7 +4977,13 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     cString offsetstr(cur_line.PopWord());
     while (offsetstr.GetSize()) tmp.offsets.Push(offsetstr.Pop(',').AsInt());
     assert(tmp.offsets.GetSize() == tmp.num_cpus);
-    
+  
+    // Lineage label (only set if given in file)
+    cString lineagestr(cur_line.PopWord());
+    while (lineagestr.GetSize()) tmp.lineage_labels.Push(lineagestr.Pop(',').AsInt());
+    // @blw preserve compatability with older .spop files that don't have lineage labels
+    assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == tmp.num_cpus);
+
     // Don't allow birth or death times larger than the current update
     if (update > tmp.update_born) tmp.update_born = update;
     if (update > tmp.update_dead) tmp.update_dead = update;
@@ -5000,10 +5038,10 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
     } else {
       // otherwise, we insert as many organisms as we need
       for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
-        int cell_id = tmp.cells[cell_i];
-        
+        int cell_id = tmp.cells[cell_i] + cellid_offset;
+      
         InjectGenome(cell_id, SRC_ORGANISM_FILE_LOAD, tmp.genotype->GetGenome());
-        
+      
         cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
         
         // Set the phenotype merit from the save file
@@ -5021,7 +5059,12 @@ bool cPopulation::LoadStructuredPopulation(const cString& filename)
         // Schedule the organism
         AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
         
-        LineageSetupOrganism(GetCell(cell_id).GetOrganism(), NULL, 0, tmp.genotype->GetParentGenotype());
+        // Set up lineage, including lineage label (0 if not loaded)
+        int lineage_label = 0;
+        if (tmp.lineage_labels.GetSize() != 0) {
+          lineage_label = tmp.lineage_labels[cell_i] + lineage_offset;
+        }
+        LineageSetupOrganism(GetCell(cell_id).GetOrganism(), NULL, lineage_label, tmp.genotype->GetParentGenotype());
       }
     }
   }

@@ -523,6 +523,70 @@ the data and output the results.
 
 
 <p>&nbsp;</p>
+<h3>Building Input Files for Avida</h3>
+
+<p>
+These commands build input files for Avida, using the capabilities of analyze mode to 
+automate some tedium.
+</p>
+
+<dl>
+<dt><strong>
+  WRITE_CLONE [<span class="cmdargopt">file='clone.dat'</span>]
+  [<span class="cmdargopt">num_cells=-1</span>]
+</strong></dt>
+<dd>
+  Creates a clone population file (as <a href="actions.html#SaveClone">SaveClone</a>) 
+  from the current batch, suitable for loading with <a href="actions.html#LoadClone">LoadClone</a>.  
+  The starting update is 0 and the archive is empty.  num_cells should be the number 
+  of cells in the world -- the default value of -1 will not be accepted by LoadClone, 
+  so be sure to specify the correct number.
+  <br />
+  <strong>Warning:</strong> Unlike SaveClone, WRITE_CLONE does not preserve location.  
+  Any spatial structure the population had is lost.
+</dd>
+<dt><strong>
+  WRITE_INJECT_EVENTS [<span class="cmdargopt">file='events_inj.cfg'</span>]
+  [<span class="cmdargopt">start_cell=0</span>] [<span class="cmdargopt">lineage=0</span>]
+</strong></dt>
+<dd>
+  Creates an <a href="events.html">events file</a> which injects all the genotypes of the current 
+  batch at update 0.  Injection starts at the given start_cell id and increments 
+  upward.  All injected organisms are assigned the given lineage label and start 
+  with the relevant merit; num_cpus copies of each genotype are injected.
+  <br />
+  <strong>Warning:</strong> injection is in order that the genotypes appear in the batch.  
+  This will break any spatial structure your population may have had.
+</dd>
+<dt><strong>
+  WRITE_COMPETITION [<span class="cmdargopt">join_UD=0</span>]
+  [<span class="cmdargopt">start_merit=50000</span>] [<span class="cmdargopt">file='events_comp.cfg'</span>]
+  [<span class="cmdargopt">batch_A=cur_batch-1</span>] 
+  [<span class="cmdargopt">file=batch_B=cur_batch</span>] [<span class="cmdargopt">grid_side=-1</span>]
+  [<span class="cmdargopt">lineage=0</span>]
+</strong></dt>
+<dd>
+  Creates an <a href="events.html">events file</a> which acts much like the one produced 
+  by WRITE_INJECT_EVENTS, but injects two populations (from the given batches), separates 
+  the populations at update 0 (via SeverGridRow grid_side), and joins them at the given 
+  join_UD.  Organisms from batch_A are injected starting at cell id 0; organisms from 
+  batch_B are injected starting at cell id grid_side*grid_side.    (If grid_side is negative, 
+  an attempt will be made to infer it from the number of organisms in the population.)
+  <br />
+  Each population should be square, of grid_side x grid_side dimensions.  (You will have 
+  to set up the world in avida.cfg to have WORLD_X of grid_side and WORLD_Y of 2*grid_side.)  
+  Each population may not be larger than 10,000 organisms.  Organisms from batch_A will 
+  be assigned the given lineage label; organisms from batch_B will be assigned the given 
+  lineage label + 1.
+  <br />
+  <strong>Warning:</strong> Like WRITE_INJECT_EVENTS, WRITE_COMPEITITIONS will destroy any 
+  spatial structure the populations may have had.  Also, since it severs/joins only the grid_side 
+  row, it is not suitable for use with WORLD_GEOMETRY values other than 1 (bounded grid).
+</dd>
+</dl>
+
+
+<p>&nbsp;</p>
 <h2><a name="USING_RESOURCES">Using Test CPU Resources Summary</a></h2>
 
 <p>
@@ -604,6 +668,7 @@ from the input file to be loaded in) are:
   <td><strong>depth</strong> (Tree Depth)</td>
 </tr>
 <tr>
+  <td><strong>lineage</strong> (Unique Lineage Label)</td>
   <td><strong>sequence</strong> (Genome Sequence)</td>
   <td><strong>task_list</strong> (List of all tasks performed)</td>
 </tr>

@@ -133,7 +133,7 @@ private:
 
   int m_max_executed;      // Max number of instruction executed before death.  
   bool m_is_running;       // Does this organism have the CPU?
-  bool m_is_sleeping;      // Is this organisms sleeping?
+  bool m_is_sleeping;      // Is this organism sleeping?
   bool m_is_dead;          // Is this organism dead?
 
   bool killed_event;
@@ -243,6 +243,8 @@ public:
   bool IsSleeping() { return m_is_sleeping; }
   
   bool IsDead() { return m_is_dead; }
+  
+  bool IsInterrupted();
   
   bool GetPheromoneStatus() { return m_pher_drop; }
   void TogglePheromone() { m_pher_drop = (m_pher_drop == true) ? false : true; }
@@ -426,6 +428,7 @@ public:
   const message_list_type& GetSentMessages() { InitMessaging(); return m_msg->sent; }
 	//! Use at your own rish; clear all the message buffers.
 	void FlushMessageBuffers() { InitMessaging(); m_msg->sent.clear(); m_msg->received.clear(); }
+	int PeekAtNextMessageType() { InitMessaging(); return m_msg->received.front().GetMessageType(); }
 
 private:
   /*! Contains all the different data structures needed to support messaging within
@@ -546,7 +549,7 @@ protected:
 	};
 	cNeighborhoodSupport* m_neighborhood; //!< Lazily-initialized pointer to the neighborhood data.
 
-
+	
   // -------- Reputation support --------	
 public: 
 	// Deduct amount number of self raw materials
@@ -660,6 +663,16 @@ protected:
 	 be used to track production, consumption, and donation of 
 	 strings. */
 	std::map < int, cStringSupport > m_string_map;
+
+	
+	// -------- HGT conjugation support --------
+public:
+	//! Called when this individual is the donor organism during conjugation.
+	void DoHGTDonation();
+	
+	
+	
+	
 	
 	// -------- Internal Support Methods --------
 private:

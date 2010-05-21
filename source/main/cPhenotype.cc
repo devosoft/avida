@@ -284,7 +284,7 @@ bool cPhenotype::OK()
   assert(last_num_donates >= 0);
   assert(last_fitness >= 0.0);
   assert(num_divides >= 0);
-  assert(num_divides_filed >= 0);
+  assert(num_divides_failed >= 0);
   assert(generation >= 0);
   assert(cpu_cycles_used >= 0);  
   assert(time_used >= 0);

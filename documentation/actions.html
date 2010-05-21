@@ -9,7 +9,7 @@
 
 <div class="revision">
 Revised 2006-09-03 DMB
-<br>Generated Mon Nov 16 13:42:09 2009 by make_actions_html</div>
+<br>Generated Thu Apr 15 16:24:30 2010 by make_actions_html</div>
 
 <p>
 <a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
@@ -60,6 +60,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#AnalyzePopulation">AnalyzePopulation</a><br>
       <a href="#apocalypse">apocalypse</a><br>
       <a href="#AssignRandomCellData">AssignRandomCellData</a><br>
+      <a href="#AvidianConjugation">AvidianConjugation</a><br>
+      <a href="#CalcConsensus">CalcConsensus</a><br>
       <a href="#ChangeEnvironment">ChangeEnvironment</a><br>
       <a href="#compete_demes">compete_demes</a><br>
       <a href="#CompeteDemes">CompeteDemes</a><br>
@@ -141,6 +143,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#InjectDemes">InjectDemes</a><br>
       <a href="#InjectDemesFromNest">InjectDemesFromNest</a><br>
       <a href="#InjectDemesRandom">InjectDemesRandom</a><br>
+      <a href="#InjectModuloDemes">InjectModuloDemes</a><br>
       <a href="#InjectParasite">InjectParasite</a><br>
       <a href="#InjectParasitePair">InjectParasitePair</a><br>
       <a href="#InjectRandom">InjectRandom</a><br>
@@ -165,20 +168,22 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#KillFractionInSequence_PopLimit">KillFractionInSequence_PopLimit</a><br>
       <a href="#KillInstLimit">KillInstLimit</a><br>
       <a href="#KillInstPair">KillInstPair</a><br>
-      <a href="#KillNAboveResourceThreshold">KillNAboveResourceThreshold</a><br>
       <a href="#KillNBelowResourceThreshold">KillNBelowResourceThreshold</a><br>
       <a href="#KillProb">KillProb</a><br>
       <a href="#KillRate">KillRate</a><br>
       <a href="#KillRectangle">KillRectangle</a><br>
       <a href="#kill_rectangle">kill_rectangle</a><br>
       <a href="#KillWithinRadiusBelowResourceThreshold">KillWithinRadiusBelowResourceThreshold</a><br>
+      <a href="#KillWithinRadiusBelowResourceThresholdTestAll">KillWithinRadiusBelowResourceThresholdTestAll</a><br>
+      <a href="#KillWithinRadiusMeanBelowResourceThreshold">KillWithinRadiusMeanBelowResourceThreshold</a><br>
       <a href="#LoadClone">LoadClone</a><br>
       <a href="#load_clone">load_clone</a><br>
       <a href="#load_dump_file">load_dump_file</a><br>
       <a href="#LoadPopulation">LoadPopulation</a><br>
+      <a href="#LoadSexPopulation">LoadSexPopulation</a><br>
+    <td valign="top">
       <a href="#LoadStructuredPopulation">LoadStructuredPopulation</a><br>
       <a href="#MigrateDemes">MigrateDemes</a><br>
-    <td valign="top">
       <a href="#MixPopulation">MixPopulation</a><br>
       <a href="#ModMutProb">ModMutProb</a><br>
       <a href="#MutationalNeighborhood">MutationalNeighborhood</a><br>
@@ -261,6 +266,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintDominantParasiteGenotype">PrintDominantParasiteGenotype</a><br>
       <a href="#print_donation_stats">print_donation_stats</a><br>
       <a href="#PrintDynamicMaxMinData">PrintDynamicMaxMinData</a><br>
+      <a href="#PrintEditDistance">PrintEditDistance</a><br>
       <a href="#print_error_data">print_error_data</a><br>
       <a href="#PrintErrorData">PrintErrorData</a><br>
       <a href="#PrintExtendedTimeData">PrintExtendedTimeData</a><br>
@@ -284,6 +290,7 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintInstructionData">PrintInstructionData</a><br>
       <a href="#PrintInternalTasksData">PrintInternalTasksData</a><br>
       <a href="#PrintInternalTasksQualData">PrintInternalTasksQualData</a><br>
+      <a href="#PrintInterruptData">PrintInterruptData</a><br>
       <a href="#print_lineage_counts">print_lineage_counts</a><br>
       <a href="#print_lineage_totals">print_lineage_totals</a><br>
       <a href="#PrintLineageCounts">PrintLineageCounts</a><br>
@@ -300,8 +307,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#PrintNewTasksDataPlus">PrintNewTasksDataPlus</a><br>
       <a href="#print_number_phenotypes">print_number_phenotypes</a><br>
       <a href="#PrintNumOrgsInDeme">PrintNumOrgsInDeme</a><br>
-      <a href="#PrintNumOrgsKilledData">PrintNumOrgsKilledData</a><br>
     <td valign="top">
+      <a href="#PrintNumOrgsKilledData">PrintNumOrgsKilledData</a><br>
       <a href="#PrintOpinionsSetPerDeme">PrintOpinionsSetPerDeme</a><br>
       <a href="#PrintParasiteData">PrintParasiteData</a><br>
       <a href="#PrintPerDemeGenPerFounderData">PrintPerDemeGenPerFounderData</a><br>
@@ -1069,6 +1076,13 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="AvidianConjugation">AvidianConjugation</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="compete_demes">compete_demes</a></strong>
   <i>[int type=1]</i>
   </p>
@@ -1382,6 +1396,13 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
+  <strong><a name="InjectModuloDemes">InjectModuloDemes</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="InjectParasite">InjectParasite</a></strong>
   <i>&lt;string filename&gt; &lt;string label&gt; [int cell_start=0] [int cell_end=-1]</i>
   </p>
@@ -1554,14 +1575,6 @@ change the course of the run.  There are a wide variety of these.
   </p>
 </li>
 <li><p>
-  <strong><a name="KillNAboveResourceThreshold">KillNAboveResourceThreshold</a></strong>
-  <i>[int numkills=0, string resource name, double threshold=0]</i>
-  </p>
-  <p>
-  
-  </p>
-</li>
-<li><p>
   <strong><a name="KillNBelowResourceThreshold">KillNBelowResourceThreshold</a></strong>
   <i>[int numkills=0, string resource name, double threshold=0]</i>
   </p>
@@ -1612,7 +1625,22 @@ change the course of the run.  There are a wide variety of these.
 </li>
 <li><p>
   <strong><a name="KillWithinRadiusBelowResourceThreshold">KillWithinRadiusBelowResourceThreshold</a></strong>
-  <i>[int numradii=0, int radius=0, string resource name, double threshold=0]</i>
+  <i>[int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="KillWithinRadiusBelowResourceThresholdTestAll">KillWithinRadiusBelowResourceThresholdTestAll</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="KillWithinRadiusMeanBelowResourceThreshold">KillWithinRadiusMeanBelowResourceThreshold</a></strong>
+  <i>[int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]</i>
   </p>
   <p>
   
@@ -1919,6 +1947,14 @@ every time the event is trigged, and <em>singular output</em>, which produce
 a single, complete file for each trigger.
 </p>
 <UL>
+<li><p>
+  <strong><a name="CalcConsensus">CalcConsensus</a></strong>
+  <i>[int lines_saved=0]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
 <li><p>
   <strong><a name="DumpCellDataGrid">DumpCellDataGrid</a></strong>
   <i>[string fname=""]</i>
@@ -2696,6 +2732,13 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="PrintEditDistance">PrintEditDistance</a></strong>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
   <strong><a name="print_error_data">print_error_data</a></strong>
   <i>[string fname="error.dat"]</i>
   </p>
@@ -2919,6 +2962,14 @@ a single, complete file for each trigger.
 <li><p>
   <strong><a name="PrintInternalTasksQualData">PrintInternalTasksQualData</a></strong>
   <i>[string fname="in_tasks_quality.dat"]</i>
+  </p>
+  <p>
+  
+  </p>
+</li>
+<li><p>
+  <strong><a name="PrintInterruptData">PrintInterruptData</a></strong>
+  <i>[string fname="interrupt.dat"]</i>
   </p>
   <p>
   
@@ -3644,7 +3695,12 @@ a single, complete file for each trigger.
   <i>&lt;cString fname&gt;</i>
   </p>
   <p>
-  
+    Sets up a population based on a save file generated by <a href="#SaveClone">SaveClone</a>
+    or WRITE_CLONE (an analyze command).  Note that a clone only consists of
+    the genomes in the population, and their current state is lost, so the
+    run may not proceed identically as it would have if it had continued as
+    it was going.
+
   </p>
 </li>
 <li><p>
@@ -3672,13 +3728,26 @@ a single, complete file for each trigger.
   <p>
     Sets up a population based on a save file such as written out by
   SavePopulation. It is also possible to append a history file to the
-  save file, in order to preserve the history of a previous run.
+  save file, in order to preserve the history of a previous run.<br>
+  <i>update</i> allows user to set the current update number to a new value
+
+  </p>
+</li>
+<li><p>
+  <strong><a name="LoadSexPopulation">LoadSexPopulation</a></strong>
+  <i>&lt;cString fname&gt; [int update=-1]</i>
+  </p>
+  <p>
+    Sets up a sexual population based on a save file such as written out by
+  SaveSexPopulation. It is also possible to append a history file to the
+  save file, in order to preserve the history of a previous run.<br>
+  <i>update</i> allows user to set the current update number to a new value
 
   </p>
 </li>
 <li><p>
   <strong><a name="LoadStructuredPopulation">LoadStructuredPopulation</a></strong>
-  <i>&lt;cString fname&gt; [int update=-1]</i>
+  <i>&lt;cString fname&gt; [int update=-1] [int cellid_offset=0] [int lineage_offset=0]</i>
   </p>
   <p>
   
@@ -3698,13 +3767,13 @@ a single, complete file for each trigger.
   <i>[string fname=""]</i>
   </p>
   <p>
-    Save a clone of this organism to the file specified; if no filename is
+    Save a clone of this population to the file specified; if no filename is
   given, use the name clone.<em>update</em>.  The update number allows regular
   clones with distinct filenames to be saved with the same periodic event.
   Running <kbd>avida -l filename</kbd> will start an Avida population with the
   saved clone.  Note that a clone only consists of the genomes in
   the population, and their current state is lost, so the run may not
-  proceed identically as to if it had continued as it was going.
+  proceed identically as it would have continued as it was going.
 
   </p>
 </li>
@@ -3723,7 +3792,9 @@ a single, complete file for each trigger.
   <i>[string fname=""]</i>
   </p>
   <p>
-  
+    This action is used to output all of the ancestors of the currently
+  living population to the file specified, or <kbd>historic-<em>update</em>.pop</kbd>.
+
   </p>
 </li>
 <li><p>
@@ -3752,7 +3823,13 @@ a single, complete file for each trigger.
   <i>[string fname=""]</i>
   </p>
   <p>
-  
+    Save the genotypes and lots of statistics about a population where 
+  organisms have two parents to the
+  file specified; if not filename is given, use the name
+  <kbd>detail-<em>update</em>.pop</kbd>.  As with clones, the update number
+  allows a single event to produce many detail files.  The details are used
+  to collect crossection data about the population.
+
   </p>
 </li>
 <li><p>

@@ -41,7 +41,7 @@ public:
   cOrgMessage();
 	
   //! Constructor that takes a pointer to the sending organism.
-  cOrgMessage(cOrganism* sender);
+  cOrgMessage(cOrganism* sender, int messageType = 0);
   
   cOrganism* GetSender() const { return m_pSender; }
   cOrganism* GetReceiver() const { return m_pReceiver; }
@@ -58,10 +58,13 @@ public:
 
   int GetReceiverCellID() const { return m_receiverCellID; }
   int GetReceiverOrgID() const { return m_receiverOrgID; }
+	
+	int GetMessageType() const { return m_messageType; }
 
 private:
   cOrganism* m_pSender;
   cOrganism* m_pReceiver;
+	int m_messageType;
   unsigned int m_data;
   unsigned int m_label;
 

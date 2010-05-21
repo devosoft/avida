@@ -240,10 +240,9 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   }
 	
 	// HGT Mutations - NOT COUNTED
-	// These are location-dependent, hence they are implemented in cPopulationInterface.
-	if(m_world->GetConfig().ENABLE_HGT.Get()
-		 && (m_world->GetConfig().HGT_MUTATION_P.Get() > 0.0)
-		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_MUTATION_P.Get()))) {
+	// HGT is a location-dependent random process; each type is tested over in
+	// cPopulationInterface.
+	if(m_world->GetConfig().ENABLE_HGT.Get()) {
 		m_organism->GetOrgInterface().DoHGTMutation(ctx, offspring_genome);
 	}
   

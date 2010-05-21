@@ -52,6 +52,7 @@
 #include <cmath>
 #include <cerrno>
 #include <map>
+#include <algorithm>
 
 class cBioGroup;
 
@@ -78,6 +79,7 @@ STATS_OUT_FILE(PrintDominantData,           dominant.dat        );
 STATS_OUT_FILE(PrintStatsData,              stats.dat           );
 STATS_OUT_FILE(PrintCountData,              count.dat           );
 STATS_OUT_FILE(PrintMessageData,            message.dat         );
+STATS_OUT_FILE(PrintInterruptData,          interrupt.dat       );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
@@ -2439,6 +2441,64 @@ public:
   }
 };
 
+/*! Calculate and print average edit distance between organisms in the current population.
+ 
+ Here we calculate the average edit distance between sample_size pairs of organisms
+ from the current population, selected at random with replacement.
+ */
+class cActionPrintEditDistance : public cAction {
+public:
+  cActionPrintEditDistance(cWorld* world, const cString& args) 
+	: cAction(world, args)
+	, m_sample_size(100)
+	, m_filename("edit_distance.dat") {
+    cString largs(args);
+		if(largs.GetSize()) { m_sample_size = static_cast<unsigned int>(largs.PopWord().AsInt()); }
+    if(largs.GetSize()) {	m_filename = largs.PopWord();	}
+  }
+
+  static const cString GetDescription() { return "Arguments: [sample_size [filename]]"; }
+
+  void Process(cAvidaContext& ctx) {
+		cDataFile& df = m_world->GetDataFile(m_filename);
+		std::vector<int> occupied_cells(m_world->GetPopulation().GetNumOrganisms());
+		std::vector<int>::iterator oiter=occupied_cells.begin();
+		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+			if(m_world->GetPopulation().GetCell(i).IsOccupied()) {
+				*oiter = i;
+				++oiter;
+			}
+		}
+
+		std::random_shuffle(occupied_cells.begin(), occupied_cells.end());
+		if(occupied_cells.size() % 2) {
+			occupied_cells.pop_back();
+		}
+		
+		unsigned int max_pairs = occupied_cells.size()/2;
+		unsigned int sample_pairs = std::min(m_sample_size, max_pairs);
+		
+		cDoubleSum edit_distance;
+		for(unsigned int i=0; i<sample_pairs; ++i) {
+			cOrganism* a = m_world->GetPopulation().GetCell(occupied_cells.back()).GetOrganism(); 
+			occupied_cells.pop_back();
+			cOrganism* b = m_world->GetPopulation().GetCell(occupied_cells.back()).GetOrganism(); 
+			occupied_cells.pop_back();
+			edit_distance.Add(cGenomeUtil::FindEditDistance(a->GetGenome(), b->GetGenome()));
+		}
+		
+		df.Write(m_world->GetStats().GetUpdate(), "Update [update]");
+		df.Write(edit_distance.N(), "Number of pairs in sample [pairs]");
+		df.Write(edit_distance.Average(), "Average edit distance [distance]");
+		df.Endl();
+	}
+	
+private:
+	unsigned int m_sample_size; //!< Number of pairs of organisms to sample for diversity calculation.
+  cString m_filename;
+};
+
+
 class cActionDumpEnergyGrid : public cAction
 {
 private:
@@ -3105,6 +3165,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintStatsData>("PrintStatsData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
   action_lib->Register<cActionPrintMessageData>("PrintMessageData");
+  action_lib->Register<cActionPrintInterruptData>("PrintInterruptData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
@@ -3243,11 +3304,27 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpCellDataGrid>("DumpCellDataGrid");
   action_lib->Register<cActionDumpSleepGrid>("DumpSleepGrid");
   
-  // Print Settings
-  action_lib->Register<cActionSetVerbose>("SetVerbose");
   
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");
   action_lib->Register<cActionPrintMigrationData>("PrintMigrationData");
+	
+  action_lib->Register<cActionPrintReputationData>("PrintReputationData");
+	action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
+  action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
+	action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
+	
+	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
+	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");	
+	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
+	
+  action_lib->Register<cActionSetVerbose>("SetVerbose");
+  action_lib->Register<cActionSetVerbose>("VERBOSE");
+  
+  action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
+  action_lib->Register<cActionCalcConsensus>("CalcConsensus");
+	action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
+	
+	
 
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionPrintAverageData>("print_average_data");
@@ -3300,21 +3377,4 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
   action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
   action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");
-	
-	// Reputation
-  action_lib->Register<cActionPrintReputationData>("PrintReputationData");
-	action_lib->Register<cActionPrintDirectReciprocityData>("PrintDirectReciprocityData");
-  action_lib->Register<cActionPrintStringMatchData>("PrintStringMatchData");
-	action_lib->Register<cActionPrintShadedAltruists>("PrintShadedAltruists");
-
-	// Group Formation
-	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
-	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
-
-	// hgt
-	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
-	
-  action_lib->Register<cActionSetVerbose>("VERBOSE");
-  
-  action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
 }

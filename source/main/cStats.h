@@ -329,9 +329,9 @@ private:
   int m_spec_waste;
   
   // Number of organisms killed by kill actions
-  int num_orgs_killed;
-	int num_unoccupied_cell_kill_attempts;
-  int num_cells_scanned_at_kill;
+  cIntSum sum_orgs_killed;
+  cIntSum sum_unoccupied_cell_kill_attempts;
+  cIntSum sum_cells_scanned_at_kill;
   
   // Number of migrations that have been made
   int num_migrations;
@@ -546,9 +546,9 @@ public:
 				
   void IncExecuted() { num_executed++; }
   
-  void IncNumOrgsKilled() { num_orgs_killed++; }
-	void IncNumUnoccupiedCellAttemptedToKill() { num_unoccupied_cell_kill_attempts++; }
-  void IncNumCellsScannedAtKill() { num_cells_scanned_at_kill++; }
+  void AddNumOrgsKilled(long num) { sum_orgs_killed.Add(num); }
+	void AddNumUnoccupiedCellAttemptedToKill(long num) { sum_unoccupied_cell_kill_attempts.Add(num); }
+  void AddNumCellsScannedAtKill(long num) { sum_cells_scanned_at_kill.Add(num); }
   void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
@@ -724,8 +724,8 @@ public:
   double GetAveSpeculative() const { return (m_spec_num) ? ((double)m_spec_total / (double)m_spec_num) : 0.0; }
   int GetSpeculativeWaste() const { return m_spec_waste; }
   
-  int GetNumOrgsKilled() const { return num_orgs_killed; }
-  int GetNumCellsScannedAtKill() const { return num_cells_scanned_at_kill; }
+  double GetAvgNumOrgsKilled() const { return sum_orgs_killed.Average(); }
+  double GetAvgNumCellsScannedAtKill() const { return sum_cells_scanned_at_kill.Average(); }
   int GetNumMigrations() const { return num_migrations; }
 
   // this value gets recorded when a creature with the particular
@@ -748,6 +748,7 @@ public:
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
 	void PrintMessageData(const cString& filename);
+  void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);
   void PrintTasksData(const cString& filename);
   void PrintTasksExeData(const cString& filename);

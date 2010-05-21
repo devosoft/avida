@@ -34,6 +34,8 @@
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cTestCPU.h"
+#include "cRandom.h"
+#include "cInstSet.h"
 
 #include <cassert>
 #include <algorithm>
@@ -43,6 +45,23 @@
 #define NULL 0
 #endif
 
+
+cPopulationInterface::cPopulationInterface(cWorld* world) 
+: m_world(world)
+, m_cell_id(-1)
+, m_deme_id(-1)
+, m_hgt_support(0) {
+}
+
+cPopulationInterface::~cPopulationInterface() {
+	if(m_hgt_support) {
+		delete m_hgt_support;
+	}
+}
+
+cOrganism* cPopulationInterface::GetOrganism() {
+	return GetCell()->GetOrganism();
+}
 
 cPopulationCell* cPopulationInterface::GetCell() { 
 	return &m_world->GetPopulation().GetCell(m_cell_id);
@@ -119,7 +138,7 @@ void cPopulationInterface::Rotate(int direction)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-
+	
   if (direction >= 0) cell.ConnectionList().CircNext();
   else cell.ConnectionList().CircPrev();
 }
@@ -181,10 +200,10 @@ void cPopulationInterface::Kaboom(int distance)
 void cPopulationInterface::SpawnDeme()
 {
   // const int num_demes = m_world->GetPopulation().GetNumDemes();
-
+	
   // Spawn the current deme; no target ID will put it into a random deme.
   const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();
-
+	
   m_world->GetPopulation().SpawnDeme(deme_id);
 }
 
@@ -195,16 +214,16 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
   
   switch(m_world->GetConfig().NET_STYLE.Get())
   {
-  case 1: // Receiver Facing
+		case 1: // Receiver Facing
     {
       cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
       cOrgSinkMessage* msg = NULL;
       if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL) return msg;
     }
-    break;
-    
-  case 0: // Random Next - First Available
-  default:
+			break;
+			
+		case 0: // Random Next - First Available
+		default:
     {
       const int num_neighbors = cell.ConnectionList().GetSize();
       for (int i = 0; i < num_neighbors; i++) {
@@ -215,7 +234,7 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
         if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL ) return msg;
       }
     }
-    break;
+			break;
   }
   
   return NULL;
@@ -310,7 +329,7 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
 bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
 	assert(cell.IsOccupied()); // This organism; sanity.
-
+	
   cPopulationCell* rcell = cell.ConnectionList().GetFirst();
   assert(rcell != 0); // Cells should never be null.	
 	return SendMessage(msg, *rcell);
@@ -342,7 +361,7 @@ bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
   bool successfully_sent(false);
   cPopulationCell& scell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(scell.IsOccupied()); // This organism; sanity.
-
+	
   const int ALARM_SELF = m_world->GetConfig().ALARM_SELF.Get(); // does an alarm affect the sender; 0=no  non-0=yes
   
   if(bcast_range > 1) { // multi-hop messaging
@@ -350,13 +369,13 @@ bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
     for(int i = 0; i < deme.GetSize(); i++) {
       int possible_receiver_id = deme.GetCellID(i);
       cPopulationCell& rcell = m_world->GetPopulation().GetCell(possible_receiver_id);
-    
+			
       if(rcell.IsOccupied() && possible_receiver_id != GetCellID()) {
         //check distance
         pair<int, int> sender_pos = deme.GetCellPosition(GetCellID());
         pair<int, int> possible_receiver_pos = deme.GetCellPosition(possible_receiver_id);
         int hop_distance = max( abs(sender_pos.first  - possible_receiver_pos.first),
-                              abs(sender_pos.second - possible_receiver_pos.second));
+															 abs(sender_pos.second - possible_receiver_pos.second));
         if(hop_distance <= bcast_range) {
           // send alarm to organisms
           cOrganism* recvr = rcell.GetOrganism();
@@ -370,7 +389,7 @@ bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
     for(int i = 0; i < scell.ConnectionList().GetSize(); i++) {
       cPopulationCell* rcell = scell.ConnectionList().GetPos(i);
       assert(rcell != NULL); // Cells should never be null.
-
+			
       // Fail if the cell we're facing is not occupied.
       if(!rcell->IsOccupied())
         continue;
@@ -508,7 +527,7 @@ void cPopulationInterface::RotateToGreatestReputationWithDifferentTag(int tag)
 	if (high_rep_orgs.size() > 0) {
 		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size()); 
 		int high_org_id = high_rep_orgs[rand_num];
-
+		
 		for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
 			const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
 			
@@ -615,92 +634,249 @@ void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
 }
 
 
+/*! Called when this individual is the donor organism during conjugation.
+ 
+ This method causes this individual to "donate" a fragment of its own genome to
+ another organism selected from the population.
+ */
+void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
+	cPopulationCell* target=0;
+	
+	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
+		case 0: { // selected at random from neighborhood
+			std::set<cPopulationCell*> occupied_cell_set;
+			GetCell()->GetOccupiedNeighboringCells(occupied_cell_set, 1);
+			if(occupied_cell_set.size()==0) {
+				// nothing to do here, there are no neighbors
+				return;
+			}
+			std::set<cPopulationCell*>::iterator selected=occupied_cell_set.begin();
+			std::advance(selected, ctx.GetRandom().GetInt(occupied_cell_set.size()));
+			target = *selected;
+			break;
+		}
+		case 1: { // faced individual
+			target = GetCellFaced();
+			if(!target->IsOccupied()) {
+				// nothing to do, we're facing an empty cell.
+				return;
+			}
+			break;
+		}
+		default: {
+			m_world->GetDriver().RaiseFatalException(1, "HGT_CONJUGATION_METHOD is set to an invalid value.");
+			break;
+		}
+	}
+	assert(target != 0);
+	fragment_list_type fragments;
+	cGenomeUtil::RandomSplit(ctx, 
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
+													 GetOrganism()->GetGenome(),
+													 fragments);
+	target->GetOrganism()->GetOrgInterface().ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);
+}
+
+
+/*! Called when this organism "requests" an HGT conjugation.
+ 
+ Technically, organisms don't request an HGT conjugation.  However, this provides
+ an alternative to population-level conjugational events.  Specifically, whenever
+ an organism replicates, there is the possibility that its offspring conjugates
+ with another organism in the population -- that is what we check here.
+ 
+ This method is closely related to HGT donation, except here we're looking for
+ the donatOR, instead of the donatEE.
+ */
+void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
+	cPopulationCell* source=0;
+	
+	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
+		case 0: { // selected at random from neighborhood
+			std::set<cPopulationCell*> occupied_cell_set;
+			GetCell()->GetOccupiedNeighboringCells(occupied_cell_set, 1);
+			if(occupied_cell_set.size()==0) {
+				// nothing to do here, there are no neighbors
+				return;
+			}
+			std::set<cPopulationCell*>::iterator selected=occupied_cell_set.begin();
+			std::advance(selected, ctx.GetRandom().GetInt(occupied_cell_set.size()));
+			source = *selected;
+			break;
+		}
+		case 1: { // faced individual
+			source = GetCellFaced();
+			if(!source->IsOccupied()) {
+				// nothing to do, we're facing an empty cell.
+				return;
+			}
+			break;
+		}
+		default: {
+			m_world->GetDriver().RaiseFatalException(1, "HGT_CONJUGATION_METHOD is set to an invalid value.");
+			break;
+		}
+	}
+	assert(source != 0);
+	fragment_list_type fragments;
+	cGenomeUtil::RandomSplit(ctx, 
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
+													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
+													 source->GetOrganism()->GetGenome(),
+													 fragments);
+	ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);	
+}
+
+
 /*! Perform an HGT mutation on this offspring. 
  
  HGT mutations are location-dependent, hence they are piped through the populatin
  interface as opposed to being implemented in the CPU or organism.
- 
- If this method is called, an HGT mutation of some kind is imminent.  All that's left
- is to actually *do* the mutation.  We only do *one* HGT mutation each time this method
+
+ There is the possibility that more than one HGT mutation occurs when this method 
  is called.
  */
 void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
-	// get this organism's cell:
-	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+	InitHGTSupport();
 	
-	// do we have any fragments available?
-	if(cell.CountGenomeFragments() == 0) { return; }
+	// first, gather up all the fragments that we're going to be inserting into this offspring:
+	// these come from a per-replication conjugational event:
+	if((m_world->GetConfig().HGT_CONJUGATION_P.Get() > 0.0)
+		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_CONJUGATION_P.Get()))) {
+		DoHGTConjugation(ctx);
+	}	
+	
+	// the pending list includes both the fragments selected via the above process,
+	// as well as from population-level conjugational events (see cPopulationActions.cc:cActionAvidianConjugation).
+	fragment_list_type& fragments = m_hgt_support->_pending;
 
-	// select the fragment and figure out where we're putting it:
-	fragment_list_type::iterator selected;
-	cGenomeUtil::substring_match location;
-	switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
-		case 0: { // random selection
-			HGTRandomFragmentSelection(ctx, offspring, cell.GetFragments(), selected, location);
-			break;
+	// these come from "natural" competence (ie, eating the dead):
+	if((m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)
+		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_COMPETENCE_P.Get()))) {
+		
+		// get this organism's cell:
+		cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+		
+		// the hgt source controls where the genetic material for HGT comes from.
+		switch(m_world->GetConfig().HGT_SOURCE.Get()) {
+			case 0: { // source is other genomes, nothing to do here (default)
+				break;
+			}
+			case 1: { // source is the parent (a control)
+				// this is a little hackish, but this is the cleanest way to make sure
+				// that all downstream stuff works right.
+				cell.ClearFragments();
+				cell.AddGenomeFragments(cell.GetOrganism()->GetGenome());
+				break;
+			}
+			default: { // error
+				m_world->GetDriver().RaiseFatalException(1, "HGT_SOURCE is set to an invalid value.");
+				break;
+			}
 		}
-		case 1: { // random selection with redundant instruction trimming
-			HGTTrimmedFragmentSelection(ctx, offspring, cell.GetFragments(), selected, location);
-			break;
-		}
-		case 2: { // random selection and random placement
-			HGTRandomFragmentPlacement(ctx, offspring, cell.GetFragments(), selected, location);
-			break;
-		}
-		default: { // error
-			m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
-			break;
+		
+		// do we have any fragments available?
+		if(cell.CountGenomeFragments() > 0) {
+			// add a randomly-selected fragment to the list of fragments to be HGT'd,
+			// remove it from the cell, and adjust the level of HGT resource.
+			fragment_list_type::iterator selected=cell.GetFragments().begin();
+			std::advance(selected, ctx.GetRandom().GetInt(cell.GetFragments().size()));
+			fragments.insert(fragments.end(), *selected);			
+			m_world->GetPopulation().AdjustHGTResource(-selected->GetSize());
+			cell.GetFragments().erase(selected);
 		}
 	}
 	
-	// do the mutation; we currently support insertions and replacements, but this can
-	// be extended in the same way as fragment selection if need be.
-	if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
-		// insert the fragment just after the final location:
-		offspring.Insert(location.end, *selected);
-	} else {
-		// replacement: replace [begin,end) instructions in the genome with the fragment,
-		// respecting circularity.
-		offspring.Replace(*selected, location.begin, location.end);
+	// now, for each fragment being HGT'd, figure out where to put it:
+	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
+		cGenomeUtil::substring_match location;
+		switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
+			case 0: { // random selection
+				HGTMatchPlacement(ctx, offspring, i, location);
+				break;
+			}
+			case 1: { // random selection with redundant instruction trimming
+				HGTTrimmedPlacement(ctx, offspring, i, location);
+				break;
+			}
+			case 2: { // random selection and random placement
+				HGTRandomPlacement(ctx, offspring, i, location);
+				break;
+			}
+			default: { // error
+				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
+				break;
+			}
+		}
+		
+		// at this stage, we have a fragment and a location we're going to put it.
+		// there are various transformations to this fragment that we could perform,
+		// more as controls than anything else.
+		switch(m_world->GetConfig().HGT_FRAGMENT_XFORM.Get()) {
+			case 0: { // no transformation.
+				break;
+			}
+			case 1: { // random shuffle of the instructions in the fragment.
+				cGenomeUtil::RandomShuffle(ctx, *i);
+				break;
+			}
+			case 2: { // replace the instructions in the fragment with random instructions.
+				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+				for(int j=0; j<i->GetSize(); ++j) {
+					(*i)[j] = instset.GetRandomInst(ctx);
+				}
+				break;
+			}
+			default: { // error
+				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_XFORM is set to an invalid value.");
+				break;
+			}				
+		}
+		
+		// do the mutation; we currently support insertions and replacements, but this can
+		// be extended in the same way as fragment selection if need be.
+		if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
+			// insert the fragment just after the final location:
+			offspring.Insert(location.end, *i);
+		} else {
+			// replacement: replace [begin,end) instructions in the genome with the fragment,
+			// respecting circularity.
+			offspring.Replace(*i, location.begin, location.end);
+		}
+		
+		// stats tracking:
+		m_world->GetStats().GenomeFragmentInserted(GetOrganism(), *i, location);
 	}
 	
-	// resource utilization, cleanup, and stats tracking:
-	m_world->GetPopulation().AdjustHGTResource(-selected->GetSize());
-	m_world->GetStats().GenomeFragmentInserted(cell.GetOrganism(), *selected, location);
-	cell.GetFragments().erase(selected);
+	// clean-up; be sure to empty the pending list so that we don't end up doing an HGT
+	// operation multiple times on the same fragment.
+	fragments.clear();
 }
 
 
-/*! Randomly select the fragment used for HGT mutation.
+/*! Place the fragment at the location of best match.
  */
-void cPopulationInterface::HGTRandomFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																											fragment_list_type& fragments, fragment_list_type::iterator& selected,
-																											substring_match& location) {
-	// randomly select the genome fragment for HGT:
-	selected=fragments.begin();
-	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
-
+void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const cGenome& offspring,
+																						 fragment_list_type::iterator& selected,
+																						 substring_match& location) {
 	// find the location within the offspring's genome that best matches the selected fragment:
 	location = cGenomeUtil::FindUnbiasedCircularMatch(ctx, offspring, *selected);
 }
 
 
-/*! Randomly select the fragment used for HGT mutation, trimming redundant instructions.
- 
- In this fragment selection method, the fragment itself is selected randomly, but the
+/*! Place the fragment at the location of best match, with redundant instructions trimmed.
+
+ In this fragment selection method, the
  match location within the genome is calculated on a "trimmed" fragment.  Specifically,
  the trimmed fragment has all duplicate instructions at its end removed prior to the match.
  
  Mutations to the offspring are still performed using the entire fragment, so this effectively
  increases the insertion rate.  E.g., hgt(abcde, abcccc) -> abccccde.
  */
-void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const cGenome& offspring,
-																											 fragment_list_type& fragments, fragment_list_type::iterator& selected,
+void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const cGenome& offspring,
+																											 fragment_list_type::iterator& selected,
 																											 substring_match& location) {
-	// randomly select the genome fragment for HGT:
-	selected=fragments.begin();
-	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
-	
 	// copy the selected fragment, trimming redundant instructions at the end:
 	cGenome trimmed(*selected);
 	while((trimmed.GetSize() >= 2) && (trimmed[trimmed.GetSize()-1] == trimmed[trimmed.GetSize()-2])) {
@@ -712,19 +888,15 @@ void cPopulationInterface::HGTTrimmedFragmentSelection(cAvidaContext& ctx, const
 }
 
 
-/*! Random selection of the fragment used for HGT mutation, located at a random position.
+/*! Place the fragment at a random location.
  
- Here we select a random fragment and a random location for that fragment within the offspring.
+ Here we select a random location for the fragment within the offspring.
  The beginning of the fragment location is selected at random, while the end is selected a
  random distance (up to the length of the selected fragment * 2) instructions away.
  */
-void cPopulationInterface::HGTRandomFragmentPlacement(cAvidaContext& ctx, const cGenome& offspring,
-																fragment_list_type& fragments, fragment_list_type::iterator& selected,
-																substring_match& location) {
-	// randomly select the genome fragment for HGT:
-	selected=fragments.begin();
-	std::advance(selected, ctx.GetRandom().GetUInt(fragments.size()));
-
+void cPopulationInterface::HGTRandomPlacement(cAvidaContext& ctx, const cGenome& offspring,
+																											fragment_list_type::iterator& selected,
+																											substring_match& location) {
 	// select a random location within the offspring's genome for this fragment to be
 	// inserted:
 	location.begin = ctx.GetRandom().GetUInt(offspring.GetSize());
@@ -733,3 +905,9 @@ void cPopulationInterface::HGTRandomFragmentPlacement(cAvidaContext& ctx, const 
 	location.resize(offspring.GetSize());
 }
 
+/*! Called when this organism is the receiver of an HGT donation.
+ */
+void cPopulationInterface::ReceiveHGTDonation(const cGenome& fragment) {
+	InitHGTSupport();
+	m_hgt_support->_pending.push_back(fragment);
+}

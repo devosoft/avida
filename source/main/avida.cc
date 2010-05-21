@@ -126,8 +126,8 @@ void PrintVersionBanner()
   cout << "Lead Developers: David M. Bryson (Avida) and Kaben Nanlohy (Avida-ED)" << endl << endl;
 
   cout << "Active contributors include:  Christoph Adami, Brian Baer, Jeffrey Barrick," << endl
-       << "Benjamin Beckmann, Jeffrey Clune, Art Covert, Santiago Elena, Sherri Goings," << endl
-       << "Heather Goldsby, David Knoester, Richard Lenski, Philip McKinley," << endl
+       << "Benjamin Beckmann, Jeffrey Clune, Brian Connelly, Art Covert, Santiago Elena," << endl
+       << "Sherri Goings, Heather Goldsby, David Knoester, Richard Lenski, Philip McKinley," << endl
        << "Dusan Misevic, Elizabeth Ostrowski, Robert Pennock, Matthew Rupp, Eric Torng," << endl
        << "Michael Vo, Bess Walker, and Gabriel Yedid" << endl << endl;
 

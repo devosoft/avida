@@ -52,6 +52,16 @@
 # define AVIDA_PLATFORM_APPLE 1
 #endif
 
+#if defined(__hppa__) || defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
+    (defined(__MIPS__) && defined(__MISPEB__)) || defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
+    defined(__sparc__)
+# define AVIDA_PLATFORM_BIG_ENDIAN 1
+# define AVIDA_PLATFORM_LITTLE_ENDIAN 0
+#else
+# define AVIDA_PLATFORM_BIG_ENDIAN 0
+# define AVIDA_PLATFORM_LITTLE_ENDIAN 1
+#endif
+
 
 #ifdef DEBUG
 # include <cstdlib>

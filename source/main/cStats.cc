@@ -27,6 +27,7 @@
 
 #include "cDataFile.h"
 #include "cEnvironment.h"
+#include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
@@ -132,9 +133,6 @@ cStats::cStats(cWorld* world)
   , m_spec_total(0)
   , m_spec_num(0)
   , m_spec_waste(0)
-  , num_orgs_killed(0)
-	, num_unoccupied_cell_kill_attempts(0)
-  , num_cells_scanned_at_kill(0)
   , num_migrations(0)
   , m_deme_num_repls(0)
 	, m_deme_num_repls_treatable(0)
@@ -571,9 +569,6 @@ void cStats::ProcessUpdate()
   m_spec_num = 0;
   m_spec_waste = 0;
   
-  num_orgs_killed = 0;
-	num_unoccupied_cell_kill_attempts = 0;
-  num_cells_scanned_at_kill = 0;
   num_migrations = 0;
 }
 
@@ -865,7 +860,7 @@ void cStats::PrintCountData(const cString& filename)
 void cStats::PrintMessageData(const cString& filename) {
 	cDataFile& df = m_world->GetDataFile(filename);
 	
-  df.WriteComment( "Number of organsism to organisms messages\n" );
+  df.WriteComment( "Number of organism to organism messages\n" );
   
   df.Write( GetUpdate(), "update" );
   
@@ -884,11 +879,52 @@ void cStats::PrintMessageData(const cString& filename) {
 		totalMessagesFailed  += pop.GetDeme(i).GetMessageSendFailed();
 	}
 	
-	df.Write(totalMessagesSent, "Totlal messages sent");
+	df.Write(totalMessagesSent, "Total messages sent");
 	df.Write(totalMessagesSuccessfullySent, "Sent successfully");
 	df.Write(totalMessagesDropped, "Dropped");
 	df.Write(totalMessagesFailed, "Failed");
 	
+  df.Endl();
+}
+
+void cStats::PrintInterruptData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+  df.WriteComment( "Total number of organisms interrupted\n" );
+  
+  df.Write( GetUpdate(), "update" );
+  
+  cPopulation& pop = m_world->GetPopulation();
+  int numDemes = pop.GetNumDemes();
+  
+	unsigned int totalOrgsInterrupted(0);
+  unsigned int totalThreads(0);
+	const int NUM_INTERRUPT_MSG_TYPES = 10;
+  int interruptTypeCounts[NUM_INTERRUPT_MSG_TYPES] = {0};
+    
+	for( int i = 0; i < numDemes; ++i ){
+    const cDeme & cur_deme = m_world->GetPopulation().GetDeme(i);;
+    for (int j = 0; j < cur_deme.GetSize(); ++j) {
+      cPopulationCell& cur_cell = cur_deme.GetCell(j);
+      cOrganism* org = cur_cell.GetOrganism();
+      if (cur_cell.IsOccupied() == false) {
+        continue;
+      } else if (org->IsInterrupted()) {
+        ++totalOrgsInterrupted;
+        int numThreadsInOrg = org->GetHardware().GetNumThreads();
+        totalThreads += numThreadsInOrg;
+        for(int k = 0; k< numThreadsInOrg; ++k) {
+          ++interruptTypeCounts[org->GetHardware().GetThreadMessageTriggerType(k)];
+        }
+      }
+    }
+  }
+	
+	df.Write(totalOrgsInterrupted, "Total organisms interrupted");
+	df.Write(totalThreads, "Total threads");
+  for (int i = 0; i < NUM_INTERRUPT_MSG_TYPES; ++i) {
+    df.Write(interruptTypeCounts[i], "Interrupt Counts");
+  }
   df.Endl();
 }
 
@@ -2466,10 +2502,14 @@ void cStats::PrintNumOrgsKilledData(const cString& filename)
   df.WriteComment("First column is the current update and the second column lists the number of organisms killed");
   
   df.Write(m_update,   "Update");
-  df.Write(num_orgs_killed, "Num Orgs Killed");
-  df.Write(num_unoccupied_cell_kill_attempts, "Num Unoccupied Cell Kill Attempts");
-  df.Write(num_cells_scanned_at_kill, "Num Cells Scanned By Kill Event");
+  df.Write(sum_orgs_killed.Average(), "Avg Num Orgs Killed");
+  df.Write(sum_unoccupied_cell_kill_attempts.Average(), "Avg Num Unoccupied Cell Kill Attempts");
+  df.Write(sum_cells_scanned_at_kill.Average(), "Avg Num Cells Scanned By Kill Event");
   df.Endl();
+    
+  sum_orgs_killed.Clear();
+  sum_unoccupied_cell_kill_attempts.Clear();
+  sum_cells_scanned_at_kill.Clear();
 } //End PrintNumOrgsKilledData()
 
 void cStats::PrintMigrationData(const cString& filename)

@@ -44,6 +44,10 @@
 #include <numeric>
 #include <algorithm>
 
+#ifndef cDoubleSum_h
+#include "cDoubleSum.h"
+#endif
+
 /*
  Injects a single organism into the population.
  
@@ -582,6 +586,73 @@ class cActionInjectDemes : public cAction
 																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
 																					m_merit, m_lineage_label, m_neutral_metric);
 					m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+					
+				}
+			}
+		}
+	};
+
+/*! Injects an organism into all demes modulo a given number in the population. 
+ 
+ Parameters:
+ filename (string):
+ The filename of the genotype to load. If this is left empty, or the keyword
+ "START_CREATURE" is given, than the genotype specified in the genesis
+ file under "START_CREATURE" is used.
+ modulo default: 1 -- when the deme number modulo this number is 0, inject org
+ cell ID (integer) default: 0
+ The grid-point into which the organism should be placed.
+ merit (double) default: -1
+ The initial merit of the organism. If set to -1, this is ignored.
+ lineage label (integer) default: 0
+ An integer that marks all descendants of this organism.
+ neutral metric (double) default: 0
+ A double value that randomly drifts over time.
+ */
+class cActionInjectModuloDemes : public cAction
+	{
+	private:
+		cString m_filename;
+		int m_mod_num;
+		double m_merit;
+		int m_lineage_label;
+		double m_neutral_metric;
+	public:
+    cActionInjectModuloDemes(cWorld* world, const cString& args) : cAction(world, args), m_mod_num(1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+		{
+      cString largs(args);
+      if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+			if (largs.GetSize()) m_mod_num = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+      if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+		}
+		
+		static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+		
+		void Process(cAvidaContext& ctx)
+		{
+			cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+			if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+				for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
+					if (i % m_mod_num == 0) {
+							m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
+																							m_world->GetPopulation().GetDeme(i).GetCellID(0),
+																							m_merit, m_lineage_label, m_neutral_metric);
+							m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+						}
+				}
+			} else {
+				for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+					// WARNING: initial ancestor has already be injected into the population
+					//           calling this will overwrite it.
+					if (i==0 || (i % m_mod_num) ==0){
+						m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
+																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
+																					m_merit, m_lineage_label, m_neutral_metric);
+						m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+					}
 					
 				}
 			}
@@ -3460,10 +3531,10 @@ class cActionSeverGridCol : public cAction
  Arguments:
  row_id:  indicates the number of rows above the cut.
  default (or -1) = cut population in half
- min_col: First row to start cutting from
+ min_col: First column to start cutting from
  default = 0
- max_col: Last row to cut to
- default (or -1) = last row in population.
+ max_col: Last column to cut to
+ default (or -1) = last column in population.
  */
 class cActionSeverGridRow : public cAction
 	{
@@ -3606,15 +3677,15 @@ class cActionJoinGridCol : public cAction
 
 
 /*
- Remove the connections between cells along a column in an avida grid.
+ Join the connections between cells along a row in an avida grid.
  
  Arguments:
- row_id:  indicates the number of rows abovef the cut.
+ row_id:  indicates the number of rows above the join.
  default (or -1) = cut population in half
- min_col: First row to start cutting from
+ min_col: First column to start cutting from
  default = 0
  max_col: Last row to cut to
- default (or -1) = last row in population.
+ default (or -1) = last column in population.
  */
 class cActionJoinGridRow : public cAction
 	{
@@ -3929,78 +4000,33 @@ class cActionKillNBelowResourceThreshold : public cAction
       
       assert(res_id != -1);
       
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
       for(int i=0; i < m_numkills; i++) {
         target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
         level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+        cells_scanned++;
         
         if(level < m_threshold) {
           cPopulationCell& cell = pop.GetCell(target_cell);
           if (cell.IsOccupied()) {
             pop.KillOrganism(cell);
-            m_world->GetStats().IncNumOrgsKilled();
+            orgs_killed++;
           } else {
-            m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+            cells_empty++;
           }
         }
       }
       
-    } //End Process()
-  };
-
-
-/*
- Kill organisms in N randomly-chosen cells if the level of the given resource
- in the chosen cell is above the configured threshold
- 
- Parameters:
- - The number of cells to kill (default: 0)
- - The name of the resource
- - The amount of resource above which to execute the kill (default: 0)
- */
-
-class cActionKillNAboveResourceThreshold : public cAction
-  {
-  private:
-    cString m_resname;
-    int m_numkills;
-    double m_threshold;
-  public:
-    cActionKillNAboveResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numkills(0), m_threshold(0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_numkills = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_resname = largs.PopWord();
-      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
-    }
-    
-    static const cString GetDescription() { return "Arguments: [int numkills=0, string resource name, double threshold=0]"; }
-    
-    void Process(cAvidaContext& ctx)
-    {
-      double level;
-      int target_cell;
-      cPopulation& pop = m_world->GetPopulation();
-      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
-      
-      assert(res_id != -1);
-      
-      for(int i=0; i < m_numkills; i++) {
-        target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-        level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
-        
-        if(level > m_threshold) {
-          cPopulationCell& cell = pop.GetCell(target_cell);
-          if (cell.IsOccupied()) {
-            pop.KillOrganism(cell);
-            m_world->GetStats().IncNumOrgsKilled();
-          } else {
-            m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
-          }
-        }
-      }
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
       
     } //End Process()
   };
+
 
 
 /*
@@ -4057,6 +4083,10 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
       
       assert(res_id != -1);
       
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
       for (int i = 0; i < m_numradii; i++) {
 
         int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
@@ -4073,6 +4103,7 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
             for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
               if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
               
+              cells_scanned++;
               int row_adj = 0;
               int col_adj = 0;
 
@@ -4086,24 +4117,164 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
               
               int current_cell = (world_x * row_adj) + col_adj;
 							cPopulationCell& cell = pop.GetCell(current_cell);
-              m_world->GetStats().IncNumCellsScannedAtKill();
 
 							if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
 								pop.KillOrganism(cell);
-								m_world->GetStats().IncNumOrgsKilled();
+								orgs_killed++;
 							} else {
-								m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+								cells_empty++;
 							}
 
             }
           }
           
         }  // End if level at cell is below threshold
-        
+                
       } //End iterating through kill zones
+      
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
       
     } //End Process()
   };
+
+
+/*
+ Kill all organisms within a given radius of a randomly-chosen cell if the MEAN level
+ of the given resource selected neighborhood is below the given threshold.  Currently
+ only works for toruses and bounded grids.
+ 
+ Parameters:
+ - The number of kill radii to use (default: 0)
+ - The radius of the kill zone (default: 0)
+ - The name of the resource
+ - The amount of resource below which to execute the kill (default: 0)
+ - The fraction of orgs in the region to kill (1=all, 0.5 leave half) (default: 1) -- useful for controlling density with biofilms
+ */
+
+class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
+  {
+  private:
+    int m_numradii;
+    int m_radius;
+    cString m_resname;
+    double m_threshold;
+    double m_kill_density;
+  public:
+    cActionKillWithinRadiusMeanBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_radius = largs.PopWord().AsInt();
+      if (largs.GetSize()) m_resname = largs.PopWord();
+      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+      if (largs.GetSize()) m_kill_density = largs.PopWord().AsDouble();
+    }
+    
+    static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]"; }
+    
+    void Process(cAvidaContext& ctx)
+    {
+			const int world_x = m_world->GetPopulation().GetWorldX();
+			const int world_y = m_world->GetPopulation().GetWorldY();
+      const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+      
+      assert(m_numradii >= 0);
+      assert(m_radius >= 0);
+      assert(m_radius <= world_x);
+      assert(m_radius <= world_y);
+      assert(m_threshold >= 0.0);
+      assert(m_kill_density >= 0.0);
+      assert(m_kill_density <= 1.0);
+      assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
+      
+      cDoubleSum resourcesum;
+      
+      cPopulation& pop = m_world->GetPopulation();
+      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+      
+      assert(res_id != -1);
+      
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
+      for (int i = 0; i < m_numradii; i++) {
+        
+        int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+        resourcesum.Clear();
+        
+        const int current_row = target_cell / world_x;
+        const int current_col = target_cell % world_x;
+        
+        for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
+          
+          if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
+          
+          for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
+            if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
+            
+            int row_adj = 0;
+            int col_adj = 0;
+            
+            if(geometry == nGeometry::TORUS) {
+              row_adj = (row + world_y) % world_y;
+              col_adj = (col + world_x) % world_x;
+            } else if(geometry == nGeometry::GRID) {
+              row_adj = row;
+              col_adj = col;
+            }
+            
+            int current_cell = (world_x * row_adj) + col_adj;
+            resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));            
+            cells_scanned++;
+          }
+        }
+        
+        if(resourcesum.Average() < m_threshold) {
+          for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
+            
+            if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
+            
+            for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
+              if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
+              
+              int row_adj = 0;
+              int col_adj = 0;
+              
+              if(geometry == nGeometry::TORUS) {
+                row_adj = (row + world_y) % world_y;
+                col_adj = (col + world_x) % world_x;
+              } else if(geometry == nGeometry::GRID) {
+                row_adj = row;
+                col_adj = col;
+              }
+              
+              int current_cell = (world_x * row_adj) + col_adj;
+              cPopulationCell& cell = pop.GetCell(current_cell);
+              
+              if( (cell.IsOccupied())  && (ctx.GetRandom().P(m_kill_density)) ) {
+                pop.KillOrganism(cell);
+                orgs_killed++;
+              } else {
+                cells_empty++;
+              }
+              
+            }
+          }
+          
+        }
+        
+      } //End iterating through kill zones
+
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+      
+    } //End Process()
+  };
+
 
 /*
  Kill organisms within a given radius of a randomly-chosen cell if the level
@@ -4157,6 +4328,10 @@ public:
 		int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
 		
 		assert(res_id != -1);
+    
+    long cells_scanned = 0;
+    long orgs_killed = 0;
+    long cells_empty = 0;
 		
 		for (int i = 0; i < m_numradii; i++) {
 			
@@ -4184,21 +4359,26 @@ public:
 					
 					int current_cell = (world_x * row_adj) + col_adj;
 					cPopulationCell& cell = pop.GetCell(current_cell);
-					m_world->GetStats().IncNumCellsScannedAtKill();
+					cells_scanned++;
 					
 					double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell);
 					
 					if(level < m_threshold) {
 						if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
 							pop.KillOrganism(cell);
-							m_world->GetStats().IncNumOrgsKilled();
+							orgs_killed++;
 						} else {
-							m_world->GetStats().IncNumUnoccupiedCellAttemptedToKill();
+							cells_empty++;
 						}
 					}
 				}
 			}
 		}
+    
+    m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+    m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+    m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+    
 	}
 };
 
@@ -4230,25 +4410,38 @@ class cActionKillDemePercent : public cAction
       int target_cell;
       cPopulation& pop = m_world->GetPopulation();
       
+      long cells_scanned = 0;
+      long orgs_killed = 0;
+      long cells_empty = 0;
+      
       for (int d = 0; d < pop.GetNumDemes(); d++) {
         
         cDeme &deme = pop.GetDeme(d);
                 
         if(deme.IsTreatableNow()) {
-        
           for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
+            cells_scanned++;
             target_cell = deme.GetCellID(c); 
+            cPopulationCell& cell = pop.GetCell(target_cell);
           
             if(ctx.GetRandom().P(m_pctkills)) {
-              pop.KillOrganism(pop.GetCell(target_cell));
-              m_world->GetStats().IncNumOrgsKilled();
-            }
+              if(cell.IsOccupied()) {
+                pop.KillOrganism(pop.GetCell(target_cell));
+                orgs_killed++;
+              } else {
+                cells_empty++; 
+              }
+            }      
           
           } //End iterating through all cells
            
         } //End if deme is treatable
         
       } //End iterating through all demes
+      
+      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
       
     } //End Process()
 };
@@ -4306,18 +4499,61 @@ public:
  */
 class cActionDiffuseHGTGenomeFragments : public cAction {
 public:
-  static const cString GetDescription() { return "Arguments: <none>"; }
+	static const cString GetDescription() { return "Arguments: <none>"; }
+	
+	//! Constructor.
+	cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args) : cAction(world, args) {
+	}
+	
+	//! Process this event.
+	void Process(cAvidaContext& ctx) {
+		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
+		}
+	}
+};
+
+/*! Avidian conjugation.
+ 
+ This event is an approximation of bacterial conjugation.  Behind the scenes, this
+ is implemented as intra-lifetime HGT, and so requires that HGT be enabled.
+ 
+ Each time this event runs, each individual in the population has a configurable
+ probability of being the conjugate "donor."  If so, a genome fragment from that
+ individual is deposited in a buffer in the receiving organism.  When the receiver
+ next replicates, that fragment will be incorporated into its offspring.
+ 
+ \todo I suppose that the fragment could be inserted at runtime, but I fear there
+ would be... complications... to runtime changes to an organism's genome...
+ */
+class cActionAvidianConjugation : public cAction {
+public:
+	static const cString GetDescription() { return "Arguments: (prob. of donation)"; }
   
 	//! Constructor.
-  cActionDiffuseHGTGenomeFragments(cWorld* world, const cString& args) : cAction(world, args) {
+  cActionAvidianConjugation(cWorld* world, const cString& args) : cAction(world, args), m_donation_p(-1.0) {
+		cString largs(args);
+		if(largs.GetSize()) {
+			m_donation_p = largs.PopWord().AsDouble();
+		} 
+		
+		if((m_donation_p < 0.0) || (m_donation_p > 1.0)) {
+			world->GetDriver().RaiseFatalException(-1, "Conjugate event must include probability of donation [0..1].");
+		}
   }
   
 	//! Process this event.
   void Process(cAvidaContext& ctx) {
 		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			m_world->GetPopulation().GetCell(i).DiffuseGenomeFragments();
+			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();			
+			if(org && (m_donation_p > 0.0) && m_world->GetRandom().P(m_donation_p)) {
+				org->GetOrgInterface().DoHGTDonation(ctx);
+			}
 		}
 	}
+
+private:
+	double m_donation_p; //!< Per-individual probability of being a conjugate donor.
 };
 
 
@@ -4431,6 +4667,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectSequence>("InjectSequence");
   action_lib->Register<cActionInjectSequenceWithDivMutRate>("InjectSequenceWDivMutRate");
   action_lib->Register<cActionInjectDemes>("InjectDemes");
+	action_lib->Register<cActionInjectModuloDemes>("InjectModuloDemes");
   action_lib->Register<cActionInjectDemesFromNest>("InjectDemesFromNest");
   action_lib->Register<cActionInjectDemesRandom>("InjectDemesRandom");
 	
@@ -4513,11 +4750,12 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionPred_DemeResourceThresholdPredicate>("DemeResourceThresholdPredicate");
   
   action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
-  action_lib->Register<cActionKillNAboveResourceThreshold>("KillNAboveResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThreshold>("KillWithinRadiusBelowResourceThreshold");
+  action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
 	action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
 	
 	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
+	action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
 	
   // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
   action_lib->Register<cActionInject>("inject");

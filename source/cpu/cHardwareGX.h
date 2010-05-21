@@ -368,6 +368,10 @@ public:
   virtual int GetCurThread() const { return -1; }
   virtual int GetCurThreadID() const { return -1; }
  
+  // interrupt current thread
+  bool InterruptThread(int interruptType) { return false; }
+  int GetThreadMessageTriggerType(int _index) { return -1; }
+
    // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu) { return false; }
 

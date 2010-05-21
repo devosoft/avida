@@ -3335,9 +3335,10 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
   
   fout << "# All pairs edit distance" << endl;
   fout << "# 1: Num organism pairs" << endl;
-  fout << "# 2: Mean distance" << endl;
-  fout << "# 3: Max distance" << endl;
-  fout << "# 4: Frac distances above threshold (" << dist_threshold << ")" << endl;
+	fout << "# 2: Mean distance computed using (n*(n-1)/2) as all pairs." << endl;
+  fout << "# 3: Mean distance" << endl;
+  fout << "# 4: Max distance" << endl;
+  fout << "# 5: Frac distances above threshold (" << dist_threshold << ")" << endl;
   fout << endl;
   
   // Loop through all pairs of organisms.
@@ -3345,7 +3346,8 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
   int dist_max = 0;
   int pair_count = 0;
   int threshold_pair_count = 0;
-
+	double count = 0;
+	
   cAnalyzeGenotype * genotype1 = NULL;
   cAnalyzeGenotype * genotype2 = NULL;
   tListIterator<cAnalyzeGenotype> batch_it1(batch[cur_batch].List());
@@ -3353,6 +3355,7 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
   int watermark = 0;
   
   while ((genotype1 = batch_it1.Next()) != NULL) {
+		count ++;
     const int gen1_count = genotype1->GetNumCPUs();
 
     // Pair this genotype with itself for a distance of 0.
@@ -3376,7 +3379,9 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
     }
   }
   
+	count = (count * (count-1) ) /2;
   fout << pair_count << " "
+	     << ((double) dist_total) / count << " " 
        << ((double) dist_total) / (double) pair_count << " "
        << dist_max << " "
        << ((double) threshold_pair_count) / (double) pair_count << " "
@@ -6565,7 +6570,7 @@ void cAnalyze::WriteInjectEvents(cString cur_string)
     org_count += cur_count;
     const cGenome & genome = genotype->GetGenome();
     
-    fp << "u 0 inject_sequence "
+    fp << "u 0 InjectSequence "
       << genome.AsString() << " "
       << start_cell << " "
       << start_cell + cur_count << " "
@@ -6649,7 +6654,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
     const cGenome & genome = genotype->GetGenome();
     double cur_merit = start_merit;
     if (cur_merit < 0) cur_merit = genotype->GetMerit();
-    fp << "u 0 inject_sequence "
+    fp << "u 0 InjectSequence "
       << genome.AsString() << " "
       << inject_pos << " "
       << inject_pos + cur_count << " "
@@ -6665,7 +6670,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
     const cGenome & genome = genotype->GetGenome();
     double cur_merit = start_merit;
     if (cur_merit < 0) cur_merit = genotype->GetMerit();
-    fp << "u 0 inject_sequence "
+    fp << "u 0 InjectSequence "
       << genome.AsString() << " "
       << inject_pos << " "
       << inject_pos + cur_count << " "
@@ -6675,8 +6680,8 @@ void cAnalyze::WriteCompetition(cString cur_string)
     inject_pos += cur_count;
   }
   
-  fp << "u 0 sever_grid_row" << grid_side << endl;
-  fp << "u " << join_UD << " join_grid_row " << grid_side << endl;
+  fp << "u 0 SeverGridRow" << grid_side << endl;
+  fp << "u " << join_UD << " JoinGridRow " << grid_side << endl;
 }
 
 

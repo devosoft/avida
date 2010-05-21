@@ -261,6 +261,9 @@ public:
   int GetCurThread() const { return m_cur_thread; }
   int GetCurThreadID() const { return m_cur_thread; }
   
+  // interrupt current thread
+  bool InterruptThread(int interruptType) { return false; }
+  int GetThreadMessageTriggerType(int _index) { return -1; }
   
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu);

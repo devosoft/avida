@@ -81,6 +81,7 @@ private:
 	unsigned int MSG_dropped;
 	unsigned int MSG_SuccessfullySent;
 	unsigned int MSG_sent;
+  unsigned int numOrgsInterruted;
 	double energyInjectedIntoOrganisms; //! total amount of energy injected into seed organisms
 	double energyRemainingInDemeAtReplication; //! total amount of energy remaining in deme when deme was last replicated.
   double total_energy_testament; //! total amount of energy from suicide organisms for offspring deme
@@ -346,7 +347,7 @@ public:
 	unsigned int GetMessageSuccessfullySent() { return MSG_SuccessfullySent; }
 	unsigned int GetMessageDropped() { return MSG_dropped; }
 	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
-
+  
   // --- Pheromones --- //
   void AddPheromone(int absolute_cell_id, double value);
 	

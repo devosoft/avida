@@ -82,6 +82,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_neighborhood(0)
   , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
   , m_other_raw_materials(0)
   , m_num_donate(0)
@@ -126,6 +127,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_neighborhood(0)
   , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
   , m_other_raw_materials(0)
   , m_num_donate(0)
@@ -170,6 +172,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   , m_net(NULL)
   , m_msg(0)
   , m_opinion(0)
+  , m_neighborhood(0)
 {
   m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome, inst_set);
   
@@ -216,6 +219,7 @@ cOrganism::~cOrganism()
   if(m_msg) delete m_msg;
   if(m_opinion) delete m_opinion;  
   for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
+  if(m_neighborhood) delete m_neighborhood;
 }
 
 cOrganism::cNetSupport::~cNetSupport()
@@ -773,10 +777,10 @@ bool cOrganism::Divide_CheckViable()
   
   const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
   const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
-  if (required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0) {
-    if(immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0){
+  if (required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0)   {
+    if (immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
-            cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
+          cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
       return false; //  (divide fails)
     }
   }
@@ -857,8 +861,6 @@ void cOrganism::MessageSent(cAvidaContext& ctx, cOrgMessage& msg) {
 		while((bsize != -1) && (static_cast<int>(m_msg->sent.size()) > bsize)) {
 			m_msg->sent.pop_front();
 		}
-		// check to see if we've performed any tasks:
-		DoOutput(ctx);
 	}	
 }
 
@@ -872,12 +874,14 @@ bool cOrganism::SendMessage(cAvidaContext& ctx, cOrgMessage& msg) {
   assert(m_interface);
   InitMessaging();
 
+  // check to see if we've performed any tasks:
+  DoOutput(ctx, static_cast<int>(msg.GetData()));
+
   // if we sent the message:
   if(m_interface->SendMessage(msg)) {
 		MessageSent(ctx, msg);
     return true;
   }
-	
 	// importantly, m_interface->SendMessage() fails if we're running in the test CPU.
 	return false;
 }
@@ -922,6 +926,11 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 
 	msg.SetReceiver(this);
 	m_msg->received.push_back(msg);
+  
+  if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
+    // then create new thread and load its registers
+    m_hardware->InterruptThread(cHardwareBase::MSG_INTERRUPT);
+  }
 }
 
 
@@ -944,11 +953,15 @@ std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
 	return ret;
 }
 
-
 void cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
   DoOutput(ctx);
+  
+  if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {
+    // then create new thread and load its registers
+    m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
+  }
 } //End cOrganism::Move()
 
 bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range) {
@@ -1257,4 +1270,11 @@ bool cOrganism::CanReceiveString(int string_tag, int amount)
 	}
 	return val;
 	
+}
+
+bool cOrganism::IsInterrupted() {
+  for(int k = 0; k< GetHardware().GetNumThreads(); ++k)
+    if(GetHardware().GetThreadMessageTriggerType(k) != -1)
+      return true;
+  return false;
 }

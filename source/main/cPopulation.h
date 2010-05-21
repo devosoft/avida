@@ -241,10 +241,10 @@ public:
   // Saving and loading...
   bool SaveClone(std::ofstream& fp);
   bool LoadClone(std::ifstream& fp);
-  bool LoadDumpFile(cString filename, int update);
+  bool LoadDumpFile(cString filename, int update, bool sexualpop);
   bool SaveStructuredPopulation(const cString& filename);
   bool SaveStructuredPopulationBG(const cString& filename);
-  bool LoadStructuredPopulation(const cString& filename);
+  bool LoadStructuredPopulation(const cString& filename, int cellid_offset=0, int lineage_offset=0);
   bool DumpMemorySummary(std::ofstream& fp);
 
   bool OK();
@@ -366,6 +366,7 @@ private:
     int update_dead;
     tArray<int> cells;
     tArray<int> offsets;
+    tArray<int> lineage_labels;
     
     cGenotype *genotype;
     
