@@ -1,9 +1,9 @@
 /*
- *  cBioGroup.cc
+ *  cBioGroupData.h
  *  Avida
  *
- *  Created by David on 10/7/09.
- *  Copyright 2009 Michigan State University. All rights reserved.
+ *  Created by David on 5/26/10.
+ *  Copyright 2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,16 +22,30 @@
  *
  */
 
-#include "cBioGroup.h"
+#ifndef cBioGroupData_h
+#define cBioGroupData_h
 
-#include <cassert>
-
-
-cBioGroup::~cBioGroup()
+class cBioGroupData
 {
-  assert(m_a_refs == 0 && m_p_refs == 0);
-  
-  for (tArrayMap<cString, cBioGroupData*>::iterator t = m_data.begin(); t; t++) delete t->Value();
-}
+public:
+  virtual ~cBioGroupData() = 0;
+};
 
-cBioGroupData::~cBioGroupData() { ; }
+template<typename T> class tBioGroupData
+{
+private:
+  T* m_data;
+  
+  tBioGroupData(); // @not_implemented
+  tBioGroupData(const tBioGroupData&); // @not_implemented
+  tBioGroupData& operator=(const tBioGroupData&); // @not_implemented
+  
+public:
+  tBioGroupData(T* data) : m_data(data) { ; }
+  ~tBioGroupData() { delete m_data; }
+  
+  T* GetData() { return m_data; }
+};
+
+
+#endif

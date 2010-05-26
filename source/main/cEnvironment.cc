@@ -33,6 +33,7 @@
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cEnvReqs.h"
+#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
@@ -54,7 +55,6 @@
 #include "tAutoRelease.h"
 
 #include "cOrganism.h"
-#include "cGenotype.h"
 
 #include <iostream>
 #include <algorithm>

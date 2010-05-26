@@ -25,15 +25,28 @@
 #ifndef cBioGroup_h
 #define cBioGroup_h
 
+#include <typeinfo>
+
 #ifndef defs_h
 #include "defs.h"
+#endif
+#ifndef cBioGroupData_h
+#include "cBioGroupData.h"
 #endif
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
 #endif
+#ifndef cString_h
+#include "cString.h"
+#endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+#ifndef tArrayMap_h
+#include "tArrayMap.h"
+#endif
 
 class cDataFile;
-template<typename T> class tArray;
 
 
 class cBioGroup
@@ -41,6 +54,8 @@ class cBioGroup
 protected:
   int m_a_refs;
   int m_p_refs;
+  tArrayMap<cString, cBioGroupData*> m_data;
+  
   
 public:
   cBioGroup() : m_a_refs(0), m_p_refs(0) { ; }
@@ -66,6 +81,17 @@ public:
   int GetPassiveReferenceCount() const { return m_p_refs; }
   void AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
   void RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }
+  
+  template<typename T> void AttachData(T* data)
+  {
+    delete m_data.GetWithDefault(cString(typeid(data).name()), NULL);
+    m_data.Set(typeid(data).name(), new tBioGroupData<T>(data));
+  }
+  
+  template<typename T> T* GetData() {
+    tBioGroupData<T>* data = (tBioGroupData<T>*)m_data.GetWithDefault(cString(typeid(T).name()), NULL);
+    return (data) ? data->GetData() : NULL;
+  }
 };
 
 #endif
