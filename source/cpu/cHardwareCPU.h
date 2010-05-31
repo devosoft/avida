@@ -548,9 +548,10 @@ private:
   bool Inst_DonateEditDist(cAvidaContext& ctx);
   bool Inst_DonateGreenBeardGene(cAvidaContext& ctx);
   bool Inst_DonateTrueGreenBeard(cAvidaContext& ctx);
-	bool Inst_DonateShadedGreenBeard(cAvidaContext& ctx);
+  bool Inst_DonateShadedGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateThreshGreenBeard(cAvidaContext& ctx);
   bool Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx);
+  bool Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx);
   bool Inst_DonateNULL(cAvidaContext& ctx);
   bool Inst_DonateFacing(cAvidaContext& ctx);
   bool Inst_ReceiveDonatedEnergy(cAvidaContext& ctx);
