@@ -210,14 +210,18 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   is_donor_threshgb_last  = in_phen.is_donor_threshgb_last;
   is_donor_quanta_threshgb        = in_phen.is_donor_quanta_threshgb;  
   is_donor_quanta_threshgb_last   = in_phen.is_donor_quanta_threshgb_last;
-	is_donor_shadedgb       = in_phen.is_donor_shadedgb;  
+  is_donor_shadedgb       = in_phen.is_donor_shadedgb;  
   is_donor_shadedgb_last  = in_phen.is_donor_shadedgb_last;	
-	num_thresh_gb_donations         = in_phen.num_thresh_gb_donations;  
+  is_donor_locus          = in_phen.is_donor_locus;
+  is_donor_locus_last     = in_phen.is_donor_locus_last;
+  num_thresh_gb_donations         = in_phen.num_thresh_gb_donations;  
   num_thresh_gb_donations_last    = in_phen.num_thresh_gb_donations_last;  
   num_quanta_thresh_gb_donations = in_phen.num_quanta_thresh_gb_donations;
   num_quanta_thresh_gb_donations_last = in_phen.num_quanta_thresh_gb_donations_last;
-	num_shaded_gb_donations         = in_phen.num_shaded_gb_donations;  
+  num_shaded_gb_donations         = in_phen.num_shaded_gb_donations;  
   num_shaded_gb_donations_last    = in_phen.num_shaded_gb_donations_last; 
+  num_donations_locus     = in_phen.num_donations_locus;
+  num_donations_locus_last = in_phen.num_donations_locus_last;
   is_receiver             = in_phen.is_receiver;   
   is_receiver_last        = in_phen.is_receiver_last;      
   is_receiver_rand        = in_phen.is_receiver_rand;
@@ -232,8 +236,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   is_receiver_threshgb_last    = in_phen.is_receiver_threshgb_last;
   is_receiver_quanta_threshgb  = in_phen.is_receiver_quanta_threshgb;
   is_receiver_quanta_threshgb_last = in_phen.is_receiver_quanta_threshgb_last;
-	is_receiver_shadedgb    = in_phen.is_receiver_shadedgb;
+  is_receiver_shadedgb    = in_phen.is_receiver_shadedgb;
   is_receiver_shadedgb_last    = in_phen.is_receiver_shadedgb_last;	
+  is_receiver_gb_same_locus = in_phen.is_receiver_gb_same_locus;
+  is_receiver_gb_same_locus_last = in_phen.is_receiver_gb_same_locus_last;
   is_modifier             = in_phen.is_modifier;      
   is_modified             = in_phen.is_modified;      
   is_fertile              = in_phen.is_fertile;      
@@ -403,8 +409,11 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   num_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
   num_quanta_thresh_gb_donations = 0;
   num_quanta_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
-	num_shaded_gb_donations = 0;
+  num_shaded_gb_donations = 0;
   num_shaded_gb_donations_last = parent_phenotype.num_shaded_gb_donations_last;
+  num_donations_locus = 0;
+  num_donations_locus_last = parent_phenotype.num_donations_locus_last;
+
 	
   // Setup flags...
   is_injected   = false;
@@ -428,7 +437,10 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   is_donor_quanta_threshgb_last = parent_phenotype.is_donor_quanta_threshgb_last;
   is_donor_shadedgb  = false;
   is_donor_shadedgb_last = parent_phenotype.is_donor_shadedgb_last;	
-	is_receiver   = false;
+  is_donor_locus.SetAll(false);
+  is_donor_locus_last = parent_phenotype.is_donor_locus_last;
+  
+  is_receiver   = false;  
   is_receiver_last = parent_phenotype.is_receiver_last;
   is_receiver_rand   = false;
   is_receiver_kin    = false;
@@ -442,9 +454,12 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   is_receiver_threshgb_last = parent_phenotype.is_receiver_threshgb_last;
   is_receiver_quanta_threshgb = false;
   is_receiver_quanta_threshgb_last = parent_phenotype.is_receiver_quanta_threshgb_last;
-	is_receiver_shadedgb = false;
+  is_receiver_shadedgb = false;
   is_receiver_shadedgb_last = parent_phenotype.is_receiver_shadedgb_last;	
-	is_modifier   = false;
+  is_receiver_gb_same_locus = false;
+  is_receiver_gb_same_locus_last = parent_phenotype.is_receiver_gb_same_locus;
+
+  is_modifier   = false;
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
   is_mutated    = false;
@@ -572,6 +587,8 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   num_quanta_thresh_gb_donations_last = 0;
   num_shaded_gb_donations = 0;
   num_shaded_gb_donations_last = 0;	
+  num_donations_locus = 0;
+  num_donations_locus_last = 0;
 	
   // Setup flags...
   is_injected   = true;
@@ -593,8 +610,11 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_donor_threshgb_last = false;
   is_donor_quanta_threshgb = false;
   is_donor_quanta_threshgb_last = false;
-	is_donor_shadedgb = false;
-  is_donor_shadedgb_last = false;	
+  is_donor_shadedgb = false;
+  is_donor_shadedgb_last = false;
+  is_donor_locus.SetAll(false);
+  is_donor_locus_last.SetAll(false);
+
   is_receiver   = false;
   is_receiver_last   = false;
   is_receiver_rand   = false;
@@ -609,8 +629,11 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_receiver_threshgb_last   = false;
   is_receiver_quanta_threshgb   = false;
   is_receiver_quanta_threshgb_last   = false;
-	is_receiver_shadedgb   = false;
+  is_receiver_shadedgb   = false;
   is_receiver_shadedgb_last   = false;	
+  is_receiver_gb_same_locus = false;
+  is_receiver_gb_same_locus_last = false;
+
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = true;
@@ -755,8 +778,10 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   num_thresh_gb_donations = 0;
   num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
   num_quanta_thresh_gb_donations = 0;
-	num_shaded_gb_donations_last = num_shaded_gb_donations;
-  num_shaded_gb_donations = 0;	
+  num_shaded_gb_donations_last = num_shaded_gb_donations;
+  num_shaded_gb_donations = 0;
+  num_donations_locus_last = num_donations_locus;
+  num_donations_locus = 0;
 	
   // Leave flags alone...
   (void) is_injected;
@@ -778,8 +803,11 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   is_donor_threshgb = false;
   is_donor_quanta_threshgb_last = is_donor_quanta_threshgb;
   is_donor_quanta_threshgb = false;
-	is_donor_shadedgb_last = is_donor_shadedgb;
+  is_donor_shadedgb_last = is_donor_shadedgb;
   is_donor_shadedgb = false;	
+  is_donor_locus_last = is_donor_locus;
+  is_donor_locus.SetAll(false);
+  
   is_receiver_last = is_receiver;
   is_receiver = false;
   is_receiver_rand = false;
@@ -794,8 +822,11 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   is_receiver_threshgb = false;
   is_receiver_quanta_threshgb_last = is_receiver_quanta_threshgb;
   is_receiver_quanta_threshgb = false;
-	is_receiver_shadedgb_last = is_receiver_shadedgb;
+  is_receiver_shadedgb_last = is_receiver_shadedgb;
   is_receiver_shadedgb = false;	
+  is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
+  is_receiver_gb_same_locus = false;
+
   (void) is_modifier;
   (void) is_modified;
   (void) is_fertile;
@@ -925,8 +956,10 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   num_thresh_gb_donations = 0;
   num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
   num_quanta_thresh_gb_donations = 0;
-	num_shaded_gb_donations_last = num_shaded_gb_donations;
+  num_shaded_gb_donations_last = num_shaded_gb_donations;
   num_shaded_gb_donations = 0;
+  num_donations_locus_last = num_donations_locus;
+  num_donations_locus = 0;
 	
   // Leave flags alone...
   (void) is_injected;
@@ -948,8 +981,11 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   is_donor_threshgb = false;
   is_donor_quanta_threshgb_last = is_donor_quanta_threshgb;
   is_donor_quanta_threshgb = false;
-	is_donor_shadedgb_last = is_donor_shadedgb;
-  is_donor_shadedgb = false;	
+  is_donor_shadedgb_last = is_donor_shadedgb;
+  is_donor_shadedgb = false;
+  is_donor_locus_last = is_donor_locus;
+  is_donor_locus.SetAll(false);
+
   is_receiver_last = is_receiver;
   is_receiver = false;
   is_receiver_rand = false;
@@ -966,6 +1002,9 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   is_receiver_quanta_threshgb = false;
   is_receiver_shadedgb_last = is_receiver_shadedgb;
   is_receiver_shadedgb = false;	
+  is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
+  is_receiver_gb_same_locus = false;
+
   (void) is_modifier;
   (void) is_modified;
   (void) is_fertile;
@@ -1085,8 +1124,10 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
   num_quanta_thresh_gb_donations_last = clone_phenotype.num_quanta_thresh_gb_donations_last;
   num_quanta_thresh_gb_donations  = clone_phenotype.num_quanta_thresh_gb_donations;
-	num_shaded_gb_donations_last = clone_phenotype.num_shaded_gb_donations_last;
+  num_shaded_gb_donations_last = clone_phenotype.num_shaded_gb_donations_last;
   num_shaded_gb_donations  = clone_phenotype.num_shaded_gb_donations;
+  num_donations_locus = clone_phenotype.num_donations_locus;
+  num_donations_locus_last = clone_phenotype.num_donations_locus_last;
 	
   // Setup flags...
   is_injected   = false;
@@ -1109,8 +1150,11 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_donor_threshgb  = clone_phenotype.is_donor_threshgb;
   is_donor_quanta_threshgb_last = clone_phenotype.is_donor_quanta_threshgb_last;
   is_donor_quanta_threshgb  = clone_phenotype.is_donor_quanta_threshgb;
-	is_donor_shadedgb_last = clone_phenotype.is_donor_shadedgb_last;
-  is_donor_shadedgb  = clone_phenotype.is_donor_shadedgb;	
+  is_donor_shadedgb_last = clone_phenotype.is_donor_shadedgb_last;
+  is_donor_shadedgb  = clone_phenotype.is_donor_shadedgb;
+  is_donor_locus_last = clone_phenotype.is_donor_locus_last;
+  is_donor_locus = clone_phenotype.is_donor_locus;
+
   is_receiver = clone_phenotype.is_receiver;
   is_receiver_last = clone_phenotype.is_receiver_last;
   is_receiver_rand = clone_phenotype.is_receiver_rand;
@@ -1125,8 +1169,10 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_receiver_threshgb_last = clone_phenotype.is_receiver_threshgb_last;
   is_receiver_quanta_threshgb = clone_phenotype.is_receiver_quanta_threshgb;
   is_receiver_quanta_threshgb_last = clone_phenotype.is_receiver_quanta_threshgb_last;
-	is_receiver_shadedgb = clone_phenotype.is_receiver_shadedgb;
-  is_receiver_shadedgb_last = clone_phenotype.is_receiver_shadedgb_last;	
+  is_receiver_shadedgb = clone_phenotype.is_receiver_shadedgb;
+  is_receiver_shadedgb_last = clone_phenotype.is_receiver_shadedgb_last;
+  is_receiver_gb_same_locus = clone_phenotype.is_receiver_gb_same_locus;
+
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = clone_phenotype.last_child_fertile;
@@ -1671,8 +1717,10 @@ void cPhenotype::NewTrial()
   num_thresh_gb_donations = 0;
   num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
   num_quanta_thresh_gb_donations = 0;
-	num_shaded_gb_donations_last = num_shaded_gb_donations;
+  num_shaded_gb_donations_last = num_shaded_gb_donations;
   num_shaded_gb_donations = 0;
+  num_donations_locus_last = num_donations_locus;
+  num_donations_locus = 0;
 	
   // Leave flags alone...
   (void) is_injected;
@@ -1694,8 +1742,11 @@ void cPhenotype::NewTrial()
   is_donor_threshgb = false;
   is_donor_quanta_threshgb_last = is_donor_quanta_threshgb;
   is_donor_quanta_threshgb = false;
-	is_donor_shadedgb_last = is_donor_shadedgb;
-  is_donor_shadedgb = false;	
+  is_donor_shadedgb_last = is_donor_shadedgb;
+  is_donor_shadedgb = false;
+  is_donor_locus_last = is_donor_locus;
+  is_donor_locus.SetAll(false);
+
   is_receiver_last = is_receiver;
   is_receiver = false;
   is_receiver_rand = false;
@@ -1710,8 +1761,11 @@ void cPhenotype::NewTrial()
   is_receiver_threshgb = false;
   is_receiver_quanta_threshgb_last = is_receiver_quanta_threshgb;
   is_receiver_quanta_threshgb = false;
-	is_receiver_shadedgb_last = is_receiver_shadedgb;
-  is_receiver_shadedgb = false;	
+  is_receiver_shadedgb_last = is_receiver_shadedgb;
+  is_receiver_shadedgb = false;
+  is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
+  is_receiver_gb_same_locus = false;
+
   is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;

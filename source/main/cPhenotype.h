@@ -208,9 +208,11 @@ private:
   bool is_donor_threshgb;  // Has this organism threshgb_donated (true green beard)? 
   bool is_donor_threshgb_last;// Did this org's parent threshgbg_donate? 
   bool is_donor_quanta_threshgb;  // Has this organism quanta_threshgb_donated (true green beard)? 
-  bool is_donor_quanta_threshgb_last;// Did this org's parent quanta_threshgbg_donate? 
-	bool is_donor_shadedgb; // Has this organism shaded_gb_donated (true shaded green beard)? 
-	bool is_donor_shadedgb_last; // Did this org's parent shaded_gb_donate? 
+  bool is_donor_quanta_threshgb_last;// Did this org's parent quanta_threshgbg_donate?
+  bool is_donor_shadedgb; // Has this organism shaded_gb_donated (true shaded green beard)? 
+  bool is_donor_shadedgb_last; // Did this org's parent shaded_gb_donate? 
+  tArray<bool> is_donor_locus; // Did this org target a donation at a specific locus.
+  tArray<bool> is_donor_locus_last; // Did this org's parent target a donation at a specific locus.
   bool is_energy_requestor; // Has this organism requested energy?
   bool is_energy_donor; // Has this organism donated energy?
   bool is_energy_receiver;  // Has this organism received an energy donation?
@@ -220,8 +222,10 @@ private:
   int num_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
   int num_quanta_thresh_gb_donations;  // Num times this organism threshgb_donated (thresh green beard)? 
   int num_quanta_thresh_gb_donations_last; // Num times this org's parent thresh_donated? 
-	int num_shaded_gb_donations; // Num times this org shaded_gb_donated? 
-	int num_shaded_gb_donations_last; // Num times this org's parent shaded_gb_donated?
+  int num_shaded_gb_donations; // Num times this org shaded_gb_donated? 
+  int num_shaded_gb_donations_last; // Num times this org's parent shaded_gb_donated?
+  int num_donations_locus; // Num times this org targeted a donation to a position.
+  int num_donations_locus_last; // Num times this org's parent targeted a donation to a position.
   bool is_receiver;      // Has this organism ever received merit donation?
   bool is_receiver_last;      // Did this organism's parent receive a merit donation?
   bool is_receiver_rand; // Has this organism ever received random merit donation?
@@ -236,8 +240,10 @@ private:
   bool is_receiver_threshgb_last;// Did this organism's parent receive a threshgb donation?
   bool is_receiver_quanta_threshgb;// Has this organism ever received a quanta_threshgb donation?
   bool is_receiver_quanta_threshgb_last;// Did this organism's parent receive a quanta_threshgb donation?
-	bool is_receiver_shadedgb; // Has this organism ever received a shaded_gb donation? 
-	bool is_receiver_shadedgb_last; // Did this organism's parent receive a shaded gb donation?
+  bool is_receiver_shadedgb; // Has this organism ever received a shaded_gb donation? 
+  bool is_receiver_shadedgb_last; // Did this organism's parent receive a shaded gb donation?
+  bool is_receiver_gb_same_locus; // Has this org ever received a donation for a specific locus.
+  bool is_receiver_gb_same_locus_last; // Did this org's parent ever received a donation for a specific locus.
   bool is_modifier;      // Has this organism modified another?
   bool is_modified;      // Has this organism been modified by another?
   bool is_fertile;       // Do we allow this organisms to produce offspring?
@@ -416,9 +422,10 @@ public:
   int  GetNumThreshGbDonationsLast() const { assert(initialized == true); return num_thresh_gb_donations_last; }
   int  GetNumQuantaThreshGbDonations() const { assert(initialized == true); return num_quanta_thresh_gb_donations; }
   int  GetNumQuantaThreshGbDonationsLast() const { assert(initialized == true); return num_quanta_thresh_gb_donations_last; }
-	int  GetNumShadedGbDonations() const { assert(initialized == true); return num_shaded_gb_donations; }
-  int  GetNumShadedGbDonationsLast() const { assert(initialized == true); return num_shaded_gb_donations_last; }	
-
+  int  GetNumShadedGbDonations() const { assert(initialized == true); return num_shaded_gb_donations; }
+  int  GetNumShadedGbDonationsLast() const { assert(initialized == true); return num_shaded_gb_donations_last; }
+  int GetNumDonationsLocus() const { assert(initialized == true); return num_donations_locus; }
+  int GetNumDonationsLocusLast() const { assert(initialized == true); return num_donations_locus_last; }
 
   bool IsInjected() const { assert(initialized == true); return is_injected; }
   bool IsDonorCur() const { assert(initialized == true); return is_donor_cur; }
@@ -437,8 +444,11 @@ public:
   bool IsDonorThreshGbLast() const { assert(initialized == true); return is_donor_threshgb_last; }
   bool IsDonorQuantaThreshGb() const { assert(initialized == true); return is_donor_quanta_threshgb; }
   bool IsDonorQuantaThreshGbLast() const { assert(initialized == true); return is_donor_quanta_threshgb_last; }
-	bool IsDonorShadedGb() const { assert(initialized == true); return is_donor_shadedgb; }
+  bool IsDonorShadedGb() const { assert(initialized == true); return is_donor_shadedgb; }
   bool IsDonorShadedGbLast() const { assert(initialized == true); return is_donor_shadedgb_last; }	
+  bool IsDonorPosition(int pos) const {assert(initialized == true); return is_donor_locus.GetSize() > pos ? is_donor_locus[pos] : 0; }
+  bool IsDonorPositionLast(int pos) const {assert(initialized == true); return is_donor_locus_last.GetSize() > pos ? is_donor_locus_last[pos] : 0; }
+  
   bool IsEnergyRequestor() const { assert(initialized == true); return is_energy_requestor; }
   bool IsEnergyDonor() const { assert(initialized == true); return is_energy_donor; }
   bool IsEnergyReceiver() const { assert(initialized == true); return is_energy_receiver; }
@@ -460,6 +470,8 @@ public:
   bool IsReceiverQuantaThreshGbLast() const { assert(initialized == true); return is_receiver_quanta_threshgb_last; }
   bool IsReceiverShadedGb() const { assert(initialized == true); return is_receiver_shadedgb; }
   bool IsReceiverShadedGbLast() const { assert(initialized == true); return is_receiver_shadedgb_last; }
+  bool IsReceiverGBSameLocus() const { assert(initialized == true); return is_receiver_gb_same_locus; }
+  bool IsReceiverGBSameLocusLast() const { assert(initialized == true); return is_receiver_gb_same_locus_last; }
   bool IsModifier() const { assert(initialized == true); return is_modifier; }
   bool IsModified() const { assert(initialized == true); return is_modified; }
   bool IsFertile() const  { assert(initialized == true); return is_fertile; }
@@ -530,7 +542,8 @@ public:
   void SetIsDonorTrueGb() { SetIsDonorCur(); is_donor_truegb = true; }
   void SetIsDonorThreshGb() { SetIsDonorCur(); is_donor_threshgb = true; }
   void SetIsDonorQuantaThreshGb() { SetIsDonorCur(); is_donor_quanta_threshgb = true; }
-	void SetIsDonorShadedGb() { SetIsDonorCur(); is_donor_shadedgb = true; }
+  void SetIsDonorShadedGb() { SetIsDonorCur(); is_donor_shadedgb = true; }
+  void SetIsDonorPosition(int pos) { SetIsDonorCur(); if (is_donor_locus.GetSize() <= pos) is_donor_locus.Resize(pos+1, false); is_donor_locus[pos] = true; }
   void SetIsReceiver() { is_receiver = true; } 
   void SetIsReceiverRand() { SetIsReceiver(); is_receiver_rand = true; } 
   void SetIsReceiverKin() { SetIsReceiver(); is_receiver_kin = true; } 
@@ -539,7 +552,8 @@ public:
   void SetIsReceiverTrueGb() { SetIsReceiver(); is_receiver_truegb = true; } 
   void SetIsReceiverThreshGb() { SetIsReceiver(); is_receiver_threshgb = true; } 
   void SetIsReceiverQuantaThreshGb() { SetIsReceiver(); is_receiver_quanta_threshgb = true; } 
-	void SetIsReceiverShadedGb() { SetIsReceiver(); is_receiver_shadedgb = true; } 	
+  void SetIsReceiverShadedGb() { SetIsReceiver(); is_receiver_shadedgb = true; }
+  void SetIsReceiverGBSameLocus() { SetIsReceiver(); is_receiver_gb_same_locus = true; }
   void SetIsEnergyRequestor() { is_energy_requestor = true; }
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
@@ -556,7 +570,7 @@ public:
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }
   void IncNumShadedGbDonations() { assert(initialized == true); num_shaded_gb_donations++; }	
-
+  void IncNumGreenBeardSameLocus() { assert(initialized == true); num_donations_locus++; }	
   void IncAge()      { assert(initialized == true); age++; }
   void IncCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used++; trial_cpu_cycles_used++; }
   void DecCPUCyclesUsed() { assert(initialized == true); cpu_cycles_used--; trial_cpu_cycles_used--; }

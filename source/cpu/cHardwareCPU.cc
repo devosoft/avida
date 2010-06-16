@@ -259,9 +259,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("donate-edt", &cHardwareCPU::Inst_DonateEditDist),
     tInstLibEntry<tMethod>("donate-gbg",  &cHardwareCPU::Inst_DonateGreenBeardGene),
     tInstLibEntry<tMethod>("donate-tgb",  &cHardwareCPU::Inst_DonateTrueGreenBeard),
-		tInstLibEntry<tMethod>("donate-shadedgb",  &cHardwareCPU::Inst_DonateShadedGreenBeard),
+    tInstLibEntry<tMethod>("donate-shadedgb",  &cHardwareCPU::Inst_DonateShadedGreenBeard),
     tInstLibEntry<tMethod>("donate-threshgb",  &cHardwareCPU::Inst_DonateThreshGreenBeard),
     tInstLibEntry<tMethod>("donate-quantagb",  &cHardwareCPU::Inst_DonateQuantaThreshGreenBeard),
+    tInstLibEntry<tMethod>("donate-gbsl",  &cHardwareCPU::Inst_DonateGreenBeardSameLocus),
     tInstLibEntry<tMethod>("donate-NUL", &cHardwareCPU::Inst_DonateNULL),
     tInstLibEntry<tMethod>("donate-facing", &cHardwareCPU::Inst_DonateFacing),
     tInstLibEntry<tMethod>("receive-donated-energy", &cHardwareCPU::Inst_ReceiveDonatedEnergy, nInstFlag::STALL),
@@ -4764,6 +4765,71 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
     neighbor->GetPhenotype().SetIsReceiverQuantaThreshGb();
     //cout << " ************ neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() is " << neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast();
     
+  }
+	
+  return true;
+  
+}
+
+
+bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
+{
+  // This instruction donates to organisms that have a matching instruction
+  // at the same position in their genome AND their parents excuted it.
+
+  cPhenotype & phenotype = m_organism->GetPhenotype();
+	
+  if (phenotype.GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
+    return false;
+  }
+	
+  int donate_locus = getIP().GetPosition();
+
+  phenotype.IncDonates();
+  phenotype.SetIsDonorPosition(donate_locus);
+  phenotype.IncNumGreenBeardSameLocus();
+	
+  // Find the target as the first match found in the neighborhood.
+	
+  //get the neighborhood size
+  const int num_neighbors = m_organism->GetNeighborhoodSize();
+	
+  // Turn to face a random neighbor
+  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
+  cOrganism * neighbor = m_organism->GetNeighbor();
+	
+  int max_id = neighbor_id + num_neighbors;
+	
+  // We have not found a match yet
+  bool found = false;
+	
+  // Rotate through orgs in neighborhood  
+  while (neighbor_id < max_id) {
+    neighbor = m_organism->GetNeighbor();
+    // If neighbor exists, AND if their parent attempted to donate at this position.
+    if (neighbor != NULL && neighbor->GetPhenotype().IsDonorPositionLast(donate_locus)) {
+      const cGenome & neighbor_genome = neighbor->GetGenome();
+      // See if this organism has a donate at the correct position.
+      if (neighbor_genome.GetSize() > donate_locus && neighbor_genome[donate_locus] == getIP().GetInst()) {
+	found = true;
+	break;
+      }
+    }
+		
+    m_organism->Rotate(1);
+    neighbor_id++;
+  }
+	
+  if (found == false) neighbor = NULL;
+	
+  // Put the facing back where it was.
+  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
+	
+  // Donate only if we have found a valid receiver
+  if (neighbor != NULL) {
+    DoDonate(neighbor);
+    neighbor->GetPhenotype().SetIsReceiverGBSameLocus();
   }
 	
   return true;
