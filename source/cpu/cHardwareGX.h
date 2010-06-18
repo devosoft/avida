@@ -521,7 +521,6 @@ private:
 
   void DoDonate(cOrganism * to_org);
   bool Inst_DonateRandom(cAvidaContext& ctx);
-  bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
   bool Inst_DonateGreenBeardGene(cAvidaContext& ctx);
   bool Inst_DonateTrueGreenBeard(cAvidaContext& ctx);

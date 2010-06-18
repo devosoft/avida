@@ -30,7 +30,6 @@
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"

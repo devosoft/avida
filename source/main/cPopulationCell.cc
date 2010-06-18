@@ -228,7 +228,6 @@ void cPopulationCell::ResetInputs(cAvidaContext& ctx)
 void cPopulationCell::InsertOrganism(cOrganism* new_org)
 {
   assert(new_org != NULL);
-  assert(new_org->GetGenotype() != NULL);
   assert(m_organism == NULL);
 	
   // Adjust this cell's attributes to account for the new organism.

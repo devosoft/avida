@@ -29,7 +29,6 @@
 #include "cEnvironment.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
@@ -196,7 +195,6 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("sense-m100", &cHardwareGX::Inst_SenseMult100),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareGX::Inst_DonateRandom),
-    tInstLibEntry<tMethod>("donate-kin", &cHardwareGX::Inst_DonateKin),
     tInstLibEntry<tMethod>("donate-edt", &cHardwareGX::Inst_DonateEditDist),
     tInstLibEntry<tMethod>("donate-gbg",  &cHardwareGX::Inst_DonateGreenBeardGene),
     tInstLibEntry<tMethod>("donate-tgb",  &cHardwareGX::Inst_DonateTrueGreenBeard),
@@ -2463,53 +2461,6 @@ bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
 }
 
 
-bool cHardwareGX::Inst_DonateKin(cAvidaContext& ctx)
-{
-  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
-    return false;
-  }
-  
-  m_organism->GetPhenotype().IncDonates();
-  m_organism->GetPhenotype().SetIsDonorKin();
-
-
-  // Find the target as the first Kin found in the neighborhood.
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  
-  // Turn to face a random neighbor
-  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
-  cOrganism * neighbor = m_organism->GetNeighbor();
-  
-  // If there is no max distance, just take the random neighbor we're facing.
-  const int max_dist = m_world->GetConfig().MAX_DONATE_KIN_DIST.Get();
-  if (max_dist != -1) {
-    int max_id = neighbor_id + num_neighbors;
-    bool found = false;
-    cGenotype* genotype = m_organism->GetGenotype();
-    while (neighbor_id < max_id) {
-      neighbor = m_organism->GetNeighbor();
-      if (neighbor != NULL &&
-          genotype->GetPhyloDistance(neighbor->GetGenotype()) <= max_dist) {
-        found = true;
-        break;
-      }
-      m_organism->Rotate(1);
-      neighbor_id++;
-    }
-    if (found == false) neighbor = NULL;
-  }
-  
-  // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
-  
-  // Donate only if we have found a close enough relative...
-  if (neighbor != NULL){
-    DoDonate(neighbor);
-    neighbor->GetPhenotype().SetIsReceiverKin();
-  }
-  return true;
-}
 
 bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
 {

@@ -1,9 +1,9 @@
 /*
- *  cBirthEntry.h
+ *  cPhenPlastUtil.h
  *  Avida
  *
- *  Created by David Bryson on 4/1/09.
- *  Copyright 2009 Michigan State University. All rights reserved.
+ *  Created by David on 6/18/10.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,29 +22,25 @@
  *
  */
 
-#ifndef cBirthEntry_h
-#define cBirthEntry_h
+#ifndef cPhenPlastUtil_h
+#define cPhenPlastUtil_h
 
-#ifndef cMerit_h
-#include "cMerit.h"
-#endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
-#endif
-
+class cAvidaContext;
 class cBioGroup;
+class cMetaGenome;
+class cPhenPlastSummary;
+class cWorld;
 
 
-class cBirthEntry
+class cPhenPlastUtil
 {
-public:
-  cMetaGenome genome;
-  double energy4Offspring;
-  cMerit merit;
-  int timestamp; // -1 if empty
-  tArray<cBioGroup*> groups;
+private:
+  cPhenPlastUtil(); // @not_implemented
   
-  inline cBirthEntry() : timestamp(-1) { ; }
-};
+public:
+  static double GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBioGroup* bg, int task_id);
+  static cPhenPlastSummary* TestPlasticity(cAvidaContext& ctx, cWorld* world, const cMetaGenome& mg);
+};  
+
 
 #endif

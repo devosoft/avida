@@ -92,8 +92,7 @@ private:
   void DoModularShuffleRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
                                      double& merit0, double& merit1);
   
-  void SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0_genotype, const tArray<cBioGroup*>* p0grps,
-                         cGenotype* parent1_genotype = NULL, const tArray<cBioGroup*>* p1grps = NULL);
+  void SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGroup*>* p0grps, const tArray<cBioGroup*>* p1grps = NULL);
 };
 
 

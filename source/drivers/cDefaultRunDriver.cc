@@ -28,7 +28,6 @@
 #include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cDriverManager.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
@@ -65,7 +64,6 @@ cDefaultRunDriver::~cDefaultRunDriver()
 
 void cDefaultRunDriver::Run()
 {
-  cClassificationManager& classmgr = m_world->GetClassificationManager();
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
@@ -95,13 +93,6 @@ void cDefaultRunDriver::Run()
     if (stats.GetUpdate() > 0) {
       // Tell the stats object to do update calculations and printing.
       stats.ProcessUpdate();
-      
-      // Update all the genotypes for the end of this update.
-      for (cGenotype * cur_genotype = classmgr.ResetThread(0);
-           cur_genotype != NULL && cur_genotype->GetThreshold();
-           cur_genotype = classmgr.NextGenotype(0)) {
-        cur_genotype->UpdateReset();
-      }
     }
     
     // don't process organisms if we are in fast-forward mode. -- @JEB

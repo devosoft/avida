@@ -81,7 +81,6 @@
 class cAvidaContext;
 class cBioGroup;
 class cEnvironment;
-class cGenotype;
 class cHardwareBase;
 class cInstSet;
 class cLineage;
@@ -96,7 +95,6 @@ class cOrganism : public cBioUnit
 private:
   cWorld* m_world;
   cHardwareBase* m_hardware;              // The actual machinery running this organism.
-  cGenotype* m_genotype;                  // Information about organisms with this genome.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   eBioUnitSource m_src;
   cString m_src_args;
@@ -199,8 +197,6 @@ public:
   
   
   // --------  Accessor Methods  --------
-  void SetGenotype(cGenotype* in_genotype) { m_genotype = in_genotype; }
-  cGenotype* GetGenotype() const { return m_genotype; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
   cPhenotype& GetPhenotype() { return m_phenotype; }
   void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }

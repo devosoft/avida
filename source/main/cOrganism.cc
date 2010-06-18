@@ -55,7 +55,6 @@ using namespace std;
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation, eBioUnitSource src,
                      const cString& src_args)
   : m_world(world)
-  , m_genotype(NULL)
   , m_phenotype(world, parent_generation)
   , m_src(src)
   , m_src_args(src_args)
@@ -100,7 +99,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
                      int parent_generation, eBioUnitSource src, const cString& src_args)
   : m_world(world)
-  , m_genotype(NULL)
   , m_phenotype(world, parent_generation)
   , m_src(src)
   , m_src_args(src_args)
@@ -145,7 +143,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set, int parent_generation,
                      eBioUnitSource src, const cString& src_args)
   : m_world(world)
-  , m_genotype(NULL)
   , m_phenotype(world, parent_generation)
   , m_src(src)
   , m_src_args(src_args)

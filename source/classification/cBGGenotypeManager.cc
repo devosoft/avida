@@ -130,6 +130,11 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   resizeActiveList(new_size);
   m_active_sz[new_size].Push(genotype);
   if (new_size > m_best) m_best = new_size;
+  
+  if (!genotype->IsThreshold() && (new_size >= m_world->GetConfig().THRESHOLD.Get() || genotype == getBest())) {
+    genotype->SetThreshold();
+    // @TODO - handle threshold triggers
+  }
 }
 
 
@@ -146,6 +151,10 @@ unsigned int cBGGenotypeManager::hashGenome(const cGenome& genome) const
 
 cString cBGGenotypeManager::nameGenotype(int size, int num) const
 {
+  if (m_sz_count.GetSize() <= size) m_sz_count.Resize(size + 1, 0);
+  
+  // @TODO -- bggenotype threshold naming - left off here
+  
   char alpha[6];
   
   for (int i = 4; i >= 0; i--) {

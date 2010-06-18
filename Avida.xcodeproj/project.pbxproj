@@ -191,6 +191,8 @@
 		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
 		70310E6B0EDD09260044971B /* cStateGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 70310E690EDD09260044971B /* cStateGrid.h */; };
 		703178AD11AD711B00F81E21 /* cBioGroupData.h in Headers */ = {isa = PBXBuildFile; fileRef = 703178AC11AD711B00F81E21 /* cBioGroupData.h */; };
+		7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */; };
+		7034D0F111CBEA4300020AC4 /* cPhenPlastUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */; };
 		70381F810EAD0BD000A97DFD /* ASAnalyzeLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */; };
 		7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
 		7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
@@ -545,6 +547,8 @@
 		702F52DF0992FD8000B2B507 /* cScriptObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cScriptObject.cc; sourceTree = "<group>"; };
 		70310E690EDD09260044971B /* cStateGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cStateGrid.h; sourceTree = "<group>"; };
 		703178AC11AD711B00F81E21 /* cBioGroupData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBioGroupData.h; sourceTree = "<group>"; };
+		7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastUtil.h; sourceTree = "<group>"; };
+		7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenPlastUtil.cc; sourceTree = "<group>"; };
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
 		70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAnalyzeLib.cc; sourceTree = "<group>"; };
 		70381FDB0EAE2A2A00A97DFD /* ASAvidaNativeObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaNativeObjects.h; sourceTree = "<group>"; };
@@ -1736,6 +1740,8 @@
 				7090F57310D956A400ECFBA1 /* cParasite.h */,
 				7090F57410D956A400ECFBA1 /* cParasite.cc */,
 				700B6D4010DFFDD000A1F8F1 /* cMetaGenome.cc */,
+				7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */,
+				7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1947,6 +1953,7 @@
 				7090F71810E16CC400ECFBA1 /* cBGSpecies.h in Headers */,
 				7090F72F10E1731900ECFBA1 /* cBGSpeciesManager.h in Headers */,
 				703178AD11AD711B00F81E21 /* cBioGroupData.h in Headers */,
+				7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2333,6 +2340,7 @@
 				700B6D4110DFFDD000A1F8F1 /* cMetaGenome.cc in Sources */,
 				7090F71910E16CC400ECFBA1 /* cBGSpecies.cc in Sources */,
 				7090F73010E1731900ECFBA1 /* cBGSpeciesManager.cc in Sources */,
+				7034D0F111CBEA4300020AC4 /* cPhenPlastUtil.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

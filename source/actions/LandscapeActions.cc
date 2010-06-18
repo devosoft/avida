@@ -28,6 +28,7 @@
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
+#include "cBGGenotype.h"
 #include "cClassificationManager.h"
 #include "cGenotype.h"
 #include "cGenotypeBatch.h"
@@ -1060,20 +1061,20 @@ public:
       cTestCPU* testcpu = (m_save_genotypes) ? m_world->GetHardwareManager().CreateTestCPU() : NULL;
       while ((orgdata = batch.Pop())) {
         cOrganism* organism = orgdata->GetOrganism();
-        cGenotype* genotype = organism->GetGenotype();
         cPhenotype& phenotype = organism->GetPhenotype();
         
+        assert(dynamic_cast<cBGGenotype*>(organism->GetBioGroup("genotype")));
+        
         cString name;
-        if (genotype->GetThreshold()) name = genotype->GetName();
-        else name.Set("%03d-no_name-u%i-c%i", genotype->GetLength(), update, orgdata->GetCellID());
+        if (((cBGGenotype*)organism->GetBioGroup("genotype"))->IsThreshold()) name = genotype->GetName();
+        else name.Set("%03d-no_name-u%i-c%i", organism->GetGenome().GetSize(), update, orgdata->GetCellID());
 
         
         df.Write(orgdata->GetCellID(), "Cell ID");
         df.Write(name, "Organism Name");
-        df.Write(genotype->GetLength(),"Genome Length");
+        df.Write(organism->GetGenome().GetSize(),"Genome Length");
         df.Write(organism->GetTestFitness(ctx), "Fitness (test-cpu)");
         df.Write(phenotype.GetFitness(), "Fitness (actual)");
-        df.Write(genotype->GetBreedTrue(), "Breed True");
         df.Write(organism->GetLineageLabel(), "Lineage Label");
         df.Write(phenotype.GetNeutralMetric(), "Neutral Metric");
         orgdata->PrintLand(df, update);

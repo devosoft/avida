@@ -59,6 +59,7 @@ private:
   int m_next_id;
   int m_dom_prev;
   int m_dom_time;
+  tArray<int> m_sz_count;
   
   
 public:
