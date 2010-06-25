@@ -1064,9 +1064,10 @@ public:
         cPhenotype& phenotype = organism->GetPhenotype();
         
         assert(dynamic_cast<cBGGenotype*>(organism->GetBioGroup("genotype")));
+        cBGGenotype* genotype = (cBGGenotype*)organism->GetBioGroup("genotype");
         
         cString name;
-        if (((cBGGenotype*)organism->GetBioGroup("genotype"))->IsThreshold()) name = genotype->GetName();
+        if (genotype->IsThreshold()) name = genotype->GetName();
         else name.Set("%03d-no_name-u%i-c%i", organism->GetGenome().GetSize(), update, orgdata->GetCellID());
 
         

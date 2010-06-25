@@ -79,7 +79,7 @@ public:
   
 private:
   unsigned int hashGenome(const cGenome& genome) const;
-  cString nameGenotype(int size, int num) const;
+  cString nameGenotype(int size);
   
   void removeGenotype(cBGGenotype* genotype);
   void updateCoalescent();

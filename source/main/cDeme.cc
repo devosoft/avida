@@ -24,6 +24,7 @@
 #include "cDeme.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
+#include "cBioGroup.h"
 #include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -148,7 +149,7 @@ std::vector<int> cDeme::GetGenotypeIDs()
   std::vector<int> genotype_ids;
   for (int i = 0; i < GetSize(); i++) {
     cPopulationCell& cell = GetCell(i);
-    if (cell.IsOccupied()) genotype_ids.push_back(cell.GetOrganism()->GetGenotype()->GetID());
+    if (cell.IsOccupied()) genotype_ids.push_back(cell.GetOrganism()->GetBioGroup("genotype")->GetID());
   }
 
   //assert(genotype_ids.size()>0); // How did we get to replication otherwise?

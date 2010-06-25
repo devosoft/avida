@@ -111,6 +111,7 @@ public:
   inline const cMetaGenome& GetMetaGenome() const { return m_genome; }
   
   inline const cString& GetName() const { return m_name; }
+  inline void SetName(const cString& name) { m_name = name; }
   
   inline bool IsThreshold() const { return m_threshold; }
   inline bool IsActive() const { return m_active; }
@@ -120,10 +121,10 @@ public:
   
   inline int GetNumOrganisms() const { return m_num_organisms; }
   
-  void SetThreshold() { m_threshold = true; }
-  void ClearThreshold() { m_threshold = false; }
+  inline void SetThreshold() { m_threshold = true; }
+  inline void ClearThreshold() { m_threshold = false; }
   
-  void Deactivate(int update) { m_active = false; m_update_deactivated = update; }
+  inline void Deactivate(int update) { m_active = false; m_update_deactivated = update; }
   
   inline const tArray<cBGGenotype*> GetParents() const { return m_parents; }
 
