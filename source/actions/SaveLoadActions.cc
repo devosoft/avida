@@ -355,32 +355,6 @@ public:
 };
 
 
-class cActionSaveParasitePopulation : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionSaveParasitePopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    assert(false);
-    // @TODO - save parasite pop?
-    
-    cString filename(m_filename);
-    if (filename == "") filename.Set("parasite-%d.pop", m_world->GetStats().GetUpdate());
-//    m_world->GetClassificationManager().DumpInjectDetailedSummary(filename, m_world->GetStats().GetUpdate());
-  }
-};
-
-
 /*
  Similar to detail_pop. However, only genotypes that are not in the
  current population anymore are included. Genotypes that are not in
@@ -475,7 +449,6 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSaveStructuredPopulation>("SaveStructuredPopulation");
   action_lib->Register<cActionSaveStructuredPopulationBG>("SaveStructuredPopulationBG");
   action_lib->Register<cActionSaveSexPopulation>("SaveSexPopulation");
-  action_lib->Register<cActionSaveParasitePopulation>("SaveParasitePopulation");
   action_lib->Register<cActionSaveHistoricPopulation>("SaveHistoricPopulation");
   action_lib->Register<cActionSaveHistoricSexPopulation>("SaveHistoricSexPopulation");
 

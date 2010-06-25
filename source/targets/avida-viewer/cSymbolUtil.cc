@@ -9,7 +9,6 @@
 
 #include <fstream>
 
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPopulationCell.h"
 #include "cSpecies.h"

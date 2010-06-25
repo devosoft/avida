@@ -38,13 +38,12 @@
 #include "functions.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
+#include "cBGGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cIntegratedSchedule.h"
-#include "cLineage.h"
 #include "cOrganism.h"
 #include "cParasite.h"
 #include "cPhenotype.h"
@@ -54,7 +53,6 @@
 #include "cResource.h"
 #include "cResourceCount.h"
 #include "cSaleItem.h"
-#include "cSpecies.h"
 #include "cStats.h"
 #include "cTopology.h"
 #include "cWorld.h"
@@ -365,7 +363,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, child_array, merit_array);
   
   // First, setup the genotype of all of the offspring.
-  cGenotype* parent_genotype = parent_organism->GetGenotype();
   const int parent_id = parent_organism->GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell& parent_cell = cell_array[parent_id];
@@ -417,9 +414,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
-    // Do lineage tracking for the new organisms.
-    LineageSetupOrganism(child_array[i], parent_organism->GetLineage(),
-                         parent_organism->GetLineageLabel(), parent_genotype);
     
     //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
     child_array[i]->SetCCladeLabel(parent_organism->GetCCladeLabel());
@@ -498,11 +492,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   
   // Do any statistics on the parent that just gave birth...
   parent_organism->HandleGestation();
-  parent_genotype->AddGestationTime( parent_phenotype.GetGestationTime() );
-  parent_genotype->AddFitness(       parent_phenotype.GetFitness()       );
-  parent_genotype->AddMerit(         parent_phenotype.GetMerit()         );
-  parent_genotype->AddCopiedSize(    parent_phenotype.GetCopiedSize()    );
-  parent_genotype->AddExecutedSize(  parent_phenotype.GetExecutedSize()  );
   
   
   // Place all of the offspring...
@@ -3472,21 +3461,6 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
 }
 
 
-/**
- * This function is responsible for adding an organism to a given lineage,
- * and setting the organism's lineage label and the lineage pointer.
- **/
-void cPopulation::LineageSetupOrganism(cOrganism* organism, cLineage* lin, int lin_label, cGenotype* parent_genotype)
-{
-  // If we have some kind of lineage control, adjust the default values passed in.
-  if (m_world->GetConfig().LOG_LINEAGES.Get()){
-    lin = m_world->GetClassificationManager().GetLineage(m_world->GetDefaultContext(), organism->GetGenotype(), parent_genotype, lin, lin_label);
-    lin_label = lin->GetID();
-  }
-  
-  organism->SetLineageLabel( lin_label );
-  organism->SetLineage( lin );
-}
 
 
 /**
@@ -5399,20 +5373,19 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& g
   
   cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - genotypes need metagenomes
   cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome, -1, src);
-  cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotypeInjected(genome, lineage_label);
   
   // Setup the phenotype...
-  cPhenotype & phenotype = new_organism->GetPhenotype();
-  phenotype.SetupInject(new_genotype->GetGenome());  //TODO  sets merit to lenght of genotype
+  cPhenotype& phenotype = new_organism->GetPhenotype();
+  
+  assert(dynamic_cast<cBGGenotype*>(new_organism->GetBioGroup("genotype")));
+  cBGGenotype* genotype = (cBGGenotype*)new_organism->GetBioGroup("genotype");
+  phenotype.SetupInject(genotype->GetMetaGenome().GetGenome());
   
   // Classify this new organism
   m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
   
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);  
-  
-  // Set the genotype...
-  new_organism->SetGenotype(new_genotype);
   
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));
@@ -5443,17 +5416,13 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& g
     cString tmpfilename = cStringUtil::Stringf("injectlog.dat");
     cDataFile& df = m_world->GetDataFile(tmpfilename);
     
-    int update = m_world->GetStats().GetUpdate();
-    int orgid = new_organism->GetID();
-    int deme_id = m_world->GetPopulation().GetCell(cell_id).GetDemeID();
-    int facing = new_organism->GetFacing();
-    const char *orgname = (const char *)new_genotype->GetName();
-    
-    cString UpdateStr = cStringUtil::Stringf("%d %d %d %d %d %s", update, orgid, cell_id, deme_id, facing, orgname);
-    df.WriteRaw(UpdateStr);
-  }
-  
-
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(new_organism->GetID(), "Organism ID");
+    df.Write(m_world->GetPopulation().GetCell(cell_id).GetDemeID(), "Deme ID");
+    df.Write(new_organism->GetFacing(), "Facing");
+    df.Write(genotype->GetName(), "Genotype Name");
+    df.Endl();
+  }  
 }
 
 // Note: cPopulation::SerialTransfer does not respect deme boundaries and only acts on a single population.

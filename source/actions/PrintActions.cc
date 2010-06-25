@@ -34,7 +34,6 @@
 #include "cEnvironment.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHistogram.h"
@@ -498,31 +497,6 @@ public:
   }
 };
 
-/*
- Write the currently dominant parasite genotype to disk.
-*/
-class cActionPrintDominantParasiteGenotype : public cAction
-{
-public:
-  cActionPrintDominantParasiteGenotype(cWorld* world, const cString& args) : cAction(world, args)
-  {
-  }
-  
-  static const cString GetDescription() { return "Arguments: (none)"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    // @TODO - get best parasite?
-    assert(false);
-    //cBioGroup* dom = m_world->GetClassificationManager().GetBestParasite();
-    cBioGroup* dom = NULL;
-    if (dom != NULL) {
-      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-      testcpu->PrintBioGroup(ctx, dom, "", m_world->GetStats().GetUpdate());
-      delete testcpu;
-    }
-  }
-};
 
 // This is a generic place for Developers to hook into an action for printing out debug information
 class cActionPrintDebug : public cAction
@@ -3269,7 +3243,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
   action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
-  action_lib->Register<cActionPrintDominantParasiteGenotype>("PrintDominantParasiteGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
   action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
   action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");
@@ -3359,7 +3332,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintLineageTotals>("print_lineage_totals");
   action_lib->Register<cActionPrintLineageCounts>("print_lineage_counts");
   action_lib->Register<cActionPrintDominantGenotype>("print_dom");
-  action_lib->Register<cActionPrintDominantParasiteGenotype>("print_dom_parasite");
   action_lib->Register<cActionPrintDetailedFitnessData>("print_detailed_fitness_data");
   action_lib->Register<cActionPrintGeneticDistanceData>("print_genetic_distance_data");
   action_lib->Register<cActionPrintPopulationDistanceData>("genetic_distance_pop_dump");

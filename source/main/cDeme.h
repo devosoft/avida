@@ -41,7 +41,6 @@
 class cResource;
 class cWorld;
 class cPopulationCell;
-class cGenotype;
 class cOrganism;
 class cOrgMovementPredicate;
 class cOrgMessagePredicate;

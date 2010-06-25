@@ -44,7 +44,6 @@
 class cAvidaContext;
 class cBioGroup;
 class cGenome;
-class cGenotype;
 class cInstSet;
 class cMetaGenome;
 class cResourceCount;

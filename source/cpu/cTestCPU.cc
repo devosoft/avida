@@ -31,7 +31,6 @@
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"

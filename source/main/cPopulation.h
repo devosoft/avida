@@ -75,7 +75,6 @@ class cCodeLabel;
 class cChangeList;
 class cEnvironment;
 class cGenome;
-class cGenotype;
 class cLineage;
 class cOrganism;
 class cPopulationCell;
@@ -343,7 +342,6 @@ private:
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
   void SeedDeme_InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype = NULL);
   
-  void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
   void CCladeSetupOrganism(cOrganism* organism); 
 	
   // Must be called to activate *any* organism in the population.

@@ -31,7 +31,6 @@
 #include "functions.h"
 #include "cEnvironment.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"

@@ -35,7 +35,6 @@
 #include "cBirthNeighborhoodHandler.h"
 #include "cClassificationManager.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cTools.h"
 #include "cWorld.h"

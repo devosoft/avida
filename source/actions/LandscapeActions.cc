@@ -30,7 +30,6 @@
 #include "cAnalyzeGenotype.h"
 #include "cBGGenotype.h"
 #include "cClassificationManager.h"
-#include "cGenotype.h"
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"

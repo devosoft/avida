@@ -180,7 +180,7 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
   
   if (genotype->IsThreshold()) {
     // @TODO handle threshold removal
-    // m_world->GetStats().RemoveThreshold();
+    m_world->GetStats().RemoveThreshold();
     genotype->ClearThreshold();
   }
   
