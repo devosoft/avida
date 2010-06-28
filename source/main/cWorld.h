@@ -54,6 +54,7 @@ class cClassificationManager;
 class cEnvironment;
 class cEventList;
 class cHardwareManager;
+class cOrganism;
 class cPopulation;
 class cStats;
 class cTestCPU;
@@ -95,7 +96,7 @@ protected:
   
 public:
   cWorld(cAvidaConfig* cfg) : m_analyze(NULL), m_conf(cfg), m_ctx(m_rng) { Setup(); }
-  ~cWorld();
+  virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
   
@@ -131,7 +132,13 @@ public:
   void GetEvents(cAvidaContext& ctx);
 	
 	cEventList* GetEventsList() { return m_event_list; }
-
+	
+	//! Migrate this organism to a different world (does nothing here; see cMultiProcessWorld).
+	virtual void MigrateOrganism(cOrganism* org) { }
+	
+	//! Process post-update events.
+	virtual void ProcessPostUpdate(cAvidaContext& ctx) { }
+	
   // Save to archive 
   template<class Archive>
   void save(Archive & a, const unsigned int version) const {
@@ -186,7 +193,6 @@ public:
   void serialize(Archive & a, const unsigned int version){
     a.SplitLoadSave(*this, version);
   }
-
 };
 
 

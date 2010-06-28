@@ -302,6 +302,10 @@ public:
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
   CONFIG_ADD_VAR(START_CREATURE, cString, "default-heads.org", "Organism to seed the soup");
   
+	CONFIG_ADD_GROUP(MP_GROUP, "Multi-process Avida Variables");
+	CONFIG_ADD_VAR(NUMBER_OF_WORLDS, int, 1, "Number of worlds (default=1).");
+	CONFIG_ADD_VAR(WORLD_MIGRATION_RATE, double, 0.0, "Migration rate between worlds (default=0.0).");
+	
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");
 	CONFIG_ADD_VAR(DEMES_COMPETITION_STYLE, int, 0, "Select how the demes compete\n0=Fitness proportional\n1=Tournament");
