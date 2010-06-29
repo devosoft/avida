@@ -411,10 +411,13 @@
 		2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cProbDemeProbSchedule.cc; sourceTree = "<group>"; };
 		2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cProbDemeProbSchedule.h; sourceTree = "<group>"; };
 		4201F39A0BE187F6006279B9 /* cTopology.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTopology.h; sourceTree = "<group>"; };
+		4216165511DA45A800B49195 /* cMultiProcessWorld.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMultiProcessWorld.cc; sourceTree = "<group>"; };
+		4216165611DA45A800B49195 /* cMultiProcessWorld.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMultiProcessWorld.h; sourceTree = "<group>"; };
 		422B64520C8305C40012C545 /* cOrgMessagePredicate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessagePredicate.h; sourceTree = "<group>"; };
 		423335880BC067E3000DF681 /* cHardwareGX.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareGX.cc; sourceTree = "<group>"; };
 		423335890BC067E3000DF681 /* cHardwareGX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareGX.h; sourceTree = "<group>"; };
 		42490EFE0BE2472800318058 /* cGermline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGermline.h; sourceTree = "<group>"; };
+		4254F0AD11DA3646005C315B /* main.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		42777E5B0C7F123600AFA4ED /* cOrgMessage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOrgMessage.h; sourceTree = "<group>"; };
 		42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeNetwork.cc; sourceTree = "<group>"; };
 		42C27C800FDC22AC00C45B78 /* cDemeNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetwork.h; sourceTree = "<group>"; };
@@ -1069,6 +1072,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4254F0AC11DA3646005C315B /* avida-mp */ = {
+			isa = PBXGroup;
+			children = (
+				4254F0AD11DA3646005C315B /* main.cc */,
+			);
+			path = "avida-mp";
+			sourceTree = "<group>";
+		};
 		565121C50C3B055F009CBD3F /* viewer-core */ = {
 			isa = PBXGroup;
 			children = (
@@ -1348,6 +1359,7 @@
 		70DCAC54097AF730002F8733 /* targets */ = {
 			isa = PBXGroup;
 			children = (
+				4254F0AC11DA3646005C315B /* avida-mp */,
 				70DCAC55097AF730002F8733 /* avida */,
 				70DCAC56097AF730002F8733 /* avida-s */,
 				70DCAC58097AF730002F8733 /* avida-viewer */,
@@ -1685,6 +1697,8 @@
 				70B0871D08F5E81000FC65FE /* cTaskLib.h */,
 				70C5BC6209059A970028A785 /* cWorld.h */,
 				70C5BC6309059A970028A785 /* cWorld.cc */,
+				4216165511DA45A800B49195 /* cMultiProcessWorld.cc */,
+				4216165611DA45A800B49195 /* cMultiProcessWorld.h */,
 				70B0865008F4972600FC65FE /* MyCodeArrayLessThan.h */,
 				70B0875A08F5EC8900FC65FE /* nGeometry.h */,
 				70B0867208F499C100FC65FE /* nMutation.h */,

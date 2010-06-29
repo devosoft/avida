@@ -303,8 +303,8 @@ public:
   CONFIG_ADD_VAR(START_CREATURE, cString, "default-heads.org", "Organism to seed the soup");
   
 	CONFIG_ADD_GROUP(MP_GROUP, "Multi-process Avida Variables");
-	CONFIG_ADD_VAR(NUMBER_OF_WORLDS, int, 1, "Number of worlds (default=1).");
-	CONFIG_ADD_VAR(WORLD_MIGRATION_RATE, double, 0.0, "Migration rate between worlds (default=0.0).");
+	CONFIG_ADD_VAR(ENABLE_MP, int, 0, "Enable multi-process Avida; 0=disabled (default),\n1=enabled.");
+	CONFIG_ADD_VAR(WORLD_MIGRATION_P, double, 0.0, "Probability of offspring migration between worlds (default=0.0).");
 	
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");

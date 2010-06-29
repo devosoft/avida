@@ -29,14 +29,19 @@
 #include "cWorld.h"
 #include "cPopulation.h"
 #include "cMultiProcessWorld.h"
+#include <map>
 #include <iostream>
 #include <boost/optional.hpp>
 
 
 /*! Constructor.
+ 
+ Since we're running in a multi-process environment from a single command line,
+ we need to tweak the random seed a bit.
  */
 cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg) : cWorld(cfg) {
-  //std::cout << "I am process " << m_mpi_world.rank() << " of " << m_mpi_world.size() << "." << std::endl;
+	cfg->RANDOM_SEED.Set(m_mpi_world.rank() + cfg->RANDOM_SEED.Get());
+	std::cout << "Random seed overwritten for Avida-MP: " << cfg->RANDOM_SEED.Get() << std::endl;
 }
 
 
@@ -66,8 +71,10 @@ struct migration_message {
  */
 void cMultiProcessWorld::MigrateOrganism(cOrganism* org) {
 	assert(org!=0);
-	int dst = GetRandom().GetInt(m_mpi_world.size());	
-	m_reqs.push_back(m_mpi_world.isend(dst, 0, migration_message(org)));
+	int dst = GetRandom().GetInt(m_mpi_world.size());
+	// the tag is set to the number of messages previously sent; this is to allow
+	// the receiver to sort messages for consistency.
+	m_reqs.push_back(m_mpi_world.isend(dst, m_reqs.size(), migration_message(org)));
 }
 
 
@@ -84,12 +91,7 @@ void cMultiProcessWorld::MigrateOrganism(cOrganism* org) {
  
  \todo At the moment, this method forces synchronization on update boundaries across
  *all* worlds.  This could slow things down quite a bit, so we may need to consider a
- configurable sync barrier.
- 
- \todo This method has "loose" consistency - the only inconsistent part is related to 
- ordering of message reception.  This can be fixed if we sort by tag / source.
- 
- \todo Random seeds; yeeouch.  Will probably have to set random seeds based on rank.
+ second mode that relaxes consistency in favor of speed.
  */
 void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 	namespace mpi = boost::mpi;
@@ -106,22 +108,38 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 	// this means that all messages must have been received, too.
 	m_mpi_world.barrier();
 	
-	// now, iterate over all the messages that we have received:
-	optional<mpi::status> s = m_mpi_world.iprobe(mpi::any_source,0);
+	// now, receive all the messages, but store them in order by source and tag:
+	typedef std::map<int,migration_message> rx_tag_t;
+	typedef std::map<int,rx_tag_t> rx_src_t;
+	rx_src_t recvd;
+	optional<mpi::status> s = m_mpi_world.iprobe(mpi::any_source,mpi::any_tag);
 	while(s.is_initialized()) {
 		migration_message msg;
 		m_mpi_world.recv(s->source(), s->tag(), msg);
-
-		// ok, add this migrant to the current population:
-		int cell_id = GetRandom().GetInt(GetPopulation().GetSize());
-		//std::cerr << "**********  INJECTING *********** " << s->source() << " " << m_mpi_world.rank() << std::endl;
-		GetPopulation().InjectGenome(GetRandom().GetInt(GetPopulation().GetSize()), // random cell
-																 cGenome(cString(msg._genome.c_str())), // genome unpacked from message
-																 -1); // lineage label??
-		
-		// do we have any more messages to process?
-		s = m_mpi_world.iprobe(mpi::any_source,0);
+		recvd[s->source()][s->tag()] = msg;		
+		// any others?
+		s = m_mpi_world.iprobe(mpi::any_source,mpi::any_tag);		
 	}
+		
+	// iterate over received messages in-order, injecting genomes into our population:
+	for(rx_src_t::iterator i=recvd.begin(); i!=recvd.end(); ++i) {
+		for(rx_tag_t::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
+			//std::cerr << "**********  INJECTING *********** " << i->first << " " << j->first << std::endl;
+			// ok, add this migrant to the current population:
+			int cell_id = GetRandom().GetInt(GetPopulation().GetSize());
+			GetPopulation().InjectGenome(GetRandom().GetInt(GetPopulation().GetSize()), // random cell
+																	 cGenome(cString(j->second._genome.c_str())), // genome unpacked from message
+																	 -1); // lineage label??
+		}
+	}
+	
+	// oh, sweet sanity; make sure that we actually processed all messages.
+	assert(!m_mpi_world.iprobe(mpi::any_source,mpi::any_tag).is_initialized());
+	
+	// finally, we need another barrier down here, in the off chance that one of the
+	// processes is really speedy and manages to migrate another org to this world
+	// before we finished the probe-loop.
+	m_mpi_world.barrier();
 }
 
-#endif
+#endif // boost_is_available
