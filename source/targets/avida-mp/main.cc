@@ -23,6 +23,10 @@
 
 #include "defs.h"
 #if BOOST_IS_AVAILABLE
+#include <boost/mpi.hpp>
+#include <boost/mpi/environment.hpp>
+#include <boost/mpi/communicator.hpp>
+
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cDefaultAnalyzeDriver.h"
@@ -43,8 +47,19 @@ int main(int argc, char * argv[])
   // Initialize the configuration data...
   cAvidaConfig* cfg = new cAvidaConfig();
   Avida::ProcessCmdLineArgs(argc, argv, cfg);
+
+	boost::mpi::environment mpi_env; //!< MPI environment.
+	boost::mpi::communicator mpi_world; //!< World-wide MPI communicator.
+	
+	cfg->RANDOM_SEED.Set(mpi_world.rank() + cfg->RANDOM_SEED.Get());
+	cout << "Random seed overwritten for Avida-MP: " << cfg->RANDOM_SEED.Get() << endl;
+	
+	ostringstream dirname;
+	dirname << cfg->DATA_DIR.Get() << "_" << mpi_world.rank();	
+	cfg->DATA_DIR.Set(dirname.str().c_str());
+	cout << "Data directory overwritten for Avida-MP: " << cfg->DATA_DIR.Get() << endl;
   
-  cWorld* world = new cMultiProcessWorld(cfg);
+  cWorld* world = new cMultiProcessWorld(cfg, mpi_env, mpi_world);
   cAvidaDriver* driver = NULL;
 
   if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
@@ -58,7 +73,7 @@ int main(int argc, char * argv[])
   driver->Run();
 
   // Exit Nicely
-  Avida::Exit(0);
+  //Avida::Exit(0);
   
   return 0;
 }

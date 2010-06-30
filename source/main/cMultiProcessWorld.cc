@@ -31,17 +31,19 @@
 #include "cMultiProcessWorld.h"
 #include <map>
 #include <iostream>
+#include <sstream>
 #include <boost/optional.hpp>
 
 
 /*! Constructor.
  
  Since we're running in a multi-process environment from a single command line,
- we need to tweak the random seed a bit.
+ we need to tweak the random seed and data dirs a bit.
  */
-cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg) : cWorld(cfg) {
-	cfg->RANDOM_SEED.Set(m_mpi_world.rank() + cfg->RANDOM_SEED.Get());
-	std::cout << "Random seed overwritten for Avida-MP: " << cfg->RANDOM_SEED.Get() << std::endl;
+cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environment& env, boost::mpi::communicator& world) 
+	: cWorld(cfg)
+	, m_mpi_env(env)
+	, m_mpi_world(world) {
 }
 
 

@@ -47,13 +47,13 @@ class cMultiProcessWorld : public cWorld
 		cMultiProcessWorld& operator=(const cMultiProcessWorld&); // @not_implemented
 		
 	protected:
-		boost::mpi::environment m_mpi_env; //!< MPI environment.
-		boost::mpi::communicator m_mpi_world; //!< World-wide MPI communicator.
+		boost::mpi::environment& m_mpi_env; //!< MPI environment.
+		boost::mpi::communicator& m_mpi_world; //!< World-wide MPI communicator.
 		std::vector<boost::mpi::request> m_reqs; //!< Requests outstanding since the last ProcessPostUpdate.
 		
 	public:
 		//! Constructor.
-		cMultiProcessWorld(cAvidaConfig* cfg);
+		cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environment& env, boost::mpi::communicator& world);
 		
 		//! Destructor.
 		virtual ~cMultiProcessWorld() { }
