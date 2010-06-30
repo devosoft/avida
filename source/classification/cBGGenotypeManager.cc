@@ -30,6 +30,7 @@
 #include "cStats.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
+#include "tDataCommandManager.h"
 
 
 cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
@@ -39,6 +40,7 @@ cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
   , m_next_id(1)
   , m_dom_prev(-1)
   , m_dom_time(0)
+  , m_dcm(NULL)
 {
 }
 
@@ -140,6 +142,31 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
 }
 
 
+
+const tArray<cString>& cBGGenotypeManager::GetBioGroupProperyList() const
+{
+  if (!m_dcm) buildDataCommandManager();
+  return m_dcm->GetEntryNames();
+}
+
+bool cBGGenotypeManager::BioGroupHasProperty(const cString& prop) const
+{
+  if (!m_dcm) buildDataCommandManager();
+  return (m_dcm->GetDataCommand(prop));
+}
+
+cFlexVar cBGGenotypeManager::GetBioGroupProperty(cBGGenotype* genotype, const cString& prop) const
+{
+  if (!m_dcm) buildDataCommandManager();
+  tDataEntryCommand<cBGGenotype>* dc = m_dcm->GetDataCommand(prop);
+  
+  if (dc) return dc->GetValue(genotype);
+  
+  return cFlexVar();
+}
+
+
+
 unsigned int cBGGenotypeManager::hashGenome(const cGenome& genome) const
 {
   unsigned int total = 0;
@@ -223,3 +250,13 @@ void cBGGenotypeManager::updateCoalescent()
   // m_world->GetStats().SetCoalescentGenotypeDepth(m_coalescent->GetDepth());
 }
 
+void cBGGenotypeManager::buildDataCommandManager() const
+{
+  m_dcm = new tDataCommandManager<cBGGenotype>;
+  
+#define ADD_PROP(NAME, TYPE, GET, DESC) \
+  m_dcm->Add(NAME, new tDataEntryOfType<cBGGenotype, TYPE>(NAME, DESC, &cBGGenotype::GET));
+
+  ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
+  ADD_PROP("parents", const cString& (), GetParentString, "Parents");
+}

@@ -31,6 +31,9 @@
 #ifndef cBioGroupManager_h
 #include "cBioGroupManager.h"
 #endif
+#ifndef cFlexVar_h
+#include "cFlexVar.h"
+#endif
 #ifndef tList_h
 #include "tList.h"
 #endif
@@ -41,6 +44,7 @@
 class cBGGenotype;
 class cGenome;
 class cWorld;
+template <class T> class tDataCommandManager;
 
 namespace nBGGenotypeManager {
   const int HASH_SIZE = 3203;
@@ -61,6 +65,8 @@ private:
   int m_dom_time;
   tArray<int> m_sz_count;
   
+  mutable tDataCommandManager<cBGGenotype>* m_dcm;
+  
   
 public:
   cBGGenotypeManager(cWorld* world);
@@ -76,6 +82,10 @@ public:
   // Genotype Manager Methods
   cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
   void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
+
+  const tArray<cString>& GetBioGroupProperyList() const;
+  bool BioGroupHasProperty(const cString& prop) const;
+  cFlexVar GetBioGroupProperty(cBGGenotype* genotype, const cString& prop) const;
   
 private:
   unsigned int hashGenome(const cGenome& genome) const;
@@ -86,6 +96,8 @@ private:
   
   inline void resizeActiveList(int size);
   inline cBGGenotype* getBest();
+  
+  void buildDataCommandManager() const;
 };
 
 

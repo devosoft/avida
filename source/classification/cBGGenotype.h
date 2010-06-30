@@ -72,6 +72,7 @@ private:
   int m_total_organisms;
   
   tArray<cBGGenotype*> m_parents;
+  cString m_parent_str;
   
   cCountTracker m_births;
   cCountTracker m_deaths;
@@ -101,6 +102,10 @@ public:
   void RemoveBioUnit(cBioUnit* bu);
   
   int GetDepth() const { return m_depth; }
+
+  const tArray<cString>& GetProperyList() const;
+  bool HasProperty(const cString& prop) const;
+  cFlexVar GetProperty(const cString& prop) const;
   
   void Save(cDataFile& df);
 
@@ -118,6 +123,8 @@ public:
   
   inline int GetUpdateBorn() const { return m_update_born; }
   inline int GetUpdateDeactivated() const { return m_update_deactivated; }
+  
+  inline const cString& GetParentString() const { return m_parent_str; }
   
   inline int GetNumOrganisms() const { return m_num_organisms; }
   

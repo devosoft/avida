@@ -36,7 +36,7 @@
 class cBGSpeciesManager: public cBioGroupManager
 {
 private:
-
+  tArray<cString> m_bg_props;
   
   
 public:
@@ -49,6 +49,8 @@ public:
   void UpdateReset();
   
   void SaveBioGroups(cDataFile& df);
+
+  const tArray<cString>& GetBioGroupProperyList() const { return m_bg_props; }
 };
 
 #endif

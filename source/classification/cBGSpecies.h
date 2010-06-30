@@ -70,6 +70,10 @@ public:
   
   int GetDepth() const { return m_depth; }
   
+  const tArray<cString>& GetProperyList() const;
+  bool HasProperty(const cString& prop) const { false; }
+  cFlexVar GetProperty(const cString& prop) const { return cFlexVar(); }
+
   void Save(cDataFile& df);
   
   

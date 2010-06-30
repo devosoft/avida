@@ -36,28 +36,34 @@ template <class TargetType> class tDataCommandManager
 {
 private:
   tDictionary<tDataEntry<TargetType>*> m_entry_dict;  
+  tArray<cString> m_entry_names;
   
 public:
   tDataCommandManager() { ; }
   ~tDataCommandManager()
   {
-    tArray<tDataEntry<cAnalyzeGenotype>*> entries;
+    tArray<tDataEntry<TargetType>*> entries;
     m_entry_dict.GetValues(entries);
     for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
   }
   
-  void Add(const cString& name, tDataEntry<TargetType>* entry) { m_entry_dict.Add(name, entry); }
+  void Add(const cString& name, tDataEntry<TargetType>* entry)
+  {
+    m_entry_dict.Add(name, entry);
+    m_entry_names.Push(name);
+  }
   
+  const tArray<cString>& GetEntryNames() const { return m_entry_names; }
 
-  tDataEntryCommand<cAnalyzeGenotype>* GetDataCommand(const cString& cmd, cString** error_str = NULL) const
+  tDataEntryCommand<TargetType>* GetDataCommand(const cString& cmd, cString** error_str = NULL) const
   {
     cString arg_list = cmd;
     cString idx = arg_list.Pop(':');
     cString entry_name = idx.Pop('.');
     
-    tDataEntry<cAnalyzeGenotype>* data_entry;
+    tDataEntry<TargetType>* data_entry;
     if (m_entry_dict.Find(entry_name, data_entry)) {
-      return new tDataEntryCommand<cAnalyzeGenotype>(data_entry, idx, arg_list);
+      return new tDataEntryCommand<TargetType>(data_entry, idx, arg_list);
     }
     
     if (error_str) {

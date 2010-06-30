@@ -54,6 +54,8 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
     for (int i = 0; i < m_parents.GetSize(); i++) {
       m_parents[i] = static_cast<cBGGenotype*>((*parents)[i]);
       m_parents[i]->AddPassiveReference();
+      if (i > 0) m_parent_str += ",";
+      m_parent_str += cStringUtil::Convert(m_parents[i]->GetID());
     }
   }
   if (m_parents.GetSize()) m_depth = m_parents[0]->GetDepth() + 1;
@@ -111,6 +113,12 @@ void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
   m_num_organisms--;
   m_mgr->AdjustGenotype(this, m_num_organisms + 1, m_num_organisms);
 }
+
+
+const tArray<cString>& GetProperyList() const { m_bgm->GetBioGroupPropertyList(); }
+bool HasProperty(const cString& prop) const { return m_bgm->BioGroupHasProperty(prop); }
+cFlexVar GetProperty(const cString& prop) const { const m_bgm->GetBioGroupProperty(this, prop); }
+
 
 
 void cBGGenotype::Save(cDataFile& df)

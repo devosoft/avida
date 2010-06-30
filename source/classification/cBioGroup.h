@@ -36,6 +36,9 @@
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
 #endif
+#ifndef cFlexVar_h
+#include "cFlexVar.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -70,6 +73,10 @@ public:
   virtual void RemoveBioUnit(cBioUnit* bu) = 0;
   
   virtual int GetDepth() const = 0;
+  
+  virtual const tArray<cString>& GetProperyList() const = 0;
+  virtual bool HasProperty(const cString& prop) const = 0;
+  virtual cFlexVar GetProperty(const cString& prop) const = 0;
   
   virtual void Save(cDataFile& df) = 0;
   
