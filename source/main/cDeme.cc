@@ -693,17 +693,15 @@ double cDeme::CalculateTotalInitialEnergyResources() const {
 
 // --- Founder list management --- //
 
-void cDeme::AddFounder(cGenotype& _in_genotype, cPhenotype * _in_phenotype) {
-  
+void cDeme::AddFounder(cBioGroup* bg, cPhenotype * _in_phenotype)
+{
   // save genotype id
-  m_founder_genotype_ids.Push( _in_genotype.GetID() );
+  m_founder_genotype_ids.Push( bg->GetID() );
   cPhenotype phenotype;
   if (_in_phenotype) phenotype = *_in_phenotype;
   m_founder_phenotypes.Push( phenotype );
   
-  // defer adjusting this genotype until we are done with it
-  _in_genotype.IncDeferAdjust();
-  
+  bg->AddPassiveReference();
 }
 
 void cDeme::ClearFounders() {

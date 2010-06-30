@@ -74,6 +74,7 @@ public:
   
   // cBioGroupManager Interface Methods
   cBioGroup* ClassifyNewBioUnit(cBioUnit* bu);
+  cBioGroup* GetBioGroup(int bg_id);
   
   void UpdateReset();
   

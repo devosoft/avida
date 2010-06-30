@@ -69,6 +69,18 @@ void cBGGenotypeManager::UpdateReset()
   }
 }
 
+cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)
+{
+  for (int i = m_best; i >= 0; i--) {
+    tListIterator<cBGGenotype> list_it(m_active_sz[i]);
+    while (list_it.Next() != NULL) if (list_it.Get()->GetID() == bg_id) return list_it.Get();
+  }
+  
+  tListIterator<cBGGenotype> list_it(m_historic);
+  while (list_it.Next() != NULL) if (list_it.Get()->GetID() == bg_id) return list_it.Get();
+  
+  return NULL;
+}
 
 void cBGGenotypeManager::SaveBioGroups(cDataFile& df)
 {

@@ -307,7 +307,7 @@ public:
 
   // --- Founder list management --- //
   void ClearFounders();
-  void AddFounder(cGenotype& _in_genotype, cPhenotype * _in_phenotype = NULL);
+  void AddFounder(cBioGroup* bg, cPhenotype * _in_phenotype = NULL);
   tArray<int>& GetFounderGenotypeIDs() { return m_founder_genotype_ids; }
   tArray<cPhenotype>& GetFounderPhenotypes() { return m_founder_phenotypes; }
   double GetAvgFounderGeneration() { return avg_founder_generation; }        

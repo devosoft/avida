@@ -1960,53 +1960,6 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       tArray<cOrganism*> source_founders; // List of organisms we're going to transfer.
       tArray<cOrganism*> target_founders; // List of organisms we're going to transfer.
       
-      /*
-       // Debug Code
-       cGenotype * original_source_founder_genotype = NULL;
-       if (1) {
-       tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
-       if (source_founders.GetSize() > 0) {
-       original_source_founder_genotype = m_world->GetClassificationManager().FindGenotype(source_founders[0]);
-       cout << "Source:" << endl << original_source_founder_genotype->GetGenome().AsString() << endl;
-       }
-       tArray<int>& target_founders = target_deme.GetFounderGenotypeIDs();
-       if (target_founders.GetSize() > 0) {
-       cGenotype * target_founder_genotype = m_world->GetClassificationManager().FindGenotype(target_founders[0]);
-       cout << "Target:" << endl << target_founder_genotype->GetGenome().AsString() << endl;
-       }
-       }
-       
-       tArray<int>& source_founders = source_deme.GetFounders();
-       cerr << "Original source genotype ids:" << endl;
-       for(int i=0; i<source_founders.GetSize(); i++) {
-       cerr << source_founders[i] << " ";
-       }
-       cerr << endl;
-       
-       tArray<int>& target_founders = target_deme.GetFounders();
-       cerr << "Original target genotype ids:" << endl;
-       for(int i=0; i<target_founders.GetSize(); i++) {
-       cerr << target_founders[i] << " ";
-       }
-       cerr << endl;
-       
-       // Debug Code
-       //// Count the number of orgs in each deme.
-       int count = 0;
-       for(int i=0; i<target_deme.GetSize(); ++i) {
-       int cell_id = target_deme.GetCellID(i);
-       if (cell_array[cell_id].IsOccupied()) count++;
-       }
-       cout << "Initial orgs in target deme: " << count << endl;
-       
-       count = 0;
-       for(int i=0; i<source_deme.GetSize(); ++i) {
-       int cell_id = source_deme.GetCellID(i);
-       if (cell_array[cell_id].IsOccupied()) count++;
-       }
-       cout << "Initial orgs in source deme: " << count << endl;     
-       */
-      
       
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
@@ -2311,52 +2264,6 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         m_world->GetDriver().RaiseFatalException(1, "Unknown DEMES_DIVIDE_METHOD");
       }
       
-      /*
-       // Debug Code
-       //// Count the number of orgs in each deme.
-       count = 0;
-       for(int i=0; i<target_deme.GetSize(); ++i) {
-       int cell_id = target_deme.GetCellID(i);
-       if (cell_array[cell_id].IsOccupied()) count++;
-       }
-       cout << "Final orgs in target deme: " << count << endl;
-       
-       count = 0;
-       for(int i=0; i<source_deme.GetSize(); ++i) {
-       int cell_id = source_deme.GetCellID(i);
-       if (cell_array[cell_id].IsOccupied()) count++;
-       }
-       cout << "Final orgs in source deme: " << count << endl;
-       
-       if (1) {
-       tArray<int>& source_founders = source_deme.GetFounderGenotypeIDs();
-       cGenotype * source_founder_genotype = m_world->GetClassificationManager().FindGenotype(source_founders[0]);
-       tArray<int>& target_founders = target_deme.GetFounderGenotypeIDs();
-       cGenotype * target_founder_genotype = m_world->GetClassificationManager().FindGenotype(target_founders[0]);
-       if (original_source_founder_genotype->GetGenome().AsString() != source_founder_genotype->GetGenome().AsString())
-       {
-       cout << "Original source founder does not equal final source founder!!!!" << endl;
-       }
-       
-       cout << "Source:" << endl << source_founder_genotype->GetGenome().AsString() << endl;
-       cout << "Target:" << endl << target_founder_genotype->GetGenome().AsString() << endl;
-       }
-       
-       // Debug
-       tArray<int>& new_source_founders = source_deme.GetFounders();
-       cerr << "New source genotype ids:" << endl;
-       for(int i=0; i<new_source_founders.GetSize(); i++) {
-       cerr << new_source_founders[i] << " ";
-       }
-       cerr << endl;
-       
-       tArray<int>& new_target_founders = target_deme.GetFounders();
-       cerr << "New target genotype ids:" << endl;
-       for(int i=0; i<new_target_founders.GetSize(); i++) {
-       cerr << new_target_founders[i] << " ";
-       }
-       cerr << endl;
-       */
       
       // remember to delete the old target organisms and adjust their genotypes
       for(int i=0; i<old_target_organisms.GetSize(); ++i) {
