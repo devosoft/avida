@@ -115,9 +115,9 @@ void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
 }
 
 
-const tArray<cString>& GetProperyList() const { m_bgm->GetBioGroupPropertyList(); }
-bool HasProperty(const cString& prop) const { return m_bgm->BioGroupHasProperty(prop); }
-cFlexVar GetProperty(const cString& prop) const { const m_bgm->GetBioGroupProperty(this, prop); }
+const tArray<cString>& cBGGenotype::GetProperyList() const { return m_mgr->GetBioGroupPropertyList(); }
+bool cBGGenotype::HasProperty(const cString& prop) const { return m_mgr->BioGroupHasProperty(prop); }
+cFlexVar cBGGenotype::GetProperty(const cString& prop) const { return m_mgr->GetBioGroupProperty(this, prop); }
 
 
 

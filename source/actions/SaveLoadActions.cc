@@ -461,7 +461,6 @@ void RegisterSaveLoadActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpPopulation>("dump_pop");
   action_lib->Register<cActionSavePopulation>("detail_pop");
   action_lib->Register<cActionSaveSexPopulation>("detail_sex_pop");
-  action_lib->Register<cActionSaveParasitePopulation>("detail_parasite_pop");
   action_lib->Register<cActionSaveHistoricPopulation>("dump_historic_pop");
   action_lib->Register<cActionSaveHistoricSexPopulation>("dump_historic_sex_pop");
 }

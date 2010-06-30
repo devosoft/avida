@@ -31,6 +31,9 @@
 #ifndef cBioGroupManager_h
 #include "cBioGroupManager.h"
 #endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
 
 
 class cBGSpeciesManager: public cBioGroupManager

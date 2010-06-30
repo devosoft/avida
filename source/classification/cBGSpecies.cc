@@ -24,4 +24,7 @@
 
 #include "cBGSpecies.h"
 
+#include "cBGSpeciesManager.h"
+
+
 const tArray<cString>& cBGSpecies::GetProperyList() const { return m_mgr->GetBioGroupProperyList(); }

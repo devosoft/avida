@@ -28,12 +28,12 @@
 #ifndef cBioGroup_h
 #include "cBioGroup.h"
 #endif
-#ifndef nSpecies_h
-#include "nSpecies.h"
-#endif
-
 
 class cBGSpeciesManager;
+
+namespace nSpecies {
+  static const int MAX_DISTANCE = 20;
+}
 
 
 class cBGSpecies : public cBioGroup
@@ -71,7 +71,7 @@ public:
   int GetDepth() const { return m_depth; }
   
   const tArray<cString>& GetProperyList() const;
-  bool HasProperty(const cString& prop) const { false; }
+  bool HasProperty(const cString& prop) const { return false; }
   cFlexVar GetProperty(const cString& prop) const { return cFlexVar(); }
 
   void Save(cDataFile& df);

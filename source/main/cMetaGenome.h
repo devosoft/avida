@@ -28,6 +28,7 @@
 #include "cGenome.h"
 
 class cDataFile;
+class cString;
 
 
 class cMetaGenome
@@ -41,6 +42,7 @@ private:
 public:
   cMetaGenome() : m_hw_type(-1), m_inst_set_id(-1) { ; }
   cMetaGenome(int hw, int is, const cGenome& gen) : m_hw_type(hw), m_inst_set_id(is), m_genome(gen) { ; }
+  cMetaGenome(const cString& gen_str);
   cMetaGenome(const cMetaGenome& mg) : m_hw_type(mg.m_hw_type), m_inst_set_id(mg.m_inst_set_id), m_genome(mg.m_genome) { ; }
   
   inline int GetHardwareType() const { return m_hw_type; }
@@ -53,6 +55,8 @@ public:
   inline void SetHardwareType(int type) { m_hw_type = type; }
   inline void SetInstSetID(int is) { m_inst_set_id = is; }
   inline void SetGenome(const cGenome& gen) { m_genome = gen; }
+  
+  cString AsString() const;
   
   bool operator==(const cMetaGenome& mg) const
     { return (m_hw_type == mg.m_hw_type && m_inst_set_id == mg.m_inst_set_id && m_genome == mg.m_genome); }

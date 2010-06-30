@@ -28,6 +28,7 @@
 #include "functions.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cGenomeUtil.h"
@@ -346,8 +347,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 }
 
 
-void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename,
-                           cGenotype* genotype, int update)
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename, int update)
 {
   if (filename == "") filename.Set("archive/%03d-unnamed.org", genome.GetSize());
     
@@ -370,14 +370,6 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
   df.WriteComment(c.Set("Repro Cycle Size: %d", test_info.GetMaxCycle()));
   df.WriteComment(c.Set("Depth to Viable.: %d", test_info.GetDepthFound()));
   
-  if (genotype != NULL) {
-    df.WriteComment(c.Set("Update Created..: %d", genotype->GetUpdateBorn()));
-    df.WriteComment(c.Set("Genotype ID.....: %d", genotype->GetID()));
-    df.WriteComment(c.Set("Parent Gen ID...: %d", genotype->GetParentID()));
-    df.WriteComment(c.Set("Tree Depth......: %d", genotype->GetDepth()));
-    df.WriteComment(c.Set("Parent Distance.: %d", genotype->GetParentDistance()));
-  }
-
   df.WriteComment("");
   
   const int num_levels = test_info.GetMaxDepth() + 1;
@@ -452,8 +444,106 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
 
 void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename, int update)
 {
-  // @TODO - test cpu print bio group
-  assert(false);
+  if (!bg->HasProperty("genome")) return;
+  
+  cMetaGenome mg(bg->GetProperty("genome").AsString());
+  
+  if (filename == "") filename.Set("archive/%03d-unnamed.org", mg.GetGenome().GetSize());
+  
+  cCPUTestInfo test_info;
+  TestGenome(ctx, test_info, mg.GetGenome());
+  
+  // Open the file...
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  // Print the useful info at the top...
+  df.WriteTimeStamp();  
+  cString c("");
+  
+  df.WriteComment(c.Set("Filename........: %s", static_cast<const char*>(filename)));
+  
+  if (update >= 0) df.WriteComment(c.Set("Update Output...: %d", update));
+  else df.WriteComment("Update Output...: N/A");
+  
+  df.WriteComment(c.Set("Is Viable.......: %d", test_info.IsViable()));
+  df.WriteComment(c.Set("Repro Cycle Size: %d", test_info.GetMaxCycle()));
+  df.WriteComment(c.Set("Depth to Viable.: %d", test_info.GetDepthFound()));
+
+  df.WriteComment(c.Set("Genotype ID.....: %d", bg->GetID()));
+  df.WriteComment(c.Set("Tree Depth......: %d", bg->GetDepth()));
+
+  if (bg->HasProperty("update_born")) df.WriteComment(c.Set("Update Born.....: %d", bg->GetProperty("update_born").AsInt()));
+  if (bg->HasProperty("parents")) df.WriteComment(c.Set("Parent(s).......: %s", (const char*)bg->GetProperty("parents").AsString()));
+  
+  df.WriteComment("");
+  
+  const int num_levels = test_info.GetMaxDepth() + 1;
+  for (int j = 0; j < num_levels; j++) {
+    df.WriteComment(c.Set("Generation: %d", j));
+    
+    cOrganism* organism = test_info.GetTestOrganism(j);
+    assert(organism != NULL);
+    cPhenotype& phenotype = organism->GetPhenotype();
+    
+    df.WriteComment(c.Set("Merit...........: %f", phenotype.GetMerit().GetDouble()));
+    df.WriteComment(c.Set("Gestation Time..: %d", phenotype.GetGestationTime()));
+    df.WriteComment(c.Set("Fitness.........: %f", phenotype.GetFitness()));
+    df.WriteComment(c.Set("Errors..........: %d", phenotype.GetLastNumErrors()));
+    df.WriteComment(c.Set("Genome Size.....: %d", organism->GetGenome().GetSize()));
+    df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
+    df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
+    
+    if (phenotype.GetNumDivides() == 0)
+      df.WriteComment("Offspring.......: NONE");
+    else if (phenotype.CopyTrue())
+      df.WriteComment("Offspring.......: SELF");
+    else if (test_info.GetCycleTo() != -1)
+      df.WriteComment(c.Set("Offspring.......: %d", test_info.GetCycleTo()));
+    else
+      df.WriteComment(c.Set("Offspring.......: %d", j + 1));
+    
+    df.WriteComment("");
+  }
+  
+  df.WriteComment("Tasks Performed:");
+  
+  const cEnvironment& env = m_world->GetEnvironment();
+  const tArray<int>& task_count = test_info.GetTestPhenotype().GetLastTaskCount();
+  const tArray<double>& task_qual = test_info.GetTestPhenotype().GetLastTaskQuality();
+  for (int i = 0; i < task_count.GetSize(); i++) {
+    df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+                          task_count[i], task_qual[i]));
+  }
+  
+  // if resource bins are being used, print relevant information
+  if(m_world->GetConfig().USE_RESOURCE_BINS.Get())  {
+  	df.WriteComment("Tasks Performed Using Internal Resources:");
+  	
+  	const tArray<int>& internal_task_count = test_info.GetTestPhenotype().GetLastInternalTaskCount();
+  	const tArray<double>& internal_task_qual = test_info.GetTestPhenotype().GetLastInternalTaskQuality();
+  	
+  	for (int i = 0; i < task_count.GetSize(); i++) {
+  		df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+  		                      internal_task_count[i], internal_task_qual[i]));
+  	}
+  	
+  	const tArray<double>& rbins_total = test_info.GetTestPhenotype().GetLastRBinsTotal();
+  	const tArray<double>& rbins_avail = test_info.GetTestPhenotype().GetLastRBinsAvail();
+  	
+  	df.WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
+  	for (int i = 0; i < rbins_total.GetSize(); i++) {
+  		df.WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
+  		                      static_cast<const char*>(env.GetResourceLib().GetResource(i)->GetName()),
+  		                      rbins_total[i], rbins_avail[i]));
+  	}
+  }
+  
+  df.Endl();
+  
+  // Display the genome
+  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), mg.GetGenome());
+  
+  m_world->GetDataFileManager().Remove(filename);
 }
 
 

@@ -97,8 +97,7 @@ public:
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome);
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, std::ofstream& out_fp);
   
-  void PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename,
-                   cGenotype* genotype = NULL, int update = -1);
+  void PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename = "", int update = -1);
   void PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename = "", int update = -1);
 
   inline int GetInput();

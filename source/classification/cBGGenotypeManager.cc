@@ -143,7 +143,7 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
 
 
 
-const tArray<cString>& cBGGenotypeManager::GetBioGroupProperyList() const
+const tArray<cString>& cBGGenotypeManager::GetBioGroupPropertyList() const
 {
   if (!m_dcm) buildDataCommandManager();
   return m_dcm->GetEntryNames();
@@ -155,7 +155,7 @@ bool cBGGenotypeManager::BioGroupHasProperty(const cString& prop) const
   return (m_dcm->GetDataCommand(prop));
 }
 
-cFlexVar cBGGenotypeManager::GetBioGroupProperty(cBGGenotype* genotype, const cString& prop) const
+cFlexVar cBGGenotypeManager::GetBioGroupProperty(const cBGGenotype* genotype, const cString& prop) const
 {
   if (!m_dcm) buildDataCommandManager();
   tDataEntryCommand<cBGGenotype>* dc = m_dcm->GetDataCommand(prop);
@@ -257,6 +257,7 @@ void cBGGenotypeManager::buildDataCommandManager() const
 #define ADD_PROP(NAME, TYPE, GET, DESC) \
   m_dcm->Add(NAME, new tDataEntryOfType<cBGGenotype, TYPE>(NAME, DESC, &cBGGenotype::GET));
 
-  ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
+  ADD_PROP("genome", cString (), GetGenomeString, "Genome");
   ADD_PROP("parents", const cString& (), GetParentString, "Parents");
+  ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
 }

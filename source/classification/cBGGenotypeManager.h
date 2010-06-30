@@ -83,9 +83,9 @@ public:
   cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
   void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
 
-  const tArray<cString>& GetBioGroupProperyList() const;
+  const tArray<cString>& GetBioGroupPropertyList() const;
   bool BioGroupHasProperty(const cString& prop) const;
-  cFlexVar GetBioGroupProperty(cBGGenotype* genotype, const cString& prop) const;
+  cFlexVar GetBioGroupProperty(const cBGGenotype* genotype, const cString& prop) const;
   
 private:
   unsigned int hashGenome(const cGenome& genome) const;
