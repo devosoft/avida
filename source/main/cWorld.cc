@@ -102,8 +102,8 @@ void cWorld::Setup()
     m_stats->SetInstName(i, inst_set.GetName(i));
   
   // @MRR CClade Tracking
-	if (m_conf->TRACK_CCLADES.Get() > 0)
-		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
+//	if (m_conf->TRACK_CCLADES.Get() > 0)
+//		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
   
 	m_pop = new cPopulation(this);
   m_pop->InitiatePop();
