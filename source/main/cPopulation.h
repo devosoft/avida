@@ -176,7 +176,7 @@ public:
   void SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src);
 
   //! Helper method that seeds a deme from the given genotype.
-  void SeedDeme(cDeme& _deme, cGenotype& _genotype, eBioUnitSource src);
+  void SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src);
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
   bool SeedDeme(cDeme& source_deme, cDeme& target_deme);
@@ -340,7 +340,7 @@ private:
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype = NULL);
+  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cPhenotype* _phenotype = NULL);
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	
@@ -366,7 +366,7 @@ private:
     tArray<int> offsets;
     tArray<int> lineage_labels;
     
-    cGenotype *genotype;
+    cBioGroup* bg;
     
     inline sTmpGenotype() : id_num(-1) { ; }
     inline bool operator<(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }

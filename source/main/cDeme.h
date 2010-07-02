@@ -38,6 +38,7 @@
 #include "cStringList.h"
 #include "cDoubleSum.h"
 
+class cBioGroup;
 class cResource;
 class cWorld;
 class cPopulationCell;
@@ -315,7 +316,7 @@ public:
   double GetGenerationsPerLifetime() { return generations_per_lifetime; }  
 
   // --- Germline management --- //
-  void ReplaceGermline(cGenotype& _in_genotype);
+  void ReplaceGermline(cBioGroup* bg);
   int GetGermlineGenotypeID() { return m_germline_genotype_id; }
 
   // --- Deme/Message/Movement predicates --- //

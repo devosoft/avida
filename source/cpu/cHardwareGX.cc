@@ -2444,16 +2444,6 @@ bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
     DoDonate(neighbor);
-    
-    //print out how often random donations go to kin
-    /*
-    static ofstream kinDistanceFile("kinDistance.dat");
-    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=1) << " ";
-    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=2) << " ";
-    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=3) << " ";
-    kinDistanceFile << genotype->GetPhyloDistance(neighbor->GetGenotype());
-    kinDistanceFile << endl; 
-    */
     neighbor->GetPhenotype().SetIsReceiverRand();
   }
 

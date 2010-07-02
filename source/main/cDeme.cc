@@ -22,9 +22,11 @@
  */
 
 #include "cDeme.h"
+
+#include "cBioGroup.h"
+#include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
-#include "cBioGroup.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
@@ -704,13 +706,14 @@ void cDeme::AddFounder(cBioGroup* bg, cPhenotype * _in_phenotype)
   bg->AddPassiveReference();
 }
 
-void cDeme::ClearFounders() {
+void cDeme::ClearFounders()
+{
   // check for unused genotypes, now that we're done with these
   for (int i=0; i<m_founder_genotype_ids.GetSize(); i++) {
-    cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(m_founder_genotype_ids[i]);
-    assert(genotype);
-    genotype->DecDeferAdjust();
-    m_world->GetClassificationManager().AdjustGenotype(*genotype);
+    
+    cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(m_founder_genotype_ids[i]);
+    assert(bg);
+    bg->RemovePassiveReference();
   }
   
   // empty our list
@@ -718,23 +721,20 @@ void cDeme::ClearFounders() {
   m_founder_phenotypes.ResizeClear(0);
 }
 
-void cDeme::ReplaceGermline(cGenotype& _in_genotype) {
-  
+void cDeme::ReplaceGermline(cBioGroup* bg)
+{
   // same genotype, no changes
-  if (m_germline_genotype_id == _in_genotype.GetID()) return;
+  if (m_germline_genotype_id == bg->GetID()) return;
   
   // first, save and put a hold on new germline genotype
   int prev_germline_genotype_id = m_germline_genotype_id;
-  m_germline_genotype_id = _in_genotype.GetID();
-  _in_genotype.IncDeferAdjust();  
+  m_germline_genotype_id = bg->GetID();
+  bg->AddPassiveReference();
+
   
   // next, if we previously were saving a germline genotype, free it
-  cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(prev_germline_genotype_id);
-  if (genotype) {
-    genotype->DecDeferAdjust();
-    m_world->GetClassificationManager().AdjustGenotype(*genotype);
-  }
-  
+  cBioGroup* pbg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(prev_germline_genotype_id);
+  if (pbg) pbg->RemovePassiveReference();
 }
 
 bool cDeme::DemePredSatisfiedPreviously() {

@@ -1856,7 +1856,7 @@ void cPopulation::SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src) {
   }
 }
 
-void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype, eBioUnitSource src) {
+void cPopulation::SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src) {
   // Kill all the organisms in the deme.
   _deme.KillAll();
   _deme.ClearFounders();
@@ -1864,9 +1864,9 @@ void cPopulation::SeedDeme(cDeme& _deme, cGenotype& _genotype, eBioUnitSource sr
   // Create the specified number of organisms in the deme.
   for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
     int cellid = DemeSelectInjectionCell(_deme, i);
-    InjectGenome(cellid, src, _genotype.GetGenome());
+    InjectGenome(cellid, src, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome());
     DemePostInjection(_deme, cell_array[cellid]);
-    _deme.AddFounder(_genotype);
+    _deme.AddFounder(bg);
   }
   
 }
@@ -2332,11 +2332,11 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
 	return successfully_seeded;
 }
 
-void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype)
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cPhenotype* _phenotype)
 {
   // phenotype can be NULL
   
-  InjectGenome(_cell_id, SRC_DEME_REPLICATE, _genotype.GetGenome());
+  InjectGenome(_cell_id, SRC_DEME_REPLICATE, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome());
   
   // At this point, the cell had better be occupied...
   assert(GetCell(_cell_id).IsOccupied());

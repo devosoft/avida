@@ -67,6 +67,9 @@ void cBGGenotypeManager::UpdateReset()
       while (list_it.Next() != NULL) list_it.Get()->UpdateReset();
     }    
   }
+
+  tListIterator<cBGGenotype> list_it(m_historic);
+  while (list_it.Next() != NULL) if (!list_it.Get()->GetReferenceCount()) removeGenotype(list_it.Get());
 }
 
 cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)

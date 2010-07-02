@@ -4077,48 +4077,13 @@ bool cHardwareCPU::Inst_DonateRandom(cAvidaContext& ctx)
   // Turn to a random neighbor, get it, and turn back...
   int neighbor_id = ctx.GetRandom().GetInt(m_organism->GetNeighborhoodSize());
   for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
-  cOrganism * neighbor = m_organism->GetNeighbor();
+  cOrganism* neighbor = m_organism->GetNeighbor();
   for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
   
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
     DoDonate(neighbor);
     
-		// Code to track the edit distance between kin donors and recipients
-		const int edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),neighbor->GetGenome());
-		
-		/*static ofstream rand_file("rand_dists.dat");*/
-		static int num_rand_donates = 0;
-		static int num_rand_donates_15_dist = 0;
-		static int tot_dist_rand_donate = 0;
-		
-		num_rand_donates++;
-		if (edit_dist > 15) num_rand_donates_15_dist++;
-		tot_dist_rand_donate += edit_dist;
-		
-		if (num_rand_donates == 1000) {
-			
-			/*rand_file << num_rand_donates << " "
-       << (double) num_rand_donates_15_dist / (double) num_rand_donates << " "
-       << (double) tot_dist_rand_donate / (double) num_rand_donates << endl;
-       */
-			num_rand_donates = 0;
-			num_rand_donates_15_dist = 0;
-			tot_dist_rand_donate = 0;
-		}
-		
-		
-		
-    //print out how often random donations go to kin
-    /*
-		 static ofstream kinDistanceFile("kinDistance.dat");
-		 kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=1) << " ";
-		 kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=2) << " ";
-		 kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=3) << " ";
-		 kinDistanceFile << genotype->GetPhyloDistance(neighbor->GetGenotype());
-		 kinDistanceFile << endl; 
-		 */
-		
     neighbor->GetPhenotype().SetIsReceiverRand();
   }
 	
@@ -4153,32 +4118,7 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
     cGenotype* genotype = m_organism->GetGenotype();
     while (neighbor_id < max_id) {
       neighbor = m_organism->GetNeighbor();
-      if (neighbor != NULL &&
-          genotype->GetPhyloDistance(neighbor->GetGenotype()) <= max_dist) {
-				
-				// Code to track the edit distance between kin donors and recipients
-				const int edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),neighbor->GetGenome());
-				
-				/*static ofstream kin_file("kin_dists.dat");*/
-				static int num_kin_donates = 0;
-				static int num_kin_donates_15_dist = 0;
-				static int tot_dist_kin_donate = 0;
-				
-				num_kin_donates++;
-				if (edit_dist > 15) num_kin_donates_15_dist++;
-				tot_dist_kin_donate += edit_dist;
-				
-				
-				if (num_kin_donates == 1000) {
-					/* 
-					 kin_file << num_kin_donates << " "
-					 << (double) num_kin_donates_15_dist / (double) num_kin_donates << " "
-					 << (double) tot_dist_kin_donate / (double) num_kin_donates << endl;
-					 */
-					num_kin_donates = 0;
-					num_kin_donates_15_dist = 0;
-					tot_dist_kin_donate = 0;
-				}
+      if (neighbor != NULL && genotype->GetPhyloDistance(neighbor->GetGenotype()) <= max_dist) {
 				
         found = true;
         break;
