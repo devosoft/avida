@@ -39,6 +39,8 @@
 		700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
 		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
+		701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */; };
+		701B343011E4CC1E00FEF49A /* cSexualAncestry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */; };
 		701E746C10A37967006B6193 /* cBGGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701E746A10A37967006B6193 /* cBGGenotype.cc */; };
 		701E748510A37DB2006B6193 /* cBioGroupManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701E748310A37DB2006B6193 /* cBioGroupManager.cc */; };
 		7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
@@ -455,6 +457,8 @@
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		701384A10902A16F0087ED2E /* defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
 		70166B8D0B519CFE009533A5 /* cTaskState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskState.h; sourceTree = "<group>"; };
+		701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSexualAncestry.h; sourceTree = "<group>"; };
+		701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSexualAncestry.cc; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
 		701D9116094B773E008B845F /* cWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		701D912B094B7AC1008B845F /* cAvidaDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver.h; sourceTree = "<group>"; };
@@ -1482,6 +1486,8 @@
 		70F7D8C8092546DC009E311D /* classification */ = {
 			isa = PBXGroup;
 			children = (
+				701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */,
+				701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */,
 				70F7DAEF09290468009E311D /* cClassificationManager.h */,
 				70F7DAF009290468009E311D /* cClassificationManager.cc */,
 				10479F2D0F1BC54B00AF9F6A /* cMutationSteps.h */,
@@ -1920,6 +1926,7 @@
 				7090F72F10E1731900ECFBA1 /* cBGSpeciesManager.h in Headers */,
 				703178AD11AD711B00F81E21 /* cBioGroupData.h in Headers */,
 				7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */,
+				701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2301,6 +2308,7 @@
 				7090F71910E16CC400ECFBA1 /* cBGSpecies.cc in Sources */,
 				7090F73010E1731900ECFBA1 /* cBGSpeciesManager.cc in Sources */,
 				7034D0F111CBEA4300020AC4 /* cPhenPlastUtil.cc in Sources */,
+				701B343011E4CC1E00FEF49A /* cSexualAncestry.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

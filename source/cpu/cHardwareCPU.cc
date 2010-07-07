@@ -27,6 +27,7 @@
 #include "cHardwareCPU.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cEnvironment.h"
@@ -46,6 +47,7 @@
 #include "cReactionLib.h"
 #include "cReactionProcess.h"
 #include "cResource.h"
+#include "cSexualAncestry.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
@@ -4115,13 +4117,23 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
   if (max_dist != -1) {
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
-    cGenotype* genotype = m_organism->GetGenotype();
+    cBioGroup* bg = m_organism->GetBioGroup("genotype");
+    assert(bg);
+    cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+    if (!sa) {
+      sa = new cSexualAncestry(bg);
+      bg->AttachData(sa);
+    }
+    
     while (neighbor_id < max_id) {
       neighbor = m_organism->GetNeighbor();
-      if (neighbor != NULL && genotype->GetPhyloDistance(neighbor->GetGenotype()) <= max_dist) {
-				
-        found = true;
-        break;
+      if (neighbor != NULL) {
+        cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+        assert(nbg);
+        if (sa->GetPhyloDistance(nbg) <= max_dist) {
+          found = true;
+          break;
+        }
       }
       m_organism->Rotate(1);
       neighbor_id++;
