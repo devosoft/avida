@@ -298,28 +298,22 @@ cPopulation::cPopulation(cWorld* world)
   
 }
 
-void cPopulation::InitiatePop() {
+void cPopulation::InitiatePop()
+{  
+  cGenome start_org(0);
+  const cString& filename = m_world->GetConfig().START_CREATURE.Get();
   
-  // Load a clone if one is provided, otherwise setup start organism.
-  if (m_world->GetConfig().CLONE_FILE.Get() == "-" || m_world->GetConfig().CLONE_FILE.Get() == "") {
-    cGenome start_org(0);
-    const cString& filename = m_world->GetConfig().START_CREATURE.Get();
-    
-    if (filename != "-" && filename != "") {
-      if (!cGenomeUtil::LoadGenome(filename, m_world->GetHardwareManager().GetInstSet(), start_org)) {
-        cerr << "Error: Unable to load start creature" << endl;
-        exit(-1);
-      }
-      if (start_org.GetSize() != 0) {
-        Inject(start_org, SRC_ORGANISM_FILE_LOAD);
-      }
-      else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
-    } else {
-      cerr << "Warning: No start organism specified." << endl;
+  if (filename != "-" && filename != "") {
+    if (!cGenomeUtil::LoadGenome(filename, m_world->GetHardwareManager().GetInstSet(), start_org)) {
+      cerr << "Error: Unable to load start creature" << endl;
+      exit(-1);
     }
+    if (start_org.GetSize() != 0) {
+      Inject(start_org, SRC_ORGANISM_FILE_LOAD);
+    }
+    else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
   } else {
-    ifstream fp(m_world->GetConfig().CLONE_FILE.Get());
-    LoadClone(fp);
+    cerr << "Warning: No start organism specified." << endl;
   }
 }
 
@@ -503,10 +497,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
         || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
       child_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
     }
-    
-    cGenotype* child_genotype = child_array[i]->GetGenotype();
-    child_genotype->DecDeferAdjust();
-    m_world->GetClassificationManager().AdjustGenotype(*child_genotype);
   }
   
   return parent_alive;
@@ -627,25 +617,6 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
   
-  // If the organism does not have a genotype, give it one!  No parent
-  // information is provided so we must set parents to NULL.
-  if (in_organism->GetGenotype() == NULL) {
-    cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotype(in_organism->GetGenome(), NULL, NULL);
-    in_organism->SetGenotype(new_genotype);
-  }
-  cGenotype* in_genotype = in_organism->GetGenotype();
-  
-  // Save the old genotype from this cell...
-  cGenotype* old_genotype = NULL;
-  if (target_cell.IsOccupied()) {
-    old_genotype = target_cell.GetOrganism()->GetGenotype();
-    
-    // Sometimes a new organism will kill off the last member of its genotype
-    // in the population.  Normally this would remove the genotype, so we 
-    // want to defer adjusting that genotype until the new one is placed.
-    old_genotype->IncDeferAdjust();
-  }
-  
   // Update the contents of the target cell.
   KillOrganism(target_cell);
   target_cell.InsertOrganism(in_organism);
@@ -670,25 +641,6 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   }
   // Update the archive...
   
-  in_genotype->AddOrganism();
-  
-  //@MRR If this is a new genotype, then store it's exec_birth here
-  //Assuming that all new genotypes must go through this function, AddOrganism()
-  //above should increment a new genotype's total organism count to 1
-  //The in_genotype's phenotype should have been set by cPhenotype::SetupOffspring
-  //by this point.
-  if (in_genotype->GetTotalOrganisms() == 1)
-  {
-    in_genotype->SetExecTimeBorn(in_organism->GetPhenotype().GetExecTimeBorn());
-    in_genotype->SetGenerationBorn(in_organism->GetPhenotype().GetGeneration());
-    in_genotype->SetOrganismIDAtBirth(in_organism->GetID());
-  }
-  
-  if (old_genotype != NULL) {
-    old_genotype->DecDeferAdjust();
-    m_world->GetClassificationManager().AdjustGenotype(*old_genotype);
-  }
-  m_world->GetClassificationManager().AdjustGenotype(*in_genotype);
   
   // Initialize the time-slice for this new organism.
   AdjustSchedule(target_cell, in_organism->GetPhenotype().GetMerit());
@@ -706,8 +658,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   }
   
   // Statistics...
-  m_world->GetStats().RecordBirth(target_cell.GetID(), in_genotype->GetID(),
-                                  in_organism->GetPhenotype().ParentTrue());
+  m_world->GetStats().RecordBirth(in_organism->GetPhenotype().ParentTrue());
   
   // @MRR Do coalescence clade setup for new organisms.
   CCladeSetupOrganism(in_organism ); 
@@ -830,7 +781,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   
   // Statistics...
   cOrganism* organism = in_cell.GetOrganism();
-  cGenotype* genotype = organism->GetGenotype();
   m_world->GetStats().RecordDeath();
   
   int cellID = in_cell.GetID();
@@ -874,9 +824,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
     LeaveGroup(opinion);
 	}
   
-  // Do the lineage handling
-  if (m_world->GetConfig().LOG_LINEAGES.Get()) { m_world->GetClassificationManager().RemoveLineageOrganism(organism); }
-  
   // Update count statistics...
   num_organisms--;
   
@@ -885,7 +832,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
     deme_array[in_cell.GetDemeID()].DecOrgCount();
 		deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
   }
-  genotype->RemoveOrganism();
 	
 	// If HGT is turned on, this organism's genome needs to be split up into fragments
 	// and deposited in its cell.  We then also have to add the size of this genome to
@@ -901,49 +847,33 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   
   // Alert the scheduler that this cell has a 0 merit.
   AdjustSchedule(in_cell, cMerit(0));
-  
-  // Update the archive (note: genotype adjustment may be defered)
-  m_world->GetClassificationManager().AdjustGenotype(*genotype);
 }
 
-void cPopulation::Kaboom(cPopulationCell & in_cell, int distance)
+void cPopulation::Kaboom(cPopulationCell& in_cell, int distance)
 {
-  cOrganism * organism = in_cell.GetOrganism();
-  cGenotype * genotype = organism->GetGenotype();
-  cGenome genome = genotype->GetGenome();
-  int id = genotype->GetID();
+  cOrganism* organism = in_cell.GetOrganism();
+  cString ref_genome = organism->GetMetaGenome().GetGenome().AsString();
+  int bgid = organism->GetBioGroup("genotype")->GetID();
   
   int radius = 2;
-  int count = 0;
   
-  for (int i=-1*radius; i<=radius; i++) {
-    for (int j=-1*radius; j<=radius; j++) {
-      cPopulationCell & death_cell =
-      cell_array[GridNeighbor(in_cell.GetID(), world_x, world_y, i, j)];
+  for (int i = -1 * radius; i <= radius; i++) {
+    for (int j = -1 * radius; j <= radius; j++) {
+      cPopulationCell& death_cell = cell_array[GridNeighbor(in_cell.GetID(), world_x, world_y, i, j)];
+      
       //do we actually have something to kill?
       if (death_cell.IsOccupied() == false) continue;
       
-      cOrganism * org_temp = death_cell.GetOrganism();
-      cGenotype * gene_temp = org_temp->GetGenotype();
+      cOrganism* org_temp = death_cell.GetOrganism();
       
       if (distance == 0) {
-        int temp_id = gene_temp->GetID();
-        if (temp_id != id) {
-          KillOrganism(death_cell);
-          count++;
-        }
-      }
-      else {	
-        cGenome genome_temp = gene_temp->GetGenome();
-        int diff=0;
-        for (int i=0; i<genome_temp.GetSize(); i++)
-          if (genome_temp.AsString()[i] != genome.AsString()[i])
-            diff++;
-        if (diff > distance)
-        {
-          KillOrganism(death_cell);
-          count++;
-        }
+        int temp_id = org_temp->GetBioGroup("genotype")->GetID();
+        if (temp_id != bgid) KillOrganism(death_cell);
+      } else {	
+        cString genome_temp = org_temp->GetMetaGenome().GetGenome().AsString();
+        int diff = 0;
+        for (int i = 0; i < genome_temp.GetSize(); i++) if (genome_temp[i] != ref_genome[i]) diff++;
+        if (diff > distance) KillOrganism(death_cell);
       }
     }
   }
@@ -2172,14 +2102,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           cOrganism * org = cell_array[cell_id].GetOrganism();
           old_source_organisms.Push(org);
           org->SetRunning(true);
-          org->GetGenotype()->IncDeferAdjust();
-          
-          // cout << org->GetPhenotype().GetGeneration()-source_deme.GetAvgFounderGeneration() << " ";
-          // gen.Add(org->GetPhenotype().GetGeneration()-source_deme.GetAvgFounderGeneration());
         }
       }  
-      //cout << endl;
-      //cout << "Average: " << gen.Average() << endl;
       
       
       tArray<cOrganism*> old_target_organisms;
@@ -2190,7 +2114,6 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           cOrganism * org = cell_array[cell_id].GetOrganism();
           old_target_organisms.Push(org);
           org->SetRunning(true);
-          org->GetGenotype()->IncDeferAdjust();
         }
       }
       
@@ -3384,13 +3307,10 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
  **/
 void cPopulation::CCladeSetupOrganism(cOrganism* organism)
 {
-  int gen_id = organism->GetGenotype()->GetID();	
-  if (m_world->GetConfig().TRACK_CCLADES.Get() > 0)
-  {
-    if (m_world->GetClassificationManager().IsCCladeFounder(gen_id))
-    {	
-      organism->SetCCladeLabel(gen_id);
-    }
+  int gen_id = organism->GetBioGroup("genotype")->GetID();	
+  if (m_world->GetConfig().TRACK_CCLADES.Get() > 0) {
+    // @TODO - support for IsCCladeFounder?
+//    if (m_world->GetClassificationManager().IsCCladeFounder(gen_id)) organism->SetCCladeLabel(gen_id);
   }
 }
 
@@ -4103,7 +4023,7 @@ void cPopulation::UpdateOrganismStats()
     stats.SumLogDivMutRate().Push(log(organism->MutationRates().GetDivMutProb() /organism->GetPhenotype().GetDivType()));
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
-    stats.SetGenoMapElement(i, organism->GetGenotype()->GetID());
+    stats.SetGenoMapElement(i, organism->GetBioGroup("genotype")->GetID());
     
 #if INSTRUCTION_COUNT
     for (int j = 0; j < m_world->GetNumInstructions(); j++) {
@@ -4208,55 +4128,6 @@ void cPopulation::UpdateOrganismStats()
 }
 
 
-void cPopulation::UpdateGenotypeStats()
-{
-  // Loop through all genotypes, finding stats and doing calcuations.
-  
-  cStats& stats = m_world->GetStats();
-  
-  // Clear out genotype sums...
-  stats.SumGenotypeAge().Clear();
-  stats.SumAbundance().Clear();
-  stats.SumGenotypeDepth().Clear();
-  stats.SumSize().Clear();
-  stats.SumThresholdAge().Clear();
-  
-  double entropy = 0.0;
-  
-  cGenotype * cur_genotype = m_world->GetClassificationManager().GetBestGenotype();
-  for (int i = 0; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
-    const int abundance = cur_genotype->GetNumOrganisms();
-    
-    // If we're at a dead genotype, we've hit the end of the list!
-    if (abundance == 0) break;
-    
-    // Update stats...
-    const int age = stats.GetUpdate() - cur_genotype->GetUpdateBorn();
-    stats.SumGenotypeAge().Add(age, abundance);
-    stats.SumAbundance().Add(abundance);
-    stats.SumGenotypeDepth().Add(cur_genotype->GetDepth(), abundance);
-    stats.SumSize().Add(cur_genotype->GetLength(), abundance);
-    
-    // Calculate this genotype's contribution to entropy
-    // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
-    //   to the output stage, but behavior is dependent on compiler used and optimization
-    //   level.  For consistent output, ensures that 0.0 is returned.
-    const double p = ((double) abundance) / (double) num_organisms;
-    const double partial_ent = (abundance == num_organisms) ? 0.0 : -(p * Log(p)); 
-    entropy += partial_ent;
-    
-    // Do any special calculations for threshold genotypes.
-    if (cur_genotype->GetThreshold()) {
-      stats.SumThresholdAge().Add(age, abundance);
-    }
-    
-    // ...and advance to the next genotype...
-    cur_genotype = cur_genotype->GetNext();
-  }
-  
-  stats.SetEntropy(entropy);
-}
-
 
 void cPopulation::UpdateSpeciesStats()
 {
@@ -4308,31 +4179,6 @@ void cPopulation::UpdateSpeciesStats()
   stats.SetSpeciesEntropy(species_entropy);
 }
 
-void cPopulation::UpdateDominantStats()
-{
-  cStats& stats = m_world->GetStats();
-  cGenotype * dom_genotype = m_world->GetClassificationManager().GetBestGenotype();
-  if (dom_genotype == NULL) return;
-  
-  stats.SetDomMerit(dom_genotype->GetMerit());
-  stats.SetDomGestation(dom_genotype->GetGestationTime());
-  stats.SetDomReproRate(dom_genotype->GetReproRate());
-  stats.SetDomFitness(dom_genotype->GetFitness());
-  stats.SetDomCopiedSize(dom_genotype->GetCopiedSize());
-  stats.SetDomExeSize(dom_genotype->GetExecutedSize());
-  
-  stats.SetDomSize(dom_genotype->GetLength());
-  stats.SetDomID(dom_genotype->GetID());
-  stats.SetDomName(dom_genotype->GetName());
-  stats.SetDomBirths(dom_genotype->GetThisBirths());
-  stats.SetDomBreedTrue(dom_genotype->GetThisBreedTrue());
-  stats.SetDomBreedIn(dom_genotype->GetThisBreedIn());
-  stats.SetDomBreedOut(dom_genotype->GetThisBreedOut());
-  stats.SetDomAbundance(dom_genotype->GetNumOrganisms());
-  stats.SetDomGeneDepth(dom_genotype->GetDepth());
-  stats.SetDomSequence(dom_genotype->GetGenome().AsString());
-}
-
 
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
@@ -4342,15 +4188,15 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   // Reset the Genebank to prepare it for stat collection.
   m_world->GetClassificationManager().UpdateReset();
   
+  stats.SetNumCreatures(GetNumOrganisms());
+
+  m_world->GetClassificationManager().UpdateStats(stats);
+  
   UpdateDemeStats();
   UpdateOrganismStats();
-  UpdateGenotypeStats();
   UpdateSpeciesStats();
-  UpdateDominantStats();
   
   // Do any final calculations...
-  stats.SetNumCreatures(GetNumOrganisms());
-  stats.SetNumGenotypes(m_world->GetClassificationManager().GetGenotypeCount());
   stats.SetNumThreshSpecies(m_world->GetClassificationManager().GetNumSpecies());
   
   // Have stats calculate anything it now can...
@@ -4368,238 +4214,6 @@ void cPopulation::ProcessUpdateCellActions(cAvidaContext& ctx)
 }
 
 
-bool cPopulation::SaveClone(ofstream& fp)
-{
-  if (fp.good() == false) return false;
-  
-  // Save the current update
-  fp << m_world->GetStats().GetUpdate() << " ";
-  
-  // Save the archive info.
-  m_world->GetClassificationManager().SaveClone(fp);
-  
-  // Save the genotypes manually.
-  fp << m_world->GetClassificationManager().GetGenotypeCount() << " ";
-  
-  cGenotype * cur_genotype = m_world->GetClassificationManager().GetBestGenotype();
-  for (int i = 0; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
-    cur_genotype->SaveClone(fp);
-    
-    // Advance...
-    cur_genotype = cur_genotype->GetNext();
-  }
-  
-  // Save the organim layout...
-  fp << cell_array.GetSize() << " ";
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    if (cell_array[i].IsOccupied() == true) {
-      fp <<  cell_array[i].GetOrganism()->GetGenotype()->GetID() << " ";
-    }
-    else fp << "-1 ";
-  }
-  
-  return true;
-}
-
-
-bool cPopulation::LoadClone(ifstream & fp)
-{
-  if (fp.good() == false) return false;
-  
-  // Pick up the update where it was left off.
-  int cur_update;
-  fp >> cur_update;
-  
-  m_world->GetStats().SetCurrentUpdate(cur_update);
-  
-  // Clear out the population
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
-  
-  // Load the archive info.
-  m_world->GetClassificationManager().LoadClone(fp);
-  
-  // Load up the genotypes.
-  int num_genotypes = 0;
-  fp >> num_genotypes;
-  
-  cGenotype** genotype_array = new cGenotype*[num_genotypes];
-  for (int i = 0; i < num_genotypes; i++) {
-    genotype_array[i] = cGenotype::LoadClone(m_world, fp);
-  }
-  
-  // Now load them into the organims.  @CAO make sure cell_array.GetSize() is right!
-  int in_num_cells;
-  int genotype_id;
-  fp >> in_num_cells;
-  if (cell_array.GetSize() != in_num_cells) return false;
-  
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    fp >> genotype_id;
-    if (genotype_id == -1) continue;
-    int genotype_index = -1;
-    for (int j = 0; j < num_genotypes; j++) {
-      if (genotype_array[j]->GetID() == genotype_id) {
-        genotype_index = j;
-        break;
-      }
-    }
-    
-    assert(genotype_index != -1);
-    InjectGenome(i, SRC_ORGANISM_FILE_LOAD, genotype_array[genotype_index]->GetGenome());
-  }
-  
-  sync_events = true;
-  
-  return true;
-}
-
-
-bool cPopulation::LoadDumpFile(cString filename, int update, bool sexualpop)
-{
-  // set the update if requested
-  if (update >= 0) m_world->GetStats().SetCurrentUpdate(update);
-  
-  // Clear out the population
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
-  
-  if (sexualpop) {
-    cout << "Loading sexual population: " << filename << endl;
-  } else {
-    cout << "Loading asexual population: " << filename << endl;
-  }
-  
-  cInitFile input_file(filename);
-  if (!input_file.WasOpened()) {
-    tConstListIterator<cString> err_it(input_file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    exit(1);
-  }
-  
-  // First, we read in all the genotypes and store them in a list
-  
-  vector<sTmpGenotype> genotype_vect;
-  
-  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
-    cString cur_line = input_file.GetLine(line_id);
-    
-    // Setup the genotype for this line...
-    sTmpGenotype tmp;
-    tmp.id_num      = cur_line.PopWord().AsInt();
-    tmp.parent_id   = cur_line.PopWord().AsInt();
-    if (sexualpop) {
-      tmp.parent_id2   = cur_line.PopWord().AsInt();
-    } else {
-      tmp.parent_id2   = 0;
-    }
-    /*parent_dist =*/          cur_line.PopWord().AsInt();
-    tmp.num_cpus    = cur_line.PopWord().AsInt();
-    tmp.total_cpus  = cur_line.PopWord().AsInt();
-    /*length      =*/          cur_line.PopWord().AsInt();
-    tmp.merit 	    = cur_line.PopWord().AsDouble();
-    /*gest_time   =*/ cur_line.PopWord().AsInt();
-    /*fitness     =*/ cur_line.PopWord().AsDouble();
-    tmp.update_born = cur_line.PopWord().AsInt();
-    tmp.update_dead = cur_line.PopWord().AsInt();
-    /*depth       =*/ cur_line.PopWord().AsInt();
-    cString name = cStringUtil::Stringf("org-%d", tmp.id_num);
-    cGenome genome( cur_line.PopWord() );
-    
-    // we don't allow birth or death times larger than the current update
-    if ( m_world->GetStats().GetUpdate() > tmp.update_born )
-      tmp.update_born = m_world->GetStats().GetUpdate();
-    if ( m_world->GetStats().GetUpdate() > tmp.update_dead )
-      tmp.update_dead = m_world->GetStats().GetUpdate();
-    
-    tmp.genotype = m_world->GetClassificationManager().GetGenotypeLoaded(genome, tmp.update_born, tmp.id_num);
-    tmp.genotype->SetName( name );
-    
-    genotype_vect.push_back( tmp );
-  }
-  
-  // now, we sort them in ascending order according to their id_num
-  sort( genotype_vect.begin(), genotype_vect.end() );
-  // set the parents correctly
-  
-  vector<sTmpGenotype>::const_iterator it = genotype_vect.begin();
-  for ( ; it != genotype_vect.end(); it++ ){
-    vector<sTmpGenotype>::const_iterator it2 = it;
-    cGenotype *parent = NULL;
-    cGenotype *parent2 = NULL;
-    bool foundparent = false;
-    bool foundparent2;
-    if (sexualpop) {
-      foundparent2 = false;
-    } else {
-      foundparent2 = true;
-    }
-    // search backwards till we find the parent
-    if ( it2 != genotype_vect.begin() )
-      do{
-        it2--;
-        if ( (*it).parent_id == (*it2).id_num && !foundparent){
-          parent = (*it2).genotype;
-          foundparent = true;
-        }	
-        if ( (*it).parent_id2 == (*it2).id_num && !foundparent2){
-          parent2 = (*it2).genotype;
-          foundparent2 = true;
-        }	
-        if (foundparent && foundparent2) {
-          break;
-        }
-      }
-    while ( it2 != genotype_vect.begin() );
-    (*it).genotype->SetParent( parent, parent2 );
-  }
-  
-  int cur_update = m_world->GetStats().GetUpdate(); 
-  int current_cell = 0;
-  bool soup_full = false;
-  it = genotype_vect.begin();
-  for ( ; it != genotype_vect.end(); it++ ){
-    if ( (*it).num_cpus == 0 ){ // historic organism
-      // remove immediately, so that it gets transferred into the
-      // historic database. We change the update temporarily to the
-      // true death time of this organism, so that all stats are correct.
-      m_world->GetStats().SetCurrentUpdate( (*it).update_dead );
-      m_world->GetClassificationManager().RemoveGenotype( *(*it).genotype );
-      m_world->GetStats().SetCurrentUpdate( cur_update );
-    }
-    else{ // otherwise, we insert as many organisms as we need
-      for ( int i=0; i<(*it).num_cpus; i++ ){
-        if ( current_cell >= cell_array.GetSize() ){
-          soup_full = true;
-          break;
-        }	  
-        InjectGenome(current_cell, SRC_ORGANISM_FILE_LOAD, (*it).genotype->GetGenome());
-        cPhenotype & phenotype = GetCell(current_cell).GetOrganism()->GetPhenotype();
-        if ( (*it).merit > 0) phenotype.SetMerit( cMerit((*it).merit) );
-        AdjustSchedule(GetCell(current_cell), phenotype.GetMerit());
-        
-        int lineage_label = 0;
-        LineageSetupOrganism(GetCell(current_cell).GetOrganism(),
-                             0, lineage_label,
-                             (*it).genotype->GetParentGenotype());
-        current_cell += 1;
-      }
-    }
-    
-    // @DMB - This seems to be debugging output...
-    //    cout << (*it).id_num << " " << (*it).parent_id << " " << (*it).genotype->GetParentID() << " "
-    //         << (*it).genotype->GetNumOffspringGenotypes() << " " << (*it).num_cpus << " " << (*it).genotype->GetNumOrganisms() << endl;
-    
-    if (soup_full) {
-      cout << "Warning: Too many organisms in population file, remainder ignored" << endl;
-      break;
-    }
-  }
-  sync_events = true;
-  
-  return true;
-}
-
 struct sOrgInfo {
   int cell_id;
   int offset;
@@ -4609,115 +4223,6 @@ struct sOrgInfo {
   sOrgInfo(int c, int o, int l) : cell_id(c), offset(o), lineage_label(l) { ; }
 };
 
-bool cPopulation::SaveStructuredPopulation(const cString& filename)
-{
-  tHashTable<int, int> sumDivideFailed;
-  tHashTable<int, int> sumDivideSucceeded;
-
-  cDataFile& df = m_world->GetDataFile(filename);
-  df.WriteRawComment("#filetype genotype_data");
-  df.WriteRawComment("#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset lineage");
-  df.WriteComment("");
-  df.WriteComment("Structured Population Dump");
-  df.WriteTimeStamp();
-  
-  // Build up hash table of all current genotypes and the cells in which the organisms reside
-  tHashTable<int, tKVPair<cGenotype*, tArray<sOrgInfo> >* > genotype_map;
-  
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    if (cell_array[i].IsOccupied()) {
-      cOrganism* org = cell_array[i].GetOrganism();
-      cGenotype* genotype = org->GetGenotype();
-      
-      int offset = org->GetPhenotype().GetCPUCyclesUsed();
-      int lineage_label = org->GetLineageLabel();     
-      int divFailed = 0;
-      int divSucceeded = 0;
-      
-      if (sumDivideFailed.Find(genotype->GetID(), divFailed))
-        sumDivideFailed.SetValue(genotype->GetID(), divFailed + org->GetPhenotype().GetNumDivideFailed());
-      else
-        sumDivideFailed.SetValue(genotype->GetID(), org->GetPhenotype().GetNumDivideFailed());
-      
-      if (sumDivideSucceeded.Find(genotype->GetID(), divSucceeded))
-        sumDivideSucceeded.SetValue(genotype->GetID(), divSucceeded + org->GetPhenotype().GetNumDivides());
-      else
-        sumDivideSucceeded.SetValue(genotype->GetID(), org->GetPhenotype().GetNumDivides());
-      
-      
-      tKVPair<cGenotype*, tArray<sOrgInfo> >* map_entry = NULL;
-      if (genotype_map.Find(genotype->GetID(), map_entry)) {
-        map_entry->Value().Push(sOrgInfo(i, offset, lineage_label));
-      } else {
-        map_entry = new tKVPair<cGenotype*, tArray<sOrgInfo> >(genotype, tArray<sOrgInfo>(0));
-        map_entry->Value().Push(sOrgInfo(i, offset, lineage_label));
-        genotype_map.Add(genotype->GetID(), map_entry);
-      }
-    }
-  }
-  
-  // Output all current genotypes
-  
-  tArray<tKVPair<cGenotype*, tArray<sOrgInfo> >* > genotype_entries;
-  genotype_map.GetValues(genotype_entries);
-  for (int i = 0; i < genotype_entries.GetSize(); i++) {
-    cGenotype* genotype = genotype_entries[i]->Key();
-    
-    df.Write(genotype->GetID(), "Genotype ID");
-    df.Write(genotype->GetAncestorID(0), "Parent 1 Genotype ID");
-    df.Write(genotype->GetAncestorID(1), "Parent 2 Genotype ID");
-    df.Write(genotype->GetParentDistance(), "Parent Distance");
-    df.Write(genotype->GetNumOrganisms(), "Number of currently living organisms");
-    df.Write(genotype->GetTotalOrganisms(), "Total number of organisms that ever existed");
-    df.Write(genotype->GetLength(), "Genome Length");
-    df.Write(genotype->GetMerit(), "Merit");
-    df.Write(genotype->GetGestationTime(), "Gestation Time");
-    df.Write(genotype->GetFitness(), "Fitness");
-    df.Write(genotype->GetUpdateBorn(), "Update Born");
-    df.Write(genotype->GetUpdateDeactivated(), "Update Deactivated");
-    df.Write(genotype->GetDepth(), "Phylogenetic Depth");
-    df.Write(genotype->GetGenome().AsString(), "Genome Sequence");
-    
-    tArray<sOrgInfo>& cells = genotype_entries[i]->Value();
-    cString cellstr;
-    cString offsetstr;
-    cString lineagestr;
-    cellstr.Set("%d", cells[0].cell_id);
-    offsetstr.Set("%d", cells[0].offset);
-    lineagestr.Set("%d", cells[0].lineage_label);
-    for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
-      cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
-      offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
-      lineagestr += cStringUtil::Stringf(",%d", cells[cell_i].lineage_label);
-    }
-    df.Write(cellstr, "Occupied Cell IDs");
-    df.Write(offsetstr, "Gestation (CPU) Cycle Offsets");
-    
-    int sumFailsForGenotype = 0;
-    int sumSuccForGenotype = 0;
-//    int divFailsForGenotype = sumDivideFailed.Find(genotype->GetID(), sumFailsForGenotype);
-//    int divSuccForGenotype = sumDivideSucceeded.Find(genotype->GetID(), sumSuccForGenotype);
-
-
-    df.Write(sumFailsForGenotype, "Total Division Failures");
-    df.Write(sumSuccForGenotype, "Total Division Successes");
-    //df.Write(sumFailsForGenotype/(sumFailsForGenotype + sumSuccForGenotype), "Failure");
-    
-    df.Write(lineagestr, "Lineage Labels");
-
-    df.Endl();
-    
-    delete genotype_entries[i];
-  }
-  
-  // Output historic genotypes
-  m_world->GetClassificationManager().DumpHistoricSexSummary(df.GetOFStream(), false);
-  
-  m_world->GetDataFileManager().Remove(filename);
-  return true;
-}
-
-
 struct sGroupInfo {
   cBioGroup* bg;
   tArray<sOrgInfo> orgs;
@@ -4726,7 +4231,7 @@ struct sGroupInfo {
   sGroupInfo(cBioGroup* in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
 };
 
-bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
+bool cPopulation::SavePopulation(const cString& filename)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.SetFileType("genotype_data");
@@ -4807,7 +4312,7 @@ bool cPopulation::SaveStructuredPopulationBG(const cString& filename)
 }
 
 
-bool cPopulation::LoadStructuredPopulation(const cString& filename, int cellid_offset, int lineage_offset)
+bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int lineage_offset)
 {
   // @TODO - build in support for verifying population dimensions
  
@@ -5190,9 +4695,6 @@ void cPopulation::InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource s
   // Classify the new organism
   m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
   
-  // Set the genotype...
-  new_organism->SetGenotype(orig_org.GetGenotype());
-  
   // Setup the phenotype...
   new_organism->GetPhenotype().SetupClone(orig_org.GetPhenotype());
   
@@ -5237,11 +4739,6 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
   tArray<const tArray<cBioGroup*>*> pgrps(1);
   pgrps[0] = &parent.GetBioGroups();
   new_organism->SelfClassify(pgrps);  
-  
-  // Set the genotype...
-  assert(parent.GetGenotype());  
-  cGenotype* new_genotype = m_world->GetClassificationManager().GetGenotype(child_genome.GetGenome(), parent.GetGenotype(), NULL);
-  new_organism->SetGenotype(new_genotype);
   
   // Setup the phenotype...
   new_organism->GetPhenotype().SetupOffspring(parent.GetPhenotype(),child_genome.GetGenome());
@@ -5879,7 +5376,6 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
     cout << "Copied  : Min fitness = " << lowest_fitness_copied << ", Avg fitness = " << average_fitness_copied << ", Max fitness = " << highest_fitness_copied << endl;
     cout << "Copied  : Different organisms = " << different_orgs_copied << endl;
   }
-  if (m_world->GetVerbosity() >= VERBOSE_DETAILS) cout << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << endl;
   
   // copy stats to cStats, so that these can be remembered and printed
   m_world->GetStats().SetCompetitionTrialFitnesses(avg_trial_fitnesses);

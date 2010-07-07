@@ -272,9 +272,7 @@ public:
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
   CONFIG_ADD_VAR(VIEW_MODE, int, 1, "Initial viewer screen");
-  CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
-  //CONFIG_ADD_VAR(INST_LOAD_VALUE, int, 42, "Value used by load_val instruction");
   
   CONFIG_ADD_GROUP(ARCH_GROUP, "Architecture Variables");
   CONFIG_ADD_VAR(WORLD_X, int, 60, "Width of the Avida world");
@@ -495,7 +493,6 @@ public:
   CONFIG_ADD_VAR(TRACK_PARENT_DIST, bool, 0, "Track parent distance during run. This is unnecessary when track main lineage is on.");
   
   CONFIG_ADD_GROUP(LOG_GROUP, "Log Files");
-  CONFIG_ADD_VAR(LOG_CREATURES, bool, 0, "0/1 (off/on) toggle to print file.");
   CONFIG_ADD_VAR(LOG_GENOTYPES, int, 0, "0 = off, 1 = print ALL, 2 = print threshold ONLY.");
   CONFIG_ADD_VAR(LOG_THRESHOLD, bool, 0, "0/1 (off/on) toggle to print file.");
   CONFIG_ADD_VAR(LOG_SPECIES, bool, 0, "0/1 (off/on) toggle to print file.");

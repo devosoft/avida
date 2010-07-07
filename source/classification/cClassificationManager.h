@@ -36,6 +36,7 @@
 class cBioGroupManager;
 class cBioUnit;
 class cDataFile;
+class cStats;
 class cWorld;
 
 
@@ -57,6 +58,7 @@ public:
   ~cClassificationManager();
 
   void UpdateReset();
+  void UpdateStats(cStats& stats);
   
   bool RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role, const tArray<cString>* dependencies = NULL);
   cBioGroupManager* GetBioGroupManager(const cString& role);

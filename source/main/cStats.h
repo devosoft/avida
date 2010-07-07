@@ -531,7 +531,7 @@ public:
   void CalcEnergy();
   void CalcFidelity();
 
-  void RecordBirth(int cell_id, int genotype_id, bool breed_true);
+  void RecordBirth(bool breed_true);
   void RecordDeath() { num_deaths++; }
   void AddGenotype() { tot_genotypes++; }
   void RemoveGenotype(int id_num, int parent_id, int parent_distance, int depth, int max_abundance,

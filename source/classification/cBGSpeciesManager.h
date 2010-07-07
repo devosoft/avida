@@ -35,6 +35,8 @@
 #include "tArray.h"
 #endif
 
+class cStats;
+
 
 class cBGSpeciesManager: public cBioGroupManager
 {
@@ -51,6 +53,7 @@ public:
   cBioGroup* GetBioUnit(int bg_id) { return NULL; }
   
   void UpdateReset();
+  void UpdateStats(cStats& stats);
   
   void SaveBioGroups(cDataFile& df);
 

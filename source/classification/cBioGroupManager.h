@@ -31,6 +31,7 @@
 
 class cBioGroup;
 class cBioUnit;
+class cStats;
 class cDataFile;
 
 
@@ -50,6 +51,7 @@ public:
   virtual cBioGroup* GetBioGroup(int bg_id) = 0;
   
   virtual void UpdateReset() = 0;
+  virtual void UpdateStats(cStats& stats) = 0;
     
   virtual void SaveBioGroups(cDataFile& df) = 0;
 

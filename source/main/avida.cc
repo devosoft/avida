@@ -167,7 +167,6 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   
   bool flag_analyze = false;
   bool flag_interactive = false;
-  bool flag_load = false;         cString val_load;
   bool flag_review = false;
   bool flag_verbosity = false;    int val_verbosity = 0;
   bool flag_seed = false;         int val_seed = 0;
@@ -226,15 +225,6 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       flag_interactive = true;
     } else if (cur_arg == "-warn" || cur_arg == "-w") {
       flag_warn_default = true;
-    } else if (cur_arg == "-load" || cur_arg == "-l") {
-      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
-        cerr << "Error: Must include a filename to load from." << endl;
-        exit(0);
-      } else {
-        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-        val_load = cur_arg;
-      }
-      flag_load = true;
     } else if (cur_arg == "-version" || cur_arg == "-v") {
       // We've already showed version info, so just quit.
       exit(0);
@@ -287,7 +277,6 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   // Process Command Line Flags
   if (flag_analyze) if (cfg->ANALYZE_MODE.Get() < 1) cfg->ANALYZE_MODE.Set(1);
   if (flag_interactive) if (cfg->ANALYZE_MODE.Get() < 2) cfg->ANALYZE_MODE.Set(2);
-  if (flag_load) cfg->CLONE_FILE.Set(val_load);
   if (flag_seed) cfg->RANDOM_SEED.Set(val_seed);
   if (flag_verbosity) cfg->VERBOSITY.Set(val_verbosity);
   

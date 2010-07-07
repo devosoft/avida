@@ -82,3 +82,10 @@ void cClassificationManager::UpdateReset()
   // Notify all bio group managers of the update reset
   for (int i = 0; i < m_bgms.GetSize(); i++) m_bgms[i]->UpdateReset();
 }
+
+void cClassificationManager::UpdateStats(cStats& stats)
+{
+  // @TODO - in the future classification manager should have bio group managers register for stats updating...
+  //         for now assume all bio groups will have stats to update
+  for (int i = 0; i < m_bgms.GetSize(); i++) m_bgms[i]->UpdateStats(stats);
+}

@@ -238,12 +238,8 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads);
 
   // Saving and loading...
-  bool SaveClone(std::ofstream& fp);
-  bool LoadClone(std::ifstream& fp);
-  bool LoadDumpFile(cString filename, int update, bool sexualpop);
-  bool SaveStructuredPopulation(const cString& filename);
-  bool SaveStructuredPopulationBG(const cString& filename);
-  bool LoadStructuredPopulation(const cString& filename, int cellid_offset=0, int lineage_offset=0);
+  bool SavePopulation(const cString& filename);
+  bool LoadPopulation(const cString& filename, int cellid_offset=0, int lineage_offset=0);
   bool DumpMemorySummary(std::ofstream& fp);
 
   bool OK();
@@ -332,9 +328,7 @@ private:
   // Update statistics collecting...
   void UpdateDemeStats();
   void UpdateOrganismStats();
-  void UpdateGenotypeStats();
   void UpdateSpeciesStats();
-  void UpdateDominantStats();
   
   void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);

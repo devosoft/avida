@@ -40,6 +40,7 @@ cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
   , m_next_id(1)
   , m_dom_prev(-1)
   , m_dom_time(0)
+  , m_active_count(0)
   , m_dcm(NULL)
 {
 }
@@ -71,6 +72,78 @@ void cBGGenotypeManager::UpdateReset()
   tListIterator<cBGGenotype> list_it(m_historic);
   while (list_it.Next() != NULL) if (!list_it.Get()->GetReferenceCount()) removeGenotype(list_it.Get());
 }
+
+
+void cBGGenotypeManager::UpdateStats(cStats& stats)
+{
+  // @TODO - genotype manager should stash stats in cStats as a classification "role" stats object so that multiple roles can report stats
+  
+  // Clear out genotype sums...
+  stats.SumGenotypeAge().Clear();
+  stats.SumAbundance().Clear();
+  stats.SumGenotypeDepth().Clear();
+  stats.SumSize().Clear();
+  stats.SumThresholdAge().Clear();
+  
+  double entropy = 0.0;
+  
+  for (int i = 0; i < m_active_sz.GetSize(); i++) {
+    tListIterator<cBGGenotype> list_it(m_active_sz[i]);
+    while (list_it.Next() != NULL) {
+      cBGGenotype* bg = list_it.Get();
+      const int abundance = bg->GetNumOrganisms();
+      
+      // Update stats...
+      const int age = stats.GetUpdate() - bg->GetUpdateBorn();
+      stats.SumGenotypeAge().Add(age, abundance);
+      stats.SumAbundance().Add(abundance);
+      stats.SumGenotypeDepth().Add(bg->GetDepth(), abundance);
+      stats.SumSize().Add(bg->GetMetaGenome().GetGenome().GetSize(), abundance);
+      
+      // Calculate this genotype's contribution to entropy
+      // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
+      //   to the output stage, but behavior is dependent on compiler used and optimization
+      //   level.  For consistent output, ensures that 0.0 is returned.
+      const double p = ((double) abundance) / (double) stats.GetNumCreatures();
+      const double partial_ent = (abundance == stats.GetNumCreatures()) ? 0.0 : -(p * Log(p)); 
+      entropy += partial_ent;
+      
+      // Do any special calculations for threshold genotypes.
+      if (bg->IsThreshold()) stats.SumThresholdAge().Add(age, abundance);
+    }
+  }
+  
+  stats.SetEntropy(entropy);
+  stats.SetNumGenotypes(m_active_count);
+  
+  
+  // Handle dominant genotype stats
+  cBGGenotype* dom_genotype = getBest();
+  if (dom_genotype == NULL) return;
+  
+  stats.SetDomMerit(dom_genotype->GetMerit());
+  stats.SetDomGestation(dom_genotype->GetGestationTime());
+// @TODO?  stats.SetDomReproRate(dom_genotype->GetReproRate());
+  stats.SetDomFitness(dom_genotype->GetFitness());
+  stats.SetDomCopiedSize(dom_genotype->GetCopiedSize());
+  stats.SetDomExeSize(dom_genotype->GetExecutedSize());
+  
+  stats.SetDomSize(dom_genotype->GetMetaGenome().GetGenome().GetSize());
+  stats.SetDomID(dom_genotype->GetID());
+  stats.SetDomName(dom_genotype->GetName());
+  
+  stats.SetDomBirths(dom_genotype->GetThisBirths());
+  stats.SetDomBreedTrue(dom_genotype->GetThisBreedTrue());
+  stats.SetDomBreedIn(dom_genotype->GetThisBreedIn());
+  stats.SetDomBreedOut(dom_genotype->GetThisBreedOut());
+  
+  stats.SetDomAbundance(dom_genotype->GetNumOrganisms());
+  stats.SetDomGeneDepth(dom_genotype->GetDepth());
+  stats.SetDomSequence(dom_genotype->GetMetaGenome().GetGenome().AsString());
+  
+}
+
+
 
 cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)
 {
@@ -122,6 +195,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     resizeActiveList(found->GetNumOrganisms());
     m_active_sz[found->GetNumOrganisms()].Push(found);
     m_world->GetStats().AddGenotype();
+    m_active_count++;
   }
   
   return found;
@@ -218,6 +292,7 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_world->GetStats().GetUpdate());
     m_historic.Push(genotype);
+    m_active_count--;
   }
   
   if (genotype->IsThreshold()) {

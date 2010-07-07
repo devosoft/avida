@@ -135,6 +135,19 @@ public:
   inline void Deactivate(int update) { m_active = false; m_update_deactivated = update; }
   
   inline const tArray<cBGGenotype*> GetParents() const { return m_parents; }
+  
+
+  inline int GetThisBirths() const { return m_births.GetCur(); }
+  inline int GetThisBreedIn() const { return m_breed_in.GetCur(); }
+  inline int GetThisBreedTrue() const { return m_breed_true.GetCur(); }
+  inline int GetThisBreedOut() const { return m_breed_out.GetCur(); }
+  
+  inline double GetCopiedSize() const { return m_copied_size.Average(); }
+  inline double GetExecutedSize() const { return m_exe_size.Average(); }
+  inline double GetGestationTime() const { return m_gestation_time.Average(); }
+  inline double GetMerit() const { return m_merit.Average(); }
+  inline double GetFitness() const { return m_fitness.Average(); }
+  
 
   bool Matches(cBioUnit* bu);
   void NotifyNewBioUnit(cBioUnit* bu);

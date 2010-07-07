@@ -33,68 +33,6 @@
 
 #include <iostream>
 
-/*
- Saves the population for cloning.
-
- Parameters:
-   filename (string) default: clone.*
-     The name of the file into which the population should
-     be saved. If it is not given, then the name 'clone.*'
-     is used, with '*' replaced by the current update.
-*/
-class cActionSaveClone : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionSaveClone(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
-
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("clone.%d", m_world->GetStats().GetUpdate());
-    m_world->GetPopulation().SaveClone(m_world->GetDataFileOFStream(filename));
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
-
-
-/*
- Loads a population clone.
- 
- Parameters:
-   filename (string)
-     The name of the file to open.
-*/
-class cActionLoadClone : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionLoadClone(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: <cString fname>"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    std::ifstream fp(m_filename);
-    m_world->GetPopulation().LoadClone(fp);
-  }
-};
-
-
 
 /*
  Sets up a population based on a dump file such as written out by
@@ -132,8 +70,8 @@ public:
     // set the update if requested
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
-    if (!m_world->GetPopulation().LoadStructuredPopulation(m_filename, m_cellid_offset, m_lineage_offset)) {
-      m_world->GetDriver().RaiseFatalException(-1, "failed to load structured population");
+    if (!m_world->GetPopulation().LoadPopulation(m_filename, m_cellid_offset, m_lineage_offset)) {
+      m_world->GetDriver().RaiseFatalException(-1, "failed to load population");
     }
   }
 };
@@ -158,16 +96,13 @@ public:
   {
     cString filename(m_filename);
     if (filename == "") filename.Set("detail-%d.bgspop", m_world->GetStats().GetUpdate());
-    m_world->GetPopulation().SaveStructuredPopulationBG(filename);
+    m_world->GetPopulation().SavePopulation(filename);
   }
 };
 
 
 void RegisterSaveLoadActions(cActionLibrary* action_lib)
 {
-  action_lib->Register<cActionSaveClone>("SaveClone");
-  action_lib->Register<cActionLoadClone>("LoadClone");
-
   action_lib->Register<cActionLoadPopulation>("LoadPopulation");
   action_lib->Register<cActionSavePopulation>("SavePopulation");
 }
