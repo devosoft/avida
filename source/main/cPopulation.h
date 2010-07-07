@@ -328,7 +328,6 @@ private:
   // Update statistics collecting...
   void UpdateDemeStats();
   void UpdateOrganismStats();
-  void UpdateSpeciesStats();
   
   void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);

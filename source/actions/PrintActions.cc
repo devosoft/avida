@@ -43,7 +43,6 @@
 #include "cPlasticPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cSpecies.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"

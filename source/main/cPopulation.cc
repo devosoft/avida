@@ -2134,8 +2134,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       // we wanted to re-seed from the original founders.
       for(int i=0; i<target_founders.GetSize(); i++) {
         int cellid = DemeSelectInjectionCell(target_deme, i);
-        SeedDeme_InjectDemeFounder(cellid, *target_founders[i]->GetGenotype(), &target_founders[i]->GetPhenotype());
-        target_deme.AddFounder(*target_founders[i]->GetGenotype(), &target_founders[i]->GetPhenotype());
+        SeedDeme_InjectDemeFounder(cellid, target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
+        target_deme.AddFounder(target_founders[i]->GetBioGroup("genotype"), &target_founders[i]->GetPhenotype());
         DemePostInjection(target_deme, cell_array[cellid]);
       }
       
@@ -2152,8 +2152,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
         
         for(int i=0; i<source_founders.GetSize(); i++) {
           int cellid = DemeSelectInjectionCell(source_deme, i); 
-          SeedDeme_InjectDemeFounder(cellid, *source_founders[i]->GetGenotype(), &source_founders[i]->GetPhenotype());
-          source_deme.AddFounder(*source_founders[i]->GetGenotype(), &source_founders[i]->GetPhenotype());
+          SeedDeme_InjectDemeFounder(cellid, source_founders[i]->GetBioGroup("genotype"), &source_founders[i]->GetPhenotype());
+          source_deme.AddFounder(source_founders[i]->GetBioGroup("genotype"), &source_founders[i]->GetPhenotype());
           DemePostInjection(source_deme, cell_array[cellid]);
         }
       }
@@ -2191,10 +2191,6 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       // remember to delete the old target organisms and adjust their genotypes
       for(int i=0; i<old_target_organisms.GetSize(); ++i) {
         old_target_organisms[i]->SetRunning(false);
-        cGenotype * genotype = old_target_organisms[i]->GetGenotype();
-        genotype->DecDeferAdjust();
-        m_world->GetClassificationManager().AdjustGenotype(*genotype);
-        
         // ONLY delete target orgs if seeding was successful
         // otherwise they still exist in the population!!!
         if (successfully_seeded) delete old_target_organisms[i];
@@ -2202,9 +2198,6 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       
       for(int i=0; i<old_source_organisms.GetSize(); ++i) {
         old_source_organisms[i]->SetRunning(false);
-        cGenotype * genotype = old_source_organisms[i]->GetGenotype();
-        genotype->DecDeferAdjust();
-        m_world->GetClassificationManager().AdjustGenotype(*genotype);
         
         // delete old source organisms ONLY if source was replaced
         if ( (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 0)
@@ -3307,7 +3300,7 @@ void cPopulation::DumpDemeFounders(ofstream& fp) {
  **/
 void cPopulation::CCladeSetupOrganism(cOrganism* organism)
 {
-  int gen_id = organism->GetBioGroup("genotype")->GetID();	
+//  int gen_id = organism->GetBioGroup("genotype")->GetID();	
   if (m_world->GetConfig().TRACK_CCLADES.Get() > 0) {
     // @TODO - support for IsCCladeFounder?
 //    if (m_world->GetClassificationManager().IsCCladeFounder(gen_id)) organism->SetCCladeLabel(gen_id);
@@ -4128,58 +4121,6 @@ void cPopulation::UpdateOrganismStats()
 }
 
 
-
-void cPopulation::UpdateSpeciesStats()
-{
-  cStats& stats = m_world->GetStats();
-  double species_entropy = 0.0;
-  
-  stats.SumSpeciesAge().Clear();
-  
-  // Loop through all species that need to be reset prior to calculations.
-  cSpecies * cur_species = m_world->GetClassificationManager().GetFirstSpecies();
-  for (int i = 0; i < m_world->GetClassificationManager().GetNumSpecies(); i++) {
-    cur_species->ResetStats();
-    cur_species = cur_species->GetNext();
-  }
-  
-  // Collect info from genotypes and send it to their species.
-  cGenotype * genotype = m_world->GetClassificationManager().GetBestGenotype();
-  for (int i = 0; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
-    if (genotype->GetSpecies() != NULL) {
-      genotype->GetSpecies()->AddOrganisms(genotype->GetNumOrganisms());
-    }
-    genotype = genotype->GetNext();
-  }
-  
-  // Loop through all of the species in the soup, taking info on them.
-  cur_species = m_world->GetClassificationManager().GetFirstSpecies();
-  for (int i = 0; i < m_world->GetClassificationManager().GetNumSpecies(); i++) {
-    const int abundance = cur_species->GetNumOrganisms();
-    // const int num_genotypes = cur_species->GetNumGenotypes();
-    
-    // Basic statistical collection...
-    const int species_age = stats.GetUpdate() - cur_species->GetUpdateBorn();
-    stats.SumSpeciesAge().Add(species_age, abundance);
-    
-    // Caculate entropy on the species level...
-    // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
-    //   to the output stage, but behavior is dependent on compiler used and optimization
-    //   level.  For consistent output, ensures that 0.0 is returned.
-    if (abundance > 0) {
-      double p = ((double) abundance) / (double) num_organisms;
-      double partial_ent = (abundance == num_organisms) ? 0.0 : -(p * Log(p));
-      species_entropy += partial_ent;
-    }
-    
-    // ...and advance to the next species...
-    cur_species = cur_species->GetNext();
-  }
-  
-  stats.SetSpeciesEntropy(species_entropy);
-}
-
-
 void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 {
   ProcessUpdateCellActions(ctx);
@@ -4194,10 +4135,6 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   
   UpdateDemeStats();
   UpdateOrganismStats();
-  UpdateSpeciesStats();
-  
-  // Do any final calculations...
-  stats.SetNumThreshSpecies(m_world->GetClassificationManager().GetNumSpecies());
   
   // Have stats calculate anything it now can...
   stats.CalcEnergy();
@@ -4450,7 +4387,7 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
         if (tmp.lineage_labels.GetSize() != 0) {
           lineage_label = tmp.lineage_labels[cell_i] + lineage_offset;
         }
-        LineageSetupOrganism(GetCell(cell_id).GetOrganism(), NULL, lineage_label, tmp.genotype->GetParentGenotype());
+        // @TODO - handle lineage setup?
       }
     }
   }
@@ -4529,7 +4466,7 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
   if (merit > 0) phenotype.SetMerit(cMerit(merit));
   AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
   
-  LineageSetupOrganism(GetCell(cell_id).GetOrganism(), 0, lineage_label);
+  // @TODO - handle lineage setup?
   
   if (GetNumDemes() > 1) {
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
@@ -4550,12 +4487,10 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
     else if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 1) {    
       if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
         //find the genotype we just created from the genome, and save it
-        cGenotype * genotype = GetCell(cell_id).GetOrganism()->GetGenotype();
-        deme.ReplaceGermline(*genotype);        
+        deme.ReplaceGermline(GetCell(cell_id).GetOrganism()->GetBioGroup("genotype"));        
       } 
       else { // not germlines, save org as founder
-        cGenotype * genotype = GetCell(cell_id).GetOrganism()->GetGenotype();
-        deme.AddFounder(*genotype, &phenotype);
+        deme.AddFounder(GetCell(cell_id).GetOrganism()->GetBioGroup("genotype"), &phenotype);
       }
       
       GetCell(cell_id).GetOrganism()->GetPhenotype().SetPermanentGermlinePropensity
