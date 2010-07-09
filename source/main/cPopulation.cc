@@ -1707,9 +1707,9 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     }
     
     //Create a new genotype which is daughter to the old one.
-    cGenotype * new_germline_genotype = m_world->GetClassificationManager().GetGenotype(new_genome, germline_genotype, NULL);
-    source_deme.ReplaceGermline(*new_germline_genotype);
-    target_deme.ReplaceGermline(*new_germline_genotype);
+    cBioGroup* new_germline_genotype = m_world->GetClassificationManager().GetGenotype(new_genome, germline_genotype, NULL);
+    source_deme.ReplaceGermline(new_germline_genotype);
+    target_deme.ReplaceGermline(new_germline_genotype);
     SeedDeme(source_deme, *new_germline_genotype, SRC_DEME_GERMLINE);
     SeedDeme(target_deme, *new_germline_genotype, SRC_DEME_GERMLINE);
     
@@ -2173,8 +2173,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           
           int cellid = DemeSelectInjectionCell(source_deme, i);
           //cout << "founder: " << source_founders[i] << endl;
-          cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(source_founders[i]);
-          SeedDeme_InjectDemeFounder(cellid, *genotype, &source_founder_phenotypes[i]);
+          cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(source_founders[i]);
+          SeedDeme_InjectDemeFounder(cellid, bg, &source_founder_phenotypes[i]);
           DemePostInjection(source_deme, cell_array[cellid]);
         }
         
@@ -4381,6 +4381,7 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
         phenotype.SetupInject(mg.GetGenome());
         
         // Classify this new organism
+        // @TODO - classify loaded genotypes with load hints
         m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
         
         // Coalescense Clade Setup
@@ -4565,11 +4566,6 @@ void cPopulation::InjectParasite(const cString& label, const cGenome& injected_c
   }
 }
 
-
-cPopulationCell& cPopulation::GetCell(int in_num)
-{
-  return cell_array[in_num];
-}
 
 void cPopulation::UpdateResources(const tArray<double> & res_change)
 {

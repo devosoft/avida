@@ -61,12 +61,6 @@
 #include "tVector.h"
 #endif
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 #include "cInstSet.h"
 
 class cAvidaContext;
@@ -85,9 +79,6 @@ class cSaleItem;
 
 class cPopulation
 {
-#if USE_tMemTrack
-  tMemTrack<cPopulation> mt;
-#endif
 private:
   // Components...
   cWorld* m_world;
@@ -250,7 +241,7 @@ public:
   int GetNumDemes() const { return deme_array.GetSize(); }
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
-  cPopulationCell& GetCell(int in_num);
+  cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
   const tArray<double>& GetResources() const { return resource_count.GetResources(); }
   const tArray<double>& GetCellResources(int cell_id) const { return resource_count.GetCellResources(cell_id); }
   const tArray<double>& GetDemeResources(int deme_id) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(); }

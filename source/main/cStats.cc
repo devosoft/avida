@@ -787,11 +787,6 @@ void cStats::PrintParasiteData(const cString& filename)
 
   df.Write(m_update, "Update");
   df.Write(num_parasites, "Number of Extant Parasites");
-// @TODO - parasite stats output?
-//  df.Write(dom_inj_size, "Size of Dominant Parasite Genotype");
-//  df.Write(dom_inj_abundance, "Abundance of Dominant Parasite Genotype");
-//  df.Write(dom_inj_genotype_id, "Genotype ID of Dominant Parasite Genotype");
-//  df.Write(dom_inj_name, "Name of the Dominant Parasite Genotype");
   df.Endl();
 }
 

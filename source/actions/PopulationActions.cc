@@ -4756,39 +4756,4 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
 	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
 	action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
-	
-  // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
-  action_lib->Register<cActionInject>("inject");
-  action_lib->Register<cActionInjectRandom>("inject_random");
-  action_lib->Register<cActionInjectAllRandomRepro>("inject_all_random_repro");
-  action_lib->Register<cActionInjectAll>("inject_all");
-  action_lib->Register<cActionInjectRange>("inject_range");
-  action_lib->Register<cActionInjectSequence>("inject_sequence");
-	
-  action_lib->Register<cActionKillProb>("apocalypse");
-  action_lib->Register<cActionKillRate>("rate_kill");
-  action_lib->Register<cActionKillRectangle>("kill_rectangle");
-  action_lib->Register<cActionSerialTransfer>("serial_transfer");
-	
-  action_lib->Register<cActionZeroMuts>("zero_muts");
-  
-  action_lib->Register<cActionCompeteDemes>("compete_demes");
-  action_lib->Register<cActionReplicateDemes>("replicate_demes");
-  action_lib->Register<cActionResetDemes>("reset_demes");
-  action_lib->Register<cActionCopyDeme>("copy_deme");
-  
-  action_lib->Register<cActionCompeteDemes>("new_trial");
-  action_lib->Register<cActionCompeteDemes>("compete_organisms");
-  
-  action_lib->Register<cActionSeverGridCol>("sever_grid_col");
-  action_lib->Register<cActionSeverGridRow>("sever_grid_row");
-  action_lib->Register<cActionJoinGridCol>("join_grid_col");
-  action_lib->Register<cActionJoinGridRow>("join_grid_row");
-	
-  action_lib->Register<cActionConnectCells>("connect_cells");
-  action_lib->Register<cActionDisconnectCells>("disconnect_cells");
-  action_lib->Register<cActionSwapCells>("swap_cells");
-  action_lib->Register<cActionKillDemePercent>("KillDemePercent");
-  action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
-  action_lib->Register<cActionMigrateDemes>("MigrateDemes");
 }

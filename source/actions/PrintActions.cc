@@ -28,6 +28,7 @@
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
+#include "cBioGroup.h"
 #include "tArrayUtils.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
@@ -357,108 +358,111 @@ public:
   }
 };
 
+// @TODO - needs species support
+//class cActionPrintSpeciesAbundanceHistogram : public cAction
+//{
+//private:
+//  cString m_filename;
+//public:
+//  cActionPrintSpeciesAbundanceHistogram(cWorld* world, const cString& args) : cAction(world, args)
+//  {
+//    cString largs(args);
+//    if (largs == "") m_filename = "species_abundance_histogram.dat"; else m_filename = largs.PopWord();
+//  }
+//  
+//  static const cString GetDescription() { return "Arguments: [string fname=\"species_abundance_histogram.dat\"]"; }
+//  
+//  void Process(cAvidaContext& ctx)
+//  {
+//    int max = 0;
+//    
+//    // Find max species abundance...
+//    cClassificationManager& classmgr = m_world->GetClassificationManager();
+//    cSpecies* cur_species = classmgr.GetFirstSpecies();
+//    for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
+//      if (max < cur_species->GetNumOrganisms()) {
+//        max = cur_species->GetNumOrganisms();
+//      }
+//      cur_species = cur_species->GetNext();
+//    }
+//    
+//    // Allocate array for the histogram & zero it
+//    tArray<int> hist(max);
+//    hist.SetAll(0);
+//    
+//    // Loop through all species binning the values
+//    cur_species = classmgr.GetFirstSpecies();
+//    for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
+//      assert( cur_species->GetNumOrganisms() - 1 >= 0 );
+//      assert( cur_species->GetNumOrganisms() - 1 < hist.GetSize() );
+//      hist[cur_species->GetNumOrganisms() - 1]++;
+//      cur_species = cur_species->GetNext();
+//    }
+//    
+//    // Actual output
+//    cDataFile& df = m_world->GetDataFile(m_filename);
+//    df.Write(m_world->GetStats().GetUpdate(), "Update");
+//    for (int i = 0; i < hist.GetSize(); i++) df.WriteAnonymous(hist[i]);
+//    df.Endl();
+//  }
+//};
 
-class cActionPrintSpeciesAbundanceHistogram : public cAction
-{
-private:
-  cString m_filename;
-public:
-  cActionPrintSpeciesAbundanceHistogram(cWorld* world, const cString& args) : cAction(world, args)
-  {
-    cString largs(args);
-    if (largs == "") m_filename = "species_abundance_histogram.dat"; else m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname=\"species_abundance_histogram.dat\"]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    int max = 0;
-    
-    // Find max species abundance...
-    cClassificationManager& classmgr = m_world->GetClassificationManager();
-    cSpecies* cur_species = classmgr.GetFirstSpecies();
-    for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
-      if (max < cur_species->GetNumOrganisms()) {
-        max = cur_species->GetNumOrganisms();
-      }
-      cur_species = cur_species->GetNext();
-    }
-    
-    // Allocate array for the histogram & zero it
-    tArray<int> hist(max);
-    hist.SetAll(0);
-    
-    // Loop through all species binning the values
-    cur_species = classmgr.GetFirstSpecies();
-    for (int i = 0; i < classmgr.GetNumSpecies(); i++) {
-      assert( cur_species->GetNumOrganisms() - 1 >= 0 );
-      assert( cur_species->GetNumOrganisms() - 1 < hist.GetSize() );
-      hist[cur_species->GetNumOrganisms() - 1]++;
-      cur_species = cur_species->GetNext();
-    }
-    
-    // Actual output
-    cDataFile& df = m_world->GetDataFile(m_filename);
-    df.Write(m_world->GetStats().GetUpdate(), "Update");
-    for (int i = 0; i < hist.GetSize(); i++) df.WriteAnonymous(hist[i]);
-    df.Endl();
-  }
-};
+// @TODO - needs lineage support
+//class cActionPrintLineageTotals : public cAction
+//{
+//private:
+//  cString m_filename;
+//  int m_verbose;
+//public:
+//  cActionPrintLineageTotals(cWorld* world, const cString& args) : cAction(world, args), m_verbose(1)
+//  {
+//    cString largs(args);
+//    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_totals.dat";
+//    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
+//  }
+//  
+//  static const cString GetDescription() { return "Arguments: [string fname='lineage_totals.dat'] [int verbose=1]"; }
+//  
+//  void Process(cAvidaContext& ctx)
+//  {
+//    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
+//      m_world->GetDataFileOFStream(m_filename) << "No lineage data available!" << endl;
+//      return;
+//    }
+//    m_world->GetClassificationManager().PrintLineageTotals(m_filename, m_verbose);
+//  }
+//};
 
-class cActionPrintLineageTotals : public cAction
-{
-private:
-  cString m_filename;
-  int m_verbose;
-public:
-  cActionPrintLineageTotals(cWorld* world, const cString& args) : cAction(world, args), m_verbose(1)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_totals.dat";
-    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname='lineage_totals.dat'] [int verbose=1]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
-      m_world->GetDataFileOFStream(m_filename) << "No lineage data available!" << endl;
-      return;
-    }
-    m_world->GetClassificationManager().PrintLineageTotals(m_filename, m_verbose);
-  }
-};
 
-class cActionPrintLineageCounts : public cAction
-{
-private:
-  cString m_filename;
-  int m_verbose;
-public:
-  cActionPrintLineageCounts(cWorld* world, const cString& args) : cAction(world, args), m_verbose(1)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
-    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat'] [int verbose=1]"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
-      m_world->GetDataFileOFStream(m_filename) << "No lineage data available!" << endl;
-      return;
-    }
-    if (m_verbose) {    // verbose mode is the same in both methods
-      m_world->GetClassificationManager().PrintLineageTotals(m_filename, m_verbose);
-      return;
-    }
-    m_world->GetClassificationManager().PrintLineageCurCounts(m_filename);
-  }
-};
+// @TODO - needs lineage support
+//class cActionPrintLineageCounts : public cAction
+//{
+//private:
+//  cString m_filename;
+//  int m_verbose;
+//public:
+//  cActionPrintLineageCounts(cWorld* world, const cString& args) : cAction(world, args), m_verbose(1)
+//  {
+//    cString largs(args);
+//    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
+//    if (largs.GetSize()) m_verbose = largs.PopWord().AsInt();
+//  }
+//  
+//  static const cString GetDescription() { return "Arguments: [string fname='lineage_counts.dat'] [int verbose=1]"; }
+//  
+//  void Process(cAvidaContext& ctx)
+//  {
+//    if (!m_world->GetConfig().LOG_LINEAGES.Get()) {
+//      m_world->GetDataFileOFStream(m_filename) << "No lineage data available!" << endl;
+//      return;
+//    }
+//    if (m_verbose) {    // verbose mode is the same in both methods
+//      m_world->GetClassificationManager().PrintLineageTotals(m_filename, m_verbose);
+//      return;
+//    }
+//    m_world->GetClassificationManager().PrintLineageCurCounts(m_filename);
+//  }
+//};
 
 
 /*
@@ -497,64 +501,6 @@ public:
 };
 
 
-// This is a generic place for Developers to hook into an action for printing out debug information
-class cActionPrintDebug : public cAction
-{
-public:
-  cActionPrintDebug(cWorld* world, const cString& args) : cAction(world, args) { ; }
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    std::cout << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << std::endl;
-  }
-};
-
-
-/*
- This is a new version of "detail_pop" or "historic_dump".  It allows you to
- output one line per genotype in memory where you get to choose what data
- should be included.
- 
- Parameters
-   data_fields (string)
-     This must be a comma separated string of all data you wish to output.
-     Options include: id, parent_id, parent2_id (for sex), parent_dist,
-       num_cpus, total_cpus, length, merit, gest_time, fitness, update_born,
-       update_dead, depth, lineage, sequence
-   historic (int) default: 0
-     How many updates back of history should we include (-1 = all)
-   filename (string) default: "genotypes-<update>.dat"
-     The name of the file into which the population dump should be written.
-*/
-class cActionPrintGenotypes : public cAction
-{
-private:
-  cString m_datafields;
-  cString m_filename;
-  int m_historic;
-  
-public:
-  cActionPrintGenotypes(cWorld* world, const cString& args)
-    : cAction(world, args), m_datafields("all"), m_filename(""), m_historic(0)
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_datafields = largs.PopWord();
-    if (largs.GetSize()) m_historic = largs.PopWord().AsInt();
-    if (largs.GetSize()) m_filename = largs.PopWord();
-  }
-  
-  static const cString GetDescription() { return "Arguments: [string data_fields=\"all\"] [int historic=0] [string fname='']"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("genotypes-%d.dat", m_world->GetStats().GetUpdate());
-    m_world->GetClassificationManager().PrintGenotypes(m_world->GetDataFileOFStream(filename),
-                                                       m_datafields, m_historic);
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
 
 
 /*
@@ -2593,28 +2539,31 @@ public:
 };
 
 
-class cActionDumpGenotypeIDGrid : public cAction
+class cActionDumpClassificationIDGrid : public cAction
 {
 private:
   cString m_filename;
+  cString m_role;
   
 public:
-  cActionDumpGenotypeIDGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  cActionDumpClassificationIDGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename(""), m_role("genotype")
   {
     cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();  
+    if (largs.GetSize()) m_filename = largs.PopWord();
+    if (largs.GetSize()) m_role = largs.PopWord();
   }
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string fname_prefix='']"; }
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("grid_genotype_id-%d.dat", m_world->GetStats().GetUpdate());
+    if (filename == "") filename = "grid_class_id";
+    filename.Set("%s-%d.dat", (const char*)filename, m_world->GetStats().GetUpdate());
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype()->GetID() : -1;
+        int id = (cell.IsOccupied() && cell.GetOrganism()->GetBioGroup(m_role)) ? cell.GetOrganism()->GetBioGroup(m_role)->GetID() : -1;
         fp << id << " ";
       }
       fp << endl;
@@ -3238,18 +3187,16 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDepthHistogram>("PrintDepthHistogram");
   action_lib->Register<cActionEcho>("Echo");
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
-  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");
-  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
-  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
+//  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");
+//  action_lib->Register<cActionPrintLineageTotals>("PrintLineageTotals");
+//  action_lib->Register<cActionPrintLineageCounts>("PrintLineageCounts");
   action_lib->Register<cActionPrintDominantGenotype>("PrintDominantGenotype");
   action_lib->Register<cActionPrintDetailedFitnessData>("PrintDetailedFitnessData");
   action_lib->Register<cActionPrintLogFitnessHistogram>("PrintLogFitnessHistogram");
   action_lib->Register<cActionPrintRelativeFitnessHistogram>("PrintRelativeFitnessHistogram");
   action_lib->Register<cActionPrintGeneticDistanceData>("PrintGeneticDistanceData");
   action_lib->Register<cActionPrintPopulationDistanceData>("PrintPopulationDistanceData");
-  action_lib->Register<cActionPrintDebug>("PrintDebug");
 
-  action_lib->Register<cActionPrintGenotypes>("PrintGenotypes");
   action_lib->Register<cActionPrintPhenotypicPlasticity>("PrintPhenotypicPlasticity");
   action_lib->Register<cActionPrintTaskProbHistogram>("PrintTaskProbHistogram");
   action_lib->Register<cActionPrintPlasticGenotypeSummary>("PrintPlasticGenotypeSummary");
@@ -3263,8 +3210,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   
   // Grid Information Dumps
   action_lib->Register<cActionDumpMemory>("DumpMemory");
+  action_lib->Register<cActionDumpClassificationIDGrid>("DumpClassificationIDGrid");
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
-  action_lib->Register<cActionDumpGenotypeIDGrid>("DumpGenotypeIDGrid");
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpLineageGrid>("DumpLineageGrid");
@@ -3295,57 +3242,4 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintNumOrgsInDeme>("PrintNumOrgsInDeme");
   action_lib->Register<cActionCalcConsensus>("CalcConsensus");
 	action_lib->Register<cActionPrintEditDistance>("PrintEditDistance");
-	
-	
-
-  // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
-  action_lib->Register<cActionPrintAverageData>("print_average_data");
-  action_lib->Register<cActionPrintErrorData>("print_error_data");
-  action_lib->Register<cActionPrintVarianceData>("print_variance_data");
-  action_lib->Register<cActionPrintDominantData>("print_dominant_data");
-  action_lib->Register<cActionPrintStatsData>("print_stats_data");
-  action_lib->Register<cActionPrintCountData>("print_count_data");
-  action_lib->Register<cActionPrintTotalsData>("print_totals_data");
-  action_lib->Register<cActionPrintTasksData>("print_tasks_data");
-  action_lib->Register<cActionPrintTasksExeData>("print_tasks_exe_data");
-  action_lib->Register<cActionPrintTasksQualData>("print_tasks_qual_data");
-  action_lib->Register<cActionPrintResourceData>("print_resource_data");
-  action_lib->Register<cActionPrintTimeData>("print_time_data");
-  action_lib->Register<cActionPrintMutationRateData>("print_mutation_rate_data");
-  action_lib->Register<cActionPrintDivideMutData>("print_divide_mut_data");
-  action_lib->Register<cActionPrintInstructionData>("print_instruction_data");
-  action_lib->Register<cActionPrintGenotypeMap>("print_genotype_map");
-  action_lib->Register<cActionPrintMarketData>("print_market_data");
-  
-  action_lib->Register<cActionPrintPhenotypeData>("print_number_phenotypes");
-  action_lib->Register<cActionPrintPhenotypeStatus>("print_phenotype_status");
-  action_lib->Register<cActionPrintDonationStats>("print_donation_stats");
-  action_lib->Register<cActionPrintDemeAllStats>("print_deme_stats");
-  
-  action_lib->Register<cActionPrintData>("print_data");
-  action_lib->Register<cActionPrintInstructionAbundanceHistogram>("print_instruction_abundance_histogram");
-  action_lib->Register<cActionPrintDepthHistogram>("print_depth_histogram");
-  action_lib->Register<cActionEcho>("echo");
-  action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("print_genotype_abundance_histogram");
-  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("print_species_abundance_histogram");
-  action_lib->Register<cActionPrintLineageTotals>("print_lineage_totals");
-  action_lib->Register<cActionPrintLineageCounts>("print_lineage_counts");
-  action_lib->Register<cActionPrintDominantGenotype>("print_dom");
-  action_lib->Register<cActionPrintDetailedFitnessData>("print_detailed_fitness_data");
-  action_lib->Register<cActionPrintGeneticDistanceData>("print_genetic_distance_data");
-  action_lib->Register<cActionPrintPopulationDistanceData>("genetic_distance_pop_dump");
-  
-  action_lib->Register<cActionPrintGenotypes>("print_genotypes");
-
-  action_lib->Register<cActionTestDominant>("test_dom");
-  action_lib->Register<cActionPrintTaskSnapshot>("task_snapshot");
-  action_lib->Register<cActionPrintViableTasksData>("print_viable_tasks_data");
-
-  action_lib->Register<cActionDumpMemory>("dump_memory");
-  action_lib->Register<cActionDumpFitnessGrid>("dump_fitness_grid");
-  action_lib->Register<cActionDumpGenotypeIDGrid>("dump_genotype_grid");
-  action_lib->Register<cActionDumpPhenotypeIDGrid>("dump_phenotype_grid");
-  action_lib->Register<cActionDumpTaskGrid>("dump_task_grid");
-  action_lib->Register<cActionDumpDonorGrid>("dump_donor_grid");
-  action_lib->Register<cActionDumpReceiverGrid>("dump_receiver_grid");
 }
