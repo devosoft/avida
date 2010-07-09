@@ -727,7 +727,7 @@ public:
         int count = 0;
         if (!cclade_count.Find(cclade_id,count))
           clade_ids.insert(cclade_id);
-        cclade_count.SetValue(cclade_id, ++count);
+        cclade_count.Set(cclade_id, ++count);
       }
       
       ofstream& fp = m_world->GetDataFileManager().GetOFStream(filename);
@@ -2084,8 +2084,7 @@ public:
       df.Write(parent_sum_tasks_rewarded, "Parent Number of Tasks Rewared");
       df.Write(parent_sum_tasks_all, "Parent Total Number of Tasks Done");
       df.Write(test_info.GetColonyFitness(), "Genotype Fitness");
-      df.Write(organism->GetGenotype()->GetName(), "Genotype Name");
-      df.Write(organism->GetGenotype()->GetID(), "Genotype ID");
+      df.Write(organism->GetBioGroup("genotype")->GetID(), "Genotype ID");
       df.Endl();
     }
     
@@ -2529,7 +2528,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
       for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        double fitness = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype()->GetFitness() : 0.0;
+        double fitness = (cell.IsOccupied()) ? cell.GetOrganism()->GetPhenotype().GetFitness() : 0.0;
         fp << fitness << " ";
       }
       fp << endl;
@@ -2683,36 +2682,6 @@ public:
   }
 };
 
-
-class cActionDumpLineageGrid : public cAction
-{
-private:
-  cString m_filename;
-  
-public:
-  cActionDumpLineageGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
-  {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();  
-  }
-  static const cString GetDescription() { return "Arguments: [string fname='grid_linage.update.dat']"; }
-  void Process(cAvidaContext& ctx)
-  {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("grid_lineage.%d.dat", m_world->GetStats().GetUpdate());
-    ofstream& fp = m_world->GetDataFileOFStream(filename);
-    
-    for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-      for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
-        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetGenotype()->GetLineageLabel() : -1;
-        fp << id << " ";
-      }
-      fp << endl;
-    }
-    m_world->GetDataFileManager().Remove(filename);
-  }
-};
 
 class cActionDumpSleepGrid : public cAction
 {
@@ -3214,7 +3183,6 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
-  action_lib->Register<cActionDumpLineageGrid>("DumpLineageGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
