@@ -110,6 +110,8 @@ public:
    **/
   cString GetLine(int line_num = 0);
   
+  tDictionary<cString>* GetLineAsDict(int line_num = 0);
+  
 
   /**
    * Checks whether any line contains a given keyword in the specified 

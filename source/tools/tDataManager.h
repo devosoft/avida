@@ -62,7 +62,7 @@ public:
   {
     tDataEntry<TargetType>* new_entry =
       new tDataEntryOfType<TargetType, EntryType ()>(name, desc, funR, funS, compare, null, html_cell);
-    m_entry_dict.Add(name, new_entry);
+    m_entry_dict.Set(name, new_entry);
     return true;
   }
 

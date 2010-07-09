@@ -29,7 +29,7 @@
 
 class cDataFile;
 class cString;
-
+template <typename T> class tDictionary;
 
 class cMetaGenome
 {
@@ -62,7 +62,8 @@ public:
     { return (m_hw_type == mg.m_hw_type && m_inst_set_id == mg.m_inst_set_id && m_genome == mg.m_genome); }
   cMetaGenome& operator=(const cMetaGenome& mg)
     { m_hw_type = mg.m_hw_type; m_inst_set_id = mg.m_inst_set_id; m_genome = mg.m_genome; return *this; }
-  
+
+  void Load(const tDictionary<cString>& props);
   void Save(cDataFile& df);
 };
 

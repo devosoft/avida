@@ -33,6 +33,7 @@ class cBioGroup;
 class cBioUnit;
 class cStats;
 class cDataFile;
+template <typename T> class tDictionary;
 
 
 class cBioGroupManager
@@ -53,6 +54,7 @@ public:
   virtual void UpdateReset() = 0;
   virtual void UpdateStats(cStats& stats) = 0;
     
+  virtual cBioGroup* LoadBioGroup(const tDictionary<cString>& props) = 0;
   virtual void SaveBioGroups(cDataFile& df) = 0;
 
   inline int GetRoleID() const { return m_role_id; }

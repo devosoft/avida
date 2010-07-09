@@ -766,7 +766,7 @@ public:
         m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount requires coalescence clade tracking to be enabled.");
       
       
-      tHashTable<int, int> cclade_count;  //A count for each clade in the population
+      tHashMap<int, int> cclade_count;  //A count for each clade in the population
       set<int>             clade_ids;
       
       cPopulation& pop = m_world->GetPopulation();

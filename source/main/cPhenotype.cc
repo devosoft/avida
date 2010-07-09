@@ -148,7 +148,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   while(vit.Next() && kit.Next())
   {
     cTaskState* new_ts = new cTaskState(**(vit.Get()));
-    m_task_states.Add(*(kit.Get()), new_ts);
+    m_task_states.Set(*(kit.Get()), new_ts);
   }
   
   // 3. These mark the status of "in progess" variables at the last divide.

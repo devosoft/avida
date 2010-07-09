@@ -54,7 +54,7 @@ public:
     m_functions(functions)
   {
     // Fill out cInstLib::m_namemap dictionary with instruction name to entry index mappings
-    for(int i = 0; i < m_size; i++) m_namemap.Add(m_entries[i].GetName(), i);
+    for(int i = 0; i < m_size; i++) m_namemap.Set(m_entries[i].GetName(), i);
   }
   
   const MethodType* GetFunctions() const { return m_functions; } 

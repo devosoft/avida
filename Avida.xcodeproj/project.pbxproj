@@ -41,6 +41,7 @@
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
 		701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */; };
 		701B343011E4CC1E00FEF49A /* cSexualAncestry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */; };
+		701B356011E7744D00FEF49A /* tHashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B355F11E7744D00FEF49A /* tHashMap.h */; };
 		701E746C10A37967006B6193 /* cBGGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701E746A10A37967006B6193 /* cBGGenotype.cc */; };
 		701E748510A37DB2006B6193 /* cBioGroupManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701E748310A37DB2006B6193 /* cBioGroupManager.cc */; };
 		7020699C0FDFEB7900B77E39 /* cBitArray.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7020828D0FB9F2DF00637AD6 /* cBitArray.cc */; };
@@ -459,6 +460,7 @@
 		70166B8D0B519CFE009533A5 /* cTaskState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskState.h; sourceTree = "<group>"; };
 		701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSexualAncestry.h; sourceTree = "<group>"; };
 		701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSexualAncestry.cc; sourceTree = "<group>"; };
+		701B355F11E7744D00FEF49A /* tHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tHashMap.h; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
 		701D9116094B773E008B845F /* cWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		701D912B094B7AC1008B845F /* cAvidaDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver.h; sourceTree = "<group>"; };
@@ -868,7 +870,7 @@
 		70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataEntryCommand.h; sourceTree = "<group>"; };
 		70B08B8908FB2E5500FC65FE /* tDataManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDataManager.h; sourceTree = "<group>"; };
 		70B08B8A08FB2E5500FC65FE /* tDictionary.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tDictionary.h; sourceTree = "<group>"; };
-		70B08B8B08FB2E5500FC65FE /* tHashTable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tHashTable.h; sourceTree = "<group>"; };
+		70B08B8B08FB2E5500FC65FE /* nHashTable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nHashTable.h; sourceTree = "<group>"; };
 		70B08B8C08FB2E5500FC65FE /* tList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tList.h; sourceTree = "<group>"; };
 		70B08B8D08FB2E5500FC65FE /* tMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tMatrix.h; sourceTree = "<group>"; };
 		70B08B8E08FB2E5500FC65FE /* tMemTrack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tMemTrack.h; sourceTree = "<group>"; };
@@ -1743,7 +1745,7 @@
 				70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */,
 				70B08B8908FB2E5500FC65FE /* tDataManager.h */,
 				70B08B8A08FB2E5500FC65FE /* tDictionary.h */,
-				70B08B8B08FB2E5500FC65FE /* tHashTable.h */,
+				70B08B8B08FB2E5500FC65FE /* nHashTable.h */,
 				70B08B8C08FB2E5500FC65FE /* tList.h */,
 				70B08B8D08FB2E5500FC65FE /* tMatrix.h */,
 				70B08B8E08FB2E5500FC65FE /* tMemTrack.h */,
@@ -1845,6 +1847,7 @@
 				700D9C170F1A7436002CC711 /* tArrayMap.h */,
 				700D9C1A0F1A77EC002CC711 /* tKVPair.h */,
 				70100BD7108F8F4F005999F0 /* cRunningStats.h */,
+				701B355F11E7744D00FEF49A /* tHashMap.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";
@@ -1927,6 +1930,7 @@
 				703178AD11AD711B00F81E21 /* cBioGroupData.h in Headers */,
 				7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */,
 				701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */,
+				701B356011E7744D00FEF49A /* tHashMap.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

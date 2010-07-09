@@ -28,7 +28,7 @@
 #include "cASNativeObject.h"
 #include "cASTVisitor.h"
 
-#include "tHashTable.h"
+#include "tHashMap.h"
 #include "tManagedPointerArray.h"
 #include "tSmartArray.h"
 
@@ -193,7 +193,7 @@ private:
   class cLocalDict
   {
   private:
-    tHashTable<sAggregateValue, sAggregateValue> m_storage;
+    tHashMap<sAggregateValue, sAggregateValue> m_storage;
     int m_ref_count;
     
     

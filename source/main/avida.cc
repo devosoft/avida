@@ -240,7 +240,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       cString name(cur_arg);
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       cString value(cur_arg);
-      sets.Add(name, value);
+      sets.Set(name, value);
     } else if (cur_arg == "-def") {
       if (arg_num + 1 == argc || arg_num + 2 == argc) {
         cerr << "'-def' option must be followed by name and value" << endl;
@@ -250,7 +250,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       cString name(cur_arg);
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       cString value(cur_arg);
-      defs.Add(name, value);
+      defs.Set(name, value);
     } else if (cur_arg == "-c" || cur_arg == "-config") {
       if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
         cerr << "Error: Filename for configuration must be specified." << endl;

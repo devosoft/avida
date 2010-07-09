@@ -49,7 +49,7 @@ public:
   
   void Add(const cString& name, tDataEntry<TargetType>* entry)
   {
-    m_entry_dict.Add(name, entry);
+    m_entry_dict.Set(name, entry);
     m_entry_names.Push(name);
   }
   

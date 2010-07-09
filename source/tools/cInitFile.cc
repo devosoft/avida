@@ -81,7 +81,7 @@ void cInitFile::InitMappings(const tDictionary<cString>& mappings)
   while (names_it.Next() != NULL) {
     cString* name = names_it.Get();
     cString value;
-    if (mappings.Find(*name, value)) m_mappings.Add(*name, value);
+    if (mappings.Find(*name, value)) m_mappings.Set(*name, value);
   }
 }
 
@@ -225,6 +225,19 @@ cString cInitFile::GetLine(int line_num)
 {
   if (line_num < 0 || line_num >= m_lines.GetSize()) return "";
   return m_lines[line_num]->line;
+}
+
+tDictionary<cString>* cInitFile::GetLineAsDict(int line_num)
+{
+  tDictionary<cString>* dict = new tDictionary<cString>;
+  
+  cStringList fmt = m_format;
+  cStringList line;
+  if (line_num >= 0 && line_num < m_lines.GetSize()) line.Load(m_lines[line_num]->line);  
+  
+  while (fmt.GetSize() && line.GetSize()) dict->Set(fmt.Pop(), line.Pop());
+  
+  return dict;
 }
 
 

@@ -116,7 +116,7 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
   while ((cur_format = format_it.Next())) {
     tListIterator<cBaseConfigFormatEntry> entry_it(cur_format->GetEntryList());
     cBaseConfigFormatEntry* cur_entry;
-    while ((cur_entry = entry_it.Next())) entry_dict.Add(cur_entry->GetName(), cur_entry);
+    while ((cur_entry = entry_it.Next())) entry_dict.Set(cur_entry->GetName(), cur_entry);
   }
   
   

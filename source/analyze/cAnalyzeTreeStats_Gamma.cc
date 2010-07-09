@@ -118,11 +118,11 @@ void cAnalyzeTreeStats_Gamma::LoadGenotypes(tList<cAnalyzeGenotype> &genotype_li
 
 void cAnalyzeTreeStats_Gamma::MapIDToGenotypePos(
   tArray<cAnalyzeGenotype *> &lineage,
-  tHashTable<int, int> &out_mapping
+  tHashMap<int, int> &out_mapping
 ){
   out_mapping.ClearAll();
   for(int i = 0; i < lineage.GetSize(); i++){
-    out_mapping.SetValue(lineage[i]->GetID(), i);
+    out_mapping.Set(lineage[i]->GetID(), i);
   }
 }
 
@@ -134,7 +134,7 @@ void cAnalyzeTreeStats_Gamma::Unlink(tArray<cAnalyzeGenotype *> &lineage){
 
 void cAnalyzeTreeStats_Gamma::EstablishLinks(
   tArray<cAnalyzeGenotype *> &lineage,
-  tHashTable<int, int> &out_mapping
+  tHashMap<int, int> &out_mapping
 ){
   this->Unlink(lineage);
   this->MapIDToGenotypePos(lineage, out_mapping);
@@ -309,7 +309,7 @@ void cAnalyzeTreeStats_Gamma::AnalyzeBatch(
   int end_time,
   int furcation_time_convention
 ){
-  tHashTable<int, int> mapping;
+  tHashMap<int, int> mapping;
 
   int (*furcation_time_policy)(cAnalyzeLineageFurcation &furcation);
   furcation_time_policy = 0;

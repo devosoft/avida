@@ -27,8 +27,8 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef tHashTable
-#include "tHashTable.h"
+#ifndef tHashMap
+#include "tHashMap.h"
 #endif
 #ifndef tList_h
 #include "tList.h"
@@ -76,12 +76,12 @@ public:
   void LoadGenotypes(tList<cAnalyzeGenotype> &genotype_list);
   void MapIDToGenotypePos(
     tArray<cAnalyzeGenotype *> &lineage,
-    tHashTable<int, int> &out_mapping
+    tHashMap<int, int> &out_mapping
   );
   void Unlink(tArray<cAnalyzeGenotype *> &lineage);
   void EstablishLinks(
     tArray<cAnalyzeGenotype *> &lineage,
-    tHashTable<int, int> &out_mapping
+    tHashMap<int, int> &out_mapping
   );
   void FindFurcations(
     tArray<cAnalyzeGenotype *> &lineage,

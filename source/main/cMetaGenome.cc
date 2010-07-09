@@ -26,6 +26,7 @@
 
 #include "cDataFile.h"
 #include "cStringUtil.h"
+#include "tDictionary.h"
 
 
 cMetaGenome::cMetaGenome(const cString& gen_str)
@@ -36,6 +37,15 @@ cMetaGenome::cMetaGenome(const cString& gen_str)
   m_genome = cGenome(str);
 }
 
+void cMetaGenome::Load(const tDictionary<cString>& props)
+{
+  assert(props.HasEntry("hw_type"));
+  m_hw_type = props.Get("hw_type").AsInt();
+  assert(props.HasEntry("inst_set"));
+  m_inst_set_id = props.Get("inst_set").AsInt();
+  assert(props.HasEntry("sequence"));
+  m_genome = cGenome(props.Get("sequence"));
+}
 
 void cMetaGenome::Save(cDataFile& df)
 {

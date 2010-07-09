@@ -27,7 +27,9 @@
 #include "cBGGenotypeManager.h"
 #include "cDataFile.h"
 #include "cPhenotype.h"
+#include "cStringList.h"
 #include "cStringUtil.h"
+#include "tDictionary.h"
 
 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
@@ -60,6 +62,47 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   }
   if (m_parents.GetSize()) m_depth = m_parents[0]->GetDepth() + 1;
 }
+
+
+cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props)
+: m_mgr(mgr)
+, m_name("001-no_name")
+, m_threshold(false)
+, m_active(false)
+, m_id(in_id)
+, m_active_offspring_genotypes(0)
+, m_num_organisms(1)
+, m_last_num_organisms(0)
+, m_total_organisms(1)
+{
+  assert(props.HasEntry("src"));  
+  m_src = (eBioUnitSource)props.Get("src").AsInt();
+  assert(props.HasEntry("src_args"));  
+  m_src_args = props.Get("src_args");
+  
+  m_genome.Load(props);
+  
+  assert(props.HasEntry("gen_born"));
+  m_generation_born = props.Get("gen_born").AsInt();
+  assert(props.HasEntry("update_born"));
+  m_update_born = props.Get("update_born").AsInt();
+  assert(props.HasEntry("update_deactivated"));
+  m_update_deactivated = props.Get("update_deactivated").AsInt();
+  assert(props.HasEntry("depth"));  
+  m_depth = props.Get("depth").AsInt();
+  
+  m_parent_str = props.Get("parents");
+  cStringList parents(m_parent_str,',');
+
+  m_parents.Resize(parents.GetSize());
+  for (int i = 0; i < m_parents.GetSize(); i++) {
+    m_parents[i] = static_cast<cBGGenotype*>(m_mgr->GetBioGroup(parents.Pop().AsInt()));
+    assert(m_parents[i]);
+    m_parents[i]->AddPassiveReference();
+  }
+}
+
+
 
 cBGGenotype::~cBGGenotype()
 {

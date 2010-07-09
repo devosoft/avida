@@ -55,8 +55,8 @@
 #ifndef tMatrix_h
 #include "tMatrix.h"
 #endif
-#ifndef tHashTable_h
-#include "tHashTable.h"
+#ifndef tHashMap_h
+#include "tHashMap.h"
 #endif
 
 #if USE_tMemTrack

@@ -341,32 +341,6 @@ private:
   void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
   
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
-
-
-  struct sTmpGenotype
-  {
-  public:
-    int id_num;
-    int parent_id;
-    int parent_id2;
-    int num_cpus;
-    int total_cpus;
-    double merit;
-    double gest_time;
-    int update_born;
-    int update_dead;
-    tArray<int> cells;
-    tArray<int> offsets;
-    tArray<int> lineage_labels;
-    
-    cBioGroup* bg;
-    
-    inline sTmpGenotype() : id_num(-1) { ; }
-    inline bool operator<(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }
-    inline bool operator>(const sTmpGenotype& rhs) const { return id_num > rhs.id_num; }
-    inline bool operator<=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
-    inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
-  };  
 };
 
 

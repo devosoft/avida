@@ -88,6 +88,7 @@ private:
     
   
   cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents);
+  cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props);
   
 public:
   ~cBGGenotype();

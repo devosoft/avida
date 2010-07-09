@@ -47,8 +47,8 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef tHashTable_h
-#include "tHashTable.h"
+#ifndef tHashMap_h
+#include "tHashMap.h"
 #endif
 #ifndef tInstLib_h
 #include "tInstLib.h"
@@ -115,11 +115,11 @@ protected:
 	
   // Memory
   tManagedPointerArray<cCPUMemory> m_mem_array;
-  tHashTable<int, int> m_mem_lbls;
+  tHashMap<int, int> m_mem_lbls;
 
   // Threads
   tManagedPointerArray<cLocalThread> m_threads;
-  tHashTable<int, int> m_thread_lbls;
+  tHashMap<int, int> m_thread_lbls;
   int m_cur_thread;
   int m_cur_child;
 

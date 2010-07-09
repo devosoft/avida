@@ -1,9 +1,9 @@
 /*
- *  tHashTable.h
+ *  tHashMap.h
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
- *  Copyright 1993-2003 California Institute of Technology.
+ *  Created by David on 7/9/10.
+ *  Copyright 2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,8 +22,19 @@
  *
  */
 
-#ifndef tHashTable_h
-#define tHashTable_h
+#ifndef tHashMap_h
+#define tHashMap_h
+
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+#ifndef tList_h
+#include "tList.h"
+#endif
+#ifndef nHashTable_h
+#include "nHashTable.h"
+#endif
+
 
 /*
  * This template is used to look up objects of the desired type by an integer
@@ -36,11 +47,10 @@
  * The inputs are HASH_TYPE and DATA_TYPE
  *
  * INTERFACE:
- *    tHashTable(int in_hash_size=HASH_TABLE_SIZE_DEFAULT)  // Constructor
- *    ~tHashTable()                                   // Destructor
+ *    tHashMap(int in_hash_size=HASH_TABLE_SIZE_DEFAULT)  // Constructor
+ *    ~tHashMap()                                   // Destructor
  *    int GetSize()                                   // Get num entries
- *    void Add(const HASH_TYPE & key, DATA_TYPE data) // Add new entry
- *    void SetValue(const HASH_TYPE & key, DATA_TYPE data)  // Add/modify entry
+ *    void Set(const HASH_TYPE & key, DATA_TYPE data)  // Add/modify entry
  *    bool HasEntry(const HASH_TYPE & key)            // Test if key exists
  *    bool Find(const HASH_TYPE & key, T & out_data)  // Find entry for key
  *    T Remove(const HASH_TYPE & key)                 // Remove entry
@@ -64,101 +74,16 @@
  * the lookup finds an entry not in the current cell (lookup fails).
  */
 
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tList_h
-#include "tList.h"
-#endif
-#ifndef BIT_ARRAY_H
-#include "cBitArray.h"
-#endif
 
-#include <cstdlib>
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-
-#define HASH_TABLE_SIZE_DEFAULT 23
-#define HASH_TABLE_SIZE_MEDIUM  331
-#define HASH_TABLE_SIZE_LARGE   2311
-
-template <class DATA_TYPE> class tList; // access
-template <class DATA_TYPE> class tListIterator; // aggregate
-
-namespace nHashTable {
-  
-  // HASH_TYPE = basic object
-  // Casts the pointer to an int, shift right last two bit positions, mod by
-  // the size of the hash table and hope for the best.  The shift is to account
-  // for typical 4-byte alignment of pointer values.  Depending on architecture
-  // this may not be true and could result in suboptimal hashing at higher
-  // order alignments.
-  template<typename HASH_TYPE> inline int HashKey(const HASH_TYPE& key, int table_size)
+template <class HASH_TYPE, class DATA_TYPE> class tHashMap
+{  
+  // We create a structure with full information about each entry stored in this dictionary.
+  template <class E_HASH_TYPE, class E_DATA_TYPE> struct tHashEntry
   {
-    // Cast/Dereference of key as an int* tells the compiler that we really want
-    // to truncate the value to an integer, even if a pointer is larger.
-    return abs((*((int*)&key) >> 2) % table_size);    
-  }
-  
-  // HASH_TYPE = int
-  // Simply mod the into by the size of the hash table and hope for the best
-  template<> inline int HashKey<int>(const int& key, int table_size)
-  {
-    return abs(key % table_size);
-  }
-  
-  // HASH_TYPE = cString
-  // We hash a string simply by adding up the individual character values in
-  // that string and modding by the hash size.  For most applications this
-  // will work fine (and reasonably fast!) but some patterns will cause all
-  // strings to go into the same cell.  For example, "ABC"=="CBA"=="BBB".
-  template<> inline int HashKey<cString>(const cString& key, int table_size)
-  {
-    unsigned int out_hash = 0;
-    for (int i = 0; i < key.GetSize(); i++)
-      out_hash += (unsigned int) key[i];
-    return out_hash % table_size;
-  }
-  
-  // HASH_TYPE = cBitArray
-  // We hash a bit array by calculating the sum of the squared values of the
-  // positions where bits are on, then modding this number by the size of 
-  // the hash table
-  template<> inline int HashKey<cBitArray>(const cBitArray& key, int table_size)
-  {
-    unsigned int out_hash = 0;
-    for (int i = 0; i < key.GetSize(); i++) {
-      if (key.Get(i)) { out_hash += i*i; }
-    }
-    return out_hash % table_size;
-  }
-  
-}
-
-
-template <class HASH_TYPE, class DATA_TYPE> class tHashTable {
-#if USE_tMemTrack
-  tMemTrack<tHashTable<HASH_TYPE, DATA_TYPE> > mt;
-#endif
-  
-  // We create a structure with full information about each entry stored in
-  // this dictionary.
-  template <class E_HASH_TYPE, class E_DATA_TYPE> struct tHashEntry {
-  #if USE_tMemTrack
-    tMemTrack<tHashEntry<E_HASH_TYPE, E_DATA_TYPE> > mt;
-  #endif
     E_HASH_TYPE key;
     int id;
     E_DATA_TYPE data;
-
+    
     template<class Archive>
     void serialize(Archive & a, const unsigned int version){
       a.ArkvObj("key", key);
@@ -182,7 +107,8 @@ private:
   
   // Function to find the appropriate tHashEntry for a key that is passed
   // in and return it.
-  tHashEntry<HASH_TYPE, DATA_TYPE> * FindEntry(const HASH_TYPE& key) const {
+  tHashEntry<HASH_TYPE, DATA_TYPE>* FindEntry(const HASH_TYPE& key) const
+  {
     const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
     if (cell_array[bin] == NULL) return NULL;
     
@@ -198,25 +124,24 @@ private:
     // No matches found.
     return NULL;
   }
-
-  tHashTable(const tHashTable &); // @not_implemented
-
+  
+  tHashMap(const tHashMap&); // @not_implemented
+  
   
 public:
-  tHashTable(int in_table_size=HASH_TABLE_SIZE_DEFAULT)
-    : entry_count(0)
-    , table_size(in_table_size)
-    , cell_array(in_table_size)
-    , list_it(entry_list)
+  tHashMap(int in_table_size=HASH_TABLE_SIZE_DEFAULT)
+  : entry_count(0)
+  , table_size(in_table_size)
+  , cell_array(in_table_size)
+  , list_it(entry_list)
   {
-      cell_array.SetAll(NULL);
+    cell_array.SetAll(NULL);
   }
   
-  ~tHashTable() {
-    while (entry_list.GetSize()) delete entry_list.Pop();
-  }
+  ~tHashMap() { while (entry_list.GetSize()) delete entry_list.Pop(); }
   
-  void ClearAll() {
+  void ClearAll()
+  {
     list_it.Reset();
     while (list_it.Next() != NULL) {
       delete list_it.Remove();
@@ -226,81 +151,26 @@ public:
   }
   
   
-  bool OK() const {
-    std::cout << "ENTRY_COUNT = " << entry_count << std::endl;
-    std::cout << "TABLE_SIZE = " << table_size << std::endl;
-    int count = 0;
-    std::cout << "LIST ELEMENTS:" << std::endl;
-    list_it.Reset();
-    while (list_it.Next() != NULL) {
-      tHashEntry<HASH_TYPE, DATA_TYPE> * cur_entry = list_it.Get();
-      std::cout << "  " << count << " : "
-      << cur_entry->id << " "
-      << cur_entry->key << " "
-      << cur_entry->data << " "
-      << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << "ARRAY CELLS: "
-      << cell_array.GetSize()
-      << std::endl;
-    for (int i = 0; i < table_size; i++) {
-      tListNode< tHashEntry<HASH_TYPE, DATA_TYPE> > * cur_list_node = cell_array[i];
-      if (cur_list_node == NULL) {
-        std::cout << "  NULL" << std::endl;
-      } else {
-        std::cout << "  " << cur_list_node->data->id << " " << cur_list_node->data->key << std::endl;
-      }
-    }
-    
-    return true;
-  }
-  
+
   int GetSize() const { return entry_count; }
   
-  // This function is used to add a new entry...
-  void Add(const HASH_TYPE & key, DATA_TYPE data) {
-    // Build the new entry...
-    tHashEntry<HASH_TYPE, DATA_TYPE> * new_entry = new tHashEntry<HASH_TYPE, DATA_TYPE>;
-    new_entry->key = key;
-    new_entry->data = data;
-    const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
-    new_entry->id = bin;
-    
-    
-    // Determine where this new entry should go; either at the end of
-    // the list (if there are no others in the bin) or following another
-    // entry in the bin.
-    if (cell_array[bin] == NULL) { list_it.Reset(); } // Reset to list start
-    else { list_it.Set(cell_array[bin]); }            // Else find insert point
-    
-    entry_list.Insert(list_it, new_entry); // Place new entry in the list
-    list_it.Prev();                        // Back up to new entry
-    cell_array[bin] = list_it.GetPos();    // Record position
-    
-    // Update our entry count...
-    entry_count++;
-  }
-  
-  
-  // This function will change the value of an entry that exists, or add it
-  // if it doesn't exist.
-  void SetValue(const HASH_TYPE & key, DATA_TYPE data) {
-    tHashEntry<HASH_TYPE, DATA_TYPE> * cur_entry = FindEntry(key);
+  // This function will change the value of an entry that exists, or add it if it doesn't exist.
+  void Set(const HASH_TYPE& key, DATA_TYPE data)
+  {
+    tHashEntry<HASH_TYPE, DATA_TYPE>* cur_entry = FindEntry(key);
     if (cur_entry == NULL) {
-      Add(key, data);
+      addEntry(key, data);
       return;
     }
     cur_entry->data = data;
   }
   
   
-  bool HasEntry(const HASH_TYPE & key) const {
-    return FindEntry(key) != NULL;
-  }
+  bool HasEntry(const HASH_TYPE& key) const { return FindEntry(key) != NULL; }
   
-  bool Find(const HASH_TYPE & key, DATA_TYPE & out_data) const {
-    tHashEntry<HASH_TYPE, DATA_TYPE> * found_entry = FindEntry(key);
+  bool Find(const HASH_TYPE& key, DATA_TYPE& out_data) const
+  {
+    tHashEntry<HASH_TYPE, DATA_TYPE>* found_entry = FindEntry(key);
     if (found_entry != NULL) {
       out_data = found_entry->data;
       return true;
@@ -308,7 +178,8 @@ public:
     return false;
   }
   
-  bool Remove(const HASH_TYPE& key, DATA_TYPE& out_data) {
+  bool Remove(const HASH_TYPE& key, DATA_TYPE& out_data)
+  {
     // Determine the bin that we are going to be using.
     const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
     
@@ -347,7 +218,8 @@ public:
     return found;
   }
   
-  void Remove(const HASH_TYPE& key) {
+  void Remove(const HASH_TYPE& key)
+  {
     // Determine the bin that we are going to be using.
     const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
     
@@ -378,9 +250,10 @@ public:
       }
     }
   }
-
   
-  void SetTableSize(int _hash) {
+  
+  void SetTableSize(int _hash)
+  {
     // Create the new table...
     table_size = _hash;
     cell_array.ResizeClear(table_size);
@@ -391,7 +264,7 @@ public:
     backup_list.Transfer(entry_list);
     
     while (backup_list.GetSize() > 0) {
-      tHashEntry<HASH_TYPE, DATA_TYPE> * cur_entry = backup_list.Pop();
+      tHashEntry<HASH_TYPE, DATA_TYPE>* cur_entry = backup_list.Pop();
       
       // determine the new bin for this entry.
       int bin = nHashTable::HashKey<HASH_TYPE>(cur_entry->key, table_size);
@@ -475,24 +348,42 @@ public:
     list_it.Reset();
     while (list_it.Next() != NULL) value_list.Push(&list_it.Get()->data);
   }
-
+  
   void GetValues(tArray<DATA_TYPE>& value_array) const
   {
     value_array.Resize(entry_count);
     int idx = 0;
-
+    
     list_it.Reset();
     while (list_it.Next() != NULL) value_array[idx++] = list_it.Get()->data;
   }
   
   
+private:
   
-  template<class Archive> 
-  void serialize(Archive & a, const unsigned int version){
-    a.ArkvObj("entry_count", entry_count);
-    a.ArkvObj("table_size", table_size);
-    a.ArkvObj("entry_list", entry_list);
-    a.ArkvObj("cell_array", cell_array);
+  // This function is used to add a new entry...
+  void addEntry(const HASH_TYPE & key, DATA_TYPE data)
+  {
+    // Build the new entry...
+    tHashEntry<HASH_TYPE, DATA_TYPE>* new_entry = new tHashEntry<HASH_TYPE, DATA_TYPE>;
+    new_entry->key = key;
+    new_entry->data = data;
+    const int bin = nHashTable::HashKey<HASH_TYPE>(key, table_size);
+    new_entry->id = bin;
+    
+    
+    // Determine where this new entry should go; either at the end of
+    // the list (if there are no others in the bin) or following another
+    // entry in the bin.
+    if (cell_array[bin] == NULL) { list_it.Reset(); } // Reset to list start
+    else { list_it.Set(cell_array[bin]); }            // Else find insert point
+    
+    entry_list.Insert(list_it, new_entry); // Place new entry in the list
+    list_it.Prev();                        // Back up to new entry
+    cell_array[bin] = list_it.GetPos();    // Record position
+    
+    // Update our entry count...
+    entry_count++;
   }
 };
 

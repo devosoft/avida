@@ -382,7 +382,7 @@ public:
       return false;
     }
     
-    m_create_funcs.Add(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type, Arg2Type>);
+    m_create_funcs.Set(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type, Arg2Type>);
     return true;
   }
   

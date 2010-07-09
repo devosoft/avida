@@ -368,7 +368,7 @@ int cHardwareTransSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_spa
   if (!m_mem_lbls.Find(hash_key, mem_space)) {
     mem_space = m_mem_array.GetSize();
     m_mem_array.Resize(mem_space + 1);
-    m_mem_lbls.Add(hash_key, mem_space);
+    m_mem_lbls.Set(hash_key, mem_space);
   }
   
   return mem_space;
@@ -682,7 +682,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
     
     // Add new thread entry
     m_threads.Resize(thread_id + 1);
-    m_thread_lbls.Add(hash_key, thread_id);
+    m_thread_lbls.Set(hash_key, thread_id);
 	}
   
   // Create the memory space and copy in the parasite
@@ -754,7 +754,7 @@ int cHardwareTransSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
   
   // Add new thread entry
   m_threads.Resize(thread_id + 1);
-  m_thread_lbls.Add(hash_key, thread_id);
+  m_thread_lbls.Set(hash_key, thread_id);
   
   // Setup this thread into the current selected memory space (Flow Head)
   m_threads[thread_id].Reset(this, mem_space);

@@ -158,6 +158,15 @@ cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)
   return NULL;
 }
 
+
+cBioGroup* cBGGenotypeManager::LoadBioGroup(const tDictionary<cString>& props)
+{
+  cBGGenotype* bg = new cBGGenotype(this, m_next_id++, props); 
+  m_historic.Push(bg);
+  return bg;
+}
+
+
 void cBGGenotypeManager::SaveBioGroups(cDataFile& df)
 {
   // @TODO - Just dump historic for now.  Need structured output format to support top down save

@@ -108,7 +108,7 @@ cDataFile& cDataFileManager::Get(const cString& name)
 
   target = dir_prefix + target;
   found_file = new cDataFile(target);
-  m_datafiles.Add(name, found_file);
+  m_datafiles.Set(name, found_file);
 
   return *found_file;
 }

@@ -68,7 +68,7 @@ public:
   {
     ClassDescFunction func;
     if (m_desc_funcs.Find(key, func)) return false;
-    m_desc_funcs.Add(key, &ClassType::GetDescription);
+    m_desc_funcs.Set(key, &ClassType::GetDescription);
     return m_factory.Register<ClassType>(key);
   }
   bool Unregister(const cString& key)

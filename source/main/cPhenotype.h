@@ -43,8 +43,8 @@
 #ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
-#ifndef tHashTable_h
-#include "tHashTable.h"
+#ifndef tHashMap_h
+#include "tHashMap.h"
 #endif
 #ifndef cWorld_h
 #include "cWorld.h"
@@ -137,7 +137,7 @@ private:
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
   tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB 
   tArray<double> cur_task_time;    // Time at which each task was last performed; WRE 03-18-07
-  tHashTable<void*, cTaskState*> m_task_states;
+  tHashMap<void*, cTaskState*> m_task_states;
   tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   tArray<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB

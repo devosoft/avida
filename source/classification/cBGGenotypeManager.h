@@ -80,6 +80,7 @@ public:
   void UpdateReset();
   void UpdateStats(cStats& stats);
   
+  cBioGroup* LoadBioGroup(const tDictionary<cString>& props);
   void SaveBioGroups(cDataFile& df);
   
   // Genotype Manager Methods

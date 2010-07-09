@@ -27,6 +27,7 @@
 
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
+#include "cBioGroupManager.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cCodeLabel.h"
@@ -62,7 +63,7 @@
 #include "cRandom.h"
 #include "tArrayUtils.h"
 #include "tKVPair.h"
-#include "tHashTable.h"
+#include "tHashMap.h"
 #include "tManagedPointerArray.h"
 
 
@@ -4176,7 +4177,7 @@ bool cPopulation::SavePopulation(const cString& filename)
   df.WriteTimeStamp();
   
   // Build up hash table of all current genotypes and the cells in which the organisms reside
-  tHashTable<int, sGroupInfo*> genotype_map;
+  tHashMap<int, sGroupInfo*> genotype_map;
   
   for (int cell = 0; cell < cell_array.GetSize(); cell++) {
     if (cell_array[cell].IsOccupied()) {
@@ -4194,7 +4195,7 @@ bool cPopulation::SavePopulation(const cString& filename)
         } else {
           map_entry = new sGroupInfo(pg, true);
           map_entry->orgs.Push(sOrgInfo(cell, 0, -1));
-          genotype_map.Add(pg->GetID(), map_entry);
+          genotype_map.Set(pg->GetID(), map_entry);
         }        
       }
       
@@ -4211,7 +4212,7 @@ bool cPopulation::SavePopulation(const cString& filename)
       } else {
         map_entry = new sGroupInfo(genotype);
         map_entry->orgs.Push(sOrgInfo(cell, offset, org->GetLineageLabel()));
-        genotype_map.Add(genotype->GetID(), map_entry);
+        genotype_map.Set(genotype->GetID(), map_entry);
       }
     }
   }
@@ -4227,15 +4228,19 @@ bool cPopulation::SavePopulation(const cString& filename)
     tArray<sOrgInfo>& cells = genotype_entries[i]->orgs;
     cString cellstr;
     cString offsetstr;
+    cString lineagestr;
     cellstr.Set("%d", cells[0].cell_id);
     offsetstr.Set("%d", cells[0].offset);
+    lineagestr.Set("%d", cells[0].lineage_label);
     for (int cell_i = 1; cell_i < cells.GetSize(); cell_i++) {
       cellstr += cStringUtil::Stringf(",%d", cells[cell_i].cell_id);
       offsetstr += cStringUtil::Stringf(",%d", cells[cell_i].offset);
+      lineagestr += cStringUtil::Stringf(",%d", cells[cell_i].lineage_label);
     }
     df.Write(cellstr, "Occupied Cell IDs", "cells");
     if (genotype_entries[i]->parasite) df.Write("", "Gestation (CPU) Cycle Offsets", "gest_offset");
     else df.Write(offsetstr, "Gestation (CPU) Cycle Offsets", "gest_offset");
+    df.Write(lineagestr, "Lineage Label", "lineage");
     df.Endl();
     
     delete genotype_entries[i];
@@ -4247,6 +4252,27 @@ bool cPopulation::SavePopulation(const cString& filename)
   m_world->GetDataFileManager().Remove(filename);
   return true;
 }
+
+
+struct sTmpGenotype
+{
+public:
+  int id_num;
+  tDictionary<cString>* props;
+
+  tArray<int> cells;
+  tArray<int> offsets;
+  tArray<int> lineage_labels;
+  
+  cBioGroup* bg;
+
+  
+  inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
+  inline bool operator<(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }
+  inline bool operator>(const sTmpGenotype& rhs) const { return id_num > rhs.id_num; }
+  inline bool operator<=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
+  inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
+};  
 
 
 bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int lineage_offset)
@@ -4266,128 +4292,139 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
     for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i]);
   }
   
+
+  
   // First, we read in all the genotypes and store them in an array
   tManagedPointerArray<sTmpGenotype> genotypes(input_file.GetNumLines());
-  const int update = m_world->GetStats().GetUpdate();
   
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
     cString cur_line = input_file.GetLine(line_id);
     
     // Setup the genotype for this line...
     sTmpGenotype& tmp = genotypes[line_id];
-    tmp.id_num      = cur_line.PopWord().AsInt();
-    tmp.parent_id   = cur_line.PopWord().AsInt();
-    tmp.parent_id2  = cur_line.PopWord().AsInt();    
-    /* parent_dist */ cur_line.PopWord();
-    tmp.num_cpus    = cur_line.PopWord().AsInt();
-    tmp.total_cpus  = cur_line.PopWord().AsInt();
-    /* length */      cur_line.PopWord();
-    tmp.merit 	    = cur_line.PopWord().AsDouble();
-    tmp.gest_time   = cur_line.PopWord().AsDouble();
-    /* fitness */     cur_line.PopWord();
-    tmp.update_born = cur_line.PopWord().AsInt();
-    tmp.update_dead = cur_line.PopWord().AsInt();
-    /* depth */       cur_line.PopWord();
-    cString name = cStringUtil::Stringf("org-%d", tmp.id_num);
-    cGenome genome(cur_line.PopWord());
+    tmp.props = input_file.GetLineAsDict(line_id);
+    tmp.id_num = tmp.props->Get("id").AsInt();
+    
+    assert(tmp.props->HasEntry("num_cpus"));
+    int num_cpus = tmp.props->Get("num_cpus").AsInt();
     
     // Process resident cell ids
-    cString cellstr(cur_line.PopWord());
+    cString cellstr(tmp.props->Get("cells"));
     while (cellstr.GetSize()) tmp.cells.Push(cellstr.Pop(',').AsInt());
-    assert(tmp.cells.GetSize() == tmp.num_cpus);
+    assert(tmp.cells.GetSize() == num_cpus);
     
     // Process gestation time offsets
-    cString offsetstr(cur_line.PopWord());
+    cString offsetstr(tmp.props->Get("gest_offset"));
     while (offsetstr.GetSize()) tmp.offsets.Push(offsetstr.Pop(',').AsInt());
-    assert(tmp.offsets.GetSize() == tmp.num_cpus);
+    assert(tmp.offsets.GetSize() == num_cpus);
   
     // Lineage label (only set if given in file)
-    cString lineagestr(cur_line.PopWord());
+    cString lineagestr(tmp.props->Get("lineage"));
     while (lineagestr.GetSize()) tmp.lineage_labels.Push(lineagestr.Pop(',').AsInt());
     // @blw preserve compatability with older .spop files that don't have lineage labels
-    assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == tmp.num_cpus);
-
-    // Don't allow birth or death times larger than the current update
-    if (update > tmp.update_born) tmp.update_born = update;
-    if (update > tmp.update_dead) tmp.update_dead = update;
-    
-    tmp.genotype = m_world->GetClassificationManager().GetGenotypeLoaded(genome, tmp.update_born, tmp.id_num);
-    tmp.genotype->SetName(name);
+    assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == num_cpus);
   }
   
   // Sort genotypes in ascending order according to their id_num
   tArrayUtils::QSort(genotypes);
   
   
-  // Set parents correctly
-  for (int gen_i = genotypes.GetSize() - 1; gen_i > 0; gen_i--) {
-    cGenotype* parent1 = NULL;
-    cGenotype* parent2 = NULL;
-    
-    int pid = genotypes[gen_i].parent_id;
-    if (pid != -1) {
-      for (int p_i = gen_i + 1; p_i < genotypes.GetSize(); p_i++) {
-        if (genotypes[p_i].id_num == pid) {
-          parent1 = genotypes[p_i].genotype;
+  cBioGroupManager* bgm = m_world->GetClassificationManager().GetBioGroupManager("genotype");
+  for (int i = 0; i < genotypes.GetSize(); i++) {
+    // Fix Parent IDs
+    cString nparentstr;
+    int pcount = 0;
+    cStringList opidlist(genotypes[i].props->Get("parents"), ',');
+    while (opidlist.GetSize()) {
+      int opid = opidlist.Pop().AsInt();
+      int npid = -1;
+      for (int j = i; j >= 0; j--) {
+        if (genotypes[j].id_num == opid) {
+          npid = genotypes[j].bg->GetID();
           break;
         }
       }
+      assert(npid != -1);
+      if (pcount) nparentstr += ",";
+      nparentstr += cStringUtil::Convert(npid);      
+      pcount++;
     }
+    genotypes[i].props->Set("parents", nparentstr);
     
-    pid = genotypes[gen_i].parent_id2;
-    if (pid != -1) {
-      for (int p_i = gen_i + 1; p_i < genotypes.GetSize(); p_i++) {
-        if (genotypes[p_i].id_num == pid) {
-          parent2 = genotypes[p_i].genotype;
-          break;
-        }
-      }
-    }    
-    
-    genotypes[gen_i].genotype->SetParent(parent1, parent2);
+    genotypes[i].bg = bgm->LoadBioGroup(*genotypes[i].props);
   }
   
   
   // Process genotypes, inject into organisms as necessary
   for (int gen_i = genotypes.GetSize() - 1; gen_i > 0; gen_i--) {
     sTmpGenotype& tmp = genotypes[gen_i];
-    if (tmp.num_cpus == 0) {
-      // historic organism - remove immediately, so that it gets transferred into
-      // the historic database. We change the update temporarily to the
-      // true death time of this organism, so that all stats are correct
-      m_world->GetStats().SetCurrentUpdate(tmp.update_dead);
-      m_world->GetClassificationManager().RemoveGenotype(*tmp.genotype);
-      m_world->GetStats().SetCurrentUpdate(update);
-    } else {
+    if (tmp.cells.GetSize()) {
       // otherwise, we insert as many organisms as we need
-      for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
+      for (int cell_i = 0; cell_i < tmp.cells.GetSize(); cell_i++) {
         int cell_id = tmp.cells[cell_i] + cellid_offset;
       
-        InjectGenome(cell_id, SRC_ORGANISM_FILE_LOAD, tmp.genotype->GetGenome());
-      
-        cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
-        
-        // Set the phenotype merit from the save file
-        if (tmp.merit > 0) phenotype.SetMerit(cMerit(tmp.merit));
-        
-        // Adjust initial merit to account for organism execution at the time the population was saved
-        // - this factors the merit by the fraction of the gestation time remaining
-        // - this will be approximate, since gestation time may vary for each organism, but it should work for many cases
-        double gest_remain = tmp.gest_time - (double)tmp.offsets[cell_i];
-        if (gest_remain > 0.0 && tmp.gest_time > 0.0) {
-          double new_merit = phenotype.GetMerit().GetDouble() * (tmp.gest_time / gest_remain);
-          phenotype.SetMerit(cMerit(new_merit));
-        }
-        
-        // Schedule the organism
-        AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
-        
         // Set up lineage, including lineage label (0 if not loaded)
         int lineage_label = 0;
         if (tmp.lineage_labels.GetSize() != 0) {
           lineage_label = tmp.lineage_labels[cell_i] + lineage_offset;
         }
-        // @TODO - handle lineage setup?
+        
+        cAvidaContext& ctx = m_world->GetDefaultContext();
+        
+        assert(tmp.bg->HasProperty("genome"));
+        cMetaGenome mg(tmp.bg->GetProperty("genome").AsString());
+        cOrganism* new_organism = new cOrganism(m_world, ctx, mg, -1, SRC_ORGANISM_FILE_LOAD);
+        
+        // Setup the phenotype...
+        cPhenotype& phenotype = new_organism->GetPhenotype();
+        
+        phenotype.SetupInject(mg.GetGenome());
+        
+        // Classify this new organism
+        m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
+        
+        // Coalescense Clade Setup
+        new_organism->SetCCladeLabel(-1);  
+        
+        if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+          phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));
+        } else {
+          // Set the phenotype merit from the save file
+          assert(tmp.props->HasEntry("merit"));
+          double merit = tmp.props->Get("merit").AsDouble();
+          
+          if (merit > 0) {
+            phenotype.SetMerit(cMerit(merit));
+          } else {
+            phenotype.SetMerit(cMerit(new_organism->GetTestMerit(ctx)));
+          }
+          
+          // Adjust initial merit to account for organism execution at the time the population was saved
+          // - this factors the merit by the fraction of the gestation time remaining
+          // - this will be approximate, since gestation time may vary for each organism, but it should work for many cases
+          double gest_time = tmp.props->Get("gest_time").AsDouble();
+          double gest_remain = gest_time - (double)tmp.offsets[cell_i];
+          if (gest_remain > 0.0 && gest_time > 0.0) {
+            double new_merit = phenotype.GetMerit().GetDouble() * (gest_time / gest_remain);
+            phenotype.SetMerit(cMerit(new_merit));
+          }
+        }
+        
+        // Prep the cell..
+        if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST &&
+            cell_array[cell_id].IsOccupied() == true) {
+          // Have to manually take this cell out of the reaper Queue.
+          reaper_queue.Remove( &(cell_array[cell_id]) );
+        }
+        
+        // Setup the child's mutation rates.  Since this organism is being injected
+        // and has no parent, we should always take the rate from the environment.
+        new_organism->MutationRates().Copy(cell_array[cell_id].MutationRates());
+        
+        
+        // Activate the organism in the population...
+        ActivateOrganism(ctx, new_organism, cell_array[cell_id]);
+        
       }
     }
   }
@@ -4716,9 +4753,7 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& g
   // Setup the phenotype...
   cPhenotype& phenotype = new_organism->GetPhenotype();
   
-  assert(dynamic_cast<cBGGenotype*>(new_organism->GetBioGroup("genotype")));
-  cBGGenotype* genotype = (cBGGenotype*)new_organism->GetBioGroup("genotype");
-  phenotype.SetupInject(genotype->GetMetaGenome().GetGenome());
+  phenotype.SetupInject(genome);
   
   // Classify this new organism
   m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
@@ -4759,7 +4794,6 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& g
     df.Write(new_organism->GetID(), "Organism ID");
     df.Write(m_world->GetPopulation().GetCell(cell_id).GetDemeID(), "Deme ID");
     df.Write(new_organism->GetFacing(), "Facing");
-    df.Write(genotype->GetName(), "Genotype Name");
     df.Endl();
   }  
 }
