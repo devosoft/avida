@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "tDictionary.hh" prior to 10/11/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or

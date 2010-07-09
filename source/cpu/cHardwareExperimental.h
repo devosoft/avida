@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 2/10/07 based on cHardwareCPU.h
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
