@@ -364,7 +364,9 @@ void cBGGenotypeManager::buildDataCommandManager() const
   m_dcm->Add(NAME, new tDataEntryOfType<cBGGenotype, TYPE>(NAME, DESC, &cBGGenotype::GET));
 
   ADD_PROP("genome", cString (), GetGenomeString, "Genome");
+  ADD_PROP("name", const cString& (), GetName, "Name");
   ADD_PROP("parents", const cString& (), GetParentString, "Parents");
+  ADD_PROP("threshold", bool (), IsThreshold, "Threshold");  
   ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
 }
 

@@ -494,11 +494,12 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenotype* dom = m_world->GetClassificationManager().GetBestGenotype();
+    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    cBioGroup* bg = it->Next();
     cString filename(m_filename);
-    if (filename == "") filename.Set("archive/%s.org", static_cast<const char*>(dom->GetName()));
+    if (filename == "") filename.Set("archive/%s.org", (const char*)bg->GetProperty("name").AsString());
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-    testcpu->PrintGenome(ctx, dom->GetGenome(), filename, dom, m_world->GetStats().GetUpdate());
+    testcpu->PrintGenome(ctx, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome(), filename, m_world->GetStats().GetUpdate());
     delete testcpu;
   }
 };
@@ -579,7 +580,7 @@ public:
     double fave = 0;
     double fave_testCPU = 0;
     double max_fitness = -1; // we set this to -1, so that even 0 is larger...
-    cGenotype* max_f_genotype = NULL;
+    cBioGroup* max_f_genotype = NULL;
     
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
 
@@ -587,10 +588,10 @@ public:
       if (pop.GetCell(i).IsOccupied() == false) continue;  // One use organisms.
       
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cGenotype* genotype = organism->GetGenotype();
+      cBioGroup* genotype = organism->GetBioGroup("genotype");
       
       cCPUTestInfo test_info;
-      testcpu->TestGenome(ctx, test_info, genotype->GetGenome());
+      testcpu->TestGenome(ctx, test_info, cMetaGenome(genotype->GetProperty("genome").AsString()).GetGenome());
       // We calculate the fitness based on the current merit,
       // but with the true gestation time. Also, we set the fitness
       // to zero if the creature is not viable.
@@ -625,10 +626,10 @@ public:
     
     // determine the name of the maximum fitness genotype
     cString max_f_name;
-    if (max_f_genotype->GetThreshold())
-      max_f_name = max_f_genotype->GetName();
+    if (max_f_genotype->GetProperty("threshold").AsInt())
+      max_f_name = max_f_genotype->GetProperty("name").AsString();
     else // we put the current update into the name, so that it becomes unique.
-      max_f_name.Set("%03d-no_name-u%i", max_f_genotype->GetLength(), update);
+      max_f_name.Set("%03d-no_name-u%i", cMetaGenome(max_f_genotype->GetProperty("genome").AsString()).GetGenome().GetSize(), update);
     
     cDataFile& df = m_world->GetDataFile(m_filenames[0]);
     df.Write(update, "Update");
@@ -643,7 +644,7 @@ public:
     if (m_save_max) {
       cString filename;
       filename.Set("archive/%s", static_cast<const char*>(max_f_name));
-      testcpu->PrintGenome(ctx, max_f_genotype->GetGenome(), filename);
+      testcpu->PrintGenome(ctx, cMetaGenome(max_f_genotype->GetProperty("genome").AsString()).GetGenome(), filename);
     }
 
     delete testcpu;
@@ -832,7 +833,7 @@ public:
     
   //This function may get called by outside classes to generate a histogram of log10 fitnesses;
   //max may be updated by this function if the range is not evenly divisible by the step
-  static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cGenotype*>& gens, 
+  static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cBioGroup*>& gens, 
                                    double min, double step, double& max, const cString& mode, cWorld* world,
                                    cAvidaContext& ctx)
   {
@@ -849,14 +850,14 @@ public:
     // We calculate the fitness based on the current merit,
     // but with the true gestation time. Also, we set the fitness
     // to zero if the creature is not viable.
-    tArray<cGenotype*>::const_iterator git;
+    tArray<cBioGroup*>::const_iterator git;
     tArray<cOrganism*>::const_iterator oit;
     for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
       cCPUTestInfo test_info;
       double fitness = 0.0;
       if (mode == "TEST_CPU" || mode == "ACTUAL"){
         test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
-        testcpu->TestGenome(ctx, test_info, (*git)->GetGenome());
+        testcpu->TestGenome(ctx, test_info, cMetaGenome((*git)->GetProperty("genome").AsString()).GetGenome());
       }
       
       if (mode == "TEST_CPU"){
@@ -915,13 +916,13 @@ public:
     const int    update     = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
     tArray<cOrganism*> orgs;
-    tArray<cGenotype*> gens;
+    tArray<cBioGroup*> gens;
     
     for (int i = 0; i < pop.GetSize(); i++)
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cGenotype* genotype = organism->GetGenotype();
+      cBioGroup* genotype = organism->GetBioGroup("genotype");
       orgs.Push(organism);
       gens.Push(genotype);
     }
@@ -1010,7 +1011,7 @@ public:
     return retval;
   }
   
-    static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cGenotype*>& gens, 
+    static tArray<int> MakeHistogram(const tArray<cOrganism*>& orgs, const tArray<cBioGroup*>& gens, 
                                      double min, double step, double& max, const cString& mode, cWorld* world,
                                      cAvidaContext& ctx)
   {
@@ -1027,7 +1028,7 @@ public:
       // We calculate the fitness based on the current merit,
       // but with the true gestation time. Also, we set the fitness
       // to zero if the creature is not viable.
-      tArray<cGenotype*>::const_iterator git;
+      tArray<cBioGroup*>::const_iterator git;
       tArray<cOrganism*>::const_iterator oit;
       for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
         cCPUTestInfo test_info;
@@ -1035,7 +1036,7 @@ public:
         double parent_fitness = ( (*git)->GetParentID() > 0) ? (*git)->GetParentGenotype()->GetFitness() : 1.0;
         if (mode == "TEST_CPU" || mode == "ACTUAL"){
           test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );  
-          testcpu->TestGenome(ctx, test_info, (*git)->GetGenome());
+          testcpu->TestGenome(ctx, test_info, cMetaGenome((*git)->GetProperty("genome").AsString()).GetGenome());
         }
         
         if (mode == "TEST_CPU"){
@@ -1086,13 +1087,13 @@ public:
     const int    update     = m_world->GetStats().GetUpdate();
     const double generation = m_world->GetStats().SumGeneration().Average();
     tArray<cOrganism*> orgs;
-    tArray<cGenotype*> gens;
+    tArray<cBioGroup*> gens;
     
     for (int i = 0; i < pop.GetSize(); i++)
     {
       if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
       cOrganism* organism = pop.GetCell(i).GetOrganism();
-      cGenotype* genotype = organism->GetGenotype();
+      cBioGroup* genotype = organism->GetBioGroup("genotype");
       orgs.Push(organism);
       gens.Push(genotype);
     }
