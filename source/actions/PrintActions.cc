@@ -29,6 +29,7 @@
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
 #include "cBioGroup.h"
+#include "cBioGroupManager.h"
 #include "tArrayUtils.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
@@ -47,6 +48,8 @@
 #include "cStats.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
+#include "tAutoRelease.h"
+#include "tIterator.h"
 #include "tVector.h"
 #include <cmath>
 #include <cerrno>
@@ -273,11 +276,13 @@ public:
     
     // Loop through all genotypes getting min and max values
     cClassificationManager& classmgr = m_world->GetClassificationManager();
-    cGenotype* cur_genotype = classmgr.GetBestGenotype();
-    for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
-      if (cur_genotype->GetDepth() < min) min = cur_genotype->GetDepth();
-      if (cur_genotype->GetDepth() > max) max = cur_genotype->GetDepth();
-      cur_genotype = cur_genotype->GetNext();
+    tAutoRelease<tIterator<cBioGroup> > it;
+    
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if (bg->GetDepth() < min) min = bg->GetDepth();
+      if (bg->GetDepth() > max) max = bg->GetDepth();
     }
     assert(max >= min);
     
@@ -286,10 +291,9 @@ public:
     n.SetAll(0);
     
     // Loop through all genotypes binning the values
-    cur_genotype = classmgr.GetBestGenotype();
-    for (int i = 0; i < classmgr.GetGenotypeCount(); i++) {
-      n[cur_genotype->GetDepth() - min] += cur_genotype->GetNumOrganisms();
-      cur_genotype = cur_genotype->GetNext();
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      n[it->Get()->GetDepth() - min] += it->Get()->GetNumUnits();
     }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -339,17 +343,16 @@ public:
   void Process(cAvidaContext& ctx)
   {
     // Allocate array for the histogram & zero it
-    tArray<int> hist(m_world->GetClassificationManager().GetBestGenotype()->GetNumOrganisms());
+    tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    tArray<int> hist(it->Next()->GetNumUnits());
     hist.SetAll(0);
     
     // Loop through all genotypes binning the values
-    cGenotype* cur_genotype = m_world->GetClassificationManager().GetBestGenotype();
-    for (int i = 0; i < m_world->GetClassificationManager().GetGenotypeCount(); i++) {
-      assert( cur_genotype->GetNumOrganisms() - 1 >= 0 );
-      assert( cur_genotype->GetNumOrganisms() - 1 < hist.GetSize() );
-      hist[cur_genotype->GetNumOrganisms() - 1]++;
-      cur_genotype = cur_genotype->GetNext();
-    }
+    do {
+      assert(it->Get()->GetNumUnits() - 1 >= 0);
+      assert(it->Get()->GetNumUnits() - 1 < hist.GetSize());
+      hist[it->Get()->GetNumUnits() - 1]++;
+    } while (it->Next());
     
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");

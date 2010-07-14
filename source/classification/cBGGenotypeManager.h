@@ -34,6 +34,9 @@
 #ifndef cFlexVar_h
 #include "cFlexVar.h"
 #endif
+#ifndef tIterator_h
+#include "tIterator.h"
+#endif
 #ifndef tList_h
 #include "tList.h"
 #endif
@@ -83,6 +86,9 @@ public:
   cBioGroup* LoadBioGroup(const tDictionary<cString>& props);
   void SaveBioGroups(cDataFile& df);
   
+  tIterator<cBioGroup>* Iterator();
+  
+  
   // Genotype Manager Methods
   cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
   void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
@@ -102,6 +108,26 @@ private:
   inline cBGGenotype* getBest();
   
   void buildDataCommandManager() const;
+  
+  class cGenotypeIterator : public tIterator<cBioGroup>
+  {
+  private:
+    cBGGenotypeManager* m_bgm;
+    int m_sz_i;
+    tListIterator<cBGGenotype>* m_it;
+    
+    cGenotypeIterator(); // @not_implemented
+    cGenotypeIterator(const cGenotypeIterator&); // @not_implemented
+    cGenotypeIterator& operator=(const cGenotypeIterator&); // @not_implemented
+    
+    
+  public:
+    cGenotypeIterator(cBGGenotypeManager* bgm)
+      : m_bgm(bgm), m_sz_i(bgm->m_best), m_it(new tListIterator<cBGGenotype>(m_bgm->m_active_sz[m_sz_i])) { ; }
+    
+    cBioGroup* Get();
+    cBioGroup* Next();
+  };
 };
 
 

@@ -34,6 +34,7 @@ class cBioUnit;
 class cStats;
 class cDataFile;
 template <typename T> class tDictionary;
+template <class T> class tIterator;
 
 
 class cBioGroupManager
@@ -56,6 +57,8 @@ public:
     
   virtual cBioGroup* LoadBioGroup(const tDictionary<cString>& props) = 0;
   virtual void SaveBioGroups(cDataFile& df) = 0;
+  
+  virtual tIterator<cBioGroup>* Iterator() = 0;
 
   inline int GetRoleID() const { return m_role_id; }
   inline const cString& GetRole() const { return m_role; }

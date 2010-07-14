@@ -73,6 +73,7 @@ public:
   virtual void RemoveBioUnit(cBioUnit* bu) = 0;
   
   virtual int GetDepth() const = 0;
+  virtual int GetNumUnits() const = 0;
   
   virtual const tArray<cString>& GetProperyList() const = 0;
   virtual bool HasProperty(const cString& prop) const = 0;

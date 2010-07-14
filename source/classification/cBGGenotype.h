@@ -103,7 +103,8 @@ public:
   void RemoveBioUnit(cBioUnit* bu);
   
   int GetDepth() const { return m_depth; }
-
+  int GetNumUnits() const { return m_num_organisms; }
+  
   const tArray<cString>& GetProperyList() const;
   bool HasProperty(const cString& prop) const;
   cFlexVar GetProperty(const cString& prop) const;
@@ -127,8 +128,6 @@ public:
   inline int GetUpdateDeactivated() const { return m_update_deactivated; }
   
   inline const cString& GetParentString() const { return m_parent_str; }
-  
-  inline int GetNumOrganisms() const { return m_num_organisms; }
   
   inline void SetThreshold() { m_threshold = true; }
   inline void ClearThreshold() { m_threshold = false; }

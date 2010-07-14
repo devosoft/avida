@@ -91,7 +91,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
     tListIterator<cBGGenotype> list_it(m_active_sz[i]);
     while (list_it.Next() != NULL) {
       cBGGenotype* bg = list_it.Get();
-      const int abundance = bg->GetNumOrganisms();
+      const int abundance = bg->GetNumUnits();
       
       // Update stats...
       const int age = stats.GetUpdate() - bg->GetUpdateBorn();
@@ -137,7 +137,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetDomBreedIn(dom_genotype->GetThisBreedIn());
   stats.SetDomBreedOut(dom_genotype->GetThisBreedOut());
   
-  stats.SetDomAbundance(dom_genotype->GetNumOrganisms());
+  stats.SetDomAbundance(dom_genotype->GetNumUnits());
   stats.SetDomGeneDepth(dom_genotype->GetDepth());
   stats.SetDomSequence(dom_genotype->GetMetaGenome().GetGenome().AsString());
   
@@ -184,6 +184,13 @@ void cBGGenotypeManager::SaveBioGroups(cDataFile& df)
 }
 
 
+tIterator<cBioGroup>* cBGGenotypeManager::Iterator()
+{
+  return new cGenotypeIterator(this);
+}
+
+
+
 cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents)
 {
   int list_num = hashGenome(bu->GetMetaGenome().GetGenome());
@@ -201,8 +208,8 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
   if (!found) {
     found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
     m_active_hash[list_num].Push(found);
-    resizeActiveList(found->GetNumOrganisms());
-    m_active_sz[found->GetNumOrganisms()].Push(found);
+    resizeActiveList(found->GetNumUnits());
+    m_active_sz[found->GetNumUnits()].Push(found);
     m_world->GetStats().AddGenotype();
     m_active_count++;
   }
@@ -359,4 +366,22 @@ void cBGGenotypeManager::buildDataCommandManager() const
   ADD_PROP("genome", cString (), GetGenomeString, "Genome");
   ADD_PROP("parents", const cString& (), GetParentString, "Parents");
   ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
+}
+
+cBioGroup* cBGGenotypeManager::cGenotypeIterator::Get() { return m_it->Get(); }
+
+
+cBioGroup* cBGGenotypeManager::cGenotypeIterator::Next()
+{
+  if (!m_it->Next()) {
+    for (m_sz_i--; (m_sz_i); m_sz_i--) {
+      if (m_bgm->m_active_sz[m_sz_i].GetSize()) {
+        delete m_it;
+        m_it = new tListIterator<cBGGenotype>(m_bgm->m_active_sz[m_sz_i]);
+        break;
+      }
+    }
+  }
+  
+  return m_it->Get();
 }

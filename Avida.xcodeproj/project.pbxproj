@@ -461,6 +461,7 @@
 		701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cSexualAncestry.h; sourceTree = "<group>"; };
 		701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSexualAncestry.cc; sourceTree = "<group>"; };
 		701B355F11E7744D00FEF49A /* tHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tHashMap.h; sourceTree = "<group>"; };
+		701B365B11EE013A00FEF49A /* tIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tIterator.h; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
 		701D9116094B773E008B845F /* cWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		701D912B094B7AC1008B845F /* cAvidaDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver.h; sourceTree = "<group>"; };
@@ -1848,6 +1849,7 @@
 				700D9C1A0F1A77EC002CC711 /* tKVPair.h */,
 				70100BD7108F8F4F005999F0 /* cRunningStats.h */,
 				701B355F11E7744D00FEF49A /* tHashMap.h */,
+				701B365B11EE013A00FEF49A /* tIterator.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";
