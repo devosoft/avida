@@ -223,6 +223,7 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   // Remove from old size list
   m_active_sz[old_size].Remove(genotype);
 
+  // Handle best genotype pointer
   if (old_size == m_best && m_active_sz[old_size].GetSize() == 0) {
     for (m_best--; m_best > 0; m_best--) if (m_active_sz[m_best].GetSize()) break;
   }

@@ -718,6 +718,7 @@
 		70920C690A9CCE2C00757CDB /* structure.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = structure.html; sourceTree = "<group>"; };
 		70920C6A0A9CCE2C00757CDB /* svn.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = svn.html; sourceTree = "<group>"; };
 		7093DB4009D6F50300DE7FEB /* tSmartArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSmartArray.h; sourceTree = "<group>"; };
+		7099D5E712062D6300EB3E46 /* cBioGroupListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBioGroupListener.h; sourceTree = "<group>"; };
 		7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEnvReqs.h; sourceTree = "<group>"; };
 		7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeScreen.cc; sourceTree = "<group>"; };
 		7099EF480B2FBC85001269F6 /* cAnalyzeScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeScreen.h; sourceTree = "<group>"; };
@@ -1489,6 +1490,7 @@
 		70F7D8C8092546DC009E311D /* classification */ = {
 			isa = PBXGroup;
 			children = (
+				7099D5E712062D6300EB3E46 /* cBioGroupListener.h */,
 				701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */,
 				701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */,
 				70F7DAEF09290468009E311D /* cClassificationManager.h */,
