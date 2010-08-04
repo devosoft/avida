@@ -529,6 +529,7 @@ public:
   void AddToCurRBinTotal(int index, double val) { cur_rbins_total[index] += val; }
   void SetCurCollectSpecCount(int spec_id, int val) { cur_collect_spec_counts[spec_id] = val; }
 
+  void SetIsMultiThread() { is_multi_thread = true; }
   void SetIsDonorCur() { is_donor_cur = true; } 
   void SetIsDonorRand() { SetIsDonorCur(); is_donor_rand = true; }
   void SetIsDonorKin() { SetIsDonorCur(); is_donor_kin = true; }
@@ -556,6 +557,7 @@ public:
   void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
   void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
   void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }
+  void ClearIsMultiThread() { is_multi_thread = false; }
   
   void SetCurBonus(double _bonus) { cur_bonus = _bonus; }
   void SetCurBonusInstCount(int _num_bonus_inst) {bonus_instruction_count = _num_bonus_inst;}

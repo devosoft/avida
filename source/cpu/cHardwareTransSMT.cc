@@ -1333,6 +1333,9 @@ bool cHardwareTransSMT::Inst_ThreadCreate(cAvidaContext& ctx)
   ReadLabel(MAX_THREAD_LABEL);
   bool success = ThreadCreate(GetLabel(), GetHead(nHardware::HEAD_FLOW).GetMemSpace());
   if (!success) m_organism->Fault(FAULT_LOC_THREAD_FORK, FAULT_TYPE_FORK_TH);
+  
+  if (success) m_organism->GetPhenotype().SetIsMultiThread();
+  
   return success;
 }
 
@@ -1341,6 +1344,9 @@ bool cHardwareTransSMT::Inst_ThreadCancel(cAvidaContext& ctx)
 {
   bool success = ThreadKill(m_cur_thread);
   if (!success) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+  
+  if(m_threads.GetSize() == 1) m_organism->GetPhenotype().ClearIsMultiThread();
+  
   return success;
 }
 
@@ -1350,6 +1356,9 @@ bool cHardwareTransSMT::Inst_ThreadKill(cAvidaContext& ctx)
   ReadLabel(MAX_THREAD_LABEL);
   bool success = ThreadKill(GetLabel());
   if (!success) m_organism->Fault(FAULT_LOC_THREAD_KILL, FAULT_TYPE_KILL_TH);
+  
+  if(m_threads.GetSize() == 1) m_organism->GetPhenotype().ClearIsMultiThread();
+  
   return success;
 }
 
