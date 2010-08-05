@@ -1033,7 +1033,14 @@ public:
       for (git = gens.begin(), oit = orgs.begin(); git != gens.end(); git++, oit++){
         cCPUTestInfo test_info;
         double fitness = 0.0;
-        double parent_fitness = ( (*git)->GetParentID() > 0) ? (*git)->GetParentGenotype()->GetFitness() : 1.0;
+        double parent_fitness = 1.0;
+        if ((*git)->GetProperty("parents") != "") {
+          cStringList parents((*git)->GetProperty("parents").AsString(), ',');
+          
+          cBioGroup* pbg = world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(parents.Pop().AsInt());
+          parent_fitness = pbg->GetProperty("fitness").AsDouble();
+        }
+        
         if (mode == "TEST_CPU" || mode == "ACTUAL"){
           test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );  
           testcpu->TestGenome(ctx, test_info, cMetaGenome((*git)->GetProperty("genome").AsString()).GetGenome());
@@ -1054,7 +1061,7 @@ public:
         
         //Update the histogram
         if (parent_fitness <= 0.0)
-          world->GetDriver().RaiseFatalException(1, cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + cStringUtil::Convert((*git)->GetParentID()) + cString(":") + cStringUtil::Convert( (*git)->GetParentGenotype()->GetMerit() ));
+          world->GetDriver().RaiseFatalException(1, cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->GetProperty("parents").AsString());
         
         int update_bin = 0;
         double rfitness = fitness/parent_fitness;        

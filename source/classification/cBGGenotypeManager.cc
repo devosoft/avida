@@ -369,6 +369,7 @@ void cBGGenotypeManager::buildDataCommandManager() const
   ADD_PROP("parents", const cString& (), GetParentString, "Parents");
   ADD_PROP("threshold", bool (), IsThreshold, "Threshold");  
   ADD_PROP("update_born", int (), GetUpdateBorn, "Update Born");
+  ADD_PROP("fitness", double (), GetFitness, "Average Fitness");
 }
 
 cBioGroup* cBGGenotypeManager::cGenotypeIterator::Get() { return m_it->Get(); }
