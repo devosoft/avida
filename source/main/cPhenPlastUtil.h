@@ -31,6 +31,8 @@ class cMetaGenome;
 class cPhenPlastSummary;
 class cWorld;
 
+template<class T> class tArray;
+
 
 class cPhenPlastUtil
 {
@@ -38,7 +40,10 @@ private:
   cPhenPlastUtil(); // @not_implemented
   
 public:
+  static int GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
+  static double GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
   static double GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBioGroup* bg, int task_id);
+  static const tArray<double>& GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
   static cPhenPlastSummary* TestPlasticity(cAvidaContext& ctx, cWorld* world, const cMetaGenome& mg);
 };  
 

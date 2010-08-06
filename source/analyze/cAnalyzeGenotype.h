@@ -323,6 +323,7 @@ public:
   bool GetViable() const { return viable; }
 
   int GetID() const { return id_num; }
+  cString GetParents() const { return cStringUtil::Stringf("%d,%d", parent_id, parent2_id); }
   int GetParentID() const { return parent_id; }
   int GetParent2ID() const { return parent2_id; }
   int GetParentDist() const { return parent_dist; }

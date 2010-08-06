@@ -29,6 +29,32 @@
 #include "cPhenPlastSummary.h"
 
 
+int cPhenPlastUtil::GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, cBioGroup* bg)
+{
+  cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
+  if (!ps) {
+    assert(dynamic_cast<cBGGenotype*>(bg));
+    
+    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetMetaGenome());
+    bg->AttachData(ps);
+  }
+  
+  return ps->m_num_phenotypes;
+}
+
+double cPhenPlastUtil::GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, cBioGroup* bg)
+{
+  cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
+  if (!ps) {
+    assert(dynamic_cast<cBGGenotype*>(bg));
+    
+    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetMetaGenome());
+    bg->AttachData(ps);
+  }
+  
+  return ps->m_phenotypic_entropy;
+}
+
 double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBioGroup* bg, int task_id)
 {
   cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
@@ -40,6 +66,19 @@ double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBi
   }
   
   return ps->m_task_probabilities[task_id];
+}
+
+const tArray<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, cBioGroup* bg)
+{
+  cPhenPlastSummary* ps = bg->GetData<cPhenPlastSummary>();
+  if (!ps) {
+    assert(dynamic_cast<cBGGenotype*>(bg));
+    
+    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetMetaGenome());
+    bg->AttachData(ps);
+  }
+  
+  return ps->m_task_probabilities;
 }
 
 cPhenPlastSummary* cPhenPlastUtil::TestPlasticity(cAvidaContext& ctx, cWorld* world, const cMetaGenome& mg)
