@@ -68,6 +68,9 @@ public:
 
   const cInstSet& GetInstSet() const { return *m_inst_set; }
   cInstSet& GetInstSet() { return *m_inst_set; }
+
+  const cInstSet& GetInstSet(int isid) const { return *m_inst_set; }
+  cInstSet& GetInstSet(int isid) { return *m_inst_set; }
 };
 
 

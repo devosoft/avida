@@ -1678,12 +1678,13 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     
     // get germline genotype
     int germline_genotype_id = source_deme.GetGermlineGenotypeID();
-    cGenotype * germline_genotype = m_world->GetClassificationManager().FindGenotype(germline_genotype_id);
+    cBioGroup* germline_genotype = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(germline_genotype_id);
     assert(germline_genotype);
     
     // create a new genome by mutation
-    cCPUMemory new_genome(germline_genotype->GetGenome());
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+    cMetaGenome mg(germline_genotype->GetProperty("genome").AsString());
+    cCPUMemory new_genome(mg.GetGenome());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSetID());
     cAvidaContext ctx(m_world->GetRandom());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {

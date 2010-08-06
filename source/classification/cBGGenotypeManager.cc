@@ -123,7 +123,6 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   
   stats.SetDomMerit(dom_genotype->GetMerit());
   stats.SetDomGestation(dom_genotype->GetGestationTime());
-// @TODO?  stats.SetDomReproRate(dom_genotype->GetReproRate());
   stats.SetDomFitness(dom_genotype->GetFitness());
   stats.SetDomCopiedSize(dom_genotype->GetCopiedSize());
   stats.SetDomExeSize(dom_genotype->GetExecutedSize());
