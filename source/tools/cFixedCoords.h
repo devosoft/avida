@@ -107,15 +107,6 @@ public:
     block_num += offset / fixed_size;
     offset %= fixed_size;
   }
-
-  /**   
-   * Serialize to and from archive.
-   **/  
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.ArkvObj("block_num", block_num);
-    a.ArkvObj("offset", offset);
-  }   
 };
 
 #endif

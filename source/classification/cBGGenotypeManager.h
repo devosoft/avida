@@ -77,7 +77,7 @@ public:
   ~cBGGenotypeManager();
   
   // cBioGroupManager Interface Methods
-  cBioGroup* ClassifyNewBioUnit(cBioUnit* bu);
+  cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArrayMap<cString, cString>* hints);
   cBioGroup* GetBioGroup(int bg_id);
   
   void UpdateReset();
@@ -90,7 +90,7 @@ public:
   
   
   // Genotype Manager Methods
-  cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents);
+  cBGGenotype* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents, tArrayMap<cString, cString>* hints = NULL);
   void AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size);
 
   const tArray<cString>& GetBioGroupPropertyList() const;

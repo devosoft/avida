@@ -32,6 +32,9 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+#ifndef tArrayMap_h
+#include "tArrayMap.h"
+#endif
 
 class cBioGroupManager;
 class cBioUnit;
@@ -63,7 +66,7 @@ public:
   bool RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role, const tArray<cString>* dependencies = NULL);
   cBioGroupManager* GetBioGroupManager(const cString& role);
   
-  void ClassifyNewBioUnit(cBioUnit* bu);
+  void ClassifyNewBioUnit(cBioUnit* bu, tArrayMap<cString, tArrayMap<cString, cString> >* hints = NULL);
 
   void SaveBioGroups(const cString& role, cDataFile& df);
 };

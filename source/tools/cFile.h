@@ -111,66 +111,6 @@ public:
   bool Eof() const { return (fp.eof()); }
 
   void SetVerbose(bool _v=true) { verbose = _v; }
-
-  // Serialization
-public:
-  // Save to archive
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    /*
-    __is_open and __verbose are workarounds for bool-serialization bugs.
-    @kgn
-    */
-    int __is_open = (is_open == false)?(0):(1);
-    int __verbose = (verbose == false)?(0):(1);
-    a.ArkvObj("filename", filename);
-    a.ArkvObj("verbose", __verbose);
-    a.ArkvObj("is_open", __is_open);
-    a.ArkvObj("m_openmode", m_openmode);
-    if(is_open){
-      /*
-      If the file is open, record current read-position.
-      */
-      int position = fp.rdbuf()->pubseekoff(0,std::ios::cur);
-      a.ArkvObj("position", position);
-    }
-  }
-
-  // Load from archive 
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    /*
-    __is_open and __verbose are workarounds for bool-serialization bugs.
-    @kgn
-    */
-    int __is_open;
-    int __verbose;
-    a.ArkvObj("filename", filename);
-    a.ArkvObj("verbose", __verbose);
-    a.ArkvObj("is_open", __is_open);
-    a.ArkvObj("m_openmode", m_openmode);
-    is_open = (__is_open == 0)?(false):(true);
-    verbose = (__verbose == 0)?(false):(true);
-    if(is_open){
-      /*
-      After opening file, seek to saved read-position.
-      */
-      int position;
-      a.ArkvObj("position", position);
-      is_open = false;
-      // Only seek if open succeeds.
-      if(Open(filename, m_openmode)){
-        fp.rdbuf()->pubseekpos(position);
-      }
-    }
-  } 
-    
-  // Ask archive to handle loads and saves separately
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  }
-
 };
 
 #endif

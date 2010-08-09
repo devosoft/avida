@@ -31,6 +31,7 @@
 #include "cStringUtil.h"
 #include "cWorld.h"
 #include "tDataCommandManager.h"
+#include "tArrayMap.h"
 
 
 cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
@@ -52,7 +53,7 @@ cBGGenotypeManager::~cBGGenotypeManager()
 }
 
 
-cBioGroup* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu) { return ClassifyNewBioUnit(bu, NULL); }
+cBioGroup* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArrayMap<cString, cString>* hints) { return ClassifyNewBioUnit(bu, NULL, hints); }
 
 
 void cBGGenotypeManager::UpdateReset()
@@ -190,20 +191,42 @@ tIterator<cBioGroup>* cBGGenotypeManager::Iterator()
 
 
 
-cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents)
+cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents, tArrayMap<cString, cString>* hints)
 {
   int list_num = hashGenome(bu->GetMetaGenome().GetGenome());
-
+  
   cBGGenotype* found = NULL;
-  tListIterator<cBGGenotype> list_it(m_active_hash[list_num]);
-  while (list_it.Next() != NULL) {
-    if (list_it.Get()->Matches(bu)) {
-      found = list_it.Get();
-      found->NotifyNewBioUnit(bu);
-      break;
+
+  cString gid_str;
+  if (hints && hints->Get("id", gid_str)) {
+    int gid = gid_str.AsInt();
+    
+    // Search all lists attempting to locate the referenced genotype by ID
+    for (int i = 0; i < m_active_sz.GetSize() && !found; i++) {
+      tListIterator<cBGGenotype> list_it(m_active_sz[i]);
+      while (list_it.Next() != NULL) {
+        if (list_it.Get()->GetID() == gid) {
+          found = list_it.Get();
+          found->NotifyNewBioUnit(bu);
+          break;
+        }
+      }
+    }
+  } 
+  
+  // No hints or unable to locate hinted genome, search for a matching genotype
+  if (!found) {
+    tListIterator<cBGGenotype> list_it(m_active_hash[list_num]);
+    while (list_it.Next() != NULL) {
+      if (list_it.Get()->Matches(bu)) {
+        found = list_it.Get();
+        found->NotifyNewBioUnit(bu);
+        break;
+      }
     }
   }
   
+  // No matching genotype (hinted or otherwise), so create a new one
   if (!found) {
     found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
     m_active_hash[list_num].Push(found);

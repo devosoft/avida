@@ -96,42 +96,6 @@ public:
   int GetTotal() const { return total; }
   int GetNumStored() const { return (total <= data.GetSize()) ? total : data.GetSize(); }
   int GetNum() const { return total - last_total; }
-
-  
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.ArkvObj("data", data);
-    a.ArkvObj("offset", offset);
-    a.ArkvObj("total", total);
-    a.ArkvObj("last_total", last_total);
-  }
-
-  /*
-  FIXME: I'm replacing the code below with a serializing system, but
-  want to keep the old around for reference until I'm sure the new
-  system works.
-  @kgn
-  */
-  //void SaveState(std::ostream& fp)
-  //{
-  //  assert(fp.good());
-  //  fp << "tBuffer" << " ";
-  //  fp << data.GetSize() << " ";
-  //  for (int i = 0; i < data.GetSize(); i++)  fp << data[i] << " ";
-  //  fp << offset << " "  << total << " "  << last_total << " "  << std::endl;
-  //}
-  //
-  //void LoadState(std::istream& fp)
-  //{
-  //  assert(fp.good());
-  //  cString foo;  fp >> foo;  assert(foo == "tBuffer");
-  //  int capacity;  fp >> capacity;
-  //  data.Resize(capacity);
-  //  for (int i = 0; i < capacity; i++) {
-  //    fp >> data[i];
-  //  }
-  //  fp  >>  offset  >>  total  >>  last_total;
-  //}
 };
 
 #endif

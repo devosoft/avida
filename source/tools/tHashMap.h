@@ -83,13 +83,6 @@ template <class HASH_TYPE, class DATA_TYPE> class tHashMap
     E_HASH_TYPE key;
     int id;
     E_DATA_TYPE data;
-    
-    template<class Archive>
-    void serialize(Archive & a, const unsigned int version){
-      a.ArkvObj("key", key);
-      a.ArkvObj("id", id);
-      a.ArkvObj("data", data);
-    }
   };
   
 private:

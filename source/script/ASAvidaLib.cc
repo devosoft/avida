@@ -160,5 +160,5 @@ void RegisterASAvidaLib(cASLibrary* lib)
   lib->RegisterFunction(new tASNativeObjectInstantiate<cAvidaConfig ()>());
   lib->RegisterFunction(new tASNativeObjectInstantiate<cDefaultRunDriver (cWorld*)>());
   lib->RegisterFunction(new tASNativeObjectInstantiate<cWorld (cAvidaConfig*)>());
-    // @TODO - world takes ownership of config, but I don't handle that here... world could delete it without AS knowing
+    // @AS_TODO - world takes ownership of config, but I don't handle that here... world could delete it without AS knowing
 }

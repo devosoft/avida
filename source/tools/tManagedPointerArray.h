@@ -203,39 +203,6 @@ public:
   {
     for (int i = 0; i < m_size; i++) *m_data[i] = value;
   }
-
-  // Save to archive
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    // Save number of elements.
-    unsigned int count = m_size;
-    a.ArkvObj("count", count);
-    // Save elements.
-    while(count-- > 0){ 
-      a.ArkvObj("item", (*this)[count]);
-    } 
-  }   
-    
-    
-  // Load from archive
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    // Retrieve number of elements.
-    unsigned int count; 
-    a.ArkvObj("count", count);
-    ResizeClear(count);
-    // Retrieve elements.
-    while(count-- > 0){
-      a.ArkvObj("item", (*this)[count]);
-    }
-  } 
-  
-  // Ask archive to handle loads and saves separately
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  } 
-
 };
 
 #endif

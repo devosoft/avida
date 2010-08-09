@@ -35,6 +35,7 @@ class cStats;
 class cDataFile;
 template <typename T> class tDictionary;
 template <class T> class tIterator;
+template <class K, class V> class tArrayMap; 
 
 
 class cBioGroupManager
@@ -49,7 +50,7 @@ public:
   cBioGroupManager() { ; }
   virtual ~cBioGroupManager() = 0;
   
-  virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu) = 0;
+  virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArrayMap<cString, cString>* hints = NULL) = 0;
   virtual cBioGroup* GetBioGroup(int bg_id) = 0;
   
   virtual void UpdateReset() = 0;

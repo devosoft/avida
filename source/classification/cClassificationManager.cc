@@ -58,10 +58,12 @@ cBioGroupManager* cClassificationManager::GetBioGroupManager(const cString& role
 }
 
 
-void cClassificationManager::ClassifyNewBioUnit(cBioUnit* bu)
+void cClassificationManager::ClassifyNewBioUnit(cBioUnit* bu, tArrayMap<cString, tArrayMap<cString, cString> >* hints)
 {
   for (int i = 0; i < m_bgms.GetSize(); i++) {
-    cBioGroup* group = m_bgms[i]->ClassifyNewBioUnit(bu);
+    tArrayMap<cString, cString> role_hints;
+    if (hints) hints->Get(m_bgms[i]->GetRole(), role_hints);
+    cBioGroup* group = m_bgms[i]->ClassifyNewBioUnit(bu, &role_hints);
     if (group) bu->AddClassification(group);
   }
 }

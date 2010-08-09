@@ -131,62 +131,6 @@ public:
   void GetEvents(cAvidaContext& ctx);
 	
 	cEventList* GetEventsList() { return m_event_list; }
-
-  // Save to archive 
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    a.ArkvObj("m_analyze", m_analyze);
-    a.ArkvObj("m_conf", m_conf);
-    a.ArkvObj("m_ctx", m_ctx);
-    a.ArkvObj("m_class_mgr", m_class_mgr);
-    a.ArkvObj("m_data_mgr", m_data_mgr);
-    a.ArkvObj("m_env", m_env);
-    a.ArkvObj("m_event_list", m_event_list);
-    a.ArkvObj("m_hw_mgr", m_hw_mgr);
-    a.ArkvObj("m_pop", m_pop);
-    a.ArkvObj("m_stats", m_stats);
-    a.ArkvObj("m_driver", m_driver);
-    a.ArkvObj("m_rng", m_rng);
-    int __m_test_on_div = (m_test_on_div == false)?(0):(1);
-    int __m_test_sterilize = (m_test_sterilize == false)?(0):(1);
-    int __m_own_driver = (m_own_driver == false)?(0):(1);
-    a.ArkvObj("m_test_on_div", __m_test_on_div);
-    a.ArkvObj("m_test_sterilize", __m_test_sterilize);
-    a.ArkvObj("m_own_driver", __m_own_driver);
-  }
-  
-  // Load from archive 
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    a.ArkvObj("m_analyze", m_analyze);
-    a.ArkvObj("m_conf", m_conf);
-    a.ArkvObj("m_ctx", m_ctx);
-    a.ArkvObj("m_class_mgr", m_class_mgr);
-    a.ArkvObj("m_data_mgr", m_data_mgr);
-    a.ArkvObj("m_env", m_env);
-    a.ArkvObj("m_event_list", m_event_list);
-    a.ArkvObj("m_hw_mgr", m_hw_mgr);
-    a.ArkvObj("m_pop", m_pop);
-    a.ArkvObj("m_stats", m_stats);
-    a.ArkvObj("m_driver", m_driver);
-    a.ArkvObj("m_rng", m_rng);
-    int __m_test_on_div;
-    int __m_test_sterilize;
-    int __m_own_driver;
-    a.ArkvObj("m_test_on_div", __m_test_on_div);
-    a.ArkvObj("m_test_sterilize", __m_test_sterilize);
-    a.ArkvObj("m_own_driver", __m_own_driver);
-    m_test_on_div = (__m_test_on_div == 0)?(false):(true);
-    m_test_sterilize = (__m_test_sterilize == 0)?(false):(true);
-    m_own_driver = (__m_own_driver == 0)?(false):(true);
-  } 
-    
-  // Ask archive to handle loads and saves separately
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  }
-
 };
 
 

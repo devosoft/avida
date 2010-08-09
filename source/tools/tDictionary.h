@@ -106,11 +106,6 @@ public:
     }
     return best_match;
   }
-
-  template<class Archive>
-  void serialize(Archive& a, const unsigned int version){
-    a.ArkvObj("m_hash", m_hash);
-  }
 };
 
 

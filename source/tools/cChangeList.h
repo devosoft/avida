@@ -96,48 +96,6 @@ public:
   void PushChange(int changed_index);
 
   void Reset();
-
-  /**
-   * Save to archive
-   **/
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    /*
-    Must convert tArray<bool> m_change_tracking into tArray<int>
-    change_tracking, because our serializer doesn't like bools...
-    */
-    int count = m_change_tracking.GetSize();
-    tArray<int> change_tracking(count);
-    while(count--) change_tracking[count] = (m_change_tracking[count] == false)?(0):(1);
-
-    a.ArkvObj("m_change_count", m_change_count);
-    a.ArkvObj("m_change_list", m_change_list);
-    a.ArkvObj("m_change_tracking", change_tracking);
-  }
-  
-  /**
-   * Load from archive
-   **/
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    tArray<int> change_tracking;
-
-    a.ArkvObj("m_change_count", m_change_count);
-    a.ArkvObj("m_change_list", m_change_list);
-    a.ArkvObj("m_change_tracking", change_tracking);
-
-    int count = change_tracking.GetSize();
-    m_change_tracking.Resize(count);
-    while(count--) m_change_tracking[count] = (change_tracking[count] == 0)?(false):(true);
-  }
-
-  /**
-   * Ask archive to handle loads and saves separately
-   **/
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  }
 };
 
 #endif

@@ -34,6 +34,7 @@
 #include "cConstBurstSchedule.h"
 #include "cConstSchedule.h"
 #include "cDataFile.h"
+#include "cDemePlaceholderUnit.h"
 #include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
 #include "functions.h"
@@ -1707,13 +1708,18 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
       new_genome.Remove(mut_line);
     }
     
+    mg.SetGenome(new_genome);
+    
     //Create a new genotype which is daughter to the old one.
-    cBioGroup* new_germline_genotype = m_world->GetClassificationManager().GetGenotype(new_genome, germline_genotype, NULL);
+    cDemePlaceholderUnit unit(SRC_DEME_GERMLINE, mg);
+    tArray<cBioGroup*> parents;
+    parents.Push(germline_genotype);
+    cBioGroup* new_germline_genotype = germline_genotype->ClassifyNewBioUnit(&unit, &parents);
     source_deme.ReplaceGermline(new_germline_genotype);
     target_deme.ReplaceGermline(new_germline_genotype);
-    SeedDeme(source_deme, *new_germline_genotype, SRC_DEME_GERMLINE);
-    SeedDeme(target_deme, *new_germline_genotype, SRC_DEME_GERMLINE);
-    
+    SeedDeme(source_deme, new_germline_genotype, SRC_DEME_GERMLINE);
+    SeedDeme(target_deme, new_germline_genotype, SRC_DEME_GERMLINE);
+    new_germline_genotype->RemoveBioUnit(&unit);
   } else {
     // Not using germlines; things are much simpler.  Seed the target from the source.
     target_successfully_seeded = SeedDeme(source_deme, target_deme);
@@ -4382,8 +4388,9 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
         phenotype.SetupInject(mg.GetGenome());
         
         // Classify this new organism
-        // @TODO - classify loaded genotypes with load hints
-        m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);
+        tArrayMap<cString, tArrayMap<cString, cString> > hints;
+        hints["genotype"]["id"] = cStringUtil::Stringf("%d", tmp.bg->GetID());
+        m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism, &hints);
         
         // Coalescense Clade Setup
         new_organism->SetCCladeLabel(-1);  
@@ -4546,8 +4553,11 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
   else if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
     //find the genotype we just created from the genome, and save it
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
-    cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(genome, lineage_label);
-    deme.ReplaceGermline(*genotype);
+    cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - genotypes need metagenomes
+    cDemePlaceholderUnit unit(src, tmp_genome);
+    cBioGroup* genotype = m_world->GetClassificationManager().GetBioGroupManager("genotype")->ClassifyNewBioUnit(&unit);
+    deme.ReplaceGermline(genotype);
+    genotype->RemoveBioUnit(&unit);
   }
 }
 

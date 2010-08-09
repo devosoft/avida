@@ -47,11 +47,6 @@ public:
   // @DMB - Visual Studio doesn't like usage of 'this' in initializers 
   //        and throws a lot of useless warnings. 
   tListNode() : data(NULL) { next = this; prev = this; } 
-    
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.ArkvObj("data", data);
-  }
 };
 
 
@@ -307,49 +302,6 @@ public:
     return RemoveNode(test_node);
   }
   
-  
-
-  // Save to archive
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    // Save number of elements.
-    unsigned int count = size;
-    a.ArkvObj("count", count);
-    // Save elements.
-    const tListNode<T> * node = &root;
-    while(count-- > 0){
-      node = node->next;
-      a.ArkvObj("item", node);
-    }
-  }
-
-
-  // Load from archive
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    Clear();
-    // Retrieve number of elements.
-    unsigned int count;
-    a.ArkvObj("count", count);
-    // Retrieve elements.
-    while(count-- > 0){
-      tListNode<T> * new_node(0);
-      a.ArkvObj("item", new_node);
-
-      new_node->next = &root;
-      new_node->prev = root.prev;
-      root.prev->next = new_node;
-      root.prev = new_node;
-      size++;
-    }
-  }
-
-
-  // Ask archive to handle loads and saves separately
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  }
 };
 
 
