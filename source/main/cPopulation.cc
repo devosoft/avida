@@ -492,6 +492,17 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   
   // Place all of the offspring...
   for (int i = 0; i < child_array.GetSize(); i++) {
+		// If this is multi-process Avida, test to see if we should send the offspring
+		// to a different world:
+		if(m_world->GetConfig().ENABLE_MP.Get()) {
+			if((m_world->GetConfig().WORLD_MIGRATION_P.Get() > 0.0)
+				 && m_world->GetRandom().P(m_world->GetConfig().WORLD_MIGRATION_P.Get())) {
+				// this offspring is outta here!
+				m_world->MigrateOrganism(child_array[i]);
+				continue;
+			}
+		}		
+		
     ActivateOrganism(ctx, child_array[i], GetCell(target_cells[i]));
     
     //@JEB - we may want to pass along some state information from parent to child

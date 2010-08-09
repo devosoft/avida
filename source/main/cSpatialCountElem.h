@@ -58,16 +58,4 @@ public:
   inline void ResetResourceCount(double res_initial) { amount = res_initial + initial; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nSpatialCountElem {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

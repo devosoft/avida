@@ -64,16 +64,4 @@ public:
   int GetRightChild(int id) { return 2*id + 2; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nWeightedIndex {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

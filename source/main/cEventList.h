@@ -218,16 +218,4 @@ public:
 	bool IsEventUpcoming(const cString& event_name);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nEventList {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

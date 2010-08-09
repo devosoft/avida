@@ -796,16 +796,4 @@ inline cUInt::operator>=(const cUInt& in_cUInt) const
 
 #endif
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nUInt {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
-
 #endif

@@ -113,21 +113,7 @@ public:
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(const tArray<double>& res_change);
   cResourceCount& GetResourceCount() { return m_resource_count; }
-	
-
 };
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTestCPU {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
-
 
 
 // Inline Methods

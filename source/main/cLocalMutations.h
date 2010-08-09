@@ -55,16 +55,4 @@ public:
   void IncCount(int id, int num_mut) { counts[id] += num_mut; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nLocalMutations {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

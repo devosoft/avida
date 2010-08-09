@@ -141,18 +141,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nCPUTestInfo {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
 inline cOrganism* cCPUTestInfo::GetTestOrganism(int level)
 {
   assert(org_array[level] != NULL);

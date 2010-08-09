@@ -203,16 +203,4 @@ public:
   void SetDeathProb(double in_prob)         { update.death_prob      = in_prob; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMutationRates {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

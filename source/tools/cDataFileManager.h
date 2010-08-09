@@ -75,18 +75,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nDataFileManager {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
 inline bool cDataFileManager::IsOpen(const cString & name)
 {
   cDataFile* found;

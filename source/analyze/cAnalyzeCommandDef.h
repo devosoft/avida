@@ -51,16 +51,4 @@ public:
   }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nAnalyzeCommandDef {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
-
 #endif

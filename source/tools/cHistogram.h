@@ -69,17 +69,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nHistogram {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 inline void cHistogram::Clear()
 {
   int num_bins = GetNumBins();

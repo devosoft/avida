@@ -180,16 +180,4 @@ protected:
 	void ReceiveHGTDonation(const cGenome& fragment);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nPopulationInterface {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

@@ -1,0 +1,67 @@
+/*
+ *  cWorld.h
+ *  Avida
+ *
+ *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; version 2
+ *  of the License.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
+
+#ifndef cMultiProcessWorld_h
+#define cMultiProcessWorld_h
+
+#include <boost/mpi.hpp>
+#include <boost/mpi/environment.hpp>
+#include <boost/mpi/communicator.hpp>
+#include <vector>
+
+#include "cWorld.h"
+#include "cAvidaConfig.h"
+
+/*! Multi-process Avida world.
+ 
+ This class enables multi-process Avida, which provides a mechanism for much larger
+ populations than are possible on a single machine.  This is made possible through
+ a single new technique, that of "cross-world migration," where an individual organism
+ is transferred to a different Avida world and injected into a random location in that
+ world's population.
+ */
+class cMultiProcessWorld : public cWorld
+	{
+	private:
+		cMultiProcessWorld(const cMultiProcessWorld&); // @not_implemented
+		cMultiProcessWorld& operator=(const cMultiProcessWorld&); // @not_implemented
+		
+	protected:
+		boost::mpi::environment& m_mpi_env; //!< MPI environment.
+		boost::mpi::communicator& m_mpi_world; //!< World-wide MPI communicator.
+		std::vector<boost::mpi::request> m_reqs; //!< Requests outstanding since the last ProcessPostUpdate.
+		
+	public:
+		//! Constructor.
+		cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environment& env, boost::mpi::communicator& world);
+		
+		//! Destructor.
+		virtual ~cMultiProcessWorld() { }
+		
+		//! Migrate this organism to a different world.
+		virtual void MigrateOrganism(cOrganism* org);
+		
+		//! Process post-update events.
+		virtual void ProcessPostUpdate(cAvidaContext& ctx);
+		
+#endif

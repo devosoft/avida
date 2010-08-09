@@ -82,16 +82,4 @@ public:
   double GetValue(int process_num = 0);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nReaction {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
-
 #endif

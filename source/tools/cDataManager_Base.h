@@ -55,16 +55,4 @@ public:
   bool PrintRow(cDataFile& data_file, cString row_entries, char sep=' ');
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nDataManager_Base {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

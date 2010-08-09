@@ -312,17 +312,6 @@ ForwardIterator choose(ForwardIterator first, ForwardIterator last, RNG rng) {
 	return first+rng(range);
 }
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nRandom {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 
 class cRandomMT : public cRandom
 {

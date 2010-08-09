@@ -65,17 +65,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nDefaultMessageDisplay {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 extern cDefaultMessageDisplay s_info_msg_cout;
 extern cDefaultMessageDisplay s_debug_msg_cerr;
 extern cDefaultMessageDisplay s_error_msg_cerr;

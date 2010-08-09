@@ -67,16 +67,4 @@ public:
   cArgContainer& GetArguments() const { return *m_args; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTaskEntry {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

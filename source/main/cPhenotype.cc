@@ -463,7 +463,11 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
   is_mutated    = false;
-  is_multi_thread = parent_phenotype.is_multi_thread;
+  if(m_world->GetConfig().INHERIT_MULTI_THREAD_CLASSIFICATION.Get())
+    is_multi_thread = parent_phenotype.is_multi_thread;
+  else
+    is_multi_thread = false;
+  
   parent_true   = parent_phenotype.copy_true;
   parent_sex    = parent_phenotype.divide_sex;
   parent_cross_num    = parent_phenotype.cross_num;

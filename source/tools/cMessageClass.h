@@ -51,17 +51,6 @@ private:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nMessageClass {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 /*
 Declaration of the five message classes.
 */

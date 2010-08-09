@@ -61,18 +61,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nCPUStack {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
 inline void cCPUStack::Push(int value)
 {
   if (stack_pointer == 0) stack_pointer = nHardware::STACK_SIZE - 1;

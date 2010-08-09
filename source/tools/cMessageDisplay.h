@@ -48,18 +48,6 @@ public:
   virtual void abort(){ abort(); }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMessageDisplay {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 void setInfoDisplay(cMessageDisplay &info);
 void setDebugDisplay(cMessageDisplay &debug);
 void setErrorDisplay(cMessageDisplay &error);

@@ -41,16 +41,4 @@ public:
   static bool MkDir(const cString& dirname, bool verbose=false);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTools {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

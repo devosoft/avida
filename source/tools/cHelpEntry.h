@@ -52,16 +52,4 @@ public:
   cString GetHTMLFilename() const { return cStringUtil::Stringf("help.%s.html", static_cast<const char*>(GetKeyword())); }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHelpEntry {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

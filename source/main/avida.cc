@@ -105,9 +105,6 @@ cString GetVersion()
 #if INSTRUCTION_COUNT
   version += " inst_cnt";
 #endif
-#ifdef ENABLE_UNIT_TESTS
-  version += " ut";
-#endif
 #if USE_tMemTrack
   version += " memt";
 #endif

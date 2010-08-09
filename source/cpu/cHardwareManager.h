@@ -73,16 +73,4 @@ public:
   cInstSet& GetInstSet(int isid) { return *m_inst_set; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareManager {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

@@ -61,16 +61,4 @@ public:
   bool AtEnd() const { return list_it.AtEnd(); }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nStringIterator {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

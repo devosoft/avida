@@ -158,18 +158,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nInstSet {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
 inline cInstSet::cInstSet(const cInstSet& is)
 : m_world(is.m_world), m_inst_lib(is.m_inst_lib), m_lib_name_map(is.m_lib_name_map)
 , m_lib_nopmod_map(is.m_lib_nopmod_map), m_mutation_chart(is.m_mutation_chart)

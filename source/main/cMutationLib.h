@@ -58,16 +58,4 @@ public:
   const tList<cMutation>& GetMutationList(int trigger) const { return trigger_list_array[trigger]; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMutationLib {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

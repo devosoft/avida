@@ -127,16 +127,4 @@ public:
   void AdvanceUpdate() { memory_offset = 0; }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nZoomScreen {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

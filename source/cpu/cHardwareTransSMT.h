@@ -322,18 +322,6 @@ private:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareTransSMT {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
 inline bool cHardwareTransSMT::ThreadKill(const cCodeLabel& in_label)
 {
   return ThreadKill(FindThreadLabel(in_label));

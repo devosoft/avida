@@ -52,16 +52,4 @@ public:
   cReaction* GetReaction(int id) const;
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nReactionLib {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
-
 #endif

@@ -179,17 +179,4 @@ inline cInstruction cHeadCPU::GetNextInst() const
   return (AtEnd()) ? m_hardware->GetInstSet().GetInstError() : GetMemory()[m_position + 1];
 }
 
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHeadCPU {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

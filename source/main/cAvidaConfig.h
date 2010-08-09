@@ -299,6 +299,10 @@ public:
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
   CONFIG_ADD_VAR(START_CREATURE, cString, "default-heads.org", "Organism to seed the soup");
   
+	CONFIG_ADD_GROUP(MP_GROUP, "Multi-process Avida Variables");
+	CONFIG_ADD_VAR(ENABLE_MP, int, 0, "Enable multi-process Avida; 0=disabled (default),\n1=enabled.");
+	CONFIG_ADD_VAR(WORLD_MIGRATION_P, double, 0.0, "Probability of offspring migration between worlds (default=0.0).");
+	
   CONFIG_ADD_GROUP(DEME_GROUP, "Demes and Germlines");
   CONFIG_ADD_VAR(NUM_DEMES, int, 1, "Number of independent groups in the\npopulation (default=1).");
 	CONFIG_ADD_VAR(DEMES_COMPETITION_STYLE, int, 0, "Select how the demes compete\n0=Fitness proportional\n1=Tournament");
@@ -360,6 +364,7 @@ public:
   CONFIG_ADD_VAR(INJECT_PROB_SIGMOID, int, 1, "Inject Probs follow a psuedo-sigmoid path - only works if task probs are turned on");
   CONFIG_ADD_VAR(INHERIT_MERIT, int, 1, "Merit if inhereted from mother cell (only in asexual for now)");
 
+  CONFIG_ADD_VAR(INHERIT_MULTI_THREAD_CLASSIFICATION, int, 0, "Inherit the parental classification of multithreaded");
 	
   CONFIG_ADD_GROUP(RECOMBINATION_GROUP, "Sexual Recombination and Modularity");
   CONFIG_ADD_VAR(RECOMBINATION_PROB, double, 1.0, "probability of recombination in div-sex");
@@ -389,7 +394,7 @@ public:
   CONFIG_ADD_VAR(IMPLICIT_REPRO_CPU_CYCLES, int, 0, "Call Inst_Repro after this many cpu cycles. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_TIME, int, 0, "Call Inst_Repro after this time used. 0 = OFF");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_END, int, 0, "Call Inst_Repro after executing the last instruction in the genome.");  
-  CONFIG_ADD_VAR(IMPLICIT_REPRO_ENERGY, double, 0.0, "Call Inst_Repro if organism accumulates this amount of energy.");    
+  CONFIG_ADD_VAR(IMPLICIT_REPRO_ENERGY, double, 0.0, "Call Inst_Repro if organism accumulates this amount of energy.");   
   
   CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutations");
   CONFIG_ADD_VAR(POINT_MUT_PROB, double, 0.0, "Mutation rate (per-location per update)");
@@ -715,16 +720,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nAvidaConfig {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 // Concept:
 // Setup #define to build class that will manage the specific variable inside

@@ -51,16 +51,4 @@ public:
   virtual std::ostream * GetStream() { return &m_trace_fp; }  
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareStatusPrinter {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

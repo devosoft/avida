@@ -121,17 +121,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nIndexedBlockStruct {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 inline int cIndexedBlockStruct::Find(cFixedCoords & search_coords) const
 {
   // Make sure the find is within range.

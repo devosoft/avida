@@ -63,15 +63,4 @@ public:
   bool operator==(const cAnalyzeCommand &in) const { return &in == this; }
 };
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nAnalyzeCommand {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

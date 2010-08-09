@@ -458,6 +458,16 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
 	
 	if (name == "form-group-id")
     Load_FormSpatialGroupWithID(name, info, envreqs, errors);
+	
+	// String matching
+	if(name == "all-ones")
+		Load_AllOnes(name, info, envreqs, errors);
+	else if (name == "royal-road")
+		Load_RoyalRoad(name, info, envreqs, errors);
+	else if (name == "royal-road-wd")
+		Load_RoyalRoadWithDitches(name, info, envreqs, errors);
+  
+	
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -3549,3 +3559,161 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 	return reward;
 }
 
+
+void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+  cArgSchema schema;
+  schema.AddEntry("length", 0, 0);		
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  envreqs.SetMinOutputs(args->GetInt(0));
+  if (args) NewTask(name, "all-ones", &cTaskLib::Task_AllOnes, 0, args);
+}
+
+
+double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
+{
+	tBuffer<int> buf(ctx.GetOutputBuffer());
+	double num_ones = 0.0;
+	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	
+	for(int i=0; i<length; ++i) {
+		num_ones += buf[i];
+	}
+	
+	return (num_ones/length);
+}
+
+
+void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+  cArgSchema schema;
+  schema.AddEntry("length", 0, 0);
+	schema.AddEntry("block_count", 1, 0);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  envreqs.SetMinOutputs(args->GetInt(0));
+  if (args) NewTask(name, "royal-road", &cTaskLib::Task_RoyalRoad, 0, args);
+}
+
+double cTaskLib::Task_RoyalRoad(cTaskContext& ctx) const
+{
+	// block size
+	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+	int block_size = floor(double(length) / double(block_count));
+	int block_reward; 
+	int current_spot;
+	double total_reward = 0.0;
+	tBuffer<int> buf(ctx.GetOutputBuffer());
+	
+	// Cycle through each block. If a block is correct, then add a reward.
+	for (int i=0; i<block_count; ++i) {
+		block_reward = 1;
+		// AND the elements of each block.
+		for (int j=0; j<block_size; ++j) {
+			current_spot = i*block_size + j;
+			block_reward &= buf[current_spot];
+		}
+		
+		//				if (block_reward) total_reward += (block_size);
+		if (block_reward) total_reward ++;
+		
+	}
+	
+	return (total_reward/block_count);
+	
+}
+
+
+void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+  cArgSchema schema;
+  schema.AddEntry("length", 0, 0);
+	schema.AddEntry("block_count", 1, 0);
+	schema.AddEntry("width", 2, 0);
+	schema.AddEntry("height", 3, 0);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  envreqs.SetMinOutputs(args->GetInt(0));
+  if (args) NewTask(name, "royal-road-wd", &cTaskLib::Task_RoyalRoadWithDitches, 0, args);
+}
+
+
+double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
+{
+	
+	// block size
+	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+	int block_size = floor(double(length) / double(block_count));
+	int block_correct;
+	int num_b_blocks = 0;
+	int current_spot;
+	double total_reward = 0.0;
+	int width = ctx.GetTaskEntry()->GetArguments().GetInt(2);
+	int height = ctx.GetTaskEntry()->GetArguments().GetInt(3);
+	int next_case = 1;
+	int block_type = -1; // -1 undefined; 0 X; 1 A; 2 B
+	tBuffer<int> buf(ctx.GetOutputBuffer());
+	
+	
+	// Cycle through each block. If a block is correct, then add a reward.
+	for (int i=0; i<block_count; ++i) {
+		block_correct = 1;
+		block_type = -1;
+		
+		
+		// Identify the type of block... 
+		// Check for block A
+		for (int j=0; j<(block_size); ++j) {
+			current_spot = i*block_size + j;
+			block_correct &= buf[current_spot];
+		} 
+		
+		if (block_correct) block_type = 1;
+		
+		// Check for block B
+		if (block_type == -1) {
+			block_correct = 1;
+			for (int j=0; j<block_size; ++j) {
+				
+				current_spot = i*block_size + j;
+				
+				// For starter's lets just check for blocks of type B
+				if (j < (block_size -width)) { 
+					if (buf[current_spot] == 0) block_correct = 0;
+				} else {
+					if (buf[current_spot] == 1) block_correct = 0;											
+				}
+				// this should escape the loop if the block reward is set to 0.
+				if (block_correct == 0) break;
+			}
+			if (block_correct) block_type = 2;
+		}
+		
+		
+		// Else consider it an X
+		if(block_type == -1) block_type = 0;
+		
+		// Based on the type of block... change states....
+		switch(next_case){
+			case 1:
+				if(block_type == 0) next_case = 2;
+				if(block_type == 1) {
+					total_reward = num_b_blocks + 2; 
+					next_case = 3; 
+				} 
+				if(block_type == 2) num_b_blocks++;
+				break;
+			case 2:
+				if(block_type == 1) total_reward = num_b_blocks + 2 - height;
+				next_case = 3;
+				break;
+			case 3: 		
+				break;
+			default: 
+				break;
+		}
+		
+	}
+	
+	return (total_reward/block_count);
+}

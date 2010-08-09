@@ -334,16 +334,4 @@ private:
   inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nPopulation {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

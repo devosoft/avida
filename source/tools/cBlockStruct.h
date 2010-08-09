@@ -246,17 +246,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nBlockStruct {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 inline void * cBlockStruct::Find(const cFixedCoords & search_coords) const
 {
   // Make sure the find is within range.

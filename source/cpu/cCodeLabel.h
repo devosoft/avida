@@ -89,17 +89,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nCodeLabel {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 void cCodeLabel::AddNop(int nop_num) {
   assert (nop_num < nHardware::MAX_NOPS);
 

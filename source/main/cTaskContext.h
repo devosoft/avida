@@ -113,16 +113,4 @@ public:
   inline void AddTaskState(cTaskState* value) { m_task_states->Set(m_task_entry, value); }
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTaskContext {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

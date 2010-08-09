@@ -333,20 +333,14 @@ private:
 	double Task_FormSpatialGroup(cTaskContext& ctx) const; 
 	void Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
 	double Task_FormSpatialGroupWithID(cTaskContext& ctx) const; 
+	
+	// String Matching Tasks
+	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+	double Task_AllOnes(cTaskContext& ctx) const;
+	void Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+	double Task_RoyalRoad(cTaskContext& ctx) const;
+	void Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+	double Task_RoyalRoadWithDitches(cTaskContext& ctx) const;
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTaskLib {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
-
 
 #endif

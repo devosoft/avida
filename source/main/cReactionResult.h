@@ -111,19 +111,6 @@ public:
   double GetMultDemeBonus() { return deme_mult_bonus; }
   double GetAddGermline() { return germline_add; }
   double GetMultGermline() { return germline_mult; }
-
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nReactionResult {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif
