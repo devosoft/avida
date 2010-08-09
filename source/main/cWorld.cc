@@ -27,6 +27,7 @@
 #include "avida.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
+#include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
@@ -96,6 +97,7 @@ void cWorld::Setup()
   
   // Setup Stats Object
   m_stats = new cStats(this);
+  m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
     
   const cInstSet& inst_set = m_hw_mgr->GetInstSet();
   for (int i = 0; i < inst_set.GetSize(); i++)

@@ -36,11 +36,17 @@
 #ifndef defs_h
 #include "defs.h"
 #endif
+#ifndef cBioGroupListener_h
+#include "cBioGroupListener.h"
+#endif
 #ifndef cDoubleSum_h
 #include "cDoubleSum.h"
 #endif
-#ifndef functions_h
-#include "functions.h"
+#ifndef cGenome_h
+#include "cGenome.h"
+#endif
+#ifndef cGenomeUtil_h
+#include "cGenomeUtil.h"
 #endif
 #ifndef cIntSum_h
 #include "cIntSum.h"
@@ -54,6 +60,12 @@
 #ifndef cRunningStats_h
 #include "cRunningStats.h"
 #endif
+#ifndef functions_h
+#include "functions.h"
+#endif
+#ifndef nGeometry_h
+#include "nGeometry.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -62,17 +74,6 @@
 #endif
 #ifndef tMatrix_h
 #include "tMatrix.h"
-#endif
-#ifndef nGeometry_h
-#include "nGeometry.h"
-#endif
-#include "cGenome.h"
-#include "cGenomeUtil.h"
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
 #endif
 
 
@@ -93,7 +94,8 @@ struct flow_rate_tuple {
   cIntSum currentSleeping;
 };
 
-class cStats
+
+class cStats : public cBioGroupListener
 {
 #if USE_tMemTrack
   tMemTrack<cStats> mt;
@@ -344,6 +346,8 @@ private:
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
+  
+  void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu);
 
   void SetupPrintDatabase();
   void ProcessUpdate();
@@ -536,8 +540,6 @@ public:
   void AddGenotype() { tot_genotypes++; }
   void RemoveGenotype(int id_num, int parent_id, int parent_distance, int depth, int max_abundance,
                       int parasite_abundance, int age, int length);
-  void AddThreshold(int id_num, const char * name, int species_num=-1);
-  void RemoveThreshold() { num_threshold--; }
   void AddSpecies() { tot_species++; num_species++; }
   void RemoveSpecies(int id_num, int parent_id, int max_gen_abundance, int max_abundance, int age);
   void AddLineage() { tot_lineages++; num_lineages++; }

@@ -25,6 +25,7 @@
 
 #include "cStats.h"
 
+#include "cBioGroup.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
 #include "cHardwareBase.h"
@@ -282,6 +283,32 @@ cStats::cStats(cWorld* world)
   SetupPrintDatabase();
 }
 
+
+void cStats::NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu)
+{
+  assert(bg);
+
+  switch (type) {
+    case BG_EVENT_ADD_THRESHOLD:
+      num_threshold++;
+      tot_threshold++;
+      if (m_world->GetConfig().LOG_THRESHOLD.Get()) {
+        cDataFile& df = m_world->GetDataFile("threshold.log");
+        df.Write(m_update, "Update");
+        df.Write(bg->GetID(), "ID");
+        df.Write(bg->GetProperty("name").AsString(), "Name");
+        df.Endl();
+      }
+      break;
+      
+    case BG_EVENT_REMOVE_THRESHOLD:
+      num_threshold--;
+      break;
+  } 
+  
+}
+
+
 void cStats::SetupPrintDatabase()
 {
   // Load in all the keywords, descriptions, and associated functions for
@@ -472,21 +499,6 @@ void cStats::RemoveGenotype(int id_num, int parent_id,
 
   (void) parasite_abundance; // Not used now, but maybe in future.
 }
-
-void cStats::AddThreshold(int id_num, const char* name, int species_num)
-{
-  num_threshold++;
-  tot_threshold++;
-  if (m_world->GetConfig().LOG_THRESHOLD.Get()) {
-    cDataFile& df = m_world->GetDataFile("threshold.log");
-    df.Write(m_update, "Update");
-    df.Write(id_num, "ID");
-    df.Write(species_num, "Species Num");
-    df.Write(name, "Name");
-    df.Endl();
-  }
-}
-
 
 void cStats::RemoveSpecies(int id_num, int parent_id, int max_gen_abundance, int max_abundance, int age)
 {

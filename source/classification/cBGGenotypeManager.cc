@@ -238,8 +238,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
       m_best = found->GetNumUnits();
       found->SetThreshold();
       found->SetName(nameGenotype(found->GetMetaGenome().GetGenome().GetSize()));
-      
-      // @TODO - handle threshold triggers
+      NotifyListeners(found, BG_EVENT_ADD_THRESHOLD);
     }
   }
   
@@ -271,8 +270,7 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   if (!genotype->IsThreshold() && (new_size >= m_world->GetConfig().THRESHOLD.Get() || genotype == getBest())) {
     genotype->SetThreshold();
     genotype->SetName(nameGenotype(genotype->GetMetaGenome().GetGenome().GetSize()));
-    
-    // @TODO - handle threshold triggers
+    NotifyListeners(genotype, BG_EVENT_ADD_THRESHOLD);
   }
 }
 
@@ -342,8 +340,7 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
   }
   
   if (genotype->IsThreshold()) {
-    // @TODO handle threshold removal
-    m_world->GetStats().RemoveThreshold();
+    NotifyListeners(genotype, BG_EVENT_REMOVE_THRESHOLD);
     genotype->ClearThreshold();
   }
   

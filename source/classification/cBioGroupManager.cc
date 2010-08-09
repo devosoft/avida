@@ -25,3 +25,11 @@
 #include "cBioGroupManager.h"
 
 cBioGroupManager::~cBioGroupManager() { ; }
+
+
+void cBioGroupManager::NotifyListeners(cBioGroup* bg, eBGEventType type, cBioUnit* bu)
+{
+  for (int i = 0; i < m_listeners.GetSize(); i++) {
+    m_listeners[i]->NotifyBGEvent(bg, type, bu);
+  }
+}

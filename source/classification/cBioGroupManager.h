@@ -25,11 +25,19 @@
 #ifndef cBioGroupManager_h
 #define cBioGroupManager_h
 
+#ifndef cBioGroupListener_h
+#include "cBioGroupListener.h"
+#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
+#ifndef tArray_h
+#include "tArray.h"
+#endif
+
 
 class cBioGroup;
+class cBioGroupListener;
 class cBioUnit;
 class cStats;
 class cDataFile;
@@ -44,6 +52,7 @@ class cBioGroupManager
 private:
   int m_role_id;
   cString m_role;
+  tArray<cBioGroupListener*> m_listeners;
   
   
 public:
@@ -63,6 +72,12 @@ public:
 
   inline int GetRoleID() const { return m_role_id; }
   inline const cString& GetRole() const { return m_role; }
+  
+  inline void AddListener(cBioGroupListener* bgl) { m_listeners.Push(bgl); }
+  
+  
+protected:
+  void NotifyListeners(cBioGroup* bg, eBGEventType type, cBioUnit* bu = NULL);
   
   
 private:

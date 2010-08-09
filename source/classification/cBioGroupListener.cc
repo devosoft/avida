@@ -1,8 +1,8 @@
 /*
- *  cBioGroupListener.h
+ *  cBioGroupListener.cc
  *  Avida
  *
- *  Created by David Bryson on 5/26/10.
+ *  Created by David on 8/9/10.
  *  Copyright 2010 Michigan State University. All rights reserved.
  *
  *
@@ -22,23 +22,7 @@
  *
  */
 
-#ifndef cBioGroupListener_h
-#define cBioGroupListener_h
+#include "cBioGroupListener.h"
 
-enum eBGEventType {
-  BG_EVENT_ADD_THRESHOLD,
-  BG_EVENT_REMOVE_THRESHOLD
-};
+cBioGroupListener::~cBioGroupListener() { ; }
 
-class cBioGroup;
-class cBioUnit;
-
-class cBioGroupListener
-{
-public:
-  virtual ~cBioGroupListener() = 0;
-  
-  virtual void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu) = 0;
-};
-
-#endif
