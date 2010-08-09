@@ -3599,7 +3599,7 @@ double cTaskLib::Task_RoyalRoad(cTaskContext& ctx) const
 	// block size
 	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
 	int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-	int block_size = floor(length / block_count);
+	int block_size = floor(double(length) / double(block_count));
 	int block_reward; 
 	int current_spot;
 	double total_reward = 0.0;
@@ -3643,7 +3643,7 @@ double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 	// block size
 	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
 	int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-	int block_size = floor(length / block_count);
+	int block_size = floor(double(length) / double(block_count));
 	int block_correct;
 	int num_b_blocks = 0;
 	int current_spot;
