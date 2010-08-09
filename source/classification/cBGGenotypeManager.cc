@@ -234,6 +234,13 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     m_active_sz[found->GetNumUnits()].Push(found);
     m_world->GetStats().AddGenotype();
     m_active_count++;
+    if (found->GetNumUnits() > m_best) {
+      m_best = found->GetNumUnits();
+      found->SetThreshold();
+      found->SetName(nameGenotype(found->GetMetaGenome().GetGenome().GetSize()));
+      
+      // @TODO - handle threshold triggers
+    }
   }
   
   return found;
@@ -263,7 +270,7 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   
   if (!genotype->IsThreshold() && (new_size >= m_world->GetConfig().THRESHOLD.Get() || genotype == getBest())) {
     genotype->SetThreshold();
-    genotype->SetName(nameGenotype(new_size));
+    genotype->SetName(nameGenotype(genotype->GetMetaGenome().GetGenome().GetSize()));
     
     // @TODO - handle threshold triggers
   }
@@ -400,7 +407,7 @@ cBioGroup* cBGGenotypeManager::cGenotypeIterator::Get() { return m_it->Get(); }
 cBioGroup* cBGGenotypeManager::cGenotypeIterator::Next()
 {
   if (!m_it->Next()) {
-    for (m_sz_i--; (m_sz_i); m_sz_i--) {
+    for (m_sz_i--; m_sz_i > 0; m_sz_i--) {
       if (m_bgm->m_active_sz[m_sz_i].GetSize()) {
         delete m_it;
         m_it = new tListIterator<cBGGenotype>(m_bgm->m_active_sz[m_sz_i]);

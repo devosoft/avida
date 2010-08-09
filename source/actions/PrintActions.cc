@@ -497,11 +497,13 @@ public:
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     cBioGroup* bg = it->Next();
-    cString filename(m_filename);
-    if (filename == "") filename.Set("archive/%s.org", (const char*)bg->GetProperty("name").AsString());
-    cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-    testcpu->PrintGenome(ctx, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome(), filename, m_world->GetStats().GetUpdate());
-    delete testcpu;
+    if (bg) {
+      cString filename(m_filename);
+      if (filename == "") filename.Set("archive/%s.org", (const char*)bg->GetProperty("name").AsString());
+      cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+      testcpu->PrintGenome(ctx, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome(), filename, m_world->GetStats().GetUpdate());
+      delete testcpu;
+    }
   }
 };
 
