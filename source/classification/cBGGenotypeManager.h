@@ -138,7 +138,7 @@ inline void cBGGenotypeManager::resizeActiveList(int size)
 
 inline cBGGenotype* cBGGenotypeManager::getBest()
 {
-  return (m_best) ? m_active_sz[m_best].GetLast() : NULL;
+  return (m_best) ? m_active_sz[m_best].GetFirst() : NULL;
 }
 
 

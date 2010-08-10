@@ -232,7 +232,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
     m_active_hash[list_num].Push(found);
     resizeActiveList(found->GetNumUnits());
-    m_active_sz[found->GetNumUnits()].Push(found);
+    m_active_sz[found->GetNumUnits()].PushRear(found);
     m_world->GetStats().AddGenotype();
     m_active_count++;
     if (found->GetNumUnits() > m_best) {
@@ -251,9 +251,11 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
 {
   // Remove from old size list
   m_active_sz[old_size].Remove(genotype);
+  if (m_coalescent == genotype) m_coalescent = NULL;
 
   // Handle best genotype pointer
-  if (old_size == m_best && m_active_sz[old_size].GetSize() == 0) {
+  bool was_best = (old_size == m_best);
+  if (was_best && m_active_sz[old_size].GetSize() == 0) {
     for (m_best--; m_best > 0; m_best--) if (m_active_sz[m_best].GetSize()) break;
   }
   
@@ -265,8 +267,13 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   
   // Add to new size list
   resizeActiveList(new_size);
-  m_active_sz[new_size].Push(genotype);
-  if (new_size > m_best) m_best = new_size;
+  if (was_best && m_best == new_size) {
+    // Special case to keep the current best genotype as best when shrinking to the same size as other genotypes
+    m_active_sz[new_size].Push(genotype);
+  } else {
+    m_active_sz[new_size].PushRear(genotype);
+    if (new_size > m_best) m_best = new_size;
+  }
   
   if (!genotype->IsThreshold() && (new_size >= m_world->GetConfig().THRESHOLD.Get() || genotype == getBest())) {
     genotype->SetThreshold();
@@ -364,7 +371,7 @@ void cBGGenotypeManager::updateCoalescent()
   
   if (m_best == 0) {
     m_coalescent = NULL;
-    // m_world->GetStats().SetCoalescentGenotypeDepth(-1);
+    m_world->GetStats().SetCoalescentGenotypeDepth(-1);
     return;
   }
   
@@ -381,7 +388,7 @@ void cBGGenotypeManager::updateCoalescent()
   }
   
   m_coalescent = found_gen;
-  // m_world->GetStats().SetCoalescentGenotypeDepth(m_coalescent->GetDepth());
+  m_world->GetStats().SetCoalescentGenotypeDepth(m_coalescent->GetDepth());
 }
 
 void cBGGenotypeManager::buildDataCommandManager() const
@@ -409,6 +416,7 @@ cBioGroup* cBGGenotypeManager::cGenotypeIterator::Next()
       if (m_bgm->m_active_sz[m_sz_i].GetSize()) {
         delete m_it;
         m_it = new tListIterator<cBGGenotype>(m_bgm->m_active_sz[m_sz_i]);
+        m_it->Next();
         break;
       }
     }

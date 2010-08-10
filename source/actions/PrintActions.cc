@@ -3075,8 +3075,42 @@ class cActionPrintNumOrgsInDeme : public cAction
   };
 
 
+
+class cActionPrintDebug : public cAction
+{
+public:
+  cActionPrintDebug(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cDataFile & df = m_world->GetDataFile("genotype_id_list.dat");
+    df.WriteComment("Ordered Genotype List");
+    
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    
+    cString foo;
+    tAutoRelease<tIterator<cBioGroup> > it;
+    it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      foo += cStringUtil::Stringf("%d(%d),", bg->GetID(), bg->GetNumUnits());      
+    }
+    df.Write(foo, "IDs");
+    
+    df.Endl();
+  }
+};
+
+
+
+
 void RegisterPrintActions(cActionLibrary* action_lib)
 {
+  action_lib->Register<cActionPrintDebug>("PrintDebug");
+
+  
   // Stats Out Files
   action_lib->Register<cActionPrintAverageData>("PrintAverageData");
   action_lib->Register<cActionPrintDemeAverageData>("PrintDemeAverageData");
