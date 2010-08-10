@@ -124,6 +124,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   
   stats.SetDomMerit(dom_genotype->GetMerit());
   stats.SetDomGestation(dom_genotype->GetGestationTime());
+  stats.SetDomReproRate(dom_genotype->GetReproRate());
   stats.SetDomFitness(dom_genotype->GetFitness());
   stats.SetDomCopiedSize(dom_genotype->GetCopiedSize());
   stats.SetDomExeSize(dom_genotype->GetExecutedSize());
@@ -132,10 +133,10 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetDomID(dom_genotype->GetID());
   stats.SetDomName(dom_genotype->GetName());
   
-  stats.SetDomBirths(dom_genotype->GetThisBirths());
-  stats.SetDomBreedTrue(dom_genotype->GetThisBreedTrue());
-  stats.SetDomBreedIn(dom_genotype->GetThisBreedIn());
-  stats.SetDomBreedOut(dom_genotype->GetThisBreedOut());
+  stats.SetDomBirths(dom_genotype->GetLastBirths());
+  stats.SetDomBreedTrue(dom_genotype->GetLastBreedTrue());
+  stats.SetDomBreedIn(dom_genotype->GetLastBreedIn());
+  stats.SetDomBreedOut(dom_genotype->GetLastBreedOut());
   
   stats.SetDomAbundance(dom_genotype->GetNumUnits());
   stats.SetDomGeneDepth(dom_genotype->GetDepth());

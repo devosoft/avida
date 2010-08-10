@@ -144,6 +144,7 @@ void cBGGenotype::HandleBioUnitGestation(cBioUnit* bu)
   m_copied_size.Add(phenotype.GetCopiedSize());
   m_exe_size.Add(phenotype.GetExecutedSize());
   m_gestation_time.Add(phenotype.GetGestationTime());
+  m_repro_rate.Add(1.0 / phenotype.GetGestationTime());
   m_merit.Add(phenotype.GetMerit().GetDouble());
   m_fitness.Add(phenotype.GetFitness());
 }

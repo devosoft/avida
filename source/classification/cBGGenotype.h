@@ -83,6 +83,7 @@ private:
   cDoubleSum m_copied_size;
   cDoubleSum m_exe_size;
   cDoubleSum m_gestation_time;
+  cDoubleSum m_repro_rate;
   cDoubleSum m_merit;
   cDoubleSum m_fitness;
     
@@ -137,6 +138,11 @@ public:
   inline const tArray<cBGGenotype*> GetParents() const { return m_parents; }
   
 
+  inline int GetLastBirths() const { return m_births.GetLast(); }
+  inline int GetLastBreedIn() const { return m_breed_in.GetLast(); }
+  inline int GetLastBreedTrue() const { return m_breed_true.GetLast(); }
+  inline int GetLastBreedOut() const { return m_breed_out.GetLast(); }
+  
   inline int GetThisBirths() const { return m_births.GetCur(); }
   inline int GetThisBreedIn() const { return m_breed_in.GetCur(); }
   inline int GetThisBreedTrue() const { return m_breed_true.GetCur(); }
@@ -145,6 +151,7 @@ public:
   inline double GetCopiedSize() const { return m_copied_size.Average(); }
   inline double GetExecutedSize() const { return m_exe_size.Average(); }
   inline double GetGestationTime() const { return m_gestation_time.Average(); }
+  inline double GetReproRate() const { return m_repro_rate.Average(); }
   inline double GetMerit() const { return m_merit.Average(); }
   inline double GetFitness() const { return m_fitness.Average(); }
   

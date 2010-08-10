@@ -410,6 +410,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     
+    child_array[i]->SetLineageLabel(parent_organism->GetLineageLabel());
     
     //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
     child_array[i]->SetCCladeLabel(parent_organism->GetCCladeLabel());
@@ -4145,15 +4146,17 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   ProcessUpdateCellActions(ctx);
   
   cStats& stats = m_world->GetStats();
+  
+  
   // Reset the Genebank to prepare it for stat collection.
   m_world->GetClassificationManager().UpdateReset();
   
   stats.SetNumCreatures(GetNumOrganisms());
 
-  m_world->GetClassificationManager().UpdateStats(stats);
-  
   UpdateDemeStats();
   UpdateOrganismStats();
+  
+  m_world->GetClassificationManager().UpdateStats(stats);
   
   // Have stats calculate anything it now can...
   stats.CalcEnergy();
@@ -4430,6 +4433,8 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
           }
         }
         
+        new_organism->SetLineageLabel(lineage_label);
+        
         // Prep the cell..
         if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST &&
             cell_array[cell_id].IsOccupied() == true) {
@@ -4523,7 +4528,7 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
   if (merit > 0) phenotype.SetMerit(cMerit(merit));
   AdjustSchedule(GetCell(cell_id), phenotype.GetMerit());
   
-  // @TODO - handle lineage setup?
+  cell_array[cell_id].GetOrganism()->SetLineageLabel(lineage_label);
   
   if (GetNumDemes() > 1) {
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
