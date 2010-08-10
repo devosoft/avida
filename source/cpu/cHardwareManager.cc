@@ -91,7 +91,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
 {
   assert(org != NULL);
 	
-  int inst_set_id = (is == NULL) ? 0 : -1;
+  int inst_set_id = (is == NULL) ? mg.GetInstSetID() : -1;
   cInstSet* inst_set = (is == NULL) ? m_inst_set : is;
   
   cHardwareBase* hw = 0;
