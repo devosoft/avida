@@ -367,7 +367,7 @@ public:
   CONFIG_ADD_VAR(MODULE_NUM, int, 0, "number of modules in the genome");
   CONFIG_ADD_VAR(CONT_REC_REGS, int, 1, "are (modular) recombination regions continuous");
   CONFIG_ADD_VAR(CORESPOND_REC_REGS, int, 1, "are (modular) recombination regions swapped randomly\n or with corresponding positions?");
-  CONFIG_ADD_VAR(TWO_FOLD_COST_SEX, int, 0, "1 = only one recombined offspring is born.\n2 = both offspring are born");
+  CONFIG_ADD_VAR(TWO_FOLD_COST_SEX, int, 0, "0 = Both offspring are born (no two-fold cost)\n1 = only one recombined offspring is born.");
   CONFIG_ADD_VAR(SAME_LENGTH_SEX, int, 0, "0 = recombine with any genome\n1 = only recombine w/ same length");
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
   CONFIG_ADD_VAR(LEGACY_GRID_LOCAL_SELECTION, bool, 0, "Enable legacy grid local mate selection (ignores population structure)");
