@@ -271,6 +271,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
 
 void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)
 {
+  m_active = true;
   m_breed_in.Inc();
   m_total_organisms++;
   m_num_organisms++;

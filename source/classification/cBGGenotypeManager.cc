@@ -213,6 +213,27 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
         }
       }
     }
+    
+    if (!found) {
+      tListIterator<cBGGenotype> list_it(m_historic);
+      while (list_it.Next() != NULL) {
+        if (list_it.Get()->GetID() == gid) {
+          found = list_it.Get();
+          found->NotifyNewBioUnit(bu);
+          list_it.Remove();
+          m_active_hash[hashGenome(found->GetMetaGenome().GetGenome())].Push(found);
+          m_active_sz[found->GetNumUnits()].PushRear(found);
+          m_world->GetStats().AddGenotype();
+          m_active_count++;
+          if (found->GetNumUnits() > m_best) {
+            m_best = found->GetNumUnits();
+            found->SetThreshold();
+            found->SetName(nameGenotype(found->GetMetaGenome().GetGenome().GetSize()));
+            NotifyListeners(found, BG_EVENT_ADD_THRESHOLD);
+          }          
+        }
+      }
+    }
   } 
   
   // No hints or unable to locate hinted genome, search for a matching genotype
