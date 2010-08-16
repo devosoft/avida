@@ -236,6 +236,8 @@
 		7090F71910E16CC400ECFBA1 /* cBGSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F71710E16CC400ECFBA1 /* cBGSpecies.cc */; };
 		7090F72F10E1731900ECFBA1 /* cBGSpeciesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F72D10E1731900ECFBA1 /* cBGSpeciesManager.h */; };
 		7090F73010E1731900ECFBA1 /* cBGSpeciesManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F72E10E1731900ECFBA1 /* cBGSpeciesManager.cc */; };
+		7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = 7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */; };
+		7099D6021215BB9500EB3E46 /* cGenomeTestMetrics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099D6001215BB9500EB3E46 /* cGenomeTestMetrics.cc */; };
 		709A1EEB0EB6C42D006090AF /* cOrgMovementPredicate.h in Headers */ = {isa = PBXBuildFile; fileRef = 709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */; };
 		709A1EEC0EB6C42D006090AF /* cResourceHistory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */; };
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
@@ -726,6 +728,8 @@
 		70920C6A0A9CCE2C00757CDB /* svn.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = svn.html; sourceTree = "<group>"; };
 		7093DB4009D6F50300DE7FEB /* tSmartArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSmartArray.h; sourceTree = "<group>"; };
 		7099D5E712062D6300EB3E46 /* cBioGroupListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBioGroupListener.h; sourceTree = "<group>"; };
+		7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGenomeTestMetrics.h; sourceTree = "<group>"; };
+		7099D6001215BB9500EB3E46 /* cGenomeTestMetrics.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenomeTestMetrics.cc; sourceTree = "<group>"; };
 		7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cEnvReqs.h; sourceTree = "<group>"; };
 		7099EF470B2FBC85001269F6 /* cAnalyzeScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeScreen.cc; sourceTree = "<group>"; };
 		7099EF480B2FBC85001269F6 /* cAnalyzeScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeScreen.h; sourceTree = "<group>"; };
@@ -1529,6 +1533,8 @@
 				7090F72E10E1731900ECFBA1 /* cBGSpeciesManager.cc */,
 				703178AC11AD711B00F81E21 /* cBioGroupData.h */,
 				7070E6BE12109C1D0056BE1E /* cBioGroupListener.cc */,
+				7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */,
+				7099D6001215BB9500EB3E46 /* cGenomeTestMetrics.cc */,
 			);
 			path = classification;
 			sourceTree = "<group>";
@@ -1956,6 +1962,7 @@
 				701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */,
 				701B356011E7744D00FEF49A /* tHashMap.h in Headers */,
 				7070E46D12104A660056BE1E /* cDemePlaceholderUnit.h in Headers */,
+				7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2339,6 +2346,7 @@
 				7034D0F111CBEA4300020AC4 /* cPhenPlastUtil.cc in Sources */,
 				701B343011E4CC1E00FEF49A /* cSexualAncestry.cc in Sources */,
 				7070E6BF12109C1D0056BE1E /* cBioGroupListener.cc in Sources */,
+				7099D6021215BB9500EB3E46 /* cGenomeTestMetrics.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
