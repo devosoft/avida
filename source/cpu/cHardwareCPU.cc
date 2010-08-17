@@ -255,6 +255,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("collect-no-env-remove", &cHardwareCPU::Inst_CollectNoEnvRemove, nInstFlag::STALL),
     tInstLibEntry<tMethod>("destroy", &cHardwareCPU::Inst_Destroy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("nop-collect", &cHardwareCPU::Inst_NopCollect),
+    tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -600,6 +601,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kill-cell-event", &cHardwareCPU::Inst_KillCellEvent, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kill-faced-cell-event", &cHardwareCPU::Inst_KillFacedCellEvent, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-cell-data-and-kill-event", &cHardwareCPU::Inst_CollectCellDataAndKillEvent, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-cell-data", &cHardwareCPU::Inst_ReadCellData),
+    tInstLibEntry<tMethod>("read-faced-cell-data", &cHardwareCPU::Inst_ReadFacedCellData, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("mark-cell-with-id", &cHardwareCPU::Inst_MarkCellWithID),
+    tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
+    
 		
 		// Synchronization
     tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
@@ -3947,15 +3953,14 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   int start_bin, end_bin, bin_used, spec_id;
   
   bool finite_resources_exist = FindModifiedResource(start_bin, end_bin, spec_id);
-  if(!finite_resources_exist) {return true;}
+  if (!finite_resources_exist) { return true; }
   
   // Add this specification
   m_organism->IncCollectSpecCount(spec_id);
   
-  if(start_bin == end_bin)  // resource completely specified
-  {bin_used = start_bin;}
-  else
-  {
+  if (start_bin == end_bin) { // resource completely specified
+    bin_used = start_bin;
+  } else {
     switch (m_world->GetConfig().MULTI_ABSORB_TYPE.Get())
     {
       case 0:
@@ -3976,6 +3981,15 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
     }
   }
   
+  DoActualCollect(ctx, bin_used, env_remove, internal_add, start_bin, end_bin);
+  
+  return true;
+}
+
+
+bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin)
+{
+ 
   // Set up res_change and max total
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
   tArray<double> res_change(res_count.GetSize());
@@ -4017,6 +4031,8 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   return true;
 }
 
+
+
 /* Takes resource(s) from the environment and adds them to the internal resource
  * bins of the organism.
  */
@@ -4047,6 +4063,16 @@ bool cHardwareCPU::Inst_NopCollect(cAvidaContext& ctx)
 {
   return DoCollect(ctx, false, false);
 }
+
+/* Takes resource(s) from the environment and adds them to the internal resource
+ * bins of the organism.
+ */
+bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
+{
+  return DoActualCollect(ctx, m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get(), true, true, 0, 0);
+}
+
+
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
  resources present are above the min level for that resource, execute the following
@@ -8474,6 +8500,41 @@ bool cHardwareCPU::Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx) {
   m_organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
   return true;
 }
+
+
+bool cHardwareCPU::Inst_ReadCellData(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetCellData();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ReadFacedCellData(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetFacedCellData();
+  return true;
+}
+
+bool cHardwareCPU::Inst_MarkCellWithID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->SetCellData(m_organism->GetID());
+  return true;
+}
+
+bool cHardwareCPU::Inst_GetID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_CX);
+  GetRegister(out_reg) = m_organism->GetID();
+  return true;
+}
+
+
+
 
 
 /*! Called when the organism that owns this CPU has received a flash from a neighbor. */

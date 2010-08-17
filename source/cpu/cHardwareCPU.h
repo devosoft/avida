@@ -532,10 +532,12 @@ private:
   // Resources
   bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin);
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
   bool Inst_Destroy(cAvidaContext& ctx);
   bool Inst_NopCollect(cAvidaContext& ctx);  
+  bool Inst_CollectSpecific(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 
   // Donation
@@ -898,6 +900,11 @@ public:
 	bool Inst_KillCellEvent(cAvidaContext& ctx);
   bool Inst_KillFacedCellEvent(cAvidaContext& ctx);
   bool Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx);
+  bool Inst_ReadCellData(cAvidaContext& ctx);
+  bool Inst_ReadFacedCellData(cAvidaContext& ctx);
+  bool Inst_MarkCellWithID(cAvidaContext& ctx);
+  bool Inst_GetID(cAvidaContext& ctx);
+  
 	
 private:
 	std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.
