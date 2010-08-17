@@ -934,7 +934,6 @@ void cPopulationInterface::ReceiveHGTDonation(const cGenome& fragment) {
 
 void cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
 {
-  m_world->GetPopulation().SwapCells(src_id, dest_id);
   m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
 }
 

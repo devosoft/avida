@@ -4635,7 +4635,6 @@ class cActionMigrateDemes : public cAction
             
             if( (src_cellid != -1) && (dest_cellid != -1) ) {
             
-              m_world->GetPopulation().SwapCells(src_cellid, dest_cellid);
               m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid);
               
               deme.DecOrgCount();

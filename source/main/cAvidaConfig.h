@@ -616,6 +616,11 @@ public:
   CONFIG_ADD_VAR(BIOMIMETIC_MOVEMENT_FACTOR, double, 1.0, "Scale merit bonus due to movement (m<1.0 applies a cost)");
   CONFIG_ADD_VAR(BIOMIMETIC_EVAL_ON_MOVEMENT, int, 0, "Force task evaluation on each movement step");
   CONFIG_ADD_VAR(BIOMIMETIC_K, int, 0, "Carrying capacity in number of organisms");
+  
+  CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
+  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal?");
+  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_SELECTION_TYPE, int, 0, "0 = 50% chance\n1 = normal distribution based on age");
+  
 
   // BDC: Additions for pheromones
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");

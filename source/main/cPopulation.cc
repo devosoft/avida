@@ -693,6 +693,32 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
 {
   cPopulationCell& src_cell = GetCell(src_cell_id);
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
+
+  if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
+    bool kill_source = true;
+    switch (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get()) {
+      case 0: // 50% chance, no modifiers
+      default:
+        kill_source = ctx.GetRandom().P(0.5);
+        break;
+        
+      case 1: // normal distribution based on age
+        // @TODO - implement normal distribution movement collision selection
+        break;
+    }
+    
+    if (kill_source) {
+      KillOrganism(src_cell);
+
+      // Killing the moving organism means that we shouldn't actually do the swap, so return
+      return;
+    }
+    
+    KillOrganism(dest_cell);
+  }
+  
+  SwapCells(src_cell_id, dest_cell_id);
+  
   
   // Declarations
   int actualNeighborhoodSize, fromFacing, destFacing, newFacing, success;
@@ -734,24 +760,6 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       break;
     }
   }
-  // @DMB this doesn't compile properly -- #ifdef DEBUG
-#if 0
-  if (!success) {
-    sID = src_cell.GetID();
-    dID = dest_cell.GetID();
-    src_cell.GetPosition(xx1,yy1);
-    dest_cell.GetPosition(xx2,yy2);
-    //Conditional for examining only neighbor move without swap in facing
-    //if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
-    cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set src_cell facing to " << newFacing << endl;
-    for (int j=0; j < actualNeighborhoodSize; j++) {
-      src_cell.ConnectionList().CircNext();
-      src_cell.GetCellFaced().GetPosition(xx2,yy2);
-      cout << "connlist for " << sID << ": facing " << src_cell.GetFacing() << " -> (" << xx2 << "," << yy2 << ")" << endl;
-    }
-    //}
-  }
-#endif 
   
   // Set facing in destinatiion cell
   success = 0;
@@ -766,19 +774,6 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       break;
     }
   }
-  // @DMB this doesn't compile properly -- #ifdef DEBUG
-#if 0
-  if (!success) {
-    sID = src_cell.GetID();
-    dID = dest_cell.GetID();
-    src_cell.GetPosition(xx1,yy1);
-    dest_cell.GetPosition(xx2,yy2);
-    if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
-      cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set dest_cell facing to " << newFacing << endl;
-    }
-  }
-#endif
-  
 }
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
