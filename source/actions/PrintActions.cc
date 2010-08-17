@@ -534,19 +534,6 @@ public:
   }
 };
 
-// This is a generic place for Developers to hook into an action for printing out debug information
-class cActionPrintDebug : public cAction
-{
-public:
-  cActionPrintDebug(cWorld* world, const cString& args) : cAction(world, args) { ; }
-  static const cString GetDescription() { return "No Arguments"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-    std::cout << "Genotype Count: " << m_world->GetClassificationManager().GetGenotypeCount() << std::endl;
-  }
-};
-
 
 /*
  This is a new version of "detail_pop" or "historic_dump".  It allows you to
@@ -3199,6 +3186,18 @@ class cActionPrintNumOrgsInDeme : public cAction
       df.Endl();
     }
   };
+
+class cActionPrintDebug : public cAction
+{
+public:
+  cActionPrintDebug(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+  }
+};
 
 
 void RegisterPrintActions(cActionLibrary* action_lib)
