@@ -3859,9 +3859,7 @@ class cActionSwapCells : public cAction
 				m_world->GetDriver().NotifyWarning("SwapCells cell IDs identical");
 			}
 			
-			cPopulationCell& cell1 = m_world->GetPopulation().GetCell(id1);
-			cPopulationCell& cell2 = m_world->GetPopulation().GetCell(id2);
-			m_world->GetPopulation().SwapCells(cell1, cell2);
+			m_world->GetPopulation().SwapCells(id1, id2);
 		}
 	};
 
@@ -4637,8 +4635,8 @@ class cActionMigrateDemes : public cAction
             
             if( (src_cellid != -1) && (dest_cellid != -1) ) {
             
-              m_world->GetPopulation().SwapCells(deme.GetCell(src_cellid), target_deme.GetCell(dest_cellid));
-              m_world->GetPopulation().MoveOrganisms(ctx, deme.GetCell(src_cellid), target_deme.GetCell(dest_cellid));
+              m_world->GetPopulation().SwapCells(src_cellid, dest_cellid);
+              m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid);
               
               deme.DecOrgCount();
               target_deme.IncOrgCount();

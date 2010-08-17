@@ -243,11 +243,13 @@ public:
   
   int GetCellData() { return m_interface->GetCellData(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
+  int GetFacedCellData() { return m_interface->GetFacedCellData(); }
   
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }
   int GetNeighborhoodSize() { return m_interface->GetNumNeighbors(); }
   int GetFacing() { assert(m_interface); return m_interface->GetFacing(); }  // Returns the facing of this organism.
+  int GetFacedCellID() { assert(m_interface); return m_interface->GetFacedCellID(); }  // Returns the facing of this organism.
   int GetNeighborCellContents() const { return m_interface->GetNeighborCellContents(); }
   void Rotate(int direction) { m_interface->Rotate(direction); }
   

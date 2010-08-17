@@ -933,6 +933,61 @@ std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
 void cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
+  
+  /*********************/
+  // TEMP.  Remove once movement tasks are implemented.
+  if (GetCellData() < GetFacedCellData()) { // move up gradient
+    SetGradientMovement(1.0);
+  } else if(GetCellData() == GetFacedCellData()) {
+    SetGradientMovement(0.0);
+  } else { // move down gradient
+    SetGradientMovement(-1.0);    
+  }
+  /*********************/    
+  
+  int fromcellID = GetCellID();
+  int destcellID = GetFacedCellID();
+  
+  // Actually perform the move
+  m_interface->Move(ctx, fromcellID, destcellID);
+  
+  // updates movement predicates
+  m_world->GetStats().Move(*this);
+  
+  // Pheromone drop stuff
+  double pher_amount = 0; // this is used in the logging
+  int drop_mode = -1;
+
+  // If organism is dropping pheromones, mark the appropriate cell(s)
+  if (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1 && GetPheromoneStatus() == true) {
+    pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
+    drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
+    
+    cDeme* deme = GetDeme();
+    
+    if (drop_mode == 0) {
+      deme->AddPheromone(fromcellID, pher_amount / 2);
+      deme->AddPheromone(destcellID, pher_amount / 2);
+    } else if(drop_mode == 1) {
+      deme->AddPheromone(fromcellID, pher_amount);
+    } else if(drop_mode == 2) {
+      deme->AddPheromone(destcellID, pher_amount);
+    }
+  } // End laying pheromone
+  
+  // Write some logging information if LOG_PHEROMONE is set.  This is done
+  // out here so that non-pheromone moves are recorded.
+  if (m_world->GetConfig().LOG_PHEROMONE.Get() == 1 &&
+      m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) {
+    cDataFile& df = m_world->GetDataFile("movelog.dat");
+    
+    int rel_srcid = GetDeme()->GetRelativeCellID(fromcellID);
+    int rel_destid = GetDeme()->GetRelativeCellID(destcellID);
+    
+    cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,5",  m_world->GetStats().GetUpdate(), GetID(), GetDeme()->GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
+    df.WriteRaw(UpdateStr);
+  }
+  
   DoOutput(ctx);
   
   if (m_world->GetConfig().ACTIVE_MESSAGES_ENABLED.Get() > 0) {

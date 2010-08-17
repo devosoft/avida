@@ -689,8 +689,11 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
 // movement that cannot be directly handled in cHardwareCPU.cc
-void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, cPopulationCell& dest_cell)
+void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id)
 {
+  cPopulationCell& src_cell = GetCell(src_cell_id);
+  cPopulationCell& dest_cell = GetCell(dest_cell_id);
+  
   // Declarations
   int actualNeighborhoodSize, fromFacing, destFacing, newFacing, success;
 #ifdef DEBBUG
@@ -983,8 +986,11 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
   return receive_value;
 }
 
-void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
+void cPopulation::SwapCells(int cell_id1, int cell_id2)
 {
+  cPopulationCell& cell1 = GetCell(cell_id1);
+  cPopulationCell& cell2 = GetCell(cell_id2);
+  
   // Sanity checks: Don't process if the cells are the same and 
   // don't bother trying to move when given a cell that isn't there
   if ((&cell1 == NULL) || (&cell2 == NULL)) return;

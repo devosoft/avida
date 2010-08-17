@@ -80,6 +80,7 @@ public:
   
   int GetCellData();
   void SetCellData(const int newData);
+  int GetFacedCellData();
 
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }
@@ -94,6 +95,7 @@ public:
   int GetNumNeighbors();
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetFacing(); // Returns the facing of this organism.
+  int GetFacedCellID();
   int GetNeighborCellContents();
   void Rotate(int direction = 1);
   void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
@@ -139,6 +141,9 @@ public:
 	void CreateLinkByXY(int x, int y, double weight=1.0);
 	//! Link this organism's cell to the cell with index idx.
 	void CreateLinkByIndex(int idx, double weight=1.0);
+
+  void Move(cAvidaContext& ctx, int src_id, int dest_id);
+
 
 protected:
 	//! Internal-use method to consolidate message-sending code.

@@ -26,7 +26,7 @@
 #ifndef defs_h
 #define defs_h
 
-#define VERSION "2.9.0"
+#define VERSION "2.10.0"
 #define VERSION_TAG "Jedi Master"
 
 

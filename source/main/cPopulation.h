@@ -184,13 +184,13 @@ public:
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
-  void MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, cPopulationCell& dest_cell);
+  void MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id);
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, int distance=0);
   void AddSellValue(const int data, const int label, const int sell_price, const int org_id, const int cell_id);
   int BuyValue(const int label, const int buy_price, const int cell_id);
-  void SwapCells(cPopulationCell & cell1, cPopulationCell & cell2);
+  void SwapCells(int cell_id1, int cell_id2);
 
   // Deme-related methods
   //! Compete all demes with each other based on the given competition type.
