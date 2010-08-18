@@ -26,8 +26,8 @@
 #ifndef defs_h
 #define defs_h
 
-#define VERSION "2.10.0"
-#define VERSION_TAG "Jedi Master"
+#define VERSION "2.11.0"
+#define VERSION_TAG "(TBA)"
 
 
 // -= Configurable Features
