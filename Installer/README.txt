@@ -1,7 +1,7 @@
-Avida 2.6
+Avida 2.10  http://avida.devosoft.org
 ----------------------------------------------------------------------
 Digital Evolution Laboratory at Michigan State University
-
+(http://devolab.msu.edu)
 
 
 Copyright 1999-2007 Michigan State University. All rights reserved.

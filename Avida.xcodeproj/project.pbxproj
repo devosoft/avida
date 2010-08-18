@@ -210,17 +210,13 @@
 		70447CA80F83DB5600E1BF72 /* cBirthMateSelectHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */; };
 		70447CAB0F83DBC100E1BF72 /* cBirthDemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 70447CA90F83DBC100E1BF72 /* cBirthDemeHandler.h */; };
 		70447CAC0F83DBC100E1BF72 /* cBirthDemeHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CAA0F83DBC100E1BF72 /* cBirthDemeHandler.cc */; };
-		7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3540A66A8F500640512 /* instset-smt.cfg */; };
 		7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
-		7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36E0A66AD7E00640512 /* default-smt.org */; };
 		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E6770D74C36F008B3CA0 /* AvidaScript.cc */; };
 		7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */; };
 		7050E7D70D7DC979008B3CA0 /* cDirectInterpretASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */; };
-		705B103C1073AEF1002242E6 /* default-gx.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10311073AC1F002242E6 /* default-gx.org */; };
 		705B103D1073AEF1002242E6 /* default-heads-sex.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10321073AC1F002242E6 /* default-heads-sex.org */; };
 		705B103E1073AEF1002242E6 /* default-heads.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10331073AC1F002242E6 /* default-heads.org */; };
-		705B103F1073AF05002242E6 /* instset-gx.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10341073AC1F002242E6 /* instset-gx.cfg */; };
 		705B10401073AF05002242E6 /* instset-heads-sex.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10351073AC1F002242E6 /* instset-heads-sex.cfg */; };
 		705B10411073AF05002242E6 /* instset-heads.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10361073AC1F002242E6 /* instset-heads.cfg */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
@@ -232,8 +228,6 @@
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
 		70A778390D69D5CA00735F1E /* cDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */; };
 		70AD4FA00F194F4D00AA50AC /* cGenotypeData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70AD4F9E0F194DD400AA50AC /* cGenotypeData.cc */; };
-		70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */; };
-		70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7590B7E431F00067486 /* experimental.org */; };
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70BB2A2B0E9FA12F008269D2 /* ASAvidaLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */; };
@@ -361,10 +355,8 @@
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
-				705B103F1073AF05002242E6 /* instset-gx.cfg in CopyFiles */,
 				705B10401073AF05002242E6 /* instset-heads-sex.cfg in CopyFiles */,
 				705B10411073AF05002242E6 /* instset-heads.cfg in CopyFiles */,
-				705B103C1073AEF1002242E6 /* default-gx.org in CopyFiles */,
 				705B103D1073AEF1002242E6 /* default-heads-sex.org in CopyFiles */,
 				705B103E1073AEF1002242E6 /* default-heads.org in CopyFiles */,
 				700E2996085A1F6000CF158A /* avida in CopyFiles */,
@@ -372,12 +364,8 @@
 				7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */,
 				7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */,
 				7039885009F00D080052ACE7 /* events.cfg in CopyFiles */,
-				7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */,
 				7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */,
-				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
 				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
-				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
-				70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,6 +506,53 @@
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
+		702A66E0121C73EE0014F776 /* components.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = components.help; sourceTree = "<group>"; };
+		702A66E1121C73EE0014F776 /* help.add.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.add.html; sourceTree = "<group>"; };
+		702A66E2121C73EE0014F776 /* help.Bitwise.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Bitwise.html; sourceTree = "<group>"; };
+		702A66E3121C73EE0014F776 /* help.Complement-Label.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Complement-Label.html"; sourceTree = "<group>"; };
+		702A66E4121C73EE0014F776 /* help.CPU-cycle.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.CPU-cycle.html"; sourceTree = "<group>"; };
+		702A66E5121C73EE0014F776 /* help.CPU.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.CPU.html; sourceTree = "<group>"; };
+		702A66E6121C73EE0014F776 /* help.dec.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.dec.html; sourceTree = "<group>"; };
+		702A66E7121C73EE0014F776 /* help.Genome.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Genome.html; sourceTree = "<group>"; };
+		702A66E8121C73EE0014F776 /* help.Genotype.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Genotype.html; sourceTree = "<group>"; };
+		702A66E9121C73EE0014F776 /* help.h-alloc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-alloc.html"; sourceTree = "<group>"; };
+		702A66EA121C73EE0014F776 /* help.h-copy.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-copy.html"; sourceTree = "<group>"; };
+		702A66EB121C73EE0014F776 /* help.h-divide.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-divide.html"; sourceTree = "<group>"; };
+		702A66EC121C73EE0014F776 /* help.h-search.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-search.html"; sourceTree = "<group>"; };
+		702A66ED121C73EE0014F776 /* help.Heads.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Heads.html; sourceTree = "<group>"; };
+		702A66EE121C73EE0014F776 /* help.if-label.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.if-label.html"; sourceTree = "<group>"; };
+		702A66EF121C73EE0014F776 /* help.if-less.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.if-less.html"; sourceTree = "<group>"; };
+		702A66F0121C73EE0014F776 /* help.if-n-equ.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.if-n-equ.html"; sourceTree = "<group>"; };
+		702A66F1121C73EE0014F776 /* help.inc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.inc.html; sourceTree = "<group>"; };
+		702A66F2121C73EE0014F776 /* help.Input-Output.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Input-Output.html"; sourceTree = "<group>"; };
+		702A66F3121C73EE0014F776 /* help.Instruction.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Instruction.html; sourceTree = "<group>"; };
+		702A66F4121C73EE0014F776 /* help.IO.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.IO.html; sourceTree = "<group>"; };
+		702A66F5121C73EE0014F776 /* help.jmp-head.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.jmp-head.html"; sourceTree = "<group>"; };
+		702A66F6121C73EE0014F776 /* help.Label.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Label.html; sourceTree = "<group>"; };
+		702A66F7121C73EE0014F776 /* help.Logic.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Logic.html; sourceTree = "<group>"; };
+		702A66F8121C73EE0014F776 /* help.Memory.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Memory.html; sourceTree = "<group>"; };
+		702A66F9121C73EE0014F776 /* help.mov-head.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.mov-head.html"; sourceTree = "<group>"; };
+		702A66FA121C73EE0014F776 /* help.Mutation.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Mutation.html; sourceTree = "<group>"; };
+		702A66FB121C73EE0014F776 /* help.nand.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.nand.html; sourceTree = "<group>"; };
+		702A66FC121C73EE0014F776 /* help.Nop-Head-Notation.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Nop-Head-Notation.html"; sourceTree = "<group>"; };
+		702A66FD121C73EE0014F776 /* help.nop-instructions.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.nop-instructions.html"; sourceTree = "<group>"; };
+		702A66FE121C73EE0014F776 /* help.Nop-Register-Notation.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Nop-Register-Notation.html"; sourceTree = "<group>"; };
+		702A66FF121C73EE0014F776 /* help.Organism.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Organism.html; sourceTree = "<group>"; };
+		702A6700121C73EE0014F776 /* help.pop.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.pop.html; sourceTree = "<group>"; };
+		702A6701121C73EE0014F776 /* help.Population.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Population.html; sourceTree = "<group>"; };
+		702A6702121C73EE0014F776 /* help.push.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.push.html; sourceTree = "<group>"; };
+		702A6703121C73EE0014F776 /* help.Registers.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Registers.html; sourceTree = "<group>"; };
+		702A6704121C73EE0014F776 /* help.set-flow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.set-flow.html"; sourceTree = "<group>"; };
+		702A6705121C73EE0014F776 /* help.shift-l.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.shift-l.html"; sourceTree = "<group>"; };
+		702A6706121C73EE0014F776 /* help.shift-r.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.shift-r.html"; sourceTree = "<group>"; };
+		702A6707121C73EE0014F776 /* help.Stack.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Stack.html; sourceTree = "<group>"; };
+		702A6708121C73EE0014F776 /* help.sub.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.sub.html; sourceTree = "<group>"; };
+		702A6709121C73EE0014F776 /* help.swap-stk.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.swap-stk.html"; sourceTree = "<group>"; };
+		702A670A121C73EE0014F776 /* help.swap.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.swap.html; sourceTree = "<group>"; };
+		702A670B121C73EE0014F776 /* help.Tasks.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Tasks.html; sourceTree = "<group>"; };
+		702A670C121C73EE0014F776 /* inst.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst.help; sourceTree = "<group>"; };
+		702A670D121C73EE0014F776 /* notations.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = notations.help; sourceTree = "<group>"; };
+		702A670E121C73EE0014F776 /* todo.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = todo.help; sourceTree = "<group>"; };
 		702D4EF508DA5328007BA469 /* cEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironment.h; sourceTree = "<group>"; };
 		702D4EF608DA5328007BA469 /* cPopulationInterface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationInterface.h; sourceTree = "<group>"; };
 		702D4EFC08DA5341007BA469 /* cEnvironment.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEnvironment.cc; sourceTree = "<group>"; };
@@ -1184,6 +1219,84 @@
 			path = "tcmalloc-1.4";
 			sourceTree = "<group>";
 		};
+		702A66DF121C73EE0014F776 /* glossary */ = {
+			isa = PBXGroup;
+			children = (
+				702A66E0121C73EE0014F776 /* components.help */,
+				702A66E1121C73EE0014F776 /* help.add.html */,
+				702A66E2121C73EE0014F776 /* help.Bitwise.html */,
+				702A66E3121C73EE0014F776 /* help.Complement-Label.html */,
+				702A66E4121C73EE0014F776 /* help.CPU-cycle.html */,
+				702A66E5121C73EE0014F776 /* help.CPU.html */,
+				702A66E6121C73EE0014F776 /* help.dec.html */,
+				702A66E7121C73EE0014F776 /* help.Genome.html */,
+				702A66E8121C73EE0014F776 /* help.Genotype.html */,
+				702A66E9121C73EE0014F776 /* help.h-alloc.html */,
+				702A66EA121C73EE0014F776 /* help.h-copy.html */,
+				702A66EB121C73EE0014F776 /* help.h-divide.html */,
+				702A66EC121C73EE0014F776 /* help.h-search.html */,
+				702A66ED121C73EE0014F776 /* help.Heads.html */,
+				702A66EE121C73EE0014F776 /* help.if-label.html */,
+				702A66EF121C73EE0014F776 /* help.if-less.html */,
+				702A66F0121C73EE0014F776 /* help.if-n-equ.html */,
+				702A66F1121C73EE0014F776 /* help.inc.html */,
+				702A66F2121C73EE0014F776 /* help.Input-Output.html */,
+				702A66F3121C73EE0014F776 /* help.Instruction.html */,
+				702A66F4121C73EE0014F776 /* help.IO.html */,
+				702A66F5121C73EE0014F776 /* help.jmp-head.html */,
+				702A66F6121C73EE0014F776 /* help.Label.html */,
+				702A66F7121C73EE0014F776 /* help.Logic.html */,
+				702A66F8121C73EE0014F776 /* help.Memory.html */,
+				702A66F9121C73EE0014F776 /* help.mov-head.html */,
+				702A66FA121C73EE0014F776 /* help.Mutation.html */,
+				702A66FB121C73EE0014F776 /* help.nand.html */,
+				702A66FC121C73EE0014F776 /* help.Nop-Head-Notation.html */,
+				702A66FD121C73EE0014F776 /* help.nop-instructions.html */,
+				702A66FE121C73EE0014F776 /* help.Nop-Register-Notation.html */,
+				702A66FF121C73EE0014F776 /* help.Organism.html */,
+				702A6700121C73EE0014F776 /* help.pop.html */,
+				702A6701121C73EE0014F776 /* help.Population.html */,
+				702A6702121C73EE0014F776 /* help.push.html */,
+				702A6703121C73EE0014F776 /* help.Registers.html */,
+				702A6704121C73EE0014F776 /* help.set-flow.html */,
+				702A6705121C73EE0014F776 /* help.shift-l.html */,
+				702A6706121C73EE0014F776 /* help.shift-r.html */,
+				702A6707121C73EE0014F776 /* help.Stack.html */,
+				702A6708121C73EE0014F776 /* help.sub.html */,
+				702A6709121C73EE0014F776 /* help.swap-stk.html */,
+				702A670A121C73EE0014F776 /* help.swap.html */,
+				702A670B121C73EE0014F776 /* help.Tasks.html */,
+				702A670C121C73EE0014F776 /* inst.help */,
+				702A670D121C73EE0014F776 /* notations.help */,
+				702A670E121C73EE0014F776 /* todo.help */,
+			);
+			path = glossary;
+			sourceTree = "<group>";
+		};
+		702A670F121C746A0014F776 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				705B10311073AC1F002242E6 /* default-gx.org */,
+				705B10321073AC1F002242E6 /* default-heads-sex.org */,
+				705B10331073AC1F002242E6 /* default-heads.org */,
+				705B10341073AC1F002242E6 /* instset-gx.cfg */,
+				705B10351073AC1F002242E6 /* instset-heads-sex.cfg */,
+				705B10361073AC1F002242E6 /* instset-heads.cfg */,
+				70B1A7590B7E431F00067486 /* experimental.org */,
+				70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */,
+				7049F36E0A66AD7E00640512 /* default-smt.org */,
+				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
+				707AF2D309EE8501001AEA89 /* analyze.cfg */,
+				707AF2D509EE8501001AEA89 /* avida.cfg */,
+				707AF2D709EE8501001AEA89 /* environment.cfg */,
+				707AF2D809EE8501001AEA89 /* events.cfg */,
+				7049F3540A66A8F500640512 /* instset-smt.cfg */,
+				7049F3550A66A8F500640512 /* instset-transsmt.cfg */,
+				707AF2DD09EE8501001AEA89 /* misc */,
+			);
+			name = config;
+			sourceTree = "<group>";
+		};
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
@@ -1248,23 +1361,7 @@
 		707AF2D209EE8501001AEA89 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				705B10311073AC1F002242E6 /* default-gx.org */,
-				705B10321073AC1F002242E6 /* default-heads-sex.org */,
-				705B10331073AC1F002242E6 /* default-heads.org */,
-				705B10341073AC1F002242E6 /* instset-gx.cfg */,
-				705B10351073AC1F002242E6 /* instset-heads-sex.cfg */,
-				705B10361073AC1F002242E6 /* instset-heads.cfg */,
-				70B1A7590B7E431F00067486 /* experimental.org */,
-				70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */,
-				7049F36E0A66AD7E00640512 /* default-smt.org */,
-				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
-				707AF2D309EE8501001AEA89 /* analyze.cfg */,
-				707AF2D509EE8501001AEA89 /* avida.cfg */,
-				707AF2D709EE8501001AEA89 /* environment.cfg */,
-				707AF2D809EE8501001AEA89 /* events.cfg */,
-				7049F3540A66A8F500640512 /* instset-smt.cfg */,
-				7049F3550A66A8F500640512 /* instset-transsmt.cfg */,
-				707AF2DD09EE8501001AEA89 /* misc */,
+				702A670F121C746A0014F776 /* config */,
 			);
 			name = Support;
 			path = support/config;
@@ -1304,6 +1401,7 @@
 		70920C1A0A9CCE2C00757CDB /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
+				702A66DF121C73EE0014F776 /* glossary */,
 				707415C70AA7E4100064A546 /* main.css */,
 				70A33CC00D878407008EF976 /* as_overview.html */,
 				70217EAE105AB75500F2789F /* avida_overview.html */,
