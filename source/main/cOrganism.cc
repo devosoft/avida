@@ -762,6 +762,15 @@ bool cOrganism::Divide_CheckViable()
     }
   }
   
+  // Test for required resource availability (must be stored in an internal resource bin)
+  const int required_resource = m_world->GetConfig().REQUIRED_RESOURCE.Get();
+  const double required_resource_level = m_world->GetConfig().REQUIRED_RESOURCE_LEVEL.Get();
+  if (required_resource != -1) {
+    const double resource_level = m_phenotype.GetCurRBinAvail(required_resource);
+    if ((required_resource_level > 0.0 && resource_level < required_resource_level) ||
+        (required_resource_level == 0.0 && resource_level == 0.0)) return false;
+  }
+  
   // Make sure the parent is fertile
   if ( m_phenotype.IsFertile() == false ) {
     Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, "Infertile organism");
@@ -781,7 +790,12 @@ bool cOrganism::ActivateDivide(cAvidaContext& ctx)
   // Test tasks one last time before actually dividing, pass true so 
   // know that should only test "divide" tasks here
   DoOutput(ctx, true);
-
+  
+  // Handle successful divide consumption of require resource
+  const int required_resource = m_world->GetConfig().REQUIRED_RESOURCE.Get();
+  const double required_resource_level = m_world->GetConfig().REQUIRED_RESOURCE_LEVEL.Get();
+  if (required_resource != -1 && required_resource_level > 0.0) AddToRBin(required_resource, -required_resource_level);
+  
   // Activate the child!  (Keep Last: may kill this organism!)
   return m_interface->Divide(ctx, this, m_offspring_genome);
 }
