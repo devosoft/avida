@@ -159,7 +159,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("set_C=A", &cHardwareCPU::Inst_CopyRegCA),
     tInstLibEntry<tMethod>("set_C=B", &cHardwareCPU::Inst_CopyRegCB),
     tInstLibEntry<tMethod>("reset", &cHardwareCPU::Inst_Reset),
-    //tInstLibEntry<tMethod>("load-val", &cHardwareCPU::Inst_LoadVal),
     
     tInstLibEntry<tMethod>("pop-A", &cHardwareCPU::Inst_PopA),
     tInstLibEntry<tMethod>("pop-B", &cHardwareCPU::Inst_PopB),
@@ -2643,13 +2642,6 @@ bool cHardwareCPU::Inst_Reset(cAvidaContext& ctx)
 	m_last_cell_data = std::make_pair(false, 0);
   return true;
 }
-
-/*bool cHardwareCPU::Inst_LoadVal(cAvidaContext& ctx)
- {
- const int reg_used = FindModifiedRegister(REG_BX);
- GetRegister(reg_used) = m_world->GetConfig().INST_LOAD_VALUE.Get();
- return true;
- }*/
 
 bool cHardwareCPU::Inst_ShiftR(cAvidaContext& ctx)
 {

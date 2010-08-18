@@ -41,34 +41,34 @@ using namespace std;
 
 
 cPhenotype::cPhenotype(cWorld* world)
-  : m_world(world)
-  , initialized(false)
-  , cur_task_count(m_world->GetEnvironment().GetNumTasks())
-  , cur_internal_task_count(m_world->GetEnvironment().GetNumTasks())
-  , eff_task_count(m_world->GetEnvironment().GetNumTasks())
-  , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
-  , cur_task_value(m_world->GetEnvironment().GetNumTasks())  
-  , cur_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
-  , cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
-  , cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
-  , cur_collect_spec_counts(m_world->GetNumResourceSpecs())
-  , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
-  , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
-  , cur_sense_count(m_world->GetStats().GetSenseSize())
-  , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
-  , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
-  , m_reaction_result(NULL)
-  , last_task_count(m_world->GetEnvironment().GetNumTasks())
-  , last_internal_task_count(m_world->GetEnvironment().GetNumTasks())
-  , last_task_quality(m_world->GetEnvironment().GetNumTasks())
-  , last_task_value(m_world->GetEnvironment().GetNumTasks())
-  , last_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
-  , last_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
-  , last_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
-  , last_collect_spec_counts()
-  , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
-  , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
-  , last_sense_count(m_world->GetStats().GetSenseSize())
+: m_world(world)
+, initialized(false)
+, cur_task_count(m_world->GetEnvironment().GetNumTasks())
+, cur_internal_task_count(m_world->GetEnvironment().GetNumTasks())
+, eff_task_count(m_world->GetEnvironment().GetNumTasks())
+, cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
+, cur_task_value(m_world->GetEnvironment().GetNumTasks())  
+, cur_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
+, cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
+, cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
+, cur_collect_spec_counts(m_world->GetNumResourceSpecs())
+, cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
+, cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
+, cur_sense_count(m_world->GetStats().GetSenseSize())
+, sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
+, cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
+, m_reaction_result(NULL)
+, last_task_count(m_world->GetEnvironment().GetNumTasks())
+, last_internal_task_count(m_world->GetEnvironment().GetNumTasks())
+, last_task_quality(m_world->GetEnvironment().GetNumTasks())
+, last_task_value(m_world->GetEnvironment().GetNumTasks())
+, last_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
+, last_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
+, last_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
+, last_collect_spec_counts()
+, last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
+, last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
+, last_sense_count(m_world->GetStats().GetSenseSize())
 {
 }
 
@@ -107,7 +107,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   copied_size              = in_phen.copied_size;          
   executed_size            = in_phen.executed_size;       
   gestation_time           = in_phen.gestation_time;       
-                  
+  
   gestation_start          = in_phen.gestation_start;     
   fitness                  = in_phen.fitness;           
   div_type                 = in_phen.div_type;          
@@ -133,7 +133,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   sensed_resources         = in_phen.sensed_resources;            
   cur_task_time            = in_phen.cur_task_time;   
   cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
-
+  
   // Dynamically allocated m_task_states requires special handling
   tList<cTaskState*> hash_values;
   tList<void*>       hash_keys;
@@ -169,7 +169,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   total_energy_donated     = in_phen.total_energy_donated;
   total_energy_received    = in_phen.total_energy_received;
   total_energy_applied     = in_phen.total_energy_applied;
-
+  
   // 4. Records from this organisms life...
   num_divides              = in_phen.num_divides;      
   generation               = in_phen.generation;        
@@ -251,7 +251,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   total_energy_donated    = in_phen.total_energy_donated;
   total_energy_received   = in_phen.total_energy_received;
   total_energy_applied    = in_phen.total_energy_applied;
-
+  
   // 6. Child information...
   copy_true               = in_phen.copy_true;       
   divide_sex              = in_phen.divide_sex;       
@@ -260,10 +260,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   child_fertile           = in_phen.child_fertile;  
   last_child_fertile      = in_phen.last_child_fertile; 
   child_copied_size       = in_phen.child_copied_size;
-
+  
   // 7. Permanent information...
   permanent_germline_propensity = in_phen.permanent_germline_propensity;
-         
+  
   return *this;
 }
 
@@ -312,7 +312,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
     executionRatio = 1.0;
   else 
     executionRatio = parent_phenotype.executionRatio;
-    
+  
   energy_store    = min(energy_store, m_world->GetConfig().ENERGY_CAP.Get());
   energy_tobe_applied = 0.0;
   energy_testament = 0.0;
@@ -326,12 +326,12 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   cpu_cycles_used = 0;
   fitness         = parent_phenotype.fitness;
   div_type        = parent_phenotype.div_type;
-
+  
   assert(genome_length > 0);
   assert(copied_size > 0);
   assert(gestation_time >= 0); //@JEB 0 valid for some fitness methods
   assert(div_type > 0);
-
+  
   // Initialize current values, as neeeded.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_energy_bonus = 0.0;
@@ -347,7 +347,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   // parent's resources have already been halved in DivideReset;
   // offspring gets that value too.
   for (int i = 0; i < cur_rbins_avail.GetSize(); i++)
-        cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
+    cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -355,14 +355,14 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   cur_sense_count.SetAll(0);  
   cur_task_time.SetAll(0.0);  // Added for time tracking; WRE 03-18-07
   for (int j = 0; j < sensed_resources.GetSize(); j++)
-	      sensed_resources[j] =  parent_phenotype.sensed_resources[j];
+    sensed_resources[j] =  parent_phenotype.sensed_resources[j];
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
-
+  
   // Copy last values from parent
   last_merit_base           = parent_phenotype.last_merit_base;
   last_bonus                = parent_phenotype.last_bonus;
@@ -383,7 +383,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   last_sense_count          = parent_phenotype.last_sense_count;
   last_fitness              = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   last_child_germline_propensity = parent_phenotype.last_child_germline_propensity;   // chance of child being a germline cell; @JEB
-
+  
   // Setup other miscellaneous values...
   num_divides     = 0;
   generation      = parent_phenotype.generation;
@@ -405,7 +405,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   num_shaded_gb_donations_last = parent_phenotype.num_shaded_gb_donations_last;
   num_donations_locus = 0;
   num_donations_locus_last = parent_phenotype.num_donations_locus_last;
-
+  
 	
   // Setup flags...
   is_injected   = false;
@@ -450,7 +450,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   is_receiver_shadedgb_last = parent_phenotype.is_receiver_shadedgb_last;	
   is_receiver_gb_same_locus = false;
   is_receiver_gb_same_locus_last = parent_phenotype.is_receiver_gb_same_locus;
-
+  
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
@@ -465,7 +465,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   parent_cross_num    = parent_phenotype.cross_num;
   to_die = false;
   to_delete = false;
-
+  
   is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;
@@ -474,7 +474,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   total_energy_donated = 0.0;
   total_energy_received = 0.0; 
   total_energy_applied = 0.0;
-
+  
   // Setup child info...
   copy_true          = false;
   divide_sex         = false;
@@ -483,10 +483,10 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   last_child_fertile = is_fertile;
   child_fertile      = true;
   child_copied_size  = 0;
-
+  
   // permanently set germline propensity of org (since DivideReset is called first, it is now in the "last" slot...)
   permanent_germline_propensity  = parent_phenotype.last_child_germline_propensity;
-
+  
   initialized = true;
 }
 
@@ -516,7 +516,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   gestation_start = 0;
   fitness         = 0;
   div_type	  = 1;
-
+  
   // Initialize current values, as neeeded.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cur_energy_bonus = 0.0;
@@ -543,7 +543,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
-
+  
   // New organism has no parent and so cannot use its last values; initialize as needed
   last_merit_base = genome_length;
   last_bonus      = 1;
@@ -563,7 +563,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_inst_count.SetAll(0);
   last_sense_count.SetAll(0);
   last_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
-
+  
   // Setup other miscellaneous values...
   num_divides     = 0;
   generation      = 0;
@@ -575,7 +575,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   life_fitness    = 0;
   exec_time_born  = 0;
   birth_update     = m_world->GetStats().GetUpdate();
-
+  
   num_thresh_gb_donations = 0;
   num_thresh_gb_donations_last = 0;
   num_quanta_thresh_gb_donations = 0;
@@ -609,7 +609,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_donor_shadedgb_last = false;
   is_donor_locus.SetAll(false);
   is_donor_locus_last.SetAll(false);
-
+  
   is_receiver   = false;
   is_receiver_last   = false;
   is_receiver_rand   = false;
@@ -628,7 +628,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_receiver_shadedgb_last   = false;	
   is_receiver_gb_same_locus = false;
   is_receiver_gb_same_locus_last = false;
-
+  
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = true;
@@ -648,7 +648,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   total_energy_donated = 0.0;
   total_energy_received = 0.0;
   total_energy_applied = 0.0;
-
+  
   // Setup child info...
   copy_true         = false;
   divide_sex        = false;
@@ -657,9 +657,9 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   child_fertile     = true;
   last_child_fertile = true;
   child_copied_size = 0;
-
+  
   permanent_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
-
+  
   initialized = true;
 }
 
@@ -667,12 +667,12 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 /**
  * This function is run whenever an organism executes a successful divide.
  **/
- 
- void cPhenotype::DivideReset(const cGenome & _genome)
+
+void cPhenotype::DivideReset(const cGenome & _genome)
 {
   assert(time_used >= 0);
   assert(initialized == true);
-
+  
   // Update these values as needed...
   int cur_merit_base = CalcSizeMerit();
   
@@ -695,12 +695,12 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   gestation_time  = time_used - gestation_start;
   gestation_start = time_used;
   fitness = CalcFitness( cur_merit_base, cur_bonus, gestation_time, cpu_cycles_used); 
-
+  
   // Lock in cur values as last values.
   last_merit_base           = cur_merit_base;
   last_bonus                = cur_bonus;
   last_cpu_cycles_used      = cpu_cycles_used;
-//TODO?  last_energy         = cur_energy_bonus;
+  //TODO?  last_energy         = cur_energy_bonus;
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
@@ -716,7 +716,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_inst_count           = cur_inst_count;
   last_sense_count          = cur_sense_count;
   last_child_germline_propensity = cur_child_germline_propensity;
-
+  
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
@@ -739,7 +739,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_sense_count.SetAll(0);
   cur_task_time.SetAll(0.0);
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
-
+  
   // Setup other miscellaneous values...
   num_divides++;
   (void) generation;
@@ -750,7 +750,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR Treating organism as sibling
   birth_update = m_world->GetStats().GetUpdate();   
-
+  
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
   num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
@@ -803,7 +803,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_receiver_shadedgb = false;	
   is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
   is_receiver_gb_same_locus = false;
-
+  
   (void) is_modifier;
   (void) is_modified;
   (void) is_fertile;
@@ -812,7 +812,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
-
+  
   // Reset child info...
   (void) copy_true;
   (void) divide_sex;
@@ -821,7 +821,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_child_fertile = child_fertile;
   child_fertile     = true;
   (void) child_copied_size;;
-
+  
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
@@ -830,7 +830,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
-
+  
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
   
   // Reset Task States
@@ -850,7 +850,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
 {
   assert(time_used > 0);
   assert(initialized == true);
-
+  
   // Update these values as needed...
   int cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
@@ -858,7 +858,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
     cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
-
+  
   genome_length   = _genome.GetSize();
   (void) copied_size;                            // Unchanged
   (void) executed_size;                          // Unchanged
@@ -866,7 +866,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   gestation_start = time_used;
   fitness         = CalcFitness(cur_merit_base, cur_bonus, gestation_time, cpu_cycles_used);
   (void) div_type; 				// Unchanged
-
+  
   // Lock in cur values as last values.
   last_merit_base           = cur_merit_base;
   last_bonus                = cur_bonus;
@@ -914,7 +914,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
-
+  
   // Setup other miscellaneous values...
   num_divides++;
   generation++;
@@ -925,7 +925,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR See DivideReset 
   birth_update  = m_world->GetStats().GetUpdate();
-
+  
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
   num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
@@ -959,7 +959,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   is_donor_shadedgb = false;
   is_donor_locus_last = is_donor_locus;
   is_donor_locus.SetAll(false);
-
+  
   is_receiver_last = is_receiver;
   is_receiver = false;
   is_receiver_rand = false;
@@ -978,7 +978,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   is_receiver_shadedgb = false;	
   is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
   is_receiver_gb_same_locus = false;
-
+  
   (void) is_modifier;
   (void) is_modified;
   (void) is_fertile;
@@ -987,7 +987,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   (void) parent_true;
   (void) parent_sex;
   (void) parent_cross_num;
-
+  
   // Reset child info...
   (void) copy_true;
   (void) divide_sex;
@@ -1017,12 +1017,12 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   energy_tobe_applied = 0.0;
   energy_testament = 0.0;
   energy_received_buffer = 0.0;
-
+  
   if(m_world->GetConfig().INHERIT_EXE_RATE.Get() == 0)
     executionRatio = 1.0;
   else 
     executionRatio = clone_phenotype.executionRatio;
-
+  
   genome_length   = clone_phenotype.genome_length;
   copied_size     = clone_phenotype.copied_size;
   // copied_size     = clone_phenotype.child_copied_size;
@@ -1031,12 +1031,12 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   gestation_start = 0;
   fitness         = clone_phenotype.fitness;
   div_type        = clone_phenotype.div_type;
-
+  
   assert(genome_length > 0);
   assert(copied_size > 0);
   assert(gestation_time >= 0); //@JEB 0 valid for some fitness methods
   assert(div_type > 0);
-
+  
   // Initialize current values, as neeeded.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
@@ -1054,14 +1054,14 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_sense_count.SetAll(0);  
   cur_task_time.SetAll(0.0);
   for (int j = 0; j < sensed_resources.GetSize(); j++)
-	      sensed_resources[j] =  clone_phenotype.sensed_resources[j];
+    sensed_resources[j] =  clone_phenotype.sensed_resources[j];
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
-
+  
   // Copy last values from parent
   last_merit_base          = clone_phenotype.last_merit_base;
   last_bonus               = clone_phenotype.last_bonus;
@@ -1079,7 +1079,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   last_sense_count         = clone_phenotype.last_sense_count;  
   last_fitness             = CalcFitness(last_merit_base, last_bonus, gestation_time, last_cpu_cycles_used);
   last_child_germline_propensity = clone_phenotype.last_child_germline_propensity;
-
+  
   // Setup other miscellaneous values...
   num_divides     = 0;
   generation      = clone_phenotype.generation;
@@ -1092,7 +1092,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   life_fitness    = fitness; 
   exec_time_born  = 0;
   birth_update    = m_world->GetStats().GetUpdate();
-
+  
   num_thresh_gb_donations_last = clone_phenotype.num_thresh_gb_donations_last;
   num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
   num_quanta_thresh_gb_donations_last = clone_phenotype.num_quanta_thresh_gb_donations_last;
@@ -1127,7 +1127,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_donor_shadedgb  = clone_phenotype.is_donor_shadedgb;
   is_donor_locus_last = clone_phenotype.is_donor_locus_last;
   is_donor_locus = clone_phenotype.is_donor_locus;
-
+  
   is_receiver = clone_phenotype.is_receiver;
   is_receiver_last = clone_phenotype.is_receiver_last;
   is_receiver_rand = clone_phenotype.is_receiver_rand;
@@ -1145,7 +1145,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_receiver_shadedgb = clone_phenotype.is_receiver_shadedgb;
   is_receiver_shadedgb_last = clone_phenotype.is_receiver_shadedgb_last;
   is_receiver_gb_same_locus = clone_phenotype.is_receiver_gb_same_locus;
-
+  
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = clone_phenotype.last_child_fertile;
@@ -1161,7 +1161,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_energy_receiver = false;
   has_used_donated_energy = false;
   has_open_energy_request = false;
-
+  
   // Setup child info...
   copy_true          = false;
   divide_sex         = false;
@@ -1171,7 +1171,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   child_fertile      = true;
   child_copied_size  = 0;
   permanent_germline_propensity = clone_phenotype.permanent_germline_propensity;
-
+  
   initialized = true;
 }
 
@@ -1186,35 +1186,35 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 }
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-			    const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-			    tArray<int>& insts_triggered)
+                            const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
+                            tArray<int>& insts_triggered)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
-
+  
   const cEnvironment& env = m_world->GetEnvironment();
   const int num_resources = env.GetResourceLib().GetSize();
   const int num_tasks = env.GetNumTasks();
   const int num_reactions = env.GetReactionLib().GetSize();
-
+  
   // For refractory period @WRE 03-20-07
   const int cur_update_time = m_world->GetStats().GetUpdate();
-  const double biomimetic_refractory_period = m_world->GetConfig().BIOMIMETIC_REFRACTORY_PERIOD.Get();
+  const double task_refractory_period = m_world->GetConfig().TASK_REFRACTORY_PERIOD.Get();
   double refract_factor;
-
+  
   if (!m_reaction_result) m_reaction_result = new cReactionResult(num_resources, num_tasks, num_reactions);
   cReactionResult& result = *m_reaction_result;
   
   // Run everything through the environment.
   bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in); //NEED different eff_task_count and cur_reaction_count for deme resource
-
+  
   // If nothing was found, stop here.
   if (found == false) {
     result.Invalidate();
     res_change.SetAll(0.0);
     return false;  // Nothing happened.
   }
-
+  
   // Update the phenotype with the results...
   // Start with updating task and reaction counters
   for (int i = 0; i < num_tasks; i++) {
@@ -1222,19 +1222,18 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     // Modify TaskQuality amount based on refractory period
     // Logistic equation using refractory period
     // in update units from configuration file.  @WRE 03-20-07, 04-17-07
-    if (0.0 == biomimetic_refractory_period) {
+    if (task_refractory_period == 0.0) {
       refract_factor = 1.0;
     } else {
-      refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i])-biomimetic_refractory_period*0.5)));
+      refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i]) - task_refractory_period * 0.5)));
     }
     if (result.TaskDone(i) == true) 
     {
       cur_task_count[i]++;
       eff_task_count[i]++;
-      //cerr << "eff: " << eff_task_count[i] << endl;
       if(result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
     }
-
+    
     if (result.TaskQuality(i) > 0) 
     {
     	cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
@@ -1259,14 +1258,13 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 		  m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
 	  }
   }
-
+  
   for (int i = 0; i < num_reactions; i++) {
-//    if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;  // moved into cEnvironment::TestOutput to allow reaction requisites to be satisified at the time a reaction is completed
     cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
-	if (result.ReactionTriggered(i) && last_reaction_count[i]==0) 
-		m_world->GetStats().AddNewReactionCount(i); 
+    if (result.ReactionTriggered(i) && last_reaction_count[i]==0) 
+      m_world->GetStats().AddNewReactionCount(i); 
   }
-
+  
   // Update the merit bonus
   cur_bonus *= result.GetMultBonus();
   cur_bonus += result.GetAddBonus();
@@ -1279,7 +1277,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // no deme object.  Don't touch deme merit if there is no deme frac component.
   cDeme* deme = taskctx.GetOrganism()->GetDeme();
   if (deme) {
-  
+    
     if (result.GetActiveDeme()) {
       double deme_bonus = deme->GetHeritableDemeMerit().GetDouble();
       deme_bonus *= result.GetMultDemeBonus();
@@ -1295,7 +1293,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       if (result.ReactionTriggered(i) == true) deme->AddCurReaction(i);
     }
   }
-    
+  
   // Update the energy bonus
   cur_energy_bonus += result.GetAddEnergy();
   
@@ -1303,7 +1301,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   for (int i = 0; i < res_in.GetSize(); i++) {
     res_change[i] = result.GetProduced(i) - result.GetConsumed(i);
   }
-
+  
   // Update rbins as necessary
   if(result.UsedEnvResource() == false)
   {
@@ -1315,18 +1313,18 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   		if(rbin_diff > 0) { cur_rbins_total[i] += rbin_diff; }
   	}
   }
-
+  
   // Save the instructions that should be triggered...
   insts_triggered = result.GetInstArray();
-
+  
   //Put in detected resources
   for (int j = 0; j < res_in.GetSize(); j++)
 	  if(result.GetDetected(j) != -1.0)
-	      sensed_resources[j] = result.GetDetected(j);
-
+      sensed_resources[j] = result.GetDetected(j);
+  
   //Kill any cells that did lethal reactions
   to_die = result.GetLethal();
-
+  
   // Sterilize organisms that have performed a sterilizing task.
   if(result.GetSterilize()) {
     is_fertile = false;
@@ -1339,10 +1337,10 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 void cPhenotype::PrintStatus(ostream& fp) const
 {
   fp << "  MeritBase:"
-     << CalcSizeMerit()
-     << " Bonus:" << cur_bonus
-     << " Errors:" << cur_num_errors
-     << " Donates:" << cur_num_donates;
+  << CalcSizeMerit()
+  << " Bonus:" << cur_bonus
+  << " Errors:" << cur_num_errors
+  << " Donates:" << cur_num_donates;
   fp << endl;
   
   fp << "  Task Count (Quality):";
@@ -1371,51 +1369,51 @@ int cPhenotype::CalcSizeMerit() const
 {
   assert(genome_length > 0);
   assert(copied_size > 0);
-
+  
   int out_size;
-
+  
   switch (m_world->GetConfig().BASE_MERIT_METHOD.Get()) {
-  case BASE_MERIT_COPIED_SIZE:
-    out_size = copied_size;
-    break;
-  case BASE_MERIT_EXE_SIZE:
-    out_size = executed_size;
-    break;
-  case BASE_MERIT_FULL_SIZE:
-    out_size = genome_length;
-    break;
-  case BASE_MERIT_LEAST_SIZE:
-    out_size = genome_length;
-    if (out_size > copied_size) out_size = copied_size;
-    if (out_size > executed_size)    out_size = executed_size;
-    break;
-  case BASE_MERIT_SQRT_LEAST_SIZE:
-    out_size = genome_length;
-    if (out_size > copied_size) out_size = copied_size;
-    if (out_size > executed_size)    out_size = executed_size;
-    out_size = (int) sqrt((double) out_size);
-    break;
-  case BASE_MERIT_NUM_BONUS_INST:
-    if(m_world->GetConfig().FITNESS_VALLEY.Get()){
-      if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
-          bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
-         out_size = 1;
-         break;
-      }            
-    }
-    if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {out_size = 1 + bonus_instruction_count;}
-    else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {out_size = genome_length - (bonus_instruction_count -1);}
-    else {out_size = 1;}  //the extra 1 point in all these case is so the orgs are not jilted by the scheduler        
-    break;
-  case BASE_MERIT_GESTATION_TIME:
-    out_size = cpu_cycles_used;
-    break;
-  case BASE_MERIT_CONST:
-  default:
-    out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
-    break;
+    case BASE_MERIT_COPIED_SIZE:
+      out_size = copied_size;
+      break;
+    case BASE_MERIT_EXE_SIZE:
+      out_size = executed_size;
+      break;
+    case BASE_MERIT_FULL_SIZE:
+      out_size = genome_length;
+      break;
+    case BASE_MERIT_LEAST_SIZE:
+      out_size = genome_length;
+      if (out_size > copied_size) out_size = copied_size;
+      if (out_size > executed_size)    out_size = executed_size;
+      break;
+    case BASE_MERIT_SQRT_LEAST_SIZE:
+      out_size = genome_length;
+      if (out_size > copied_size) out_size = copied_size;
+      if (out_size > executed_size)    out_size = executed_size;
+      out_size = (int) sqrt((double) out_size);
+      break;
+    case BASE_MERIT_NUM_BONUS_INST:
+      if(m_world->GetConfig().FITNESS_VALLEY.Get()){
+        if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
+            bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
+          out_size = 1;
+          break;
+        }            
+      }
+      if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {out_size = 1 + bonus_instruction_count;}
+      else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {out_size = genome_length - (bonus_instruction_count -1);}
+      else {out_size = 1;}  //the extra 1 point in all these case is so the orgs are not jilted by the scheduler        
+      break;
+    case BASE_MERIT_GESTATION_TIME:
+      out_size = cpu_cycles_used;
+      break;
+    case BASE_MERIT_CONST:
+    default:
+      out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
+      break;
   }
-
+  
   return out_size;
 } 
 
@@ -1433,34 +1431,33 @@ double cPhenotype::CalcCurrentMerit() const
 double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation_time, int _cpu_cycles) const
 {
   double out_fitness = 0;
-  switch (m_world->GetConfig().FITNESS_METHOD.Get())
-  {
+  switch (m_world->GetConfig().FITNESS_METHOD.Get()) {
     case 0: // Normal
-    assert(_gestation_time > 0);
-    out_fitness = _merit_base * _bonus / _gestation_time;
-    break;
-
-    case 1: // Sigmoidal returns (should be used with an additive reward)
-    {
       assert(_gestation_time > 0);
-      out_fitness = 0;
-      //Note: this operates on accumulated bonus and ignores the default bonus.
-      double converted_bonus = (_bonus - m_world->GetConfig().DEFAULT_BONUS.Get()) * m_world->GetConfig().FITNESS_COEFF_2.Get() / (1 + _bonus * m_world->GetConfig().FITNESS_COEFF_2.Get() ) ;
-      out_fitness = _merit_base * exp(converted_bonus * log(m_world->GetConfig().FITNESS_COEFF_1.Get())) / _gestation_time;
-    }
-    break;
-    
+      out_fitness = _merit_base * _bonus / _gestation_time;
+      break;
+      
+    case 1: // Sigmoidal returns (should be used with an additive reward)
+      {
+        assert(_gestation_time > 0);
+        out_fitness = 0;
+        //Note: this operates on accumulated bonus and ignores the default bonus.
+        double converted_bonus = (_bonus - m_world->GetConfig().DEFAULT_BONUS.Get()) * m_world->GetConfig().FITNESS_COEFF_2.Get() / (1 + _bonus * m_world->GetConfig().FITNESS_COEFF_2.Get() ) ;
+        out_fitness = _merit_base * exp(converted_bonus * log(m_world->GetConfig().FITNESS_COEFF_1.Get())) / _gestation_time;
+      }
+      break;
+      
     case 2: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
-    {
-      out_fitness = 0;
-      double net_bonus = _bonus +  - m_world->GetConfig().DEFAULT_BONUS.Get();
-      out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF_1.Get())); 
-    }
-    break;
-     
+      {
+        out_fitness = 0;
+        double net_bonus = _bonus +  - m_world->GetConfig().DEFAULT_BONUS.Get();
+        out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF_1.Get())); 
+      }
+      break;
+      
     default:
-    cout << "Unknown FITNESS_METHOD!" << endl;
-    exit(1);
+      cout << "Unknown FITNESS_METHOD!" << endl;
+      exit(1);
   }
   
   return out_fitness;
@@ -1488,7 +1485,7 @@ void cPhenotype::DefaultEnergyUsage() {
 
 
 /**
-Credit organism with energy reward, but only update energy store if APPLY_ENERGY_METHOD = "on task completion" (1)
+ Credit organism with energy reward, but only update energy store if APPLY_ENERGY_METHOD = "on task completion" (1)
  */
 void cPhenotype::RefreshEnergy() {
   if(cur_energy_bonus > 0) {
@@ -1524,7 +1521,7 @@ void cPhenotype::EnergyTestament(const double value) {
 
 void cPhenotype::ApplyDonatedEnergy() {
   double energy_cap = m_world->GetConfig().ENERGY_CAP.Get();
-
+  
   if((energy_store + energy_received_buffer) >= energy_cap) {
     IncreaseEnergyApplied(energy_cap - energy_store);
     SetEnergy(energy_store + (energy_cap - energy_received_buffer));
@@ -1572,7 +1569,7 @@ double cPhenotype::ExtractParentEnergy() {
   assert(GetStoredEnergy()>0.0);
   // adjust energy in parent
   ReduceEnergy(child_energy - 2*energy_given_at_birth); // 2*energy_given_at_birth: 1 in child_energy & 1 for parent
-    
+  
   //TODO: add energy_given_at_birth to Stored_energy
   cMerit parentMerit(ConvertEnergyToMerit(GetStoredEnergy() * GetEnergyUsageRatio()));
 	if(parentMerit.GetDouble() > 0.0)
@@ -1595,7 +1592,7 @@ void cPhenotype::NewTrial()
   cur_trial_fitnesses.Push(fitness);
   cur_trial_bonuses.Push(GetCurBonus());
   cur_trial_times_used.Push(trial_time_used);
-
+  
   //The rest of the function, resets the phenotype like DivideReset(), but without
   //incrementing the generation or child statistics.
   
@@ -1619,21 +1616,21 @@ void cPhenotype::NewTrial()
   energy_store += cur_energy_bonus;
   energy_store = m_world->GetConfig().ENERGY_GIVEN_AT_BIRTH.Get(); // We reset to what they had at birth
   cur_energy_bonus = 0;
-      // to be perfectly accurate, this should be from a last_energy value??
-
+  // to be perfectly accurate, this should be from a last_energy value??
   
- // genome_length   = _genome.GetSize();  //No child! @JEB
+  
+  // genome_length   = _genome.GetSize();  //No child! @JEB
   (void) copied_size;          // Unchanged
   (void) executed_size;        // Unchanged
   gestation_time  = time_used - gestation_start;  //Keep gestation referring to actual replication time! @JEB
   gestation_start = time_used;                    //Keep gestation referring to actual replication time! @JEB
- // fitness         = merit.GetDouble() / gestation_time; //Use fitness measure that is per-trial @JEB
-
+  // fitness         = merit.GetDouble() / gestation_time; //Use fitness measure that is per-trial @JEB
+  
   // Lock in cur values as last values.
   last_merit_base           = cur_merit_base;
   last_bonus                = cur_bonus;
   last_cpu_cycles_used      = cpu_cycles_used;
-//TODO?  last_energy         = cur_energy_bonus;
+  //TODO?  last_energy         = cur_energy_bonus;
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
@@ -1648,7 +1645,7 @@ void cPhenotype::NewTrial()
   last_reaction_add_reward  = cur_reaction_add_reward;
   last_inst_count           = cur_inst_count;
   last_sense_count          = cur_sense_count;
-
+  
   // Reset cur values.
   cur_bonus       = m_world->GetConfig().DEFAULT_BONUS.Get();
   cpu_cycles_used = 0;
@@ -1671,7 +1668,7 @@ void cPhenotype::NewTrial()
   //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
-
+  
   // Setup other miscellaneous values...
   num_divides++;
   (void) generation;
@@ -1681,7 +1678,7 @@ void cPhenotype::NewTrial()
   (void) neutral_metric;
   life_fitness = fitness; 
   
-
+  
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
   num_quanta_thresh_gb_donations_last = num_quanta_thresh_gb_donations;
@@ -1715,7 +1712,7 @@ void cPhenotype::NewTrial()
   is_donor_shadedgb = false;
   is_donor_locus_last = is_donor_locus;
   is_donor_locus.SetAll(false);
-
+  
   is_receiver_last = is_receiver;
   is_receiver = false;
   is_receiver_rand = false;
@@ -1734,7 +1731,7 @@ void cPhenotype::NewTrial()
   is_receiver_shadedgb = false;
   is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
   is_receiver_gb_same_locus = false;
-
+  
   is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;
@@ -1752,11 +1749,11 @@ void cPhenotype::NewTrial()
  * This function is run to reset an organism whose task counts (etc) have already been moved from cur to last
  * by another call (like NewTrial). It is a subset of DivideReset @JEB
  **/
- 
+
 void cPhenotype::TrialDivideReset(const cGenome & _genome)
 {
   int cur_merit_base = CalcSizeMerit();
-
+  
   // If we are resetting the current merit, do it here
   // and it will also be propagated to the child
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
@@ -1764,17 +1761,17 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
     cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
-
+  
   SetEnergy(energy_store + cur_energy_bonus);
   m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
   energy_testament = 0.0;
-    
+  
   genome_length   = _genome.GetSize();
   gestation_start = time_used;
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
-
+  
   // Reset child info...
   (void) copy_true;
   (void) divide_sex;
@@ -1783,7 +1780,7 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
   last_child_fertile = child_fertile;
   child_fertile     = true;
   (void) child_copied_size;
-
+  
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {    
@@ -1792,7 +1789,7 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
     time_used = 0;
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
-
+  
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
 }
 

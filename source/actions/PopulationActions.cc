@@ -66,34 +66,34 @@
  A double value that randomly drifts over time.
  */
 class cActionInject : public cAction
-	{
-	private:
-		cString m_filename;
-		int m_cell_id;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-		cActionInject(cWorld* world, const cString& args) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-			cString largs(args);
-			if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
-			if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			
-			if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-			m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
-		}
-	};
+{
+private:
+  cString m_filename;
+  int m_cell_id;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInject(cWorld* world, const cString& args) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
+  }
+};
 
 
 /*
@@ -112,32 +112,32 @@ class cActionInject : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectRandom : public cAction
-	{
-	private:
-		int m_length;
-		int m_cell_id;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-		cActionInjectRandom(cWorld* world, const cString& args) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-			cString largs(args);
-			m_length = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <int length> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			cGenome genome = cGenomeUtil::RandomGenome(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-			m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
-		}
-	};
+{
+private:
+  int m_length;
+  int m_cell_id;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectRandom(cWorld* world, const cString& args) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    m_length = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int length> [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cGenome genome = cGenomeUtil::RandomGenome(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
+    m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
+  }
+};
 
 
 /*
@@ -156,39 +156,39 @@ class cActionInjectRandom : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectAllRandomRepro : public cAction
-	{
-	private:
-		int m_length;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-		int m_sex;
-	public:
-		cActionInjectAllRandomRepro(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0), m_sex(0)
-		{
-			cString largs(args);
-			m_length = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_sex = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <int length> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
-			{
-				cGenome genome;
-				if (m_sex)
-					genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-				else
-					genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-				m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
-			}
-		}
-	};
+{
+private:
+  int m_length;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+  int m_sex;
+public:
+  cActionInjectAllRandomRepro(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0), m_sex(0)
+  {
+    cString largs(args);
+    m_length = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_sex = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int length> [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
+    {
+      cGenome genome;
+      if (m_sex)
+        genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
+      else
+        genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
+      m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+    }
+  }
+};
 
 /*
  Injects identical organisms into all cells of the population.
@@ -206,33 +206,33 @@ class cActionInjectAllRandomRepro : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectAll : public cAction
-	{
-	private:
-		cString m_filename;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-		cActionInjectAll(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-			cString largs(args);
-			if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			
-			if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-			for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
-				m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
-		}
-	};
+{
+private:
+  cString m_filename;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectAll(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
+      m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+  }
+};
 
 /*
  Injects identical organisms into a range of cells of the population.
@@ -254,45 +254,45 @@ class cActionInjectAll : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectRange : public cAction
-	{
-	private:
-		cString m_filename;
-		int m_cell_start;
-		int m_cell_end;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-		cActionInjectRange(cWorld* world, const cString& args)
-		: cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-			cString largs(args);
-			if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
-			if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			
-			if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
-			if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-				m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
-			} else {
-				cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-				for (int i = m_cell_start; i < m_cell_end; i++) {
-					m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
-				}
-				m_world->GetPopulation().SetSyncEvents(true);
-			}
-		}
-	};
+{
+private:
+  cString m_filename;
+  int m_cell_start;
+  int m_cell_end;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectRange(cWorld* world, const cString& args)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+      m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
+    } else {
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+      for (int i = m_cell_start; i < m_cell_end; i++) {
+        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
 
 
 /*
@@ -313,44 +313,44 @@ class cActionInjectRange : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectSequence : public cAction
-	{
-	private:
-		cString m_sequence;
-		int m_cell_start;
-		int m_cell_end;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-		cActionInjectSequence(cWorld* world, const cString& args)
-		: cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-			cString largs(args);
-			m_sequence = largs.PopWord();
-			if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			
-			if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
-		}
-		
-		static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-				m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
-			} else {
-				cGenome genome(m_sequence);
-				for (int i = m_cell_start; i < m_cell_end; i++) {
-					m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
-				}
-				m_world->GetPopulation().SetSyncEvents(true);
-			}
-		}
-	};
+{
+private:
+  cString m_sequence;
+  int m_cell_start;
+  int m_cell_end;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectSequence(cWorld* world, const cString& args)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    m_sequence = largs.PopWord();
+    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+      m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
+    } else {
+      cGenome genome(m_sequence);
+      for (int i = m_cell_start; i < m_cell_end; i++) {
+        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
 
 /*
  Injects identical organisms into a range of cells of the population with a specified divide mut rate (per site).
@@ -370,49 +370,49 @@ class cActionInjectSequence : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectSequenceWithDivMutRate : public cAction
-	{
-	private:
-		cString m_sequence;
-		int m_cell_start;
-		int m_cell_end;
-		double m_merit;
-		double m_div_mut_rate;
-		int m_lineage_label;
-		double m_neutral_metric;
-		
-		
-	public:
-		cActionInjectSequenceWithDivMutRate(cWorld* world, const cString& args)
-    : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_div_mut_rate(0.0), m_lineage_label(0), m_neutral_metric(0)
-		{
-			cString largs(args);
-			m_sequence = largs.PopWord();
-			if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_div_mut_rate = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			
-			if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
-		}
-		
-		static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double div_mut_rate=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-				m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
-			} else {
-				cGenome genome(m_sequence);
-				for (int i = m_cell_start; i < m_cell_end; i++) {
-					m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
-					m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
-				}
-				m_world->GetPopulation().SetSyncEvents(true);
-			}
-		}
-	};
+{
+private:
+  cString m_sequence;
+  int m_cell_start;
+  int m_cell_end;
+  double m_merit;
+  double m_div_mut_rate;
+  int m_lineage_label;
+  double m_neutral_metric;
+  
+  
+public:
+  cActionInjectSequenceWithDivMutRate(cWorld* world, const cString& args)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_div_mut_rate(0.0), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    m_sequence = largs.PopWord();
+    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_div_mut_rate = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string sequence> [int cell_start=0] [int cell_end=-1] [double div_mut_rate=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+      m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
+    } else {
+      cGenome genome(m_sequence);
+      for (int i = m_cell_start; i < m_cell_end; i++) {
+        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
 
 /*
  Injects identical parasites into a range of cells of the population.
@@ -428,39 +428,39 @@ class cActionInjectSequenceWithDivMutRate : public cAction
  First cell *not* to inject into.
  */
 class cActionInjectParasite : public cAction
-	{
-	private:
-		cString m_filename;
-		cCodeLabel m_label;
-		int m_cell_start;
-		int m_cell_end;
-	public:
-		cActionInjectParasite(cWorld* world, const cString& args) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
-		{
-			cString largs(args);
-			m_filename = largs.PopWord();
-			m_label.ReadString(largs.PopWord());
-			if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
-			
-			if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
-		}
-		
-		static const cString GetDescription() { return "Arguments: <string filename> <string label> [int cell_start=0] [int cell_end=-1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-				m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
-			} else {
-				cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-				for (int i = m_cell_start; i < m_cell_end; i++) {
-					m_world->GetPopulation().InjectParasite(m_label, genome, i);
-				}
-				m_world->GetPopulation().SetSyncEvents(true);
-			}
-		}
-	};
+{
+private:
+  cString m_filename;
+  cCodeLabel m_label;
+  int m_cell_start;
+  int m_cell_end;
+public:
+  cActionInjectParasite(cWorld* world, const cString& args) : cAction(world, args), m_cell_start(0), m_cell_end(-1)
+  {
+    cString largs(args);
+    m_filename = largs.PopWord();
+    m_label.ReadString(largs.PopWord());
+    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    
+    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string filename> <string label> [int cell_start=0] [int cell_end=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+      m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
+    } else {
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+      for (int i = m_cell_start; i < m_cell_end; i++) {
+        m_world->GetPopulation().InjectParasite(m_label, genome, i);
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
 
 
 /*
@@ -485,50 +485,50 @@ class cActionInjectParasite : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectParasitePair : public cAction
-	{
-	private:
-		cString m_filename_genome;
-		cString m_filename_parasite;
-		cCodeLabel m_label;
-		int m_cell_start;
-		int m_cell_end;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-		cActionInjectParasitePair(cWorld* world, const cString& args)
-		: cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-			cString largs(args);
-			m_filename_genome = largs.PopWord();
-			m_filename_parasite = largs.PopWord();
-			m_label.ReadString(largs.PopWord());
-			if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			
-			if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
-		}
-		
-		static const cString GetDescription() { return "Arguments: <string filename_genome> <string filename_parasite> <string label> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-				m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
-			} else {
-				cGenome genome = cGenomeUtil::LoadGenome(m_filename_genome, m_world->GetHardwareManager().GetInstSet());
-				cGenome parasite = cGenomeUtil::LoadGenome(m_filename_parasite, m_world->GetHardwareManager().GetInstSet());
-				for (int i = m_cell_start; i < m_cell_end; i++) {
-					m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
-					m_world->GetPopulation().InjectParasite(m_label, parasite, i);
-				}
-				m_world->GetPopulation().SetSyncEvents(true);
-			}
-		}
-	};
+{
+private:
+  cString m_filename_genome;
+  cString m_filename_parasite;
+  cCodeLabel m_label;
+  int m_cell_start;
+  int m_cell_end;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectParasitePair(cWorld* world, const cString& args)
+  : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    m_filename_genome = largs.PopWord();
+    m_filename_parasite = largs.PopWord();
+    m_label.ReadString(largs.PopWord());
+    if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string filename_genome> <string filename_parasite> <string label> [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
+      m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
+    } else {
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename_genome, m_world->GetHardwareManager().GetInstSet());
+      cGenome parasite = cGenomeUtil::LoadGenome(m_filename_parasite, m_world->GetHardwareManager().GetInstSet());
+      for (int i = m_cell_start; i < m_cell_end; i++) {
+        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().InjectParasite(m_label, parasite, i);
+      }
+      m_world->GetPopulation().SetSyncEvents(true);
+    }
+  }
+};
 
 
 
@@ -549,48 +549,48 @@ class cActionInjectParasitePair : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectDemes : public cAction
-	{
-	private:
-		cString m_filename;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-    cActionInjectDemes(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-      cString largs(args);
-      if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
-      if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-      if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-			if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-				for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
-					m_world->GetPopulation().Inject(genome,
-																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
-																					m_merit, m_lineage_label, m_neutral_metric);
-					m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-				}
-			} else {
-				for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-					// WARNING: initial ancestor has already be injected into the population
-					//           calling this will overwrite it.
-					m_world->GetPopulation().Inject(genome,
-																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
-																					m_merit, m_lineage_label, m_neutral_metric);
-					m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-					
-				}
-			}
-		}
-	};
+{
+private:
+  cString m_filename;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectDemes(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
+        m_world->GetPopulation().Inject(genome,
+                                        m_world->GetPopulation().GetDeme(i).GetCellID(0),
+                                        m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+      }
+    } else {
+      for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+        // WARNING: initial ancestor has already be injected into the population
+        //           calling this will overwrite it.
+        m_world->GetPopulation().Inject(genome,
+                                        m_world->GetPopulation().GetDeme(i).GetCellID(0),
+                                        m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        
+      }
+    }
+  }
+};
 
 /*! Injects an organism into all demes modulo a given number in the population. 
  
@@ -610,54 +610,54 @@ class cActionInjectDemes : public cAction
  A double value that randomly drifts over time.
  */
 class cActionInjectModuloDemes : public cAction
-	{
-	private:
-		cString m_filename;
-		int m_mod_num;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-	public:
-    cActionInjectModuloDemes(cWorld* world, const cString& args) : cAction(world, args), m_mod_num(1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
-		{
-      cString largs(args);
-      if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
-			if (largs.GetSize()) m_mod_num = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-      if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-			if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
-				for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
-					if (i % m_mod_num == 0) {
-							m_world->GetPopulation().Inject(genome,
-																							m_world->GetPopulation().GetDeme(i).GetCellID(0),
-																							m_merit, m_lineage_label, m_neutral_metric);
-							m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-						}
-				}
-			} else {
-				for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-					// WARNING: initial ancestor has already be injected into the population
-					//           calling this will overwrite it.
-					if (i==0 || (i % m_mod_num) ==0){
-						m_world->GetPopulation().Inject(genome,
+{
+private:
+  cString m_filename;
+  int m_mod_num;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+public:
+  cActionInjectModuloDemes(cWorld* world, const cString& args) : cAction(world, args), m_mod_num(1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (largs.GetSize()) m_mod_num = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+      for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
+        if (i % m_mod_num == 0) {
+          m_world->GetPopulation().Inject(genome,
+                                          m_world->GetPopulation().GetDeme(i).GetCellID(0),
+                                          m_merit, m_lineage_label, m_neutral_metric);
+          m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        }
+      }
+    } else {
+      for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+        // WARNING: initial ancestor has already be injected into the population
+        //           calling this will overwrite it.
+        if (i==0 || (i % m_mod_num) ==0){
+          m_world->GetPopulation().Inject(genome,
 																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
 																					m_merit, m_lineage_label, m_neutral_metric);
-						m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-					}
-					
-				}
-			}
-		}
-	};
+          m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        }
+        
+      }
+    }
+  }
+};
 
 
 /*! Injects one or more organisms into all demes in the population at a specified cell.
@@ -675,63 +675,63 @@ class cActionInjectModuloDemes : public cAction
  */
 
 class cActionInjectDemesFromNest : public cAction
-	{
-	private:
-		int m_num_orgs;
-		int m_nest_cellid;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-		
-	public:
-		cActionInjectDemesFromNest(cWorld* world, const cString& args):
-    cAction(world, args),
-    m_num_orgs(1),
-    m_nest_cellid(0),
-    m_merit(-1),
-    m_lineage_label(0),
-    m_neutral_metric(0)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_nest_cellid = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			
-			assert(m_num_orgs <= m_world->GetPopulation().GetSize());
-			assert(m_nest_cellid > -1);
-			assert(m_nest_cellid < m_world->GetPopulation().GetSize());
-		} //End cActionInjectDemesFromNest constructor
-		
-		static const cString GetDescription() { return "Arguments: [int num_orgs=1] [int nest_cellid=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-				
-				// Each deme will have initially had one organism injected.  If this
-				// is the first injection and energy is used, increment the injected
-				// count (the initial injection wasn't counted) and skip the first deme
-				// so that the energies don't get messed up.
-				if( (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
-					 (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
-					m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-					continue;
-				}
-				
-				if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
-					m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
-																					m_world->GetPopulation().GetDeme(i).GetCellID(m_nest_cellid),
-																					m_merit, m_lineage_label, m_neutral_metric);
-					m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-				}
-				
-			} //End iterating through demes
-			
-		} //End Process()
-		
-	}; //End cActionInjectDemesFromNest
+{
+private:
+  int m_num_orgs;
+  int m_nest_cellid;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+  
+public:
+  cActionInjectDemesFromNest(cWorld* world, const cString& args):
+  cAction(world, args),
+  m_num_orgs(1),
+  m_nest_cellid(0),
+  m_merit(-1),
+  m_lineage_label(0),
+  m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_nest_cellid = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    
+    assert(m_num_orgs <= m_world->GetPopulation().GetSize());
+    assert(m_nest_cellid > -1);
+    assert(m_nest_cellid < m_world->GetPopulation().GetSize());
+  } //End cActionInjectDemesFromNest constructor
+  
+  static const cString GetDescription() { return "Arguments: [int num_orgs=1] [int nest_cellid=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      
+      // Each deme will have initially had one organism injected.  If this
+      // is the first injection and energy is used, increment the injected
+      // count (the initial injection wasn't counted) and skip the first deme
+      // so that the energies don't get messed up.
+      if( (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
+         (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        continue;
+      }
+      
+      if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
+                                        m_world->GetPopulation().GetDeme(i).GetCellID(m_nest_cellid),
+                                        m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+      }
+      
+    } //End iterating through demes
+    
+  } //End Process()
+  
+}; //End cActionInjectDemesFromNest
 
 
 
@@ -749,73 +749,73 @@ class cActionInjectDemesFromNest : public cAction
  */
 
 class cActionInjectDemesRandom : public cAction
-	{
-	private:
-		int m_num_orgs;
-		double m_merit;
-		int m_lineage_label;
-		double m_neutral_metric;
-		
-	public:
-		cActionInjectDemesRandom(cWorld* world, const cString& args):
-    cAction(world, args),
-    m_num_orgs(1),
-    m_merit(-1),
-    m_lineage_label(0),
-    m_neutral_metric(0)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-			assert(m_num_orgs <= m_world->GetPopulation().GetSize());
-		} //End cActionInjectDemesRandom constructor
-		
-		static const cString GetDescription() { return "Arguments: [int num_orgs=1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			int target_cell, target_cellr;
-			int deme_size;
-			
-			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-				
-				// Each deme will have initially had one organism injected.  If this
-				// is the first injection and energy is used, increment the injected
-				// count (the initial injection wasn't counted) and skip the first deme
-				// so that the energies don't get messed up.
-				if( (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
-					 (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
-					m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-					continue;
-				}
-				
-				if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
-					target_cell = -1;
-					target_cellr = -1;
-					deme_size = m_world->GetPopulation().GetDeme(i).GetSize();
-					
-					// Find a random, unoccupied cell to use. Assumes one exists.
-					do {
-						target_cellr = m_world->GetRandom().GetInt(0, deme_size-1);
-						target_cell = m_world->GetPopulation().GetDeme(i).GetCellID(target_cellr);
-					} while (m_world->GetPopulation().GetCell(target_cell).IsOccupied());
-					
-					assert(target_cell > -1);
-					assert(target_cell < m_world->GetPopulation().GetSize());
-					
-					m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
-																					target_cell, m_merit,
-																					m_lineage_label, m_neutral_metric);
-					m_world->GetPopulation().GetDeme(i).IncInjectedCount();
-				} //End if there are still orgs to be inserted
-				
-			} //End iterating through demes
-			
-		} //End Process()
-		
-	}; //End cActionInjectDemesRandom
+{
+private:
+  int m_num_orgs;
+  double m_merit;
+  int m_lineage_label;
+  double m_neutral_metric;
+  
+public:
+  cActionInjectDemesRandom(cWorld* world, const cString& args):
+  cAction(world, args),
+  m_num_orgs(1),
+  m_merit(-1),
+  m_lineage_label(0),
+  m_neutral_metric(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_num_orgs = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
+    assert(m_num_orgs <= m_world->GetPopulation().GetSize());
+  } //End cActionInjectDemesRandom constructor
+  
+  static const cString GetDescription() { return "Arguments: [int num_orgs=1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int target_cell, target_cellr;
+    int deme_size;
+    
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      
+      // Each deme will have initially had one organism injected.  If this
+      // is the first injection and energy is used, increment the injected
+      // count (the initial injection wasn't counted) and skip the first deme
+      // so that the energies don't get messed up.
+      if( (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) &&
+         (m_world->GetPopulation().GetDeme(i).GetInjectedCount() == 0) ) {
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+        continue;
+      }
+      
+      if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
+        target_cell = -1;
+        target_cellr = -1;
+        deme_size = m_world->GetPopulation().GetDeme(i).GetSize();
+        
+        // Find a random, unoccupied cell to use. Assumes one exists.
+        do {
+          target_cellr = m_world->GetRandom().GetInt(0, deme_size-1);
+          target_cell = m_world->GetPopulation().GetDeme(i).GetCellID(target_cellr);
+        } while (m_world->GetPopulation().GetCell(target_cell).IsOccupied());
+        
+        assert(target_cell > -1);
+        assert(target_cell < m_world->GetPopulation().GetSize());
+        
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
+                                        target_cell, m_merit,
+                                        m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().GetDeme(i).IncInjectedCount();
+      } //End if there are still orgs to be inserted
+      
+    } //End iterating through demes
+    
+  } //End Process()
+  
+}; //End cActionInjectDemesRandom
 
 
 
@@ -827,27 +827,27 @@ class cActionInjectDemesRandom : public cAction
  The probability with which a single organism is removed.
  */
 class cActionKillProb : public cAction
-	{
-	private:
-		double m_killprob;
-	public:
-		cActionKillProb(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9)
-		{
-      cString largs(args);
-      if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-				cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-				if (cell.IsOccupied() == false) continue;
-				if (ctx.GetRandom().P(m_killprob))  m_world->GetPopulation().KillOrganism(cell);
-			}
-		}
-	};
+{
+private:
+  double m_killprob;
+public:
+  cActionKillProb(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double probability=0.9]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      if (cell.IsOccupied() == false) continue;
+      if (ctx.GetRandom().P(m_killprob))  m_world->GetPopulation().KillOrganism(cell);
+    }
+  }
+};
 
 /*
  Kills a fraction of organisms in the population in sequence.
@@ -857,60 +857,60 @@ class cActionKillProb : public cAction
  
  */
 class cActionKillFractionInSequence : public cAction
-	{
-	private:
-		double m_killFraction;
-		int m_windowLength;
-		int killIndex;
-		bool applyAction;
-		int updateSinceLastContextSwitch;
-	public:
-		cActionKillFractionInSequence(cWorld* world, const cString& args) : 
-			cAction(world, args), 
-			m_killFraction(0.01), 
-			m_windowLength(1000), 
-			killIndex(0),
-			applyAction(true),
-			updateSinceLastContextSwitch(0)
-		{
-      cString largs(args);
-      if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_windowLength = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			++updateSinceLastContextSwitch;
-
-			if(updateSinceLastContextSwitch >= static_cast<int>(m_windowLength/2.0)) {
-				// switch context
-				applyAction = !applyAction;
-				updateSinceLastContextSwitch = 0;
-				cerr << "applied? " << applyAction<<endl;
-			}
-			
-			if(!applyAction)
-				return;
-			
-			cPopulation& pop = m_world->GetPopulation();
-			const int numOrgsInPop = pop.GetNumOrganisms();
-			int organismsToKill = static_cast<int>(numOrgsInPop * m_killFraction);
-			int oldKillIndex = killIndex;
-						
-			while(organismsToKill > 0) {
-				cPopulationCell& cell = pop.GetCell(killIndex);
-				if (cell.IsOccupied()) {
-					pop.KillOrganism(cell);
-					--organismsToKill;
-				}
-				killIndex = (killIndex + 1) % pop.GetSize();
-				if(killIndex == oldKillIndex)
-					assert(false);  // trying to kill organisms that don't exist
-			}
-		}
-	};
+{
+private:
+  double m_killFraction;
+  int m_windowLength;
+  int killIndex;
+  bool applyAction;
+  int updateSinceLastContextSwitch;
+public:
+  cActionKillFractionInSequence(cWorld* world, const cString& args) : 
+  cAction(world, args), 
+  m_killFraction(0.01), 
+  m_windowLength(1000), 
+  killIndex(0),
+  applyAction(true),
+  updateSinceLastContextSwitch(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_windowLength = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    ++updateSinceLastContextSwitch;
+    
+    if(updateSinceLastContextSwitch >= static_cast<int>(m_windowLength/2.0)) {
+      // switch context
+      applyAction = !applyAction;
+      updateSinceLastContextSwitch = 0;
+      cerr << "applied? " << applyAction<<endl;
+    }
+    
+    if(!applyAction)
+      return;
+    
+    cPopulation& pop = m_world->GetPopulation();
+    const int numOrgsInPop = pop.GetNumOrganisms();
+    int organismsToKill = static_cast<int>(numOrgsInPop * m_killFraction);
+    int oldKillIndex = killIndex;
+    
+    while(organismsToKill > 0) {
+      cPopulationCell& cell = pop.GetCell(killIndex);
+      if (cell.IsOccupied()) {
+        pop.KillOrganism(cell);
+        --organismsToKill;
+      }
+      killIndex = (killIndex + 1) % pop.GetSize();
+      if(killIndex == oldKillIndex)
+        assert(false);  // trying to kill organisms that don't exist
+    }
+  }
+};
 
 /*
  Kills a fraction of organisms in the population in sequence.
@@ -920,52 +920,52 @@ class cActionKillFractionInSequence : public cAction
  
  */
 class cActionKillFractionInSequence_PopLimit : public cAction
-	{
-	private:
-		double m_killFraction;
-		int m_popSize;
-		int killIndex;
-
-	public:
-		cActionKillFractionInSequence_PopLimit(cWorld* world, const cString& args) : 
-		cAction(world, args), 
-		m_killFraction(0.01), 
-		m_popSize(1000),
-		killIndex(0)
-		{
-      cString largs(args);
-      if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_popSize = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			double avgGestation = m_world->GetStats().GetAveGestation();
-			double instPerUpdate = m_world->GetConfig().AVE_TIME_SLICE.Get();
-			double growthRate = floor(instPerUpdate/avgGestation * 100.0 + 0.5) / 100.0;
-			
-			cPopulation& pop = m_world->GetPopulation();
-			const int numOrgsInPop = pop.GetNumOrganisms();
-			if(numOrgsInPop < m_popSize)
-				return;
-			
-			int organismsToKill = static_cast<int>(numOrgsInPop * growthRate);
-			int oldKillIndex = killIndex;
-			cerr<< "growth rate: " << growthRate << "  kill: " << organismsToKill <<endl;
-			while(organismsToKill > 0) {
-				cPopulationCell& cell = pop.GetCell(killIndex);
-				if (cell.IsOccupied()) {
-					pop.KillOrganism(cell);
-					--organismsToKill;
-				}
-				killIndex = (killIndex + 1) % pop.GetSize();
-				if(killIndex == oldKillIndex)
-					assert(false);  // trying to kill organisms that don't exist
-			}
-		}
-	};
+{
+private:
+  double m_killFraction;
+  int m_popSize;
+  int killIndex;
+  
+public:
+  cActionKillFractionInSequence_PopLimit(cWorld* world, const cString& args) : 
+  cAction(world, args), 
+  m_killFraction(0.01), 
+  m_popSize(1000),
+  killIndex(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killFraction = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_popSize = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double fraction=0.01]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double avgGestation = m_world->GetStats().GetAveGestation();
+    double instPerUpdate = m_world->GetConfig().AVE_TIME_SLICE.Get();
+    double growthRate = floor(instPerUpdate/avgGestation * 100.0 + 0.5) / 100.0;
+    
+    cPopulation& pop = m_world->GetPopulation();
+    const int numOrgsInPop = pop.GetNumOrganisms();
+    if(numOrgsInPop < m_popSize)
+      return;
+    
+    int organismsToKill = static_cast<int>(numOrgsInPop * growthRate);
+    int oldKillIndex = killIndex;
+    cerr<< "growth rate: " << growthRate << "  kill: " << organismsToKill <<endl;
+    while(organismsToKill > 0) {
+      cPopulationCell& cell = pop.GetCell(killIndex);
+      if (cell.IsOccupied()) {
+        pop.KillOrganism(cell);
+        --organismsToKill;
+      }
+      killIndex = (killIndex + 1) % pop.GetSize();
+      if(killIndex == oldKillIndex)
+        assert(false);  // trying to kill organisms that don't exist
+    }
+  }
+};
 
 /*
  Randomly removes a certain proportion of the population whose genomes contain a specified
@@ -981,47 +981,47 @@ class cActionKillFractionInSequence_PopLimit : public cAction
  The threshold for instruction instances.
  */
 class cActionKillInstLimit : public cAction
-	{
-	private:
-		double m_killprob;
-		cString m_inst;
-		double m_limit;
-	public:
-		cActionKillInstLimit(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9), m_inst("nand"), m_limit(5)
-		{
-      cString largs(args);
-      if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_inst = largs.PopWord();
-      if (largs.GetSize()) m_limit = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [double probability=0.9] [cString inst=nand] [int limit=5]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			int count;
-			int totalkilled = 0;
-			
-			// for each organism in the population...
-			for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-				cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-				if (cell.IsOccupied() == false) continue;
-				
-				// count the number of target instructions in the genome
-				count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
-				
-				// decide if it should be killed or not, based on the count and a the kill probability
-				if (count >= m_limit) {
-					if (ctx.GetRandom().P(m_killprob))  {
-						m_world->GetPopulation().KillOrganism(cell);
-						totalkilled++;
-					}
-				}
-			}
-			// could keep track of the total number killed for statistics; in testing simply printed it out
-			// cout << "total killed = " << totalkilled << endl;
-		}
-	};
+{
+private:
+  double m_killprob;
+  cString m_inst;
+  double m_limit;
+public:
+  cActionKillInstLimit(cWorld* world, const cString& args) : cAction(world, args), m_killprob(0.9), m_inst("nand"), m_limit(5)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killprob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_inst = largs.PopWord();
+    if (largs.GetSize()) m_limit = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double probability=0.9] [cString inst=nand] [int limit=5]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int count;
+    int totalkilled = 0;
+    
+    // for each organism in the population...
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      if (cell.IsOccupied() == false) continue;
+      
+      // count the number of target instructions in the genome
+      count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+      
+      // decide if it should be killed or not, based on the count and a the kill probability
+      if (count >= m_limit) {
+        if (ctx.GetRandom().P(m_killprob))  {
+          m_world->GetPopulation().KillOrganism(cell);
+          totalkilled++;
+        }
+      }
+    }
+    // could keep track of the total number killed for statistics; in testing simply printed it out
+    // cout << "total killed = " << totalkilled << endl;
+  }
+};
 
 
 /*
@@ -1090,7 +1090,7 @@ public:
  
  Parameters:
  1. instruction type (string) default: "nand"
-  - The type of instruction in question.
+ - The type of instruction in question.
  2. weight value multiplied by instruction count
  3. exponent applied to weighted instruction count
  */
@@ -1103,7 +1103,7 @@ private:
 	cIntSum m_instCount;
 	cIntSum m_totalkilled;
 	cDoubleSum m_killProd;
-
+  
 public:
 	cAction_TherapyStructuralNumInst(cWorld* world, const cString& args) : cAction(world, args), m_inst("nand"), m_exprWeight(1.0), m_exponent(1.0), m_printUpdate(100)
 	{
@@ -1126,7 +1126,7 @@ public:
 		cDoubleSum currentKillProb;
 		currentInstCount.Clear();
 		currentKillProb.Clear();
-
+    
 		// for each deme in the population...
 		cPopulation& pop = m_world->GetPopulation();
 		const int numDemes = pop.GetNumDemes();
@@ -1140,14 +1140,14 @@ public:
 			//Yes
 			for(int cellInDeme = 0; cellInDeme < currentDeme.GetSize(); ++cellInDeme) {
 				cPopulationCell& cell = currentDeme.GetCell(cellInDeme);
-
+        
 				if (cell.IsOccupied() == false)
 					continue;
 				
 				// count the number of target instructions in the genome
 				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
 				currentInstCount.Add(count);
-
+        
 				double killprob;
 				if(m_exponent == -1.0)
 					killprob = min(1.0/(m_exprWeight+ exp(double(-count))), 100.0)/100.0;  //sigmoid
@@ -1167,7 +1167,7 @@ public:
 		m_instCount.Add(currentInstCount.Average());
 		m_totalkilled.Add(totalkilled);
 		m_killProd.Add(currentKillProb.Average());
-			
+    
 		const int update = m_world->GetStats().GetUpdate();
 		if(update % m_printUpdate == 0) {
 			cDataFile& df = m_world->GetDataFile("TherapyStructuralNumInst_kill.dat");
@@ -1229,7 +1229,7 @@ public:
 		// for each deme in the population...
 		cPopulation& pop = m_world->GetPopulation();
 		const int numDemes = pop.GetNumDemes();
-
+    
 		for (int demeCounter = 0; demeCounter < numDemes; ++demeCounter) {
 			cDeme& currentDeme = pop.GetDeme(demeCounter);
 			
@@ -1288,116 +1288,116 @@ public:
  Parameters:
  - The name of resource to decay
  - How the amount of decay decreases over time ['const', 'lin', 'taper'] -- CASE SENSITIVE!
-   - none: the amount of resource decayed remains constant over time
-   - lin: the amount of resource decayed decreases linearly throughout the duration
-   - taper: retains a slowly-decreasing amount of decay then drops off sharply at the end of the duration
+ - none: the amount of resource decayed remains constant over time
+ - lin: the amount of resource decayed decreases linearly throughout the duration
+ - taper: retains a slowly-decreasing amount of decay then drops off sharply at the end of the duration
  - Base amount to be removed.
  - Duration (how long this resource decay should last.  works only with lin and exp.  none lasts infinitely.)
  */
 
 class cAction_TherapyDecayDemeResource : public cAction
+{
+private:
+  cString m_resname;
+  cString m_decrtype;
+  double m_amount;
+  double m_duration;
+public:
+  cAction_TherapyDecayDemeResource(cWorld* world, const cString& args) : cAction(world, args), m_amount(0), m_duration(1)
   {
-  private:
-    cString m_resname;
-    cString m_decrtype;
-    double m_amount;
-    double m_duration;
-  public:
-    cAction_TherapyDecayDemeResource(cWorld* world, const cString& args) : cAction(world, args), m_amount(0), m_duration(1)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_resname = largs.PopWord();
-      if (largs.GetSize()) m_decrtype = largs.PopWord();
-      if (largs.GetSize()) m_amount = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
-      assert(m_amount >= 0);
-      assert(m_amount <= 1);
-      assert(m_duration >= 1);
-    }
+    cString largs(args);
+    if (largs.GetSize()) m_resname = largs.PopWord();
+    if (largs.GetSize()) m_decrtype = largs.PopWord();
+    if (largs.GetSize()) m_amount = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_duration = largs.PopWord().AsInt();
+    assert(m_amount >= 0);
+    assert(m_amount <= 1);
+    assert(m_duration >= 1);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string resource_name=resname, string decrease_type=(none|lin|exp), double amount=0.2]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double adjusted_amount;
+    int time_since_treatment;
+    int latest_treatment_age;
+    std::set<int> treatment_ages;
+    int deme_age;
     
-    static const cString GetDescription() { return "Arguments: [string resource_name=resname, string decrease_type=(none|lin|exp), double amount=0.2]"; }
+    //adjusted amount will be something like max(0, 1 - (m_amount * time_since_treatment)) for linear
     
-    void Process(cAvidaContext& ctx)
-    {
-      double adjusted_amount;
-      int time_since_treatment;
-      int latest_treatment_age;
-      std::set<int> treatment_ages;
-      int deme_age;
+    cPopulation& pop = m_world->GetPopulation();
+    
+    for (int d = 0; d < pop.GetNumDemes(); d++) {
       
-      //adjusted amount will be something like max(0, 1 - (m_amount * time_since_treatment)) for linear
-            
-      cPopulation& pop = m_world->GetPopulation();
+      cDeme &deme = pop.GetDeme(d);
+      deme_age = deme.GetAge();
+      latest_treatment_age = -1;
+      time_since_treatment = INT_MAX;
       
-      for (int d = 0; d < pop.GetNumDemes(); d++) {
+      if(deme.isTreatable()) {
         
-        cDeme &deme = pop.GetDeme(d);
-        deme_age = deme.GetAge();
-        latest_treatment_age = -1;
-        time_since_treatment = INT_MAX;
+        treatment_ages = deme.GetTreatmentAges();
         
-        if(deme.isTreatable()) {
-                    
-          treatment_ages = deme.GetTreatmentAges();
-          
-          // Find out the last update at which this treatment was started
-          for (std::set<int>::iterator it = treatment_ages.begin(); it != treatment_ages.end(); it++) {
-            if( (*it < deme_age) && (*it > latest_treatment_age) ) {
-              latest_treatment_age = *it;
-              time_since_treatment = deme_age - latest_treatment_age;
-            }
+        // Find out the last update at which this treatment was started
+        for (std::set<int>::iterator it = treatment_ages.begin(); it != treatment_ages.end(); it++) {
+          if( (*it < deme_age) && (*it > latest_treatment_age) ) {
+            latest_treatment_age = *it;
+            time_since_treatment = deme_age - latest_treatment_age;
           }
-          
-          // If we haven't begun treatment on this deme, or if this treatment is over, skip it.
-          if ((latest_treatment_age == -1) || (time_since_treatment > m_duration)) {
-            continue;
-          }
-                          
-          // Find out how much to decrease the resource by
-          // none - as long as the treatment is ongoing, it is at full force
-          // lin - as the treatment continues, the amount decayed decreases linearly
-          // exp - as treatment continues, the amount decayed decreases exponentially
-          if(m_decrtype == "const") {
-            if(time_since_treatment >= m_duration) {
-              adjusted_amount = 0;
-            } else {
-              adjusted_amount = m_amount;
-            }
-          } else if (m_decrtype == "lin") {
-            adjusted_amount = max(0.0, 1 - (time_since_treatment/m_duration)) * m_amount;
-          } else if (m_decrtype == "taper") {
-            adjusted_amount = max(0.0, 1 - pow(time_since_treatment/m_duration, 2)) * m_amount;
-          } else {
+        }
+        
+        // If we haven't begun treatment on this deme, or if this treatment is over, skip it.
+        if ((latest_treatment_age == -1) || (time_since_treatment > m_duration)) {
+          continue;
+        }
+        
+        // Find out how much to decrease the resource by
+        // none - as long as the treatment is ongoing, it is at full force
+        // lin - as the treatment continues, the amount decayed decreases linearly
+        // exp - as treatment continues, the amount decayed decreases exponentially
+        if(m_decrtype == "const") {
+          if(time_since_treatment >= m_duration) {
             adjusted_amount = 0;
+          } else {
+            adjusted_amount = m_amount;
           }
-                    
-          cResourceCount res = deme.GetDemeResourceCount();
-          const int resid = res.GetResourceByName(m_resname);
-          
-          if(resid == -1)
-          {
-            //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
-            cerr << "Error: Resource \"" << m_resname << "\" not defined for this deme" << endl;
-            continue;
-          }
-          
-          if(res.IsSpatial(resid)) {
-            for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
-              deme.AdjustSpatialResource(c, resid, -1 * deme.GetSpatialResource(c, resid) * adjusted_amount); 
-            } //End iterating through all cells
-          }
-          else
-          {
-            deme.AdjustResource(resid, -1 * res.Get(resid) * adjusted_amount);
-          }
-          
-        } //End if deme is treatable
+        } else if (m_decrtype == "lin") {
+          adjusted_amount = max(0.0, 1 - (time_since_treatment/m_duration)) * m_amount;
+        } else if (m_decrtype == "taper") {
+          adjusted_amount = max(0.0, 1 - pow(time_since_treatment/m_duration, 2)) * m_amount;
+        } else {
+          adjusted_amount = 0;
+        }
         
-      } //End iterating through all demes
+        cResourceCount res = deme.GetDemeResourceCount();
+        const int resid = res.GetResourceByName(m_resname);
+        
+        if(resid == -1)
+        {
+          //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
+          cerr << "Error: Resource \"" << m_resname << "\" not defined for this deme" << endl;
+          continue;
+        }
+        
+        if(res.IsSpatial(resid)) {
+          for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
+            deme.AdjustSpatialResource(c, resid, -1 * deme.GetSpatialResource(c, resid) * adjusted_amount); 
+          } //End iterating through all cells
+        }
+        else
+        {
+          deme.AdjustResource(resid, -1 * res.Get(resid) * adjusted_amount);
+        }
+        
+      } //End if deme is treatable
       
-    } //End Process()
+    } //End iterating through all demes
     
-  };
+  } //End Process()
+  
+};
 
 
 /*
@@ -1408,18 +1408,18 @@ class cAction_TherapyDecayDemeResource : public cAction
  counting-ones type of dynamic environment.  
  */
 class cActionToggleRewardInstruction : public cAction
-	{
-	private:
-	public:
-		cActionToggleRewardInstruction(cWorld* world, const cString& args) : cAction(world, args) {}
-		
-		static const cString GetDescription() { return "No Arguments"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetConfig().MERIT_BONUS_EFFECT.Set(-1* m_world->GetConfig().MERIT_BONUS_EFFECT.Get());
-		}
-	};
+{
+private:
+public:
+  cActionToggleRewardInstruction(cWorld* world, const cString& args) : cAction(world, args) {}
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetConfig().MERIT_BONUS_EFFECT.Set(-1* m_world->GetConfig().MERIT_BONUS_EFFECT.Get());
+  }
+};
 
 /*
  In avida.cfg, when BASE_MERIT_METHOD is set to 6 (Merit prop. to num times MERIT_BONUS_INST is in genome), 
@@ -1432,19 +1432,19 @@ class cActionToggleRewardInstruction : public cAction
  */
 
 class cActionToggleFitnessValley : public cAction
-	{
-	private:
-	public:
-		cActionToggleFitnessValley(cWorld* world, const cString& args) : cAction(world, args) {}
-		
-		static const cString GetDescription() { return "No Arguments"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			if(m_world->GetConfig().FITNESS_VALLEY.Get()) {m_world->GetConfig().FITNESS_VALLEY.Set(0);}
-			else{m_world->GetConfig().FITNESS_VALLEY.Set(1);}
-		}
-	};
+{
+private:
+public:
+  cActionToggleFitnessValley(cWorld* world, const cString& args) : cAction(world, args) {}
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if(m_world->GetConfig().FITNESS_VALLEY.Get()) {m_world->GetConfig().FITNESS_VALLEY.Set(0);}
+    else{m_world->GetConfig().FITNESS_VALLEY.Set(1);}
+  }
+};
 
 
 /*
@@ -1460,31 +1460,31 @@ class cActionToggleFitnessValley : public cAction
  The rate at which organisms are removed.
  */
 class cActionKillRate : public cAction
-	{
-	private:
-		double m_killrate;
-	public:
-		cActionKillRate(cWorld* world, const cString& args) : cAction(world, args), m_killrate(0.0)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_killrate = largs.PopWord().AsDouble();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <double probability>"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			double ave_merit = m_world->GetStats().SumMerit().Average();
-			if (ave_merit <= 0) ave_merit = 1; // make sure that we don't get NAN's or negative numbers
-			ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
-			const double kill_prob = m_killrate / ave_merit;
-			for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-				cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
-				if (cell.IsOccupied() == false) continue;
-				if (ctx.GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
-			}
-		}
-	};
+{
+private:
+  double m_killrate;
+public:
+  cActionKillRate(cWorld* world, const cString& args) : cAction(world, args), m_killrate(0.0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_killrate = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <double probability>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double ave_merit = m_world->GetStats().SumMerit().Average();
+    if (ave_merit <= 0) ave_merit = 1; // make sure that we don't get NAN's or negative numbers
+    ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
+    const double kill_prob = m_killrate / ave_merit;
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+      if (cell.IsOccupied() == false) continue;
+      if (ctx.GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
+    }
+  }
+};
 
 
 /*
@@ -1495,67 +1495,67 @@ class cActionKillRate : public cAction
  The start and stoping grid-points into which the organism should be killed.
  */
 class cActionKillRectangle : public cAction
-	{
-	private:
-		int m_x1;
-		int m_y1;
-		int m_x2;
-		int m_y2;
-	public:
-		cActionKillRectangle(cWorld* world, const cString& args) : cAction(world, args), m_x1(0), m_y1(0), m_x2(0), m_y2(0)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_y1 = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_x2 = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
-			
-			/* Be sure the user entered a valid range */
-			if (m_x1 < 0) {
-				m_x1 = 0;
-			} else if (m_x1 > m_world->GetPopulation().GetWorldX() - 1) {
-				m_x1 = m_world->GetPopulation().GetWorldX() - 1;
-			}
-			if (m_x2 < 0) {
-				m_x2 = 0;
-			} else if (m_x2 > m_world->GetPopulation().GetWorldX() - 1) {
-				m_x2 = m_world->GetPopulation().GetWorldX() - 1;
-			}
-			if (m_y1 < 0) {
-				m_y1 = 0;
-			} else if (m_y1 > m_world->GetPopulation().GetWorldY() - 1) {
-				m_y1 = m_world->GetPopulation().GetWorldY() - 1;
-			}
-			if (m_y2 < 0) {
-				m_y2 = 0;
-			} else if (m_y2 > m_world->GetPopulation().GetWorldY() - 1) {
-				m_y2 = m_world->GetPopulation().GetWorldY() - 1;
-			}
-			
-			/* Account for a rectangle that crosses over the Zero X or Y cell */
-			if (m_x2 < m_x1) {
-				m_x2 = m_x2 + m_world->GetPopulation().GetWorldX();
-			}
-			if (m_y2 < m_y1) {
-				m_y2 = m_y2 + m_world->GetPopulation().GetWorldY();
-			}
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int x1=0] [int y1=0] [int x2=0] [int y2=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			cPopulation& pop = m_world->GetPopulation();
-			for (int i = m_y1; i <= m_y2; i++) {
-				for (int j = m_x1; j <= m_x2; j++) {
-					int loc = (i % pop.GetWorldY()) * pop.GetWorldX() + (j % pop.GetWorldX());
-					cPopulationCell& cell = pop.GetCell(loc);
-					if (cell.IsOccupied()) pop.KillOrganism(cell);
-				}
-			}
-			m_world->GetPopulation().SetSyncEvents(true);
-		}
-	};
+{
+private:
+  int m_x1;
+  int m_y1;
+  int m_x2;
+  int m_y2;
+public:
+  cActionKillRectangle(cWorld* world, const cString& args) : cAction(world, args), m_x1(0), m_y1(0), m_x2(0), m_y2(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_x1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_x2 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_y2 = largs.PopWord().AsInt();
+    
+    /* Be sure the user entered a valid range */
+    if (m_x1 < 0) {
+      m_x1 = 0;
+    } else if (m_x1 > m_world->GetPopulation().GetWorldX() - 1) {
+      m_x1 = m_world->GetPopulation().GetWorldX() - 1;
+    }
+    if (m_x2 < 0) {
+      m_x2 = 0;
+    } else if (m_x2 > m_world->GetPopulation().GetWorldX() - 1) {
+      m_x2 = m_world->GetPopulation().GetWorldX() - 1;
+    }
+    if (m_y1 < 0) {
+      m_y1 = 0;
+    } else if (m_y1 > m_world->GetPopulation().GetWorldY() - 1) {
+      m_y1 = m_world->GetPopulation().GetWorldY() - 1;
+    }
+    if (m_y2 < 0) {
+      m_y2 = 0;
+    } else if (m_y2 > m_world->GetPopulation().GetWorldY() - 1) {
+      m_y2 = m_world->GetPopulation().GetWorldY() - 1;
+    }
+    
+    /* Account for a rectangle that crosses over the Zero X or Y cell */
+    if (m_x2 < m_x1) {
+      m_x2 = m_x2 + m_world->GetPopulation().GetWorldX();
+    }
+    if (m_y2 < m_y1) {
+      m_y2 = m_y2 + m_world->GetPopulation().GetWorldY();
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int x1=0] [int y1=0] [int x2=0] [int y2=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cPopulation& pop = m_world->GetPopulation();
+    for (int i = m_y1; i <= m_y2; i++) {
+      for (int j = m_x1; j <= m_x2; j++) {
+        int loc = (i % pop.GetWorldY()) * pop.GetWorldX() + (j % pop.GetWorldX());
+        cPopulationCell& cell = pop.GetCell(loc);
+        if (cell.IsOccupied()) pop.KillOrganism(cell);
+      }
+    }
+    m_world->GetPopulation().SetSyncEvents(true);
+  }
+};
 
 
 /*
@@ -1574,365 +1574,365 @@ class cActionKillRectangle : public cAction
  every type of organism can be retained.
  */
 class cActionSerialTransfer : public cAction
-	{
-	private:
-		int m_size;
-		int m_ignore_deads;
-	public:
-		cActionSerialTransfer(cWorld* world, const cString& args) : cAction(world, args), m_size(1), m_ignore_deads(1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_size = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_ignore_deads = largs.PopWord().AsInt();
-			
-			if (m_size < 0) m_size = 1;
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int transfer_size=1] [int ignore_deads=1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().SerialTransfer(m_size, m_ignore_deads);
-		}
-	};
+{
+private:
+  int m_size;
+  int m_ignore_deads;
+public:
+  cActionSerialTransfer(cWorld* world, const cString& args) : cAction(world, args), m_size(1), m_ignore_deads(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_size = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_ignore_deads = largs.PopWord().AsInt();
+    
+    if (m_size < 0) m_size = 1;
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int transfer_size=1] [int ignore_deads=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().SerialTransfer(m_size, m_ignore_deads);
+  }
+};
 
 class cActionSetMigrationRate : public cAction
-	{
-	private:
-    double m_rate;
-		
-	public:
-    cActionSetMigrationRate(cWorld* world, const cString& args) : cAction(world, args), m_rate(0.0)
-    {
-			cString largs(args);
-			if(largs.GetSize()) m_rate = largs.PopWord().AsDouble();
-    }
-		
-    static const cString GetDescription() { return "Arguments: [double rate=0.0]"; }
-		
-    void Process(cAvidaContext& ctx)
-    {
-			m_world->GetConfig().MIGRATION_RATE.Set(m_rate);
-    }
-	};
+{
+private:
+  double m_rate;
+  
+public:
+  cActionSetMigrationRate(cWorld* world, const cString& args) : cAction(world, args), m_rate(0.0)
+  {
+    cString largs(args);
+    if(largs.GetSize()) m_rate = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double rate=0.0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetConfig().MIGRATION_RATE.Set(m_rate);
+  }
+};
 
 class cActionSetMutProb : public cAction
-	{
-	private:
-		enum {
-			POINT,
-			C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
-			DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
-			D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-			PARENT, DEATH,
-			I_MUT, I_INS, I_DEL
-		} m_mut_type;
-		
-		double m_prob;
-		int m_start;
-		int m_end;
-		bool m_setconf;
-		
-	public:
-		cActionSetMutProb(cWorld* world, const cString& args) : cAction(world, args), m_prob(0.0), m_start(-1), m_end(-1), m_setconf(false)
-		{
-			cString mutstr("COPY_MUT");
-			
-			cString largs(args);
-			if (largs.GetSize()) mutstr = largs.PopWord().ToUpper();
-			if (largs.GetSize()) m_prob = largs.PopWord().AsDouble();
-			if (largs.GetSize()) m_start = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_end = largs.PopWord().AsInt();
-			
-			
-			if (mutstr == "POINT") m_mut_type = POINT;
-			
-			else if (mutstr == "COPY_MUT") m_mut_type = C_MUT;
-			else if (mutstr == "COPY_INS") m_mut_type = C_INS;
-			else if (mutstr == "COPY_DEL") m_mut_type = C_DEL;
-			else if (mutstr == "COPY_UNIFORM") m_mut_type = C_UNIFORM;
-			else if (mutstr == "COPY_SLIP") m_mut_type = C_SLIP;
-			
-			else if (mutstr == "DIV_MUT") m_mut_type = DS_MUT;
-			else if (mutstr == "DIV_INS") m_mut_type = DS_INS;
-			else if (mutstr == "DIV_DEL") m_mut_type = DS_DEL;
-			else if (mutstr == "DIV_UNIFORM") m_mut_type = DS_UNIFORM;
-			else if (mutstr == "DIV_SLIP") m_mut_type = DS_SLIP;
-			
-			else if (mutstr == "DIVIDE_MUT") m_mut_type = D1_MUT;
-			else if (mutstr == "DIVIDE_INS") m_mut_type = D1_INS;
-			else if (mutstr == "DIVIDE_DEL") m_mut_type = D1_DEL;
-			else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
-			else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
-			
-			else if (mutstr == "PARENT") m_mut_type = PARENT;
-			else if (mutstr == "DEATH") m_mut_type = DEATH;
-			else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
-			else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
-			else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
-			
-			
-			if (m_start < 0) { // start == -1  -->  all
-				m_setconf = true;
-				m_start = 0;
-				m_end = m_world->GetPopulation().GetSize();
-			}
-			if (m_end < 0)  m_end = m_start + 1; // end == -1 --> Only one cell!
-			if (m_end < m_start) { // swap order
-				int temp = m_start;
-				m_start = m_end;
-				m_end = temp;
-			}
-			if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			if (m_setconf) {
-				switch (m_mut_type) {
-					case POINT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
-						
-					case C_MUT: m_world->GetConfig().COPY_MUT_PROB.Set(m_prob); break;
-					case C_INS: m_world->GetConfig().COPY_INS_PROB.Set(m_prob); break;
-					case C_DEL: m_world->GetConfig().COPY_DEL_PROB.Set(m_prob); break;
-					case C_UNIFORM: m_world->GetConfig().COPY_UNIFORM_PROB.Set(m_prob); break;
-					case C_SLIP: m_world->GetConfig().COPY_SLIP_PROB.Set(m_prob); break;
-						
-					case DS_MUT: m_world->GetConfig().DIV_MUT_PROB.Set(m_prob); break;
-					case DS_INS: m_world->GetConfig().DIV_INS_PROB.Set(m_prob); break;
-					case DS_DEL: m_world->GetConfig().DIV_DEL_PROB.Set(m_prob); break;
-					case DS_UNIFORM: m_world->GetConfig().DIV_UNIFORM_PROB.Set(m_prob); break;
-					case DS_SLIP: m_world->GetConfig().DIV_SLIP_PROB.Set(m_prob); break;
-						
-					case D1_MUT: m_world->GetConfig().DIVIDE_MUT_PROB.Set(m_prob); break;
-					case D1_INS: m_world->GetConfig().DIVIDE_INS_PROB.Set(m_prob); break;
-					case D1_DEL: m_world->GetConfig().DIVIDE_DEL_PROB.Set(m_prob); break;
-					case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(m_prob); break;
-					case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(m_prob); break;
-						
-					case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
-					case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
-					case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(m_prob); break;
-					case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(m_prob); break;
-					case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(m_prob); break;
-					default:
-						return;
-				}
-			}
-			
-			switch (m_mut_type) {
-					
-				case C_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(m_prob); break;
-				case C_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyInsProb(m_prob); break;
-				case C_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyDelProb(m_prob); break;
-				case C_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyUniformProb(m_prob); break;
-				case C_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopySlipProb(m_prob); break;
-					
-				case DS_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivMutProb(m_prob); break;
-				case DS_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivInsProb(m_prob); break;
-				case DS_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivDelProb(m_prob); break;
-				case DS_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivUniformProb(m_prob); break;
-				case DS_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivSlipProb(m_prob); break;
-					
-				case D1_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideMutProb(m_prob); break;
-				case D1_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideInsProb(m_prob); break;
-				case D1_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideDelProb(m_prob); break;
-				case D1_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideUniformProb(m_prob); break;
-				case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(m_prob); break;
-					
-				case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
-				case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(m_prob); break;
-				case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(m_prob); break;
-				case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(m_prob); break;
-				case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(m_prob); break;
-				default:
-					return;
-			}
-		}
-	};
+{
+private:
+  enum {
+    POINT,
+    C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
+    DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
+    D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
+    PARENT, DEATH,
+    I_MUT, I_INS, I_DEL
+  } m_mut_type;
+  
+  double m_prob;
+  int m_start;
+  int m_end;
+  bool m_setconf;
+  
+public:
+  cActionSetMutProb(cWorld* world, const cString& args) : cAction(world, args), m_prob(0.0), m_start(-1), m_end(-1), m_setconf(false)
+  {
+    cString mutstr("COPY_MUT");
+    
+    cString largs(args);
+    if (largs.GetSize()) mutstr = largs.PopWord().ToUpper();
+    if (largs.GetSize()) m_prob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_end = largs.PopWord().AsInt();
+    
+    
+    if (mutstr == "POINT") m_mut_type = POINT;
+    
+    else if (mutstr == "COPY_MUT") m_mut_type = C_MUT;
+    else if (mutstr == "COPY_INS") m_mut_type = C_INS;
+    else if (mutstr == "COPY_DEL") m_mut_type = C_DEL;
+    else if (mutstr == "COPY_UNIFORM") m_mut_type = C_UNIFORM;
+    else if (mutstr == "COPY_SLIP") m_mut_type = C_SLIP;
+    
+    else if (mutstr == "DIV_MUT") m_mut_type = DS_MUT;
+    else if (mutstr == "DIV_INS") m_mut_type = DS_INS;
+    else if (mutstr == "DIV_DEL") m_mut_type = DS_DEL;
+    else if (mutstr == "DIV_UNIFORM") m_mut_type = DS_UNIFORM;
+    else if (mutstr == "DIV_SLIP") m_mut_type = DS_SLIP;
+    
+    else if (mutstr == "DIVIDE_MUT") m_mut_type = D1_MUT;
+    else if (mutstr == "DIVIDE_INS") m_mut_type = D1_INS;
+    else if (mutstr == "DIVIDE_DEL") m_mut_type = D1_DEL;
+    else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
+    else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
+    
+    else if (mutstr == "PARENT") m_mut_type = PARENT;
+    else if (mutstr == "DEATH") m_mut_type = DEATH;
+    else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
+    else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
+    else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
+    
+    
+    if (m_start < 0) { // start == -1  -->  all
+      m_setconf = true;
+      m_start = 0;
+      m_end = m_world->GetPopulation().GetSize();
+    }
+    if (m_end < 0)  m_end = m_start + 1; // end == -1 --> Only one cell!
+    if (m_end < m_start) { // swap order
+      int temp = m_start;
+      m_start = m_end;
+      m_end = temp;
+    }
+    if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    if (m_setconf) {
+      switch (m_mut_type) {
+        case POINT: m_world->GetConfig().POINT_MUT_PROB.Set(m_prob); break;
+          
+        case C_MUT: m_world->GetConfig().COPY_MUT_PROB.Set(m_prob); break;
+        case C_INS: m_world->GetConfig().COPY_INS_PROB.Set(m_prob); break;
+        case C_DEL: m_world->GetConfig().COPY_DEL_PROB.Set(m_prob); break;
+        case C_UNIFORM: m_world->GetConfig().COPY_UNIFORM_PROB.Set(m_prob); break;
+        case C_SLIP: m_world->GetConfig().COPY_SLIP_PROB.Set(m_prob); break;
+          
+        case DS_MUT: m_world->GetConfig().DIV_MUT_PROB.Set(m_prob); break;
+        case DS_INS: m_world->GetConfig().DIV_INS_PROB.Set(m_prob); break;
+        case DS_DEL: m_world->GetConfig().DIV_DEL_PROB.Set(m_prob); break;
+        case DS_UNIFORM: m_world->GetConfig().DIV_UNIFORM_PROB.Set(m_prob); break;
+        case DS_SLIP: m_world->GetConfig().DIV_SLIP_PROB.Set(m_prob); break;
+          
+        case D1_MUT: m_world->GetConfig().DIVIDE_MUT_PROB.Set(m_prob); break;
+        case D1_INS: m_world->GetConfig().DIVIDE_INS_PROB.Set(m_prob); break;
+        case D1_DEL: m_world->GetConfig().DIVIDE_DEL_PROB.Set(m_prob); break;
+        case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(m_prob); break;
+        case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(m_prob); break;
+          
+        case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(m_prob); break;
+        case DEATH: m_world->GetConfig().DEATH_PROB.Set(m_prob); break;
+        case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(m_prob); break;
+        case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(m_prob); break;
+        case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(m_prob); break;
+        default:
+          return;
+      }
+    }
+    
+    switch (m_mut_type) {
+        
+      case C_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(m_prob); break;
+      case C_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyInsProb(m_prob); break;
+      case C_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyDelProb(m_prob); break;
+      case C_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyUniformProb(m_prob); break;
+      case C_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopySlipProb(m_prob); break;
+        
+      case DS_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivMutProb(m_prob); break;
+      case DS_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivInsProb(m_prob); break;
+      case DS_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivDelProb(m_prob); break;
+      case DS_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivUniformProb(m_prob); break;
+      case DS_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivSlipProb(m_prob); break;
+        
+      case D1_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideMutProb(m_prob); break;
+      case D1_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideInsProb(m_prob); break;
+      case D1_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideDelProb(m_prob); break;
+      case D1_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideUniformProb(m_prob); break;
+      case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(m_prob); break;
+        
+      case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(m_prob); break;
+      case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(m_prob); break;
+      case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(m_prob); break;
+      case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(m_prob); break;
+      case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(m_prob); break;
+      default:
+        return;
+    }
+  }
+};
 
 class cActionModMutProb : public cAction
-	{
-	private:
-		enum {
-			POINT,
-			C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
-			DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
-			D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
-			PARENT, DEATH,
-			I_MUT, I_INS, I_DEL
-		} m_mut_type;
-		
-		double m_prob;
-		int m_start;
-		int m_end;
-		bool m_setconf;
-		
-	public:
-		cActionModMutProb(cWorld* world, const cString& args) : cAction(world, args), m_prob(0.0), m_start(-1), m_end(-1), m_setconf(false)
-		{
-      cString mutstr("COPY_MUT");
-      
-      cString largs(args);
-      if (largs.GetSize()) mutstr = largs.PopWord().ToUpper();
-      if (largs.GetSize()) m_prob = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_start = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_end = largs.PopWord().AsInt();
-      
-      if (mutstr == "POINT") m_mut_type = POINT;
-			
-      else if (mutstr == "COPY_MUT") m_mut_type = C_MUT;
-      else if (mutstr == "COPY_INS") m_mut_type = C_INS;
-      else if (mutstr == "COPY_DEL") m_mut_type = C_DEL;
-      else if (mutstr == "COPY_UNIFORM") m_mut_type = C_UNIFORM;
-      else if (mutstr == "COPY_SLIP") m_mut_type = C_SLIP;
-			
-      else if (mutstr == "DIV_MUT") m_mut_type = DS_MUT;
-      else if (mutstr == "DIV_INS") m_mut_type = DS_INS;
-      else if (mutstr == "DIV_DEL") m_mut_type = DS_DEL;
-      else if (mutstr == "DIV_UNIFORM") m_mut_type = DS_UNIFORM;
-      else if (mutstr == "DIV_SLIP") m_mut_type = DS_SLIP;
-			
-      else if (mutstr == "DIVIDE_MUT") m_mut_type = D1_MUT;
-      else if (mutstr == "DIVIDE_INS") m_mut_type = D1_INS;
-      else if (mutstr == "DIVIDE_DEL") m_mut_type = D1_DEL;
-      else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
-      else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
-			
-      else if (mutstr == "PARENT") m_mut_type = PARENT;
-      else if (mutstr == "DEATH") m_mut_type = DEATH;
-      else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
-      else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
-      else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
-      
-      if (m_start < 0) { // start == -1  -->  all
-        m_setconf = true;
-        m_start = 0;
-        m_end = m_world->GetPopulation().GetSize();
+{
+private:
+  enum {
+    POINT,
+    C_MUT, C_INS, C_DEL, C_UNIFORM, C_SLIP,
+    DS_MUT, DS_INS, DS_DEL, DS_UNIFORM, DS_SLIP,
+    D1_MUT, D1_INS, D1_DEL, D1_UNIFORM, D1_SLIP,
+    PARENT, DEATH,
+    I_MUT, I_INS, I_DEL
+  } m_mut_type;
+  
+  double m_prob;
+  int m_start;
+  int m_end;
+  bool m_setconf;
+  
+public:
+  cActionModMutProb(cWorld* world, const cString& args) : cAction(world, args), m_prob(0.0), m_start(-1), m_end(-1), m_setconf(false)
+  {
+    cString mutstr("COPY_MUT");
+    
+    cString largs(args);
+    if (largs.GetSize()) mutstr = largs.PopWord().ToUpper();
+    if (largs.GetSize()) m_prob = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_start = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_end = largs.PopWord().AsInt();
+    
+    if (mutstr == "POINT") m_mut_type = POINT;
+    
+    else if (mutstr == "COPY_MUT") m_mut_type = C_MUT;
+    else if (mutstr == "COPY_INS") m_mut_type = C_INS;
+    else if (mutstr == "COPY_DEL") m_mut_type = C_DEL;
+    else if (mutstr == "COPY_UNIFORM") m_mut_type = C_UNIFORM;
+    else if (mutstr == "COPY_SLIP") m_mut_type = C_SLIP;
+    
+    else if (mutstr == "DIV_MUT") m_mut_type = DS_MUT;
+    else if (mutstr == "DIV_INS") m_mut_type = DS_INS;
+    else if (mutstr == "DIV_DEL") m_mut_type = DS_DEL;
+    else if (mutstr == "DIV_UNIFORM") m_mut_type = DS_UNIFORM;
+    else if (mutstr == "DIV_SLIP") m_mut_type = DS_SLIP;
+    
+    else if (mutstr == "DIVIDE_MUT") m_mut_type = D1_MUT;
+    else if (mutstr == "DIVIDE_INS") m_mut_type = D1_INS;
+    else if (mutstr == "DIVIDE_DEL") m_mut_type = D1_DEL;
+    else if (mutstr == "DIVIDE_UNIFORM") m_mut_type = D1_UNIFORM;
+    else if (mutstr == "DIVIDE_SLIP") m_mut_type = D1_SLIP;
+    
+    else if (mutstr == "PARENT") m_mut_type = PARENT;
+    else if (mutstr == "DEATH") m_mut_type = DEATH;
+    else if (mutstr == "INJECT_MUT") m_mut_type = I_MUT;
+    else if (mutstr == "INJECT_INS") m_mut_type = I_INS;
+    else if (mutstr == "INJECT_DEL") m_mut_type = I_DEL;
+    
+    if (m_start < 0) { // start == -1  -->  all
+      m_setconf = true;
+      m_start = 0;
+      m_end = m_world->GetPopulation().GetSize();
+    }
+    if (m_end < 0)  m_end = m_start + 1; // end == -1 --> Only one cell!
+    if (m_end < m_start) { // swap order
+      int temp = m_start;
+      m_start = m_end;
+      m_end = temp;
+    }
+    if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double prob = m_prob;
+    
+    switch (m_mut_type) {
+      case POINT: prob += m_world->GetConfig().POINT_MUT_PROB.Get(); break;
+        
+      case C_MUT: prob += m_world->GetConfig().COPY_MUT_PROB.Get(); break;
+      case C_INS: prob += m_world->GetConfig().COPY_INS_PROB.Get(); break;
+      case C_DEL: prob += m_world->GetConfig().COPY_DEL_PROB.Get(); break;
+      case C_UNIFORM: prob += m_world->GetConfig().COPY_MUT_PROB.Get(); break;
+      case C_SLIP: prob += m_world->GetConfig().COPY_MUT_PROB.Get(); break;
+        
+      case DS_MUT: prob += m_world->GetConfig().DIV_MUT_PROB.Get(); break;
+      case DS_INS: prob += m_world->GetConfig().DIV_INS_PROB.Get(); break;
+      case DS_DEL: prob += m_world->GetConfig().DIV_DEL_PROB.Get(); break;
+      case DS_UNIFORM: prob += m_world->GetConfig().DIV_MUT_PROB.Get(); break;
+      case DS_SLIP: prob += m_world->GetConfig().DIV_MUT_PROB.Get(); break;
+        
+      case D1_MUT: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
+      case D1_INS: prob += m_world->GetConfig().DIVIDE_INS_PROB.Get(); break;
+      case D1_DEL: prob += m_world->GetConfig().DIVIDE_DEL_PROB.Get(); break;
+      case D1_UNIFORM: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
+      case D1_SLIP: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
+        
+      case PARENT: prob += m_world->GetConfig().PARENT_MUT_PROB.Get(); break;
+      case DEATH: prob += m_world->GetConfig().DEATH_PROB.Get(); break;
+      case I_MUT: prob += m_world->GetConfig().INJECT_MUT_PROB.Get(); break;
+      case I_INS: prob += m_world->GetConfig().INJECT_INS_PROB.Get(); break;
+      case I_DEL: prob += m_world->GetConfig().INJECT_DEL_PROB.Get(); break;
+      default:
+        return;
+    }
+    
+    if (m_setconf) {
+      switch (m_mut_type) {
+        case POINT: m_world->GetConfig().POINT_MUT_PROB.Set(prob); break;
+          
+        case C_MUT: m_world->GetConfig().COPY_MUT_PROB.Set(prob); break;
+        case C_INS: m_world->GetConfig().COPY_INS_PROB.Set(prob); break;
+        case C_DEL: m_world->GetConfig().COPY_DEL_PROB.Set(prob); break;
+        case C_UNIFORM: m_world->GetConfig().COPY_UNIFORM_PROB.Set(prob); break;
+        case C_SLIP: m_world->GetConfig().COPY_SLIP_PROB.Set(prob); break;
+          
+        case DS_MUT: m_world->GetConfig().DIV_MUT_PROB.Set(prob); break;
+        case DS_INS: m_world->GetConfig().DIV_INS_PROB.Set(prob); break;
+        case DS_DEL: m_world->GetConfig().DIV_DEL_PROB.Set(prob); break;
+        case DS_UNIFORM: m_world->GetConfig().DIV_UNIFORM_PROB.Set(prob); break;
+        case DS_SLIP: m_world->GetConfig().DIV_SLIP_PROB.Set(prob); break;
+          
+        case D1_MUT: m_world->GetConfig().DIVIDE_MUT_PROB.Set(prob); break;
+        case D1_INS: m_world->GetConfig().DIVIDE_INS_PROB.Set(prob); break;
+        case D1_DEL: m_world->GetConfig().DIVIDE_DEL_PROB.Set(prob); break;
+        case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(prob); break;
+        case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(prob); break;
+          
+        case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(prob); break;
+        case DEATH: m_world->GetConfig().DEATH_PROB.Set(prob); break;
+        case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(prob); break;
+        case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(prob); break;
+        case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(prob); break;
+        default:
+          return;
       }
-      if (m_end < 0)  m_end = m_start + 1; // end == -1 --> Only one cell!
-      if (m_end < m_start) { // swap order
-        int temp = m_start;
-        m_start = m_end;
-        m_end = temp;
-      }
-      if (m_end > m_world->GetPopulation().GetSize()) m_end = m_world->GetPopulation().GetSize();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string mut_type='COPY_MUT'] [double prob=0.0] [int start_cell=-1] [int end_cell=-1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			double prob = m_prob;
-			
-			switch (m_mut_type) {
-				case POINT: prob += m_world->GetConfig().POINT_MUT_PROB.Get(); break;
-					
-				case C_MUT: prob += m_world->GetConfig().COPY_MUT_PROB.Get(); break;
-				case C_INS: prob += m_world->GetConfig().COPY_INS_PROB.Get(); break;
-				case C_DEL: prob += m_world->GetConfig().COPY_DEL_PROB.Get(); break;
-				case C_UNIFORM: prob += m_world->GetConfig().COPY_MUT_PROB.Get(); break;
-				case C_SLIP: prob += m_world->GetConfig().COPY_MUT_PROB.Get(); break;
-					
-				case DS_MUT: prob += m_world->GetConfig().DIV_MUT_PROB.Get(); break;
-				case DS_INS: prob += m_world->GetConfig().DIV_INS_PROB.Get(); break;
-				case DS_DEL: prob += m_world->GetConfig().DIV_DEL_PROB.Get(); break;
-				case DS_UNIFORM: prob += m_world->GetConfig().DIV_MUT_PROB.Get(); break;
-				case DS_SLIP: prob += m_world->GetConfig().DIV_MUT_PROB.Get(); break;
-					
-				case D1_MUT: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
-				case D1_INS: prob += m_world->GetConfig().DIVIDE_INS_PROB.Get(); break;
-				case D1_DEL: prob += m_world->GetConfig().DIVIDE_DEL_PROB.Get(); break;
-				case D1_UNIFORM: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
-				case D1_SLIP: prob += m_world->GetConfig().DIVIDE_MUT_PROB.Get(); break;
-					
-				case PARENT: prob += m_world->GetConfig().PARENT_MUT_PROB.Get(); break;
-				case DEATH: prob += m_world->GetConfig().DEATH_PROB.Get(); break;
-				case I_MUT: prob += m_world->GetConfig().INJECT_MUT_PROB.Get(); break;
-				case I_INS: prob += m_world->GetConfig().INJECT_INS_PROB.Get(); break;
-				case I_DEL: prob += m_world->GetConfig().INJECT_DEL_PROB.Get(); break;
-				default:
-					return;
-			}
-			
-			if (m_setconf) {
-				switch (m_mut_type) {
-					case POINT: m_world->GetConfig().POINT_MUT_PROB.Set(prob); break;
-						
-					case C_MUT: m_world->GetConfig().COPY_MUT_PROB.Set(prob); break;
-					case C_INS: m_world->GetConfig().COPY_INS_PROB.Set(prob); break;
-					case C_DEL: m_world->GetConfig().COPY_DEL_PROB.Set(prob); break;
-					case C_UNIFORM: m_world->GetConfig().COPY_UNIFORM_PROB.Set(prob); break;
-					case C_SLIP: m_world->GetConfig().COPY_SLIP_PROB.Set(prob); break;
-						
-					case DS_MUT: m_world->GetConfig().DIV_MUT_PROB.Set(prob); break;
-					case DS_INS: m_world->GetConfig().DIV_INS_PROB.Set(prob); break;
-					case DS_DEL: m_world->GetConfig().DIV_DEL_PROB.Set(prob); break;
-					case DS_UNIFORM: m_world->GetConfig().DIV_UNIFORM_PROB.Set(prob); break;
-					case DS_SLIP: m_world->GetConfig().DIV_SLIP_PROB.Set(prob); break;
-						
-					case D1_MUT: m_world->GetConfig().DIVIDE_MUT_PROB.Set(prob); break;
-					case D1_INS: m_world->GetConfig().DIVIDE_INS_PROB.Set(prob); break;
-					case D1_DEL: m_world->GetConfig().DIVIDE_DEL_PROB.Set(prob); break;
-					case D1_UNIFORM: m_world->GetConfig().DIVIDE_UNIFORM_PROB.Set(prob); break;
-					case D1_SLIP: m_world->GetConfig().DIVIDE_SLIP_PROB.Set(prob); break;
-						
-					case PARENT: m_world->GetConfig().PARENT_MUT_PROB.Set(prob); break;
-					case DEATH: m_world->GetConfig().DEATH_PROB.Set(prob); break;
-					case I_MUT: m_world->GetConfig().INJECT_MUT_PROB.Set(prob); break;
-					case I_INS: m_world->GetConfig().INJECT_INS_PROB.Set(prob); break;
-					case I_DEL: m_world->GetConfig().INJECT_DEL_PROB.Set(prob); break;
-					default:
-						return;
-				}
-			}
-			
-			switch (m_mut_type) {
-				case C_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(prob); break;
-				case C_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyInsProb(prob); break;
-				case C_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyDelProb(prob); break;
-				case C_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyUniformProb(prob); break;
-				case C_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopySlipProb(prob); break;
-					
-				case DS_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivMutProb(prob); break;
-				case DS_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivInsProb(prob); break;
-				case DS_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivDelProb(prob); break;
-				case DS_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivUniformProb(prob); break;
-				case DS_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivSlipProb(prob); break;
-					
-				case D1_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideMutProb(prob); break;
-				case D1_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideInsProb(prob); break;
-				case D1_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideDelProb(prob); break;
-				case D1_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideUniformProb(prob); break;
-				case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(prob); break;
-					
-					
-				case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(prob); break;
-				case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(prob); break;
-				case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(prob); break;
-				case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(prob); break;
-				case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(prob); break;
-				default:
-					return;
-			}
-		}
-	};
+    }
+    
+    switch (m_mut_type) {
+      case C_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyMutProb(prob); break;
+      case C_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyInsProb(prob); break;
+      case C_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyDelProb(prob); break;
+      case C_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopyUniformProb(prob); break;
+      case C_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetCopySlipProb(prob); break;
+        
+      case DS_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivMutProb(prob); break;
+      case DS_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivInsProb(prob); break;
+      case DS_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivDelProb(prob); break;
+      case DS_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivUniformProb(prob); break;
+      case DS_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivSlipProb(prob); break;
+        
+      case D1_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideMutProb(prob); break;
+      case D1_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideInsProb(prob); break;
+      case D1_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideDelProb(prob); break;
+      case D1_UNIFORM: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideUniformProb(prob); break;
+      case D1_SLIP: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDivideSlipProb(prob); break;
+        
+        
+      case PARENT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetParentMutProb(prob); break;
+      case DEATH: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetDeathProb(prob); break;
+      case I_MUT: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectMutProb(prob); break;
+      case I_INS: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectInsProb(prob); break;
+      case I_DEL: for (int i = m_start; i < m_end; i++) m_world->GetPopulation().GetCell(i).MutationRates().SetInjectDelProb(prob); break;
+      default:
+        return;
+    }
+  }
+};
 
 
 class cActionZeroMuts : public cAction
-	{
-	public:
-		cActionZeroMuts(cWorld* world, const cString& args) : cAction(world, args) { ; }
-		static const cString GetDescription() { return "No Arguments"; }
-		void Process(cAvidaContext& ctx)
-		{
-			for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
-				m_world->GetPopulation().GetCell(i).MutationRates().Clear();
-			}
-		}
-	};
+{
+public:
+  cActionZeroMuts(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  static const cString GetDescription() { return "No Arguments"; }
+  void Process(cAvidaContext& ctx)
+  {
+    for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
+      m_world->GetPopulation().GetCell(i).MutationRates().Clear();
+    }
+  }
+};
 
 
 /*! This action enables the tracking of all messages that are sent in each deme. */
@@ -1968,23 +1968,23 @@ cOrgMessagePred_AllData* cActionTrackAllMessages::s_pred=0;
  */
 
 class cActionCompeteDemes : public cAction
-	{
-	private:
-		int m_type;
-	public:
-		cActionCompeteDemes(cWorld* world, const cString& args) : cAction(world, args), m_type(1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_type = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int type=1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().CompeteDemes(m_type);
-		}
-	};
+{
+private:
+  int m_type;
+public:
+  cActionCompeteDemes(cWorld* world, const cString& args) : cAction(world, args), m_type(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_type = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int type=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().CompeteDemes(m_type);
+  }
+};
 
 
 /*! Assign a random identifier to the data for each cell and save those IDs for later
@@ -2004,13 +2004,13 @@ public:
 			_num_cells = largs.PopWord().AsInt();
 		}		
 	}
-
+  
 	//! Destructor.
 	virtual ~cAssignRandomCellData() { }
   
 	//! Description of this event; only possible argument is the number of cells whose data is to be set.
   static const cString GetDescription() { return "Arguments: [num_cells=deme_size]"; }
-
+  
 	//! Process this event, setting the requested number of cell's data to a random value.
   virtual void Process(cAvidaContext& ctx) {
 		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
@@ -3243,41 +3243,41 @@ public:
  */
 
 class cActionReplicateDemes : public cAction
-	{
-	private:
-		int m_rep_trigger;
-	public:
-		cActionReplicateDemes(cWorld* world, const cString& args) : cAction(world, args), m_rep_trigger(-1)
-		{
-			cString largs(args);
-			cString in_trigger("full_deme");
-			if (largs.GetSize()) in_trigger = largs.PopWord();
-			
-			if (in_trigger == "all") m_rep_trigger = 0;
-			else if (in_trigger == "full_deme") m_rep_trigger = 1;
-			else if (in_trigger == "corners") m_rep_trigger = 2;
-			else if (in_trigger == "deme-age") m_rep_trigger = 3;
-			else if (in_trigger == "birth-count") m_rep_trigger = 4;
-			else if (in_trigger == "sat-mov-pred") m_rep_trigger = 5;
-			else if (in_trigger == "events-killed") m_rep_trigger = 6;
-			else if (in_trigger == "sat-msg-pred") m_rep_trigger = 7;
-			else if (in_trigger == "sat-deme-predicate") m_rep_trigger = 8;
-			else {
-				cString err("Unknown replication trigger '");
-				err += in_trigger;
-				err += "' in ReplicatDemes action.";
-				m_world->GetDriver().RaiseException(err);
-				return;
-			}
-		}
-		
-		static const cString GetDescription() { return "Arguments: [string trigger=full_deme]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().ReplicateDemes(m_rep_trigger);
-		}
-	};
+{
+private:
+  int m_rep_trigger;
+public:
+  cActionReplicateDemes(cWorld* world, const cString& args) : cAction(world, args), m_rep_trigger(-1)
+  {
+    cString largs(args);
+    cString in_trigger("full_deme");
+    if (largs.GetSize()) in_trigger = largs.PopWord();
+    
+    if (in_trigger == "all") m_rep_trigger = 0;
+    else if (in_trigger == "full_deme") m_rep_trigger = 1;
+    else if (in_trigger == "corners") m_rep_trigger = 2;
+    else if (in_trigger == "deme-age") m_rep_trigger = 3;
+    else if (in_trigger == "birth-count") m_rep_trigger = 4;
+    else if (in_trigger == "sat-mov-pred") m_rep_trigger = 5;
+    else if (in_trigger == "events-killed") m_rep_trigger = 6;
+    else if (in_trigger == "sat-msg-pred") m_rep_trigger = 7;
+    else if (in_trigger == "sat-deme-predicate") m_rep_trigger = 8;
+    else {
+      cString err("Unknown replication trigger '");
+      err += in_trigger;
+      err += "' in ReplicatDemes action.";
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string trigger=full_deme]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().ReplicateDemes(m_rep_trigger);
+  }
+};
 
 
 /*
@@ -3301,22 +3301,22 @@ class cActionReplicateDemes : public cAction
  */
 
 class cActionDivideDemes : public cAction
-	{
-	private:
-	public:
-		cActionDivideDemes(cWorld* world, const cString& args) : cAction(world, args)
-		{
-			cString largs(args);
-			// Nothing to do here yet....
-		}
-		
-		static const cString GetDescription() { return "No arguments (yet!)"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().DivideDemes();
-		}
-	};
+{
+private:
+public:
+  cActionDivideDemes(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    // Nothing to do here yet....
+  }
+  
+  static const cString GetDescription() { return "No arguments (yet!)"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().DivideDemes();
+  }
+};
 
 
 /*! Mix all organisms in the population.
@@ -3324,7 +3324,7 @@ class cActionDivideDemes : public cAction
  This event, in combination with a method for deme competition, can be used to model
  the different biologically-inspired approaches to group selection, specifically
  Wilson's and Traulsen's models.
-*/
+ */
 class cActionMixPopulation : public cAction {
 public:
 	cActionMixPopulation(cWorld* world, const cString& args) : cAction(world, args) {
@@ -3343,108 +3343,111 @@ public:
  copied into itself and the parameters reset. 
  */
 class cActionResetDemes : public cAction
-	{
-	public:
-		cActionResetDemes(cWorld* world, const cString& args) : cAction(world, args) { ; }
-		
-		static const cString GetDescription() { return "No Arguments"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().ResetDemes();
-		}
-	};
+{
+public:
+  cActionResetDemes(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().ResetDemes();
+  }
+};
 
 
 class cActionCopyDeme : public cAction
-	{
-	private:
-		int m_id1;
-		int m_id2;
-	public:
-		cActionCopyDeme(cWorld* world, const cString& args) : cAction(world, args), m_id1(0), m_id2(1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_id1 = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_id2 = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <int src_id> <int dest_id>"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().CopyDeme(m_id1, m_id2);
-		}
-	};
+{
+private:
+  int m_id1;
+  int m_id2;
+public:
+  cActionCopyDeme(cWorld* world, const cString& args) : cAction(world, args), m_id1(0), m_id2(1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_id2 = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int src_id> <int dest_id>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().CopyDeme(m_id1, m_id2);
+  }
+};
 
 
 class cActionNewTrial : public cAction
-	{
-	private:
-	public:
-		cActionNewTrial(cWorld* world, const cString& args) : cAction(world, args)
-		{
-			cString largs(args);
-		}
-		
-		static const cString GetDescription() { return "No Arguments"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().NewTrial(ctx);
-		}
-	};
+{
+private:
+public:
+  cActionNewTrial(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+  }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().NewTrial(ctx);
+  }
+};
 
 
 /* This action decays the number of points a deme has accumulated by 
  a percentage that is set in the configuration file. (hjg)*/
 class cActionDecayPoints : public cAction
-	{
-	private:
-	public:
-		cActionDecayPoints(cWorld* world, const cString& args) : cAction(world, args)
-		{
-			cString largs(args);
-		}
-		
-		static const cString GetDescription() { return "No Arguments"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			double decay_percent = (double) m_world->GetConfig().POINT_DECAY_PERCENT.Get() / 100;
-			double cur_points = 0;
-			int sub_points = 0;
-			
-			// For each deme, subtract decay_percent of its points.
-			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-				cur_points = m_world->GetPopulation().GetDeme(i).GetNumberOfPoints(); 
-				sub_points = (int) (cur_points * decay_percent); 
-				m_world->GetPopulation().GetDeme(i).SubtractNumberOfPoints(sub_points); 
-			}		
-			
-		}
-	};
+{
+private:
+  int m_decay_percent;
+  
+public:
+  cActionDecayPoints(cWorld* world, const cString& args) : cAction(world, args), m_decay_percent(0)
+  {
+    cString largs(args);
+    m_decay_percent = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "No Arguments"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double decay_percent = (double) m_decay_percent / 100;
+    double cur_points = 0;
+    int sub_points = 0;
+    
+    // For each deme, subtract decay_percent of its points.
+    for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+      cur_points = m_world->GetPopulation().GetDeme(i).GetNumberOfPoints(); 
+      sub_points = (int) (cur_points * decay_percent); 
+      m_world->GetPopulation().GetDeme(i).SubtractNumberOfPoints(sub_points); 
+    }		
+    
+  }
+};
 
 class cActionCompeteOrganisms : public cAction
-	{
-	private:
-		int m_type;
-		int m_parents_survive;
-	public:
-		cActionCompeteOrganisms(cWorld* world, const cString& args) : cAction(world, args), m_type(0), m_parents_survive(0)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_type = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_parents_survive = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int type=0] [int parents_survive=0] [double scaled_time=1.0] [int dynamic_scaling=0]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().CompeteOrganisms(ctx, m_type, m_parents_survive);
-		}
-	};
+{
+private:
+  int m_type;
+  int m_parents_survive;
+public:
+  cActionCompeteOrganisms(cWorld* world, const cString& args) : cAction(world, args), m_type(0), m_parents_survive(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_type = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_parents_survive = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int type=0] [int parents_survive=0] [double scaled_time=1.0] [int dynamic_scaling=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().CompeteOrganisms(ctx, m_type, m_parents_survive);
+  }
+};
 
 
 /*
@@ -3459,68 +3462,68 @@ class cActionCompeteOrganisms : public cAction
  default (or -1) = last row in population.
  */
 class cActionSeverGridCol : public cAction
-	{
-	private:
-		int m_id;
-		int m_min;
-		int m_max;
-	public:
-		cActionSeverGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_id = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_min = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_max = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-			if (m_id == -1) m_id = world_x / 2;
-			if (m_max == -1) m_max = world_y;
-			if (m_id < 0 || m_id >= world_x) {
-				cString err = cStringUtil::Stringf("Column ID %d out of range for SeverGridCol", m_id);
-				m_world->GetDriver().RaiseException(err);
-				return;
-			}
-			
-			// Loop through all of the rows and make the cut on each...
-			for (int row_id = m_min; row_id < m_max; row_id++) {
-				//col is always the same -- compute which row to make the cut
-				int idA = row_id * world_x + m_id;
-				int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
-				
-				int idA0 = GridNeighbor(idA, world_x, world_y,  0, -1);
-				int idA1 = GridNeighbor(idA, world_x, world_y,  0,  1);
-				
-				int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
-				int idB1 = GridNeighbor(idA, world_x, world_y, -1,  1);
-				
-				cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
-				cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-				
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionSeverGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_id == -1) m_id = world_x / 2;
+    if (m_max == -1) m_max = world_y;
+    if (m_id < 0 || m_id >= world_x) {
+      cString err = cStringUtil::Stringf("Column ID %d out of range for SeverGridCol", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    
+    // Loop through all of the rows and make the cut on each...
+    for (int row_id = m_min; row_id < m_max; row_id++) {
+      //col is always the same -- compute which row to make the cut
+      int idA = row_id * world_x + m_id;
+      int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
+      
+      int idA0 = GridNeighbor(idA, world_x, world_y,  0, -1);
+      int idA1 = GridNeighbor(idA, world_x, world_y,  0,  1);
+      
+      int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
+      int idB1 = GridNeighbor(idA, world_x, world_y, -1,  1);
+      
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      
 #ifdef DEBUG
-				int temp_x = 0, temp_y = 0;
-				cellA.GetPosition(temp_x,temp_y);
-				cerr << "cellA: " << temp_x << " " << temp_y << endl;
-				cellB.GetPosition(temp_x,temp_y);
-				cerr << "cellB: " << temp_x << " " << temp_y << endl;
+      int temp_x = 0, temp_y = 0;
+      cellA.GetPosition(temp_x,temp_y);
+      cerr << "cellA: " << temp_x << " " << temp_y << endl;
+      cellB.GetPosition(temp_x,temp_y);
+      cerr << "cellB: " << temp_x << " " << temp_y << endl;
 #endif
-				
-				tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
-				tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
-				cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
-				cellA_list.Remove(&m_world->GetPopulation().GetCell(idB0));
-				cellA_list.Remove(&m_world->GetPopulation().GetCell(idB1));
-				cellB_list.Remove(&m_world->GetPopulation().GetCell(idA));
-				cellB_list.Remove(&m_world->GetPopulation().GetCell(idA0));
-				cellB_list.Remove(&m_world->GetPopulation().GetCell(idA1));
-			}
-		}
-	};
+      
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB0));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB1));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA0));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA1));
+    }
+  }
+};
 
 
 ///// sever_grid_row /////
@@ -3537,67 +3540,67 @@ class cActionSeverGridCol : public cAction
  default (or -1) = last column in population.
  */
 class cActionSeverGridRow : public cAction
-	{
-	private:
-		int m_id;
-		int m_min;
-		int m_max;
-	public:
-		cActionSeverGridRow(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_id = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_min = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_max = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-			if (m_id == -1) m_id = world_y / 2;
-			if (m_max == -1) m_max = world_x;
-			if (m_id < 0 || m_id >= world_y) {
-				cString err = cStringUtil::Stringf("Row ID %d out of range for SeverGridRow", m_id);
-				m_world->GetDriver().RaiseException(err);
-				return;
-			}
-			
-			// Loop through all of the cols and make the cut on each...
-			for (int col_id = m_min; col_id < m_max; col_id++) {
-				//row is always the same -- only the column changes -- could also do this in the loop
-				int idA = m_id * world_x + col_id;
-				int idB  = GridNeighbor(idA, world_x, world_y,  0, -1);
-				
-				int idA0 = GridNeighbor(idA, world_x, world_y, -1,  0);
-				int idA1 = GridNeighbor(idA, world_x, world_y,  1,  0);
-				
-				int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
-				int idB1 = GridNeighbor(idA, world_x, world_y,  1, -1);
-				cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
-				cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-				
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionSeverGridRow(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_id == -1) m_id = world_y / 2;
+    if (m_max == -1) m_max = world_x;
+    if (m_id < 0 || m_id >= world_y) {
+      cString err = cStringUtil::Stringf("Row ID %d out of range for SeverGridRow", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    
+    // Loop through all of the cols and make the cut on each...
+    for (int col_id = m_min; col_id < m_max; col_id++) {
+      //row is always the same -- only the column changes -- could also do this in the loop
+      int idA = m_id * world_x + col_id;
+      int idB  = GridNeighbor(idA, world_x, world_y,  0, -1);
+      
+      int idA0 = GridNeighbor(idA, world_x, world_y, -1,  0);
+      int idA1 = GridNeighbor(idA, world_x, world_y,  1,  0);
+      
+      int idB0 = GridNeighbor(idA, world_x, world_y, -1, -1);
+      int idB1 = GridNeighbor(idA, world_x, world_y,  1, -1);
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      
 #ifdef DEBUG
-				int temp_x = 0, temp_y = 0;
-				cellA.GetPosition(temp_x,temp_y);
-				cerr << "cellA: " << temp_x << " " << temp_y << endl;
-				cellB.GetPosition(temp_x,temp_y);
-				cerr << "cellB: " << temp_x << " " << temp_y << endl;
+      int temp_x = 0, temp_y = 0;
+      cellA.GetPosition(temp_x,temp_y);
+      cerr << "cellA: " << temp_x << " " << temp_y << endl;
+      cellB.GetPosition(temp_x,temp_y);
+      cerr << "cellB: " << temp_x << " " << temp_y << endl;
 #endif
-				
-				tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
-				tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
-				cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
-				cellA_list.Remove(&m_world->GetPopulation().GetCell(idB0));
-				cellA_list.Remove(&m_world->GetPopulation().GetCell(idB1));
-				cellB_list.Remove(&m_world->GetPopulation().GetCell(idA));
-				cellB_list.Remove(&m_world->GetPopulation().GetCell(idA0));
-				cellB_list.Remove(&m_world->GetPopulation().GetCell(idA1));
-			}
-		}
-	};
+      
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB0));
+      cellA_list.Remove(&m_world->GetPopulation().GetCell(idB1));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA0));
+      cellB_list.Remove(&m_world->GetPopulation().GetCell(idA1));
+    }
+  }
+};
 
 
 /*
@@ -3612,68 +3615,68 @@ class cActionSeverGridRow : public cAction
  default (or -1) = last row in population.
  */
 class cActionJoinGridCol : public cAction
-	{
-	private:
-		int m_id;
-		int m_min;
-		int m_max;
-	public:
-		cActionJoinGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_id = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_min = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_max = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-			const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
-			if (m_id == -1) m_id = world_x / 2;
-			if (m_max == -1) m_max = world_y;
-			if (m_id < 0 || m_id >= world_x) {
-				cString err = cStringUtil::Stringf("Column ID %d out of range for JoinGridCol", m_id);
-				m_world->GetDriver().RaiseException(err);
-				return;
-			}
-			// Loop through all of the rows and make the cut on each...
-			for (int row_id = m_min; row_id < m_max; row_id++) {
-				//compute which cells to be joined -- grab them from the population
-				int idA = row_id * world_x + m_id;
-				int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
-				cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
-				cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-				
-				//grab the cell lists
-				tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
-				tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
-				
-				//these cells are always joined
-				if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
-				if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
-				
-				//make sure we don't break the bounded grid at the top
-				if((nGeometry::GRID == geometry && row_id != 0) || nGeometry::GRID != geometry){
-					cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0, -1));
-					cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
-					if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
-					if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
-				}
-				
-				//make sure we don't break the bounded grid at the bottom
-				if((nGeometry::GRID == geometry && row_id != (world_y-1)) || nGeometry::GRID != geometry){
-					cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0,  1));
-					cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  1));
-					if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
-					if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
-				}
-			}
-		}
-	};
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionJoinGridCol(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int col_id=-1] [int min_row=0] [int max_row=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+    if (m_id == -1) m_id = world_x / 2;
+    if (m_max == -1) m_max = world_y;
+    if (m_id < 0 || m_id >= world_x) {
+      cString err = cStringUtil::Stringf("Column ID %d out of range for JoinGridCol", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    // Loop through all of the rows and make the cut on each...
+    for (int row_id = m_min; row_id < m_max; row_id++) {
+      //compute which cells to be joined -- grab them from the population
+      int idA = row_id * world_x + m_id;
+      int idB  = GridNeighbor(idA, world_x, world_y, -1,  0);
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      
+      //grab the cell lists
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      
+      //these cells are always joined
+      if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
+      if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
+      
+      //make sure we don't break the bounded grid at the top
+      if((nGeometry::GRID == geometry && row_id != 0) || nGeometry::GRID != geometry){
+        cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0, -1));
+        cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
+        if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
+        if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
+      }
+      
+      //make sure we don't break the bounded grid at the bottom
+      if((nGeometry::GRID == geometry && row_id != (world_y-1)) || nGeometry::GRID != geometry){
+        cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  0,  1));
+        cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  1));
+        if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
+        if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
+      }
+    }
+  }
+};
 
 
 /*
@@ -3688,180 +3691,180 @@ class cActionJoinGridCol : public cAction
  default (or -1) = last column in population.
  */
 class cActionJoinGridRow : public cAction
-	{
-	private:
-		int m_id;
-		int m_min;
-		int m_max;
-	public:
-		cActionJoinGridRow(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_id = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_min = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_max = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-			const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
-			if (m_id == -1) m_id = world_y / 2;
-			if (m_max == -1) m_max = world_x;
-			if (m_id < 0 || m_id >= world_y) {
-				cString err = cStringUtil::Stringf("Row ID %d out of range for JoinGridRow", m_id);
-				m_world->GetDriver().RaiseException(err);
-				return;
-			}
-			// Loop through all of the rows and make the cut on each...
-			for (int col_id = m_min; col_id < m_max; col_id++) {
-				//compute which cells are beoing joined and grab them
-				int idA = m_id * world_x + col_id;
-				int idB  = GridNeighbor(idA, world_x, world_y, 0, -1);
-				cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
-				cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-				
-				//grab the cell lists
-				tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
-				tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
-				
-				//these cells are always joined
-				if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
-				if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
-				
-				//make sure we don't break the bounded grid on the left
-				if((nGeometry::GRID == geometry && col_id != 0) || nGeometry::GRID != geometry){
-					cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  0));
-					cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
-					if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
-					if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
-				}
-				
-				//make cure we don't break the bounded grid on the right
-				if((nGeometry::GRID == geometry && col_id != (world_x-1)) || nGeometry::GRID != geometry){
-					cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1,  0));
-					cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1, -1));
-					if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
-					if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
-				}
-			}
-		}
-	};
+{
+private:
+  int m_id;
+  int m_min;
+  int m_max;
+public:
+  cActionJoinGridRow(cWorld* world, const cString& args) : cAction(world, args), m_id(-1), m_min(0), m_max(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_id = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_min = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_max = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int row_id=-1] [int min_col=0] [int max_col=-1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+    if (m_id == -1) m_id = world_y / 2;
+    if (m_max == -1) m_max = world_x;
+    if (m_id < 0 || m_id >= world_y) {
+      cString err = cStringUtil::Stringf("Row ID %d out of range for JoinGridRow", m_id);
+      m_world->GetDriver().RaiseException(err);
+      return;
+    }
+    // Loop through all of the rows and make the cut on each...
+    for (int col_id = m_min; col_id < m_max; col_id++) {
+      //compute which cells are beoing joined and grab them
+      int idA = m_id * world_x + col_id;
+      int idB  = GridNeighbor(idA, world_x, world_y, 0, -1);
+      cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+      cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+      
+      //grab the cell lists
+      tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+      tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+      
+      //these cells are always joined
+      if (cellA_list.FindPtr(&cellB)  == NULL) cellA_list.Push(&cellB);
+      if (cellB_list.FindPtr(&cellA)  == NULL) cellB_list.Push(&cellA);
+      
+      //make sure we don't break the bounded grid on the left
+      if((nGeometry::GRID == geometry && col_id != 0) || nGeometry::GRID != geometry){
+        cPopulationCell& cellA0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1,  0));
+        cPopulationCell& cellB0 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y, -1, -1));
+        if (cellA_list.FindPtr(&cellB0) == NULL) cellA_list.Push(&cellB0);
+        if (cellB_list.FindPtr(&cellA0) == NULL) cellB_list.Push(&cellA0);
+      }
+      
+      //make cure we don't break the bounded grid on the right
+      if((nGeometry::GRID == geometry && col_id != (world_x-1)) || nGeometry::GRID != geometry){
+        cPopulationCell& cellA1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1,  0));
+        cPopulationCell& cellB1 = m_world->GetPopulation().GetCell(GridNeighbor(idA, world_x, world_y,  1, -1));
+        if (cellA_list.FindPtr(&cellB1) == NULL) cellA_list.Push(&cellB1);
+        if (cellB_list.FindPtr(&cellA1) == NULL) cellB_list.Push(&cellA1);
+      }
+    }
+  }
+};
 
 
 class cActionConnectCells : public cAction
-	{
-	private:
-		int m_a_x;
-		int m_a_y;
-		int m_b_x;
-		int m_b_y;
-	public:
-		cActionConnectCells(cWorld* world, const cString& args) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_a_y = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_b_x = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-			if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
-					m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
-				m_world->GetDriver().RaiseException("ConnectCells cell out of range");
-				return;
-			}
-			int idA = m_a_y * world_x + m_a_x;
-			int idB = m_b_y * world_x + m_b_x;
-			cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
-			cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-			tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
-			tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
-			cellA_list.PushRear(&cellB);
-			cellB_list.PushRear(&cellA);
-		}
-	};
+{
+private:
+  int m_a_x;
+  int m_a_y;
+  int m_b_x;
+  int m_b_y;
+public:
+  cActionConnectCells(cWorld* world, const cString& args) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_a_y = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
+        m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
+      m_world->GetDriver().RaiseException("ConnectCells cell out of range");
+      return;
+    }
+    int idA = m_a_y * world_x + m_a_x;
+    int idB = m_b_y * world_x + m_b_x;
+    cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+    cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+    tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+    tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+    cellA_list.PushRear(&cellB);
+    cellB_list.PushRear(&cellA);
+  }
+};
 
 
 class cActionDisconnectCells : public cAction
-	{
-	private:
-		int m_a_x;
-		int m_a_y;
-		int m_b_x;
-		int m_b_y;
-	public:
-		cActionDisconnectCells(cWorld* world, const cString& args) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_a_y = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_b_x = largs.PopWord().AsInt();
-			if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-			if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
-					m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
-				m_world->GetDriver().RaiseException("DisconnectCells cell out of range");
-				return;
-			}
-			int idA = m_a_y * world_x + m_a_x;
-			int idB = m_b_y * world_x + m_b_x;
-			cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
-			cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
-			tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
-			tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
-			cellA_list.Remove(&cellB);
-			cellB_list.Remove(&cellA);
-		}
-	};
+{
+private:
+  int m_a_x;
+  int m_a_y;
+  int m_b_x;
+  int m_b_y;
+public:
+  cActionDisconnectCells(cWorld* world, const cString& args) : cAction(world, args), m_a_x(-1), m_a_y(-1), m_b_x(-1), m_b_y(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_a_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_a_y = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_x = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_b_y = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int cellA_x> <int cellA_y> <int cellB_x> <int cellB_y>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
+        m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
+      m_world->GetDriver().RaiseException("DisconnectCells cell out of range");
+      return;
+    }
+    int idA = m_a_y * world_x + m_a_x;
+    int idB = m_b_y * world_x + m_b_x;
+    cPopulationCell& cellA = m_world->GetPopulation().GetCell(idA);
+    cPopulationCell& cellB = m_world->GetPopulation().GetCell(idB);
+    tList<cPopulationCell>& cellA_list = cellA.ConnectionList();
+    tList<cPopulationCell>& cellB_list = cellB.ConnectionList();
+    cellA_list.Remove(&cellB);
+    cellB_list.Remove(&cellA);
+  }
+};
 
 class cActionSwapCells : public cAction
-	{
-	private:
-		int id1;
-		int id2;
-		
-	public:
-		cActionSwapCells(cWorld* world, const cString& args) : cAction(world, args), id1(-1), id2(-1)
-		{
-			cString largs(args);
-			if (largs.GetSize()) id1 = largs.PopWord().AsInt();
-			if (largs.GetSize()) id2 = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: <int cell_id1> <int cell_id2>"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			const int num_cells = m_world->GetPopulation().GetSize();
-			if (id1 < 0 || id1 >= num_cells ||
-					id2 < 0 || id2 >= num_cells) {
-				m_world->GetDriver().RaiseException("SwapCells cell ID out of range");
-				return;
-			}
-			if (id1 == id2) {
-				m_world->GetDriver().NotifyWarning("SwapCells cell IDs identical");
-			}
-			
-			m_world->GetPopulation().SwapCells(id1, id2);
-		}
-	};
+{
+private:
+  int id1;
+  int id2;
+  
+public:
+  cActionSwapCells(cWorld* world, const cString& args) : cAction(world, args), id1(-1), id2(-1)
+  {
+    cString largs(args);
+    if (largs.GetSize()) id1 = largs.PopWord().AsInt();
+    if (largs.GetSize()) id2 = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <int cell_id1> <int cell_id2>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int num_cells = m_world->GetPopulation().GetSize();
+    if (id1 < 0 || id1 >= num_cells ||
+        id2 < 0 || id2 >= num_cells) {
+      m_world->GetDriver().RaiseException("SwapCells cell ID out of range");
+      return;
+    }
+    if (id1 == id2) {
+      m_world->GetDriver().NotifyWarning("SwapCells cell IDs identical");
+    }
+    
+    m_world->GetPopulation().SwapCells(id1, id2);
+  }
+};
 
 class cActionPred_DemeResourceThresholdPredicate : public cAction {
 private:
@@ -3895,23 +3898,23 @@ public:
  Added predicate to all demes that is satisified when an organism reaches the center of an event
  */
 class cActionPred_DemeEventMoveCenter : public cAction
-	{
-	private:
-		int m_times;
-		
-	public:
-		cActionPred_DemeEventMoveCenter(cWorld* world, const cString& args) : cAction(world, args), m_times(1) {
-			cString largs(args);
-			if (largs.GetSize()) m_times = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int times=1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().AddDemePred("EventMovedIntoCenter", m_times);
-		}
-	};
+{
+private:
+  int m_times;
+  
+public:
+  cActionPred_DemeEventMoveCenter(cWorld* world, const cString& args) : cAction(world, args), m_times(1) {
+    cString largs(args);
+    if (largs.GetSize()) m_times = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int times=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().AddDemePred("EventMovedIntoCenter", m_times);
+  }
+};
 
 
 /*
@@ -3919,23 +3922,23 @@ class cActionPred_DemeEventMoveCenter : public cAction
  modified cActionPred_DemeEventMoveCenter
  */
 class cActionPred_DemeEventMoveBetweenTargets : public cAction
-	{
-	private:
-		int m_times;
-		
-	public:
-		cActionPred_DemeEventMoveBetweenTargets(cWorld* world, const cString& args) : cAction(world, args), m_times(1) {
-			cString largs(args);
-			if (largs.GetSize()) m_times = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int times=1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().AddDemePred("EventMovedBetweenTargets", m_times);
-		}
-	};
+{
+private:
+  int m_times;
+  
+public:
+  cActionPred_DemeEventMoveBetweenTargets(cWorld* world, const cString& args) : cAction(world, args), m_times(1) {
+    cString largs(args);
+    if (largs.GetSize()) m_times = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int times=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().AddDemePred("EventMovedBetweenTargets", m_times);
+  }
+};
 
 
 /*
@@ -3943,23 +3946,23 @@ class cActionPred_DemeEventMoveBetweenTargets : public cAction
  reach a target cell
  */
 class cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget : public cAction
-	{
-	private:
-		int m_numorgs;
-		
-	public:
-		cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget(cWorld* world, const cString& args) : cAction(world, args), m_numorgs(1) {
-			cString largs(args);
-			if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
-		}
-		
-		static const cString GetDescription() { return "Arguments: [int numorgs=1]"; }
-		
-		void Process(cAvidaContext& ctx)
-		{
-			m_world->GetPopulation().AddDemePred("EventNUniqueIndividualsMovedIntoTarget", m_numorgs);
-		}
-	};
+{
+private:
+  int m_numorgs;
+  
+public:
+  cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget(cWorld* world, const cString& args) : cAction(world, args), m_numorgs(1) {
+    cString largs(args);
+    if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int numorgs=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetPopulation().AddDemePred("EventNUniqueIndividualsMovedIntoTarget", m_numorgs);
+  }
+};
 
 
 /*
@@ -3973,57 +3976,57 @@ class cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget : public cActi
  */
 
 class cActionKillNBelowResourceThreshold : public cAction
+{
+private:
+  cString m_resname;
+  int m_numkills;
+  double m_threshold;
+public:
+  cActionKillNBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numkills(0), m_threshold(0)
   {
-  private:
-    cString m_resname;
-    int m_numkills;
-    double m_threshold;
-  public:
-    cActionKillNBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numkills(0), m_threshold(0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_numkills = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_resname = largs.PopWord();
-      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
-    }
+    cString largs(args);
+    if (largs.GetSize()) m_numkills = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_resname = largs.PopWord();
+    if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int numkills=0, string resource name, double threshold=0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    double level;
+    int target_cell;
+    cPopulation& pop = m_world->GetPopulation();
+    int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
     
-    static const cString GetDescription() { return "Arguments: [int numkills=0, string resource name, double threshold=0]"; }
+    assert(res_id != -1);
     
-    void Process(cAvidaContext& ctx)
-    {
-      double level;
-      int target_cell;
-      cPopulation& pop = m_world->GetPopulation();
-      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+    long cells_scanned = 0;
+    long orgs_killed = 0;
+    long cells_empty = 0;
+    
+    for(int i=0; i < m_numkills; i++) {
+      target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
+      level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+      cells_scanned++;
       
-      assert(res_id != -1);
-      
-      long cells_scanned = 0;
-      long orgs_killed = 0;
-      long cells_empty = 0;
-      
-      for(int i=0; i < m_numkills; i++) {
-        target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
-        level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
-        cells_scanned++;
-        
-        if(level < m_threshold) {
-          cPopulationCell& cell = pop.GetCell(target_cell);
-          if (cell.IsOccupied()) {
-            pop.KillOrganism(cell);
-            orgs_killed++;
-          } else {
-            cells_empty++;
-          }
+      if(level < m_threshold) {
+        cPopulationCell& cell = pop.GetCell(target_cell);
+        if (cell.IsOccupied()) {
+          pop.KillOrganism(cell);
+          orgs_killed++;
+        } else {
+          cells_empty++;
         }
       }
-      
-      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
-      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
-      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
-      
-    } //End Process()
-  };
+    }
+    
+    m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+    m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+    m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+    
+  } //End Process()
+};
 
 
 
@@ -4041,101 +4044,101 @@ class cActionKillNBelowResourceThreshold : public cAction
  */
 
 class cActionKillWithinRadiusBelowResourceThreshold : public cAction
+{
+private:
+  int m_numradii;
+  int m_radius;
+  cString m_resname;
+  double m_threshold;
+  double m_kill_density;
+public:
+  cActionKillWithinRadiusBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
   {
-  private:
-    int m_numradii;
-    int m_radius;
-    cString m_resname;
-    double m_threshold;
-    double m_kill_density;
-  public:
-    cActionKillWithinRadiusBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_radius = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_resname = largs.PopWord();
-      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_kill_density = largs.PopWord().AsDouble();
-     }
+    cString largs(args);
+    if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_radius = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_resname = largs.PopWord();
+    if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_kill_density = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
     
-    static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]"; }
+    assert(m_numradii >= 0);
+    assert(m_radius >= 0);
+    assert(m_radius <= world_x);
+    assert(m_radius <= world_y);
+    assert(m_threshold >= 0.0);
+    assert(m_kill_density >= 0.0);
+    assert(m_kill_density <= 1.0);
+    assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
     
-    void Process(cAvidaContext& ctx)
-    {
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-      const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+    cPopulation& pop = m_world->GetPopulation();
+    int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+    
+    assert(res_id != -1);
+    
+    long cells_scanned = 0;
+    long orgs_killed = 0;
+    long cells_empty = 0;
+    
+    for (int i = 0; i < m_numradii; i++) {
       
-      assert(m_numradii >= 0);
-      assert(m_radius >= 0);
-      assert(m_radius <= world_x);
-      assert(m_radius <= world_y);
-      assert(m_threshold >= 0.0);
-      assert(m_kill_density >= 0.0);
-      assert(m_kill_density <= 1.0);
-      assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
+      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+      double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
       
-      cPopulation& pop = m_world->GetPopulation();
-      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
-      
-      assert(res_id != -1);
-      
-      long cells_scanned = 0;
-      long orgs_killed = 0;
-      long cells_empty = 0;
-      
-      for (int i = 0; i < m_numradii; i++) {
-
-        int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-        double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+      if(level < m_threshold) {
+        const int current_row = target_cell / world_x;
+        const int current_col = target_cell % world_x;
         
-        if(level < m_threshold) {
-          const int current_row = target_cell / world_x;
-          const int current_col = target_cell % world_x;
+        for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
           
-          for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
+          if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
+          
+          for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
+            if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
             
-            if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
+            cells_scanned++;
+            int row_adj = 0;
+            int col_adj = 0;
             
-            for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
-              if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
-              
-              cells_scanned++;
-              int row_adj = 0;
-              int col_adj = 0;
-
-              if(geometry == nGeometry::TORUS) {
-                row_adj = (row + world_y) % world_y;
-                col_adj = (col + world_x) % world_x;
-              } else if(geometry == nGeometry::GRID) {
-                row_adj = row;
-                col_adj = col;
-              }
-              
-              int current_cell = (world_x * row_adj) + col_adj;
-							cPopulationCell& cell = pop.GetCell(current_cell);
-
-							if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
-								pop.KillOrganism(cell);
-								orgs_killed++;
-							} else {
-								cells_empty++;
-							}
-
+            if(geometry == nGeometry::TORUS) {
+              row_adj = (row + world_y) % world_y;
+              col_adj = (col + world_x) % world_x;
+            } else if(geometry == nGeometry::GRID) {
+              row_adj = row;
+              col_adj = col;
             }
+            
+            int current_cell = (world_x * row_adj) + col_adj;
+            cPopulationCell& cell = pop.GetCell(current_cell);
+            
+            if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
+              pop.KillOrganism(cell);
+              orgs_killed++;
+            } else {
+              cells_empty++;
+            }
+            
           }
-          
-        }  // End if level at cell is below threshold
-                
-      } //End iterating through kill zones
+        }
+        
+      }  // End if level at cell is below threshold
       
-      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
-      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
-      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
-      
-    } //End Process()
-  };
+    } //End iterating through kill zones
+    
+    m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+    m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+    m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+    
+  } //End Process()
+};
 
 
 /*
@@ -4152,60 +4155,85 @@ class cActionKillWithinRadiusBelowResourceThreshold : public cAction
  */
 
 class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
+{
+private:
+  int m_numradii;
+  int m_radius;
+  cString m_resname;
+  double m_threshold;
+  double m_kill_density;
+public:
+  cActionKillWithinRadiusMeanBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
   {
-  private:
-    int m_numradii;
-    int m_radius;
-    cString m_resname;
-    double m_threshold;
-    double m_kill_density;
-  public:
-    cActionKillWithinRadiusMeanBelowResourceThreshold(cWorld* world, const cString& args) : cAction(world, args), m_numradii(0), m_radius(0), m_threshold(0.0), m_kill_density(1.0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_radius = largs.PopWord().AsInt();
-      if (largs.GetSize()) m_resname = largs.PopWord();
-      if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_kill_density = largs.PopWord().AsDouble();
-    }
+    cString largs(args);
+    if (largs.GetSize()) m_numradii = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_radius = largs.PopWord().AsInt();
+    if (largs.GetSize()) m_resname = largs.PopWord();
+    if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_kill_density = largs.PopWord().AsDouble();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    const int world_x = m_world->GetPopulation().GetWorldX();
+    const int world_y = m_world->GetPopulation().GetWorldY();
+    const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
     
-    static const cString GetDescription() { return "Arguments: [int numradii=0, int radius=0, string resource name, double threshold=0, double killdensity=1]"; }
+    assert(m_numradii >= 0);
+    assert(m_radius >= 0);
+    assert(m_radius <= world_x);
+    assert(m_radius <= world_y);
+    assert(m_threshold >= 0.0);
+    assert(m_kill_density >= 0.0);
+    assert(m_kill_density <= 1.0);
+    assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
     
-    void Process(cAvidaContext& ctx)
-    {
-			const int world_x = m_world->GetPopulation().GetWorldX();
-			const int world_y = m_world->GetPopulation().GetWorldY();
-      const int geometry = m_world->GetConfig().WORLD_GEOMETRY.Get();
+    cDoubleSum resourcesum;
+    
+    cPopulation& pop = m_world->GetPopulation();
+    int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
+    
+    assert(res_id != -1);
+    
+    long cells_scanned = 0;
+    long orgs_killed = 0;
+    long cells_empty = 0;
+    
+    for (int i = 0; i < m_numradii; i++) {
       
-      assert(m_numradii >= 0);
-      assert(m_radius >= 0);
-      assert(m_radius <= world_x);
-      assert(m_radius <= world_y);
-      assert(m_threshold >= 0.0);
-      assert(m_kill_density >= 0.0);
-      assert(m_kill_density <= 1.0);
-      assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
+      int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
+      resourcesum.Clear();
       
-      cDoubleSum resourcesum;
+      const int current_row = target_cell / world_x;
+      const int current_col = target_cell % world_x;
       
-      cPopulation& pop = m_world->GetPopulation();
-      int res_id = m_world->GetPopulation().GetResourceCount().GetResourceCountID(m_resname);
-      
-      assert(res_id != -1);
-      
-      long cells_scanned = 0;
-      long orgs_killed = 0;
-      long cells_empty = 0;
-      
-      for (int i = 0; i < m_numradii; i++) {
+      for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
         
-        int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-        resourcesum.Clear();
+        if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
         
-        const int current_row = target_cell / world_x;
-        const int current_col = target_cell % world_x;
-        
+        for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
+          if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
+          
+          int row_adj = 0;
+          int col_adj = 0;
+          
+          if(geometry == nGeometry::TORUS) {
+            row_adj = (row + world_y) % world_y;
+            col_adj = (col + world_x) % world_x;
+          } else if(geometry == nGeometry::GRID) {
+            row_adj = row;
+            col_adj = col;
+          }
+          
+          int current_cell = (world_x * row_adj) + col_adj;
+          resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));            
+          cells_scanned++;
+        }
+      }
+      
+      if(resourcesum.Average() < m_threshold) {
         for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
           
           if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
@@ -4225,53 +4253,28 @@ class cActionKillWithinRadiusMeanBelowResourceThreshold : public cAction
             }
             
             int current_cell = (world_x * row_adj) + col_adj;
-            resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));            
-            cells_scanned++;
-          }
-        }
-        
-        if(resourcesum.Average() < m_threshold) {
-          for(int row = current_row - m_radius; row <= current_row + m_radius; row++) {
+            cPopulationCell& cell = pop.GetCell(current_cell);
             
-            if( ((row < 0) || (row >= world_y)) && (geometry == nGeometry::GRID) ) continue;
-            
-            for(int col = current_col - m_radius; col <= current_col + m_radius; col++) {
-              if( ((col < 0) || (col >= world_x)) && (geometry == nGeometry::GRID) ) continue;
-              
-              int row_adj = 0;
-              int col_adj = 0;
-              
-              if(geometry == nGeometry::TORUS) {
-                row_adj = (row + world_y) % world_y;
-                col_adj = (col + world_x) % world_x;
-              } else if(geometry == nGeometry::GRID) {
-                row_adj = row;
-                col_adj = col;
-              }
-              
-              int current_cell = (world_x * row_adj) + col_adj;
-              cPopulationCell& cell = pop.GetCell(current_cell);
-              
-              if( (cell.IsOccupied())  && (ctx.GetRandom().P(m_kill_density)) ) {
-                pop.KillOrganism(cell);
-                orgs_killed++;
-              } else {
-                cells_empty++;
-              }
-              
+            if( (cell.IsOccupied())  && (ctx.GetRandom().P(m_kill_density)) ) {
+              pop.KillOrganism(cell);
+              orgs_killed++;
+            } else {
+              cells_empty++;
             }
+            
           }
-          
         }
         
-      } //End iterating through kill zones
-
-      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
-      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
-      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+      }
       
-    } //End Process()
-  };
+    } //End iterating through kill zones
+    
+    m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+    m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+    m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+    
+  } //End Process()
+};
 
 
 /*
@@ -4389,59 +4392,59 @@ public:
 
 class cActionKillDemePercent : public cAction
 {
-  private:
-    double m_pctkills;
-  public:
-    cActionKillDemePercent(cWorld* world, const cString& args) : cAction(world, args), m_pctkills(0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_pctkills = largs.PopWord().AsDouble();
-      
-      assert(m_pctkills >= 0);
-      assert(m_pctkills <= 1);
-    }
+private:
+  double m_pctkills;
+public:
+  cActionKillDemePercent(cWorld* world, const cString& args) : cAction(world, args), m_pctkills(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_pctkills = largs.PopWord().AsDouble();
     
-    static const cString GetDescription() { return "Arguments: [double pctkills=0.0]"; }
+    assert(m_pctkills >= 0);
+    assert(m_pctkills <= 1);
+  }
+  
+  static const cString GetDescription() { return "Arguments: [double pctkills=0.0]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int target_cell;
+    cPopulation& pop = m_world->GetPopulation();
     
-    void Process(cAvidaContext& ctx)
-    {
-      int target_cell;
-      cPopulation& pop = m_world->GetPopulation();
+    long cells_scanned = 0;
+    long orgs_killed = 0;
+    long cells_empty = 0;
+    
+    for (int d = 0; d < pop.GetNumDemes(); d++) {
       
-      long cells_scanned = 0;
-      long orgs_killed = 0;
-      long cells_empty = 0;
+      cDeme &deme = pop.GetDeme(d);
       
-      for (int d = 0; d < pop.GetNumDemes(); d++) {
-        
-        cDeme &deme = pop.GetDeme(d);
-                
-        if(deme.IsTreatableNow()) {
-          for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
-            cells_scanned++;
-            target_cell = deme.GetCellID(c); 
-            cPopulationCell& cell = pop.GetCell(target_cell);
+      if(deme.IsTreatableNow()) {
+        for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
+          cells_scanned++;
+          target_cell = deme.GetCellID(c); 
+          cPopulationCell& cell = pop.GetCell(target_cell);
           
-            if(ctx.GetRandom().P(m_pctkills)) {
-              if(cell.IsOccupied()) {
-                pop.KillOrganism(pop.GetCell(target_cell));
-                orgs_killed++;
-              } else {
-                cells_empty++; 
-              }
-            }      
+          if(ctx.GetRandom().P(m_pctkills)) {
+            if(cell.IsOccupied()) {
+              pop.KillOrganism(pop.GetCell(target_cell));
+              orgs_killed++;
+            } else {
+              cells_empty++; 
+            }
+          }      
           
-          } //End iterating through all cells
-           
-        } //End if deme is treatable
+        } //End iterating through all cells
         
-      } //End iterating through all demes
+      } //End if deme is treatable
       
-      m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
-      m_world->GetStats().AddNumOrgsKilled(orgs_killed);
-      m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
-      
-    } //End Process()
+    } //End iterating through all demes
+    
+    m_world->GetStats().AddNumCellsScannedAtKill(cells_scanned);
+    m_world->GetStats().AddNumOrgsKilled(orgs_killed);
+    m_world->GetStats().AddNumUnoccupiedCellAttemptedToKill(cells_empty);
+    
+  } //End Process()
 };
 
 
@@ -4549,108 +4552,108 @@ public:
 			}
 		}
 	}
-
+  
 private:
 	double m_donation_p; //!< Per-individual probability of being a conjugate donor.
 };
 
 
 /* This action migrates a configurable number of organisms from one deme to another if
-   the level of some global (deme) resource is above the configured threshold.
+ the level of some global (deme) resource is above the configured threshold.
  
-Parameters: 3
+ Parameters: 3
  - name of the resource.  This must be a deme-level global resource.
  - threshold level for resource.  above this, organisms are migrated.
  - number of organisms to migrate to a randomly-chosen deme.
  
-*/
+ */
 
 class cActionMigrateDemes : public cAction
 {
-  private:
-    cString m_res;
-    double m_thresh;
-    int m_numorgs;
-  public:
-    static const cString GetDescription() { return "Arguments: <string resource name><double failure_percent>"; }
+private:
+  cString m_res;
+  double m_thresh;
+  int m_numorgs;
+public:
+  static const cString GetDescription() { return "Arguments: <string resource name><double failure_percent>"; }
+  
+  cActionMigrateDemes(cWorld* world, const cString& args) : cAction(world, args), m_thresh(0), m_numorgs(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_res = largs.PopWord();
+    if (largs.GetSize()) m_thresh = largs.PopWord().AsDouble();
+    if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
     
-    cActionMigrateDemes(cWorld* world, const cString& args) : cAction(world, args), m_thresh(0), m_numorgs(0)
-    {
-      cString largs(args);
-      if (largs.GetSize()) m_res = largs.PopWord();
-      if (largs.GetSize()) m_thresh = largs.PopWord().AsDouble();
-      if (largs.GetSize()) m_numorgs = largs.PopWord().AsInt();
-
-      assert(m_thresh >= 0);
-      assert(m_numorgs >= 0);
-      
-      assert(m_world->GetConfig().NUM_DEMES.Get() > 1);
-      
-      //Speculative execution will not work since we are moving organisms around.
-      assert(m_world->GetConfig().SPECULATIVE.Get() == 0);
-    }
+    assert(m_thresh >= 0);
+    assert(m_numorgs >= 0);
     
-    void Process(cAvidaContext& ctx)
-    {
-      int src_cellid, dest_cellid;
+    assert(m_world->GetConfig().NUM_DEMES.Get() > 1);
+    
+    //Speculative execution will not work since we are moving organisms around.
+    assert(m_world->GetConfig().SPECULATIVE.Get() == 0);
+  }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    int src_cellid, dest_cellid;
+    
+    for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
+      cDeme& deme = m_world->GetPopulation().GetDeme(d);
+      int deme_size = deme.GetWidth() * deme.GetHeight();
       
-      for (int d = 0; d < m_world->GetPopulation().GetNumDemes(); d++) {
-        cDeme& deme = m_world->GetPopulation().GetDeme(d);
-        int deme_size = deme.GetWidth() * deme.GetHeight();
+      const cResourceCount &res = deme.GetDemeResourceCount();
+      const int resid = res.GetResourceByName(m_res);
+      
+      if(resid == -1) {
+        //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
+        cerr << "Error: Resource \"" << m_res << "\" not defined for this deme" << endl;
+        continue;
+      }
+      
+      if(res.Get(resid) >= m_thresh) {
+        //Set the resource to zero
+        deme.AdjustResource(resid, (-1 * res.Get(resid)));
         
-        const cResourceCount &res = deme.GetDemeResourceCount();
-        const int resid = res.GetResourceByName(m_res);
+        //Pick a deme to move to
+        int target_demeid = m_world->GetRandom().GetInt(0, m_world->GetConfig().NUM_DEMES.Get()-1);
+        cDeme& target_deme = m_world->GetPopulation().GetDeme(target_demeid);
+        int target_deme_size = target_deme.GetWidth() * target_deme.GetHeight();
         
-        if(resid == -1) {
-          //Resource doesn't exist for this deme.  This is a bad situation, but just go to next deme.
-          cerr << "Error: Resource \"" << m_res << "\" not defined for this deme" << endl;
-          continue;
-        }
-        
-        if(res.Get(resid) >= m_thresh) {
-          //Set the resource to zero
-          deme.AdjustResource(resid, (-1 * res.Get(resid)));
+        //Migrate up to m_numorgs orgs
+        for(int i = 0; i < m_numorgs; i++) {
+          src_cellid = -1;
+          dest_cellid = -1;
           
-          //Pick a deme to move to
-          int target_demeid = m_world->GetRandom().GetInt(0, m_world->GetConfig().NUM_DEMES.Get()-1);
-          cDeme& target_deme = m_world->GetPopulation().GetDeme(target_demeid);
-          int target_deme_size = target_deme.GetWidth() * target_deme.GetHeight();
+          int counter = 0;
+          do {
+            src_cellid = m_world->GetRandom().GetInt(0, (deme.GetWidth() * deme.GetHeight())-1);
+            counter++;
+          } while((counter < deme_size) && (!deme.GetCell(src_cellid).IsOccupied()));
           
-          //Migrate up to m_numorgs orgs
-          for(int i = 0; i < m_numorgs; i++) {
-            src_cellid = -1;
-            dest_cellid = -1;
+          counter = 0;
+          do {
+            dest_cellid = m_world->GetRandom().GetInt(0, target_deme_size - 1);
+            counter++;
+          } while((counter < target_deme_size) && (target_deme.GetCell(dest_cellid).IsOccupied())); 
+          
+          if( (src_cellid != -1) && (dest_cellid != -1) ) {
             
-            int counter = 0;
-            do {
-              src_cellid = m_world->GetRandom().GetInt(0, (deme.GetWidth() * deme.GetHeight())-1);
-              counter++;
-            } while((counter < deme_size) && (!deme.GetCell(src_cellid).IsOccupied()));
-                        
-            counter = 0;
-            do {
-              dest_cellid = m_world->GetRandom().GetInt(0, target_deme_size - 1);
-              counter++;
-            } while((counter < target_deme_size) && (target_deme.GetCell(dest_cellid).IsOccupied())); 
+            m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid);
             
-            if( (src_cellid != -1) && (dest_cellid != -1) ) {
-            
-              m_world->GetPopulation().MoveOrganisms(ctx, src_cellid, dest_cellid);
-              
-              deme.DecOrgCount();
-              target_deme.IncOrgCount();
-            }
-            
-            //migrate the organism from src_cell to dest cell
+            deme.DecOrgCount();
+            target_deme.IncOrgCount();
           }
           
-          m_world->GetStats().IncNumMigrations();
-          
+          //migrate the organism from src_cell to dest cell
         }
         
-      } //End iterating through demes
+        m_world->GetStats().IncNumMigrations();
+        
+      }
       
-    }
+    } //End iterating through demes
+    
+  }
 };
 
 
@@ -4689,7 +4692,7 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
 	action_lib->Register<cActionReplaceFromGermline>("ReplaceFromGermline");
-		
+  
   action_lib->Register<cActionSetMigrationRate>("SetMigrationRate");
   action_lib->Register<cActionSetMutProb>("SetMutProb");
   action_lib->Register<cActionModMutProb>("ModMutProb");

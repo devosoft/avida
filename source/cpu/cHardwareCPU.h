@@ -423,7 +423,6 @@ private:
   bool Inst_CopyRegCA(cAvidaContext& ctx);
   bool Inst_CopyRegCB(cAvidaContext& ctx);
   bool Inst_Reset(cAvidaContext& ctx);
-  //bool Inst_LoadVal(cAvidaContext& ctx);
 
   // Single-Argument Math
   bool Inst_ShiftR(cAvidaContext& ctx);
