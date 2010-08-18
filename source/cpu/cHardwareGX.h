@@ -100,7 +100,7 @@ public:
   //! Enums for the different supported registers.
   enum tRegisters { REG_AX=0, REG_BX, REG_CX };
   
-  struct cProgramid; // pre-declaration.
+  class cProgramid; // pre-declaration.
   typedef cProgramid* programid_ptr; //!< It would be nice to change this to boost::shared_ptr.
   typedef std::vector<programid_ptr> programid_list; //!< Type for the list of cProgramids.
   

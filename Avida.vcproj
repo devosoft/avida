@@ -521,10 +521,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\cpu\cHardwareGX.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\cpu\cHardwareGX.h"
 				>
 			</File>
@@ -742,6 +738,10 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cPhenPlastGenotype.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\analyze\cPhenPlastSummary.h"
 				>
 			</File>
 			<File
@@ -1417,6 +1417,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\cpu\cHardwareGX.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\source\cpu\cHardwareManager.cc"
 				>
 			</File>
@@ -1772,6 +1776,10 @@
 				RelativePath=".\source\targets\avida-viewer\viewer.cc"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="source"
+			>
 		</Filter>
 		<File
 			RelativePath=".\source\platform\msvc2005\pdcurses\pdcurses.lib"
