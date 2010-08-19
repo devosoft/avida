@@ -1,7 +1,7 @@
-Avida 2.9.x
+Avida 2.11.x   http://avida.devosoft.org
 ----------------------------------------------------------------------
 Digital Evolution Laboratory at Michigan State University
-(http://devolab.cse.msu.edu)
+(http://devolab.msu.edu)
 
 
 I.   REQUIREMENTS
@@ -137,4 +137,4 @@ Helpful usage and code documentation can be found in the HTML files in
 the 'documentation' directory.  See index.html.
 
 
-Revised 2007-07-10 DMB
+Revised 2010-08-17 DMB

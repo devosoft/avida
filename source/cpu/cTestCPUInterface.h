@@ -56,6 +56,7 @@ public:
   
   int GetCellData() { return -1; }
   void SetCellData(const int newData) { ; }
+  int GetFacedCellData() { return -1; }
 
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }
@@ -92,6 +93,7 @@ public:
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
+  int GetFacedCellID() { return -1; }
   bool SendMessage(cOrgMessage& msg) { return false; }
   bool SendMessage(cOrganism* recvr, cOrgMessage& msg) { return false; }
 	bool BroadcastMessage(cOrgMessage& msg, int depth) { return false; }
@@ -120,6 +122,8 @@ public:
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
 	//! Receive HGT donation (does nothing).
 	void ReceiveHGTDonation(const cGenome& fragment) { }
+  
+  void Move(cAvidaContext& ctx, int src_id, int dest_id) { ; }
 };
 
 #endif

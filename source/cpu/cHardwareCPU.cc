@@ -160,7 +160,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("set_C=A", &cHardwareCPU::Inst_CopyRegCA),
     tInstLibEntry<tMethod>("set_C=B", &cHardwareCPU::Inst_CopyRegCB),
     tInstLibEntry<tMethod>("reset", &cHardwareCPU::Inst_Reset),
-    //tInstLibEntry<tMethod>("load-val", &cHardwareCPU::Inst_LoadVal),
     
     tInstLibEntry<tMethod>("pop-A", &cHardwareCPU::Inst_PopA),
     tInstLibEntry<tMethod>("pop-B", &cHardwareCPU::Inst_PopB),
@@ -254,6 +253,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("collect-no-env-remove", &cHardwareCPU::Inst_CollectNoEnvRemove, nInstFlag::STALL),
     tInstLibEntry<tMethod>("destroy", &cHardwareCPU::Inst_Destroy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("nop-collect", &cHardwareCPU::Inst_NopCollect),
+    tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
     tInstLibEntry<tMethod>("donate-kin", &cHardwareCPU::Inst_DonateKin),
@@ -599,6 +599,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("kill-cell-event", &cHardwareCPU::Inst_KillCellEvent, nInstFlag::STALL),
     tInstLibEntry<tMethod>("kill-faced-cell-event", &cHardwareCPU::Inst_KillFacedCellEvent, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-cell-data-and-kill-event", &cHardwareCPU::Inst_CollectCellDataAndKillEvent, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-cell-data", &cHardwareCPU::Inst_ReadCellData),
+    tInstLibEntry<tMethod>("read-faced-cell-data", &cHardwareCPU::Inst_ReadFacedCellData, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("mark-cell-with-id", &cHardwareCPU::Inst_MarkCellWithID),
+    tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
+    
 		
 		// Synchronization
     tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
@@ -2597,13 +2602,6 @@ bool cHardwareCPU::Inst_Reset(cAvidaContext& ctx)
   return true;
 }
 
-/*bool cHardwareCPU::Inst_LoadVal(cAvidaContext& ctx)
- {
- const int reg_used = FindModifiedRegister(REG_BX);
- GetRegister(reg_used) = m_world->GetConfig().INST_LOAD_VALUE.Get();
- return true;
- }*/
-
 bool cHardwareCPU::Inst_ShiftR(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -3787,15 +3785,14 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   int start_bin, end_bin, bin_used, spec_id;
   
   bool finite_resources_exist = FindModifiedResource(start_bin, end_bin, spec_id);
-  if(!finite_resources_exist) {return true;}
+  if (!finite_resources_exist) { return true; }
   
   // Add this specification
   m_organism->IncCollectSpecCount(spec_id);
   
-  if(start_bin == end_bin)  // resource completely specified
-  {bin_used = start_bin;}
-  else
-  {
+  if (start_bin == end_bin) { // resource completely specified
+    bin_used = start_bin;
+  } else {
     switch (m_world->GetConfig().MULTI_ABSORB_TYPE.Get())
     {
       case 0:
@@ -3816,6 +3813,15 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
     }
   }
   
+  DoActualCollect(ctx, bin_used, env_remove, internal_add, start_bin, end_bin);
+  
+  return true;
+}
+
+
+bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin)
+{
+ 
   // Set up res_change and max total
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
   tArray<double> res_change(res_count.GetSize());
@@ -3857,6 +3863,8 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   return true;
 }
 
+
+
 /* Takes resource(s) from the environment and adds them to the internal resource
  * bins of the organism.
  */
@@ -3887,6 +3895,21 @@ bool cHardwareCPU::Inst_NopCollect(cAvidaContext& ctx)
 {
   return DoCollect(ctx, false, false);
 }
+
+/* Takes resource(s) from the environment and adds them to the internal resource
+ * bins of the organism.
+ */
+bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
+{
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  double res_before = m_organism->GetRBin(resource);
+  bool success = DoActualCollect(ctx, resource, true, true, 0, 0);
+  double res_after = m_organism->GetRBin(resource);
+  GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
+  return success;
+}
+
+
 
 /*! Sense the level of resources in this organism's cell, and if all of the 
  resources present are above the min level for that resource, execute the following
@@ -5589,111 +5612,20 @@ bool cHardwareCPU::Inst_SGSense(cAvidaContext& ctx)
 // The cell selected as a destination is the one faced
 bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
 {
-  // Declarations
-  int fromcellID, destcellID; //, actualNeighborhoodSize, fromFacing, destFacing, currentFacing;
-  
-  fromcellID = m_organism->GetCellID(); //absolute id of current cell
+	// In TestCPU, movement fails...
+  if (m_organism->GetCellID() == -1) return false;
 	
-  if(fromcellID == -1) {
-    return false;
-  }
-	
-  // Get population
-  cPopulation& pop = m_world->GetPopulation();
-  cDeme &deme = pop.GetDeme(pop.GetCell(m_organism->GetCellID()).GetDemeID());
+  m_organism->Move(ctx);
   
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone stuff
-  double pher_amount = 0;
-  int drop_mode = -1;
-  
-  // Code
-  if (0 < stepsize) {
-    // Current cell
-    //fromcellID = organism->GetCellID();
-    // With sanity check
-    if (-1  == fromcellID) return false;
-    // Destination cell
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/    
-    
-    // Actually perform the move using SwapCells
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    // Swap inputs and facings between cells using helper function
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    // updates movement predicates
-    m_world->GetStats().Move(*m_organism);
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-      // Old CellData-based version
-      //const int newval = pop.GetCell(destcellID).GetCellData() + 1;
-      //pop.GetCell(destcellID).SetCellData(newval);
-      
-    } //End laying pheromone
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,5",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    
-    // check tasks.  general movement tasks are not yet supported.
-    //organism->DoOutput(ctx);
-    
-    // Brian movement
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
+  return true;
 }
 
 bool cHardwareCPU::Inst_MoveToEvent(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
   
-  for(int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
-    if(m_organism->GetNeighborCellContents() > 0) { 
+  for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+    if (m_organism->GetNeighborCellContents() > 0) { 
       Inst_Move(ctx);
       GetRegister(reg_used) = 1;
       return true;
@@ -7634,33 +7566,19 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   cPopulation& pop = m_world->GetPopulation();
   int cellid = m_organism->GetCellID();
   
-  if(cellid == -1) {
-    return false;
-  }
+  if (cellid == -1) return false;
   
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  //  int relative_cell_id = deme.GetRelativeCellID(cellid);
-  //tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   tArray<double> cell_resources;
   
-  int fromcellID, destcellID;
-  
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone drop stuff
-  double pher_amount = 0; // this is used in the logging
-  int drop_mode = -1;
-  
-  if( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
+  if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
      (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
     num_rotations = ctx.GetRandom().GetUInt(m_organism->GetNeighborhoodSize());
   } else {
     // Find which neighbor has the strongest pheromone
-    for(int i = 0; i < mycell.ConnectionList().GetSize(); i++) {
+    for (int i = 0; i < mycell.ConnectionList().GetSize(); i++) {
       
       phero_amount = 0;
       cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
@@ -7671,7 +7589,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
         }
       }
       
-      if(phero_amount > max_pheromone) {
+      if (phero_amount > max_pheromone) {
         num_rotations = i;
         max_pheromone = phero_amount;
       }
@@ -7682,79 +7600,11 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   
   // Rotate until we face the neighbor with the strongest pheromone.
   // If there was no winner, just move forward.
-  for(int i = 0; i < num_rotations; i++) {
-    mycell.ConnectionList().CircNext();
-  }
+  for (int i = 0; i < num_rotations; i++) mycell.ConnectionList().CircNext();
   
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().EXPLOIT_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,3",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
-  
+  m_organism->Move(ctx);
+
   return true;
-  
 } //End Inst_Exploit()
 
 
@@ -7779,20 +7629,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  //  int relative_cell_id = deme.GetRelativeCellID(cellid);
-  //tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   tArray<double> cell_resources;
-  
-  int fromcellID, destcellID;
-  
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone drop stuff
-  double pher_amount = 0; // this is used in the logging.
-  int drop_mode = -1;
-  
   
   if( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
      (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
@@ -7831,75 +7668,9 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
     mycell.ConnectionList().CircNext();
   }
   
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().EXPLOIT_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,7",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
-  
+  m_organism->Move(ctx);
+
   return true;
-  
 } //End Inst_ExploitForward5()
 
 
@@ -7923,19 +7694,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
   cPopulationCell& mycell = pop.GetCell(cellid);
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  //  int relative_cell_id = deme.GetRelativeCellID(cellid);
-  //tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   tArray<double> cell_resources;
-  
-  int fromcellID, destcellID;
-  
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone drop stuff
-  double pher_amount = 0; // this is used in the logging.
-  int drop_mode = -1;
   
   if( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
      (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
@@ -7974,81 +7733,13 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
     mycell.ConnectionList().CircNext();
   }
   
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().EXPLOIT_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,9",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
+  m_organism->Move(ctx);
   
   return true;
-  
 } //End Inst_ExploitForward3()
 
 bool cHardwareCPU::Inst_Explore(cAvidaContext& ctx)
 {
-  //  int num_rotations = 0;
-  
   cPopulation& pop = m_world->GetPopulation();
   int cellid = m_organism->GetCellID();
   
@@ -8060,93 +7751,15 @@ bool cHardwareCPU::Inst_Explore(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   
-  int fromcellID, destcellID;
-  //  int cell_data;
-  
-  // Pheromone drop stuff
-  double pher_amount = 0;
-  int drop_mode = -1;
-  
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
   // Rotate randomly.  Code taken from tumble.
   const int num_neighbors = m_organism->GetNeighborhoodSize();
   for(unsigned int i = 0; i < ctx.GetRandom().GetUInt(num_neighbors); i++) {
     m_organism->Rotate(1);  // Rotate doesn't rotate N times, just once.
   }
   
+  m_organism->Move(ctx);
   
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    // If organism is dropping pheromones, mark the cells appropriately
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().EXPLORE_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,2",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
-  
-  return true;
-  
+  return true;  
 } // End Inst_Explore()
 
 // This command should move the organism to the neighbor cell that is a
@@ -8165,19 +7778,9 @@ bool cHardwareCPU::Inst_MoveTarget(cAvidaContext& ctx)
   }
   
   cPopulationCell& mycell = pop.GetCell(cellid);
-  cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
-  //  const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
   
-  int fromcellID, destcellID;
   int cell_data;
   
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone drop stuff
-  double pher_amount = 0; // this is used in logging
-  int drop_mode = -1;
   
   cPopulationCell faced = mycell.GetCellFaced();
   
@@ -8197,77 +7800,10 @@ bool cHardwareCPU::Inst_MoveTarget(cAvidaContext& ctx)
   for(int i = 0; i < num_rotations; i++) {
     mycell.ConnectionList().CircNext();
   }
-  
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,1",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
+
+  m_organism->Move(ctx);
   
   return true;
-  
 } // End Inst_MoveTarget()
 
 
@@ -8292,16 +7828,7 @@ bool cHardwareCPU::Inst_MoveTargetForward5(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   
-  int fromcellID, destcellID;
   int cell_data;
-  
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone drop stuff
-  double pher_amount = 0;
-  int drop_mode = -1;
   
   cPopulationCell faced = mycell.GetCellFaced();
   
@@ -8323,84 +7850,15 @@ bool cHardwareCPU::Inst_MoveTargetForward5(cAvidaContext& ctx)
     mycell.ConnectionList().CircNext();
   }
   
-  //  assert(faced == pop.GetCell(fromcellID).GetCellFaced());
-  
   // Rotate until we face the neighbor with a target.
   // If there was no winner, just move forward.
   for(int i = 0; i < num_rotations; i++) {
     mycell.ConnectionList().CircNext();
   }
   
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,6",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
+  m_organism->Move(ctx);
   
   return true;
-  
 } // End Inst_MoveTargetForward5()
 
 
@@ -8424,16 +7882,7 @@ bool cHardwareCPU::Inst_MoveTargetForward3(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   
-  int fromcellID, destcellID;
   int cell_data;
-  
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone drop stuff
-  double pher_amount = 0;
-  int drop_mode = -1;
   
   cPopulationCell faced = mycell.GetCellFaced();
   
@@ -8455,84 +7904,15 @@ bool cHardwareCPU::Inst_MoveTargetForward3(cAvidaContext& ctx)
     mycell.ConnectionList().CircNext();
   }
   
-  //  assert(faced == pop.GetCell(fromcellID).GetCellFaced());
-  
   // Rotate until we face the neighbor with a target.
   // If there was no winner, just move forward.
   for(int i = 0; i < num_rotations; i++) {
     mycell.ConnectionList().CircNext();
   }
+
+  m_organism->Move(ctx);
   
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,8",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
-  
-  return true;
-  
+  return true;  
 } // End Inst_MoveTargetForward3()
 
 bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
@@ -8554,16 +7934,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   
-  int fromcellID, destcellID;
   int cell_data;
-  
-  // Get stepsize. Currently, all moves are one cell regardless of stepsize.
-  // This could be changed in the future.
-  const int stepsize = m_world->GetConfig().BIOMIMETIC_MOVEMENT_STEP.Get();
-  
-  // Pheromone drop stuff
-  double pher_amount = 0;
-  int drop_mode = -1;
   
   // Set num_rotations to a random number for explore -- lowest priority
   const int num_neighbors = m_organism->GetNeighborhoodSize();
@@ -8607,75 +7978,9 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
     mycell.ConnectionList().CircNext();
   }
   
-  // Move to the faced cell
-  if(stepsize > 0) {
-    fromcellID = m_organism->GetCellID();
-    
-    if(fromcellID == -1) {
-      return false;
-    }
-    
-    destcellID = pop.GetCell(fromcellID).GetCellFaced().GetID();
-    
-    /*********************/
-    // TEMP.  Remove once movement tasks are implemented.
-    if(pop.GetCell(fromcellID).GetCellData() < pop.GetCell(destcellID).GetCellData()) { // move up gradient
-      m_organism->SetGradientMovement(1.0);
-    } else if(pop.GetCell(fromcellID).GetCellData() == pop.GetCell(destcellID).GetCellData()) {
-      m_organism->SetGradientMovement(0.0);
-    } else { // move down gradient
-      m_organism->SetGradientMovement(-1.0);    
-    }
-    /*********************/ 
-    
-    pop.SwapCells(pop.GetCell(fromcellID),pop.GetCell(destcellID));
-    pop.MoveOrganisms(ctx, pop.GetCell(fromcellID), pop.GetCell(destcellID));
-    
-    m_world->GetStats().Move(*m_organism);
-    
-    // If organism is dropping pheromones, mark the appropriate cell(s)
-    if( (m_world->GetConfig().PHEROMONE_ENABLED.Get() == 1) &&
-       (m_organism->GetPheromoneStatus() == true) ) {
-      
-      pher_amount = m_world->GetConfig().PHEROMONE_AMOUNT.Get();
-      drop_mode = m_world->GetConfig().PHEROMONE_DROP_MODE.Get();
-      
-      if(drop_mode == 0) {
-        deme.AddPheromone(fromcellID, pher_amount/2);
-        deme.AddPheromone(destcellID, pher_amount/2);
-      } else if(drop_mode == 1) {
-        deme.AddPheromone(fromcellID, pher_amount);
-      }
-      else if(drop_mode == 2) {
-        deme.AddPheromone(destcellID, pher_amount);
-      }
-      
-    } //End laying pheromone
-    
-    
-    // Write some logging information if LOG_PHEROMONE is set.  This is done
-    // out here so that non-pheromone moves are recorded.
-    if( (m_world->GetConfig().LOG_PHEROMONE.Get() == 1) &&
-       (m_world->GetStats().GetUpdate() >= m_world->GetConfig().MOVETARGET_LOG_START.Get()) ) {
-      cString tmpfilename = cStringUtil::Stringf("movelog.dat");
-      cDataFile& df = m_world->GetDataFile(tmpfilename);
-      
-      int rel_srcid = deme.GetRelativeCellID(fromcellID);
-      int rel_destid = deme.GetRelativeCellID(destcellID);
-      
-      cString UpdateStr = cStringUtil::Stringf("%d,%d,%d,%d,%d,%f,%d,4",  m_world->GetStats().GetUpdate(), m_organism->GetID(), deme.GetDemeID(), rel_srcid, rel_destid, pher_amount, drop_mode);
-      df.WriteRaw(UpdateStr);
-    }
-    
-    m_organism->Move(ctx);
-    
-    return true;
-  } else {
-    return false;
-  }
+  m_organism->Move(ctx);
   
-  return true;
-  
+  return true;  
 } // End Inst_SuperMove()
 
 bool cHardwareCPU::Inst_IfTarget(cAvidaContext& ctx)
@@ -8982,6 +8287,41 @@ bool cHardwareCPU::Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx) {
   m_organism->GetOrgInterface().GetDeme()->KillCellEvent(eventID);
   return true;
 }
+
+
+bool cHardwareCPU::Inst_ReadCellData(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetCellData();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ReadFacedCellData(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetFacedCellData();
+  return true;
+}
+
+bool cHardwareCPU::Inst_MarkCellWithID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->SetCellData(m_organism->GetID());
+  return true;
+}
+
+bool cHardwareCPU::Inst_GetID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_CX);
+  GetRegister(out_reg) = m_organism->GetID();
+  return true;
+}
+
+
+
 
 
 /*! Called when the organism that owns this CPU has received a flash from a neighbor. */

@@ -23,7 +23,7 @@
  */
 
 #ifndef cGenomeTestMetrics_h
-#define cGenomeTestMetrics
+#define cGenomeTestMetrics_h
 
 #ifndef cBioGroupData_h
 #include "cBioGroupData.h"
@@ -31,7 +31,9 @@
 
 #include <cassert>
 
+class cAvidaContext;
 class cBioGroup;
+
 
 class cGenomeTestMetrics : public cBioGroupData
 {
@@ -40,7 +42,7 @@ private:
   
   
 public:
-  cGenomeTestMetrics(cAvidaContext& ctx)
+  cGenomeTestMetrics(cAvidaContext& ctx);
   
 };
 

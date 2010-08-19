@@ -69,7 +69,7 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation)
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , last_sense_count(m_world->GetStats().GetSenseSize())
-  , generation(0)
+, generation(0)
 {
   if (parent_generation >= 0) {
     generation = parent_generation;
@@ -413,7 +413,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   num_shaded_gb_donations_last = parent_phenotype.num_shaded_gb_donations_last;
   num_donations_locus = 0;
   num_donations_locus_last = parent_phenotype.num_donations_locus_last;
-
+  
 	
   // Setup flags...
   is_injected   = false;
@@ -458,7 +458,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   is_receiver_shadedgb_last = parent_phenotype.is_receiver_shadedgb_last;	
   is_receiver_gb_same_locus = false;
   is_receiver_gb_same_locus_last = parent_phenotype.is_receiver_gb_same_locus;
-
+  
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
@@ -618,7 +618,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_donor_shadedgb_last = false;
   is_donor_locus.SetAll(false);
   is_donor_locus_last.SetAll(false);
-
+  
   is_receiver   = false;
   is_receiver_last   = false;
   is_receiver_rand   = false;
@@ -637,7 +637,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   is_receiver_shadedgb_last   = false;	
   is_receiver_gb_same_locus = false;
   is_receiver_gb_same_locus_last = false;
-
+  
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = true;
@@ -684,7 +684,7 @@ void cPhenotype::ResetMerit(const cGenome & _cgenome)
 	
   if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
     merit = cur_merit_base;
-
+  
 }
 
 
@@ -830,7 +830,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   is_receiver_shadedgb = false;	
   is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
   is_receiver_gb_same_locus = false;
-
+  
   (void) is_modifier;
   (void) is_modified;
   (void) is_fertile;
@@ -885,10 +885,10 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
     cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
-
+  
   if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
     merit = cur_merit_base;
-
+  
   genome_length   = _genome.GetSize();
   (void) copied_size;                            // Unchanged
   (void) executed_size;                          // Unchanged
@@ -989,7 +989,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   is_donor_shadedgb = false;
   is_donor_locus_last = is_donor_locus;
   is_donor_locus.SetAll(false);
-
+  
   is_receiver_last = is_receiver;
   is_receiver = false;
   is_receiver_rand = false;
@@ -1008,7 +1008,7 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   is_receiver_shadedgb = false;	
   is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
   is_receiver_gb_same_locus = false;
-
+  
   (void) is_modifier;
   (void) is_modified;
   (void) is_fertile;
@@ -1158,7 +1158,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_donor_shadedgb  = clone_phenotype.is_donor_shadedgb;
   is_donor_locus_last = clone_phenotype.is_donor_locus_last;
   is_donor_locus = clone_phenotype.is_donor_locus;
-
+  
   is_receiver = clone_phenotype.is_receiver;
   is_receiver_last = clone_phenotype.is_receiver_last;
   is_receiver_rand = clone_phenotype.is_receiver_rand;
@@ -1176,7 +1176,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   is_receiver_shadedgb = clone_phenotype.is_receiver_shadedgb;
   is_receiver_shadedgb_last = clone_phenotype.is_receiver_shadedgb_last;
   is_receiver_gb_same_locus = clone_phenotype.is_receiver_gb_same_locus;
-
+  
   is_modifier   = false;
   is_modified   = false;
   is_fertile    = clone_phenotype.last_child_fertile;
@@ -1230,7 +1230,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   
   // For refractory period @WRE 03-20-07
   const int cur_update_time = m_world->GetStats().GetUpdate();
-  const double biomimetic_refractory_period = m_world->GetConfig().BIOMIMETIC_REFRACTORY_PERIOD.Get();
+  const double task_refractory_period = m_world->GetConfig().TASK_REFRACTORY_PERIOD.Get();
   double refract_factor;
   
   if (!m_reaction_result) m_reaction_result = new cReactionResult(num_resources, num_tasks, num_reactions);
@@ -1238,6 +1238,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   
   // Run everything through the environment.
   bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in); //NEED different eff_task_count and cur_reaction_count for deme resource
+  
   // If nothing was found, stop here.
   if (found == false) {
     result.Invalidate();
@@ -1252,16 +1253,15 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     // Modify TaskQuality amount based on refractory period
     // Logistic equation using refractory period
     // in update units from configuration file.  @WRE 03-20-07, 04-17-07
-    if (0.0 == biomimetic_refractory_period) {
+    if (task_refractory_period == 0.0) {
       refract_factor = 1.0;
     } else {
-      refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i])-biomimetic_refractory_period*0.5)));
+      refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i]) - task_refractory_period * 0.5)));
     }
     if (result.TaskDone(i) == true) 
     {
       cur_task_count[i]++;
       eff_task_count[i]++;
-      //cerr << "eff: " << eff_task_count[i] << endl;
       if(result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
     }
     
@@ -1291,7 +1291,6 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   }
   
   for (int i = 0; i < num_reactions; i++) {
-    //    if (result.ReactionTriggered(i) == true) cur_reaction_count[i]++;  // moved into cEnvironment::TestOutput to allow reaction requisites to be satisified at the time a reaction is completed
     cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
     if (result.ReactionTriggered(i) && last_reaction_count[i]==0) 
       m_world->GetStats().AddNewReactionCount(i); 
@@ -1441,6 +1440,9 @@ int cPhenotype::CalcSizeMerit() const
       else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {out_size = genome_length - (bonus_instruction_count -1);}
       else {out_size = 1;}  //the extra 1 point in all these case is so the orgs are not jilted by the scheduler        
       break;
+    case BASE_MERIT_GESTATION_TIME:
+      out_size = cpu_cycles_used;
+      break;
     case BASE_MERIT_CONST:
     default:
       out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
@@ -1464,8 +1466,7 @@ double cPhenotype::CalcCurrentMerit() const
 double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation_time, int _cpu_cycles) const
 {
   double out_fitness = 0;
-  switch (m_world->GetConfig().FITNESS_METHOD.Get())
-  {
+  switch (m_world->GetConfig().FITNESS_METHOD.Get()) {
     case 0: // Normal
       assert(_gestation_time > 0);
       out_fitness = _merit_base * _bonus / _gestation_time;
@@ -1750,7 +1751,7 @@ void cPhenotype::NewTrial()
   is_donor_shadedgb = false;
   is_donor_locus_last = is_donor_locus;
   is_donor_locus.SetAll(false);
-
+  
   is_receiver_last = is_receiver;
   is_receiver = false;
   is_receiver_rand = false;
@@ -1769,7 +1770,7 @@ void cPhenotype::NewTrial()
   is_receiver_shadedgb = false;
   is_receiver_gb_same_locus_last = is_receiver_gb_same_locus;
   is_receiver_gb_same_locus = false;
-
+  
   is_energy_requestor = false;
   is_energy_donor = false;
   is_energy_receiver = false;

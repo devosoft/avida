@@ -311,7 +311,9 @@ void cGenomeUtil::substring_match::rotate(int r, std::size_t n) {
 cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const cGenome& base, const cGenome& substring) {
 	const int rows=substring.GetSize()+1;
 	const int cols=base.GetSize()+1;
-	substring_match m[2][cols];
+	substring_match* m[2];
+	m[0] = new substring_match[cols];
+	m[1] = new substring_match[cols];
 	substring_match* c=m[0];
 	substring_match* p=m[1];
 	
@@ -343,6 +345,8 @@ cGenomeUtil::substring_match cGenomeUtil::FindSubstringMatch(const cGenome& base
 	
 	substring_match* min = std::min_element(p, p+cols);
 	min->size = base.GetSize();
+	delete [] m[0];
+	delete [] m[1];
 	return *min;
 }
 

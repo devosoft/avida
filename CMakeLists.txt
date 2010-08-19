@@ -615,15 +615,11 @@ SET(CFG_FILES
   ${CFG_FILES_DIR}/avida.cfg
   ${CFG_FILES_DIR}/environment.cfg
   ${CFG_FILES_DIR}/events.cfg
-  ${CFG_FILES_DIR}/instset-gx.cfg
   ${CFG_FILES_DIR}/instset-heads.cfg
   ${CFG_FILES_DIR}/instset-heads-sex.cfg
-  ${CFG_FILES_DIR}/instset-smt.cfg
   ${CFG_FILES_DIR}/instset-transsmt.cfg
-  ${CFG_FILES_DIR}/default-gx.org
   ${CFG_FILES_DIR}/default-heads.org
   ${CFG_FILES_DIR}/default-heads-sex.org
-  ${CFG_FILES_DIR}/default-smt.org
   ${CFG_FILES_DIR}/default-transsmt.org 
 )
 INSTALL_FILES(/work FILES ${CFG_FILES})

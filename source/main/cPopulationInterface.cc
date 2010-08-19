@@ -79,6 +79,10 @@ int cPopulationInterface::GetCellData() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
 }
 
+int cPopulationInterface::GetFacedCellData() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellData();
+}
+
 void cPopulationInterface::SetCellData(const int newData) {
   m_world->GetPopulation().GetCell(m_cell_id).SetCellData(newData);
 }
@@ -127,6 +131,13 @@ int cPopulationInterface::GetFacing()
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
 	assert(cell.IsOccupied());
 	return cell.GetFacing();
+}
+
+int cPopulationInterface::GetFacedCellID()
+{
+	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced();
+	assert(cell.IsOccupied());
+	return cell.GetID();
 }
 
 int cPopulationInterface::GetNeighborCellContents() {
@@ -911,3 +922,10 @@ void cPopulationInterface::ReceiveHGTDonation(const cGenome& fragment) {
 	InitHGTSupport();
 	m_hgt_support->_pending.push_back(fragment);
 }
+
+
+void cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
+{
+  m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
+}
+

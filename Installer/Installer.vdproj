@@ -39,6 +39,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1050A10682124E82A47F98A1F3DFAFE1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_152B7F74CD464519A05BF40404343217"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -69,19 +75,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1A9D1282747646D49D8DEDF2CFE37228"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_1C5F71CC5CDC43C0A12B84A6F481BAEB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_204CB5E1443B4FC88BBCB80DC26D21CF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -177,12 +171,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4857B4C478F4448D9CB1C11C0A894D91"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_49C3FB9C80A04BA69C6E8E18C57AF474"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -231,12 +219,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6F1EFD3ED0694F9DB4CE4815B7E68E0C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_75CA88B87821493A82DD6F7C83B46E95"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -262,6 +244,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7C15C97412BA4B1A8D7657581DCAB4C8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7CB11489A6824B9482733A646FB19319"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -327,6 +315,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_922E1D302CF7483D85C2ACFCF2BD97ED"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9955D41A76F448F6833F9A6DAD1510CE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -370,12 +364,6 @@
         "Entry"
         {
         "MsmKey" = "8:_B26D6FA9AE5B41DDBEFED6D2C8392257"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_BC060CC6F8D741A6BF0626D0364A62C4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -436,12 +424,6 @@
         "Entry"
         {
         "MsmKey" = "8:_D446FA919E484E618BF265CBB4768BEF"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D78F176C4DA24D768B76CE9D761176FC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -508,6 +490,12 @@
         "Entry"
         {
         "MsmKey" = "8:_F6F95E9A2B6549D49A7394BB3056758D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F853F066C47B492886ED2065DA9694C2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -686,6 +674,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1050A10682124E82A47F98A1F3DFAFE1"
+            {
+            "SourcePath" = "8:..\\support\\config\\instset-heads-sex.cfg"
+            "TargetName" = "8:instset-heads-sex.cfg"
+            "Tag" = "8:"
+            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_152B7F74CD464519A05BF40404343217"
             {
             "SourcePath" = "8:..\\documentation\\glossary\\help.h-divide.html"
@@ -786,52 +794,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1A9D1282747646D49D8DEDF2CFE37228"
-            {
-            "SourcePath" = "8:..\\support\\config\\default-sex-classic.org"
-            "TargetName" = "8:default-sex-classic.org"
-            "Tag" = "8:"
-            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1C5F71CC5CDC43C0A12B84A6F481BAEB"
             {
             "SourcePath" = "8:..\\documentation\\energy_model.html"
             "TargetName" = "8:energy_model.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_204CB5E1443B4FC88BBCB80DC26D21CF"
-            {
-            "SourcePath" = "8:..\\support\\config\\default-smt.org"
-            "TargetName" = "8:default-smt.org"
-            "Tag" = "8:"
-            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1126,26 +1094,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4857B4C478F4448D9CB1C11C0A894D91"
-            {
-            "SourcePath" = "8:..\\support\\config\\instset-sex-classic.cfg"
-            "TargetName" = "8:instset-sex-classic.cfg"
-            "Tag" = "8:"
-            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_49C3FB9C80A04BA69C6E8E18C57AF474"
             {
             "SourcePath" = "8:..\\documentation\\code_genome.html"
@@ -1306,26 +1254,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6F1EFD3ED0694F9DB4CE4815B7E68E0C"
-            {
-            "SourcePath" = "8:..\\support\\config\\instset-smt.cfg"
-            "TargetName" = "8:instset-smt.cfg"
-            "Tag" = "8:"
-            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_75CA88B87821493A82DD6F7C83B46E95"
             {
             "SourcePath" = "8:..\\documentation\\glossary\\help.Genotype.html"
@@ -1412,6 +1340,26 @@
             "TargetName" = "8:notations.help"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7CB11489A6824B9482733A646FB19319"
+            {
+            "SourcePath" = "8:..\\support\\config\\default-heads.org"
+            "TargetName" = "8:default-heads.org"
+            "Tag" = "8:"
+            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1626,6 +1574,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_922E1D302CF7483D85C2ACFCF2BD97ED"
+            {
+            "SourcePath" = "8:..\\support\\config\\default-heads-sex.org"
+            "TargetName" = "8:default-heads-sex.org"
+            "Tag" = "8:"
+            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9955D41A76F448F6833F9A6DAD1510CE"
             {
             "SourcePath" = "8:..\\documentation\\glossary\\help.Registers.html"
@@ -1770,26 +1738,6 @@
             {
             "SourcePath" = "8:..\\support\\config\\avida.cfg"
             "TargetName" = "8:avida.cfg"
-            "Tag" = "8:"
-            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BC060CC6F8D741A6BF0626D0364A62C4"
-            {
-            "SourcePath" = "8:..\\support\\config\\instset-classic.cfg"
-            "TargetName" = "8:instset-classic.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
             "Condition" = "8:"
@@ -1992,26 +1940,6 @@
             "TargetName" = "8:help.set-flow.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D78F176C4DA24D768B76CE9D761176FC"
-            {
-            "SourcePath" = "8:..\\support\\config\\default-classic.org"
-            "TargetName" = "8:default-classic.org"
-            "Tag" = "8:"
-            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2246,6 +2174,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F853F066C47B492886ED2065DA9694C2"
+            {
+            "SourcePath" = "8:..\\support\\config\\instset-heads.cfg"
+            "TargetName" = "8:instset-heads.cfg"
+            "Tag" = "8:"
+            "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F90A3F78C92B41B4B44F4D82E71DD8DD"
             {
             "SourcePath" = "8:..\\documentation\\events.html"
@@ -2371,24 +2319,24 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Avida 2.7"
-        "ProductCode" = "8:{2689A806-3753-42D9-A605-53AC66166735}"
-        "PackageCode" = "8:{C84D4377-9F33-4E5F-A3F4-75B75F4CBEDA}"
+        "ProductName" = "8:Avida 2.10"
+        "ProductCode" = "8:{F229CE57-CFC8-41F7-9698-BE16EC3EEEA6}"
+        "PackageCode" = "8:{41181E39-B4ED-4F6B-8A6A-6935012DB795}"
         "UpgradeCode" = "8:{E01716DE-7ED4-4DE0-87FF-D76F9A33C61F}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.7.0"
+        "ProductVersion" = "8:2.10.0"
         "Manufacturer" = "8:Michigan State University"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:"
+        "ARPHELPLINK" = "8:http://avida.devosoft.org"
         "Title" = "8:Avida"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Michigan State University"
+        "ARPCONTACT" = "8:Digital Evolution Laboratory"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
-        "ARPURLINFOABOUT" = "8:http://devolab.cse.msu.edu"
+        "ARPURLINFOABOUT" = "8:http://avida.devosoft.org"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
@@ -2544,7 +2492,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:The installer will guide you through the steps required to install [ProductName] on your computer.  This release is EXPERIMENTAL."
+                            "Value" = "8:The installer will guide you through the steps required to install [ProductName] on your computer."
                             "DefaultValue" = "8:#1203"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -2708,7 +2656,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:The installer will guide you through the steps required to install [ProductName] on your computer.  This release is EXPERIMENTAL."
+                            "Value" = "8:The installer will guide you through the steps required to install [ProductName] on your computer."
                             "DefaultValue" = "8:#1203"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -2893,7 +2841,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3547E7E10C78406791D4C46B86EB90D6"
             {
-            "SourcePath" = "8:..\\Debug\\Avida.exe"
+            "SourcePath" = "8:..\\release\\Avida.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"

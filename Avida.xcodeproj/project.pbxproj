@@ -20,6 +20,21 @@
 			name = "full-suite";
 			productName = "full-suite";
 		};
+		702A6748121C798D0014F776 /* prepare-package */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 702A6750121C79B80014F776 /* Build configuration list for PBXAggregateTarget "prepare-package" */;
+			buildPhases = (
+				702A67A5121C7B060014F776 /* work */,
+				702A67A6121C7B060014F776 /* work:documentation */,
+				702A67A7121C7B060014F776 /* work:documentation:images */,
+				702A67A8121C7B060014F776 /* work:documentation:glossary */,
+			);
+			dependencies = (
+				702A674F121C79990014F776 /* PBXTargetDependency */,
+			);
+			name = "prepare-package";
+			productName = "prepare-package";
+		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -37,7 +52,7 @@
 		700B6D4110DFFDD000A1F8F1 /* cMetaGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700B6D4010DFFDD000A1F8F1 /* cMetaGenome.cc */; };
 		700D9C460F1A8F34002CC711 /* cModularityAnalysis.h in Headers */ = {isa = PBXBuildFile; fileRef = 700D9C440F1A8F34002CC711 /* cModularityAnalysis.h */; };
 		700D9C470F1A8F34002CC711 /* cModularityAnalysis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 700D9C450F1A8F34002CC711 /* cModularityAnalysis.cc */; };
-		700E2996085A1F6000CF158A /* avida in CopyFiles */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
+		700E2996085A1F6000CF158A /* avida in Create work dir */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
 		701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */; };
 		701B343011E4CC1E00FEF49A /* cSexualAncestry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */; };
@@ -185,16 +200,89 @@
 		7023ECDC0C0A44CC00362B9C /* cScriptObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52DF0992FD8000B2B507 /* cScriptObject.cc */; };
 		7023ECDD0C0A44CE00362B9C /* cSymbolTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52A80992F8F600B2B507 /* cSymbolTable.cc */; };
 		7023ECDE0C0A44D800362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
+		702A6759121C7A050014F776 /* README.txt in work */ = {isa = PBXBuildFile; fileRef = 702A6727121C788E0014F776 /* README.txt */; };
+		702A675C121C7A5F0014F776 /* AvidaLogo.gif in work:documentation:images */ = {isa = PBXBuildFile; fileRef = 70920C5D0A9CCE2C00757CDB /* AvidaLogo.gif */; };
+		702A675D121C7A5F0014F776 /* cpu2.gif in work:documentation:images */ = {isa = PBXBuildFile; fileRef = 70920C5E0A9CCE2C00757CDB /* cpu2.gif */; };
+		702A675E121C7A690014F776 /* actions.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 707CE7490AA333060022D19C /* actions.html */; };
+		702A675F121C7A690014F776 /* analyze.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 707CE7500AA334120022D19C /* analyze.html */; };
+		702A6760121C7A690014F776 /* analyze_samples.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C1C0A9CCE2C00757CDB /* analyze_samples.html */; };
+		702A6761121C7A690014F776 /* as_overview.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70A33CC00D878407008EF976 /* as_overview.html */; };
+		702A6762121C7A690014F776 /* avida_overview.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70217EAE105AB75500F2789F /* avida_overview.html */; };
+		702A6763121C7A690014F776 /* code_c++_intro.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C1D0A9CCE2C00757CDB /* code_c++_intro.html */; };
+		702A6764121C7A690014F776 /* code_death_birth.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C1E0A9CCE2C00757CDB /* code_death_birth.html */; };
+		702A6765121C7A690014F776 /* code_environment.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C1F0A9CCE2C00757CDB /* code_environment.html */; };
+		702A6766121C7A690014F776 /* code_genome.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C220A9CCE2C00757CDB /* code_genome.html */; };
+		702A6767121C7A690014F776 /* code_instruction.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C240A9CCE2C00757CDB /* code_instruction.html */; };
+		702A6768121C7A690014F776 /* code_life_cycle.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C250A9CCE2C00757CDB /* code_life_cycle.html */; };
+		702A6769121C7A690014F776 /* code_standards.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 704D57210AA53F8600207FC1 /* code_standards.html */; };
+		702A676A121C7A690014F776 /* code_task.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C260A9CCE2C00757CDB /* code_task.html */; };
+		702A676B121C7A690014F776 /* config.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 707CE51D0A9E49A50022D19C /* config.html */; };
+		702A676C121C7A690014F776 /* cpu_tour.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C280A9CCE2C00757CDB /* cpu_tour.html */; };
+		702A676D121C7A690014F776 /* environment.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C290A9CCE2C00757CDB /* environment.html */; };
+		702A676E121C7A690014F776 /* events.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C2A0A9CCE2C00757CDB /* events.html */; };
+		702A676F121C7A690014F776 /* index.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C5F0A9CCE2C00757CDB /* index.html */; };
+		702A6770121C7A690014F776 /* inst_set.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C600A9CCE2C00757CDB /* inst_set.html */; };
+		702A6771121C7A690014F776 /* main.css in work:documentation */ = {isa = PBXBuildFile; fileRef = 707415C70AA7E4100064A546 /* main.css */; };
+		702A6772121C7A690014F776 /* print_data.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C680A9CCE2C00757CDB /* print_data.html */; };
+		702A6773121C7A690014F776 /* structure.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C690A9CCE2C00757CDB /* structure.html */; };
+		702A6774121C7A690014F776 /* svn.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 70920C6A0A9CCE2C00757CDB /* svn.html */; };
+		702A6776121C7AE80014F776 /* components.help in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E0121C73EE0014F776 /* components.help */; };
+		702A6777121C7AE80014F776 /* help.add.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E1121C73EE0014F776 /* help.add.html */; };
+		702A6778121C7AE80014F776 /* help.Bitwise.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E2121C73EE0014F776 /* help.Bitwise.html */; };
+		702A6779121C7AE80014F776 /* help.Complement-Label.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E3121C73EE0014F776 /* help.Complement-Label.html */; };
+		702A677A121C7AE80014F776 /* help.CPU-cycle.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E4121C73EE0014F776 /* help.CPU-cycle.html */; };
+		702A677B121C7AE80014F776 /* help.CPU.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E5121C73EE0014F776 /* help.CPU.html */; };
+		702A677C121C7AE80014F776 /* help.dec.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E6121C73EE0014F776 /* help.dec.html */; };
+		702A677D121C7AE80014F776 /* help.Genome.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E7121C73EE0014F776 /* help.Genome.html */; };
+		702A677E121C7AE80014F776 /* help.Genotype.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E8121C73EE0014F776 /* help.Genotype.html */; };
+		702A677F121C7AE80014F776 /* help.h-alloc.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66E9121C73EE0014F776 /* help.h-alloc.html */; };
+		702A6780121C7AE80014F776 /* help.h-copy.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66EA121C73EE0014F776 /* help.h-copy.html */; };
+		702A6781121C7AE80014F776 /* help.h-divide.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66EB121C73EE0014F776 /* help.h-divide.html */; };
+		702A6782121C7AE80014F776 /* help.h-search.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66EC121C73EE0014F776 /* help.h-search.html */; };
+		702A6783121C7AE80014F776 /* help.Heads.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66ED121C73EE0014F776 /* help.Heads.html */; };
+		702A6784121C7AE80014F776 /* help.if-label.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66EE121C73EE0014F776 /* help.if-label.html */; };
+		702A6785121C7AE80014F776 /* help.if-less.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66EF121C73EE0014F776 /* help.if-less.html */; };
+		702A6786121C7AE80014F776 /* help.if-n-equ.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F0121C73EE0014F776 /* help.if-n-equ.html */; };
+		702A6787121C7AE80014F776 /* help.inc.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F1121C73EE0014F776 /* help.inc.html */; };
+		702A6788121C7AE80014F776 /* help.Input-Output.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F2121C73EE0014F776 /* help.Input-Output.html */; };
+		702A6789121C7AE80014F776 /* help.Instruction.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F3121C73EE0014F776 /* help.Instruction.html */; };
+		702A678A121C7AE80014F776 /* help.IO.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F4121C73EE0014F776 /* help.IO.html */; };
+		702A678B121C7AE80014F776 /* help.jmp-head.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F5121C73EE0014F776 /* help.jmp-head.html */; };
+		702A678C121C7AE80014F776 /* help.Label.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F6121C73EE0014F776 /* help.Label.html */; };
+		702A678D121C7AE80014F776 /* help.Logic.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F7121C73EE0014F776 /* help.Logic.html */; };
+		702A678E121C7AE80014F776 /* help.Memory.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F8121C73EE0014F776 /* help.Memory.html */; };
+		702A678F121C7AE80014F776 /* help.mov-head.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66F9121C73EE0014F776 /* help.mov-head.html */; };
+		702A6790121C7AE80014F776 /* help.Mutation.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66FA121C73EE0014F776 /* help.Mutation.html */; };
+		702A6791121C7AE80014F776 /* help.nand.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66FB121C73EE0014F776 /* help.nand.html */; };
+		702A6792121C7AE80014F776 /* help.Nop-Head-Notation.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66FC121C73EE0014F776 /* help.Nop-Head-Notation.html */; };
+		702A6793121C7AE80014F776 /* help.nop-instructions.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66FD121C73EE0014F776 /* help.nop-instructions.html */; };
+		702A6794121C7AE80014F776 /* help.Nop-Register-Notation.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66FE121C73EE0014F776 /* help.Nop-Register-Notation.html */; };
+		702A6795121C7AE80014F776 /* help.Organism.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A66FF121C73EE0014F776 /* help.Organism.html */; };
+		702A6796121C7AE80014F776 /* help.pop.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6700121C73EE0014F776 /* help.pop.html */; };
+		702A6797121C7AE80014F776 /* help.Population.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6701121C73EE0014F776 /* help.Population.html */; };
+		702A6798121C7AE80014F776 /* help.push.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6702121C73EE0014F776 /* help.push.html */; };
+		702A6799121C7AE80014F776 /* help.Registers.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6703121C73EE0014F776 /* help.Registers.html */; };
+		702A679A121C7AE80014F776 /* help.set-flow.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6704121C73EE0014F776 /* help.set-flow.html */; };
+		702A679B121C7AE80014F776 /* help.shift-l.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6705121C73EE0014F776 /* help.shift-l.html */; };
+		702A679C121C7AE80014F776 /* help.shift-r.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6706121C73EE0014F776 /* help.shift-r.html */; };
+		702A679D121C7AE80014F776 /* help.Stack.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6707121C73EE0014F776 /* help.Stack.html */; };
+		702A679E121C7AE80014F776 /* help.sub.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6708121C73EE0014F776 /* help.sub.html */; };
+		702A679F121C7AE80014F776 /* help.swap-stk.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A6709121C73EE0014F776 /* help.swap-stk.html */; };
+		702A67A0121C7AE80014F776 /* help.swap.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A670A121C73EE0014F776 /* help.swap.html */; };
+		702A67A1121C7AE80014F776 /* help.Tasks.html in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A670B121C73EE0014F776 /* help.Tasks.html */; };
+		702A67A2121C7AE80014F776 /* inst.help in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A670C121C73EE0014F776 /* inst.help */; };
+		702A67A3121C7AE80014F776 /* notations.help in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A670D121C73EE0014F776 /* notations.help */; };
+		702A67A4121C7AE80014F776 /* todo.help in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A670E121C73EE0014F776 /* todo.help */; };
 		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
 		70310E6B0EDD09260044971B /* cStateGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 70310E690EDD09260044971B /* cStateGrid.h */; };
 		703178AD11AD711B00F81E21 /* cBioGroupData.h in Headers */ = {isa = PBXBuildFile; fileRef = 703178AC11AD711B00F81E21 /* cBioGroupData.h */; };
 		7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */; };
 		7034D0F111CBEA4300020AC4 /* cPhenPlastUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */; };
 		70381F810EAD0BD000A97DFD /* ASAnalyzeLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */; };
-		7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
-		7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
-		7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
-		7039885009F00D080052ACE7 /* events.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
+		7039884D09F00D020052ACE7 /* analyze.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
+		7039884E09F00D030052ACE7 /* avida.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
+		7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
+		7039885009F00D080052ACE7 /* events.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
 		704368D60C31991500A05ABA /* ASTree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704368CC0C3198F200A05ABA /* ASTree.cc */; };
 		70436B280C36C64400A05ABA /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70436B230C36C64000A05ABA /* cThread.cc */; };
 		70436B6C0C36C98900A05ABA /* PlatformExpert.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70436B260C36C64000A05ABA /* PlatformExpert.cc */; };
@@ -211,19 +299,15 @@
 		70447CA80F83DB5600E1BF72 /* cBirthMateSelectHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CA60F83DB5600E1BF72 /* cBirthMateSelectHandler.cc */; };
 		70447CAB0F83DBC100E1BF72 /* cBirthDemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 70447CA90F83DBC100E1BF72 /* cBirthDemeHandler.h */; };
 		70447CAC0F83DBC100E1BF72 /* cBirthDemeHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CAA0F83DBC100E1BF72 /* cBirthDemeHandler.cc */; };
-		7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3540A66A8F500640512 /* instset-smt.cfg */; };
-		7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
-		7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36E0A66AD7E00640512 /* default-smt.org */; };
-		7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
+		7049F3590A66A8F500640512 /* instset-transsmt.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
+		7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
 		7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E6770D74C36F008B3CA0 /* AvidaScript.cc */; };
 		7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */; };
 		7050E7D70D7DC979008B3CA0 /* cDirectInterpretASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */; };
-		705B103C1073AEF1002242E6 /* default-gx.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10311073AC1F002242E6 /* default-gx.org */; };
-		705B103D1073AEF1002242E6 /* default-heads-sex.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10321073AC1F002242E6 /* default-heads-sex.org */; };
-		705B103E1073AEF1002242E6 /* default-heads.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10331073AC1F002242E6 /* default-heads.org */; };
-		705B103F1073AF05002242E6 /* instset-gx.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10341073AC1F002242E6 /* instset-gx.cfg */; };
-		705B10401073AF05002242E6 /* instset-heads-sex.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10351073AC1F002242E6 /* instset-heads-sex.cfg */; };
-		705B10411073AF05002242E6 /* instset-heads.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 705B10361073AC1F002242E6 /* instset-heads.cfg */; };
+		705B103D1073AEF1002242E6 /* default-heads-sex.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10321073AC1F002242E6 /* default-heads-sex.org */; };
+		705B103E1073AEF1002242E6 /* default-heads.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10331073AC1F002242E6 /* default-heads.org */; };
+		705B10401073AF05002242E6 /* instset-heads-sex.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10351073AC1F002242E6 /* instset-heads-sex.cfg */; };
+		705B10411073AF05002242E6 /* instset-heads.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10361073AC1F002242E6 /* instset-heads.cfg */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		7070E46D12104A660056BE1E /* cDemePlaceholderUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 7070E46B12104A660056BE1E /* cDemePlaceholderUnit.h */; };
 		7070E6BF12109C1D0056BE1E /* cBioGroupListener.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7070E6BE12109C1D0056BE1E /* cBioGroupListener.cc */; };
@@ -243,8 +327,6 @@
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
 		70A778390D69D5CA00735F1E /* cDemeProbSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A778370D69D5C200735F1E /* cDemeProbSchedule.cc */; };
 		70AD4FA00F194F4D00AA50AC /* cGenotypeData.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70AD4F9E0F194DD400AA50AC /* cGenotypeData.cc */; };
-		70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */; };
-		70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B1A7590B7E431F00067486 /* experimental.org */; };
 		70B547FD10AB22920013E999 /* cBGGenotypeManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B547FB10AB22920013E999 /* cBGGenotypeManager.cc */; };
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
@@ -333,6 +415,13 @@
 			remoteGlobalIDString = 70B6514B0BEA6FAD002472ED;
 			remoteInfo = "unit-tests";
 		};
+		702A674E121C79990014F776 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7023ED520C0A590200362B9C;
+			remoteInfo = "full-suite";
+		};
 		70C9D5C5108688FA00472C46 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
@@ -367,30 +456,138 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		70486B9508267145009328F0 /* CopyFiles */ = {
+		702A67A5121C7B060014F776 /* work */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
-				705B103F1073AF05002242E6 /* instset-gx.cfg in CopyFiles */,
-				705B10401073AF05002242E6 /* instset-heads-sex.cfg in CopyFiles */,
-				705B10411073AF05002242E6 /* instset-heads.cfg in CopyFiles */,
-				705B103C1073AEF1002242E6 /* default-gx.org in CopyFiles */,
-				705B103D1073AEF1002242E6 /* default-heads-sex.org in CopyFiles */,
-				705B103E1073AEF1002242E6 /* default-heads.org in CopyFiles */,
-				700E2996085A1F6000CF158A /* avida in CopyFiles */,
-				7039884D09F00D020052ACE7 /* analyze.cfg in CopyFiles */,
-				7039884E09F00D030052ACE7 /* avida.cfg in CopyFiles */,
-				7039884F09F00D060052ACE7 /* environment.cfg in CopyFiles */,
-				7039885009F00D080052ACE7 /* events.cfg in CopyFiles */,
-				7049F3580A66A8F500640512 /* instset-smt.cfg in CopyFiles */,
-				7049F3590A66A8F500640512 /* instset-transsmt.cfg in CopyFiles */,
-				7049F3720A66AD7E00640512 /* default-smt.org in CopyFiles */,
-				7049F3730A66AD7E00640512 /* default-transsmt.org in CopyFiles */,
-				70B1A7430B7E3FFD00067486 /* instset-experimental.cfg in CopyFiles */,
-				70B1A75A0B7E431F00067486 /* experimental.org in CopyFiles */,
+				702A6759121C7A050014F776 /* README.txt in work */,
 			);
+			name = work;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		702A67A6121C7B060014F776 /* work:documentation */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = work/documentation;
+			dstSubfolderSpec = 16;
+			files = (
+				702A675E121C7A690014F776 /* actions.html in work:documentation */,
+				702A675F121C7A690014F776 /* analyze.html in work:documentation */,
+				702A6760121C7A690014F776 /* analyze_samples.html in work:documentation */,
+				702A6761121C7A690014F776 /* as_overview.html in work:documentation */,
+				702A6762121C7A690014F776 /* avida_overview.html in work:documentation */,
+				702A6763121C7A690014F776 /* code_c++_intro.html in work:documentation */,
+				702A6764121C7A690014F776 /* code_death_birth.html in work:documentation */,
+				702A6765121C7A690014F776 /* code_environment.html in work:documentation */,
+				702A6766121C7A690014F776 /* code_genome.html in work:documentation */,
+				702A6767121C7A690014F776 /* code_instruction.html in work:documentation */,
+				702A6768121C7A690014F776 /* code_life_cycle.html in work:documentation */,
+				702A6769121C7A690014F776 /* code_standards.html in work:documentation */,
+				702A676A121C7A690014F776 /* code_task.html in work:documentation */,
+				702A676B121C7A690014F776 /* config.html in work:documentation */,
+				702A676C121C7A690014F776 /* cpu_tour.html in work:documentation */,
+				702A676D121C7A690014F776 /* environment.html in work:documentation */,
+				702A676E121C7A690014F776 /* events.html in work:documentation */,
+				702A676F121C7A690014F776 /* index.html in work:documentation */,
+				702A6770121C7A690014F776 /* inst_set.html in work:documentation */,
+				702A6771121C7A690014F776 /* main.css in work:documentation */,
+				702A6772121C7A690014F776 /* print_data.html in work:documentation */,
+				702A6773121C7A690014F776 /* structure.html in work:documentation */,
+				702A6774121C7A690014F776 /* svn.html in work:documentation */,
+			);
+			name = "work:documentation";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		702A67A7121C7B060014F776 /* work:documentation:images */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = work/documentation/images;
+			dstSubfolderSpec = 16;
+			files = (
+				702A675C121C7A5F0014F776 /* AvidaLogo.gif in work:documentation:images */,
+				702A675D121C7A5F0014F776 /* cpu2.gif in work:documentation:images */,
+			);
+			name = "work:documentation:images";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		702A67A8121C7B060014F776 /* work:documentation:glossary */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = work/documentation/glossary;
+			dstSubfolderSpec = 16;
+			files = (
+				702A6776121C7AE80014F776 /* components.help in work:documentation:glossary */,
+				702A6777121C7AE80014F776 /* help.add.html in work:documentation:glossary */,
+				702A6778121C7AE80014F776 /* help.Bitwise.html in work:documentation:glossary */,
+				702A6779121C7AE80014F776 /* help.Complement-Label.html in work:documentation:glossary */,
+				702A677A121C7AE80014F776 /* help.CPU-cycle.html in work:documentation:glossary */,
+				702A677B121C7AE80014F776 /* help.CPU.html in work:documentation:glossary */,
+				702A677C121C7AE80014F776 /* help.dec.html in work:documentation:glossary */,
+				702A677D121C7AE80014F776 /* help.Genome.html in work:documentation:glossary */,
+				702A677E121C7AE80014F776 /* help.Genotype.html in work:documentation:glossary */,
+				702A677F121C7AE80014F776 /* help.h-alloc.html in work:documentation:glossary */,
+				702A6780121C7AE80014F776 /* help.h-copy.html in work:documentation:glossary */,
+				702A6781121C7AE80014F776 /* help.h-divide.html in work:documentation:glossary */,
+				702A6782121C7AE80014F776 /* help.h-search.html in work:documentation:glossary */,
+				702A6783121C7AE80014F776 /* help.Heads.html in work:documentation:glossary */,
+				702A6784121C7AE80014F776 /* help.if-label.html in work:documentation:glossary */,
+				702A6785121C7AE80014F776 /* help.if-less.html in work:documentation:glossary */,
+				702A6786121C7AE80014F776 /* help.if-n-equ.html in work:documentation:glossary */,
+				702A6787121C7AE80014F776 /* help.inc.html in work:documentation:glossary */,
+				702A6788121C7AE80014F776 /* help.Input-Output.html in work:documentation:glossary */,
+				702A6789121C7AE80014F776 /* help.Instruction.html in work:documentation:glossary */,
+				702A678A121C7AE80014F776 /* help.IO.html in work:documentation:glossary */,
+				702A678B121C7AE80014F776 /* help.jmp-head.html in work:documentation:glossary */,
+				702A678C121C7AE80014F776 /* help.Label.html in work:documentation:glossary */,
+				702A678D121C7AE80014F776 /* help.Logic.html in work:documentation:glossary */,
+				702A678E121C7AE80014F776 /* help.Memory.html in work:documentation:glossary */,
+				702A678F121C7AE80014F776 /* help.mov-head.html in work:documentation:glossary */,
+				702A6790121C7AE80014F776 /* help.Mutation.html in work:documentation:glossary */,
+				702A6791121C7AE80014F776 /* help.nand.html in work:documentation:glossary */,
+				702A6792121C7AE80014F776 /* help.Nop-Head-Notation.html in work:documentation:glossary */,
+				702A6793121C7AE80014F776 /* help.nop-instructions.html in work:documentation:glossary */,
+				702A6794121C7AE80014F776 /* help.Nop-Register-Notation.html in work:documentation:glossary */,
+				702A6795121C7AE80014F776 /* help.Organism.html in work:documentation:glossary */,
+				702A6796121C7AE80014F776 /* help.pop.html in work:documentation:glossary */,
+				702A6797121C7AE80014F776 /* help.Population.html in work:documentation:glossary */,
+				702A6798121C7AE80014F776 /* help.push.html in work:documentation:glossary */,
+				702A6799121C7AE80014F776 /* help.Registers.html in work:documentation:glossary */,
+				702A679A121C7AE80014F776 /* help.set-flow.html in work:documentation:glossary */,
+				702A679B121C7AE80014F776 /* help.shift-l.html in work:documentation:glossary */,
+				702A679C121C7AE80014F776 /* help.shift-r.html in work:documentation:glossary */,
+				702A679D121C7AE80014F776 /* help.Stack.html in work:documentation:glossary */,
+				702A679E121C7AE80014F776 /* help.sub.html in work:documentation:glossary */,
+				702A679F121C7AE80014F776 /* help.swap-stk.html in work:documentation:glossary */,
+				702A67A0121C7AE80014F776 /* help.swap.html in work:documentation:glossary */,
+				702A67A1121C7AE80014F776 /* help.Tasks.html in work:documentation:glossary */,
+				702A67A2121C7AE80014F776 /* inst.help in work:documentation:glossary */,
+				702A67A3121C7AE80014F776 /* notations.help in work:documentation:glossary */,
+				702A67A4121C7AE80014F776 /* todo.help in work:documentation:glossary */,
+			);
+			name = "work:documentation:glossary";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70486B9508267145009328F0 /* Create work dir */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = work;
+			dstSubfolderSpec = 16;
+			files = (
+				705B10401073AF05002242E6 /* instset-heads-sex.cfg in Create work dir */,
+				705B10411073AF05002242E6 /* instset-heads.cfg in Create work dir */,
+				705B103D1073AEF1002242E6 /* default-heads-sex.org in Create work dir */,
+				705B103E1073AEF1002242E6 /* default-heads.org in Create work dir */,
+				700E2996085A1F6000CF158A /* avida in Create work dir */,
+				7039884D09F00D020052ACE7 /* analyze.cfg in Create work dir */,
+				7039884E09F00D030052ACE7 /* avida.cfg in Create work dir */,
+				7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */,
+				7039885009F00D080052ACE7 /* events.cfg in Create work dir */,
+				7049F3590A66A8F500640512 /* instset-transsmt.cfg in Create work dir */,
+				7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */,
+			);
+			name = "Create work dir";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		70B651B50BEA9AC2002472ED /* CopyFiles */ = {
@@ -543,6 +740,54 @@
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
+		702A66E0121C73EE0014F776 /* components.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = components.help; sourceTree = "<group>"; };
+		702A66E1121C73EE0014F776 /* help.add.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.add.html; sourceTree = "<group>"; };
+		702A66E2121C73EE0014F776 /* help.Bitwise.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Bitwise.html; sourceTree = "<group>"; };
+		702A66E3121C73EE0014F776 /* help.Complement-Label.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Complement-Label.html"; sourceTree = "<group>"; };
+		702A66E4121C73EE0014F776 /* help.CPU-cycle.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.CPU-cycle.html"; sourceTree = "<group>"; };
+		702A66E5121C73EE0014F776 /* help.CPU.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.CPU.html; sourceTree = "<group>"; };
+		702A66E6121C73EE0014F776 /* help.dec.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.dec.html; sourceTree = "<group>"; };
+		702A66E7121C73EE0014F776 /* help.Genome.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Genome.html; sourceTree = "<group>"; };
+		702A66E8121C73EE0014F776 /* help.Genotype.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Genotype.html; sourceTree = "<group>"; };
+		702A66E9121C73EE0014F776 /* help.h-alloc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-alloc.html"; sourceTree = "<group>"; };
+		702A66EA121C73EE0014F776 /* help.h-copy.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-copy.html"; sourceTree = "<group>"; };
+		702A66EB121C73EE0014F776 /* help.h-divide.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-divide.html"; sourceTree = "<group>"; };
+		702A66EC121C73EE0014F776 /* help.h-search.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.h-search.html"; sourceTree = "<group>"; };
+		702A66ED121C73EE0014F776 /* help.Heads.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Heads.html; sourceTree = "<group>"; };
+		702A66EE121C73EE0014F776 /* help.if-label.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.if-label.html"; sourceTree = "<group>"; };
+		702A66EF121C73EE0014F776 /* help.if-less.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.if-less.html"; sourceTree = "<group>"; };
+		702A66F0121C73EE0014F776 /* help.if-n-equ.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.if-n-equ.html"; sourceTree = "<group>"; };
+		702A66F1121C73EE0014F776 /* help.inc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.inc.html; sourceTree = "<group>"; };
+		702A66F2121C73EE0014F776 /* help.Input-Output.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Input-Output.html"; sourceTree = "<group>"; };
+		702A66F3121C73EE0014F776 /* help.Instruction.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Instruction.html; sourceTree = "<group>"; };
+		702A66F4121C73EE0014F776 /* help.IO.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.IO.html; sourceTree = "<group>"; };
+		702A66F5121C73EE0014F776 /* help.jmp-head.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.jmp-head.html"; sourceTree = "<group>"; };
+		702A66F6121C73EE0014F776 /* help.Label.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Label.html; sourceTree = "<group>"; };
+		702A66F7121C73EE0014F776 /* help.Logic.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Logic.html; sourceTree = "<group>"; };
+		702A66F8121C73EE0014F776 /* help.Memory.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Memory.html; sourceTree = "<group>"; };
+		702A66F9121C73EE0014F776 /* help.mov-head.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.mov-head.html"; sourceTree = "<group>"; };
+		702A66FA121C73EE0014F776 /* help.Mutation.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Mutation.html; sourceTree = "<group>"; };
+		702A66FB121C73EE0014F776 /* help.nand.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.nand.html; sourceTree = "<group>"; };
+		702A66FC121C73EE0014F776 /* help.Nop-Head-Notation.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Nop-Head-Notation.html"; sourceTree = "<group>"; };
+		702A66FD121C73EE0014F776 /* help.nop-instructions.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.nop-instructions.html"; sourceTree = "<group>"; };
+		702A66FE121C73EE0014F776 /* help.Nop-Register-Notation.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.Nop-Register-Notation.html"; sourceTree = "<group>"; };
+		702A66FF121C73EE0014F776 /* help.Organism.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Organism.html; sourceTree = "<group>"; };
+		702A6700121C73EE0014F776 /* help.pop.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.pop.html; sourceTree = "<group>"; };
+		702A6701121C73EE0014F776 /* help.Population.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Population.html; sourceTree = "<group>"; };
+		702A6702121C73EE0014F776 /* help.push.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.push.html; sourceTree = "<group>"; };
+		702A6703121C73EE0014F776 /* help.Registers.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Registers.html; sourceTree = "<group>"; };
+		702A6704121C73EE0014F776 /* help.set-flow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.set-flow.html"; sourceTree = "<group>"; };
+		702A6705121C73EE0014F776 /* help.shift-l.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.shift-l.html"; sourceTree = "<group>"; };
+		702A6706121C73EE0014F776 /* help.shift-r.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.shift-r.html"; sourceTree = "<group>"; };
+		702A6707121C73EE0014F776 /* help.Stack.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Stack.html; sourceTree = "<group>"; };
+		702A6708121C73EE0014F776 /* help.sub.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.sub.html; sourceTree = "<group>"; };
+		702A6709121C73EE0014F776 /* help.swap-stk.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = "help.swap-stk.html"; sourceTree = "<group>"; };
+		702A670A121C73EE0014F776 /* help.swap.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.swap.html; sourceTree = "<group>"; };
+		702A670B121C73EE0014F776 /* help.Tasks.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = help.Tasks.html; sourceTree = "<group>"; };
+		702A670C121C73EE0014F776 /* inst.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst.help; sourceTree = "<group>"; };
+		702A670D121C73EE0014F776 /* notations.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = notations.help; sourceTree = "<group>"; };
+		702A670E121C73EE0014F776 /* todo.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = todo.help; sourceTree = "<group>"; };
+		702A6727121C788E0014F776 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		702D4EF508DA5328007BA469 /* cEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironment.h; sourceTree = "<group>"; };
 		702D4EF608DA5328007BA469 /* cPopulationInterface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationInterface.h; sourceTree = "<group>"; };
 		702D4EFC08DA5341007BA469 /* cEnvironment.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEnvironment.cc; sourceTree = "<group>"; };
@@ -1199,6 +1444,92 @@
 			path = "tcmalloc-1.4";
 			sourceTree = "<group>";
 		};
+		702A66DF121C73EE0014F776 /* glossary */ = {
+			isa = PBXGroup;
+			children = (
+				702A66E0121C73EE0014F776 /* components.help */,
+				702A66E1121C73EE0014F776 /* help.add.html */,
+				702A66E2121C73EE0014F776 /* help.Bitwise.html */,
+				702A66E3121C73EE0014F776 /* help.Complement-Label.html */,
+				702A66E4121C73EE0014F776 /* help.CPU-cycle.html */,
+				702A66E5121C73EE0014F776 /* help.CPU.html */,
+				702A66E6121C73EE0014F776 /* help.dec.html */,
+				702A66E7121C73EE0014F776 /* help.Genome.html */,
+				702A66E8121C73EE0014F776 /* help.Genotype.html */,
+				702A66E9121C73EE0014F776 /* help.h-alloc.html */,
+				702A66EA121C73EE0014F776 /* help.h-copy.html */,
+				702A66EB121C73EE0014F776 /* help.h-divide.html */,
+				702A66EC121C73EE0014F776 /* help.h-search.html */,
+				702A66ED121C73EE0014F776 /* help.Heads.html */,
+				702A66EE121C73EE0014F776 /* help.if-label.html */,
+				702A66EF121C73EE0014F776 /* help.if-less.html */,
+				702A66F0121C73EE0014F776 /* help.if-n-equ.html */,
+				702A66F1121C73EE0014F776 /* help.inc.html */,
+				702A66F2121C73EE0014F776 /* help.Input-Output.html */,
+				702A66F3121C73EE0014F776 /* help.Instruction.html */,
+				702A66F4121C73EE0014F776 /* help.IO.html */,
+				702A66F5121C73EE0014F776 /* help.jmp-head.html */,
+				702A66F6121C73EE0014F776 /* help.Label.html */,
+				702A66F7121C73EE0014F776 /* help.Logic.html */,
+				702A66F8121C73EE0014F776 /* help.Memory.html */,
+				702A66F9121C73EE0014F776 /* help.mov-head.html */,
+				702A66FA121C73EE0014F776 /* help.Mutation.html */,
+				702A66FB121C73EE0014F776 /* help.nand.html */,
+				702A66FC121C73EE0014F776 /* help.Nop-Head-Notation.html */,
+				702A66FD121C73EE0014F776 /* help.nop-instructions.html */,
+				702A66FE121C73EE0014F776 /* help.Nop-Register-Notation.html */,
+				702A66FF121C73EE0014F776 /* help.Organism.html */,
+				702A6700121C73EE0014F776 /* help.pop.html */,
+				702A6701121C73EE0014F776 /* help.Population.html */,
+				702A6702121C73EE0014F776 /* help.push.html */,
+				702A6703121C73EE0014F776 /* help.Registers.html */,
+				702A6704121C73EE0014F776 /* help.set-flow.html */,
+				702A6705121C73EE0014F776 /* help.shift-l.html */,
+				702A6706121C73EE0014F776 /* help.shift-r.html */,
+				702A6707121C73EE0014F776 /* help.Stack.html */,
+				702A6708121C73EE0014F776 /* help.sub.html */,
+				702A6709121C73EE0014F776 /* help.swap-stk.html */,
+				702A670A121C73EE0014F776 /* help.swap.html */,
+				702A670B121C73EE0014F776 /* help.Tasks.html */,
+				702A670C121C73EE0014F776 /* inst.help */,
+				702A670D121C73EE0014F776 /* notations.help */,
+				702A670E121C73EE0014F776 /* todo.help */,
+			);
+			path = glossary;
+			sourceTree = "<group>";
+		};
+		702A670F121C746A0014F776 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				705B10311073AC1F002242E6 /* default-gx.org */,
+				705B10321073AC1F002242E6 /* default-heads-sex.org */,
+				705B10331073AC1F002242E6 /* default-heads.org */,
+				705B10341073AC1F002242E6 /* instset-gx.cfg */,
+				705B10351073AC1F002242E6 /* instset-heads-sex.cfg */,
+				705B10361073AC1F002242E6 /* instset-heads.cfg */,
+				70B1A7590B7E431F00067486 /* experimental.org */,
+				70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */,
+				7049F36E0A66AD7E00640512 /* default-smt.org */,
+				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
+				707AF2D309EE8501001AEA89 /* analyze.cfg */,
+				707AF2D509EE8501001AEA89 /* avida.cfg */,
+				707AF2D709EE8501001AEA89 /* environment.cfg */,
+				707AF2D809EE8501001AEA89 /* events.cfg */,
+				7049F3540A66A8F500640512 /* instset-smt.cfg */,
+				7049F3550A66A8F500640512 /* instset-transsmt.cfg */,
+				707AF2DD09EE8501001AEA89 /* misc */,
+			);
+			name = config;
+			sourceTree = "<group>";
+		};
+		702A6725121C788E0014F776 /* Installer */ = {
+			isa = PBXGroup;
+			children = (
+				702A6727121C788E0014F776 /* README.txt */,
+			);
+			path = Installer;
+			sourceTree = "<group>";
+		};
 		70422A1B091B141000A5E67F /* analyze */ = {
 			isa = PBXGroup;
 			children = (
@@ -1263,23 +1594,7 @@
 		707AF2D209EE8501001AEA89 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				705B10311073AC1F002242E6 /* default-gx.org */,
-				705B10321073AC1F002242E6 /* default-heads-sex.org */,
-				705B10331073AC1F002242E6 /* default-heads.org */,
-				705B10341073AC1F002242E6 /* instset-gx.cfg */,
-				705B10351073AC1F002242E6 /* instset-heads-sex.cfg */,
-				705B10361073AC1F002242E6 /* instset-heads.cfg */,
-				70B1A7590B7E431F00067486 /* experimental.org */,
-				70B1A7420B7E3FFD00067486 /* instset-experimental.cfg */,
-				7049F36E0A66AD7E00640512 /* default-smt.org */,
-				7049F36F0A66AD7E00640512 /* default-transsmt.org */,
-				707AF2D309EE8501001AEA89 /* analyze.cfg */,
-				707AF2D509EE8501001AEA89 /* avida.cfg */,
-				707AF2D709EE8501001AEA89 /* environment.cfg */,
-				707AF2D809EE8501001AEA89 /* events.cfg */,
-				7049F3540A66A8F500640512 /* instset-smt.cfg */,
-				7049F3550A66A8F500640512 /* instset-transsmt.cfg */,
-				707AF2DD09EE8501001AEA89 /* misc */,
+				702A670F121C746A0014F776 /* config */,
 			);
 			name = Support;
 			path = support/config;
@@ -1319,6 +1634,7 @@
 		70920C1A0A9CCE2C00757CDB /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
+				702A66DF121C73EE0014F776 /* glossary */,
 				707415C70AA7E4100064A546 /* main.css */,
 				70A33CC00D878407008EF976 /* as_overview.html */,
 				70217EAE105AB75500F2789F /* avida_overview.html */,
@@ -1544,6 +1860,7 @@
 			children = (
 				DCC30C670762539A008F7A48 /* Main Source */,
 				70920C1A0A9CCE2C00757CDB /* Documentation */,
+				702A6725121C788E0014F776 /* Installer */,
 				707AF2D209EE8501001AEA89 /* Support */,
 				DCC315B6076253A5008F7A48 /* Utilities */,
 				DCC3164E07626CF3008F7A48 /* Products */,
@@ -2085,7 +2402,7 @@
 			buildPhases = (
 				DCC3164A07626CF3008F7A48 /* Sources */,
 				DCC3164B07626CF3008F7A48 /* Frameworks */,
-				70486B9508267145009328F0 /* CopyFiles */,
+				70486B9508267145009328F0 /* Create work dir */,
 			);
 			buildRules = (
 			);
@@ -2119,6 +2436,7 @@
 				7023EC320C0A426900362B9C /* avida-core */,
 				7022469C107FC4F10079CD25 /* tcmalloc-1.4 */,
 				70B6514B0BEA6FAD002472ED /* unit-tests */,
+				702A6748121C798D0014F776 /* prepare-package */,
 			);
 		};
 /* End PBXProject section */
@@ -2431,6 +2749,11 @@
 			target = 70B6514B0BEA6FAD002472ED /* unit-tests */;
 			targetProxy = 7023ED570C0A591100362B9C /* PBXContainerItemProxy */;
 		};
+		702A674F121C79990014F776 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7023ED520C0A590200362B9C /* full-suite */;
+			targetProxy = 702A674E121C79990014F776 /* PBXContainerItemProxy */;
+		};
 		70C9D5C6108688FA00472C46 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
@@ -2694,6 +3017,48 @@
 				);
 			};
 			name = Deployment;
+		};
+		702A6749121C798D0014F776 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = "prepare-package";
+			};
+			name = Development;
+		};
+		702A674A121C798D0014F776 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "prepare-package";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		702A674B121C798D0014F776 /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "prepare-package";
+			};
+			name = "Deployment-G5";
+		};
+		702A674C121C798D0014F776 /* Deployment-Universal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "prepare-package";
+			};
+			name = "Deployment-Universal";
+		};
+		702A674D121C798D0014F776 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "prepare-package";
+			};
+			name = Profile;
 		};
 		70B393DC0944CA6F0018F09D /* Deployment-G5 */ = {
 			isa = XCBuildConfiguration;
@@ -3023,6 +3388,18 @@
 				70B393E00944CA6F0018F09D /* Deployment-G5 */,
 				E626209D0A372B9900C07685 /* Deployment-Universal */,
 				70B393E10944CA6F0018F09D /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		702A6750121C79B80014F776 /* Build configuration list for PBXAggregateTarget "prepare-package" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				702A6749121C798D0014F776 /* Development */,
+				702A674A121C798D0014F776 /* Deployment */,
+				702A674B121C798D0014F776 /* Deployment-G5 */,
+				702A674C121C798D0014F776 /* Deployment-Universal */,
+				702A674D121C798D0014F776 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;

@@ -509,7 +509,6 @@ public:
 
 
 
-
 /*
  This function prints out fitness data. The main point is that it
  calculates the average fitness from info from the testCPU + the actual
@@ -3074,8 +3073,6 @@ class cActionPrintNumOrgsInDeme : public cAction
     }
   };
 
-
-
 class cActionPrintDebug : public cAction
 {
 public:
@@ -3085,21 +3082,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cDataFile & df = m_world->GetDataFile("genotype_id_list.dat");
-    df.WriteComment("Ordered Genotype List");
-    
-    df.Write(m_world->GetStats().GetUpdate(), "Update");
-    
-    cString foo;
-    tAutoRelease<tIterator<cBioGroup> > it;
-    it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
-    while (it->Next()) {
-      cBioGroup* bg = it->Get();
-      foo += cStringUtil::Stringf("%d(%d),", bg->GetID(), bg->GetNumUnits());      
-    }
-    df.Write(foo, "IDs");
-    
-    df.Endl();
   }
 };
 

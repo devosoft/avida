@@ -699,8 +699,37 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
 // movement that cannot be directly handled in cHardwareCPU.cc
-void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, cPopulationCell& dest_cell)
+void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id)
 {
+  cPopulationCell& src_cell = GetCell(src_cell_id);
+  cPopulationCell& dest_cell = GetCell(dest_cell_id);
+
+  if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
+    bool kill_source = true;
+    switch (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get()) {
+      case 0: // 50% chance, no modifiers
+      default:
+        kill_source = ctx.GetRandom().P(0.5);
+        break;
+        
+      case 1: // normal distribution based on age
+        // @TODO - implement normal distribution movement collision selection
+        break;
+    }
+    
+    if (kill_source) {
+      KillOrganism(src_cell);
+
+      // Killing the moving organism means that we shouldn't actually do the swap, so return
+      return;
+    }
+    
+    KillOrganism(dest_cell);
+  }
+  
+  SwapCells(src_cell_id, dest_cell_id);
+  
+  
   // Declarations
   int actualNeighborhoodSize, fromFacing, destFacing, newFacing, success;
 #ifdef DEBBUG
@@ -741,24 +770,6 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, c
       break;
     }
   }
-  // @DMB this doesn't compile properly -- #ifdef DEBUG
-#if 0
-  if (!success) {
-    sID = src_cell.GetID();
-    dID = dest_cell.GetID();
-    src_cell.GetPosition(xx1,yy1);
-    dest_cell.GetPosition(xx2,yy2);
-    //Conditional for examining only neighbor move without swap in facing
-    //if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
-    cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set src_cell facing to " << newFacing << endl;
-    for (int j=0; j < actualNeighborhoodSize; j++) {
-      src_cell.ConnectionList().CircNext();
-      src_cell.GetCellFaced().GetPosition(xx2,yy2);
-      cout << "connlist for " << sID << ": facing " << src_cell.GetFacing() << " -> (" << xx2 << "," << yy2 << ")" << endl;
-    }
-    //}
-  }
-#endif 
   
   // Set facing in destinatiion cell
   success = 0;
@@ -773,19 +784,6 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, cPopulationCell& src_cell, c
       break;
     }
   }
-  // @DMB this doesn't compile properly -- #ifdef DEBUG
-#if 0
-  if (!success) {
-    sID = src_cell.GetID();
-    dID = dest_cell.GetID();
-    src_cell.GetPosition(xx1,yy1);
-    dest_cell.GetPosition(xx2,yy2);
-    if (1 == abs(xx2-xx1)+abs(yy2-yy1)) {
-      cout << "MO: src: " << sID << "@ (" << xx1 << "," << yy1 << ") dest: " << dID << "@ (" << xx2 << "," << yy2 << "), FAILED to set dest_cell facing to " << newFacing << endl;
-    }
-  }
-#endif
-  
 }
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
@@ -971,35 +969,28 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
   return receive_value;
 }
 
-void cPopulation::SwapCells(cPopulationCell & cell1, cPopulationCell & cell2)
+void cPopulation::SwapCells(int cell_id1, int cell_id2)
 {
-  // Sanity checks: Don't process if the cells are the same and 
-  // don't bother trying to move when given a cell that isn't there
-  if ((&cell1 == NULL) || (&cell2 == NULL)) return;
-  if (cell1.GetID() == cell2.GetID()) return;
+  // Sanity checks: Don't process if the cells are the same
+  if (cell_id1 == cell_id2) return;
+
+  cPopulationCell& cell1 = GetCell(cell_id1);
+  cPopulationCell& cell2 = GetCell(cell_id2);
+  
   // Clear current contents of cells
-  cOrganism * org1 = cell1.RemoveOrganism();
-  cOrganism * org2 = cell2.RemoveOrganism();
+  cOrganism* org1 = cell1.RemoveOrganism();
+  cOrganism* org2 = cell2.RemoveOrganism();
+  
   if (org2 != NULL) {
     cell1.InsertOrganism(org2);
     AdjustSchedule(cell1, org2->GetPhenotype().GetMerit());
   } else {
     AdjustSchedule(cell1, cMerit(0));
   }
+  
   if (org1 != NULL) {
     cell2.InsertOrganism(org1);
-    // Increment visit count
-    cell2.IncVisits();
-    // Adjust for movement factor if needed
-    if (1.0 != m_world->GetConfig().BIOMIMETIC_MOVEMENT_FACTOR.Get()) {
-      double afterfit = org1->GetPhenotype().GetCurBonus() * m_world->GetConfig().BIOMIMETIC_MOVEMENT_FACTOR.Get();
-      org1->GetPhenotype().SetCurBonus(afterfit); //Update fitness
-    }
-    // Trigger evaluation for task completion
-    if (0 < m_world->GetConfig().BIOMIMETIC_EVAL_ON_MOVEMENT.Get()) {
-      cAvidaContext& ctx = m_world->GetDefaultContext();
-      org1->DoOutput(ctx,0);
-    }
+    cell2.IncVisits();  // Increment visit count
     AdjustSchedule(cell2, org1->GetPhenotype().GetMerit());
   } else {
     AdjustSchedule(cell2, cMerit(0));
@@ -3342,33 +3333,21 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
   
   const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
   
-  // @WRE carrying capacity handling
-  /* Pick and kill an organism here if needed
-   * and then enter choices for birth method handling.
-   */
-  if ((0 < m_world->GetConfig().BIOMIMETIC_K.Get()) &&
-      (num_organisms >= m_world->GetConfig().BIOMIMETIC_K.Get())) {
-    // Measure temporary variables
+  // Handle Population Cap (if enabled)
+  int pop_cap = m_world->GetConfig().POPULATION_CAP.Get();
+  if (pop_cap && num_organisms >= pop_cap) {
     double max_msr = 0.0;
-    double msr = 0.0;
-    int max_msrndx = 0;
-    for  (int i=0; i < cell_array.GetSize(); i++) {
-      if (cell_array[i].IsOccupied()) {
-        if (cell_array[i].GetOrganism()->GetPhenotype().OK()) {
-          // Get measurement, exclude parent
-          if (parent_cell.GetID() != cell_array[i].GetID()) {
-            msr = m_world->GetRandom().GetDouble();
-          } else {
-            msr = 0.0;
-          }
-          if (max_msr < msr) {
-            max_msr = msr;
-            max_msrndx = i;
-          }
+    int cell_id = 0;
+    for (int i = 0; i < cell_array.GetSize(); i++) {
+      if (cell_array[i].IsOccupied() && cell_array[i].GetID() != parent_cell.GetID()) {       
+        double msr = m_world->GetRandom().GetDouble();
+        if (msr > max_msr) {
+          max_msr = msr;
+          cell_id = i;
         }
       }
     }
-    KillOrganism(cell_array[max_msrndx]);
+    KillOrganism(cell_array[cell_id]);
   }
   
   //@AWC -- decide wether the child will migrate to another deme -- if migrating we ignore the birth method.  
