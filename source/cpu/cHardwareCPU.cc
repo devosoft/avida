@@ -4061,7 +4061,12 @@ bool cHardwareCPU::Inst_NopCollect(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 {
-  return DoActualCollect(ctx, m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get(), true, true, 0, 0);
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  double res_before = m_organism->GetRBin(resource);
+  bool success = DoActualCollect(ctx, resource, true, true, 0, 0);
+  double res_after = m_organism->GetRBin(resource);
+  GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
+  return success;
 }
 
 
