@@ -25,16 +25,12 @@
 #ifndef cSexualAncestry_h
 #define cSexualAncestry_h
 
-#ifndef cBioGroupData_h
-#include "cBioGroupData.h"
-#endif
-
 #include <cassert>
 
 class cBioGroup;
 
 
-class cSexualAncestry : public cBioGroupData
+class cSexualAncestry
 {
 private:
   int m_id;

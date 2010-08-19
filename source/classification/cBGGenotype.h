@@ -42,6 +42,7 @@
 #endif
 
 
+class cAvidaContext;
 class cBGGenotypeManager;
 
 

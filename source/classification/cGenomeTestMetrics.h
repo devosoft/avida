@@ -25,25 +25,37 @@
 #ifndef cGenomeTestMetrics_h
 #define cGenomeTestMetrics_h
 
-#ifndef cBioGroupData_h
-#include "cBioGroupData.h"
-#endif
-
 #include <cassert>
 
 class cAvidaContext;
 class cBioGroup;
 
 
-class cGenomeTestMetrics : public cBioGroupData
+class cGenomeTestMetrics
 {
 private:
+  bool m_is_viable;
+  double m_fitness;
+  double m_merit;
+  int m_copied_size;
+  int m_executed_size;
+  int m_gestation_time;
+  
+  
   cGenomeTestMetrics(); // @not_implemented
   
+  cGenomeTestMetrics(cAvidaContext& ctx, cBioGroup* bg);
   
 public:
-  cGenomeTestMetrics(cAvidaContext& ctx);
+  bool IsViable() const { return m_is_viable; }
+  double GetFitness() const { return m_fitness; }
+  double GetMerit() const { return m_merit; }
+  int GetLinesCopied() const { return m_copied_size; }
+  int GetLinesExecuted() const { return m_executed_size; }
+  int GetGestationTime() const { return m_gestation_time; }
   
+  
+  static cGenomeTestMetrics* GetMetrics(cAvidaContext& ctx, cBioGroup* bg);
 };
 
 #endif

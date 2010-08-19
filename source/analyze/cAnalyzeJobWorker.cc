@@ -30,7 +30,7 @@
 
 void cAnalyzeJobWorker::Run()
 {
-  cAvidaContext ctx(NULL);
+  cAvidaContext ctx(m_queue->m_world, NULL);
   ctx.SetAnalyzeMode();
   
   cAnalyzeJob* job = NULL;

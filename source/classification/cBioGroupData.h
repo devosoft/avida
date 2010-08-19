@@ -31,7 +31,7 @@ public:
   virtual ~cBioGroupData() = 0;
 };
 
-template<typename T> class tBioGroupData
+template<typename T> class tBioGroupData : public cBioGroupData
 {
 private:
   T* m_data;

@@ -95,7 +95,7 @@ protected:
   cWorld& operator=(const cWorld&); // @not_implemented
   
 public:
-  cWorld(cAvidaConfig* cfg) : m_analyze(NULL), m_conf(cfg), m_ctx(m_rng) { Setup(); }
+  cWorld(cAvidaConfig* cfg) : m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng) { Setup(); }
   virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);

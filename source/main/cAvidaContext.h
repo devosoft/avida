@@ -29,14 +29,9 @@
 #ifndef cAvidaContext_h
 #define cAvidaContext_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 
 class cRandom;
+class cWorld;
 
 class cAvidaContext
 {
@@ -44,15 +39,18 @@ class cAvidaContext
   tMemTrack<cAvidaContext> mt;
 #endif
 private:
+  cWorld* m_world;
   cRandom* m_rng;
   bool m_analyze;
   bool m_testing;
   bool m_org_faults;
   
 public:
-  cAvidaContext(cRandom& rng) : m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
-  cAvidaContext(cRandom* rng) : m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(cWorld* world, cRandom& rng) : m_world(world), m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(cWorld* world, cRandom* rng) : m_world(world), m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
   ~cAvidaContext() { ; }
+  
+  cWorld* GetWorld() { return m_world; }
   
   void SetRandom(cRandom& rng) { m_rng = &rng; }  
   void SetRandom(cRandom* rng) { m_rng = rng; }  

@@ -39,6 +39,7 @@
 #include "cEnvironment.h"
 #include "functions.h"
 #include "cGenome.h"
+#include "cGenomeTestMetrics.h"
 #include "cGenomeUtil.h"
 #include "cBGGenotype.h"
 #include "cHardwareBase.h"
@@ -1637,7 +1638,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     // @JEB Original germlines
     cCPUMemory next_germ(source_deme.GetGermline().GetLatest());
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext ctx(m_world, m_world->GetRandom());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<next_germ.GetSize(); ++i) {
@@ -1689,7 +1690,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     cMetaGenome mg(germline_genotype->GetProperty("genome").AsString());
     cCPUMemory new_genome(mg.GetGenome());
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSetID());
-    cAvidaContext ctx(m_world->GetRandom());
+    cAvidaContext ctx(m_world, m_world->GetRandom());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<new_genome.GetSize(); ++i) {
@@ -4763,11 +4764,18 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& g
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);  
   
+  cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(ctx, new_organism->GetBioGroup("genotype"));
+
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));
   } else {
-    phenotype.SetMerit(cMerit(new_organism->GetTestMerit(ctx)));
+    phenotype.SetMerit(cMerit(metrics->GetMerit()));
   }
+  
+  phenotype.SetLinesCopied(metrics->GetLinesCopied());
+  phenotype.SetLinesExecuted(metrics->GetLinesExecuted());
+  phenotype.SetGestationTime(metrics->GetGestationTime());
+  
   
   // Prep the cell..
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST &&

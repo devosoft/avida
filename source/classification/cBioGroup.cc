@@ -31,7 +31,10 @@ cBioGroup::~cBioGroup()
 {
   assert(m_a_refs == 0 && m_p_refs == 0);
   
-  for (tArrayMap<cString, cBioGroupData*>::iterator t = m_data.begin(); t; t++) delete t->Value();
+  for (tArrayMap<cString, cBioGroupData*>::iterator t = m_data.begin(); t != m_data.end(); t++) {
+    cBioGroupData* data = t->Value();
+    delete data;
+  }
 }
 
 cBioGroupData::~cBioGroupData() { ; }

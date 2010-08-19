@@ -106,6 +106,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
 
 cBGGenotype::~cBGGenotype()
 {
+  m_parents.Resize(0);
 }
 
 int cBGGenotype::GetRoleID() const
@@ -289,4 +290,3 @@ void cBGGenotype::UpdateReset()
   m_breed_true.Next();
   m_breed_in.Next();
 }
-

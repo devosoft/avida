@@ -92,8 +92,8 @@ public:
   
   template<typename T> void AttachData(T* data)
   {
-    delete m_data.GetWithDefault(cString(typeid(data).name()), NULL);
-    m_data.Set(typeid(data).name(), (cBioGroupData*)new tBioGroupData<T>(data));
+    delete m_data.GetWithDefault(cString(typeid(T).name()), NULL);
+    m_data.Set(cString(typeid(T).name()), new tBioGroupData<T>(data));
   }
   
   template<typename T> T* GetData() {

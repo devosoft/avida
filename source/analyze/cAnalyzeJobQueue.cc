@@ -130,7 +130,7 @@ void cAnalyzeJobQueue::Execute()
 
 void cAnalyzeJobQueue::singleThreadedJobExecution(cAnalyzeJob* job)
 {
-  cAvidaContext ctx(NULL);
+  cAvidaContext ctx(m_world, NULL);
   ctx.SetRandom(GetRandom(job->GetID()));
   job->Run(ctx);
   delete job;

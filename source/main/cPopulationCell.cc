@@ -327,7 +327,7 @@ void cPopulationCell::AddGenomeFragments(const cGenome& genome) {
 	
 	m_world->GetPopulation().AdjustHGTResource(genome.GetSize());
 	
-	cAvidaContext ctx(m_world->GetRandom());
+	cAvidaContext ctx(m_world, m_world->GetRandom());
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
