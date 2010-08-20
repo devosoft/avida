@@ -273,7 +273,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
 void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)
 {
   m_active = true;
-  m_breed_in.Inc();
+  if (bu->GetUnitSource() != SRC_ORGANISM_FILE_LOAD) m_breed_in.Inc();
   m_total_organisms++;
   m_num_organisms++;
   m_mgr->AdjustGenotype(this, m_num_organisms - 1, m_num_organisms);
