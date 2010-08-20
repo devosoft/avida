@@ -71,27 +71,39 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
 , m_active(false)
 , m_id(in_id)
 , m_active_offspring_genotypes(0)
-, m_num_organisms(1)
+, m_num_organisms(0)
 , m_last_num_organisms(0)
-, m_total_organisms(1)
+, m_total_organisms(0)
 {
-  assert(props.HasEntry("src"));  
-  m_src = (eBioUnitSource)props.Get("src").AsInt();
-  assert(props.HasEntry("src_args"));  
+  if (props.HasEntry("src")) {
+    m_src = (eBioUnitSource)props.Get("src").AsInt();
+  } else {
+    m_src = SRC_ORGANISM_FILE_LOAD;
+  }
   m_src_args = props.Get("src_args");
   
   m_genome.Load(props);
   
-  assert(props.HasEntry("gen_born"));
-  m_generation_born = props.Get("gen_born").AsInt();
+  if (props.HasEntry("gen_born")) {
+    m_generation_born = props.Get("gen_born").AsInt();
+  } else {
+    m_generation_born = -1;
+  }
   assert(props.HasEntry("update_born"));
   m_update_born = props.Get("update_born").AsInt();
-  assert(props.HasEntry("update_deactivated"));
-  m_update_deactivated = props.Get("update_deactivated").AsInt();
+  if (props.HasEntry("update_deactivated")) {
+    m_update_deactivated = props.Get("update_deactivated").AsInt();
+  } else {
+    m_update_deactivated = -1;
+  }
   assert(props.HasEntry("depth"));  
   m_depth = props.Get("depth").AsInt();
   
-  m_parent_str = props.Get("parents");
+  if (props.HasEntry("parents")) {
+    m_parent_str = props.Get("parents");
+  } else if (props.HasEntry("parent_id")) { // Backwards compatible load
+    m_parent_str = props.Get("parent_id");
+  }
   cStringList parents(m_parent_str,',');
 
   m_parents.Resize(parents.GetSize());

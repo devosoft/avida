@@ -219,10 +219,10 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
       while (list_it.Next() != NULL) {
         if (list_it.Get()->GetID() == gid) {
           found = list_it.Get();
-          found->NotifyNewBioUnit(bu);
-          list_it.Remove();
           m_active_hash[hashGenome(found->GetMetaGenome().GetGenome())].Push(found);
           m_active_sz[found->GetNumUnits()].PushRear(found);
+          found->NotifyNewBioUnit(bu);
+          list_it.Remove();
           m_world->GetStats().AddGenotype();
           m_active_count++;
           if (found->GetNumUnits() > m_best) {
@@ -271,7 +271,8 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
 void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size)
 {
   // Remove from old size list
-  m_active_sz[old_size].Remove(genotype);
+  genotype = m_active_sz[old_size].Remove(genotype);
+  assert(genotype);
   if (m_coalescent == genotype) m_coalescent = NULL;
 
   // Handle best genotype pointer

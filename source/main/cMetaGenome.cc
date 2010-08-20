@@ -39,10 +39,16 @@ cMetaGenome::cMetaGenome(const cString& gen_str)
 
 void cMetaGenome::Load(const tDictionary<cString>& props)
 {
-  assert(props.HasEntry("hw_type"));
-  m_hw_type = props.Get("hw_type").AsInt();
-  assert(props.HasEntry("inst_set"));
-  m_inst_set_id = props.Get("inst_set").AsInt();
+  if (props.HasEntry("hw_type")) {
+    m_hw_type = props.Get("hw_type").AsInt();
+  } else {
+    m_hw_type = 0; // Default when not found, for backwards compatibility
+  }
+  if (props.HasEntry("inst_set")) {
+    m_inst_set_id = props.Get("inst_set").AsInt();
+  } else {
+    m_inst_set_id = 0; // Default when not found, for backwards compatibility
+  }
   assert(props.HasEntry("sequence"));
   m_genome = cGenome(props.Get("sequence"));
 }
