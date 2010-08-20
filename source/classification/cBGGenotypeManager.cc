@@ -88,7 +88,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   
   double entropy = 0.0;
   
-  for (int i = 0; i < m_active_sz.GetSize(); i++) {
+  for (int i = 1; i < m_active_sz.GetSize(); i++) {
     tListIterator<cBGGenotype> list_it(m_active_sz[i]);
     while (list_it.Next() != NULL) {
       cBGGenotype* bg = list_it.Get();

@@ -4141,7 +4141,7 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
     cBioGroup* bg = m_organism->GetBioGroup("genotype");
-    assert(bg);
+    if (!bg) return false;
     cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
     if (!sa) {
       sa = new cSexualAncestry(bg);

@@ -3153,6 +3153,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 	action_lib->Register<cActionPrintSynchronizationData>("PrintSynchronizationData");
   action_lib->Register<cActionPrintDetailedSynchronizationData>("PrintDetailedSynchronizationData");
 	
+  action_lib->Register<cActionPrintDemeAllStats>("PrintDonationStats");
+  
+  
   // deme output files
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeAllStats");
   action_lib->Register<cActionPrintDemeAllStats>("PrintDemeStats"); //duplicate of previous
