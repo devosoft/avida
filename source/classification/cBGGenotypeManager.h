@@ -66,7 +66,6 @@ private:
   int m_next_id;
   int m_dom_prev;
   int m_dom_time;
-  int m_active_count;
   tArray<int> m_sz_count;
   
   mutable tDataCommandManager<cBGGenotype>* m_dcm;

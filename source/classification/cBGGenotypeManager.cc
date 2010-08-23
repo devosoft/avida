@@ -41,7 +41,6 @@ cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
   , m_next_id(1)
   , m_dom_prev(-1)
   , m_dom_time(0)
-  , m_active_count(0)
   , m_dcm(NULL)
 {
 }
@@ -87,8 +86,9 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SumThresholdAge().Clear();
   
   double entropy = 0.0;
-  
+  int active_count = 0;
   for (int i = 1; i < m_active_sz.GetSize(); i++) {
+    active_count += m_active_sz[i].GetSize();
     tListIterator<cBGGenotype> list_it(m_active_sz[i]);
     while (list_it.Next() != NULL) {
       cBGGenotype* bg = list_it.Get();
@@ -115,7 +115,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   }
   
   stats.SetEntropy(entropy);
-  stats.SetNumGenotypes(m_active_count);
+  stats.SetNumGenotypes(active_count);
   
   
   // Handle dominant genotype stats
@@ -224,7 +224,6 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
           found->NotifyNewBioUnit(bu);
           list_it.Remove();
           m_world->GetStats().AddGenotype();
-          m_active_count++;
           if (found->GetNumUnits() > m_best) {
             m_best = found->GetNumUnits();
             found->SetThreshold();
@@ -255,7 +254,6 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     resizeActiveList(found->GetNumUnits());
     m_active_sz[found->GetNumUnits()].PushRear(found);
     m_world->GetStats().AddGenotype();
-    m_active_count++;
     if (found->GetNumUnits() > m_best) {
       m_best = found->GetNumUnits();
       found->SetThreshold();
@@ -359,16 +357,15 @@ cString cBGGenotypeManager::nameGenotype(int size)
 
 void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
 {
-  if (genotype->GetActiveReferenceCount()) return;
+  if (genotype->GetActiveReferenceCount()) return;    
   
   if (genotype->IsActive()) {
     int list_num = hashGenome(genotype->GetMetaGenome().GetGenome());
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_world->GetStats().GetUpdate());
     m_historic.Push(genotype);
-    m_active_count--;
   }
-  
+
   if (genotype->IsThreshold()) {
     NotifyListeners(genotype, BG_EVENT_REMOVE_THRESHOLD);
     genotype->ClearThreshold();
