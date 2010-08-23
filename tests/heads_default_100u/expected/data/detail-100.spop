@@ -1,58 +1,60 @@
 #filetype genotype_data
-#format id parent_id parent2_id parent_dist num_cpus total_cpus length merit gest_time fitness update_born update_dead depth sequence cells gest_offset lineage
-# 
-# Structured Population Dump
-# Mon Aug  9 12:25:46 2010
-#  1: Genotype ID
-#  2: Parent 1 Genotype ID
-#  3: Parent 2 Genotype ID
-#  4: Parent Distance
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Mon Aug 23 10:00:57 2010
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
 #  5: Number of currently living organisms
 #  6: Total number of organisms that ever existed
 #  7: Genome Length
-#  8: Merit
-#  9: Gestation Time
-# 10: Fitness
-# 11: Update Born
-# 12: Update Deactivated
-# 13: Phylogenetic Depth
-# 14: Genome Sequence
-# 15: Occupied Cell IDs
-# 16: Gestation (CPU) Cycle Offsets
-# 17: Lineage Labels
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set ID
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
 
-1 -1 -1 -1 7 9 100 97 389 0.249357 -1 -1 0 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 0,1,58,117,3421,3480,3599 388,388,65,66,330,362,329 0,0,0,0,0,0,0 
-22 3 -1 -1 2 2 100 96 386 0.248705 79 -1 2 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccecccutycasvab 2,3543 329,330 0,0 
-34 24 -1 -1 1 1 99 96 385 0.249351 91 -1 3 rucavccccccccccccccccccccccccccceccccccccccccccccccccccccccccccccccccsccccccccccccccccccccutycasvab 3 329 0 
-21 5 -1 -1 2 2 100 97 388 0.25 78 -1 2 rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccchutycasvab 57,116 329,330 0,0 
-10 3 -1 -1 1 1 100 97 387 0.250646 65 -1 2 rucavcccccccccccccccccccccccccccccccccccccccvccccccccccccccccccccccccccciccccccccccccccccccutycasvab 239 329 0 
-33 1 -1 -1 1 1 100 97 389 0.249357 91 -1 1 rucavccccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 59 363 0 
-29 3 -1 -1 1 1 100 97 388 0.25 89 -1 2 rucavcccccccccccvccccccccccccccccccccccccccfcccccccccccccccccccccccccccciccccccccccccccccccutycasvxb 180 396 0 
-6 1 -1 -1 1 3 100 97 388 0.25 50 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccutycasvab 60 362 0 
-16 1 -1 -1 2 2 100 97 386 0.251295 75 -1 1 rucavcccccccccccccccccccccccccccccctcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 118,178 32,33 0,0 
-39 3 -1 -1 1 1 99 97 388 0.25 100 -1 2 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 61 33 0 
-7 1 -1 -1 5 5 99 96 385 0.249351 52 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3422,3482,3483,3541,3542 362,329,363,296,297 0,0,0,0,0 
-30 1 -1 -1 1 1 100 97 389 0.249357 89 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcutycasvab 62 363 0 
-20 10 -1 -1 2 2 100 97 385 0.251948 78 -1 3 rucavcccccccccccccccccccccccccgcccccccccccccvccccccckccccccccccccccccccciccccccccccccccccccutycasvab 119,179 363,329 0,0 
-26 1 -1 -1 1 1 100 97 388 0.25 79 -1 1 rucavcccccccccccccccccccccccccccccccccccccccbczccccccccccccccccccccccccccccccccccccccccccccutycasvab 3539 263 0 
-3 1 -1 -1 3 4 100 97 388 0.25 38 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 120,181,241 32,362,363 0,0,0 
-17 6 -1 -1 2 2 100 97 387 0.250646 76 -1 2 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccmcccccutycasvab 121,182 329,363 0,0 
-35 9 -1 -1 1 1 101 97 388 0.25 91 -1 3 rucavcccccccccccccccccccccccccccccccccccczfxccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3418 297 0 
-12 3 -1 -1 1 1 100 49 337 0.145401 66 -1 2 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutynasvab 122 395 0 
-18 12 -1 -1 1 1 100 97 388 0.25 77 -1 3 cccccccccccccccccccccciccccccccccccccccccutynasvabrucavcccfccccccccccccccccccccccccccccccccccccccccc 123 374 0 
-38 27 -1 -1 1 1 101 97 389 0.249357 99 -1 3 rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccncccccccccccccutzycasvab 176 66 0 
-27 16 -1 -1 1 1 100 97 385 0.251948 87 -1 2 rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 177 65 0 
-8 1 -1 -1 1 1 99 48 381 0.125984 53 -1 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuthcasvab 3540 560 0 
-31 10 -1 -1 1 1 101 97 387 0.250646 90 -1 3 rucavcccccccccccccccccccccccccccccccccccccccvccccccccccczccccccccccccccciccccccccccccccccccutycasuvab 298 396 0 
-9 5 -1 -1 4 4 100 97 388 0.25 53 -1 2 rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3477,3537,3597,3598 296,296,330,296 0,0,0,0 
-32 7 -1 -1 1 1 99 96 385 0.249351 90 -1 2 rucavcccccccccccccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3361 316 0 
-19 1 -1 -1 2 2 101 88 382 0.230366 78 -1 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyccccccccccccccccccccutycasvab 3419,3420 297,263 0,0 
-13 8 -1 -1 1 1 99 97 389 0.249357 66 -1 2 cccccccccccccccccccccccccccccccccccccccccuthcasvabrucavcccccccccccccccccccccccccccccccccccccccccccc 3481 544 0 
-36 9 -1 -1 1 1 100 97 388 0.25 91 -1 3 rucavcccccccccccccccccccscccccccccccccccccfccccccicchccccccccccccccccccccccccccccccccccucccutycasvab 3478 318 0 
-37 26 -1 -1 1 1 100 97 389 0.249357 92 -1 2 rucavcccccccccccccccccccccccmcccccccccccccccbczccccccdcccccccccccccccccccccccccccccccccccccutycasvab 3479 264 0 
-28 23 -1 -1 1 1 100 97 388 0.25 88 -1 4 cccccccccccccccccccccccccccccccccccccccccutycesvabrucavccccccccccccccccccccccccccccccxjcccccfcccccmc 3536 204 0 
-25 9 -1 -1 1 1 100 97 388 0.25 79 -1 3 rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccwtycasvab 3538 627 0 
-23 14 -1 -1 1 1 100 49 285 0.17193 79 -1 3 rucavccccccccccccccccccccccccccccccxjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycesvab 3596 263 0 
-24 7 -1 -1 0 1 99 96 384 0.25 79 92 2 rucavcccccccccccccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
-14 5 -1 -1 0 1 100 97 386 0.251295 67 91 2 rucavcccccccccccccccccccccccccccccccjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycasvab 
-5 1 -1 -1 0 1 100 97 388 0.25 39 87 1 rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+1 org:file_load   7 9 100 97 389 0.249357 0 -1 -1 0 0 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 0,1,58,117,3421,3480,3599 388,388,65,66,330,362,329 0,0,0,0,0,0,0 
+22 org:divide  3 2 2 100 96 386 0.248705 6 79 -1 2 0 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccecccutycasvab 2,3543 329,330 0,0 
+34 org:divide  24 1 1 99 0 0 0 7 91 -1 3 0 1 rucavccccccccccccccccccccccccccceccccccccccccccccccccccccccccccccccccsccccccccccccccccccccutycasvab 3 329 0 
+21 org:divide  5 2 2 100 97 388 0.25 6 78 -1 2 0 1 rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccchutycasvab 57,116 329,330 0,0 
+10 org:divide  3 1 1 100 97 387 0.250646 5 65 -1 2 0 1 rucavcccccccccccccccccccccccccccccccccccccccvccccccccccccccccccccccccccciccccccccccccccccccutycasvab 239 329 0 
+33 org:divide  1 1 1 100 0 0 0 7 91 -1 1 0 1 rucavccccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 59 363 0 
+29 org:divide  3 1 1 100 0 0 0 7 89 -1 2 0 1 rucavcccccccccccvccccccccccccccccccccccccccfcccccccccccccccccccccccccccciccccccccccccccccccutycasvxb 180 396 0 
+6 org:divide  1 1 3 100 97 388 0.25 4 50 -1 1 0 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccutycasvab 60 362 0 
+16 org:divide  1 2 2 100 97 386 0.251295 6 75 -1 1 0 1 rucavcccccccccccccccccccccccccccccctcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 118,178 32,33 0,0 
+39 org:divide  3 1 1 99 0 0 0 8 100 -1 2 0 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 61 33 0 
+7 org:divide  1 5 5 99 96 385 0.249351 4 52 -1 1 0 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3422,3482,3483,3541,3542 362,329,363,296,297 0,0,0,0,0 
+30 org:divide  1 1 1 100 0 0 0 7 89 -1 1 0 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcutycasvab 62 363 0 
+20 org:divide  10 2 2 100 97 385 0.251948 6 78 -1 3 0 1 rucavcccccccccccccccccccccccccgcccccccccccccvccccccckccccccccccccccccccciccccccccccccccccccutycasvab 119,179 363,329 0,0 
+26 org:divide  1 1 1 100 97 388 0.25 6 79 -1 1 0 1 rucavcccccccccccccccccccccccccccccccccccccccbczccccccccccccccccccccccccccccccccccccccccccccutycasvab 3539 263 0 
+3 org:divide  1 3 4 100 97 388 0.25 3 38 -1 1 0 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 120,181,241 32,362,363 0,0,0 
+17 org:divide  6 2 2 100 97 387 0.250646 6 76 -1 2 0 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccmcccccutycasvab 121,182 329,363 0,0 
+35 org:divide  9 1 1 101 0 0 0 7 91 -1 3 0 1 rucavcccccccccccccccccccccccccccccccccccczfxccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3418 297 0 
+12 org:divide  3 1 1 100 49 337 0.145401 5 66 -1 2 0 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutynasvab 122 395 0 
+18 org:divide  12 1 1 100 0 0 0 6 77 -1 3 0 1 cccccccccccccccccccccciccccccccccccccccccutynasvabrucavcccfccccccccccccccccccccccccccccccccccccccccc 123 374 0 
+38 org:divide  27 1 1 101 0 0 0 8 99 -1 3 0 1 rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccncccccccccccccutzycasvab 176 66 0 
+27 org:divide  16 1 1 100 97 385 0.251948 7 87 -1 2 0 1 rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 177 65 0 
+8 org:divide  1 1 1 99 48 381 0.125984 4 53 -1 1 0 1 rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuthcasvab 3540 560 0 
+31 org:divide  10 1 1 101 0 0 0 7 90 -1 3 0 1 rucavcccccccccccccccccccccccccccccccccccccccvccccccccccczccccccccccccccciccccccccccccccccccutycasuvab 298 396 0 
+9 org:divide  5 4 4 100 97 388 0.25 4 53 -1 2 0 1 rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3477,3537,3597,3598 296,296,330,296 0,0,0,0 
+32 org:divide  7 1 1 99 0 0 0 7 90 -1 2 0 1 rucavcccccccccccccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3361 316 0 
+19 org:divide  1 2 2 101 88 382 0.230366 6 78 -1 1 0 1 rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyccccccccccccccccccccutycasvab 3419,3420 297,263 0,0 
+13 org:divide  8 1 1 99 0 0 0 5 66 -1 2 0 1 cccccccccccccccccccccccccccccccccccccccccuthcasvabrucavcccccccccccccccccccccccccccccccccccccccccccc 3481 544 0 
+36 org:divide  9 1 1 100 0 0 0 7 91 -1 3 0 1 rucavcccccccccccccccccccscccccccccccccccccfccccccicchccccccccccccccccccccccccccccccccccucccutycasvab 3478 318 0 
+37 org:divide  26 1 1 100 0 0 0 7 92 -1 2 0 1 rucavcccccccccccccccccccccccmcccccccccccccccbczccccccdcccccccccccccccccccccccccccccccccccccutycasvab 3479 264 0 
+28 org:divide  23 1 1 100 0 0 0 7 88 -1 4 0 1 cccccccccccccccccccccccccccccccccccccccccutycesvabrucavccccccccccccccccccccccccccccccxjcccccfcccccmc 3536 204 0 
+25 org:divide  9 1 1 100 0 0 0 6 79 -1 3 0 1 rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccwtycasvab 3538 627 0 
+23 org:divide  14 1 1 100 49 285 0.17193 6 79 -1 3 0 1 rucavccccccccccccccccccccccccccccccxjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycesvab 3596 263 0 
+24 org:divide  7 0 1 99 96 384 0.25 6 79 92 2 0 1 rucavcccccccccccccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+14 org:divide  5 0 1 100 97 386 0.251295 5 67 91 2 0 1 rucavcccccccccccccccccccccccccccccccjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycasvab 
+5 org:divide  1 0 1 100 97 388 0.25 3 39 87 1 0 1 rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 

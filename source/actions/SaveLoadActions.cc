@@ -95,7 +95,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cString filename(m_filename);
-    if (filename == "") filename.Set("detail-%d.bgspop", m_world->GetStats().GetUpdate());
+    if (filename == "") filename.Set("detail-%d.spop", m_world->GetStats().GetUpdate());
     m_world->GetPopulation().SavePopulation(filename);
   }
 };
