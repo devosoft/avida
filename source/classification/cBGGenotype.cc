@@ -61,6 +61,8 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
     }
   }
   if (m_parents.GetSize()) m_depth = m_parents[0]->GetDepth() + 1;
+  if (m_src != SRC_ORGANISM_FILE_LOAD) m_breed_in.Inc();
+  m_name.Set("%03d-no_name", m_genome.GetGenome().GetSize());
 }
 
 

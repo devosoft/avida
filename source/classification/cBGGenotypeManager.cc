@@ -60,12 +60,12 @@ void cBGGenotypeManager::UpdateReset()
   if (m_active_sz.GetSize() < nBGGenotypeManager::HASH_SIZE) {
     for (int i = 0; i < m_active_sz.GetSize(); i++) {
       tListIterator<cBGGenotype> list_it(m_active_sz[i]);
-      while (list_it.Next() != NULL) list_it.Get()->UpdateReset();
+      while (list_it.Next() != NULL) if (list_it.Get()->IsThreshold()) list_it.Get()->UpdateReset();
     }
   } else {
     for (int i = 0; i < nBGGenotypeManager::HASH_SIZE; i++) {
       tListIterator<cBGGenotype> list_it(m_active_hash[i]);
-      while (list_it.Next() != NULL) list_it.Get()->UpdateReset();
+      while (list_it.Next() != NULL) if (list_it.Get()->IsThreshold()) list_it.Get()->UpdateReset();
     }    
   }
 
@@ -133,10 +133,17 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetDomID(dom_genotype->GetID());
   stats.SetDomName(dom_genotype->GetName());
   
-  stats.SetDomBirths(dom_genotype->GetLastBirths());
-  stats.SetDomBreedTrue(dom_genotype->GetLastBreedTrue());
-  stats.SetDomBreedIn(dom_genotype->GetLastBreedIn());
-  stats.SetDomBreedOut(dom_genotype->GetLastBreedOut());
+  if (dom_genotype->IsThreshold()) {
+    stats.SetDomBirths(dom_genotype->GetLastBirths());
+    stats.SetDomBreedTrue(dom_genotype->GetLastBreedTrue());
+    stats.SetDomBreedIn(dom_genotype->GetLastBreedIn());
+    stats.SetDomBreedOut(dom_genotype->GetLastBreedOut());
+  } else {
+    stats.SetDomBirths(dom_genotype->GetThisBirths());
+    stats.SetDomBreedTrue(dom_genotype->GetThisBreedTrue());
+    stats.SetDomBreedIn(dom_genotype->GetThisBreedIn());
+    stats.SetDomBreedOut(dom_genotype->GetThisBreedOut());
+  }
   
   stats.SetDomAbundance(dom_genotype->GetNumUnits());
   stats.SetDomGeneDepth(dom_genotype->GetDepth());
