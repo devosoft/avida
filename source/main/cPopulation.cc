@@ -4365,7 +4365,7 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
   
   // Process genotypes, inject into organisms as necessary
   int u_cell_id = 0;
-  for (int gen_i = genotypes.GetSize() - 1; gen_i > 0; gen_i--) {
+  for (int gen_i = genotypes.GetSize() - 1; gen_i >= 0; gen_i--) {
     sTmpGenotype& tmp = genotypes[gen_i];
     // otherwise, we insert as many organisms as we need
     for (int cell_i = 0; cell_i < tmp.num_cpus; cell_i++) {
