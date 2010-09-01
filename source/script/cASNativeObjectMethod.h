@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 10/13/08.
- *  Copyright 2008-2009 Michigan State University. All rights reserved.
+ *  Copyright 2008-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -76,7 +76,7 @@ public:
   cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
   {
     (object->*m_method)();
-    return cASCPPParameter(); // @TODO - return actual void value?
+    return cASCPPParameter(); // @AS_TODO - return actual void value?
   }
 };
 
@@ -103,7 +103,7 @@ public:
   cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
   {
     (object->*m_method)();
-    return cASCPPParameter(); // @TODO - return actual void value?
+    return cASCPPParameter(); // @AS_TODO - return actual void value?
   }
 };
 
@@ -130,7 +130,7 @@ public:
   cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
   {
     (*m_method)(object);
-    return cASCPPParameter(); // @TODO - return actual void value?
+    return cASCPPParameter(); // @AS_TODO - return actual void value?
   }
 };
 
@@ -245,7 +245,7 @@ public:
   cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
   {
     (object->*m_method)(args[0].Get<Arg1Type>());
-    return cASCPPParameter(); // @TODO - return actual void value?
+    return cASCPPParameter(); // @AS_TODO - return actual void value?
   }
 };
 
@@ -272,7 +272,7 @@ public:
   cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
   {
     (object->*m_method)(args[0].Get<Arg1Type>());
-    return cASCPPParameter(); // @TODO - return actual void value?
+    return cASCPPParameter(); // @AS_TODO - return actual void value?
   }
 };
 
@@ -299,7 +299,7 @@ public:
   cASCPPParameter Call(NativeClass* object, cASCPPParameter args[]) const
   {
     (*m_method)(object, args[0].Get<Arg1Type>());
-    return cASCPPParameter(); // @TODO - return actual void value?
+    return cASCPPParameter(); // @AS_TODO - return actual void value?
   }
 };
 

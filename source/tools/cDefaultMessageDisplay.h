@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "default_message_display.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -64,17 +64,6 @@ public:
   void out(cString& final_msg);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nDefaultMessageDisplay {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 extern cDefaultMessageDisplay s_info_msg_cout;
 extern cDefaultMessageDisplay s_debug_msg_cerr;

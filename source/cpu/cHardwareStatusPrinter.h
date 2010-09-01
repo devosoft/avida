@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "hardware_status_printer.hh" prior to 11/30/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2004 California Institute of Technology.
  *
  *
@@ -50,17 +50,5 @@ public:
   virtual void TraceTestCPU(int time_used, int time_allocated, const cOrganism& organism);
   virtual std::ostream * GetStream() { return &m_trace_fp; }  
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareStatusPrinter {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

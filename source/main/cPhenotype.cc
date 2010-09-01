@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "phenotype.cc" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -40,7 +40,7 @@
 using namespace std;
 
 
-cPhenotype::cPhenotype(cWorld* world)
+cPhenotype::cPhenotype(cWorld* world, int parent_generation)
 : m_world(world)
 , initialized(false)
 , cur_task_count(m_world->GetEnvironment().GetNumTasks())
@@ -69,7 +69,12 @@ cPhenotype::cPhenotype(cWorld* world)
 , last_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , last_sense_count(m_world->GetStats().GetSenseSize())
+, generation(0)
 {
+  if (parent_generation >= 0) {
+    generation = parent_generation;
+    if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
+  }
 }
 
 cPhenotype::~cPhenotype()
@@ -143,7 +148,7 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   while(vit.Next() && kit.Next())
   {
     cTaskState* new_ts = new cTaskState(**(vit.Get()));
-    m_task_states.Add(*(kit.Get()), new_ts);
+    m_task_states.Set(*(kit.Get()), new_ts);
   }
   
   // 3. These mark the status of "in progess" variables at the last divide.
@@ -171,7 +176,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   total_energy_applied     = in_phen.total_energy_applied;
   
   // 4. Records from this organisms life...
-  num_divides              = in_phen.num_divides;      
+  num_divides              = in_phen.num_divides;   
+  num_divides_failed       = in_phen.num_divides_failed;
   generation               = in_phen.generation;        
   cpu_cycles_used          = in_phen.cpu_cycles_used;   
   time_used                = in_phen.time_used;         
@@ -284,6 +290,7 @@ bool cPhenotype::OK()
   assert(last_num_donates >= 0);
   assert(last_fitness >= 0.0);
   assert(num_divides >= 0);
+  assert(num_divides_failed >= 0);
   assert(generation >= 0);
   assert(cpu_cycles_used >= 0);  
   assert(time_used >= 0);
@@ -386,6 +393,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   
   // Setup other miscellaneous values...
   num_divides     = 0;
+  num_divides_failed = 0;
   generation      = parent_phenotype.generation;
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
@@ -566,6 +574,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   
   // Setup other miscellaneous values...
   num_divides     = 0;
+  num_divides_failed = 0;
   generation      = 0;
   cpu_cycles_used = 0;
   time_used       = 0;
@@ -664,6 +673,21 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 }
 
 
+void cPhenotype::ResetMerit(const cGenome & _cgenome)
+{
+  int cur_merit_base = CalcSizeMerit();
+  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
+  if (merit_default_bonus) {
+    cur_bonus = merit_default_bonus;
+  }
+	merit = cur_merit_base * cur_bonus;
+	
+  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+    merit = cur_merit_base;
+  
+}
+
+
 /**
  * This function is run whenever an organism executes a successful divide.
  **/
@@ -682,7 +706,10 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
-  merit = cur_merit_base * cur_bonus;
+	merit = cur_merit_base * cur_bonus;
+	
+  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+    merit = cur_merit_base;
   
   SetEnergy(energy_store + cur_energy_bonus);
   m_world->GetStats().SumEnergyTestamentAcceptedByOrganisms().Add(energy_testament);
@@ -824,7 +851,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+  if ((m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)) {
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
@@ -858,6 +885,9 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
     cur_bonus = merit_default_bonus;
   }
   merit = cur_merit_base * cur_bonus;
+  
+  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+    merit = cur_merit_base;
   
   genome_length   = _genome.GetSize();
   (void) copied_size;                            // Unchanged
@@ -1082,6 +1112,7 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   
   // Setup other miscellaneous values...
   num_divides     = 0;
+  num_divides_failed = 0;
   generation      = clone_phenotype.generation;
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   cpu_cycles_used = 0;
@@ -1334,6 +1365,10 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   return true;
 }
 
+void cPhenotype::Sterilize()
+{
+  is_fertile = false;
+}
 void cPhenotype::PrintStatus(ostream& fp) const
 {
   fp << "  MeritBase:"
@@ -1438,21 +1473,21 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
       break;
       
     case 1: // Sigmoidal returns (should be used with an additive reward)
-      {
-        assert(_gestation_time > 0);
-        out_fitness = 0;
-        //Note: this operates on accumulated bonus and ignores the default bonus.
-        double converted_bonus = (_bonus - m_world->GetConfig().DEFAULT_BONUS.Get()) * m_world->GetConfig().FITNESS_COEFF_2.Get() / (1 + _bonus * m_world->GetConfig().FITNESS_COEFF_2.Get() ) ;
-        out_fitness = _merit_base * exp(converted_bonus * log(m_world->GetConfig().FITNESS_COEFF_1.Get())) / _gestation_time;
-      }
+    {
+      assert(_gestation_time > 0);
+      out_fitness = 0;
+      //Note: this operates on accumulated bonus and ignores the default bonus.
+      double converted_bonus = (_bonus - m_world->GetConfig().DEFAULT_BONUS.Get()) * m_world->GetConfig().FITNESS_COEFF_2.Get() / (1 + _bonus * m_world->GetConfig().FITNESS_COEFF_2.Get() ) ;
+      out_fitness = _merit_base * exp(converted_bonus * log(m_world->GetConfig().FITNESS_COEFF_1.Get())) / _gestation_time;
+    }
       break;
       
     case 2: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
-      {
-        out_fitness = 0;
-        double net_bonus = _bonus +  - m_world->GetConfig().DEFAULT_BONUS.Get();
-        out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF_1.Get())); 
-      }
+    {
+      out_fitness = 0;
+      double net_bonus = _bonus +  - m_world->GetConfig().DEFAULT_BONUS.Get();
+      out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF_1.Get())); 
+    }
       break;
       
     default:
@@ -1481,6 +1516,10 @@ void cPhenotype::HalveEnergyUsage() {
 
 void cPhenotype::DefaultEnergyUsage() {
   executionRatio = 1.0;
+}
+
+void cPhenotype::DivideFailed() {
+  num_divides_failed++;
 }
 
 
@@ -1783,7 +1822,7 @@ void cPhenotype::TrialDivideReset(const cGenome & _genome)
   
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {    
+  if ((m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)) {    
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;

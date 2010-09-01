@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "defs.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -198,6 +198,24 @@ enum eVerbosity {
 };
 
 
+enum eBioUnitSource {
+  SRC_DEME_COMPETE,
+  SRC_DEME_COPY,
+  SRC_DEME_GERMLINE,
+  SRC_DEME_REPLICATE,
+  SRC_DEME_SPAWN,
+  SRC_ORGANISM_COMPETE,
+  SRC_ORGANISM_DIVIDE,
+  SRC_ORGANISM_FILE_LOAD,
+  SRC_ORGANISM_RANDOM,
+  SRC_PARASITE_FILE_LOAD,
+  SRC_PARASITE_INJECT,
+  SRC_TEST_CPU
+};
+
+namespace Avida {
+  extern const char* const BioUnitSourceMap[];
+};
 
 
 #endif

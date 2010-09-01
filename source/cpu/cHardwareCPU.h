@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "hardware_cpu.hh" prior to 11/17/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -72,7 +72,6 @@
  * @see cHardwareCPU_Thread, cCPUStack, cCPUMemory, cInstSet
  **/
 
-class cInjectGenotype;
 class cInstLib;
 class cInstSet;
 class cMutation;
@@ -250,8 +249,6 @@ protected:
   void Divide_DoTransposons(cAvidaContext& ctx);
   void InheritState(cHardwareBase& in_hardware);
   
-  void InjectCode(const cGenome& injection, const int line_num);
-  
   bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);
   bool Inst_HeadDivideMut(cAvidaContext& ctx, double mut_multiplier = 1);
   
@@ -317,8 +314,7 @@ public:
   bool ThreadSelect(const cCodeLabel& in_label) { return false; } // Labeled threads not supported
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
-  cInjectGenotype* ThreadGetOwner() { return NULL; } // @DMB - cHardwareCPU does not really implement cInjectGenotype yet
-  void ThreadSetOwner(cInjectGenotype* in_genotype) { return; }
+  cBioUnit* ThreadGetOwner() { return m_organism; }
   
   int GetNumThreads() const     { return m_threads.GetSize(); }
   int GetCurThread() const      { return m_cur_thread; }
@@ -327,7 +323,7 @@ public:
   int GetThreadMessageTriggerType(int _index) { return m_threads[_index].getMessageTriggerType(); }
   
   // --------  Parasite Stuff  --------
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
+  bool ParasiteInfectHost(cBioUnit* bu) { return false; }
 
   
   // Non-Standard Methods
@@ -480,9 +476,6 @@ private:
   bool Inst_CDivide(cAvidaContext& ctx);
   bool Inst_MaxAlloc(cAvidaContext& ctx);
   bool Inst_MaxAllocMoveWriteHead(cAvidaContext& ctx);
-  bool Inst_Inject(cAvidaContext& ctx);
-  bool Inst_InjectRand(cAvidaContext& ctx);
-  bool Inst_InjectThread(cAvidaContext& ctx);
   bool Inst_Transposon(cAvidaContext& ctx);
 	bool Inst_ReproDeme(cAvidaContext& ctx);
   bool Inst_Repro(cAvidaContext& ctx);
@@ -960,18 +953,6 @@ public:
 	//! Create a link to the cell specified by index.
 	bool Inst_CreateLinkByIndex(cAvidaContext& ctx);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareCPU {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 
 inline bool cHardwareCPU::ThreadSelect(const int thread_num)

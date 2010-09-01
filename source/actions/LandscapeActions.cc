@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 4/10/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -28,8 +28,8 @@
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
+#include "cBGGenotype.h"
 #include "cClassificationManager.h"
-#include "cGenotype.h"
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
@@ -102,13 +102,13 @@ public:
         depths.Push(genotype->GetDepth());
       }
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Performing landscape analysis...");
-
-      cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
-      LoadGenome(batches, genotype->GetGenome());
-      depths.Push(genotype->GetDepth());
-      update = m_world->GetStats().GetUpdate();
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Performing landscape analysis...");
+//
+//      cGenotype* genotype = m_world->GetClassificationManager().GetBestGenotype();
+//      LoadGenome(batches, genotype->GetGenome());
+//      depths.Push(genotype->GetDepth());
+//      update = m_world->GetStats().GetUpdate();
     }
     
     m_world->GetAnalyze().GetJobQueue().Execute();
@@ -266,15 +266,15 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Full Landscaping...");
-      
-      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
-                            m_world->GetHardwareManager().GetInstSet());
-      m_batch.PushRear(land);
-      land->SetDistance(m_dist);
-      land->Process(ctx);
-      update = m_world->GetStats().GetUpdate();      
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Full Landscaping...");
+//      
+//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+//                            m_world->GetHardwareManager().GetInstSet());
+//      m_batch.PushRear(land);
+//      land->SetDistance(m_dist);
+//      land->Process(ctx);
+//      update = m_world->GetStats().GetUpdate();      
     }
     
     cDataFile& df = m_world->GetDataFile(m_sfilename);
@@ -346,26 +346,26 @@ public:
       m_world->GetDataFileManager().Remove(m_filename);
 
     } else {
-    
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Dumping Landscape...");
-      
-      // Get the current best genotype
-      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-
-      // Create datafile for genotype landscape (best-${update}.land)
-      cString gfn("best-");
-      gfn += m_world->GetStats().GetUpdate();
-      gfn += ".land";
-      cDataFile& gdf = m_world->GetDataFile(gfn);
-
-      // Create the landscape object and process the dump
-      cLandscape land(m_world, best_genome, inst_set);
-      land.ProcessDump(ctx, gdf);
-      land.PrintStats(sdf, m_world->GetStats().GetUpdate());
-
-      // Remove the completed datafile
-      m_world->GetDataFileManager().Remove(gfn);
+//    
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Dumping Landscape...");
+//      
+//      // Get the current best genotype
+//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//
+//      // Create datafile for genotype landscape (best-${update}.land)
+//      cString gfn("best-");
+//      gfn += m_world->GetStats().GetUpdate();
+//      gfn += ".land";
+//      cDataFile& gdf = m_world->GetDataFile(gfn);
+//
+//      // Create the landscape object and process the dump
+//      cLandscape land(m_world, best_genome, inst_set);
+//      land.ProcessDump(ctx, gdf);
+//      land.PrintStats(sdf, m_world->GetStats().GetUpdate());
+//
+//      // Remove the completed datafile
+//      m_world->GetDataFileManager().Remove(gfn);
     }
   }
 };
@@ -421,15 +421,15 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Deletion Landscaping...");
-      
-      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
-                            m_world->GetHardwareManager().GetInstSet());
-      m_batch.PushRear(land);
-      land->SetDistance(m_dist);
-      land->ProcessDelete(ctx);
-      update = m_world->GetStats().GetUpdate();      
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Deletion Landscaping...");
+//      
+//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+//                            m_world->GetHardwareManager().GetInstSet());
+//      m_batch.PushRear(land);
+//      land->SetDistance(m_dist);
+//      land->ProcessDelete(ctx);
+//      update = m_world->GetStats().GetUpdate();      
     }
     
     cDataFile& df = m_world->GetDataFile(m_sfilename);
@@ -496,15 +496,15 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Insertion Landscaping...");
-      
-      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
-                            m_world->GetHardwareManager().GetInstSet());
-      m_batch.PushRear(land);
-      land->SetDistance(m_dist);
-      land->ProcessInsert(ctx);
-      update = m_world->GetStats().GetUpdate();      
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Insertion Landscaping...");
+//      
+//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+//                            m_world->GetHardwareManager().GetInstSet());
+//      m_batch.PushRear(land);
+//      land->SetDistance(m_dist);
+//      land->ProcessInsert(ctx);
+//      update = m_world->GetStats().GetUpdate();      
     }
     
     cDataFile& df = m_world->GetDataFile(m_sfilename);
@@ -561,12 +561,12 @@ public:
       }
       m_world->GetDataFileManager().Remove(m_filename);
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Predicting W Landscape...");
-      
-      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-      cLandscape land(m_world, best_genome, inst_set);
-      land.PredictWProcess(ctx, df, m_world->GetStats().GetUpdate());
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Predicting W Landscape...");
+//      
+//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      cLandscape land(m_world, best_genome, inst_set);
+//      land.PredictWProcess(ctx, df, m_world->GetStats().GetUpdate());
     }
   }
 };
@@ -612,12 +612,12 @@ public:
       }
       m_world->GetDataFileManager().Remove(m_filename);
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
-      
-      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-      cLandscape land(m_world, best_genome, inst_set);
-      land.PredictNuProcess(ctx, df, m_world->GetStats().GetUpdate());
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
+//      
+//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      cLandscape land(m_world, best_genome, inst_set);
+//      land.PredictNuProcess(ctx, df, m_world->GetStats().GetUpdate());
     }
   }
 };
@@ -674,16 +674,16 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Random Landscaping...");
-
-      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
-                            m_world->GetHardwareManager().GetInstSet());
-      m_batch.PushRear(land);
-      land->SetDistance(m_dist);
-      land->SetTrials(m_trials);
-      land->RandomProcess(ctx);
-      update = m_world->GetStats().GetUpdate();      
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Random Landscaping...");
+//
+//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+//                            m_world->GetHardwareManager().GetInstSet());
+//      m_batch.PushRear(land);
+//      land->SetDistance(m_dist);
+//      land->SetTrials(m_trials);
+//      land->RandomProcess(ctx);
+//      update = m_world->GetStats().GetUpdate();      
     }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -745,15 +745,15 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Sample Landscaping...");
-
-      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
-                            m_world->GetHardwareManager().GetInstSet());
-      m_batch.PushRear(land);
-      land->SetTrials(m_trials);
-      land->SampleProcess(ctx);
-      update = m_world->GetStats().GetUpdate();      
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Sample Landscaping...");
+//
+//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+//                            m_world->GetHardwareManager().GetInstSet());
+//      m_batch.PushRear(land);
+//      land->SetTrials(m_trials);
+//      land->SampleProcess(ctx);
+//      update = m_world->GetStats().GetUpdate();      
     }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -806,12 +806,12 @@ public:
       }
       m_world->GetDataFileManager().Remove(m_filename);
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
-      
-      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-      cLandscape land(m_world, best_genome, inst_set);
-      land.HillClimb(ctx, m_world->GetDataFile(m_filename));
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+//      
+//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      cLandscape land(m_world, best_genome, inst_set);
+//      land.HillClimb(ctx, m_world->GetDataFile(m_filename));
     }
   }
 };
@@ -871,14 +871,14 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
-      
-      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
-      mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set, m_target);
-
-      m_batch.PushRear(new sBatchEntry(mutn, m_world->GetStats().GetUpdate()));
-      mutn->Process(ctx);
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
+//      
+//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set, m_target);
+//
+//      m_batch.PushRear(new sBatchEntry(mutn, m_world->GetStats().GetUpdate()));
+//      mutn->Process(ctx);
     }
     
     cMutationalNeighborhoodResults* results = NULL;
@@ -951,18 +951,18 @@ public:
       }
       jobqueue.Execute();
     } else {
-      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
-      
-      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
-                            m_world->GetHardwareManager().GetInstSet());
-      m_batch.PushRear(land);
-      if (m_sample_size) {
-        land->SetTrials(m_sample_size);        
-        land->TestPairs(ctx);
-      } else land->TestAllPairs(ctx);
-      
-      update = m_world->GetStats().GetUpdate();      
+//      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
+//        m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
+//      
+//      land = new cLandscape(m_world, m_world->GetClassificationManager().GetBestGenotype()->GetGenome(),
+//                            m_world->GetHardwareManager().GetInstSet());
+//      m_batch.PushRear(land);
+//      if (m_sample_size) {
+//        land->SetTrials(m_sample_size);        
+//        land->TestPairs(ctx);
+//      } else land->TestAllPairs(ctx);
+//      
+//      update = m_world->GetStats().GetUpdate();      
     }
     
     cDataFile& df = m_world->GetDataFile(m_filename);
@@ -1060,20 +1060,21 @@ public:
       cTestCPU* testcpu = (m_save_genotypes) ? m_world->GetHardwareManager().CreateTestCPU() : NULL;
       while ((orgdata = batch.Pop())) {
         cOrganism* organism = orgdata->GetOrganism();
-        cGenotype* genotype = organism->GetGenotype();
         cPhenotype& phenotype = organism->GetPhenotype();
         
+        assert(dynamic_cast<cBGGenotype*>(organism->GetBioGroup("genotype")));
+        cBGGenotype* genotype = (cBGGenotype*)organism->GetBioGroup("genotype");
+        
         cString name;
-        if (genotype->GetThreshold()) name = genotype->GetName();
-        else name.Set("%03d-no_name-u%i-c%i", genotype->GetLength(), update, orgdata->GetCellID());
+        if (genotype->IsThreshold()) name = genotype->GetName();
+        else name.Set("%03d-no_name-u%i-c%i", organism->GetGenome().GetSize(), update, orgdata->GetCellID());
 
         
         df.Write(orgdata->GetCellID(), "Cell ID");
         df.Write(name, "Organism Name");
-        df.Write(genotype->GetLength(),"Genome Length");
-        df.Write(genotype->GetTestFitness(ctx), "Fitness (test-cpu)");
+        df.Write(organism->GetGenome().GetSize(),"Genome Length");
+        df.Write(organism->GetTestFitness(ctx), "Fitness (test-cpu)");
         df.Write(phenotype.GetFitness(), "Fitness (actual)");
-        df.Write(genotype->GetBreedTrue(), "Breed True");
         df.Write(organism->GetLineageLabel(), "Lineage Label");
         df.Write(phenotype.GetNeutralMetric(), "Neutral Metric");
         orgdata->PrintLand(df, update);

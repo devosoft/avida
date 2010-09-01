@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 10/10/08.
- *  Copyright 2008-2009 Michigan State University. All rights reserved.
+ *  Copyright 2008-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -160,5 +160,5 @@ void RegisterASAvidaLib(cASLibrary* lib)
   lib->RegisterFunction(new tASNativeObjectInstantiate<cAvidaConfig ()>());
   lib->RegisterFunction(new tASNativeObjectInstantiate<cDefaultRunDriver (cWorld*)>());
   lib->RegisterFunction(new tASNativeObjectInstantiate<cWorld (cAvidaConfig*)>());
-    // @TODO - world takes ownership of config, but I don't handle that here... world could delete it without AS knowing
+    // @AS_TODO - world takes ownership of config, but I don't handle that here... world could delete it without AS knowing
 }

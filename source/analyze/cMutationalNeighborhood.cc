@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 6/13/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -553,8 +553,6 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   m_ot.size_pos = m_op.size_pos + m_oi.size_pos + m_od.size_pos;
   m_ot.size_neg = m_op.size_neg + m_oi.size_neg + m_od.size_neg;
   
-  // @TODO - total_entropy/complexity across all mutation classes?
-
   m_ot.task_target = m_op.task_target + m_oi.task_target + m_od.task_target;
   m_ot.task_total = m_op.task_total + m_oi.task_total + m_od.task_total;
   m_ot.task_knockout = m_op.task_knockout + m_oi.task_knockout + m_od.task_knockout;
@@ -638,8 +636,6 @@ void cMutationalNeighborhood::ProcessComplete(cAvidaContext& ctx)
   m_tt.dead = m_tp.dead + m_ti.dead + m_td.dead + m_tip.dead + m_tid.dead + m_tdp.dead;
   m_tt.size_pos = m_tp.size_pos + m_ti.size_pos + m_td.size_pos + m_tip.size_pos + m_tid.size_pos + m_tdp.size_pos;
   m_tt.size_neg = m_tp.size_neg + m_ti.size_neg + m_td.size_neg + m_tip.size_neg + m_tid.size_neg + m_tdp.size_neg;
-  
-  // @TODO - total_entropy/complexity across all mutation classes?
   
   m_tt.task_target = m_tp.task_target + m_ti.task_target + m_td.task_target
                      + m_tip.task_target + m_tid.task_target + m_tdp.task_target;

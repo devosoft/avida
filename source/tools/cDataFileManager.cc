@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "data_file_manager.cc" prior to 10/18/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2005 California Institute of Technology
  *
  */
@@ -108,7 +108,7 @@ cDataFile& cDataFileManager::Get(const cString& name)
 
   target = dir_prefix + target;
   found_file = new cDataFile(target);
-  m_datafiles.Add(name, found_file);
+  m_datafiles.Set(name, found_file);
 
   return *found_file;
 }

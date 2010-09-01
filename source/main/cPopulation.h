@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "population.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -61,20 +61,14 @@
 #include "tVector.h"
 #endif
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 #include "cInstSet.h"
 
 class cAvidaContext;
+class cBioUnit;
 class cCodeLabel;
 class cChangeList;
 class cEnvironment;
 class cGenome;
-class cGenotype;
 class cLineage;
 class cOrganism;
 class cPopulationCell;
@@ -82,11 +76,9 @@ class cSchedule;
 class cSaleItem;
 
 
+
 class cPopulation
 {
-#if USE_tMemTrack
-  tMemTrack<cPopulation> mt;
-#endif
 private:
   // Components...
   cWorld* m_world;
@@ -118,51 +110,13 @@ private:
 	// Group formation information
 	std::map<int, int> m_groups; //<! Maps the group id to the number of orgs in the group
 
-  ///////////////// Private Methods ////////////////////
-  void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
-
-  // Methods to place offspring in the population.
-  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, bool parent_ok = true);
-  void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
-  cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
-  cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
-  int UpdateEmptyCellIDArray(int deme_id = -1);
-  void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
-
-  // Update statistics collecting...
-  void UpdateDemeStats();
-  void UpdateOrganismStats();
-  void UpdateGenotypeStats();
-  void UpdateSpeciesStats();
-  void UpdateDominantStats();
-  void UpdateDominantParaStats();
-
-  /**
-   * Attention: InjectGenotype does *not* add the genotype to the archive.
-   * It assumes that's where you got the genotype from.
-   **/
-  void InjectGenotype(int cell_id, cGenotype* genotype);
-public:
-	// This needs to be public so it can be used over in PopulationActions.cc...
-  void InjectGenome(int cell_id, const cGenome& genome, int lineage_label);
-private:
-  void InjectClone(int cell_id, cOrganism& orig_org);
-  void InjectChild(int cell_id, cOrganism& parent);
-
-  void LineageSetupOrganism(cOrganism* organism, cLineage* lineage, int lin_label, cGenotype* parent_genotype = NULL);
-  void CCladeSetupOrganism(cOrganism* organism); 
-	
-  // Must be called to activate *any* organism in the population.
-  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
-  
-  inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
+  int m_hgt_resid; //!< HGT resource ID.
   
 
   cPopulation(); // @not_implemented
   cPopulation(const cPopulation&); // @not_implemented
   cPopulation& operator=(const cPopulation&); // @not_implemented
+  
   
 public:
   cPopulation(cWorld* world);
@@ -170,14 +124,15 @@ public:
 
   void InitiatePop();
 
+  void InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, int lineage_label = 0);
+
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism* parent_organism);
-  bool ActivateParasite(cOrganism& parent, const cCodeLabel& label, const cGenome& injected_code);
+  bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code);
   
   // Inject an organism from the outside world.
-  void Inject(const cGenome& genome, int cell_id = -1, double merit = -1, int lineage_label = 0,
-              double neutral_metric = 0);
-  void InjectParasite(const cCodeLabel& label, const cGenome& injected_code, int cell_id);
+  void Inject(const cGenome& genome, eBioUnitSource src, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0);
+  void InjectParasite(const cString& label, const cGenome& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell);
@@ -209,17 +164,14 @@ public:
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme);
   
   //! Helper method that seeds a deme from the given genome.
-  void SeedDeme(cDeme& deme, cGenome& genome);
+  void SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src);
 
   //! Helper method that seeds a deme from the given genotype.
-  void SeedDeme(cDeme& _deme, cGenotype& _genotype);
+  void SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src);
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
   bool SeedDeme(cDeme& source_deme, cDeme& target_deme);
 
-  //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void InjectDemeFounder(int _cell_id, cGenotype& _genotype, cPhenotype* _phenotype = NULL);
-  
   //! Helper method that determines the cell into which an organism will be placed during deme replication.
   int DemeSelectInjectionCell(cDeme& deme, int sequence=0);
   
@@ -277,11 +229,8 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads);
 
   // Saving and loading...
-  bool SaveClone(std::ofstream& fp);
-  bool LoadClone(std::ifstream& fp);
-  bool LoadDumpFile(cString filename, int update, bool sexualpop);
-  bool SaveStructuredPopulation(const cString& filename);
-  bool LoadStructuredPopulation(const cString& filename, int cellid_offset=0, int lineage_offset=0);
+  bool SavePopulation(const cString& filename);
+  bool LoadPopulation(const cString& filename, int cellid_offset=0, int lineage_offset=0);
   bool DumpMemorySummary(std::ofstream& fp);
 
   bool OK();
@@ -292,7 +241,7 @@ public:
   int GetNumDemes() const { return deme_array.GetSize(); }
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
-  cPopulationCell& GetCell(int in_num);
+  cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
   const tArray<double>& GetResources() const { return resource_count.GetResources(); }
   const tArray<double>& GetCellResources(int cell_id) const { return resource_count.GetCellResources(cell_id); }
   const tArray<double>& GetDemeResources(int deme_id) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(); }
@@ -346,55 +295,43 @@ public:
 	// Get the group information
 	map<int, int> GetFormedGroups() { return m_groups; }
 	
-private:
-  struct sTmpGenotype
-  {
-  public:
-    int id_num;
-    int parent_id;
-    int parent_id2;
-    int num_cpus;
-    int total_cpus;
-    double merit;
-    double gest_time;
-    int update_born;
-    int update_dead;
-    tArray<int> cells;
-    tArray<int> offsets;
-    tArray<int> lineage_labels;
-    
-    cGenotype *genotype;
-    
-    inline sTmpGenotype() : id_num(-1) { ; }
-    inline bool operator<(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }
-    inline bool operator>(const sTmpGenotype& rhs) const { return id_num > rhs.id_num; }
-    inline bool operator<=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
-    inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
-  };  
-  
 	// -------- HGT support --------
-private:
-	int m_hgt_resid; //!< HGT resource ID.
-public:
 	//! Modify current level of the HGT resource.
 	void AdjustHGTResource(double delta);
 	
 	// -------- Population mixing support --------
-public:
 	//! Mix all organisms in the population.
 	void MixPopulation();
+
+private:
+  void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
+  
+  // Methods to place offspring in the population.
+  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, bool parent_ok = true);
+  void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
+  cPopulationCell& PositionDemeMigration(cPopulationCell& parent_cell, bool parent_ok = true);
+  cPopulationCell& PositionDemeRandom(int deme_id, cPopulationCell& parent_cell, bool parent_ok = true);
+  int UpdateEmptyCellIDArray(int deme_id = -1);
+  void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
+  
+  // Update statistics collecting...
+  void UpdateDemeStats();
+  void UpdateOrganismStats();
+  
+  void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
+  void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
+  
+  //! Helper method that adds a founder organism to a deme, and sets up its phenotype
+  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cPhenotype* _phenotype = NULL);
+  
+  void CCladeSetupOrganism(cOrganism* organism); 
+	
+  // Must be called to activate *any* organism in the population.
+  void ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, cPopulationCell& target_cell);
+  
+  inline void AdjustSchedule(const cPopulationCell& cell, const cMerit& merit);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nPopulation {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

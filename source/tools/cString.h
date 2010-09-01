@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "cstringh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -547,37 +547,15 @@ public:
    **/
   cString EjectStr(int pos, int excise);
 
-  /*
-  We have decided to not serialize information about data-sharing
-  between cStrings (via cStringData). This leads to plausible memory
-  bloat when formerly shared strings are reloaded (and are no longer
-  shared), but in the case of Avida, there shouldn't be much bloat. @kgn
-  */
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    std::string s(value->GetData());
-    a.ArkvObj("value", s);
-  }
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    std::string s;
-    a.ArkvObj("value", s);
-    (*this)=s.c_str();
-  }
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  }
 
   // {{{ -- INTERNALS -------------------------------------------------------
 protected:
   // -- Internal Functions --
 
   // Methods that take input string size (unsafe to call from outside)
-  cString & AppendStr(const int in_size, const char * in);  // Optimized
-  cString & InsertStr(const int in_size, const char * in,
-		      int pos, int excise=0);
-  int FindStr(const char * in_string, const int in_size, int pos) const;
+  cString& AppendStr(const int in_size, const char* in);  // Optimized
+  cString& InsertStr(const int in_size, const char* in, int pos, int excise=0);
+  int FindStr(const char* in_string, const int in_size, int pos) const;
 
   // -- Internal Data --
 protected:
@@ -590,8 +568,8 @@ protected:
 // {{{ ** External cString Functions **
 
 // iostream input
-std::istream & operator >> (std::istream & in, cString & string);
-std::ostream& operator << (std::ostream& out, const cString & string);
+std::istream& operator >> (std::istream& in, cString& string);
+std::ostream& operator << (std::ostream& out, const cString& string);
 
 // }}}
 

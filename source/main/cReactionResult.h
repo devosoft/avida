@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "reaction_result.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2004 California Institute of Technology.
  *
  *
@@ -111,19 +111,6 @@ public:
   double GetMultDemeBonus() { return deme_mult_bonus; }
   double GetAddGermline() { return germline_add; }
   double GetMultGermline() { return germline_mult; }
-
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nReactionResult {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

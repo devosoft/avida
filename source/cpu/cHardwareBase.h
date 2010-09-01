@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "hardware_base.hh" prior to 11/17/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -44,11 +44,11 @@
 using namespace std;
 
 class cAvidaContext;
+class cBioUnit;
 class cCodeLabel;
 class cCPUMemory;
 class cHardwareTracer;
 class cHeadCPU;
-class cInjectGenotype;
 class cInstruction;
 class cMutation;
 class cOrganism;
@@ -166,8 +166,7 @@ public:
   virtual bool ThreadSelect(const cCodeLabel& in_label) = 0;
   virtual void ThreadNext() = 0;
   virtual void ThreadPrev() = 0;
-  virtual cInjectGenotype* ThreadGetOwner() = 0;
-  virtual void ThreadSetOwner(cInjectGenotype* in_genotype) = 0;
+  virtual cBioUnit* ThreadGetOwner() = 0;
 
   virtual int GetNumThreads() const = 0;
   virtual int GetCurThread() const = 0;
@@ -179,7 +178,7 @@ public:
   
   
   // --------  Parasite Stuff  --------
-  virtual bool InjectHost(const cCodeLabel& in_label, const cGenome& injection) = 0;
+  virtual bool ParasiteInfectHost(cBioUnit* bu) = 0;
   
     
   // --------  Mutation  --------

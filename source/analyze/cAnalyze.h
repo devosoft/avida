@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "analyze.hh" prior to 12/1/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -55,8 +55,8 @@
 #ifndef tMatrix_h
 #include "tMatrix.h"
 #endif
-#ifndef tHashTable_h
-#include "tHashTable.h"
+#ifndef tHashMap_h
+#include "tHashMap.h"
 #endif
 
 #if USE_tMemTrack

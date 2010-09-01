@@ -2,7 +2,7 @@
  *  cDeme.cc
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,9 +22,11 @@
  */
 
 #include "cDeme.h"
+
+#include "cBioGroup.h"
+#include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
@@ -142,6 +144,22 @@ cOrganism* cDeme::GetOrganism(int pos) const
 {
   return GetCell(pos).GetOrganism();
 }
+
+std::vector<int> cDeme::GetGenotypeIDs()
+{
+  std::vector<int> genotype_ids;
+  for (int i = 0; i < GetSize(); i++) {
+    cPopulationCell& cell = GetCell(i);
+    if (cell.IsOccupied()) genotype_ids.push_back(cell.GetOrganism()->GetBioGroup("genotype")->GetID());
+  }
+
+  //assert(genotype_ids.size()>0); // How did we get to replication otherwise?
+  //@JEB some germline methods can result in empty source demes if they didn't produce a germ)
+  
+  return genotype_ids;
+}
+
+
 
 int cDeme::GetNumOrgsWithOpinion() const {
 	int demeSize = GetSize();
@@ -677,26 +695,25 @@ double cDeme::CalculateTotalInitialEnergyResources() const {
 
 // --- Founder list management --- //
 
-void cDeme::AddFounder(cGenotype& _in_genotype, cPhenotype * _in_phenotype) {
-  
+void cDeme::AddFounder(cBioGroup* bg, cPhenotype * _in_phenotype)
+{
   // save genotype id
-  m_founder_genotype_ids.Push( _in_genotype.GetID() );
+  m_founder_genotype_ids.Push( bg->GetID() );
   cPhenotype phenotype;
   if (_in_phenotype) phenotype = *_in_phenotype;
   m_founder_phenotypes.Push( phenotype );
   
-  // defer adjusting this genotype until we are done with it
-  _in_genotype.IncDeferAdjust();
-  
+  bg->AddPassiveReference();
 }
 
-void cDeme::ClearFounders() {
+void cDeme::ClearFounders()
+{
   // check for unused genotypes, now that we're done with these
   for (int i=0; i<m_founder_genotype_ids.GetSize(); i++) {
-    cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(m_founder_genotype_ids[i]);
-    assert(genotype);
-    genotype->DecDeferAdjust();
-    m_world->GetClassificationManager().AdjustGenotype(*genotype);
+    
+    cBioGroup* bg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(m_founder_genotype_ids[i]);
+    assert(bg);
+    bg->RemovePassiveReference();
   }
   
   // empty our list
@@ -704,23 +721,20 @@ void cDeme::ClearFounders() {
   m_founder_phenotypes.ResizeClear(0);
 }
 
-void cDeme::ReplaceGermline(cGenotype& _in_genotype) {
-  
+void cDeme::ReplaceGermline(cBioGroup* bg)
+{
   // same genotype, no changes
-  if (m_germline_genotype_id == _in_genotype.GetID()) return;
+  if (m_germline_genotype_id == bg->GetID()) return;
   
   // first, save and put a hold on new germline genotype
   int prev_germline_genotype_id = m_germline_genotype_id;
-  m_germline_genotype_id = _in_genotype.GetID();
-  _in_genotype.IncDeferAdjust();  
+  m_germline_genotype_id = bg->GetID();
+  bg->AddPassiveReference();
+
   
   // next, if we previously were saving a germline genotype, free it
-  cGenotype * genotype = m_world->GetClassificationManager().FindGenotype(prev_germline_genotype_id);
-  if (genotype) {
-    genotype->DecDeferAdjust();
-    m_world->GetClassificationManager().AdjustGenotype(*genotype);
-  }
-  
+  cBioGroup* pbg = m_world->GetClassificationManager().GetBioGroupManager("genotype")->GetBioGroup(prev_germline_genotype_id);
+  if (pbg) pbg->RemovePassiveReference();
 }
 
 bool cDeme::DemePredSatisfiedPreviously() {

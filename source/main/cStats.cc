@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "stats.cc" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology.
  *
  *
@@ -25,9 +25,9 @@
 
 #include "cStats.h"
 
+#include "cBioGroup.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
@@ -65,7 +65,6 @@ cStats::cStats(cWorld* world)
   , dom_fidelity(0.0)
   , ave_fidelity(0.0)
   , max_viable_fitness(0)
-  , dom_genotype(NULL)
   , dom_merit(0)
   , dom_gestation(0)
   , dom_repro_rate(0)
@@ -284,6 +283,32 @@ cStats::cStats(cWorld* world)
   SetupPrintDatabase();
 }
 
+
+void cStats::NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu)
+{
+  assert(bg);
+
+  switch (type) {
+    case BG_EVENT_ADD_THRESHOLD:
+      num_threshold++;
+      tot_threshold++;
+      if (m_world->GetConfig().LOG_THRESHOLD.Get()) {
+        cDataFile& df = m_world->GetDataFile("threshold.log");
+        df.Write(m_update, "Update");
+        df.Write(bg->GetID(), "ID");
+        df.Write(bg->GetProperty("name").AsString(), "Name");
+        df.Endl();
+      }
+      break;
+      
+    case BG_EVENT_REMOVE_THRESHOLD:
+      num_threshold--;
+      break;
+  } 
+  
+}
+
+
 void cStats::SetupPrintDatabase()
 {
   // Load in all the keywords, descriptions, and associated functions for
@@ -323,13 +348,6 @@ void cStats::SetupPrintDatabase()
   data_manager.Add("dom_depth",      "Tree Depth of Dominant Genotype",         &cStats::GetDomGeneDepth);
   data_manager.Add("dom_sequence",   "Sequence of Dominant Genotype",           &cStats::GetDomSequence);
 
-  // Dominant Inject Genotype Stats
-  data_manager.Add("dom_inj_size",      "Genome Length of Dominant Parasite",   &cStats::GetDomInjSize);
-  data_manager.Add("dom_inj_ID",        "ID of Dominant Parasite",              &cStats::GetDomInjID);
-  data_manager.Add("dom_inj_name",      "Nameof Dominant Parasite",             &cStats::GetDomInjName);
-  data_manager.Add("dom_inj_births",    "Birth Count of Dominant Parasite",     &cStats::GetDomInjBirths);
-  data_manager.Add("dom_inj_abundance", "Abundance of Dominant Parasite",       &cStats::GetDomInjAbundance);
-  data_manager.Add("dom_inj_sequence",  "Sequence of Dominant Parasite",        &cStats::GetDomInjSequence);
   
   // Current Counts...
   data_manager.Add("num_births",     "Count of Births in Population",          &cStats::GetNumBirths);
@@ -445,7 +463,7 @@ void cStats::CalcFidelity()
   dom_fidelity = base_fidelity * pow(1.0 - true_cm_rate, dom_size);
 }
 
-void cStats::RecordBirth(int cell_id, int genotype_id, bool breed_true)
+void cStats::RecordBirth(bool breed_true)
 {
 
 	
@@ -454,14 +472,6 @@ void cStats::RecordBirth(int cell_id, int genotype_id, bool breed_true)
 		
   tot_organisms++;
   num_births++;
-
-  if (m_world->GetConfig().LOG_CREATURES.Get()) {
-    cDataFile& df = m_world->GetDataFile("creature.log");
-    df.Write(m_update, "Update");
-    df.Write(cell_id, "Cell ID");
-    df.Write(genotype_id, "Genotype ID");
-    df.Endl();
-  }
 
   if (breed_true) num_breed_true++;
   else num_breed_in++;
@@ -489,21 +499,6 @@ void cStats::RemoveGenotype(int id_num, int parent_id,
 
   (void) parasite_abundance; // Not used now, but maybe in future.
 }
-
-void cStats::AddThreshold(int id_num, const char* name, int species_num)
-{
-  num_threshold++;
-  tot_threshold++;
-  if (m_world->GetConfig().LOG_THRESHOLD.Get()) {
-    cDataFile& df = m_world->GetDataFile("threshold.log");
-    df.Write(m_update, "Update");
-    df.Write(id_num, "ID");
-    df.Write(species_num, "Species Num");
-    df.Write(name, "Name");
-    df.Endl();
-  }
-}
-
 
 void cStats::RemoveSpecies(int id_num, int parent_id, int max_gen_abundance, int max_abundance, int age)
 {
@@ -804,10 +799,6 @@ void cStats::PrintParasiteData(const cString& filename)
 
   df.Write(m_update, "Update");
   df.Write(num_parasites, "Number of Extant Parasites");
-  df.Write(dom_inj_size, "Size of Dominant Parasite Genotype");
-  df.Write(dom_inj_abundance, "Abundance of Dominant Parasite Genotype");
-  df.Write(dom_inj_genotype_id, "Genotype ID of Dominant Parasite Genotype");
-  df.Write(dom_inj_name, "Name of the Dominant Parasite Genotype");
   df.Endl();
 }
 
@@ -1672,16 +1663,7 @@ lose the ancestral deme founders.
 */
 void cStats::DemePostReplication(cDeme& source_deme, cDeme& target_deme)
 {
-  std::vector<int> genotype_ids;
-  for(int i=0; i<target_deme.GetSize(); ++i) {
-    cPopulationCell& cell = target_deme.GetCell(i);
-    if(cell.IsOccupied()) {
-      genotype_ids.push_back(cell.GetOrganism()->GetGenotype()->GetID());  
-    }
-  }
-  //assert(genotype_ids.size()>0); // How did we get to replication otherwise?
-  //@JEB some germline methods can result in empty source demes if they didn't produce a germ)
-  m_deme_founders[target_deme.GetID()] = genotype_ids;
+  m_deme_founders[target_deme.GetID()] = target_deme.GetGenotypeIDs();
 }
 
 

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 2/18/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@
 
 void cAnalyzeJobWorker::Run()
 {
-  cAvidaContext ctx(NULL);
+  cAvidaContext ctx(m_queue->m_world, NULL);
   ctx.SetAnalyzeMode();
   
   cAnalyzeJob* job = NULL;

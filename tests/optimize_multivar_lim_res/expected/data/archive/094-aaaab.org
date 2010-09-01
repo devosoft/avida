@@ -1,14 +1,9 @@
-# Tue Sep 22 16:17:52 2009
+# Wed Sep  1 14:33:50 2010
 # Filename........: archive/094-aaaab.org
 # Update Output...: 10
 # Is Viable.......: 1
 # Repro Cycle Size: 0
 # Depth to Viable.: 0
-# Update Created..: 5
-# Genotype ID.....: 104
-# Parent Gen ID...: 2
-# Tree Depth......: 1
-# Parent Distance.: -1
 # 
 # Generation: 0
 # Merit...........: 100.000000

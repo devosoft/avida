@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "help_entry.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -51,17 +51,5 @@ public:
 
   cString GetHTMLFilename() const { return cStringUtil::Stringf("help.%s.html", static_cast<const char*>(GetKeyword())); }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHelpEntry {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

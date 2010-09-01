@@ -2,7 +2,7 @@
  *  cCycleCheck.h
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2004 California Institute of Technology.
  *
  *
@@ -81,15 +81,4 @@ public:
 };
 
   
-#ifdef ENABLE_UNIT_TESTS
-namespace nCycleCheck {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

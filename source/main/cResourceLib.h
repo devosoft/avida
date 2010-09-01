@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "resource_lib.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -55,17 +55,5 @@ public:
   const cResourceHistory& GetInitialResourceLevels() const;
   bool DoesResourceExist(const cString& res_name);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nResourceLib {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

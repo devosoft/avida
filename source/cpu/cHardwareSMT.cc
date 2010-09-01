@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 6/4/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -166,6 +166,8 @@ void cHardwareSMT::internalReset()
   for(int i = 0; i < NUM_STACKS; i++) {
 		Stack(i).Clear();
 	}
+  
+  m_organism->ClearParasites();
 }
 
 void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space)
@@ -178,6 +180,11 @@ void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space
   next_label.Clear();
   running = true;
   owner = NULL;  
+}
+
+cBioUnit* cHardwareSMT::ThreadGetOwner()
+{
+  return (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
 }
 
 
@@ -359,7 +366,7 @@ int cHardwareSMT::FindMemorySpaceLabel(const cCodeLabel& label, int mem_space)
     m_mem_array.Resize(mem_space + 1);
     m_mem_marks.Resize(mem_space + 1);
     m_mem_marks[mem_space] = false;
-    m_mem_lbls.Add(hash_key, mem_space);
+    m_mem_lbls.Set(hash_key, mem_space);
   }
   
   return mem_space;
@@ -625,7 +632,10 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   Inject_DoMutations(ctx, mut_multiplier, injected_code);
 	
   bool inject_signal = false;
-  if (injected_code.GetSize() > 0) inject_signal = m_organism->InjectParasite(GetLabel(), injected_code);
+  if (injected_code.GetSize() > 0) {
+    cBioUnit* parent = (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
+    inject_signal = m_organism->InjectParasite(parent, GetLabel().AsString(), injected_code);
+  }
 	
   // reset the memory space that was injected
   m_mem_array[mem_space_used] = cGenome("a"); 
@@ -638,20 +648,40 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   return inject_signal;
 }
 
-//This is the code run by the TARGET of an injection.  This RECIEVES the infection.
-bool cHardwareSMT::InjectHost(const cCodeLabel& in_label, const cGenome& inject_code)
+bool cHardwareSMT::ParasiteInfectHost(cBioUnit* bu)
 {
-  // Inject fails if the memory space is already in use or thread exists
-  if (MemorySpaceExists(in_label) || FindThreadLabel(in_label) != -1) return false;
-
-  // Otherwise create the memory space and copy in the genome
-  int mem_space_used = FindMemorySpaceLabel(in_label, -1);
-  assert(mem_space_used != -1);
-  m_mem_array[mem_space_used] = inject_code;
+  assert(bu->GetMetaGenome().GetHardwareType() == GetType() && bu->GetMetaGenome().GetInstSetID() == GetInstSetID());
   
-  // Create a thread for this parasite
-  if (!ThreadCreate(in_label, mem_space_used)) return false; // Partially failed injection, could not create thread
-
+  cCodeLabel label;
+  label.ReadString(bu->GetUnitSourceArgs());
+  
+  // Inject fails if the memory space is already in use
+  if (label.GetSize() == 0 || MemorySpaceExists(label)) return false;
+  
+  int thread_id = m_threads.GetSize();
+  
+  // Check for existing thread
+  int hash_key = label.AsInt(NUM_NOPS);
+  if (m_thread_lbls.Find(hash_key, thread_id)) {
+    if (m_threads[thread_id].running) return false;  // Thread exists, and is running... call fails
+  } else {
+    // Check for thread cap
+    if (thread_id == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
+    
+    // Add new thread entry
+    m_threads.Resize(thread_id + 1);
+    m_thread_lbls.Set(hash_key, thread_id);
+  }
+  
+  // Create the memory space and copy in the parasite
+  int mem_space = FindMemorySpaceLabel(label, -1);
+  assert(mem_space != -1);
+  m_mem_array[mem_space] = bu->GetMetaGenome().GetGenome();
+  
+  // Setup the thread
+  m_threads[thread_id].Reset(this, mem_space);
+  m_threads[thread_id].owner = bu;
+  
   return true;
 }
 
@@ -709,10 +739,11 @@ int cHardwareSMT::ThreadCreate(const cCodeLabel& label, int mem_space)
   
   // Add new thread entry
   m_threads.Resize(thread_id + 1);
-  m_thread_lbls.Add(hash_key, thread_id);
+  m_thread_lbls.Set(hash_key, thread_id);
     
   // Setup this thread into the current selected memory space (Flow Head)
   m_threads[thread_id].Reset(this, mem_space);
+  m_threads[thread_id].owner = m_threads[m_cur_thread].owner;
 	
   return (thread_id + 1);
 }

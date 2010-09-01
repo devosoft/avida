@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "reaction.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2004 California Institute of Technology.
  *
  *
@@ -81,17 +81,5 @@ public:
 
   double GetValue(int process_num = 0);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nReaction {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
 
 #endif

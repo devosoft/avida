@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "pop_cell.cc" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -228,7 +228,6 @@ void cPopulationCell::ResetInputs(cAvidaContext& ctx)
 void cPopulationCell::InsertOrganism(cOrganism* new_org)
 {
   assert(new_org != NULL);
-  assert(new_org->GetGenotype() != NULL);
   assert(m_organism == NULL);
 	
   // Adjust this cell's attributes to account for the new organism.
@@ -328,7 +327,7 @@ void cPopulationCell::AddGenomeFragments(const cGenome& genome) {
 	
 	m_world->GetPopulation().AdjustHGTResource(genome.GetSize());
 	
-	cAvidaContext ctx(m_world->GetRandom());
+	cAvidaContext ctx(m_world, m_world->GetRandom());
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),

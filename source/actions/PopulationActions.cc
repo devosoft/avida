@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 6/25/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -91,7 +91,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
-    m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
+    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
 
@@ -135,7 +135,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cGenome genome = cGenomeUtil::RandomGenome(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-    m_world->GetPopulation().Inject(genome, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
+    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_RANDOM, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
 
@@ -185,7 +185,7 @@ public:
         genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
       else
         genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-      m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+      m_world->GetPopulation().Inject(genome, SRC_ORGANISM_RANDOM, i, m_merit, m_lineage_label, m_neutral_metric);
     }
   }
 };
@@ -230,7 +230,7 @@ public:
   {
     cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
-      m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+      m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
 
@@ -287,7 +287,7 @@ public:
     } else {
       cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -345,7 +345,7 @@ public:
     } else {
       cGenome genome(m_sequence);
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -406,7 +406,7 @@ public:
     } else {
       cGenome genome(m_sequence);
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
       }
       m_world->GetPopulation().SetSyncEvents(true);
@@ -431,7 +431,7 @@ class cActionInjectParasite : public cAction
 {
 private:
   cString m_filename;
-  cCodeLabel m_label;
+  cString m_label;
   int m_cell_start;
   int m_cell_end;
 public:
@@ -439,7 +439,7 @@ public:
   {
     cString largs(args);
     m_filename = largs.PopWord();
-    m_label.ReadString(largs.PopWord());
+    m_label = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     
@@ -489,7 +489,7 @@ class cActionInjectParasitePair : public cAction
 private:
   cString m_filename_genome;
   cString m_filename_parasite;
-  cCodeLabel m_label;
+  cString m_label;
   int m_cell_start;
   int m_cell_end;
   double m_merit;
@@ -502,7 +502,7 @@ public:
     cString largs(args);
     m_filename_genome = largs.PopWord();
     m_filename_parasite = largs.PopWord();
-    m_label.ReadString(largs.PopWord());
+    m_label = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
@@ -522,7 +522,7 @@ public:
       cGenome genome = cGenomeUtil::LoadGenome(m_filename_genome, m_world->GetHardwareManager().GetInstSet());
       cGenome parasite = cGenomeUtil::LoadGenome(m_filename_parasite, m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().InjectParasite(m_label, parasite, i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
@@ -573,7 +573,7 @@ public:
     cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
-        m_world->GetPopulation().Inject(genome,
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -582,7 +582,7 @@ public:
       for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
-        m_world->GetPopulation().Inject(genome,
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                         m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -637,7 +637,7 @@ public:
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         if (i % m_mod_num == 0) {
-          m_world->GetPopulation().Inject(genome,
+          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
                                           m_world->GetPopulation().GetDeme(i).GetCellID(0),
                                           m_merit, m_lineage_label, m_neutral_metric);
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -648,7 +648,7 @@ public:
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
         if (i==0 || (i % m_mod_num) ==0){
-          m_world->GetPopulation().Inject(genome,
+          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
 																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
 																					m_merit, m_lineage_label, m_neutral_metric);
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -721,7 +721,7 @@ public:
       }
       
       if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
-        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), SRC_DEME_GERMLINE,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(m_nest_cellid),
                                         m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -805,7 +805,7 @@ public:
         assert(target_cell > -1);
         assert(target_cell < m_world->GetPopulation().GetSize());
         
-        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(),
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), SRC_DEME_GERMLINE,
                                         target_cell, m_merit,
                                         m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
@@ -2565,7 +2565,7 @@ protected:
 			// This is probably only compatible with the "old-style" germline
 			for(cAssignRandomCellData::CellIDList::iterator i=cell_ids.begin(); i!=cell_ids.end(); ++i) {
 				m_world->GetPopulation().KillOrganism(deme.GetCell(*i));
-				m_world->GetPopulation().InjectGenome(*i, deme.GetGermline().GetLatest(), 0);
+				m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
 				m_world->GetPopulation().DemePostInjection(deme, deme.GetCell(*i));
 			}
 		}		
@@ -2614,7 +2614,7 @@ public:
 					
 					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
 					m_world->GetPopulation().KillOrganism(cell);
-					m_world->GetPopulation().InjectGenome(cell.GetID(), deme.GetGermline().GetLatest(), 0);
+					m_world->GetPopulation().InjectGenome(cell.GetID(), SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
 					m_world->GetPopulation().DemePostInjection(deme, cell);
 				}
 			}
@@ -4756,39 +4756,4 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
 	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
 	action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
-	
-  // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
-  action_lib->Register<cActionInject>("inject");
-  action_lib->Register<cActionInjectRandom>("inject_random");
-  action_lib->Register<cActionInjectAllRandomRepro>("inject_all_random_repro");
-  action_lib->Register<cActionInjectAll>("inject_all");
-  action_lib->Register<cActionInjectRange>("inject_range");
-  action_lib->Register<cActionInjectSequence>("inject_sequence");
-	
-  action_lib->Register<cActionKillProb>("apocalypse");
-  action_lib->Register<cActionKillRate>("rate_kill");
-  action_lib->Register<cActionKillRectangle>("kill_rectangle");
-  action_lib->Register<cActionSerialTransfer>("serial_transfer");
-	
-  action_lib->Register<cActionZeroMuts>("zero_muts");
-  
-  action_lib->Register<cActionCompeteDemes>("compete_demes");
-  action_lib->Register<cActionReplicateDemes>("replicate_demes");
-  action_lib->Register<cActionResetDemes>("reset_demes");
-  action_lib->Register<cActionCopyDeme>("copy_deme");
-  
-  action_lib->Register<cActionCompeteDemes>("new_trial");
-  action_lib->Register<cActionCompeteDemes>("compete_organisms");
-  
-  action_lib->Register<cActionSeverGridCol>("sever_grid_col");
-  action_lib->Register<cActionSeverGridRow>("sever_grid_row");
-  action_lib->Register<cActionJoinGridCol>("join_grid_col");
-  action_lib->Register<cActionJoinGridRow>("join_grid_row");
-	
-  action_lib->Register<cActionConnectCells>("connect_cells");
-  action_lib->Register<cActionDisconnectCells>("disconnect_cells");
-  action_lib->Register<cActionSwapCells>("swap_cells");
-  action_lib->Register<cActionKillDemePercent>("KillDemePercent");
-  action_lib->Register<cActionSetDemeTreatmentAges>("SetDemeTreatmentAges");
-  action_lib->Register<cActionMigrateDemes>("MigrateDemes");
 }

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 10/13/08.
- *  Copyright 2008-2009 Michigan State University. All rights reserved.
+ *  Copyright 2008-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@
 template<typename T> inline T cASCPPParameter::Get() const
 {
   if (strcmp(m_nobj->GetType(), typeid(T).name()) != 0)
-    Avida::Exit(AS_EXIT_INTERNAL_ERROR); // @TODO - report type mismatch error
+    Avida::Exit(AS_EXIT_INTERNAL_ERROR); // @AS_TODO - report type mismatch error
   return (T)m_nobj->GetObject();
 }
 

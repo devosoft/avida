@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "analyze.cc" prior to 12/1/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -65,7 +65,6 @@
 #include "cResource.h"
 #include "cResourceHistory.h"
 #include "cSchedule.h"
-#include "cSpecies.h"
 #include "cStringIterator.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
@@ -75,7 +74,7 @@
 #include "tDataCommandManager.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
-#include "tHashTable.h"
+#include "tHashMap.h"
 #include "tMatrix.h"
 
 #include "defs.h"
@@ -1772,7 +1771,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
         offspring_genotype->SetID(parent_genotype->GetID());
         offspring_genotype->SetNumCPUs(1);
         offspring_list.Push(offspring_genotype);
-        genome_hash.Add(test_info.GetTestOrganism(0)->OffspringGenome().GetGenome().AsString(), offspring_genotype);
+        genome_hash.Set(test_info.GetTestOrganism(0)->OffspringGenome().GetGenome().AsString(), offspring_genotype);
       }
     }
     batch_it.Remove();
@@ -2524,7 +2523,7 @@ void cAnalyze::CommandHistogram_Body(ostream& fp, int format_type,
       int count = 0;
       count_dict.Find(cur_name, count);
       count += cur_genotype->GetNumCPUs();
-      count_dict.SetValue(cur_name, count);
+      count_dict.Set(cur_name, count);
     }
     
     tList<cString> name_list;
@@ -2634,7 +2633,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
   // Setup the phenotype categories...
   const int num_tasks = batch[cur_batch].List().GetFirst()->GetNumTasks();
   
-  tHashTable<cBitArray, p_stats> phenotype_table(HASH_TABLE_SIZE_MEDIUM);
+  tHashMap<cBitArray, p_stats> phenotype_table(HASH_TABLE_SIZE_MEDIUM);
   
   // Loop through all of the genotypes in this batch...
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -2683,7 +2682,7 @@ void cAnalyze::CommandPrintPhenotypes(cString cur_string)
     }
     
     // add to / update table
-    phenotype_table.SetValue(phen_id, phenotype_stats);
+    phenotype_table.Set(phen_id, phenotype_stats);
   }
     
   ofstream& fp = m_world->GetDataFileOFStream(filename);
@@ -4120,7 +4119,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
   
   // Start by counting the total number of organisms (and do other such
   // data collection...
-  tHashTable<int, int> mate_id_counts;
+  tHashMap<int, int> mate_id_counts;
   
   int org_count = 0;
   int gen_count = 0;
@@ -4138,7 +4137,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     int count = 0;
     mate_id_counts.Find(mate_id, count);
     count += genotype->GetNumCPUs();
-    mate_id_counts.SetValue(mate_id, count);
+    mate_id_counts.Set(mate_id, count);
   }
   
   // Create an array of the correct size.

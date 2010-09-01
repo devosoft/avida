@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "hardware_cpu.cc" prior to 11/17/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -27,11 +27,11 @@
 #include "cHardwareCPU.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "functions.h"
 #include "cEnvironment.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
@@ -47,6 +47,7 @@
 #include "cReactionLib.h"
 #include "cReactionProcess.h"
 #include "cResource.h"
+#include "cSexualAncestry.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
@@ -217,8 +218,6 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("divideRS", &cHardwareCPU::Inst_DivideRS, nInstFlag::STALL),
     tInstLibEntry<tMethod>("c-alloc", &cHardwareCPU::Inst_CAlloc),
     tInstLibEntry<tMethod>("c-divide", &cHardwareCPU::Inst_CDivide, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("inject", &cHardwareCPU::Inst_Inject, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("inject-r", &cHardwareCPU::Inst_InjectRand, nInstFlag::STALL),
     tInstLibEntry<tMethod>("transposon", &cHardwareCPU::Inst_Transposon),
     tInstLibEntry<tMethod>("search-f", &cHardwareCPU::Inst_SearchF),
     tInstLibEntry<tMethod>("search-b", &cHardwareCPU::Inst_SearchB),
@@ -1289,46 +1288,6 @@ cHeadCPU cHardwareCPU::FindLabel(const cCodeLabel & in_label, int direction)
   return temp_head;
 }
 
-
-bool cHardwareCPU::InjectHost(const cCodeLabel & in_label, const cGenome & injection)
-{
-  // Make sure the genome will be below max size after injection.
-  
-  const int new_size = injection.GetSize() + m_memory.GetSize();
-  if (new_size > MAX_CREATURE_SIZE) return false; // (inject fails)
-  
-  const int inject_line = FindLabelFull(in_label).GetPosition();
-  
-  // Abort if no compliment is found.
-  if (inject_line == -1) return false; // (inject fails)
-  
-  // Inject the code!
-  InjectCode(injection, inject_line+1);
-  
-  return true; // (inject succeeds!)
-}
-
-void cHardwareCPU::InjectCode(const cGenome & inject_code, const int line_num)
-{
-  assert(line_num >= 0);
-  assert(line_num <= m_memory.GetSize());
-  assert(m_memory.GetSize() + inject_code.GetSize() < MAX_CREATURE_SIZE);
-  
-  // Inject the new code.
-  const int inject_size = inject_code.GetSize();
-  m_memory.Insert(line_num, inject_code);
-  
-  // Set instruction flags on the injected code
-  for (int i = line_num; i < line_num + inject_size; i++) {
-    m_memory.SetFlagInjected(i);
-  }
-  m_organism->GetPhenotype().IsModified() = true;
-  
-  // Adjust all of the heads to take into account the new mem size.  
-  for (int i = 0; i < NUM_HEADS; i++) {    
-    if (getHead(i).GetPosition() > line_num) getHead(i).Jump(inject_size);
-  }
-}
 
 
 void cHardwareCPU::ReadInst(const int in_inst)
@@ -3386,128 +3345,9 @@ bool cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme(cAvidaContext& ctx) {
   return true;
 }
 
-// The inject instruction can be used instead of a divide command, paired
-// with an allocate.  Note that for an inject to work, one needs to have a
-// broad range for sizes allowed to be allocated.
-//
-// This command will cut out from read-head to write-head.
-// It will then look at the template that follows the command and inject it
-// into the complement template found in a neighboring organism.
-
-bool cHardwareCPU::Inst_Inject(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int start_pos = getHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = getHead(nHardware::HEAD_WRITE).GetPosition();
-  const int inject_size = end_pos - start_pos;
-  
-  // Make sure the creature will still be above the minimum size,
-  if (inject_size <= 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
-    return false; // (inject fails)
-  }
-  if (start_pos < MIN_CREATURE_SIZE) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
-    return false; // (inject fails)
-  }
-  
-  // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code(cGenomeUtil::Crop(m_memory, start_pos, end_pos));
-  m_memory.Remove(start_pos, inject_size);
-  AdjustHeads();
-  
-  // If we don't have a host, stop here.
-  cOrganism * host_organism = m_organism->GetNeighbor();
-  if (host_organism == NULL) return false;
-  
-  // Scan for the label to match...
-  ReadLabel();
-  
-  // If there is no label, abort.
-  if (GetLabel().GetSize() == 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
-    return false; // (inject fails)
-  }
-  
-  // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  const bool inject_signal = host_organism->GetHardware().InjectHost(GetLabel(), inject_code);
-  if (inject_signal) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
-    return false; // Inject failed.
-  }
-  
-  // Set the relevent flags.
-  m_organism->GetPhenotype().IsModifier() = true;
-  
-  return inject_signal;
-}
 
 
-bool cHardwareCPU::Inst_InjectRand(cAvidaContext& ctx)
-{
-  // Rotate to a random facing and then run the normal inject instruction
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  m_organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
-  Inst_Inject(ctx);
-  return true;
-}
 
-// The inject instruction can be used instead of a divide command, paired
-// with an allocate.  Note that for an inject to work, one needs to have a
-// broad range for sizes allowed to be allocated.
-//
-// This command will cut out from read-head to write-head.
-// It will then look at the template that follows the command and inject it
-// into the complement template found in a neighboring organism.
-
-bool cHardwareCPU::Inst_InjectThread(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int start_pos = getHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = getHead(nHardware::HEAD_WRITE).GetPosition();
-  const int inject_size = end_pos - start_pos;
-  
-  // Make sure the creature will still be above the minimum size,
-  if (inject_size <= 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
-    return false; // (inject fails)
-  }
-  if (start_pos < MIN_CREATURE_SIZE) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
-    return false; // (inject fails)
-  }
-  
-  // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code( cGenomeUtil::Crop(m_memory, start_pos, end_pos) );
-  m_memory.Remove(start_pos, inject_size);
-  
-  // If we don't have a host, stop here.
-  cOrganism * host_organism = m_organism->GetNeighbor();
-  if (host_organism == NULL) return false;
-  
-  // Scan for the label to match...
-  ReadLabel();
-  
-  // If there is no label, abort.
-  if (GetLabel().GetSize() == 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
-    return false; // (inject fails)
-  }
-  
-  // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  if (host_organism->GetHardware().InjectHost(GetLabel(), inject_code)) {
-    if (ForkThread()) m_organism->GetPhenotype().IsMultiThread() = true;
-  }
-  
-  // Set the relevent flags.
-  m_organism->GetPhenotype().IsModifier() = true;
-  
-  return true;
-}
 
 bool cHardwareCPU::Inst_TaskGet(cAvidaContext& ctx)
 {
@@ -4262,48 +4102,13 @@ bool cHardwareCPU::Inst_DonateRandom(cAvidaContext& ctx)
   // Turn to a random neighbor, get it, and turn back...
   int neighbor_id = ctx.GetRandom().GetInt(m_organism->GetNeighborhoodSize());
   for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
-  cOrganism * neighbor = m_organism->GetNeighbor();
+  cOrganism* neighbor = m_organism->GetNeighbor();
   for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
   
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
     DoDonate(neighbor);
     
-		// Code to track the edit distance between kin donors and recipients
-		const int edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),neighbor->GetGenome());
-		
-		/*static ofstream rand_file("rand_dists.dat");*/
-		static int num_rand_donates = 0;
-		static int num_rand_donates_15_dist = 0;
-		static int tot_dist_rand_donate = 0;
-		
-		num_rand_donates++;
-		if (edit_dist > 15) num_rand_donates_15_dist++;
-		tot_dist_rand_donate += edit_dist;
-		
-		if (num_rand_donates == 1000) {
-			
-			/*rand_file << num_rand_donates << " "
-       << (double) num_rand_donates_15_dist / (double) num_rand_donates << " "
-       << (double) tot_dist_rand_donate / (double) num_rand_donates << endl;
-       */
-			num_rand_donates = 0;
-			num_rand_donates_15_dist = 0;
-			tot_dist_rand_donate = 0;
-		}
-		
-		
-		
-    //print out how often random donations go to kin
-    /*
-		 static ofstream kinDistanceFile("kinDistance.dat");
-		 kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=1) << " ";
-		 kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=2) << " ";
-		 kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=3) << " ";
-		 kinDistanceFile << genotype->GetPhyloDistance(neighbor->GetGenotype());
-		 kinDistanceFile << endl; 
-		 */
-		
     neighbor->GetPhenotype().SetIsReceiverRand();
   }
 	
@@ -4335,38 +4140,23 @@ bool cHardwareCPU::Inst_DonateKin(cAvidaContext& ctx)
   if (max_dist != -1) {
     int max_id = neighbor_id + num_neighbors;
     bool found = false;
-    cGenotype* genotype = m_organism->GetGenotype();
+    cBioGroup* bg = m_organism->GetBioGroup("genotype");
+    if (!bg) return false;
+    cSexualAncestry* sa = bg->GetData<cSexualAncestry>();
+    if (!sa) {
+      sa = new cSexualAncestry(bg);
+      bg->AttachData(sa);
+    }
+    
     while (neighbor_id < max_id) {
       neighbor = m_organism->GetNeighbor();
-      if (neighbor != NULL &&
-          genotype->GetPhyloDistance(neighbor->GetGenotype()) <= max_dist) {
-				
-				// Code to track the edit distance between kin donors and recipients
-				const int edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),neighbor->GetGenome());
-				
-				/*static ofstream kin_file("kin_dists.dat");*/
-				static int num_kin_donates = 0;
-				static int num_kin_donates_15_dist = 0;
-				static int tot_dist_kin_donate = 0;
-				
-				num_kin_donates++;
-				if (edit_dist > 15) num_kin_donates_15_dist++;
-				tot_dist_kin_donate += edit_dist;
-				
-				
-				if (num_kin_donates == 1000) {
-					/* 
-					 kin_file << num_kin_donates << " "
-					 << (double) num_kin_donates_15_dist / (double) num_kin_donates << " "
-					 << (double) tot_dist_kin_donate / (double) num_kin_donates << endl;
-					 */
-					num_kin_donates = 0;
-					num_kin_donates_15_dist = 0;
-					tot_dist_kin_donate = 0;
-				}
-				
-        found = true;
-        break;
+      if (neighbor != NULL) {
+        cBioGroup* nbg = neighbor->GetBioGroup("genotype");
+        assert(nbg);
+        if (sa->GetPhyloDistance(nbg) <= max_dist) {
+          found = true;
+          break;
+        }
       }
       m_organism->Rotate(1);
       neighbor_id++;

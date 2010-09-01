@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "tMatrix.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -139,66 +139,22 @@ public:
   }
 
   // Assingment Operator
-  tMatrix & operator= (const tMatrix<T> & rhs){
+  tMatrix& operator= (const tMatrix<T>& rhs) {
     if( GetNumRows() != rhs.GetNumRows() || GetNumCols() != rhs.GetNumCols()) {
       ResizeClear(rhs.GetNumRows(), rhs.GetNumCols());
     }
     for (int row = 0; row < GetNumRows(); row++) {
       for (int col = 0; col < GetNumCols(); col++) {
-	data[row][col] = rhs.data[row][col];
+        data[row][col] = rhs.data[row][col];
       }
     }
     return *this;
   }
 
-  // Copy constructor
-  //explicit tMatrix(const tMatrix & rhs) : data(NULL), num_rows(0) {
-  //  this->operator=(rhs);
-  //}
-
-  tMatrix(const tMatrix & rhs) : data(NULL), num_rows(0) {
-    this->operator=(rhs);
-  }
+  tMatrix(const tMatrix& rhs) : data(NULL), num_rows(0) { this->operator=(rhs); }
 
   // Destructor
-  virtual ~tMatrix(){ if(data!=NULL) delete [] data; }
-
-  // Save to archive
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    // Save number of elements.
-    unsigned int rows = GetNumRows();
-    unsigned int cols = GetNumCols();
-    a.ArkvObj("rows", rows);
-    a.ArkvObj("cols", cols);
-    // Save elements.
-    while(rows-- > 0){
-      a.ArkvObj("row", (*this)[rows]);
-    }
-  } 
-
-  
-  // Load from archive
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    // Retrieve number of elements.
-    unsigned int rows;
-    unsigned int cols;
-    a.ArkvObj("rows", rows);
-    a.ArkvObj("cols", cols);
-    ResizeClear(rows, cols);
-    // Retrieve elements.
-    while(rows-- > 0){
-      a.ArkvObj("row", (*this)[rows]);
-    }
-  }   
-      
-      
-  // Ask archive to handle loads and saves separately
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  } 
+  virtual ~tMatrix() { if (data != NULL) delete [] data; }
 };
 
 #endif

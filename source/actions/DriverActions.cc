@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David Bryson on 7/19/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -206,9 +206,4 @@ void RegisterDriverActions(cActionLibrary* action_lib)
   action_lib->Register<cActionExitElapsedTime>("ExitElapsedTime");
   action_lib->Register<cActionStopFastForward>("StopFastForward");
   action_lib->Register<cActionPause>("Pause");
-
-  // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
-  action_lib->Register<cActionExit>("exit");
-  action_lib->Register<cActionExitAveLineageLabelGreater>("exit_if_ave_lineage_label_larger");
-  action_lib->Register<cActionExitAveLineageLabelLess>("exit_if_ave_lineage_label_smaller");
 }

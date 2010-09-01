@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 10/18/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -91,7 +91,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
 {
   assert(org != NULL);
 	
-  int inst_set_id = (is == NULL) ? 1 : -1;
+  int inst_set_id = (is == NULL) ? mg.GetInstSetID() : -1;
   cInstSet* inst_set = (is == NULL) ? m_inst_set : is;
   
   cHardwareBase* hw = 0;

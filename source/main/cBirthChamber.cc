@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "birth_chamber.cc" prior to 12/2/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -26,6 +26,7 @@
 #include "cBirthChamber.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cBirthDemeHandler.h"
 #include "cBirthGenomeSizeHandler.h"
 #include "cBirthGlobalHandler.h"
@@ -34,7 +35,6 @@
 #include "cBirthNeighborhoodHandler.h"
 #include "cClassificationManager.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cTools.h"
 #include "cWorld.h"
@@ -98,8 +98,6 @@ bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
 
 void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring, cOrganism* parent, cBirthEntry& entry) const
 {
-  cGenotype* parent_genotype = parent->GetGenotype();
-  parent_genotype->IncDeferAdjust();
   entry.genome = offspring;
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     entry.energy4Offspring = parent->GetPhenotype().ExtractParentEnergy();
@@ -107,9 +105,24 @@ void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring, cOrganism* parent
   } else {
     entry.merit = parent->GetPhenotype().GetMerit();
   }
-  entry.parent_genotype = parent_genotype;
-  entry.timestamp = m_world->GetStats().GetUpdate();  
+  entry.timestamp = m_world->GetStats().GetUpdate();
+  entry.groups = parent->GetBioGroups();
+  
+  for (int i = 0; i < entry.groups.GetSize(); i++) {
+    entry.groups[i]->AddActiveReference();
+  }
 }
+
+
+void cBirthChamber::ClearEntry(cBirthEntry& entry)
+{
+  entry.timestamp = -1;
+
+  for (int i = 0; i < entry.groups.GetSize(); i++) {
+    entry.groups[i]->RemoveActiveReference();
+  }
+}
+
 
 bool cBirthChamber::RegionSwap(cGenome& genome0, cGenome& genome1, int start0, int end0, int start1, int end1)
 {
@@ -165,7 +178,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
   // This is asexual who doesn't need to wait in the birth chamber
   // just build the child and return.
   child_array.Resize(1);
-  child_array[0] = new cOrganism(m_world, ctx, offspring);
+  child_array[0] = new cOrganism(m_world, ctx, offspring, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_DIVIDE);
   merit_array.Resize(1);
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
@@ -182,21 +195,16 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
 			return false;
 		}
   } else {
-    merit_array[0] = parent.GetPhenotype().GetMerit();
-  }
+	if(m_world->GetConfig().INHERIT_MERIT.Get())
+		merit_array[0] = parent.GetPhenotype().GetMerit();
+	else
+		merit_array[0] = parent.GetPhenotype().CalcSizeMerit();
 
-  // Setup the genotype for the child
-  cGenotype* child_genotype = parent.GetGenotype();
+  }
   
-  if (parent.GetPhenotype().CopyTrue() == false) {
-    // Add this genotype with only one parent since its asexual.
-    child_genotype = m_world->GetClassificationManager().GetGenotype(offspring.GetGenome(), parent.GetGenotype(), NULL);
-  }
-
-  child_array[0]->SetGenotype(child_genotype);
-  parent.GetGenotype()->SetBreedStats(*child_genotype);
-    
-  child_genotype->IncDeferAdjust();
+  tArray<const tArray<cBioGroup*>*> pgrps(1);
+  pgrps[0] = &parent.GetBioGroups();
+  child_array[0]->SelfClassify(pgrps);
 
   return true;
 }
@@ -206,8 +214,8 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
 {
   // Build both child organisms...
   child_array.Resize(2);
-  child_array[0] = new cOrganism(m_world, ctx, old_entry.genome);
-  child_array[1] = new cOrganism(m_world, ctx, new_genome);
+  child_array[0] = new cOrganism(m_world, ctx, old_entry.genome, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_DIVIDE);
+  child_array[1] = new cOrganism(m_world, ctx, new_genome, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_DIVIDE);
 
   // Setup the merits for both children...
   merit_array.Resize(2);
@@ -215,14 +223,8 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
   merit_array[1] = parent.GetPhenotype().GetMerit();
 
   // Setup the genotypes for both children...
-  SetupGenotypeInfo(child_array[0], old_entry.parent_genotype, NULL);
-  SetupGenotypeInfo(child_array[1], parent.GetGenotype(), NULL);
-
-  // We are now also done with the parent genotype that we were saving in
-  // the birth chamber, so we can un-defer that one.
-
-  old_entry.parent_genotype->DecDeferAdjust();
-  m_world->GetClassificationManager().AdjustGenotype(*old_entry.parent_genotype);
+  SetupGenotypeInfo(child_array[0], &old_entry.groups);
+  SetupGenotypeInfo(child_array[1], &parent.GetBioGroups());
 
   return true;
 }
@@ -378,18 +380,12 @@ void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, cGenome& g
 }
 
 
-void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, cGenotype* parent0, cGenotype* parent1)
+void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGroup*>* p0grps, const tArray<cBioGroup*>* p1grps)
 {
-  // Setup the genotypes for both children...
-  cGenotype* child_genotype =
-    m_world->GetClassificationManager().GetGenotype(organism->GetGenome(), parent0, parent1);
-
-  organism->SetGenotype(child_genotype);
-  parent0->SetBreedStats(*child_genotype);
-  
-  // Defer the child genotype from being adjusted until after the child
-  // has been placed into the population.
-  child_genotype->IncDeferAdjust();
+  tArray<const tArray<cBioGroup*>*> pgrps;
+  if (p0grps) pgrps.Push(p0grps);
+  if (p1grps) pgrps.Push(p1grps);
+  organism->SelfClassify(pgrps);
 }
 
 bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent,
@@ -411,7 +407,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   if (old_entry == NULL) return false;
 
   // We have now found a waiting entry.  Mark it no longer waiting and use it.
-  old_entry->timestamp = -1;
+  // @TODO - should this really be cleared here? It removes references before we are actually done with the bio groups
+  ClearEntry(*old_entry);
 
   // If we are NOT recombining, handle that here.
   if (parent_phenotype.CrossNum() == 0 || 
@@ -465,16 +462,16 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 
   const int two_fold_cost = m_world->GetConfig().TWO_FOLD_COST_SEX.Get();
 
-  cGenotype* parent0_genotype = old_entry->parent_genotype;
-  cGenotype* parent1_genotype = parent->GetGenotype();
+  const tArray<cBioGroup*>* parent0_groups = &old_entry->groups;
+  const tArray<cBioGroup*>* parent1_groups = &parent->GetBioGroups();
   
   const int hw_type = offspring.GetHardwareType();
   const int inst_set_id = offspring.GetInstSetID();
 
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);
-    child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0);
-    child_array[1] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1);
+    child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+    child_array[1] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
     
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
@@ -488,8 +485,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     merit_array[1] = meritOrEnergy1;
     
     // Setup the genotypes for both children...
-    SetupGenotypeInfo(child_array[0], parent0_genotype, parent1_genotype);
-    SetupGenotypeInfo(child_array[1], parent1_genotype, parent0_genotype);
+    SetupGenotypeInfo(child_array[0], parent0_groups, parent1_groups);
+    SetupGenotypeInfo(child_array[1], parent1_groups, parent0_groups);
 
   }
   else { 			// Build only one organism	
@@ -497,7 +494,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     merit_array.Resize(1);
 
     if (ctx.GetRandom().GetDouble() < 0.5) {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0);
+      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
         meritOrEnergy0 = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
@@ -505,10 +502,10 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       merit_array[0] = meritOrEnergy0;
 
       // Setup the genotype for the child...
-      SetupGenotypeInfo(child_array[0], parent0_genotype, parent1_genotype);
+      SetupGenotypeInfo(child_array[0], parent0_groups, parent1_groups);
     } 
     else {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1);
+      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy1);
         meritOrEnergy1 = child_array[1]->GetPhenotype().ConvertEnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy());
@@ -516,14 +513,9 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       merit_array[0] = meritOrEnergy1;
 
       // Setup the genotype for the child...
-      SetupGenotypeInfo(child_array[0], parent1_genotype, parent0_genotype);
+      SetupGenotypeInfo(child_array[0], parent1_groups, parent0_groups);
     }
   } 
-
-  // We are now also done with the parent genotype that we were saving in
-  // the birth chamber, so we can un-defer that one.
-  parent0_genotype->DecDeferAdjust();
-  m_world->GetClassificationManager().AdjustGenotype(*parent0_genotype);
 
   return true;
 }

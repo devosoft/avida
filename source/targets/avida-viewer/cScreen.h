@@ -30,7 +30,6 @@ class cGenotype;
 class cPopulation;
 class cPopulationCell;
 class cOrganism;
-class cInjectGenotype;
 
 #define NUM_SYMBOLS 12
 #define SYMBOL_THRESHOLD 10
@@ -79,18 +78,6 @@ public:
   virtual void DoMouseClick(int x, int y) { (void) x; (void) y; }
   virtual void Exit() { ; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nScreen {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 
 inline void cScreen::SetSymbolColor(char color)

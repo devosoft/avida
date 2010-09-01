@@ -4,7 +4,7 @@
  *
  *  Created by David on 10/16/05.
  *  Designed by Charles.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -150,8 +150,7 @@ private:
     bool use_overide;
     
   public:
-    cBaseConfigEntry(const cString& _name, const cString& _type,
-		     const cString& _def, const cString& _desc);
+    cBaseConfigEntry(const cString& _name, const cString& _type, const cString& _def, const cString& _desc);
     virtual ~cBaseConfigEntry() { ; }
     
     virtual void LoadString(const cString& str_value) = 0;
@@ -175,7 +174,7 @@ private:
     tList<cBaseConfigEntry> entry_list;
   public:
     cBaseConfigGroup(const cString& _name, const cString& _desc)
-      : group_name(_name), description(_desc) { global_group_list.PushRear(this); }
+    : group_name(_name), description(_desc) { global_group_list.PushRear(this); }
     ~cBaseConfigGroup() { ; }
     
     const cString& GetName() const { return group_name; }
@@ -195,7 +194,7 @@ private:
     cString m_description;
     tList<cBaseConfigFormatEntry> m_entry_list;
     cStringList m_value;
-  
+    
   public:
     cBaseConfigCustomFormat(const cString& _name, const cString& _desc)
       : m_format_name(_name), m_description(_desc) { global_format_list.PushRear(this); }
@@ -207,11 +206,11 @@ private:
     const tList<cBaseConfigFormatEntry>& GetEntryList() const { return m_entry_list; }
     
     void AddEntry(cBaseConfigFormatEntry* _entry) { m_entry_list.PushRear(_entry); }
-  
+    
     const cStringList& Get() const { return m_value; }
     void Add(const cString& value) { m_value.PushRear(value); }
   };
-
+  
   // The cConfigFormatEntry class is a bass class for all configuration entries.
   // It is used to manage the various types of entries in a dynamic fashion.
   class cBaseConfigFormatEntry {
@@ -247,8 +246,8 @@ private:
   static tList<cBaseConfigCustomFormat> global_format_list;
   tList<cBaseConfigGroup> m_group_list;
   tList<cBaseConfigCustomFormat> m_format_list;
-
-
+  
+  
 public:
   cAvidaConfig()
   {
@@ -257,7 +256,7 @@ public:
     global_list_mutex.Unlock();
   }
   ~cAvidaConfig() { ; }
-
+  
 #ifdef OVERRIDE_CONFIG
 #include "config_overrides.h"
 #else
@@ -274,7 +273,6 @@ public:
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive");
   CONFIG_ADD_VAR(VIEW_MODE, int, 1, "Initial viewer screen");
-  CONFIG_ADD_VAR(CLONE_FILE, cString, "-", "Clone file to load");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
   
 
@@ -350,7 +348,7 @@ public:
   CONFIG_ADD_VAR(META_STD_DEV, double, 0.0, "Standard deviation of meta mutation size.");
   CONFIG_ADD_VAR(MUT_RATE_SOURCE, int, 1, "1 = Mutation rates determined by environment.\n2 = Mutation rates inherited from parent.");
   CONFIG_ADD_VAR(MIGRATION_RATE, double, 0.0, "Uniform probability of offspring migrating to a new deme.");
-
+  
   
 	// -------- Birth and Death config options --------
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death");
@@ -368,6 +366,14 @@ public:
   CONFIG_ADD_VAR(GENERATION_INC_METHOD, int, 1, "0 = Only the generation of the child is\n    increased on divide.\n1 = Both the generation of the mother and child are\n    increased on divide (good with DIVIDE_METHOD 1).");
   CONFIG_ADD_VAR(RESET_INPUTS_ON_DIVIDE, int, 0, "Reset environment inputs of parent upon successful divide.");
   CONFIG_ADD_VAR(REPRO_METHOD, int, 1, "Replace existing organism: 1=yes");
+  
+  
+  CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks");
+  CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
+  CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles");
+  CONFIG_ADD_VAR(INJECT_PROB_SIGMOID, int, 1, "Inject Probs follow a psuedo-sigmoid path - only works if task probs are turned on");
+  CONFIG_ADD_VAR(INHERIT_MERIT, int, 1, "Merit if inhereted from mother cell (only in asexual for now)");
+
   CONFIG_ADD_VAR(INHERIT_MULTI_THREAD_CLASSIFICATION, int, 0, "Inherit the parental classification of multithreaded");
   CONFIG_ADD_VAR(POPULATION_CAP, int, 0, "Carrying capacity in number of organisms");
 	
@@ -383,7 +389,7 @@ public:
   CONFIG_ADD_VAR(SAME_LENGTH_SEX, int, 0, "0 = recombine with any genome\n1 = only recombine w/ same length");
   CONFIG_ADD_VAR(ALLOW_MATE_SELECTION, bool, 0, "Allow organisms to select mates (requires instruction set support)");
   CONFIG_ADD_VAR(LEGACY_GRID_LOCAL_SELECTION, bool, 0, "Enable legacy grid local mate selection (ignores population structure)");
-
+  
 
 	
   // -------- Divide Restrictions config options --------
@@ -408,7 +414,7 @@ public:
   CONFIG_ADD_VAR(IMPLICIT_REPRO_END, int, 0, "Call Inst_Repro after executing the last instruction in the genome.");  
   CONFIG_ADD_VAR(IMPLICIT_REPRO_ENERGY, double, 0.0, "Call Inst_Repro if organism accumulates this amount of energy.");   
    
-
+  
 	// -------- Multi-process Avida config options --------
   CONFIG_ADD_GROUP(MP_GROUP, "Multi-process Avida Variables");
 	CONFIG_ADD_VAR(ENABLE_MP, int, 0, "Enable multi-process Avida; 0=disabled (default),\n1=enabled.");
@@ -505,7 +511,7 @@ public:
   CONFIG_ADD_VAR(FASTFORWARD_UPDATES, int, 0, "Fast-forward if the average generation has not changed in this many updates. (0 = off)");
   CONFIG_ADD_VAR(FASTFORWARD_NUM_ORGS, int, 0, "Fast-forward if population is equal to this");
   CONFIG_ADD_VAR(GENOTYPE_PHENPLAST_CALC, int, 100, "Number of times to test a genotype's\nplasticity during runtime.");
-
+  
   
 	// -------- Geneology config options --------
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
@@ -522,7 +528,6 @@ public:
 
 	// -------- Log File config options --------
   CONFIG_ADD_GROUP(LOG_GROUP, "Log Files");
-  CONFIG_ADD_VAR(LOG_CREATURES, bool, 0, "0/1 (off/on) toggle to print file.");
   CONFIG_ADD_VAR(LOG_GENOTYPES, int, 0, "0 = off, 1 = print ALL, 2 = print threshold ONLY.");
   CONFIG_ADD_VAR(LOG_THRESHOLD, bool, 0, "0/1 (off/on) toggle to print file.");
   CONFIG_ADD_VAR(LOG_SPECIES, bool, 0, "0/1 (off/on) toggle to print file.");
@@ -548,7 +553,7 @@ public:
   CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, int, 1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf, default=1.");
   CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_SIZE, int, 8, "Size of message receive buffer (stores messages that are received); -1=inf, default=8.");
 	CONFIG_ADD_VAR(MESSAGE_RECV_BUFFER_BEHAVIOR, bool, 0, "Behavior of message receive buffer; 0=drop oldest (default), 1=drop incoming");
-
+  
 
 	// -------- Active Messaging config options --------
   CONFIG_ADD_GROUP(ACTIVE_MESSAGING_GROUP, "Active Message Communication");
@@ -620,7 +625,7 @@ public:
   CONFIG_ADD_GROUP(SECOND_PASS_GROUP, "Tracking metrics known after the running experiment previously");
   CONFIG_ADD_VAR(TRACK_CCLADES, int, 0, "Enable tracking of coalescence clades");
   CONFIG_ADD_VAR(TRACK_CCLADES_IDS, cString, "coalescence.ids", "File storing coalescence IDs");
-
+  
 
 	// -------- Gene Expression CPU config options --------
   CONFIG_ADD_GROUP(GX_GROUP, "Gene Expression CPU Settings");
@@ -630,7 +635,7 @@ public:
   CONFIG_ADD_VAR(IMPLICIT_BG_PROMOTER_RATE, double, 0.0, "Relative rate of non-promoter sites creating programids.");
   CONFIG_ADD_VAR(IMPLICIT_TURNOVER_RATE, double, 0.0, "Number of programids recycled per CPU cycle. 0 = OFF");
   CONFIG_ADD_VAR(IMPLICIT_MAX_PROGRAMID_LENGTH, int, 0, "Creation of an executable programid terminates after this many instructions. 0 = disabled");
-
+  
 
 	// -------- Promoters config options --------
   CONFIG_ADD_GROUP(PROMOTER_GROUP, "Promoters");
@@ -647,7 +652,7 @@ public:
   CONFIG_ADD_VAR(INST_CODE_LENGTH, int, 3, "Instruction binary code length (number of bits)");
   CONFIG_ADD_VAR(INST_CODE_DEFAULT_TYPE, int, 0, "Default value of instruction binary code value.\n0 = All zeros\n1 = Based off the instruction number");
   CONFIG_ADD_VAR(CONSTITUTIVE_REGULATION, int, 0, "Sense a new regulation value before each CPU cycle?");
-
+  
 
 	// -------- Output Colors config options --------
   CONFIG_ADD_GROUP(COLORS_GROUP, "Output colors for when data files are printed in HTML mode.\nThere are two sets of these; the first are for lineages,\nand the second are for mutation tests.");
@@ -657,13 +662,13 @@ public:
   CONFIG_ADD_VAR(COLOR_NEG1, cString, "FFCCCC", "Color to flag stat that is minorly worse than parent.");
   CONFIG_ADD_VAR(COLOR_POS1, cString, "CCFFCC", "Color to flag stat that is minorly better than parent.");
   CONFIG_ADD_VAR(COLOR_POS2, cString, "00FF00", "Color to flag stat that is significantly better than parent.");
-
+  
   CONFIG_ADD_VAR(COLOR_MUT_POS,    cString, "00FF00", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_MUT_NEUT,   cString, "FFFFFF", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_MUT_NEG,    cString, "FFFF00", "Color to flag stat that has changed since parent.");
   CONFIG_ADD_VAR(COLOR_MUT_LETHAL, cString, "FF0000", "Color to flag stat that has changed since parent.");
-
-
+  
+  
 	// -------- Synchronization config options --------
   CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
   CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal?");
@@ -695,7 +700,7 @@ public:
 	// -------- Consensus config options --------
   CONFIG_ADD_GROUP(CONSENSUS_GROUP, "Consensus settings");	
 	CONFIG_ADD_VAR(CONSENSUS_HOLD_TIME, int, 1, "Number of updates that consensus must be held for.");
-		
+  
   CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
 	
@@ -743,7 +748,7 @@ public:
 	CONFIG_ADD_VAR(HGT_CONJUGATION_METHOD, int, 0, "Method used to select the receiver and/or donor of an HGT conjugation;\n0=random from neighborhood (default);\n1=faced.");
 	CONFIG_ADD_VAR(HGT_CONJUGATION_P, double, 0.0, "Probability that an HGT conjugation mutation will occur on divide (default=0.0).");
 	CONFIG_ADD_VAR(HGT_FRAGMENT_XFORM, int, 0, "Transformation to apply to each fragment prior to incorporation into offspring's genome; 0=none (default),\n1=random shuffle,\n2=replace with random instructions.");
-	
+
 
   // -------- Resource Dependent Instructions config options --------
   CONFIG_ADD_GROUP(INST_RES_GROUP, "Resource-Dependent Instructions Settings");
@@ -783,16 +788,6 @@ public:
 };
 
 
-#ifdef ENABLE_UNIT_TESTS
-namespace nAvidaConfig {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 // Concept:
 // Setup #define to build class that will manage the specific variable inside

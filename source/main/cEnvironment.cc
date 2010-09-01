@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "environment.cc" prior to 12/2/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -37,6 +37,7 @@
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "nMutation.h"
+#include "cPhenPlastUtil.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cRandom.h"
@@ -54,7 +55,6 @@
 #include "tAutoRelease.h"
 
 #include "cOrganism.h"
-#include "cGenotype.h"
 
 #include <iostream>
 #include <algorithm>
@@ -1231,7 +1231,7 @@ double cEnvironment::GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskct
   }
   if (test_plasticity){  //We have to test for plasticity, so try to get it
     int task_id = taskctx.GetTaskEntry()->GetID();
-    task_prob = taskctx.GetOrganism()->GetGenotype()->GetTaskProbability(ctx,task_id);
+    task_prob = cPhenPlastUtil::GetTaskProbability(ctx, m_world, taskctx.GetOrganism()->GetBioGroup("genotype"), task_id);
   }
   force_mark_task = force_mark_task && (task_prob > 0.0);  //If the task isn't demonstrated, we don't need to worry about marking it.
   return task_prob;

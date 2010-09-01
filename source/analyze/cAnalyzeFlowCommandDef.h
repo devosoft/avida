@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "analyze_flow_command_def.hh" prior to 12/2/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -57,17 +57,5 @@ public:
 
   virtual bool IsFlowCommand() { return true; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nAnalyzeFlowCommandDef {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

@@ -2,7 +2,7 @@
  *  cHardwareGX.h
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -63,7 +63,6 @@
 #include "nHardware.h"
 #include "tBuffer.h"
 
-class cInjectGenotype;
 class cInstLib;
 class cInstSet;
 class cMutation;
@@ -301,7 +300,6 @@ protected:
   int calcExecutedSize(const int parent_size);
   int calcCopiedSize(const int parent_size, const int child_size);
   bool Divide_Main(cAvidaContext& ctx);
-  void InjectCode(const cGenome& injection, const int line_num);
   bool HeadCopy_ErrorCorrect(cAvidaContext& ctx, double reduction);
   void ReadInst(const int in_inst);
 
@@ -362,12 +360,11 @@ public:
   /* cHardwareGX does not support threads (at least, not as in other CPUs). */
   virtual bool ThreadSelect(const int thread_id) { return false; }
   virtual bool ThreadSelect(const cCodeLabel& in_label) { return false; }
-  virtual void ThreadPrev() { }
-  virtual void ThreadNext() { }
-  virtual cInjectGenotype* ThreadGetOwner() { return 0; }
-  virtual void ThreadSetOwner(cInjectGenotype* in_genotype) { }
+  virtual void ThreadPrev() { ; }
+  virtual void ThreadNext() { ; }
+  virtual cBioUnit* ThreadGetOwner() { return m_organism; }
   
-  virtual int GetNumThreads() const { return -1; }
+  virtual int GetNumThreads() const { return 1; }
   virtual int GetCurThread() const { return -1; }
   virtual int GetCurThreadID() const { return -1; }
  
@@ -376,7 +373,7 @@ public:
   int GetThreadMessageTriggerType(int _index) { return -1; }
 
    // --------  Parasite Stuff  --------
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& injection);
+  bool ParasiteInfectHost(cBioUnit* bu) { return false; }
 
 
   // --------  Input/Output Buffers  --------
@@ -494,8 +491,6 @@ private:
   bool Inst_Allocate(cAvidaContext& ctx);
   bool Inst_CAlloc(cAvidaContext& ctx);
   bool Inst_MaxAlloc(cAvidaContext& ctx);
-  bool Inst_Inject(cAvidaContext& ctx);
-  bool Inst_InjectRand(cAvidaContext& ctx);
   
   bool Inst_Repro(cAvidaContext& ctx);
 
@@ -526,7 +521,6 @@ private:
 
   void DoDonate(cOrganism * to_org);
   bool Inst_DonateRandom(cAvidaContext& ctx);
-  bool Inst_DonateKin(cAvidaContext& ctx);
   bool Inst_DonateEditDist(cAvidaContext& ctx);
   bool Inst_DonateGreenBeardGene(cAvidaContext& ctx);
   bool Inst_DonateTrueGreenBeard(cAvidaContext& ctx);
@@ -605,17 +599,5 @@ private:
   void AdjustPromoterRates(); //Call after a change to occupied array to correctly update rates.
   int FindRegulatoryMatch(const cCodeLabel& label);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareGX {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
 
 #endif

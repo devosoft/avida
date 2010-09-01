@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "tArray.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -26,23 +26,15 @@
 #ifndef tArray_h
 #define tArray_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 #include <cassert>
 
 #ifndef NULL
 #define NULL 0
 #endif
 
+
 template <class T> class tArray
 {
-#if USE_tMemTrack
-  tMemTrack<tArray<T> > mt;
-#endif
 private:
   T* m_data;  // Data Elements
   int m_size; // Number of Elements
@@ -95,7 +87,6 @@ public:
     return tmp;
   }
   
-  bool Good() const { return (m_data != NULL); }
   int GetSize() const { return m_size; }
 
   void ResizeClear(const int in_size)
@@ -185,37 +176,6 @@ public:
     for (int i = 0; i < m_size; i++) m_data[i] = value;
   }
 
-  // Save to archive
-  template<class Archive>
-  void save(Archive & a, const unsigned int version) const {
-    // Save number of elements.
-    unsigned int count = GetSize();
-    a.ArkvObj("count", count);
-    // Save elements.
-    while(count-- > 0){ 
-      a.ArkvObj("item", (*this)[count]);
-    } 
-  }   
-    
-    
-  // Load from archive
-  template<class Archive>
-  void load(Archive & a, const unsigned int version){
-    // Retrieve number of elements.
-    unsigned int count; 
-    a.ArkvObj("count", count);
-    ResizeClear(count);
-    // Retrieve elements.
-    while(count-- > 0){
-      a.ArkvObj("item", (*this)[count]);
-    }
-  } 
-  
-  // Ask archive to handle loads and saves separately
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.SplitLoadSave(*this, version);
-  } 
 
   // wrapper for the c++ qsort routine
   

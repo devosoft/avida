@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 2/18/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -41,17 +41,5 @@ public:
   
   virtual void Run(cAvidaContext& ctx) = 0;
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nAnalyzeJob {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

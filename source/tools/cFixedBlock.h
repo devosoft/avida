@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "fixed_block.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -39,14 +39,6 @@ public:
 
   inline int GetStart() { return start_point; }
   inline void SetStart(int in_sp) { start_point = in_sp; }
-
-  /**   
-   * Serialize to and from archive.
-   **/  
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.ArkvObj("start_point", start_point);
-  }   
 };
 
 #endif

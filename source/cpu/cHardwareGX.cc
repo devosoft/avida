@@ -2,7 +2,7 @@
  *  cHardwareGX.cc
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -29,7 +29,6 @@
 #include "cEnvironment.h"
 #include "functions.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
@@ -173,8 +172,6 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("if-n-cpy", &cHardwareGX::Inst_IfNCpy),
     tInstLibEntry<tMethod>("allocate", &cHardwareGX::Inst_Allocate),
     tInstLibEntry<tMethod>("c-alloc", &cHardwareGX::Inst_CAlloc),
-    tInstLibEntry<tMethod>("inject", &cHardwareGX::Inst_Inject),
-    tInstLibEntry<tMethod>("inject-r", &cHardwareGX::Inst_InjectRand),
     tInstLibEntry<tMethod>("search-f", &cHardwareGX::Inst_SearchF),
     tInstLibEntry<tMethod>("search-b", &cHardwareGX::Inst_SearchB),
     tInstLibEntry<tMethod>("mem-size", &cHardwareGX::Inst_MemSize),
@@ -198,7 +195,6 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
     tInstLibEntry<tMethod>("sense-m100", &cHardwareGX::Inst_SenseMult100),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareGX::Inst_DonateRandom),
-    tInstLibEntry<tMethod>("donate-kin", &cHardwareGX::Inst_DonateKin),
     tInstLibEntry<tMethod>("donate-edt", &cHardwareGX::Inst_DonateEditDist),
     tInstLibEntry<tMethod>("donate-gbg",  &cHardwareGX::Inst_DonateGreenBeardGene),
     tInstLibEntry<tMethod>("donate-tgb",  &cHardwareGX::Inst_DonateTrueGreenBeard),
@@ -933,33 +929,7 @@ cHeadCPU cHardwareGX::FindLabel(const cCodeLabel & in_label, int direction)
 }
 
 
-/*! Inject a genome fragment into this CPU.  This works a little differently in
-cHardwareGX, in that we don't insert a genome fragment into a preexisting genome,
-but instead ust create a new cProgramid with the genome-to-be-injected.
-*/
-bool cHardwareGX::InjectHost(const cCodeLabel & in_label, const cGenome & injection)
-{
-  InjectCode(injection, -1);
-  return true;
-}
 
-
-/*! Inject a genome fragment into this CPU.  This works differently in 
-cHardwareGX -- We just insert a new cProgramid.
-*/
-void cHardwareGX::InjectCode(const cGenome & inject_code, const int line_num)
-{
-  programid_ptr injected = new cProgramid(inject_code, this);
-
-  // Set instruction flags on the injected code
-  for(int i=0; i<injected->m_memory.GetSize(); ++i) {
-    injected->m_memory.SetFlagInjected(i);
-  }
-
-  AddProgramid(injected);
-  
-  m_organism->GetPhenotype().IsModified() = true;
-}
 
 
 void cHardwareGX::ReadInst(const int in_inst)
@@ -2147,73 +2117,6 @@ bool cHardwareGX::Inst_Die(cAvidaContext& ctx)
   return true; 
 }
 
-// The inject instruction can be used instead of a divide command, paired
-// with an allocate.  Note that for an inject to work, one needs to have a
-// broad range for sizes allowed to be allocated.
-//
-// This command will cut out from read-head to write-head.
-// It will then look at the template that follows the command and inject it
-// into the complement template found in a neighboring organism.
-
-bool cHardwareGX::Inst_Inject(cAvidaContext& ctx)
-{
-  AdjustHeads();
-  const int start_pos = GetHead(nHardware::HEAD_READ).GetPosition();
-  const int end_pos = GetHead(nHardware::HEAD_WRITE).GetPosition();
-  const int inject_size = end_pos - start_pos;
-  
-  // Make sure the creature will still be above the minimum size,
-  if (inject_size <= 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: no code to inject");
-    return false; // (inject fails)
-  }
-  if (start_pos < MIN_CREATURE_SIZE) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
-    return false; // (inject fails)
-  }
-  
-  // Since its legal to cut out the injected piece, do so.
-  cGenome inject_code( cGenomeUtil::Crop(GetMemory(), start_pos, end_pos) );
-  GetMemory().Remove(start_pos, inject_size);
-  
-  // If we don't have a host, stop here.
-  cOrganism * host_organism = m_organism->GetNeighbor();
-  if (host_organism == NULL) return false;
-  
-  // Scan for the label to match...
-  ReadLabel();
-  
-  // If there is no label, abort.
-  if (GetLabel().GetSize() == 0) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: label required");
-    return false; // (inject fails)
-  }
-  
-  // Search for the label in the host...
-  GetLabel().Rotate(1, NUM_NOPS);
-  
-  const bool inject_signal = host_organism->GetHardware().InjectHost(GetLabel(), inject_code);
-  if (inject_signal) {
-    m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_WARNING, "inject: host too large.");
-    return false; // Inject failed.
-  }
-  
-  // Set the relevent flags.
-  m_organism->GetPhenotype().IsModifier() = true;
-  
-  return inject_signal;
-}
-
-
-bool cHardwareGX::Inst_InjectRand(cAvidaContext& ctx)
-{
-  // Rotate to a random facing and then run the normal inject instruction
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  m_organism->Rotate(ctx.GetRandom().GetUInt(num_neighbors));
-  Inst_Inject(ctx);
-  return true;
-}
-
 
 
 bool cHardwareGX::Inst_TaskGet(cAvidaContext& ctx)
@@ -2541,16 +2444,6 @@ bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
   // Donate only if we have found a neighbor.
   if (neighbor != NULL) {
     DoDonate(neighbor);
-    
-    //print out how often random donations go to kin
-    /*
-    static ofstream kinDistanceFile("kinDistance.dat");
-    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=1) << " ";
-    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=2) << " ";
-    kinDistanceFile << (genotype->GetPhyloDistance(neighbor->GetGenotype())<=3) << " ";
-    kinDistanceFile << genotype->GetPhyloDistance(neighbor->GetGenotype());
-    kinDistanceFile << endl; 
-    */
     neighbor->GetPhenotype().SetIsReceiverRand();
   }
 
@@ -2558,53 +2451,6 @@ bool cHardwareGX::Inst_DonateRandom(cAvidaContext& ctx)
 }
 
 
-bool cHardwareGX::Inst_DonateKin(cAvidaContext& ctx)
-{
-  if (m_organism->GetPhenotype().GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
-    return false;
-  }
-  
-  m_organism->GetPhenotype().IncDonates();
-  m_organism->GetPhenotype().SetIsDonorKin();
-
-
-  // Find the target as the first Kin found in the neighborhood.
-  const int num_neighbors = m_organism->GetNeighborhoodSize();
-  
-  // Turn to face a random neighbor
-  int neighbor_id = ctx.GetRandom().GetInt(num_neighbors);
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(1);
-  cOrganism * neighbor = m_organism->GetNeighbor();
-  
-  // If there is no max distance, just take the random neighbor we're facing.
-  const int max_dist = m_world->GetConfig().MAX_DONATE_KIN_DIST.Get();
-  if (max_dist != -1) {
-    int max_id = neighbor_id + num_neighbors;
-    bool found = false;
-    cGenotype* genotype = m_organism->GetGenotype();
-    while (neighbor_id < max_id) {
-      neighbor = m_organism->GetNeighbor();
-      if (neighbor != NULL &&
-          genotype->GetPhyloDistance(neighbor->GetGenotype()) <= max_dist) {
-        found = true;
-        break;
-      }
-      m_organism->Rotate(1);
-      neighbor_id++;
-    }
-    if (found == false) neighbor = NULL;
-  }
-  
-  // Put the facing back where it was.
-  for (int i = 0; i < neighbor_id; i++) m_organism->Rotate(-1);
-  
-  // Donate only if we have found a close enough relative...
-  if (neighbor != NULL){
-    DoDonate(neighbor);
-    neighbor->GetPhenotype().SetIsReceiverKin();
-  }
-  return true;
-}
 
 bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
 {

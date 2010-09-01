@@ -4,7 +4,7 @@
  *
  *  Created by David on 10/16/05.
  *  Designed by Charles.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -116,7 +116,7 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
   while ((cur_format = format_it.Next())) {
     tListIterator<cBaseConfigFormatEntry> entry_it(cur_format->GetEntryList());
     cBaseConfigFormatEntry* cur_entry;
-    while ((cur_entry = entry_it.Next())) entry_dict.Add(cur_entry->GetName(), cur_entry);
+    while ((cur_entry = entry_it.Next())) entry_dict.Set(cur_entry->GetName(), cur_entry);
   }
   
   

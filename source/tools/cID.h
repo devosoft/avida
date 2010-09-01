@@ -2,7 +2,7 @@
  *  cID.h
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2004 California Institute of Technology
  *
  */
@@ -41,17 +41,5 @@ public:
   bool operator==(const cID &rhs) const { return this == &rhs; }
   bool operator!=(const cID &rhs) const { return this != &rhs; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nID {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

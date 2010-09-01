@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 3/4/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -76,7 +76,6 @@ public:
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
-  int Debug();
   const tArray<double>& GetResources();
   const tArray<double>& GetDemeResources(int deme_id);
   const tArray< tArray<int> >& GetCellIdLists();  
@@ -90,7 +89,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
@@ -126,17 +125,5 @@ public:
   
   void Move(cAvidaContext& ctx, int src_id, int dest_id) { ; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTestCPUInterface {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

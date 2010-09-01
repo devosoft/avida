@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "landscape.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -183,17 +183,5 @@ public:
   inline double GetTotalEntropy() const { return total_entropy; }
   inline double GetComplexity() const { return complexity; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nLandscape {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

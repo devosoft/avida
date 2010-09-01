@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "resource.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -142,17 +142,5 @@ public:
   void SetCellIdList(tArray<int>& id_list); //SLG partial resources
 	void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nResource {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

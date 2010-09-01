@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "organism.cc" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -26,16 +26,14 @@
 #include "cOrganism.h"
 
 #include "cAvidaContext.h"
-#include "cHeadCPU.h"
+#include "cBioGroup.h"
 #include "nHardware.h"
 #include "cEnvironment.h"
 #include "functions.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
-#include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrgSinkMessage.h"
 #include "cPopulationCell.h"
@@ -54,10 +52,12 @@
 using namespace std;
 
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation, eBioUnitSource src,
+                     const cString& src_args)
   : m_world(world)
-  , m_genotype(NULL)
-  , m_phenotype(world)
+  , m_phenotype(world, parent_generation)
+  , m_src(src)
+  , m_src_args(src_args)
   , m_initial_genome(genome)
   , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
   , m_interface(NULL)
@@ -96,10 +96,12 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   
   initialize(ctx);
 }
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
+                     int parent_generation, eBioUnitSource src, const cString& src_args)
   : m_world(world)
-  , m_genotype(NULL)
-  , m_phenotype(world)
+  , m_phenotype(world, parent_generation)
+  , m_src(src)
+  , m_src_args(src_args)
   , m_initial_genome(hw_type, inst_set_id, genome)
   , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
   , m_interface(NULL)
@@ -138,10 +140,12 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_se
   initialize(ctx);
 }
 
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set)
+cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set, int parent_generation,
+                     eBioUnitSource src, const cString& src_args)
   : m_world(world)
-  , m_genotype(NULL)
-  , m_phenotype(world)
+  , m_phenotype(world, parent_generation)
+  , m_src(src)
+  , m_src_args(src_args)
   , m_initial_genome(genome)
   , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
   , m_interface(NULL)
@@ -210,7 +214,8 @@ cOrganism::~cOrganism()
   delete m_interface;
   if(m_net) delete m_net;
   if(m_msg) delete m_msg;
-  if(m_opinion) delete m_opinion;
+  if(m_opinion) delete m_opinion;  
+  for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
   if(m_neighborhood) delete m_neighborhood;
 }
 
@@ -263,12 +268,8 @@ void cOrganism::IncCollectSpecCount(const int spec_id)
   m_phenotype.SetCurCollectSpecCount(spec_id, current_count + 1);
 }
 
-double cOrganism::GetTestFitness(cAvidaContext& ctx)
-{
-  assert(m_interface);
-  return m_genotype->GetTestFitness(ctx);
-}
-  
+
+
 int cOrganism::ReceiveValue()
 {
   assert(m_interface);
@@ -379,6 +380,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   
   // Do the testing of tasks performed...
   
+  
   tArray<double> global_res_change(global_resource_count.GetSize());
   global_res_change.SetAll(0.0);
   tArray<double> deme_res_change(deme_resource_count.GetSize());
@@ -418,7 +420,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
                                                insts_triggered);
-  
+											   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double cur_merit = m_phenotype.CalcCurrentMerit();
@@ -643,20 +645,23 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
 }
 
 
-bool cOrganism::InjectParasite(const cCodeLabel& label, const cGenome& injected_code)
+bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const cGenome& injected_code)
 {
   assert(m_interface);
-  return m_interface->InjectParasite(this, label, injected_code);
+  return m_interface->InjectParasite(this, parent, label, injected_code);
 }
 
-bool cOrganism::InjectHost(const cCodeLabel& label, const cGenome& injected_code)
+bool cOrganism::ParasiteInfectHost(cBioUnit* parasite)
 {
-  return m_hardware->InjectHost(label, injected_code);
+  if (!m_hardware->ParasiteInfectHost(parasite)) return false;
+  
+  m_parasites.Push(parasite);
+  return true;
 }
 
 void cOrganism::ClearParasites()
 {
-  for (int i = 0; i < m_parasites.GetSize(); i++) m_parasites[i]->RemoveParasite();
+  for (int i = 0; i < m_parasites.GetSize(); i++) delete m_parasites[i];
   m_parasites.Resize(0);
 }
 
@@ -743,7 +748,7 @@ bool cOrganism::Divide_CheckViable()
   const int immunity_task = m_world->GetConfig().IMMUNITY_TASK.Get();
 
   if (required_task != -1 && m_phenotype.GetCurTaskCount()[required_task] == 0) { 
-    if (immunity_task==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
+    if (immunity_task ==-1 || m_phenotype.GetCurTaskCount()[immunity_task] == 0) {
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
             cStringUtil::Stringf("Lacks required task (%d)", required_task));
       return false; //  (divide fails)

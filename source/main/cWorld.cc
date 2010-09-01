@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 10/18/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include "avida.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
+#include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
@@ -96,14 +97,15 @@ void cWorld::Setup()
   
   // Setup Stats Object
   m_stats = new cStats(this);
+  m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
     
   const cInstSet& inst_set = m_hw_mgr->GetInstSet();
   for (int i = 0; i < inst_set.GetSize(); i++)
     m_stats->SetInstName(i, inst_set.GetName(i));
   
   // @MRR CClade Tracking
-	if (m_conf->TRACK_CCLADES.Get() > 0)
-		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
+//	if (m_conf->TRACK_CCLADES.Get() > 0)
+//		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
   
 	m_pop = new cPopulation(this);
   m_pop->InitiatePop();

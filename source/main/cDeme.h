@@ -2,7 +2,7 @@
  *  cDeme.h
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -38,10 +38,10 @@
 #include "cStringList.h"
 #include "cDoubleSum.h"
 
+class cBioGroup;
 class cResource;
 class cWorld;
 class cPopulationCell;
-class cGenotype;
 class cOrganism;
 class cOrgMovementPredicate;
 class cOrgMessagePredicate;
@@ -162,6 +162,8 @@ public:
   cPopulationCell& GetCell(int pos) const;
 	cPopulationCell& GetCell(int x, int y) const;
   cOrganism* GetOrganism(int pos) const;
+  
+  std::vector<int> GetGenotypeIDs();
 
   int GetWidth() const { return width; }
   int GetHeight() const { return cell_ids.GetSize() / width; }
@@ -306,7 +308,7 @@ public:
 
   // --- Founder list management --- //
   void ClearFounders();
-  void AddFounder(cGenotype& _in_genotype, cPhenotype * _in_phenotype = NULL);
+  void AddFounder(cBioGroup* bg, cPhenotype * _in_phenotype = NULL);
   tArray<int>& GetFounderGenotypeIDs() { return m_founder_genotype_ids; }
   tArray<cPhenotype>& GetFounderPhenotypes() { return m_founder_phenotypes; }
   double GetAvgFounderGeneration() { return avg_founder_generation; }        
@@ -314,7 +316,7 @@ public:
   double GetGenerationsPerLifetime() { return generations_per_lifetime; }  
 
   // --- Germline management --- //
-  void ReplaceGermline(cGenotype& _in_genotype);
+  void ReplaceGermline(cBioGroup* bg);
   int GetGermlineGenotypeID() { return m_germline_genotype_id; }
 
   // --- Deme/Message/Movement predicates --- //

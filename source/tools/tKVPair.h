@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 1/11/09.
- *  Copyright 2009 Michigan State University. All rights reserved.
+ *  Copyright 2009-2010 Michigan State University. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@ private:
   
 public:
   inline tKVPair() { ; }
+  inline tKVPair(const K& key) : m_key(key) { ; }
   inline tKVPair(const K& key, const V& value) : m_key(key), m_value(value) { ; }
   inline tKVPair(const tKVPair& p) : m_key(p.m_key), m_value(p.m_value) { ; }
   

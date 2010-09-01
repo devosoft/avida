@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 1/11/09.
- *  Copyright 2009 Michigan State University. All rights reserved.
+ *  Copyright 2009-2010 Michigan State University. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -71,6 +71,38 @@ public:
     m_map.Push(tKVPair<KeyType, ValueType>(key, default_value));
     return m_map[m_map.GetSize() - 1].Value();
   }
+  
+  ValueType& ValueFor(const KeyType& key)
+  {
+    for (int i = 0; i < m_map.GetSize(); i++) {
+      if (m_map[i].Key() == key) {
+        return m_map[i].Value();
+      }
+    }
+    m_map.Push(tKVPair<KeyType, ValueType>(key));
+    return m_map[m_map.GetSize() - 1].Value();
+  }
+
+  const ValueType& ValueFor(const KeyType& key) const
+  {
+    for (int i = 0; i < m_map.GetSize(); i++) {
+      if (m_map[i].Key() == key) {
+        return m_map[i].Value();
+      }
+    }
+    m_map.Push(tKVPair<KeyType, ValueType>(key));
+    return m_map[m_map.GetSize() - 1].Value();
+  }
+  
+  ValueType& operator[](const KeyType& key) { return ValueFor(key); }
+  const ValueType& operator[](const KeyType& key) const { return ValueFor(key); }
+  
+  tArray<KeyType> GetKeys() const
+  {
+    tArray<KeyType> keys(m_map.GetSize());
+    for (int i = 0; i < m_map.GetSize(); i++) keys[i] = m_map[i].Key();
+    return keys;
+  }  
   
   void Remove(const KeyType& key)
   {

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 3/26/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -46,17 +46,5 @@ public:
   int GetCorrupted() { return m_corrupt; }
   void SetCorrupted() { m_corrupt++; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nOrgSourceMessage {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

@@ -4,7 +4,7 @@
  *  Avida
  *
  *  Called "task_lib.cc" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -36,7 +36,7 @@
 #include "cOrgMovementPredicate.h"
 #include "cStateGrid.h"
 #include "tArrayUtils.h"
-#include "tHashTable.h"
+#include "tHashMap.h"
 #include "cEnvironment.h"
 
 #include "platform.h"
@@ -2281,12 +2281,12 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   // if less than half, can't possibly reach threshold
   if (stored <= (size / 2)) return 0.0;
   
-  tHashTable<int, int> valmap;
+  tHashMap<int, int> valmap;
   int score = 0;
   int maxscore = 0;
   
   // add all valid inputs into the value map
-  for (int i = 0; i < size; i++) valmap.Add(ctx.GetOrganism()->GetInputAt(i), -1);
+  for (int i = 0; i < size; i++) valmap.Set(ctx.GetOrganism()->GetInputAt(i), -1);
   
   int span_start = -1;
   int span_end = stored;
@@ -2327,7 +2327,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
   int count = 1;
   
   // store first value
-  valmap.SetValue(output[span_start], span_start);
+  valmap.Set(output[span_start], span_start);
   sorted[0] = output[span_start];
   
   // iterate over the remaining span (discovered for contiguous, full output for scattered)
@@ -2340,7 +2340,7 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
     
     maxscore += count; // count the maximum moves possible
     count++; // iterate the observed count
-    valmap.SetValue(value,i); // save position, so that missing values can be determined later
+    valmap.Set(value,i); // save position, so that missing values can be determined later
     
     // sort value based on ascending for descending, counting moves
     int j = count - 2;

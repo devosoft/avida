@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "tDataManager.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -62,7 +62,7 @@ public:
   {
     tDataEntry<TargetType>* new_entry =
       new tDataEntryOfType<TargetType, EntryType ()>(name, desc, funR, funS, compare, null, html_cell);
-    m_entry_dict.Add(name, new_entry);
+    m_entry_dict.Set(name, new_entry);
     return true;
   }
 

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David Bryson on 9/14/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -57,7 +57,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, tType in_type)
       return false;
   }
   
-  m_entries.Add(in_name, entry);
+  m_entries.Set(in_name, entry);
   
   return true;
 }
@@ -68,7 +68,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, int def)
   if (m_entries.HasEntry(in_name)) return false;
   
   sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, def); 
-  m_entries.Add(in_name, entry);
+  m_entries.Set(in_name, entry);
 
   if (m_ints.GetSize() <= in_idx) m_ints.Resize(in_idx + 1, NULL);
   m_ints[in_idx] = entry;
@@ -106,7 +106,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, double def)
   if (m_entries.HasEntry(in_name)) return false;
   
   sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, def); 
-  m_entries.Add(in_name, entry);
+  m_entries.Set(in_name, entry);
   
   if (m_doubles.GetSize() <= in_idx) m_doubles.Resize(in_idx + 1, NULL);
   m_doubles[in_idx] = entry;
@@ -145,7 +145,7 @@ bool cArgSchema::AddEntry(cString in_name, int in_idx, const cString& def)
   
   cString* str = new cString(def);
   sArgSchemaEntry* entry = new sArgSchemaEntry(in_name, in_idx, str); 
-  m_entries.Add(in_name, entry);
+  m_entries.Set(in_name, entry);
   
   if (m_strings.GetSize() <= in_idx) m_strings.Resize(in_idx + 1, NULL);
   m_strings[in_idx] = entry;

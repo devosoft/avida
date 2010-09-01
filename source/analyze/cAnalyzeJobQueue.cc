@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 2/18/06.
- *  Copyright 2006-2009 Michigan State University. All rights reserved.
+ *  Copyright 2006-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -130,7 +130,7 @@ void cAnalyzeJobQueue::Execute()
 
 void cAnalyzeJobQueue::singleThreadedJobExecution(cAnalyzeJob* job)
 {
-  cAvidaContext ctx(NULL);
+  cAvidaContext ctx(m_world, NULL);
   ctx.SetRandom(GetRandom(job->GetID()));
   job->Run(ctx);
   delete job;

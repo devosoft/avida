@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "init_file.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -109,6 +109,8 @@ public:
    * (starting from 0).
    **/
   cString GetLine(int line_num = 0);
+  
+  tDictionary<cString>* GetLineAsDict(int line_num = 0);
   
 
   /**

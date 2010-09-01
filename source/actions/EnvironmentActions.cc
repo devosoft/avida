@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David Bryson on 8/9/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -1125,15 +1125,4 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
   
   action_lib->Register<cActionSetConfig>("SetConfig");
-
-  // @DMB - The following actions are DEPRECATED aliases - These will be removed in 2.7.
-  action_lib->Register<cActionInjectResource>("inject_resource");
-  action_lib->Register<cActionInjectScaledResource>("inject_scaled_resource");
-  action_lib->Register<cActionOutflowScaledResource>("outflow_scaled_resource");
-  action_lib->Register<cActionSetResource>("set_resource");
-
-  action_lib->Register<cActionSetReactionValue>("set_reaction_value");
-  action_lib->Register<cActionSetReactionValueMult>("set_reaction_value_mult");
-  action_lib->Register<cActionSetReactionInst>("set_reaction_inst");
-  
 }

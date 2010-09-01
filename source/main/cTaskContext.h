@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 3/29/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -34,8 +34,8 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
-#ifndef tHashTable_h
-#include "tHashTable.h"
+#ifndef tHashMap_h
+#include "tHashMap.h"
 #endif
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
@@ -63,7 +63,7 @@ private:
   double m_task_value;	
 
   cTaskEntry* m_task_entry;
-  tHashTable<void*, cTaskState*>* m_task_states;
+  tHashMap<void*, cTaskState*>* m_task_states;
   
   
 public:
@@ -102,7 +102,7 @@ public:
   inline void SetTaskEntry(cTaskEntry* in_entry) { m_task_entry = in_entry; }
   inline cTaskEntry* GetTaskEntry() { return m_task_entry; }
     
-  inline void SetTaskStates(tHashTable<void*, cTaskState*>* states) { m_task_states = states; }
+  inline void SetTaskStates(tHashMap<void*, cTaskState*>* states) { m_task_states = states; }
   
   inline cTaskState* GetTaskState()
   {
@@ -110,19 +110,7 @@ public:
     m_task_states->Find(m_task_entry, ret);
     return ret;
   }
-  inline void AddTaskState(cTaskState* value) { m_task_states->Add(m_task_entry, value); }
+  inline void AddTaskState(cTaskState* value) { m_task_states->Set(m_task_entry, value); }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTaskContext {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

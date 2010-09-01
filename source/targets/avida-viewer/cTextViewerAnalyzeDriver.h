@@ -59,16 +59,4 @@ public:
   void NotifyWarning(const cString& in_string);
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTextViewerAnalyzeDriver {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
-
 #endif

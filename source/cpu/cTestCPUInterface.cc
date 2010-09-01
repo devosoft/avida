@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 3/4/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@
 
 #include "cTestCPUInterface.h"
 
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cTestCPU.h"
 
@@ -72,11 +71,6 @@ void cTestCPUInterface::ResetInputs(cAvidaContext& ctx)
 const tArray<int>& cTestCPUInterface::GetInputs() const
 {
   return m_testcpu->GetInputs();
-}
-
-int cTestCPUInterface::Debug()
-{
-  return -1;
 }
 
 const tArray<double>& cTestCPUInterface::GetResources()
@@ -128,7 +122,7 @@ int cTestCPUInterface::BuyValue(const int label, const int buy_price)
 	return m_testcpu->GetReceiveValue();
 }
 
-bool cTestCPUInterface::InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code)
+bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code)
 {
   return false;
 }

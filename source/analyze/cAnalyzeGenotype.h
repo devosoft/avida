@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "analyze_genotype.hh" prior to 12/2/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -323,6 +323,7 @@ public:
   bool GetViable() const { return viable; }
 
   int GetID() const { return id_num; }
+  cString GetParents() const { return cStringUtil::Stringf("%d,%d", parent_id, parent2_id); }
   int GetParentID() const { return parent_id; }
   int GetParent2ID() const { return parent2_id; }
   int GetParentDist() const { return parent_dist; }

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David Bryson on 3/29/09.
- *  Copyright 2009 Michigan State University. All rights reserved.
+ *  Copyright 2009-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -27,6 +27,9 @@
 
 #include "cGenome.h"
 
+class cDataFile;
+class cString;
+template <typename T> class tDictionary;
 
 class cMetaGenome
 {
@@ -39,6 +42,7 @@ private:
 public:
   cMetaGenome() : m_hw_type(-1), m_inst_set_id(-1) { ; }
   cMetaGenome(int hw, int is, const cGenome& gen) : m_hw_type(hw), m_inst_set_id(is), m_genome(gen) { ; }
+  cMetaGenome(const cString& gen_str);
   cMetaGenome(const cMetaGenome& mg) : m_hw_type(mg.m_hw_type), m_inst_set_id(mg.m_inst_set_id), m_genome(mg.m_genome) { ; }
   
   inline int GetHardwareType() const { return m_hw_type; }
@@ -52,10 +56,15 @@ public:
   inline void SetInstSetID(int is) { m_inst_set_id = is; }
   inline void SetGenome(const cGenome& gen) { m_genome = gen; }
   
+  cString AsString() const;
+  
   bool operator==(const cMetaGenome& mg) const
     { return (m_hw_type == mg.m_hw_type && m_inst_set_id == mg.m_inst_set_id && m_genome == mg.m_genome); }
   cMetaGenome& operator=(const cMetaGenome& mg)
     { m_hw_type = mg.m_hw_type; m_inst_set_id = mg.m_inst_set_id; m_genome = mg.m_genome; return *this; }
+
+  void Load(const tDictionary<cString>& props);
+  void Save(cDataFile& df);
 };
 
 

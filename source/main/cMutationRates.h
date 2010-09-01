@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "mutation_rates.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -202,17 +202,5 @@ public:
 
   void SetDeathProb(double in_prob)         { update.death_prob      = in_prob; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMutationRates {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

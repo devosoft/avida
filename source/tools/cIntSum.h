@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "int_sum.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -94,17 +94,5 @@ public:
     s4 -= w_val * w_val * w_val * w_val;
   }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nIntSum {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

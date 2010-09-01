@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "data_file_manager.hh" prior to 10/18/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2005 California Institute of Technology
  *
  */
@@ -73,18 +73,6 @@ public:
   
   const cString& GetTargetDir() const { return m_target_dir; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nDataFileManager {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 
 inline bool cDataFileManager::IsOpen(const cString & name)

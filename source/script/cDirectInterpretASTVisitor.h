@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 3/4/08.
- *  Copyright 2008-2009 Michigan State University. All rights reserved.
+ *  Copyright 2008-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@
 #include "cASNativeObject.h"
 #include "cASTVisitor.h"
 
-#include "tHashTable.h"
+#include "tHashMap.h"
 #include "tManagedPointerArray.h"
 #include "tSmartArray.h"
 
@@ -193,7 +193,7 @@ private:
   class cLocalDict
   {
   private:
-    tHashTable<sAggregateValue, sAggregateValue> m_storage;
+    tHashMap<sAggregateValue, sAggregateValue> m_storage;
     int m_ref_count;
     
     

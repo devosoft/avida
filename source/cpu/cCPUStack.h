@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "cpu_stack.hh" prior to 11/17/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2001 California Institute of Technology.
  *
  *
@@ -59,18 +59,6 @@ public:
   void SaveState(std::ostream& fp);
   void LoadState(std::istream & fp);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nCPUStack {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 
 inline void cCPUStack::Push(int value)

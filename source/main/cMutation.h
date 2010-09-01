@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "mutation.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -63,17 +63,5 @@ public:
   */
   bool operator==(const cMutation &in) const { return &in == this; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMutation {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
 
 #endif

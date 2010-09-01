@@ -3,7 +3,7 @@
  *  Avida@vallista
  *
  *  Created by Kaben Nanlohy on 2007.12.03.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@
 #include "cAnalyzeTreeStats_CumulativeStemminess.h"
 
 #include "cAnalyzeGenotype.h"
-#include "tHashTable.h"
+#include "tHashMap.h"
 #include "cWorld.h"
 
 
@@ -97,14 +97,14 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
     cout << "Scanning genotypes..." << endl;
   }
   tArray<cAnalyzeGenotype *> gen_array(num_gens);
-  tHashTable<int, int> id_hash;  // Store array pos for each id.
+  tHashMap<int, int> id_hash;  // Store array pos for each id.
   tArray<int> id_array(num_gens), pid_array(num_gens);
   tArray<int> depth_array(num_gens), birth_array(num_gens);
 
   array_pos = 0;
   batch_it.Reset();
   while ((genotype = batch_it.Next()) != NULL) {
-    id_hash.Add(genotype->GetID(), array_pos);
+    id_hash.Set(genotype->GetID(), array_pos);
     array_pos++;
   }
 
@@ -244,7 +244,7 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
   }
 
   m_agl2.Resize(branch_tree_size);  // Store agl data for each id.
-  tHashTable<int, int> id_hash_2;
+  tHashMap<int, int> id_hash_2;
   int array_pos_2 = 0;
   if (true) for (int pos = 0; pos < num_gens; pos++) {
     int offs_count = m_agl[pos].offspring_count;
@@ -261,7 +261,7 @@ void cAnalyzeTreeStats_CumulativeStemminess::AnalyzeBatchTree(tList<cAnalyzeGeno
       anc_branch_pos, off_branch_dist_acc (to be calculated),
       offspring_positions
       */
-      id_hash_2.Add(m_agl2[array_pos_2].id, array_pos_2);
+      id_hash_2.Set(m_agl2[array_pos_2].id, array_pos_2);
       array_pos_2++;
     }
   }

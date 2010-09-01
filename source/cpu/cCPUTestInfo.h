@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "cpu_test_info.hh" prior to 11/29/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -139,18 +139,6 @@ public:
   
   int GetStateGridID() const { return m_cur_sg; }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nCPUTestInfo {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 
 inline cOrganism* cCPUTestInfo::GetTestOrganism(int level)

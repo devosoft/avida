@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "pop_interface.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -102,7 +102,6 @@ public:
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
-  int Debug();
   const tArray<double>& GetResources();
   const tArray<double>& GetDemeResources(int deme_id);
   const tArray< tArray<int> >& GetCellIdLists();
@@ -116,7 +115,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
   //! Send a message to the faced organism.
@@ -161,7 +160,7 @@ public:
 	void DoHGTConjugation(cAvidaContext& ctx);
 	//! Perform an HGT mutation on this offspring.
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
-	
+
 protected:
 	//! Place the fragment at the location of best match.
 	void HGTMatchPlacement(cAvidaContext& ctx, const cGenome& offspring,
@@ -185,17 +184,5 @@ protected:
 	//! Called when this organism is the receiver of an HGT donation.
 	void ReceiveHGTDonation(const cGenome& fragment);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nPopulationInterface {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

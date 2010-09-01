@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "organism.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -34,8 +34,14 @@
 #include <utility>
 #include <map>
 
+#ifndef cBioUnit_h
+#include "cBioUnit.h"
+#endif
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
+#endif
+#ifndef cGenomeTestMetrics_h
+#include "cGenomeTestMetrics.h"
 #endif
 #ifndef cLocalMutations_h
 #include "cLocalMutations.h"
@@ -76,11 +82,9 @@
 
 
 class cAvidaContext;
-class cCodeLabel;
+class cBioGroup;
 class cEnvironment;
-class cGenotype;
 class cHardwareBase;
-class cInjectGenotype;
 class cInstSet;
 class cLineage;
 class cOrgSinkMessage;
@@ -89,15 +93,16 @@ class cStateGrid;
 
 
 
-class cOrganism
+class cOrganism : public cBioUnit
 {
 private:
   cWorld* m_world;
   cHardwareBase* m_hardware;              // The actual machinery running this organism.
-  cGenotype* m_genotype;                  // Information about organisms with this genome.
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
+  eBioUnitSource m_src;
+  cString m_src_args;
   const cMetaGenome m_initial_genome;         // Initial genome; can never be changed!
-  tArray<cInjectGenotype*> m_parasites;   // List of all parasites associated with this organism.
+  tArray<cBioUnit*> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cLocalMutations m_mut_info;             // Info about possible mutations;
   cOrgInterface* m_interface;             // Interface back to the population.
@@ -156,13 +161,24 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome);
-  cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome);
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set);
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation,
+            eBioUnitSource src, const cString& src_args = "");
+  cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
+            int parent_generation, eBioUnitSource src, const cString& src_args = "");
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set,
+            int parent_generation, eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
+  
+  // --------  cBioUnit Methods  --------
+  eBioUnitSource GetUnitSource() const { return m_src; }
+  const cString& GetUnitSourceArgs() const { return m_src_args; }
+  const cMetaGenome& GetMetaGenome() const { return m_initial_genome; }
+  
 
   // --------  Support Methods  --------
-  double GetTestFitness(cAvidaContext& ctx);
+  inline double GetTestFitness(cAvidaContext& ctx) const;
+  inline double GetTestMerit(cAvidaContext& ctx) const;
+  inline double GetTestColonyFitness(cAvidaContext& ctx) const;
   double CalcMeritRatio();
   
   void HardwareReset(cAvidaContext& ctx);
@@ -175,14 +191,11 @@ public:
   
   
   // --------  Accessor Methods  --------
-  void SetGenotype(cGenotype* in_genotype) { m_genotype = in_genotype; }
-  cGenotype* GetGenotype() const { return m_genotype; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
   cPhenotype& GetPhenotype() { return m_phenotype; }
   void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }
 
   const cGenome& GetGenome() const { return m_initial_genome.GetGenome(); }
-  const cMetaGenome& GetMetaGenome() const { return m_initial_genome; }
   
   const cMutationRates& MutationRates() const { return m_mut_rates; }
   cMutationRates& MutationRates() { return m_mut_rates; }
@@ -263,7 +276,6 @@ public:
   void Die() { m_interface->Die(); m_is_dead = true; }
   void Kaboom(int dist) { m_interface->Kaboom(dist);}
   void SpawnDeme() { m_interface->SpawnDeme(); }
-  int GetDebugInfo() { return m_interface->Debug(); }
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
@@ -320,11 +332,10 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(const cCodeLabel& label, const cGenome& genome);
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& genome);
-  void AddParasite(cInjectGenotype* cur) { m_parasites.Push(cur); }
-  cInjectGenotype& GetParasite(int x) { return *m_parasites[x]; }
+  bool InjectParasite(cBioUnit* parent, const cString& label, const cGenome& genome);
+  bool ParasiteInfectHost(cBioUnit* parasite);
   int GetNumParasites() const { return m_parasites.GetSize(); }
+  const tArray<cBioUnit*>& GetParasites() const { return m_parasites; }
   void ClearParasites();
 
   // --------  Mutation Rate Convenience Methods  --------
@@ -663,6 +674,18 @@ private:
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
 };
 
+
+inline double cOrganism::GetTestFitness(cAvidaContext& ctx) const {
+  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetFitness();
+}
+
+inline double cOrganism::GetTestMerit(cAvidaContext& ctx) const {
+  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetMerit();
+}
+
+inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
+  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetColonyFitness();
+}
 
 #endif
 

@@ -2,7 +2,7 @@
  *  cFlexVar.h
  *  Avida
  *
- *  Copyright 2007-2009 Michigan State University. All rights reserved.
+ *  Copyright 2007-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -37,7 +37,8 @@ public:
     TYPE_INT    = 1,
     TYPE_CHAR   = 2,
     TYPE_DOUBLE = 3,
-    TYPE_STRING = 4
+    TYPE_STRING = 4,
+    TYPE_BOOL   = 5
   };
   
 private:
@@ -48,6 +49,7 @@ private:
     cFlexVar_Base() { ; }
     virtual ~cFlexVar_Base() { ; }
 
+    virtual bool AsBool() const = 0;
     virtual int AsInt() const = 0;
     virtual char AsChar() const = 0;
     virtual double AsDouble() const = 0;
@@ -58,6 +60,7 @@ private:
     virtual void Print(std::ostream& out) const = 0;
 
 #define ABSTRACT_FLEX_VAR_BASE_OP(OP, RETURN_TYPE)                         \
+    virtual RETURN_TYPE operator OP (bool in_var) const = 0;                \
     virtual RETURN_TYPE operator OP (int in_var) const = 0;                \
     virtual RETURN_TYPE operator OP (char in_var) const = 0;               \
     virtual RETURN_TYPE operator OP (double in_var) const = 0;             \
@@ -73,6 +76,38 @@ private:
   
   ////////////////////////////////////////////////////////////
   // Internal class for managing int type......
+  class cFlexVar_Bool : public cFlexVar_Base {
+  private:
+    bool m_value;
+  public:
+    cFlexVar_Bool(bool in_val) : m_value(in_val) { ; }
+    ~cFlexVar_Bool() { ; }
+    
+    bool AsBool() const { return m_value; }
+    int AsInt() const { return (int) m_value; }
+    char AsChar() const { return (char) m_value; }
+    double AsDouble() const { return (double) m_value; }
+    void SetString(cString & in_str) const { if (m_value) in_str = "true"; else in_str = "false"; }
+    
+    eFlexType GetType() const { return TYPE_BOOL; }
+    void Print(std::ostream& out) const { out << m_value; }
+    
+#define CREATE_FLEX_VAR_BOOL_MATH_OP(OP, RETURN_TYPE)                                                           \
+RETURN_TYPE operator OP (bool in_var) const { return (int)m_value OP in_var; }                                   \
+RETURN_TYPE operator OP (int in_var) const { return (int)m_value OP in_var; }                                   \
+RETURN_TYPE operator OP (char in_var) const { return (int)m_value OP (int) in_var; }                            \
+RETURN_TYPE operator OP (double in_var) const { return ((double) m_value) OP in_var; }                     \
+RETURN_TYPE operator OP (const cString & in_var) const { return ((double) m_value) OP in_var.AsDouble(); }
+    
+    CREATE_FLEX_VAR_BOOL_MATH_OP(==, bool);
+    CREATE_FLEX_VAR_BOOL_MATH_OP(!=, bool);
+    CREATE_FLEX_VAR_BOOL_MATH_OP(<, bool);
+    CREATE_FLEX_VAR_BOOL_MATH_OP(>, bool);
+    CREATE_FLEX_VAR_BOOL_MATH_OP(<=, bool);
+    CREATE_FLEX_VAR_BOOL_MATH_OP(>=, bool);
+  };
+
+  
   class cFlexVar_Int : public cFlexVar_Base {
   private:
     int m_value;
@@ -80,6 +115,7 @@ private:
     cFlexVar_Int(int in_val) : m_value(in_val) { ; }
     ~cFlexVar_Int() { ; }
 
+    bool AsBool() const { return (m_value); }
     int AsInt() const { return m_value; }
     char AsChar() const { return (char) m_value; }
     double AsDouble() const { return (double) m_value; }
@@ -89,6 +125,7 @@ private:
     void Print(std::ostream& out) const { out << m_value; }
 
 #define CREATE_FLEX_VAR_INT_MATH_OP(OP, RETURN_TYPE)                                                           \
+    RETURN_TYPE operator OP (bool in_var) const { return m_value OP (int)in_var; }                             \
     RETURN_TYPE operator OP (int in_var) const { return m_value OP in_var; }                                   \
     RETURN_TYPE operator OP (char in_var) const { return m_value OP (int) in_var; }                            \
     RETURN_TYPE operator OP (double in_var) const { return ((double) m_value) OP in_var; }                     \
@@ -113,6 +150,7 @@ private:
     cFlexVar_Char(char in_val) : m_value(in_val) { ; }
     ~cFlexVar_Char() { ; }
 
+    bool AsBool() const { return ((int)m_value); }
     int AsInt() const { return (int) m_value; }
     char AsChar() const { return m_value; }
     double AsDouble() const { return (double) m_value; }
@@ -122,6 +160,7 @@ private:
     void Print(std::ostream& out) const { out << m_value; }
 
 #define CREATE_FLEX_VAR_CHAR_MATH_OP(OP, RETURN_TYPE)                                               \
+    RETURN_TYPE operator OP (bool in_var) const { return (int)m_value OP (int)in_var; }                             \
     RETURN_TYPE operator OP (int in_var) const { return ((int) m_value) OP in_var; }                \
     RETURN_TYPE operator OP (char in_var) const { return m_value OP in_var; }                       \
     RETURN_TYPE operator OP (double in_var) const { return ((double) m_value) OP in_var; }          \
@@ -146,6 +185,7 @@ private:
     cFlexVar_Double(double in_val) : m_value(in_val) { ; }
     ~cFlexVar_Double() { ; }
 
+    bool AsBool() const { return ((int)m_value); }
     int AsInt() const { return (int) m_value; }
     char AsChar() const { return (char) m_value; }
     double AsDouble() const { return m_value; }
@@ -155,6 +195,7 @@ private:
     void Print(std::ostream& out) const { out << m_value; }
 
 #define CREATE_FLEX_VAR_DOUBLE_MATH_OP(OP, RETURN_TYPE)                                             \
+    RETURN_TYPE operator OP (bool in_var) const { return m_value OP (double)in_var; }                             \
     RETURN_TYPE operator OP (int in_var) const { return m_value OP (double) in_var; }               \
     RETURN_TYPE operator OP (char in_var) const { return m_value OP (double) in_var; }              \
     RETURN_TYPE operator OP (double in_var) const { return m_value OP in_var; }                     \
@@ -179,6 +220,17 @@ private:
     cFlexVar_String(const cString & in_val) : m_value(in_val) { ; }
     ~cFlexVar_String() { ; }
 
+    bool AsBool() const
+    {
+      cString val(m_value);
+      val.ToUpper();
+      
+      if (val == "TRUE" || val == "T") return true;
+      if (val == "FALSE" || val == "F") return false;
+      
+      return (val.AsInt());
+    }
+    
     int AsInt() const { return m_value.AsInt(); }
     char AsChar() const { return m_value[0]; }
     double AsDouble() const { return m_value.AsDouble(); }
@@ -188,6 +240,7 @@ private:
     void Print(std::ostream& out) const { out << m_value; }
 
 #define CREATE_FLEX_VAR_STRING_MATH_OP(OP, RETURN_TYPE)                                           \
+    RETURN_TYPE operator OP (bool in_var) const { return AsBool() OP in_var; }  \
     RETURN_TYPE operator OP (int in_var) const { return m_value.AsDouble() OP (double) in_var; }  \
     RETURN_TYPE operator OP (char in_var) const { return m_value OP cString(&in_var, 1); }        \
     RETURN_TYPE operator OP (double in_var) const { return m_value.AsDouble() OP in_var; }        \
@@ -223,6 +276,7 @@ public:
 
 
   // Setup accessors to get this variable as any type we might need.
+  bool AsBool() const { return m_var->AsBool(); }
   int AsInt() const { return m_var->AsInt(); }
   char AsChar() const { return m_var->AsChar(); }
   double AsDouble() const { return m_var->AsDouble(); }
@@ -254,6 +308,7 @@ public:
 
   // The following macro will forward all of the commands with the associated operator to the internal class.
 #define FORWARD_FLEX_VAR_OP(OP, RETURN_TYPE)                                               \
+  RETURN_TYPE operator OP(bool in_var) const { return (*m_var) OP in_var; }                 \
   RETURN_TYPE operator OP(int in_var) const { return (*m_var) OP in_var; }                 \
   RETURN_TYPE operator OP(char in_var) const { return (*m_var) OP in_var; }                \
   RETURN_TYPE operator OP(double in_var) const { return (*m_var) OP in_var; }              \
@@ -275,6 +330,7 @@ public:
   
 };
 
+template<> inline bool cFlexVar::As<bool>() const { return m_var->AsBool(); }
 template<> inline int cFlexVar::As<int>() const { return m_var->AsInt(); }
 template<> inline char cFlexVar::As<char>() const { return m_var->AsChar(); }
 template<> inline double cFlexVar::As<double>() const { return m_var->AsDouble(); }

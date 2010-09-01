@@ -12,7 +12,6 @@
 #include "cClassificationManager.h"
 #include "cSpecies.h"
 #include "cGenotype.h"
-#include "cInjectGenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"
@@ -61,17 +60,6 @@ void cViewInfo::AddSpeciesChart(cSpecies * in_species)
     if (species_chart[i] == NULL) {
       species_chart[i] = in_species;
       in_species->SetSymbol(symbol_chart[i]);
-      break;
-    }
-  }
-}
-
-void cViewInfo::AddInjectGenChart(cInjectGenotype * in_gen)
-{
-  for (int i = 0; i < NUM_SYMBOLS; i++) {
-    if (inject_genotype_chart[i] == NULL) {
-      inject_genotype_chart[i] = in_gen;
-      in_gen->SetSymbol(symbol_chart[i]);
       break;
     }
   }

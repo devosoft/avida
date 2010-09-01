@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 4/10/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -58,17 +58,5 @@ public:
     action->Process(ctx);
   }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nAnalyzeCommandAction {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

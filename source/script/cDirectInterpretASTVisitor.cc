@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 3/4/08.
- *  Copyright 2008-2009 Michigan State University. All rights reserved.
+ *  Copyright 2008-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -354,7 +354,7 @@ void cDirectInterpretASTVisitor::VisitVariableDefinition(cASTVariableDefinition&
       INTERPRET_ERROR(INTERNAL);
     }
   } else if (node.GetType().type == TYPE(OBJECT_REF)) {
-    // @TODO - set native object ref to special NULL value
+    // @AS_TODO - set native object ref to special NULL value
   }
 }
 
@@ -1505,7 +1505,7 @@ void cDirectInterpretASTVisitor::VisitObjectCall(cASTObjectCall& node)
 
 void cDirectInterpretASTVisitor::VisitObjectReference(cASTObjectReference& node)
 {
-  // @TODO - handle object reference
+  // @AS_TODO - handle object reference
   INTERPRET_ERROR(INTERNAL);
 }
 
@@ -1709,7 +1709,7 @@ bool cDirectInterpretASTVisitor::asBool(const sASTypeInfo& type, uAnyType value,
       }
       
 
-    case TYPE(OBJECT_REF): // @TODO - implement asBool
+    case TYPE(OBJECT_REF): // @AS_TODO - implement asBool
       INTERPRET_ERROR(INTERNAL);
 
     default:
@@ -1979,13 +1979,13 @@ ASType_t cDirectInterpretASTVisitor::getRuntimeType(ASType_t ltype, ASType_t rty
 
 void cDirectInterpretASTVisitor::matrixAdd(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node)
 {
-  INTERPRET_ERROR(INTERNAL); // @TODO - handle matrix add
+  INTERPRET_ERROR(INTERNAL); // @AS_TODO - handle matrix add
 }
 
 
 void cDirectInterpretASTVisitor::matrixSubtract(cLocalMatrix* m1, cLocalMatrix* m2, cASTNode& node)
 {
-  INTERPRET_ERROR(INTERNAL); // @TODO - handle matrix sub
+  INTERPRET_ERROR(INTERNAL); // @AS_TODO - handle matrix sub
 }
 
 
@@ -2603,13 +2603,13 @@ bool cDirectInterpretASTVisitor::cMatrixVarRef::Set(sAggregateValue& idx, sAggre
 
 bool cDirectInterpretASTVisitor::cNativeObjectVarRef::Get(const sAggregateValue& idx, sAggregateValue& val)
 {
-  // @TODO - get indexed native var
+  // @AS_TODO - get indexed native var
   return false;
 }
 
 bool cDirectInterpretASTVisitor::cNativeObjectVarRef::Set(sAggregateValue& idx, sAggregateValue& val)
 {
-  // @TODO - set indexed native var
+  // @AS_TODO - set indexed native var
   return false;
 }
 

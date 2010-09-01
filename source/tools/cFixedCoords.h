@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "fixed_coords.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -107,15 +107,6 @@ public:
     block_num += offset / fixed_size;
     offset %= fixed_size;
   }
-
-  /**   
-   * Serialize to and from archive.
-   **/  
-  template<class Archive>
-  void serialize(Archive & a, const unsigned int version){
-    a.ArkvObj("block_num", block_num);
-    a.ArkvObj("offset", offset);
-  }   
 };
 
 #endif

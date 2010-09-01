@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "test_cpu.hh" prior to 11/30/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -42,9 +42,8 @@
 #endif
 
 class cAvidaContext;
+class cBioGroup;
 class cGenome;
-class cGenotype;
-class cInjectGenotype;
 class cInstSet;
 class cMetaGenome;
 class cResourceCount;
@@ -98,10 +97,8 @@ public:
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome);
   bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, std::ofstream& out_fp);
   
-  void PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename,
-                   cGenotype* genotype = NULL, int update = -1);
-  void PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_genotype,
-                         const cGenome& genome, cString filename = "", int update = -1);
+  void PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename = "", int update = -1);
+  void PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename = "", int update = -1);
 
   inline int GetInput();
   inline int GetInputAt(int & input_pointer);
@@ -116,21 +113,7 @@ public:
   // Used by cTestCPUInterface to get/update resources
   void ModifyResources(const tArray<double>& res_change);
   cResourceCount& GetResourceCount() { return m_resource_count; }
-	
-
 };
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nTestCPU {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
-
 
 
 // Inline Methods

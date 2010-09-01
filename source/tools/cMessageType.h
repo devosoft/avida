@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "message_type.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -37,17 +37,5 @@ public:
   
   cMessageType(const char* type_name, cMessageClass& message_class);
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMessageType {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif
 
 #endif

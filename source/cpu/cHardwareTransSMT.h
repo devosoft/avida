@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 7/13/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -47,8 +47,8 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
-#ifndef tHashTable_h
-#include "tHashTable.h"
+#ifndef tHashMap_h
+#include "tHashMap.h"
 #endif
 #ifndef tInstLib_h
 #include "tInstLib.h"
@@ -87,13 +87,14 @@ protected:
     cCPUStack local_stacks[NUM_LOCAL_STACKS];
     
     bool advance_ip;         // Should the IP advance after this instruction?
+	bool skipExecution;
     cCodeLabel read_label;
     cCodeLabel next_label;
     bool running;
     
-    // If this thread was spawned by Inject, this will point to the genotype 
-    // of the parasite running the thread.  Otherwise, it will be NULL.
-    cInjectGenotype* owner;
+    // If this thread was spawned by Inject, this will point to the biounit of the parasite running the thread.
+    // Otherwise, it will be NULL.
+    cBioUnit* owner;
     
     cLocalThread(cHardwareBase* in_hardware = NULL) { Reset(in_hardware); }
     ~cLocalThread() { ; }
@@ -114,11 +115,11 @@ protected:
 	
   // Memory
   tManagedPointerArray<cCPUMemory> m_mem_array;
-  tHashTable<int, int> m_mem_lbls;
+  tHashMap<int, int> m_mem_lbls;
 
   // Threads
   tManagedPointerArray<cLocalThread> m_threads;
-  tHashTable<int, int> m_thread_lbls;
+  tHashMap<int, int> m_thread_lbls;
   int m_cur_thread;
   int m_cur_child;
 
@@ -253,8 +254,7 @@ public:
   inline bool ThreadSelect(const cCodeLabel& in_label);
   inline void ThreadPrev(); // Shift the current thread in use.
   inline void ThreadNext();
-  cInjectGenotype* ThreadGetOwner() { return m_threads[m_cur_thread].owner; }
-  void ThreadSetOwner(cInjectGenotype* in_genotype) { m_threads[m_cur_thread].owner = in_genotype; }
+  cBioUnit* ThreadGetOwner();
 
   int GetNumThreads() const { return m_threads.GetSize(); }
   int GetCurThread() const { return m_cur_thread; }
@@ -265,7 +265,7 @@ public:
   int GetThreadMessageTriggerType(int _index) { return -1; }
 
   // --------  Parasite Stuff  --------
-  bool InjectHost(const cCodeLabel& in_label, const cGenome& inject_code);
+  bool ParasiteInfectHost(cBioUnit* bu);
 	
   
 private:
@@ -316,20 +316,10 @@ private:
   bool Inst_CallFlow(cAvidaContext& ctx);       // 45
   bool Inst_CallLabel(cAvidaContext& ctx);      // 46
   bool Inst_Return(cAvidaContext& ctx);         // 47
+  bool Inst_IfGreaterEqual(cAvidaContext& ctx); //48
+  bool Inst_Divide_Erase(cAvidaContext& ctx); //49
   
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nHardwareTransSMT {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 
 inline bool cHardwareTransSMT::ThreadKill(const cCodeLabel& in_label)

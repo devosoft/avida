@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "test_cpu.cc" prior to 11/30/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *
@@ -28,14 +28,13 @@
 #include "functions.h"
 
 #include "cAvidaContext.h"
+#include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
 #include "cGenomeUtil.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
-#include "cInjectGenotype.h"
 #include "cInstSet.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
@@ -214,7 +213,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
+  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
   TestGenome_Body(ctx, test_info, mg, 0);
   ctx.ClearTestMode();
   
@@ -226,7 +225,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - fix test cpu metagenome handling
+  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
   TestGenome_Body(ctx, test_info, mg, 0);
 
   ////////////////////////////////////////////////////////////////
@@ -288,8 +287,8 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   }
   cOrganism* organism = NULL;
   
-  if (test_info.GetInstSet()) organism = new cOrganism(m_world, ctx, genome, test_info.GetInstSet());
-  else organism = new cOrganism(m_world, ctx, genome);
+  if (test_info.GetInstSet()) organism = new cOrganism(m_world, ctx, genome, test_info.GetInstSet(), -1, SRC_TEST_CPU);
+  else organism = new cOrganism(m_world, ctx, genome, -1, SRC_TEST_CPU);
   
   // Copy the test mutation rates
   organism->MutationRates().Copy(test_info.MutationRates());
@@ -348,8 +347,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 }
 
 
-void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename,
-                           cGenotype* genotype, int update)
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename, int update)
 {
   if (filename == "") filename.Set("archive/%03d-unnamed.org", genome.GetSize());
     
@@ -372,14 +370,6 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
   df.WriteComment(c.Set("Repro Cycle Size: %d", test_info.GetMaxCycle()));
   df.WriteComment(c.Set("Depth to Viable.: %d", test_info.GetDepthFound()));
   
-  if (genotype != NULL) {
-    df.WriteComment(c.Set("Update Created..: %d", genotype->GetUpdateBorn()));
-    df.WriteComment(c.Set("Genotype ID.....: %d", genotype->GetID()));
-    df.WriteComment(c.Set("Parent Gen ID...: %d", genotype->GetParentID()));
-    df.WriteComment(c.Set("Tree Depth......: %d", genotype->GetDepth()));
-    df.WriteComment(c.Set("Parent Distance.: %d", genotype->GetParentDistance()));
-  }
-
   df.WriteComment("");
   
   const int num_levels = test_info.GetMaxDepth() + 1;
@@ -452,42 +442,106 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
 }
 
 
-void cTestCPU::PrintInjectGenome(cAvidaContext& ctx, cInjectGenotype* inject_genotype,
-                                 const cGenome& genome, cString filename, int update)
+void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename, int update)
 {
-  if (filename == "") filename.Set("p%03d-unnamed", genome.GetSize());
+  if (!bg->HasProperty("genome")) return;
   
-  // Build the test info for printing.
+  cMetaGenome mg(bg->GetProperty("genome").AsString());
+  
+  if (filename == "") filename.Set("archive/%03d-unnamed.org", mg.GetGenome().GetSize());
+  
   cCPUTestInfo test_info;
-  TestGenome(ctx, test_info, genome);
+  TestGenome(ctx, test_info, mg.GetGenome());
   
   // Open the file...
-  ofstream& fp = m_world->GetDataFileOFStream(filename);
-  
-  // @CAO Fix!!!!!!
-  if( fp.good() == false ) {
-    cerr << "Unable to open output file '" <<  filename << "'" << endl;
-    return;
-  }
+  cDataFile& df = m_world->GetDataFile(filename);
   
   // Print the useful info at the top...
+  df.WriteTimeStamp();  
+  cString c("");
   
-  fp << "# Filename........: " << filename << endl;
+  df.WriteComment(c.Set("Filename........: %s", static_cast<const char*>(filename)));
   
-  if (update >= 0) fp << "# Update Output...: " << update << endl;
-  else fp << "# Update Output...: N/A" << endl;
+  if (update >= 0) df.WriteComment(c.Set("Update Output...: %d", update));
+  else df.WriteComment("Update Output...: N/A");
   
+  df.WriteComment(c.Set("Is Viable.......: %d", test_info.IsViable()));
+  df.WriteComment(c.Set("Repro Cycle Size: %d", test_info.GetMaxCycle()));
+  df.WriteComment(c.Set("Depth to Viable.: %d", test_info.GetDepthFound()));
+
+  df.WriteComment(c.Set("Genotype ID.....: %d", bg->GetID()));
+  df.WriteComment(c.Set("Tree Depth......: %d", bg->GetDepth()));
+
+  if (bg->HasProperty("update_born")) df.WriteComment(c.Set("Update Born.....: %d", bg->GetProperty("update_born").AsInt()));
+  if (bg->HasProperty("parents")) df.WriteComment(c.Set("Parent(s).......: %s", (const char*)bg->GetProperty("parents").AsString()));
   
-  if (inject_genotype != NULL) {
-    fp << "# Update Created..: " << inject_genotype->GetUpdateBorn() << endl;
-    fp << "# Genotype ID.....: " << inject_genotype->GetID() << endl;
-    fp << "# Parent Gen ID...: " << inject_genotype->GetParentID() << endl;
-    fp << "# Tree Depth......: " << inject_genotype->GetDepth() << endl;
+  df.WriteComment("");
+  
+  const int num_levels = test_info.GetMaxDepth() + 1;
+  for (int j = 0; j < num_levels; j++) {
+    df.WriteComment(c.Set("Generation: %d", j));
+    
+    cOrganism* organism = test_info.GetTestOrganism(j);
+    assert(organism != NULL);
+    cPhenotype& phenotype = organism->GetPhenotype();
+    
+    df.WriteComment(c.Set("Merit...........: %f", phenotype.GetMerit().GetDouble()));
+    df.WriteComment(c.Set("Gestation Time..: %d", phenotype.GetGestationTime()));
+    df.WriteComment(c.Set("Fitness.........: %f", phenotype.GetFitness()));
+    df.WriteComment(c.Set("Errors..........: %d", phenotype.GetLastNumErrors()));
+    df.WriteComment(c.Set("Genome Size.....: %d", organism->GetGenome().GetSize()));
+    df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
+    df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
+    
+    if (phenotype.GetNumDivides() == 0)
+      df.WriteComment("Offspring.......: NONE");
+    else if (phenotype.CopyTrue())
+      df.WriteComment("Offspring.......: SELF");
+    else if (test_info.GetCycleTo() != -1)
+      df.WriteComment(c.Set("Offspring.......: %d", test_info.GetCycleTo()));
+    else
+      df.WriteComment(c.Set("Offspring.......: %d", j + 1));
+    
+    df.WriteComment("");
   }
-  fp << endl;
+  
+  df.WriteComment("Tasks Performed:");
+  
+  const cEnvironment& env = m_world->GetEnvironment();
+  const tArray<int>& task_count = test_info.GetTestPhenotype().GetLastTaskCount();
+  const tArray<double>& task_qual = test_info.GetTestPhenotype().GetLastTaskQuality();
+  for (int i = 0; i < task_count.GetSize(); i++) {
+    df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+                          task_count[i], task_qual[i]));
+  }
+  
+  // if resource bins are being used, print relevant information
+  if(m_world->GetConfig().USE_RESOURCE_BINS.Get())  {
+  	df.WriteComment("Tasks Performed Using Internal Resources:");
+  	
+  	const tArray<int>& internal_task_count = test_info.GetTestPhenotype().GetLastInternalTaskCount();
+  	const tArray<double>& internal_task_qual = test_info.GetTestPhenotype().GetLastInternalTaskQuality();
+  	
+  	for (int i = 0; i < task_count.GetSize(); i++) {
+  		df.WriteComment(c.Set("%s %d (%f)", static_cast<const char*>(env.GetTask(i).GetName()),
+  		                      internal_task_count[i], internal_task_qual[i]));
+  	}
+  	
+  	const tArray<double>& rbins_total = test_info.GetTestPhenotype().GetLastRBinsTotal();
+  	const tArray<double>& rbins_avail = test_info.GetTestPhenotype().GetLastRBinsAvail();
+  	
+  	df.WriteComment(        "Resources Collected: Name\t\tTotal\t\tAvailable");
+  	for (int i = 0; i < rbins_total.GetSize(); i++) {
+  		df.WriteComment(c.Set("                %d : %s\t\t%f\t\t%f\t\t", i,
+  		                      static_cast<const char*>(env.GetResourceLib().GetResource(i)->GetName()),
+  		                      rbins_total[i], rbins_avail[i]));
+  	}
+  }
+  
+  df.Endl();
   
   // Display the genome
-  cGenomeUtil::SaveGenome(fp, test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
+  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), mg.GetGenome());
   
   m_world->GetDataFileManager().Remove(filename);
 }

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "pop_interface.cc" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -27,7 +27,6 @@
 
 #include "cDeme.h"
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cOrgSinkMessage.h"
@@ -171,13 +170,6 @@ const tArray<int>& cPopulationInterface::GetInputs() const
   return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
 }
 
-int cPopulationInterface::Debug()
-{
-  cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  assert(cell.IsOccupied());
-  return cell.GetOrganism()->GetGenotype()->GetID();
-}
-
 const tArray<double> & cPopulationInterface::GetResources()
 {
   return m_world->GetPopulation().GetCellResources(m_cell_id);
@@ -295,12 +287,12 @@ int cPopulationInterface::BuyValue(const int label, const int buy_price)
 	return value;
 }
 
-bool cPopulationInterface::InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code)
+bool cPopulationInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code)
 {
   assert(parent != NULL);
-  assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
+  assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == host);
   
-  return m_world->GetPopulation().ActivateParasite(*parent, label, injected_code);
+  return m_world->GetPopulation().ActivateParasite(host, parent, label, injected_code);
 }
 
 bool cPopulationInterface::UpdateMerit(double new_merit)

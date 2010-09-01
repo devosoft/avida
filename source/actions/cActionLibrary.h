@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 4/8/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -68,7 +68,7 @@ public:
   {
     ClassDescFunction func;
     if (m_desc_funcs.Find(key, func)) return false;
-    m_desc_funcs.Add(key, &ClassType::GetDescription);
+    m_desc_funcs.Set(key, &ClassType::GetDescription);
     return m_factory.Register<ClassType>(key);
   }
   bool Unregister(const cString& key)
@@ -89,16 +89,5 @@ public:
   const cString DescribeAll() const;
 };
 
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nActionLibrary {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 #endif

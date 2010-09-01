@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "stats.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2002 California Institute of Technology.
  *
  *
@@ -36,11 +36,17 @@
 #ifndef defs_h
 #include "defs.h"
 #endif
+#ifndef cBioGroupListener_h
+#include "cBioGroupListener.h"
+#endif
 #ifndef cDoubleSum_h
 #include "cDoubleSum.h"
 #endif
-#ifndef functions_h
-#include "functions.h"
+#ifndef cGenome_h
+#include "cGenome.h"
+#endif
+#ifndef cGenomeUtil_h
+#include "cGenomeUtil.h"
 #endif
 #ifndef cIntSum_h
 #include "cIntSum.h"
@@ -54,6 +60,12 @@
 #ifndef cRunningStats_h
 #include "cRunningStats.h"
 #endif
+#ifndef functions_h
+#include "functions.h"
+#endif
+#ifndef nGeometry_h
+#include "nGeometry.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -63,21 +75,8 @@
 #ifndef tMatrix_h
 #include "tMatrix.h"
 #endif
-#ifndef nGeometry_h
-#include "nGeometry.h"
-#endif
-#include "cGenome.h"
-#include "cGenomeUtil.h"
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
 
 
-class cGenotype;
-class cInjectGenotype;
 class cWorld;
 class cOrganism;
 class cOrgMessage;
@@ -95,7 +94,8 @@ struct flow_rate_tuple {
   cIntSum currentSleeping;
 };
 
-class cStats
+
+class cStats : public cBioGroupListener
 {
 #if USE_tMemTrack
   tMemTrack<cStats> mt;
@@ -172,7 +172,6 @@ private:
   double max_viable_fitness;
 
   // Dominant Genotype
-  cGenotype * dom_genotype;
   double dom_merit;
   double dom_gestation;
   double dom_repro_rate;
@@ -198,15 +197,6 @@ private:
   int dom_gene_depth;
   cString dom_sequence;
   int coal_depth;
-
-  // Dominant Parasite
-  cInjectGenotype * dom_inj_genotype;
-  int dom_inj_size;
-  int dom_inj_genotype_id;
-  cString dom_inj_name;
-  int dom_inj_births;
-  int dom_inj_abundance;
-  cString dom_inj_sequence;
 
   int num_births;
   int num_deaths;
@@ -356,6 +346,8 @@ private:
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
+  
+  void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu);
 
   void SetupPrintDatabase();
   void ProcessUpdate();
@@ -369,7 +361,6 @@ public:
   int GetSubUpdate() const { return sub_update; }
   double GetGeneration() const { return SumGeneration().Average(); }
 
-  cGenotype* GetDomGenotype() const { return dom_genotype; }
   double GetDomMerit() const { return dom_merit; }
   double GetDomGestation() const { return dom_gestation; }
   double GetDomReproRate() const { return dom_repro_rate; }
@@ -388,18 +379,9 @@ public:
   int GetDomGeneDepth() const { return dom_gene_depth; }
   const cString & GetDomSequence() const { return dom_sequence; }
 
-  cInjectGenotype * GetDomInjGenotype() const { return dom_inj_genotype; }
-  int GetDomInjSize() const { return dom_inj_size; }
-  int GetDomInjID() const { return dom_inj_genotype_id; }
-  const cString & GetDomInjName() const { return dom_inj_name; }
-  int GetDomInjBirths() const { return dom_inj_births; }
-  int GetDomInjAbundance() const { return dom_inj_abundance; }
-  const cString & GetDomInjSequence() const { return dom_inj_sequence; }
-  
   int GetSenseSize() const { return sense_size; }
 
   // Settings...
-  void SetDomGenotype(cGenotype * in_gen) { dom_genotype = in_gen; }
   void SetDomMerit(double in_merit) { dom_merit = in_merit; }
   void SetDomGestation(double in_gest) { dom_gestation = in_gest; }
   void SetDomReproRate(double in_rate) { dom_repro_rate = in_rate; }
@@ -417,14 +399,6 @@ public:
   void SetDomAbundance(int in_abund) { dom_abundance = in_abund; }
   void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
   void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
-
-  void SetDomInjGenotype(cInjectGenotype * in_inj_genotype) { dom_inj_genotype = in_inj_genotype; }
-  void SetDomInjSize(int in_inj_size) { dom_inj_size = in_inj_size; }
-  void SetDomInjID(int in_inj_ID) { dom_inj_genotype_id = in_inj_ID; }
-  void SetDomInjName(const cString & in_name) { dom_inj_name = in_name; }
-  void SetDomInjBirths(int in_births) { dom_inj_births = in_births; }
-  void SetDomInjAbundance(int in_inj_abundance) { dom_inj_abundance = in_inj_abundance; }
-  void SetDomInjSequence(const cString & in_inj_sequence) { dom_inj_sequence = in_inj_sequence; }
 
   void SetGenoMapElement(int i, int in_geno) { genotype_map[i] = in_geno; }
   void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}
@@ -561,13 +535,11 @@ public:
   void CalcEnergy();
   void CalcFidelity();
 
-  void RecordBirth(int cell_id, int genotype_id, bool breed_true);
+  void RecordBirth(bool breed_true);
   void RecordDeath() { num_deaths++; }
   void AddGenotype() { tot_genotypes++; }
   void RemoveGenotype(int id_num, int parent_id, int parent_distance, int depth, int max_abundance,
                       int parasite_abundance, int age, int length);
-  void AddThreshold(int id_num, const char * name, int species_num=-1);
-  void RemoveThreshold() { num_threshold--; }
   void AddSpecies() { tot_species++; num_species++; }
   void RemoveSpecies(int id_num, int parent_id, int max_gen_abundance, int max_abundance, int age);
   void AddLineage() { tot_lineages++; num_lineages++; }
@@ -1040,20 +1012,6 @@ public:
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
 };
-
-
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nStats {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 
 inline void cStats::SetNumGenotypes(int new_genotypes)

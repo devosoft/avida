@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "message_display.hh" prior to 12/7/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -47,18 +47,6 @@ public:
   virtual void out(cString &final_msg){}
   virtual void abort(){ abort(); }
 };
-
-
-#ifdef ENABLE_UNIT_TESTS
-namespace nMessageDisplay {
-  /**
-   * Run unit tests
-   *
-   * @param full Run full test suite; if false, just the fast tests.
-   **/
-  void UnitTests(bool full = false);
-}
-#endif  
 
 void setInfoDisplay(cMessageDisplay &info);
 void setDebugDisplay(cMessageDisplay &debug);

@@ -2,7 +2,7 @@
  *  avida.cc
  *  Avida
  *
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -49,6 +49,22 @@ using namespace std;
 
 namespace Avida {
   
+
+const char* const BioUnitSourceMap[] = {
+  "deme:compete", // SRC_DEME_COMPETE
+  "deme:copy", // SRC_DEME_COPY
+  "deme:germline", // SRC_DEME_GERMLINE
+  "deme:replicate", // SRC_DEME_REPLICATE
+  "deme:spawn", // SRC_DEME_SPAWN
+  "org:compete", // SRC_ORGANISM_COMPETE
+  "org:divide", // SRC_ORGANISM_DIVIDE
+  "org:file_load", // SRC_ORGANISM_FILE_LOAD
+  "org:random", // SRC_ORGANISM_RANDOM
+  "para:file_load", // SRC_PARASITE_FILE_LOAD
+  "para:inject", // SRC_PARASITE_INJECT
+  "testcpu", // SRC_TEST_CPU
+};
+  
 void Initialize()
 {
   cActionLibrary::Initialize();
@@ -88,9 +104,6 @@ cString GetVersion()
 #endif
 #if INSTRUCTION_COUNT
   version += " inst_cnt";
-#endif
-#ifdef ENABLE_UNIT_TESTS
-  version += " ut";
 #endif
 #if USE_tMemTrack
   version += " memt";
@@ -151,7 +164,6 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   
   bool flag_analyze = false;
   bool flag_interactive = false;
-  bool flag_load = false;         cString val_load;
   bool flag_review = false;
   bool flag_verbosity = false;    int val_verbosity = 0;
   bool flag_seed = false;         int val_seed = 0;
@@ -210,15 +222,6 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       flag_interactive = true;
     } else if (cur_arg == "-warn" || cur_arg == "-w") {
       flag_warn_default = true;
-    } else if (cur_arg == "-load" || cur_arg == "-l") {
-      if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
-        cerr << "Error: Must include a filename to load from." << endl;
-        exit(0);
-      } else {
-        arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
-        val_load = cur_arg;
-      }
-      flag_load = true;
     } else if (cur_arg == "-version" || cur_arg == "-v") {
       // We've already showed version info, so just quit.
       exit(0);
@@ -234,7 +237,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       cString name(cur_arg);
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       cString value(cur_arg);
-      sets.Add(name, value);
+      sets.Set(name, value);
     } else if (cur_arg == "-def") {
       if (arg_num + 1 == argc || arg_num + 2 == argc) {
         cerr << "'-def' option must be followed by name and value" << endl;
@@ -244,7 +247,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       cString name(cur_arg);
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       cString value(cur_arg);
-      defs.Add(name, value);
+      defs.Set(name, value);
     } else if (cur_arg == "-c" || cur_arg == "-config") {
       if (arg_num + 1 == argc || args[arg_num + 1][0] == '-') {
         cerr << "Error: Filename for configuration must be specified." << endl;
@@ -271,7 +274,6 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   // Process Command Line Flags
   if (flag_analyze) if (cfg->ANALYZE_MODE.Get() < 1) cfg->ANALYZE_MODE.Set(1);
   if (flag_interactive) if (cfg->ANALYZE_MODE.Get() < 2) cfg->ANALYZE_MODE.Set(2);
-  if (flag_load) cfg->CLONE_FILE.Set(val_load);
   if (flag_seed) cfg->RANDOM_SEED.Set(val_seed);
   if (flag_verbosity) cfg->VERBOSITY.Set(val_verbosity);
   

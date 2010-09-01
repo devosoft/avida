@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 3/4/06.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -35,13 +35,14 @@
 #define cOrgInterface_h
 
 class cAvidaContext;
-class cCodeLabel;
+class cBioUnit;
 class cDeme;
 class cGenome;
 class cMetaGenome;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
+class cString;
 template <class T> class tArray;
 
 
@@ -88,7 +89,6 @@ public:
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const tArray<int>& GetInputs() const = 0;
-  virtual int Debug() = 0;
   virtual const tArray<double>& GetResources() = 0;
   virtual const tArray<double>& GetDemeResources(int deme_id) = 0;  
   virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
@@ -102,7 +102,7 @@ public:
   virtual int ReceiveValue() = 0;
   virtual void SellValue(const int data, const int label, const int sell_price, const int org_id) = 0;
   virtual int BuyValue(const int label, const int buy_price) = 0;
-  virtual bool InjectParasite(cOrganism* parent, const cCodeLabel& label, const cGenome& injected_code) = 0;
+  virtual bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;

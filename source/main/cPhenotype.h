@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "phenotype.hh" prior to 12/5/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -43,8 +43,8 @@
 #ifndef cCodeLabel_h
 #include "cCodeLabel.h"
 #endif
-#ifndef tHashTable_h
-#include "tHashTable.h"
+#ifndef tHashMap_h
+#include "tHashMap.h"
 #endif
 #ifndef cWorld_h
 #include "cWorld.h"
@@ -137,7 +137,7 @@ private:
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
   tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB 
   tArray<double> cur_task_time;    // Time at which each task was last performed; WRE 03-18-07
-  tHashTable<void*, cTaskState*> m_task_states;
+  tHashMap<void*, cTaskState*> m_task_states;
   tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   tArray<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
@@ -171,6 +171,7 @@ private:
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   // 4. Records from this organism's life...
+  int num_divides_failed; //Number of failed divide events @LZ
   int num_divides;       // Total successful divides organism has produced.
   int generation;        // Number of birth events to original ancestor.
   int cpu_cycles_used;   // Total CPU cycles consumed. @JEB
@@ -268,11 +269,10 @@ private:
   inline void SetInstSetSize(int inst_set_size);
 
   
-  cPhenotype(cWorld* world);
-
-  
 public:
   cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
+  cPhenotype(cWorld* world, int parent_generation);
+
 
   cPhenotype(const cPhenotype&); 
   cPhenotype& operator=(const cPhenotype&); 
@@ -282,6 +282,8 @@ public:
 	
   bool OK();
 
+  void ResetMerit(const cGenome & _cgenome);
+  void Sterilize();
   // Run when being setup *as* and offspring.
   void SetupOffspring(const cPhenotype & parent_phenotype, const cGenome & _genome);
 
@@ -406,7 +408,9 @@ public:
   int GetLastCollectSpecCount(int spec_id) const { assert(initialized == true); return last_collect_spec_counts[spec_id]; }
 
   int GetNumDivides() const { assert(initialized == true); return num_divides;}
-  int GetGeneration() const { assert(initialized == true); return generation; }
+  int GetNumDivideFailed() const { assert(initialized == true); return num_divides_failed;}
+
+  int GetGeneration() const { return generation; }
   int GetCPUCyclesUsed() const { assert(initialized == true); return cpu_cycles_used; }
   int GetTimeUsed()   const { assert(initialized == true); return time_used; }
   int GetTrialTimeUsed()   const { assert(initialized == true); return trial_time_used; }
@@ -595,6 +599,10 @@ public:
   void DoubleEnergyUsage();
   void HalveEnergyUsage();
   void DefaultEnergyUsage();
+  
+  //LZ
+  void DivideFailed();
+
   
   void RefreshEnergy();
   void ApplyToEnergyStore();
