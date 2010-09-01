@@ -136,7 +136,6 @@ int cPopulationInterface::GetFacing()
 int cPopulationInterface::GetFacedCellID()
 {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced();
-	assert(cell.IsOccupied());
 	return cell.GetID();
 }
 
