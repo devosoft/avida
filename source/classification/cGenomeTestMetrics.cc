@@ -45,6 +45,7 @@ cGenomeTestMetrics::cGenomeTestMetrics(cAvidaContext& ctx, cBioGroup* bg)
   
   cPhenotype& phenotype = test_info.GetTestPhenotype();
   m_fitness = test_info.GetGenotypeFitness();
+  m_colony_fitness = test_info.GetColonyFitness();
   m_merit = phenotype.GetMerit().GetDouble();
   m_executed_size = phenotype.GetExecutedSize();
   m_copied_size = phenotype.GetCopiedSize();

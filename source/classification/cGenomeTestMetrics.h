@@ -36,6 +36,7 @@ class cGenomeTestMetrics
 private:
   bool m_is_viable;
   double m_fitness;
+  double m_colony_fitness;
   double m_merit;
   int m_copied_size;
   int m_executed_size;
@@ -49,6 +50,7 @@ private:
 public:
   bool IsViable() const { return m_is_viable; }
   double GetFitness() const { return m_fitness; }
+  double GetColonyFitness() const { return m_colony_fitness; }
   double GetMerit() const { return m_merit; }
   int GetLinesCopied() const { return m_copied_size; }
   int GetLinesExecuted() const { return m_executed_size; }

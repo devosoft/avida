@@ -40,6 +40,9 @@
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
+#ifndef cGenomeTestMetrics_h
+#include "cGenomeTestMetrics.h"
+#endif
 #ifndef cLocalMutations_h
 #include "cLocalMutations.h"
 #endif
@@ -151,15 +154,6 @@ private:
     ~cNetSupport();
   };
   cNetSupport* m_net;
-  
-  mutable struct sTestData
-  {
-    double fitness;
-    double merit;
-    double colony_fitness;
-
-    sTestData() : fitness(-1) { ; }
-  } m_test_data;
   
   
   cOrganism(); // @not_implemented
@@ -678,24 +672,19 @@ private:
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
   void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
-  
-  void calcTestData(cAvidaContext& ctx) const;
 };
 
 
 inline double cOrganism::GetTestFitness(cAvidaContext& ctx) const {
-  if (m_test_data.fitness == -1) calcTestData(ctx);
-  return m_test_data.fitness;
+  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetFitness();
 }
 
 inline double cOrganism::GetTestMerit(cAvidaContext& ctx) const {
-  if (m_test_data.fitness == -1) calcTestData(ctx);
-  return m_test_data.merit;
+  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetMerit();
 }
 
 inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
-  if (m_test_data.fitness == -1) calcTestData(ctx);
-  return m_test_data.colony_fitness;
+  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetColonyFitness();
 }
 
 #endif
