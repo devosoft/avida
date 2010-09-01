@@ -1,0 +1,370 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Sep  1 14:02:51 2010
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set ID
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+4 org:file_load   76 738 100 97 389 0.249357 0 0 -1 0 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 570,571,572,574,575,576,577,578,581,583,584,585,586,587,589,590,591,594,595,596,598,600,601,602,603,604,605,606,607,608,609,610,611,612,613,614,615,616,617,618,621,623,624,625,626,627,629,660,661,662,663,664,665,666,667,669,670,671,672,673,674,675,676,677,678,679,680,681,682,683,684,685,686,687,688,689 388,329,32,388,330,66,297,65,363,363,330,388,33,363,363,32,363,329,363,329,33,33,362,363,363,65,388,65,33,32,362,329,363,66,296,329,329,330,32,362,388,388,363,363,66,329,297,363,363,363,362,330,362,388,32,330,363,388,329,329,362,329,362,330,388,330,297,330,296,296,329,329,388,297,388,330 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 
+395 org:divide  3 2 10 100 97 389 0.249357 2 27 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuccccccccccccccccccccyxCcauzab 309,319 33,32 -1,-1 
+1085 org:divide  770 1 1 100 0 0 0 6 89 -1 2 0 1 rycazccccccccccccccccccccncccccsccccccccccccccccccccccccccccccccccccccccccccccccccpctccccccyxCcaszab 171 343 -1 
+970 org:divide  790 1 1 100 89 379 0.234828 5 77 -1 2 0 1 rycazcccccccccccccycccccccccqccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 129 313 -1 
+740 org:divide  2 1 3 100 97 388 0.25 4 63 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 108 329 -1 
+809 org:divide  429 1 1 100 0 0 0 4 64 -1 2 0 1 rycazucqcccicckccccdccccccccccAccccccccccccccccccccccccccclccccccccccccccccccccccccccccccccyxCcaszab 87 1089 -1 
+1154 org:divide  997 1 1 100 0 0 0 6 97 -1 4 0 1 rycazcuccBvccccDccceccccchcccckccccccccccccccccccccccncccccccccccjcccccccccxccccdccccceccccyxCcfszab 79 84 -1 
+1039 org:divide  1 1 1 100 0 0 0 6 88 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccjcccccccccccccccccccccccccccccccccccccccccgcccccyxCcaszab 67 363 -1 
+1016 org:divide  732 1 1 100 0 0 0 6 88 -1 2 0 1 rycazccctccvcccycccccccccccccccccccDccccccccccpccccccccccccccpccccccccccccccccccckcccccccccyxucaszab 65 379 -1 
+832 org:divide  2 2 2 100 97 388 0.25 5 64 -1 1 0 1 rycazcccccccccccccccccccccpccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 35,36 330,362 -1,-1 
+993 org:divide  1 1 1 100 0 0 0 5 78 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccvcccccccccccccccccccccccccccccccccccccccAcccccyxCcaszab 0 651 -1 
+1141 org:divide  3 1 1 100 0 0 0 6 91 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccacccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 517 297 -1 
+1118 org:divide  768 1 1 100 0 0 0 6 90 -1 2 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccyxbcauzab 480 302 -1 
+428 org:divide  3 1 3 100 0 0 0 2 28 -1 1 0 1 rycazcccccccccDcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccCccccccccyxCcauzab 407 1452 -1 
+37 org:divide  3 3 14 100 97 388 0.25 1 12 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccfcccccccccccccccccccccccccccccyxCcauzab 364,365,372 296,362,329 -1,-1,-1 
+1164 org:divide  735 1 1 100 0 0 0 7 100 -1 3 0 1 rycazccccccccbcBcccccccccccccccccccccccccccccccccccccccccccccccwcccccccccccccccccccccccccccyxCcatzab 287 33 -1 
+1003 org:divide  1 1 1 100 97 389 0.249357 6 87 -1 1 0 1 rycazcccccccccccccccccccccccccccwccccccccccccccccccccccccccaccccccccccccccccccrccccccccccccyxCcaszab 152 62 -1 
+1072 org:divide  409 1 1 100 0 0 0 6 89 -1 3 0 1 rycazecccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccnccccccccccccceccccccccccyxCcatzab 128 330 -1 
+681 org:divide  478 2 10 100 97 387 0.250646 4 50 -1 3 0 1 rycazcpcccccccccccccccccccccccccccvcccccccdccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 51,130 386,327 -1,-1 
+911 org:divide  674 1 1 100 97 387 0.250646 6 76 -1 3 0 1 rycazcccccccccccccccccuccccccccccccccccccccccccccccccccccccccjccccccccccccczctccccccchcccccyxCcaszab 1 369 -1 
+1174 org:divide  4 1 1 100 0 0 0 7 100 -1 1 0 1 rycazccccccccccccccccccccccccxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 668 33 -1 
+921 org:divide  3 2 2 100 97 388 0.25 5 76 -1 1 0 1 rycazccccccccccccccccckccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 454,472 387,363 -1,-1 
+829 org:divide  212 1 1 100 0 0 0 4 64 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccyxCcarzab 385 1089 -1 
+944 org:divide  139 1 1 100 97 386 0.251295 5 77 -1 2 0 1 rycazcccccccccmccdcccccccccceccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 298 362 -1 
+139 org:divide  2 3 11 100 97 388 0.25 1 13 -1 1 0 1 rycazccccccccccccccccccccccceccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 275,280,296 330,362,32 -1,-1,-1 
+783 org:divide  2 3 3 100 97 388 0.25 4 64 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccccccccccccccccccccyxCcatzab 270,283,299 32,33,363 -1,-1,-1 
+1013 org:divide  655 1 1 100 0 0 0 6 88 -1 2 0 1 rycazccccccccccccckcccccccccccccccccccccccccccccccccccccccccccctcccccccccccccccccccccccccccyxCcaszab 167 387 -1 
+1082 org:divide  2 1 1 100 0 0 0 6 89 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccvccccccccccyxCcatzab 117 374 -1 
+1036 org:divide  874 1 1 100 0 0 0 6 88 -1 3 0 1 rycazccccccvcccscccccccccccccccccccccgccccccpcpcccccccccccccccccccccccccccmDcccccBcchccccccyxCcaszab 76 375 -1 
+1128 org:divide  797 1 1 100 0 0 0 6 90 -1 3 0 1 rycazcccccccckcccccciccccccicccccccccccccccccccclccfccccccccccccccceccccccccCccccccccccccccyxCcasBab 72 264 -1 
+1105 org:divide  655 1 1 100 0 0 0 6 90 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccdccccccctcccccccccycccccccccccccccccyxCcaszau 16 323 -1 
+1 org:file_load   10 223 100 97 389 0.249357 0 -1 -1 0 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 2,10,11,15,27,74,157,162,168,177 388,388,296,362,263,362,388,32,329,388 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1 
+756 org:divide  3 3 4 100 97 388 0.25 4 63 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 511,531,534 330,363,362 -1,-1,-1 
+1147 org:divide  3 1 1 100 0 0 0 6 92 -1 1 0 1 rycazccccccccccccccccccccccccccccccicccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 498 264 -1 
+825 org:divide  3 1 2 100 97 389 0.249357 4 64 -1 1 0 1 rycazccccccccccccccccccacccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 366 296 -1 
+894 org:divide  3 1 2 100 97 389 0.249357 5 76 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuccccccccccccccccccccccccyxCcauzab 314 388 -1 
+480 org:divide  3 2 7 100 98 685 0.143066 3 38 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxucauzab 302,320 159,168 -1,-1 
+1170 org:divide  2 1 1 100 0 0 0 7 100 -1 1 0 1 rycazccccccccccccccccccBccccccccccccccccccccccccccccccccccccccccccccccccccccccccCccccccccccyxCcatzab 297 33 -1 
+1078 org:divide  2 1 1 100 0 0 0 6 89 -1 1 0 1 rycazcczcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 230 363 -1 
+1101 org:divide  409 1 1 100 0 0 0 6 90 -1 3 0 1 rycazccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccnccccccccccccmeccccccccccyxCcatzab 229 363 -1 
+986 org:divide  166 1 1 100 0 0 0 5 78 -1 2 0 1 rycazccxlccccdcccccccccccccccqcccccacccccccccccccccccAcccccccccccccccccccccucccccBcccccccccyxCcaszab 150 662 -1 
+434 org:divide  211 1 12 100 97 387 0.250646 2 28 -1 2 0 1 rycazcccccccccccpcccccccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 142 329 -1 
+848 org:divide  611 1 2 100 97 388 0.25 5 75 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccchcccccccccccccccccccccccccccccccclcccccyxCcatzab 107 387 -1 
+802 org:divide  434 1 3 100 97 387 0.250646 4 64 -1 3 0 1 rycazcccccccccccpcccccccgccccccccccccccscccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 99 331 -1 
+1124 org:divide  1 1 1 100 0 0 0 6 90 -1 1 0 1 rycazcccccccvccccccccccccccccccrcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCfaszab 3 297 -1 
+677 org:divide  487 3 7 100 97 385 0.251948 4 50 -1 4 0 1 rycazcccccccccccccccccccccccccqczccjccccccccccchccccccccccccccccccccccccccccccccjccccccccccyxCcauzab 489,492,497 27,27,357 -1,-1,-1 
+1091 org:divide  3 1 1 100 0 0 0 7 89 -1 1 0 1 rycazccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 391 369 -1 
+1114 org:divide  3 1 1 100 0 0 0 6 90 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccBcccccccccccccccccccccccccccccccccyxCcauzab 317 330 -1 
+1068 org:divide  3 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclccyxCcauzab 306 330 -1 
+1022 org:divide  2 1 1 100 0 0 0 6 88 -1 1 0 1 rycazcccczcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 286 387 -1 
+10 org:divide  2 1 5 100 97 387 0.250646 1 12 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfcccccccecccccccccccccyxCcatzab 203 32 -1 
+1160 org:divide  2 1 1 100 0 0 0 7 100 -1 1 0 1 rycazccccccccrccccccccccccccccccccccccccccsccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 198 33 -1 
+884 org:divide  655 1 1 100 97 388 0.25 5 75 -1 2 0 1 rycazcccccccccccccccccccccccccccDcccccccccccccccccccccccccccccctcccccccccccccccccccccccccccyxCcaszab 153 387 -1 
+953 org:divide  819 2 3 100 97 387 0.250646 5 77 -1 2 0 1 rycazcccccccccccccccccccccccccccccccccccBcccclccccccccccccccccccccccccccccccccccccccwccccccyxCcatzab 105,114 33,32 -1,-1 
+1045 org:divide  720 1 1 100 0 0 0 6 88 -1 4 0 1 rycazccccgccczcccccccnccccccccccccccccwcccccccfccerczcccccccccccccccccccccaCcccccccccccccccyxCcatzab 102 329 -1 
+861 org:divide  218 2 2 100 91 379 0.240106 5 75 -1 2 0 1 rycazcccccccccccccccccucccccccccccccccccccccccocccccccccccccccccccncccccccccccccecccyccccccyxCcatzab 46,56 378,349 -1,-1 
+1137 org:divide  490 1 1 100 0 0 0 6 91 -1 3 0 1 rycazccccccczcccccccdccccccccccccccccchccvcccccccccccccDcccccpcccccccccccccccccccccccccccccyxCcaszab 4 300 -1 
+1094 org:divide  214 1 1 100 0 0 0 6 90 -1 2 0 1 rycazccccccccccccccccccccccccgcccccccccccccccccccccccccccccccccccccccccccceccccccccccccccccyxCcawzab 757 330 -1 
+1025 org:divide  3 1 1 100 0 0 0 6 88 -1 1 0 1 rycazccccncccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 520 387 -1 
+910 org:divide  3 1 2 100 97 388 0.25 6 76 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcyxCcauzab 457 387 -1 
+1002 org:divide  686 1 1 100 0 0 0 7 87 -1 3 0 1 rymazccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccccfcccjccccccyxCcauzab 401 429 -1 
+1163 org:divide  3 1 1 100 0 0 0 8 100 -1 1 0 1 rycazccccccccccvcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 392 45 -1 
+956 org:divide  139 1 1 100 0 0 0 5 77 -1 2 0 1 rycazccccccccccccccccccccccceccacccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxzcatzab 288 705 -1 
+979 org:divide  822 1 1 100 97 386 0.251295 5 78 -1 2 0 1 rycazccccccccfcccccccccccccccccccccccocccccccccccccccccccccccccccccccclccccccccccccccccccccyxCcatzab 282 362 -1 
+1071 org:divide  692 1 1 100 0 0 0 6 89 -1 2 0 1 rycazccccccccccccccccccdccccccccccccccccccclccccccccccccccccccccccccccccccccccccgccccqcccccyxCcatzab 278 376 -1 
+1117 org:divide  3 1 1 100 0 0 0 6 90 -1 1 0 1 rycazcccccccccccccccccccccsccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 250 320 -1 
+864 org:divide  490 1 1 100 98 483 0.202899 5 75 -1 3 0 1 rycazccccccczccccczcdcccccccrccccccccchccvcccccccccccccccccccpcccccccccccccccccccccdcccccccyxCcCszab 159 330 -1 
+1140 org:divide  340 1 1 100 0 0 0 6 91 -1 2 0 1 rxcazccccccccccccccccccccccccccccccCcccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 109 231 -1 
+266 org:divide  122 1 2 100 88 378 0.232804 2 25 -1 2 0 1 rycazccccccccscccccccccccccCcccccccccjccccccccccccccccwcccccccccccccccccccickvcccccccccccccyxCcaszab 81 261 -1 
+1048 org:divide  1 1 1 100 0 0 0 6 88 -1 1 0 1 rycazcccccccccccccDccccccccccccccccccccccccccccccccccccccccccccacccccccccccccDcccccccccccccyxCcaszab 23 386 -1 
+841 org:divide  616 1 1 100 0 0 0 4 73 -1 2 0 1 rycgzcccccccccccccccccccccccccccccccccccccccccccccccccccccccoccccccccccccccccccccccccccccccyxbcaxzab 5 858 -1 
+752 org:divide  3 2 3 100 97 388 0.25 4 63 -1 1 0 1 rycazccccccccccccccccccccncccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 451,458 329,330 -1,-1 
+1166 org:divide  920 1 1 100 0 0 0 7 100 -1 2 0 1 rycazcccccccccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccByxCcauzab 376 15 -1 
+936 org:divide  37 1 1 100 97 388 0.25 5 76 -1 2 0 1 rycazcccccccchcccccccccccccccccccccccccccccccccccccccccccccccfcccccccccccccccccccccccccccccyxCcauzab 375 362 -1 
+1051 org:divide  521 1 1 100 0 0 0 6 89 -1 3 0 1 rycazrccccccccccccccccccccccccccccccccccccccccccccccnccccccccccccccccccccccccccccccccccccckyxCcatzab 199 363 -1 
+1143 org:divide  557 1 1 100 0 0 0 6 91 -1 3 0 1 rycazccccdcccccccccccccccccccccccccccycccccwmccccecccccccccccccccccccccfccccpccccccccccccccyxCcaszab 169 232 -1 
+913 org:divide  2 1 1 100 0 0 0 5 76 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccyxCcatzau 96 726 -1 
+959 org:divide  1 1 1 100 97 383 0.253264 5 77 -1 1 0 1 rycazcccccccccccccccccccccccccccccDccccccccccccccccchccccccccccgcccccccocccccccccccccccxcccyxCcaszab 64 329 -1 
+1028 org:divide  674 1 1 100 0 0 0 7 88 -1 3 0 1 rycazccccfccccccccccccuccccccccccccccccccccccccccccccccccccccjoccccccccyccccctcccccccccccccaxCcaszab 28 410 -1 
+614 org:divide  1 2 3 100 91 380 0.239474 3 40 -1 1 0 1 rycazccccccccccccccccccccccccocccccccccccccccccccccccncccccccccccccccccccccccccccccycccccccyxCcaszab 6,156 362,296 -1,-1 
+768 org:divide  3 1 1 100 97 388 0.25 4 63 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccyxCcauzab 501 329 -1 
+1113 org:divide  803 1 1 100 0 0 0 6 90 -1 2 0 1 rycazcccccccccccccccacccccccccccccBccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 441 297 -1 
+1044 org:divide  3 2 2 100 97 388 0.25 6 88 -1 1 0 1 rycazccccccccccccccccccccccccccDcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 390,413 0,32 -1,-1 
+1159 org:divide  139 1 1 100 0 0 0 7 100 -1 2 0 1 rycazcccccccccccccccccccccccecccccccccccccccccnccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 284 66 -1 
+1021 org:divide  654 1 1 100 0 0 0 6 88 -1 3 0 1 rycazccccccpccccpcccccccccccccccccchccccccccccccccccccccccccccccccccccccccDccccccccccccccccyxCcatzab 213 363 -1 
+975 org:divide  835 1 1 100 97 380 0.255263 5 77 -1 3 0 1 rycazccxlccccccccccccccccccccqcccxccccccccccccccccccccccccvcccccckcccccccccucccccccscccccccyxCcaszab 172 308 -1 
+1090 org:divide  942 1 1 100 0 0 0 6 89 -1 3 0 1 rycazccccccccccccccccccbcnccccncccccccAcccccccccccccccxccccCccccccccccccccccccccccpctfcccccytCcaszab 158 301 -1 
+1136 org:divide  434 1 1 100 0 0 0 6 91 -1 3 0 1 rycazcccccccccrcpcccccccgccccccccccccccccccccccccccccccccccccccxcccccccccccccccccccccccccccyxCcatzab 120 297 -1 
+699 org:divide  2 2 3 100 97 388 0.25 4 63 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccBccccccccccccccccccyxCcatzab 100,110 387,363 -1,-1 
+998 org:divide  391 1 1 100 0 0 0 5 82 -1 2 0 1 rycazrccccccccccccccccccchcccccccccccccaccccccccccccccccccccvccccjcccccccczxccccdcvccccccccyxCcfszab 86 594 -1 
+837 org:divide  391 1 1 100 98 482 0.20332 4 65 -1 2 0 1 rycazcccccccccccccccccccchcccckccccccccccccccccccccccccccccccccccjcccccccccxccccdccccccccccyxCcfszab 85 65 -1 
+1067 org:divide  1 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccgcccccwnccccccccccccccDcccccccccccccccccCccccqccccccccccccccccccccyxCcazzab 7 357 -1 
+1169 org:divide  5 1 1 100 0 0 0 7 100 -1 1 0 1 rycazccccccccccccccccccccccchccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcawzab 872 33 -1 
+916 org:divide  363 1 1 100 97 385 0.251948 5 76 -1 2 0 1 rycazcccccccccccccccccccccccccucccccxcccccccccccnccccccccccccccccccccccccccccccccccccccccccyxCcauzab 410 384 -1 
+778 org:divide  3 2 3 100 97 388 0.25 4 64 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccyxCcauzab 399,411 33,32 -1,-1 
+686 org:divide  276 2 3 100 97 386 0.251295 5 62 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccccfcccjccccccyxCcauzab 398,404 33,32 -1,-1 
+1077 org:divide  759 1 1 100 0 0 0 7 89 -1 2 0 1 rycazccccccccccccccccccccccccckccccccccccccccccccfcccccccccccccccccccccccccccccccccccccccccyxCcauzab 396 330 -1 
+939 org:divide  3 2 2 100 97 389 0.249357 6 77 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccchccccccccccccccccccccccccccccccccccyxCcauzab 395,409 330,362 -1,-1 
+1100 org:divide  3 1 1 100 0 0 0 6 90 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccgcccccccccccccccccccccccccccccccccccccccccccyxCcauzab 388 330 -1 
+1123 org:divide  2 1 1 100 0 0 0 7 90 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccoccyxCcatzab 228 297 -1 
+870 org:divide  10 2 2 100 97 385 0.251948 6 75 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfccccccceccceccrccncccyxCcatzab 191,201 384,330 -1,-1 
+1054 org:divide  2 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccgccccccccccccccccccccqccccccccccccccccccccccccccccyxCcatzab 112 355 -1 
+433 org:divide  175 1 2 100 0 0 0 2 28 -1 2 0 1 rycazccccccccccccccctcDcccccccCcccwcfcccccccccccccfcccccccccccccczcccccccccccccccccccccccccyxCcaszab 77 1568 -1 
+1146 org:divide  266 1 1 100 0 0 0 6 92 -1 3 0 1 rycazccccccccscccccccccccccCcccccccccjccccccccccccccccwccccccccccccccbccccickvcccccccccccccyxCcaszab 70 261 -1 
+640 org:divide  429 1 5 100 97 381 0.254593 3 41 -1 2 0 1 rycazccqcccicckccccccccccccccccccccccccccccccmcccccccccccclccccccccccccccccccxcccccccccccccyxCcatzab 68 367 -1 
+134 org:divide  1 1 3 100 0 0 0 1 13 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccctcccccccqxCcaszaB 8 1503 -1 
+214 org:divide  5 3 10 100 97 388 0.25 1 14 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceccccccccccccccccyxCcawzab 760,766,779 387,362,362 -1,-1,-1 
+1157 org:divide  4 1 1 100 0 0 0 8 99 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccyxCcavzab 620 66 -1 
+1088 org:divide  4 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccscccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 582 339 -1 
+398 org:divide  3 1 8 100 97 389 0.249357 2 27 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccchcccccccccccccccyxCcauzab 521 363 -1 
+1111 org:divide  701 1 1 100 0 0 0 6 90 -1 4 0 1 ryrazcccccccccccpcccccccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceccccccyxCcatzab 231 330 -1 
+1065 org:divide  2 1 1 100 0 0 0 6 89 -1 1 0 1 rycazcccccccccccccccccccccccctcccccBcccccccccccccccccccccccccccccccccccccccccDcccccccccccccyxCcatzab 227 323 -1 
+1134 org:divide  864 1 1 100 0 0 0 6 91 -1 4 0 1 rycazccccccczcccpczcdcccccccrccccccccchccvcccccckccccccccccccpcccccccBcccccccccccccdcccccccyxCcCszab 166 302 -1 
+858 org:divide  218 1 2 100 97 386 0.251295 5 75 -1 2 0 1 rycazccccccccccccccccccsccccccccccccccccccccccccccccccccccccecccccnccccccccccccceccccccccccyxCcatzab 139 53 -1 
+950 org:divide  35 1 1 100 97 387 0.250646 5 77 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccaccccdccccccccccccpcccccccyxCcatzab 121 329 -1 
+421 org:divide  1 1 2 100 97 387 0.250646 2 27 -1 1 0 1 rycazccccccccccccccccccccccccccccccoccwcscccccccccccccccccccccccjccccccccccccccccccccccccccyxCcaszab 80 366 -1 
+628 org:divide  1 1 2 100 88 378 0.232804 3 40 -1 1 0 1 rycazccpccccccccccccccccccccccccccccycccccccccccccccccccccccccccccccccccccccccccccccchcccccyxCcaszab 73 263 -1 
+490 org:divide  245 1 5 100 97 386 0.251295 3 38 -1 2 0 1 rycazccccccczcccccccdccccccccccccccccchccvcccccccccccccccccccpcccccccccccccccccccccccccccccyxCcaszab 13 300 -1 
+674 org:divide  283 1 3 100 97 388 0.25 4 50 -1 2 0 1 rycazcccccccccccccccccuccccccccccccccccccccccccccccccccccccccjccccccccccccccctcccccccccccccyxCcaszab 9 19 -1 
+1098 org:divide  5 1 1 100 0 0 0 6 90 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgcccccccccccyxCcawzab 803 297 -1 
+845 org:divide  4 3 3 100 97 388 0.25 5 74 -1 1 0 1 rycazcccmccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 580,593,597 387,33,32 -1,-1,-1 
+1121 org:divide  788 1 1 100 0 0 0 6 90 -1 3 0 1 rycazchcccccccccrcccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccyxCcauzab 537 330 -1 
+891 org:divide  3 1 1 100 0 0 0 5 76 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccynCcauzab 328 792 -1 
+730 org:divide  681 1 3 100 97 384 0.252604 5 63 -1 4 0 1 rycazcpcccccccccccccccccccccccccccvcccccccdccccccccccccccccccccccccxccccccccvccccccccccccccyxCcatzab 233 383 -1 
+1075 org:divide  2 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccycccccccccccccccccccccccccccccccccccyxCcatzab 133 363 -1 
+753 org:divide  611 2 2 100 97 387 0.250646 4 63 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccckcccccccccccccclcccccyxCcatzab 30,47 363,362 -1,-1 
+1167 org:divide  674 1 1 100 0 0 0 8 100 -1 3 0 1 rycazccccccchccccceccwuccccccccccccccccccccccccccccccccccccckjcccccccccccBccctcccccccccccccyxCcaszab 17 17 -1 
+1144 org:divide  100 1 1 100 0 0 0 6 92 -1 2 0 1 rycazccccccqccccccccccccccccCcccccccccccccccccccccccccwcccccccccccccccccccdcccccccccccjocccyxCcaszab 12 237 -1 
+721 org:divide  4 2 4 100 97 388 0.25 4 63 -1 1 0 1 rycazccccccccccccccccccccccczccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 619,622 32,33 -1,-1 
+1135 org:divide  5 1 1 100 0 0 0 6 91 -1 1 0 1 rqcazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcawzab 554 298 -1 
+629 org:divide  2 3 6 100 97 388 0.25 3 40 -1 1 0 1 rycazccccccccccccccccccccccccccclccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 273,276,277 330,33,32 -1,-1,-1 
+1112 org:divide  988 1 1 100 0 0 0 6 90 -1 3 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccegcccccccccyxCcatzpb 217 330 -1 
+1158 org:divide  851 1 1 100 0 0 0 7 99 -1 3 0 1 rycazcccccccccccncccccccccchccccccccccccccccccccccccccocccccccBcccccccccccccccccczcccccccxcyxCcatzab 206 33 -1 
+974 org:divide  1 1 1 100 97 388 0.25 5 77 -1 1 0 1 rycazccccccvccccccfccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 155 305 -1 
+905 org:divide  725 1 1 100 0 0 0 6 76 -1 3 0 1 rycazcccccccbccccccBccucccccccccccccccccvcccccAhcccccbccccccccccccccccccccccwccccccccccccccyxCcaszab 154 774 -1 
+1066 org:divide  919 1 1 100 0 0 0 6 89 -1 4 0 1 rycmzcccccccccecpcccccccgccecccccccclcccccccccccccccccccccclcccccccccccccccccccchccccccccccyxCcatzab 42 396 -1 
+859 org:divide  727 2 2 100 87 375 0.232 5 75 -1 3 0 1 rycazcccccccchccpccccccccccccccccccccccccccccccicccccccccccccccccccccczcccCccccccccccccccccyxCcatzab 32,34 329,330 -1,-1 
+100 org:divide  1 1 3 100 87 375 0.232 1 13 -1 1 0 1 rycazccccccqccccccccccccccccCcccccccccccccccccccccccccwcccccccccccccccccccdccccccccccccocccyxCcaszab 19 270 -1 
+813 org:divide  1 1 1 100 0 0 0 4 64 -1 1 0 1 ryckzccccccccccccmccccccccccccccccccccccccxccccccccccccccccccccccccccccccqccccccccccccccCccyxCcaszab 14 1092 -1 
+1012 org:divide  241 2 2 100 97 386 0.251295 7 87 -1 3 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccgcccccciccccccccccccccccccccccjcccccccccyxCcauzab 512,522 32,33 -1,-1 
+713 org:divide  47 1 4 100 97 387 0.250646 4 63 -1 2 0 1 rycazccczcccccccccccccccccccccccccccccccccccccccccccoccccccccccccccccccccccccccccccccccccccyxCcauzab 474 386 -1 
+759 org:divide  3 1 2 100 97 388 0.25 5 63 -1 1 0 1 rycazccccccccccccccccccccccccckccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 417 329 -1 
+920 org:divide  3 1 2 100 97 389 0.249357 5 76 -1 1 0 1 rycazcccccccccccccsccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 380 15 -1 
+1104 org:divide  979 1 1 100 0 0 0 6 90 -1 3 0 1 rycazccccccccfcccccccccccccccccccccccoccccccccccccccccccccccwccccccccclccccccccccccccccccccyxCcatzab 274 352 -1 
+1173 org:divide  367 1 1 100 0 0 0 7 100 -1 2 0 1 rycazcccccccbcccccccccccccocccccccccccccccccccccccccccccccccccccccccqccccccccccccccccccccccyxCcatzab 205 0 -1 
+851 org:divide  722 2 2 100 97 383 0.253264 5 75 -1 2 0 1 rycazcccccccccccncccccccccchccccccccccccccccccccccccccocccccccBccccccccccccccccccccccccccxcyxCcatzab 183,197 382,32 -1,-1 
+1081 org:divide  1 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccscccccccccccccccccccccccccccccctccccccccccccccccccccccccccccccccccccccccqcccccyxCcaszab 175 346 -1 
+805 org:divide  409 1 2 100 96 384 0.25 4 64 -1 3 0 1 rycazccccccccccccccccccccccccccccccclccccccccccccccccccccccnccccccnccccccccccccceccccccccccyxCcatzab 143 329 -1 
+1127 org:divide  805 1 1 100 0 0 0 6 90 -1 4 0 1 rycazccccccccccccccccccccccccccccccclccccccccccccccccccccccnccccccncccccccccccccecwccccccccyxCcatzab 140 330 -1 
+1035 org:divide  858 2 2 100 97 386 0.251295 6 88 -1 3 0 1 rycazccccccccccccccccccsccccccccccccccccccccccccccccccccccccecccccncccccccccccwceccccccccccyxCcatzab 126,148 53,20 -1,-1 
+874 org:divide  732 1 1 100 97 386 0.251295 5 75 -1 2 0 1 rycazccccccvcccsccccccccccccccccccccccccccccccpccccccccccccccccccccccccccccDcccccBcchccccccyxCcaszab 83 45 -1 
+345 org:divide  1 1 2 100 98 686 0.142857 2 26 -1 1 0 1 rycazccccccccccccccccccccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccpcccccyxacaszab 75 181 -1 
+391 org:divide  1 1 2 100 98 483 0.202899 2 27 -1 1 0 1 rycazcccccccccccccccccccchcccccccccccccccccccccccccccccccccccccccjcccccccccxccccdccccccccccyxCcfszab 69 101 -1 
+1058 org:divide  429 1 1 100 0 0 0 6 89 -1 2 0 1 rAcazccqcccicckccccccccccccccccccccccccccccccceccccccccccclccccccccccccccccccccccccccccccccybCcaszab 63 377 -1 
+1150 org:divide  1 1 1 100 0 0 0 6 93 -1 1 0 1 wycazcccccccccccccccccccccccccccccccccccccccccccccccccccBccccccccccccccccccccccccccccccccccyxCcaszab 18 231 -1 
+1063 org:divide  5 1 1 100 0 0 0 7 89 -1 1 0 1 rycazcccccccccccccccccccclcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcawzab 863 363 -1 
+212 org:divide  3 2 6 100 97 388 0.25 1 14 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccyxCcauzab 378,381 387,330 -1,-1 
+5 org:file_load   286 1445 100 97 389 0.249357 0 0 -1 0 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcawzab 330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,540,541,542,543,544,545,546,547,548,549,550,551,552,553,555,556,557,558,559,560,561,562,563,564,565,566,567,568,569,630,631,632,633,634,635,636,637,638,639,640,641,642,643,644,645,646,647,648,649,650,651,652,653,654,655,656,657,658,659,690,691,692,693,694,695,696,697,698,699,700,701,702,703,704,705,706,707,708,709,710,711,712,713,714,715,716,717,718,719,720,721,723,724,725,726,727,728,729,730,731,732,733,734,735,736,737,738,739,740,742,743,744,745,747,748,749,750,751,752,753,754,755,756,758,759,761,762,763,764,765,767,768,769,770,771,772,773,774,775,776,777,778,780,781,782,783,784,785,786,787,788,789,791,792,793,794,795,797,798,799,800,801,802,804,805,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825,826,827,828,829,830,831,832,833,834,835,836,837,838,839,840,841,842,843,844,845,846,847,848,849,850,851,852,853,854,855,856,857,858,859,860,861,862,864,865,866,867,868,869,870,871,873,874,875,876,877,878,879,880,881,882,883,884,885,886,887,888,889,890,891,892,893,894,895,896,897,898,899 329,329,363,388,33,363,363,388,32,388,388,388,363,32,363,363,66,33,297,330,363,363,65,296,362,363,296,363,363,362,329,362,362,363,362,329,297,388,329,330,363,296,297,363,32,388,363,362,65,330,330,330,33,296,297,363,363,329,33,362,32,363,388,388,363,33,32,32,330,362,388,388,388,329,363,33,329,330,33,363,329,330,388,329,363,362,388,388,33,363,388,363,330,363,329,388,329,363,388,329,363,330,33,362,363,32,329,32,362,362,388,388,297,33,388,330,363,329,329,32,362,330,362,363,363,296,329,362,363,297,330,362,362,362,296,33,388,329,296,329,362,330,362,330,297,330,330,388,330,66,330,32,388,66,330,363,362,33,329,329,32,388,32,33,330,363,65,362,329,329,388,362,32,32,33,362,32,329,362,363,388,33,362,363,32,32,362,362,33,363,33,363,33,388,33,362,363,388,388,330,388,362,329,330,329,388,330,330,297,388,296,362,330,363,297,388,32,263,329,329,33,329,362,363,296,297,362,363,264,363,363,329,388,363,296,362,330,362,32,230,0,363,388,362,362,330,388,330,388,0,296,388,388,330,296,32,329,388,362,33,32,330,388,388,33,263,330,330,32,329,329,330,388,329,363,296,33,297,329,363,388,32,362,388,362,32 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 
+948 org:divide  139 2 2 100 97 387 0.250646 5 77 -1 2 0 1 rycazccccccccccccccccccccccceccccccccccccccccccccccccnccccccccccccccccccccccctcccccccccccccyxCcatzab 290,294 336,369 -1,-1 
+764 org:divide  2 1 2 100 97 388 0.25 4 63 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccjcccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 235 362 -1 
+1040 org:divide  478 1 1 100 0 0 0 7 88 -1 3 0 1 rycazccccccccccccccccccccccccccccDvccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 141 361 -1 
+1109 org:divide  970 1 1 100 0 0 0 6 90 -1 3 0 1 rycazcccccccccccccycccccccccqccccccccccccccccccccccccccccccccccccccccccccccccccccccccgcccccyxCcotzab 138 284 -1 
+1132 org:divide  2 1 1 100 0 0 0 6 91 -1 1 0 1 rycszccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 116 289 -1 
+1017 org:divide  409 1 1 100 0 0 0 6 88 -1 3 0 1 rycazccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccnccccccccccccceccccccccccyBCcatzab 91 429 -1 
+1155 org:divide  837 1 1 100 0 0 0 6 98 -1 3 0 1 rycazBcccccccccccccccccDchcccckccccccccccccccccccccccccccccccccccjcccccccccxccccdccccccccccyxgcfszab 66 99 -1 
+879 org:divide  1 1 1 100 97 389 0.249357 5 75 -1 1 0 1 rycazcccccccccccccccccccccchcccccccucccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 29 362 -1 
+810 org:divide  557 1 1 100 0 0 0 4 64 -1 3 0 1 BycazcccccccccccccccccjccccccccccccccycccccwcccccecccccccccccccccccccccfccccpccccccccccccccyxCorszab 20 1053 -1 
+1060 org:divide  4 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccncccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 628 363 -1 
+1175 org:divide  748 1 1 100 0 0 0 7 100 -1 3 0 1 rycazccccccsccccccccccccccccccxcccccccccccccccccccccccccccpccccccccccccccccccccccccccccccccyxCcauzab 502 0 -1 
+1037 org:divide  3 1 1 100 0 0 0 7 88 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccAccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 459 387 -1 
+807 org:divide  3 2 2 100 97 388 0.25 4 64 -1 1 0 1 rycazccccccccccccccccccccccccccBccccccccccccccccccccccccccccccccccccccccccccaccccccccccccccyxCcauzab 429,446 329,330 -1,-1 
+968 org:divide  3 2 2 100 97 389 0.249357 6 77 -1 1 0 1 rycazccccccccccccccccvcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 427,433 348,381 -1,-1 
+991 org:divide  595 1 2 100 97 387 0.250646 5 78 -1 2 0 1 rycazccccckcccccccccccccccccccccvccccccccccccccccccccccccccccccccccccccccccccccccncccccccccyxCcauzab 424 292 -1 
+922 org:divide  3 1 1 100 98 488 0.20082 5 76 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCceuzab 397 243 -1 
+715 org:divide  3 1 1 100 0 0 0 4 63 -1 1 0 1 rycazccccccccccccccccccccccCcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwxCcauzab 373 1154 -1 
+1083 org:divide  3 1 1 100 0 0 0 6 89 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccAccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 369 363 -1 
+692 org:divide  2 1 1 100 97 386 0.251295 4 62 -1 1 0 1 rycazccccccccccccccccccdccccccccccccccccccclccccccccccccccccccccccccccccccccccccgccccccccccyxCcatzab 291 362 -1 
+876 org:divide  3 2 2 100 97 388 0.25 6 75 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccBccccccccccccccccccccccccccccccccccccccccvcyxCcauzab 256,261 382,349 -1,-1 
+508 org:divide  267 1 2 100 0 0 0 3 38 -1 2 0 1 AyDazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 184 1523 -1 
+830 org:divide  312 1 1 100 0 0 0 4 64 -1 2 0 1 rycazccccccccbccccccccccccccccccccccccccccccccccccccccccaqcccccccccccccccccccccccccccccccpcmxCcaszab 89 1101 -1 
+1152 org:divide  345 1 1 100 0 0 0 5 95 -1 2 0 1 ryAazccccccccccccccccccccckccccccccmccccccccccccccccccchcccccocccccccccccccccccccccccpcccccyxacaszab 88 162 -1 
+2 org:file_load   29 383 100 97 389 0.249357 0 0 -1 0 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 31,41,44,50,90,95,97,103,104,118,123,131,134,149,188,192,193,194,196,207,211,216,219,220,221,224,239,285,293 329,388,362,388,388,296,297,296,329,329,329,362,362,329,329,33,362,362,32,363,263,264,362,297,388,329,296,363,32 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 
+1129 org:divide  490 1 1 100 0 0 0 6 91 -1 3 0 1 rychzccccccczcccccucdcccccccccAccccccchccvccccccccchcccccccccpcccccccccccccccccccccccccdcccyxCcaszab 21 292 -1 
+923 org:divide  5 1 2 100 88 379 0.23219 6 76 -1 1 0 1 rycazcccccccccccyccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcawzab 790 329 -1 
+3 org:file_load   122 908 100 97 389 0.249357 0 0 -1 0 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 240,241,242,243,244,245,246,247,248,249,251,252,253,254,255,257,258,259,260,262,263,264,265,266,267,268,269,300,301,304,305,307,308,310,311,312,313,316,318,321,322,325,327,329,360,361,362,374,382,383,386,389,400,403,405,406,408,414,416,419,421,422,423,425,426,432,434,436,437,438,439,440,442,444,445,447,448,449,450,452,453,455,460,461,462,463,464,465,466,467,468,471,473,476,478,479,481,483,484,485,488,490,491,494,495,496,499,500,506,507,510,513,514,515,516,524,526,529,530,533,538,539 363,388,362,388,388,362,363,362,263,32,33,363,363,388,296,264,297,388,388,33,32,388,362,388,329,362,362,329,297,329,388,388,329,362,33,362,296,329,362,297,296,297,32,330,296,330,297,329,362,362,330,329,363,362,388,32,297,388,296,329,330,363,363,388,363,329,362,329,363,33,330,329,362,330,32,329,330,330,363,330,329,329,329,362,388,296,297,329,362,363,329,330,388,329,330,388,329,296,330,388,329,362,388,33,388,388,363,330,32,388,362,362,263,363,264,330,32,362,363,362,330,363 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 
+900 org:divide  764 1 1 100 0 0 0 5 76 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccjcccccccccccccccwcccccccccccccccccccccccccccccccccyxCcatzak 238 713 -1 
+877 org:divide  515 1 1 100 0 0 0 5 75 -1 3 0 1 rycazcccccftcccecccccccccmccccccccAcccccccccccccccccccccucccccccccccccccccvccccccccccccccccyxCcatzab 202 781 -1 
+1130 org:divide  974 1 1 100 0 0 0 6 91 -1 2 0 1 rycazccccccvccccccfcccccccccccccccccccccccccccccccccccccccccccocccccccfccacccccccccccccccccyxCcaszab 173 371 -1 
+693 org:divide  611 1 1 100 0 0 0 4 62 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccxccccccccccccccccccccccccccccccccccccccccccccclcccccyxCcatzaw 111 1122 -1 
+946 org:divide  2 1 1 100 97 388 0.25 5 77 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 101 329 -1 
+1153 org:divide  391 1 1 100 0 0 0 6 97 -1 2 0 1 rycazcccccccccccccccccccchccccccccccccccccccxccccccccccccccccccccjccyccccccxccccdccccccccccxxCcfszab 60 116 -1 
+1061 org:divide  434 1 1 100 0 0 0 6 89 -1 3 0 1 rycazcccccccccccpcccccccgcccccccccccccccccccccccccccvccccccccccccccccccccccccccccccccccccccyxCcatzab 57 377 -1 
+1107 org:divide  911 1 1 100 0 0 0 7 90 -1 4 0 1 rycazcccscccccccccccccucccctccccccccccccccccccccccccCccccycchjcccccccccccAczctccchccchcccccyxCcasrab 22 367 -1 
+1125 org:divide  5 1 1 100 0 0 0 7 90 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccaccccccccccccccccccccccccccccccccccccccyxCcawzab 746 363 -1 
+1171 org:divide  3 1 1 100 0 0 0 7 100 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 532 33 -1 
+803 org:divide  3 1 1 100 97 388 0.25 4 64 -1 1 0 1 rycazcccccccccccccccccccccccccccccBccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 443 329 -1 
+251 org:divide  3 1 3 100 97 388 0.25 2 25 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccyxCcauzab 430 365 -1 
+849 org:divide  3 2 3 100 97 389 0.249357 5 75 -1 1 0 1 rycazccccccccccccccchccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 393,412 33,388 -1,-1 
+1010 org:divide  629 2 2 100 97 385 0.251948 6 87 -1 2 0 1 rycazccccccccccccccccccccccccccclcccccccccccccccccccccxccccccccccccccccccccccccccccccccccccyxCcatzab 271,292 32,33 -1,-1 
+1056 org:divide  909 1 1 100 0 0 0 6 89 -1 2 0 1 rycazcccccceccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccccccccmcccpccxyxCcdszab 176 359 -1 
+1148 org:divide  995 1 1 100 0 0 0 6 92 -1 4 0 1 rycazccccacqccccccccccccccccCcccccccccccccccccccccccccwccccpcccncccccccccvxccccccccccccocccyxCcaszab 151 254 -1 
+1102 org:divide  950 1 1 100 0 0 0 6 90 -1 3 0 1 rycazccccccccccccccccccccccccccccccccccccccccccncccccccccccccccccaccccdccccccccccccpcccccccyxCcatzab 144 330 -1 
+895 org:divide  753 1 1 100 0 0 0 5 76 -1 3 0 1 rycaiccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccckcccccccccccccclcccccyxCcatzab 55 782 -1 
+1033 org:divide  1 1 1 100 0 0 0 6 88 -1 1 0 1 rycazcccccccccccccczcccccAccacccccctcccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 25 386 -1 
+642 org:divide  166 1 3 100 0 0 0 3 41 -1 2 0 1 rycazccxlccccccccccccccccccccqccccccccccccccccccAccccccccccicccccccccccccccucccccccccccccccyxCcaszab 24 1503 -1 
+965 org:divide  5 2 2 100 87 378 0.230159 6 77 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccCcccccccccccccccccccccccccccccccccccccyxCcawzab 722,741 362,297 -1,-1 
+1080 org:divide  3 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxkcauzab 469 397 -1 
+735 org:divide  158 3 3 100 97 389 0.249357 4 63 -1 2 0 1 rycazccccccccbcccccccccccccccccccccccccccccccccccccccccccccccccwcccccccccccccccccccccccccccyxCcatzab 279,281,289 33,32,32 -1,-1,-1 
+988 org:divide  218 1 1 100 97 387 0.250646 5 78 -1 2 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccccegcccccccccyxCcatzab 214 329 -1 
+1149 org:divide  996 1 1 100 0 0 0 6 93 -1 4 0 1 rycazcccccrccccccccccccccccccchccczccycccccccccccncccccccccccccccccccccccccccCccccccbccccccyxCcatzab 200 198 -1 
+1172 org:divide  10 1 1 100 0 0 0 8 100 -1 2 0 1 rycazcccccccccccccccccccccchcccccccccccccccccccccccccccccccccccccccccfcccccccecccccccccccccyxCcatzab 195 33 -1 
+367 org:divide  2 2 8 100 97 387 0.250646 2 26 -1 1 0 1 rycazcccccccccccccccccccccocccccccccccccccccccccccccccccccccccccccccqccccccccccccccccccccccyxCcatzab 181,187 32,361 -1,-1 
+942 org:divide  770 1 1 100 97 383 0.253264 5 77 -1 2 0 1 rycazccccccccccccccccccbcnccccncccccccccccccccccccccccxcccccccccccccccccccccccccccpctccccccyxCcaszab 178 375 -1 
+1126 org:divide  975 1 1 100 0 0 0 6 90 -1 4 0 1 rycazccxlccccccccccccccccccccqcccxcccccccjccccccccccccccccvccccccccccccccccucccccccscccccykyxCcaszab 165 308 -1 
+597 org:divide  1 1 2 100 0 0 0 3 40 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccrcccccccccccccccccccccccccccccccccccccccccccyxCcasbab 84 1584 -1 
+1103 org:divide  2 1 1 100 0 0 0 6 90 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfcccccccccccccccccccccccccyxCcatzab 59 330 -1 
+850 org:divide  611 2 2 100 97 387 0.250646 5 75 -1 2 0 1 rycazcccccccccccccccccccccczccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccyxCcatzab 38,39 363,386 -1,-1 
+919 org:divide  434 1 1 100 97 383 0.253264 5 76 -1 3 0 1 rycazcccccccccecpcccccccgccecccccccclcccccccccccccccccccccclcccccccccccccccccccccccccccccccyxCcatzab 37 362 -1 
+827 org:divide  1 1 1 100 0 0 0 4 64 -1 1 0 1 rvcazcccccccccccrccccccccccccccccccccccccccccccccAccccccccccccchccccccccccoccgcccccccccccccyxCcaszab 26 1087 -1 
+363 org:divide  3 4 11 100 97 388 0.25 2 26 -1 1 0 1 rycazcccccccccccccccccccccccccucccccccccccccccccnccccccccccccccccccccccccccccccccccccccccccyxCcauzab 394,402,415,418 27,357,60,27 -1,-1,-1,-1 
+823 org:divide  3 2 3 100 97 388 0.25 4 64 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccdcccccccccccccccccccccccccccccccccyxCcauzab 323,324 362,330 -1,-1 
+1099 org:divide  972 1 1 100 0 0 0 6 90 -1 2 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccncccccccccccccfccccccccccccccccccccccccccccyxCcatzab 222 363 -1 
+570 org:divide  105 1 4 100 87 377 0.230769 3 39 -1 2 0 1 rycazcccccrccccccccccccccccccccccczccccccccccccccccccccccccccccccccccccccccccCccccccbccccccyxCcatzab 180 264 -1 
+1168 org:divide  218 1 1 100 0 0 0 7 100 -1 2 0 1 rycazccccccccccccccccccccccvccccDcccccccccccccccccccccccccccccccchnccccccccccccceccccccccccyxCcatzab 136 24 -1 
+409 org:divide  218 4 13 100 97 386 0.251295 2 27 -1 2 0 1 rycazccccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccnccccccccccccceccccccccccyxCcatzab 132,225,234,236 362,385,296,363 -1,-1,-1,-1 
+294 org:divide  2 1 5 100 0 0 0 2 26 -1 1 0 1 rycazpcccccccccccccccccccccccmcBcccccccccchccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 125 1551 -1 
+547 org:divide  2 1 5 100 0 0 0 3 39 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccAcccccccccccccccccccccccccccccpcccccccyxCcatzab 94 1541 -1 
+340 org:divide  2 3 9 100 87 378 0.230159 2 26 -1 1 0 1 rycazccccccccccccccccccccccccccccccCcccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 92,93,113 264,263,263 -1,-1,-1 
+800 org:divide  628 1 1 100 0 0 0 4 64 -1 2 0 1 rycazccpcccccnccccccccccccccccccccccyccccccccccccccccxccccccccCcccccgccccAccccccccccchcccccyxCcaszab 71 993 -1 
+1145 org:divide  628 1 1 100 0 0 0 6 92 -1 2 0 1 rycazccpcccccccccccccccccccccchcccccecccccccccccccccccccccycccccccccccccccccccccccccchcccccyxCcaszab 61 264 -1 
+478 org:divide  41 6 12 100 97 389 0.249357 3 38 -1 2 0 1 rycazcccccccccccccccccccccccccccccvccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 40,43,45,147,218,223 388,31,31,388,388,361 -1,-1,-1,-1,-1,-1 
+1053 org:divide  749 1 1 100 0 0 0 6 89 -1 3 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccmzcnccccccccmcccceccccccccccyxCcatzab 33 363 -1 
+673 org:divide  5 2 8 100 97 388 0.25 4 50 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccBccccccccccccccccccccccccccccccccccccccccccccyxCcawzab 796,806 296,297 -1,-1 
+259 org:divide  4 2 11 100 97 389 0.249357 2 25 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccvcccccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 592,599 304,304 -1,-1 
+788 org:divide  205 1 2 100 97 389 0.249357 4 64 -1 2 0 1 rycazchcccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 518 329 -1 
+1064 org:divide  936 1 1 100 0 0 0 6 89 -1 3 0 1 rycazcccccccchcccccsccccccccccccccccccccccccccccccccccccoccccfcccccccccccccccccccccccccccccyxCcauzab 384 346 -1 
+1133 org:divide  825 1 1 100 0 0 0 6 91 -1 2 0 1 rycazccccccccccccccccccaccccccccccccxccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 363 297 -1 
+1041 org:divide  908 1 1 100 0 0 0 6 88 -1 3 0 1 rycazcccccccccccccccocccccccccccCcccccccccccccccccccccccltcccccccccccccccccccccccccccccccccyxCcatzab 295 372 -1 
+972 org:divide  2 1 1 100 97 388 0.25 5 77 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccyxCcatzab 215 362 -1 
+995 org:divide  828 1 1 100 87 372 0.233871 5 79 -1 3 0 1 rycazccccacqccccccccccccccccCcccccccccccccccccccccccccwccccccccnccccccccccxccccccccccccocccyxCcaszab 164 237 -1 
+1156 org:divide  1003 1 1 100 0 0 0 7 99 -1 2 0 1 rycazccccpcccccccoccccccccccccccwccccccccccccccccccccccccccaccccccccccccccfcccrccccccnccccpyxCcaszab 161 60 -1 
+880 org:divide  654 1 1 100 97 386 0.251295 5 75 -1 3 0 1 rycazccccccpccccpccccccccccccccccccccccccccgcccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 145 362 -1 
+1110 org:divide  2 1 1 100 0 0 0 6 90 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzqb 98 330 -1 
+857 org:divide  218 1 1 100 0 0 0 5 75 -1 2 0 1 rccazccccccccccccccccvcccccccccccccccccccccccccccccccccccmccccccccnccccccccccccceccccccccccyxCcatzab 48 717 -1 
+471 org:divide  4 2 7 100 97 387 0.250646 3 38 -1 1 0 1 rycazcccccccccccccccccccccccccccccDccccccccccccccccccccccccccccccccccccccccccccccccccccpcccyxCcavzab 573,588 386,386 -1,-1 
+241 org:divide  7 2 5 100 97 387 0.250646 2 23 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccgcccccccccccccccccccccccccccccjcccccccccyxCcauzab 525,535 66,65 -1,-1 
+977 org:divide  3 2 2 100 97 388 0.25 5 77 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccyxCcauzab 470,477 330,362 -1,-1 
+793 org:divide  3 4 4 100 97 388 0.25 4 64 -1 1 0 1 rycazcccccccccccccccccccccccmccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 420,428,431,435 363,329,330,329 -1,-1,-1,-1 
+1046 org:divide  930 1 1 100 0 0 0 6 88 -1 3 0 1 rycazcccccccccccccccccccccccxccycccccccccccccccccccccccccccccfccccccccgccccccccccccccccccccyxCcauzab 379 363 -1 
+1115 org:divide  37 1 1 100 0 0 0 7 90 -1 2 0 1 rycazccccccccccccccccccccccccccjcccccccccccccccccccccccccccccfcccccccccccccccccccccccccccccyxCcauzab 377 297 -1 
+931 org:divide  3 2 2 100 97 388 0.25 5 76 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceccccccccccccccccccccccccccyxCcauzab 367,370 330,329 -1,-1 
+103 org:divide  3 3 7 100 98 588 0.166667 1 13 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCAauzab 303,315,326 342,347,332 -1,-1,-1 
+908 org:divide  783 1 1 100 87 377 0.230769 5 76 -1 2 0 1 rycazcccccccccccccccccccccccccccCccccccccccccccccccccccclccccccccccccccccccccccccccccccccccyxCcatzab 272 362 -1 
+1092 org:divide  701 1 1 100 0 0 0 6 89 -1 4 0 1 rycazcccccccccccpcccccccgcccccccccccccccccccccccccccccccccccccccccccccccccccccDccccceccccccyxCcatzab 212 330 -1 
+701 org:divide  434 1 2 100 97 386 0.251295 4 63 -1 3 0 1 rycazcccccccccccpcccccccgccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceccccccyxCcatzab 210 329 -1 
+632 org:divide  2 1 2 100 0 0 0 3 40 -1 1 0 1 rylazccccccccccccccccccccccccccccccccccccccccccccccccccBcccccccccccccccccccccccccccccccccccyxCcatzab 209 1485 -1 
+770 org:divide  1 1 1 100 97 387 0.250646 4 63 -1 1 0 1 rycazccccccccccccccccccccnccccccccccccccccccccccccccccccccccccccccccccccccccccccccpctccccccyxCcaszab 174 343 -1 
+1161 org:divide  1 1 1 100 0 0 0 7 100 -1 1 0 1 rycazccccccccbcccccccccccccccccccccccccccccccccccccccccccccccccfccccccdcccCccccccccccccccccyxCcaszab 170 33 -1 
+747 org:divide  1 1 1 100 0 0 0 4 63 -1 1 0 1 rycuzcccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccccccccccnccccccccccccccccccyxClaszab 160 1101 -1 
+885 org:divide  2 2 2 100 97 388 0.25 6 76 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccckccccyxCcatzab 122,137 330,329 -1,-1 
+1138 org:divide  2 1 1 100 0 0 0 6 91 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccAccccccccccccccccccccccccccyxCcatzab 115 297 -1 
+218 org:divide  2 7 22 100 97 387 0.250646 1 14 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccnccccccccccccceccccccccccyxCcatzab 49,53,124,127,135,146,226 363,32,32,386,362,386,386 -1,-1,-1,-1,-1,-1,-1 
+886 org:divide  3 1 1 100 0 0 0 5 76 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzfb 523 792 -1 
+518 org:divide  3 4 6 100 97 389 0.249357 3 39 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccucccccccccccccccccccccccccccccccccccccccccyxCcauzab 519,527,528,536 376,388,310,310 -1,-1,-1,-1 
+679 org:divide  3 4 5 100 97 388 0.25 4 50 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccicccccccccccccccccccccccccccccyxCcauzab 486,487,493,504 32,297,33,362 -1,-1,-1,-1 
+748 org:divide  592 3 4 100 97 388 0.25 4 63 -1 2 0 1 rycazccccccsccccccccccccccccccccccccccccccccccccccccccccccpccccccccccccccccccccccccccccccccyxCcauzab 482,503,505 387,8,371 -1,-1,-1 
+1139 org:divide  3 1 1 100 0 0 0 6 91 -1 1 0 1 rycazcccccccccccccccccccccoccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 456 264 -1 
+1001 org:divide  722 1 2 100 97 382 0.253927 6 87 -1 2 0 1 rycazcccccccccccncccccccccccccccccccccccccccccccccccccccccBcccBcBccccccccccccccccccccccccxcyxCcatzab 204 32 -1 
+1070 org:divide  2 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccclcccccccccccccccccccccccccccccccccccccccccccccccccccccccccchcccccccccccccccccccccyxCcatzab 189 363 -1 
+1047 org:divide  367 1 1 100 0 0 0 6 88 -1 2 0 1 rycazccccccccccpccccccccccoccccccccccccccccccccccccccccccsccccccccccqccccccccccccccccccccccyxCcatzab 186 385 -1 
+840 org:divide  501 1 2 100 88 575 0.153043 4 73 -1 3 0 1 rycazccccccccccccccccccccccccccccccccccctccccccccccCccccccccccccccccecccccccccccccccccccnccyxCjatzab 185 149 -1 
+955 org:divide  218 1 1 100 96 384 0.25 5 77 -1 2 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccncccccccccccicecccccccczcyxCcatzab 119 362 -1 
+1162 org:divide  874 1 1 100 0 0 0 7 100 -1 3 0 1 rycazccccccvuccscccccccccccccccccccccccccoccccpccccccccccccqcccccccccccacccDcccccBcchccccccyxCcaszab 82 12 -1 
+1093 org:divide  728 1 1 100 0 0 0 6 89 -1 2 0 1 rycazcccccccccccccgcccccccccccccccccccccccccccccccccccccccciccccccccczcccccccccccccccccccccyxCcatzab 52 330 -1 
+1004 org:divide  4 1 2 100 97 389 0.249357 6 87 -1 1 0 1 rycazcccccccccccccccccccchcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcavzab 579 33 -1 
+751 org:divide  566 2 3 100 97 387 0.250646 4 63 -1 2 0 1 rycazccccccccccccccccccccccccccccccccccccuccccccccccccccckcpcccccccccccccccccccccccccccccccyxCcauzab 508,509 335,335 -1,-1 
+1073 org:divide  3 1 1 100 0 0 0 6 89 -1 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccccccccccyxCcauzab 475 363 -1 
+1119 org:divide  3 1 1 100 0 0 0 6 90 -1 1 0 1 rycabccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 387 330 -1 
+636 org:divide  3 2 5 100 97 388 0.25 3 41 -1 1 0 1 rycazcccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccccccctcccccyxCcauzab 368,371 312,279 -1,-1 
+820 org:divide  2 1 1 100 0 0 0 4 64 -1 1 0 1 rmcazcccccccccccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 237 1122 -1 
+912 org:divide  409 1 1 100 0 0 0 5 76 -1 3 0 1 rycazkcccccccccccccccccccccccccccccclcccccccccccccccccccccccccccccnccccccccccccceccccccccccyxCcatzab 232 726 -1 
+498 org:divide  2 1 2 100 0 0 0 3 38 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccckccccAccccccccccccccccccccyxCcatzab 208 1475 -1 
+521 org:divide  269 1 3 100 97 388 0.25 3 39 -1 2 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccnccccccccccccccccccccccccccccccccccccckyxCcatzab 190 362 -1 
+1165 org:divide  1031 1 1 100 0 0 0 7 100 -1 2 0 1 rycazccccccccccccccccccsccrcccccccvccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 182 20 -1 
+1142 org:divide  614 1 1 100 0 0 0 6 91 -1 2 0 1 rycazccccccccccccccccncccccccocccccccccccccccccccccccncccccccccccccccccccccccccccccycccccccyxCcaszab 179 264 -1 
+935 org:divide  1 1 2 100 97 388 0.25 5 76 -1 1 0 1 rycazcccccccccccccccccccccccckcccccccccccrccccccccccccccccccccccccccccccaccccccccccccccccccyxCcaszab 163 362 -1 
+866 org:divide  685 1 1 100 0 0 0 5 75 -1 4 0 1 rycazcccccccccccpcccccccgccccccccccccccccccccccccccccBcccccccvcccccccccccccccccccccccccccccyxCcatzpb 106 748 -1 
+1050 org:divide  421 1 1 100 0 0 0 6 89 -1 2 0 1 rycazcfcccccccccccccccccfccccccccccoccwcscccccccccccccccicccccccjccccccccccccccccccccDcccccyxCcaszob 78 397 -1 
+429 org:divide  1 1 2 100 97 385 0.251948 2 28 -1 1 0 1 rycazccqcccicckccccccccccccccccccccccccccccccccccccccccccclccccccccccccccccccccccccccccccccyxCcaszab 62 367 -1 
+889 org:divide  2 1 1 100 96 387 0.248062 5 76 -1 1 0 1 rycazcccccccccccccyccwcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 58 379 -1 
+728 org:divide  2 1 1 100 97 388 0.25 4 63 -1 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcccccccccccccccccccccyxCcatzab 54 329 -1 
+1031 org:divide  2 0 1 100 97 389 0.249357 6 88 100 1 0 1 rycazccccccccccccccccccsccccccccccvccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+557 org:divide  403 0 3 100 93 381 0.244094 3 39 100 2 0 1 rycazccccccccccccccccccccccccccccccccycccccwcccccecccccccccccccccccccccfccccpccccccccccccccyxCcaszab 
+996 org:divide  570 0 1 100 78 367 0.212534 5 79 99 3 0 1 rycazcccccrccccccccccccccccccccccczccycccccccccccccccccccccccccccccccccccccccCccccccbccccccyxCcatzab 
+997 org:divide  837 0 1 100 97 480 0.202083 5 81 98 3 0 1 rycazccccBccccccccccccccchcccckccccccccccccccccccccccccccccccccccjcccccccccxccccdccccccccccyxCcfszab 
+797 org:divide  587 0 1 100 86 374 0.229947 4 64 97 2 0 1 rycazcccccccckccccccicccccccccccccccccccccccccccccccccccccccccccccceccccccccCccccccccccccccyxCcaszab 
+501 org:divide  308 0 2 100 88 576 0.152778 3 38 93 2 0 1 rycazccccccccccccccccccccccccccccccccccctccccccccccCccccccccccccccccccccccccccccccccccccnccyxCjatzab 
+205 org:divide  3 0 12 100 97 389 0.249357 1 14 91 1 0 1 rycazcccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 
+166 org:divide  1 0 3 100 97 384 0.252604 1 14 91 1 0 1 rycazccxlccccccccccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccucccccccccccccccyxCcaszab 
+828 org:divide  100 0 1 100 87 372 0.233871 4 64 91 2 0 1 rycazccccccqccccccccccccccccCcccccccccccccccccccccccccwccccccccnccccccccccxccccccccccccocccyxCcaszab 
+655 org:divide  1 0 3 100 97 389 0.249357 3 41 91 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccctcccccccccccccccccccccccccccyxCcaszab 
+616 org:divide  1 0 3 100 98 687 0.142649 3 40 90 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccoccccccccccccccccccccccccccccccyxbcaszab 
+909 org:divide  1 0 1 100 97 386 0.251295 5 76 90 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccccccccmcccpcccyxCcaszab 
+595 org:divide  3 0 3 100 97 388 0.25 3 40 90 1 0 1 rycazccccckccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 
+822 org:divide  2 0 1 100 97 388 0.25 4 64 90 1 0 1 rycazccccccccccccccccccccccccccccccccocccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+930 org:divide  37 0 1 100 88 377 0.233422 5 76 89 2 0 1 rycazccccccccccccccccccccccccccycccccccccccccccccccccccccccccfccccccccgccccccccccccccccccccyxCcauzab 
+35 org:divide  2 0 7 100 97 388 0.25 1 12 89 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccacccccccccccccccccpcccccccyxCcatzab 
+732 org:divide  1 0 1 100 97 388 0.25 4 63 89 1 0 1 rycazccccccvccccccccccccccccccccccccccccccccccpccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 
+654 org:divide  211 0 7 100 97 387 0.250646 3 41 89 2 0 1 rycazccccccpccccpccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+749 org:divide  218 0 1 100 97 385 0.251948 4 63 89 2 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczcnccccccccmcccceccccccccccyxCcatzab 
+722 org:divide  2 0 1 100 97 384 0.252604 4 63 89 1 0 1 rycazcccccccccccncccccccccccccccccccccccccccccccccccccccccccccBccccccccccccccccccccccccccxcyxCcatzab 
+611 org:divide  2 0 6 100 97 388 0.25 3 40 89 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccyxCcatzab 
+720 org:divide  596 0 1 100 86 373 0.230563 4 63 89 3 0 1 rycazccccgccczccccccccccccccccccccccccwcccccccfccerczcccccccccccccccccccccaCcccccccccccccccyxCcatzab 
+158 org:divide  2 0 5 100 97 389 0.249357 1 14 88 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwcccccccccccccccccccccccccccyxCcatzab 
+727 org:divide  211 0 1 100 97 386 0.251295 4 63 88 2 0 1 rycazcccccccccccpccccccccccccccccccccccccccccccicccccccccccccccccccccczccccccccccccccccccccyxCcatzab 
+312 org:divide  1 0 4 100 97 389 0.249357 2 26 82 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccaccccccccccccccccccccccccccccccccccyxCcaszab 
+308 org:divide  2 0 2 100 87 378 0.230159 2 26 79 1 0 1 rycazccccccccccccccccccccccccccccccccccctccccccccccCcccccccccccccccccccccccccccccccccccccccyxCcatzab 
+835 org:divide  166 0 1 100 97 384 0.252604 4 65 79 2 0 1 rycazccxlccccccccccccccccccccqccccccccccccccccccccccccccccvccccccccccccccccucccccccscccccccyxCcaszab 
+566 org:divide  3 0 3 100 97 388 0.25 3 39 78 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccckcccccccccccccccccccccccccccccccccyxCcauzab 
+819 org:divide  2 0 1 100 97 388 0.25 4 64 77 1 0 1 rycazcccccccccccccccccccccccccccccccccccBccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+790 org:divide  2 0 1 100 97 388 0.25 4 64 77 1 0 1 rycazcccccccccccccccccccccccqccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+725 org:divide  283 0 1 100 97 389 0.249357 5 63 77 2 0 1 rycazcccccccccccccccccucccccccccccccccccvccccccccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 
+596 org:divide  343 0 5 100 96 387 0.248062 3 40 77 2 0 1 rycazccccgcccccccccccccccccccccccccccccccccccccccercscccccccccccccccccccccaccccccccccccccccyxCcatzab 
+47 org:divide  3 0 8 100 97 388 0.25 1 13 76 1 0 1 rycazccczccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 
+515 org:divide  331 0 3 100 97 387 0.250646 3 39 76 2 0 1 rycazcccccctcccecccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+487 org:divide  359 0 3 100 97 386 0.251295 3 38 76 3 0 1 rycazccccccccccccccccccccccccccczccjccccccccccchccccccccccccccccccccccccccccccccjccccccccccyxCcauzab 
+685 org:divide  434 0 1 100 97 387 0.250646 4 62 76 3 0 1 rycazcccccccccccpcccccccgccccccccccccccccccccccccccccccccccccvcccccccccccccccccccccccccccccyxCcatzab 
+592 org:divide  3 0 2 100 97 389 0.249357 3 40 75 1 0 1 rycazccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 
+211 org:divide  2 0 6 100 97 388 0.25 1 14 75 1 0 1 rycazcccccccccccpccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+283 org:divide  1 0 3 100 97 389 0.249357 2 25 73 1 0 1 rycazcccccccccccccccccuccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 
+245 org:divide  1 0 4 100 97 388 0.25 2 25 64 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccccpcccccccccccccccccccccccccccccyxCcaszab 
+587 org:divide  1 0 2 100 97 387 0.250646 3 40 64 1 0 1 rycazcccccccckcccccciccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 
+343 org:divide  2 0 5 100 97 389 0.249357 2 26 64 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccaccccccccccccccccyxCcatzab 
+276 org:divide  3 0 5 100 97 387 0.250646 2 25 63 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccccccccfccccccccccyxCcauzab 
+269 org:divide  2 0 2 100 97 388 0.25 2 25 63 1 0 1 rycazcccccccccccccccccccccccccccccccccccccccccccccccnccccccccccccccccccccccccccccccccccccccyxCcatzab 
+105 org:divide  2 0 2 100 87 378 0.230159 1 13 63 1 0 1 rycazcccccrccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccCccccccbccccccyxCcatzab 
+267 org:divide  2 0 1 100 98 390 0.251282 2 25 41 1 0 1 ryDazccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+175 org:divide  1 0 1 100 97 388 0.25 1 14 40 1 0 1 rycazccccccccccccccctcccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccyxCcaszab 
+7 org:divide  3 0 2 100 97 388 0.25 1 12 40 1 0 1 rycazccccccccccccccccccccccccccccccccccccccccccccccgcccccccccccccccccccccccccccccccccccccccyxCcauzab 
+403 org:divide  1 0 1 100 88 379 0.23219 2 27 39 1 0 1 rycazccccccccccccccccccccccccccccccccycccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcaszab 
+331 org:divide  2 0 1 100 97 388 0.25 2 26 39 1 0 1 rycazcccccctcccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+359 org:divide  230 0 1 100 97 387 0.250646 2 26 39 2 0 1 rycazccccccccccccccccccccccccccczcccccccccccccchccccccccccccccccccccccccccccccccjccccccccccyxCcauzab 
+230 org:divide  3 0 1 100 97 388 0.25 1 15 39 1 0 1 rycazccccccccccccccccccccccccccczccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcauzab 
+41 org:divide  2 0 2 100 97 388 0.25 1 13 38 1 0 1 rycazccccccccccccccccccccccccccccckccccccccccccccccccccccccccccccccccccccccccccccccccccccccyxCcatzab 
+122 org:divide  1 0 1 100 97 388 0.25 1 13 25 1 0 1 rycazccccccccccccccccccccccccccccccccjccccccccccccccccwccccccccccccccccccccccvcccccccccccccyxCcaszab 
