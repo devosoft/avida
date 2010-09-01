@@ -128,7 +128,6 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 		for(rx_tag_t::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
 			//std::cerr << "**********  INJECTING *********** " << i->first << " " << j->first << std::endl;
 			// ok, add this migrant to the current population:
-			int cell_id = GetRandom().GetInt(GetPopulation().GetSize());
 			GetPopulation().InjectGenome(GetRandom().GetInt(GetPopulation().GetSize()), // random cell
 																	 cGenome(cString(j->second._genome.c_str())), // genome unpacked from message
 																	 -1); // lineage label??
