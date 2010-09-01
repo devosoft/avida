@@ -287,7 +287,26 @@ bool cBGGenotype::Matches(cBioUnit* bu)
 void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)
 {
   m_active = true;
-  if (bu->GetUnitSource() != SRC_ORGANISM_FILE_LOAD) m_breed_in.Inc();
+  switch (bu->GetUnitSource()) {
+    case SRC_DEME_COMPETE:
+    case SRC_DEME_COPY:
+    case SRC_DEME_GERMLINE:
+    case SRC_DEME_REPLICATE:
+    case SRC_DEME_SPAWN:
+    case SRC_ORGANISM_COMPETE:
+    case SRC_ORGANISM_FILE_LOAD:
+    case SRC_ORGANISM_RANDOM:
+    case SRC_PARASITE_FILE_LOAD:
+      break;
+      
+    case SRC_ORGANISM_DIVIDE:
+    case SRC_PARASITE_INJECT:
+      m_breed_in.Inc();
+      break;
+      
+    default:
+      break;          
+  }
   m_total_organisms++;
   m_num_organisms++;
   m_mgr->AdjustGenotype(this, m_num_organisms - 1, m_num_organisms);
