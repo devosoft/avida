@@ -14,7 +14,7 @@ email =  covertar@gmail.com                ; Email address for the test's creato
 
 [consistency]
 enabled = yes            ; Is this test a consistency test?
-long = no                ; Is this test a long test?
+long = yes                ; Is this test a long test?
 
 [performance]
 enabled = no             ; Is this test a performance test?
