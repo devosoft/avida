@@ -32,21 +32,16 @@ lib avida-core :
     analyze/cGenotypeData.cc
     analyze/cModularityAnalysis.cc
     analyze/cMutationalNeighborhood.cc
-    analyze/cPhenPlastSummary.h
+    classification/cBGGenotype.cc
+    classification/cBGGenotypeManager.cc
+    classification/cBioGroup.cc
+    classification/cBioGroupListener.cc
+    classification/cBioGroupManager.cc
+    classification/cBioUnit.cc
     classification/cClassificationManager.cc
-    classification/cGenotype.cc
-    classification/cGenotype_BirthData.cc
-    classification/cGenotypeControl.cc
-    classification/cInjectGenotype.cc
-    classification/cInjectGenotypeControl.cc
-    classification/cInjectGenotypeQueue.cc
-    classification/cLineage.cc
+    classification/cGenomeTestMetrics.cc
     classification/cMutationSteps.cc
-    classification/cSpecies.cc
-    classification/cSpeciesControl.cc
-    classification/cSpeciesQueue.cc
-    viewer-core/cCoreView_Info.cc
-    viewer-core/cCoreView_Map.cc
+    classification/cSexualAncestry.cc
     cpu/cCodeLabel.cc
     cpu/cCPUMemory.cc
     cpu/cCPUStack.cc
@@ -90,13 +85,16 @@ lib avida-core :
     main/cInstruction.cc
     main/cLandscape.cc
     main/cLocalMutations.cc
+    main/cMetaGenome.cc
     main/cMutationLib.cc
     main/cMutationRates.cc
     main/cMxCodeArray.cc
     main/cOrganism.cc
     main/cOrgMessage.cc
+    main/cParasite.cc
     main/cPhenotype.cc
     main/cPhenPlastGenotype.cc
+    main/cPhenPlastUtil.cc
     main/cPlasticPhenotype.cc
     main/cPopulation.cc
     main/cPopulationCell.cc
@@ -125,8 +123,8 @@ lib avida-core :
     tools/cDataFileManager.cc
     tools/cDataManager_Base.cc
     tools/cDefaultMessageDisplay.cc
-    tools/cDemeProbSchedule.cc
     tools/cFile.cc
+    tools/cDemeProbSchedule.cc
     tools/cHelpAlias.cc
     tools/cHelpManager.cc
     tools/cHelpType.cc
@@ -148,7 +146,7 @@ lib avida-core :
     tools/cStringUtil.cc
     tools/cTools.cc
     tools/cWeightedIndex.cc
-;
+    ;
 
 exe avida :
     avida-core

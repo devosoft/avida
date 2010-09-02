@@ -63,5 +63,6 @@ class cMultiProcessWorld : public cWorld
 		
 		//! Process post-update events.
 		virtual void ProcessPostUpdate(cAvidaContext& ctx);
-		
+	};
+
 #endif
