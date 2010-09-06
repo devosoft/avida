@@ -2559,16 +2559,26 @@ protected:
 			cAssignRandomCellData::ReplaceCellData(cell_data, m_world->GetRandom().GetInt(min_data, max_data), deme);
 			cell_ids.insert(cell_ids.end(), extra_cell_ids.begin(), extra_cell_ids.end());
 		}
-		
+				
 		// Ok, if we're going to kill the organisms, do so:
 		if(_kill) {
 			// This is probably only compatible with the "old-style" germline
 			for(cAssignRandomCellData::CellIDList::iterator i=cell_ids.begin(); i!=cell_ids.end(); ++i) {
-				m_world->GetPopulation().KillOrganism(deme.GetCell(*i));
-				m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
-				m_world->GetPopulation().DemePostInjection(deme, deme.GetCell(*i));
+				cPopulationCell& cell = deme.GetCell(*i);				
+				if(cell.IsOccupied()) {
+					if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
+						m_world->GetPopulation().KillOrganism(cell);
+						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
+					} else {
+						cGenome genome(cell.GetOrganism()->GetGenome());
+						m_world->GetPopulation().KillOrganism(cell);
+						m_world->GetPopulation().InjectGenome(*i, SRC_ORGANISM_RANDOM, genome);
+					}
+					
+					m_world->GetPopulation().DemePostInjection(deme, cell);
+				}
 			}
-		}		
+		}
 	}
 	
 private:
