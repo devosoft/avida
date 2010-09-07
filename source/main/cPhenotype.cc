@@ -351,8 +351,8 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  // parent's resources have already been halved in DivideReset;
-  // offspring gets that value too.
+  // parent's resources have already been halved or reset in DivideReset;
+  // offspring gets that value (half or 0) too.
   for (int i = 0; i < cur_rbins_avail.GetSize(); i++)
     cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
   cur_collect_spec_counts.SetAll(0);
@@ -757,8 +757,13 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  // resources available are split in half -- the offspring gets the other half
-  for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
+  if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
+    // resources available are split in half -- the offspring gets the other half
+    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
+  }
+  else {
+    cur_rbins_avail.SetAll(0);
+  }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -929,8 +934,13 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  // resources available are split in half -- the offspring gets the other half
-  for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
+  if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
+    // resources available are split in half -- the offspring gets the other half
+    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
+  }
+  else {
+    cur_rbins_avail.SetAll(0);
+  }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
