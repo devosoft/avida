@@ -55,18 +55,22 @@ class cDataFile;
 class cBioGroup
 {
 protected:
+  int m_id;
   int m_a_refs;
   int m_p_refs;
   tArrayMap<cString, cBioGroupData*> m_data;
   
   
+  cBioGroup(); // @not_implemented
+  
+  
 public:
-  cBioGroup() : m_a_refs(0), m_p_refs(0) { ; }
+  cBioGroup(int in_id) : m_id(in_id), m_a_refs(0), m_p_refs(0) { ; }
   virtual ~cBioGroup() = 0;
   
   virtual int GetRoleID() const = 0;
   virtual const cString& GetRole() const = 0;
-  virtual int GetID() const = 0;
+  int GetID() const { return m_id; }
   
   virtual cBioGroup* ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents = NULL) = 0;
   virtual void HandleBioUnitGestation(cBioUnit* bu) = 0;

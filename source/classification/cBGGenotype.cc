@@ -33,14 +33,14 @@
 
 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
-  : m_mgr(mgr)
+  : cBioGroup(in_id)
+  , m_mgr(mgr)
   , m_src(founder->GetUnitSource())
   , m_src_args(founder->GetUnitSourceArgs())
   , m_genome(founder->GetMetaGenome())
   , m_name("001-no_name")
   , m_threshold(false)
   , m_active(true)
-  , m_id(in_id)
   , m_generation_born(founder->GetPhenotype().GetGeneration())
   , m_update_born(update)
   , m_update_deactivated(-1)
@@ -67,11 +67,11 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
 
 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props)
-: m_mgr(mgr)
+: cBioGroup(in_id)
+, m_mgr(mgr)
 , m_name("001-no_name")
 , m_threshold(false)
 , m_active(false)
-, m_id(in_id)
 , m_active_offspring_genotypes(0)
 , m_num_organisms(0)
 , m_last_num_organisms(0)

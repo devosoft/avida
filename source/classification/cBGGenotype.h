@@ -62,7 +62,6 @@ private:
     bool m_active:1;
   };
   
-  int m_id;
   int m_generation_born;
   int m_update_born;
   int m_update_deactivated;

@@ -903,6 +903,7 @@
 		705B10341073AC1F002242E6 /* instset-gx.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-gx.cfg"; sourceTree = "<group>"; };
 		705B10351073AC1F002242E6 /* instset-heads-sex.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-sex.cfg"; sourceTree = "<group>"; };
 		705B10361073AC1F002242E6 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads.cfg"; sourceTree = "<group>"; };
+		705FD5F9123A81A8002DE4B2 /* tSparseVectorList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSparseVectorList.h; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayUtils.h; sourceTree = "<group>"; };
 		706C6F480B83E69D003174C1 /* cSaleItem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSaleItem.h; sourceTree = "<group>"; };
@@ -2195,6 +2196,7 @@
 				70100BD7108F8F4F005999F0 /* cRunningStats.h */,
 				701B355F11E7744D00FEF49A /* tHashMap.h */,
 				701B365B11EE013A00FEF49A /* tIterator.h */,
+				705FD5F9123A81A8002DE4B2 /* tSparseVectorList.h */,
 			);
 			path = tools;
 			sourceTree = "<group>";
