@@ -218,6 +218,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
     case SRC_DEME_COMPETE:
     case SRC_DEME_COPY:
     case SRC_DEME_GERMLINE:
+    case SRC_DEME_RANDOM:
     case SRC_DEME_REPLICATE:
     case SRC_DEME_SPAWN:
     case SRC_ORGANISM_COMPETE:
@@ -228,6 +229,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
         case SRC_DEME_COMPETE:
         case SRC_DEME_COPY:
         case SRC_DEME_GERMLINE:
+        case SRC_DEME_RANDOM:
         case SRC_DEME_REPLICATE:
         case SRC_DEME_SPAWN:
         case SRC_ORGANISM_COMPETE:
@@ -253,6 +255,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
         case SRC_DEME_COMPETE:
         case SRC_DEME_COPY:
         case SRC_DEME_GERMLINE:
+        case SRC_DEME_RANDOM:
         case SRC_DEME_REPLICATE:
         case SRC_DEME_SPAWN:
         case SRC_ORGANISM_COMPETE:
@@ -291,6 +294,7 @@ void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)
     case SRC_DEME_COMPETE:
     case SRC_DEME_COPY:
     case SRC_DEME_GERMLINE:
+    case SRC_DEME_RANDOM:
     case SRC_DEME_REPLICATE:
     case SRC_DEME_SPAWN:
     case SRC_ORGANISM_COMPETE:

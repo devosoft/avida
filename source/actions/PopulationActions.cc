@@ -2572,7 +2572,7 @@ protected:
 					} else {
 						cGenome genome(cell.GetOrganism()->GetGenome());
 						m_world->GetPopulation().KillOrganism(cell);
-						m_world->GetPopulation().InjectGenome(*i, SRC_ORGANISM_RANDOM, genome);
+						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_RANDOM, genome);
 					}
 					
 					m_world->GetPopulation().DemePostInjection(deme, cell);

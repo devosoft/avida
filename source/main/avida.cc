@@ -54,6 +54,7 @@ const char* const BioUnitSourceMap[] = {
   "deme:compete", // SRC_DEME_COMPETE
   "deme:copy", // SRC_DEME_COPY
   "deme:germline", // SRC_DEME_GERMLINE
+  "deme:random", // SRC_DEME_RANDOM
   "deme:replicate", // SRC_DEME_REPLICATE
   "deme:spawn", // SRC_DEME_SPAWN
   "org:compete", // SRC_ORGANISM_COMPETE
