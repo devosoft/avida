@@ -107,7 +107,7 @@ public:
   void GetOccupiedNeighboringCells(std::set<cPopulationCell*>& occupied_cell_set, int depth) const;
   inline cPopulationCell& GetCellFaced() { return *(m_connections.GetFirst()); }
   int GetFacing();  // Returns the facing of this cell.
-  inline void GetPosition(int& x, int& y) { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
+  inline void GetPosition(int& x, int& y) const { x = m_x; y = m_y; } // Retrieves the position (x,y) coordinates of this cell.
   inline int GetVisits() { return m_visits; } // @WRE: Retrieves the number of visits for this cell.
   inline void IncVisits() { m_visits++; } // @WRE: Increments the visit count for a cell
   inline const cMutationRates& MutationRates() const { assert(m_mut_rates); return *m_mut_rates; }

@@ -56,6 +56,7 @@ class cEventList;
 class cHardwareManager;
 class cOrganism;
 class cPopulation;
+class cPopulationCell;
 class cStats;
 class cTestCPU;
 class cWorldDriver;
@@ -134,7 +135,10 @@ public:
 	cEventList* GetEventsList() { return m_event_list; }
 
 	//! Migrate this organism to a different world (does nothing here; see cMultiProcessWorld).
-	virtual void MigrateOrganism(cOrganism* org) { }
+	virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& parent_cell) { }
+	
+	//! Returns true if the given cell is on the boundary of the world, false otherwise.
+	virtual bool IsWorldBoundary(const cPopulationCell& cell) { return false; }
 	
 	//! Process post-update events.
 	virtual void ProcessPostUpdate(cAvidaContext& ctx) { }

@@ -50,6 +50,9 @@ class cMultiProcessWorld : public cWorld
 		boost::mpi::environment& m_mpi_env; //!< MPI environment.
 		boost::mpi::communicator& m_mpi_world; //!< World-wide MPI communicator.
 		std::vector<boost::mpi::request> m_reqs; //!< Requests outstanding since the last ProcessPostUpdate.
+		std::size_t m_universe_dim; //!< Dimension (x & y) of the universe (number of worlds along the side of a grid of worlds).
+		std::size_t m_universe_x; //!< X coordinate of this world.
+		std::size_t m_universe_y; //!< Y coordinate of this world.
 		
 	public:
 		//! Constructor.
@@ -59,7 +62,10 @@ class cMultiProcessWorld : public cWorld
 		virtual ~cMultiProcessWorld() { }
 		
 		//! Migrate this organism to a different world.
-		virtual void MigrateOrganism(cOrganism* org);
+		virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& parent_cell);
+		
+		//! Returns true if the given cell is on the boundary of the world, false otherwise.
+		virtual bool IsWorldBoundary(const cPopulationCell& cell);
 		
 		//! Process post-update events.
 		virtual void ProcessPostUpdate(cAvidaContext& ctx);

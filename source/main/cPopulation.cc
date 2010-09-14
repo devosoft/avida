@@ -364,6 +364,25 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell& parent_cell = cell_array[parent_id];
   
+	// If this is multi-process Avida, test to see if we should send the offspring
+	// to a different world.  We check this here so that 1) we avoid all the extra
+	// work below in the case of a migration event and 2) so that we don't mess up
+	// and mistakenly kill the parent.
+	if(m_world->GetConfig().ENABLE_MP.Get() && (m_world->GetConfig().MP_MIGRATION_P.Get() > 0.0)) {
+		tArray<cOrganism*> non_migrants;
+		for(int i=0; i<child_array.GetSize(); ++i) {
+			if(m_world->GetRandom().P(m_world->GetConfig().MP_MIGRATION_P.Get())) {
+				// this offspring is outta here!
+				m_world->MigrateOrganism(child_array[i], parent_cell);
+				delete child_array[i]; // this child isn't hanging around.
+			} else {
+				// boring; stay here.
+				non_migrants.Push(child_array[i]);
+			}
+		}		
+		child_array = non_migrants;
+	}
+	
   tArray<int> target_cells(child_array.GetSize());
   
   // Loop through choosing the later placement of each child in the population.
@@ -494,24 +513,13 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   
   // Place all of the offspring...
   for (int i = 0; i < child_array.GetSize(); i++) {
-		// If this is multi-process Avida, test to see if we should send the offspring
-		// to a different world:
-		if(m_world->GetConfig().ENABLE_MP.Get()) {
-			if((m_world->GetConfig().WORLD_MIGRATION_P.Get() > 0.0)
-				 && m_world->GetRandom().P(m_world->GetConfig().WORLD_MIGRATION_P.Get())) {
-				// this offspring is outta here!
-				m_world->MigrateOrganism(child_array[i]);
-				continue;
-			}
-		}		
-		
-    ActivateOrganism(ctx, child_array[i], GetCell(target_cells[i]));
-    
     //@JEB - we may want to pass along some state information from parent to child
     if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING) 
         || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
       child_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
     }
+
+    ActivateOrganism(ctx, child_array[i], GetCell(target_cells[i]));
   }
   
   return parent_alive;
@@ -629,12 +637,12 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() >= 1);
-  
+
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
-  
+	
   // Update the contents of the target cell.
   KillOrganism(target_cell);
-  target_cell.InsertOrganism(in_organism);
+	target_cell.InsertOrganism(in_organism);
   
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.m_inputs);
@@ -696,6 +704,14 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     } 
     in_organism->GetPhenotype().SetCurBonusInstCount(num_rewarded_instructions);
   }
+	
+	// ok, after we've gone through all that, there's a catch.  it's possible that the
+	// cell into which this organism has been injected is in fact a "gateway" to another
+	// world.  if so, we then migrate this organism out of this world and empty the cell.
+	if(m_world->IsWorldBoundary(target_cell)) {
+		m_world->MigrateOrganism(in_organism, target_cell);
+		KillOrganism(target_cell);
+	}	
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
@@ -4509,6 +4525,11 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
     }
   }
   
+	// we can't inject into the boundary of the world:
+	if(m_world->IsWorldBoundary(GetCell(cell_id))) {
+		cell_id += m_world->GetConfig().WORLD_X.Get()+1;
+	}	
+	
   InjectGenome(cell_id, src, genome, lineage_label);
   cPhenotype& phenotype = GetCell(cell_id).GetOrganism()->GetPhenotype();
   phenotype.SetNeutralMetric(neutral);

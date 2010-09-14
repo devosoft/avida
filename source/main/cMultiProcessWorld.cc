@@ -32,7 +32,28 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <cmath>
 #include <boost/optional.hpp>
+
+
+/*! Message that is sent from one MPI world to another during organism migration.
+ */
+struct migration_message {
+	migration_message() { }
+	migration_message(cOrganism* org, const cPopulationCell& cell) {
+		_genome = org->GetGenome().AsString();
+		cell.GetPosition(_x, _y);
+	}
+	
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version) {
+		ar & _genome & _x & _y;
+	}
+	
+	std::string _genome; //!< Genome of the organism.
+	int _x; //!< X-coordinate of the cell from which this migrant originated.
+	int _y; //!< Y-coordinate of the cell from which this migrant originated.
+};
 
 
 /*! Constructor.
@@ -41,42 +62,98 @@
  we need to tweak the random seed and data dirs a bit.
  */
 cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environment& env, boost::mpi::communicator& world) 
-	: cWorld(cfg)
-	, m_mpi_env(env)
-	, m_mpi_world(world) {
+: cWorld(cfg)
+, m_mpi_env(env)
+, m_mpi_world(world)
+, m_universe_dim(0)
+, m_universe_x(0)
+, m_universe_y(0) {
+	
+	if(GetConfig().MP_MIGRATION_STYLE.Get() == 1) {
+		m_universe_dim = static_cast<std::size_t>(sqrt(m_mpi_world.size()));
+		if((m_universe_dim*m_universe_dim) != m_mpi_world.size()) {
+			GetDriver().RaiseFatalException(-1, "Spatial Avida-MP worlds must be square.");
+		}
+		
+		m_universe_x = m_mpi_world.rank() % m_universe_dim;
+		m_universe_y = m_mpi_world.rank() / m_universe_dim;
+	}
 }
-
-
-/*! Message that is sent from one MPI world to another during organism migration.
- */
-struct migration_message {
-	migration_message() { }
-	migration_message(cOrganism* org) {
-		_genome = org->GetGenome().AsString();
-		//_merit = org->GetPhenotype().GetMerit().GetDouble();
-	}
-	
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
-		ar & _genome;
-		//ar & _merit;
-	}
-	
-	std::string _genome; //!< Genome of the organism.
-	//double _merit; //!< Merit of the organism.
-};
 
 
 /*! Migrate this organism to a different world.
  
  Send this organism to a different world, selected at random.
  */
-void cMultiProcessWorld::MigrateOrganism(cOrganism* org) {
+void cMultiProcessWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& cell) {
 	assert(org!=0);
-	int dst = GetRandom().GetInt(m_mpi_world.size());
+	int dst_world=-1;
+	
+	// which world is this organism migrating to?
+	switch(GetConfig().MP_MIGRATION_STYLE.Get()) {
+		case 0: { // mass action
+			dst_world = GetRandom().GetInt(m_mpi_world.size());
+			break;
+		}
+		case 1: { // spatial
+			int x, y;
+			cell.GetPosition(x,y);
+			if(x == 0) {
+				// migrate left
+				dst_world = m_mpi_world.rank() - 1;
+			} else if(x == (GetConfig().WORLD_X.Get()-1)) {
+				// migrate right
+				dst_world = m_mpi_world.rank() + 1;
+			} else if(y == 0) {
+				// migrate down
+				dst_world = m_mpi_world.rank() - m_universe_dim;
+			} else if(y == (GetConfig().WORLD_Y.Get()-1)) {
+				// migrate up
+				dst_world = m_mpi_world.rank() + m_universe_dim;
+			}
+			break;
+		}
+		default: {
+			GetDriver().RaiseFatalException(-1, "Unrecognized MP_MIGRATION_STYLE.");
+		}
+	}
+	
 	// the tag is set to the number of messages previously sent; this is to allow
 	// the receiver to sort messages for consistency.
-	m_reqs.push_back(m_mpi_world.isend(dst, m_reqs.size(), migration_message(org)));
+	m_reqs.push_back(m_mpi_world.isend(dst_world, m_reqs.size(), migration_message(org, cell)));
+}
+
+
+/*! Returns true if the given cell is on the boundary of the world, false otherwise.
+ */
+bool cMultiProcessWorld::IsWorldBoundary(const cPopulationCell& cell) {
+	if(GetConfig().ENABLE_MP.Get() && (GetConfig().MP_MIGRATION_STYLE.Get()==1)) {
+		int x, y;
+		cell.GetPosition(x,y);
+		
+		// if this cell isn't on the boundary of this world, then there's no way that
+		// it can cause a migration, regardless of world geometry.
+		if(!((x == 0) || (x == (GetConfig().WORLD_X.Get()-1)) || (y == 0) || (y == (GetConfig().WORLD_Y.Get()-1)))) {
+			return false;
+		}
+		
+		switch(GetConfig().WORLD_GEOMETRY.Get()) {
+			case 1: { // bounded grid: prevent the universe boundary cells from causing migrations.
+				int uni_x = x + GetConfig().WORLD_X.Get() * m_universe_x;
+				int uni_y = y + GetConfig().WORLD_Y.Get() * m_universe_y;
+				return !((uni_x == 0) || (uni_x == (GetConfig().WORLD_X.Get() * m_universe_dim-1))
+								 || (uni_y == 0) || (uni_y == (GetConfig().WORLD_Y.Get() * m_universe_dim-1)));
+			}				
+			case 2: { // torus: this always results in a migration (because, if we reached
+				// here, we know the cell is on the boundary).
+				return true;
+			}
+			default: {
+				GetDriver().RaiseFatalException(-1, "Only bounded grid and toroidal geometries are supported for cell migration.");
+			}
+		}
+	}
+	return false;	
 }
 
 
@@ -127,10 +204,30 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 	for(rx_src_t::iterator i=recvd.begin(); i!=recvd.end(); ++i) {
 		for(rx_tag_t::iterator j=i->second.begin(); j!=i->second.end(); ++j) {
 			//std::cerr << "**********  INJECTING *********** " << i->first << " " << j->first << std::endl;
-			// ok, add this migrant to the current population:
-			GetPopulation().InjectGenome(GetRandom().GetInt(GetPopulation().GetSize()), // random cell
+			// ok, add this migrant to the current population
+			migration_message& migrant = j->second;
+			int target_cell=-1;
+
+			switch(GetConfig().MP_MIGRATION_STYLE.Get()) {
+				case 0: { // mass action
+					target_cell = GetRandom().GetInt(GetPopulation().GetSize());
+					break;
+				}
+				case 1: { // spatial
+					// invert the orginating cell
+					migrant._x = GetConfig().WORLD_X.Get() - migrant._x - 1;
+					migrant._y = GetConfig().WORLD_Y.Get() - migrant._y - 1;
+					target_cell = GetConfig().WORLD_Y.Get() * migrant._y + migrant._x;
+					break;
+				}
+				default: {
+					GetDriver().RaiseFatalException(-1, "Unrecognized MP_MIGRATION_STYLE.");
+				}
+			}
+			
+			GetPopulation().InjectGenome(target_cell,
 																	 SRC_ORGANISM_RANDOM, // for right now, we'll treat this as a random organism injection
-																	 cGenome(cString(j->second._genome.c_str())), // genome unpacked from message
+																	 cGenome(cString(migrant._genome.c_str())), // genome unpacked from message
 																	 -1); // lineage label??
 		}
 	}
