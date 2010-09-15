@@ -127,6 +127,22 @@ size_t diameter(const Network& network) {
 }
 
 
+template <typename Network>
+double link_length_sum(const Network& network) {
+	typename Network::edge_iterator ei,ei_end;
+	double sum=0.0;
+	
+	for(tie(ei,ei_end)=edges(network); ei!=ei_end; ++ei) {
+		std::pair<int,int> s,d;
+		s = network[source(*ei,network)].location();
+		d = network[target(*ei,network)].location();
+		sum += sqrt(pow(s.first-d.first,2.0) + pow(s.second-d.second,2.0));
+	}
+	
+	return sum;
+}
+
+
 /*! Calculate the clustering coefficient of the passed-in network.  Clustering coefficient
  is roughly a measure of "how many of my friends are themselves friends?"
  */

@@ -2232,6 +2232,29 @@ public:
 };
 
 
+/*! Measure statistics of all deme networks.
+ */
+class cActionMeasureDemeNetworks : public cAction {
+public:
+	//! Constructor.
+	cActionMeasureDemeNetworks(cWorld* world, const cString& args) : cAction(world, args) {
+	}
+	
+	//! Retrieve this class's description.
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Called to process this event.
+  virtual void Process(cAvidaContext& ctx) {
+		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {			
+			cDeme& deme = m_world->GetPopulation().GetDeme(i);
+			m_world->GetStats().NetworkTopology(deme.GetNetwork().Measure());
+		}
+	}
+	
+protected:
+};
+
+
 /*! This class rewards for data distribution among organisms in a deme.
  
  Specifically, "data" injected into a single cell-data field in the deme should eventually
@@ -2304,6 +2327,35 @@ public:
 		double size = deme.GetSize() * 1000; // Scaled by 1000 (arbitrary) to get the fraction > 1.0.
 		double msg_count = m_message_counter.GetMessageCount(deme);
 		return pow(received + 1.0 + size / msg_count, 2.0);
+	}	
+};
+
+
+
+class cActionDistributeDataCheaply : public cActionDistributeData {
+public:
+	cActionDistributeDataCheaply(cWorld* world, const cString& args) : cActionDistributeData(world, args) {
+		m_world->GetConfig().DEME_NETWORK_TOPOLOGY_FITNESS.Set(4); // link length sum
+	}
+	
+	//! Destructor.
+	virtual ~cActionDistributeDataCheaply() { }
+	
+	static const cString GetDescription() { return "No arguments."; }
+	
+	//! Calculate the current fitness of this deme.
+	virtual double Fitness(cDeme& deme) {
+		// First, get the number that have received the data (and set their opinion):
+		unsigned int received = received_data(deme);
+		
+		// If not everyone has the data yet, we're done:
+		if(received < (unsigned int)deme.GetSize()) {
+			return pow((double)received + 1.0, 2.0);
+		}
+		
+		// sum the euclidean lengths of all links in the network:
+		double link_length_sum = deme.GetNetwork().Fitness(false);
+		return pow(received + 1.0 + 1000.0/link_length_sum, 2.0);
 	}	
 };
 
@@ -4725,8 +4777,11 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
 	
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
+	action_lib->Register<cActionMeasureDemeNetworks>("MeasureDemeNetworks");
 	action_lib->Register<cActionDistributeData>("DistributeData");
 	action_lib->Register<cActionDistributeDataEfficiently>("DistributeDataEfficiently");
+	action_lib->Register<cActionDistributeDataCheaply>("DistributeDataCheaply");
+
 	action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
 	action_lib->Register<cActionCountOpinions>("CountOpinions");

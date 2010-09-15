@@ -120,6 +120,11 @@ public:
   bool TestOnDivide();
   //! Send a message to the faced organism.
   bool SendMessage(cOrgMessage& msg);
+	//! Send a message to the organism in the given cell.
+	bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
+	//! Send a message to the cell with the given cell id.
+	bool SendMessage(cOrgMessage& msg, int cellid);	
+	//! Broadcast a message.
   bool BroadcastMessage(cOrgMessage& msg, int depth);
   bool BcastAlarm(int jump_label, int bcast_range);  
   void DivideOrgTestamentAmongDeme(double value);
@@ -128,25 +133,23 @@ public:
 
   int GetStateGridID(cAvidaContext& ctx);
 	
+  void Move(cAvidaContext& ctx, int src_id, int dest_id);
+
 	// Reputation
 	void RotateToGreatestReputation();
 	void RotateToGreatestReputationWithDifferentTag(int tag);
 	void RotateToGreatestReputationWithDifferentLineage(int line);
 	
 	// -------- Network creation support --------
+public:
 	//! Link this organism's cell to the cell it is currently facing.
 	void CreateLinkByFacing(double weight=1.0);
 	//! Link this organism's cell to the cell with coordinates (x,y).
 	void CreateLinkByXY(int x, int y, double weight=1.0);
 	//! Link this organism's cell to the cell with index idx.
 	void CreateLinkByIndex(int idx, double weight=1.0);
-
-  void Move(cAvidaContext& ctx, int src_id, int dest_id);
-
-
-protected:
-	//! Internal-use method to consolidate message-sending code.
-	bool SendMessage(cOrgMessage& msg, cPopulationCell& rcell);
+	//! Broadcast a message to all organisms that are connected by this network.
+	bool NetworkBroadcast(cOrgMessage& msg);
 	
 	// -------- HGT support --------
 public:

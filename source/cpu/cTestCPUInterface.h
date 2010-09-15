@@ -113,7 +113,9 @@ public:
 	void CreateLinkByXY(int x, int y, double weight=1.0) { }
 	//! Link this organism's cell to the cell with index idx.
 	void CreateLinkByIndex(int idx, double weight=1.0) { }
-	
+	//! Broadcast a message to all organisms that are connected by this network.
+	bool NetworkBroadcast(cOrgMessage& msg) { return false; }
+
 	//! HGT donation (does nothing).
 	void DoHGTDonation(cAvidaContext& ctx) { }
 	//! HGT conjugation (does nothing).

@@ -952,6 +952,8 @@ public:
 	bool Inst_CreateLinkByXY(cAvidaContext& ctx);
 	//! Create a link to the cell specified by index.
 	bool Inst_CreateLinkByIndex(cAvidaContext& ctx);
+	//! Broadcast a message in the communication network.
+	bool Inst_NetworkBroadcast1(cAvidaContext& ctx);
 };
 
 

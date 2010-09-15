@@ -2962,6 +2962,15 @@ void cStats::PrintGroupIds(const cString& filename)
 	
 }
 
+/*! Track named network stats.
+ */
+void cStats::NetworkTopology(const network_stats_t& ns) {
+	for(network_stats_t::const_iterator i=ns.begin(); i!=ns.end(); ++i) {
+		m_network_stats[i->first].Add(i->second);
+	}
+}
+
+
 /*! Print and reset network statistics.
  */
 void cStats::PrintDemeNetworkData(const cString& filename) {
@@ -2969,6 +2978,12 @@ void cStats::PrintDemeNetworkData(const cString& filename) {
   
   df.WriteComment("Deme network statistics");
   df.WriteTimeStamp();
+	df.Write(GetUpdate(), "Update [update]");
+	for(avg_network_stats_t::iterator i=m_network_stats.begin(); i!=m_network_stats.end(); ++i) {
+		df.Write(i->second.Average(), i->first.c_str());
+	}
+	df.Endl();
+	m_network_stats.clear();
 }
 
 /*! Called when an organism metabolizes a genome fragment.

@@ -42,50 +42,69 @@ class cPopulationCell;
 class cDemeTopologyNetwork : public cDemeNetwork {
 public:	
 	enum FitnessType {
-		MIN_SIZE,
-		MIN_DIAMETER,
-		MIN_CPL,
-		MAX_CC,
-		MIN_CC,
-		TGT_CC,
-		CPL_AND_EDGES_1,
-		CPL_AND_EDGES_2,
-		CPL_AND_EDGES_3,
-		CPL_AND_EDGES_LADDER_1,
-		CPL_AND_EDGES_LADDER_2
+		MIN_CPL=0,
+		MAX_CC=1,
+		MIN_CC=2,
+		TGT_CC=3,
+		LENGTH_SUM=4,
 	};
 	
-	//! The internal vertex properties.
+	//! Internal vertex properties.
 	struct vertex_properties {
 		vertex_properties() { }
 		vertex_properties(std::pair<int,int> pos, int cell_id) : _x(pos.first), _y(pos.second), _cell_id(cell_id) { }
-		int _x, _y, _cell_id;
+		std::pair<int,int> location() const { return std::make_pair(_x,_y); }
+		int _x, _y, _cell_id; // coordinates and cell id of this vertex, used to relate it back to the population.
+	};
+	
+	//! Internal edge properties
+	struct edge_properties {
+		edge_properties() { }
+		edge_properties(int t) : _t(t) { }
+		int _t; //!< Time (update) at which this edge was (last!) added to the network.
 	};
 	
   //! An ease-of-use typedef to support the distributed construction of a network.
-  typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, vertex_properties> Network;
+  typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, vertex_properties, edge_properties> Network;
   
   //! A map of cell IDs to vertex descriptors.
   typedef std::map<int, Network::vertex_descriptor> CellVertexMap;
   
   //! Map of cell IDs to counts.
   typedef std::map<int, unsigned int> CellCountMap;
-  
+	
+  //! Function object to remove edges if they've decayed.
+	struct edge_decayed {
+		edge_decayed(int n, int d, Network& net) : _now(n), _decay(d), _network(net) { }
+		bool operator()(Network::edge_descriptor e);
+		int _now, _decay;
+		Network& _network;
+	};
+	
 	//! Constructor.
 	cDemeTopologyNetwork(cWorld* world, cDeme& deme);
 	
+	//! Destructor.
+	virtual ~cDemeTopologyNetwork() { }
+	
 	//! Called at the end of every update.
-	virtual void ProcessUpdate() { }
+	virtual void ProcessUpdate();
 	
 	//! Connect u->v with weight w.
 	virtual void Connect(cPopulationCell& u, cPopulationCell& v, double w=1.0);
+	
+	//! Broadcast a message to connected cells.
+	virtual void BroadcastToConnected(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface);
 	
 	//! Called when the organism living in cell u dies.
 	virtual void OrganismDeath(cPopulationCell& u) { }
 	
 	//! Returns a network-defined fitness.
-	virtual double Fitness() const;
-
+	virtual double Fitness(bool record_stats=true) const;
+	
+	//! Measure statistics of this network.
+	virtual cStats::network_stats_t Measure() const;
+	
 protected:
 	Network m_network; //!< Underlying network model.
 	CellVertexMap m_cv; //!< Map of cell ids to vertex descriptors.

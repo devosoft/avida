@@ -734,6 +734,7 @@ public:
 	CONFIG_ADD_VAR(DEME_NETWORK_TYPE, int, 0, "0=topology, structure of network determines fitness.");
 	CONFIG_ADD_VAR(DEME_NETWORK_REQUIRES_CONNECTEDNESS, int, 1, "Whether the deme's network must be connected before an actual fitness is calculated.");
 	CONFIG_ADD_VAR(DEME_NETWORK_TOPOLOGY_FITNESS, int, 0, "Network measure used to determine fitness; see cDemeTopologyNetwork.h.");
+	CONFIG_ADD_VAR(DEME_NETWORK_LINK_DECAY, int, 0, "Number of updates after which a link decays; 0=no decay (default).");
 	
 
 	// -------- Horizontal Gene Transfer (HGT) config options --------

@@ -648,7 +648,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("create-link-facing", &cHardwareCPU::Inst_CreateLinkByFacing, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("create-link-xy", &cHardwareCPU::Inst_CreateLinkByXY, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("create-link-index", &cHardwareCPU::Inst_CreateLinkByIndex, nInstFlag::STALL),
-		
+		tInstLibEntry<tMethod>("network-bcast1", &cHardwareCPU::Inst_NetworkBroadcast1, nInstFlag::STALL),
+
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
   };
@@ -9025,4 +9026,19 @@ bool cHardwareCPU::Inst_CreateLinkByIndex(cAvidaContext& ctx) {
   return true;
 }
 
-
+/*! Broadcast a message in the communication network.
+ 
+ Messages sent by this instruction are only sent to organisms that they are connected to
+ via a cDemeNetwork.
+ 
+ NOTE: These messages are still retrieved in the normal way!
+ */
+bool cHardwareCPU::Inst_NetworkBroadcast1(cAvidaContext& ctx) {
+	const int label_reg = FindModifiedRegister(REG_BX);
+  const int data_reg = FindNextRegister(label_reg);
+  
+  cOrgMessage msg = cOrgMessage(m_organism);
+  msg.SetLabel(GetRegister(label_reg));
+  msg.SetData(GetRegister(data_reg));
+  return m_organism->GetOrgInterface().NetworkBroadcast(msg);
+}

@@ -332,6 +332,11 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
   return true;
 }
 
+bool cPopulationInterface::SendMessage(cOrgMessage& msg, int cellid) {
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
+	return SendMessage(msg, cell);	
+}
+
 
 /*! Send a message to the faced organism, failing if this cell does not have 
  neighbors or if the cell currently faced is not occupied.
@@ -630,8 +635,17 @@ void cPopulationInterface::CreateLinkByFacing(double weight) {
 void cPopulationInterface::CreateLinkByXY(int x, int y, double weight) {
 	cDeme* deme = GetDeme(); assert(deme);
 	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	cPopulationCell& that_cell = deme->GetCell(x % deme->GetWidth(), y % deme->GetHeight());
-	deme->GetNetwork().Connect(*this_cell, that_cell, weight);
+	// the static casts here are to fix a problem with -2^31 being sent in as a 
+	// cell coordinate.  the problem is that a 2s-complement int can hold a negative
+	// number whose absolute value is too large for the int to hold.  when this happens,
+	// abs returns the value unmodified.
+	int cellx = std::abs(static_cast<long long int>(x)) % deme->GetWidth();
+	int celly = std::abs(static_cast<long long int>(y)) % deme->GetHeight();
+	assert(cellx >= 0);
+	assert(cellx < deme->GetWidth());
+	assert(celly >= 0);
+	assert(celly < deme->GetHeight());
+	deme->GetNetwork().Connect(*this_cell, deme->GetCell(cellx, celly), weight);
 }
 
 /*! Link this organism's cell to the cell with index idx.
@@ -639,10 +653,24 @@ void cPopulationInterface::CreateLinkByXY(int x, int y, double weight) {
 void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
 	cDeme* deme = GetDeme(); assert(deme);
 	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	cPopulationCell& that_cell = deme->GetCell(idx % deme->GetSize());
-	deme->GetNetwork().Connect(*this_cell, that_cell, weight);
+	// the static casts here are to fix a problem with -2^31 being sent in as a 
+	// cell coordinate.  the problem is that a 2s-complement int can hold a negative
+	// number whose absolute value is too large for the int to hold.  when this happens,
+	// abs returns the value unmodified.
+	int that_cell = std::abs(static_cast<long long int>(idx)) % deme->GetSize();
+	assert(that_cell >= 0);
+	assert(that_cell < deme->GetSize());
+	deme->GetNetwork().Connect(*this_cell, deme->GetCell(that_cell), weight);
 }
 
+/*! Broadcast a message to all organisms that are connected by this network.
+ */
+bool cPopulationInterface::NetworkBroadcast(cOrgMessage& msg) {	
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	deme->GetNetwork().BroadcastToConnected(*this_cell, msg, this);
+	return true;
+}
 
 /*! Called when this individual is the donor organism during conjugation.
  

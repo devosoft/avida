@@ -5,3 +5,4 @@ alias avida : /avida//avida ;
 alias avida-mp : /avida-mp//avida-mp ;
 
 build-project avida ;
+explicit avida-mp ;
