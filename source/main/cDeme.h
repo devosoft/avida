@@ -395,12 +395,17 @@ public:
 	double GetNumOrgsPerformedReaction();
 	double GetTotalResourceAmountConsumed() const;  
 	void AddResourcesConsumed(double amt){	m_total_res_consumed += amt; }
+	void UpdateShannon(cPopulationCell& cell);
+	void UpdateShannonAll();
 	
 	
 private:
 	double m_total_res_consumed; //! Amount of resources consumed by deme.
 	//! get total amount of resources used
 	int m_switch_penalties; //! number of task switching penalties accumulated
+  std::vector< std::vector<double> > m_shannon_matrix;
+	int m_num_active; // number of active organisms in the lifetime of the deme
+	
 	
 };
 

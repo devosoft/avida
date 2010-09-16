@@ -1530,6 +1530,8 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
 {
   // Doesn't make sense to try and replicate a deme that *has no organisms*.
   if (source_deme.IsEmpty()) return;
+	
+	source_deme.UpdateShannonAll();
   
   // Prevent sterile demes from replicating.
   if (m_world->GetConfig().DEMES_PREVENT_STERILE.Get() && (source_deme.GetBirthCount() == 0)) {
