@@ -152,6 +152,8 @@ STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
 STATS_OUT_FILE(PrintDynamicMaxMinData,		maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
 STATS_OUT_FILE(PrintMigrationData,      migration.dat);
+STATS_OUT_FILE(PrintAgePolyethismData, age_polyethism.dat);
+
 
 // reputation
 STATS_OUT_FILE(PrintReputationData,         reputation.dat);
@@ -3193,6 +3195,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintCurrentTaskCounts>("PrintCurrentTaskCounts");
   action_lib->Register<cActionPrintPerDemeGenPerFounderData>("PrintPerDemeGenPerFounderData");
   action_lib->Register<cActionPrintDemeMigrationSuicidePoints>("PrintDemeMigrationSuicidePoints");
+	action_lib->Register<cActionPrintAgePolyethismData>("PrintAgePolyethismData");
 	
 
   //Coalescence Clade Actions

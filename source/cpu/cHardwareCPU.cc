@@ -649,6 +649,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("create-link-xy", &cHardwareCPU::Inst_CreateLinkByXY, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("create-link-index", &cHardwareCPU::Inst_CreateLinkByIndex, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("network-bcast1", &cHardwareCPU::Inst_NetworkBroadcast1, nInstFlag::STALL),
+		
+		// Division of labor instructions
+		tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
 
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -9042,3 +9045,9 @@ bool cHardwareCPU::Inst_NetworkBroadcast1(cAvidaContext& ctx) {
   msg.SetData(GetRegister(data_reg));
   return m_organism->GetOrgInterface().NetworkBroadcast(msg);
 }
+
+bool cHardwareCPU::Inst_GetTimeUsed(cAvidaContext& ctx) {
+  GetRegister(FindModifiedRegister(REG_BX)) = m_organism->GetPhenotype().GetTimeUsed();
+  return true;
+}
+

@@ -226,9 +226,9 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
       new_process->SetInstID( m_world->GetHardwareManager().GetInstSet().GetInst(var_value).GetOp() );
     }
     else if (var_name == "lethal") {
-      if (!AssertInputBool(var_value, "lethal", var_type)) 
+      if (!AssertInputDouble(var_value, "lethal", var_type)) 
         return false;
-      new_process->SetLethal(var_value.AsInt());
+      new_process->SetLethal(var_value.AsDouble());
     }
     else if (var_name == "sterilize") {
       if (!AssertInputBool(var_value, "sterilize", var_type))
@@ -1462,8 +1462,19 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       result.AddInst(inst_id);
     }
     
-    result.Lethal(cur_process->GetLethal());
-    result.Sterilize(cur_process->GetSterilize());
+		double prob_lethal = cur_process->GetLethal();
+		bool lethal = false;
+		
+		if (prob_lethal != 0 && prob_lethal != 1) {
+			// hjg
+			double x = ctx.GetRandom().GetDouble();
+			if (x < prob_lethal) {
+				lethal = true;
+			}
+		} 
+		
+    result.Lethal(lethal);    
+		result.Sterilize(cur_process->GetSterilize());
 	} 
 }
 

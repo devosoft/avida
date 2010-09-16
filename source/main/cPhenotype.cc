@@ -1273,6 +1273,12 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       cur_task_count[i]++;
       eff_task_count[i]++;
       if(result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
+			
+			// if we want to generate and age-task histogram
+			if (m_world->GetConfig().AGE_POLY_TRACKING.Get()){
+				m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
+			}
+			
     }
     
     if (result.TaskQuality(i) > 0) 

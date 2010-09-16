@@ -3015,3 +3015,55 @@ void cStats::PrintHGTData(const cString& filename) {
 	m_hgt_metabolized.Clear();
 	m_hgt_inserted.Clear();
 }
+
+/* Add that an organism performed a task at a certain age */
+void cStats::AgeTaskEvent(int org_id, int task_id, int org_age) { 
+	reaction_age_map[task_id].Add(org_age); 
+}
+
+/* Track the relationship between the age of the organism and the task that they perform */
+
+void cStats::PrintAgePolyethismData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	const cEnvironment& env = m_world->GetEnvironment();
+  const int num_tasks = env.GetNumTasks();
+  
+  df.WriteComment("Tasks, mean organism age, and variance of ages");
+  df.WriteTimeStamp();
+	df.WriteColumnDesc("Update [update]");
+	for(int i = 0; i < num_tasks; i++) {
+		string s;
+		std::stringstream out;
+		out << i;
+		s = out.str();
+		string av_comment = "Task " + s + " Organism Age Mean [meanorgage" + s + "]";
+		string err_comment = "Task " + s + " Organism Age Standard Error [errorgage" + s + "]"; 
+		df.WriteComment(av_comment.c_str());
+		df.WriteComment(err_comment.c_str());
+		
+	}
+	
+	df.FlushComments();	
+	df.Write(m_update,   "Update");
+	for(int i = 0; i < num_tasks; i++) {
+		string s;
+		std::stringstream out;
+		out << i;
+		s = out.str();
+		
+		string av_comment = "Task " + s + " Organism Age Mean [meanorgage" + s + "]";
+		string err_comment = "Task " + s + " Organism Age Standard Error [errorgage" + s + "]"; 
+		if (reaction_age_map[i].Count()  > 0) {
+			df.Write(reaction_age_map[i].Average(), av_comment.c_str());
+			df.Write(reaction_age_map[i].StdError(), err_comment.c_str());
+		} else {
+			df.Write(0, av_comment.c_str());
+			df.Write(0, err_comment.c_str());		
+		}
+		
+		reaction_age_map[i].Clear();
+	}
+	df.Endl();
+}
+
+

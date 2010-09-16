@@ -385,6 +385,11 @@ private:
 public:
 	//! Retrieve this deme's network.
 	cDemeNetwork& GetNetwork();
+	
+	// --- Division of Labor --- //
+public: 	
+	int MinNumTimesReactionPerformed();
+
 };
 
 #endif

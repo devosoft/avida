@@ -965,6 +965,16 @@ public:
 protected:
 	Consensi m_consensi; //!< Tracks when demes have reached consensus.
 	
+// ----------Division of Labor support --------
+public: 
+	
+	void PrintAgePolyethismData(const cString& filename);
+	void AgeTaskEvent(int org_id, int task_id, int org_age); 
+
+protected:
+	std::map<int, cDoubleSum> reaction_age_map;
+
+	
 // -------- Reputation support ---------
 public: 
 	// Print statistics about reputation

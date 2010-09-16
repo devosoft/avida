@@ -3302,6 +3302,8 @@ public:
  'events-killed' ...demes that have killed a certian number of events
  'sat-msg-pred'  - ...demes whose message predicate was previously satisfied
  'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
+ 'perf-reactions' ...demes that have performed X number of each task are replicated
+
  */
 
 class cActionReplicateDemes : public cAction
@@ -3324,6 +3326,7 @@ public:
     else if (in_trigger == "events-killed") m_rep_trigger = 6;
     else if (in_trigger == "sat-msg-pred") m_rep_trigger = 7;
     else if (in_trigger == "sat-deme-predicate") m_rep_trigger = 8;
+		else if (in_trigger == "perf-reactions") m_rep_trigger = 9;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;

@@ -55,7 +55,7 @@ private:
   double k_sub_m;        // k sub m variable needed for enzyme reaction
   cResource* product;    // Output resource.
   double conversion;     // Conversion factor.
-  bool lethal;		 // Lethality of reaction
+  double lethal;		 // Lethality of reaction
   bool sterilize; //!< Whether performance of this reaction sterilizes the organism.
   double deme_fraction; //!< Fraction of process reward that is applied to the organism's deme.
   bool is_germline;         // Apply reward to germline propensity instead of bonus?
@@ -111,7 +111,7 @@ public:
   double GetConversion() const { return conversion; }
   int GetInstID() const { return inst_id; }
   bool GetDepletable() const { return depletable; }
-  bool GetLethal() const { return lethal; }
+  double GetLethal() const { return lethal; }
   bool GetSterilize() const { return sterilize; }
   double GetDemeFraction() const { return deme_fraction; }
   ePHENPLAST_BONUS_METHOD GetPhenPlastBonusMethod() const { return m_ppmethod; }
@@ -132,7 +132,7 @@ public:
   void SetConversion(double _in) { conversion = _in; }
   void SetInstID(int _in) { inst_id = _in; }
   void SetDepletable(bool _in) { depletable = _in; }
-  void SetLethal(int _in) { lethal = _in; }
+  void SetLethal(double _in) { lethal = _in; }
   void SetSterile(int _in) { sterilize = _in; }
   void SetDemeFraction(double _in) { assert(_in>=0.0); assert(_in<=1.0); deme_fraction = _in; }
   void SetIsGermline(bool _in) { is_germline = _in; }

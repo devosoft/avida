@@ -980,3 +980,14 @@ cDemeNetwork& cDeme::GetNetwork() {
 	InitNetworkCreation(); 
 	return *m_network; 
 }
+
+// Returns the minimum number of times any of the reactions were performed
+int cDeme::MinNumTimesReactionPerformed()  {
+	int min = 100000000;
+	for (int i = 0; i < cur_reaction_count.GetSize(); i++ ) {
+		if (cur_reaction_count[i] < min) { min = cur_reaction_count[i]; }
+	}
+	return min;
+}
+
+

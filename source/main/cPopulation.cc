@@ -1426,6 +1426,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
  6: 'events-killed' ...demes that have killed a certian number of events
  7: 'sat-msg-pred'...demes whose movement predicate was previously satisfied
  8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
+ 9: 'perf-reactions' ...demes that have performed X number of each task are replicated
  
  */
 
@@ -1497,6 +1498,11 @@ void cPopulation::ReplicateDemes(int rep_trigger)
 			case 8: {
         if (!(source_deme.DemePredSatisfiedPreviously())) continue;
         break;
+			}
+			case 9: {
+				// hjg -- loop through each reaction. Make sure each has been performed X times. 
+				if (source_deme.MinNumTimesReactionPerformed() < m_world->GetConfig().REACTION_THRESH.Get()) continue;
+				break;
 			}
       default: {
         cerr << "ERROR: Invalid replication trigger " << rep_trigger

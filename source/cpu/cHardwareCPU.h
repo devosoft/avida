@@ -954,6 +954,10 @@ public:
 	bool Inst_CreateLinkByIndex(cAvidaContext& ctx);
 	//! Broadcast a message in the communication network.
 	bool Inst_NetworkBroadcast1(cAvidaContext& ctx);
+	
+	// -------- Division of labor support --------
+	bool Inst_GetTimeUsed(cAvidaContext& ctx);
+
 };
 
 

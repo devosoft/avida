@@ -769,6 +769,11 @@ public:
   CONFIG_ADD_GROUP(ALARM_GROUP, "Alarm Settings");
   CONFIG_ADD_VAR(BCAST_HOPS, int, 1, "Number of hops to broadcast an alarm");
   CONFIG_ADD_VAR(ALARM_SELF, bool, 0, "Does sending an alarm move sender IP to alarm label?\n0=no\n1=yes");
+	
+	//--------- Division of Labor --------------------
+	CONFIG_ADD_GROUP(DIVISION_OF_LABOR_GROUP, "Division of Labor settings");	
+	CONFIG_ADD_VAR(AGE_POLY_TRACKING, bool, 0, "Print data for an age-task histogram");
+	CONFIG_ADD_VAR(REACTION_THRESH, int, 0, "The number of times the deme must perform each reaction in order to replicate");
   
 #endif
   
