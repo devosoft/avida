@@ -1055,6 +1055,7 @@ double cDeme::GetShannonMutualInformation() {
 			}
 		}
 	}
+	shannon_sum /= log2((double)m_num_active);
 	return shannon_sum;
 }
 
