@@ -957,7 +957,13 @@ public:
 	
 	// -------- Division of labor support --------
 	bool Inst_GetTimeUsed(cAvidaContext& ctx);
+	bool Inst_DonateResToDeme(cAvidaContext& ctx);
+	// If there is a penalty for switching tasks, call this function and 
+	// the additional cycle cost will be added.
+	void IncrementTaskSwitchingCost(int cost);
+	int GetTaskSwitchingCost() { return m_task_switching_cost; }
 
+	
 };
 
 

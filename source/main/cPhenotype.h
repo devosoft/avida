@@ -185,6 +185,9 @@ private:
   double gmu_exec_time_born; //@MRR mutation-rate and gestation time scaled time of birth
   int birth_update;      // @MRR update *organism* born
 	tArray<int> testCPU_inst_count;	  // Instruction exection counter as calculated by Test CPU
+	int last_task_id; // id of the previous task
+	int num_new_unique_reactions; // count the number of new unique reactions this organism has performed.
+	double res_consumed; // amount of resources consumed since the organism last turned them over to the deme.
 
   
   // 5. Status Flags...  (updated at each divide)
@@ -378,6 +381,7 @@ public:
   const tArray<int>& GetCurCollectSpecCounts() const { assert(initialized == true); return cur_collect_spec_counts; }
   int GetCurCollectSpecCount(int spec_id) const { assert(initialized == true); return cur_collect_spec_counts[spec_id]; }
 	const tArray<int>& GetTestCPUInstCount() const { assert(initialized == true); return testCPU_inst_count; }
+
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
   void  TrialDivideReset(const cGenome & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
@@ -599,7 +603,13 @@ public:
   void DoubleEnergyUsage();
   void HalveEnergyUsage();
   void DefaultEnergyUsage();
-  
+	
+	// --- Support for Division of Labor --- //
+	int GetLastTaskID() const { return last_task_id; }
+	int  GetNumNewUniqueReactions() const {assert(initialized == true);  return num_new_unique_reactions; }
+	void  ResetNumNewUniqueReactions()  {num_new_unique_reactions =0; }
+	double GetResourcesConsumed(); 
+
   //LZ
   void DivideFailed();
 

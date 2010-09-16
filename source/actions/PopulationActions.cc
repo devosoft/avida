@@ -1931,6 +1931,15 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       m_world->GetPopulation().GetCell(i).MutationRates().Clear();
     }
+		bool Set(const cString& entry, const cString& val);
+		const cString cpy = "GERMLINE_COPY_MUT";
+		const cString ins = "GERMLINE_INS_MUT";
+		const cString del = "GERMLINE_DEL_MUT";
+		const cString val = "0.0";
+		
+		m_world->GetConfig().Set(cpy, val);
+		m_world->GetConfig().Set(ins, val);
+		m_world->GetConfig().Set(del, val);
   }
 };
 
@@ -3303,6 +3312,7 @@ public:
  'sat-msg-pred'  - ...demes whose message predicate was previously satisfied
  'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
  'perf-reactions' ...demes that have performed X number of each task are replicated
+ 'consume-res' ...demes that have consumed a sufficienct amount of resources
 
  */
 
@@ -3327,6 +3337,7 @@ public:
     else if (in_trigger == "sat-msg-pred") m_rep_trigger = 7;
     else if (in_trigger == "sat-deme-predicate") m_rep_trigger = 8;
 		else if (in_trigger == "perf-reactions") m_rep_trigger = 9;
+		else if (in_trigger == "consume-res") m_rep_trigger = 10;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;

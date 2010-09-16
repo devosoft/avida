@@ -67,6 +67,8 @@
 #include "tKVPair.h"
 #include "tHashMap.h"
 #include "tManagedPointerArray.h"
+#include "cHardwareCPU.h"
+
 
 
 #include <fstream>
@@ -1427,6 +1429,8 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
  7: 'sat-msg-pred'...demes whose movement predicate was previously satisfied
  8: 'sat-deme-predicate'...demes whose predicate has been satisfied; does not include movement or message predicates as those are organisms-level
  9: 'perf-reactions' ...demes that have performed X number of each task are replicated
+ 10:'consume-res' ...demes that have consumed a sufficienct amount of resources
+
  
  */
 
@@ -1500,8 +1504,13 @@ void cPopulation::ReplicateDemes(int rep_trigger)
         break;
 			}
 			case 9: {
-				// hjg -- loop through each reaction. Make sure each has been performed X times. 
+				//  loop through each reaction. Make sure each has been performed X times. 
 				if (source_deme.MinNumTimesReactionPerformed() < m_world->GetConfig().REACTION_THRESH.Get()) continue;
+				break;
+			}
+			case 10: {
+				// check how many resources have been consumed by the deme
+				if (source_deme.GetTotalResourceAmountConsumed() < m_world->GetConfig().RES_FOR_DEME_REP.Get()) continue;
 				break;
 			}
       default: {
@@ -1528,6 +1537,44 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
     source_deme.KillAll();
     return;
   }
+	
+	// Update stats
+	// calculate how many different reactions the deme performed.
+	double deme_performed_rx=0;
+	tArray<int> deme_reactions = source_deme.GetCurReactionCount();
+	for(int i=0; i< deme_reactions.GetSize(); ++i) {
+		//HJG
+		if (deme_reactions[i] > 0){
+			deme_performed_rx++;
+		}
+	}
+	
+	// calculate how many penalties were accrued by the orgs on average
+	double switch_penalties = source_deme.GetNumSwitchingPenalties();
+//	double num_parents = source_deme.GetNumParents();
+//	double num_births = source_deme.GetBirthCount();
+	double num_orgs_perf_reaction = source_deme.GetNumOrgsPerformedReaction();
+	double shannon_div = source_deme.GetShannonMutualInformation();
+	
+	if (switch_penalties > 0) {
+		switch_penalties = (switch_penalties/30.0)/(source_deme.GetInjectedCount() + source_deme.GetBirthCount());
+	}
+	
+	int y = 0;
+	
+	for (int i=0; i<source_deme.GetSize(); i++) {
+		int cellid = source_deme.GetCellID(i);
+		if (GetCell(cellid).IsOccupied()) {          
+			
+			cHardwareCPU* c = (cHardwareCPU*) &GetCell(cellid).GetOrganism()->GetHardware();
+			int x = c->GetTaskSwitchingCost();
+			y += x; 
+			
+		}
+	}
+	
+	m_world->GetStats().IncDemeReactionDiversityReplicationData(deme_performed_rx, switch_penalties,  \
+																															shannon_div, num_orgs_perf_reaction);
   
   //Option to bridge between kin and group selection.
   if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get())

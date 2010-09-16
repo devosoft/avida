@@ -70,6 +70,9 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation)
 , last_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())  
 , last_sense_count(m_world->GetStats().GetSenseSize())
 , generation(0)
+, last_task_id(-1)
+, num_new_unique_reactions(0)
+, res_consumed(0)
 {
   if (parent_generation >= 0) {
     generation = parent_generation;
@@ -187,6 +190,9 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   life_fitness             = in_phen.life_fitness; 	
   exec_time_born           = in_phen.exec_time_born;
   birth_update             = in_phen.birth_update;
+	num_new_unique_reactions = in_phen.num_new_unique_reactions;
+  last_task_id             = in_phen.last_task_id;
+	res_consumed             = in_phen.res_consumed;  
   
   // 5. Status Flags...  (updated at each divide)
   to_die                  = in_phen.to_die;		 
@@ -404,6 +410,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   life_fitness    = fitness; 
   exec_time_born  = parent_phenotype.exec_time_born;  //@MRR treating offspring and parent as siblings; already set in DivideReset
   birth_update    = parent_phenotype.birth_update;    
+	num_new_unique_reactions = 0;
+	last_task_id             = -1;
+	res_consumed             = 0;
   
   num_thresh_gb_donations = 0;
   num_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
@@ -782,6 +791,9 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR Treating organism as sibling
   birth_update = m_world->GetStats().GetUpdate();   
+	num_new_unique_reactions = 0;
+	last_task_id             = -1;
+	res_consumed             = 0;
   
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -965,6 +977,9 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR See DivideReset 
   birth_update  = m_world->GetStats().GetUpdate();
+	num_new_unique_reactions = 0;
+	last_task_id             = -1;
+	res_consumed             = 0;
   
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -1133,6 +1148,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   life_fitness    = fitness; 
   exec_time_born  = 0;
   birth_update    = m_world->GetStats().GetUpdate();
+	num_new_unique_reactions = clone_phenotype.num_new_unique_reactions;
+	last_task_id             = clone_phenotype.last_task_id;
+	res_consumed             = clone_phenotype.res_consumed;
   
   num_thresh_gb_donations_last = clone_phenotype.num_thresh_gb_donations_last;
   num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
@@ -1310,6 +1328,36 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
     if (result.ReactionTriggered(i) && last_reaction_count[i]==0) 
       m_world->GetStats().AddNewReactionCount(i); 
+		if (result.ReactionTriggered(i) == true) {
+			// If the organism has not performed this task,
+			// then consider it to be a task switch.
+			// If applicable, add in the penalty.
+			switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
+				case 0: { // no penalty
+					break;
+				}
+				case 1: { // "learning" cost
+					if(cur_reaction_count[i] == 0) {
+						++num_new_unique_reactions;
+					}
+					break;
+				}
+				case 2: { // "retooling" cost
+					if(last_task_id == -1) {
+						last_task_id = i;
+					}					
+					if(last_task_id != i) {
+						num_new_unique_reactions++;
+						last_task_id = i;
+					}
+					break;
+				}
+				default: {
+					assert(false);
+					break;
+				}
+			}
+		}		
   }
   
   // Update the merit bonus
@@ -1347,6 +1395,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // Denote consumed resources...
   for (int i = 0; i < res_in.GetSize(); i++) {
     res_change[i] = result.GetProduced(i) - result.GetConsumed(i);
+		res_consumed += result.GetConsumed(i);
+
   }
   
   // Update rbins as necessary
@@ -1941,3 +1991,13 @@ double cPhenotype::ConvertEnergyToMerit(double energy) const
   
   return 100 * energy / m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Get();
 }
+
+
+
+double cPhenotype::GetResourcesConsumed() 
+{
+	double r = res_consumed; 
+	res_consumed =0; 
+	return r; 
+}
+

@@ -1329,3 +1329,13 @@ bool cOrganism::IsInterrupted() {
       return true;
   return false;
 }
+
+void cOrganism::DonateResConsumedToDeme()
+{
+	cDeme* deme = m_interface->GetDeme();
+	
+	if(deme) {
+		deme->AddResourcesConsumed(m_phenotype.GetResourcesConsumed());
+	}	
+	return;
+}

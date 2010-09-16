@@ -652,6 +652,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		
 		// Division of labor instructions
 		tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
+
 
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
@@ -948,6 +950,16 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
   
   // NOTE: Organism may be dead now if instruction executed killed it (such as some divides, "die", or "kazi")
   
+	// Add in a cycle cost for switching which task is performed
+	if (m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
+		if (m_organism->GetPhenotype().GetNumNewUniqueReactions()) {
+			int cost = m_organism->GetPhenotype().GetNumNewUniqueReactions() * m_world->GetConfig().TASK_SWITCH_PENALTY.Get();
+			IncrementTaskSwitchingCost(cost);
+			
+			m_organism->GetPhenotype().ResetNumNewUniqueReactions();
+		}
+	}
+	
 #if INSTRUCTION_COUNT
   // Decrement if the instruction was not executed successfully.
   if (exec_success == false) {
@@ -9050,4 +9062,14 @@ bool cHardwareCPU::Inst_GetTimeUsed(cAvidaContext& ctx) {
   GetRegister(FindModifiedRegister(REG_BX)) = m_organism->GetPhenotype().GetTimeUsed();
   return true;
 }
+
+bool  cHardwareCPU::Inst_DonateResToDeme(cAvidaContext& ctx) {
+	m_organism->DonateResConsumedToDeme();
+	return true;
+}
+
+void cHardwareCPU::IncrementTaskSwitchingCost(int cost) {
+	m_task_switching_cost += cost;
+}
+
 

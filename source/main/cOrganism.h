@@ -663,6 +663,11 @@ public:
 	void DoHGTDonation();
 	
 	
+	// -------- Division of Labor support --------
+public: 
+	void DonateResConsumedToDeme(); //! donate consumed resources to the deme.
+	
+	
 	
 	
 	

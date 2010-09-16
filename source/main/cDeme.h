@@ -389,7 +389,19 @@ public:
 	// --- Division of Labor --- //
 public: 	
 	int MinNumTimesReactionPerformed();
-
+	void IncNumSwitchingPenalties(int pen_count) { m_switch_penalties += pen_count; }
+	int GetNumSwitchingPenalties() { return m_switch_penalties; }
+	double GetShannonMutualInformation();
+	double GetNumOrgsPerformedReaction();
+	double GetTotalResourceAmountConsumed() const;  
+	void AddResourcesConsumed(double amt){	m_total_res_consumed += amt; }
+	
+	
+private:
+	double m_total_res_consumed; //! Amount of resources consumed by deme.
+	//! get total amount of resources used
+	int m_switch_penalties; //! number of task switching penalties accumulated
+	
 };
 
 #endif

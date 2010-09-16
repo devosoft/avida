@@ -3067,3 +3067,54 @@ void cStats::PrintAgePolyethismData(const cString& filename) {
 }
 
 
+
+
+/*! Print statistics related to the diversity of reactions performed by a deme 
+ prior to replication.  */
+void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
+{
+  cDataFile& df = m_world->GetDataFile(filename);
+  
+  df.WriteComment("Avida deme reaction diversity replication data");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+	
+	while(m_switching.size()>100) {
+		m_switching.pop_front();
+	}
+	while(m_deme_diversity.size()>100) {
+		m_deme_diversity.pop_front();
+	}
+	while(m_shannon_div.size()>100) {
+		m_shannon_div.pop_front();
+	}
+	while(m_num_orgs_perf_reaction.size() > 100) {
+		m_num_orgs_perf_reaction.pop_front();
+	}
+	
+	if(m_deme_diversity.empty()) {
+		df.Write(0.0, "Mean number of different reactions by deme [demereact]");
+	} else {
+		df.Write(std::accumulate(m_deme_diversity.begin(), m_deme_diversity.end(), 0.0)/m_deme_diversity.size(), "Mean number of different reactions by deme [demereact]"); 
+	}
+	if(m_switching.empty()) {
+		df.Write(0.0, "Mean number of deme switch penalties per org  [orgpen]"); 
+	} else {
+		df.Write(std::accumulate(m_switching.begin(), m_switching.end(), 0.0)/m_switching.size(), "Mean number of deme switch penalties per org  [orgpen]");
+	}
+	if(m_shannon_div.empty()) {
+		df.Write(0.0, "Mean shannon mutual entropy per deme [shannon]"); 
+	} else {
+		df.Write(std::accumulate(m_shannon_div.begin(), m_shannon_div.end(), 0.0)/m_shannon_div.size(), "Mean shannon mutual entropy [shannon]");
+	}
+	if(m_num_orgs_perf_reaction.empty()) {
+		df.Write(0.0, "Mean number of orgs that perform a reaction [meanreact]"); 
+	} else {
+		df.Write(std::accumulate(m_num_orgs_perf_reaction.begin(), m_num_orgs_perf_reaction.end(), 0.0)/m_num_orgs_perf_reaction.size(), "Mean number of orgs that perform a reaction [meanreact]");
+	}
+	
+	
+  df.Endl();
+}
+
+

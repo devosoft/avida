@@ -95,6 +95,9 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
   last_org_task_exe_count.SetAll(0);
   last_org_reaction_count.ResizeClear(num_reactions);
   last_org_reaction_count.SetAll(0);
+	m_total_res_consumed = 0;
+	m_switch_penalties = 0;
+
   
   total_energy_donated = 0.0;
   total_energy_received = 0.0;
@@ -332,6 +335,8 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 	MSG_dropped = 0;
 	MSG_SuccessfullySent = 0;
 	MSG_sent = 0;
+	m_total_res_consumed = 0;
+	m_switch_penalties = 0;
   
 	numOrgsInterruted = 0;
   
@@ -990,4 +995,116 @@ int cDeme::MinNumTimesReactionPerformed()  {
 	return min;
 }
 
+// track the number of resources used. 
+double cDeme::GetTotalResourceAmountConsumed() const {
+	
+	double total = m_total_res_consumed;
+	return total;
+}
 
+
+/** calculate shannon mutual entropy for the relationship between individuals and tasks. A few notes: 
+ - pi - probability of an individual - 1/# orgs that do something
+ - pij - probability an individual performs a task:
+ (num times ind performs this task / num tasks performed by ind) / num orgs that did stuff
+ 
+ 
+ Because we are only including organisms that do a task in this calculation, we also need a separate
+ stat that tracks the percentage of a deme that does stuff. */
+
+double cDeme::GetShannonMutualInformation() {
+	
+	double num_is = 0; 
+	int org_react_count =0; // number of tasks done by an org.
+	int i_size = cell_ids.GetSize();
+	int j_size = cur_reaction_count.GetSize();
+	double pij_matrix [i_size][j_size];
+	double pj_array[j_size];
+	
+	// first pass through the deme calculates raw material for pij.
+	for (int i=0; i<GetSize(); i++) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
+		org_react_count = 0;		
+    if(cell.IsOccupied()) {
+      cOrganism* organism = cell.GetOrganism();
+      cPhenotype& phenotype = organism->GetPhenotype();			
+			const tArray<int> curr_react =  phenotype.GetCurReactionCount();
+			for (int j=0; j<curr_react.GetSize(); j++) {
+				
+				org_react_count += curr_react[j];
+				pij_matrix[i][j] = curr_react[j];
+				
+			}
+		} else {
+			// set to 0 if the org does not exist.
+			for (int j=0; j<j_size; j++) {
+				pij_matrix[i][j] = 0;
+			}
+		}
+		
+		// normalize the data for the current organism.
+		for (int j=0; j<j_size; j++){
+			if (pij_matrix[i][j]) pij_matrix[i][j] /= org_react_count;
+		}
+		
+		if (org_react_count > 0) num_is++;
+	}
+	
+	// exit if 0 or 1 organism did stuff.
+	if ((num_is == 0) || (num_is ==1)) return 0.0;
+	
+	
+	// create pjs
+	for (int j=0; j<j_size; j++){
+		pj_array[j] =0;
+		
+		for (int i=0; i<i_size; i++) {
+			pj_array[j] += pij_matrix[i][j];
+		}
+		pj_array[j] /= num_is;
+	}
+	//cout << endl;
+	
+	double shannon_sum = 0;
+	float pij = 0;
+	float pi = 1/num_is;
+	float pj = 0;
+	// calculate shannon mutual information
+	for (int i=0; i<i_size; i++) {
+		for (int j=0; j<j_size; j++) {
+			pij = pij_matrix[i][j]/num_is;
+			pj = pj_array[j];
+			
+			if (pi && pj && pij) {
+				shannon_sum += (pij * log2(pij / (pi * pj)));
+			}
+			
+		}
+	}
+	
+	
+	return shannon_sum;
+}
+
+double cDeme::GetNumOrgsPerformedReaction() { 
+	// number of orgs that perform tasks
+	double num_is = 0; 
+	int org_react_count =0; // number of tasks done by an org.
+	
+	
+	// first pass through the deme calculates raw material for pi, pj, and pij.
+	for (int i=0; i<GetSize(); i++) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
+		org_react_count = 0;		
+    if(cell.IsOccupied()) {
+      cOrganism* organism = cell.GetOrganism();
+      cPhenotype& phenotype = organism->GetPhenotype();			
+			const tArray<int> curr_react =  phenotype.GetCurReactionCount();
+			for (int j=0; j<curr_react.GetSize(); j++) {
+				org_react_count += curr_react[j];
+			}
+		}
+		if (org_react_count > 0) num_is++;
+	}
+	return num_is;
+}

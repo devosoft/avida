@@ -774,7 +774,10 @@ public:
 	CONFIG_ADD_GROUP(DIVISION_OF_LABOR_GROUP, "Division of Labor settings");	
 	CONFIG_ADD_VAR(AGE_POLY_TRACKING, bool, 0, "Print data for an age-task histogram");
 	CONFIG_ADD_VAR(REACTION_THRESH, int, 0, "The number of times the deme must perform each reaction in order to replicate");
-  
+  CONFIG_ADD_VAR(TASK_SWITCH_PENALTY, int, 0, "Cost of task switching in cycles");
+	CONFIG_ADD_VAR(TASK_SWITCH_PENALTY_TYPE, int, 0, "Type of task switch cost: (0) none (1) learning, (2) retooling");
+	CONFIG_ADD_VAR(RES_FOR_DEME_REP, int, 0, "The amount of resources that must be consumed prior to automatic deme replication");
+	
 #endif
   
   inline void Load(const cString& filename) { Load(filename, false); }

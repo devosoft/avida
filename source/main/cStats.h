@@ -840,6 +840,7 @@ public:
   void GermlineReplication(cGermline& source_germline, cGermline& target_germline);
   //! Print statistics about deme replication.
   void PrintDemeReplicationData(const cString& filename);
+
 	
 	void PrintDemeTreatableReplicationData(const cString& filename);
 	void PrintDemeUntreatableReplicationData(const cString& filename);
@@ -871,14 +872,14 @@ public:
   void PrintCurrentTaskCounts(const cString& filename);
   void PrintPerDemeGenPerFounderData(const cString& filename);
 	void PrintDemeMigrationSuicidePoints(const cString& filename);
-
-	
-
+	void PrintDemeReactionDiversityReplicationData(const cString& filename);
 
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
   int GetNumOccupiedDemes() { return m_num_occupied_demes; }
   
+
+	
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
   cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.
@@ -966,8 +967,26 @@ protected:
 	Consensi m_consensi; //!< Tracks when demes have reached consensus.
 	
 // ----------Division of Labor support --------
-public: 
+protected:
+	typedef std::deque<double> dblq;
+	dblq m_switching;
+	dblq m_deme_diversity;
+	dblq m_shannon_div;
+	dblq m_num_orgs_perf_reaction;
+	cDoubleSum m_deme_reaction_diversity; //!< Mean number of different reactions performed by the deme
+  cDoubleSum m_deme_switch_pen; //!< Mean number of different reactions performed by an org in the deme
+	cDoubleSum m_deme_num_res; //!< Mean number of resources used by the deme before replication
+	cDoubleSum m_deme_num_res_on_hand; //!< Mean number of resources the deme currently has
 	
+public:
+	void IncDemeReactionDiversityReplicationData(double deme_div, double switch_pen,  \
+																							  double shannon_div, double num_orgs_perf_reaction) {
+		m_switching.push_back(switch_pen); m_deme_diversity.push_back(deme_div);
+		m_shannon_div.push_back(shannon_div);
+		m_num_orgs_perf_reaction.push_back(num_orgs_perf_reaction);
+		
+	}
+		
 	void PrintAgePolyethismData(const cString& filename);
 	void AgeTaskEvent(int org_id, int task_id, int org_age); 
 
