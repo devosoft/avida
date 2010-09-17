@@ -1061,6 +1061,17 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
       }
     }
   }
+	
+	// If task switching costs need to be paid off...
+	if (m_task_switching_cost > 0) { 
+		m_task_switching_cost--;
+		// update deme level stats
+		cDeme* deme = m_organism->GetOrgInterface().GetDeme();
+		if(deme != NULL) {
+			deme->IncNumSwitchingPenalties(1);
+		}
+		return false;
+	}
 
   // If first time cost hasn't been paid off...
   if (m_has_ft_costs && m_inst_ft_cost[cur_inst.GetOp()] > 0) {
