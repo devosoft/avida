@@ -31,6 +31,7 @@
 #include "cStats.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
+#include "cDataFile.h"
 
 static const char* E="edges [e]";
 static const char* V="vertices [v]";
@@ -227,6 +228,20 @@ cStats::network_stats_t cDemeTopologyNetwork::Measure() const {
 	}
 	
 	return stats;
+}
+
+/*! Print this network's topology.
+ */
+void cDemeTopologyNetwork::PrintTopology(cDataFile& df) const {
+	Network::edge_iterator ei,ei_end;
+	for(boost::tie(ei,ei_end)=boost::edges(m_network); ei!=ei_end; ++ei) {
+		df.Write(m_world->GetStats().GetUpdate(), "Update [update]");
+		df.Write(m_deme.GetDemeID(), "Deme ID [deme]");
+		df.Write(m_network[boost::source(*ei, m_network)]._cell_id, "Source [src]");
+		df.Write(m_network[boost::target(*ei, m_network)]._cell_id, "Destination [dst]");
+		df.Write(m_world->GetStats().GetUpdate() - m_network[*ei]._t, "Age [age]");
+		df.Endl();
+	}
 }
 
 #endif

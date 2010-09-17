@@ -146,6 +146,7 @@ lib avida-core :
     tools/cStringUtil.cc
     tools/cTools.cc
     tools/cWeightedIndex.cc
+    : <link>static
     ;
 
 exe avida :

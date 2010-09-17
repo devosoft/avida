@@ -27,6 +27,7 @@
 #include "cStats.h"
 
 class cDeme;
+class cDataFile;
 class cWorld;
 class cPopulationCell;
 class cPopulationInterface;
@@ -81,6 +82,9 @@ public:
 	
 	//! Measure statistics of this network.
 	virtual cStats::network_stats_t Measure() const = 0;
+	
+	//! Print this network's topology.
+	virtual void PrintTopology(cDataFile& df) const = 0;
 	
 protected:
 	//! Constructor, called by derived classes only.

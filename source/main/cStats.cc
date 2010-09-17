@@ -33,6 +33,7 @@
 #include "cInstSet.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cDeme.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
@@ -2986,6 +2987,17 @@ void cStats::PrintDemeNetworkData(const cString& filename) {
 	m_network_stats.clear();
 }
 
+void cStats::PrintDemeNetworkTopology(const cString& filename) {
+  cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Deme network topologies.");
+  df.WriteTimeStamp();
+	
+	for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+		m_world->GetPopulation().GetDeme(i).GetNetwork().PrintTopology(df);
+	}
+}
+
+
 /*! Called when an organism metabolizes a genome fragment.
  */
 void cStats::GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment) {
@@ -3015,6 +3027,44 @@ void cStats::PrintHGTData(const cString& filename) {
 	m_hgt_metabolized.Clear();
 	m_hgt_inserted.Clear();
 }
+
+
+/*! Log a message.
+ */
+void cStats::LogMessage(const cOrgMessage& msg, bool dropped, bool lost) {
+	m_message_log.push_back(message_log_entry_t(GetUpdate(),
+																							msg.GetSender()->GetDeme()->GetID(),
+																							msg.GetSenderCellID(), 
+																							msg.GetReceiverCellID(), 
+																							msg.GetData(),
+																							msg.GetLabel(),
+																							dropped,
+																							lost));
+}
+
+/*! Prints logged messages.
+ */
+void cStats::PrintMessageLog(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+	df.WriteComment("Log of all messages sent in population.");
+  df.WriteTimeStamp();
+
+	for(message_log_t::iterator i=m_message_log.begin(); i!=m_message_log.end(); ++i) {
+		df.Write(i->update, "Update [update]");
+		df.Write(i->deme, "Deme ID [deme]");
+		df.Write(i->src_cell, "Source [src]");
+		df.Write(i->dst_cell, "Destination [dst]");
+		df.Write(i->msg_data, "Message data [data]");
+		df.Write(i->msg_label, "Message label [label]");
+		df.Write(i->dropped, "Dropped [dropped]");
+		df.Write(i->lost, "Lost [lost]");
+		df.Endl();
+	}
+
+	m_message_log.clear();
+}
+
 
 /* Add that an organism performed a task at a certain age */
 void cStats::AgeTaskEvent(int org_id, int task_id, int org_age) { 
@@ -3116,5 +3166,3 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 	
   df.Endl();
 }
-
-

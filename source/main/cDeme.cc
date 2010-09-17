@@ -381,6 +381,7 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 	// and go ahead and rely on lazy initialization to fill this back in.
 	if(m_network) {
 		delete m_network;
+		m_network = 0;
 	}
 }
 

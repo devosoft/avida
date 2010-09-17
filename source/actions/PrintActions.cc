@@ -82,6 +82,7 @@ STATS_OUT_FILE(PrintDominantData,           dominant.dat        );
 STATS_OUT_FILE(PrintStatsData,              stats.dat           );
 STATS_OUT_FILE(PrintCountData,              count.dat           );
 STATS_OUT_FILE(PrintMessageData,            message.dat         );
+STATS_OUT_FILE(PrintMessageLog,             message_log.dat     );
 STATS_OUT_FILE(PrintInterruptData,          interrupt.dat       );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
@@ -118,6 +119,7 @@ STATS_OUT_FILE(PrintDemeTreatableCount,    deme_treatable.dat       );
 
 STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
 STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
+STATS_OUT_FILE(PrintDemeNetworkTopology,    deme_network_topology.dat);
 STATS_OUT_FILE(PrintDemeFoundersData,       deme_founders.dat   );
 STATS_OUT_FILE(PrintPerDemeTasksData,       per_deme_tasks.dat      );
 STATS_OUT_FILE(PrintPerDemeTasksExeData,    per_deme_tasks_exe.dat  );
@@ -3106,6 +3108,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintStatsData>("PrintStatsData");
   action_lib->Register<cActionPrintCountData>("PrintCountData");
   action_lib->Register<cActionPrintMessageData>("PrintMessageData");
+	action_lib->Register<cActionPrintMessageLog>("PrintMessageLog");
   action_lib->Register<cActionPrintInterruptData>("PrintInterruptData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
@@ -3178,6 +3181,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 	
   action_lib->Register<cActionPrintDemeCompetitionData>("PrintDemeCompetitionData");
+	action_lib->Register<cActionPrintDemeNetworkData>("PrintDemeNetworkData");
+	action_lib->Register<cActionPrintDemeNetworkTopology>("PrintDemeNetworkTopology");
   action_lib->Register<cActionPrintDemeFoundersData>("PrintDemeFoundersData");
   action_lib->Register<cActionPrintGermlineData>("PrintGermlineData");
   action_lib->Register<cActionSaveDemeFounders>("SaveDemeFounders");

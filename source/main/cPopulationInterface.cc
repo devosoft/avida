@@ -309,18 +309,31 @@ bool cPopulationInterface::TestOnDivide()
 /*! Internal-use method to consolidate message-sending code.
  */
 bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell) {
+	
+	bool dropped=false;
+	bool lost=false;
+	
 	static const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
   if((drop_prob > 0.0) && m_world->GetRandom().P(drop_prob)) {
 		// message dropped
 		GetDeme()->messageDropped();
 		GetDeme()->messageSendFailed();
-		return false;
+		dropped = true;
 	}
 	
-  // Fail if the cell we're facing is not occupied.
+	// Fail if the cell we're facing is not occupied.
   if(!rcell.IsOccupied()) {
 		GetDeme()->messageSendFailed();
-    return false;
+		lost = true;
+	}
+	
+	// record this message, regardless of whether it's actually received.
+	if(m_world->GetConfig().NET_LOG_MESSAGES.Get()) {
+		m_world->GetStats().LogMessage(msg, dropped, lost);
+	}
+	
+	if(dropped || lost) {
+		return false;
 	}
 	
 	cOrganism* recvr = rcell.GetOrganism();

@@ -105,6 +105,9 @@ public:
 	//! Measure statistics of this network.
 	virtual cStats::network_stats_t Measure() const;
 	
+	//! Print this network's topology.
+	virtual void PrintTopology(cDataFile& df) const;
+	
 protected:
 	Network m_network; //!< Underlying network model.
 	CellVertexMap m_cv; //!< Map of cell ids to vertex descriptors.
