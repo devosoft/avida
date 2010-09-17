@@ -1026,6 +1026,7 @@ double cDeme::GetShannonMutualInformation() {
 	
 	// exit if 0 or 1 organism did stuff.
 	if ((m_num_active == 0) || (m_num_active ==1)) return 0.0;
+	
 	int num_org = m_shannon_matrix.size();
 	int num_task = m_shannon_matrix[0].size();
 	double ptask_array[num_task];
@@ -1041,6 +1042,7 @@ double cDeme::GetShannonMutualInformation() {
 	}
 	
 	double shannon_sum = 0.0;
+	double shannon_change = 0.0;
 	double pij = 0.0;
 	double pi = 1.0/m_num_active;
 	double pj = 0;
@@ -1049,13 +1051,16 @@ double cDeme::GetShannonMutualInformation() {
 		for (int j=0; j<num_task; j++) {
 			pij = m_shannon_matrix[i][j]/m_num_active;
 			pj = ptask_array[j];
-			
+
 			if (pi && pj && pij) {
-				shannon_sum += (pij * log2(pij / (pi * pj)));
+				shannon_change= (pij * log(pij / (pi * pj)));
+				shannon_sum += shannon_change;
 			}
 		}
 	}
-	shannon_sum /= log2((double)m_num_active);
+	
+	shannon_sum /= log((double)m_num_active);
+
 	return shannon_sum;
 }
 
@@ -1070,9 +1075,10 @@ void cDeme::UpdateShannon(cPopulationCell& cell) {
 		cOrganism* organism = cell.GetOrganism();
 		cPhenotype& phenotype = organism->GetPhenotype();			
 		const tArray<int> curr_react =  phenotype.GetCurReactionCount();
+		org_row.resize(curr_react.GetSize(), 0.0);
 		for (int j=0; j<curr_react.GetSize(); j++) {
 			org_react_count += curr_react[j];
-			org_row.push_back(curr_react[j]);
+			org_row[j] = curr_react[j];
 		}
 		
 
@@ -1082,9 +1088,9 @@ void cDeme::UpdateShannon(cPopulationCell& cell) {
 				if (org_row[j]) org_row[j] /= org_react_count;
 			}
 			m_num_active++;
+			m_shannon_matrix.push_back(org_row);
 		}
 	}
-	m_shannon_matrix.push_back(org_row);
 }
 
 void cDeme::UpdateShannonAll(){
