@@ -3088,8 +3088,8 @@ void cStats::PrintAgePolyethismData(const cString& filename) {
 		s = out.str();
 		string av_comment = "Task " + s + " Organism Age Mean [meanorgage" + s + "]";
 		string err_comment = "Task " + s + " Organism Age Standard Error [errorgage" + s + "]"; 
-		df.WriteComment(av_comment.c_str());
-		df.WriteComment(err_comment.c_str());
+		df.WriteColumnDesc(av_comment.c_str());
+		df.WriteColumnDesc(err_comment.c_str());
 		
 	}
 	
