@@ -244,6 +244,9 @@ public:
   void SetFracEnergyDonating(double newval) { assert(newval >= 0); assert(newval <= 1); frac_energy_donating = newval; }
   
   const cStateGrid& GetStateGrid() const;
+  
+  
+  double GetVitality() const;
 
   
   // --------  cOrgInterface Methods  --------
@@ -255,8 +258,12 @@ public:
   cDeme* GetDeme() { return m_interface->GetDeme(); }
   
   int GetCellData() { return m_interface->GetCellData(); }
+  int GetCellDataOrgID() { return m_interface->GetCellDataOrgID(); }
+  int GetCellDataUpdate() { return m_interface->GetCellDataUpdate(); }
   void SetCellData(const int data) { m_interface->SetCellData(data); }  
   int GetFacedCellData() { return m_interface->GetFacedCellData(); }
+  int GetFacedCellDataOrgID() { return m_interface->GetFacedCellDataOrgID(); }
+  int GetFacedCellDataUpdate() { return m_interface->GetFacedCellDataUpdate(); }
   
   cOrganism* GetNeighbor() { return m_interface->GetNeighbor(); }
   bool IsNeighborCellOccupied() { return m_interface->IsNeighborCellOccupied(); }

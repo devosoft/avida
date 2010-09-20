@@ -235,6 +235,25 @@ void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* interface)
 
 const cStateGrid& cOrganism::GetStateGrid() const { return m_world->GetEnvironment().GetStateGrid(m_cur_sg); }
 
+double cOrganism::GetVitality() const {
+  double mean_age = m_world->GetStats().SumCreatureAge().Ave();
+  double age_stddev = m_world->GetStats().SumCreatureAge().StdDeviation();
+  int org_age = m_phenotype.GetAge();
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  double res_level = m_phenotype.GetCurRBinAvail(resource);
+  
+  double vitality = 0.0;
+  
+  if (org_age < (mean_age - age_stddev) || org_age > (mean_age + age_stddev)) {
+    vitality = m_world->GetConfig().VITALITY_BIN_EXTREMES.Get() * res_level;
+  } else {
+    vitality = m_world->GetConfig().VITALITY_BIN_CENTER.Get() * res_level;    
+  }
+  
+  return vitality;
+}
+
+
 double cOrganism::GetRBinsTotal()
 {
 	double total = 0;

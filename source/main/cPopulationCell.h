@@ -64,7 +64,13 @@ private:
 
   int m_cell_id;           // Unique id for position of cell in population.
   int m_deme_id;           // ID of the deme that this cell is part of.
-  int m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
+  
+  struct {
+    int contents;
+    int org_id;
+    int update;
+  } m_cell_data;         // "data" that is local to the cell and can be retrieaved by the org.
+  
   int m_spec_state;
 
   bool m_migrant; //@AWC -- does the cell contain a migrant genome?
@@ -122,8 +128,10 @@ public:
 
   inline int GetID() const { return m_cell_id; }
   inline int GetDemeID() const { return m_deme_id; }
-  inline int GetCellData() const { return m_cell_data; }
-  void SetCellData(const int data) { m_cell_data = data; }
+  inline int GetCellData() const { return m_cell_data.contents; }
+  inline int GetCellDataOrgID() const { return m_cell_data.org_id; }
+  inline int GetCellDataUpdate() const { return m_cell_data.update; }
+  void SetCellData(int data, int org_id = -1);
 
   inline int GetSpeculativeState() const { return m_spec_state; }
   inline void SetSpeculativeState(int count) { m_spec_state = count; }

@@ -894,7 +894,10 @@ public:
   bool Inst_CollectCellDataAndKillEvent(cAvidaContext& ctx);
   bool Inst_ReadCellData(cAvidaContext& ctx);
   bool Inst_ReadFacedCellData(cAvidaContext& ctx);
+  bool Inst_ReadFacedCellDataOrgID(cAvidaContext& ctx);
+  bool Inst_ReadFacedCellDataFreshness(cAvidaContext& ctx);
   bool Inst_MarkCellWithID(cAvidaContext& ctx);
+  bool Inst_MarkCellWithVitality(cAvidaContext& ctx);
   bool Inst_GetID(cAvidaContext& ctx);
   
 	

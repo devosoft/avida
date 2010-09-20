@@ -55,8 +55,12 @@ public:
   void SetDemeID(int in_id) { ; }
   
   int GetCellData() { return -1; }
+  int GetCellDataOrgID() { return -1; }
+  int GetCellDataUpdate() { return -1; }
   void SetCellData(const int newData) { ; }
   int GetFacedCellData() { return -1; }
+  int GetFacedCellDataOrgID() { return -1; }
+  int GetFacedCellDataUpdate() { return -1; }
 
   int GetPrevSeenCellID() { return 0; }
   int GetPrevTaskCellID() { return 0; }

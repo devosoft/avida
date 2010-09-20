@@ -731,8 +731,10 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
         kill_source = ctx.GetRandom().P(0.5);
         break;
         
-      case 1: // normal distribution based on age
-        // @TODO - implement normal distribution movement collision selection
+      case 1: // binned vitality based on age
+        double src_vitality = src_cell.GetOrganism()->GetVitality();
+        double dest_vitality = dest_cell.GetOrganism()->GetVitality();
+        kill_source = (src_vitality < ctx.GetRandom().GetDouble(src_vitality + dest_vitality));
         break;
     }
     

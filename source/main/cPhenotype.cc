@@ -1522,10 +1522,7 @@ double cPhenotype::CalcCurrentMerit() const
 {
   int merit_base = CalcSizeMerit();
   
-  const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
-  double bonus = (merit_default_bonus) ? merit_default_bonus : cur_bonus;
-  
-  return merit_base * bonus;  
+  return merit_base * cur_bonus;  
 }
 
 

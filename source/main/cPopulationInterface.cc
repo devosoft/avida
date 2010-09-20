@@ -79,12 +79,29 @@ int cPopulationInterface::GetCellData() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellData();
 }
 
+int cPopulationInterface::GetCellDataOrgID() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataOrgID();
+}
+
+int cPopulationInterface::GetCellDataUpdate() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellDataUpdate();
+}
+
 int cPopulationInterface::GetFacedCellData() {
   return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellData();
 }
 
+int cPopulationInterface::GetFacedCellDataOrgID() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataOrgID();
+}
+
+int cPopulationInterface::GetFacedCellDataUpdate() {
+  return m_world->GetPopulation().GetCell(m_cell_id).GetCellFaced().GetCellDataUpdate();
+}
+
 void cPopulationInterface::SetCellData(const int newData) {
-  m_world->GetPopulation().GetCell(m_cell_id).SetCellData(newData);
+  cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
+  cell.SetCellData(cell.GetOrganism()->GetID(), newData);
 }
 
 bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome)

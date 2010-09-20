@@ -79,8 +79,12 @@ public:
   void SetDemeID(int in_id) { m_deme_id = in_id; }
   
   int GetCellData();
+  int GetCellDataOrgID();
+  int GetCellDataUpdate();
   void SetCellData(const int newData);
   int GetFacedCellData();
+  int GetFacedCellDataOrgID();
+  int GetFacedCellDataUpdate();
 
   int GetPrevSeenCellID() { return m_prevseen_cell_id; }
   int GetPrevTaskCellID() { return m_prev_task_cell; }

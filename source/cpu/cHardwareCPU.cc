@@ -601,9 +601,12 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("collect-cell-data-and-kill-event", &cHardwareCPU::Inst_CollectCellDataAndKillEvent, nInstFlag::STALL),
     tInstLibEntry<tMethod>("read-cell-data", &cHardwareCPU::Inst_ReadCellData),
     tInstLibEntry<tMethod>("read-faced-cell-data", &cHardwareCPU::Inst_ReadFacedCellData, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-faced-cell-org-id", &cHardwareCPU::Inst_ReadFacedCellDataOrgID, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("read-faced-cell-freshness", &cHardwareCPU::Inst_ReadFacedCellDataFreshness, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-cell-with-id", &cHardwareCPU::Inst_MarkCellWithID),
+    tInstLibEntry<tMethod>("mark-cell-with-vitality", &cHardwareCPU::Inst_MarkCellWithVitality),
     tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
-    
+
 		
 		// Synchronization
     tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
@@ -8321,10 +8324,33 @@ bool cHardwareCPU::Inst_ReadFacedCellData(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_ReadFacedCellDataOrgID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetFacedCellDataOrgID();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ReadFacedCellDataFreshness(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_world->GetStats().GetUpdate() - m_organism->GetFacedCellDataUpdate();
+  return true;
+}
+
 bool cHardwareCPU::Inst_MarkCellWithID(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   m_organism->SetCellData(m_organism->GetID());
+  return true;
+}
+
+bool cHardwareCPU::Inst_MarkCellWithVitality(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  m_organism->SetCellData(m_organism->GetVitality());
   return true;
 }
 
