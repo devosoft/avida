@@ -146,10 +146,11 @@ lib avida-core :
     tools/cStringUtil.cc
     tools/cTools.cc
     tools/cWeightedIndex.cc
-    : <link>static
+    : <link>static <threading>multi
     ;
 
 exe avida :
     avida-core
     targets/avida/primitive.cc
+    : <threading>multi
 ;

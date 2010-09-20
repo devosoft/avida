@@ -24,6 +24,7 @@
 #ifndef cDemeNetworkUtils_h
 #define cDemeNetworkUtils_h
 
+/* THIS HEADER REQUIRES BOOST */
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/visitors.hpp>
@@ -136,7 +137,7 @@ size_t diameter(const Network& network) {
 template <typename Network>
 double distance(typename Network::vertex_descriptor u, 
 								typename Network::vertex_descriptor v, const Network& network) {
-	std::pair<int,int> s,d;
+	std::pair<double,double> s,d;
 	s = network[u].location();
 	d = network[v].location();
 	return sqrt(pow(s.first-d.first,2.0) + pow(s.second-d.second,2.0));
