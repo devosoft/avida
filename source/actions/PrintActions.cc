@@ -2794,6 +2794,52 @@ public:
   }
 };
 
+//Dump the reaction grid from the last gestation cycle, so skip the 
+//test cpu, and just use what the phenotype has. 
+
+class cActionDumpReactionGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpReactionGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_reactions.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+        
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        int task_sum = 0;
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          
+		  cPhenotype& test_phenotype = organism->GetPhenotype();
+          for (int k = 0; k < num_tasks; k++) {
+            if (test_phenotype.GetLastReactionCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k)); 
+          }
+        }
+		else {task_sum = -1;}
+        fp << task_sum << " ";
+      }
+      fp << endl;
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
 
 class cActionDumpDonorGrid : public cAction
 {
@@ -3244,6 +3290,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
+  action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
+
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
   action_lib->Register<cActionDumpEnergyGrid>("DumpEnergyGrid");
