@@ -44,7 +44,9 @@ static const char* LINK_LENGTH_SUM="link length sum [link_sum]";
 
 /*! Constructor.
  */
-cDemeTopologyNetwork::cDemeTopologyNetwork(cWorld* world, cDeme& deme) : cDemeNetwork(world, deme) {
+cDemeTopologyNetwork::cDemeTopologyNetwork(cWorld* world, cDeme& deme)
+: cDemeNetwork(world, deme)
+, m_link_length_sum(0.0) {
 }
 
 
@@ -92,6 +94,10 @@ void cDemeTopologyNetwork::Connect(cPopulationCell& u, cPopulationCell& v, doubl
 	if(!e.second) {
 		// create the edge
 		boost::add_edge(ui->second, vi->second, edge_properties(m_world->GetStats().GetUpdate()), m_network);
+		// we have to track link lengths here in order to bypass a bug that's triggered when
+		// links decay.  if links decay, the network could actually have dissipated by the time
+		// we get around to calculating fitness.
+		m_link_length_sum += distance(ui->second, vi->second, m_network);
 	} else {
 		// update the create time of the edge
 		m_network[e.first]._t = m_world->GetStats().GetUpdate();
@@ -154,7 +160,7 @@ double cDemeTopologyNetwork::Fitness(bool record_stats) const {
 		case MAX_CC: 
 		case MIN_CC:
 		case TGT_CC: { stats[CC] = calc_fitness ? clustering_coefficient(m_network) : 0.0; break; }
-		case LENGTH_SUM: { stats[LINK_LENGTH_SUM] = calc_fitness ? link_length_sum(m_network) : 0.0; break; }
+		case LENGTH_SUM: { stats[LINK_LENGTH_SUM] = calc_fitness ? m_link_length_sum : 0.0; break; }
 		default: {
 			m_world->GetDriver().RaiseFatalException(-1, "Unrecognized network fitness type in cDemeTopologyNetwork::Fitness().");
 		}			
@@ -220,7 +226,7 @@ cStats::network_stats_t cDemeTopologyNetwork::Measure() const {
 	if(stats[CONNECTED] == 1.0) {
 		stats[CPL] = characteristic_path_length(m_network);
 		stats[CC] = clustering_coefficient(m_network);
-		stats[LINK_LENGTH_SUM] = link_length_sum(m_network);
+		stats[LINK_LENGTH_SUM] = m_link_length_sum;
 	} else {
 		stats[CPL] = 0.0;
 		stats[CC] = 0.0;

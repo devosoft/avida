@@ -127,16 +127,33 @@ size_t diameter(const Network& network) {
 }
 
 
+/*! Calculate the Euclidean distance between two vertices in a network.
+ 
+ Vertices must define the following method:
+   std::pair<double,double> location(),
+ which returns the vertex's X-Y coordinates.
+ */
+template <typename Network>
+double distance(typename Network::vertex_descriptor u, 
+								typename Network::vertex_descriptor v, const Network& network) {
+	std::pair<int,int> s,d;
+	s = network[u].location();
+	d = network[v].location();
+	return sqrt(pow(s.first-d.first,2.0) + pow(s.second-d.second,2.0));
+}
+
+
+/*! Calculate the sum of all link lengths in the given network.
+ 
+ See the distance() function above for requirements.
+ */
 template <typename Network>
 double link_length_sum(const Network& network) {
 	typename Network::edge_iterator ei,ei_end;
 	double sum=0.0;
 	
 	for(tie(ei,ei_end)=edges(network); ei!=ei_end; ++ei) {
-		std::pair<int,int> s,d;
-		s = network[source(*ei,network)].location();
-		d = network[target(*ei,network)].location();
-		sum += sqrt(pow(s.first-d.first,2.0) + pow(s.second-d.second,2.0));
+		sum += distance(source(*ei,network), target(*ei,network), network);
 	}
 	
 	return sum;

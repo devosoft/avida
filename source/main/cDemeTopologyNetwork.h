@@ -53,7 +53,7 @@ public:
 	struct vertex_properties {
 		vertex_properties() { }
 		vertex_properties(std::pair<int,int> pos, int cell_id) : _x(pos.first), _y(pos.second), _cell_id(cell_id) { }
-		std::pair<int,int> location() const { return std::make_pair(_x,_y); }
+		std::pair<double,double> location() const { return std::make_pair(static_cast<double>(_x),static_cast<double>(_y)); }
 		int _x, _y, _cell_id; // coordinates and cell id of this vertex, used to relate it back to the population.
 	};
 	
@@ -111,6 +111,7 @@ public:
 protected:
 	Network m_network; //!< Underlying network model.
 	CellVertexMap m_cv; //!< Map of cell ids to vertex descriptors.
+	double m_link_length_sum; //!< Sum of all link lengths, at connection.
 };
 
 #endif
