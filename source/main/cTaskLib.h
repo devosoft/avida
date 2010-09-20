@@ -341,6 +341,13 @@ private:
 	double Task_RoyalRoad(cTaskContext& ctx) const;
 	void Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
 	double Task_RoyalRoadWithDitches(cTaskContext& ctx) const;
+	
+	// division of labor
+	void Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+	double Task_OpinionIs(cTaskContext& ctx) const;
+	
+
+	
 };
 
 #endif

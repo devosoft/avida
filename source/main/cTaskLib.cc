@@ -467,7 +467,10 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
 	else if (name == "royal-road-wd")
 		Load_RoyalRoadWithDitches(name, info, envreqs, errors);
   
-	
+	// Division of labor
+	if(name == "opinion_is") {
+		Load_OpinionIs(name, info, envreqs, errors);
+	}
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -3717,3 +3720,30 @@ double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 	
 	return (total_reward/block_count);
 }
+
+	
+	
+//! Load the command line for checking an opinion.
+void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors) {
+		cArgSchema schema;
+		schema.AddEntry("opinion", 0, cArgSchema::SCHEMA_INT);
+		cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+		if(args) {
+			NewTask(name, "Whether organism's opinion is set to value.", &cTaskLib::Task_OpinionIs, 0, args);
+		}
+	} 
+	
+//! This task is complete if this organism's current opinion is set to a configured value.
+double cTaskLib::Task_OpinionIs(cTaskContext& ctx) const {
+		cOrganism* org = ctx.GetOrganism();
+		const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+		int opinion = args.GetInt(0);
+		
+		if(org->HasOpinion()) {
+			return org->GetOpinion().first == opinion;
+		} else {
+			return 0.0;
+		}
+	}
+
+
