@@ -1064,6 +1064,21 @@ public:
 	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location);
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
+	
+	// -------- Multiprocess support --------
+private:
+	cDoubleSum m_outgoing; //!< Number of outgoing migration events.
+	cDoubleSum m_incoming; //!< Number of incoming migration events.
+
+public:
+	//! Record information about an organism migrating from this population.
+	void OutgoingMigrant(const cOrganism* org);
+	
+	//! Record information about an organism migrating into this population.
+	void IncomingMigrant(const cOrganism* org);
+	
+	//! Print multiprocess data.
+	void PrintMultiProcessData(const cString& filename);
 };
 
 

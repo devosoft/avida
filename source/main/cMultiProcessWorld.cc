@@ -128,6 +128,9 @@ void cMultiProcessWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& 
 	// the tag is set to the number of messages previously sent; this is to allow
 	// the receiver to sort messages for consistency.
 	m_reqs.push_back(m_mpi_world.isend(dst_world, m_reqs.size(), migration_message(org, cell, merit.GetDouble(), lineage)));
+	
+	// stats tracking:
+	GetStats()->OrganismMigrated(org);
 }
 
 

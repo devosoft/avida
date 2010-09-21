@@ -3167,3 +3167,31 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 	
   df.Endl();
 }
+
+/*! Record information about an organism migrating from this population.
+ */
+void cStats::OutgoingMigrant(const cOrganism* org) {
+	m_outgoing.Add(1);
+}
+
+/*! Record information about an organism migrating into this population.
+ */
+void cStats::IncomingMigrant(const cOrganism* org) {
+	m_incoming.Add(1);
+}
+
+/*! Print multiprocess data.
+ */
+void cStats::PrintMultiProcessData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Avida-MP data");
+  df.WriteTimeStamp();
+  df.Write(GetUpdate(), "Update [update]");
+	df.Write(m_outgoing.Count(), "Outgoing migrants [outgoing]");
+	df.Write(m_incoming.Count(), "Incoming migrants [incoming]");
+	df.Endl();
+	
+	m_outgoing.Clear();
+	m_incoming.Clear();
+}
