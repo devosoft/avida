@@ -56,6 +56,7 @@ class cEventList;
 class cHardwareManager;
 class cOrganism;
 class cPopulation;
+class cMerit;
 class cPopulationCell;
 class cStats;
 class cTestCPU;
@@ -135,8 +136,8 @@ public:
 	cEventList* GetEventsList() { return m_event_list; }
 
 	//! Migrate this organism to a different world (does nothing here; see cMultiProcessWorld).
-	virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& parent_cell) { }
-	
+	virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage) { }
+
 	//! Returns true if the given cell is on the boundary of the world, false otherwise.
 	virtual bool IsWorldBoundary(const cPopulationCell& cell) { return false; }
 	

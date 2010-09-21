@@ -372,17 +372,20 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 	// and mistakenly kill the parent.
 	if(m_world->GetConfig().ENABLE_MP.Get() && (m_world->GetConfig().MP_MIGRATION_P.Get() > 0.0)) {
 		tArray<cOrganism*> non_migrants;
+		tArray<cMerit> non_migrant_merits;
 		for(int i=0; i<child_array.GetSize(); ++i) {
 			if(m_world->GetRandom().P(m_world->GetConfig().MP_MIGRATION_P.Get())) {
 				// this offspring is outta here!
-				m_world->MigrateOrganism(child_array[i], parent_cell);
+				m_world->MigrateOrganism(child_array[i], parent_cell, merit_array[i], parent_organism->GetLineageLabel());
 				delete child_array[i]; // this child isn't hanging around.
 			} else {
 				// boring; stay here.
 				non_migrants.Push(child_array[i]);
+				non_migrant_merits.Push(merit_array[i]);
 			}
 		}		
 		child_array = non_migrants;
+		merit_array = non_migrant_merits;
 	}
 	
   tArray<int> target_cells(child_array.GetSize());
@@ -431,7 +434,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     const cGenome& genome = child_array[i]->GetGenome();
     child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
-    
     child_array[i]->SetLineageLabel(parent_organism->GetLineageLabel());
     
     //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
@@ -448,7 +450,6 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 			child_array[i]->SetReputation(parent_organism->GetReputation()); 
 		}
 		
-		
 		// If spatial groups are used, put the offspring in the 
 		// parents' group
 		if (m_world->GetConfig().USE_FORM_GROUPS.Get()){
@@ -456,10 +457,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 			int group = parent_organism->GetOpinion().first;
 			child_array[i]->SetOpinion(group); 
 			JoinGroup(group);
-      
 		}
-		
-    
 	}
 	
   
@@ -711,7 +709,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 	// cell into which this organism has been injected is in fact a "gateway" to another
 	// world.  if so, we then migrate this organism out of this world and empty the cell.
 	if(m_world->IsWorldBoundary(target_cell)) {
-		m_world->MigrateOrganism(in_organism, target_cell);
+		m_world->MigrateOrganism(in_organism, target_cell, in_organism->GetPhenotype().GetMerit(), in_organism->GetLineageLabel());
 		KillOrganism(target_cell);
 	}	
 }

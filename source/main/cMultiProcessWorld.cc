@@ -43,19 +43,20 @@
  */
 struct migration_message {
 	migration_message() { }
-	migration_message(cOrganism* org, const cPopulationCell& cell) {
+	migration_message(cOrganism* org, const cPopulationCell& cell, double merit, int lineage)
+	: _merit(merit), _lineage(lineage) {
 		_genome = org->GetGenome().AsString();
 		cell.GetPosition(_x, _y);
-		_merit = org->GetPhenotype().GetMerit().GetDouble();
 	}
 	
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
-		ar & _genome & _merit & _x & _y;
+		ar & _genome & _merit & _lineage & _x & _y;
 	}
 	
 	std::string _genome; //!< Genome of the organism.
 	double _merit; //!< Merit of this organism in its originating population.
+	int _lineage; //!< Lineage label of this organism in its orginating population.
 	int _x; //!< X-coordinate of the cell from which this migrant originated.
 	int _y; //!< Y-coordinate of the cell from which this migrant originated.
 };
@@ -91,7 +92,7 @@ cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environmen
  
  Send this organism to a different world, selected at random.
  */
-void cMultiProcessWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& cell) {
+void cMultiProcessWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage) {
 	assert(org!=0);
 	int dst_world=-1;
 	
@@ -126,14 +127,14 @@ void cMultiProcessWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& 
 	
 	// the tag is set to the number of messages previously sent; this is to allow
 	// the receiver to sort messages for consistency.
-	m_reqs.push_back(m_mpi_world.isend(dst_world, m_reqs.size(), migration_message(org, cell)));
+	m_reqs.push_back(m_mpi_world.isend(dst_world, m_reqs.size(), migration_message(org, cell, merit.GetDouble(), lineage)));
 }
 
 
 /*! Returns true if the given cell is on the boundary of the world, false otherwise.
  */
 bool cMultiProcessWorld::IsWorldBoundary(const cPopulationCell& cell) {
-	if(GetConfig().ENABLE_MP.Get() && (GetConfig().MP_MIGRATION_STYLE.Get()==1)) {
+	if(GetConfig().MP_MIGRATION_STYLE.Get()==1) {
 		int x, y;
 		cell.GetPosition(x,y);
 		
@@ -234,7 +235,7 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 			GetPopulation().InjectGenome(target_cell,
 																	 SRC_ORGANISM_RANDOM, // for right now, we'll treat this as a random organism injection
 																	 cGenome(cString(migrant._genome.c_str())), // genome unpacked from message
-																	 -1); // lineage label??
+																	 migrant._lineage); // lineage label
 			// oh!  update its merit, too:
 			GetPopulation().GetCell(target_cell).GetOrganism()->UpdateMerit(migrant._merit);
 		}
@@ -284,7 +285,7 @@ int cMultiProcessWorld::CalculateUpdateSize()
 	
 			// sum the merits of organisms in all populations.
 			// there's no clean way to do this across the different schedulers in avida,
-			// so we'll take the O(n) hit and sum them (for now)
+			// so we'll take the O(n) hit and sum them (for now):
 			double local_merit=0.0;
 			for(int i=0; i<GetPopulation().GetSize(); ++i) {
 				cPopulationCell& cell=GetPopulation().GetCell(i);

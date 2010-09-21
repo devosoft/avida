@@ -64,7 +64,7 @@ class cMultiProcessWorld : public cWorld
 		virtual ~cMultiProcessWorld() { }
 		
 		//! Migrate this organism to a different world.
-		virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& parent_cell);
+		virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage);
 		
 		//! Returns true if the given cell is on the boundary of the world, false otherwise.
 		virtual bool IsWorldBoundary(const cPopulationCell& cell);
