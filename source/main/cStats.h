@@ -898,6 +898,7 @@ public:
 	
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
+	int m_total_deme_num_repls; //!< Total number of deme replications ever.	
   cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.
   cDoubleSum m_deme_births; //!< Mean number of births in replicated demes.
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
@@ -1005,6 +1006,9 @@ public:
 		
 	void PrintAgePolyethismData(const cString& filename);
 	void AgeTaskEvent(int org_id, int task_id, int org_age); 
+	//! Get number of deme replications
+	int GetNumDemeReplications() { return m_total_deme_num_repls; }
+
 
 protected:
 	std::map<int, cDoubleSum> reaction_age_map;

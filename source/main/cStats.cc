@@ -1633,6 +1633,7 @@ void cStats::PrintPredSatFracDump(const cString& filename) {
 void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
 {
   ++m_deme_num_repls;
+	++m_total_deme_num_repls;
   m_deme_gestation_time.Add(source_deme.GetAge());
   m_deme_births.Add(source_deme.GetBirthCount());
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
