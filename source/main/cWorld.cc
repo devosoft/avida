@@ -183,3 +183,10 @@ void cWorld::SetDriver(cWorldDriver* driver, bool take_ownership)
   m_driver = driver;
   m_own_driver = take_ownership;
 }
+
+/*! Calculate the size (in virtual CPU cycles) of the current update.
+ */
+int cWorld::CalculateUpdateSize()
+{
+	return GetConfig().AVE_TIME_SLICE.Get() * GetPopulation().GetNumOrganisms();
+}

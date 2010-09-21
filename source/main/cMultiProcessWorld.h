@@ -24,6 +24,7 @@
 #ifndef cMultiProcessWorld_h
 #define cMultiProcessWorld_h
 
+/* THIS HEADER REQUIRES BOOST */
 #include <boost/mpi.hpp>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
@@ -50,9 +51,10 @@ class cMultiProcessWorld : public cWorld
 		boost::mpi::environment& m_mpi_env; //!< MPI environment.
 		boost::mpi::communicator& m_mpi_world; //!< World-wide MPI communicator.
 		std::vector<boost::mpi::request> m_reqs; //!< Requests outstanding since the last ProcessPostUpdate.
-		std::size_t m_universe_dim; //!< Dimension (x & y) of the universe (number of worlds along the side of a grid of worlds).
-		std::size_t m_universe_x; //!< X coordinate of this world.
-		std::size_t m_universe_y; //!< Y coordinate of this world.
+		int m_universe_dim; //!< Dimension (x & y) of the universe (number of worlds along the side of a grid of worlds).
+		int m_universe_x; //!< X coordinate of this world.
+		int m_universe_y; //!< Y coordinate of this world.
+		int m_universe_popsize; //!< Total size of the population, delayed one update.
 		
 	public:
 		//! Constructor.
@@ -69,6 +71,12 @@ class cMultiProcessWorld : public cWorld
 		
 		//! Process post-update events.
 		virtual void ProcessPostUpdate(cAvidaContext& ctx);
+		
+		//! Returns true if this world allows early exits, e.g., when the population reaches 0.
+		virtual bool AllowsEarlyExit() const;
+		
+		//! Calculate the size (in virtual CPU cycles) of the current update.
+		virtual int CalculateUpdateSize();
 	};
 
 #endif

@@ -418,6 +418,7 @@ public:
 	// -------- Multi-process Avida config options --------
   CONFIG_ADD_GROUP(MP_GROUP, "Multi-process Avida Variables");
 	CONFIG_ADD_VAR(ENABLE_MP, int, 0, "Enable multi-process Avida; 0=disabled (default),\n1=enabled.");
+	CONFIG_ADD_VAR(MP_SCHEDULING_STYLE, int, 0, "Style of scheduling:\n0=non-MP aware (default)\n1=MP aware");
 	CONFIG_ADD_VAR(MP_MIGRATION_STYLE, int, 0, "Style of migration:\n0=mass action, probabilistic (default)\n1=spatial, using boundary cells");
 	CONFIG_ADD_VAR(MP_MIGRATION_P, double, 0.0, "Probability of offspring migration between worlds (default=0.0).");
 	

@@ -67,7 +67,6 @@ void cDefaultRunDriver::Run()
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
-  const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
   void (cPopulation::*ActiveProcessStep)(cAvidaContext& ctx, double step_size, int cell_id) = &cPopulation::ProcessStep;
@@ -84,7 +83,7 @@ void cDefaultRunDriver::Run()
     }
     
     m_world->GetEvents(ctx);
-    if (m_done == true) break;
+    if(m_done == true) break;
     
     // Increment the Update.
     stats.IncCurrentUpdate();
@@ -96,15 +95,14 @@ void cDefaultRunDriver::Run()
     }
     
     // don't process organisms if we are in fast-forward mode. -- @JEB
-    if (!GetFastForward())
-    {
+    if (!GetFastForward()) {
       // Process the update.
-      const int UD_size = ave_time_slice * population.GetNumOrganisms();
+			// query the world to calculate the exact size of this update:
+      const int UD_size = m_world->CalculateUpdateSize();
       const double step_size = 1.0 / (double) UD_size;
       
       for (int i = 0; i < UD_size; i++) {
-        if (population.GetNumOrganisms() == 0) {
-          m_done = true;
+        if(population.GetNumOrganisms() == 0) {
           break;
         }
         (population.*ActiveProcessStep)(ctx, step_size, population.ScheduleOrganism());
@@ -148,7 +146,9 @@ void cDefaultRunDriver::Run()
     UpdateFastForward(stats.GetGeneration(),stats.GetNumCreatures());
     
     // Exit conditons...
-    if (population.GetNumOrganisms() == 0) m_done = true;
+    if((population.GetNumOrganisms()==0) && m_world->AllowsEarlyExit()) {
+			m_done = true;
+		}
   }
 }
 

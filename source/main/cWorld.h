@@ -143,6 +143,11 @@ public:
 	//! Process post-update events.
 	virtual void ProcessPostUpdate(cAvidaContext& ctx) { }
 	
+	//! Returns true if this world allows early exits, e.g., when the population reaches 0.
+	virtual bool AllowsEarlyExit() const { return true; }
+	
+	//! Calculate the size (in virtual CPU cycles) of the current update.
+	virtual int CalculateUpdateSize();
 };
 
 #endif

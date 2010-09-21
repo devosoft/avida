@@ -25,11 +25,14 @@
 #if BOOST_IS_AVAILABLE
 #include "cGenome.h"
 #include "cOrganism.h"
+#include "cPhenotype.h"
 #include "cMerit.h"
 #include "cWorld.h"
 #include "cPopulation.h"
+#include "cPopulationCell.h"
 #include "cMultiProcessWorld.h"
 #include <map>
+#include <functional>
 #include <iostream>
 #include <sstream>
 #include <cmath>
@@ -43,14 +46,16 @@ struct migration_message {
 	migration_message(cOrganism* org, const cPopulationCell& cell) {
 		_genome = org->GetGenome().AsString();
 		cell.GetPosition(_x, _y);
+		_merit = org->GetPhenotype().GetMerit().GetDouble();
 	}
 	
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
-		ar & _genome & _x & _y;
+		ar & _genome & _merit & _x & _y;
 	}
 	
 	std::string _genome; //!< Genome of the organism.
+	double _merit; //!< Merit of this organism in its originating population.
 	int _x; //!< X-coordinate of the cell from which this migrant originated.
 	int _y; //!< Y-coordinate of the cell from which this migrant originated.
 };
@@ -67,10 +72,11 @@ cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environmen
 , m_mpi_world(world)
 , m_universe_dim(0)
 , m_universe_x(0)
-, m_universe_y(0) {
+, m_universe_y(0)
+, m_universe_popsize(-1) {
 	
 	if(GetConfig().MP_MIGRATION_STYLE.Get() == 1) {
-		m_universe_dim = static_cast<std::size_t>(sqrt(m_mpi_world.size()));
+		m_universe_dim = sqrt(m_mpi_world.size());
 		if((m_universe_dim*m_universe_dim) != m_mpi_world.size()) {
 			GetDriver().RaiseFatalException(-1, "Spatial Avida-MP worlds must be square.");
 		}
@@ -229,6 +235,8 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 																	 SRC_ORGANISM_RANDOM, // for right now, we'll treat this as a random organism injection
 																	 cGenome(cString(migrant._genome.c_str())), // genome unpacked from message
 																	 -1); // lineage label??
+			// oh!  update its merit, too:
+			GetPopulation().GetCell(target_cell).GetOrganism()->UpdateMerit(migrant._merit);
 		}
 	}
 	
@@ -239,6 +247,63 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 	// processes is really speedy and manages to migrate another org to this world
 	// before we finished the probe-loop.
 	m_mpi_world.barrier();
+}
+
+/*! Returns true if this world allows early exits, e.g., when the population reaches 0.
+ */
+bool cMultiProcessWorld::AllowsEarlyExit() const
+{
+	if(m_universe_popsize == 0) {
+		return true;
+	}
+	return false;
+}
+
+
+/*! Calculate the size (in virtual CPU cycles) of the current update.
+ 
+ This is a little challenging, because we need to scale the number of virtual CPU
+ cycles allotted to each world based on the *total* (all populations) number of
+ organisms, as well as by the total merit.  We do that here.
+ */
+int cMultiProcessWorld::CalculateUpdateSize()
+{
+	namespace mpi = boost::mpi;
+	using namespace boost;
+	
+	int update_size=0;
+	switch(GetConfig().MP_SCHEDULING_STYLE.Get()) {
+		case 0: { // default, non-MP aware
+			update_size = cWorld::CalculateUpdateSize();
+			break;
+		}
+		case 1: { // MP aware
+			// sum the total number of organisms in all populations, storing that value
+			// so that we know if we have to exit early:
+			all_reduce(m_mpi_world, GetPopulation().GetNumOrganisms(), m_universe_popsize, std::plus<int>());
+	
+			// sum the merits of organisms in all populations.
+			// there's no clean way to do this across the different schedulers in avida,
+			// so we'll take the O(n) hit and sum them (for now)
+			double local_merit=0.0;
+			for(int i=0; i<GetPopulation().GetSize(); ++i) {
+				cPopulationCell& cell=GetPopulation().GetCell(i);
+				if(cell.IsOccupied()) {
+					local_merit += cell.GetOrganism()->GetPhenotype().GetMerit().GetDouble();
+				}
+			}
+			double total_merit;
+			all_reduce(m_mpi_world, local_merit, total_merit, std::plus<double>());
+
+			// ok, calculate the total CPU cycles allotted to this population:
+			update_size = (local_merit/total_merit) * GetConfig().AVE_TIME_SLICE.Get() * m_universe_popsize;
+			break;
+		}
+		default: {
+			GetDriver().RaiseFatalException(-1, "Unrecognized MP_SCHEDULING_STYLE.");
+		}
+	}
+	return update_size;
 }
 
 #endif // boost_is_available
