@@ -130,7 +130,7 @@ void cMultiProcessWorld::MigrateOrganism(cOrganism* org, const cPopulationCell& 
 	m_reqs.push_back(m_mpi_world.isend(dst_world, m_reqs.size(), migration_message(org, cell, merit.GetDouble(), lineage)));
 	
 	// stats tracking:
-	GetStats()->OrganismMigrated(org);
+	GetStats().OutgoingMigrant(org);
 }
 
 
@@ -241,6 +241,7 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 																	 migrant._lineage); // lineage label
 			// oh!  update its merit, too:
 			GetPopulation().GetCell(target_cell).GetOrganism()->UpdateMerit(migrant._merit);
+			GetStats().IncomingMigrant(GetPopulation().GetCell(target_cell).GetOrganism());
 		}
 	}
 	
