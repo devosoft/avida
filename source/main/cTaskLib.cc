@@ -459,6 +459,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
 	if (name == "form-group-id")
     Load_FormSpatialGroupWithID(name, info, envreqs, errors);
 	
+	if (name == "live-on-patch-id")
+    Load_LiveOnPatchRes(name, info, envreqs, errors);
+	
 	// String matching
 	if(name == "all-ones")
 		Load_AllOnes(name, info, envreqs, errors);
@@ -3561,6 +3564,41 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 
 	return reward;
 }
+
+/* Reward organisms for having a given group-id.*/
+void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+{
+	cArgSchema schema;
+  
+  schema.AddEntry("patch_id", 0, 1);
+
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  if (args) NewTask(name, "LiveOnPatchRes", &cTaskLib::Task_LiveOnPatchRes, 0, args);
+	
+	// Add this patch id to the list in the instructions file. 
+	m_world->GetEnvironment().AddGroupID(args->GetInt(0));
+	
+}
+
+double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
+{
+	int des_patch_id = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+	
+	double reward = 0.0;
+	int patch_id = -1; 
+	if (ctx.GetOrganism()->HasOpinion()) {
+		patch_id = ctx.GetOrganism()->GetOpinion().first;
+	}
+	
+	// If the organism is in the group...
+	if (patch_id == des_patch_id) {
+		reward = 1;
+	}
+	
+	return reward;
+}
+
+
 
 
 void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)

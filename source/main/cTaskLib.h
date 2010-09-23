@@ -333,6 +333,8 @@ private:
 	double Task_FormSpatialGroup(cTaskContext& ctx) const; 
 	void Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
 	double Task_FormSpatialGroupWithID(cTaskContext& ctx) const; 
+	void Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);
+	double Task_LiveOnPatchRes(cTaskContext& ctx) const; 
 	
 	// String Matching Tasks
 	void Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors);

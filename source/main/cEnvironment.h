@@ -192,6 +192,7 @@ public:
 public: 
 	void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
 	bool IsGroupID(int test_id);
+	std::set<int> GetGroupIDs() { return possible_group_ids; }
 	
 protected:
 	std::set<int> possible_group_ids;
