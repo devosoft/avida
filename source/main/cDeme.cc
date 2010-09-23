@@ -1030,7 +1030,7 @@ double cDeme::GetShannonMutualInformation() {
 	
 	int num_org = m_shannon_matrix.size();
 	int num_task = m_shannon_matrix[0].size();
-	double ptask_array[num_task];
+	double* ptask_array = new double[num_task];
 	// create ptasks
 	for (int j=0; j<num_task; j++){
 		ptask_array[j] =0;
@@ -1062,6 +1062,7 @@ double cDeme::GetShannonMutualInformation() {
 	
 	shannon_sum /= log((double)m_num_active);
 
+	delete ptask_array;
 	return shannon_sum;
 }
 
