@@ -43,6 +43,9 @@
 #ifndef tManagedPointerArray_h
 #include "tManagedPointerArray.h"
 #endif
+#ifndef tSparseVectorList_h
+#include "tSparseVectorList.h"
+#endif
 
 class cBGGenotype;
 class cGenome;
@@ -60,7 +63,7 @@ private:
 
   tList<cBGGenotype> m_active_hash[nBGGenotypeManager::HASH_SIZE];
   tManagedPointerArray<tList<cBGGenotype> > m_active_sz;
-  tList<cBGGenotype> m_historic;
+  tSparseVectorList<cBGGenotype> m_historic;
   cBGGenotype* m_coalescent;
   int m_best;
   int m_next_id;

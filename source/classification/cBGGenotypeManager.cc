@@ -30,8 +30,9 @@
 #include "cStats.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
-#include "tDataCommandManager.h"
 #include "tArrayMap.h"
+#include "tAutoRelease.h"
+#include "tDataCommandManager.h"
 
 
 cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
@@ -69,8 +70,8 @@ void cBGGenotypeManager::UpdateReset()
     }    
   }
 
-  tListIterator<cBGGenotype> list_it(m_historic);
-  while (list_it.Next() != NULL) if (!list_it.Get()->GetReferenceCount()) removeGenotype(list_it.Get());
+  tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
+  while (list_it->Next() != NULL) if (!list_it->Get()->GetReferenceCount()) removeGenotype(list_it->Get());
 }
 
 
@@ -160,8 +161,8 @@ cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)
     while (list_it.Next() != NULL) if (list_it.Get()->GetID() == bg_id) return list_it.Get();
   }
   
-  tListIterator<cBGGenotype> list_it(m_historic);
-  while (list_it.Next() != NULL) if (list_it.Get()->GetID() == bg_id) return list_it.Get();
+  tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
+  while (list_it->Next() != NULL) if (list_it->Get()->GetID() == bg_id) return list_it->Get();
   
   return NULL;
 }
@@ -184,9 +185,9 @@ void cBGGenotypeManager::SaveBioGroups(cDataFile& df)
   //         Thus it is not proper to split bgm save into a save historic and save active.  Right now we'll just make
   //         cPopulation do the work.
   
-  tListIterator<cBGGenotype> list_it(m_historic);
-  while (list_it.Next() != NULL) {
-    list_it.Get()->Save(df);
+  tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
+  while (list_it->Next() != NULL) {
+    list_it->Get()->Save(df);
     df.Endl();
   }
 }
@@ -222,14 +223,14 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     }
     
     if (!found) {
-      tListIterator<cBGGenotype> list_it(m_historic);
-      while (list_it.Next() != NULL) {
-        if (list_it.Get()->GetID() == gid) {
-          found = list_it.Get();
+      tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
+      while (list_it->Next() != NULL) {
+        if (list_it->Get()->GetID() == gid) {
+          found = list_it->Get();
           m_active_hash[hashGenome(found->GetMetaGenome().GetGenome())].Push(found);
           m_active_sz[found->GetNumUnits()].PushRear(found);
           found->NotifyNewBioUnit(bu);
-          list_it.Remove();
+          m_historic.Remove(found);
           m_world->GetStats().AddGenotype();
           if (found->GetNumUnits() > m_best) {
             m_best = found->GetNumUnits();

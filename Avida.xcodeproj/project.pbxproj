@@ -1348,7 +1348,8 @@
 				565121C70C3B055F009CBD3F /* cCoreView_Info.h */,
 				565121C80C3B055F009CBD3F /* LAYOUT */,
 			);
-			path = "viewer-core";
+			name = "viewer-core";
+			path = "../viewer-core";
 			sourceTree = "<group>";
 		};
 		56F555DE0C3B402A00E2E929 /* viewer-text */ = {
@@ -1883,7 +1884,6 @@
 				70DCAD1E097AF81A002F8733 /* script */,
 				70DCAC54097AF730002F8733 /* targets */,
 				DCC314D8076253A2008F7A48 /* tools */,
-				565121C50C3B055F009CBD3F /* viewer-core */,
 				701384A10902A16F0087ED2E /* defs.h */,
 				DCC30FCF0762539D008F7A48 /* Doxyfile */,
 			);
@@ -2070,6 +2070,7 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				565121C50C3B055F009CBD3F /* viewer-core */,
 				70B549ED10B4791B0013E999 /* tArraySet.h */,
 				7020828D0FB9F2DF00637AD6 /* cBitArray.cc */,
 				7020828E0FB9F2DF00637AD6 /* cBitArray.h */,
