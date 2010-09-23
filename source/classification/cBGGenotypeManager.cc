@@ -384,7 +384,9 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
   for (int i = 0; i < parents.GetSize(); i++) {
     parents[i]->RemovePassiveReference();
     updateCoalescent();
-    removeGenotype(parents[i]);
+    
+    // Pre-check for active genotypes to avoid recursion costs
+    if (!parents[i]->GetActiveReferenceCount()) removeGenotype(parents[i]);
   }
   
   m_historic.Remove(genotype);

@@ -3929,7 +3929,15 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
     }
   }
   
-  double merit = cur_org->GetPhenotype().GetMerit().GetDouble();
+  // Deme specific
+  if (GetNumDemes() > 1) {
+    for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
+    
+    cDeme& deme = GetDeme(GetCell(cell_id).GetDemeID());
+    deme.IncTimeUsed(cur_org->GetPhenotype().GetMerit().GetDouble());
+    CheckImplicitDemeRepro(deme);
+  }
+  
   if (cur_org->GetPhenotype().GetToDelete() == true) {
     delete cur_org;
     cur_org = NULL;
@@ -3937,17 +3945,6 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
   
   m_world->GetStats().IncExecuted();
   resource_count.Update(step_size);
-  
-  // Deme specific
-  if (GetNumDemes() > 1)
-  {
-    for(int i = 0; i < GetNumDemes(); i++) GetDeme(i).Update(step_size);
-    
-    cDeme & deme = GetDeme(GetCell(cell_id).GetDemeID());
-    deme.IncTimeUsed(merit);
-    CheckImplicitDemeRepro(deme);
-  }
-  
 }
 
 // Loop through all the demes getting stats and doing calculations
