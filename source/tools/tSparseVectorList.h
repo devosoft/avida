@@ -33,6 +33,8 @@
 #include "tIterator.h"
 #endif
 
+#define SEGMENT_SIZE 16
+
 template <class T> class tSparseVectorList
 {
 private:
@@ -42,7 +44,7 @@ private:
   struct sListSegment
   {
     int used;
-    T* entries[16];
+    T* entries[SEGMENT_SIZE];
     sListSegment* next;
     
     sListSegment() : used(0), next(NULL) { ; }
@@ -50,11 +52,12 @@ private:
   };
   
   sListSegment* m_head_seg;
+  sListSegment* m_tail_seg;
   tArray<cSparseVectorListIterator*> m_its;
   
   
 public:
-  tSparseVectorList() : m_size(0), m_head_seg(NULL) { ; }
+  tSparseVectorList() : m_size(0), m_head_seg(NULL), m_tail_seg(NULL) { ; }
   explicit tSparseVectorList(const tSparseVectorList& list);
   ~tSparseVectorList()
   {
@@ -68,12 +71,32 @@ public:
   
   int GetSize() const { return m_size; }
   
+  T* GetFirst() { return (m_head_seg && m_head_seg->used) ? m_head_seg->entries[m_head_seg->used - 1] : NULL; }
+    
   void Push(T* value)
   {
-    if (m_head_seg && m_head_seg->used < 16) {
+    if (m_head_seg && m_head_seg->used < SEGMENT_SIZE) {
       m_head_seg->entries[m_head_seg->used++] = value;
     } else {
       m_head_seg = new sListSegment(value, m_head_seg);
+      if (!(m_head_seg->next)) m_tail_seg = m_head_seg;
+    }
+    
+    m_size++;
+  }
+  
+  void PushRear(T* value)
+  {
+    if (m_tail_seg && m_tail_seg->used < SEGMENT_SIZE) {
+      for (int i = m_tail_seg->used; i > 0; i--) m_tail_seg->entries[i] = m_tail_seg->entries[i - 1];
+      m_tail_seg->entries[0] = value;
+      m_tail_seg->used++;
+    } else if (m_tail_seg && m_tail_seg->used == SEGMENT_SIZE) {
+      m_tail_seg->next = new sListSegment(value, NULL);
+      m_tail_seg = m_tail_seg->next;
+    } else {
+      m_tail_seg = new sListSegment(value, NULL);
+      m_head_seg = m_tail_seg;
     }
     
     m_size++;
@@ -91,6 +114,7 @@ public:
             // Last entry in this segment, remove segment
             if (prev) prev->next = cur->next;
             if (cur == m_head_seg) m_head_seg = cur->next;
+            if (cur == m_tail_seg) m_tail_seg = prev;
             
             // Adjust any iterators to remain consistent
             for (int it = 0; it < m_its.GetSize(); it++) {
@@ -177,5 +201,7 @@ private:
   
   
 };
+
+#undef SEGMENT_SIZE
 
 #endif

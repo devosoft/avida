@@ -60,13 +60,13 @@ void cBGGenotypeManager::UpdateReset()
 {
   if (m_active_sz.GetSize() < nBGGenotypeManager::HASH_SIZE) {
     for (int i = 0; i < m_active_sz.GetSize(); i++) {
-      tListIterator<cBGGenotype> list_it(m_active_sz[i]);
-      while (list_it.Next() != NULL) if (list_it.Get()->IsThreshold()) list_it.Get()->UpdateReset();
+      tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_sz[i].Iterator());
+      while (list_it->Next() != NULL) if (list_it->Get()->IsThreshold()) list_it->Get()->UpdateReset();
     }
   } else {
     for (int i = 0; i < nBGGenotypeManager::HASH_SIZE; i++) {
-      tListIterator<cBGGenotype> list_it(m_active_hash[i]);
-      while (list_it.Next() != NULL) if (list_it.Get()->IsThreshold()) list_it.Get()->UpdateReset();
+      tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_hash[i].Iterator());
+      while (list_it->Next() != NULL) if (list_it->Get()->IsThreshold()) list_it->Get()->UpdateReset();
     }    
   }
 
@@ -90,9 +90,9 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   int active_count = 0;
   for (int i = 1; i < m_active_sz.GetSize(); i++) {
     active_count += m_active_sz[i].GetSize();
-    tListIterator<cBGGenotype> list_it(m_active_sz[i]);
-    while (list_it.Next() != NULL) {
-      cBGGenotype* bg = list_it.Get();
+    tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_sz[i].Iterator());
+    while (list_it->Next() != NULL) {
+      cBGGenotype* bg = list_it->Get();
       const int abundance = bg->GetNumUnits();
       
       // Update stats...
@@ -157,8 +157,8 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
 cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)
 {
   for (int i = m_best; i >= 0; i--) {
-    tListIterator<cBGGenotype> list_it(m_active_sz[i]);
-    while (list_it.Next() != NULL) if (list_it.Get()->GetID() == bg_id) return list_it.Get();
+    tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_sz[i].Iterator());
+    while (list_it->Next() != NULL) if (list_it->Get()->GetID() == bg_id) return list_it->Get();
   }
   
   tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
@@ -212,10 +212,10 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     
     // Search all lists attempting to locate the referenced genotype by ID
     for (int i = 0; i < m_active_sz.GetSize() && !found; i++) {
-      tListIterator<cBGGenotype> list_it(m_active_sz[i]);
-      while (list_it.Next() != NULL) {
-        if (list_it.Get()->GetID() == gid) {
-          found = list_it.Get();
+      tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_sz[i].Iterator());
+      while (list_it->Next() != NULL) {
+        if (list_it->Get()->GetID() == gid) {
+          found = list_it->Get();
           found->NotifyNewBioUnit(bu);
           break;
         }
@@ -245,10 +245,10 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
   
   // No hints or unable to locate hinted genome, search for a matching genotype
   if (!found) {
-    tListIterator<cBGGenotype> list_it(m_active_hash[list_num]);
-    while (list_it.Next() != NULL) {
-      if (list_it.Get()->Matches(bu)) {
-        found = list_it.Get();
+    tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_hash[list_num].Iterator());
+    while (list_it->Next() != NULL) {
+      if (list_it->Get()->Matches(bu)) {
+        found = list_it->Get();
         found->NotifyNewBioUnit(bu);
         break;
       }
@@ -277,8 +277,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
 void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size)
 {
   // Remove from old size list
-  genotype = m_active_sz[old_size].Remove(genotype);
-  assert(genotype);
+  m_active_sz[old_size].Remove(genotype);
   if (m_coalescent == genotype) m_coalescent = NULL;
 
   // Handle best genotype pointer
@@ -442,7 +441,7 @@ cBioGroup* cBGGenotypeManager::cGenotypeIterator::Next()
     for (m_sz_i--; m_sz_i > 0; m_sz_i--) {
       if (m_bgm->m_active_sz[m_sz_i].GetSize()) {
         delete m_it;
-        m_it = new tListIterator<cBGGenotype>(m_bgm->m_active_sz[m_sz_i]);
+        m_it = m_bgm->m_active_sz[m_sz_i].Iterator();
         m_it->Next();
         break;
       }

@@ -37,9 +37,6 @@
 #ifndef tIterator_h
 #include "tIterator.h"
 #endif
-#ifndef tList_h
-#include "tList.h"
-#endif
 #ifndef tManagedPointerArray_h
 #include "tManagedPointerArray.h"
 #endif
@@ -61,8 +58,8 @@ class cBGGenotypeManager : public cBioGroupManager
 private:
   cWorld* m_world;
 
-  tList<cBGGenotype> m_active_hash[nBGGenotypeManager::HASH_SIZE];
-  tManagedPointerArray<tList<cBGGenotype> > m_active_sz;
+  tSparseVectorList<cBGGenotype> m_active_hash[nBGGenotypeManager::HASH_SIZE];
+  tManagedPointerArray<tSparseVectorList<cBGGenotype> > m_active_sz;
   tSparseVectorList<cBGGenotype> m_historic;
   cBGGenotype* m_coalescent;
   int m_best;
@@ -116,7 +113,7 @@ private:
   private:
     cBGGenotypeManager* m_bgm;
     int m_sz_i;
-    tListIterator<cBGGenotype>* m_it;
+    tIterator<cBGGenotype>* m_it;
     
     cGenotypeIterator(); // @not_implemented
     cGenotypeIterator(const cGenotypeIterator&); // @not_implemented
@@ -125,7 +122,8 @@ private:
     
   public:
     cGenotypeIterator(cBGGenotypeManager* bgm)
-      : m_bgm(bgm), m_sz_i(bgm->m_best), m_it(new tListIterator<cBGGenotype>(m_bgm->m_active_sz[m_sz_i])) { ; }
+      : m_bgm(bgm), m_sz_i(bgm->m_best), m_it(m_bgm->m_active_sz[m_sz_i].Iterator()) { ; }
+    ~cGenotypeIterator() { delete m_it; }
     
     cBioGroup* Get();
     cBioGroup* Next();
