@@ -50,6 +50,7 @@ cBGGenotypeManager::~cBGGenotypeManager()
 {
   assert(m_historic.GetSize() == 0);
   assert(m_best == 0);
+  delete m_dcm;
 }
 
 
@@ -72,6 +73,18 @@ void cBGGenotypeManager::UpdateReset()
 
   tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
   while (list_it->Next() != NULL) if (!list_it->Get()->GetReferenceCount()) removeGenotype(list_it->Get());
+  
+//  int tot_i = 0;
+//  int tot_d = 0;
+//  int tot_m = 0;
+//  for (int i = 0; i < m_active_sz.GetSize(); i++) {
+//    tot_i += m_active_sz[i].GetSize();
+//    tot_d += m_active_sz[i].GetDataSize();
+//    tot_m += m_active_sz[i].GetMemSize();
+//  }
+//  std::cerr << "Gen: " << (tot_i + m_historic.GetSize()) << ":" << (sizeof(cBGGenotype) * (tot_i + m_historic.GetSize()));
+//  std::cerr << " Total: " << tot_d << "/" << tot_m;
+//  std::cerr << " Historic: " << m_historic.GetDataSize() << "/" << m_historic.GetMemSize() << std::endl;
 }
 
 
@@ -320,15 +333,16 @@ const tArray<cString>& cBGGenotypeManager::GetBioGroupPropertyList() const
 bool cBGGenotypeManager::BioGroupHasProperty(const cString& prop) const
 {
   if (!m_dcm) buildDataCommandManager();
-  return (m_dcm->GetDataCommand(prop));
+  tAutoRelease<tDataEntryCommand<cBGGenotype> > dc(m_dcm->GetDataCommand(prop));
+  return (!dc.IsNull());
 }
 
 cFlexVar cBGGenotypeManager::GetBioGroupProperty(const cBGGenotype* genotype, const cString& prop) const
 {
   if (!m_dcm) buildDataCommandManager();
-  tDataEntryCommand<cBGGenotype>* dc = m_dcm->GetDataCommand(prop);
+  tAutoRelease<tDataEntryCommand<cBGGenotype> > dc(m_dcm->GetDataCommand(prop));
   
-  if (dc) return dc->GetValue(genotype);
+  if (!dc.IsNull()) return dc->GetValue(genotype);
   
   return cFlexVar();
 }

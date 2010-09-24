@@ -54,7 +54,12 @@ private:
   
 public:
   tDataManager(TargetType* target, const cString& filetype = "unknown") : cDataManager_Base(filetype), m_target(target) { ; }
-  ~tDataManager() { ; }
+  ~tDataManager()
+  {
+    tArray<tDataEntry<TargetType>*> entries;
+    m_entry_dict.GetValues(entries);
+    for (int i = 0; i < entries.GetSize(); i++) delete entries[i];
+  }
 
   template<class EntryType> bool Add(const cString& name,  const cString& desc,
                                      EntryType (TargetType::*funR)() const, void (TargetType::*funS)(EntryType) = NULL,

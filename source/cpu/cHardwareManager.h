@@ -61,7 +61,7 @@ private:
 
 public:
   cHardwareManager(cWorld* world);
-  ~cHardwareManager() { ; }
+  ~cHardwareManager();
   
   cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is = NULL);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }

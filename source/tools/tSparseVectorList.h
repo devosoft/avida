@@ -39,6 +39,7 @@ template <class T> class tSparseVectorList
 {
 private:
   int m_size;
+  int m_segs;
   
   class cSparseVectorListIterator;
   struct sListSegment
@@ -57,7 +58,7 @@ private:
   
   
 public:
-  tSparseVectorList() : m_size(0), m_head_seg(NULL), m_tail_seg(NULL) { ; }
+  tSparseVectorList() : m_size(0), m_segs(0), m_head_seg(NULL), m_tail_seg(NULL) { ; }
   explicit tSparseVectorList(const tSparseVectorList& list);
   ~tSparseVectorList()
   {
@@ -79,6 +80,7 @@ public:
       m_head_seg->entries[m_head_seg->used++] = value;
     } else {
       m_head_seg = new sListSegment(value, m_head_seg);
+      m_segs++;
       if (!(m_head_seg->next)) m_tail_seg = m_head_seg;
     }
     
@@ -93,9 +95,11 @@ public:
       m_tail_seg->used++;
     } else if (m_tail_seg && m_tail_seg->used == SEGMENT_SIZE) {
       m_tail_seg->next = new sListSegment(value, NULL);
+      m_segs++;
       m_tail_seg = m_tail_seg->next;
     } else {
       m_tail_seg = new sListSegment(value, NULL);
+      m_segs++;
       m_head_seg = m_tail_seg;
     }
     
@@ -123,6 +127,7 @@ public:
                 m_its[it]->m_pos = -1;
               }
             }
+            m_segs--;
             delete cur;
           } else if (cur->next && (cur->used + cur->next->used) <= SEGMENT_SIZE) {
             // Adjust any iterators to remain consistent
@@ -143,6 +148,7 @@ public:
             if (prev) prev->next = cur->next;
             if (cur == m_head_seg) m_head_seg = cur->next;
             if (cur == m_tail_seg) m_tail_seg = prev;
+            m_segs--;
             delete cur;            
           } else {
             // Adjust any iterators to remain consistent
@@ -165,6 +171,9 @@ public:
   }
   
   tIterator<T>* Iterator() { return new cSparseVectorListIterator(this); }
+  
+  int GetDataSize() const { return sizeof(T*) * m_size; }
+  int GetMemSize() const { return sizeof(sListSegment) * m_segs; }
   
 private:
   class cSparseVectorListIterator : public tIterator<T>

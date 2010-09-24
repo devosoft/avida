@@ -35,7 +35,7 @@ cDataFileManager::cDataFileManager(const cString& target_dir, bool verbose) : m_
     if (cwd != NULL) {
       m_target_dir = cString(cwd) + "/" + m_target_dir;
     }
-    delete dirbuf;
+    delete [] dirbuf;
   }
   
   if (m_target_dir.GetSize() > 0) {

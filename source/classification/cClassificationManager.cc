@@ -37,6 +37,7 @@ cClassificationManager::cClassificationManager(cWorld* world) : m_world(world)
 
 cClassificationManager::~cClassificationManager()
 {
+  for (int i = 0; i < m_bgms.GetSize(); i++) delete m_bgms[i];
 }
 
 bool cClassificationManager::RegisterBioGroupManager(cBioGroupManager* bgm, const cString& role,

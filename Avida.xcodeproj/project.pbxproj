@@ -79,7 +79,6 @@
 		702246EC107FCA900079CD25 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D8107FCA590079CD25 /* tcmalloc.cc */; settings = {COMPILER_FLAGS = "-fexceptions"; }; };
 		702246ED107FCA900079CD25 /* thread_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D9107FCA590079CD25 /* thread_cache.cc */; };
 		7022479E108620E40079CD25 /* sysinfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7022479C108620E40079CD25 /* sysinfo.cc */; };
-		702247F2108625920079CD25 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		7023EC3A0C0A431B00362B9C /* avida.cc in Sources */ = {isa = PBXBuildFile; fileRef = DCC3109C0762539E008F7A48 /* avida.cc */; };
 		7023EC3B0C0A431B00362B9C /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		7023EC3C0C0A431B00362B9C /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
@@ -366,13 +365,6 @@
 			remoteGlobalIDString = 7023EC320C0A426900362B9C;
 			remoteInfo = "avida-core";
 		};
-		702247EA108624880079CD25 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7022469C107FC4F10079CD25;
-			remoteInfo = "tcmalloc-1.4";
-		};
 		7023ECA60C0A436000362B9C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
@@ -441,6 +433,13 @@
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 7022469C107FC4F10079CD25;
+			remoteInfo = "tcmalloc-1.4";
+		};
+		70D1038A124CF80800F25734 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
 			remoteInfo = "tcmalloc-1.4";
 		};
 /* End PBXContainerItemProxy section */
@@ -1325,7 +1324,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				702247F2108625920079CD25 /* libtcmalloc-1.4.a in Frameworks */,
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2411,7 +2409,7 @@
 			);
 			dependencies = (
 				7023ECA70C0A436000362B9C /* PBXTargetDependency */,
-				702247EB108624880079CD25 /* PBXTargetDependency */,
+				70D1038B124CF80800F25734 /* PBXTargetDependency */,
 			);
 			name = avida;
 			productName = primitive;
@@ -2717,11 +2715,6 @@
 			target = 7023EC320C0A426900362B9C /* avida-core */;
 			targetProxy = 56F555DA0C3B36FC00E2E929 /* PBXContainerItemProxy */;
 		};
-		702247EB108624880079CD25 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
-			targetProxy = 702247EA108624880079CD25 /* PBXContainerItemProxy */;
-		};
 		7023ECA70C0A436000362B9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7023EC320C0A426900362B9C /* avida-core */;
@@ -2771,6 +2764,11 @@
 			isa = PBXTargetDependency;
 			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
 			targetProxy = 70C9D5CB1086894A00472C46 /* PBXContainerItemProxy */;
+		};
+		70D1038B124CF80800F25734 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
+			targetProxy = 70D1038A124CF80800F25734 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

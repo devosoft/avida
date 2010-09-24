@@ -87,6 +87,9 @@ cHardwareManager::cHardwareManager(cWorld* world)
   }
 }
 
+cHardwareManager::~cHardwareManager() { delete m_inst_set; }
+
+
 cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is)
 {
   assert(org != NULL);

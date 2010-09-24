@@ -31,7 +31,6 @@
 #include "cStringUtil.h"
 #include "tDictionary.h"
 
-
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
   : cBioGroup(in_id)
   , m_mgr(mgr)
