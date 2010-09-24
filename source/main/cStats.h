@@ -205,6 +205,7 @@ private:
   int num_breed_true_creatures;
   int num_creatures;
   int num_genotypes;
+  int num_genotypes_historic;
   int num_threshold;
   int num_species;
   int num_thresh_species;
@@ -403,7 +404,7 @@ public:
   void SetGenoMapElement(int i, int in_geno) { genotype_map[i] = in_geno; }
   void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}
 
-  inline void SetNumGenotypes(int new_genotypes);
+  inline void SetNumGenotypes(int new_genotypes, int num_historic);
   inline void SetNumCreatures(int new_creatures);
   inline void SetNumThreshSpecies(int new_thresh_species);
   inline void SetBreedTrueCreatures(int in_num_breed_true_creatures);
@@ -633,6 +634,7 @@ public:
   int GetBreedTrueCreatures() const { return num_breed_true_creatures; }
   int GetNumCreatures() const       { return num_creatures; }
   int GetNumGenotypes() const       { return num_genotypes; }
+  int GetNumGenotypesHistoric() const { return num_genotypes_historic; }
   int GetNumThreshold() const       { return num_threshold; }
   int GetNumSpecies() const         { return num_species; }
   int GetNumThreshSpecies() const   { return num_thresh_species; }
@@ -1082,10 +1084,11 @@ public:
 };
 
 
-inline void cStats::SetNumGenotypes(int new_genotypes)
+inline void cStats::SetNumGenotypes(int new_genotypes, int num_historic)
 {
   num_genotypes_last = num_genotypes;
   num_genotypes = new_genotypes;
+  num_genotypes_historic = num_historic;
 }
 
 inline void cStats::SetNumCreatures(int new_creatures)

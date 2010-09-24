@@ -98,6 +98,7 @@ cStats::cStats(cWorld* world)
   , num_breed_true_creatures(0)
   , num_creatures(0)
   , num_genotypes(0)
+  , num_genotypes_historic(0)
   , num_threshold(0)
   , num_species(0)
   , num_thresh_species(0)
@@ -358,6 +359,7 @@ void cStats::SetupPrintDatabase()
   data_manager.Add("bred_true",      "Count of Organisms that have Bred True", &cStats::GetBreedTrueCreatures);
   data_manager.Add("num_cpus",       "Count of Organisms in Population",       &cStats::GetNumCreatures);
   data_manager.Add("num_genotypes",  "Count of Genotypes in Population",       &cStats::GetNumGenotypes);
+  data_manager.Add("num_genotypes_historic", "Count of Historic Genotypes",    &cStats::GetNumGenotypesHistoric);
   data_manager.Add("num_threshold",  "Count of Threshold Genotypes",           &cStats::GetNumThreshold);
   data_manager.Add("num_species",    "Count of Species in Population",         &cStats::GetNumSpecies);
   data_manager.Add("thresh_species", "Count of Threshold Species",             &cStats::GetNumThreshSpecies);

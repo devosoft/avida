@@ -73,18 +73,6 @@ void cBGGenotypeManager::UpdateReset()
 
   tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
   while (list_it->Next() != NULL) if (!list_it->Get()->GetReferenceCount()) removeGenotype(list_it->Get());
-  
-//  int tot_i = 0;
-//  int tot_d = 0;
-//  int tot_m = 0;
-//  for (int i = 0; i < m_active_sz.GetSize(); i++) {
-//    tot_i += m_active_sz[i].GetSize();
-//    tot_d += m_active_sz[i].GetDataSize();
-//    tot_m += m_active_sz[i].GetMemSize();
-//  }
-//  std::cerr << "Gen: " << (tot_i + m_historic.GetSize()) << ":" << (sizeof(cBGGenotype) * (tot_i + m_historic.GetSize()));
-//  std::cerr << " Total: " << tot_d << "/" << tot_m;
-//  std::cerr << " Historic: " << m_historic.GetDataSize() << "/" << m_historic.GetMemSize() << std::endl;
 }
 
 
@@ -129,7 +117,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   }
   
   stats.SetEntropy(entropy);
-  stats.SetNumGenotypes(active_count);
+  stats.SetNumGenotypes(active_count, m_historic.GetSize());
   
   
   // Handle dominant genotype stats
