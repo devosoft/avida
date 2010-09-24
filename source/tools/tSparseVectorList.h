@@ -124,6 +124,26 @@ public:
               }
             }
             delete cur;
+          } else if (cur->next && (cur->used + cur->next->used) <= SEGMENT_SIZE) {
+            // Adjust any iterators to remain consistent
+            for (int it = 0; it < m_its.GetSize(); it++) {
+              if (m_its[it]->m_cur == cur) {
+                if (m_its[it]->m_pos >= i) m_its[it]->m_pos--;
+                m_its[it]->m_pos += cur->next->used;
+                m_its[it]->m_cur = cur->next;
+              }
+            }            
+            
+            // Pack the remaining entries in this segment onto the next
+            for (int j = 0; j < i && j < cur->used; j++) cur->next->entries[cur->next->used + j] = cur->entries[j];
+            for (; i < cur->used; i++) cur->next->entries[cur->next->used + i] = cur->entries[i + 1];            
+            cur->next->used += cur->used;
+            
+            // Remove now empty segment
+            if (prev) prev->next = cur->next;
+            if (cur == m_head_seg) m_head_seg = cur->next;
+            if (cur == m_tail_seg) m_tail_seg = prev;
+            delete cur;            
           } else {
             // Adjust any iterators to remain consistent
             for (int it = 0; it < m_its.GetSize(); it++) {
