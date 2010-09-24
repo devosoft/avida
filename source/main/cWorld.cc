@@ -107,17 +107,6 @@ void cWorld::Setup()
 //	if (m_conf->TRACK_CCLADES.Get() > 0)
 //		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
   
-	m_pop = new cPopulation(this);
-  m_pop->InitiatePop();
-  
-  // Setup Event List
-  m_event_list = new cEventList(this);
-  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get())) {
-    cerr << "error: unable to load events" << endl;
-    Avida::Exit(-1);
-  }
-	
-  
   const bool revert_fatal = m_conf->REVERT_FATAL.Get() > 0.0;
   const bool revert_neg = m_conf->REVERT_DETRIMENTAL.Get() > 0.0;
   const bool revert_neut = m_conf->REVERT_NEUTRAL.Get() > 0.0;
@@ -132,6 +121,16 @@ void cWorld::Setup()
   const bool sterilize_pos = m_conf->STERILIZE_BENEFICIAL.Get() > 0.0;
   const bool sterilize_taskloss = m_conf->STERILIZE_TASKLOSS.Get() > 0.0;
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
+
+	m_pop = new cPopulation(this);
+  m_pop->InitiatePop();
+  
+  // Setup Event List
+  m_event_list = new cEventList(this);
+  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get())) {
+    cerr << "error: unable to load events" << endl;
+    Avida::Exit(-1);
+  }
 }
 
 cAnalyze& cWorld::GetAnalyze()

@@ -43,6 +43,7 @@ using namespace std;
 cPhenotype::cPhenotype(cWorld* world, int parent_generation)
 : m_world(world)
 , initialized(false)
+, energy_store(0.0)
 , cur_task_count(m_world->GetEnvironment().GetNumTasks())
 , cur_internal_task_count(m_world->GetEnvironment().GetNumTasks())
 , eff_task_count(m_world->GetEnvironment().GetNumTasks())

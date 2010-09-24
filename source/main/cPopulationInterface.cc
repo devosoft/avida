@@ -58,7 +58,11 @@ cPopulationInterface::cPopulationInterface(cWorld* world)
 : m_world(world)
 , m_cell_id(-1)
 , m_deme_id(-1)
-, m_hgt_support(0) {
+, m_prevseen_cell_id(-1)
+, m_prev_task_cell(-1)
+, m_num_task_cells(0)
+, m_hgt_support(NULL)
+{
 }
 
 cPopulationInterface::~cPopulationInterface() {

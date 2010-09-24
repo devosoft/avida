@@ -201,6 +201,7 @@ void cInitFile::PostProcess(tSmartArray<sLine*>& lines)
   // Resize the internal line structure and move the line structs to it
   m_lines.Resize(next_id);
   for (int i = 0; i < next_id; i++) m_lines[i] = lines[i];
+  for (int i = next_id; i < num_lines; i++) delete lines[i];
 }
 
 

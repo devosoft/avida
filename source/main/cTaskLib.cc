@@ -513,7 +513,9 @@ void cTaskLib::SetupTests(cTaskContext& ctx) const
   for (int i = 0; i < 3; i++) {
     test_inputs[i] = (num_inputs > i) ? input_buffer[i] : 0;
   }
-  int test_output = ctx.GetOutputBuffer()[0];
+  
+  int test_output = 0;
+  if (ctx.GetOutputBuffer().GetNumStored()) ctx.GetOutputBuffer()[0];
   
   
   // Setup logic_out to test the output for each logical combination...
