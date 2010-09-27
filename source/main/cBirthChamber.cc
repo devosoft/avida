@@ -36,7 +36,6 @@
 #include "cClassificationManager.h"
 #include "cGenomeUtil.h"
 #include "cOrganism.h"
-#include "cTools.h"
 #include "cWorld.h"
 #include "cStats.h"
 #include "tArray.h"

@@ -10,10 +10,6 @@
 
 #include <cassert>
 
-#ifndef cTools_h
-#include "cTools.h"
-#endif
-
 #ifndef cCoords_h
 #include "cCoords.h"
 #endif

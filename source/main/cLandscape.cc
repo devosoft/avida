@@ -34,7 +34,6 @@
 #include "cPhenotype.h"
 #include "cStats.h"             // For GetUpdate in outputs...
 #include "cTestCPU.h"
-#include "cTools.h"
 #include "cWorld.h"
 
 

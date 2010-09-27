@@ -35,7 +35,6 @@
 #include "cPhenotype.h"
 #include "cStats.h"
 #include "cTestCPU.h"
-#include "cTools.h"
 #include "cWorld.h"
 #include "tAnalyzeJob.h"
 

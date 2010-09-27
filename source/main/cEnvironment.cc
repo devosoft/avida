@@ -50,7 +50,6 @@
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
-#include "cTools.h"
 #include "cWorld.h"
 #include "tAutoRelease.h"
 

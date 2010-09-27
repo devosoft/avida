@@ -1,7 +1,8 @@
 /*
- *  cFixedBlock.cc
+ *  Tools.h
  *  Avida
  *
+ *  Called "tools.hh" prior to 12/7/05.
  *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
@@ -22,5 +23,14 @@
  *
  */
 
-#include "cFixedBlock.h"
+#ifndef Tools_h
+#define Tools_h
 
+class cString;
+
+namespace Tools
+{
+  bool MkDir(const cString& dirname, bool verbose=false);
+};
+
+#endif

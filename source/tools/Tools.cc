@@ -1,20 +1,21 @@
 /*
- *  cTools.cc
+ *  Tools.cc
  *  Avida
  *
- *  Called "tools.cc" prior to 12/7/05.
  *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology
  *
  */
 
-#include "cTools.h"
+#include "Tools.h"
 
 #include <iostream>
 #include <cerrno>
 #include <sys/stat.h>
 #include <cstdio>
 
+#include "cEntryHandle.h"
+#include "cRCObject.h"
 #include "cString.h"
 #include "platform.h"
 
@@ -36,8 +37,11 @@
 
 using namespace std;
 
+cEntryHandle::~cEntryHandle() { ; }
+cRCObject::~cRCObject() { ; }
 
-bool cTools::MkDir(const cString & dirname, bool verbose)
+
+bool Tools::MkDir(const cString & dirname, bool verbose)
 {
   if (verbose) cout << "Checking for directory '" << dirname << "'..." << flush;
 
@@ -63,3 +67,4 @@ bool cTools::MkDir(const cString & dirname, bool verbose)
   if (verbose) cout << " found." << endl;
   return true;
 }
+

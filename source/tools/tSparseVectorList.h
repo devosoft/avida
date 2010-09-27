@@ -26,6 +26,9 @@
 #ifndef tSparseVectorList_h
 #define tSparseVectorList_h
 
+#ifndef cEntryHandle_h
+#include "cEntryHandle.h"
+#endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
@@ -42,11 +45,13 @@ private:
   int m_segs;
   
   class cSparseVectorListIterator;
+  class cSparseVectorListHandle;
   struct sListSegment
   {
     int used;
     T* entries[SEGMENT_SIZE];
     sListSegment* next;
+    tArray<cSparseVectorListHandle*> handles;
     
     sListSegment() : used(0), next(NULL) { ; }
     sListSegment(T* value, sListSegment* in_next) : used(1), next(in_next) { entries[0] = value; }
@@ -74,7 +79,7 @@ public:
   
   T* GetFirst() { return (m_head_seg && m_head_seg->used) ? m_head_seg->entries[m_head_seg->used - 1] : NULL; }
     
-  void Push(T* value)
+  void Push(T* value, cEntryHandle** handle = NULL)
   {
     if (m_head_seg && m_head_seg->used < SEGMENT_SIZE) {
       m_head_seg->entries[m_head_seg->used++] = value;
@@ -85,9 +90,11 @@ public:
     }
     
     m_size++;
+    
+    if (handle) *handle = new cSparseVectorListHandle(this, m_head_seg, value);
   }
   
-  void PushRear(T* value)
+  void PushRear(T* value, cEntryHandle** handle = NULL)
   {
     if (m_tail_seg && m_tail_seg->used < SEGMENT_SIZE) {
       for (int i = m_tail_seg->used; i > 0; i--) m_tail_seg->entries[i] = m_tail_seg->entries[i - 1];
@@ -104,6 +111,7 @@ public:
     }
     
     m_size++;
+    if (handle) *handle = new cSparseVectorListHandle(this, m_tail_seg, value);
   }
   
   void Remove(const T* value)
@@ -229,6 +237,29 @@ private:
   };
   
   
+  class cSparseVectorListHandle : public cEntryHandle
+  {
+    friend class tSparseVectorList<T>;
+  private:
+    tSparseVectorList<T>* m_list;
+    sListSegment* m_seg;
+    T* m_entry;
+    
+    cSparseVectorListHandle(); // @not_implemented
+    cSparseVectorListHandle(const cSparseVectorListHandle&); // @not_implemented
+    cSparseVectorListHandle& operator=(const cSparseVectorListHandle&); // @not_implemented
+    
+    
+    cSparseVectorListHandle(tSparseVectorList<T>* list, sListSegment* seg, T* entry)
+      : m_list(list), m_seg(seg), m_entry(entry)
+    {
+      m_seg->handles.Push(this);
+    }
+    
+  public:
+    bool IsValid() const { return (m_seg); }
+    void Remove() { ; } // @TODO    
+  };
 };
 
 #undef SEGMENT_SIZE

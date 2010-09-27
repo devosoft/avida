@@ -315,15 +315,14 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cProbDemeProbSchedule.cc
   ${TOOLS_DIR}/cProbSchedule.cc
   ${TOOLS_DIR}/cRandom.cc
-  ${TOOLS_DIR}/cRCObject.cc
   ${TOOLS_DIR}/cRunningAverage.cc
   ${TOOLS_DIR}/cSchedule.cc
   ${TOOLS_DIR}/cString.cc
   ${TOOLS_DIR}/cStringIterator.cc
   ${TOOLS_DIR}/cStringList.cc
   ${TOOLS_DIR}/cStringUtil.cc
-  ${TOOLS_DIR}/cTools.cc
   ${TOOLS_DIR}/cWeightedIndex.cc
+  ${TOOLS_DIR}/Tools.cc
 )
 SOURCE_GROUP(tools FILES ${TOOLS_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${TOOLS_SOURCES})

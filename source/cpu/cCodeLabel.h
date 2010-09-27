@@ -38,9 +38,6 @@
 #ifndef tArray_h
 #include "tArray.h"
 #endif
-#ifndef cTools_h
-#include "cTools.h"
-#endif
 
 /**
  * The cCodeLabel class is used to identify a label within the genotype of

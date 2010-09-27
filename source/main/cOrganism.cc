@@ -41,7 +41,6 @@
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
-#include "cTools.h"
 #include "cWorld.h"
 #include "cStats.h"
 

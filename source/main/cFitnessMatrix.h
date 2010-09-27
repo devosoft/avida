@@ -53,9 +53,6 @@
 #ifndef cStringUtil_h
 #include "cStringUtil.h"
 #endif
-#ifndef cTools_h
-#include "cTools.h"
-#endif
 
 class cGenome;
 class cInstSet;

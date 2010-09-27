@@ -28,8 +28,6 @@
 #include "cDoubleSum.h"
 #include "nHardware.h"
 #include "cOrganism.h"
-#include "cTools.h"
-#include "cTools.h"
 #include "cWorld.h"
 #include "cEnvironment.h"
 #include "cPopulation.h"
