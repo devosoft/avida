@@ -155,6 +155,18 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
       return false; // (divide fails)
     }
   }
+
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
+    if (!m_organism->HasOpinion()) {
+      if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) {
+        m_organism->SetOpinion(m_world->GetConfig().DEFAULT_GROUP.Get());
+      } else {
+        // No default group, so divide fails (group opinion is required by cPopulation::ActivateOffspring)
+        return false;
+      }
+    }
+  }
+  
   
   // Save the information we collected here...
   cPhenotype& phenotype = m_organism->GetPhenotype();

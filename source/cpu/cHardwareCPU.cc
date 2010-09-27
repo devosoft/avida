@@ -8982,14 +8982,10 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 	// Check if the org is currently part of a group
 	assert(m_organism != 0);
 	
-	// check if this is a valid group
-	if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2) { 
-		int prop_group_id =   GetRegister(FindModifiedRegister(REG_BX));
-		if (!(m_world->GetEnvironment().IsGroupID(prop_group_id))){
-			return true;
-		}
-	}
+  int prop_group_id = GetRegister(FindModifiedRegister(REG_BX));
   
+	// check if this is a valid group
+	if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
 	
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
@@ -8997,8 +8993,8 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 		m_world->GetPopulation().LeaveGroup(opinion);
   }
 	
-	// Call the set opinion instruction, which does all the dirty work.
-	Inst_SetOpinion(ctx);
+	// Set the opinion
+  m_organism->SetOpinion(prop_group_id);
 	
 	// Add org to group count
 	opinion = m_organism->GetOpinion().first;	

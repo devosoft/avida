@@ -732,6 +732,7 @@ public:
   // -------- Group formation config options --------
   CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
   CONFIG_ADD_VAR(USE_FORM_GROUPS, int, 0, "Enable organisms to form groups. 0=off,\n 1=on no restrict,\n 2=on restrict to defined");
+  CONFIG_ADD_VAR(DEFAULT_GROUP, int, -1, "Default group to assign to organisms not asserting a group membership (-1 indicates disabled)");
 	
 
 	// -------- Deme network config options --------

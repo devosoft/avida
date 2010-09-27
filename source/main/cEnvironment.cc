@@ -71,6 +71,7 @@ m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_ran
 m_use_specific_inputs(false), m_specific_inputs(), m_mask(0)
 {
   mut_rates.Setup(world);
+  if (m_world->GetConfig().DEFAULT_GROUP.Get() != -1) possible_group_ids.insert(m_world->GetConfig().DEFAULT_GROUP.Get());
 }
 
 cEnvironment::~cEnvironment()
