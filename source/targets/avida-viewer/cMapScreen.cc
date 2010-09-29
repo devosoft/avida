@@ -35,6 +35,7 @@ void cMapScreen::Draw()
   Update();
  
 }
+
 void cMapScreen::Update()
 {
   // Get working in multiple modes!!
@@ -44,8 +45,6 @@ void cMapScreen::Update()
   const int name_x = Width() - 20;
   const int name_y = Height() - 1;
   if (info.GetMapMode() == MAP_BASIC)           Print(name_y, name_x, " Genotype View ");
-  else if (info.GetMapMode() == MAP_SPECIES)    Print(name_y, name_x, " Species View  ");
-  else if (info.GetMapMode() == MAP_COMBO)      Print(name_y, name_x, "  Combo View   ");
   else if (info.GetMapMode() == MAP_INJECT)     Print(name_y, name_x, " Modified View ");
   else if (info.GetMapMode() == MAP_RESOURCE)   Print(name_y, name_x, " Resource View ");
   else if (info.GetMapMode() == MAP_AGE)        Print(name_y, name_x, "   Age View    ");
@@ -127,14 +126,11 @@ void cMapScreen::DoInput(int in_char)
   case '>':
   case '.':
     info.IncMapMode();
-    //++map_mode %= NUM_MAPS;
     Update();
     break;
   case '<':
   case ',':
     info.DecMapMode();
-    //map_mode += NUM_MAPS;
-    //--map_mode %= NUM_MAPS;
     Update();
     break;
   }
