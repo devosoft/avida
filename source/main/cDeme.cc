@@ -306,7 +306,7 @@ void cDeme::OrganismDeath(cPopulationCell& cell) {
 	// Add information about the organisms tasks to the deme so that
 	// we can use it to compute shannon mutual information and measure
 	// division of labor.
-	UpdateShannon(cell);
+	if (m_world->GetConfig().DEMES_TRACK_SHANNON_INFO.Get()) UpdateShannon(cell);
 	
 }
 

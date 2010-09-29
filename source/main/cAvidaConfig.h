@@ -460,6 +460,7 @@ public:
   CONFIG_ADD_VAR(DEMES_FOUNDER_GERMLINE_PROPENSITY, double, -1.0, "Default germline propensity of founder organisms in deme.\nFor use with DEMES_DIVIDE_METHOD 2.\n <0 = OFF");
   CONFIG_ADD_VAR(DEMES_PREFER_EMPTY, int, 0, "Give empty demes preference as targets of deme replication?");
   CONFIG_ADD_VAR(DEMES_PROTECTION_POINTS, int, 0, "The number of points a deme receives for each suicide.");
+  CONFIG_ADD_VAR(DEMES_TRACK_SHANNON_INFO, int, 0, "Enable shannon mutual information tracking for demes.");
   
   
 	// -------- Reversion config options --------
