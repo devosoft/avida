@@ -55,37 +55,37 @@ private:
 
   // Window managing functions...
 
-  void TogglePause();
+  void TogglePause(cAvidaContext& ctx);
   void CloneSoup();
   void ExtractCreature();
 
   // Input function
-  void DoInputs();
+  void DoInputs(cAvidaContext& ctx);
 
   // Screen helpers
-  void ChangeCurScreen(cScreen * new_screen);
+  void ChangeCurScreen(cAvidaContext& ctx, cScreen * new_screen);
   void PrintMerit(int in_y, int in_x, double in_merit);
   void PrintFitness(int in_y, int in_x, double in_fitness);
 
   // Map navigation
-  void NavigateMapWindow();
+  void NavigateMapWindow(cAvidaContext& ctx);
 public:
   cView(cWorld* world);
   virtual ~cView();
 
-  void Setup(const cString & in_name);
+  void Setup(cAvidaContext& ctx, const cString & in_name);
   void SetViewMode(int in_mode);
 
-  bool ProcessKeypress(int keypress);
+  bool ProcessKeypress(cAvidaContext& ctx, int keypress);
 
-  void NewUpdate();
-  void NotifyUpdate();
+  void NewUpdate(cAvidaContext& ctx);
+  void NotifyUpdate(cAvidaContext& ctx);
   void NotifyError(const cString & in_string);
   void NotifyWarning(const cString & in_string);
   void NotifyComment(const cString & in_string);
   void NotifyOutput(const cString & in_string);
   void Pause() { info.SetPauseLevel(PAUSE_ON); }
-  void DoBreakpoint();
+  void DoBreakpoint(cAvidaContext& ctx);
   
   int Confirm(const cString & message);
   void Notify(const cString & message);
@@ -93,7 +93,7 @@ public:
   int GetStepOrganism() { return info.GetStepOrganism(); }
   void SetStepOrganism(int in_id) { info.SetStepOrganism(in_id); }
 
-  void Refresh();
+  void Refresh(cAvidaContext& ctx);
 
   // Methods called by sub-windows.
   void Redraw();

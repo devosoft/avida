@@ -29,14 +29,14 @@ cMapScreen::~cMapScreen()
 {
 }
 
-void cMapScreen::Draw()
+void cMapScreen::Draw(cAvidaContext& ctx)
 {
   CenterActiveCPU();
-  Update();
+  Update(ctx);
  
 }
 
-void cMapScreen::Update()
+void cMapScreen::Update(cAvidaContext& ctx)
 {
   // Get working in multiple modes!!
 
@@ -96,42 +96,42 @@ void cMapScreen::Update()
 }
 
 
-void cMapScreen::DoInput(int in_char)
+void cMapScreen::DoInput(cAvidaContext& ctx, int in_char)
 {
   switch(in_char) {
   case '2':
   case KEY_DOWN:
     corner_id += x_size;
     corner_id %= population.GetSize();
-    Update();
+    Update(ctx);
     break;
   case '8':
   case KEY_UP:
     corner_id -= x_size;
     if (corner_id < 0) corner_id += population.GetSize();
-    Update();
+    Update(ctx);
     break;
   case '6':
   case KEY_RIGHT:
     corner_id++;
     if (corner_id == population.GetSize()) corner_id = 0;
-    Update();
+    Update(ctx);
     break;
   case '4':
   case KEY_LEFT:
     corner_id--;
     if (corner_id < 0) corner_id += population.GetSize();
-    Update();
+    Update(ctx);
     break;
   case '>':
   case '.':
     info.IncMapMode();
-    Update();
+    Update(ctx);
     break;
   case '<':
   case ',':
     info.DecMapMode();
-    Update();
+    Update(ctx);
     break;
   }
 }
@@ -188,7 +188,7 @@ void cMapScreen::CenterYCoord()
   corner_id = corner_y * x_size + corner_x;
 }
 
-void cMapScreen::PlaceCursor()
+void cMapScreen::PlaceCursor(cAvidaContext& ctx)
 {
   int x_offset = info.GetActiveID() - corner_id;
   x_offset %= x_size;
@@ -197,7 +197,7 @@ void cMapScreen::PlaceCursor()
   int y_offset = (info.GetActiveID() / x_size) - (corner_id / x_size);
   if (y_offset < 0) y_offset += y_size;
 
-  cGenotype * cpu_gen = info.GetActiveGenotype();
+  cBioGroup* cpu_gen = info.GetActiveGenotype();
 
   if (!cpu_gen) {
     Print(Height() - 1, 33,
@@ -207,20 +207,20 @@ void cMapScreen::PlaceCursor()
     Print(Height() - 1, 33, "(%2d, %2d) - %s",
 		       info.GetActiveID() % x_size,
 		       info.GetActiveID() / x_size,
-		       static_cast<const char*>(cpu_gen->GetName()));
+		       static_cast<const char*>(cpu_gen->GetProperty("name").AsString()));
   }
 
   if (x_offset == 0 || x_offset == Width()/2 - 1) {
     CenterXCoord();
     Clear();
-    Draw();
-    PlaceCursor();
+    Draw(ctx);
+    PlaceCursor(ctx);
   }
   else if (y_offset == 0 || y_offset == Height() - 2) {
     CenterYCoord();
     Clear();
-    Draw();
-    PlaceCursor();
+    Draw(ctx);
+    PlaceCursor(ctx);
   }
   else {
     Move(y_offset, x_offset * 2);
@@ -228,17 +228,17 @@ void cMapScreen::PlaceCursor()
   }
 }
 
-void cMapScreen::Navigate()
+void cMapScreen::Navigate(cAvidaContext& ctx)
 {
   // Setup for choosing a cpu...
 
   CenterActiveCPU();
   Clear();
-  Update();
+  Update(ctx);
   Print(Height() - 1, 0, "Choose a CPU and press ENTER");
   Refresh();
 
-  PlaceCursor();
+  PlaceCursor(ctx);
 
   cPopulationCell * old_cell = info.GetActiveCell();
   int temp_cell_id;
@@ -340,7 +340,7 @@ void cMapScreen::Navigate()
     }
     if (iXMove || iYMove) {
       info.SetActiveCell( &(population.GetCell(temp_cell_id)) );
-      PlaceCursor();
+      PlaceCursor(ctx);
     }
   } // End of WHILE
 

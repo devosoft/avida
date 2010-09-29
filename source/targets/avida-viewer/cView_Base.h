@@ -15,13 +15,13 @@ public:
   cView_Base() { ; }
   virtual ~cView_Base() { ; }
   
-  virtual void Setup(const cString & in_name) = 0;
+  virtual void Setup(cAvidaContext& ctx, const cString& in_name) = 0;
   virtual void SetViewMode(int in_mode) { (void) in_mode; }
 
-  virtual bool ProcessKeypress(int keypress) = 0;
+  virtual bool ProcessKeypress(cAvidaContext& ctx, int keypress) = 0;
 
-  virtual void NewUpdate() { ; }
-  virtual void NotifyUpdate() { ; }
+  virtual void NewUpdate(cAvidaContext& ctx) { ; }
+  virtual void NotifyUpdate(cAvidaContext& ctx) { ; }
   virtual void NotifyError(const cString & in_string) = 0;
   virtual void NotifyWarning(const cString & in_string) = 0;
   virtual void NotifyComment(const cString & in_string) = 0;
@@ -35,7 +35,7 @@ public:
   virtual int GetStepOrganism() { return -1; }
   virtual void SetStepOrganism(int in_id) { (void) in_id; }
 
-  virtual void Refresh() = 0;
+  virtual void Refresh(cAvidaContext& ctx) = 0;
 
   // Methods called by sub-windows.
   virtual void Redraw() = 0;

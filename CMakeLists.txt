@@ -427,7 +427,6 @@ IF(AVD_GUI_NCURSES)
       ${AVIDA_VIEWER_DIR}/cMapScreen.cc
       ${AVIDA_VIEWER_DIR}/cMenuWindow.cc
       ${AVIDA_VIEWER_DIR}/cOptionsScreen.cc
-      ${AVIDA_VIEWER_DIR}/cScreen.cc
       ${AVIDA_VIEWER_DIR}/cStatsScreen.cc
       ${AVIDA_VIEWER_DIR}/cSymbolUtil.cc
       ${AVIDA_VIEWER_DIR}/cTextViewerAnalyzeDriver.cc

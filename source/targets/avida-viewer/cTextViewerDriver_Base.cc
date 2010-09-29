@@ -73,7 +73,7 @@ void cTextViewerDriver_Base::Flush()
   if (new_line_count > 0) m_view->NotifyOutput("");
 }
 
-bool cTextViewerDriver_Base::ProcessKeypress(int keypress)
+bool cTextViewerDriver_Base::ProcessKeypress(cAvidaContext& ctx, int keypress)
 {
-  return m_view->ProcessKeypress(keypress);
+  return m_view->ProcessKeypress(ctx, keypress);
 }

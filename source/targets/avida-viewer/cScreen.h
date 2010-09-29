@@ -24,6 +24,7 @@
 #include "defs.h"
 #endif
 
+class cAvidaContext;
 class cEnvironment;
 class cSpecies;
 class cGenotype;
@@ -71,10 +72,10 @@ public:
     cTextWindow(y_size, x_size, y_start, x_start), info(in_info) { ; }
   virtual ~cScreen() { ; }
 
-  virtual void Draw() = 0;
-  virtual void Update() = 0;
+  virtual void Draw(cAvidaContext& ctx) = 0;
+  virtual void Update(cAvidaContext& ctx) = 0;
   virtual void AdvanceUpdate() { ; }
-  virtual void DoInput(int in_char) = 0;
+  virtual void DoInput(cAvidaContext& ctx, int in_char) = 0;
   virtual void DoMouseClick(int x, int y) { (void) x; (void) y; }
   virtual void Exit() { ; }
 };

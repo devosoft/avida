@@ -35,6 +35,7 @@
 #include <sstream>
 #include <iostream>
 
+class cAvidaContext;
 class cView_Base;
 class cWorld;
 
@@ -57,7 +58,7 @@ public:
   bool IsInteractive() { return true; }
   void Flush();
 
-  bool ProcessKeypress(int keypress);
+  bool ProcessKeypress(cAvidaContext& ctx, int keypress);
 };
 
 #endif

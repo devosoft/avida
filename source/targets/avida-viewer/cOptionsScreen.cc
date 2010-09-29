@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void cOptionsScreen::Draw()
+void cOptionsScreen::Draw(cAvidaContext& ctx)
 {
   // Options - Used: ABCEIMOPQRSVWZ
 
@@ -132,12 +132,12 @@ void cOptionsScreen::Draw()
 
   SetColor(COLOR_WHITE);
 
-  Update();
+  Update(ctx);
   Refresh();
 }
 
 
-void cOptionsScreen::Update()
+void cOptionsScreen::Update(cAvidaContext& ctx)
 {
   if (info.GetActiveCell() == NULL)
     info.SetActiveCell( &(info.GetPopulation().GetCell(0)) );

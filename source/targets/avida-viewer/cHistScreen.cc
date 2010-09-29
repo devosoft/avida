@@ -10,9 +10,12 @@
 #include <fstream>
 
 #include "cBioGroup.h"
+#include "cBioGroupManager.h"
 #include "cClassificationManager.h"
+#include "cViewInfo.h"
 #include "cWorld.h"
-
+#include "tAutoRelease.h"
+#include "tIterator.h"
 
 using namespace std;
 
@@ -20,29 +23,34 @@ using namespace std;
 void cHistScreen::PrintGenotype(cBioGroup* in_gen, int in_pos, int max_stars, int star_size)
 {
   SetBoldColor(COLOR_CYAN);
-  PrintDouble(in_pos, 0, in_gen->GetProperty("fitness")->AsDouble());
-
+  PrintDouble(in_pos, 0, in_gen->GetProperty("fitness").AsDouble());
+  
   SetBoldColor(COLOR_WHITE);
-  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->GetProperty("name")->AsString()));
-
+  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->GetProperty("name").AsString()));
+  
   int cur_num = in_gen->GetNumUnits();
   int cur_stars = cur_num / star_size;
   if (cur_num % star_size) cur_stars++;
-
+  
   // Set the color for this bar.
-  SetSymbolColor(in_gen->GetSymbol());
-
+  sGenotypeViewInfo* view_info = in_gen->GetData<sGenotypeViewInfo>();
+  if (!view_info) {
+    view_info = new sGenotypeViewInfo;
+    in_gen->AttachData(view_info);
+  }
+  SetSymbolColor(view_info->symbol);
+  
   // Draw the bar.
   int i;
   for (i = 0; i < cur_stars; i++) Print(CHAR_BULLET);
-
+  
   // Draw the spaces following the bar.
   while (i++ < max_stars) Print(' ');
-
+  
   // Display the true length of the bar (highlighted)
   SetBoldColor(COLOR_WHITE);
   Print(in_pos, Width() - 8, " %5d", cur_num);
-
+  
   // Reset the color to normal
   SetColor(COLOR_WHITE);
 }
@@ -81,7 +89,7 @@ void cHistScreen::PrintGenotype(cBioGroup* in_gen, int in_pos, int max_stars, in
 //}
 
 
-void cHistScreen::Draw()
+void cHistScreen::Draw(cAvidaContext& ctx)
 {
   SetBoldColor(COLOR_WHITE);
   Print(1,  0, "Fitness Name");
@@ -90,86 +98,66 @@ void cHistScreen::Draw()
   SetBoldColor(COLOR_CYAN);
   Print(1, 31, '<');
   Print(1, 54, '>');
-
-  Update();
+  
+  Update(ctx);
 }
 
-void cHistScreen::Update()
+void cHistScreen::Update(cAvidaContext& ctx)
 {
   const int max_stars = Width() - 28;
   int max_num = 0, star_size = 0;
-
+  
   switch(mode) {
-  case HIST_GENOTYPE:
-    max_num = info.GetWorld().GetClassificationManager().GetBestGenotype()->GetNumOrganisms();
-    star_size = (max_num / max_stars);
-    if (max_num % max_stars) star_size++;
-
-    SetBoldColor(COLOR_WHITE);
-    Print(1,  34, "Genotype Abundance");
-
-    // Print out top NUM_SYMBOL genotypes in fixed order.
-    for (int i = 0; i < info.GetNumSymbols(); i++) {
-      if (info.GetGenotype(i)) {
-	PrintGenotype(info.GetGenotype(i), i + 2, max_stars, star_size);
+    case HIST_GENOTYPE:
+      tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+      cBioGroup* bg = it->Next();
+      if (bg) max_num = bg->GetNumUnits();
+      star_size = (max_num / max_stars);
+      if (max_num % max_stars) star_size++;
+      
+      SetBoldColor(COLOR_WHITE);
+      Print(1,  34, "Genotype Abundance");
+      
+      // Print out top NUM_SYMBOL genotypes in fixed order.
+      for (int i = 0; i < info.GetNumSymbols(); i++) {
+        if (info.GetGenotype(i)) {
+          PrintGenotype(info.GetGenotype(i), i + 2, max_stars, star_size);
+        }
+        else {
+          Move(i + 2, 0);
+          ClearToEOL();
+        }
       }
-      else {
-	Move(i + 2, 0);
-	ClearToEOL();
+      
+      SetBoldColor(COLOR_WHITE);
+      if (star_size == 1) {
+        Print(info.GetNumSymbols() + 3, 0, "Each '#' = %d Organism   ", star_size);
+      } else {
+        Print(info.GetNumSymbols() + 3, 0, "Each '#' = %d Organisms  ", star_size);
       }
-    }
-
-    SetBoldColor(COLOR_WHITE);
-    if (star_size == 1) {
-      Print(info.GetNumSymbols() + 3, 0, "Each '#' = %d Organism   ", star_size);
-    } else {
-      Print(info.GetNumSymbols() + 3, 0, "Each '#' = %d Organisms  ", star_size);
-    }
-    ClearToEOL();
-
-    break;
-  case HIST_SPECIES:
-    max_num = 0;
-    for (int i = 0; i < NUM_SYMBOLS; i++) {
-      if (info.GetSpecies(i) && info.GetSpecies(i)->GetNumOrganisms()
-	  > max_num)
-	max_num = info.GetSpecies(i)->GetNumOrganisms();
-    }
-
-    SetBoldColor(COLOR_WHITE);
-    Print(1,  34, "Species Abundance");
-
-    // Print out top number of symbols species in fixed order.
-    for (int i = 0; i < info.GetNumSymbols(); i++) {
-      if (info.GetSpecies(i)) {
-	PrintSpecies(info.GetSpecies(i), i + 2, max_num);
-      }
-      else {
-	Move(i + 2, 0);
-	ClearToEOL();
-      }
-    }
-    break;
+      ClearToEOL();
+      
+      break;
   }
-
+  
   ClearToBot();
   Refresh();
 }
 
-void cHistScreen::DoInput(int in_char)
+void cHistScreen::DoInput(cAvidaContext& ctx, int in_char)
 {
   switch(in_char) {
-  case '<':
-  case ',':
-    ++mode %= NUM_HIST;
-    Update();
-    break;
-  case '>':
-  case '.':
-    mode += NUM_HIST;
-    --mode %= NUM_HIST;
-    Update();
-    break;
+    case '<':
+    case ',':
+      ++mode %= NUM_HIST;
+      Update(ctx);
+      break;
+    case '>':
+    case '.':
+      mode += NUM_HIST;
+      --mode %= NUM_HIST;
+      Update(ctx);
+      break;
   }
 }
 

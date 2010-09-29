@@ -179,7 +179,6 @@
 		7023ECBF0C0A441D00362B9C /* cMapScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC61097AF730002F8733 /* cMapScreen.cc */; };
 		7023ECC10C0A442200362B9C /* cMenuWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC63097AF730002F8733 /* cMenuWindow.cc */; };
 		7023ECC30C0A442400362B9C /* cOptionsScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC65097AF730002F8733 /* cOptionsScreen.cc */; };
-		7023ECC40C0A442700362B9C /* cScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC67097AF730002F8733 /* cScreen.cc */; };
 		7023ECC50C0A442D00362B9C /* cStatsScreen.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC69097AF730002F8733 /* cStatsScreen.cc */; };
 		7023ECC60C0A443000362B9C /* cSymbolUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC6B097AF730002F8733 /* cSymbolUtil.cc */; };
 		7023ECC70C0A443500362B9C /* cTextViewerAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099EF4C0B2FBC85001269F6 /* cTextViewerAnalyzeDriver.cc */; };
@@ -1204,7 +1203,6 @@
 		70DCAC64097AF730002F8733 /* cMenuWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMenuWindow.h; sourceTree = "<group>"; };
 		70DCAC65097AF730002F8733 /* cOptionsScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cOptionsScreen.cc; sourceTree = "<group>"; };
 		70DCAC66097AF730002F8733 /* cOptionsScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cOptionsScreen.h; sourceTree = "<group>"; };
-		70DCAC67097AF730002F8733 /* cScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cScreen.cc; sourceTree = "<group>"; };
 		70DCAC68097AF730002F8733 /* cScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cScreen.h; sourceTree = "<group>"; };
 		70DCAC69097AF730002F8733 /* cStatsScreen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStatsScreen.cc; sourceTree = "<group>"; };
 		70DCAC6A097AF730002F8733 /* cStatsScreen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cStatsScreen.h; sourceTree = "<group>"; };
@@ -1739,7 +1737,6 @@
 				70DCAC64097AF730002F8733 /* cMenuWindow.h */,
 				70DCAC65097AF730002F8733 /* cOptionsScreen.cc */,
 				70DCAC66097AF730002F8733 /* cOptionsScreen.h */,
-				70DCAC67097AF730002F8733 /* cScreen.cc */,
 				70DCAC68097AF730002F8733 /* cScreen.h */,
 				70DCAC69097AF730002F8733 /* cStatsScreen.cc */,
 				70DCAC6A097AF730002F8733 /* cStatsScreen.h */,
@@ -2490,7 +2487,6 @@
 				7023ECBF0C0A441D00362B9C /* cMapScreen.cc in Sources */,
 				7023ECC10C0A442200362B9C /* cMenuWindow.cc in Sources */,
 				7023ECC30C0A442400362B9C /* cOptionsScreen.cc in Sources */,
-				7023ECC40C0A442700362B9C /* cScreen.cc in Sources */,
 				7023ECC50C0A442D00362B9C /* cStatsScreen.cc in Sources */,
 				7023ECC60C0A443000362B9C /* cSymbolUtil.cc in Sources */,
 				7023ECC70C0A443500362B9C /* cTextViewerAnalyzeDriver.cc in Sources */,

@@ -32,19 +32,19 @@ private:
   cAnalyzeScreen * analyze_screen;
 
   // Input function
-  void DoInputs();
+  void DoInputs(cAvidaContext& ctx);
 
 public:
   cAnalyzeView(cWorld* world);
   ~cAnalyzeView();
 
-  void Setup(const cString & in_name);
+  void Setup(cAvidaContext& ctx, const cString& in_name);
   void SetViewMode(int in_mode) { (void) in_mode; }
 
-  bool ProcessKeypress(int keypress) { return false; }
+  bool ProcessKeypress(cAvidaContext& ctx, int keypress) { return false; }
 
-  void NewUpdate() { ; }
-  void NotifyUpdate();
+  void NewUpdate(cAvidaContext& ctx) { ; }
+  void NotifyUpdate(cAvidaContext& ctx);
   void NotifyError(const cString & in_string);
   void NotifyWarning(const cString & in_string);
   void NotifyComment(const cString & in_string);
@@ -58,7 +58,7 @@ public:
   int GetStepOrganism() { return -1; }
   void SetStepOrganism(int in_id) { (void) in_id; }
 
-  void Refresh();
+  void Refresh(cAvidaContext& ctx);
 
   // Methods called by sub-windows.
   void Redraw();

@@ -7,19 +7,22 @@
 
 #include "cStatsScreen.h"
 
+#include "cBioGroupManager.h"
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
+#include "cGenomeTestMetrics.h"
 #include "cPopulation.h"
 #include "cStats.h"
+#include "tAutoRelease.h"
+#include "tIterator.h"
 
 using namespace std;
 
 
-void cStatsScreen::Draw()
+void cStatsScreen::Draw(cAvidaContext& ctx)
 {
   SetBoldColor(COLOR_WHITE);
 
-  // Print(0,  0, "--- Soup Status ---");
   Print(1,  0, "Tot Births.:");
   Print(2,  0, "Breed True.:");
   Print(3,  0, "Parasites..:");
@@ -30,8 +33,7 @@ void cStatsScreen::Draw()
   Print(1, 23, "-- Dominant Genotype --");
   Print(2, 23, "Name........:");
   Print(3, 23, "ID..........:");
-  Print(4, 23, "Species ID..:");
-  Print(5, 23, "Age.........:");
+  Print(4, 23, "Age.........:");
 
   Print(8, 11, "Current    Total  Ave Age  Entropy");
   Print(9,  0, "Organisms:");
@@ -79,12 +81,13 @@ void cStatsScreen::Draw()
     Print(15 + task_rows, Width() - 8, "->");
   }
 
-  Update();
+  Update(ctx);
 }
 
-void cStatsScreen::Update()
+void cStatsScreen::Update(cAvidaContext& ctx)
 {
-  cGenotype * best_gen = m_world->GetClassificationManager().GetBestGenotype();
+  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+  cBioGroup* best_gen = it->Next();
 
   SetBoldColor(COLOR_CYAN);
 
@@ -102,11 +105,9 @@ void cStatsScreen::Update()
   Print(11, 13, "%5d", stats.GetNumThreshold());
   Print(12, 13, "%5d", stats.GetNumSpecies());
 
-  Print(2, 37, "%s",  static_cast<const char*>(best_gen->GetName()));
+  Print(2, 37, "%s",  static_cast<const char*>(best_gen->GetProperty("name").AsString()));
   Print(3, 37, "%9d", best_gen->GetID());
-  Print(4, 37, "%9d", (best_gen->GetSpecies()) ?
-	(best_gen->GetSpecies()->GetID()) : -1);
-  Print(5, 37, "%9d", stats.GetUpdate() - best_gen->GetUpdateBorn());
+  Print(4, 37, "%9d", stats.GetUpdate() - best_gen->GetProperty("update_born").AsInt());
 
   PrintDouble(9,  20, (double) stats.GetTotCreatures());
   PrintDouble(10, 20, (double) stats.GetTotGenotypes());
@@ -122,18 +123,19 @@ void cStatsScreen::Update()
   PrintDouble(10, 38, stats.GetEntropy());
   PrintDouble(12, 38, stats.GetSpeciesEntropy());
 
-  PrintDouble(2, 62, best_gen->GetFitness());
-  PrintDouble(3, 62, best_gen->GetMerit());
-  PrintDouble(4, 62, best_gen->GetGestationTime());
-  Print(5, 62, "%7d", best_gen->GetLength());
-  PrintDouble(6, 62, best_gen->GetCopiedSize());
-  PrintDouble(7, 62, best_gen->GetExecutedSize());
-  Print(8, 62, "%7d", best_gen->GetNumOrganisms());
+  cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(ctx, best_gen);
+  PrintDouble(2, 62, metrics->GetFitness());
+  PrintDouble(3, 62, metrics->GetMerit());
+  PrintDouble(4, 62, metrics->GetGestationTime());
+  Print(5, 62, "%7d", cMetaGenome(best_gen->GetProperty("genome").AsString()).GetGenome().GetSize());
+  PrintDouble(6, 62, metrics->GetLinesCopied());
+  PrintDouble(7, 62, metrics->GetLinesExecuted());
+  Print(8, 62, "%7d", best_gen->GetNumUnits());
   Print(9, 62, "%7d", best_gen->GetThisBirths());
   if (stats.GetAveMerit() == 0) {
     PrintDouble(10, 62, 0.0);
   } else {
-    PrintDouble(10, 62, ((double) info.GetConfig().AVE_TIME_SLICE.Get()) * best_gen->GetFitness() / stats.GetAveMerit());
+    PrintDouble(10, 62, ((double) info.GetConfig().AVE_TIME_SLICE.Get()) * metrics->GetFitness() / stats.GetAveMerit());
   }
   Print(11, 62, "%7d", best_gen->GetDepth());
   // Print(12, 63, "");
@@ -177,21 +179,21 @@ void cStatsScreen::Update()
   Refresh();
 }
 
-void cStatsScreen::DoInput(int in_char)
+void cStatsScreen::DoInput(cAvidaContext& ctx, int in_char)
 {
   switch (in_char) {
   case '4':
   case KEY_LEFT:
     if (task_offset > 0) {
       task_offset -= 5;
-      Draw();
+      Draw(ctx);
     }
     break;
   case '6':
   case KEY_RIGHT:
     if (task_rows * task_cols + task_offset < info.GetWorld().GetEnvironment().GetNumTasks()) {
       task_offset += 5;
-      Draw();
+      Draw(ctx);
     }
     break;
   default:

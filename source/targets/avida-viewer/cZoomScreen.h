@@ -116,9 +116,9 @@ public:
   virtual ~cZoomScreen() { ; }
 
   // Virtual in base screen...
-  void Draw();
-  virtual void Update();
-  virtual void DoInput(int in_char);
+  void Draw(cAvidaContext& ctx);
+  virtual void Update(cAvidaContext& ctx);
+  virtual void DoInput(cAvidaContext& ctx, int in_char);
   bool DoInputCPU(int in_char);
   bool DoInputStats(int in_char);
   bool DoInputGenotype(int in_char);

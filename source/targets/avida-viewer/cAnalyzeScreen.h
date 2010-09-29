@@ -50,13 +50,13 @@ protected:
   static const int ANALYZE_MENU_TAB_FUNCTIONS = 3;
 
   void UpdateCommandLine_Body();
-  void DoInput_CommandLine();
+  void DoInput_CommandLine(cAvidaContext& ctx);
   void UpdateMenu_Body();
   void UpdateMenu_Genotypes();
   void UpdateMenu_Variables();
   void UpdateMenu_Commands();
   void UpdateMenu_Functions();
-  void DoInput_Menu();
+  void DoInput_Menu(cAvidaContext& ctx);
 
   void ProcessCommandLine();
 public:
@@ -82,14 +82,14 @@ public:
   void Notify(const cString & in_string);
 
   // Virtual in base screen...
-  void Draw();
-  void Update();
-  void DoInput(int in_char);
+  void Draw(cAvidaContext& ctx);
+  void Update(cAvidaContext& ctx);
+  void DoInput(cAvidaContext& ctx, int in_char);
 
   void DrawCommandLine();
-  void DrawMenu();
-  void UpdateCommandLine();
-  void UpdateMenu();
+  void DrawMenu(cAvidaContext& ctx);
+  void UpdateCommandLine(cAvidaContext& ctx);
+  void UpdateMenu(cAvidaContext& ctx);
 };
 
 #endif

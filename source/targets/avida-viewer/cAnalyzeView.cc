@@ -30,7 +30,7 @@ cBarScreen* cAnalyzeView::bar_screen = NULL;
 
 cAnalyzeView::cAnalyzeView(cWorld* world) : info(world, this)
 {
-  Setup("Avida");
+  Setup(world->GetDefaultContext(), "Avida");
 
   analyze_screen = new cAnalyzeScreen(world, 0, 0, 3, 0, info);
 }
@@ -41,22 +41,22 @@ cAnalyzeView::~cAnalyzeView()
   EndProg(0);
 }
 
-void cAnalyzeView::Setup(const cString & in_name)
+void cAnalyzeView::Setup(cAvidaContext& ctx, const cString& in_name)
 {
   // Setup text-interface
   StartProg();
 
   bar_screen = new cBarScreen(&info.GetWorld(), 3, 0, 0, 0, info, in_name);
   base_window = new cTextWindow(0,0,3,0);
-  bar_screen->Draw();
+  bar_screen->Draw(ctx);
 }
 
-void cAnalyzeView::Refresh()
+void cAnalyzeView::Refresh(cAvidaContext& ctx)
 {
   base_window->Redraw();
   bar_screen->Redraw();
   analyze_screen->Clear();
-  analyze_screen->Draw();
+  analyze_screen->Draw(ctx);
 }
 
 void cAnalyzeView::Redraw()
@@ -66,11 +66,11 @@ void cAnalyzeView::Redraw()
 }
 
 
-void cAnalyzeView::NotifyUpdate()
+void cAnalyzeView::NotifyUpdate(cAvidaContext& ctx)
 {
   bar_screen->Redraw();
   analyze_screen->Redraw();
-  DoInputs();
+  DoInputs(ctx);
 }
 
 void cAnalyzeView::NotifyError(const cString & in_string)
@@ -100,7 +100,7 @@ void cAnalyzeView::NotifyOutput(const cString & in_string)
 }
 
 
-void cAnalyzeView::DoInputs()
+void cAnalyzeView::DoInputs(cAvidaContext& ctx)
 {
   // @CAO For the moment, redirect to update!
   //  analyze_screen->Update();
@@ -120,10 +120,10 @@ void cAnalyzeView::DoInputs()
       EndProg(0);  // This implementation calls exit(), blowing us clean away
       break;
     case 12: // Ideally this is CTRL-L...
-      Refresh();
+      Refresh(ctx);
       break;
     default:
-      analyze_screen->DoInput(cur_char);
+      analyze_screen->DoInput(ctx, cur_char);
       break;
     }
   }

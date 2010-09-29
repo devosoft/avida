@@ -13,7 +13,6 @@ class cPopulationCell;
 class cSymbolUtil {
 public:
   static char GetBasicSymbol(    const cPopulationCell & cell );
-  static char GetSpeciesSymbol(  const cPopulationCell & cell );
   static char GetModifiedSymbol( const cPopulationCell & cell );
   static char GetResourceSymbol( const cPopulationCell & cell );
   static char GetAgeSymbol(      const cPopulationCell & cell );

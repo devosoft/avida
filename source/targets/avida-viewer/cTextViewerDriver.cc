@@ -61,14 +61,13 @@ cTextViewerDriver::~cTextViewerDriver()
 
 void cTextViewerDriver::Run()
 {
-  cClassificationManager& classmgr = m_world->GetClassificationManager();
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
-  cAvidaContext ctx(m_world->GetRandom());
+  cAvidaContext ctx(m_world, m_world->GetRandom());
   ctx.EnableOrgFaultReporting();
   
   while (!m_done) {
@@ -86,13 +85,6 @@ void cTextViewerDriver::Run()
     if (stats.GetUpdate() > 0) {
       // Tell the stats object to do update calculations and printing.
       stats.ProcessUpdate();
-      
-      // Update all the genotypes for the end of this update.
-      for (cGenotype * cur_genotype = classmgr.ResetThread(0);
-           cur_genotype != NULL && cur_genotype->GetThreshold();
-           cur_genotype = classmgr.NextGenotype(0)) {
-        cur_genotype->UpdateReset();
-      }
     }
     
     
@@ -106,7 +98,7 @@ void cTextViewerDriver::Run()
       
       // This is needed to have the top bar drawn properly; I'm not sure why...
       if (m_firstupdate) {
-        m_view->Refresh();
+        m_view->Refresh(ctx);
         m_firstupdate = false;
       }
     }
@@ -117,12 +109,12 @@ void cTextViewerDriver::Run()
       for (int i = 0; i < UD_size; i++) {
         const int next_id = population.ScheduleOrganism();
         if (next_id == m_view->GetStepOrganism()) {
-          m_view->NotifyUpdate();
-          m_view->NewUpdate();
+          m_view->NotifyUpdate(ctx);
+          m_view->NewUpdate(ctx);
           
           // This is needed to have the top bar drawn properly; I'm not sure why...
           if (m_firstupdate) {
-            m_view->Refresh();
+            m_view->Refresh(ctx);
             m_firstupdate = false;
           }
         }
@@ -139,11 +131,11 @@ void cTextViewerDriver::Run()
     
     // Setup the viewer for the new update.
     if (m_view->GetStepOrganism() == -1) {
-      m_view->NewUpdate();
+      m_view->NewUpdate(ctx);
  
       // This is needed to have the top bar drawn properly; I'm not sure why...
       if (m_firstupdate) {
-        m_view->Refresh();
+        m_view->Refresh(ctx);
         m_firstupdate = false;
       }
     }
