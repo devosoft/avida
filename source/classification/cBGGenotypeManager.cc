@@ -72,7 +72,9 @@ void cBGGenotypeManager::UpdateReset()
   }
 
   tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
-  while (list_it->Next() != NULL) if (!list_it->Get()->GetReferenceCount()) removeGenotype(list_it->Get());
+  while (list_it->Next() != NULL) if (!list_it->Get()->GetReferenceCount()) {
+    removeGenotype(list_it->Get());
+  }
 }
 
 
@@ -172,7 +174,7 @@ cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)
 cBioGroup* cBGGenotypeManager::LoadBioGroup(const tDictionary<cString>& props)
 {
   cBGGenotype* bg = new cBGGenotype(this, m_next_id++, props); 
-  m_historic.Push(bg);
+  m_historic.Push(bg, &bg->m_handle);
   return bg;
 }
 
@@ -229,9 +231,9 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
         if (list_it->Get()->GetID() == gid) {
           found = list_it->Get();
           m_active_hash[hashGenome(found->GetMetaGenome().GetGenome())].Push(found);
-          m_active_sz[found->GetNumUnits()].PushRear(found);
+          found->m_handle->Remove(); // Remove from historic list
+          m_active_sz[found->GetNumUnits()].PushRear(found, &found->m_handle);
           found->NotifyNewBioUnit(bu);
-          m_historic.Remove(found);
           m_world->GetStats().AddGenotype();
           if (found->GetNumUnits() > m_best) {
             m_best = found->GetNumUnits();
@@ -261,7 +263,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     found = new cBGGenotype(this, m_next_id++, bu, m_world->GetStats().GetUpdate(), parents);
     m_active_hash[list_num].Push(found);
     resizeActiveList(found->GetNumUnits());
-    m_active_sz[found->GetNumUnits()].PushRear(found);
+    m_active_sz[found->GetNumUnits()].PushRear(found, &found->m_handle);
     m_world->GetStats().AddGenotype();
     if (found->GetNumUnits() > m_best) {
       m_best = found->GetNumUnits();
@@ -278,7 +280,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
 void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int new_size)
 {
   // Remove from old size list
-  m_active_sz[old_size].Remove(genotype);
+  genotype->m_handle->Remove();
   if (m_coalescent == genotype) m_coalescent = NULL;
 
   // Handle best genotype pointer
@@ -297,9 +299,9 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   resizeActiveList(new_size);
   if (was_best && m_best == new_size) {
     // Special case to keep the current best genotype as best when shrinking to the same size as other genotypes
-    m_active_sz[new_size].Push(genotype);
+    m_active_sz[new_size].Push(genotype, &genotype->m_handle);
   } else {
-    m_active_sz[new_size].PushRear(genotype);
+    m_active_sz[new_size].PushRear(genotype, &genotype->m_handle);
     if (new_size > m_best) m_best = new_size;
   }
   
@@ -372,7 +374,7 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
     int list_num = hashGenome(genotype->GetMetaGenome().GetGenome());
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_world->GetStats().GetUpdate());
-    m_historic.Push(genotype);
+    m_historic.Push(genotype, &genotype->m_handle);
   }
 
   if (genotype->IsThreshold()) {
@@ -391,7 +393,8 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
     if (!parents[i]->GetActiveReferenceCount()) removeGenotype(parents[i]);
   }
   
-  m_historic.Remove(genotype);
+  assert(genotype->m_handle);
+  genotype->m_handle->Remove(); // Remove from historic list
   delete genotype;
 }
 

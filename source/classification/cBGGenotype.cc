@@ -26,6 +26,7 @@
 
 #include "cBGGenotypeManager.h"
 #include "cDataFile.h"
+#include "cEntryHandle.h"
 #include "cPhenotype.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
@@ -34,6 +35,7 @@
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
   : cBioGroup(in_id)
   , m_mgr(mgr)
+  , m_handle(NULL)
   , m_src(founder->GetUnitSource())
   , m_src_args(founder->GetUnitSourceArgs())
   , m_genome(founder->GetMetaGenome())
@@ -68,6 +70,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props)
 : cBioGroup(in_id)
 , m_mgr(mgr)
+, m_handle(NULL)
 , m_name("001-no_name")
 , m_threshold(false)
 , m_active(false)
@@ -119,6 +122,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
 
 cBGGenotype::~cBGGenotype()
 {
+  delete m_handle;
   m_parents.Resize(0);
 }
 

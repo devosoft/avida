@@ -44,6 +44,7 @@
 
 class cAvidaContext;
 class cBGGenotypeManager;
+class cEntryHandle;
 
 
 class cBGGenotype : public cBioGroup
@@ -51,6 +52,7 @@ class cBGGenotype : public cBioGroup
   friend class cBGGenotypeManager;
 private:
   cBGGenotypeManager* m_mgr;
+  cEntryHandle* m_handle;
   
   eBioUnitSource m_src;
   cString m_src_args;
