@@ -8,7 +8,6 @@
 #include "cView.h"
 
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"

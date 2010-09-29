@@ -8,12 +8,10 @@
 #include "cEnvironmentScreen.h"
 
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cPopulation.h"
 #include "cReaction.h"
 #include "cReactionProcess.h"
 #include "cResource.h"
-#include "cSpecies.h"
 #include "cStats.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"

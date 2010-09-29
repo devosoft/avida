@@ -9,9 +9,7 @@
 
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cPopulation.h"
-#include "cSpecies.h"
 #include "cStats.h"
 
 using namespace std;

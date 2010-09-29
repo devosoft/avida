@@ -8,7 +8,6 @@
 #include "cAnalyzeView.h"
 
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"

@@ -10,7 +10,6 @@
 #include "cEnvironment.h"
 #include "functions.h"
 
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"

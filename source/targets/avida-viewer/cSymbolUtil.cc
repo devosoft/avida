@@ -11,7 +11,6 @@
 
 #include "cOrganism.h"
 #include "cPopulationCell.h"
-#include "cSpecies.h"
 #include "cHardwareBase.h"
 
 using namespace std;

@@ -7,7 +7,6 @@
 
 #include "cMapScreen.h"
 
-#include "cGenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 

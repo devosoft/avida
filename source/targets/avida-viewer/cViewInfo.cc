@@ -10,8 +10,6 @@
 #include <fstream>
 
 #include "cClassificationManager.h"
-#include "cSpecies.h"
-#include "cGenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cOrganism.h"

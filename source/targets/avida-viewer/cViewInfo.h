@@ -15,8 +15,6 @@
 
 
 class cEnvironment;
-class cSpecies;
-class cGenotype;
 class cPopulation;
 class cPopulationCell;
 class cOrganism;

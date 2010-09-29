@@ -9,25 +9,23 @@
 
 #include <fstream>
 
-#include "cGenotype.h"
-#include "cSpecies.h"
-#include "cWorld.h"
+#include "cBioGroup.h"
 #include "cClassificationManager.h"
+#include "cWorld.h"
 
 
 using namespace std;
 
 
-void cHistScreen::PrintGenotype(cGenotype * in_gen, int in_pos,
-				int max_stars, int star_size)
+void cHistScreen::PrintGenotype(cBioGroup* in_gen, int in_pos, int max_stars, int star_size)
 {
   SetBoldColor(COLOR_CYAN);
-  PrintDouble(in_pos, 0, in_gen->GetFitness());
+  PrintDouble(in_pos, 0, in_gen->GetProperty("fitness")->AsDouble());
 
   SetBoldColor(COLOR_WHITE);
-  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->GetName()));
+  Print(in_pos, 8, "%s: ", static_cast<const char*>(in_gen->GetProperty("name")->AsString()));
 
-  int cur_num = in_gen->GetNumOrganisms();
+  int cur_num = in_gen->GetNumUnits();
   int cur_stars = cur_num / star_size;
   if (cur_num % star_size) cur_stars++;
 
@@ -36,14 +34,7 @@ void cHistScreen::PrintGenotype(cGenotype * in_gen, int in_pos,
 
   // Draw the bar.
   int i;
-  for (i = 0; i < cur_stars; i++) {
-    cSpecies * cur_species = in_gen->GetSpecies();
-    if (cur_species != NULL) {
-      Print(in_gen->GetSpecies()->GetSymbol());
-    } else {
-      Print(CHAR_BULLET);
-    }
-  }
+  for (i = 0; i < cur_stars; i++) Print(CHAR_BULLET);
 
   // Draw the spaces following the bar.
   while (i++ < max_stars) Print(' ');
@@ -56,38 +47,38 @@ void cHistScreen::PrintGenotype(cGenotype * in_gen, int in_pos,
   SetColor(COLOR_WHITE);
 }
 
-void cHistScreen::PrintSpecies(cSpecies * in_species, int in_pos, int max_num)
-{
-  SetBoldColor(COLOR_WHITE);
-  Print(in_pos, 0, "        sp-%06d: ", in_species->GetID());
-
-  int max_stars = Width() - 28;
-  int star_size = (max_num / max_stars);
-  if (max_num % max_stars) star_size++;
-
-  int cur_num = in_species->GetNumOrganisms();
-  int cur_stars = cur_num / star_size;
-  if (cur_num % star_size) cur_stars++;
-
-  // Set the color for this bar.
-  SetSymbolColor(in_species->GetSymbol());
-
-  // Draw the bar.
-  int i;
-  for (i = 0; i < cur_stars; i++) {
-    Print(in_species->GetSymbol());
-  }
-
-  // Draw the spaces following the bar.
-  while (i++ < max_stars) Print(' ');
-
-  // Display the true length of the bar (highlighted)
-  SetBoldColor(COLOR_WHITE);
-  Print(in_pos, Width() - 8, " %5d", cur_num);
-
-  // Reset the color to normal
-  SetColor(COLOR_WHITE);
-}
+//void cHistScreen::PrintSpecies(cSpecies * in_species, int in_pos, int max_num)
+//{
+//  SetBoldColor(COLOR_WHITE);
+//  Print(in_pos, 0, "        sp-%06d: ", in_species->GetID());
+//
+//  int max_stars = Width() - 28;
+//  int star_size = (max_num / max_stars);
+//  if (max_num % max_stars) star_size++;
+//
+//  int cur_num = in_species->GetNumOrganisms();
+//  int cur_stars = cur_num / star_size;
+//  if (cur_num % star_size) cur_stars++;
+//
+//  // Set the color for this bar.
+//  SetSymbolColor(in_species->GetSymbol());
+//
+//  // Draw the bar.
+//  int i;
+//  for (i = 0; i < cur_stars; i++) {
+//    Print(in_species->GetSymbol());
+//  }
+//
+//  // Draw the spaces following the bar.
+//  while (i++ < max_stars) Print(' ');
+//
+//  // Display the true length of the bar (highlighted)
+//  SetBoldColor(COLOR_WHITE);
+//  Print(in_pos, Width() - 8, " %5d", cur_num);
+//
+//  // Reset the color to normal
+//  SetColor(COLOR_WHITE);
+//}
 
 
 void cHistScreen::Draw()

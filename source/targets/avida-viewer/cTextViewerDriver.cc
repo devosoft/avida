@@ -27,7 +27,6 @@
 #include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cDriverManager.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
