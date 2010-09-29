@@ -46,6 +46,13 @@ class cOrganism;
 #define MAP_AGE       10
 #define NUM_MAP_MODES 11
 
+struct sGenotypeViewInfo
+{
+  char symbol;
+  
+  sGenotypeViewInfo() : symbol(0) { ; }
+};
+
 class cViewInfo {
 private:
   cWorld* m_world;
@@ -113,6 +120,9 @@ public:
   void SetPauseLevel(int in_level) { pause_level = in_level; }
   void SetThreadLock(int in_lock) { thread_lock = in_lock; }
   void SetStepOrganism(int in_id) { step_organism_id = in_id; }
+  
+private:
+  sGenotypeViewInfo* getViewInfo(cBioGroup* bg);
 };
 
 
