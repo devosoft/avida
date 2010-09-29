@@ -32,16 +32,15 @@ cViewInfo::cViewInfo(cWorld* world, cView_Base* view)
   step_organism_id = -1;
   map_mode=0;
   
-  // Handle genotype & species managing...
+  // Handle genotype managing...
   
   for (int i = 0; i < NUM_SYMBOLS; i++) {
     genotype_chart[i] = NULL;
-    species_chart[i] = NULL;
     symbol_chart[i] = (char) (i + 'A');
   }
 }
 
-void cViewInfo::AddGenChart(cGenotype * in_gen)
+void cViewInfo::AddGenChart(cBioGroup * in_gen)
 {
   for (int i = 0; i < NUM_SYMBOLS; i++) {
     if (genotype_chart[i] == NULL) {
@@ -52,16 +51,6 @@ void cViewInfo::AddGenChart(cGenotype * in_gen)
   }
 }
 
-void cViewInfo::AddSpeciesChart(cSpecies * in_species)
-{
-  for (int i = 0; i < NUM_SYMBOLS; i++) {
-    if (species_chart[i] == NULL) {
-      species_chart[i] = in_species;
-      in_species->SetSymbol(symbol_chart[i]);
-      break;
-    }
-  }
-}
 
 void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
 {
@@ -73,14 +62,6 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
     case MAP_BASIC:
       if (use_color) color_method = &cSymbolUtil::GetBasicSymbol;
       else map_method = &cSymbolUtil::GetBasicSymbol;
-      break;
-    case MAP_SPECIES:
-      if (use_color) color_method = &cSymbolUtil::GetSpeciesSymbol;
-      else map_method = &cSymbolUtil::GetSpeciesSymbol;
-      break;
-    case MAP_COMBO:
-      color_method = &cSymbolUtil::GetBasicSymbol;
-      map_method = &cSymbolUtil::GetSpeciesSymbol;
       break;
     case MAP_INJECT:
       if (use_color) color_method = &cSymbolUtil::GetModifiedSymbol;
@@ -131,7 +112,7 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
 
 void cViewInfo::UpdateSymbols()
 {
-  // First, clean up the genotype_chart & species_chart.
+  // First, clean up the genotype_chart.
   
   int i, pos;
   for (i = 0; i < NUM_SYMBOLS; i++) {
@@ -145,28 +126,15 @@ void cViewInfo::UpdateSymbols()
         genotype_chart[i] = NULL;
       }
     }
-    if (species_chart[i]) {
-      pos = m_world->GetClassificationManager().FindPos(*(species_chart[i]));
-      if (pos < 0) species_chart[i] = NULL;
-      if (pos >= NUM_SYMBOLS) {
-        species_chart[i]->SetSymbol('+');
-        species_chart[i] = NULL;
-      }
-    }
   }
   
   // Now, fill in any missing spaces...
   
   cGenotype * temp_gen = m_world->GetClassificationManager().GetBestGenotype();
-  cSpecies * temp_species = m_world->GetClassificationManager().GetFirstSpecies();
   for (i = 0; i < SYMBOL_THRESHOLD; i++) {
     if (temp_gen) {
       if (!InGenChart(temp_gen)) AddGenChart(temp_gen);
       temp_gen = temp_gen->GetNext();
-    }
-    if (temp_species) {
-      if (!InSpeciesChart(temp_species)) AddSpeciesChart(temp_species);
-      temp_species = temp_species->GetNext();
     }
   }
 }
@@ -197,13 +165,6 @@ cGenotype * cViewInfo::GetActiveGenotype()
 }
 
 
-cSpecies * cViewInfo::GetActiveSpecies()
-{
-  if (GetActiveGenotype() == NULL) return NULL;
-  return GetActiveGenotype()->GetSpecies();
-}
-
-
 cString cViewInfo::GetActiveName()
 {
   if (GetActiveGenotype() == NULL) return cString("");
@@ -220,9 +181,3 @@ int cViewInfo::GetActiveGenotypeID()
 {
   return GetActiveGenotype() ? GetActiveGenotype()->GetID() : -1;
 }
-
-int cViewInfo::GetActiveSpeciesID()
-{
-  return GetActiveSpecies() ? GetActiveSpecies()->GetID() : -1;
-}
-

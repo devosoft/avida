@@ -31,31 +31,31 @@ class cPopulation;
 class cPopulationCell;
 class cOrganism;
 
-#define NUM_SYMBOLS 12
-#define SYMBOL_THRESHOLD 10
+// #define NUM_SYMBOLS 12
+// #define SYMBOL_THRESHOLD 10
 
-#define PAUSE_OFF               0
-#define PAUSE_ON                1
-#define PAUSE_ADVANCE_STEP      2
-#define PAUSE_ADVANCE_UPDATE    3
-#define PAUSE_ADVANCE_GESTATION 4
+// #define PAUSE_OFF               0
+// #define PAUSE_ON                1
+// #define PAUSE_ADVANCE_STEP      2
+// #define PAUSE_ADVANCE_UPDATE    3
+// #define PAUSE_ADVANCE_GESTATION 4
 
 
-#define MAP_BASIC      0
-#define MAP_SPECIES    1
-#define MAP_BREED_TRUE 2
-#define MAP_PARASITE   3
-#define MAP_MUTATIONS  4
-#define MAP_THREAD     5
-#define MAP_INJECT     6
-#define MAP_LINEAGE    7
-#define NUM_MAPS       8
+// #define MAP_BASIC      0
+// #define MAP_SPECIES    1
+// #define MAP_BREED_TRUE 2
+// #define MAP_PARASITE   3
+// #define MAP_MUTATIONS  4
+// #define MAP_THREAD     5
+// #define MAP_INJECT     6
+// #define MAP_LINEAGE    7
+// #define NUM_MAPS       8
 
-// Other map modes currently inactive...
-#define MAP_COMBO      9
-#define MAP_RESOURCE  10
-#define MAP_AGE       11
-#define NUM_MAP_MODES 12
+// // Other map modes currently inactive...
+// #define MAP_COMBO      9
+// #define MAP_RESOURCE  10
+// #define MAP_AGE       11
+// #define NUM_MAP_MODES 12
 
 class cScreen : public cTextWindow {
 protected:

@@ -8,11 +8,13 @@
 #ifndef cViewInfo_h
 #define cViewInfo_h
 
-#include "cMerit.h"
+#include "cBioGroup.h"
 #include "cInstSet.h"
-#include "defs.h"
+#include "cMerit.h"
 #include "cTextWindow.h"
-
+#include "cView_Base.h"
+#include "cWorld.h"
+#include "defs.h"
 
 class cEnvironment;
 class cPopulation;
@@ -30,23 +32,19 @@ class cOrganism;
 
 
 #define MAP_BASIC      0
-#define MAP_SPECIES    1
-#define MAP_BREED_TRUE 2
-#define MAP_PARASITE   3
-#define MAP_MUTATIONS  4
-#define MAP_THREAD     5
-#define MAP_INJECT     6
-#define MAP_LINEAGE    7
-#define NUM_MAPS       8
+#define MAP_BREED_TRUE 1
+#define MAP_PARASITE   2
+#define MAP_MUTATIONS  3
+#define MAP_THREAD     4
+#define MAP_INJECT     5
+#define MAP_LINEAGE    6
+#define NUM_MAPS       7
 
 // Other map modes currently inactive...
-#define MAP_COMBO      9
-#define MAP_RESOURCE  10
-#define MAP_AGE       11
-#define NUM_MAP_MODES 12
-
-#include "cWorld.h"
-#include "cView_Base.h"
+#define MAP_COMBO      8
+#define MAP_RESOURCE   9
+#define MAP_AGE       10
+#define NUM_MAP_MODES 11
 
 class cViewInfo {
 private:
@@ -63,17 +61,14 @@ private:
   cInstSet const * saved_inst_set;
 
   // Symbol information
-  cGenotype * genotype_chart[NUM_SYMBOLS];
-  cSpecies * species_chart[NUM_SYMBOLS];
+  cBioGroup * genotype_chart[NUM_SYMBOLS];
   char symbol_chart[NUM_SYMBOLS];
 
   tArray<char> map;
   tArray<char> color_map;
 
-  inline bool InGenChart(cGenotype * in_gen);
-  inline bool InSpeciesChart(cSpecies * in_species);
-  void AddGenChart(cGenotype * in_gen);
-  void AddSpeciesChart(cSpecies * in_species);
+  inline bool InGenChart(cBioGroup * in_gen);
+  void AddGenChart(cBioGroup * in_gen);
 
 public:
   cViewInfo(cWorld* world, cView_Base * view);
@@ -99,18 +94,15 @@ public:
   cView_Base& GetView() { return *m_view; }
 
   int GetNumSymbols() { return NUM_SYMBOLS; }
-  cGenotype * GetGenotype(int index) { return genotype_chart[index]; }
-  cSpecies * GetSpecies(int index) { return species_chart[index]; }
+  cBioGroup * GetGenotype(int index) { return genotype_chart[index]; }
 
   cPopulationCell * GetActiveCell() { return active_cell; }
 
-  cGenotype * GetActiveGenotype();
-  cSpecies * GetActiveSpecies();
+  cBioGroup * GetActiveGenotype();
   cString GetActiveName();
 
   int GetActiveID();
   int GetActiveGenotypeID();
-  int GetActiveSpeciesID();
 
   void SetActiveCell(cPopulationCell * in_cell) { active_cell = in_cell; }
 
@@ -130,18 +122,10 @@ inline void cViewInfo::DecMapMode()
   --map_mode %= NUM_MAPS; 
 }
 
-inline bool cViewInfo::InGenChart(cGenotype * in_gen)
+inline bool cViewInfo::InGenChart(cBioGroup * in_gen)
 {
   for (int i = 0; i < NUM_SYMBOLS; i++) {
     if (genotype_chart[i] == in_gen) return true;
-  }
-  return false;
-}
-
-inline bool cViewInfo::InSpeciesChart(cSpecies * in_species)
-{
-  for (int i = 0; i < NUM_SYMBOLS; i++) {
-    if (species_chart[i] == in_species) return true;
   }
   return false;
 }
