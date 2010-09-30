@@ -84,9 +84,6 @@ cDriver_FLTKViewer::cDriver_FLTKViewer(cWorld* world)
   , m_pause_button(m_main_window,     400, FLTK_MENU2_Y, 30, 30, "@||")
   , m_quit_button(m_main_window,      440, FLTK_MENU2_Y, 30, 30, "@square")
 {
-  // Setup the initial view mode (loaded from avida.cfg)
-  m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
-    
   cDriverManager::Register(static_cast<cAvidaDriver*>(this));
   world->SetDriver(this);
 

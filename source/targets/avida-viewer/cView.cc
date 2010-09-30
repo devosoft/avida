@@ -86,6 +86,8 @@ void cView::Setup(cAvidaContext& ctx, const cString & in_name)
 
 void cView::SetViewMode(int in_mode)
 {
+  if (in_mode == -1) in_mode = MODE_MAP; // Default to map mode.
+
   if (in_mode == MODE_BLANK) {
     cur_screen = NULL;
   } else if (in_mode == MODE_MAP) {

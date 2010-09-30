@@ -100,7 +100,7 @@ cPopulation::cPopulation(cWorld* world)
   // Avida specific information.
   world_x = world->GetConfig().WORLD_X.Get();
   world_y = world->GetConfig().WORLD_Y.Get();
-	world_z = world->GetConfig().WORLD_Z.Get();
+  world_z = world->GetConfig().WORLD_Z.Get();
   
   int num_demes = m_world->GetConfig().NUM_DEMES.Get();
   const int num_cells = world_x * world_y * world_z;
@@ -137,9 +137,9 @@ cPopulation::cPopulation(cWorld* world)
     num_demes = 1; // One population == one deme.
   }
 	
-	// Not ready for prime time yet; need to look at how resources work in this now
-	// more complex world.
-	assert(world_z == 1);
+  // Not ready for prime time yet; need to look at how resources work in this now
+  // more complex world.
+  assert(world_z == 1);
   
   // The following combination of options creates an infinite rotate-loop:
   assert(!((m_world->GetConfig().DEMES_ORGANISM_PLACEMENT.Get()==0)
@@ -204,33 +204,45 @@ cPopulation::cPopulation(cWorld* world)
     // We're cheating here; we're using the random access nature of an iterator
     // to index beyond the end of the cell_array.
     switch(geometry) {
-      case nGeometry::GRID:
-        build_grid(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
-        break;
-      case nGeometry::TORUS:
-        build_torus(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
-        break;
-      case nGeometry::CLIQUE:
-        build_clique(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
-        break;
-      case nGeometry::HEX:
-        build_hex(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y);
-        break;
-			case nGeometry::LATTICE:
-				build_lattice(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y, world_z);
-				break;
-			case nGeometry::RANDOM_CONNECTED:
-				build_random_connected_network(&cell_array.begin()[i], &cell_array.begin()[i+deme_size], deme_size_x, deme_size_y, m_world->GetRandom());
-				break;
-			case nGeometry::SCALE_FREE:
-				build_scale_free(&cell_array.begin()[i], &cell_array.begin()[i+deme_size],
-                         world->GetConfig().SCALE_FREE_M.Get(),
-                         world->GetConfig().SCALE_FREE_ALPHA.Get(),
-                         world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
-                         m_world->GetRandom());
-				break;
-      default:
-        assert(false);
+    case nGeometry::GRID:
+      build_grid(&cell_array.begin()[i],
+		 &cell_array.begin()[i+deme_size],
+		 deme_size_x, deme_size_y);
+      break;
+    case nGeometry::TORUS:
+      build_torus(&cell_array.begin()[i],
+		  &cell_array.begin()[i+deme_size],
+		  deme_size_x, deme_size_y);
+      break;
+    case nGeometry::CLIQUE:
+      build_clique(&cell_array.begin()[i],
+		   &cell_array.begin()[i+deme_size],
+		   deme_size_x, deme_size_y);
+      break;
+    case nGeometry::HEX:
+      build_hex(&cell_array.begin()[i],
+		&cell_array.begin()[i+deme_size],
+		deme_size_x, deme_size_y);
+      break;
+    case nGeometry::LATTICE:
+      build_lattice(&cell_array.begin()[i],
+		    &cell_array.begin()[i+deme_size],
+		    deme_size_x, deme_size_y, world_z);
+      break;
+    case nGeometry::RANDOM_CONNECTED:
+      build_random_connected_network(&cell_array.begin()[i],
+				     &cell_array.begin()[i+deme_size],
+				     deme_size_x, deme_size_y, m_world->GetRandom());
+      break;
+    case nGeometry::SCALE_FREE:
+      build_scale_free(&cell_array.begin()[i], &cell_array.begin()[i+deme_size],
+		       world->GetConfig().SCALE_FREE_M.Get(),
+		       world->GetConfig().SCALE_FREE_ALPHA.Get(),
+		       world->GetConfig().SCALE_FREE_ZERO_APPEAL.Get(),
+		       m_world->GetRandom());
+      break;
+    default:
+      assert(false);
     }
   }
   
@@ -350,49 +362,49 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   }
   assert(parent_organism != NULL);
   
-  tArray<cOrganism*> child_array;
+  tArray<cOrganism*> offspring_array;
   tArray<cMerit> merit_array;
   
   // Update the parent's phenotype.
   // This needs to be done before the parent goes into the birth chamber
-  // or the merit doesn't get passed onto the child correctly
+  // or the merit doesn't get passed onto the offspring correctly
   cPhenotype& parent_phenotype = parent_organism->GetPhenotype();
   parent_phenotype.DivideReset(parent_organism->GetGenome());
   
-  birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, child_array, merit_array);
+  birth_chamber.SubmitOffspring(ctx, offspring_genome, parent_organism, offspring_array, merit_array);
   
   // First, setup the genotype of all of the offspring.
   const int parent_id = parent_organism->GetOrgInterface().GetCellID();
   assert(parent_id >= 0 && parent_id < cell_array.GetSize());
   cPopulationCell& parent_cell = cell_array[parent_id];
   
-	// If this is multi-process Avida, test to see if we should send the offspring
-	// to a different world.  We check this here so that 1) we avoid all the extra
-	// work below in the case of a migration event and 2) so that we don't mess up
-	// and mistakenly kill the parent.
-	if(m_world->GetConfig().ENABLE_MP.Get() && (m_world->GetConfig().MP_MIGRATION_P.Get() > 0.0)) {
-		tArray<cOrganism*> non_migrants;
-		tArray<cMerit> non_migrant_merits;
-		for(int i=0; i<child_array.GetSize(); ++i) {
-			if(m_world->GetRandom().P(m_world->GetConfig().MP_MIGRATION_P.Get())) {
-				// this offspring is outta here!
-				m_world->MigrateOrganism(child_array[i], parent_cell, merit_array[i], parent_organism->GetLineageLabel());
-				delete child_array[i]; // this child isn't hanging around.
-			} else {
-				// boring; stay here.
-				non_migrants.Push(child_array[i]);
-				non_migrant_merits.Push(merit_array[i]);
-			}
-		}		
-		child_array = non_migrants;
-		merit_array = non_migrant_merits;
-	}
+  // If this is multi-process Avida, test to see if we should send the offspring
+  // to a different world.  We check this here so that 1) we avoid all the extra
+  // work below in the case of a migration event and 2) so that we don't mess up
+  // and mistakenly kill the parent.
+  if (m_world->GetConfig().ENABLE_MP.Get() && (m_world->GetConfig().MP_MIGRATION_P.Get() > 0.0)) {
+    tArray<cOrganism*> non_migrants;
+    tArray<cMerit> non_migrant_merits;
+    for (int i=0; i<offspring_array.GetSize(); ++i) {
+      if (m_world->GetRandom().P(m_world->GetConfig().MP_MIGRATION_P.Get())) {
+	// this offspring is outta here!
+	m_world->MigrateOrganism(offspring_array[i], parent_cell, merit_array[i], parent_organism->GetLineageLabel());
+	delete offspring_array[i]; // this offspring isn't hanging around.
+      } else {
+	// boring; stay here.
+	non_migrants.Push(offspring_array[i]);
+	non_migrant_merits.Push(merit_array[i]);
+      }
+    }		
+    offspring_array = non_migrants;
+    merit_array = non_migrant_merits;
+  }
 	
-  tArray<int> target_cells(child_array.GetSize());
+  tArray<int> target_cells(offspring_array.GetSize());
   
-  // Loop through choosing the later placement of each child in the population.
+  // Loop through choosing the later placement of each offspring in the population.
   bool parent_alive = true;  // Will the parent live through this process?
-  for (int i = 0; i < child_array.GetSize(); i++) {
+  for (int i = 0; i < offspring_array.GetSize(); i++) {
     /*		
      THIS code will remove zero merit orgnaisms, thus never putting them into the scheduler.
      WARNING: uncommenting this code will break consistancy, but will generalize the solution.
@@ -402,11 +414,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
      
      if (merit_array[i].GetDouble() <= 0.0) {
      // no weaklings!
-     if (child_array.GetSize() > 1) {
-     child_array.Swap(i, child_array.GetSize()-1);
-     child_array = child_array.Subset(0, child_array.GetSize()-2);
+     if (offspring_array.GetSize() > 1) {
+     offspring_array.Swap(i, offspring_array.GetSize()-1);
+     offspring_array = offspring_array.Subset(0, offspring_array.GetSize()-2);
      } else {
-     child_array.ResizeClear(0);
+     offspring_array.ResizeClear(0);
      break;
      }
      --i;
@@ -419,35 +431,35 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     
     const int mut_source = m_world->GetConfig().MUT_RATE_SOURCE.Get();
     if (mut_source == 1) {
-      // Update the mutation rates of each child from the environment....
-      child_array[i]->MutationRates().Copy(GetCell(target_cells[i]).MutationRates());
+      // Update the mutation rates of each offspring from the environment....
+      offspring_array[i]->MutationRates().Copy(GetCell(target_cells[i]).MutationRates());
     } else {
-      // Update the mutation rates of each child from its parent.
-      child_array[i]->MutationRates().Copy(parent_organism->MutationRates());
+      // Update the mutation rates of each offspring from its parent.
+      offspring_array[i]->MutationRates().Copy(parent_organism->MutationRates());
       // If there is a meta-mutation rate, do tests for it.
-      if (child_array[i]->MutationRates().GetMetaCopyMutProb() > 0.0) {
-        child_array[i]->MutationRates().DoMetaCopyMut(ctx);
+      if (offspring_array[i]->MutationRates().GetMetaCopyMutProb() > 0.0) {
+        offspring_array[i]->MutationRates().DoMetaCopyMut(ctx);
       }    
     }
     
-    // Update the phenotypes of each child....
-    const cGenome& genome = child_array[i]->GetGenome();
-    child_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
-    child_array[i]->GetPhenotype().SetMerit(merit_array[i]);
-    child_array[i]->SetLineageLabel(parent_organism->GetLineageLabel());
+    // Update the phenotypes of each offspring....
+    const cGenome& genome = offspring_array[i]->GetGenome();
+    offspring_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
+    offspring_array[i]->GetPhenotype().SetMerit(merit_array[i]);
+    offspring_array[i]->SetLineageLabel(parent_organism->GetLineageLabel());
     
     //By default, store the parent cclade, this may get modified in ActivateOrgansim (@MRR)
-    child_array[i]->SetCCladeLabel(parent_organism->GetCCladeLabel());
+    offspring_array[i]->SetCCladeLabel(parent_organism->GetCCladeLabel());
 		
 		// If inherited reputation is turned on, set the offspring's reputation 
 		// to that of its parent.
 		if (m_world->GetConfig().INHERIT_REPUTATION.Get() == 1) {
-			child_array[i]->SetReputation(parent_organism->GetReputation()); 
+			offspring_array[i]->SetReputation(parent_organism->GetReputation()); 
 		} else if (m_world->GetConfig().INHERIT_REPUTATION.Get() == 2) { 
-			child_array[i]->SetTag(parent_organism->GetTag()); 	
+			offspring_array[i]->SetTag(parent_organism->GetTag()); 	
 		}else if (m_world->GetConfig().INHERIT_REPUTATION.Get() == 3) { 
-			child_array[i]->SetTag(parent_organism->GetTag()); 
-			child_array[i]->SetReputation(parent_organism->GetReputation()); 
+			offspring_array[i]->SetTag(parent_organism->GetTag()); 
+			offspring_array[i]->SetReputation(parent_organism->GetReputation()); 
 		}
 		
 		// If spatial groups are used, put the offspring in the 
@@ -455,7 +467,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 		if (m_world->GetConfig().USE_FORM_GROUPS.Get()){
 			assert(parent_organism->HasOpinion());
 			int group = parent_organism->GetOpinion().first;
-			child_array[i]->SetOpinion(group); 
+			offspring_array[i]->SetOpinion(group); 
 			JoinGroup(group);
 		}
 	}
@@ -493,11 +505,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 			}
 			AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
 			
-			// In a local run, face the child toward the parent. 
+			// In a local run, face the offspring toward the parent. 
 			const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
 			if (birth_method < NUM_LOCAL_POSITION_OFFSPRING ||
 					birth_method == POSITION_OFFSPRING_PARENT_FACING) {
-				for (int i = 0; i < child_array.GetSize(); i++) {
+				for (int i = 0; i < offspring_array.GetSize(); i++) {
 					GetCell(target_cells[i]).Rotate(parent_cell);
 				}
 			}
@@ -512,14 +524,14 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   
   
   // Place all of the offspring...
-  for (int i = 0; i < child_array.GetSize(); i++) {
-    //@JEB - we may want to pass along some state information from parent to child
+  for (int i = 0; i < offspring_array.GetSize(); i++) {
+    //@JEB - we may want to pass along some state information from parent to offspring
     if ( (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_OFFSPRING) 
         || (m_world->GetConfig().EPIGENETIC_METHOD.Get() == EPIGENETIC_METHOD_BOTH) ) {
-      child_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
+      offspring_array[i]->GetHardware().InheritState(parent_organism->GetHardware());
     }
 
-    ActivateOrganism(ctx, child_array[i], GetCell(target_cells[i]));
+    ActivateOrganism(ctx, offspring_array[i], GetCell(target_cells[i]));
   }
   
   return parent_alive;
@@ -1264,155 +1276,159 @@ void cPopulation::CompeteDemes(int competition_type)
  each deme.
  */
 void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness) {
-	// it's possible that we'll be changing the fitness values of some demes, so make a copy:
-	std::vector<double> fitness(calculated_fitness);
+  // it's possible that we'll be changing the fitness values of some demes, so make a copy:
+  std::vector<double> fitness(calculated_fitness);
 	
   // Each deme must have a fitness:
   assert((int)fitness.size() == deme_array.GetSize());
   
-	// To prevent sterile demes from replicating, we're going to replace the fitness
-	// of all sterile demes with 0; this effectively makes it impossible for a sterile
-	// deme to be selected via fitness proportional selection.
-	if (m_world->GetConfig().DEMES_PREVENT_STERILE.Get()) {
-		for(int i=0; i<deme_array.GetSize(); ++i) {
-			if (deme_array[i].GetBirthCount() == 0) {
-				fitness[i] = 0.0;
-			}
-		}
-	}
+  // To prevent sterile demes from replicating, we're going to replace the fitness
+  // of all sterile demes with 0; this effectively makes it impossible for a sterile
+  // deme to be selected via fitness proportional selection.
+  if (m_world->GetConfig().DEMES_PREVENT_STERILE.Get()) {
+    for(int i=0; i<deme_array.GetSize(); ++i) {
+      if (deme_array[i].GetBirthCount() == 0) {
+	fitness[i] = 0.0;
+      }
+    }
+  }
 	
   // Stat-tracking:
   m_world->GetStats().CompeteDemes(fitness);
   
   // This is to facilitate testing.  Obviously we can't do competition if there's
-	// only one deme, but we do want the stat-tracking.
-	if (fitness.size()==1) {
-		return;
+  // only one deme, but we do want the stat-tracking.
+  if (fitness.size() == 1) {
+    return;
+  }
+	
+  // to facilitate control runs, sometimes we want to know what the fitness values
+  // are, but we don't want competition to depend on them.
+  if (m_world->GetConfig().DEMES_OVERRIDE_FITNESS.Get()) {
+    for(int i=0; i<static_cast<int>(fitness.size()); ++i) {
+      fitness[i] = 1.0;
+    }		
+  }	
+  
+  // Number of demes (at index) which should wind up in the next generation.
+  std::vector<unsigned int> deme_counts(deme_array.GetSize(), 0);						
+  // Now, compete all demes based on the competition style.
+  switch(m_world->GetConfig().DEMES_COMPETITION_STYLE.Get()) {
+  case SELECTION_TYPE_PROPORTIONAL: {
+    // Fitness-proportional selection.
+    //
+    // Each deme has a probability equal to its fitness / sum(deme fitnesses)
+    // of proceeding to the next generation.
+    
+    const double total_fitness = std::accumulate(fitness.begin(), fitness.end(), 0.0);
+    assert(total_fitness > 0.0); // Must have *some* positive fitnesses...
+
+    // Sum up the fitnesses until we reach or exceed the target fitness.
+    // Then we're marking that deme as being part of the next generation.
+    for (int i=0; i<deme_array.GetSize(); ++i) {
+      double running_sum = 0.0;
+      double target_sum = m_world->GetRandom().GetDouble(total_fitness);
+      for (int j=0; j<deme_array.GetSize(); ++j) {
+	running_sum += fitness[j];
+	if (running_sum >= target_sum) {
+	  // j'th deme will be replicated.
+	  ++deme_counts[j];
+	  break;
 	}
-	
-	// to facilitate control runs, sometimes we want to know what the fitness values
-	// are, but we don't want competition to depend on them.
-	if (m_world->GetConfig().DEMES_OVERRIDE_FITNESS.Get()) {
-		for(int i=0; i<static_cast<int>(fitness.size()); ++i) {
-			fitness[i] = 1.0;
-		}		
-	}	
-	
-	// Number of demes (at index) which should wind up in the next generation.
-	std::vector<unsigned int> deme_counts(deme_array.GetSize(), 0);						
-	
-	// Now, compete all demes based on the competition style.
-	switch(m_world->GetConfig().DEMES_COMPETITION_STYLE.Get()) {
-		case 0: {
-			// Fitness-proportional selection.
-			//
-			// Each deme has a probability equal to its fitness / sum(deme fitnesses)
-			// of proceeding to the next generation.
+      }
+    }			
+    break;
+  }
+  case SELECTION_TYPE_TOURNAMENT: {
+    // Tournament selection.
+    //
+    // We run NUM_DEMES tournaments of size DEME_TOURNAMENT_SIZE, and select the
+    // **single** winner of the tournament to proceed to the next generation.
+    
+    // construct a list of all possible deme ids that could participate in a tournament,
+    // pruning out sterile demes:
+    std::vector<int> deme_ids;
+    for (int i=0; i<deme_array.GetSize(); ++i) {
+      if (!m_world->GetConfig().DEMES_PREVENT_STERILE.Get() ||
+	  (deme_array[i].GetBirthCount() > 0)) {
+	deme_ids.push_back(i);
+      }
+    }
+    
+    // better have more than deme tournament size, otherwise something is *really* screwed up:
+    if (m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get() > static_cast<int>(deme_ids.size())) {
+      m_world->GetDriver().RaiseFatalException(-1,
+	 "Number of demes available to participate in a tournament < the deme tournament size.");
+    }
 			
-			const double total_fitness = std::accumulate(fitness.begin(), fitness.end(), 0.0);
-			assert(total_fitness > 0.0); // Must have *some* positive fitnesses...
-			// What we're doing here is summing up the fitnesses until we reach or exceed the target fitness.
-			// Then we're marking that deme as being part of the next generation.
-			for(int i=0; i<deme_array.GetSize(); ++i) {
-				double running_sum = 0.0;
-				double target_sum = m_world->GetRandom().GetDouble(total_fitness);
-				for(int j=0; j<deme_array.GetSize(); ++j) {
-					running_sum += fitness[j];
-					if (running_sum >= target_sum) {
-						// j'th deme will be replicated.
-						++deme_counts[j];
-						break;
-					}
-				}
-			}			
-			break;
-		}
-		case 1: {
-			// Tournament selection.
-			//
-			// We run NUM_DEMES tournaments of size DEME_TOURNAMENT_SIZE, and select the
-			// **single** winner of the tournament to proceed to the next generation.
-			
-			// construct a list of all possible deme ids that could participate in a tournament,
-			// pruning out sterile demes:
-			std::vector<int> deme_ids;
-			for(int i=0; i<deme_array.GetSize(); ++i) {
-				if (!m_world->GetConfig().DEMES_PREVENT_STERILE.Get() || (deme_array[i].GetBirthCount() > 0)) {
-					deme_ids.push_back(i);
-				}
-			}
-			
-			// better have more than deme tournament size, otherwise something is *really* screwed up:
-			if (m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get() > static_cast<int>(deme_ids.size())) {
-        m_world->GetDriver().RaiseFatalException(-1, "The number of demes that can participate in a tournament is less than the deme tournament size.");
-			}
-			
-			// Run the tournaments.
-			for(int i=0; i<m_world->GetConfig().NUM_DEMES.Get(); ++i) {
-				// Which demes are in this tournament?
-				std::vector<int> tournament(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get());
-				sample_without_replacement(deme_ids.begin(), deme_ids.end(), tournament.begin(), tournament.end(), cRandomStdAdaptor(m_world->GetRandom()));
+    // Run the tournaments.
+    for (int i=0; i<m_world->GetConfig().NUM_DEMES.Get(); ++i) {
+      // Which demes are in this tournament?
+      std::vector<int> tournament(m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get());
+      sample_without_replacement(deme_ids.begin(), deme_ids.end(),
+				 tournament.begin(), tournament.end(),
+				 cRandomStdAdaptor(m_world->GetRandom()));
 				
-				// Now, iterate through the fitnesses of each of the tournament players,
-				// capturing the winner's index and fitness.
-				//
-				// If no deme actually won, meaning no one had fitness greater than 0.0,
-				// then the winner is selected at random from the tournament.
-				std::pair<int, double> winner(tournament[m_world->GetRandom().GetInt(tournament.size())], 0.0);
-				for(std::vector<int>::iterator j=tournament.begin(); j!=tournament.end(); ++j) {
-					if (fitness[*j] > winner.second) { 
-						winner = std::make_pair(*j, fitness[*j]);
-					}
-				}
+      // Now, iterate through the fitnesses of each of the tournament players,
+      // capturing the winner's index and fitness.
+      //
+      // If no deme actually won, meaning no one had fitness greater than 0.0,
+      // then the winner is selected at random from the tournament.
+      std::pair<int, double> winner(tournament[m_world->GetRandom().GetInt(tournament.size())], 0.0);
+      for(std::vector<int>::iterator j=tournament.begin(); j!=tournament.end(); ++j) {
+	if (fitness[*j] > winner.second) { 
+	  winner = std::make_pair(*j, fitness[*j]);
+	}
+      }
 				
-				// We have a winner!  Increment his replication count.
-				++deme_counts[winner.first];				
-			}
-			break;
-		}
-		default: {
-			// should never get here.
-			assert(false);
-		}
-	}
+      // We have a winner!  Increment his replication count.
+      ++deme_counts[winner.first];				
+    }
+    break;
+  }
+  default: {
+    // should never get here.
+    assert(false);
+  }
+  }
 	
-	// Housekeeping: re-inject demes with count of 1 back into self (energy-related).
-	for(int i = 0; i < (int)deme_counts.size(); i++) {
-		if (deme_counts[i] == 1)
-			ReplaceDeme(deme_array[i], deme_array[i]);
-	}
+  // Housekeeping: re-inject demes with count of 1 back into self (energy-related).
+  for (int i = 0; i < (int)deme_counts.size(); i++) {
+    if (deme_counts[i] == 1)
+      ReplaceDeme(deme_array[i], deme_array[i]);
+  }
 	
-	// Ok, the below algorithm relies upon the fact that we have a strict weak ordering
-	// of fitness values for all demes.  We're going to loop through, find demes with a
-	// count greater than one, and insert them into demes with a count of zero.
-	while(true) {
-		int source_id=0;
-		for(; source_id<(int)deme_counts.size(); ++source_id) {
-			if (deme_counts[source_id] > 1) {
-				--deme_counts[source_id];
-				break;
-			}
-		}
+  // Ok, the below algorithm relies upon the fact that we have a strict weak ordering
+  // of fitness values for all demes.  We're going to loop through, find demes with a
+  // count greater than one, and insert them into demes with a count of zero.
+  while (true) {
+    int source_id=0;
+    for(; source_id<(int)deme_counts.size(); ++source_id) {
+      if (deme_counts[source_id] > 1) {
+	--deme_counts[source_id];
+	break;
+      }
+    }
 		
-		if (source_id == (int)deme_counts.size()) {
-			break; // All done; we looped through the whole list of counts, and didn't find any > 1.
-		}
+    if (source_id == (int)deme_counts.size()) {
+      break; // All done; we looped through the whole list of counts, and didn't find any > 1.
+    }
 		
-		int target_id=0;
-		for(; target_id<(int)deme_counts.size(); ++target_id) {
-			if (deme_counts[target_id] == 0) {
-				++deme_counts[target_id];
-				break;
-			}
-		}
+    int target_id=0;
+    for(; target_id<(int)deme_counts.size(); ++target_id) {
+      if (deme_counts[target_id] == 0) {
+	++deme_counts[target_id];
+	break;
+      }
+    }
 		
-		assert(source_id < deme_array.GetSize());
-		assert(target_id < deme_array.GetSize());
-		assert(source_id != target_id);
-		
-		// Replace the target with a copy of the source:
-		ReplaceDeme(deme_array[source_id], deme_array[target_id]);
-	}
+    assert(source_id < deme_array.GetSize());
+    assert(target_id < deme_array.GetSize());
+    assert(source_id != target_id);
+    
+    // Replace the target with a copy of the source:
+    ReplaceDeme(deme_array[source_id], deme_array[target_id]);
+  }
 }
 
 
@@ -1440,89 +1456,101 @@ void cPopulation::ReplicateDemes(int rep_trigger)
   
   // Loop through all candidate demes...
   const int num_demes = GetNumDemes();
-  for(int deme_id=0; deme_id<num_demes; ++deme_id) {
+  for (int deme_id=0; deme_id<num_demes; ++deme_id) {
     cDeme& source_deme = deme_array[deme_id];
     
     // Test this deme to determine if it should be replicated.  If not,
     // continue on to the next deme.
     switch (rep_trigger) {
-      case 0: {
-        // Replicate all non-empty demes.
-        if (source_deme.IsEmpty()) continue;
-        break;
+    case DEME_TRIGGER_ALL: {
+      // Replicate all non-empty demes.
+      if (source_deme.IsEmpty()) continue;
+      break;
+    }
+    case DEME_TRIGGER_FULL: {
+      // Replicate all full demes.
+      if (!source_deme.IsFull()) continue;
+      break;
+    }
+    case DEME_TRIGGER_CORNERS: {
+      // Replicate all demes with the corners filled in.
+      // The first and last IDs represent the two corners.
+      const int id1 = source_deme.GetCellID(0);
+      const int id2 = source_deme.GetCellID(source_deme.GetSize() - 1);
+      if (cell_array[id1].IsOccupied() == false ||
+	  cell_array[id2].IsOccupied() == false) continue;
+      break;
+    }
+    case DEME_TRIGGER_AGE: {
+      // Replicate old demes.
+      if (source_deme.GetAge() < m_world->GetConfig().DEMES_MAX_AGE.Get()) continue;
+      break;
+    }
+    case DEME_TRIGGER_BIRTHS: {
+      // Replicate demes that have had a certain number of births.
+      if (source_deme.GetBirthCount() < m_world->GetConfig().DEMES_MAX_BIRTHS.Get()) continue;
+      break;
+    }
+    case DEME_TRIGGER_MOVE_PREDATORS: {
+      if (!(source_deme.MovPredSatisfiedPreviously())) continue;
+      break;
+    }
+    case DEME_TRIGGER_GROUP_KILL: {
+      int currentSlotSuccessful = 0;
+      double kill_ratio = 0.0;
+      
+      if (source_deme.GetSlotFlowRate() == 0) {
+	kill_ratio = 1.0;
+      } else {
+	kill_ratio = static_cast<double>(source_deme.GetEventsKilledThisSlot()) /
+	  static_cast<double>(source_deme.GetSlotFlowRate());
       }
-      case 1: {
-        // Replicate all full demes.
-        if (!source_deme.IsFull()) continue;
-        break;
+
+      if (kill_ratio >= m_world->GetConfig().DEMES_MIM_EVENTS_KILLED_RATIO.Get()) {
+	currentSlotSuccessful = 1;
       }
-      case 2: {
-        // Replicate all demes with the corners filled in.
-        // The first and last IDs represent the two corners.
-        const int id1 = source_deme.GetCellID(0);
-        const int id2 = source_deme.GetCellID(source_deme.GetSize() - 1);
-        if (cell_array[id1].IsOccupied() == false ||
-           cell_array[id2].IsOccupied() == false) continue;
-        break;
-      }
-      case 3: {
-        // Replicate old demes.
-        if (source_deme.GetAge() < m_world->GetConfig().DEMES_MAX_AGE.Get()) continue;
-        break;
-      }
-      case 4: {
-        // Replicate demes that have had a certain number of births.
-        if (source_deme.GetBirthCount() < m_world->GetConfig().DEMES_MAX_BIRTHS.Get()) continue;
-        break;
-      }
-      case 5: {
-        if (!(source_deme.MovPredSatisfiedPreviously())) continue;
-        break;
-      }
-      case 6: {
-        int currentSlotSuccessful = 0;
-        double kill_ratio = 0.0;
         
-        if (source_deme.GetSlotFlowRate() == 0) 
-          kill_ratio = 1.0;
-        else
-          kill_ratio = static_cast<double>(source_deme.GetEventsKilledThisSlot()) / static_cast<double>(source_deme.GetSlotFlowRate());
-        
-        if (kill_ratio >= m_world->GetConfig().DEMES_MIM_EVENTS_KILLED_RATIO.Get())
-          currentSlotSuccessful = 1;
-        
-        // Replicate demes that have killed a certain number of event.
-        if (source_deme.GetConsecutiveSuccessfulEventPeriods()+currentSlotSuccessful < m_world->GetConfig().DEMES_MIM_SUCCESSFUL_EVENT_PERIODS.Get()) continue;
-        break;
+      // Replicate demes that have killed a certain number of event.
+      if (source_deme.GetConsecutiveSuccessfulEventPeriods() + currentSlotSuccessful
+	  < m_world->GetConfig().DEMES_MIM_SUCCESSFUL_EVENT_PERIODS.Get()) {
+	continue;
       }
-      case 7: {
-        if (!(source_deme.MsgPredSatisfiedPreviously())) continue;
-        break;
+      break;
+    }
+    case DEME_TRIGGER_MESSAGE_PREDATORS: {
+      if (!(source_deme.MsgPredSatisfiedPreviously())) continue;
+      break;
+    }
+    case DEME_TRIGGER_PREDICATE: {
+      if (!(source_deme.DemePredSatisfiedPreviously())) continue;
+      break;
+    }
+    case DEME_TRIGGER_PERFECT_REACTIONS: {
+      // loop through each reaction. Make sure each has been performed X times. 
+      if (source_deme.MinNumTimesReactionPerformed() < m_world->GetConfig().REACTION_THRESH.Get()) {
+	continue;
       }
-			case 8: {
-        if (!(source_deme.DemePredSatisfiedPreviously())) continue;
-        break;
-			}
-			case 9: {
-				//  loop through each reaction. Make sure each has been performed X times. 
-				if (source_deme.MinNumTimesReactionPerformed() < m_world->GetConfig().REACTION_THRESH.Get()) continue;
-				break;
-			}
-			case 10: {
-				// check how many resources have been consumed by the deme
-				if (source_deme.GetTotalResourceAmountConsumed() < m_world->GetConfig().RES_FOR_DEME_REP.Get()) continue;
-				break;
-			}
-      default: {
-        cerr << "ERROR: Invalid replication trigger " << rep_trigger
-        << " in cPopulation::ReplicateDemes()" << endl;
-        assert(false);
+      break;
+    }
+    case DEME_TRIGGER_CONSUME_RESOURCES: {
+      // check how many resources have been consumed by the deme
+      if (source_deme.GetTotalResourceAmountConsumed() <
+	  m_world->GetConfig().RES_FOR_DEME_REP.Get()) {
+	continue;
       }
+      break;
+    }
+    default: {
+      cerr << "ERROR: Invalid replication trigger " << rep_trigger
+	   << " in cPopulation::ReplicateDemes()" << endl;
+      assert(false);
+    }
     }
     
     ReplicateDeme(source_deme);
   }
 }
+
 
 /*! ReplicateDeme is a helper method for replicating a source deme.
  */
@@ -3407,7 +3435,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
   
   // Handle Population Cap (if enabled)
   int pop_cap = m_world->GetConfig().POPULATION_CAP.Get();
-  if (pop_cap && num_organisms >= pop_cap) {
+  if (pop_cap > 0 && num_organisms >= pop_cap) {
     double max_msr = 0.0;
     int cell_id = 0;
     for (int i = 0; i < cell_array.GetSize(); i++) {
@@ -3422,9 +3450,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
     KillOrganism(cell_array[cell_id]);
   }
   
-  //@AWC -- decide wether the child will migrate to another deme -- if migrating we ignore the birth method.  
-  if ((m_world->GetConfig().MIGRATION_RATE.Get() > 0.0) //@AWC -- Pedantic test to maintain consistancy.
-      && m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())) {
+  // Decide if offspring will migrate to another deme -- if migrating we ignore the birth method.  
+  if (m_world->GetConfig().MIGRATION_RATE.Get() > 0.0 &&
+      m_world->GetRandom().P(m_world->GetConfig().MIGRATION_RATE.Get())) {
     
     //cerr << "Attempting to migrate with rate " << m_world->GetConfig().MIGRATION_RATE.Get() << "!" << endl;
     int deme_id = parent_cell.GetDemeID();

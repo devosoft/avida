@@ -41,14 +41,49 @@
 
 /*! Constructor
  */
-cDeme::cDeme() : _id(0), width(0), replicateDeme(false), treatable(false), cur_birth_count(0), last_birth_count(0), cur_org_count(0), last_org_count(0), injected_count(0), birth_count_perslot(0),
-_age(0), generation(0), total_org_energy(0.0),
-time_used(0), gestation_time(0), cur_normalized_time_used(0.0), last_normalized_time_used(0.0), 
-MSG_sendFailed(0), MSG_dropped(0), MSG_SuccessfullySent(0), MSG_sent(0), numOrgsInterruted(0), energyInjectedIntoOrganisms(0.0), energyRemainingInDemeAtReplication(0.0), total_energy_testament(0.0),
-eventsTotal(0), eventsKilled(0), eventsKilledThisSlot(0), eventKillAttempts(0), eventKillAttemptsThisSlot(0),
-consecutiveSuccessfulEventPeriods(0), sleeping_count(0),
-avg_founder_generation(0.0), generations_per_lifetime(0.0),
-deme_resource_count(0), m_germline_genotype_id(0), points(0), migrations_out(0), migrations_in(0), suicides(0), m_network(0) {
+cDeme::cDeme()
+  : _id(0)
+  , width(0)
+  , replicateDeme(false)
+  , treatable(false)
+  , cur_birth_count(0)
+  , last_birth_count(0)
+  , cur_org_count(0)
+  , last_org_count(0)
+  , injected_count(0)
+  , birth_count_perslot(0)
+  , _age(0)
+  , generation(0)
+  , total_org_energy(0.0)
+  , time_used(0)
+  , gestation_time(0)
+  , cur_normalized_time_used(0.0)
+  , last_normalized_time_used(0.0)
+  , MSG_sendFailed(0)
+  , MSG_dropped(0)
+  , MSG_SuccessfullySent(0)
+  , MSG_sent(0)
+  , numOrgsInterruted(0)
+  , energyInjectedIntoOrganisms(0.0)
+  , energyRemainingInDemeAtReplication(0.0)
+  , total_energy_testament(0.0)
+  , eventsTotal(0)
+  , eventsKilled(0)
+  , eventsKilledThisSlot(0)
+  , eventKillAttempts(0)
+  , eventKillAttemptsThisSlot(0)
+  , consecutiveSuccessfulEventPeriods(0)
+  , sleeping_count(0)
+  , avg_founder_generation(0.0)
+  , generations_per_lifetime(0.0)
+  , deme_resource_count(0)
+  , m_germline_genotype_id(0)
+  , points(0)
+  , migrations_out(0)
+  , migrations_in(0)
+  , suicides(0)
+  , m_network(0)
+{
 }
 
 cDeme::~cDeme() {
@@ -165,27 +200,29 @@ std::vector<int> cDeme::GetGenotypeIDs()
 
 
 
-int cDeme::GetNumOrgsWithOpinion() const {
-	int demeSize = GetSize();
-	int count = 0;
-	
-	for(int pos = 0; pos < demeSize; ++pos) {
-		cPopulationCell& cell = GetCell(pos);
-		if(cell.IsOccupied() && cell.GetOrganism()->HasOpinion())
-			++count;
-	}
-	return count;
+int cDeme::GetNumOrgsWithOpinion() const
+{
+  int demeSize = GetSize();
+  int count = 0;
+  
+  for (int pos = 0; pos < demeSize; ++pos) {
+    cPopulationCell& cell = GetCell(pos);
+    if (cell.IsOccupied() && cell.GetOrganism()->HasOpinion())
+      ++count;
+  }
+
+  return count;
 }
 
-void cDeme::ProcessUpdate() {
-	// test deme predicate
-	for(int i = 0; i < deme_pred_list.Size(); i++) {
-		if(deme_pred_list[i]->GetName() == "cDemeResourceThreshold") {
-			(*deme_pred_list[i])(&deme_resource_count);
-		}
-	}
-	
-	
+void cDeme::ProcessUpdate()
+{
+  // test deme predicate
+  for (int i = 0; i < deme_pred_list.Size(); i++) {
+    if (deme_pred_list[i]->GetName() == "cDemeResourceThreshold") {
+      (*deme_pred_list[i])(&deme_resource_count);
+    }
+  }
+
   energyUsage.Clear();
   
   if(IsEmpty()) {  // deme is not processed if no organisms are present
@@ -249,10 +286,10 @@ void cDeme::ProcessUpdate() {
         
         eventCell = event.GetNextEventCellID();
       }
-    } else if(event.IsActive() && event.GetDelay()+event.GetDuration() == _age) {
+    } else if (event.IsActive() && event.GetDelay()+event.GetDuration() == _age) {
       int eventCell = event.GetNextEventCellID();
-      while(eventCell != -1) {
-        if(event.GetEventID() == m_world->GetPopulation().GetCell(GetCellID(eventCell)).GetCellData()) { // eventID == CellData
+      while (eventCell != -1) {
+        if (event.GetEventID() == m_world->GetPopulation().GetCell(GetCellID(eventCell)).GetCellData()) { // eventID == CellData
           //set cell data to 0
           m_world->GetPopulation().GetCell(GetCellID(eventCell)).SetCellData(0);
           
@@ -265,13 +302,17 @@ void cDeme::ProcessUpdate() {
     }
   }
   
-  for(vector<pair<int, int> >::iterator iter = event_slot_end_points.begin(); iter < event_slot_end_points.end(); iter++) {
-    if(_age == (*iter).first) {
+  for (vector<pair<int, int> >::iterator iter = event_slot_end_points.begin();
+       iter < event_slot_end_points.end();
+       iter++) {
+    if (_age == (*iter).first) {
       // at end point              
-      if(GetEventsKilledThisSlot() >= m_world->GetConfig().DEMES_MIM_EVENTS_KILLED_RATIO.Get() * (*iter).second)
+      if (GetEventsKilledThisSlot() >=
+	 m_world->GetConfig().DEMES_MIM_EVENTS_KILLED_RATIO.Get() * (*iter).second) {
         consecutiveSuccessfulEventPeriods++;
-      else
+      } else {
         consecutiveSuccessfulEventPeriods = 0;
+      }
       
       // update stats.flow_rate_tuples
       std::map<int, flow_rate_tuple>& flowRateTuples = m_world->GetStats().FlowRateTuples();
@@ -290,8 +331,8 @@ void cDeme::ProcessUpdate() {
   }
   ++_age;
 	
-	// Let the network process the update too, if we have one.
-	if(IsNetworkInitialized()) { m_network->ProcessUpdate(); }
+  // Let the network process the update too, if we have one.
+  if (IsNetworkInitialized()) m_network->ProcessUpdate();
 }
 
 
@@ -299,15 +340,16 @@ void cDeme::ProcessUpdate() {
  
  This method is called from cPopulation::KillOrganism().
  */
-void cDeme::OrganismDeath(cPopulationCell& cell) {
-	// Clean up this deme's network, if we have one.
-	if(IsNetworkInitialized()) { m_network->OrganismDeath(cell); }
+
+void cDeme::OrganismDeath(cPopulationCell& cell)
+{
+  // Clean up this deme's network, if we have one.
+  if (IsNetworkInitialized()) m_network->OrganismDeath(cell);
 	
-	// Add information about the organisms tasks to the deme so that
-	// we can use it to compute shannon mutual information and measure
-	// division of labor.
-	if (m_world->GetConfig().DEMES_TRACK_SHANNON_INFO.Get()) UpdateShannon(cell);
-	
+  // Add information about the organisms tasks to the deme so that
+  // we can use it to compute shannon mutual information and measure
+  // division of labor.
+  if (m_world->GetConfig().DEMES_TRACK_SHANNON_INFO.Get()) UpdateShannon(cell);
 }
 
 
@@ -340,19 +382,19 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   eventKillAttemptsThisSlot = 0;
   sleeping_count = 0;
   MSG_sendFailed = 0;
-	MSG_dropped = 0;
-	MSG_SuccessfullySent = 0;
-	MSG_sent = 0;
-	m_total_res_consumed = 0;
-	m_switch_penalties = 0;
-	m_num_active = 0;
-	m_shannon_matrix.clear();
+  MSG_dropped = 0;
+  MSG_SuccessfullySent = 0;
+  MSG_sent = 0;
+  m_total_res_consumed = 0;
+  m_switch_penalties = 0;
+  m_num_active = 0;
+  m_shannon_matrix.clear();
   
-	numOrgsInterruted = 0;
+  numOrgsInterruted = 0;
   
   consecutiveSuccessfulEventPeriods = 0;
   
-	replicateDeme = false;
+  replicateDeme = false;
   
   total_energy_donated = 0.0;
   total_energy_received = 0.0;
@@ -360,8 +402,8 @@ void cDeme::Reset(bool resetResources, double deme_energy)
 	
   cur_task_exe_count.SetAll(0);
   cur_reaction_count.SetAll(0);
-
-	//reset remaining deme predicates
+  
+  //reset remaining deme predicates
   for (int i = 0; i < deme_pred_list.Size(); i++) {
     deme_pred_list[i]->Reset();
   }	
@@ -377,12 +419,13 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   if (resetResources) {
     deme_resource_count.ReinitializeResources(additional_resource);
   }
-	// Instead of polluting cDemeNetwork with Resets, we're just going to delete it,
-	// and go ahead and rely on lazy initialization to fill this back in.
-	if(m_network) {
-		delete m_network;
-		m_network = 0;
-	}
+
+  // Instead of polluting cDemeNetwork with Resets, we're just going to delete it,
+  // and go ahead and rely on lazy initialization to fill this back in.
+  if (m_network) {
+    delete m_network;
+    m_network = 0;
+  }
 }
 
 
@@ -442,9 +485,10 @@ void cDeme::KillAll()
       m_world->GetPopulation().KillOrganism(cell);
     }
   }
-	// HACK: organism are killed after DivideReset is called.
-	// need clear a deme before it is reset.
-	sleeping_count = 0;  
+
+  // HACK: organism are killed after DivideReset is called.
+  // need clear a deme before it is reset.
+  sleeping_count = 0;  
 }
 
 void cDeme::UpdateStats()
@@ -452,9 +496,9 @@ void cDeme::UpdateStats()
   //save stats about what tasks our orgs were doing
   //usually called before KillAll
   
-  for(int j = 0; j < cur_org_task_count.GetSize(); j++) {
+  for (int j = 0; j < cur_org_task_count.GetSize(); j++) {
     int count = 0;
-    for(int k=0; k<GetSize(); k++) {
+    for (int k=0; k<GetSize(); k++) {
       int cellid = GetCellID(k);
       if(m_world->GetPopulation().GetCell(cellid).IsOccupied()) {
         count += (m_world->GetPopulation().GetCell(cellid).GetOrganism()->GetPhenotype().GetLastTaskCount()[j] > 0);
@@ -492,7 +536,7 @@ void cDeme::UpdateStats()
  are all messed up.
  */
 void cDeme::ReplaceGermline(const cGermline& germline) {
-	_germline = germline;
+  _germline = germline;
 }
 
 
@@ -525,23 +569,24 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
   const double decay = 1.0 - res->GetOutflow();
   //addjust the resources cell list pointer here if we want CELL env. commands to be replicated in each deme
   
-    deme_resource_count.Setup(id, res->GetName(), res->GetInitial(), 
-                            res->GetInflow(), decay,
-                            res->GetGeometry(), res->GetXDiffuse(),
-                            res->GetXGravity(), res->GetYDiffuse(), 
-                            res->GetYGravity(), res->GetInflowX1(), 
-                            res->GetInflowX2(), res->GetInflowY1(), 
-                            res->GetInflowY2(), res->GetOutflowX1(), 
-                            res->GetOutflowX2(), res->GetOutflowY1(), 
-                            res->GetOutflowY2(), res->GetCellListPtr(),
-                            res->GetCellIdListPtr(), verbosity);
+  deme_resource_count.Setup(id, res->GetName(), res->GetInitial(), 
+			    res->GetInflow(), decay,
+			    res->GetGeometry(), res->GetXDiffuse(),
+			    res->GetXGravity(), res->GetYDiffuse(), 
+			    res->GetYGravity(), res->GetInflowX1(), 
+			    res->GetInflowX2(), res->GetInflowY1(), 
+			    res->GetInflowY2(), res->GetOutflowX1(), 
+			    res->GetOutflowX2(), res->GetOutflowY1(), 
+			    res->GetOutflowY2(), res->GetCellListPtr(),
+			    res->GetCellIdListPtr(), verbosity);
   
   if(res->GetEnergyResource()) {
     energy_res_ids.Push(id);
   }
 }
 
-double cDeme::GetCellEnergy(int absolute_cell_id) const {
+double cDeme::GetCellEnergy(int absolute_cell_id) const
+{
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
 
@@ -550,8 +595,8 @@ double cDeme::GetCellEnergy(int absolute_cell_id) const {
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   
   // sum all energy resources
-  for(int i = 0; i < energy_res_ids.GetSize(); i++) {
-    if(cell_resources[energy_res_ids[i]] > 0.0) {
+  for (int i = 0; i < energy_res_ids.GetSize(); i++) {
+    if (cell_resources[energy_res_ids[i]] > 0.0) {
       total_energy += cell_resources[energy_res_ids[i]];
       cell_resources[energy_res_ids[i]] *= -1.0;
     }
@@ -560,7 +605,8 @@ double cDeme::GetCellEnergy(int absolute_cell_id) const {
   return total_energy;
 }
 
-double cDeme::GetAndClearCellEnergy(int absolute_cell_id) {
+double cDeme::GetAndClearCellEnergy(int absolute_cell_id)
+{
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
   
@@ -569,18 +615,21 @@ double cDeme::GetAndClearCellEnergy(int absolute_cell_id) {
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   
   // sum all energy resources
-  for(int i = 0; i < energy_res_ids.GetSize(); i++) {
-    if(cell_resources[energy_res_ids[i]] > 0.0) {
+  for (int i = 0; i < energy_res_ids.GetSize(); i++) {
+    if (cell_resources[energy_res_ids[i]] > 0.0) {
       total_energy += cell_resources[energy_res_ids[i]];
       cell_resources[energy_res_ids[i]] *= -1.0;
     }
   }
+
   // set energy resources to zero
   deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
+
   return total_energy;
 }
 
-void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value) {
+void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value)
+{
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
   
@@ -596,8 +645,10 @@ void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value) {
   deme_resource_count.ModifyCell(cell_resources, relative_cell_id);
 }
 
-void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration, bool static_position, int total_events) {
-  for(int i = 0; i < total_events; i++) {
+void cDeme::SetCellEvent(int x1, int y1, int x2, int y2,
+			 int delay, int duration, bool static_position, int total_events)
+{
+  for (int i = 0; i < total_events; i++) {
     cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_position, this, m_world);
     cell_events.Add(demeEvent);
   }
@@ -609,7 +660,8 @@ void cDeme::SetCellEvent(int x1, int y1, int x2, int y2, int delay, int duration
  cell_events.Add(demeEvent);
  }*/
 
-int cDeme::GetNumEvents() {
+int cDeme::GetNumEvents()
+{
   return cell_events.Size();
 }
 
@@ -624,12 +676,12 @@ void cDeme::SetCellEventSlots(int x1, int y1, int x2, int y2, int delay, int dur
   
   // setup stats tuples
   
-  for(int i = 0; i < m_total_slots; i++) {
+  for (int i = 0; i < m_total_slots; i++) {
     int slot_flow_level = flow_level_increment * m_world->GetRandom().GetInt(m_tolal_event_flow_levels) + m_total_events_per_slot_min; // number of event during this slot
     int slot_delay = i * slot_length;
     event_slot_end_points.push_back(make_pair(slot_delay+slot_length, slot_flow_level)); // last slot is never reached it is == to MAX_AGE
     
-    for(int k = 0; k < slot_flow_level; k++) {
+    for (int k = 0; k < slot_flow_level; k++) {
       cDemeCellEvent demeEvent = cDemeCellEvent(x1, y1, x2, y2, delay, duration, width, GetHeight(), static_position, this, m_world);
       demeEvent.ConfineToTimeSlot(slot_delay, slot_delay+slot_length);
       cell_events.Add(demeEvent);
@@ -639,7 +691,7 @@ void cDeme::SetCellEventSlots(int x1, int y1, int x2, int y2, int delay, int dur
   // setup stats.flow_rate_tuples
   std::map<int, flow_rate_tuple>& flowRateTuples = m_world->GetStats().FlowRateTuples();
   
-  for(int i = m_total_events_per_slot_min; i <= m_total_events_per_slot_max; i+=flow_level_increment) {
+  for (int i = m_total_events_per_slot_min; i <= m_total_events_per_slot_max; i+=flow_level_increment) {
     flowRateTuples[i].orgCount.Clear();
     flowRateTuples[i].eventsKilled.Clear();
     flowRateTuples[i].attemptsToKillEvents.Clear();
@@ -649,12 +701,12 @@ void cDeme::SetCellEventSlots(int x1, int y1, int x2, int y2, int delay, int dur
   }
 }
 
-bool cDeme::KillCellEvent(const int eventID) {
+bool cDeme::KillCellEvent(const int eventID)
+{
   eventKillAttemptsThisSlot++;
   
-  if(eventID <= 0)
-    return false;
-  for(int i = 0; i < cell_events.Size(); i++) {
+  if (eventID <= 0) return false;
+  for( int i = 0; i < cell_events.Size(); i++) {
     cDemeCellEvent& event = cell_events[i];
     if(event.IsActive() && event.GetEventID() == eventID) {
       // remove event ID from all cells
@@ -679,7 +731,8 @@ bool cDeme::KillCellEvent(const int eventID) {
   return false;
 }
 
-double cDeme::CalculateTotalEnergy() const {
+double cDeme::CalculateTotalEnergy() const
+{
   assert(m_world->GetConfig().ENERGY_ENABLED.Get());
   
   double energy_sum = 0.0;
@@ -698,7 +751,8 @@ double cDeme::CalculateTotalEnergy() const {
   return energy_sum;
 }
 
-double cDeme::CalculateTotalInitialEnergyResources() const {
+double cDeme::CalculateTotalInitialEnergyResources() const
+{
   assert(m_world->GetConfig().ENERGY_ENABLED.Get());
   
   double energy_sum = 0.0;
@@ -753,7 +807,8 @@ void cDeme::ReplaceGermline(cBioGroup* bg)
   if (pbg) pbg->RemovePassiveReference();
 }
 
-bool cDeme::DemePredSatisfiedPreviously() {
+bool cDeme::DemePredSatisfiedPreviously()
+{
 	for(int i = 0; i < deme_pred_list.Size(); i++) {
     if(deme_pred_list[i]->PreviouslySatisfied()) {
       deme_pred_list[i]->UpdateStats(m_world->GetStats());
@@ -763,7 +818,8 @@ bool cDeme::DemePredSatisfiedPreviously() {
   return false;
 }
 
-bool cDeme::MsgPredSatisfiedPreviously() {
+bool cDeme::MsgPredSatisfiedPreviously()
+{
   for(int i = 0; i < message_pred_list.Size(); i++) {
     if(message_pred_list[i]->PreviouslySatisfied()) {
       message_pred_list[i]->UpdateStats(m_world->GetStats());
@@ -773,7 +829,8 @@ bool cDeme::MsgPredSatisfiedPreviously() {
   return false;
 }
 
-bool cDeme::MovPredSatisfiedPreviously() {
+bool cDeme::MovPredSatisfiedPreviously()
+{
   for(int i = 0; i < movement_pred_list.Size(); i++) {
     if(movement_pred_list[i]->PreviouslySatisfied()) {
       movement_pred_list[i]->UpdateStats(m_world->GetStats());
@@ -783,77 +840,93 @@ bool cDeme::MovPredSatisfiedPreviously() {
   return false;
 }
 
-int cDeme::GetNumDemePredicates() {
+int cDeme::GetNumDemePredicates()
+{
   return deme_pred_list.Size();
 }
 
-int cDeme::GetNumMessagePredicates() {
+int cDeme::GetNumMessagePredicates()
+{
   return message_pred_list.Size();
 }
 
-int cDeme::GetNumMovementPredicates() {
+int cDeme::GetNumMovementPredicates()
+{
   return movement_pred_list.Size();
 }
 
-cDemePredicate* cDeme::GetDemePredicate(int i) {
+cDemePredicate* cDeme::GetDemePredicate(int i)
+{
   assert(i < deme_pred_list.Size());
   return deme_pred_list[i];
 }
 
-cOrgMessagePredicate* cDeme::GetMsgPredicate(int i) {
+cOrgMessagePredicate* cDeme::GetMsgPredicate(int i)
+{
   assert(i < message_pred_list.Size());
   return message_pred_list[i];
 }
 
-cOrgMovementPredicate* cDeme::GetMovPredicate(int i) {
+cOrgMovementPredicate* cDeme::GetMovPredicate(int i)
+{
   assert(i < movement_pred_list.Size());
   return movement_pred_list[i];
 }
 
-void cDeme::AddDemeResourceThresholdPredicate(cString resourceName, cString comparisonOperator, double threasholdValue) {
-	cDemeResourceThresholdPredicate* pred = new cDemeResourceThresholdPredicate(resourceName, comparisonOperator, threasholdValue);
-	deme_pred_list.Add(pred);
+void cDeme::AddDemeResourceThresholdPredicate(cString resourceName, cString comparisonOperator, double threasholdValue)
+{
+  cDemeResourceThresholdPredicate* pred =
+    new cDemeResourceThresholdPredicate(resourceName, comparisonOperator, threasholdValue);
+  deme_pred_list.Add(pred);
 
-	cString name = resourceName + " " + comparisonOperator + cStringUtil::Stringf(" %f", threasholdValue);
-	m_world->GetStats().AddDemeResourceThresholdPredicate(name);
+  cString name = resourceName + " " + comparisonOperator +
+    cStringUtil::Stringf(" %f", threasholdValue);
+  m_world->GetStats().AddDemeResourceThresholdPredicate(name);
 }
 
-void cDeme::AddEventReceivedCenterPred(int times) {
-  if(cell_events.Size() == 0) {
+void cDeme::AddEventReceivedCenterPred(int times)
+{
+  if (cell_events.Size() == 0) {
     cerr<<"Error: An EventReceivedCenterPred cannot be created until a CellEvent is added.\n";
     exit(1);
   }
-  for(int i = 0; i < cell_events.Size(); i++) {
-    if(!cell_events[i].IsDead()) {
+
+  for (int i = 0; i < cell_events.Size(); i++) {
+    if (!cell_events[i].IsDead()) {
       int sink_cell = GetCellID(GetSize()/2);
-      cOrgMessagePred_EventReceivedCenter* pred = new cOrgMessagePred_EventReceivedCenter(&cell_events[i], sink_cell, times);
+      cOrgMessagePred_EventReceivedCenter* pred =
+	new cOrgMessagePred_EventReceivedCenter(&cell_events[i], sink_cell, times);
       m_world->GetStats().AddMessagePredicate(pred);
       message_pred_list.Add(pred);
     }
   }
 }
 
-void cDeme::AddEventReceivedLeftSidePred(int times) {
-  if(cell_events.Size() == 0) {
+void cDeme::AddEventReceivedLeftSidePred(int times)
+{
+  if (cell_events.Size() == 0) {
     cerr<<"Error: An EventReceivedLeftSidePred cannot be created until a CellEvent is added.\n";
     exit(1);
   }
-  for(int i = 0; i < cell_events.Size(); i++) {
-    if(!cell_events[i].IsDead()) {
-      cOrgMessagePred_EventReceivedLeftSide* pred = new cOrgMessagePred_EventReceivedLeftSide(&cell_events[i], m_world->GetPopulation(), times);
+
+  for (int i = 0; i < cell_events.Size(); i++) {
+    if (!cell_events[i].IsDead()) {
+      cOrgMessagePred_EventReceivedLeftSide* pred =
+	new cOrgMessagePred_EventReceivedLeftSide(&cell_events[i], m_world->GetPopulation(), times);
       m_world->GetStats().AddMessagePredicate(pred);
       message_pred_list.Add(pred);
     }
   }
 }
 
-void cDeme::AddEventMoveCenterPred(int times) {
-  if(cell_events.Size() == 0) {
+void cDeme::AddEventMoveCenterPred(int times)
+{
+  if (cell_events.Size() == 0) {
     cerr<<"Error: An EventMovedIntoCenter cannot be created until a CellEvent is added.\n";
     exit(1);
   }
-  for(int i = 0; i < cell_events.Size(); i++) {
-    if(!cell_events[i].IsDead()) {
+  for (int i = 0; i < cell_events.Size(); i++) {
+    if (!cell_events[i].IsDead()) {
       cOrgMovementPred_EventMovedIntoCenter* pred = new cOrgMovementPred_EventMovedIntoCenter(&cell_events[i], m_world->GetPopulation(), times);
       m_world->GetStats().AddMovementPredicate(pred);
       movement_pred_list.Add(pred);
@@ -862,16 +935,17 @@ void cDeme::AddEventMoveCenterPred(int times) {
 }
 
 
-void cDeme::AddEventMoveBetweenTargetsPred(int times) {
-  if(cell_events.Size() == 0) {
-    cerr<<"Error: An EventMoveBetweenTargets cannot be created until at least one CellEvent is added.\n";
+void cDeme::AddEventMoveBetweenTargetsPred(int times)
+{
+  if (cell_events.Size() == 0) {
+    cerr << "Error: An EventMoveBetweenTargets cannot be created until at least one CellEvent is added.\n";
     exit(1);
   }
   
   tVector<cDemeCellEvent *> alive_events;
   
-  for(int i = 0; i < cell_events.Size(); i++) {
-    if(!cell_events[i].IsDead()) {
+  for (int i = 0; i < cell_events.Size(); i++) {
+    if (!cell_events[i].IsDead()) {
       alive_events.Add(&cell_events[i]);
     }
   }
@@ -882,14 +956,16 @@ void cDeme::AddEventMoveBetweenTargetsPred(int times) {
 }
 
 
-void cDeme::AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times) {
-  if(cell_events.Size() == 0) {
-    cerr<<"Error: An EventMovedIntoCenter cannot be created until a CellEvent is added.\n";
+void cDeme::AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times)
+{
+  if (cell_events.Size() == 0) {
+    cerr << "Error: An EventMovedIntoCenter cannot be created until a CellEvent is added.\n";
     exit(1);
   }
-  for(int i = 0; i < cell_events.Size(); i++) {
-    if(!cell_events[i].IsDead()) {
-      cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget* pred = new cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget(&cell_events[i], m_world->GetPopulation(), times);
+  for (int i = 0; i < cell_events.Size(); i++) {
+    if (!cell_events[i].IsDead()) {
+      cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget* pred =
+	new cOrgMovementPred_EventNUniqueIndividualsMovedIntoTarget(&cell_events[i], m_world->GetPopulation(), times);
       m_world->GetStats().AddMovementPredicate(pred);
       movement_pred_list.Add(pred);
     }
@@ -907,7 +983,7 @@ void cDeme::AddPheromone(int absolute_cell_id, double value)
   tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
   
   for (int i = 0; i < deme_resource_count.GetSize(); i++) {
-    if(strcmp(deme_resource_count.GetResName(i), "pheromone") == 0) {
+    if (strcmp(deme_resource_count.GetResName(i), "pheromone") == 0) {
       // There should only be one "pheromone" resource, so no need to divvy value up
       cell_resources[i] = value;
     }
@@ -950,8 +1026,7 @@ void cDeme::AdjustSpatialResource(int rel_cellid, int resource_id, double amount
   res_change.Resize(deme_resource_count.GetSize(), 0);
   res_change[resource_id] = amount;
   
-  deme_resource_count.ModifyCell(res_change, rel_cellid);
-  
+  deme_resource_count.ModifyCell(res_change, rel_cellid);  
 }
 
 void cDeme::AdjustResource(int resource_id, double amount)
@@ -960,26 +1035,27 @@ void cDeme::AdjustResource(int resource_id, double amount)
   deme_resource_count.Set(resource_id, new_amount);
 }
 
-int cDeme::GetSlotFlowRate() const {
+int cDeme::GetSlotFlowRate() const
+{
   vector<pair<int, int> >::const_iterator iter = event_slot_end_points.begin();
-  while(iter != event_slot_end_points.end()) {
-    if(GetAge() <= (*iter).first) {
+  while (iter != event_slot_end_points.end()) {
+    if (GetAge() <= (*iter).first) {
       return (*iter).second;
     }
     iter++;
   }
+
   //  assert(false); // slots must be of equal size and fit perfectally in deme lifetime
   return 0;
 }
 
 
-// Return whether or not this deme is treatable at the given age (updates).  If a deme is not treatable,
-// this function will always return false.
-bool cDeme::IsTreatableAtAge(const int age) {
-  
-  if(isTreatable()) {
-		if(treatment_ages.size() == 0) // implies treatable every update
-			return true;
+// Return whether or not this deme is treatable at the given age (updates).
+// If a deme is not treatable, this function will always return false.
+bool cDeme::IsTreatableAtAge(const int age)
+{  
+  if (isTreatable()) {
+    if (treatment_ages.size() == 0) { return false; } // implies treatable every update
     set<int>::iterator it;
     it = treatment_ages.find(age);
     if(it != treatment_ages.end()) return true;  
@@ -992,25 +1068,29 @@ bool cDeme::IsTreatableAtAge(const int age) {
 
 /*! Retrieve the network object, initializing it as needed.
  */
-cDemeNetwork& cDeme::GetNetwork() {
-	InitNetworkCreation(); 
-	return *m_network; 
+cDemeNetwork& cDeme::GetNetwork()
+{
+  InitNetworkCreation(); 
+  return *m_network; 
 }
+
 
 // Returns the minimum number of times any of the reactions were performed
-int cDeme::MinNumTimesReactionPerformed()  {
-	int min = 100000000;
-	for (int i = 0; i < cur_reaction_count.GetSize(); i++ ) {
-		if (cur_reaction_count[i] < min) { min = cur_reaction_count[i]; }
-	}
-	return min;
+int cDeme::MinNumTimesReactionPerformed()
+{
+  int min = 100000000;
+  for (int i = 0; i < cur_reaction_count.GetSize(); i++ ) {
+    if (cur_reaction_count[i] < min) { min = cur_reaction_count[i]; }
+  }
+  return min;
 }
 
-// track the number of resources used. 
-double cDeme::GetTotalResourceAmountConsumed() const {
-	
-	double total = m_total_res_consumed;
-	return total;
+
+// Track the number of resources used. 
+double cDeme::GetTotalResourceAmountConsumed() const
+{
+  double total = m_total_res_consumed;
+  return total;
 }
 
 
@@ -1023,83 +1103,85 @@ double cDeme::GetTotalResourceAmountConsumed() const {
  Because we are only including organisms that do a task in this calculation, we also need a separate
  stat that tracks the percentage of a deme that does stuff. */
 
-double cDeme::GetShannonMutualInformation() {
+double cDeme::GetShannonMutualInformation()
+{	
+  // exit if 0 or 1 organism did stuff.
+  if ((m_num_active == 0) || (m_num_active ==1)) return 0.0;
 	
-	// exit if 0 or 1 organism did stuff.
-	if ((m_num_active == 0) || (m_num_active ==1)) return 0.0;
+  int num_org = m_shannon_matrix.size();
+  int num_task = m_shannon_matrix[0].size();
+  double* ptask_array = new double[num_task];
+  // create ptasks
+  for (int j=0; j<num_task; j++){
+    ptask_array[j] =0;
+    
+    for (int i=0; i<num_org; i++) {
+      ptask_array[j] += m_shannon_matrix[i][j];
+    }
+    
+    ptask_array[j] /= m_num_active;
+  }
 	
-	int num_org = m_shannon_matrix.size();
-	int num_task = m_shannon_matrix[0].size();
-	double* ptask_array = new double[num_task];
-	// create ptasks
-	for (int j=0; j<num_task; j++){
-		ptask_array[j] =0;
+  double shannon_sum = 0.0;
+  double shannon_change = 0.0;
+  double pij = 0.0;
+  double pi = 1.0/m_num_active;
+  double pj = 0;
+  // calculate shannon mutual information
+  for (int i=0; i<num_org; i++) {
+    for (int j=0; j<num_task; j++) {
+      pij = m_shannon_matrix[i][j]/m_num_active;
+      pj = ptask_array[j];
+
+      if (pi && pj && pij) {
+	shannon_change= (pij * log(pij / (pi * pj)));
+	shannon_sum += shannon_change;
+      }
+    }
+  }
+	
+  shannon_sum /= log((double)m_num_active);
+  
+  delete ptask_array;
+  return shannon_sum;
+}
+
+double cDeme::GetNumOrgsPerformedReaction()
+{ 
+  return m_num_active;
+}
+
+void cDeme::UpdateShannon(cPopulationCell& cell)
+{
+  int org_react_count = 0;
+  vector<double> org_row; 
+  if (cell.IsOccupied()) {
+    cOrganism* organism = cell.GetOrganism();
+    cPhenotype& phenotype = organism->GetPhenotype();			
+    const tArray<int> curr_react =  phenotype.GetCurReactionCount();
+    org_row.resize(curr_react.GetSize(), 0.0);
+    for (int j=0; j<curr_react.GetSize(); j++) {
+      org_react_count += curr_react[j];
+      org_row[j] = curr_react[j];
+    }
 		
-		for (int i=0; i<num_org; i++) {
-			ptask_array[j] += m_shannon_matrix[i][j];
-		}
-
-		ptask_array[j] /= m_num_active;
-	}
-	
-	double shannon_sum = 0.0;
-	double shannon_change = 0.0;
-	double pij = 0.0;
-	double pi = 1.0/m_num_active;
-	double pj = 0;
-	// calculate shannon mutual information
-	for (int i=0; i<num_org; i++) {
-		for (int j=0; j<num_task; j++) {
-			pij = m_shannon_matrix[i][j]/m_num_active;
-			pj = ptask_array[j];
-
-			if (pi && pj && pij) {
-				shannon_change= (pij * log(pij / (pi * pj)));
-				shannon_sum += shannon_change;
-			}
-		}
-	}
-	
-	shannon_sum /= log((double)m_num_active);
-
-	delete ptask_array;
-	return shannon_sum;
+    if (org_react_count > 0) {
+      // normalize the data for the current organism.
+      for (int j=0; j<curr_react.GetSize(); j++){
+	if (org_row[j]) org_row[j] /= org_react_count;
+      }
+      m_num_active++;
+      m_shannon_matrix.push_back(org_row);
+    }
+  }
 }
 
-double cDeme::GetNumOrgsPerformedReaction() { 
-	return m_num_active;
-}
-
-void cDeme::UpdateShannon(cPopulationCell& cell) {
-	int org_react_count = 0;
-	vector<double> org_row; 
-	if(cell.IsOccupied()) {
-		cOrganism* organism = cell.GetOrganism();
-		cPhenotype& phenotype = organism->GetPhenotype();			
-		const tArray<int> curr_react =  phenotype.GetCurReactionCount();
-		org_row.resize(curr_react.GetSize(), 0.0);
-		for (int j=0; j<curr_react.GetSize(); j++) {
-			org_react_count += curr_react[j];
-			org_row[j] = curr_react[j];
-		}
-		
-
-		if (org_react_count > 0) {
-			// normalize the data for the current organism.
-			for (int j=0; j<curr_react.GetSize(); j++){
-				if (org_row[j]) org_row[j] /= org_react_count;
-			}
-			m_num_active++;
-			m_shannon_matrix.push_back(org_row);
-		}
-	}
-}
-
-void cDeme::UpdateShannonAll(){
-	for (int i=0; i<GetSize(); i++) {
+void cDeme::UpdateShannonAll()
+{
+  for (int i=0; i<GetSize(); i++) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
-		UpdateShannon(cell);
-	}
+    UpdateShannon(cell);
+  }
 }
 
 

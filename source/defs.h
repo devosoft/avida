@@ -189,12 +189,32 @@ enum ePHENPLAST_BONUS_METHOD{
   FULL_BONUS
 };
 
+enum eDEME_TRIGGERS {
+  DEME_TRIGGER_ALL = 0,
+  DEME_TRIGGER_FULL,                // 1
+  DEME_TRIGGER_CORNERS,             // 2
+  DEME_TRIGGER_AGE,                 // 3
+  DEME_TRIGGER_BIRTHS,              // 4
+  DEME_TRIGGER_MOVE_PREDATORS,      // 5
+  DEME_TRIGGER_GROUP_KILL,          // 6
+  DEME_TRIGGER_MESSAGE_PREDATORS,   // 7
+  DEME_TRIGGER_PREDICATE,           // 8
+  DEME_TRIGGER_PERFECT_REACTIONS,   // 9
+  DEME_TRIGGER_CONSUME_RESOURCES,   // 10
+  DEME_TRIGGER_UNKNOWN              // 11
+};
+
+enum eSELECTION_TYPE {
+  SELECTION_TYPE_PROPORTIONAL = 0,
+  SELECTION_TYPE_TOURNAMENT
+};
+
 enum eVerbosity {
-  VERBOSE_SILENT = 0,   // No output at all
-  VERBOSE_NORMAL,       // Notification at start of commands.
-  VERBOSE_ON,           // Verbose output, detailing progress
-  VERBOSE_DETAILS,      // High level of details, as available.
-  VERBOSE_DEBUG         // Print Debug Information, as applicable.
+  VERBOSE_SILENT = 0,   // 0: No output at all
+  VERBOSE_NORMAL,       // 1: Notification at start of commands.
+  VERBOSE_ON,           // 2: Verbose output, detailing progress
+  VERBOSE_DETAILS,      // 3: High level of details, as available.
+  VERBOSE_DEBUG         // 4: Print Debug Information, as applicable.
 };
 
 

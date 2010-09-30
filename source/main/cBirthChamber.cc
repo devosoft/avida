@@ -180,25 +180,26 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
   child_array[0] = new cOrganism(m_world, ctx, offspring, parent.GetPhenotype().GetGeneration(), SRC_ORGANISM_DIVIDE);
   merit_array.Resize(1);
   
-  if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
+  if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     // calculate energy to be given to child
     double child_energy = parent.GetPhenotype().ExtractParentEnergy();
         
     // set child energy & merit
-    child_array[0]->GetPhenotype().SetEnergy(child_energy);
-    merit_array[0] = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
-		if(merit_array[0].GetDouble() <= 0.0) {  // do not allow zero merit
-			delete child_array[0];  // MAKE SURE THIS GETS DONE! Otherwise, memory leak.	
-			child_array.Resize(0);
-			merit_array.Resize(0);
-			return false;
-		}
+    cPhenotype & child_phenotype = child_array[0]->GetPhenotype();
+    child_phenotype.SetEnergy(child_energy);
+    merit_array[0] = child_phenotype.ConvertEnergyToMerit(child_phenotype.GetStoredEnergy());
+    if (merit_array[0].GetDouble() <= 0.0) {  // do not allow zero merit
+      delete child_array[0];  // MAKE SURE THIS GETS DONE! Otherwise, memory leak.	
+      child_array.Resize(0);
+      merit_array.Resize(0);
+      return false;
+    }
   } else {
-	if(m_world->GetConfig().INHERIT_MERIT.Get())
-		merit_array[0] = parent.GetPhenotype().GetMerit();
-	else
-		merit_array[0] = parent.GetPhenotype().CalcSizeMerit();
-
+    if (m_world->GetConfig().INHERIT_MERIT.Get()) {
+      merit_array[0] = parent.GetPhenotype().GetMerit();
+    } else {
+      merit_array[0] = parent.GetPhenotype().CalcSizeMerit();
+    }
   }
   
   tArray<const tArray<cBioGroup*>*> pgrps(1);

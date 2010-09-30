@@ -320,7 +320,7 @@ bool cPhenotype::OK()
 void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenome& _genome)
 {
   // Copy divide values from parent, which should already be setup.
-  merit           = parent_phenotype.merit;
+  merit = parent_phenotype.merit;
   if(m_world->GetConfig().INHERIT_EXE_RATE.Get() == 0)
     executionRatio = 1.0;
   else 
@@ -472,10 +472,11 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
   is_mutated    = false;
-  if(m_world->GetConfig().INHERIT_MULTI_THREAD_CLASSIFICATION.Get())
+  if(m_world->GetConfig().INHERIT_MULTITHREAD.Get()) {
     is_multi_thread = parent_phenotype.is_multi_thread;
-  else
+  } else {
     is_multi_thread = false;
+  }
   
   parent_true   = parent_phenotype.copy_true;
   parent_sex    = parent_phenotype.divide_sex;
@@ -1281,83 +1282,83 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     // Modify TaskQuality amount based on refractory period
     // Logistic equation using refractory period
     // in update units from configuration file.  @WRE 03-20-07, 04-17-07
+
     if (task_refractory_period == 0.0) {
       refract_factor = 1.0;
     } else {
       refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i]) - task_refractory_period * 0.5)));
     }
-    if (result.TaskDone(i) == true) 
-    {
+
+    if (result.TaskDone(i) == true) {
       cur_task_count[i]++;
       eff_task_count[i]++;
-      if(result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
-			
-			// if we want to generate and age-task histogram
-			if (m_world->GetConfig().AGE_POLY_TRACKING.Get()){
-				m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
-			}
-			
+      if (result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
+      
+      // if we want to generate and age-task histogram
+      if (m_world->GetConfig().AGE_POLY_TRACKING.Get()) {
+	m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
+      }
     }
     
-    if (result.TaskQuality(i) > 0) 
-    {
-    	cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
-    	if(result.UsedEnvResource() == false) { cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor; }
+    if (result.TaskQuality(i) > 0) {
+      cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
+      if (result.UsedEnvResource() == false) {
+	cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
+      }
     }
+
     cur_task_value[i] = result.TaskValue(i);
     cur_task_time[i] = cur_update_time; // Find out time from context
   }
+
   for (int i = 0; i < num_tasks; i++) {
-	  if (result.TaskDone(i) && !last_task_count[i])
-	  {
-		  m_world->GetStats().AddNewTaskCount(i);
-		  int prev_num_tasks = 0;
-		  int cur_num_tasks = 0;
-		  for (int j=0; j< num_tasks; j++)
-		  {
-			  if (last_task_count[j]>0)
-				  prev_num_tasks++;
-			  if (cur_task_count[j]>0)
-				  cur_num_tasks++;
-		  }
-		  m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
-	  }
+    if (result.TaskDone(i) && !last_task_count[i]) {
+      m_world->GetStats().AddNewTaskCount(i);
+      int prev_num_tasks = 0;
+      int cur_num_tasks = 0;
+      for (int j=0; j< num_tasks; j++) {
+	if (last_task_count[j]>0) prev_num_tasks++;
+	if (cur_task_count[j]>0) cur_num_tasks++;
+      }
+      m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
+    }
   }
   
   for (int i = 0; i < num_reactions; i++) {
     cur_reaction_add_reward[i] += result.GetReactionAddBonus(i);
-    if (result.ReactionTriggered(i) && last_reaction_count[i]==0) 
-      m_world->GetStats().AddNewReactionCount(i); 
-		if (result.ReactionTriggered(i) == true) {
-			// If the organism has not performed this task,
-			// then consider it to be a task switch.
-			// If applicable, add in the penalty.
-			switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
-				case 0: { // no penalty
-					break;
-				}
-				case 1: { // "learning" cost
-					if(cur_reaction_count[i] == 0) {
-						++num_new_unique_reactions;
-					}
-					break;
-				}
-				case 2: { // "retooling" cost
-					if(last_task_id == -1) {
-						last_task_id = i;
-					}					
-					if(last_task_id != i) {
-						num_new_unique_reactions++;
-						last_task_id = i;
-					}
-					break;
-				}
-				default: {
-					assert(false);
-					break;
-				}
-			}
-		}		
+    if (result.ReactionTriggered(i) && last_reaction_count[i]==0) {
+      m_world->GetStats().AddNewReactionCount(i);
+    }
+    if (result.ReactionTriggered(i) == true) {
+      // If the organism has not performed this task,
+      // then consider it to be a task switch.
+      // If applicable, add in the penalty.
+      switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
+      case 0: { // no penalty
+	break;
+      }
+      case 1: { // "learning" cost
+	if (cur_reaction_count[i] == 0) {
+	  ++num_new_unique_reactions;
+	}
+	break;
+      }
+      case 2: { // "retooling" cost
+	if (last_task_id == -1) {
+	  last_task_id = i;
+	}					
+	if (last_task_id != i) {
+	  num_new_unique_reactions++;
+	  last_task_id = i;
+	}
+	break;
+      }
+      default: {
+	assert(false);
+	break;
+      }
+      }
+    }		
   }
   
   // Update the merit bonus
@@ -1395,29 +1396,28 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   // Denote consumed resources...
   for (int i = 0; i < res_in.GetSize(); i++) {
     res_change[i] = result.GetProduced(i) - result.GetConsumed(i);
-		res_consumed += result.GetConsumed(i);
-
+    res_consumed += result.GetConsumed(i);
   }
   
   // Update rbins as necessary
-  if(result.UsedEnvResource() == false)
-  {
-  	double rbin_diff;
-  	for(int i = 0; i < num_resources; i++)
-  	{
-  		rbin_diff = result.GetInternalConsumed(i);
-  		cur_rbins_avail[i] -= rbin_diff;
-  		if(rbin_diff > 0) { cur_rbins_total[i] += rbin_diff; }
-  	}
+  if (result.UsedEnvResource() == false) {
+    double rbin_diff;
+    for (int i = 0; i < num_resources; i++) {
+      rbin_diff = result.GetInternalConsumed(i);
+      cur_rbins_avail[i] -= rbin_diff;
+      if(rbin_diff > 0) { cur_rbins_total[i] += rbin_diff; }
+    }
   }
   
   // Save the instructions that should be triggered...
   insts_triggered = result.GetInstArray();
   
   //Put in detected resources
-  for (int j = 0; j < res_in.GetSize(); j++)
-	  if(result.GetDetected(j) != -1.0)
+  for (int j = 0; j < res_in.GetSize(); j++) {
+    if(result.GetDetected(j) != -1.0) {
       sensed_resources[j] = result.GetDetected(j);
+    }
+  }
   
   //Kill any cells that did lethal reactions
   to_die = result.GetLethal();
@@ -1431,39 +1431,42 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   return true;
 }
 
+
 void cPhenotype::Sterilize()
 {
   is_fertile = false;
 }
+
+
 void cPhenotype::PrintStatus(ostream& fp) const
 {
   fp << "  MeritBase:"
-  << CalcSizeMerit()
-  << " Bonus:" << cur_bonus
-  << " Errors:" << cur_num_errors
-  << " Donates:" << cur_num_donates;
-  fp << endl;
+     << CalcSizeMerit()
+     << " Bonus:" << cur_bonus
+     << " Errors:" << cur_num_errors
+     << " Donates:" << cur_num_donates
+     << '\n';
   
   fp << "  Task Count (Quality):";
-  for (int i = 0; i < cur_task_count.GetSize(); i++)
+  for (int i = 0; i < cur_task_count.GetSize(); i++) {
     fp << " " << cur_task_count[i] << " (" << cur_task_quality[i] << ")";
-  fp << endl;
+  }
+  fp << '\n';
   
- 	// if using resoruce bins, print the relevant stats
- 	if (m_world->GetConfig().USE_RESOURCE_BINS.Get())
- 	{
- 		fp << "  Used-Internal-Resources Task Count (Quality):";
- 		for (int i = 0; i < cur_internal_task_count.GetSize(); i++) {
- 			fp << " " << cur_internal_task_count[i] << " (" << cur_internal_task_quality[i] << ")";
- 		}
- 		fp << endl;
+  // if using resoruce bins, print the relevant stats
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get()) {
+    fp << "  Used-Internal-Resources Task Count (Quality):";
+    for (int i = 0; i < cur_internal_task_count.GetSize(); i++) {
+      fp << " " << cur_internal_task_count[i] << " (" << cur_internal_task_quality[i] << ")";
+    }
+    fp << endl;
  		
- 		fp << "  Available Internal Resource Bin Contents (Total Ever Collected):";
- 		for(int i = 0; i < cur_rbins_avail.GetSize(); i++) {
- 			fp << " " << cur_rbins_avail[i] << " (" << cur_rbins_total[i] << ")";
- 		}
- 		fp << endl;
- 	}
+    fp << "  Available Internal Resource Bin Contents (Total Ever Collected):";
+    for(int i = 0; i < cur_rbins_avail.GetSize(); i++) {
+      fp << " " << cur_rbins_avail[i] << " (" << cur_rbins_total[i] << ")";
+    }
+    fp << endl;
+  }
 }
 
 int cPhenotype::CalcSizeMerit() const
@@ -1474,49 +1477,55 @@ int cPhenotype::CalcSizeMerit() const
   int out_size;
   
   switch (m_world->GetConfig().BASE_MERIT_METHOD.Get()) {
-    case BASE_MERIT_COPIED_SIZE:
-      out_size = copied_size;
-      break;
-    case BASE_MERIT_EXE_SIZE:
-      out_size = executed_size;
-      break;
-    case BASE_MERIT_FULL_SIZE:
-      out_size = genome_length;
-      break;
-    case BASE_MERIT_LEAST_SIZE:
-      out_size = genome_length;
-      if (out_size > copied_size) out_size = copied_size;
-      if (out_size > executed_size)    out_size = executed_size;
-      break;
-    case BASE_MERIT_SQRT_LEAST_SIZE:
-      out_size = genome_length;
-      if (out_size > copied_size) out_size = copied_size;
-      if (out_size > executed_size)    out_size = executed_size;
-      out_size = (int) sqrt((double) out_size);
-      break;
-    case BASE_MERIT_NUM_BONUS_INST:
-      if(m_world->GetConfig().FITNESS_VALLEY.Get()){
-        if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
-            bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
-          out_size = 1;
-          break;
-        }            
-      }
-      if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {out_size = 1 + bonus_instruction_count;}
-      else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {out_size = genome_length - (bonus_instruction_count -1);}
-      else {out_size = 1;}  //the extra 1 point in all these case is so the orgs are not jilted by the scheduler        
-      break;
-    case BASE_MERIT_GESTATION_TIME:
-      out_size = cpu_cycles_used;
-      break;
-    case BASE_MERIT_CONST:
-    default:
-      out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
-      break;
+  case BASE_MERIT_COPIED_SIZE:
+    out_size = copied_size;
+    break;
+  case BASE_MERIT_EXE_SIZE:
+    out_size = executed_size;
+    break;
+  case BASE_MERIT_FULL_SIZE:
+    out_size = genome_length;
+    break;
+  case BASE_MERIT_LEAST_SIZE:
+    out_size = genome_length;
+    if (out_size > copied_size) out_size = copied_size;
+    if (out_size > executed_size)    out_size = executed_size;
+    break;
+  case BASE_MERIT_SQRT_LEAST_SIZE:
+    out_size = genome_length;
+    if (out_size > copied_size) out_size = copied_size;
+    if (out_size > executed_size)    out_size = executed_size;
+    out_size = (int) sqrt((double) out_size);
+    break;
+  case BASE_MERIT_NUM_BONUS_INST:
+    if (m_world->GetConfig().FITNESS_VALLEY.Get()){
+      if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
+	  bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
+	out_size = 1;
+	break;
+      }            
+    }
+    if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {
+      out_size = 1 + bonus_instruction_count;
+    }
+    else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {
+      out_size = genome_length - (bonus_instruction_count -1);
+    }
+    else {
+      out_size = 1; // The extra 1 point is so the orgs are not jilted by the scheduler.
+    }
+    break;
+  case BASE_MERIT_GESTATION_TIME:
+    out_size = cpu_cycles_used;
+    break;
+  case BASE_MERIT_CONST:
+  default:
+    out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
+    break;
   }
   
   return out_size;
-} 
+}
 
 double cPhenotype::CalcCurrentMerit() const
 {
@@ -1530,12 +1539,12 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
 {
   double out_fitness = 0;
   switch (m_world->GetConfig().FITNESS_METHOD.Get()) {
-    case 0: // Normal
-      assert(_gestation_time > 0);
-      out_fitness = _merit_base * _bonus / _gestation_time;
-      break;
-      
-    case 1: // Sigmoidal returns (should be used with an additive reward)
+  case 0: // Normal
+    assert(_gestation_time > 0);
+    out_fitness = _merit_base * _bonus / _gestation_time;
+    break;
+    
+  case 1: // Sigmoidal returns (should be used with an additive reward)
     {
       assert(_gestation_time > 0);
       out_fitness = 0;
@@ -1543,19 +1552,19 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
       double converted_bonus = (_bonus - m_world->GetConfig().DEFAULT_BONUS.Get()) * m_world->GetConfig().FITNESS_COEFF_2.Get() / (1 + _bonus * m_world->GetConfig().FITNESS_COEFF_2.Get() ) ;
       out_fitness = _merit_base * exp(converted_bonus * log(m_world->GetConfig().FITNESS_COEFF_1.Get())) / _gestation_time;
     }
-      break;
-      
-    case 2: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
+    break;
+    
+  case 2: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
     {
       out_fitness = 0;
       double net_bonus = _bonus +  - m_world->GetConfig().DEFAULT_BONUS.Get();
       out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF_1.Get())); 
     }
-      break;
+    break;
       
-    default:
-      cout << "Unknown FITNESS_METHOD!" << endl;
-      exit(1);
+  default:
+    cout << "Unknown FITNESS_METHOD!" << endl;
+    exit(1);
   }
   
   return out_fitness;

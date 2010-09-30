@@ -54,9 +54,6 @@ cDriver_TextViewer::cDriver_TextViewer(cWorld* world)
   , m_cur_screen(NULL)
   , m_done(false)
 {
-  // Setup the initial view mode (loaded from avida.cfg)
-  m_info.SetViewMode(world->GetConfig().VIEW_MODE.Get());
-    
   cDriverManager::Register(this);
   world->SetDriver(this);
 

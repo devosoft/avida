@@ -3327,22 +3327,23 @@ public:
     cString in_trigger("full_deme");
     if (largs.GetSize()) in_trigger = largs.PopWord();
     
-    if (in_trigger == "all") m_rep_trigger = 0;
-    else if (in_trigger == "full_deme") m_rep_trigger = 1;
-    else if (in_trigger == "corners") m_rep_trigger = 2;
-    else if (in_trigger == "deme-age") m_rep_trigger = 3;
-    else if (in_trigger == "birth-count") m_rep_trigger = 4;
-    else if (in_trigger == "sat-mov-pred") m_rep_trigger = 5;
-    else if (in_trigger == "events-killed") m_rep_trigger = 6;
-    else if (in_trigger == "sat-msg-pred") m_rep_trigger = 7;
-    else if (in_trigger == "sat-deme-predicate") m_rep_trigger = 8;
-		else if (in_trigger == "perf-reactions") m_rep_trigger = 9;
-		else if (in_trigger == "consume-res") m_rep_trigger = 10;
+    if (in_trigger == "all") m_rep_trigger = DEME_TRIGGER_ALL;
+    else if (in_trigger == "full_deme") m_rep_trigger = DEME_TRIGGER_FULL;
+    else if (in_trigger == "corners") m_rep_trigger = DEME_TRIGGER_CORNERS;
+    else if (in_trigger == "deme-age") m_rep_trigger = DEME_TRIGGER_AGE;
+    else if (in_trigger == "birth-count") m_rep_trigger = DEME_TRIGGER_BIRTHS;
+    else if (in_trigger == "sat-mov-pred") m_rep_trigger = DEME_TRIGGER_MOVE_PREDATORS;
+    else if (in_trigger == "events-killed") m_rep_trigger = DEME_TRIGGER_GROUP_KILL;
+    else if (in_trigger == "sat-msg-pred") m_rep_trigger = DEME_TRIGGER_MESSAGE_PREDATORS;
+    else if (in_trigger == "sat-deme-predicate") m_rep_trigger = DEME_TRIGGER_PREDICATE;
+    else if (in_trigger == "perf-reactions") m_rep_trigger = DEME_TRIGGER_PERFECT_REACTIONS;
+    else if (in_trigger == "consume-res") m_rep_trigger = DEME_TRIGGER_CONSUME_RESOURCES;
     else {
       cString err("Unknown replication trigger '");
       err += in_trigger;
       err += "' in ReplicatDemes action.";
       m_world->GetDriver().RaiseException(err);
+      m_rep_trigger = DEME_TRIGGER_UNKNOWN;
       return;
     }
   }
