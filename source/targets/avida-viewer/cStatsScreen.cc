@@ -131,7 +131,7 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   PrintDouble(6, 62, metrics->GetLinesCopied());
   PrintDouble(7, 62, metrics->GetLinesExecuted());
   Print(8, 62, "%7d", best_gen->GetNumUnits());
-  Print(9, 62, "%7d", best_gen->GetThisBirths());
+  Print(9, 62, "%7d", best_gen->GetProperty("recent_births").AsInt());
   if (stats.GetAveMerit() == 0) {
     PrintDouble(10, 62, 0.0);
   } else {

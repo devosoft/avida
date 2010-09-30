@@ -139,6 +139,8 @@ public:
   
   inline const tArray<cBGGenotype*> GetParents() const { return m_parents; }
   
+  inline int GetTotalOrganisms() const { return m_total_organisms; }
+  
 
   inline int GetLastBirths() const { return m_births.GetLast(); }
   inline int GetLastBreedIn() const { return m_breed_in.GetLast(); }
@@ -146,6 +148,7 @@ public:
   inline int GetLastBreedOut() const { return m_breed_out.GetLast(); }
   
   inline int GetThisBirths() const { return m_births.GetCur(); }
+  inline int GetThisDeaths() const { return m_deaths.GetCur(); }
   inline int GetThisBreedIn() const { return m_breed_in.GetCur(); }
   inline int GetThisBreedTrue() const { return m_breed_true.GetCur(); }
   inline int GetThisBreedOut() const { return m_breed_out.GetCur(); }

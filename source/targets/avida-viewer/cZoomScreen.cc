@@ -370,8 +370,7 @@ void cZoomScreen::DrawGenotype()
   Print(13, 0, "ReproRate.:");
   
   Print(1, 27, "Update Born:");
-  Print(2, 27, "Parent ID..:");
-  Print(3, 27, "Parent Dist:");
+  Print(2, 27, "Parents....:");
   Print(4, 27, "Gene Depth.:");
   
   Print(6, 27,  "-- This Update --");
@@ -397,7 +396,7 @@ void cZoomScreen::Update(cAvidaContext& ctx)
   cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
   if(mode == ZOOM_MODE_CPU) UpdateCPU(hardware);
   else if (mode == ZOOM_MODE_STATS) UpdateStats(hardware);
-  else if (mode == ZOOM_MODE_GENOTYPE) UpdateGenotype();
+  else if (mode == ZOOM_MODE_GENOTYPE) UpdateGenotype(ctx);
   
   Refresh();
 }
@@ -407,7 +406,7 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   if (info.GetActiveCell() == NULL ||
       info.GetActiveCell()->IsOccupied() == false) return;
   
-  cGenotype* genotype = info.GetActiveGenotype();
+  cBioGroup* genotype = info.GetActiveGenotype();
   cOrganism* organism = info.GetActiveCell()->GetOrganism();
   cPhenotype& phenotype = organism->GetPhenotype();
   
@@ -425,7 +424,7 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   PrintDouble(8, 14, phenotype.GetEnergyBonus());
   PrintDouble(9, 14, phenotype.GetMerit().GetDouble());
   PrintDouble(10, 14, cur_merit.GetDouble());
-  Print(11, 15, "%6d ", genotype ? genotype->GetLength() : 0);
+  Print(11, 15, "%6d ", genotype ? cMetaGenome(genotype->GetProperty("genome").AsString()).GetGenome().GetSize() : 0);
   Print(12, 15, "%6d ", hardware.GetMemory().GetSize());
   
   Print(13, 15, "%6d ", phenotype.GetCurNumErrors());
@@ -926,43 +925,42 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
   DrawMiniMap();
 }
 
-void cZoomScreen::UpdateGenotype()
+void cZoomScreen::UpdateGenotype(cAvidaContext& ctx)
 {
   SetBoldColor(COLOR_CYAN);
   
   Print(1, 12, "%9d", info.GetActiveGenotypeID());
   Print(2, 12, "%9s", static_cast<const char*>(info.GetActiveName()));
-  Print(3, 12, "%9d", info.GetActiveSpeciesID());
   
   if (info.GetActiveGenotype() != NULL) {
-    cGenotype& genotype = *(info.GetActiveGenotype());
-    Print(5, 12, "%9d", genotype.GetNumOrganisms());
-    Print(6, 12, "%9d", genotype.GetLength());
-    PrintDouble(7, 14, genotype.GetCopiedSize());
-    PrintDouble(8, 14, genotype.GetExecutedSize());
+    cBioGroup* genotype = info.GetActiveGenotype();
+    cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(ctx, genotype);
+    Print(5, 12, "%9d", genotype->GetNumUnits());
+    Print(6, 12, "%9d", cMetaGenome(genotype->GetProperty("genome").AsString()).GetGenome().GetSize());
+    PrintDouble(7, 14, metrics->GetLinesCopied());
+    PrintDouble(8, 14, metrics->GetLinesExecuted());
     
-    PrintDouble(10, 14, genotype.GetFitness());
-    PrintDouble(11, 14, genotype.GetGestationTime());
-    PrintDouble(12, 14, genotype.GetMerit());
-    PrintDouble(13, 14, genotype.GetReproRate());
+    PrintDouble(10, 14, metrics->GetFitness());
+    PrintDouble(11, 14, metrics->GetGestationTime());
+    PrintDouble(12, 14, metrics->GetMerit());
+    PrintDouble(13, 14, genotype->GetProperty("repro_rate").AsDouble());
     
     // Column 2
-    Print(1, 40, "%9d", genotype.GetUpdateBorn());
-    Print(2, 40, "%9d", genotype.GetParentID());
-    Print(3, 40, "%9d", genotype.GetParentDistance());
-    Print(4, 40, "%9d", genotype.GetDepth());
+    Print(1, 40, "%9d", genotype->GetProperty("update_born").AsInt());
+    Print(2, 40, "%9s", (const char*)(genotype->GetProperty("parents").AsString()));
+    Print(3, 40, "%9d", genotype->GetDepth());
     
-    Print(7, 40,  "%9d", genotype.GetThisDeaths());
-    Print(8, 40,  "%9d", genotype.GetThisBirths());
-    Print(9, 40,  "%9d", genotype.GetThisBreedTrue());
-    Print(10, 40, "%9d", genotype.GetThisBreedIn());
-    Print(11, 40, "%9d", genotype.GetThisBirths() - genotype.GetThisBreedTrue());
+    Print(7, 40,  "%9d", genotype->GetProperty("recent_deaths").AsInt());
+    Print(8, 40,  "%9d", genotype->GetProperty("recent_births").AsInt());
+    Print(9, 40,  "%9d", genotype->GetProperty("recent_breed_true").AsInt());
+    Print(10, 40, "%9d", genotype->GetProperty("recent_breed_in").AsInt());
+    Print(11, 40, "%9d", genotype->GetProperty("recent_births").AsInt() - genotype->GetProperty("recent_breed_true").AsInt());
     
-    Print(14, 40, "%9d", genotype.GetTotalOrganisms());
-    Print(15, 40, "%9d", genotype.GetBirths());
-    Print(16, 40, "%9d", genotype.GetBreedTrue());
-    Print(17, 40, "%9d", genotype.GetBreedIn());
-    Print(18, 40, "%9d", genotype.GetBirths() - genotype.GetBreedTrue());
+    Print(14, 40, "%9d", genotype->GetProperty("total_organisms").AsInt());
+    Print(15, 40, "%9d", genotype->GetProperty("last_births").AsInt());
+    Print(16, 40, "%9d", genotype->GetProperty("last_breed_true").AsInt());
+    Print(17, 40, "%9d", genotype->GetProperty("last_breed_in").AsInt());
+    Print(18, 40, "%9d", genotype->GetProperty("last_births").AsInt() - genotype->GetProperty("last_breed_true").AsInt());
   }
   else {
     Print(5, 12, "  -------");
@@ -995,7 +993,7 @@ void cZoomScreen::UpdateGenotype()
   }
 }
 
-void cZoomScreen::EditMemory()
+void cZoomScreen::EditMemory(cAvidaContext& ctx)
 {
   // Collect all of the needed variables.
   cHardwareBase& hardware = info.GetActiveCell()->GetOrganism()->GetHardware();
@@ -1064,7 +1062,7 @@ void cZoomScreen::EditMemory()
   Update(ctx);
 }
 
-void cZoomScreen::ThreadOptions()
+void cZoomScreen::ThreadOptions(cAvidaContext& ctx)
 {
   int thread_method = THREAD_OPTIONS_VIEW;
   
@@ -1432,8 +1430,8 @@ void cZoomScreen::DoInput(cAvidaContext& ctx, int in_char)
   
   // First do the Mode specific io...
   
-  if (mode == ZOOM_MODE_CPU      && DoInputCPU(in_char)) return;
-  if (mode == ZOOM_MODE_STATS    && DoInputStats(in_char)) return;
+  if (mode == ZOOM_MODE_CPU      && DoInputCPU(ctx, in_char)) return;
+  if (mode == ZOOM_MODE_STATS    && DoInputStats(ctx, in_char)) return;
   if (mode == ZOOM_MODE_GENOTYPE && DoInputGenotype(in_char)) return;
   
   int num_threads = 0;
@@ -1482,7 +1480,7 @@ void cZoomScreen::DoInput(cAvidaContext& ctx, int in_char)
 }
 
 
-bool cZoomScreen::DoInputCPU(int in_char)
+bool cZoomScreen::DoInputCPU(cAvidaContext& ctx, int in_char)
 {
   switch(in_char) {
     case '2':
@@ -1576,7 +1574,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
     case '\r':
       switch (active_section) {
         case ZOOM_SECTION_MEMORY:
-          EditMemory();
+          EditMemory(ctx);
           break;
         case ZOOM_SECTION_MAP:
           memory_offset = 0;
@@ -1612,7 +1610,7 @@ bool cZoomScreen::DoInputCPU(int in_char)
   return true;
 }
 
-bool cZoomScreen::DoInputStats(int in_char)
+bool cZoomScreen::DoInputStats(cAvidaContext& ctx, int in_char)
 {
   switch(in_char) {
     case '6':

@@ -90,12 +90,12 @@ private:
   void UpdateStats(cHardwareBase & hardware);
   void UpdateStats_CPU(cHardwareBase & hardware);
   void UpdateStats_SMT(cHardwareBase & hardware);
-  void UpdateGenotype();
+  void UpdateGenotype(cAvidaContext& ctx);
 
-  void EditMemory();
+  void EditMemory(cAvidaContext& ctx);
   void ViewMemory();
 
-  void ThreadOptions();
+  void ThreadOptions(cAvidaContext& ctx);
 
   void ViewInstruction();
   void ViewRegisters();
@@ -119,8 +119,8 @@ public:
   void Draw(cAvidaContext& ctx);
   virtual void Update(cAvidaContext& ctx);
   virtual void DoInput(cAvidaContext& ctx, int in_char);
-  bool DoInputCPU(int in_char);
-  bool DoInputStats(int in_char);
+  bool DoInputCPU(cAvidaContext& ctx, int in_char);
+  bool DoInputStats(cAvidaContext& ctx, int in_char);
   bool DoInputGenotype(int in_char);
 
   // Other misc functions...
