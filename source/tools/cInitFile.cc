@@ -273,7 +273,37 @@ cString cInitFile::ReadString(const cString& name, cString def, bool warn_defaul
   if (Find(cur_line, name, 0) == false) {
     if (warn_default) {
       m_errors.PushRear(new cString(cStringUtil::Stringf("%s not in '%s', defaulting to: %s",
-                                                         (const char*)name, (const char*)m_filename, (const char*)def)));
+                                               (const char*)name, (const char*)m_filename, (const char*)def)));
+    }
+    return def;
+  }
+
+  // Pop off the keyword, and return the remainder of the line.
+  cur_line.PopWord();
+  return cur_line;
+}
+
+
+cString cInitFile::ReadString(const tArray<cString>& names, cString def, bool warn_default) const
+{
+  const int num_names = names.GetSize();
+  if (num_names == 0) return def;
+  if (num_names == 1) return ReadString(names[0], def, warn_default);
+
+  // Search for the keyword.
+  cString cur_line;
+  bool found = false;
+  for (int i = 0; i < num_names; i++) {
+    if (Find(cur_line, names[i], 0) == true) {
+      found = true;
+      break;
+    }
+  }
+
+  if (found == false) {
+    if (warn_default) {
+      m_errors.PushRear(new cString(cStringUtil::Stringf("%s not in '%s', defaulting to: %s",
+						 (const char*) names[0], (const char*)m_filename, (const char*)def)));
     }
     return def;
   }

@@ -126,8 +126,8 @@ public:
   bool Find(cString& in_string, const cString& keyword, int col) const;
   
   /**
-   * Reads an entry in the initialization file that has a given keyword
-   * in the first column. The keyword is not part of the returned string.
+   * Reads an entry in the initialization file that has a given keyword in the first column.
+   * The keyword is not part of the returned string.
    *
    * @return The entry that has been found.
    * @param name The keyword to look for (the name of the entry).
@@ -136,6 +136,18 @@ public:
    * them.
    **/
   cString ReadString(const cString& name, cString def = "", bool warn_default = true) const;
+
+  /**
+   * Reads an entry in the initialization file that has a given keyword OR ANY OF ITS ALIASES
+   * in the first column. The keyword is not part of the returned string.
+   *
+   * @return The entry that has been found.
+   * @param names An array of keywords to look for (the name of the entry).
+   * @param def If the keyword is not found, def is returned. This allows
+   * one to set standard values that are used if the user does not override
+   * them.
+   **/
+  cString ReadString(const tArray<cString>& names, cString def = "", bool warn_default = true) const;
   
   /**
    * Looks over all lines loaded into the file, and warns if any of them

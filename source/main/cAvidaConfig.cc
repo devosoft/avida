@@ -40,12 +40,14 @@ tList<cAvidaConfig::cBaseConfigCustomFormat> cAvidaConfig::global_format_list;
 
 cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
   const cString& _type, const cString& _def, const cString& _desc)
-: config_name(_name)
+: config_name(1)
 , type(_type)
 , default_value(_def)
 , description(_desc)
 , use_overide(true)
 {
+  config_name[0] = _name;
+
   // If the default value was originally a string, it will begin and end with
   // quotes.  We should make sure to remove those.
   if (default_value[0] == '"') {
@@ -62,7 +64,8 @@ void cAvidaConfig::Load(const cString& filename, bool crash_if_not_found)
 }
 
 
-void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found, bool warn_default)
+void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings,
+			bool crash_if_not_found, bool warn_default)
 {
   // Load the contents from the file.
   cInitFile init_file(filename, mappings);
@@ -95,15 +98,14 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
   // Loop through all groups, then all entrys, and try to load each one.
   tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup* cur_group;
-  while ((cur_group = group_it.Next()) != NULL) {
-    
+  while ((cur_group = group_it.Next()) != NULL) {    
     // Loop through entries for this group...
     tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
     cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
-      const cString keyword = cur_entry->GetName();
+      const tArray<cString> & keywords = cur_entry->GetNames();
       const cString default_val = cur_entry->GetDefault();
-      cur_entry->LoadString( init_file.ReadString(keyword, default_val, warn_default) );
+      cur_entry->LoadString( init_file.ReadString(keywords, default_val, warn_default) );
     }
   }
   

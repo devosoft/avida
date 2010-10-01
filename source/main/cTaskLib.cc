@@ -118,7 +118,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
 	// resoruce dependent version
   else if (name == "nand-resourceDependent") NewTask(name, "Nand-resourceDependent", &cTaskLib::Task_Nand_ResourceDependent);
-	else if (name == "nor-resourceDependent") NewTask(name, "Nor-resourceDependent", &cTaskLib::Task_Nor_ResourceDependent);
+  else if (name == "nor-resourceDependent") NewTask(name, "Nor-resourceDependent", &cTaskLib::Task_Nor_ResourceDependent);
 	
   // All 3-Input Logic Functions
   if (name == "logic_3AA")
@@ -439,9 +439,9 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "movebetweenevent")
     NewTask(name, "Move to a target area", &cTaskLib::Task_MoveBetweenMovementEvent); 
 	
-	// reputation based tasks
-	else if(name == "perfect_strings") 
-		NewTask(name, "Produce and store perfect strings", &cTaskLib::Task_CreatePerfectStrings);		
+  // reputation based tasks
+  else if(name == "perfect_strings") 
+    NewTask(name, "Produce and store perfect strings", &cTaskLib::Task_CreatePerfectStrings);		
 
   // event tasks
   if(name == "move_to_event")
@@ -453,27 +453,27 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   if (name == "sg_path_traversal")
     Load_SGPathTraversal(name, info, envreqs, errors);  
   
-	if (name == "form-group")
+  if (name == "form-group")
     Load_FormSpatialGroup(name, info, envreqs, errors);
 	
-	if (name == "form-group-id")
+  if (name == "form-group-id")
     Load_FormSpatialGroupWithID(name, info, envreqs, errors);
 	
-	if (name == "live-on-patch-id")
+  if (name == "live-on-patch-id")
     Load_LiveOnPatchRes(name, info, envreqs, errors);
 	
-	// String matching
-	if(name == "all-ones")
-		Load_AllOnes(name, info, envreqs, errors);
-	else if (name == "royal-road")
-		Load_RoyalRoad(name, info, envreqs, errors);
-	else if (name == "royal-road-wd")
-		Load_RoyalRoadWithDitches(name, info, envreqs, errors);
+  // String matching
+  if(name == "all-ones")
+    Load_AllOnes(name, info, envreqs, errors);
+  else if (name == "royal-road")
+    Load_RoyalRoad(name, info, envreqs, errors);
+  else if (name == "royal-road-wd")
+    Load_RoyalRoadWithDitches(name, info, envreqs, errors);
   
-	// Division of labor
-	if(name == "opinion_is") {
-		Load_OpinionIs(name, info, envreqs, errors);
-	}
+  // Division of labor
+  if(name == "opinion_is") {
+    Load_OpinionIs(name, info, envreqs, errors);
+  }
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -499,9 +499,6 @@ void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_
   task_array.Resize(id + 1);
   task_array[id] = new cTaskEntry(name, desc, id, task_fun, args);
 }
-
-
-
 
 
 void cTaskLib::SetupTests(cTaskContext& ctx) const
@@ -589,7 +586,6 @@ void cTaskLib::SetupTests(cTaskContext& ctx) const
   
   ctx.SetLogicId(logicid);
 }
-
 
 
 double cTaskLib::Task_Echo(cTaskContext& ctx) const
@@ -719,57 +715,57 @@ double cTaskLib::Task_Equ(cTaskContext& ctx) const
   return 0.0;
 }
 
-double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const {
-	const double resCrossoverLevel = 100;
 
-	const int logic_id = ctx.GetLogicId();
-  if (!(logic_id == 63 || logic_id == 95 || logic_id == 119))
-		return 0.0;
+double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
+{
+  const double resCrossoverLevel = 100;
+
+  const int logic_id = ctx.GetLogicId();
+  if (!(logic_id == 63 || logic_id == 95 || logic_id == 119)) return 0.0;
 		
-	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const tArray<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources();
+  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
-	const tArray<double>& resource_count_array =  ctx.GetOrganism()->GetOrgInterface().GetResources(); 
-	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+  if (resource_count.GetSize() == 0) assert(false); // change to: return false;
 	
-	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
+  double pher_amount = 0;
+  cResource* res = resLib.GetResource("pheromone");
 	
-	double pher_amount = 0;
-	cResource* res = resLib.GetResource("pheromone");
-	
-	if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-		pher_amount += resource_count_array[res->GetID()];
-	}
-	
-	if(pher_amount < resCrossoverLevel)
-		return 1.0;
-	return 0.0;	
+  if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+    pher_amount += resource_count_array[res->GetID()];
+  }
+  
+  if (pher_amount < resCrossoverLevel) return 1.0;
+  return 0.0;	
 }
 
-double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const {
-	const double resCrossoverLevel = 100;
 
-	const int logic_id = ctx.GetLogicId();
-  if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))
-		return 0.0;
+double cTaskLib::Task_Nor_ResourceDependent(cTaskContext& ctx) const
+{
+  const double resCrossoverLevel = 100;
+
+  const int logic_id = ctx.GetLogicId();
+  if (!(logic_id == 3 || logic_id == 5 || logic_id == 17))  return 0.0;
 	
-	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
+  const tArray<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources();
+  const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+  
+  //if (resource_count.GetSize() == 0) assert(false); // change to: return false;
+  assert(resource_count.GetSize() != 0);
 	
-	const tArray<double>& resource_count_array = ctx.GetOrganism()->GetOrgInterface().GetResources(); 
-	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
+  double pher_amount = 0;
+  cResource* res = resLib.GetResource("pheromone");
+  
+  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+    pher_amount += resource_count_array[res->GetID()];
+  }
 	
-	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
-	
-	double pher_amount = 0;
-	cResource* res = resLib.GetResource("pheromone");
-	
-	if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
-		pher_amount += resource_count_array[res->GetID()];
-	}
-	
-	if(pher_amount > resCrossoverLevel)
-		return 1.0;
-	return 0.0;	
+  if (pher_amount > resCrossoverLevel) return 1.0;
+  return 0.0;	
 }
+
 
 double cTaskLib::Task_Logic3in_AA(cTaskContext& ctx) const
 {
@@ -1266,6 +1262,7 @@ double cTaskLib::Task_Math1in_AA(cTaskContext& ctx) const //(2X)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     if (test_output == 2 * input_buffer[i]) return 1.0;
   }
@@ -1277,6 +1274,7 @@ double cTaskLib::Task_Math1in_AB(cTaskContext& ctx) const //(2X/3)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == 2 * input_buffer[i] / 3) return 1.0;
   }
@@ -1288,6 +1286,7 @@ double cTaskLib::Task_Math1in_AC(cTaskContext& ctx) const //(5X/4)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == 5 * input_buffer[i] / 4) return 1.0;
   }
@@ -1310,6 +1309,7 @@ double cTaskLib::Task_Math1in_AE(cTaskContext& ctx) const //(X^3)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == input_buffer[i] * input_buffer[i] * input_buffer[i])
       return 1.0;
@@ -1333,6 +1333,7 @@ double cTaskLib::Task_Math1in_AG(cTaskContext& ctx) const //(log(X))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (input_buffer[i] <= 0) continue;
     if (test_output == (int) log((double) input_buffer[i])) return 1.0;
@@ -1345,6 +1346,7 @@ double cTaskLib::Task_Math1in_AH(cTaskContext& ctx) const //(X^2+X^3)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == input_buffer[i] * input_buffer[i] + input_buffer[i] * input_buffer[i] * input_buffer[i])
       return 1.0;
@@ -1357,6 +1359,7 @@ double cTaskLib::Task_Math1in_AI(cTaskContext& ctx) const // (X^2 + sqrt(X))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == input_buffer[i] * input_buffer[i] + (int) sqrt((double) abs(input_buffer[i]))) 
       return 1.0;
@@ -1369,6 +1372,7 @@ double cTaskLib::Task_Math1in_AJ(cTaskContext& ctx) const // abs(X)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == abs(input_buffer[i])) return 1.0;
   }
@@ -1380,6 +1384,7 @@ double cTaskLib::Task_Math1in_AK(cTaskContext& ctx) const //(X-5)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == input_buffer[i] - 5) return 1.0;
   }
@@ -1391,6 +1396,7 @@ double cTaskLib::Task_Math1in_AL(cTaskContext& ctx) const //(-X)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == 0 - input_buffer[i]) return 1.0;
   }
@@ -1402,6 +1408,7 @@ double cTaskLib::Task_Math1in_AM(cTaskContext& ctx) const //(5X)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == 5 * input_buffer[i]) return 1.0;
   }
@@ -1413,6 +1420,7 @@ double cTaskLib::Task_Math1in_AN(cTaskContext& ctx) const //(X/4)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == input_buffer[i] / 4) return 1.0;
   }
@@ -1424,6 +1432,7 @@ double cTaskLib::Task_Math1in_AO(cTaskContext& ctx) const //(X-6)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == input_buffer[i] - 6) return 1.0;
   }
@@ -1435,6 +1444,7 @@ double cTaskLib::Task_Math1in_AP(cTaskContext& ctx) const //(X-7)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     if (test_output == input_buffer[i] - 7) return 1.0;
   }
@@ -1446,6 +1456,7 @@ double cTaskLib::Task_Math2in_AA(cTaskContext& ctx) const //(sqrt(X+Y))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1461,6 +1472,7 @@ double cTaskLib::Task_Math2in_AB(cTaskContext& ctx) const  //((X+Y)^2)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1476,6 +1488,7 @@ double cTaskLib::Task_Math2in_AC(cTaskContext& ctx) const //(X%Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1491,6 +1504,7 @@ double cTaskLib::Task_Math2in_AD(cTaskContext& ctx) const //(3X/2+5Y/4)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1506,6 +1520,7 @@ double cTaskLib::Task_Math2in_AE(cTaskContext& ctx) const //(abs(X-5)+abs(Y-6))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1521,6 +1536,7 @@ double cTaskLib::Task_Math2in_AF(cTaskContext& ctx) const //(XY-X/Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1538,6 +1554,7 @@ double cTaskLib::Task_Math2in_AG(cTaskContext& ctx) const //((X-Y)^2)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1553,6 +1570,7 @@ double cTaskLib::Task_Math2in_AH(cTaskContext& ctx) const //(X^2+Y^2)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1568,6 +1586,7 @@ double cTaskLib::Task_Math2in_AI(cTaskContext& ctx) const //(X^2+Y^3)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1583,6 +1602,7 @@ double cTaskLib::Task_Math2in_AJ(cTaskContext& ctx) const //((sqrt(X)+Y)/(X-7))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1598,6 +1618,7 @@ double cTaskLib::Task_Math2in_AK(cTaskContext& ctx) const //(log(|X/Y|))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j || input_buffer[j] == 0 ) continue;
@@ -1615,6 +1636,7 @@ double cTaskLib::Task_Math2in_AL(cTaskContext& ctx) const //(log(|X|)/Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j || input_buffer[j] == 0) continue;
@@ -1630,6 +1652,7 @@ double cTaskLib::Task_Math2in_AM(cTaskContext& ctx) const //(X/log(|Y|))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j || log((double) abs(input_buffer[j])) == 0) continue;
@@ -1646,6 +1669,7 @@ double cTaskLib::Task_Math2in_AN(cTaskContext& ctx) const //(X+Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1661,6 +1685,7 @@ double cTaskLib::Task_Math2in_AO(cTaskContext& ctx) const //(X-Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1676,6 +1701,7 @@ double cTaskLib::Task_Math2in_AP(cTaskContext& ctx) const //(X/Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j || input_buffer[j] == 0) continue;
@@ -1692,6 +1718,7 @@ double cTaskLib::Task_Math2in_AQ(cTaskContext& ctx) const //(XY)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1707,6 +1734,7 @@ double cTaskLib::Task_Math2in_AR(cTaskContext& ctx) const //(sqrt(X)+sqrt(Y))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1722,6 +1750,7 @@ double cTaskLib::Task_Math2in_AS(cTaskContext& ctx) const //(X+2Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1737,6 +1766,7 @@ double cTaskLib::Task_Math2in_AT(cTaskContext& ctx) const //(X+3Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1752,6 +1782,7 @@ double cTaskLib::Task_Math2in_AU(cTaskContext& ctx) const //(2X+3Y)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1767,6 +1798,7 @@ double cTaskLib::Task_Math2in_AV(cTaskContext& ctx) const //(XY^2)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i++) {
     for (int j = 0; j < input_size; j++) {
       if (i == j) continue;
@@ -1782,6 +1814,7 @@ double cTaskLib::Task_Math3in_AA(cTaskContext& ctx) const //(X^2+Y^2+Z^2)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1800,6 +1833,7 @@ double cTaskLib::Task_Math3in_AB(cTaskContext& ctx) const //(sqrt(X)+sqrt(Y)+sqr
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1818,6 +1852,7 @@ double cTaskLib::Task_Math3in_AC(cTaskContext& ctx) const //(X+2Y+3Z)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1835,6 +1870,7 @@ double cTaskLib::Task_Math3in_AD(cTaskContext& ctx) const //(XY^2+Z^3)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1852,6 +1888,7 @@ double cTaskLib::Task_Math3in_AE(cTaskContext& ctx) const //((X%Y)*Z)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1870,6 +1907,7 @@ double cTaskLib::Task_Math3in_AF(cTaskContext& ctx) const //((X+Y)^2+sqrt(Y+Z))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1889,6 +1927,7 @@ double cTaskLib::Task_Math3in_AG(cTaskContext& ctx) const //((XY)%(YZ))
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1908,6 +1947,7 @@ double cTaskLib::Task_Math3in_AH(cTaskContext& ctx) const //(X+Y+Z)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1925,6 +1965,7 @@ double cTaskLib::Task_Math3in_AI(cTaskContext& ctx) const //(-X-Y-Z)
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1942,6 +1983,7 @@ double cTaskLib::Task_Math3in_AJ(cTaskContext& ctx) const //((X-Y)^2+(Y-Z)^2+(Z-
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -1959,6 +2001,7 @@ double cTaskLib::Task_Math3in_AK(cTaskContext& ctx) const //((X+Y)^2+(Y+Z)^2+(Z+
   const tBuffer<int>& input_buffer = ctx.GetInputBuffer();
   const int test_output = ctx.GetOutputBuffer()[0];
   const int input_size = input_buffer.GetNumStored();
+
   for (int i = 0; i < input_size; i ++) {
     for (int j = 0; j < input_size; j ++) {
       for (int k = 0; k < input_size; k ++) {
@@ -2040,26 +2083,27 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
       test_output = temp_buf[0];
       
       for (int j = 0; j < string_to_match.GetSize(); j++) {  
-				string_index = string_to_match.GetSize() - j - 1; // start with last char in string
-				int k = 1 << j;
-				if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
-						(string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
+	string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+	int k = 1 << j;
+	if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+	    (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
       }
       max_num_matched = num_matched;
     }
   }
   else {
-    for (int j = 0; j < string_to_match.GetSize(); j++)
-      {
-        if (string_to_match[j]!='9')
-          num_real++;
-        if (string_to_match[j]=='0' && temp_buf[j]==0 ||
-            string_to_match[j]=='1' && temp_buf[j]==1)
+    for (int j = 0; j < string_to_match.GetSize(); j++) {
+      if (string_to_match[j] != '9') {
+	num_real++;
+      }
+      if (string_to_match[j] == '0' && temp_buf[j]==0 ||
+	  string_to_match[j] == '1' && temp_buf[j]==1) {
           num_matched++;
       }
+    }
     max_num_matched = num_matched;
-
   }
+
   bool used_received = false;
   if (ctx.GetReceivedMessages()) {
     tBuffer<int> received(*(ctx.GetReceivedMessages()));
@@ -2071,7 +2115,9 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
         string_index = string_to_match.GetSize() - j - 1; // start with last char in string
         int k = 1 << j;
         if ((string_to_match[string_index]=='0' && !(test_output & k)) ||
-            (string_to_match[string_index]=='1' && (test_output & k))) num_matched++;
+            (string_to_match[string_index]=='1' && (test_output & k))) {
+	  num_matched++;
+	}
       }
       
       if (num_matched > max_num_matched) {
@@ -2085,37 +2131,33 @@ double cTaskLib::Task_MatchStr(cTaskContext& ctx) const
   // return value between 0 & 1 representing the percentage of string that was matched
   double base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
 
-  if (partial)
-    {
-      base_bonus=double(max_num_matched)*2/double(num_real) -1;
-    }
+  if (partial) {
+    base_bonus=double(max_num_matched)*2/double(num_real) -1;
+  }
 
   if (base_bonus > 0.0) {
     bonus = pow(base_bonus, 2);
-    if (used_received)
-      m_world->GetStats().AddMarketItemUsed();
-    else
-      m_world->GetStats().AddMarketOwnItemUsed();
+    if (used_received) m_world->GetStats().AddMarketItemUsed();
+    else m_world->GetStats().AddMarketOwnItemUsed();
   }
   return bonus;
 }
 
 vector<cString> cTaskLib::GetMatchStrings()
 {
-	return m_strings;
+  return m_strings;
 }
 
 cString cTaskLib::GetMatchString(int x)
 { 
-	cString s; 
-	if(x >= 0 && x < (int)m_strings.size()){
-		s = m_strings[x]; 
-	} else { 
-		s = cString("");
-	}
-	
-	return s;
-	
+  cString s; 
+  if(x >= 0 && x < (int)m_strings.size()){
+    s = m_strings[x]; 
+  } else { 
+    s = cString("");
+  }
+  
+  return s;
 }
 
 
@@ -2136,15 +2178,13 @@ void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEn
 
 double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
 {
+  // These even out the stats tracking.
+  m_world->GetStats().AddTag(ctx.GetTaskEntry()->GetArguments().GetInt(2), 0);
+  m_world->GetStats().AddTag(-1, 0);
 	
-	
-	// These even out the stats tracking.
-	m_world->GetStats().AddTag(ctx.GetTaskEntry()->GetArguments().GetInt(2), 0);
-	m_world->GetStats().AddTag(-1, 0);
-	
-	tBuffer<int> temp_buf(ctx.GetOutputBuffer());
-	
-	const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
+  tBuffer<int> temp_buf(ctx.GetOutputBuffer());
+  
+  const cString& string_to_match = ctx.GetTaskEntry()->GetArguments().GetString(0);
   int partial = ctx.GetTaskEntry()->GetArguments().GetInt(0);
   int binary = ctx.GetTaskEntry()->GetArguments().GetInt(1);
   double mypow = ctx.GetTaskEntry()->GetArguments().GetDouble(0);
@@ -2154,76 +2194,68 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
   int max_num_matched = 0;
   int num_real=0;
 	
-  if (!binary)
-  {
+  if (!binary) {
     if (temp_buf.GetNumStored() > 0) {
       test_output = temp_buf[0];
 			
       for (int j = 0; j < string_to_match.GetSize(); j++) {  
-				string_index = string_to_match.GetSize() - j - 1; // start with last char in string
-				int k = 1 << j;
-				if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
-						(string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
+	string_index = string_to_match.GetSize() - j - 1; // start with last char in string
+	int k = 1 << j;
+	if ((string_to_match[string_index] == '0' && !(test_output & k)) ||
+	    (string_to_match[string_index] == '1' && (test_output & k))) num_matched++;
       }
       max_num_matched = num_matched;
     }
   }
-  else
-  {
-    for (int j = 0; j < string_to_match.GetSize(); j++)
-    {
-			if (string_to_match[j]!='9')
-				num_real++;
-			if (string_to_match[j]=='0' && temp_buf[j]==0 ||
-					string_to_match[j]=='1' && temp_buf[j]==1)
-				num_matched++;
+  else {
+    for (int j = 0; j < string_to_match.GetSize(); j++) {
+      if (string_to_match[j]!='9') num_real++;
+      if (string_to_match[j]=='0' && temp_buf[j]==0 ||
+	  string_to_match[j]=='1' && temp_buf[j]==1)
+	num_matched++;
     }
     max_num_matched = num_matched;
-		
+  }
+  
+  // Check if the organism already produced this string. 
+  // If so, it receives a perfect score for this task.
+  int tag = ctx.GetTaskEntry()->GetArguments().GetInt(2);
+	
+  if (m_world->GetConfig().MATCH_ALREADY_PRODUCED.Get()) {
+    int prod = ctx.GetOrganism()->GetNumberStringsProduced(tag); 
+    if (prod) max_num_matched = string_to_match.GetSize();
   }
 	
-	// Check if the organism already produced this string. 
-	// If so, it receives a perfect score for this task.
-	int tag = ctx.GetTaskEntry()->GetArguments().GetInt(2);
-	
-	if (m_world->GetConfig().MATCH_ALREADY_PRODUCED.Get()) {
-		int prod = ctx.GetOrganism()->GetNumberStringsProduced(tag); 
-		if (prod) max_num_matched = string_to_match.GetSize();
-	}
+  
+  // Update the organism's tag. 
+  ctx.GetOrganism()->UpdateTag(tag, max_num_matched);
+  if (ctx.GetOrganism()->GetTagLabel() == tag) {
+    ctx.GetOrganism()->SetLineageLabel(ctx.GetTaskEntry()->GetArguments().GetInt(2));
+  } 
 	
 	
-	// Update the organism's tag. 
-	ctx.GetOrganism()->UpdateTag(tag, max_num_matched);
-	if (ctx.GetOrganism()->GetTagLabel() == tag) {
-		ctx.GetOrganism()->SetLineageLabel(ctx.GetTaskEntry()->GetArguments().GetInt(2));
-	} 
+  // Update stats
+  cString name;
+  name = "[produced"; 
+  name += string_to_match;
+  name += "]";
+  m_world->GetStats().AddStringBitsMatchedValue(name, max_num_matched);
+  
+  // if the organism hasn't donated, then zero out its reputation. 
+  if ((ctx.GetOrganism()->GetReputation() > 0) && 
+      (ctx.GetOrganism()->GetNumberOfDonations() == 0)) {
+    ctx.GetOrganism()->SetReputation(0);
+  }
 	
-	
-	// Update stats
-	cString name;
-	name = "[produced"; 
-	name += string_to_match;
-	name += "]";
-	m_world->GetStats().AddStringBitsMatchedValue(name, max_num_matched);
-	
-	// if the organism hasn't donated, then zero out its reputation. 
-	if ((ctx.GetOrganism()->GetReputation() > 0) && 
-			(ctx.GetOrganism()->GetNumberOfDonations() == 0)) {
-		ctx.GetOrganism()->SetReputation(0);
-	}
-	
-	
-	
-	double bonus = 0.0;
-	double base_bonus = 0.0; 
-	
-	base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
-	
-  if (partial)
-  {
+  double bonus = 0.0;
+  double base_bonus = 0.0; 
+  
+  base_bonus = static_cast<double>(max_num_matched) * 2.0 / static_cast<double>(string_to_match.GetSize()) - 1;
+  
+  if (partial) {
     base_bonus=double(max_num_matched)*2/double(num_real) -1;
   }
-	
+  
   if (base_bonus > 0.0) {
     bonus = pow(base_bonus,mypow);
   }
@@ -2394,14 +2426,14 @@ double cTaskLib::Task_SortInputs(cTaskContext& ctx) const
 
 
 
-class cFibSeqState : public cTaskState
-  {
-  public:
-    int seq[2];
-    int count;
-    
-    cFibSeqState() : count(0) { seq[0] = 1; seq[1] = 0; }
-  };
+class cFibSeqState : public cTaskState {
+public:
+  int seq[2];
+  int count;
+  
+  cFibSeqState() : count(0) { seq[0] = 1; seq[1] = 0; }
+};
+
 
 void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
@@ -2416,6 +2448,7 @@ void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr
   
   if (args) NewTask(name, "Fibonacci Sequence", &cTaskLib::Task_FibonacciSequence, 0, args);
 }
+
 
 double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 {
@@ -2443,6 +2476,7 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
   return 0.0;
 }
 
+
 void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
   cArgSchema schema;
@@ -2460,29 +2494,25 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
   schema.AddEntry("threshMax", 4, -1.0);
   
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
-  if (args) 
-  {
-    if (args->GetInt(1))
-    {
+  if (args) {
+    if (args->GetInt(1)) {
       envreqs.SetMinOutputs(args->GetInt(2)*args->GetInt(3));
     }
-    else 
-    {
+    else {
       // once have ability to change args should in each of these cases change the max/min
       // to the appropriate defaults for this function
-      switch (args->GetInt(0))
-      {
-        case 1:
-          envreqs.SetMinOutputs(1);
-          break;
-        case 2:
-          envreqs.SetMinOutputs(2);
-          break;
-        case 3:
-          envreqs.SetMinOutputs(2);
-          break;
-        default:
-          envreqs.SetMinOutputs(2);
+      switch (args->GetInt(0)) {
+      case 1:
+	envreqs.SetMinOutputs(1);
+	break;
+      case 2:
+	envreqs.SetMinOutputs(2);
+	break;
+      case 3:
+	envreqs.SetMinOutputs(2);
+	break;
+      default:
+	envreqs.SetMinOutputs(2);
       };
     }
     
@@ -2509,295 +2539,258 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   
   // some of the problems don't need double variables but use the bit string as a bit string
   // string match, Fx=length - num_matched (0 best, length worst)
-  if (function==20)
-    {
-      const cString& string_to_match = args.GetString(0);
-      int matched=0;
-      for (int i=0; i<args.GetInt(2); i++)
-        {
-          if ((string_to_match[i] == '0' && ctx.GetOutputBuffer()[i]==0)  ||
-              (string_to_match[i] == '1' && ctx.GetOutputBuffer()[i]==1))
-            matched++;
-        }
-      Fx=args.GetInt(2) - matched;
+  if (function == 20) {
+    const cString& string_to_match = args.GetString(0);
+    int matched=0;
+    for (int i=0; i<args.GetInt(2); i++) {
+      if ((string_to_match[i] == '0' && ctx.GetOutputBuffer()[i]==0)  ||
+	  (string_to_match[i] == '1' && ctx.GetOutputBuffer()[i]==1))
+	matched++;
     }
+    Fx=args.GetInt(2) - matched;
+  }
+
   // string with all 1's at beginning until pattern 0101, reward for # 1's
-  else if (function==21)
-    {
-      int numOnes=0;
-      int patFound=0;
-      for (int i=0; i<args.GetInt(2)-3; i++)
-        {
-          if (ctx.GetOutputBuffer()[i]==1)
-            numOnes++;
-          else
-            {
-              if (ctx.GetOutputBuffer()[i+1]==1
-                  && ctx.GetOutputBuffer()[i+2]==0 && ctx.GetOutputBuffer()[i+3]==1)
-                patFound=1;
-              break;
-            }
-        }
-      if (patFound)
-        Fx=args.GetInt(2)-4-numOnes;
-      else
-        Fx=args.GetInt(2);
+  else if (function == 21) {
+    int numOnes=0;
+    int patFound=0;
+    for (int i=0; i<args.GetInt(2)-3; i++) {
+      if (ctx.GetOutputBuffer()[i]==1) numOnes++;
+      else {
+	if (ctx.GetOutputBuffer()[i+1] == 1 &&
+	    ctx.GetOutputBuffer()[i+2]==0 && ctx.GetOutputBuffer()[i+3]==1) {
+	  patFound=1;
+	}
+	break;
+      }
     }
+    if (patFound) Fx=args.GetInt(2)-4-numOnes;
+    else Fx=args.GetInt(2);
+  }
+
   // simply rewared for number of 1's at beginning of string, maxFx=length of string
-  else if (function==22)
-    {
-      int numOnes=0;
-      for (int i=0; i<args.GetInt(2); i++)
-        {
-          if (ctx.GetOutputBuffer()[i]==1)
-            numOnes++;
-          else
-            break;
-        }
-      Fx=args.GetInt(2)-numOnes;
+  else if (function == 22) {
+    int numOnes=0;
+    for (int i=0; i<args.GetInt(2); i++) {
+      if (ctx.GetOutputBuffer()[i]==1) numOnes++;
+      else break;
     }
+    Fx=args.GetInt(2)-numOnes;
+  }
 
   // simply reward for number 0's in string
-  else if (function==23)
-    {
-      int numZeros=0;
-      for (int i=0; i<args.GetInt(2); i++)
-        {
-          if (ctx.GetOutputBuffer()[i]==0)
-            numZeros++;
-          else
-            break;
-        }
-      Fx=args.GetInt(2)-numZeros;
+  else if (function == 23) {
+    int numZeros=0;
+    for (int i=0; i<args.GetInt(2); i++) {
+      if (ctx.GetOutputBuffer()[i]==0) numZeros++;
+      else break;
     }
+    Fx=args.GetInt(2)-numZeros;
+  }
 
-
-  else if (function==18)
-  {
+  else if (function == 18) {
     int tot=0;
-    for (int i=0; i<30; i++)
+    for (int i=0; i<30; i++) {
       tot+= ctx.GetOutputBuffer()[i];
+    }
     Fx = 1+tot;
   }
-  else if (function==19)
-  {
+
+  else if (function == 19) {
     tArray<double> tempVars;
     tempVars.Resize(args.GetInt(3));
-    for (int i=0; i<args.GetInt(3); i++)
+    for (int i=0; i<args.GetInt(3); i++) {
       tempVars[i]=0;
+    }
     
-    for (int i=0; i<30; i++)
+    for (int i=0; i<30; i++) {
       tempVars[0]+= ctx.GetOutputBuffer()[i];
+    }
     
     int len = args.GetInt(2);
-    for (int i = len - 1; i >= 0; i--) 
-    {
-      for (int j=1; j<args.GetInt(3); j++)
-      {
+    for (int i = len - 1; i >= 0; i--) {
+      for (int j=1; j<args.GetInt(3); j++) {
         tempVars[j-1] += ctx.GetOutputBuffer()[30+i + len*(args.GetInt(3)-j-1)];
       }
     }
     
     int Gx = 0;
-    for (int i = 1; i < args.GetInt(3); i++)
-    {
-      if (tempVars[i] == 5)
-        Gx += 1;
-      else 
-        Gx += int(tempVars[i]) + 2;
+    for (int i = 1; i < args.GetInt(3); i++) {
+      if (tempVars[i] == 5) Gx += 1;
+      else Gx += int(tempVars[i]) + 2;
     }
     Fx = Gx * (1 / (1 + tempVars[0]));
   }
-  else 
-  {
-    if (args.GetInt(1)) 
-    {
+
+  else {
+    if (args.GetInt(1)) {
       int len = args.GetInt(2);
       double base_pow = args.GetDouble(0);
       
       tArray<double> tempVars;
       tempVars.Resize(args.GetInt(3));
-      for (int i=0; i<args.GetInt(3); i++)
-        tempVars[i] = 0;
+      for (int i=0; i<args.GetInt(3); i++) tempVars[i] = 0;
       
       double tot = 0;
-      for (int i = len - 1; i >= 0; i--) 
-      {
-        for (int j=0; j<args.GetInt(3); j++)
-        {
+      for (int i = len - 1; i >= 0; i--) {
+        for (int j=0; j<args.GetInt(3); j++) {
           tempVars[j] += ctx.GetOutputBuffer()[i + len*(args.GetInt(3)-j-1)] * pow(base_pow, (len - 1) - i);
         }
         tot += pow(base_pow, double(i));
       }
-      for (int i=0; i<args.GetInt(3); i++)
+      for (int i=0; i<args.GetInt(3); i++) {
         vars[i] = tempVars[i] / tot;
+      }
       //	cout << "x: " << vars[0] << " ";
     } 
-    else 
-    {
-      for (int j=0; j<args.GetInt(3); j++)
+    else {
+      for (int j=0; j<args.GetInt(3); j++) {
         vars[j] = double(ctx.GetOutputBuffer()[j]) / 0xffffffff;
+      }
     }
     
-    for (int j=0; j<args.GetInt(3); j++)
-    {
-      if (vars[j] < 0)
-        vars[j] = 0;
-      else if (vars[j] > 1)
-        vars[j] = 1;
+    for (int j=0; j<args.GetInt(3); j++) {
+      if (vars[j] < 0) vars[j] = 0;
+      else if (vars[j] > 1) vars[j] = 1;
     }
     
     switch(function) {
-      case 1:
-        Fx = vars[0];		// F1
-        //	  cout << "Fx1: " << Fx << " ";
-        break;
+    case 1:
+      Fx = vars[0];		// F1
+      //	  cout << "Fx1: " << Fx << " ";
+      break;
         
-      case 2:
-        Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])));   // F2
-        break;
+    case 2:
+      Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])));   // F2
+      break;
         
-      case 3:
-        Fx = (1.0 + vars[1]) * (1.0 - pow(vars[0] / (1.0 + vars[1]), 2.0));  // F3
-        break;
+    case 3:
+      Fx = (1.0 + vars[1]) * (1.0 - pow(vars[0] / (1.0 + vars[1]), 2.0));  // F3
+      break;
         
-      case 4:
-        Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])) - (vars[0] / (1.0 + vars[1])) * sin(3.14159 * vars[0] * 10.0));
-        break;
+    case 4:
+      Fx = (1.0 + vars[1]) * (1.0 - sqrt(vars[0] / (1.0 + vars[1])) - (vars[0] / (1.0 + vars[1])) * sin(3.14159 * vars[0] * 10.0));
+      break;
         
-      case 5:
-        vars[0] = vars[0] * -2.0;
-        Fx = vars[0]*vars[0] + vars[1]*vars[1];
-        break;
+    case 5:
+      vars[0] = vars[0] * -2.0;
+      Fx = vars[0]*vars[0] + vars[1]*vars[1];
+      break;
         
-      case 6:
-        vars[0] = vars[0] * -2.0;
-        Fx = (vars[0] + 2.0)*(vars[0] + 2.0) + vars[1]*vars[1];
-        break;
+    case 6:
+      vars[0] = vars[0] * -2.0;
+      Fx = (vars[0] + 2.0)*(vars[0] + 2.0) + vars[1]*vars[1];
+      break;
         
-      case 7:
-        vars[0] = vars[0] * 4.0;
-        Fx = sqrt(vars[0]) + vars[1];
-        break;
+    case 7:
+      vars[0] = vars[0] * 4.0;
+      Fx = sqrt(vars[0]) + vars[1];
+      break;
         
-      case 8:
-        vars[0] = vars[0] * 4.0;
-        Fx = sqrt(4.0 - vars[0]) + vars[1];
-        break;
+    case 8:
+      vars[0] = vars[0] * 4.0;
+      Fx = sqrt(4.0 - vars[0]) + vars[1];
+      break;
         
-      case 9:
-      {
-        double sum = 0;
-        //      cout << "9x: " << vars[0] << " ";
-        for (int i=1; i<args.GetInt(3); i++)
-          sum += vars[i]/double(args.GetInt(3)-1);
-        double Gx = 1+9*sum;
-        Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
-        break;
-      }
+    case 9: {
+      double sum = 0;
+      //      cout << "9x: " << vars[0] << " ";
+      for (int i=1; i<args.GetInt(3); i++)
+	sum += vars[i]/double(args.GetInt(3)-1);
+      double Gx = 1+9*sum;
+      Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
+      break;
+    }
+      
+    case 10: {
+      double sum = 0;
+      for (int i=1; i<args.GetInt(3); i++)
+	sum += vars[i]/double(args.GetInt(3)-1);
+      double Gx = 1+9*sum;
+      Fx = Gx * (1.0 - pow(vars[0]/Gx, 2.0));
+      break;
+    }
+      
+    case 11: {
+      double sum = 0;
+      for (int i=1; i<args.GetInt(3); i++)
+	sum += vars[i]/double(args.GetInt(3)-1);
+      double Gx = 1+9*sum;
+      Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
+      break;
+    }
         
-      case 10:
-      {
-        double sum = 0;
-        for (int i=1; i<args.GetInt(3); i++)
-          sum += vars[i]/double(args.GetInt(3)-1);
-        double Gx = 1+9*sum;
-        Fx = Gx * (1.0 - pow(vars[0]/Gx, 2.0));
-        break;
-      }
+    case 12: {
+      vars[0] = vars[0]*.9+.1;
+      Fx = vars[0];
+      break;
+    }
         
-      case 11:
-      {
-        double sum = 0;
-        for (int i=1; i<args.GetInt(3); i++)
-          sum += vars[i]/double(args.GetInt(3)-1);
-        double Gx = 1+9*sum;
-        Fx = Gx * (1 - sqrt(vars[0]/Gx) - (vars[0]/Gx)*(sin(3.14159*vars[0]*10)));
-        break;
-      }
+    case 13: {
+      vars[0] = vars[0]*.9+.1;
+      vars[1] = vars[1]*5;
+      Fx = (1+vars[1])/vars[0];
+      break;
+    }
         
-      case 12:
-      {
-        vars[0] = vars[0]*.9+.1;
-        Fx = vars[0];
-        break;
-      }
+    case 14: {
+      vars[0] = vars[0]*6-3;
+      vars[1] = vars[1]*6-3;
+      Fx = .5*(vars[0]*vars[0]+vars[1]*vars[1]) + sin(vars[0]*vars[0]+vars[1]*vars[1]);
+      break;
+    }
         
-      case 13:
-      {
-        vars[0] = vars[0]*.9+.1;
-        vars[1] = vars[1]*5;
-        Fx = (1+vars[1])/vars[0];
-        break;
-      }
+    case 15: {
+      vars[0] = vars[0]*6-3;
+      vars[1] = vars[1]*6-3;
+      Fx = pow((3*vars[0]-2*vars[1]+4),2)/8.0 + pow((vars[0]-vars[1]+1),2)/27.0 + 15;
+      break;
+    }
         
-      case 14:
-      {
-        vars[0] = vars[0]*6-3;
-        vars[1] = vars[1]*6-3;
-        Fx = .5*(vars[0]*vars[0]+vars[1]*vars[1]) + sin(vars[0]*vars[0]+vars[1]*vars[1]);
-        break;
-      }
+    case 16: {
+      vars[0] = vars[0]*6-3;
+      vars[1] = vars[1]*6-3;
+      Fx = 1.0/(vars[0]*vars[0]+vars[1]*vars[1]+1) - 1.1*exp(-vars[0]*vars[0]-vars[1]*vars[1]);
+      break;
+    }
         
-      case 15:
-      {
-        vars[0] = vars[0]*6-3;
-        vars[1] = vars[1]*6-3;
-        Fx = pow((3*vars[0]-2*vars[1]+4),2)/8.0 + pow((vars[0]-vars[1]+1),2)/27.0 + 15;
-        break;
-      }
-        
-      case 16:
-      {
-        vars[0] = vars[0]*6-3;
-        vars[1] = vars[1]*6-3;
-        Fx = 1.0/(vars[0]*vars[0]+vars[1]*vars[1]+1) - 1.1*exp(-vars[0]*vars[0]-vars[1]*vars[1]);
-        break;
-      }
-        
-      case 17:
-      {
-        double sum = 0;
-        for (int i=1; i<args.GetInt(3); i++)
-          sum += (pow((vars[i]*6-3),2)-10*cos(4*3.14159*(vars[i]*6-3)))/10.0;
-        double Gx = 10+sum;
-        Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
-        break;
-      }
-        
-      default:
-        quality = .001;
+    case 17: {
+      double sum = 0;
+      for (int i=1; i<args.GetInt(3); i++)
+	sum += (pow((vars[i]*6-3),2)-10*cos(4*3.14159*(vars[i]*6-3)))/10.0;
+      double Gx = 10+sum;
+      Fx = Gx * (1.0 - sqrt(vars[0]/Gx));
+      break;
+    }
+      
+    default:
+      quality = .001;
     }
   }
+
   ctx.SetTaskValue(Fx);
-  if (args.GetDouble(3) < 0.0)
-  {
+  if (args.GetDouble(3) < 0.0) {
     double q1 = (args.GetDouble(1) - Fx+.001);
     double q2 = (args.GetDouble(1) - args.GetDouble(2)+.001);
     assert(q1 > 0.0);
     assert(q2 > 0.0);
     quality = q1 / q2;
   } 
-  else 
-  {
-    if (args.GetDouble(4) < 0.0)
-    {
-      if (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
-      {
+  else {
+    if (args.GetDouble(4) < 0.0) {
+      if (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2)) {
         quality = 1.0;
-      }
-      else
-      {
+      } else {
         quality = 0.0;
       }
     }
-    else
-    {
-      if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2))
-          && (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) )
+    else {
+      if ( (Fx >= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(3) + args.GetDouble(2)) &&
+	   (Fx <= (args.GetDouble(1) - args.GetDouble(2))*args.GetDouble(4) + args.GetDouble(2)) ){
         quality = 1.0;
-      else
+      } else {
         quality = 0.0;
+      }
     }
   }
   
@@ -2806,14 +2799,16 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
   // so give it a very low quality instead of 0 (if using limited resources they still will get
   // no reward because set the minimum consumed to max*.001, meaning even if they get the max
   // possible fraction they'll be below minimum allowed consumed and will consume nothing
-  
-  if (quality > 1)
+    
+  if (quality > 1) {
     cout << "\n\nquality > 1!  quality= " << quality << "  Fx= " << Fx << endl;
+  }
   
   if (quality < 0.001) return .001;
   
   return quality;
 }
+
 
 void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
@@ -2827,6 +2822,7 @@ void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& e
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "Multiplication", &cTaskLib::Task_Mult, 0, args);
 }
+
 
 double cTaskLib::Task_Mult(cTaskContext& ctx) const
 {
@@ -2872,6 +2868,7 @@ void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs& en
   if (args) NewTask(name, "Division", &cTaskLib::Task_Div, 0, args);
 }
 
+
 double cTaskLib::Task_Div(cTaskContext& ctx) const
 {
   double quality = 0.0;
@@ -2916,6 +2913,7 @@ void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs& en
   if (args) NewTask(name, "Logarithm (natural)", &cTaskLib::Task_Log, 0, args);
 }
 
+
 double cTaskLib::Task_Log(cTaskContext& ctx) const
 {
   double quality = 0.0;
@@ -2942,7 +2940,6 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
   
   return quality;
 }
-
 
 
 void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
@@ -2986,7 +2983,6 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
 }
 
 
-
 void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
   cArgSchema schema;
@@ -2999,6 +2995,7 @@ void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& 
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "Logarithm (base-10)", &cTaskLib::Task_Log10, 0, args);
 }
+
 
 double cTaskLib::Task_Log10(cTaskContext& ctx) const
 {
@@ -3028,7 +3025,6 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
 }
 
 
-
 void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
   cArgSchema schema;
@@ -3041,6 +3037,7 @@ void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& e
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "Square Root", &cTaskLib::Task_Sqrt, 0, args);
 }
+
 
 double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
 {
@@ -3070,7 +3067,6 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
 }
 
 
-
 void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
   cArgSchema schema;
@@ -3083,6 +3079,7 @@ void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& e
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "Sine", &cTaskLib::Task_Sine, 0, args);
 }
+
 
 double cTaskLib::Task_Sine(cTaskContext& ctx) const
 {
@@ -3112,7 +3109,8 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs,
+			   tList<cString>* errors)
 {
   cArgSchema schema;
   
@@ -3124,6 +3122,7 @@ void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs&
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "Cosine", &cTaskLib::Task_Cosine, 0, args);
 }
+
 
 double cTaskLib::Task_Cosine(cTaskContext& ctx) const
 {
@@ -3151,9 +3150,6 @@ double cTaskLib::Task_Cosine(cTaskContext& ctx) const
   
   return quality;
 }
-
-
-
 
 
 double cTaskLib::Task_CommEcho(cTaskContext& ctx) const
@@ -3204,33 +3200,43 @@ double cTaskLib::Task_NetReceive(cTaskContext& ctx) const
   return 0.0;
 }
 
+
 //TODO: add movement tasks here
 
-double cTaskLib::Task_MoveUpGradient(cTaskContext& ctx) const {
+double cTaskLib::Task_MoveUpGradient(cTaskContext& ctx) const
+{
   if(ctx.GetOrganism()->GetGradientMovement() == 1.0)
     return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_MoveNeutralGradient(cTaskContext& ctx) const {
+
+double cTaskLib::Task_MoveNeutralGradient(cTaskContext& ctx) const
+{
   if(ctx.GetOrganism()->GetGradientMovement() == 0.0)
     return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_MoveDownGradient(cTaskContext& ctx) const {
+
+double cTaskLib::Task_MoveDownGradient(cTaskContext& ctx) const
+{
   if(ctx.GetOrganism()->GetGradientMovement() == -1.0)
     return 1.0;
   return 0.0;
 }
 
-double cTaskLib::Task_MoveNotUpGradient(cTaskContext& ctx) const {
+
+double cTaskLib::Task_MoveNotUpGradient(cTaskContext& ctx) const
+{
   if(Task_MoveUpGradient(ctx))
     return 0.0;
   return 1.0;
 }
 
-double cTaskLib::Task_MoveToRightSide(cTaskContext& ctx) const {	
+
+double cTaskLib::Task_MoveToRightSide(cTaskContext& ctx) const
+{
   cDeme* deme = ctx.GetOrganism()->GetDeme();
   std::pair<int, int> location = deme->GetCellPosition(ctx.GetOrganism()->GetCellID());
   
@@ -3238,13 +3244,16 @@ double cTaskLib::Task_MoveToRightSide(cTaskContext& ctx) const {
   return 0.0;
 }
 
-double cTaskLib::Task_MoveToLeftSide(cTaskContext& ctx) const {
+
+double cTaskLib::Task_MoveToLeftSide(cTaskContext& ctx) const
+{
   cDeme* deme = ctx.GetOrganism()->GetDeme();
   std::pair<int, int> location = deme->GetCellPosition(ctx.GetOrganism()->GetCellID());
   
   if (location.first == 0) return 1.0;
   return 0.0;
 }
+
 
 double cTaskLib::Task_Move(cTaskContext& ctx) const
 {
@@ -3256,6 +3265,7 @@ double cTaskLib::Task_Move(cTaskContext& ctx) const
   return 0.0;
 
 } //End cTaskLib::Task_Move()
+
 
 double cTaskLib::Task_MoveToTarget(cTaskContext& ctx) const
 //Note - a generic version of this is now at - Task_MoveToMovementEvent
@@ -3292,6 +3302,7 @@ double cTaskLib::Task_MoveToTarget(cTaskContext& ctx) const
   return 0;
 
 } //End cTaskLib::TaskMoveToTarget()
+
 
 double cTaskLib::Task_MoveToMovementEvent(cTaskContext& ctx) const
 {
@@ -3360,6 +3371,7 @@ double cTaskLib::Task_MoveBetweenMovementEvent(cTaskContext& ctx) const
   return 0.0;
 }
 
+
 double cTaskLib::Task_MoveToEvent(cTaskContext& ctx) const
 {
   cOrganism* org = ctx.GetOrganism();
@@ -3377,6 +3389,7 @@ double cTaskLib::Task_MoveToEvent(cTaskContext& ctx) const
   }
   return 0.0;
 }
+
 
 double cTaskLib::Task_EventKilled(cTaskContext& ctx) const
 {
@@ -3404,6 +3417,7 @@ void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, 
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "State Grid Path Traversal", &cTaskLib::Task_SGPathTraversal, 0, args);
 }
+
 
 double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
 {
@@ -3433,7 +3447,6 @@ double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
   }
   
   traversed -= ext_mem[3 + state];
-
   
   double quality = 0.0;
   
@@ -3446,43 +3459,45 @@ double cTaskLib::Task_SGPathTraversal(cTaskContext& ctx) const
 
 
 /* This task provides major points for perfect strings and some points for just
- storing stuff. */
-double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const {
-	double bonus = 0.0;
-	int min = -1;
-	int temp = 0;
-	for (unsigned int i = 0; i<m_strings.size(); i++) {
-		temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
-		
-		// Figure out what the minimum amount of a string is.
-		if ((min == -1) || (temp < min)){
-			min = temp;
-		}
-	}
+   storing stuff. */
+double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const
+{
+  double bonus = 0.0;
+  int min = -1;
+  int temp = 0;
+  for (unsigned int i = 0; i<m_strings.size(); i++) {
+    temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
+    
+    // Figure out what the minimum amount of a string is.
+    if ((min == -1) || (temp < min)){
+      min = temp;
+    }
+  }
+  
+  // Bonus for creating perfect strings!
+  bonus = min; 
 	
-	// Bonus for creating perfect strings!
-	bonus = min; 
-	
-	// Add in some value for just creating stuff
-	for (unsigned int i = 0; i<m_strings.size(); i++) {
-		temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
-		
-		if (temp > min) { 
-			bonus += (temp - min); 
-		}
-	} 
-	
-	// Update stats
-	m_world->GetStats().IncPerfectMatch(min);
-	if (min > 0) m_world->GetStats().IncPerfectMatchOrg();
-	
-	return bonus; 
+  // Add in some value for just creating stuff
+  for (unsigned int i = 0; i<m_strings.size(); i++) {
+    temp = ctx.GetOrganism()->GetNumberStringsOnHand(i); 
+    
+    if (temp > min) { 
+      bonus += (temp - min); 
+    }
+  } 
+  
+  // Update stats
+  m_world->GetStats().IncPerfectMatch(min);
+  if (min > 0) m_world->GetStats().IncPerfectMatchOrg();
+  
+  return bonus; 
 }
 
 
-void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr,
+				     cEnvReqs& envreqs, tList<cString>* errors)
 {
-	cArgSchema schema;
+  cArgSchema schema;
   
   // Integer Arguments
   schema.AddEntry("group_size", 0, 1);
@@ -3491,118 +3506,115 @@ void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr,
   if (args) NewTask(name, "FormSpatialGroups", &cTaskLib::Task_FormSpatialGroup, 0, args);
 }
 
+
 double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
 {
-	double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
-	double reward = 0.0;
-	int group_id = 0; 
-	if (ctx.GetOrganism()->HasOpinion()) {
-		group_id = ctx.GetOrganism()->GetOpinion().first;
-	}
-	double g = (double) m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
-	double num = (t-g) * (t-g);
-	double denom = (t*t);
-	
-	reward = 1 - (num/denom);
-	if (reward < 0) reward = 0;
-	/*if (orgs_in_group < ideal_group_size) {
-		reward = orgs_in_group*orgs_in_group;
-	} else {
-		reward = ideal_group_size*ideal_group_size;
-	}
-	reward = reward / ideal_group_size;*/
-	return reward;
+  double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  double reward = 0.0;
+  int group_id = 0; 
+  if (ctx.GetOrganism()->HasOpinion()) {
+    group_id = ctx.GetOrganism()->GetOpinion().first;
+  }
+  double g = (double) m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+  double num = (t-g) * (t-g);
+  double denom = (t*t);
+  
+  reward = 1 - (num/denom);
+  if (reward < 0) reward = 0;
+  /*if (orgs_in_group < ideal_group_size) {
+    reward = orgs_in_group*orgs_in_group;
+    } else {
+    reward = ideal_group_size*ideal_group_size;
+    }
+    reward = reward / ideal_group_size;*/
+  return reward;
 }
 
 
 /* Reward organisms for having a given group-id, provided the group is under the 
- max number of members.*/
-void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+   max number of members. */
+
+void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr,
+					   cEnvReqs& envreqs, tList<cString>* errors)
 {
-	cArgSchema schema;
+  cArgSchema schema;
   
   // Integer Arguments
   schema.AddEntry("group_size", 0, 1);
   schema.AddEntry("group_id", 1, 1);
-	
-
-  
+    
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "FormSpatialGroupWithID", &cTaskLib::Task_FormSpatialGroupWithID, 0, args);
-	
-	// Add this group id to the list in the instructions file. 
-	m_world->GetEnvironment().AddGroupID(args->GetInt(1));
-	
+  
+  // Add this group id to the list in the instructions file. 
+  m_world->GetEnvironment().AddGroupID(args->GetInt(1));
 }
+
 
 double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 {
-	double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
-	int des_group_id = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-
-	double reward = 0.0;
-	int group_id = -1; 
-	if (ctx.GetOrganism()->HasOpinion()) {
-		group_id = ctx.GetOrganism()->GetOpinion().first;
-	}
+  double t = (double) ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int des_group_id = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  
+  double reward = 0.0;
+  int group_id = -1; 
+  if (ctx.GetOrganism()->HasOpinion()) {
+    group_id = ctx.GetOrganism()->GetOpinion().first;
+  }
 	
-	// If the organism is in the group...
-	if (group_id == des_group_id) {
-		double g = (double) m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
-		// If the population size is less than the max size
-		if (g < t) {
-			reward = 1;
-		} else {
-			
-			double num = (t-g) * (t-g);
-			double denom = (t*t);
-			
-			if (denom > 0) {
-				reward = 1 - (num/denom);
-				if (reward < 0) reward = 0;
-			} else {
-				reward = 0;
-			}
-			
-		}
-		
-	}
-	
+  // If the organism is in the group...
+  if (group_id == des_group_id) {
+    double g = (double) m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+    // If the population size is less than the max size
+    if (g < t) {
+      reward = 1;
+    } else {
+      double num = (t-g) * (t-g);
+      double denom = (t*t);
+      
+      if (denom > 0) {
+	reward = 1 - (num/denom);
+	if (reward < 0) reward = 0;
+      } else {
+	reward = 0;
+      }
+    }	
+  }
 
-	return reward;
+  return reward;
 }
 
 /* Reward organisms for having a given group-id.*/
 void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
 {
-	cArgSchema schema;
+  cArgSchema schema;
   
   schema.AddEntry("patch_id", 0, 1);
 
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
   if (args) NewTask(name, "LiveOnPatchRes", &cTaskLib::Task_LiveOnPatchRes, 0, args);
 	
-	// Add this patch id to the list in the instructions file. 
-	m_world->GetEnvironment().AddGroupID(args->GetInt(0));
+  // Add this patch id to the list in the instructions file. 
+  m_world->GetEnvironment().AddGroupID(args->GetInt(0));
 	
 }
 
 double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
 {
-	int des_patch_id = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-	
-	double reward = 0.0;
-	int patch_id = -1; 
-	if (ctx.GetOrganism()->HasOpinion()) {
-		patch_id = ctx.GetOrganism()->GetOpinion().first;
-	}
-	
-	// If the organism is in the group...
-	if (patch_id == des_patch_id) {
-		reward = 1;
-	}
-	
-	return reward;
+  int des_patch_id = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  double reward = 0.0;
+  int patch_id = -1; 
+  if (ctx.GetOrganism()->HasOpinion()) {
+    patch_id = ctx.GetOrganism()->GetOpinion().first;
+  }
+  
+  // If the organism is in the group...
+  if (patch_id == des_patch_id) {
+    reward = 1;
+  }
+  
+  return reward;
 }
 
 
@@ -3620,15 +3632,15 @@ void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs
 
 double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
 {
-	tBuffer<int> buf(ctx.GetOutputBuffer());
-	double num_ones = 0.0;
-	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  tBuffer<int> buf(ctx.GetOutputBuffer());
+  double num_ones = 0.0;
+  int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  
+  for(int i=0; i<length; ++i) {
+    num_ones += buf[i];
+  }
 	
-	for(int i=0; i<length; ++i) {
-		num_ones += buf[i];
-	}
-	
-	return (num_ones/length);
+  return (num_ones/length);
 }
 
 
@@ -3636,7 +3648,7 @@ void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvRe
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);
-	schema.AddEntry("block_count", 1, 0);
+  schema.AddEntry("block_count", 1, 0);
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
   envreqs.SetMinOutputs(args->GetInt(0));
   if (args) NewTask(name, "royal-road", &cTaskLib::Task_RoyalRoad, 0, args);
@@ -3644,31 +3656,29 @@ void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvRe
 
 double cTaskLib::Task_RoyalRoad(cTaskContext& ctx) const
 {
-	// block size
-	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-	int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-	int block_size = floor(double(length) / double(block_count));
-	int block_reward; 
-	int current_spot;
-	double total_reward = 0.0;
-	tBuffer<int> buf(ctx.GetOutputBuffer());
-	
-	// Cycle through each block. If a block is correct, then add a reward.
-	for (int i=0; i<block_count; ++i) {
-		block_reward = 1;
-		// AND the elements of each block.
-		for (int j=0; j<block_size; ++j) {
-			current_spot = i*block_size + j;
-			block_reward &= buf[current_spot];
-		}
-		
-		//				if (block_reward) total_reward += (block_size);
-		if (block_reward) total_reward ++;
-		
-	}
-	
-	return (total_reward/block_count);
-	
+  // block size
+  int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  int block_size = floor(double(length) / double(block_count));
+  int block_reward; 
+  int current_spot;
+  double total_reward = 0.0;
+  tBuffer<int> buf(ctx.GetOutputBuffer());
+  
+  // Cycle through each block. If a block is correct, then add a reward.
+  for (int i=0; i<block_count; ++i) {
+    block_reward = 1;
+    // AND the elements of each block.
+    for (int j=0; j<block_size; ++j) {
+      current_spot = i*block_size + j;
+      block_reward &= buf[current_spot];
+    }
+    
+    //				if (block_reward) total_reward += (block_size);
+    if (block_reward) total_reward ++;
+  }
+  
+  return (total_reward/block_count);
 }
 
 
@@ -3676,9 +3686,9 @@ void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& arg
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);
-	schema.AddEntry("block_count", 1, 0);
-	schema.AddEntry("width", 2, 0);
-	schema.AddEntry("height", 3, 0);
+  schema.AddEntry("block_count", 1, 0);
+  schema.AddEntry("width", 2, 0);
+  schema.AddEntry("height", 3, 0);
   cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
   envreqs.SetMinOutputs(args->GetInt(0));
   if (args) NewTask(name, "royal-road-wd", &cTaskLib::Task_RoyalRoadWithDitches, 0, args);
@@ -3687,108 +3697,103 @@ void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& arg
 
 double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 {
+  // block size
+  int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
+  int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
+  int block_size = floor(double(length) / double(block_count));
+  int block_correct;
+  int num_b_blocks = 0;
+  int current_spot;
+  double total_reward = 0.0;
+  int width = ctx.GetTaskEntry()->GetArguments().GetInt(2);
+  int height = ctx.GetTaskEntry()->GetArguments().GetInt(3);
+  int next_case = 1;
+  int block_type = -1; // -1 undefined; 0 X; 1 A; 2 B
+  tBuffer<int> buf(ctx.GetOutputBuffer());
+  
+  // Cycle through each block. If a block is correct, then add a reward.
+  for (int i=0; i<block_count; ++i) {
+    block_correct = 1;
+    block_type = -1;
+    
+    
+    // Identify the type of block... 
+    // Check for block A
+    for (int j=0; j<(block_size); ++j) {
+      current_spot = i*block_size + j;
+      block_correct &= buf[current_spot];
+    } 
+    
+    if (block_correct) block_type = 1;
+    
+    // Check for block B
+    if (block_type == -1) {
+      block_correct = 1;
+      for (int j=0; j<block_size; ++j) {
 	
-	// block size
-	int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
-	int block_count = ctx.GetTaskEntry()->GetArguments().GetInt(1);
-	int block_size = floor(double(length) / double(block_count));
-	int block_correct;
-	int num_b_blocks = 0;
-	int current_spot;
-	double total_reward = 0.0;
-	int width = ctx.GetTaskEntry()->GetArguments().GetInt(2);
-	int height = ctx.GetTaskEntry()->GetArguments().GetInt(3);
-	int next_case = 1;
-	int block_type = -1; // -1 undefined; 0 X; 1 A; 2 B
-	tBuffer<int> buf(ctx.GetOutputBuffer());
+	current_spot = i*block_size + j;
 	
-	
-	// Cycle through each block. If a block is correct, then add a reward.
-	for (int i=0; i<block_count; ++i) {
-		block_correct = 1;
-		block_type = -1;
-		
-		
-		// Identify the type of block... 
-		// Check for block A
-		for (int j=0; j<(block_size); ++j) {
-			current_spot = i*block_size + j;
-			block_correct &= buf[current_spot];
-		} 
-		
-		if (block_correct) block_type = 1;
-		
-		// Check for block B
-		if (block_type == -1) {
-			block_correct = 1;
-			for (int j=0; j<block_size; ++j) {
-				
-				current_spot = i*block_size + j;
-				
-				// For starter's lets just check for blocks of type B
-				if (j < (block_size -width)) { 
-					if (buf[current_spot] == 0) block_correct = 0;
-				} else {
-					if (buf[current_spot] == 1) block_correct = 0;											
-				}
-				// this should escape the loop if the block reward is set to 0.
-				if (block_correct == 0) break;
-			}
-			if (block_correct) block_type = 2;
-		}
-		
-		
-		// Else consider it an X
-		if(block_type == -1) block_type = 0;
-		
-		// Based on the type of block... change states....
-		switch(next_case){
-			case 1:
-				if(block_type == 0) next_case = 2;
-				if(block_type == 1) {
-					total_reward = num_b_blocks + 2; 
-					next_case = 3; 
-				} 
-				if(block_type == 2) num_b_blocks++;
-				break;
-			case 2:
-				if(block_type == 1) total_reward = num_b_blocks + 2 - height;
-				next_case = 3;
-				break;
-			case 3: 		
-				break;
-			default: 
-				break;
-		}
-		
+	// For starter's lets just check for blocks of type B
+	if (j < (block_size -width)) { 
+	  if (buf[current_spot] == 0) block_correct = 0;
+	} else {
+	  if (buf[current_spot] == 1) block_correct = 0;
 	}
+	// this should escape the loop if the block reward is set to 0.
+	if (block_correct == 0) break;
+      }
+      if (block_correct) block_type = 2;
+    }
+
+    // Else consider it an X
+    if(block_type == -1) block_type = 0;
+    
+    // Based on the type of block... change states....
+    switch(next_case){
+    case 1:
+      if(block_type == 0) next_case = 2;
+      if(block_type == 1) {
+	total_reward = num_b_blocks + 2; 
+	next_case = 3; 
+      } 
+      if(block_type == 2) num_b_blocks++;
+      break;
+    case 2:
+      if(block_type == 1) total_reward = num_b_blocks + 2 - height;
+      next_case = 3;
+      break;
+    case 3: 		
+      break;
+    default: 
+      break;
+    }
+  }
 	
-	return (total_reward/block_count);
+  return (total_reward/block_count);
 }
 
 	
 	
 //! Load the command line for checking an opinion.
 void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors) {
-		cArgSchema schema;
-		schema.AddEntry("opinion", 0, cArgSchema::SCHEMA_INT);
-		cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
-		if(args) {
-			NewTask(name, "Whether organism's opinion is set to value.", &cTaskLib::Task_OpinionIs, 0, args);
-		}
-	} 
+  cArgSchema schema;
+  schema.AddEntry("opinion", 0, cArgSchema::SCHEMA_INT);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  if(args) {
+    NewTask(name, "Whether organism's opinion is set to value.", &cTaskLib::Task_OpinionIs, 0, args);
+  }
+} 
 	
 //! This task is complete if this organism's current opinion is set to a configured value.
-double cTaskLib::Task_OpinionIs(cTaskContext& ctx) const {
-		cOrganism* org = ctx.GetOrganism();
-		const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
-		int opinion = args.GetInt(0);
-		
-		if(org->HasOpinion()) {
-			return org->GetOpinion().first == opinion;
-		} else {
-			return 0.0;
-		}
-	}
-
-
+double cTaskLib::Task_OpinionIs(cTaskContext& ctx) const
+{
+  cOrganism* org = ctx.GetOrganism();
+  const cArgContainer& args = ctx.GetTaskEntry()->GetArguments();
+  int opinion = args.GetInt(0);
+  
+  if (org->HasOpinion()) {
+    return org->GetOpinion().first == opinion;
+  } else {
+    return 0.0;
+  }
+}

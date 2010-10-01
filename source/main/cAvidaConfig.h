@@ -138,10 +138,10 @@ private:
   // It is used to manage the various types of entries in a dynamic fashion.
   class cBaseConfigEntry {
   private:
-    const cString config_name;   // Name of this setting
-    const cString type;          // What type does this entry return?
-    cString default_value;       // Value to use if not found in config file.
-    const cString description;   // Explaination of the use of this setting
+    tArray<cString> config_name;  // Names for this setting (first is main name; remainder are aliases)
+    const cString type;           // What type does this entry return?
+    cString default_value;        // Value to use if not found in config file.
+    const cString description;    // Explaination of the use of this setting
     
     // If we automatically regenerate this file to optimize its performace,
     // we can explicitly build some of these classes to return constant 
@@ -156,12 +156,16 @@ private:
     virtual void LoadString(const cString& str_value) = 0;
     virtual bool EqualsString(const cString& str_value) const = 0;
     
-    const cString& GetName() const { return config_name; }
+    const cString& GetName(int id=0) const { return config_name[id]; }
+    const tArray<cString>& GetNames() const { return config_name; }
     const cString& GetType() const { return type; }
     const cString& GetDefault() const { return default_value; }
     const cString& GetDesc() const { return description; }
     bool GetUseOveride() const { return use_overide; }
-    
+    int GetNumNames() const { return config_name.GetSize(); }
+
+    void AddAlias(const cString & alias) { config_name.Push(alias); }
+
     virtual cString AsString() const = 0;
   };
   
@@ -251,6 +255,8 @@ private:
 public:
   cAvidaConfig()
   {
+    INHERIT_MULTITHREAD.AddAlias("INHERIT_MULTI_THREAD_CLASSIFICATION");
+
     m_group_list.Transfer(global_group_list);
     m_format_list.Transfer(global_format_list);
     global_list_mutex.Unlock();
@@ -269,7 +275,6 @@ public:
     cGlobalListLockAcquire() { global_list_mutex.Lock(); }
   } __ListLock;
   
-  // CSTART
   // -------- General config options --------
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
@@ -300,8 +305,7 @@ public:
   
   
   // -------- Mutation config options --------
-  CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutation rates");
-  
+  CONFIG_ADD_GROUP(MUTATION_GROUP, "Mutation rates");  
   CONFIG_ADD_VAR(COPY_MUT_PROB, double, 0.0075, "Mutation rate (per copy)");
   CONFIG_ADD_VAR(COPY_INS_PROB, double, 0.0, "Insertion rate (per copy)");
   CONFIG_ADD_VAR(COPY_DEL_PROB, double, 0.0, "Deletion rate (per copy)");
@@ -759,6 +763,7 @@ public:
   CONFIG_ADD_GROUP(ALARM_GROUP, "Alarm Settings");
   CONFIG_ADD_VAR(BCAST_HOPS, int, 1, "Number of hops to broadcast an alarm");
   CONFIG_ADD_VAR(ALARM_SELF, bool, 0, "Does sending an alarm move sender IP to alarm label?\n0=no\n1=yes");
+
 	
   //--------- Division of Labor --------------------
   CONFIG_ADD_GROUP(DIVISION_OF_LABOR_GROUP, "Division of Labor settings");	
@@ -767,6 +772,7 @@ public:
   CONFIG_ADD_VAR(TASK_SWITCH_PENALTY, int, 0, "Cost of task switching in cycles");
   CONFIG_ADD_VAR(TASK_SWITCH_PENALTY_TYPE, int, 0, "Type of task switch cost: (0) none (1) learning, (2) retooling");
   CONFIG_ADD_VAR(RES_FOR_DEME_REP, int, 0, "The amount of resources that must be consumed prior to automatic deme replication");
+
 
   // -------- DEPRECATED ---------
   CONFIG_ADD_GROUP(DEPRECATED_GROUP, "DEPRECATED (New functionality listed in comments)");
@@ -783,7 +789,6 @@ public:
   CONFIG_ADD_GROUP(DEVEL_GROUP, "IN DEVELOPMENT (May not function correctly)");
   CONFIG_ADD_VAR(WORLD_Z, int, 1, "Depth of the Avida world");
 
-  // CEND
 	
 #endif
   
