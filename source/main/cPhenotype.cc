@@ -1282,13 +1282,13 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     // Modify TaskQuality amount based on refractory period
     // Logistic equation using refractory period
     // in update units from configuration file.  @WRE 03-20-07, 04-17-07
-
+		
     if (task_refractory_period == 0.0) {
       refract_factor = 1.0;
     } else {
       refract_factor = 1.0 - (1.0 / (1.0 + exp((cur_update_time - cur_task_time[i]) - task_refractory_period * 0.5)));
     }
-
+		
     if (result.TaskDone(i) == true) {
       cur_task_count[i]++;
       eff_task_count[i]++;
@@ -1296,29 +1296,29 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       
       // if we want to generate and age-task histogram
       if (m_world->GetConfig().AGE_POLY_TRACKING.Get()) {
-	m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
+				m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
       }
     }
     
     if (result.TaskQuality(i) > 0) {
       cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
       if (result.UsedEnvResource() == false) {
-	cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
+				cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
       }
     }
-
+		
     cur_task_value[i] = result.TaskValue(i);
     cur_task_time[i] = cur_update_time; // Find out time from context
   }
-
+	
   for (int i = 0; i < num_tasks; i++) {
     if (result.TaskDone(i) && !last_task_count[i]) {
       m_world->GetStats().AddNewTaskCount(i);
       int prev_num_tasks = 0;
       int cur_num_tasks = 0;
       for (int j=0; j< num_tasks; j++) {
-	if (last_task_count[j]>0) prev_num_tasks++;
-	if (cur_task_count[j]>0) cur_num_tasks++;
+				if (last_task_count[j]>0) prev_num_tasks++;
+				if (cur_task_count[j]>0) cur_num_tasks++;
       }
       m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
     }
@@ -1334,29 +1334,29 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       // then consider it to be a task switch.
       // If applicable, add in the penalty.
       switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
-      case 0: { // no penalty
-	break;
-      }
-      case 1: { // "learning" cost
-	if (cur_reaction_count[i] == 0) {
-	  ++num_new_unique_reactions;
-	}
-	break;
-      }
-      case 2: { // "retooling" cost
-	if (last_task_id == -1) {
-	  last_task_id = i;
-	}					
-	if (last_task_id != i) {
-	  num_new_unique_reactions++;
-	  last_task_id = i;
-	}
-	break;
-      }
-      default: {
-	assert(false);
-	break;
-      }
+				case 0: { // no penalty
+					break;
+				}
+				case 1: { // "learning" cost
+					if (cur_reaction_count[i] == 1) {
+						++num_new_unique_reactions;
+					}
+					break;
+				}
+				case 2: { // "retooling" cost
+					if (last_task_id == -1) {
+						last_task_id = i;
+					}					
+					if (last_task_id != i) {
+						num_new_unique_reactions++;
+						last_task_id = i;
+					}
+					break;
+				}
+				default: {
+					assert(false);
+					break;
+				}
       }
     }		
   }
