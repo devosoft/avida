@@ -1353,6 +1353,16 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
 					}
 					break;
 				}
+				case 3: { // centrifuge
+					// task switching cost is calculated based on 
+					// the distance between the two tasks.
+					
+					int distance = abs(i - last_task_id);
+					num_new_unique_reactions += distance;
+					last_task_id = i;
+
+					break;
+				}
 				default: {
 					assert(false);
 					break;
