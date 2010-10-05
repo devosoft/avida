@@ -313,10 +313,6 @@
 		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
 		7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F57410D956A400ECFBA1 /* cParasite.cc */; };
-		7090F71810E16CC400ECFBA1 /* cBGSpecies.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F71610E16CC400ECFBA1 /* cBGSpecies.h */; };
-		7090F71910E16CC400ECFBA1 /* cBGSpecies.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F71710E16CC400ECFBA1 /* cBGSpecies.cc */; };
-		7090F72F10E1731900ECFBA1 /* cBGSpeciesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F72D10E1731900ECFBA1 /* cBGSpeciesManager.h */; };
-		7090F73010E1731900ECFBA1 /* cBGSpeciesManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F72E10E1731900ECFBA1 /* cBGSpeciesManager.cc */; };
 		7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = 7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */; };
 		7099D6021215BB9500EB3E46 /* cGenomeTestMetrics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099D6001215BB9500EB3E46 /* cGenomeTestMetrics.cc */; };
 		709A1EEB0EB6C42D006090AF /* cOrgMovementPredicate.h in Headers */ = {isa = PBXBuildFile; fileRef = 709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */; };
@@ -939,10 +935,6 @@
 		708BF3010AB65DD300A923BF /* cEventList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventList.h; sourceTree = "<group>"; };
 		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
 		7090F57410D956A400ECFBA1 /* cParasite.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParasite.cc; sourceTree = "<group>"; };
-		7090F71610E16CC400ECFBA1 /* cBGSpecies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBGSpecies.h; sourceTree = "<group>"; };
-		7090F71710E16CC400ECFBA1 /* cBGSpecies.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBGSpecies.cc; sourceTree = "<group>"; };
-		7090F72D10E1731900ECFBA1 /* cBGSpeciesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBGSpeciesManager.h; sourceTree = "<group>"; };
-		7090F72E10E1731900ECFBA1 /* cBGSpeciesManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBGSpeciesManager.cc; sourceTree = "<group>"; };
 		70920C1C0A9CCE2C00757CDB /* analyze_samples.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = analyze_samples.html; sourceTree = "<group>"; };
 		70920C1D0A9CCE2C00757CDB /* code_c++_intro.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = "code_c++_intro.html"; sourceTree = "<group>"; };
 		70920C1E0A9CCE2C00757CDB /* code_death_birth.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_death_birth.html; sourceTree = "<group>"; };
@@ -1839,10 +1831,6 @@
 				701E748310A37DB2006B6193 /* cBioGroupManager.cc */,
 				70B547FA10AB22920013E999 /* cBGGenotypeManager.h */,
 				70B547FB10AB22920013E999 /* cBGGenotypeManager.cc */,
-				7090F71610E16CC400ECFBA1 /* cBGSpecies.h */,
-				7090F71710E16CC400ECFBA1 /* cBGSpecies.cc */,
-				7090F72D10E1731900ECFBA1 /* cBGSpeciesManager.h */,
-				7090F72E10E1731900ECFBA1 /* cBGSpeciesManager.cc */,
 				703178AC11AD711B00F81E21 /* cBioGroupData.h */,
 				7070E6BE12109C1D0056BE1E /* cBioGroupListener.cc */,
 				7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */,
@@ -2267,8 +2255,6 @@
 				B462B5C10FA0F47D00F379D1 /* cPhenPlastSummary.h in Headers */,
 				702082900FB9F2DF00637AD6 /* cBitArray.h in Headers */,
 				7090F57510D956A400ECFBA1 /* cParasite.h in Headers */,
-				7090F71810E16CC400ECFBA1 /* cBGSpecies.h in Headers */,
-				7090F72F10E1731900ECFBA1 /* cBGSpeciesManager.h in Headers */,
 				703178AD11AD711B00F81E21 /* cBioGroupData.h in Headers */,
 				7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */,
 				701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */,
@@ -2652,8 +2638,6 @@
 				70B547FD10AB22920013E999 /* cBGGenotypeManager.cc in Sources */,
 				7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */,
 				700B6D4110DFFDD000A1F8F1 /* cMetaGenome.cc in Sources */,
-				7090F71910E16CC400ECFBA1 /* cBGSpecies.cc in Sources */,
-				7090F73010E1731900ECFBA1 /* cBGSpeciesManager.cc in Sources */,
 				7034D0F111CBEA4300020AC4 /* cPhenPlastUtil.cc in Sources */,
 				701B343011E4CC1E00FEF49A /* cSexualAncestry.cc in Sources */,
 				7070E6BF12109C1D0056BE1E /* cBioGroupListener.cc in Sources */,
