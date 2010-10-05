@@ -104,7 +104,12 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     // Standard Conditionals
     tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, nInstFlag::DEFAULT, "Execute next instruction if ?BX?!=?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, nInstFlag::DEFAULT, "Execute next instruction if ?BX? < ?CX?, else skip it"),
-    tInstLibEntry<tMethod>("if-gtr-0", &cHardwareExperimental::Inst_IfGreaterThanZero, nInstFlag::DEFAULT, "Execute next instruction if ?BX? > 0, else skip it"),
+    tInstLibEntry<tMethod>("if-not-0", &cHardwareExperimental::Inst_IfNotZero, 0, "Execute next instruction if ?BX? != 0, else skip it"),
+    tInstLibEntry<tMethod>("if-equ-0", &cHardwareExperimental::Inst_IfEqualZero, 0, "Execute next instruction if ?BX? == 0, else skip it"),
+    tInstLibEntry<tMethod>("if-gtr-0", &cHardwareExperimental::Inst_IfGreaterThanZero, 0, "Execute next instruction if ?BX? > 0, else skip it"),
+    tInstLibEntry<tMethod>("if-less-0", &cHardwareExperimental::Inst_IfLessThanZero, 0, "Execute next instruction if ?BX? < 0, else skip it"),
+    tInstLibEntry<tMethod>("if-gtr-X", &cHardwareExperimental::Inst_IfGtrX),
+    tInstLibEntry<tMethod>("if-equ-X", &cHardwareExperimental::Inst_IfEquX),
 
     tInstLibEntry<tMethod>("if-cons", &cHardwareExperimental::Inst_IfConsensus, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
     tInstLibEntry<tMethod>("if-cons-24", &cHardwareExperimental::Inst_IfConsensus24, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
@@ -152,6 +157,14 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("search-b-direct", &cHardwareExperimental::Inst_SearchB_Direct, 0, "Find direct template backward and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
+    tInstLibEntry<tMethod>("mov-head-if-n-equ", &cHardwareExperimental::Inst_MoveHeadIfNEqu, nInstFlag::DEFAULT, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+    tInstLibEntry<tMethod>("mov-head-if-less", &cHardwareExperimental::Inst_MoveHeadIfLess, nInstFlag::DEFAULT, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
+
+    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows"),
+    tInstLibEntry<tMethod>("goto-if-n-equ", &cHardwareExperimental::Inst_GotoIfNEqu, 0, "Move IP to labeled position if BX != CX"),
+    tInstLibEntry<tMethod>("goto-if-less", &cHardwareExperimental::Inst_GotoIfLess, 0, "Move IP to labeled position if BX < CX"),
+    tInstLibEntry<tMethod>("goto-if-cons", &cHardwareExperimental::Inst_GotoConsensus, 0, "Move IP to the labeled position if BX consensus"), 
+    tInstLibEntry<tMethod>("goto-if-cons-24", &cHardwareExperimental::Inst_GotoConsensus24, 0, "Move IP to the labeled position if BX consensus"),
     
     tInstLibEntry<tMethod>("jmp-head", &cHardwareExperimental::Inst_JumpHead, nInstFlag::DEFAULT, "Move head ?Flow? by amount in ?CX? register"),
     tInstLibEntry<tMethod>("get-head", &cHardwareExperimental::Inst_GetHead, nInstFlag::DEFAULT, "Copy the position of the ?IP? head into ?CX?"),
@@ -174,11 +187,6 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
 
     tInstLibEntry<tMethod>("die", &cHardwareExperimental::Inst_Die, nInstFlag::STALL, "Instantly kills the organism"),
 
-    
-    // Goto Variants
-    tInstLibEntry<tMethod>("goto", &cHardwareExperimental::Inst_Goto, 0, "Move IP to labeled position matching the label that follows"),
-    tInstLibEntry<tMethod>("goto-if-cons", &cHardwareExperimental::Inst_GotoConsensus, 0, "Move IP to the labeled position if BX consensus"), 
-    tInstLibEntry<tMethod>("goto-if-cons-24", &cHardwareExperimental::Inst_GotoConsensus24, 0, "Move IP to the labeled position if BX consensus"), 
     
     
     // Promoter Model
@@ -1141,12 +1149,86 @@ bool cHardwareExperimental::Inst_IfLess(cAvidaContext& ctx) // Execute next if ?
   return true;
 }
 
+bool cHardwareExperimental::Inst_IfNotZero(cAvidaContext& ctx)  // Execute next if ?bx? != 0
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (GetRegister(op1) == 0)  getIP().Advance();
+  return true;
+}
+bool cHardwareExperimental::Inst_IfEqualZero(cAvidaContext& ctx)  // Execute next if ?bx? == 0
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (GetRegister(op1) != 0)  getIP().Advance();
+  return true;
+}
 bool cHardwareExperimental::Inst_IfGreaterThanZero(cAvidaContext& ctx)  // Execute next if ?bx? > 0
 {
   const int op1 = FindModifiedRegister(REG_BX);
   if (GetRegister(op1) <= 0)  getIP().Advance();
   return true;
 }
+
+bool cHardwareExperimental::Inst_IfLessThanZero(cAvidaContext& ctx)  // Execute next if ?bx? < 0
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  if (GetRegister(op1) >= 0)  getIP().Advance();
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_IfGtrX(cAvidaContext& ctx)       // Execute next if BX > X; X value set according to NOP label
+{
+  // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
+  //    no nop label (default): valueToCompare = 1;
+  //    nop-A: toggles valueToCompare sign-bit 
+  //    nop-B: valueToCompare left-shift by 1-bit
+  //    nop-C: valueToCompare left-shift by 2-bits
+  //    nop-D: valueToCompare left-shift by 3-bits, etc.
+  
+  int valueToCompare = 1;
+  
+  ReadLabel();
+  const cCodeLabel& shift_label = GetLabel();
+  for (int i = 0; i < shift_label.GetSize(); i++) {
+    if (shift_label[i] == REG_AX) {
+      valueToCompare *= -1;
+    } else {
+      valueToCompare <<= shift_label[i];
+    }
+  }
+  
+  if (GetRegister(REG_BX) <= valueToCompare)  getIP().Advance();
+  
+  return true;
+}
+
+bool cHardwareExperimental::Inst_IfEquX(cAvidaContext& ctx)       // Execute next if BX == X; X value set according to NOP label
+{
+  // Compares value in BX to a specific value.  The value to compare to is determined by the nop label as follows:
+  //    no nop label (default): valueToCompare = 1;
+  //    nop-A: toggles valueToCompare sign-bit 
+  //    nop-B: valueToCompare left-shift by 1-bit
+  //    nop-C: valueToCompare left-shift by 2-bits
+  //    nop-D: valueToCompare left-shift by 3-bits, etc.
+  
+  int valueToCompare = 1;
+  
+  ReadLabel();
+  const cCodeLabel& shift_label = GetLabel();
+  for (int i = 0; i < shift_label.GetSize(); i++) {
+    if (shift_label[i] == REG_AX) {
+      valueToCompare *= -1;
+    } else {
+      valueToCompare <<= shift_label[i];
+    }
+  }
+  
+  if (GetRegister(REG_BX) != valueToCompare)  getIP().Advance();
+  
+  return true;
+}
+
+
 
 bool cHardwareExperimental::Inst_IfConsensus(cAvidaContext& ctx)
 {
@@ -1467,6 +1549,89 @@ bool cHardwareExperimental::Inst_MoveHead(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareExperimental::Inst_MoveHeadIfNEqu(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+  if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
+    getHead(head_used).Set(getHead(target));
+    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+  }
+  return true;
+}
+
+bool cHardwareExperimental::Inst_MoveHeadIfLess(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  const int head_used = FindModifiedHead(nHardware::HEAD_IP);
+  const int target = FindModifiedHead(nHardware::HEAD_FLOW);
+  if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
+    getHead(head_used).Set(getHead(target));
+    if (head_used == nHardware::HEAD_IP) m_advance_ip = false;
+  }
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_Goto(cAvidaContext& ctx)
+{
+  ReadLabel();
+  cHeadCPU found_pos = FindLabelForward(true);
+  getIP().Set(found_pos);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GotoIfNEqu(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  ReadLabel();
+  if (m_threads[m_cur_thread].reg[op1].value != m_threads[m_cur_thread].reg[op2].value) {
+    cHeadCPU found_pos = FindLabelForward(true);
+    getIP().Set(found_pos);
+  }
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GotoIfLess(cAvidaContext& ctx)
+{
+  const int op1 = FindModifiedRegister(REG_BX);
+  const int op2 = FindModifiedNextRegister(op1);
+  ReadLabel();
+  if (m_threads[m_cur_thread].reg[op1].value < m_threads[m_cur_thread].reg[op2].value) {
+    cHeadCPU found_pos = FindLabelForward(true);
+    getIP().Set(found_pos);
+  }
+  return true;
+}
+
+
+bool cHardwareExperimental::Inst_GotoConsensus(cAvidaContext& ctx)
+{
+  if (BitCount(GetRegister(REG_BX)) < CONSENSUS) return true;
+  
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelForward(true);
+  getIP().Set(found_pos);
+  return true;
+}
+
+bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext& ctx)
+{
+  if (BitCount(GetRegister(REG_BX) & MASK24) < CONSENSUS24) return true;
+  
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindLabelForward(true);
+  getIP().Set(found_pos);
+  return true;
+}
+
+
 bool cHardwareExperimental::Inst_JumpHead(cAvidaContext& ctx)
 {
   const int head_used = FindModifiedHead(nHardware::HEAD_IP);
@@ -1721,37 +1886,6 @@ bool cHardwareExperimental::Inst_SetFlow(cAvidaContext& ctx)
   getHead(nHardware::HEAD_FLOW).Set(GetRegister(reg_used));
   return true; 
 }
-
-bool cHardwareExperimental::Inst_Goto(cAvidaContext& ctx)
-{
-  ReadLabel();
-  cHeadCPU found_pos = FindLabelForward(true);
-  getIP().Set(found_pos);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GotoConsensus(cAvidaContext& ctx)
-{
-  if (BitCount(GetRegister(REG_BX)) < CONSENSUS) return true;
-  
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelForward(true);
-  getIP().Set(found_pos);
-  return true;
-}
-
-bool cHardwareExperimental::Inst_GotoConsensus24(cAvidaContext& ctx)
-{
-  if (BitCount(GetRegister(REG_BX) & MASK24) < CONSENSUS24) return true;
-  
-  ReadLabel();
-  GetLabel().Rotate(1, NUM_NOPS);
-  cHeadCPU found_pos = FindLabelForward(true);
-  getIP().Set(found_pos);
-  return true;
-}
-
 
 
 
