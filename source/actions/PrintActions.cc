@@ -1748,16 +1748,16 @@ class cActionPrintPlasticGenotypeSummary : public cAction
       PrintHeader(fot);
       m_first_run = false;
     }
-    double median = -1.0;           //Will hold the median phenotypic value (excluding 0.0)
-    double task_median = -1.0;      //Will hold the median phenotypic entropy value of only those genotypes showing task plasticity
-    tArray<double> pp_entropy;      //Will hold the phenotypic entropy values greater than 0.0
-    tArray<double> pp_taskentropy;  //Will hold phenotypic entropy values for only those organisms with task plasticity
-    int num_plast_genotypes = 0;  //Number of plastic genotypes
-    int num_genotypes;            //Number of genotypes in the population
-    int num_orgs = 0;             //Number of organisms in the population
-    int num_plast_orgs = 0;       //Number of plastic organisms in the population
-    int gen_task_plast = 0;       //Number of genotypes with task plasticity
-    int org_task_plast = 0;       //Number of organisms with task plasticity
+    double median = -1.0;           // Will hold the median phenotypic value (excluding 0.0)
+    double task_median = -1.0;      // Will hold the median phenotypic entropy value of only those genotypes showing task plasticity
+    tArray<double> pp_entropy;      // Will hold the phenotypic entropy values greater than 0.0
+    tArray<double> pp_taskentropy;  // Will hold phenotypic entropy values for only those organisms with task plasticity
+    int num_plast_genotypes = 0;    // Number of plastic genotypes
+    int num_genotypes = 0;          // Number of genotypes in the population
+    int num_orgs = 0;               // Number of organisms in the population
+    int num_plast_orgs = 0;         // Number of plastic organisms in the population
+    int gen_task_plast = 0;         // Number of genotypes with task plasticity
+    int org_task_plast = 0;         // Number of organisms with task plasticity
     
     //Collect data using methods from the correct mode
     if (ctx.GetAnalyzeMode()){  // A N A L Y Z E    M O D E

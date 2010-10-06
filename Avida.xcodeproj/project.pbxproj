@@ -980,6 +980,47 @@
 		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
+		70A1E325125CDF2B00D56AC4 /* cCoreView_Info.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cCoreView_Info.cc; sourceTree = "<group>"; };
+		70A1E326125CDF2B00D56AC4 /* cCoreView_Info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cCoreView_Info.h; sourceTree = "<group>"; };
+		70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cCoreView_Map.cc; sourceTree = "<group>"; };
+		70A1E328125CDF2B00D56AC4 /* cCoreView_Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cCoreView_Map.h; sourceTree = "<group>"; };
+		70A1E329125CDF2B00D56AC4 /* LAYOUT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LAYOUT; sourceTree = "<group>"; };
+		70A1E32B125CDF2B00D56AC4 /* cColor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cColor.cc; sourceTree = "<group>"; };
+		70A1E32C125CDF2B00D56AC4 /* cColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cColor.h; sourceTree = "<group>"; };
+		70A1E32D125CDF2B00D56AC4 /* cGUIBaseDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIBaseDraw.h; sourceTree = "<group>"; };
+		70A1E32E125CDF2B00D56AC4 /* cGUIBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIBox.h; sourceTree = "<group>"; };
+		70A1E32F125CDF2B00D56AC4 /* cGUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIButton.h; sourceTree = "<group>"; };
+		70A1E330125CDF2B00D56AC4 /* cGUICanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUICanvas.h; sourceTree = "<group>"; };
+		70A1E331125CDF2B00D56AC4 /* cGUIColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIColor.h; sourceTree = "<group>"; };
+		70A1E332125CDF2B00D56AC4 /* cGUIContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIContainer.h; sourceTree = "<group>"; };
+		70A1E333125CDF2B00D56AC4 /* cGUIEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIEvent.h; sourceTree = "<group>"; };
+		70A1E334125CDF2B00D56AC4 /* cGUIMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIMenu.h; sourceTree = "<group>"; };
+		70A1E335125CDF2B00D56AC4 /* cGUIMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIMenuItem.h; sourceTree = "<group>"; };
+		70A1E336125CDF2B00D56AC4 /* cGUIScrollArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIScrollArea.h; sourceTree = "<group>"; };
+		70A1E337125CDF2B00D56AC4 /* cGUISlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUISlider.h; sourceTree = "<group>"; };
+		70A1E338125CDF2B00D56AC4 /* cGUIWidget.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGUIWidget.cc; sourceTree = "<group>"; };
+		70A1E339125CDF2B00D56AC4 /* cGUIWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIWidget.h; sourceTree = "<group>"; };
+		70A1E33A125CDF2B00D56AC4 /* cGUIWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIWindow.h; sourceTree = "<group>"; };
+		70A1E33B125CDF2B00D56AC4 /* tGUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUIButton.h; sourceTree = "<group>"; };
+		70A1E33C125CDF2B00D56AC4 /* tGUIMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUIMenu.h; sourceTree = "<group>"; };
+		70A1E33D125CDF2B00D56AC4 /* tGUIMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUIMenuItem.h; sourceTree = "<group>"; };
+		70A1E33E125CDF2B00D56AC4 /* tGUISlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUISlider.h; sourceTree = "<group>"; };
+		70A1E340125CDF9F00D56AC4 /* avidalogo.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = avidalogo.xpm; sourceTree = "<group>"; };
+		70A1E341125CDF9F00D56AC4 /* cDriver_FLTKViewer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver_FLTKViewer.cc; sourceTree = "<group>"; };
+		70A1E342125CDF9F00D56AC4 /* cDriver_FLTKViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDriver_FLTKViewer.h; sourceTree = "<group>"; };
+		70A1E343125CDF9F00D56AC4 /* cFLTKBaseDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKBaseDraw.h; sourceTree = "<group>"; };
+		70A1E344125CDF9F00D56AC4 /* cFLTKBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKBox.h; sourceTree = "<group>"; };
+		70A1E345125CDF9F00D56AC4 /* cFLTKGridView.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cFLTKGridView.cc; sourceTree = "<group>"; };
+		70A1E346125CDF9F00D56AC4 /* cFLTKGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKGridView.h; sourceTree = "<group>"; };
+		70A1E347125CDF9F00D56AC4 /* cFLTKLegend.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cFLTKLegend.cc; sourceTree = "<group>"; };
+		70A1E348125CDF9F00D56AC4 /* cFLTKLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKLegend.h; sourceTree = "<group>"; };
+		70A1E349125CDF9F00D56AC4 /* cFLTKWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKWidget.h; sourceTree = "<group>"; };
+		70A1E34A125CDF9F00D56AC4 /* cFLTKWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKWindow.h; sourceTree = "<group>"; };
+		70A1E34B125CDF9F00D56AC4 /* fltk-defs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "fltk-defs.cc"; sourceTree = "<group>"; };
+		70A1E34C125CDF9F00D56AC4 /* fltk-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fltk-defs.h"; sourceTree = "<group>"; };
+		70A1E34D125CDF9F00D56AC4 /* tFLTKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFLTKButton.h; sourceTree = "<group>"; };
+		70A1E34E125CDF9F00D56AC4 /* tFLTKMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFLTKMenu.h; sourceTree = "<group>"; };
+		70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "viewer-fltk.cc"; sourceTree = "<group>"; };
 		70A33CC00D878407008EF976 /* as_overview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = as_overview.html; sourceTree = "<group>"; };
 		70A33CE80D8DBD1E008EF976 /* cASFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASFunction.h; sourceTree = "<group>"; };
 		70A33CF40D8DCBB4008EF976 /* ASCoreLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCoreLib.h; sourceTree = "<group>"; };
@@ -1676,6 +1717,68 @@
 			path = notes;
 			sourceTree = "<group>";
 		};
+		70A1E324125CDF2B00D56AC4 /* viewer-core */ = {
+			isa = PBXGroup;
+			children = (
+				70A1E325125CDF2B00D56AC4 /* cCoreView_Info.cc */,
+				70A1E326125CDF2B00D56AC4 /* cCoreView_Info.h */,
+				70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */,
+				70A1E328125CDF2B00D56AC4 /* cCoreView_Map.h */,
+				70A1E329125CDF2B00D56AC4 /* LAYOUT */,
+			);
+			path = "viewer-core";
+			sourceTree = "<group>";
+		};
+		70A1E32A125CDF2B00D56AC4 /* viewer-coreGUI */ = {
+			isa = PBXGroup;
+			children = (
+				70A1E32B125CDF2B00D56AC4 /* cColor.cc */,
+				70A1E32C125CDF2B00D56AC4 /* cColor.h */,
+				70A1E32D125CDF2B00D56AC4 /* cGUIBaseDraw.h */,
+				70A1E32E125CDF2B00D56AC4 /* cGUIBox.h */,
+				70A1E32F125CDF2B00D56AC4 /* cGUIButton.h */,
+				70A1E330125CDF2B00D56AC4 /* cGUICanvas.h */,
+				70A1E331125CDF2B00D56AC4 /* cGUIColor.h */,
+				70A1E332125CDF2B00D56AC4 /* cGUIContainer.h */,
+				70A1E333125CDF2B00D56AC4 /* cGUIEvent.h */,
+				70A1E334125CDF2B00D56AC4 /* cGUIMenu.h */,
+				70A1E335125CDF2B00D56AC4 /* cGUIMenuItem.h */,
+				70A1E336125CDF2B00D56AC4 /* cGUIScrollArea.h */,
+				70A1E337125CDF2B00D56AC4 /* cGUISlider.h */,
+				70A1E338125CDF2B00D56AC4 /* cGUIWidget.cc */,
+				70A1E339125CDF2B00D56AC4 /* cGUIWidget.h */,
+				70A1E33A125CDF2B00D56AC4 /* cGUIWindow.h */,
+				70A1E33B125CDF2B00D56AC4 /* tGUIButton.h */,
+				70A1E33C125CDF2B00D56AC4 /* tGUIMenu.h */,
+				70A1E33D125CDF2B00D56AC4 /* tGUIMenuItem.h */,
+				70A1E33E125CDF2B00D56AC4 /* tGUISlider.h */,
+			);
+			path = "viewer-coreGUI";
+			sourceTree = "<group>";
+		};
+		70A1E33F125CDF9F00D56AC4 /* viewer-fltk */ = {
+			isa = PBXGroup;
+			children = (
+				70A1E340125CDF9F00D56AC4 /* avidalogo.xpm */,
+				70A1E341125CDF9F00D56AC4 /* cDriver_FLTKViewer.cc */,
+				70A1E342125CDF9F00D56AC4 /* cDriver_FLTKViewer.h */,
+				70A1E343125CDF9F00D56AC4 /* cFLTKBaseDraw.h */,
+				70A1E344125CDF9F00D56AC4 /* cFLTKBox.h */,
+				70A1E345125CDF9F00D56AC4 /* cFLTKGridView.cc */,
+				70A1E346125CDF9F00D56AC4 /* cFLTKGridView.h */,
+				70A1E347125CDF9F00D56AC4 /* cFLTKLegend.cc */,
+				70A1E348125CDF9F00D56AC4 /* cFLTKLegend.h */,
+				70A1E349125CDF9F00D56AC4 /* cFLTKWidget.h */,
+				70A1E34A125CDF9F00D56AC4 /* cFLTKWindow.h */,
+				70A1E34B125CDF9F00D56AC4 /* fltk-defs.cc */,
+				70A1E34C125CDF9F00D56AC4 /* fltk-defs.h */,
+				70A1E34D125CDF9F00D56AC4 /* tFLTKButton.h */,
+				70A1E34E125CDF9F00D56AC4 /* tFLTKMenu.h */,
+				70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */,
+			);
+			path = "viewer-fltk";
+			sourceTree = "<group>";
+		};
 		70DCAC54097AF730002F8733 /* targets */ = {
 			isa = PBXGroup;
 			children = (
@@ -1684,6 +1787,7 @@
 				70DCAC56097AF730002F8733 /* avida-s */,
 				70DCAC58097AF730002F8733 /* avida-viewer */,
 				701EF27D0BEA5D2300DAE168 /* unit-tests */,
+				70A1E33F125CDF9F00D56AC4 /* viewer-fltk */,
 				56F555DE0C3B402A00E2E929 /* viewer-text */,
 			);
 			path = targets;
@@ -1866,6 +1970,8 @@
 				70DCAD1E097AF81A002F8733 /* script */,
 				70DCAC54097AF730002F8733 /* targets */,
 				DCC314D8076253A2008F7A48 /* tools */,
+				70A1E324125CDF2B00D56AC4 /* viewer-core */,
+				70A1E32A125CDF2B00D56AC4 /* viewer-coreGUI */,
 				701384A10902A16F0087ED2E /* defs.h */,
 				DCC30FCF0762539D008F7A48 /* Doxyfile */,
 			);
@@ -2403,7 +2509,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = DCC30C490762532C008F7A48;
 			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;
 			projectDirPath = "";
