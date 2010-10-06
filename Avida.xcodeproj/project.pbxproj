@@ -1021,6 +1021,7 @@
 		70A1E34D125CDF9F00D56AC4 /* tFLTKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFLTKButton.h; sourceTree = "<group>"; };
 		70A1E34E125CDF9F00D56AC4 /* tFLTKMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFLTKMenu.h; sourceTree = "<group>"; };
 		70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "viewer-fltk.cc"; sourceTree = "<group>"; };
+		70A1E3A9125CEE6500D56AC4 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		70A33CC00D878407008EF976 /* as_overview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = as_overview.html; sourceTree = "<group>"; };
 		70A33CE80D8DBD1E008EF976 /* cASFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASFunction.h; sourceTree = "<group>"; };
 		70A33CF40D8DCBB4008EF976 /* ASCoreLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCoreLib.h; sourceTree = "<group>"; };
@@ -1759,6 +1760,7 @@
 		70A1E33F125CDF9F00D56AC4 /* viewer-fltk */ = {
 			isa = PBXGroup;
 			children = (
+				70A1E3A9125CEE6500D56AC4 /* config.h */,
 				70A1E340125CDF9F00D56AC4 /* avidalogo.xpm */,
 				70A1E341125CDF9F00D56AC4 /* cDriver_FLTKViewer.cc */,
 				70A1E342125CDF9F00D56AC4 /* cDriver_FLTKViewer.h */,

@@ -24,9 +24,9 @@
 
 #include "cCoreView_Map.h"
 
+#include "cBioGroup.h"
 #include "cCoreView_Info.h"
 #include "cEnvironment.h"
-#include "cGenotype.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
@@ -107,7 +107,15 @@ void cCoreView_Map::SetColors_Genotype(int ignore)
   for (int i = 0; i < pop.GetSize(); i++) {
     cOrganism * org = pop.GetCell(i).GetOrganism();
     if (org == NULL) m_color_grid[i] = -4;
-    else m_color_grid[i] = org->GetGenotype()->GetMapColor();
+    else {
+      sMapColor* mapcolor = org->GetBioGroup("genotype")->GetData<sMapColor>();
+      if (!mapcolor) {
+        mapcolor = new sMapColor;
+        org->GetBioGroup("genotype")->AttachData(mapcolor);
+      }
+      m_color_grid[i] = mapcolor->color;
+      
+    }
   }
 }
 

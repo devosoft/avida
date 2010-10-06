@@ -58,15 +58,23 @@
 #include "tArray.h"
 #include "tList.h"
 
-class cGenotype;
+class cBioGroup;
 class cPopulation;
 class cWorld;
 
 using namespace std;
 
+struct sMapColor
+{
+  char color;
+  
+  sMapColor() : color(-1) { ; }
+};
+
+
 class cCoreView_Info {
 protected:
-  cWorld * m_world;
+  cWorld* m_world;
   cPopulation & m_population;
 
   // Setup streams to capture stdin and stdout so we can control them as needed.
@@ -79,7 +87,7 @@ protected:
 
   // Constant Inforation setup by specific viewer.
   tArray<int> m_color_chart_id;
-  tArray<cGenotype *> m_color_chart_ptr;
+  tArray<cBioGroup*> m_color_chart_ptr;
   int m_threshold_colors;
   int m_next_color;
 
@@ -98,7 +106,7 @@ public:
   enum ePause { PAUSE_ON, PAUSE_OFF, PAUSE_ADVANCE_INST, PAUSE_ADVANCE_UPDATE, PAUSE_ADVANCE_DIVIDE };
 
 public:
-  cCoreView_Info(cWorld * in_world, int total_colors);
+  cCoreView_Info(cWorld* in_world, int total_colors);
   ~cCoreView_Info();
 
   cPopulation & GetPopulation() { return m_population; }
@@ -126,6 +134,9 @@ public:
   void EnterStepMode(int org_id);
   void ExitStepMode();
   bool TogglePause();
+
+private:
+  sMapColor* getMapColor(cBioGroup* bg);
 };
 
 #endif

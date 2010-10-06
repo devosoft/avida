@@ -24,11 +24,14 @@
 
 #include "cCoreView_Info.h"
 
+#include "cBioGroup.h"
+#include "cBioGroupManager.h"
 #include "cBitArray.h"
 #include "cClassificationManager.h"
-#include "cGenotype.h"
 #include "cPopulation.h"
 #include "cWorld.h"
+#include "tAutoRelease.h"
+#include "tIterator.h"
 
 cCoreView_Info::cCoreView_Info(cWorld * in_world, int total_colors)
   : m_world(in_world)
@@ -72,49 +75,44 @@ void cCoreView_Info::FlushErr()
 void cCoreView_Info::SetupUpdate()
 {
   const int num_colors = m_color_chart_id.GetSize();
-  const int num_genotypes = m_world->GetClassificationManager().GetGenotypeCount();
   cBitArray free_color(num_colors);   // Keep track of genotypes still using their color.
   free_color.SetAll();
 
   // Loop through all genotypes that should be colors to mark those that we can clear out.
-  cGenotype * genotype = m_world->GetClassificationManager().GetBestGenotype();
+  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
   int count = 0;
-  while (count < num_genotypes && count < num_colors) {
-    assert(genotype != NULL);
-    const int cur_color = genotype->GetMapColor();
-    const int cur_id = genotype->GetID();
+  while (it->Next() && count < num_colors) {
+    
+    const int cur_color = getMapColor(it->Get())->color;
+    const int cur_id = it->Get()->GetID();
     if (cur_color >= 0) {
       assert(m_color_chart_id[cur_color] == cur_id);     // If it has a color, the color should point back to it.
-      assert(m_color_chart_ptr[cur_color] == genotype);  // ...and so should the pointer.
+      assert(m_color_chart_ptr[cur_color] == it->Get());  // ...and so should the pointer.
       free_color[cur_color] = false;
     }
-    genotype = genotype->GetNext();
     count++;
   }
 
   // Clear out colors for genotypes below threshold.
-  for (int i = count; i < num_genotypes; i++) {
-    if (genotype->GetMapColor() >= 0) genotype->SetMapColor(-1);
-    genotype = genotype->GetNext();
+  while (it->Next()) {
+    if (getMapColor(it->Get())->color >= 0) getMapColor(it->Get())->color = -1;
   }
 
   // Setup genotypes above threshold.
-  genotype = m_world->GetClassificationManager().GetBestGenotype();
+  it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
   count = 0;
-  while (count < num_genotypes && count < m_threshold_colors) {
-    assert(genotype != NULL);
-    if (genotype->GetMapColor() < 0) {
+  while (it->Next() && count < m_threshold_colors) {
+    if (getMapColor(it->Get())->color < 0) {
       // We start with m_next_color (so we don't keep using the same set), but loop around if we need to.
       int new_color = free_color.FindBit1(m_next_color);
       if (new_color == -1) new_color = free_color.FindBit1(0);
       assert(new_color != -1);
       m_next_color = new_color + 1;
-      m_color_chart_id[new_color] = genotype->GetID();
-      m_color_chart_ptr[new_color] = genotype;
+      m_color_chart_id[new_color] = it->Get()->GetID();
+      m_color_chart_ptr[new_color] = it->Get();
       free_color[new_color] = false;
-      genotype->SetMapColor(new_color);
+      getMapColor(it->Get())->color = new_color;
     }
-    genotype = genotype->GetNext();
     count++;
   }
 }
@@ -150,4 +148,15 @@ bool cCoreView_Info::TogglePause()
   SetPauseLevel(PAUSE_OFF);
 
   return false;
+}
+
+
+sMapColor* cCoreView_Info::getMapColor(cBioGroup* bg)
+{
+  sMapColor* mc = bg->GetData<sMapColor>();
+  if (!mc) {
+    mc = new sMapColor;
+    bg->AttachData(mc);
+  }
+  return mc;
 }

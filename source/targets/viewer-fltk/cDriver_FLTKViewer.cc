@@ -27,7 +27,6 @@
 #include "cAnalyze.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
-#include "cGenotype.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -153,7 +152,7 @@ void cDriver_FLTKViewer::Run()
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
-  cAvidaContext ctx(m_world->GetRandom());
+  cAvidaContext ctx(m_world, m_world->GetRandom());
   
   while (!m_done) {
     if (cChangeList* change_list = population.GetChangeList()) {
@@ -170,13 +169,6 @@ void cDriver_FLTKViewer::Run()
     if (stats.GetUpdate() > 0) {
       // Tell the stats object to do update calculations and printing.
       stats.ProcessUpdate();
-      
-      // Update all the genotypes for the end of this update.
-      for (cGenotype * cur_genotype = classmgr.ResetThread(0);
-           cur_genotype != NULL && cur_genotype->GetThreshold();
-           cur_genotype = classmgr.NextGenotype(0)) {
-        cur_genotype->UpdateReset();
-      }
     }
     
     
@@ -202,7 +194,7 @@ void cDriver_FLTKViewer::Run()
     
     
     // end of update stats...
-    population.CalcUpdateStats();
+    population.ProcessPostUpdate(ctx);
     
     
     // Setup the viewer for the new update.

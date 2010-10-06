@@ -87,6 +87,8 @@ public:
   void SignalBreakpoint();
   void SetDone() { m_done = true; }
 
+  void SetPause() { ; }
+
   // IO
   void Flush();
   int GetKeypress() { return 0; } // @CAO FIX!
