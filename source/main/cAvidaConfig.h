@@ -99,6 +99,21 @@ public:                                                                       \
 } NAME                                                                /* 11 */\
 
 
+// Sometimes we will want to have multiple names associated with a setting.
+// This macro allows the programmer to add such an alias to the most recent
+// setting created.
+
+#define CONFIG_ADD_ALIAS(ALIAS)                                      \
+class cAlias_ ## ALIAS {                                             \
+private:                                                             \
+  cBaseConfigEntry * primary_entry;                                  \
+public:                                                              \
+  cAlias_ ## ALIAS() {                                               \
+    primary_entry = global_group_list.GetLast()->GetLastEntry();     \
+    primary_entry->AddAlias(#ALIAS);				     \
+  }                                                                  \
+} ALIAS
+
 // Now we're going to make another macro to deal with groups.  This time its
 // a bit simpler since there is only one type of group.  The reason that we
 // want to make a new class for each new group is so that we can set default
@@ -109,7 +124,7 @@ public:                                                                       \
 class cGroup_ ## NAME : public cBaseConfigGroup {                          \
 public:                                                                    \
   cGroup_ ## NAME() : cBaseConfigGroup(#NAME, DESC) { ; }                  \
-} NAME                                                                     \
+} NAME
 
 
 
@@ -185,6 +200,7 @@ private:
     const cString& GetDesc() const { return description; }
     tList<cBaseConfigEntry>& GetEntryList() { return entry_list; }
     const tList<cBaseConfigEntry>& GetEntryList() const { return entry_list; }
+    cBaseConfigEntry * GetLastEntry() { return entry_list.GetLast(); }
     
     void AddEntry(cBaseConfigEntry* _entry) { entry_list.PushRear(_entry); }
   };
@@ -255,8 +271,6 @@ private:
 public:
   cAvidaConfig()
   {
-    INHERIT_MULTITHREAD.AddAlias("INHERIT_MULTI_THREAD_CLASSIFICATION");
-
     m_group_list.Transfer(global_group_list);
     m_format_list.Transfer(global_format_list);
     global_list_mutex.Unlock();
@@ -361,6 +375,8 @@ public:
   CONFIG_ADD_VAR(RESET_INPUTS_ON_DIVIDE, int, 0, "Reset environment inputs of parent upon successful divide.");
   CONFIG_ADD_VAR(INHERIT_MERIT, int, 1, "Should merit be inhereted from mother parent? (in asexual)");
   CONFIG_ADD_VAR(INHERIT_MULTITHREAD, int, 0, "Should offspring of parents with multiple threads be marked multithreaded?");
+  CONFIG_ADD_ALIAS(INHERIT_MULTI_THREAD_CLASSIFICATION);
+  
 	
 
   // -------- Divide Restrictions config options --------

@@ -1296,14 +1296,14 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       
       // if we want to generate and age-task histogram
       if (m_world->GetConfig().AGE_POLY_TRACKING.Get()) {
-				m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
+	m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
       }
     }
     
     if (result.TaskQuality(i) > 0) {
       cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
       if (result.UsedEnvResource() == false) {
-				cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
+	cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
       }
     }
 		
@@ -1317,8 +1317,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       int prev_num_tasks = 0;
       int cur_num_tasks = 0;
       for (int j=0; j< num_tasks; j++) {
-				if (last_task_count[j]>0) prev_num_tasks++;
-				if (cur_task_count[j]>0) cur_num_tasks++;
+	if (last_task_count[j]>0) prev_num_tasks++;
+	if (cur_task_count[j]>0) cur_num_tasks++;
       }
       m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
     }
@@ -1334,39 +1334,39 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       // then consider it to be a task switch.
       // If applicable, add in the penalty.
       switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
-				case 0: { // no penalty
-					break;
-				}
-				case 1: { // "learning" cost
-					if (cur_reaction_count[i] == 1) {
-						++num_new_unique_reactions;
-					}
-					break;
-				}
-				case 2: { // "retooling" cost
-					if (last_task_id == -1) {
-						last_task_id = i;
-					}					
-					if (last_task_id != i) {
-						num_new_unique_reactions++;
-						last_task_id = i;
-					}
-					break;
-				}
-				case 3: { // centrifuge
-					// task switching cost is calculated based on 
-					// the distance between the two tasks.
-					
-					int distance = abs(i - last_task_id);
-					num_new_unique_reactions += distance;
-					last_task_id = i;
-
-					break;
-				}
-				default: {
-					assert(false);
-					break;
-				}
+      case 0: { // no penalty
+	break;
+      }
+      case 1: { // "learning" cost
+	if (cur_reaction_count[i] == 1) {
+	  ++num_new_unique_reactions;
+	}
+	break;
+      }
+      case 2: { // "retooling" cost
+	if (last_task_id == -1) {
+	  last_task_id = i;
+	}					
+	if (last_task_id != i) {
+	  num_new_unique_reactions++;
+	  last_task_id = i;
+	}
+	break;
+      }
+      case 3: { // centrifuge
+	// task switching cost is calculated based on 
+	// the distance between the two tasks.
+	
+	int distance = abs(i - last_task_id);
+	num_new_unique_reactions += distance;
+	last_task_id = i;
+	
+	break;
+      }
+      default: {
+	assert(false);
+	break;
+      }
       }
     }		
   }
