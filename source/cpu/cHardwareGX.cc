@@ -1132,14 +1132,14 @@ bool cHardwareGX::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   const int new_size = old_size + allocated_size;
   
   // Make sure that the new size is in range.
-  if (new_size > MAX_CREATURE_SIZE  ||  new_size < MIN_CREATURE_SIZE) {
+  if (new_size > MAX_GENOME_LENGTH  ||  new_size < MIN_GENOME_LENGTH) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Invalid post-allocate size (%d)",
                                new_size));
     return false;
   }
   
-  const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
+  const int max_alloc_size = (int) (old_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too large (%d > %d)",
@@ -1148,7 +1148,7 @@ bool cHardwareGX::Allocate_Main(cAvidaContext& ctx, const int allocated_size)
   }
   
   const int max_old_size =
-    (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
+    (int) (allocated_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too small (%d > %d)",
@@ -2038,8 +2038,8 @@ bool cHardwareGX::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 {
   const int dst = REG_AX;
   const int cur_size = GetMemory().GetSize();
-  const int alloc_size = Min((int) (m_world->GetConfig().CHILD_SIZE_RANGE.Get() * cur_size),
-                             MAX_CREATURE_SIZE - cur_size);
+  const int alloc_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
+                             MAX_GENOME_LENGTH - cur_size);
   if (Allocate_Main(ctx, alloc_size)) {
     GetRegister(dst) = cur_size;
     return true;
@@ -2725,16 +2725,15 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 
 bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
 {
-  // this donates to organisms that have this instruction anywhere
-  // in their genome AND their parents excuted it more than a
-  // THRESHOLD number of times where that threshold depend on the
-  // number of times the individual's parents attempted to donate
-  // using this instruction.  The threshold levels are multiples of
-  // the quanta value set in genesis, and the highest level that
-  // the donor qualifies for is the one used.
+  // this donates to organisms that have this instruction anywhere in their
+  // genome AND their parents excuted it more than a THRESHOLD number of times
+  // where that threshold depend on the number of times the individual's
+  // parents attempted to donate using this instruction.  The threshold levels
+  // are multiples of the quanta value set in avida.cfg, and the highest level
+  // that the donor qualifies for is the one used.
 
-  // (see Dawkins 1976, The Selfish Gene, for 
-  // the history of the theory and the name 'green beard'
+  // (see Dawkins 1976, The Selfish Gene, for the history of the theory and
+  // the name 'green beard'
   //  cout << "i am about to donate to a green beard" << endl;
   cPhenotype & phenotype = m_organism->GetPhenotype();
 
@@ -3658,7 +3657,7 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
   const int dst = REG_BX;
   const int cur_size = m_programids[0]->GetMemory().GetSize();
   const int old_size = cur_size;
-  const int allocated_size = Min((int) (m_world->GetConfig().CHILD_SIZE_RANGE.Get() * cur_size), MAX_CREATURE_SIZE);
+  const int allocated_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size), MAX_GENOME_LENGTH);
   
   // Modified Allocate_Main()
     // must do divide before second allocate & must allocate positive amount...
@@ -3673,7 +3672,7 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
   }
   
   
-  const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
+  const int max_alloc_size = (int) (old_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too large (%d > %d)",
@@ -3682,7 +3681,7 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
   }
 
   const int max_old_size =
-    (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
+    (int) (allocated_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too small (%d > %d)",

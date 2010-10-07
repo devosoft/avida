@@ -898,13 +898,13 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
   // Insert Mutations (per site)
   num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
                                             m_organism->GetInjectInsProb());
-  // If would make creature to big, insert up to MAX_CREATURE_SIZE
-  if( num_mut + injected_code.GetSize() > MAX_CREATURE_SIZE )
-    num_mut = MAX_CREATURE_SIZE - injected_code.GetSize();
+  // If would make creature to big, insert up to MAX_GENOME_LENGTH
+  if( num_mut + injected_code.GetSize() > MAX_GENOME_LENGTH )
+    num_mut = MAX_GENOME_LENGTH - injected_code.GetSize();
   // If we have lines to insert...
   if( num_mut > 0 ){
     // Build a list of the sites where mutations occured
-    static int mut_sites[MAX_CREATURE_SIZE];
+    static int mut_sites[MAX_GENOME_LENGTH];
     for (int i = 0; i < num_mut; i++) {
       mut_sites[i] = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
     }
@@ -919,9 +919,9 @@ void cHardwareTransSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multip
   // Delete Mutations (per site)
   num_mut = ctx.GetRandom().GetRandBinomial(injected_code.GetSize(),
                                             m_organism->GetInjectDelProb());
-  // If would make creature too small, delete down to MIN_CREATURE_SIZE
-  if (injected_code.GetSize() - num_mut < MIN_CREATURE_SIZE) {
-    num_mut = injected_code.GetSize() - MIN_CREATURE_SIZE;
+  // If would make creature too small, delete down to MIN_GENOME_LENGTH
+  if (injected_code.GetSize() - num_mut < MIN_GENOME_LENGTH) {
+    num_mut = injected_code.GetSize() - MIN_GENOME_LENGTH;
   }
   
   // If we have lines to delete...

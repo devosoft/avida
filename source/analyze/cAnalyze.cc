@@ -4205,8 +4205,8 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     if (same_mate_id == true) total_matches_tested++;
     
     // Don't Crossover if offspring will be illegal!!!
-    if (new_size0 < MIN_CREATURE_SIZE || new_size0 > MAX_CREATURE_SIZE || 
-        new_size1 < MIN_CREATURE_SIZE || new_size1 > MAX_CREATURE_SIZE) { 
+    if (new_size0 < MIN_GENOME_LENGTH || new_size0 > MAX_GENOME_LENGTH || 
+        new_size1 < MIN_GENOME_LENGTH || new_size1 > MAX_GENOME_LENGTH) { 
       fail_count++; 
       if (same_mate_id == true) match_fail_count++;
       continue; 
@@ -6173,8 +6173,8 @@ void cAnalyze::CommandSpecies(cString cur_string)
           int new_size1 = test_genome1.GetSize() - size1 + size0;
           
           // Don't Crossover if offspring will be illegal!!!
-          if (new_size0 < MIN_CREATURE_SIZE || new_size0 > MAX_CREATURE_SIZE || 
-              new_size1 < MIN_CREATURE_SIZE || new_size1 > MAX_CREATURE_SIZE) { 
+          if (new_size0 < MIN_GENOME_LENGTH || new_size0 > MAX_GENOME_LENGTH || 
+              new_size1 < MIN_GENOME_LENGTH || new_size1 > MAX_GENOME_LENGTH) { 
             fail_count +=2; 
             break; 
           } 
@@ -6281,8 +6281,8 @@ void cAnalyze::CommandRecombine(cString cur_string)
         int new_size1 = test_genome1.GetSize() - size1 + size0;
         
         // Don't Crossover if offspring will be illegal!!!
-        if (new_size0 < MIN_CREATURE_SIZE || new_size0 > MAX_CREATURE_SIZE || 
-            new_size1 < MIN_CREATURE_SIZE || new_size1 > MAX_CREATURE_SIZE) { 
+        if (new_size0 < MIN_GENOME_LENGTH || new_size0 > MAX_GENOME_LENGTH || 
+            new_size1 < MIN_GENOME_LENGTH || new_size1 > MAX_GENOME_LENGTH) { 
           fail_count +=2; 
           break; 
         } 
@@ -6507,8 +6507,8 @@ void cAnalyze::WriteClone(cString cur_string)
   fp << "0 ";
   
   // Setup the archive sizes of lists to all be zero.
-  fp << MAX_CREATURE_SIZE << " ";
-  for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
+  fp << MAX_GENOME_LENGTH << " ";
+  for (int i = 0; i < MAX_GENOME_LENGTH; i++) {
     fp << "0 ";
   }
   

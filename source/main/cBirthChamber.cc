@@ -138,8 +138,8 @@ bool cBirthChamber::RegionSwap(cGenome& genome0, cGenome& genome1, int start0, i
    int new_size1 = genome1.GetSize() - size1 + size0;
       
    // Don't Crossover if offspring will be illegal!!!
-   if (new_size0 < MIN_CREATURE_SIZE || new_size0 > MAX_CREATURE_SIZE ||
-       new_size1 < MIN_CREATURE_SIZE || new_size1 > MAX_CREATURE_SIZE) {
+   if (new_size0 < MIN_GENOME_LENGTH || new_size0 > MAX_GENOME_LENGTH ||
+       new_size1 < MIN_GENOME_LENGTH || new_size1 > MAX_GENOME_LENGTH) {
      return false;
    } 
 

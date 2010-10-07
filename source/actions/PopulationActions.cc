@@ -54,8 +54,8 @@
  Parameters:
  filename (string)
  The filename of the genotype to load. If this is left empty, or the keyword
- "START_CREATURE" is given, than the genotype specified in the genesis
- file under "START_CREATURE" is used.
+ "START_ORGANISM" is given, than the genotype specified in the avida.cfg
+ file under "START_ORGANISM" is used.
  cell ID (integer) default: 0
  The grid-point into which the organism should be placed.
  merit (double) default: -1
@@ -77,16 +77,19 @@ public:
   cActionInject(cWorld* world, const cString& args) : cAction(world, args), m_cell_id(0), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (!largs.GetSize()) m_filename = "START_ORGANISM";
+    else m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_id = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
-    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+    if (m_filename == "START_ORGANISM") {
+      m_filename = m_world->GetConfig().START_ORGANISM.Get();
+    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_id=0] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -196,8 +199,8 @@ public:
  Parameters:
  filename (string)
  The filename of the genotype to load.  If empty (or the keyword
- "START_CREATURE" is given) than the genotype specified in the genesis
- file under "START_CREATURE" is used.
+ "START_ORGANISM" is given) than the genotype specified in the avida.cfg
+ file under "START_ORGANISM" is used.
  merit (double) default: -1
  The initial merit of the organism. If set to -1, this is ignored.
  lineage label (integer) default: 0
@@ -216,15 +219,18 @@ public:
   cActionInjectAll(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (!largs.GetSize()) m_filename = "START_ORGANISM"; 
+    else m_filename = largs.PopWord();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
-    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+    if (m_filename == "START_ORGANISM") {
+      m_filename = m_world->GetConfig().START_ORGANISM.Get();
+    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -240,8 +246,8 @@ public:
  Parameters:
  filename (string)
  The filename of the genotype to load. If this is left empty, or the keyword
- "START_CREATURE" is given, than the genotype specified in the genesis
- file under "START_CREATURE" is used.
+ "START_ORGANISM" is given, than the genotype specified in the avida.cfg
+ file under "START_ORGANISM" is used.
  cell_start (int)
  First cell to inject into.
  cell_end (int)
@@ -267,18 +273,21 @@ public:
   : cAction(world, args), m_cell_start(0), m_cell_end(-1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (!largs.GetSize()) m_filename = "START_ORGANISM";
+    else m_filename = largs.PopWord();
     if (largs.GetSize()) m_cell_start = largs.PopWord().AsInt();
     if (largs.GetSize()) m_cell_end = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
     
-    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+    if (m_filename == "START_ORGANISM") {
+      m_filename = m_world->GetConfig().START_ORGANISM.Get();
+    }
     if (m_cell_end == -1) m_cell_end = m_cell_start + 1;
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int cell_start=0] [int cell_end=-1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -537,8 +546,8 @@ public:
  Parameters:
  filename (string):
  The filename of the genotype to load. If this is left empty, or the keyword
- "START_CREATURE" is given, than the genotype specified in the genesis
- file under "START_CREATURE" is used.
+ "START_ORGANISM" is given, than the genotype specified in the avida.cfg
+ file under "START_ORGANISM" is used.
  cell ID (integer) default: 0
  The grid-point into which the organism should be placed.
  merit (double) default: -1
@@ -559,14 +568,17 @@ public:
   cActionInjectDemes(cWorld* world, const cString& args) : cAction(world, args), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (!largs.GetSize()) m_filename = "START_ORGANISM";
+    else m_filename = largs.PopWord();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+    if (m_filename == "START_ORGANISM") {
+      m_filename = m_world->GetConfig().START_ORGANISM.Get();
+    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -597,8 +609,8 @@ public:
  Parameters:
  filename (string):
  The filename of the genotype to load. If this is left empty, or the keyword
- "START_CREATURE" is given, than the genotype specified in the genesis
- file under "START_CREATURE" is used.
+ "START_ORGANISM" is given, than the genotype specified in the avida.cfg
+ file under "START_ORGANISM" is used.
  modulo default: 1 -- when the deme number modulo this number is 0, inject org
  cell ID (integer) default: 0
  The grid-point into which the organism should be placed.
@@ -621,15 +633,18 @@ public:
   cActionInjectModuloDemes(cWorld* world, const cString& args) : cAction(world, args), m_mod_num(1), m_merit(-1), m_lineage_label(0), m_neutral_metric(0)
   {
     cString largs(args);
-    if (!largs.GetSize()) m_filename = "START_CREATURE"; else m_filename = largs.PopWord();
+    if (!largs.GetSize()) m_filename = "START_ORGANISM";
+    else m_filename = largs.PopWord();
     if (largs.GetSize()) m_mod_num = largs.PopWord().AsInt();
     if (largs.GetSize()) m_merit = largs.PopWord().AsDouble();
     if (largs.GetSize()) m_lineage_label = largs.PopWord().AsInt();
     if (largs.GetSize()) m_neutral_metric = largs.PopWord().AsDouble();
-    if (m_filename == "START_CREATURE") m_filename = m_world->GetConfig().START_CREATURE.Get();
+    if (m_filename == "START_ORGANISM") {
+      m_filename = m_world->GetConfig().START_ORGANISM.Get();
+    }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname=\"START_CREATURE\"] [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
+  static const cString GetDescription() { return "Arguments: [string fname=\"START_ORGANISM\"] [int mod_num = 1] [double merit=-1] [int lineage_label=0] [double neutral_metric=0]"; }
   
   void Process(cAvidaContext& ctx)
   {

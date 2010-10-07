@@ -1843,7 +1843,7 @@ class cActionPrintPlasticGenotypeSummary : public cAction
  
  Parameters
    ref_creature_file (cString)
-     Filename for the reference genome, defaults to START_CREATURE
+     Filename for the reference genome, defaults to START_ORGANISM
    fname (cString)
      Name of file to create, defaults to 'genetic_distance.dat'
 */
@@ -1864,13 +1864,13 @@ public:
     if (largs.GetSize())
       creature_file = largs.PopWord();
     else
-      creature_file = m_world->GetConfig().START_CREATURE.Get();
+      creature_file = m_world->GetConfig().START_ORGANISM.Get();
     m_reference = cGenomeUtil::LoadGenome(creature_file, world->GetHardwareManager().GetInstSet());
     
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
   
-  static const cString GetDescription() { return "Arguments: [string ref_creature_file='START_CREATURE'] [string fname='genetic_distance.dat']"; }
+  static const cString GetDescription() { return "Arguments: [string ref_creature_file='START_ORGANISM'] [string fname='genetic_distance.dat']"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -1950,17 +1950,17 @@ private:
   
 public:
   cActionPrintPopulationDistanceData(cWorld* world, const cString& args)
-    : cAction(world, args), m_creature("START_CREATURE"), m_filename(""), m_save_genotypes(0)
+    : cAction(world, args), m_creature("START_ORGANISM"), m_filename(""), m_save_genotypes(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_creature = largs.PopWord();
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_save_genotypes = largs.PopWord().AsInt();
 
-    if (m_creature == "" || m_creature == "START_CREATURE") m_creature = m_world->GetConfig().START_CREATURE.Get();
+    if (m_creature == "" || m_creature == "START_ORGANISM") m_creature = m_world->GetConfig().START_ORGANISM.Get();
 }
   
-  static const cString GetDescription() { return "Arguments: [string creature=\"START_CREATURE\"] [string fname=\"\"] [int save_genotypes=0]"; }
+  static const cString GetDescription() { return "Arguments: [string creature=\"START_ORGANISM\"] [string fname=\"\"] [int save_genotypes=0]"; }
   
   void Process(cAvidaContext& ctx)
   {
@@ -2233,8 +2233,8 @@ public:
     cClassificationManager& classmgr = m_world->GetClassificationManager();
     
     // Setup the histogtams...
-    tArray<cHistogram> inst_hist(MAX_CREATURE_SIZE);
-    for (int i = 0; i < MAX_CREATURE_SIZE; i++) inst_hist[i].Resize(num_inst,-1);
+    tArray<cHistogram> inst_hist(MAX_GENOME_LENGTH);
+    for (int i = 0; i < MAX_GENOME_LENGTH; i++) inst_hist[i].Resize(num_inst,-1);
     
     // Loop through all of the genotypes adding them to the histograms.
     tAutoRelease<tIterator<cBioGroup> > it;
@@ -2252,7 +2252,7 @@ public:
       }
       
       // Mark all instructions beyond the length as -1 in histogram...
-      for (int j = length; j < MAX_CREATURE_SIZE; j++) {
+      for (int j = length; j < MAX_GENOME_LENGTH; j++) {
         inst_hist[j].Insert(-1, num_organisms);
       }
     }
@@ -2265,14 +2265,14 @@ public:
     
     // Determine the length of the concensus genome
     int con_length;
-    for (con_length = 0; con_length < MAX_CREATURE_SIZE; con_length++) {
+    for (con_length = 0; con_length < MAX_GENOME_LENGTH; con_length++) {
       if (inst_hist[con_length].GetMode() == -1) break;
     }
     
     // Build the concensus genotype...
     cGenome con_genome(con_length);
     double total_entropy = 0.0;
-    for (int i = 0; i < MAX_CREATURE_SIZE; i++) {
+    for (int i = 0; i < MAX_GENOME_LENGTH; i++) {
       const int mode = inst_hist[i].GetMode();
       const int count = inst_hist[i].GetCount(mode);
       const int total = inst_hist[i].GetCount();

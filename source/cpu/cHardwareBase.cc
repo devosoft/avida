@@ -107,9 +107,9 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   
   // Make sure that neither parent nor child will be below the minimum size.  
   const int genome_size = m_organism->GetGenome().GetSize();
-  const double size_range = m_world->GetConfig().CHILD_SIZE_RANGE.Get();
-  const int min_size = Max(MIN_CREATURE_SIZE, static_cast<int>(genome_size / size_range));
-  const int max_size = Min(MAX_CREATURE_SIZE, static_cast<int>(genome_size * size_range));
+  const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();
+  const int min_size = Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
+  const int max_size = Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
   
   if (child_size < min_size || child_size > max_size) {
     ORG_FAULT(cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
@@ -228,8 +228,8 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 {
   int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
   int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
-  if (!max_genome_size || max_genome_size > MAX_CREATURE_SIZE) max_genome_size = MAX_CREATURE_SIZE;
-  if (!min_genome_size || min_genome_size < MIN_CREATURE_SIZE) min_genome_size = MIN_CREATURE_SIZE;
+  if (!max_genome_size || max_genome_size > MAX_GENOME_LENGTH) max_genome_size = MAX_GENOME_LENGTH;
+  if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
   
   int totalMutations = 0;
   cGenome& offspring_genome = m_organism->OffspringGenome().GetGenome();
@@ -436,13 +436,13 @@ bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cGenome& genome)
     genome[site] = cInstruction(mut);
   } else if (mut == m_inst_set->GetSize()) { // delete
     int min_genome_size = m_world->GetConfig().MIN_GENOME_SIZE.Get();
-    if (!min_genome_size || min_genome_size < MIN_CREATURE_SIZE) min_genome_size = MIN_CREATURE_SIZE;
+    if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
     if (genome.GetSize() == min_genome_size) return false;
     int site = ctx.GetRandom().GetUInt(genome.GetSize());
     genome.Remove(site);
   } else { // insert
     int max_genome_size = m_world->GetConfig().MAX_GENOME_SIZE.Get();
-    if (!max_genome_size || max_genome_size > MAX_CREATURE_SIZE) max_genome_size = MAX_CREATURE_SIZE;
+    if (!max_genome_size || max_genome_size > MAX_GENOME_LENGTH) max_genome_size = MAX_GENOME_LENGTH;
     if (genome.GetSize() == max_genome_size) return false;
     int site = ctx.GetRandom().GetUInt(genome.GetSize() + 1);
     genome.Insert(site, cInstruction(mut - m_inst_set->GetSize() - 1));
@@ -617,7 +617,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   bool sterilize = false;
   
   // If implicit mutations are turned off, make sure this won't spawn one.
-  if (m_organism->GetFailImplicit() == true) {
+  if (m_organism->GetSterilizeUnstable() == true) {
     if (test_info.GetMaxDepth() > 0) sterilize = true;
   }
   
@@ -710,11 +710,11 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   bool sterilize = false;
   
   // If implicit mutations are turned off, make sure this won't spawn one.
-  if (m_organism->GetFailImplicit() > 0) {
+  if (m_organism->GetSterilizeUnstable() > 0) {
     if (test_info.GetMaxDepth() > 0) sterilize = true;
   }
   
-  if (m_organism->GetFailImplicit() > 1 && !test_info.IsViable()) {
+  if (m_organism->GetSterilizeUnstable() > 1 && !test_info.IsViable()) {
     sterilize = true;
   }
   

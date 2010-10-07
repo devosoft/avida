@@ -318,7 +318,7 @@ cPopulation::cPopulation(cWorld* world)
 void cPopulation::InitiatePop()
 {  
   cGenome start_org(0);
-  const cString& filename = m_world->GetConfig().START_CREATURE.Get();
+  const cString& filename = m_world->GetConfig().START_ORGANISM.Get();
   
   if (filename != "-" && filename != "") {
     if (!cGenomeUtil::LoadGenome(filename, m_world->GetHardwareManager().GetInstSet(), start_org)) {
@@ -4621,7 +4621,7 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
     
     // If we're using germlines, then we have to be a little careful here.
     // This should probably not be within Inject() since we mainly want it to
-    // apply to the START_CREATURE? -- @JEB
+    // apply to the START_ORGANISM? -- @JEB
     
     //@JEB This section is very messy to maintain consistency with other deme ways.
     

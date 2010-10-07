@@ -481,8 +481,8 @@ public:
   int CompareArgNULL(cAnalyzeGenotype* prev, int i) const { (void) prev; (void) i; return 0; }
   int CompareLength(cAnalyzeGenotype* prev) const
   {
-    if (GetLength() < MIN_CREATURE_SIZE && prev->GetLength() > MIN_CREATURE_SIZE) return -2;
-    if (GetLength() > MIN_CREATURE_SIZE && prev->GetLength() < MIN_CREATURE_SIZE) return 2;
+    if (GetLength() < MIN_GENOME_LENGTH && prev->GetLength() > MIN_GENOME_LENGTH) return -2;
+    if (GetLength() > MIN_GENOME_LENGTH && prev->GetLength() < MIN_GENOME_LENGTH) return 2;
     return 0;
   }
   int CompareMerit(cAnalyzeGenotype * prev) const { return NumCompare(GetMerit(), prev->GetMerit()); }

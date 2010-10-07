@@ -1027,14 +1027,14 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   const int new_size = old_size + allocated_size;
   
   // Make sure that the new size is in range.
-  if (new_size > MAX_CREATURE_SIZE  ||  new_size < MIN_CREATURE_SIZE) {
+  if (new_size > MAX_GENOME_LENGTH  ||  new_size < MIN_GENOME_LENGTH) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Invalid post-allocate size (%d)",
                                new_size));
     return false;
   }
   
-  const int max_alloc_size = (int) (old_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
+  const int max_alloc_size = (int) (old_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (allocated_size > max_alloc_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too large (%d > %d)",
@@ -1043,7 +1043,7 @@ bool cHardwareExperimental::Allocate_Main(cAvidaContext& ctx, const int allocate
   }
   
   const int max_old_size =
-    (int) (allocated_size * m_world->GetConfig().CHILD_SIZE_RANGE.Get());
+    (int) (allocated_size * m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get());
   if (old_size > max_old_size) {
     m_organism->Fault(FAULT_LOC_ALLOC, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Allocate too small (%d > %d)",
@@ -1437,8 +1437,8 @@ bool cHardwareExperimental::Inst_HeadAlloc(cAvidaContext& ctx)   // Allocate max
 {
   const int dst = FindModifiedRegister(REG_AX);
   const int cur_size = m_memory.GetSize();
-  const int alloc_size = Min((int) (m_world->GetConfig().CHILD_SIZE_RANGE.Get() * cur_size),
-                             MAX_CREATURE_SIZE - cur_size);
+  const int alloc_size = Min((int) (m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get() * cur_size),
+                             MAX_GENOME_LENGTH - cur_size);
   sInternalValue& reg = m_threads[m_cur_thread].reg[dst];
   if (Allocate_Main(ctx, alloc_size)) {
     setInternalValue(reg, cur_size);

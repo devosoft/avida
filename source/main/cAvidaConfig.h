@@ -315,7 +315,8 @@ public:
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
-  CONFIG_ADD_VAR(START_CREATURE, cString, "default-heads.org", "Organism to seed the population");
+  CONFIG_ADD_VAR(START_ORGANISM, cString, "default-heads.org", "Organism to seed the population");
+  CONFIG_ADD_ALIAS(START_CREATURE);
   
   
   // -------- Mutation config options --------
@@ -381,7 +382,8 @@ public:
 
   // -------- Divide Restrictions config options --------
   CONFIG_ADD_GROUP(DIVIDE_GROUP, "Divide restrictions and triggers - settings describe conditions for a successful divide");
-  CONFIG_ADD_VAR(CHILD_SIZE_RANGE, double, 2.0, "Maximal differential between offspring and parent length.\n(Checked BEFORE mutations applied on divide.)");
+  CONFIG_ADD_VAR(OFFSPRING_SIZE_RANGE, double, 2.0, "Maximal differential between offspring and parent length.\n(Checked BEFORE mutations applied on divide.)");
+  CONFIG_ADD_ALIAS(CHILD_SIZE_RANGE);
   CONFIG_ADD_VAR(MIN_COPIED_LINES, double, 0.5, "Code fraction that must be copied before divide");
   CONFIG_ADD_VAR(MIN_EXE_LINES, double, 0.5, "Code fraction that must be executed before divide");
   CONFIG_ADD_VAR(MIN_GENOME_SIZE, int, 0, "Minimum number of instructions allowed in a genome. 0 = OFF");
@@ -487,7 +489,8 @@ public:
   CONFIG_ADD_VAR(STERILIZE_NEUTRAL, double, 0.0, "Prob of neutral mutations steralizing an offspring");
   CONFIG_ADD_VAR(STERILIZE_BENEFICIAL, double, 0.0, "Prob of beneficial mutations steralizing an offspring");
   CONFIG_ADD_VAR(STERILIZE_TASKLOSS, double, 0.0, "Prob of mutations causing task loss steralizing an offspring");
-  CONFIG_ADD_VAR(FAIL_IMPLICIT, int, 0, "Should copies that failed *not* due to mutations be eliminated?");
+  CONFIG_ADD_VAR(STERILIZE_UNSTABLE, int, 0, "Should genotypes that cannot replicate perfectly not be allowed to replicate?");
+  CONFIG_ADD_ALIAS(FAIL_IMPLICIT);
   CONFIG_ADD_VAR(NEUTRAL_MAX,double, 0.0, "Percent benifical change from parent fitness to be considered neutral.");
   CONFIG_ADD_VAR(NEUTRAL_MIN,double, 0.0, "Percent deleterious change from parent fitness to be considered neutral.");
 
@@ -560,7 +563,7 @@ public:
   CONFIG_ADD_VAR(NET_STYLE, int, 0, "Communication Style.  0 = Random Next, 1 = Receiver Facing");
   CONFIG_ADD_VAR(NET_LOG_MESSAGES, int, 0, "Whether all messages are logged; 0=false (default), 1=true.");
 
-	
+
   // -------- Organism Messaging config options --------
   CONFIG_ADD_GROUP(ORGANISM_MESSAGING_GROUP, "Organism Message-Based Communication");
   CONFIG_ADD_VAR(MESSAGE_SEND_BUFFER_SIZE, int, 1, "Size of message send buffer (stores messages that were sent)\nTASKS NOT CHECKED ON 0!\n-1=inf, default=1.");
@@ -713,6 +716,8 @@ public:
   CONFIG_ADD_GROUP(CONSENSUS_GROUP, "Consensus settings");	
   CONFIG_ADD_VAR(CONSENSUS_HOLD_TIME, int, 1, "Number of updates that consensus must be held for.");
   
+
+  // Setup technique to define the instruction set in avida.cfg file.
   CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
 	
@@ -839,7 +844,7 @@ public:
 //
 // User must provide in the definition:
 //  object name
-//  genesis ID
+//  config ID
 //  default value
 //  description
 //  type?

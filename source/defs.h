@@ -67,8 +67,8 @@
 # define NULL 0
 #endif
 
-const int MIN_CREATURE_SIZE = 8;
-const int MAX_CREATURE_SIZE = 2048;
+const int MIN_GENOME_LENGTH = 8;
+const int MAX_GENOME_LENGTH = 2048;
 
 const int MIN_INJECT_SIZE = 8;
 

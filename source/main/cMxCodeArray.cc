@@ -118,7 +118,7 @@ cMxCodeArray::~cMxCodeArray()
 
 void cMxCodeArray::Resize(int new_size)
 {
-  assert (new_size <= MAX_CREATURE_SIZE);
+  assert (new_size <= MAX_GENOME_LENGTH);
 
   // If we are not changing the size, just return.
   if (new_size == size) return;
@@ -283,7 +283,7 @@ bool cMxCodeArray::OK() const
 {
   bool result = true;
 
-  assert (size >= 0 && size <= max_size && max_size <= MAX_CREATURE_SIZE);
+  assert (size >= 0 && size <= max_size && max_size <= MAX_GENOME_LENGTH);
 
   return result;
 }

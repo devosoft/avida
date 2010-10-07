@@ -392,7 +392,7 @@ public:
 
   // --------  Configuration Convenience Methods  --------
   bool GetTestOnDivide() const;
-  int GetFailImplicit() const;
+  int GetSterilizeUnstable() const;
 
   bool GetRevertFatal() const;
   bool GetRevertNeg() const;

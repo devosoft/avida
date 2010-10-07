@@ -437,11 +437,14 @@ void cAvidaConfig::Set(tDictionary<cString>& sets)
     tListIterator<cBaseConfigEntry> entry_it(cur_group->GetEntryList());
     cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
-      if (sets.Find(cur_entry->GetName(), val)) {
-        cur_entry->LoadString(val);
-        sets.Remove(cur_entry->GetName());
-        if (VERBOSITY.Get() > VERBOSE_NORMAL)
-          cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
+      for (int i = 0; i < cur_entry->GetNumNames(); i++) {
+	if (sets.Find(cur_entry->GetName(i), val)) {
+	  cur_entry->LoadString(val);
+	  sets.Remove(cur_entry->GetName(i));
+	  if (VERBOSITY.Get() > VERBOSE_NORMAL)
+	    cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
+	  break;
+	}
       }
     }
   }
