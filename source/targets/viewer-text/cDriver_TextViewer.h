@@ -80,6 +80,7 @@ public:
   // Driver Actions
   void SignalBreakpoint();
   void SetDone() { m_done = true; }
+  void SetPause() { ; }
 
   // IO
   void Flush();

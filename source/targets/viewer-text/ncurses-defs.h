@@ -2,9 +2,11 @@
 #define ncurses_defs_h
 
 #ifdef HAVE_NCURSES_H
+#define NCURSES_OPAQUE 0
 #include <ncurses.h>
 #undef OK
 #else
+#define NCURSES_OPAQUE 0
 #include <curses.h>
 #undef OK
 #endif
