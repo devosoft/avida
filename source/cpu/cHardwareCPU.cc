@@ -642,8 +642,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("if-donor",  &cHardwareCPU::Inst_IfDonor, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("prod-string",  &cHardwareCPU::Inst_ProduceString, nInstFlag::STALL),
 		
+
 		// Group formation instructions
 		tInstLibEntry<tMethod>("join-group", &cHardwareCPU::Inst_JoinGroup, nInstFlag::STALL),
+	        tInstLibEntry<tMethod>("kill-group-member", &cHardwareCPU::Inst_KillGroupMember, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-my-group", &cHardwareCPU::Inst_NumberOrgsInMyGroup, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, nInstFlag::STALL),
 		
@@ -8990,7 +8992,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
 		// subtract org from group
-		m_world->GetPopulation().LeaveGroup(opinion);
+		m_world->GetPopulation().LeaveGroup(opinion, m_organism);
   }
 	
 	// Set the opinion
@@ -8998,9 +9000,25 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 	
 	// Add org to group count
 	opinion = m_organism->GetOpinion().first;	
-	m_world->GetPopulation().JoinGroup(opinion);
+	m_world->GetPopulation().JoinGroup(opinion, m_organism);
 	return true;
 }
+
+//Kill some other random organism in group JW
+bool cHardwareCPU::Inst_KillGroupMember(cAvidaContext& ctx)
+{
+	int opinion;
+	// Check if the org is currently part of a group
+	assert(m_organism != 0);
+	
+  if(m_organism->HasOpinion()) {
+		opinion = m_organism->GetOpinion().first;
+		// Kill Group in group
+		m_world->GetPopulation().KillGroupMember(opinion, m_organism);
+  }
+	return true;
+}
+
 
 //! Gets the number of organisms in the current organism's group 
 //! and places the value in the ?CX? register

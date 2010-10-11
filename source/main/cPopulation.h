@@ -88,6 +88,8 @@ private:
   cResourceCount resource_count;       // Global resources available
   cBirthChamber birth_chamber;         // Global birth chamber.
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
+  std::map<int, std::vector<cOrganism*> > group_list; //Keeps track of which organisms are in which group.
+
 
   tVector<pair<int,int> > *sleep_log;
   
@@ -287,9 +289,12 @@ public:
   void UpdateResourceCount(const int Verbosity);
 	
 	// Adds an organism to a group
-	void JoinGroup(int group_id);
+	void JoinGroup(int group_id, cOrganism* org);
 	// Removes an organism from a group
-	void LeaveGroup(int group_id);
+	void LeaveGroup(int group_id, cOrganism* org);
+	
+	//Kill Member of the Group (But not org!!!) JW
+	void KillGroupMember(int group_id, cOrganism* org);
 	// Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
 	// Get the group information

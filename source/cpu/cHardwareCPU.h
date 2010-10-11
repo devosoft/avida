@@ -942,6 +942,8 @@ public:
 public:
 	//! An organism joins a group by setting it opinion to the group id. 
 	bool Inst_JoinGroup(cAvidaContext& ctx);
+	//Kill Member in Group JW
+	bool Inst_KillGroupMember(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
 	bool Inst_NumberOrgsInMyGroup(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group

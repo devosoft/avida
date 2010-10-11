@@ -468,7 +468,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       assert(parent_organism->HasOpinion());
       int group = parent_organism->GetOpinion().first;
       offspring_array[i]->SetOpinion(group); 
-      JoinGroup(group);
+      JoinGroup(group, offspring_array[i]);
     }
   }
 	
@@ -817,6 +817,25 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }
 }
 
+
+//Kill Random Organism in Group (But Not Self)!! JW
+void cPopulation::KillGroupMember(int group_id, cOrganism *org)
+{
+    //Check to make sure we are not killing self!
+    if(group_list[group_id].size() == 1 && group_list[group_id][0] == org) return;
+    if(group_list[group_id].size() == 0) return;
+    int index;
+    while(true)
+    {
+      index = rand()%group_list[group_id].size();
+      if(group_list[group_id][index] == org) continue;
+      else break;
+    }
+    
+    int cell_id = group_list[group_id][index]->GetCellID();
+    KillOrganism(cell_array[cell_id]);
+}
+
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
 {
   // do we actually have something to kill?
@@ -864,7 +883,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
 	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && organism->HasOpinion()) 
 	{
     int opinion = organism->GetOpinion().first;
-    LeaveGroup(opinion);
+    LeaveGroup(opinion, organism);
 	}
   
   // Update count statistics...
@@ -5507,7 +5526,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity) {
 
 
 // Adds an organism to a group
-void  cPopulation::JoinGroup(int group_id)
+void  cPopulation::JoinGroup(int group_id, cOrganism* org)
 {
   map<int,int>::iterator it;
   it=m_groups.find(group_id);
@@ -5515,17 +5534,30 @@ void  cPopulation::JoinGroup(int group_id)
     m_groups[group_id] = 0;
   }
   m_groups[group_id]++;
+  group_list[group_id].push_back(org);
 }
 
 
 // Removes an organism from a group
-void  cPopulation::LeaveGroup(int group_id)
+void  cPopulation::LeaveGroup(int group_id, cOrganism* org)
 {
   map<int,int>::iterator it;
   it=m_groups.find(group_id);
   if (it != m_groups.end()) {
     m_groups[group_id]--;
   }
+  
+  for(int i = 0; i < group_list[group_id].size(); i++)
+  {
+   
+    if(group_list[group_id][i] == org) 
+    {  
+      group_list[group_id].erase(group_list[group_id].begin()+i);
+      i = group_list[group_id].size();
+    }
+    
+  }
+  
 }
 
 // Identifies the number of organisms in a group
