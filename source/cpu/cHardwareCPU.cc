@@ -9014,7 +9014,7 @@ bool cHardwareCPU::Inst_KillGroupMember(cAvidaContext& ctx)
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
 		// Kill Group in group
-		m_world->GetPopulation().KillGroupMember(opinion, m_organism);
+		m_world->GetPopulation().KillGroupMember(ctx, opinion, m_organism);
   }
 	return true;
 }

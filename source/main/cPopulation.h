@@ -294,7 +294,7 @@ public:
 	void LeaveGroup(int group_id, cOrganism* org);
 	
 	//Kill Member of the Group (But not org!!!) JW
-	void KillGroupMember(int group_id, cOrganism* org);
+	void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
 	// Identifies the number of organisms in a group
   int NumberOfOrganismsInGroup(int group_id);
 	// Get the group information

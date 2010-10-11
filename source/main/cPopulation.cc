@@ -819,21 +819,20 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
 
 
 //Kill Random Organism in Group (But Not Self)!! JW
-void cPopulation::KillGroupMember(int group_id, cOrganism *org)
+void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *org)
 {
-    //Check to make sure we are not killing self!
-    if(group_list[group_id].size() == 1 && group_list[group_id][0] == org) return;
-    if(group_list[group_id].size() == 0) return;
-    int index;
-    while(true)
-    {
-      index = rand()%group_list[group_id].size();
-      if(group_list[group_id][index] == org) continue;
-      else break;
-    }
-    
-    int cell_id = group_list[group_id][index]->GetCellID();
-    KillOrganism(cell_array[cell_id]);
+  //Check to make sure we are not killing self!
+  if (group_list[group_id].size() == 1 && group_list[group_id][0] == org) return;
+  if (group_list[group_id].size() == 0) return;
+  int index;
+  while(true) {
+    index = ctx.GetRandom().GetUInt(0, group_list[group_id].size());
+    if (group_list[group_id][index] == org) continue;
+    else break;
+  }
+  
+  int cell_id = group_list[group_id][index]->GetCellID();
+  KillOrganism(cell_array[cell_id]);
 }
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
@@ -5541,23 +5540,15 @@ void  cPopulation::JoinGroup(int group_id, cOrganism* org)
 // Removes an organism from a group
 void  cPopulation::LeaveGroup(int group_id, cOrganism* org)
 {
-  map<int,int>::iterator it;
-  it=m_groups.find(group_id);
-  if (it != m_groups.end()) {
-    m_groups[group_id]--;
-  }
+  map<int,int>::iterator it = m_groups.find(group_id);
+  if (it != m_groups.end()) m_groups[group_id]--;
   
-  for(int i = 0; i < group_list[group_id].size(); i++)
-  {
-   
-    if(group_list[group_id][i] == org) 
-    {  
-      group_list[group_id].erase(group_list[group_id].begin()+i);
-      i = group_list[group_id].size();
+  for (unsigned int i = 0; i < group_list[group_id].size(); i++) {
+    if (group_list[group_id][i] == org) {  
+      group_list[group_id].erase(group_list[group_id].begin() + i);
+      break;
     }
-    
   }
-  
 }
 
 // Identifies the number of organisms in a group
