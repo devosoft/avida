@@ -822,11 +822,11 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
 void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *org)
 {
   //Check to make sure we are not killing self!
-  if (group_list[group_id].size() == 1 && group_list[group_id][0] == org) return;
-  if (group_list[group_id].size() == 0) return;
+  if (group_list[group_id].GetSize() == 1 && group_list[group_id][0] == org) return;
+  if (group_list[group_id].GetSize() == 0) return;
   int index;
   while(true) {
-    index = ctx.GetRandom().GetUInt(0, group_list[group_id].size());
+    index = ctx.GetRandom().GetUInt(0, group_list[group_id].GetSize());
     if (group_list[group_id][index] == org) continue;
     else break;
   }
@@ -5531,9 +5531,11 @@ void  cPopulation::JoinGroup(int group_id, cOrganism* org)
   it=m_groups.find(group_id);
   if (it == m_groups.end()) {
     m_groups[group_id] = 0;
+    tSmartArray<cOrganism*> temp;
+    group_list.Set(group_id, temp);
   }
   m_groups[group_id]++;
-  group_list[group_id].push_back(org);
+  group_list[group_id].Push(org);
 }
 
 
@@ -5543,9 +5545,11 @@ void  cPopulation::LeaveGroup(int group_id, cOrganism* org)
   map<int,int>::iterator it = m_groups.find(group_id);
   if (it != m_groups.end()) m_groups[group_id]--;
   
-  for (unsigned int i = 0; i < group_list[group_id].size(); i++) {
+  for (unsigned int i = 0; i < group_list[group_id].GetSize(); i++) {
     if (group_list[group_id][i] == org) {  
-      group_list[group_id].erase(group_list[group_id].begin() + i);
+      unsigned int last = group_list[group_id].GetSize()-1;
+      group_list[group_id].Swap(i,last);
+      group_list[group_id].Pop();
       break;
     }
   }
