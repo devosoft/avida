@@ -1,5 +1,5 @@
 /*
- *  PlatformExpert.cc
+ *  Platform.cc
  *  Avida
  *
  *  Created by David on 6/29/07.
@@ -22,9 +22,7 @@
  *
  */
 
-#include "PlatformExpert.h"
-
-#include "platform.h"
+#include "Platform.h"
 
 #if AVIDA_PLATFORM(APPLE)
 # include <mach/mach.h>
@@ -39,7 +37,7 @@
 #include "FloatingPoint.h"
 
 
-namespace PlatformExpert
+namespace Platform
 {
   //! Initialize various platform settings and system handlers
   void Initialize()

@@ -10,7 +10,7 @@
 
 #include "cDataFileManager.h"
 
-#include "platform.h"
+#include "Platform.h"
 #include "Tools.h"
 
 #if AVIDA_PLATFORM(WINDOWS)

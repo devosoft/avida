@@ -36,7 +36,7 @@
 #include "cTestCPU.h"
 #include "cRandom.h"
 #include "cInstSet.h"
-#include "platform.h"
+#include "Platform.h"
 
 #include <cassert>
 #include <algorithm>

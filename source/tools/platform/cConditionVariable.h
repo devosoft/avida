@@ -29,7 +29,7 @@
 #include "cMutex.h"
 #endif
 #ifndef platform_h
-#include "platform.h"
+#include "Platform.h"
 #endif
 
 

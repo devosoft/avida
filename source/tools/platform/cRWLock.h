@@ -26,7 +26,7 @@
 #define cRWLock_h
 
 #ifndef platform_h
-#include "platform.h"
+#include "Platform.h"
 #endif
 
 

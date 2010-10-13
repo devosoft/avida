@@ -111,8 +111,8 @@ lib avida-core :
     main/cStats.cc
     main/cTaskLib.cc
     main/cWorld.cc
-    platform/cThread.cc
-    platform/PlatformExpert.cc
+    tools/platform/cThread.cc
+    tools/platform/PlatformExpert.cc
     tools/cArgContainer.cc
     tools/cArgSchema.cc
     tools/cBitArray.cc

@@ -22,7 +22,7 @@
 #include "cBaseTextWindow.h"
 #endif
 #ifndef platform_h
-#include "platform.h"
+#include "Platform.h"
 #endif
 
 #include <csignal>

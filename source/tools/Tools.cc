@@ -17,7 +17,7 @@
 #include "cEntryHandle.h"
 #include "cRCObject.h"
 #include "cString.h"
-#include "platform.h"
+#include "Platform.h"
 
 
 // mkdir undefined in ms windows

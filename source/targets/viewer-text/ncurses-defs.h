@@ -12,7 +12,7 @@
 #endif
 
 #ifndef platform_h
-#include "platform.h"
+#include "Platform.h"
 #endif
 
 // All colors are defined except black on black:

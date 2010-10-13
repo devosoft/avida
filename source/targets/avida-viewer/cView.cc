@@ -28,7 +28,7 @@
 #include "cEnvironmentScreen.h"
 #include "cAnalyzeScreen.h"
 
-#include "platform.h"
+#include "Platform.h"
 
 #include <csignal>
 #include <fstream>

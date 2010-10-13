@@ -27,7 +27,7 @@
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
-#include "PlatformExpert.h"
+#include "Platform.h"
 #include "cWorld.h"
 
 #include "cDriver_TextViewer.h"
@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, char * argv[])
 {
-  PlatformExpert::Initialize();
+  Platform::Initialize();
   
   Avida::PrintVersionBanner();
   
