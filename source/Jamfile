@@ -137,14 +137,13 @@ lib avida-core :
     tools/cProbDemeProbSchedule.cc
     tools/cProbSchedule.cc
     tools/cRandom.cc
-    tools/cRCObject.cc
     tools/cRunningAverage.cc
     tools/cSchedule.cc
     tools/cString.cc
     tools/cStringIterator.cc
     tools/cStringList.cc
     tools/cStringUtil.cc
-    tools/cTools.cc
+    tools/Tools.cc
     tools/cWeightedIndex.cc
     : <link>static <threading>multi
     ;
