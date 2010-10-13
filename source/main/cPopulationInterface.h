@@ -154,6 +154,12 @@ public:
 	void CreateLinkByIndex(int idx, double weight=1.0);
 	//! Broadcast a message to all organisms that are connected by this network.
 	bool NetworkBroadcast(cOrgMessage& msg);
+	//! Unicast a message to the current selected organism.
+	bool NetworkUnicast(cOrgMessage& msg);
+	//! Rotate to select a new network link.
+	bool NetworkRotate(int x);
+	//! Select a new network link.
+	bool NetworkSelect(int x);
 	
 	// -------- HGT support --------
 public:

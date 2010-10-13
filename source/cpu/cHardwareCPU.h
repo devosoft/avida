@@ -957,6 +957,13 @@ public:
 	bool Inst_CreateLinkByIndex(cAvidaContext& ctx);
 	//! Broadcast a message in the communication network.
 	bool Inst_NetworkBroadcast1(cAvidaContext& ctx);
+	//! Unicast a message in the communication network.
+	bool Inst_NetworkUnicast(cAvidaContext& ctx);
+	//! Rotate the current active link by the contents of register ?BX?.
+	bool Inst_NetworkRotate(cAvidaContext& ctx);
+	//! Select the current active link from the contents of register ?BX?.
+	bool Inst_NetworkSelect(cAvidaContext& ctx);
+	
 	
 	// -------- Division of labor support --------
 	bool Inst_GetTimeUsed(cAvidaContext& ctx);

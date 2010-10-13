@@ -119,6 +119,12 @@ public:
 	void CreateLinkByIndex(int idx, double weight=1.0) { }
 	//! Broadcast a message to all organisms that are connected by this network.
 	bool NetworkBroadcast(cOrgMessage& msg) { return false; }
+	//! Unicast a message to the current selected organism.
+	bool NetworkUnicast(cOrgMessage& msg) { return false; }
+	//! Rotate to select a new network link.
+	bool NetworkRotate(int x) { return false; }
+	//! Select a new network link.
+	bool NetworkSelect(int x) { return false; }	
 
 	//! HGT donation (does nothing).
 	void DoHGTDonation(cAvidaContext& ctx) { }

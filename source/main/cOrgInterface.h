@@ -124,6 +124,10 @@ public:
 	virtual void CreateLinkByXY(int x, int y, double weight=1.0) = 0;
 	virtual void CreateLinkByIndex(int idx, double weight=1.0) = 0;
 	virtual bool NetworkBroadcast(cOrgMessage& msg) = 0;
+	virtual bool NetworkUnicast(cOrgMessage& msg) = 0;
+	virtual bool NetworkRotate(int x) = 0;
+	virtual bool NetworkSelect(int x) = 0;
+	
 	virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
 	virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
 	virtual void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) = 0;
