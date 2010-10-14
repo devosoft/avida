@@ -28,9 +28,6 @@
 
 #include <fstream>
 
-#ifndef functions_h
-#include "functions.h"
-#endif
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
@@ -334,7 +331,7 @@ public:
   int GetLength() const { return length; }
   int GetCopyLength() const { return copy_length; }
   int GetExeLength() const { return exe_length; }
-  int GetMinLength() const { return Min(exe_length, copy_length); }
+  int GetMinLength() const { return AvidaTools::Min(exe_length, copy_length); }
   double GetMerit() const { return merit; }
   double GetCompMerit() const { return merit / (double) GetMinLength(); }
   int GetGestTime() const { return gest_time; }

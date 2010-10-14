@@ -42,7 +42,7 @@
 
 int main (int argc, char * const argv[])
 {
-  Platform::Initialize();
+  Avida::Initialize();
 
   Avida::PrintVersionBanner();
 

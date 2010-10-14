@@ -40,7 +40,7 @@ using namespace std;
 
 int main(int argc, char * argv[])
 {
-  Platform::Initialize();
+  Avida::Initialize();
   
   Avida::PrintVersionBanner();
 

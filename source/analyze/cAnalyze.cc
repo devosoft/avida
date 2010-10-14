@@ -85,6 +85,7 @@ extern "C" {
 }
 
 using namespace std;
+using namespace AvidaTools;
 
 cAnalyze::cAnalyze(cWorld* world)
 : cur_batch(0)
@@ -4185,7 +4186,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     while (swap_frac < min_swap_frac || swap_frac > max_swap_frac) {
       start_frac = m_world->GetRandom().GetDouble();
       end_frac = m_world->GetRandom().GetDouble();
-      if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+      if (start_frac > end_frac) Swap(start_frac, end_frac);
       swap_frac = end_frac - start_frac;
     }
     
@@ -6154,7 +6155,7 @@ void cAnalyze::CommandSpecies(cString cur_string)
           
           double start_frac = m_world->GetRandom().GetDouble();
           double end_frac = m_world->GetRandom().GetDouble();
-          if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+          if (start_frac > end_frac) Swap(start_frac, end_frac);
           
           int start0 = (int) (start_frac * (double) test_genome0.GetSize());
           int end0   = (int) (end_frac * (double) test_genome0.GetSize());
@@ -6262,7 +6263,7 @@ void cAnalyze::CommandRecombine(cString cur_string)
         
         double start_frac = m_world->GetRandom().GetDouble();
         double end_frac = m_world->GetRandom().GetDouble();
-        if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+        if (start_frac > end_frac) Swap(start_frac, end_frac);
         
         int start0 = (int) (start_frac * (double) test_genome0.GetSize());
         int end0   = (int) (end_frac * (double) test_genome0.GetSize());

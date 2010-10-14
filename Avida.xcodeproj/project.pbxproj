@@ -159,7 +159,7 @@
 		7023EC950C0A431B00362B9C /* cTaskLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0872D08F5E82D00FC65FE /* cTaskLib.cc */; };
 		7023EC960C0A431B00362B9C /* cTestCPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1F02808C3C71300F50912 /* cTestCPU.cc */; };
 		7023EC970C0A431B00362B9C /* cTestCPUInterface.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7005A70209BA0FA90007E16E /* cTestCPUInterface.cc */; };
-		7023EC990C0A431B00362B9C /* Tools.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9008FB2E6B00FC65FE /* Tools.cc */; };
+		7023EC990C0A431B00362B9C /* AvidaTools.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9008FB2E6B00FC65FE /* AvidaTools.cc */; };
 		7023EC9A0C0A431B00362B9C /* cWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */; };
 		7023EC9B0C0A431B00362B9C /* cWorld.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C5BC6309059A970028A785 /* cWorld.cc */; };
 		7023EC9C0C0A431B00362B9C /* DriverActions.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704ADBC40A6EEFC300666970 /* DriverActions.cc */; };
@@ -1180,7 +1180,6 @@
 		70B0885008F5FE5800FC65FE /* cDataFileManager.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataFileManager.cc; sourceTree = "<group>"; };
 		70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cDataManager_Base.cc; sourceTree = "<group>"; };
 		70B0887D08F603C600FC65FE /* cFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFile.h; sourceTree = "<group>"; };
-		70B0888208F603C600FC65FE /* functions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = functions.h; sourceTree = "<group>"; };
 		70B0888308F603D400FC65FE /* cFile.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cFile.cc; sourceTree = "<group>"; };
 		70B088F708F762EA00FC65FE /* cHelpAlias.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHelpAlias.h; sourceTree = "<group>"; };
 		70B088F808F762EA00FC65FE /* cHelpEntry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHelpEntry.h; sourceTree = "<group>"; };
@@ -1218,7 +1217,7 @@
 		70B0892408F7630100FC65FE /* cStringIterator.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStringIterator.cc; sourceTree = "<group>"; };
 		70B0892508F7630100FC65FE /* cStringList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStringList.cc; sourceTree = "<group>"; };
 		70B0892608F7630100FC65FE /* cStringUtil.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cStringUtil.cc; sourceTree = "<group>"; };
-		70B08B8008FB2E5500FC65FE /* Tools.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Tools.h; sourceTree = "<group>"; };
+		70B08B8008FB2E5500FC65FE /* AvidaTools.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AvidaTools.h; sourceTree = "<group>"; };
 		70B08B8208FB2E5500FC65FE /* cWeightedIndex.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cWeightedIndex.h; sourceTree = "<group>"; };
 		70B08B8408FB2E5500FC65FE /* tArray.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tArray.h; sourceTree = "<group>"; };
 		70B08B8508FB2E5500FC65FE /* tBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tBuffer.h; sourceTree = "<group>"; };
@@ -1231,7 +1230,7 @@
 		70B08B8D08FB2E5500FC65FE /* tMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tMatrix.h; sourceTree = "<group>"; };
 		70B08B8E08FB2E5500FC65FE /* tMemTrack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tMemTrack.h; sourceTree = "<group>"; };
 		70B08B8F08FB2E5500FC65FE /* tVector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tVector.h; sourceTree = "<group>"; };
-		70B08B9008FB2E6B00FC65FE /* Tools.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Tools.cc; sourceTree = "<group>"; };
+		70B08B9008FB2E6B00FC65FE /* AvidaTools.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AvidaTools.cc; sourceTree = "<group>"; };
 		70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cWeightedIndex.cc; sourceTree = "<group>"; };
 		70B1A64F0B7E237F00067486 /* cHardwareExperimental.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cHardwareExperimental.cc; sourceTree = "<group>"; wrapsLines = 0; };
 		70B1A6530B7E238F00067486 /* cHardwareExperimental.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cHardwareExperimental.h; sourceTree = "<group>"; };
@@ -2277,9 +2276,9 @@
 				70A778380D69D5C200735F1E /* cDemeProbSchedule.h */,
 				70E130BF0C442B2900CE9249 /* cCoords.h */,
 				704368F50C32E6AB00A05ABA /* cFlexVar.h */,
-				70B08B9008FB2E6B00FC65FE /* Tools.cc */,
+				70B08B9008FB2E6B00FC65FE /* AvidaTools.cc */,
 				70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */,
-				70B08B8008FB2E5500FC65FE /* Tools.h */,
+				70B08B8008FB2E5500FC65FE /* AvidaTools.h */,
 				70B08B8208FB2E5500FC65FE /* cWeightedIndex.h */,
 				70B08B8408FB2E5500FC65FE /* tArray.h */,
 				70B08B8508FB2E5500FC65FE /* tBuffer.h */,
@@ -2331,7 +2330,6 @@
 				70B0891508F762EA00FC65FE /* cStringUtil.h */,
 				70B0888308F603D400FC65FE /* cFile.cc */,
 				70B0887D08F603C600FC65FE /* cFile.h */,
-				70B0888208F603C600FC65FE /* functions.h */,
 				70B0884F08F5FE5800FC65FE /* cDataFile.cc */,
 				70B0885008F5FE5800FC65FE /* cDataFileManager.cc */,
 				70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */,
@@ -2838,7 +2836,7 @@
 				7023EC950C0A431B00362B9C /* cTaskLib.cc in Sources */,
 				7023EC960C0A431B00362B9C /* cTestCPU.cc in Sources */,
 				7023EC970C0A431B00362B9C /* cTestCPUInterface.cc in Sources */,
-				7023EC990C0A431B00362B9C /* Tools.cc in Sources */,
+				7023EC990C0A431B00362B9C /* AvidaTools.cc in Sources */,
 				7023EC9A0C0A431B00362B9C /* cWeightedIndex.cc in Sources */,
 				7023EC9B0C0A431B00362B9C /* cWorld.cc in Sources */,
 				7023EC9C0C0A431B00362B9C /* DriverActions.cc in Sources */,

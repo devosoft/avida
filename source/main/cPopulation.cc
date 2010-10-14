@@ -37,7 +37,6 @@
 #include "cDemePlaceholderUnit.h"
 #include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
-#include "functions.h"
 #include "cGenome.h"
 #include "cGenomeTestMetrics.h"
 #include "cGenomeUtil.h"
@@ -69,7 +68,7 @@
 #include "tManagedPointerArray.h"
 #include "cHardwareCPU.h"
 
-
+#include "AvidaTools.h"
 
 #include <fstream>
 #include <vector>
@@ -85,6 +84,7 @@
 #include <limits>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 cPopulation::cPopulation(cWorld* world)

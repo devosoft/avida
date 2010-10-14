@@ -1,16 +1,39 @@
-/*! Builds different topologies out of ranges of cells.
+/*
+ * cTopology.h
+ * Avida
+ *
+ * Copyright 2005-2010 Michigan State University. All rights reserved.
+ *
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; version 2
+ *  of the License.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ */
 
-Avida; cTopology.h
-Copyright 2005-2006 Michigan State University. All rights reserved.
+#ifndef cTopology_h
+#define cTopology_h
+
+/*! Builds different topologies out of ranges of cells.
 
 This file contains templated algorithms that create a particular cell
 topology out of a given range of cells.  In every case, the range of cells is 
 specified by a begin/end iterator pair.
 */
-#ifndef _C_TOPOLOGY_H_
-#define _C_TOPOLOGY_H_
 
-#include "functions.h"
+#include "AvidaTools.h"
+
+using namespace AvidaTools;
 
 /*! Builds a torus topology out of the cells betwen the iterators.
 In a torus, each cell is connected to up to 8 neighbors (including diagonals), 

@@ -29,7 +29,6 @@
 #include "cBioGroup.h"
 #include "nHardware.h"
 #include "cEnvironment.h"
-#include "functions.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cHardwareBase.h"

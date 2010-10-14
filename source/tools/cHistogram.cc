@@ -25,12 +25,13 @@
 
 #include "cHistogram.h"
 
-#include "functions.h"
+#include "AvidaTools.h"
 
 #include <cstdio>
 #include <iostream>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 cHistogram::cHistogram(int in_max, int in_min)

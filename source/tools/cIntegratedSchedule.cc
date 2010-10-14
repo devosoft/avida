@@ -27,13 +27,15 @@
 
 #include "cDeme.h"
 #include "cChangeList.h"
-#include "functions.h"
 #include "cIntegratedScheduleNode.h"
 #include "cMerit.h"
+
+#include "AvidaTools.h"
 
 #include <iostream>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 cIntegratedSchedule::cIntegratedSchedule(int _item_count)

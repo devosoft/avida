@@ -28,7 +28,6 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
-#include "functions.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
@@ -49,6 +48,7 @@
 #include <fstream>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 static const unsigned int CONSENSUS = (sizeof(int) * 8) / 2;

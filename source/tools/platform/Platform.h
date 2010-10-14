@@ -77,11 +77,13 @@
 #endif
 
 
-namespace Platform
-{
-  void Initialize();
-  
-  int AvailableCPUs();
+namespace AvidaTools {
+  namespace Platform
+  {
+    void Initialize();
+    
+    int AvailableCPUs();
+  };
 };
 
 

@@ -25,10 +25,13 @@
 
 #include "cSpatialResCount.h"
 
-#include "functions.h"
+#include "AvidaTools.h"
 #include "nGeometry.h"
 
+#include <cmath>
+
 using namespace std;
+using namespace AvidaTools;
 
 /* Setup a single spatial resource with known flows */
 

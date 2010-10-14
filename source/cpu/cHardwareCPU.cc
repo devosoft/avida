@@ -29,7 +29,6 @@
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cCPUTestInfo.h"
-#include "functions.h"
 #include "cEnvironment.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
@@ -55,11 +54,14 @@
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
+#include "AvidaTools.h"
+
 #include <climits>
 #include <fstream>
 #include <cmath>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::s_inst_slib = cHardwareCPU::initInstLib();
@@ -2565,21 +2567,21 @@ bool cHardwareCPU::Inst_Swap(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  nFunctions::Swap(GetRegister(op1), GetRegister(op2));
+  Swap(GetRegister(op1), GetRegister(op2));
   return true;
 }
 
 bool cHardwareCPU::Inst_SwapAB(cAvidaContext& ctx)\
 {
-  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_BX)); return true;
+  Swap(GetRegister(REG_AX), GetRegister(REG_BX)); return true;
 }
 bool cHardwareCPU::Inst_SwapBC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(REG_BX), GetRegister(REG_CX)); return true;
+  Swap(GetRegister(REG_BX), GetRegister(REG_CX)); return true;
 }
 bool cHardwareCPU::Inst_SwapAC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_CX)); return true;
+  Swap(GetRegister(REG_AX), GetRegister(REG_CX)); return true;
 }
 
 bool cHardwareCPU::Inst_CopyReg(cAvidaContext& ctx)
@@ -2892,7 +2894,7 @@ bool cHardwareCPU::Inst_Order(cAvidaContext& ctx)
   const int op1 = REG_BX;
   const int op2 = REG_CX;
   if (GetRegister(op1) > GetRegister(op2)) {
-    nFunctions::Swap(GetRegister(op1), GetRegister(op2));
+    Swap(GetRegister(op1), GetRegister(op2));
   }
   return true;
 }

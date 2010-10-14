@@ -25,8 +25,6 @@
 
 #include "cTestCPU.h"
 
-#include "functions.h"
-
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cCPUTestInfo.h"
@@ -50,6 +48,7 @@
 #include <iomanip>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 cTestCPU::cTestCPU(cWorld* world)

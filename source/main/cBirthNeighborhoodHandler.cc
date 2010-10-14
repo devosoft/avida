@@ -28,7 +28,6 @@
 #include "cBirthEntry.h"
 #include "cOrganism.h"
 #include "cWorld.h"
-#include "functions.h"
 
 
 cBirthNeighborhoodHandler::cBirthNeighborhoodHandler(cWorld* world, cBirthChamber* bc) : m_bc(bc)

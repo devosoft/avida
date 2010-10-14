@@ -145,7 +145,6 @@ cDriver_FLTKViewer::~cDriver_FLTKViewer()
 
 void cDriver_FLTKViewer::Run()
 {
-  cClassificationManager& classmgr = m_world->GetClassificationManager();
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
@@ -390,7 +389,6 @@ void cDriver_FLTKViewer::DoUpdate()
   }
 
   // If we are paused, keep checking the interface until we are done.
-  int cur_char = 0;
   while (m_info.GetPauseLevel() == cCoreView_Info::PAUSE_ON) {
     error = Fl::check();
   }
@@ -431,7 +429,6 @@ void cDriver_FLTKViewer::Notify(const cString& in_string)
 
 int cDriver_FLTKViewer::Confirm(const cString & message)
 {
-  const int mess_length = message.GetSize();
   return 0;
 }
 

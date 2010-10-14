@@ -46,7 +46,7 @@
 #include "nHardware.h"
 #include "tArrayUtils.h"
 
-#include "functions.h"
+using namespace AvidaTools;
 
 
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)

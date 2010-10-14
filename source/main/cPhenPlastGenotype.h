@@ -29,9 +29,6 @@
 #include <set>
 #include <utility>
 
-#ifndef functions_h
-#include "functions.h"
-#endif
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif

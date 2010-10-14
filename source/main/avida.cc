@@ -68,6 +68,13 @@ const char* const BioUnitSourceMap[] = {
   
 void Initialize()
 {
+  AvidaTools::Platform::Initialize();
+  
+  // Catch Interrupt making sure to close appropriately
+  signal(SIGINT, Avida::Exit);
+  
+  cDriverManager::Initialize();
+  
   cActionLibrary::Initialize();
   cAnalyzeGenotype::Initialize();
   cModularityAnalysis::Initialize();

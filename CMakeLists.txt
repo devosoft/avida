@@ -281,6 +281,7 @@ LIST(APPEND ALL_INC_DIRS ${MAIN_DIR})
 # The tools directory
 SET(TOOLS_DIR ${PROJECT_SOURCE_DIR}/source/tools)
 SET(TOOLS_SOURCES
+  ${TOOLS_DIR}/AvidaTools.cc
   ${TOOLS_DIR}/cArgContainer.cc
   ${TOOLS_DIR}/cArgSchema.cc
   ${TOOLS_DIR}/cBitArray.cc
@@ -311,7 +312,6 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cStringList.cc
   ${TOOLS_DIR}/cStringUtil.cc
   ${TOOLS_DIR}/cWeightedIndex.cc
-  ${TOOLS_DIR}/Tools.cc
 )
 SOURCE_GROUP(tools FILES ${TOOLS_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${TOOLS_SOURCES})

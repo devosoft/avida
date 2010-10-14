@@ -11,7 +11,7 @@
 #include "cDataFileManager.h"
 
 #include "Platform.h"
-#include "Tools.h"
+#include "AvidaTools.h"
 
 #if AVIDA_PLATFORM(WINDOWS)
 # include <direct.h>
@@ -22,6 +22,7 @@
 #define MAXIMUM_DIRECTORY_LENGTH 2048
 
 using namespace std;
+using namespace AvidaTools;
 
 
 cDataFileManager::cDataFileManager(const cString& target_dir, bool verbose) : m_target_dir(target_dir)
@@ -41,7 +42,7 @@ cDataFileManager::cDataFileManager(const cString& target_dir, bool verbose) : m_
   if (m_target_dir.GetSize() > 0) {
     char dir_tail = m_target_dir[m_target_dir.GetSize() - 1];
     if (dir_tail != '\\' && dir_tail != '/') m_target_dir += "/";
-    Tools::MkDir(m_target_dir, verbose);
+    FileSystem::MkDir(m_target_dir, verbose);
   }
 }
 
@@ -99,7 +100,7 @@ cDataFile& cDataFileManager::Get(const cString& name)
     if (d - i > 0) {
       cString dir = target.Substring(i, d - i);
       // Create if  that this directory is not a relative path component
-      if (dir.GetSize() > 2 || (dir != "." && dir != "..")) Tools::MkDir(dir_prefix + target.Substring(0, d), false);
+      if (dir.GetSize() > 2 || (dir != "." && dir != "..")) FileSystem::MkDir(dir_prefix + target.Substring(0, d), false);
     }
     
     // Adjust next directory name starting point
