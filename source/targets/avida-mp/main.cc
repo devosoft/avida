@@ -32,7 +32,7 @@
 #include "cDefaultAnalyzeDriver.h"
 #include "cDefaultRunDriver.h"
 #include "cMultiProcessWorld.h"
-#include "PlatformExpert.h"
+#include "Platform.h"
 
 using namespace std;
 
@@ -40,7 +40,7 @@ using namespace std;
 
 int main(int argc, char * argv[])
 {
-  PlatformExpert::Initialize();
+  Avida::Initialize();
   
   Avida::PrintVersionBanner();
 

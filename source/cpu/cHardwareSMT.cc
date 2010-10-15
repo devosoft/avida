@@ -36,14 +36,16 @@
 #include "cRandom.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
+#include "tArrayUtils.h"
 #include "tInstLibEntry.h"
 
-#include "functions.h"
+#include "AvidaTools.h"
 #include "nMutation.h"
 
 #include <iomanip>
 
 using namespace std;
+using namespace AvidaTools;
 
 tInstLib<cHardwareSMT::tMethod>* cHardwareSMT::s_inst_slib = cHardwareSMT::initInstLib();
 
@@ -890,12 +892,10 @@ void cHardwareSMT::Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier,
     // If we have lines to insert...
     if( num_mut > 0 ){
       // Build a list of the sites where mutations occured
-      static int mut_sites[MAX_GENOME_LENGTH];
-      for (int i = 0; i < num_mut; i++) {
-				mut_sites[i] = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
-      }
-      // Sort the list
-      qsort( (void*)mut_sites, num_mut, sizeof(int), &IntCompareFunction );
+      tArray<int> mut_sites(num_mut);
+      for (int i = 0; i < num_mut; i++) mut_sites[i] = ctx.GetRandom().GetUInt(injected_code.GetSize() + 1);
+      tArrayUtils::QSort(mut_sites);
+      
       // Actually do the mutations (in reverse sort order)
       for(int i = num_mut-1; i >= 0; i--) {
 				injected_code.Insert(mut_sites[i], m_inst_set->GetRandomInst(ctx));

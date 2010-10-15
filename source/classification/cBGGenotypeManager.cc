@@ -34,6 +34,8 @@
 #include "tAutoRelease.h"
 #include "tDataCommandManager.h"
 
+using namespace AvidaTools;
+
 
 cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
   : m_world(world)

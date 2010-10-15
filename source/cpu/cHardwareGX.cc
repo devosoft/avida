@@ -20,14 +20,11 @@
  *
  */
 
-#include <climits>
-#include <fstream>
-#include <algorithm>
 #include "cHardwareGX.h"
+
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
-#include "functions.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
@@ -43,7 +40,12 @@
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
+#include <climits>
+#include <fstream>
+#include <algorithm>
+
 using namespace std;
+using namespace AvidaTools;
 
 //! A small helper struct to make deleting a little easier.
 struct delete_functor {
@@ -1584,21 +1586,21 @@ bool cHardwareGX::Inst_Swap(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  nFunctions::Swap(GetRegister(op1), GetRegister(op2));
+  Swap(GetRegister(op1), GetRegister(op2));
   return true;
 }
 
 bool cHardwareGX::Inst_SwapAB(cAvidaContext& ctx)\
 {
-  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_BX)); return true;
+  Swap(GetRegister(REG_AX), GetRegister(REG_BX)); return true;
 }
 bool cHardwareGX::Inst_SwapBC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(REG_BX), GetRegister(REG_CX)); return true;
+  Swap(GetRegister(REG_BX), GetRegister(REG_CX)); return true;
 }
 bool cHardwareGX::Inst_SwapAC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_CX)); return true;
+  Swap(GetRegister(REG_AX), GetRegister(REG_CX)); return true;
 }
 
 bool cHardwareGX::Inst_CopyReg(cAvidaContext& ctx)
@@ -1876,7 +1878,7 @@ bool cHardwareGX::Inst_Order(cAvidaContext& ctx)
   const int op1 = REG_BX;
   const int op2 = REG_CX;
   if (GetRegister(op1) > GetRegister(op2)) {
-    nFunctions::Swap(GetRegister(op1), GetRegister(op2));
+    Swap(GetRegister(op1), GetRegister(op2));
   }
   return true;
 }

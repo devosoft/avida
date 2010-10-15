@@ -290,9 +290,9 @@ public:
   void UpdateResourceCount(const int Verbosity);
 	
 	// Adds an organism to a group
-	void JoinGroup(int group_id, cOrganism* org);
+	void JoinGroup(cOrganism* org, int group_id);
 	// Removes an organism from a group
-	void LeaveGroup(int group_id, cOrganism* org);
+	void LeaveGroup(cOrganism* org, int group_id);
 	
 	//Kill Member of the Group (But not org!!!) JW
 	void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);

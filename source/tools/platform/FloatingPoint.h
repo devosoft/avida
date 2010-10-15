@@ -1,10 +1,9 @@
 /*
- *  Tools.h
+ *  FloatingPoint.h
  *  Avida
  *
- *  Called "tools.hh" prior to 12/7/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
- *  Copyright 1993-2003 California Institute of Technology.
+ *  Created by David on 5/20/07.
+ *  Copyright 2007-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -23,14 +22,35 @@
  *
  */
 
-#ifndef Tools_h
-#define Tools_h
+#ifndef FloatingPoint_h
+#define FloatingPoint_h
 
-class cString;
+namespace AvidaTools {
+  namespace Platform {
 
-namespace Tools
+#if !defined(__APPLE__) && (defined(__i386__) || defined(i386) || defined(_M_IX86) || defined(_X86_) || defined(__THW_INTEL))
+# define FPE_X86 1
+#endif
+
+#ifdef FPE_X86
+void set_fpu (unsigned int mode)
+{ 
+#ifdef WIN32
+	__asm fldcw mode;
+#else
+  asm("fldcw %0" : : "m" (*&mode));
+#endif
+}
+#endif
+
+inline void SetupFloatingPointEnvironment()
 {
-  bool MkDir(const cString& dirname, bool verbose=false);
+#ifdef FPE_X86
+  set_fpu(0x27F); // Set the global rounding mode to double-precision
+#endif
+}
+    
+  };
 };
 
 #endif

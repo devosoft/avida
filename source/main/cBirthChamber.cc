@@ -39,8 +39,9 @@
 #include "cWorld.h"
 #include "cStats.h"
 #include "tArray.h"
-#include "functions.h"
+#include "AvidaTools.h"
 
+using namespace AvidaTools;
 
 cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
 {
@@ -236,7 +237,7 @@ void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, cGenome& genome0, c
 {
   double start_frac = ctx.GetRandom().GetDouble();
   double end_frac = ctx.GetRandom().GetDouble();
-  if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+  if (start_frac > end_frac) Swap(start_frac, end_frac);
     
   // calculate the proportion of the genome  that will be swapped
   double cut_frac = end_frac - start_frac;
@@ -271,7 +272,7 @@ void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, cGenome& geno
   double start_frac = ((double) start_module) / (double) num_modules;
   double end_frac = ((double) end_module) / (double) num_modules;
 
-  if (start_frac > end_frac) nFunctions::Swap(start_frac, end_frac);
+  if (start_frac > end_frac) Swap(start_frac, end_frac);
 	    
   // calculate the proportion of the genome  that will be swapped
   double cut_frac = end_frac - start_frac;

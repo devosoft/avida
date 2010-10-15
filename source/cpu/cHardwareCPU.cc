@@ -29,7 +29,6 @@
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cCPUTestInfo.h"
-#include "functions.h"
 #include "cEnvironment.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
@@ -55,11 +54,14 @@
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
+#include "AvidaTools.h"
+
 #include <climits>
 #include <fstream>
 #include <cmath>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::s_inst_slib = cHardwareCPU::initInstLib();
@@ -654,6 +656,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("create-link-xy", &cHardwareCPU::Inst_CreateLinkByXY, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("create-link-index", &cHardwareCPU::Inst_CreateLinkByIndex, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("network-bcast1", &cHardwareCPU::Inst_NetworkBroadcast1, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("network-unicast", &cHardwareCPU::Inst_NetworkUnicast, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("network-rotate", &cHardwareCPU::Inst_NetworkRotate, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("network-select", &cHardwareCPU::Inst_NetworkSelect, nInstFlag::STALL),		
+		
 		
 		// Division of labor instructions
 		tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
@@ -2563,21 +2569,21 @@ bool cHardwareCPU::Inst_Swap(cAvidaContext& ctx)
 {
   const int op1 = FindModifiedRegister(REG_BX);
   const int op2 = FindNextRegister(op1);
-  nFunctions::Swap(GetRegister(op1), GetRegister(op2));
+  Swap(GetRegister(op1), GetRegister(op2));
   return true;
 }
 
 bool cHardwareCPU::Inst_SwapAB(cAvidaContext& ctx)\
 {
-  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_BX)); return true;
+  Swap(GetRegister(REG_AX), GetRegister(REG_BX)); return true;
 }
 bool cHardwareCPU::Inst_SwapBC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(REG_BX), GetRegister(REG_CX)); return true;
+  Swap(GetRegister(REG_BX), GetRegister(REG_CX)); return true;
 }
 bool cHardwareCPU::Inst_SwapAC(cAvidaContext& ctx)
 {
-  nFunctions::Swap(GetRegister(REG_AX), GetRegister(REG_CX)); return true;
+  Swap(GetRegister(REG_AX), GetRegister(REG_CX)); return true;
 }
 
 bool cHardwareCPU::Inst_CopyReg(cAvidaContext& ctx)
@@ -2890,7 +2896,7 @@ bool cHardwareCPU::Inst_Order(cAvidaContext& ctx)
   const int op1 = REG_BX;
   const int op2 = REG_CX;
   if (GetRegister(op1) > GetRegister(op2)) {
-    nFunctions::Swap(GetRegister(op1), GetRegister(op2));
+    Swap(GetRegister(op1), GetRegister(op2));
   }
   return true;
 }
@@ -8992,7 +8998,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
 		// subtract org from group
-		m_world->GetPopulation().LeaveGroup(opinion, m_organism);
+		m_organism->LeaveGroup(opinion);
   }
 	
 	// Set the opinion
@@ -9000,7 +9006,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 	
 	// Add org to group count
 	opinion = m_organism->GetOpinion().first;	
-	m_world->GetPopulation().JoinGroup(opinion, m_organism);
+	m_organism->JoinGroup(opinion);
 	return true;
 }
 
@@ -9052,9 +9058,6 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
 	return true;
 }
 
-
-
-
 /*! Create a link to the currently-faced cell.
  */
 bool cHardwareCPU::Inst_CreateLinkByFacing(cAvidaContext& ctx) {
@@ -9098,6 +9101,33 @@ bool cHardwareCPU::Inst_NetworkBroadcast1(cAvidaContext& ctx) {
   msg.SetData(GetRegister(data_reg));
   return m_organism->GetOrgInterface().NetworkBroadcast(msg);
 }
+
+/*! Unicast a message in the communication network.
+ */
+bool cHardwareCPU::Inst_NetworkUnicast(cAvidaContext& ctx) {
+	const int label_reg = FindModifiedRegister(REG_BX);
+  const int data_reg = FindNextRegister(label_reg);
+  
+  cOrgMessage msg = cOrgMessage(m_organism);
+  msg.SetLabel(GetRegister(label_reg));
+  msg.SetData(GetRegister(data_reg));
+  return m_organism->GetOrgInterface().NetworkUnicast(msg);	
+}
+
+/*! Rotate the current active link by the contents of register ?BX?.
+ */
+bool cHardwareCPU::Inst_NetworkRotate(cAvidaContext& ctx) {
+	const int reg = FindModifiedRegister(REG_BX);
+  return m_organism->GetOrgInterface().NetworkRotate(GetRegister(reg));
+}
+
+/*! Select the current active link from the contents of register ?BX?.
+ */
+bool cHardwareCPU::Inst_NetworkSelect(cAvidaContext& ctx) {
+	const int reg = FindModifiedRegister(REG_BX);
+  return m_organism->GetOrgInterface().NetworkSelect(GetRegister(reg));
+}
+
 
 bool cHardwareCPU::Inst_GetTimeUsed(cAvidaContext& ctx) {
   GetRegister(FindModifiedRegister(REG_BX)) = m_organism->GetPhenotype().GetTimeUsed();

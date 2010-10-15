@@ -60,8 +60,8 @@
 #ifndef cRunningStats_h
 #include "cRunningStats.h"
 #endif
-#ifndef functions_h
-#include "functions.h"
+#ifndef AvidaTools_h
+#include "AvidaTools.h"
 #endif
 #ifndef nGeometry_h
 #include "nGeometry.h"
@@ -703,7 +703,7 @@ public:
   double GetEntropy() const        { return entropy; }
   double GetSpeciesEntropy() const { return species_entropy; }
   double GetEnergy() const         { return energy; }
-  double GetEvenness() const       { return entropy / Log(num_genotypes); }
+  double GetEvenness() const       { return entropy / AvidaTools::Log(num_genotypes); }
   int GetCoalescentDepth() const   { return coal_depth; }
 
   double GetAveThresholdAge() const { return sum_threshold_age.Average(); }

@@ -182,6 +182,7 @@ public:
   double CalcMeritRatio();
   
   void HardwareReset(cAvidaContext& ctx);
+  void NotifyDeath();
   
   void PrintStatus(std::ostream& fp, const cString& next_name);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
@@ -300,6 +301,8 @@ public:
   int GetNumTaskCellsReached() const { return m_interface->GetNumTaskCellsReached(); }
   void AddReachedTaskCell() { m_interface->AddReachedTaskCell(); }
 
+  void JoinGroup(int group_id) { m_interface->JoinGroup(group_id); }
+  void LeaveGroup(int group_id) { m_interface->LeaveGroup(group_id); }
 
   
   // --------  Input and Output Methods  --------

@@ -25,13 +25,15 @@
 
 #include "cStringUtil.h"
 
-#include "functions.h"
 #include "tMatrix.h"
+
+#include "AvidaTools.h"
 
 #include <cstdarg>
 #include <cstdio>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 cString cStringUtil::Stringf(const char * fmt, ...) {

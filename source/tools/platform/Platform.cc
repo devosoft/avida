@@ -1,5 +1,5 @@
 /*
- *  PlatformExpert.cc
+ *  Platform.cc
  *  Avida
  *
  *  Created by David on 6/29/07.
@@ -22,9 +22,7 @@
  *
  */
 
-#include "PlatformExpert.h"
-
-#include "platform.h"
+#include "Platform.h"
 
 #if AVIDA_PLATFORM(APPLE)
 # include <mach/mach.h>
@@ -32,44 +30,30 @@
 # include <unistd.h>
 #endif
 
-#include <csignal>
-
-#include "avida.h"
-#include "cDriverManager.h"
 #include "FloatingPoint.h"
 
 
-namespace PlatformExpert
+// Initialize various platform settings and system handlers
+void AvidaTools::Platform::Initialize()
 {
-  //! Initialize various platform settings and system handlers
-  void Initialize()
-  {
-    SetupFloatingPointEnvironment();
-    
-    // Catch Interrupt making sure to close appropriately
-    signal(SIGINT, Avida::Exit);
-
-    cDriverManager::Initialize();
-    Avida::Initialize();
-  }
+  SetupFloatingPointEnvironment();
+}
 
   
-  //! Autodetect the number of CPUs on a box, if available.  Otherwise, return 1.
-  int AvailableCPUs()
-  {
-    int ncpus = 1;
-    
+// Autodetect the number of CPUs on a box, if available.  Otherwise, return 1.
+int AvidaTools::Platform::AvailableCPUs()
+{
+  int ncpus = 1;
+  
 #if AVIDA_PLATFORM(APPLE)
-    kern_return_t kr;
-    host_basic_info_data_t p_host_info;     
-    mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
-    kr = host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&p_host_info, &count);
-    if (kr == KERN_SUCCESS) ncpus = (int)(p_host_info.avail_cpus);
+  kern_return_t kr;
+  host_basic_info_data_t p_host_info;     
+  mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
+  kr = host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&p_host_info, &count);
+  if (kr == KERN_SUCCESS) ncpus = (int)(p_host_info.avail_cpus);
 #elif AVIDA_PLATFORM(UNIX) && defined(_SC_NPROCESSORS_ONLN)
-    ncpus = (int)sysconf(_SC_NPROCESSORS_ONLN);
+  ncpus = (int)sysconf(_SC_NPROCESSORS_ONLN);
 #endif
-    
-    return ncpus;
-  }
-
-};
+  
+  return ncpus;
+}

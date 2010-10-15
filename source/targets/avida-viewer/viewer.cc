@@ -30,14 +30,14 @@
 #include "cTextViewerDriver.h"
 #include "cWorld.h"
 
-#include "PlatformExpert.h"
+#include "Platform.h"
 
 using namespace std;
 
 
 int main(int argc, char * argv[])
 {
-  PlatformExpert::Initialize();
+  Avida::Initialize();
   
   Avida::PrintVersionBanner();
   

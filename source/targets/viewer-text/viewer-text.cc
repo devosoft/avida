@@ -27,7 +27,7 @@
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
-#include "PlatformExpert.h"
+#include "Platform.h"
 #include "cWorld.h"
 
 #include "cDriver_TextViewer.h"
@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, char * argv[])
 {
-  PlatformExpert::Initialize();
+  Avida::Initialize();
   
   Avida::PrintVersionBanner();
   
@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
   cAvidaDriver* driver = NULL;
   
   // Test to see if we should be in analyze mode only...
-  if (world->GetConfig().ANALYZE_MODE.Get() > 0); // @CAO Do something here...
+//  if (world->GetConfig().ANALYZE_MODE.Get() > 0); // @CAO Do something here...
 
   // And run the driver!
   driver = new cDriver_TextViewer(world);

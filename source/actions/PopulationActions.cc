@@ -27,6 +27,7 @@
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
+#include "cDoubleSum.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cHardwareManager.h"
@@ -39,14 +40,15 @@
 #include "cOrganism.h"
 #include "cEnvironment.h"
 
+#include "AvidaTools.h"
+
 #include <map>
 #include <set>
 #include <numeric>
 #include <algorithm>
 
-#ifndef cDoubleSum_h
-#include "cDoubleSum.h"
-#endif
+using namespace AvidaTools;
+
 
 /*
  Injects a single organism into the population.

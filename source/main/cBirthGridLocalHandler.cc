@@ -27,7 +27,11 @@
 #include "cBirthChamber.h"
 #include "cOrganism.h"
 #include "cWorld.h"
-#include "functions.h"
+
+#include "AvidaTools.h"
+
+
+using namespace AvidaTools;
 
 
 cBirthGridLocalHandler::cBirthGridLocalHandler(cWorld* world, cBirthChamber* bc)

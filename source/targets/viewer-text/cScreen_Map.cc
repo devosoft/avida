@@ -62,6 +62,7 @@ void cScreen_Map::Update()
 
 bool cScreen_Map::DoInput(int input)
 {
+  return false;
 }
 
 

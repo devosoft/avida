@@ -1,5 +1,5 @@
 /*
- *  platform.h
+ *  Platform.h
  *  Avida
  *
  *  Created by David on 3/2/07.
@@ -75,5 +75,16 @@
 #ifndef NULL
 #define NULL 0
 #endif
+
+
+namespace AvidaTools {
+  namespace Platform
+  {
+    void Initialize();
+    
+    int AvailableCPUs();
+  };
+};
+
 
 #endif

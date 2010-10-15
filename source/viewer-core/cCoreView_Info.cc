@@ -81,8 +81,7 @@ void cCoreView_Info::SetupUpdate()
   // Loop through all genotypes that should be colors to mark those that we can clear out.
   tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
   int count = 0;
-  while (it->Next() && count < num_colors) {
-    
+  while (count < num_colors && it->Next()) {
     const int cur_color = getMapColor(it->Get())->color;
     const int cur_id = it->Get()->GetID();
     if (cur_color >= 0) {

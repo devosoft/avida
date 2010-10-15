@@ -52,9 +52,10 @@ public:
 	//! Internal vertex properties.
 	struct vertex_properties {
 		vertex_properties() { }
-		vertex_properties(std::pair<int,int> pos, int cell_id) : _x(pos.first), _y(pos.second), _cell_id(cell_id) { }
+		vertex_properties(std::pair<int,int> pos, int cell_id) : _x(pos.first), _y(pos.second), _cell_id(cell_id), _active_edge(-1) { }
 		std::pair<double,double> location() const { return std::make_pair(static_cast<double>(_x),static_cast<double>(_y)); }
 		int _x, _y, _cell_id; // coordinates and cell id of this vertex, used to relate it back to the population.
+		int _active_edge; // edge that will be used for unicast/rotate/select operations.
 	};
 	
 	//! Internal edge properties
@@ -94,7 +95,16 @@ public:
 	virtual void Connect(cPopulationCell& u, cPopulationCell& v, double w=1.0);
 	
 	//! Broadcast a message to connected cells.
-	virtual void BroadcastToConnected(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface);
+	virtual void BroadcastToNeighbors(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface);
+
+	//! Unicast a message to the currently selected neighbor.
+	virtual void Unicast(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface);
+	
+	//! Rotate the selected link from among the current neighbors.
+	virtual void Rotate(cPopulationCell& s, int x);
+	
+	//! Select the current link from among the neighbors.
+	virtual void Select(cPopulationCell& s, int x);
 	
 	//! Called when the organism living in cell u dies.
 	virtual void OrganismDeath(cPopulationCell& u) { }
@@ -109,6 +119,9 @@ public:
 	virtual void PrintTopology(cDataFile& df) const;
 	
 protected:
+	//! Ensure that the active edge of the given vertex is valid.
+	bool ActivateEdge(Network::vertex_descriptor u);
+	
 	Network m_network; //!< Underlying network model.
 	CellVertexMap m_cv; //!< Map of cell ids to vertex descriptors.
 	double m_link_length_sum; //!< Sum of all link lengths, at connection.

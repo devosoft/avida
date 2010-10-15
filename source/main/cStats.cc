@@ -44,13 +44,13 @@
 #include "cReaction.h"
 #include "cEventList.h"
 
-#include "functions.h"
-
 #include <algorithm>
 #include <cfloat>
 #include <numeric>
 #include <cmath>
 #include <sstream>
+
+using namespace AvidaTools;
 
 
 cStats::cStats(cWorld* world)

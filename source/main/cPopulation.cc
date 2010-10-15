@@ -37,7 +37,6 @@
 #include "cDemePlaceholderUnit.h"
 #include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
-#include "functions.h"
 #include "cGenome.h"
 #include "cGenomeTestMetrics.h"
 #include "cGenomeUtil.h"
@@ -69,7 +68,7 @@
 #include "tManagedPointerArray.h"
 #include "cHardwareCPU.h"
 
-
+#include "AvidaTools.h"
 
 #include <fstream>
 #include <vector>
@@ -85,6 +84,7 @@
 #include <limits>
 
 using namespace std;
+using namespace AvidaTools;
 
 
 cPopulation::cPopulation(cWorld* world)
@@ -468,7 +468,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       assert(parent_organism->HasOpinion());
       int group = parent_organism->GetOpinion().first;
       offspring_array[i]->SetOpinion(group); 
-      JoinGroup(group, offspring_array[i]);
+      JoinGroup(offspring_array[i], group);
     }
   }
 	
@@ -845,11 +845,10 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   m_world->GetStats().RecordDeath();
   
   int cellID = in_cell.GetID();
+
+  organism->NotifyDeath();
   
-  if (organism->IsSleeping()) {
-    organism->SetSleeping(false);
-    organism->GetOrgInterface().GetDeme()->DecSleepingCount();
-  }
+  // @TODO @DMB - this should really move to cOrganism::NotifyDeath
   if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
     if (sleep_log[cellID].Size() > 0) {
       pair<int,int> p = sleep_log[cellID][sleep_log[cellID].Size()-1];
@@ -859,6 +858,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
     }
   }
   
+  // @TODO @DMB - this should really move to cOrganism::NotifyDeath
   tList<tListNode<cSaleItem> >* sold_items = organism->GetSoldItems();
   if (sold_items)
   {
@@ -873,17 +873,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
     }
   }
   
-  // Return currently stored internal resources to the world
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
-  	organism->GetOrgInterface().UpdateResources(organism->GetRBins());
-  }
-  
-	// make sure the group composition is updated.
-	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && organism->HasOpinion()) 
-	{
-    int opinion = organism->GetOpinion().first;
-    LeaveGroup(opinion, organism);
-	}
   
   // Update count statistics...
   num_organisms--;
@@ -4254,6 +4243,10 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   stats.CalcFidelity();
   
   for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate();
+  
+  for (tArrayMap<int, tSmartArray<cOrganism*> >::iterator it = group_list.begin(); it != group_list.end(); it++) {
+    for (int i = 0; i < (*it).Value().GetSize(); i++) int cell_id = (*it).Value()[i]->GetCellID();
+  }
 }
 
 void cPopulation::ProcessUpdateCellActions(cAvidaContext& ctx)
@@ -5525,7 +5518,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity) {
 
 
 // Adds an organism to a group
-void  cPopulation::JoinGroup(int group_id, cOrganism* org)
+void  cPopulation::JoinGroup(cOrganism* org, int group_id)
 {
   map<int,int>::iterator it;
   it=m_groups.find(group_id);
@@ -5540,7 +5533,7 @@ void  cPopulation::JoinGroup(int group_id, cOrganism* org)
 
 
 // Removes an organism from a group
-void  cPopulation::LeaveGroup(int group_id, cOrganism* org)
+void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
 {
   map<int,int>::iterator it = m_groups.find(group_id);
   if (it != m_groups.end()) m_groups[group_id]--;

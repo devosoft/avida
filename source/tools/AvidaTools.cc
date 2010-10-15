@@ -1,5 +1,5 @@
 /*
- *  Tools.cc
+ *  AvidaTools.cc
  *  Avida
  *
  *  Copyright 1999-2010 Michigan State University. All rights reserved.
@@ -7,17 +7,18 @@
  *
  */
 
-#include "Tools.h"
+#include "AvidaTools.h"
+
+#include "Platform.h"
+
+#include "cEntryHandle.h"
+#include "cRCObject.h"
+#include "cString.h"
 
 #include <iostream>
 #include <cerrno>
 #include <sys/stat.h>
 #include <cstdio>
-
-#include "cEntryHandle.h"
-#include "cRCObject.h"
-#include "cString.h"
-#include "platform.h"
 
 
 // mkdir undefined in ms windows
@@ -41,7 +42,7 @@ cEntryHandle::~cEntryHandle() { ; }
 cRCObject::~cRCObject() { ; }
 
 
-bool Tools::MkDir(const cString & dirname, bool verbose)
+bool AvidaTools::FileSystem::MkDir(const cString& dirname, bool verbose)
 {
   if (verbose) cout << "Checking for directory '" << dirname << "'..." << flush;
 
@@ -50,8 +51,7 @@ bool Tools::MkDir(const cString & dirname, bool verbose)
     if (errno == ENOENT) {
       if (verbose) cout << "  not found, creating..." << flush;
       if (mkdir(dirname, (S_IRWXU|S_IRWXG|S_IRWXO))) {
-        if (verbose)
-          cerr << endl << "Warning: Failed to create directory '" << dirname << "'." << endl;
+        if (verbose) cerr << endl << "Warning: Failed to create directory '" << dirname << "'." << endl;
         return false;
       }
 

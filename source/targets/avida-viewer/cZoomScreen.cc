@@ -8,16 +8,14 @@
 #include "cZoomScreen.h"
 
 #include "cEnvironment.h"
-#include "functions.h"
-
+#include "cHardwareBase.h"
+#include "cHardwareCPU.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
 #include "cStringUtil.h"
 
-#include "cHardwareBase.h"
-#include "cHardwareCPU.h"
 #include "nHardware.h"
 
 #include "cView.h"

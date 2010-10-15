@@ -23,6 +23,7 @@
 
 #include "defs.h" // Must be first.
 #if BOOST_IS_AVAILABLE
+#include <iterator>
 #include "cDemeTopologyNetwork.h"
 #include "cDemeNetworkUtils.h"
 #include "cDeme.h"
@@ -107,7 +108,7 @@ void cDemeTopologyNetwork::Connect(cPopulationCell& u, cPopulationCell& v, doubl
 
 /*! Broadcast a message to connected cells.
  */
-void cDemeTopologyNetwork::BroadcastToConnected(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface) {
+void cDemeTopologyNetwork::BroadcastToNeighbors(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface) {
 	// if the sender isn't part of the network, we're all done:
 	CellVertexMap::iterator ui=m_cv.find(s.GetID());
 	if(ui==m_cv.end()) {
@@ -121,6 +122,69 @@ void cDemeTopologyNetwork::BroadcastToConnected(cPopulationCell& s, cOrgMessage&
 	for( ; ai!=ae; ++ai) {
 		pop_interface->SendMessage(msg, m_network[*ai]._cell_id);
 	}
+}
+
+
+/*! Unicast a message to the currently selected neighbor.
+ */
+void cDemeTopologyNetwork::Unicast(cPopulationCell& s, cOrgMessage& msg, cPopulationInterface* pop_interface) {
+	// if the sender isn't part of the network, we're all done:
+	CellVertexMap::iterator ui=m_cv.find(s.GetID());
+	if(ui==m_cv.end()) {
+		return;
+	}
+	
+	// activate an edge for this vertex; if we can't we're all done.
+	if(ActivateEdge(ui->second)) {
+		assert(m_network[ui->second]._active_edge >= 0);
+		assert(static_cast<std::size_t>(m_network[ui->second]._active_edge) < boost::out_degree(ui->second, m_network));
+		Network::adjacency_iterator ai,ae;
+		boost::tie(ai,ae) = boost::adjacent_vertices(ui->second, m_network);
+		std::advance(ai, m_network[ui->second]._active_edge);
+		pop_interface->SendMessage(msg, m_network[*ai]._cell_id);
+	}
+}
+
+
+/*! Rotate the selected link from among the current neighbors.
+ */
+void cDemeTopologyNetwork::Rotate(cPopulationCell& s, int x) {
+	// if the cell isn't part of the network, we're all done:
+	CellVertexMap::iterator ui=m_cv.find(s.GetID());
+	if(ui==m_cv.end()) {
+		return;
+	}
+	
+	m_network[ui->second]._active_edge += x;
+	ActivateEdge(ui->second);
+}
+
+
+/*! Select the current link from among the neighbors.
+ */
+void cDemeTopologyNetwork::Select(cPopulationCell& s, int x) {
+	// if the cell isn't part of the network, we're all done:
+	CellVertexMap::iterator ui=m_cv.find(s.GetID());
+	if(ui==m_cv.end()) {
+		return;
+	}
+	
+	m_network[ui->second]._active_edge = x;
+	ActivateEdge(ui->second);	
+}
+
+
+/*! Ensure that the active edge of the given vertex is valid.
+ */
+bool cDemeTopologyNetwork::ActivateEdge(Network::vertex_descriptor u) {
+	// if we haven't yet initialized this vertex's active_edge, we're done:
+	if(m_network[u]._active_edge == -1) {
+		return false;
+	}
+	
+	// reset the active edge so that it can't index beyond the bounds of this vertex's degree:
+	m_network[u]._active_edge %= boost::out_degree(u, m_network);
+	return true;
 }
 
 

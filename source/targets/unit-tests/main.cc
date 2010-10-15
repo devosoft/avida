@@ -24,7 +24,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include "functions.h"
 
 using namespace std;
 
@@ -112,6 +111,14 @@ protected:
     for(int i = 0; i < test3.GetSize() - 1; i++) if (test3[i] > test3[i+1]) result = false;
     ReportTestResult("MergeSort", result);
   }
+  
+  static int IntCompareFunction(const void * a, const void * b)
+  {
+    if( *((int*)a) > *((int*)b) ) return 1;
+    if( *((int*)a) < *((int*)b) ) return -1;
+    return 0;
+  }
+  
 };
 
 

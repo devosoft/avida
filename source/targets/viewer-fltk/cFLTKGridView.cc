@@ -27,7 +27,10 @@
 #include "cCoreView_Info.h"
 #include "cPopulation.h"
 
-#include "functions.h"
+#include "AvidaTools.h"
+
+using namespace AvidaTools;
+
 
 void cFLTKGridView::SetGenotypeColor(int color_id)
 {

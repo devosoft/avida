@@ -27,9 +27,8 @@
 
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
-#include "nHardware.h"
+#include "cDeme.h"
 #include "cEnvironment.h"
-#include "functions.h"
 #include "cGenome.h"
 #include "cGenomeUtil.h"
 #include "cHardwareBase.h"
@@ -37,12 +36,13 @@
 #include "cInstSet.h"
 #include "cOrgSinkMessage.h"
 #include "cPopulationCell.h"
-#include "cPopulation.h"
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskContext.h"
 #include "cWorld.h"
+#include "cWorldDriver.h"
 #include "cStats.h"
+#include "nHardware.h"
 
 #include <algorithm>
 #include <iomanip>
@@ -661,6 +661,24 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
     m_net->seq.Resize(0);
   }
 }
+
+void cOrganism::NotifyDeath()
+{
+  // Update Sleeping State
+  if (m_is_sleeping) {
+    m_is_sleeping = false;
+    GetDeme()->DecSleepingCount();
+  }
+
+  // Return currently stored internal resources to the world
+  if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
+  	m_interface->UpdateResources(GetRBins());
+  }
+  
+	// Make sure the group composition is updated.
+	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && HasOpinion()) m_interface->LeaveGroup(GetOpinion().first);  
+}
+
 
 
 bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const cGenome& injected_code)

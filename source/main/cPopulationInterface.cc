@@ -36,7 +36,7 @@
 #include "cTestCPU.h"
 #include "cRandom.h"
 #include "cInstSet.h"
-#include "platform.h"
+#include "Platform.h"
 
 #include <cassert>
 #include <algorithm>
@@ -710,7 +710,34 @@ void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
 bool cPopulationInterface::NetworkBroadcast(cOrgMessage& msg) {	
 	cDeme* deme = GetDeme(); assert(deme);
 	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	deme->GetNetwork().BroadcastToConnected(*this_cell, msg, this);
+	deme->GetNetwork().BroadcastToNeighbors(*this_cell, msg, this);
+	return true;
+}
+
+/*! Unicast a message to the current selected organism.
+ */
+bool cPopulationInterface::NetworkUnicast(cOrgMessage& msg) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	deme->GetNetwork().Unicast(*this_cell, msg, this);
+	return true;
+}
+
+/*! Rotate to select a new network link.
+ */
+bool cPopulationInterface::NetworkRotate(int x) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	deme->GetNetwork().Rotate(*this_cell, x);
+	return true;
+}
+
+/*! Select a new network link.
+ */
+bool cPopulationInterface::NetworkSelect(int x) {
+	cDeme* deme = GetDeme(); assert(deme);
+	cPopulationCell* this_cell = GetCell(); assert(this_cell);
+	deme->GetNetwork().Select(*this_cell, x);
 	return true;
 }
 
@@ -997,4 +1024,16 @@ void cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
 {
   m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
 }
+
+
+void cPopulationInterface::JoinGroup(int group_id)
+{
+  m_world->GetPopulation().JoinGroup(GetOrganism(), group_id);
+}
+
+void cPopulationInterface::LeaveGroup(int group_id)
+{
+  m_world->GetPopulation().LeaveGroup(GetOrganism(), group_id);
+}
+
 

@@ -23,7 +23,7 @@
  */
 
 #include "avida.h"
-#include "PlatformExpert.h"
+#include "Platform.h"
 
 #include "ASCoreLib.h"
 #include "ASAvidaLib.h"
@@ -42,7 +42,7 @@
 
 int main (int argc, char * const argv[])
 {
-  PlatformExpert::Initialize();
+  Avida::Initialize();
 
   Avida::PrintVersionBanner();
 

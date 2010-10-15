@@ -20,7 +20,7 @@
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 
-#include "platform.h"
+#include "Platform.h"
 
 #include <csignal>
 

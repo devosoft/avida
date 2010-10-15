@@ -30,12 +30,15 @@
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cRandom.h"
-#include "functions.h"
+
+#include "AvidaTools.h"
+
 #include <algorithm>
 #include <string.h>
 
 
 using namespace std;
+using namespace AvidaTools;
 
 
 
