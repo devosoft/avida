@@ -827,11 +827,10 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   m_world->GetStats().RecordDeath();
   
   int cellID = in_cell.GetID();
+
+  organism->NotifyDeath();
   
-  if (organism->IsSleeping()) {
-    organism->SetSleeping(false);
-    organism->GetOrgInterface().GetDeme()->DecSleepingCount();
-  }
+  // @TODO @DMB - this should really move to cOrganism::NotifyDeath
   if (m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
     if (sleep_log[cellID].Size() > 0) {
       pair<int,int> p = sleep_log[cellID][sleep_log[cellID].Size()-1];
@@ -841,6 +840,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
     }
   }
   
+  // @TODO @DMB - this should really move to cOrganism::NotifyDeath
   tList<tListNode<cSaleItem> >* sold_items = organism->GetSoldItems();
   if (sold_items)
   {
@@ -855,17 +855,6 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
     }
   }
   
-  // Return currently stored internal resources to the world
-  if (m_world->GetConfig().USE_RESOURCE_BINS.Get() && m_world->GetConfig().RETURN_STORED_ON_DEATH.Get()) {
-  	organism->GetOrgInterface().UpdateResources(organism->GetRBins());
-  }
-  
-	// make sure the group composition is updated.
-	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && organism->HasOpinion()) 
-	{
-    int opinion = organism->GetOpinion().first;
-    LeaveGroup(opinion);
-	}
   
   // Update count statistics...
   num_organisms--;

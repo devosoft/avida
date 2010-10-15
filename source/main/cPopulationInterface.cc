@@ -1025,3 +1025,15 @@ void cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
   m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
 }
 
+
+void cPopulationInterface::JoinGroup(int group_id)
+{
+  m_world->GetPopulation().JoinGroup(group_id);
+}
+
+void cPopulationInterface::LeaveGroup(int group_id)
+{
+  m_world->GetPopulation().LeaveGroup(group_id);
+}
+
+

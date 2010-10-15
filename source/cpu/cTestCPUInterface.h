@@ -136,6 +136,9 @@ public:
 	void ReceiveHGTDonation(const cGenome& fragment) { }
   
   void Move(cAvidaContext& ctx, int src_id, int dest_id) { ; }
+  
+  void JoinGroup(int group_id) { ; }
+  void LeaveGroup(int group_id) { ; }
 };
 
 #endif

@@ -299,6 +299,11 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   // Run the current organism.
   ProcessGestation(ctx, test_info, cur_depth);
 
+  
+  // Notify the organism that it has died to allow for various cleanup methods to run
+  organism->NotifyDeath();
+  
+
   // Must be able to divide twice in order to form a successful colony,
   // assuming the CPU doesn't get reset on divides.
   //
@@ -307,7 +312,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   //  2: It copied true => Check next gestation cycle, or set is_viable.
   //  3: Its copy looks like an ancestor => copy true.
   //  4: It copied false => we must check the child.
-
+  
   // Case 1:  ////////////////////////////////////
   if (organism->GetPhenotype().GetNumDivides() == 0)  return false;
 

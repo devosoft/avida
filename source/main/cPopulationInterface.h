@@ -196,6 +196,11 @@ protected:
 	inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
 	//! Called when this organism is the receiver of an HGT donation.
 	void ReceiveHGTDonation(const cGenome& fragment);
+  
+  
+public:
+  void JoinGroup(int group_id);
+  void LeaveGroup(int group_id);
 };
 
 #endif

@@ -8996,7 +8996,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
 		// subtract org from group
-		m_world->GetPopulation().LeaveGroup(opinion);
+		m_organism->LeaveGroup(opinion);
   }
 	
 	// Set the opinion
@@ -9004,7 +9004,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 	
 	// Add org to group count
 	opinion = m_organism->GetOpinion().first;	
-	m_world->GetPopulation().JoinGroup(opinion);
+	m_organism->JoinGroup(opinion);
 	return true;
 }
 
