@@ -314,6 +314,14 @@
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
 		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
+		70823AB6126F781700FA937F /* AvidaAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 70823AAE126F781700FA937F /* AvidaAppDelegate.m */; };
+		70823AB7126F781700FA937F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 70823AB0126F781700FA937F /* InfoPlist.strings */; };
+		70823AB8126F781700FA937F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70823AB2126F781700FA937F /* MainMenu.xib */; };
+		70823AB9126F781700FA937F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 70823AB4126F781700FA937F /* main.m */; };
+		70823ABD126F788900FA937F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823ABC126F788900FA937F /* Cocoa.framework */; };
+		70823ABF126F78B100FA937F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823ABE126F78B100FA937F /* AppKit.framework */; };
+		70823AC1126F78B100FA937F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823AC0126F78B100FA937F /* Foundation.framework */; };
+		70823AC2126F78C100FA937F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823ABC126F788900FA937F /* Cocoa.framework */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
 		7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F57410D956A400ECFBA1 /* cParasite.cc */; };
 		7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = 7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */; };
@@ -339,7 +347,7 @@
 		70A1E7D5126625A500D56AC4 /* viewer-fltk.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */; };
 		70A1E7DE1266261500D56AC4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70A1E7E01266261700D56AC4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
-		70A1E805126626E200D56AC4 /* avida-fltkview in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70A1E7BC1266253E00D56AC4 /* avida-fltkview */; };
+		70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70A1E7BC1266253E00D56AC4 /* avida-fltk */; };
 		70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E86D12663FA100D56AC4 /* cThread.cc */; };
 		70A1E87F126642B100D56AC4 /* Platform.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E87B126640C400D56AC4 /* Platform.cc */; };
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
@@ -653,7 +661,7 @@
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
-				70A1E805126626E200D56AC4 /* avida-fltkview in CopyFiles */,
+				70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -995,6 +1003,17 @@
 		708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveLoadActions.h; sourceTree = "<group>"; };
 		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
+		70823A40126F663A00FA937F /* Avida.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avida.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		70823A42126F663A00FA937F /* Avida-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Avida-Info.plist"; sourceTree = "<group>"; };
+		70823AAB126F781700FA937F /* Avida_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Avida_Prefix.pch; path = "viewer-macos/Avida_Prefix.pch"; sourceTree = "<group>"; };
+		70823AAD126F781700FA937F /* AvidaAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AvidaAppDelegate.h; path = "viewer-macos/AvidaAppDelegate.h"; sourceTree = "<group>"; };
+		70823AAE126F781700FA937F /* AvidaAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AvidaAppDelegate.m; path = "viewer-macos/AvidaAppDelegate.m"; sourceTree = "<group>"; };
+		70823AB1126F781700FA937F /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
+		70823AB3126F781700FA937F /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = MainMenu.xib; sourceTree = "<group>"; };
+		70823AB4126F781700FA937F /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "viewer-macos/main.m"; sourceTree = "<group>"; };
+		70823ABC126F788900FA937F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		70823ABE126F78B100FA937F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		70823AC0126F78B100FA937F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		708BF2FD0AB65DC700A923BF /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
 		708BF3010AB65DD300A923BF /* cEventList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventList.h; sourceTree = "<group>"; };
 		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
@@ -1098,7 +1117,7 @@
 		70A1E7B61266250500D56AC4 /* libfltk_jpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_jpeg.a; path = /usr/local/lib/libfltk_jpeg.a; sourceTree = "<absolute>"; };
 		70A1E7B71266250500D56AC4 /* libfltk_png.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_png.a; path = /usr/local/lib/libfltk_png.a; sourceTree = "<absolute>"; };
 		70A1E7B81266250500D56AC4 /* libfltk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk.a; path = /usr/local/lib/libfltk.a; sourceTree = "<absolute>"; };
-		70A1E7BC1266253E00D56AC4 /* avida-fltkview */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-fltkview"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70A1E7BC1266253E00D56AC4 /* avida-fltk */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-fltk"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
 		70A1E86C12663FA100D56AC4 /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
@@ -1366,6 +1385,9 @@
 				5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */,
 				5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */,
 				70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */,
+				70823ABD126F788900FA937F /* Cocoa.framework in Frameworks */,
+				70823ABF126F78B100FA937F /* AppKit.framework in Frameworks */,
+				70823AC1126F78B100FA937F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1397,6 +1419,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		70823A3E126F663A00FA937F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70823AC2126F78C100FA937F /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1741,6 +1771,27 @@
 			path = misc;
 			sourceTree = "<group>";
 		};
+		70823ABA126F781E00FA937F /* viewer-macos */ = {
+			isa = PBXGroup;
+			children = (
+				70823ABB126F784600FA937F /* Resources */,
+				70823AAB126F781700FA937F /* Avida_Prefix.pch */,
+				70823AAD126F781700FA937F /* AvidaAppDelegate.h */,
+				70823AAE126F781700FA937F /* AvidaAppDelegate.m */,
+				70823AB4126F781700FA937F /* main.m */,
+			);
+			name = "viewer-macos";
+			sourceTree = "<group>";
+		};
+		70823ABB126F784600FA937F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				70823AB0126F781700FA937F /* InfoPlist.strings */,
+				70823AB2126F781700FA937F /* MainMenu.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		70920C1A0A9CCE2C00757CDB /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1876,6 +1927,7 @@
 				70A1E4B9126624D800D56AC4 /* IOKit.framework */,
 				70A1E4BB126624D800D56AC4 /* OpenGL.framework */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
+				70823ABC126F788900FA937F /* Cocoa.framework */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1900,6 +1952,7 @@
 		70DCAC54097AF730002F8733 /* targets */ = {
 			isa = PBXGroup;
 			children = (
+				70823ABA126F781E00FA937F /* viewer-macos */,
 				4254F0AC11DA3646005C315B /* avida-mp */,
 				70DCAC55097AF730002F8733 /* avida */,
 				70DCAC56097AF730002F8733 /* avida-s */,
@@ -2061,6 +2114,9 @@
 				DCC315B6076253A5008F7A48 /* Utilities */,
 				DCC3164E07626CF3008F7A48 /* Products */,
 				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
+				70823A42126F663A00FA937F /* Avida-Info.plist */,
+				70823ABE126F78B100FA937F /* AppKit.framework */,
+				70823AC0126F78B100FA937F /* Foundation.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2409,7 +2465,8 @@
 				56F555D00C3B364E00E2E929 /* avida-text */,
 				7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */,
 				706C7B64125F64B000EDB4B9 /* libviewer-core.a */,
-				70A1E7BC1266253E00D56AC4 /* avida-fltkview */,
+				70A1E7BC1266253E00D56AC4 /* avida-fltk */,
+				70823A40126F663A00FA937F /* Avida.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2552,6 +2609,23 @@
 			productReference = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		70823A3F126F663A00FA937F /* Avida */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70823A48126F663A00FA937F /* Build configuration list for PBXNativeTarget "Avida" */;
+			buildPhases = (
+				70823A3C126F663A00FA937F /* Resources */,
+				70823A3D126F663A00FA937F /* Sources */,
+				70823A3E126F663A00FA937F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Avida;
+			productName = Avida;
+			productReference = 70823A40126F663A00FA937F /* Avida.app */;
+			productType = "com.apple.product-type.application";
+		};
 		70A1E7BB1266253E00D56AC4 /* avida-fltk */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 70A1E7C31266256000D56AC4 /* Build configuration list for PBXNativeTarget "avida-fltk" */;
@@ -2569,7 +2643,7 @@
 			);
 			name = "avida-fltk";
 			productName = "avida-fltkview";
-			productReference = 70A1E7BC1266253E00D56AC4 /* avida-fltkview */;
+			productReference = 70A1E7BC1266253E00D56AC4 /* avida-fltk */;
 			productType = "com.apple.product-type.tool";
 		};
 		70B6514B0BEA6FAD002472ED /* unit-tests */ = {
@@ -2636,6 +2710,7 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,
@@ -2659,9 +2734,22 @@
 				7023EC320C0A426900362B9C /* avida-core */,
 				7022469C107FC4F10079CD25 /* tcmalloc-1.4 */,
 				706C7B63125F64B000EDB4B9 /* viewer-core */,
+				70823A3F126F663A00FA937F /* Avida */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		70823A3C126F663A00FA937F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70823AB7126F781700FA937F /* InfoPlist.strings in Resources */,
+				70823AB8126F781700FA937F /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		7023ECA40C0A435400362B9C /* ShellScript */ = {
@@ -2896,6 +2984,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		70823A3D126F663A00FA937F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70823AB6126F781700FA937F /* AvidaAppDelegate.m in Sources */,
+				70823AB9126F781700FA937F /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		70A1E7B91266253E00D56AC4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3030,6 +3127,27 @@
 			targetProxy = 70D1038A124CF80800F25734 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		70823AB0126F781700FA937F /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				70823AB1126F781700FA937F /* English */,
+			);
+			name = InfoPlist.strings;
+			path = "viewer-macos/English.lproj";
+			sourceTree = "<group>";
+		};
+		70823AB2126F781700FA937F /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				70823AB3126F781700FA937F /* English */,
+			);
+			name = MainMenu.xib;
+			path = "viewer-macos/English.lproj";
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		56F555D50C3B36AD00E2E929 /* Development */ = {
@@ -3383,6 +3501,117 @@
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = "viewer-core";
+			};
+			name = Profile;
+		};
+		70823A43126F663A00FA937F /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Avida-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Avida;
+			};
+			name = Development;
+		};
+		70823A44126F663A00FA937F /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Avida-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Avida;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		70823A45126F663A00FA937F /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Avida-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Avida;
+			};
+			name = "Deployment-G5";
+		};
+		70823A46126F663A00FA937F /* Deployment-Universal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Avida-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Avida;
+			};
+			name = "Deployment-Universal";
+		};
+		70823A47126F663A00FA937F /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "Avida-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Avida;
 			};
 			name = Profile;
 		};
@@ -3804,6 +4033,18 @@
 				706C7B67125F64B100EDB4B9 /* Deployment-G5 */,
 				706C7B68125F64B100EDB4B9 /* Deployment-Universal */,
 				706C7B69125F64B100EDB4B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		70823A48126F663A00FA937F /* Build configuration list for PBXNativeTarget "Avida" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70823A43126F663A00FA937F /* Development */,
+				70823A44126F663A00FA937F /* Deployment */,
+				70823A45126F663A00FA937F /* Deployment-G5 */,
+				70823A46126F663A00FA937F /* Deployment-Universal */,
+				70823A47126F663A00FA937F /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
