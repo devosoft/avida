@@ -112,6 +112,7 @@ private:
   bool LoadReaction(cString desc);
   bool LoadMutation(cString desc);
   bool LoadStateGrid(cString desc);
+  bool LoadDynamicResource(cString desc); //JW
 
   bool LoadSetActive(cString desc);
 

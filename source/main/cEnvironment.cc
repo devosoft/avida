@@ -802,6 +802,125 @@ bool cEnvironment::LoadMutation(cString desc)
   return true;
 }
 
+//Dummy Function for Loading Dynamic Resources
+bool cEnvironment::LoadDynamicResource(cString desc) //JW
+{
+  if (desc.GetSize() == 0) {
+    cerr << "Warning: Dynamic Resource line with no resources listed." << endl;
+    return false;
+  }
+  
+  while (desc.GetSize() > 0) {
+    cString cur_resource = desc.PopWord();
+    const cString name = cur_resource.Pop(':');
+    
+    /* If resource does not already exist create it, however if it already
+     exists (for instance was created as a cell resource) return an error*/
+    /*
+    cDynamicResource* new_resource;
+    if (! resource_lib.DoesResourceExist(name)) {
+      new_resource = resource_lib.AddResource(name);
+    } else {
+      cerr << "Error: resource " << name << " already exists." << endl;
+      return false;
+    }*/
+    
+    while (cur_resource.GetSize() != 0) {
+      cString var_entry = cur_resource.Pop(':');
+      cString var_name;
+      cString var_value;
+      const cString var_type = cStringUtil::Stringf("dynamic resource '%s'", static_cast<const char*>(name));
+      // Parse this entry.
+      if (!ParseSetting(var_entry, var_name, var_value, var_type)) {
+        return false;
+      }
+      
+      if (var_name == "peaks") {
+        if (!AssertInputInt(var_value, "peaks", var_type)) return false;
+        /*if(peaks > MAX_PEAKS){
+	  cerr << "Error: peaks of " << name << " exceeds limits of " << MAX_PEAKS << endl;
+	  return false;
+	}*/
+        //new_resource->SetPeaks( var_value.AsInt() );
+      }
+      else if (var_name == "min_height") {
+        if (!AssertInputDouble(var_value, "min_height", var_type)) return false;
+        //new_resource->SetMinHeight( var_value.AsDouble() );
+      }
+      else if (var_name == "height_range") {
+        if (!AssertInputDouble(var_value, "height_range", var_type)) return false;
+        //new_resource->SetHeightRange( var_value.AsDouble() );
+      }
+      else if (var_name == "min_radius") {
+        if (!AssertInputDouble(var_value, "min_radius", var_type)) return false;
+        //new_resource->SetMinRadius( var_value.AsDouble() );
+      }
+      else if (var_name == "radius_range") {
+        if (!AssertInputDouble(var_value, "radius_range", var_type)) return false;
+        //new_resource->SetRadiusRange( var_value.AsDouble() );
+      }
+      else if (var_name == "ah") {
+        if (!AssertInputDouble(var_value, "ah", var_type)) return false;
+        //new_resource->SetAHeight( var_value.AsDouble() );
+      }
+      else if (var_name == "ar") {
+        if (!AssertInputDouble(var_value, "ar", var_type)) return false;
+        //new_resource->SetARadius( var_value.AsDouble() );
+      }
+      else if (var_name == "acx") {
+        if (!AssertInputDouble(var_value, "acx", var_type)) return false;
+        //new_resource->SetAX( var_value.AsDouble() );
+      }
+      else if (var_name == "acy") {
+        if (!AssertInputDouble(var_value, "acy", var_type)) return false;
+        //new_resource->SetAY( var_value.AsDouble() );
+      }
+      else if (var_name == "hstepscale") {
+        if (!AssertInputDouble(var_value, "hstepscale", var_type)) return false;
+        //new_resource->SetHStepscale( var_value.AsDouble() );
+      }
+      else if (var_name == "rstepscale") {
+        if (!AssertInputDouble(var_value, "rstepscale", var_type)) return false;
+        //new_resource->SetRStepscale( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepscalex") {
+        if (!AssertInputDouble(var_value, "cstepscalex", var_type)) return false;
+        //new_resource->SetCStepScaleX( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepscaley") {
+        if (!AssertInputDouble(var_value, "cstepscaley", var_type)) return false;
+        //new_resource->SetCStepScaleY( var_value.AsDouble() );
+      }
+      else if (var_name == "hstep") {
+        if (!AssertInputDouble(var_value, "hstep", var_type)) return false;
+        //new_resource->SetHStep( var_value.AsDouble() );
+      }
+      else if (var_name == "rstep") {
+        if (!AssertInputDouble(var_value, "rstep", var_type)) return false;
+        //new_resource->SetRStep( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepx") {
+        if (!AssertInputDouble(var_value, "cstepx", var_type)) return false;
+        //new_resource->SetCStepX( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepy") {
+        if (!AssertInputDouble(var_value, "cstepy", var_type)) return false;
+        //new_resource->SetCStepY( var_value.AsDouble() );
+      }
+      else if (var_name == "updatestep") {
+        if (!AssertInputDouble(var_value, "updatestep", var_type)) return false;
+        //new_resource->SetUpdateStep( var_value.AsDouble() );
+      }
+      else {
+        cerr << "Error: Unknown variable '" << var_name
+        << "' in dynamic resource '" << name << "'" << endl;
+        return false;
+      }
+    }
+  }
+  
+  return true;  
+}
 
 bool cEnvironment::LoadStateGrid(cString desc)
 {
@@ -972,6 +1091,7 @@ bool cEnvironment::LoadLine(cString line)
   else if (type == "SET_ACTIVE") load_ok = LoadSetActive(line);
   else if (type == "CELL") load_ok = LoadCell(line);
   else if (type == "GRID") load_ok = LoadStateGrid(line);
+  else if (type == "DYNAMIC_RESOURCE") load_ok = LoadDynamicResource(line); //JW
   else {
     cerr << "Error: Unknown environment keyword '" << type << "." << endl;
     return false;
