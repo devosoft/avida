@@ -520,6 +520,7 @@ private:
   bool Inst_SenseFacedResource0(cAvidaContext& ctx);
   bool Inst_SenseFacedResource1(cAvidaContext& ctx);
   bool Inst_SenseFacedResource2(cAvidaContext& ctx);
+  bool Inst_SenseResourceID(cAvidaContext& ctx); //JW
   
   // Resources
   bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);

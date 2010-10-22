@@ -242,6 +242,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2, nInstFlag::STALL),           // If you add more sense instructions
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
+    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareCPU::Inst_SenseResourceID, nInstFlag::STALL), //JW
     
     tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-resource1", &cHardwareCPU::Inst_SenseResource1, nInstFlag::STALL),
@@ -3846,6 +3847,17 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   return true;
 }
 
+bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx) //JW
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  int reg_to_set = FindModifiedRegister(REG_BX);
+  
+  for(int i = 0; i < res_count.GetSize(); i++) {
+    if(res_count[i] > 0.0) GetRegister(reg_to_set) = i;
+  }
+    
+  return true;
+}
 
 bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin)
 {
