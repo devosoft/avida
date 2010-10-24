@@ -53,6 +53,19 @@
 #define BOOST_IS_AVAILABLE 0
 #endif
 
+//JW Constants for Dynamic Function Generator
+#ifndef NUMBER_DIM 
+#define NUMBER_DIM 2
+#endif
+
+#ifndef  MAX_DIM
+#define  MAX_DIM 10
+#endif
+
+#ifndef  MAX_PEAKS
+#define  MAX_PEAKS 100
+#endif
+
 // #define SPECIES_TEST
 
 

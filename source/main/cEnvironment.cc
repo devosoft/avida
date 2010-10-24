@@ -816,14 +816,23 @@ bool cEnvironment::LoadDynamicResource(cString desc) //JW
     
     /* If resource does not already exist create it, however if it already
      exists (for instance was created as a cell resource) return an error*/
-    /*
-    cDynamicResource* new_resource;
+    
+    cResource* new_resource;
     if (! resource_lib.DoesResourceExist(name)) {
       new_resource = resource_lib.AddResource(name);
     } else {
       cerr << "Error: resource " << name << " already exists." << endl;
       return false;
-    }*/
+    }
+    
+    new_resource->SetGeometry("grid");
+    new_resource->SetInitial(0.0);
+    new_resource->SetOutflow(1.0);
+    new_resource->SetXDiffuse(0.0);
+    new_resource->SetYDiffuse(0.0);
+    new_resource->SetXGravity(0.0);
+    new_resource->SetYGravity(0.0);
+    new_resource->SetDynamicResource(true);
     
     while (cur_resource.GetSize() != 0) {
       cString var_entry = cur_resource.Pop(':');
@@ -841,75 +850,75 @@ bool cEnvironment::LoadDynamicResource(cString desc) //JW
 	  cerr << "Error: peaks of " << name << " exceeds limits of " << MAX_PEAKS << endl;
 	  return false;
 	}*/
-        //new_resource->SetPeaks( var_value.AsInt() );
+        new_resource->SetPeaks( var_value.AsInt() );
       }
       else if (var_name == "min_height") {
         if (!AssertInputDouble(var_value, "min_height", var_type)) return false;
-        //new_resource->SetMinHeight( var_value.AsDouble() );
+        new_resource->SetMinHeight( var_value.AsDouble() );
       }
       else if (var_name == "height_range") {
         if (!AssertInputDouble(var_value, "height_range", var_type)) return false;
-        //new_resource->SetHeightRange( var_value.AsDouble() );
+        new_resource->SetHeightRange( var_value.AsDouble() );
       }
       else if (var_name == "min_radius") {
         if (!AssertInputDouble(var_value, "min_radius", var_type)) return false;
-        //new_resource->SetMinRadius( var_value.AsDouble() );
+        new_resource->SetMinRadius( var_value.AsDouble() );
       }
       else if (var_name == "radius_range") {
         if (!AssertInputDouble(var_value, "radius_range", var_type)) return false;
-        //new_resource->SetRadiusRange( var_value.AsDouble() );
+        new_resource->SetRadiusRange( var_value.AsDouble() );
       }
       else if (var_name == "ah") {
         if (!AssertInputDouble(var_value, "ah", var_type)) return false;
-        //new_resource->SetAHeight( var_value.AsDouble() );
+        new_resource->SetAh( var_value.AsDouble() );
       }
       else if (var_name == "ar") {
         if (!AssertInputDouble(var_value, "ar", var_type)) return false;
-        //new_resource->SetARadius( var_value.AsDouble() );
+        new_resource->SetAr( var_value.AsDouble() );
       }
       else if (var_name == "acx") {
         if (!AssertInputDouble(var_value, "acx", var_type)) return false;
-        //new_resource->SetAX( var_value.AsDouble() );
+        new_resource->SetAcx( var_value.AsDouble() );
       }
       else if (var_name == "acy") {
         if (!AssertInputDouble(var_value, "acy", var_type)) return false;
-        //new_resource->SetAY( var_value.AsDouble() );
+        new_resource->SetAcy( var_value.AsDouble() );
       }
       else if (var_name == "hstepscale") {
         if (!AssertInputDouble(var_value, "hstepscale", var_type)) return false;
-        //new_resource->SetHStepscale( var_value.AsDouble() );
+        new_resource->SetHStepscale( var_value.AsDouble() );
       }
       else if (var_name == "rstepscale") {
         if (!AssertInputDouble(var_value, "rstepscale", var_type)) return false;
-        //new_resource->SetRStepscale( var_value.AsDouble() );
+        new_resource->SetRStepscale( var_value.AsDouble() );
       }
       else if (var_name == "cstepscalex") {
         if (!AssertInputDouble(var_value, "cstepscalex", var_type)) return false;
-        //new_resource->SetCStepScaleX( var_value.AsDouble() );
+        new_resource->SetCStepscaleX( var_value.AsDouble() );
       }
       else if (var_name == "cstepscaley") {
         if (!AssertInputDouble(var_value, "cstepscaley", var_type)) return false;
-        //new_resource->SetCStepScaleY( var_value.AsDouble() );
+        new_resource->SetCStepscaleY( var_value.AsDouble() );
       }
       else if (var_name == "hstep") {
         if (!AssertInputDouble(var_value, "hstep", var_type)) return false;
-        //new_resource->SetHStep( var_value.AsDouble() );
+        new_resource->SetHStep( var_value.AsDouble() );
       }
       else if (var_name == "rstep") {
         if (!AssertInputDouble(var_value, "rstep", var_type)) return false;
-        //new_resource->SetRStep( var_value.AsDouble() );
+        new_resource->SetRStep( var_value.AsDouble() );
       }
       else if (var_name == "cstepx") {
         if (!AssertInputDouble(var_value, "cstepx", var_type)) return false;
-        //new_resource->SetCStepX( var_value.AsDouble() );
+        new_resource->SetCStepX( var_value.AsDouble() );
       }
       else if (var_name == "cstepy") {
         if (!AssertInputDouble(var_value, "cstepy", var_type)) return false;
-        //new_resource->SetCStepY( var_value.AsDouble() );
+        new_resource->SetCStepY( var_value.AsDouble() );
       }
       else if (var_name == "updatestep") {
         if (!AssertInputDouble(var_value, "updatestep", var_type)) return false;
-        //new_resource->SetUpdateStep( var_value.AsDouble() );
+        new_resource->SetUpdateStep( var_value.AsInt() );
       }
       else {
         cerr << "Error: Unknown variable '" << var_name

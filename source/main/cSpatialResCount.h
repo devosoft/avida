@@ -39,6 +39,7 @@
 #include "cResource.h"
 #endif
 
+
 class cSpatialResCount
 {
 private:
@@ -75,9 +76,9 @@ public:
   void State(int x, int y);
   double GetAmount(int x) const;
   double GetAmount(int x, int y) const;
-  void RateAll(double ratein);
+  void RateAll(double ratein); //JW
   void StateAll();
-  void FlowAll();
+  void FlowAll(); //JW
   double SumAll() const;
   void Source(double amount) const;
   void CellInflow() const;
@@ -99,7 +100,7 @@ public:
   void SetOutflowX2(int in_outflowX2) { outflowX2 = in_outflowX2; }
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
-  
+  virtual void UpdateCount() {}
   void ResetResourceCounts();
 };
 

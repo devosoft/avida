@@ -68,6 +68,26 @@ cResource::cResource(const cString & _name, int _id)
   , deme_resource(false)
   , energy_resource(false)
   , hgt_metabolize(false)
+  , dynamic_resource(false) //JW
+  , peaks(0) //JW
+  , min_height(0.0) //JW
+  , height_range(0.0) //JW
+  , min_radius(0.0) //JW
+  , radius_range(0.0) //JW
+  , ah(0.0) //JW
+  , ar(0.0) //JW
+  , acx(0.0) //JW
+  , acy(0.0) //JW
+  , hstepscale(0.0) //JW
+  , rstepscale(0.0) //JW
+  , cstepscalex(0.0) //JW
+  , cstepscaley(0.0) //JW
+  , hstep(0.0) //JW
+  , rstep(0.0) //JW
+  , cstepx(0.0) //JW
+  , cstepy(0.0) //JW
+  , updatestep(0.0) //JW
+
 {
 }
 

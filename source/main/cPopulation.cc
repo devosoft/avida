@@ -294,7 +294,18 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetInflowY2(), res->GetOutflowX1(), 
                            res->GetOutflowX2(), res->GetOutflowY1(), 
                            res->GetOutflowY2(), res->GetCellListPtr(),
-                           res->GetCellIdListPtr(), world->GetVerbosity() );
+                           res->GetCellIdListPtr(), world->GetVerbosity(),
+			   res->GetDynamicResource(), res->GetPeaks(), 
+                           res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
+                           res->GetAh(), res->GetAr(),
+                           res->GetAcx(), res->GetAcy(),
+                           res->GetHStepscale(), res->GetRStepscale(),
+                           res->GetCStepscaleX(), res->GetCStepscaleY(),
+                           res->GetHStep(), res->GetRStep(),
+                           res->GetCStepX(), res->GetCStepY(),
+                           res->GetUpdateStep()
+                           ); //JW
+
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
       deme_res_index++;
@@ -5500,7 +5511,17 @@ void cPopulation::UpdateResourceCount(const int Verbosity) {
                            res->GetInflowY2(), res->GetOutflowX1(), 
                            res->GetOutflowX2(), res->GetOutflowY1(), 
                            res->GetOutflowY2(), res->GetCellListPtr(),
-                           res->GetCellIdListPtr(), Verbosity);
+                           res->GetCellIdListPtr(), Verbosity,
+			   res->GetDynamicResource(), res->GetPeaks(), 
+                           res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
+                           res->GetAh(), res->GetAr(),
+                           res->GetAcx(), res->GetAcy(),
+                           res->GetHStepscale(), res->GetRStepscale(),
+                           res->GetCStepscaleX(), res->GetCStepscaleY(),
+                           res->GetHStep(), res->GetRStep(),
+                           res->GetCStepX(), res->GetCStepY(),
+                           res->GetUpdateStep()
+                           ); //JW
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
       deme_res_index++;

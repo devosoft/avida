@@ -83,6 +83,25 @@ private:
   double ygravity;
   bool deme_resource;
   bool energy_resource;  // only implemented for spacial resource
+  bool dynamic_resource; //JW
+  int peaks; //JW
+  double min_height; //JW
+  double height_range; //JW
+  double min_radius; //JW
+  double radius_range; //JW
+  double ah; //JW
+  double ar; //JW
+  double acx; //JW
+  double acy; //JW
+  double hstepscale; //JW
+  double rstepscale; //JW
+  double cstepscalex; //JW
+  double cstepscaley; //JW
+  double hstep; //JW
+  double rstep; //JW
+  double cstepx; //JW
+  double cstepy; //JW
+  int updatestep; //JW
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;  
 	bool hgt_metabolize;
@@ -113,6 +132,25 @@ public:
   double GetYGravity() const { return ygravity; }
   bool GetDemeResource() const { return deme_resource; }
   bool GetEnergyResource() const { return energy_resource; }
+  bool GetDynamicResource() const { return dynamic_resource; }
+  int GetPeaks() const { return peaks; } //JW
+  double GetMinHeight() const { return min_height; } //JW
+  double GetHeightRange() const { return height_range; } //JW
+  double GetMinRadius() const { return min_radius; } //JW
+  double GetRadiusRange() const { return radius_range; } //JW
+  double GetAh() const { return ah; } //JW
+  double GetAr() const { return ar; } //JW
+  double GetAcx() const { return acx; } //JW
+  double GetAcy() const { return acy; } //JW
+  double GetHStepscale() const { return hstepscale; } //JW
+  double GetRStepscale() const { return rstepscale; } //JW
+  double GetCStepscaleX() const { return cstepscalex; } //JW
+  double GetCStepscaleY() const { return cstepscaley; } //JW
+  double GetHStep() const { return hstep; } //JW
+  double GetRStep() const { return rstep; } //JW
+  double GetCStepX() const { return cstepx; } //JW
+  double GetCStepY() const { return cstepy; } //JW
+  int GetUpdateStep() const { return updatestep; } //JW
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
@@ -134,7 +172,26 @@ public:
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
   bool SetDemeResource(cString _deme_resource);
-  bool SetEnergyResource(cString _energy_resource);
+  bool SetEnergyResource(cString _energy_resource); 
+  void SetDynamicResource(bool _dynamic_resource) { dynamic_resource = _dynamic_resource; } //JW
+  void SetPeaks(int _peaks) { peaks = _peaks; } //JW
+  void SetMinHeight(double _min_height) { min_height = _min_height; } //JW
+  void SetHeightRange(double _height_range) { height_range = _height_range; } //JW
+  void SetMinRadius(double _min_radius) { min_radius = _min_radius; } //JW
+  void SetRadiusRange(double _radius_range) { radius_range = _radius_range; } //JW
+  void SetAh(double _ah) { ah = _ah; } //JW
+  void SetAr(double _ar) { ar = _ar; } //JW
+  void SetAcx(double _acx) { acx = _acx; } //JW
+  void SetAcy(double _acy) { acy = _acy; } //JW
+  void SetHStepscale(double _hstepscale) { hstepscale = _hstepscale; } //JW
+  void SetRStepscale(double _rstepscale) { rstepscale = _rstepscale; } //JW
+  void SetCStepscaleX(double _cstepscalex) { cstepscalex = _cstepscalex; } //JW
+  void SetCStepscaleY(double _cstepscaley) { cstepscaley = _cstepscaley; } //JW
+  void SetHStep(double _hstep) { hstep = _hstep; } //JW
+  void SetRStep(double _rstep) { rstep = _rstep; } //JW
+  void SetCStepX(double _cstepx) { cstepx = _cstepx; } //JW
+  void SetCStepY(double _cstepy) { cstepy = _cstepy; } //JW
+  void SetUpdateStep(int _updatestep) { updatestep = _updatestep; } //JW
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, 

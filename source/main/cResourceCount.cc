@@ -25,6 +25,7 @@
 
 #include "cResourceCount.h"
 #include "cResource.h"
+#include "cDynamicCount.h"
 
 #include "nGeometry.h"
 
@@ -149,7 +150,6 @@ void cResourceCount::SetSize(int num_resources)
   curr_grid_res_cnt.ResizeClear(num_resources);
   curr_spatial_res_cnt.ResizeClear(num_resources);
   cell_lists.ResizeClear(num_resources);
-
   resource_name.SetAll("");
   resource_initial.SetAll(0.0);
   resource_count.SetAll(0.0);
@@ -185,21 +185,31 @@ void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
   }
 }
 
-void cResourceCount::Setup(int id, cString name, double initial, double inflow,
-                           double decay, int in_geometry, double in_xdiffuse,
-                           double in_xgravity, double in_ydiffuse, 
-                           double in_ygravity, int in_inflowX1, 
-                           int in_inflowX2, int in_inflowY1, 
-                           int in_inflowY2, int in_outflowX1, 
-                           int in_outflowX2, int in_outflowY1, 
-                           int in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
-                           tArray<int> *in_cell_id_list_ptr, int verbosity_level)
+void cResourceCount::Setup(const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,
+				const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
+				const double& in_ydiffuse, const double& in_ygravity,
+				const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
+				const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
+				const int& in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
+				tArray<int> *in_cell_id_list_ptr, const int& verbosity_level,
+				const bool& isdynamic, const int& in_peaks,
+				const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
+				const double& in_ah, const double& in_ar,
+				const double& in_acx, const double& in_acy,
+				const double& in_hstepscale, const double& in_rstepscale,
+				const double& in_cstepscalex, const double& in_cstepscaley,
+				const double& in_hstep, const double& in_rstep,
+				const double& in_cstepx, const double& in_cstepy,
+				const int& in_updatestep
+				)
 {
   assert(id >= 0 && id < resource_count.GetSize());
   assert(initial >= 0.0);
   assert(decay >= 0.0);
   assert(inflow >= 0.0);
   assert(spatial_resource_count[id].GetSize() > 0);
+  int tempx = spatial_resource_count[id].GetX();
+  int tempy = spatial_resource_count[id].GetY();
 
   cString geo_name;
   if (in_geometry == nGeometry::GLOBAL) {
@@ -265,9 +275,17 @@ void cResourceCount::Setup(int id, cString name, double initial, double inflow,
 
   }
   else {
-    resource_count[id] = 0;
-    spatial_resource_count[id].SetInitial(initial / spatial_resource_count[id].GetSize());
-    spatial_resource_count[id].RateAll(spatial_resource_count[id].GetInitial());
+    resource_count[id] = 0; 
+    if(isdynamic){ //JW
+      spatial_resource_count[id] = cDynamicCount(in_peaks, in_min_height, in_radius_range, in_min_radius, in_ah, in_ar,
+			    in_acx, in_acy, in_hstepscale, in_rstepscale, in_cstepscalex, in_cstepscaley, in_hstep, in_rstep,
+			    in_cstepx, in_cstepy, tempx, tempy, in_geometry, in_updatestep); 
+      spatial_resource_count[id].RateAll(0);
+    }
+    else{
+      spatial_resource_count[id].SetInitial(initial / spatial_resource_count[id].GetSize());
+      spatial_resource_count[id].RateAll(spatial_resource_count[id].GetInitial());
+    }
   }
   spatial_resource_count[id].StateAll();  
   decay_rate[id] = decay;
@@ -495,6 +513,7 @@ void cResourceCount::DoUpdates() const
     spatial_update_time -= 1.0;
     for (int i = 0; i < resource_count.GetSize(); i++) {
      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
+        spatial_resource_count[i].UpdateCount();
         spatial_resource_count[i].Source(inflow_rate[i]);
         spatial_resource_count[i].Sink(decay_rate[i]);
         if (spatial_resource_count[i].GetCellListSize() > 0) {

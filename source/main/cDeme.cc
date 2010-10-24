@@ -569,16 +569,28 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
   const double decay = 1.0 - res->GetOutflow();
   //addjust the resources cell list pointer here if we want CELL env. commands to be replicated in each deme
   
-  deme_resource_count.Setup(id, res->GetName(), res->GetInitial(), 
-			    res->GetInflow(), decay,
-			    res->GetGeometry(), res->GetXDiffuse(),
-			    res->GetXGravity(), res->GetYDiffuse(), 
-			    res->GetYGravity(), res->GetInflowX1(), 
-			    res->GetInflowX2(), res->GetInflowY1(), 
-			    res->GetInflowY2(), res->GetOutflowX1(), 
-			    res->GetOutflowX2(), res->GetOutflowY1(), 
-			    res->GetOutflowY2(), res->GetCellListPtr(),
-			    res->GetCellIdListPtr(), verbosity);
+  int* temp = &id;
+  
+  deme_resource_count.Setup(*temp, res->GetName(), res->GetInitial(), 
+			   res->GetInflow(), decay,
+			   res->GetGeometry(), res->GetXDiffuse(),
+			   res->GetXGravity(), res->GetYDiffuse(), 
+			   res->GetYGravity(), res->GetInflowX1(), 
+			   res->GetInflowX2(), res->GetInflowY1(), 
+			   res->GetInflowY2(), res->GetOutflowX1(), 
+			   res->GetOutflowX2(), res->GetOutflowY1(), 
+			   res->GetOutflowY2(), res->GetCellListPtr(),
+			   res->GetCellIdListPtr(), verbosity,
+			   res->GetDynamicResource(), res->GetPeaks(), 
+			   res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
+                           res->GetAh(), res->GetAr(),
+                           res->GetAcx(), res->GetAcy(),
+                           res->GetHStepscale(), res->GetRStepscale(),
+                           res->GetCStepscaleX(), res->GetCStepscaleY(),
+                           res->GetHStep(), res->GetRStep(),
+                           res->GetCStepX(), res->GetCStepY(),
+                           res->GetUpdateStep()
+                           ); //JW
   
   if(res->GetEnergyResource()) {
     energy_res_ids.Push(id);
