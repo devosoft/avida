@@ -456,14 +456,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 7023EC320C0A426900362B9C /* avida-core */;
+			remoteGlobalIDString = 7023EC320C0A426900362B9C;
 			remoteInfo = "avida-core";
 		};
 		70823D111270DC0200FA937F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 706C7B63125F64B000EDB4B9 /* viewer-core */;
+			remoteGlobalIDString = 706C7B63125F64B000EDB4B9;
 			remoteInfo = "viewer-core";
 		};
 		70A1E7D6126625B900D56AC4 /* PBXContainerItemProxy */ = {
@@ -2733,7 +2733,6 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,

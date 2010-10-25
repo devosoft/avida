@@ -50,6 +50,12 @@ cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
 
 cBGGenotypeManager::~cBGGenotypeManager()
 {
+  tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_sz[0].Iterator());
+  while (list_it->Next() != NULL) {
+    assert(list_it->Get()->GetActiveReferenceCount() == 0);
+    removeGenotype(list_it->Get());
+  }
+  
   assert(m_historic.GetSize() == 0);
   assert(m_best == 0);
   delete m_dcm;

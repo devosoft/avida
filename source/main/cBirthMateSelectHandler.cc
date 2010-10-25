@@ -28,6 +28,15 @@
 #include "cOrganism.h"
 
 
+cBirthMateSelectHandler::~cBirthMateSelectHandler()
+{
+  for (int i = 0; i < m_entries.GetSize(); i++) {
+    m_bc->ClearEntry(m_entries[i]);
+  }
+  m_bc->ClearEntry(m_non_ms_entry);
+}
+
+
 cBirthEntry* cBirthMateSelectHandler::SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent)
 {
   int mate_id = parent->GetPhenotype().MateSelectID();

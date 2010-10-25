@@ -28,6 +28,14 @@
 #include "cMetaGenome.h"
 
 
+cBirthGenomeSizeHandler::~cBirthGenomeSizeHandler()
+{
+  for (int i = 0; i < m_entries.GetSize(); i++) {
+    m_bc->ClearEntry(m_entries[i]);
+  }
+}
+
+
 cBirthEntry* cBirthGenomeSizeHandler::SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent)
 {
   int offspring_length = offspring.GetSize();

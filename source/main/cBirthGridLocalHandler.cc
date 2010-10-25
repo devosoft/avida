@@ -40,6 +40,13 @@ cBirthGridLocalHandler::cBirthGridLocalHandler(cWorld* world, cBirthChamber* bc)
   m_entries.Resize(m_world_x * m_world_y);
 }
 
+cBirthGridLocalHandler::~cBirthGridLocalHandler()
+{
+  for (int i = 0; i < m_entries.GetSize(); i++) {
+    m_bc->ClearEntry(m_entries[i]);
+  }
+}
+
 
 cBirthEntry* cBirthGridLocalHandler::SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent)
 {
