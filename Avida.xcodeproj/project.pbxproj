@@ -294,6 +294,7 @@
 		70447CAC0F83DBC100E1BF72 /* cBirthDemeHandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70447CAA0F83DBC100E1BF72 /* cBirthDemeHandler.cc */; };
 		7049F3590A66A8F500640512 /* instset-transsmt.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F3550A66A8F500640512 /* instset-transsmt.cfg */; };
 		7049F3730A66AD7E00640512 /* default-transsmt.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 7049F36F0A66AD7E00640512 /* default-transsmt.org */; };
+		704D974E1277629D00776779 /* MainWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 704D974D1277629D00776779 /* MainWindowController.mm */; };
 		7050E6780D74C36F008B3CA0 /* AvidaScript.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E6770D74C36F008B3CA0 /* AvidaScript.cc */; };
 		7050E69F0D74CFED008B3CA0 /* cDumpASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */; };
 		7050E7D70D7DC979008B3CA0 /* cDirectInterpretASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7050E7D60D7DC96E008B3CA0 /* cDirectInterpretASTVisitor.cc */; };
@@ -324,7 +325,6 @@
 		70823AC2126F78C100FA937F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823ABC126F788900FA937F /* Cocoa.framework */; };
 		70823D0E1270DBF900FA937F /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70823D131270DC0D00FA937F /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
-		70823D2D1270DF5300FA937F /* MainWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70823D2C1270DF5300FA937F /* MainWindowController.mm */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
 		7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F57410D956A400ECFBA1 /* cParasite.cc */; };
 		7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = 7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */; };
@@ -932,6 +932,8 @@
 		704ADBC30A6EEFC300666970 /* DriverActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverActions.h; sourceTree = "<group>"; };
 		704ADBC40A6EEFC300666970 /* DriverActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DriverActions.cc; sourceTree = "<group>"; };
 		704D57210AA53F8600207FC1 /* code_standards.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = code_standards.html; sourceTree = "<group>"; };
+		704D974C1277629D00776779 /* MainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainWindowController.h; path = "viewer-macos/MainWindowController.h"; sourceTree = "<group>"; };
+		704D974D1277629D00776779 /* MainWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MainWindowController.mm; path = "viewer-macos/MainWindowController.mm"; sourceTree = "<group>"; };
 		7050E6770D74C36F008B3CA0 /* AvidaScript.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AvidaScript.cc; sourceTree = "<group>"; };
 		7050E69D0D74CFEB008B3CA0 /* cDumpASTVisitor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDumpASTVisitor.cc; sourceTree = "<group>"; };
 		7050E69E0D74CFEB008B3CA0 /* cDumpASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDumpASTVisitor.h; sourceTree = "<group>"; };
@@ -1029,8 +1031,6 @@
 		70823ABC126F788900FA937F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		70823ABE126F78B100FA937F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		70823AC0126F78B100FA937F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		70823D2B1270DF5300FA937F /* MainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindowController.h; sourceTree = "<group>"; };
-		70823D2C1270DF5300FA937F /* MainWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MainWindowController.mm; sourceTree = "<group>"; };
 		708BF2FD0AB65DC700A923BF /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
 		708BF3010AB65DD300A923BF /* cEventList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventList.h; sourceTree = "<group>"; };
 		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
@@ -1792,13 +1792,13 @@
 		70823ABA126F781E00FA937F /* viewer-macos */ = {
 			isa = PBXGroup;
 			children = (
+				704D974C1277629D00776779 /* MainWindowController.h */,
+				704D974D1277629D00776779 /* MainWindowController.mm */,
 				70823A42126F663A00FA937F /* Avida-Info.plist */,
 				70823ABB126F784600FA937F /* Resources */,
 				70823AAD126F781700FA937F /* AvidaAppDelegate.h */,
 				70823AAE126F781700FA937F /* AvidaAppDelegate.m */,
 				70823AB4126F781700FA937F /* main.mm */,
-				70823D2B1270DF5300FA937F /* MainWindowController.h */,
-				70823D2C1270DF5300FA937F /* MainWindowController.mm */,
 			);
 			name = "viewer-macos";
 			sourceTree = "<group>";
@@ -1974,13 +1974,13 @@
 		70DCAC54097AF730002F8733 /* targets */ = {
 			isa = PBXGroup;
 			children = (
-				70823ABA126F781E00FA937F /* viewer-macos */,
 				4254F0AC11DA3646005C315B /* avida-mp */,
 				70DCAC55097AF730002F8733 /* avida */,
 				70DCAC56097AF730002F8733 /* avida-s */,
 				70DCAC58097AF730002F8733 /* avida-viewer */,
 				701EF27D0BEA5D2300DAE168 /* unit-tests */,
 				70A1E33F125CDF9F00D56AC4 /* viewer-fltk */,
+				70823ABA126F781E00FA937F /* viewer-macos */,
 				56F555DE0C3B402A00E2E929 /* viewer-text */,
 			);
 			path = targets;
@@ -2731,6 +2731,7 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,
@@ -3010,7 +3011,7 @@
 			files = (
 				70823AB6126F781700FA937F /* AvidaAppDelegate.m in Sources */,
 				70823AB9126F781700FA937F /* main.mm in Sources */,
-				70823D2D1270DF5300FA937F /* MainWindowController.mm in Sources */,
+				704D974E1277629D00776779 /* MainWindowController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

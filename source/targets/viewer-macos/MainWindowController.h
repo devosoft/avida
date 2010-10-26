@@ -11,8 +11,10 @@
 @class AvidaRun;
 
 @interface MainWindowController : NSObject {
+  IBOutlet NSPathControl* runDirControl;
   AvidaRun* currentRun;
 }
 
+-(IBAction)setRunDir:(id)sender;
 
 @end
