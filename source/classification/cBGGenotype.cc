@@ -171,9 +171,21 @@ void cBGGenotype::HandleBioUnitGestation(cBioUnit* bu)
 void cBGGenotype::RemoveBioUnit(cBioUnit* bu)
 {
   m_deaths.Inc();
-  RemoveActiveReference();
+  
+  // Remove active reference
+  m_a_refs--;
+  assert(m_a_refs >= 0);
+  
   m_num_organisms--;
   m_mgr->AdjustGenotype(this, m_num_organisms + 1, m_num_organisms);
+}
+
+void cBGGenotype::RemoveActiveReference()
+{
+  m_a_refs--;
+  assert(m_a_refs >= 0);
+  
+  if (!m_a_refs) m_mgr->AdjustGenotype(this, m_num_organisms, 0);
 }
 
 
