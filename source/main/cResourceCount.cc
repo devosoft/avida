@@ -116,15 +116,20 @@ cResourceCount::cResourceCount(const cResourceCount &rc) {
 }
 
 const cResourceCount &cResourceCount::operator=(const cResourceCount &rc) {
+  SetSize(rc.GetSize());
   resource_name = rc.resource_name;
-  resource_initial = rc.resource_initial;
+  resource_initial = rc.resource_initial;  
   resource_count = rc.resource_count;
   decay_rate = rc.decay_rate;
   inflow_rate = rc.inflow_rate;
   decay_precalc = rc.decay_precalc;
   inflow_precalc = rc.inflow_precalc;
   geometry = rc.geometry;
-  spatial_resource_count = rc.spatial_resource_count;
+  
+  for (int i = 0; i < rc.spatial_resource_count.GetSize(); i++) { //JW
+    *(spatial_resource_count[i]) = *(rc.spatial_resource_count[i]);
+  }
+  
   curr_grid_res_cnt = rc.curr_grid_res_cnt;
   curr_spatial_res_cnt = rc.curr_spatial_res_cnt;
   update_time = rc.update_time;
@@ -146,7 +151,17 @@ void cResourceCount::SetSize(int num_resources)
     inflow_precalc.ResizeClear(num_resources, PRECALC_DISTANCE+1);
   }
   geometry.ResizeClear(num_resources);
+  
+  for(int i = 0; i < spatial_resource_count.GetSize(); i++){
+    delete spatial_resource_count[i]; 
+  }
+  
   spatial_resource_count.ResizeClear(num_resources);
+  
+  for(int i = 0; i < num_resources; i++){
+    spatial_resource_count[i] = new cSpatialResCount(); 
+  }
+    
   curr_grid_res_cnt.ResizeClear(num_resources);
   curr_spatial_res_cnt.ResizeClear(num_resources);
   cell_lists.ResizeClear(num_resources);
@@ -164,6 +179,9 @@ void cResourceCount::SetSize(int num_resources)
 
 cResourceCount::~cResourceCount()
 {
+  for(int i = 0; i < spatial_resource_count.GetSize(); i++){
+    delete spatial_resource_count[i]; 
+  }
 }
 
 void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
@@ -174,7 +192,7 @@ void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
         // Set global quantity of resource
     } else {
-      spatial_resource_count[i].SetCellAmount(cell_id, res[i]);
+      spatial_resource_count[i]->SetCellAmount(cell_id, res[i]);
 
       /* Ideally the state of the cell's resource should not be set till
          the end of the update so that all processes (inflow, outflow, 
@@ -207,9 +225,9 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
   assert(initial >= 0.0);
   assert(decay >= 0.0);
   assert(inflow >= 0.0);
-  assert(spatial_resource_count[id].GetSize() > 0);
-  int tempx = spatial_resource_count[id].GetX();
-  int tempy = spatial_resource_count[id].GetY();
+  assert(spatial_resource_count[id]->GetSize() > 0);
+  int tempx = spatial_resource_count[id]->GetX();
+  int tempy = spatial_resource_count[id]->GetY();
 
   cString geo_name;
   if (in_geometry == nGeometry::GLOBAL) {
@@ -262,12 +280,12 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
   resource_initial[id] = initial;
   if (in_geometry == nGeometry::GLOBAL) {
     resource_count[id] = initial;
-	spatial_resource_count[id].RateAll(0);
+	spatial_resource_count[id]->RateAll(0);
   } 
   else if (in_geometry == nGeometry::PARTIAL) {
 	  resource_count[id]=initial;
 
-	  spatial_resource_count[id].RateAll(0);
+	  spatial_resource_count[id]->RateAll(0);
 	  // want to set list of cell ids here
 	   cell_lists[id].Resize(in_cell_id_list_ptr->GetSize());
 	  for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++)
@@ -277,23 +295,24 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
   else {
     resource_count[id] = 0; 
     if(isdynamic){ //JW
-      spatial_resource_count[id] = cDynamicCount(in_peaks, in_min_height, in_radius_range, in_min_radius, in_ah, in_ar,
+      delete spatial_resource_count[id];
+      spatial_resource_count[id] = new cDynamicCount(in_peaks, in_min_height, in_radius_range, in_min_radius, in_ah, in_ar,
 			    in_acx, in_acy, in_hstepscale, in_rstepscale, in_cstepscalex, in_cstepscaley, in_hstep, in_rstep,
 			    in_cstepx, in_cstepy, tempx, tempy, in_geometry, in_updatestep); 
-      spatial_resource_count[id].RateAll(0);
+      spatial_resource_count[id]->RateAll(0);
     }
     else{
-      spatial_resource_count[id].SetInitial(initial / spatial_resource_count[id].GetSize());
-      spatial_resource_count[id].RateAll(spatial_resource_count[id].GetInitial());
+      spatial_resource_count[id]->SetInitial(initial / spatial_resource_count[id]->GetSize());
+      spatial_resource_count[id]->RateAll(spatial_resource_count[id]->GetInitial());
     }
   }
-  spatial_resource_count[id].StateAll();  
+  spatial_resource_count[id]->StateAll();  
   decay_rate[id] = decay;
   inflow_rate[id] = inflow;
   geometry[id] = in_geometry;
-  spatial_resource_count[id].SetGeometry(in_geometry);
-  spatial_resource_count[id].SetPointers();
-  spatial_resource_count[id].SetCellList(in_cell_list_ptr);
+  spatial_resource_count[id]->SetGeometry(in_geometry);
+  spatial_resource_count[id]->SetPointers();
+  spatial_resource_count[id]->SetCellList(in_cell_list_ptr);
 
   double step_decay = pow(decay, UPDATE_STEP);
   double step_inflow = inflow * UPDATE_STEP;
@@ -304,18 +323,18 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
     decay_precalc(id, i)  = decay_precalc(id, i-1) * step_decay;
     inflow_precalc(id, i) = inflow_precalc(id, i-1) * step_decay + step_inflow;
   }
-  spatial_resource_count[id].SetXdiffuse(in_xdiffuse);
-  spatial_resource_count[id].SetXgravity(in_xgravity);
-  spatial_resource_count[id].SetYdiffuse(in_ydiffuse);
-  spatial_resource_count[id].SetYgravity(in_ygravity);
-  spatial_resource_count[id].SetInflowX1(in_inflowX1);
-  spatial_resource_count[id].SetInflowX2(in_inflowX2);
-  spatial_resource_count[id].SetInflowY1(in_inflowY1);
-  spatial_resource_count[id].SetInflowY2(in_inflowY2);
-  spatial_resource_count[id].SetOutflowX1(in_outflowX1);
-  spatial_resource_count[id].SetOutflowX2(in_outflowX2);
-  spatial_resource_count[id].SetOutflowY1(in_outflowY1);
-  spatial_resource_count[id].SetOutflowY2(in_outflowY2);
+  spatial_resource_count[id]->SetXdiffuse(in_xdiffuse);
+  spatial_resource_count[id]->SetXgravity(in_xgravity);
+  spatial_resource_count[id]->SetYdiffuse(in_ydiffuse);
+  spatial_resource_count[id]->SetYgravity(in_ygravity);
+  spatial_resource_count[id]->SetInflowX1(in_inflowX1);
+  spatial_resource_count[id]->SetInflowX2(in_inflowX2);
+  spatial_resource_count[id]->SetInflowY1(in_inflowY1);
+  spatial_resource_count[id]->SetInflowY2(in_inflowY2);
+  spatial_resource_count[id]->SetOutflowX1(in_outflowX1);
+  spatial_resource_count[id]->SetOutflowX2(in_outflowX2);
+  spatial_resource_count[id]->SetOutflowY1(in_outflowY1);
+  spatial_resource_count[id]->SetOutflowY2(in_outflowY2);
 }
 
 int cResourceCount::GetResourceCountID(const cString& res_name)
@@ -381,7 +400,7 @@ const tArray<double> & cResourceCount::GetCellResources(int cell_id) const
      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {
          curr_grid_res_cnt[i] = resource_count[i];
     } else {
-      curr_grid_res_cnt[i] = spatial_resource_count[i].GetAmount(cell_id);
+      curr_grid_res_cnt[i] = spatial_resource_count[i]->GetAmount(cell_id);
     }
   }
   return curr_grid_res_cnt;
@@ -397,11 +416,11 @@ const tArray< tArray<double> > &  cResourceCount::GetSpatialRes()
 {
   const int num_spatial_resources = spatial_resource_count.GetSize();
   if (num_spatial_resources > 0) {
-    const int num_cells = spatial_resource_count[0].GetSize();
+    const int num_cells = spatial_resource_count[0]->GetSize();
     DoUpdates();
     for (int i = 0; i < num_spatial_resources; i++) {
       for (int j = 0; j < num_cells; j++) {
-	curr_spatial_res_cnt[i][j] = spatial_resource_count[i].GetAmount(j);
+	curr_spatial_res_cnt[i][j] = spatial_resource_count[i]->GetAmount(j);
       }
     }
   }
@@ -437,7 +456,7 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
         resource_count[i] += res_change[i];
       assert(resource_count[i] >= 0.0);
     } else {
-      spatial_resource_count[i].Rate(cell_id, res_change[i]);
+      spatial_resource_count[i]->Rate(cell_id, res_change[i]);
 
       /* Ideally the state of the cell's resource should not be set till
          the end of the update so that all processes (inflow, outflow, 
@@ -445,8 +464,8 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
          waiting can cause problems with negative resources so we allow
          the organism demand to work immediately on the state of the resource */ 
     
-      spatial_resource_count[i].State(cell_id);
-      // cout << "BDB in cResourceCount::ModifyCell id = " << i << " cell = " << cell_id << " amount[41] = " << spatial_resource_count[i].GetAmount(41) << endl;
+      spatial_resource_count[i]->State(cell_id);
+      // cout << "BDB in cResourceCount::ModifyCell id = " << i << " cell = " << cell_id << " amount[41] = " << spatial_resource_count[i]->GetAmount(41) << endl;
     }
   }
 }
@@ -457,7 +476,7 @@ double cResourceCount::Get(int id) const
   if (geometry[id] == nGeometry::GLOBAL || geometry[id]==nGeometry::PARTIAL) {
       return resource_count[id];
   } //else return spacial resource sum
-  return spatial_resource_count[id].SumAll();
+  return spatial_resource_count[id]->SumAll();
 }
 
 void cResourceCount::Set(int id, double new_level)
@@ -466,8 +485,8 @@ void cResourceCount::Set(int id, double new_level)
   if (geometry[id] == nGeometry::GLOBAL || geometry[id]==nGeometry::PARTIAL) {
      resource_count[id] = new_level;
   } else {
-    for(int i = 0; i < spatial_resource_count[id].GetSize(); i++) {
-      spatial_resource_count[id].SetCellAmount(i, new_level/spatial_resource_count[id].GetSize());
+    for(int i = 0; i < spatial_resource_count[id]->GetSize(); i++) {
+      spatial_resource_count[id]->SetCellAmount(i, new_level/spatial_resource_count[id]->GetSize());
     }
   }
 }
@@ -475,7 +494,7 @@ void cResourceCount::Set(int id, double new_level)
 void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
 {
   for (int i = 0; i < resource_count.GetSize(); i++) {
-    spatial_resource_count[i].ResizeClear(in_x, in_y, geometry[i]);
+    spatial_resource_count[i]->ResizeClear(in_x, in_y, geometry[i]);
     curr_spatial_res_cnt[i].Resize(in_x * in_y);
   }
 }
@@ -513,16 +532,16 @@ void cResourceCount::DoUpdates() const
     spatial_update_time -= 1.0;
     for (int i = 0; i < resource_count.GetSize(); i++) {
      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
-        spatial_resource_count[i].UpdateCount();
-        spatial_resource_count[i].Source(inflow_rate[i]);
-        spatial_resource_count[i].Sink(decay_rate[i]);
-        if (spatial_resource_count[i].GetCellListSize() > 0) {
-          spatial_resource_count[i].CellInflow();
-          spatial_resource_count[i].CellOutflow();
+        spatial_resource_count[i]->UpdateCount();
+        spatial_resource_count[i]->Source(inflow_rate[i]);
+        spatial_resource_count[i]->Sink(decay_rate[i]);
+        if (spatial_resource_count[i]->GetCellListSize() > 0) {
+          spatial_resource_count[i]->CellInflow();
+          spatial_resource_count[i]->CellOutflow();
         }
-        spatial_resource_count[i].FlowAll();
-        spatial_resource_count[i].StateAll();
-        // BDB: resource_count[i] = spatial_resource_count[i].SumAll();
+        spatial_resource_count[i]->FlowAll();
+        spatial_resource_count[i]->StateAll();
+        // BDB: resource_count[i] = spatial_resource_count[i]->SumAll();
       }
     }
   }
@@ -534,10 +553,10 @@ void cResourceCount::ReinitializeResources(double additional_resource)
     Set(i, resource_initial[i] + additional_resource); //will cause problem if more than one resource is used. -- why?  each resource is stored separately (BDC)
 
     // Additionally, set any initial values given by the CELL command
-    spatial_resource_count[i].ResetResourceCounts();
+    spatial_resource_count[i]->ResetResourceCounts();
     if (additional_resource != 0.0) {
-      spatial_resource_count[i].RateAll(additional_resource);
-      spatial_resource_count[i].StateAll();
+      spatial_resource_count[i]->RateAll(additional_resource);
+      spatial_resource_count[i]->StateAll();
     }
 
   } //End going through the resources

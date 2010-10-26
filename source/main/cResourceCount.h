@@ -59,7 +59,7 @@ private:
   tMatrix<double> decay_precalc;  // Precalculation of decay values
   tMatrix<double> inflow_precalc; // Precalculation of inflow values
   tArray<int> geometry;           // Spatial layout of each resource
-  mutable tArray<cSpatialResCount> spatial_resource_count;
+  mutable tArray<cSpatialResCount* > spatial_resource_count;
   mutable tArray<double> curr_grid_res_cnt;
   mutable tArray< tArray<double> > curr_spatial_res_cnt;
   int verbosity;
@@ -92,16 +92,16 @@ public:
              const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
              const int& in_outflowY, tArray<cCellResource> *in_cell_list_ptr,
              tArray<int> *in_cell_id_list_ptr, const int& verbosity_level,
-	     const bool& isdynamic, const int& in_peaks,
-	     const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
-	     const double& in_ah, const double& in_ar,
-	     const double& in_acx, const double& in_acy,
-	     const double& in_hstepscale, const double& in_rstepscale,
-	     const double& in_cstepscalex, const double& in_cstepscaley,
-	     const double& in_hstep, const double& in_rstep,
-	     const double& in_cstepx, const double& in_cstepy,
-	     const int& in_updatestep
-	     ); //JW
+             const bool& isdynamic, const int& in_peaks,
+             const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
+             const double& in_ah, const double& in_ar,
+             const double& in_acx, const double& in_acy,
+             const double& in_hstepscale, const double& in_rstepscale,
+             const double& in_cstepscalex, const double& in_cstepscaley,
+             const double& in_hstep, const double& in_rstep,
+             const double& in_cstepx, const double& in_cstepy,
+             const int& in_updatestep
+             ); //JW
              
   int GetResourceCountID(const cString& res_name);
   void SetInflow(const cString& name, const double _inflow);
@@ -123,8 +123,8 @@ public:
   void Set(int id, double new_level);
   double Get(int id) const;
   void ResizeSpatialGrids(int in_x, int in_y);
-  cSpatialResCount GetSpatialResource(int id) { return spatial_resource_count[id]; }
-  const cSpatialResCount& GetSpatialResource(int id) const { return spatial_resource_count[id]; }
+  cSpatialResCount GetSpatialResource(int id) { return *(spatial_resource_count[id]); }
+  const cSpatialResCount& GetSpatialResource(int id) const { return *(spatial_resource_count[id]); }
   void ReinitializeResources(double additional_resource);
   double GetInitialResourceValue(int resourceID) const { return resource_initial[resourceID]; }
   const cString& GetResName(int id) const { return resource_name[id]; }
