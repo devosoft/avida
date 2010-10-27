@@ -131,7 +131,7 @@ void cAnalyze::RunFile(cString filename)
   bool saved_analyze = m_ctx.GetAnalyzeMode();
   m_ctx.SetAnalyzeMode();
   
-  cInitFile analyze_file(filename);
+  cInitFile analyze_file(filename, m_world->GetWorkingDir());
   if (!analyze_file.WasOpened()) {
     tConstListIterator<cString> err_it(analyze_file.GetErrors());
     const cString* errstr = NULL;
@@ -170,7 +170,7 @@ void cAnalyze::LoadOrganism(cString cur_string)
   cout << "Loading: " << filename << '\n';
   
   // Setup the genome...
-  cGenome genome( cGenomeUtil::LoadGenome(filename, inst_set) );
+  cGenome genome( cGenomeUtil::LoadGenome(filename, m_world->GetWorkingDir(), inst_set) );
   
   // Construct the new genotype..
   cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, genome, inst_set);
@@ -197,7 +197,7 @@ void cAnalyze::LoadBasicDump(cString cur_string)
   
   cout << "Loading: " << filename << '\n';
   
-  cInitFile input_file(filename);
+  cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
     tConstListIterator<cString> err_it(input_file.GetErrors());
     const cString* errstr = NULL;
@@ -239,7 +239,7 @@ void cAnalyze::LoadDetailDump(cString cur_string)
   
   cout << "Loading: " << filename << '\n';
   
-  cInitFile input_file(filename);
+  cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
     tConstListIterator<cString> err_it(input_file.GetErrors());
     const cString* errstr = NULL;
@@ -332,7 +332,7 @@ void cAnalyze::LoadMultiDetail(cString cur_string)
       << "' into batch " << cur_batch
       << endl;
     
-    cInitFile input_file(filename);
+    cInitFile input_file(filename, m_world->GetWorkingDir());
     if (!input_file.WasOpened()) {
       tConstListIterator<cString> err_it(input_file.GetErrors());
       const cString* errstr = NULL;
@@ -435,7 +435,7 @@ void cAnalyze::LoadResources(cString cur_string)
   
   cout << "Loading Resources from: " << filename << endl;
   
-  if (!m_resources->LoadFile(filename)) m_world->GetDriver().RaiseException("failed to load resource file");
+  if (!m_resources->LoadFile(filename, m_world->GetWorkingDir())) m_world->GetDriver().RaiseException("failed to load resource file");
 }
 
 double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu) 
@@ -894,7 +894,7 @@ void cAnalyze::LoadFile(cString cur_string)
   
   cout << "Loading: " << filename << endl;
   
-  cInitFile input_file(filename);
+  cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
     tConstListIterator<cString> err_it(input_file.GetErrors());
     const cString* errstr = NULL;
@@ -8653,7 +8653,7 @@ void cAnalyze::IncludeFile(cString cur_string)
   while (cur_string.GetSize() > 0) {
     cString filename = cur_string.PopWord();
     
-    cInitFile include_file(filename);
+    cInitFile include_file(filename, m_world->GetWorkingDir());
     
     tList<cAnalyzeCommand> include_list;
     LoadCommandList(include_file, include_list);

@@ -23,14 +23,14 @@
 
 #include <csignal>
 
+#include "AvidaTools.h"
+
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cTextViewerAnalyzeDriver.h"
 #include "cDriverManager.h"
 #include "cTextViewerDriver.h"
 #include "cWorld.h"
-
-#include "Platform.h"
 
 using namespace std;
 
@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
   cAvidaConfig* cfg = new cAvidaConfig();
   Avida::ProcessCmdLineArgs(argc, argv, cfg);
   
-  cWorld* world = new cWorld(cfg);
+  cWorld* world = new cWorld(cfg, AvidaTools::FileSystem::GetCWD());
   cAvidaDriver* driver = NULL;
   
   if (world->GetConfig().ANALYZE_MODE.Get() > 0) {

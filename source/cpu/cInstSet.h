@@ -153,8 +153,7 @@ public:
   cInstruction GetInstError() const { return cInstruction(255); }
   
   void LoadFromConfig();
-  void LoadFromFile(const cString& filename);
-  void LoadFromLegacyFile(const cString& filename);
+  void LoadFromLegacyFile(const cString& filename, const cString& working_dir);
 };
 
 

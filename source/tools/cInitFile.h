@@ -80,9 +80,9 @@ private:
   
 
 public:
-  cInitFile(const cString& filename);
-  cInitFile(const cString& filename, const tDictionary<cString>& mappings);
-  cInitFile(std::istream& in_stream);
+  cInitFile(const cString& filename, const cString& working_dir);
+  cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir);
+  cInitFile(std::istream& in_stream, const cString& working_dir);
   ~cInitFile();
   
   bool WasFound() const { return m_found; }
@@ -157,8 +157,8 @@ public:
 
 private:
   void initMappings(const tDictionary<cString>& mappings);
-  bool loadFile(const cString& filename, tSmartArray<sLine*>& lines);
-  bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum);
+  bool loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir);
+  bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum, const cString& working_dir);
   void postProcess(tSmartArray<sLine*>& lines);
 };
 

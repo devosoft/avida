@@ -27,13 +27,15 @@
 
 #include <cassert>
 #include <cmath>
+#include "cString.h"
 
-class cString;
 
 namespace AvidaTools
 {
   namespace FileSystem {
     bool MkDir(const cString& dirname, bool verbose = false);
+    cString GetCWD();
+    cString GetAbsolutePath(const cString& path, const cString& working_dir = GetCWD());
   };
   
   // Utility Functions

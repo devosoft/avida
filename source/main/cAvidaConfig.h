@@ -814,9 +814,10 @@ public:
 	
 #endif
   
-  inline void Load(const cString& filename) { Load(filename, false); }
-  void Load(const cString& filename, bool crash_if_not_found);
-  void Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found = false, bool warn_default = true);
+  inline void Load(const cString& filename, const cString& working_dir) { Load(filename, working_dir, false); }
+  void Load(const cString& filename, const cString& working_dir, bool crash_if_not_found);
+  void Load(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir,
+            bool crash_if_not_found = false, bool warn_default = true);
   void Print(const cString& filename);
   void Status();
   void PrintReview();

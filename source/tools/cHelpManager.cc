@@ -25,6 +25,7 @@
 
 #include "cHelpManager.h"
 
+#include "AvidaTools.h"
 #include "cHelpType.h"
 #include "cInitFile.h"
 #include "cString.h"
@@ -54,7 +55,7 @@ cHelpType* cHelpManager::GetType(const cString type_name)
 
 void cHelpManager::LoadFile(const cString & filename)
 {
-  cInitFile help_file(filename);
+  cInitFile help_file(filename, AvidaTools::FileSystem::GetCWD());
 
   cHelpType * type = NULL;
   cString keyword;

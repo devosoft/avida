@@ -10,16 +10,7 @@
 
 #include "cDataFileManager.h"
 
-#include "Platform.h"
 #include "AvidaTools.h"
-
-#if AVIDA_PLATFORM(WINDOWS)
-# include <direct.h>
-#else
-# include <unistd.h>
-#endif
-
-#define MAXIMUM_DIRECTORY_LENGTH 2048
 
 using namespace std;
 using namespace AvidaTools;
@@ -29,15 +20,7 @@ cDataFileManager::cDataFileManager(const cString& target_dir, bool verbose) : m_
 {
   m_target_dir.Trim();
   
-  // If 
-  if (m_target_dir.GetSize() == 0 || (m_target_dir[0] != '/' && m_target_dir[0] != '\\')) {
-    char* dirbuf = new char[MAXIMUM_DIRECTORY_LENGTH];    
-    char* cwd = getcwd(dirbuf, MAXIMUM_DIRECTORY_LENGTH);
-    if (cwd != NULL) {
-      m_target_dir = cString(cwd) + "/" + m_target_dir;
-    }
-    delete [] dirbuf;
-  }
+  m_target_dir = FileSystem::GetAbsolutePath(m_target_dir);
   
   if (m_target_dir.GetSize() > 0) {
     char dir_tail = m_target_dir[m_target_dir.GetSize() - 1];

@@ -985,9 +985,9 @@ bool cEnvironment::LoadLine(cString line)
   return true;
 }
 
-bool cEnvironment::Load(const cString& filename)
+bool cEnvironment::Load(const cString& filename, const cString& working_dir)
 {
-  cInitFile infile(filename);
+  cInitFile infile(filename, working_dir);
   if (!infile.WasOpened()) {
     tConstListIterator<cString> err_it(infile.GetErrors());
     const cString* errstr = NULL;

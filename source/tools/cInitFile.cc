@@ -25,6 +25,7 @@
 
 #include "cInitFile.h"
 
+#include "AvidaTools.h"
 #include "cFile.h"
 #include "cStringIterator.h"
 
@@ -32,24 +33,26 @@
 using namespace std;
 
 
-cInitFile::cInitFile(const cString& filename) : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
+cInitFile::cInitFile(const cString& filename, const cString& working_dir)
+  : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   tSmartArray<sLine*> lines;
-  m_opened = loadFile(filename, lines);
+  m_opened = loadFile(filename, lines, working_dir);
   postProcess(lines);
 }
 
-cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappings)
+cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   initMappings(mappings);
   tSmartArray<sLine*> lines;
-  m_opened = loadFile(filename, lines);
+  m_opened = loadFile(filename, lines, working_dir);
   postProcess(lines);
 }
 
 
-cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_found(false), m_opened(false), m_ftype("unknown")
+cInitFile::cInitFile(istream& in_stream, const cString& working_dir)
+  : m_filename("(stream)"), m_found(false), m_opened(false), m_ftype("unknown")
 {
   if (in_stream.good() == false) {
     m_errors.PushRear(new cString("Bad stream, unable to process."));
@@ -63,7 +66,7 @@ cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_found(false
   std::string linebuf;
   while (std::getline(in_stream, linebuf)) {
     cString cur_line(linebuf.c_str());
-    if (cur_line[0] == '#') processCommand(cur_line, lines, m_filename, linenum);
+    if (cur_line[0] == '#') processCommand(cur_line, lines, m_filename, linenum, working_dir);
     else lines.Push(new sLine(cur_line, m_filename, linenum));    
     linenum++;
   }
@@ -94,9 +97,9 @@ void cInitFile::initMappings(const tDictionary<cString>& mappings)
 }
 
 
-bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines)
+bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir)
 {
-  cFile file(filename);
+  cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
   if (!file.IsOpen()) {
     m_errors.PushRear(new cString(cStringUtil::Stringf("Unable to open file '%s'.", (const char*)filename)));
     return false;   // The file must be opened!
@@ -112,7 +115,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines)
     linenum++;
 
     if (buf.GetSize() && buf[0] == '#') {
-      if (!processCommand(buf, lines, filename, linenum)) return false;
+      if (!processCommand(buf, lines, filename, linenum, working_dir)) return false;
     } else {
       lines.Push(new sLine(buf, filename, linenum));
     }
@@ -123,7 +126,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines)
 }
 
 
-bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum)
+bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum, const cString& working_dir)
 {
   cString cmd = cmdstr.PopWord();
   
@@ -152,7 +155,7 @@ bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const
     
     if (cmd != "#import" || !m_imported_files.HasString(path)) {
       // Attempt to include the specified file
-      if (!loadFile(path, lines)) {
+      if (!loadFile(path, lines, working_dir)) {
         m_errors.PushRear(new cString(cStringUtil::Stringf("%s:%d: unable to process include directive",
                                                            (const char*)filename, linenum)));
         return false;

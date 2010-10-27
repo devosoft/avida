@@ -95,7 +95,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
     m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
@@ -236,7 +236,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
       m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
   }
@@ -296,7 +296,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
     } else {
-      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
       }
@@ -464,7 +464,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
     } else {
-      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().InjectParasite(m_label, genome, i);
       }
@@ -530,8 +530,8 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
     } else {
-      cGenome genome = cGenomeUtil::LoadGenome(m_filename_genome, m_world->GetHardwareManager().GetInstSet());
-      cGenome parasite = cGenomeUtil::LoadGenome(m_filename_parasite, m_world->GetHardwareManager().GetInstSet());
+      cGenome genome = cGenomeUtil::LoadGenome(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+      cGenome parasite = cGenomeUtil::LoadGenome(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().InjectParasite(m_label, parasite, i);
@@ -584,7 +584,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
@@ -650,7 +650,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetHardwareManager().GetInstSet());
+    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         if (i % m_mod_num == 0) {

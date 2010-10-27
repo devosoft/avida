@@ -120,25 +120,6 @@ bool cInstSet::InstInSet(const cString& in_name) const
   return false;
 }
 
-void cInstSet::LoadFromFile(const cString& filename)
-{
-  cInitFile file(filename);
-  if (!file.WasOpened()) {
-    tConstListIterator<cString> err_it(file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) m_world->GetDriver().RaiseException(*errstr);
-    m_world->GetDriver().RaiseFatalException(1, cString("Unable to load instruction set '") + filename + "'.");
-  }
-   
-  cStringList sl;
-  for (int line_id = 0; line_id < file.GetNumLines(); line_id++) {
-    sl.PushRear(file.GetLine(line_id));
-  }
-  
-  LoadWithStringList(sl);
-}
-
-
 void cInstSet::LoadFromConfig()
 {
   LoadWithStringList(m_world->GetConfig().INST_SET_NEW.Get());
@@ -303,9 +284,9 @@ void cInstSet::LoadWithStringList(const cStringList& sl)
 
 
 
-void cInstSet::LoadFromLegacyFile(const cString& filename)
+void cInstSet::LoadFromLegacyFile(const cString& filename, const cString& working_dir)
 {
-  cInitFile file(filename);
+  cInitFile file(filename, working_dir);
   
   if (file.WasOpened() == false) {
     tConstListIterator<cString> err_it(file.GetErrors());

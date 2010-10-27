@@ -24,6 +24,8 @@
 
 #include "cWorld.h"
 
+#include "AvidaTools.h"
+
 #include "avida.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
@@ -39,6 +41,8 @@
 #include "cFallbackWorldDriver.h"
 
 #include <cassert>
+
+using namespace AvidaTools;
 
 
 cWorld::~cWorld()
@@ -79,7 +83,7 @@ void cWorld::Setup()
   if (rand_seed != m_rng.GetSeed()) cout << " -> " << m_rng.GetSeed();
   cout << endl;
   
-  m_data_mgr = new cDataFileManager(m_conf->DATA_DIR.Get(), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
+  m_data_mgr = new cDataFileManager(FileSystem::GetAbsolutePath(m_conf->DATA_DIR.Get(), m_working_dir), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   if (m_conf->VERBOSITY.Get() > VERBOSE_NORMAL)
     cout << "Data Directory: " << m_data_mgr->GetTargetDir() << endl;
   
@@ -89,7 +93,7 @@ void cWorld::Setup()
   
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
-  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get())) {
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
     cerr << "error: unable to load environment" << endl;
     Avida::Exit(-1);
   }
@@ -126,7 +130,7 @@ void cWorld::Setup()
   
   // Setup Event List
   m_event_list = new cEventList(this);
-  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get())) {
+  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir)) {
     cerr << "error: unable to load events" << endl;
     Avida::Exit(-1);
   }

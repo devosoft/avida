@@ -189,7 +189,7 @@ public:
   bool AddEventFileFormat(const cString& line);
 
 
-  bool LoadEventFile(const cString& filename);
+  bool LoadEventFile(const cString& filename, const cString& working_dir);
 
   void Process(cAvidaContext& ctx);   // Go through list executing appropriate events.
   void Sync(); // Get all events caught up.

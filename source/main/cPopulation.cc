@@ -321,7 +321,7 @@ void cPopulation::InitiatePop()
   const cString& filename = m_world->GetConfig().START_ORGANISM.Get();
   
   if (filename != "-" && filename != "") {
-    if (!cGenomeUtil::LoadGenome(filename, m_world->GetHardwareManager().GetInstSet(), start_org)) {
+    if (!cGenomeUtil::LoadGenome(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet(), start_org)) {
       cerr << "Error: Unable to load start creature" << endl;
       exit(-1);
     }
@@ -4363,7 +4363,7 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
 {
   // @TODO - build in support for verifying population dimensions
   
-  cInitFile input_file(filename);
+  cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
     tConstListIterator<cString> err_it(input_file.GetErrors());
     const cString* errstr = NULL;

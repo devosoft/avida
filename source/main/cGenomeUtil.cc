@@ -484,19 +484,19 @@ cGenome cGenomeUtil::Join(const cGenome & genome1, const cGenome & genome2)
   return out_genome;
 }
 
-cGenome cGenomeUtil::LoadGenome(const cString& filename, const cInstSet& inst_set)
+cGenome cGenomeUtil::LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set)
 {
   cGenome new_genome(0);
-  if (!LoadGenome(filename, inst_set, new_genome)) {
+  if (!LoadGenome(filename, working_dir, inst_set, new_genome)) {
     cerr << "Error: Unable to load genome" << endl;
     exit(1);
   }
   return new_genome;
 }
 
-bool cGenomeUtil::LoadGenome(const cString& filename, const cInstSet& inst_set, cGenome& out_genome)
+bool cGenomeUtil::LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set, cGenome& out_genome)
 {
-  cInitFile input_file(filename);
+  cInitFile input_file(filename, working_dir);
   bool success = true;
   
   if (!input_file.WasOpened()) return false;

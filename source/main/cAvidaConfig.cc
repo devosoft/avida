@@ -57,18 +57,18 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
   }
 }
 
-void cAvidaConfig::Load(const cString& filename, bool crash_if_not_found)
+void cAvidaConfig::Load(const cString& filename, const cString& working_dir, bool crash_if_not_found)
 {
   tDictionary<cString> mappings;
-  Load(filename, mappings, crash_if_not_found);
+  Load(filename, mappings, working_dir, crash_if_not_found);
 }
 
 
 void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings,
-			bool crash_if_not_found, bool warn_default)
+                        const cString& working_dir, bool crash_if_not_found, bool warn_default)
 {
   // Load the contents from the file.
-  cInitFile init_file(filename, mappings);
+  cInitFile init_file(filename, mappings, working_dir);
   
   if (!init_file.WasOpened()) {
     tConstListIterator<cString> err_it(init_file.GetErrors());

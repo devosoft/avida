@@ -134,7 +134,7 @@ public:
   cEnvironment(cWorld* world);
   ~cEnvironment();
 
-  bool Load(const cString& filename);  // Reads the environment from disk.
+  bool Load(const cString& filename, const cString& working_dir);  // Reads the environment from disk.
   bool LoadLine(cString line);  // Reads in a single environment configuration line
 
   // Interaction with the organisms

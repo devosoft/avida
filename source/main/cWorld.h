@@ -70,6 +70,8 @@ class cWorld
   tMemTrack<cWorld> mt;
 #endif
 protected:
+  cString m_working_dir;
+  
   cAnalyze* m_analyze;
   cAvidaConfig* m_conf;
   cAvidaContext m_ctx;
@@ -97,10 +99,13 @@ protected:
   cWorld& operator=(const cWorld&); // @not_implemented
   
 public:
-  cWorld(cAvidaConfig* cfg) : m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng) { Setup(); }
+  cWorld(cAvidaConfig* cfg, const cString& working_dir)
+    : m_working_dir(working_dir), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng) { Setup(); }
   virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
+  
+  const cString& GetWorkingDir() const { return m_working_dir; }
   
   // General Object Accessors
   cAnalyze& GetAnalyze();

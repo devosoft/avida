@@ -24,10 +24,11 @@
 
 #include <csignal>
 
+#include "AvidaTools.h"
+
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
-#include "Platform.h"
 #include "cWorld.h"
 
 #include "cDriver_FLTKViewer.h"
@@ -46,7 +47,7 @@ int main(int argc, char * argv[])
   cAvidaConfig* cfg = new cAvidaConfig();
   Avida::ProcessCmdLineArgs(argc, argv, cfg);
 
-  cWorld* world = new cWorld(cfg);
+  cWorld* world = new cWorld(cfg, AvidaTools::FileSystem::GetCWD());
   cAvidaDriver* driver = NULL;
   
   // Test to see if we should be in analyze mode only...
