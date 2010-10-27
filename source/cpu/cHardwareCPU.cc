@@ -1641,10 +1641,6 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   const bool viable = Divide_CheckViable(ctx, div_point, child_size);
   if (viable == false)
 	{
-		if (m_world->GetConfig().DIVIDE_FAILURE_RESETS.Get())
-		{
-			internalReset();
-		}
 		return false;
 	}
 	

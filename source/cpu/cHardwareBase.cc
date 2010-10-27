@@ -103,7 +103,15 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
 #define ORG_FAULT(error) if (ctx.OrgFaultReporting()) m_organism->Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR, error)
   
   // Make sure the organism is okay with dividing now...
-  if (m_organism->Divide_CheckViable() == false) return false; // (divide fails)
+  if (m_organism->Divide_CheckViable() == false) 
+	{
+		if (m_world->GetConfig().DIVIDE_FAILURE_RESETS.Get())
+		{
+			internalReset();
+		}
+		
+		return false; // (divide fails)
+	}
   
   // Make sure that neither parent nor child will be below the minimum size.  
   const int genome_size = m_organism->GetGenome().GetSize();
