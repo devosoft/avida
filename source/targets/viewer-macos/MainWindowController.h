@@ -12,10 +12,13 @@
 
 @interface MainWindowController : NSObject {
   IBOutlet NSPathControl* runDirControl;
+  IBOutlet NSButton* btnRunState;
   AvidaRun* currentRun;
 }
 
 -(void)awakeFromNib;
+
 -(IBAction)setRunDir:(id)sender;
+-(IBAction)toggleRunState:(id)sender;
 
 @end

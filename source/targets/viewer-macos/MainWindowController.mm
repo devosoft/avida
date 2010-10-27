@@ -8,6 +8,8 @@
 
 #import "MainWindowController.h"
 
+#import "AvidaRun.h"
+
 #include <iostream>
 
 @implementation MainWindowController
@@ -21,6 +23,8 @@
     NSURL* userDocumentsURL = [urls objectAtIndex:0];
     [runDirControl setURL:userDocumentsURL];
   }
+  
+  currentRun = nil;
 }
 
 - (IBAction) setRunDir:(id)sender {
@@ -37,6 +41,18 @@
   NSString* path_str = [path_url path];
   
   std::cout << "Path:" << [path_str cStringUsingEncoding:NSASCIIStringEncoding] << std::endl;
+}
+
+- (IBAction) toggleRunState:(id)sender {
+  if (currentRun == nil) {
+    currentRun = [[AvidaRun alloc] init];
+    [btnRunState setTitle:@"Pause"];
+    std::cout << "Running..." << std::endl;
+  } else {
+    currentRun = nil;
+    [btnRunState setTitle:@"Run"];
+    std::cout << "Paused..." << std::endl;
+  }
 }
 
 @end
