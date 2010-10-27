@@ -65,6 +65,7 @@ public:
   inline T Get(const cString& name) const { T rval; m_hash.Find(name, rval); return rval; }
   inline void Remove(const cString& name) { m_hash.Remove(name); }
   inline bool Remove(const cString& name, T& data) { return m_hash.Remove(name, data); }
+  inline void Clear() { m_hash.ClearAll(); }
   inline void SetHash(int _hash) { m_hash.SetTableSize(_hash); }
   inline void AsLists(tList<cString>& name_list, tList<T>& value_list) const {
     m_hash.AsLists(name_list, value_list);
@@ -139,6 +140,7 @@ public:
   inline void Remove(const cString& name) { cString uname(name); uname.ToUpper(); m_hash.Remove(uname); }
   inline bool Remove(const cString& name, T& data) { cString uname(name); uname.ToUpper(); return m_hash.Remove(uname, data); }
   
+  inline void Clear() { m_hash.ClearAll(); }
 
   // Fast Accessor Methods - Calling method assumes responsibility for UCasing the key
   inline bool HasEntryFast(const cString& name) const { return m_hash.HasEntry(name); }
