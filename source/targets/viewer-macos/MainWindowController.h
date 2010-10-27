@@ -15,6 +15,7 @@
   AvidaRun* currentRun;
 }
 
+-(void)awakeFromNib;
 -(IBAction)setRunDir:(id)sender;
 
 @end
