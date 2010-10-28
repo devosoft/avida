@@ -295,6 +295,7 @@ protected:
   
 
   void internalReset();
+	void internalResetOnFailedDivide();
   
     
   int calcExecutedSize(const int parent_size);

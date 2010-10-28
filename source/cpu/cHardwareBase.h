@@ -216,6 +216,7 @@ protected:
   // --------  Core Execution Methods  --------
   bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
   virtual void internalReset() = 0;
+	virtual void internalResetOnFailedDivide() =0;
   
   
   // --------  No-Operation Instruction  --------

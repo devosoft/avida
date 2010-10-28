@@ -754,6 +754,15 @@ void cHardwareCPU::internalReset()
 	m_last_cell_data = std::make_pair(false, 0);
 }
 
+void cHardwareCPU::internalResetOnFailedDivide()
+{
+	internalReset();
+	m_mal_active = true;
+	m_advance_ip = false;
+}
+
+
+
 void cHardwareCPU::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;

@@ -172,6 +172,11 @@ void cHardwareTransSMT::internalReset()
   m_organism->ClearParasites();
 }
 
+void cHardwareTransSMT::internalResetOnFailedDivide()
+{
+	internalReset();
+}
+
 void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space)
 {
   for (int i = 0; i < NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
@@ -1570,18 +1575,20 @@ bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
   bool toReturn =  Divide_Main(ctx);
   if(toReturn)
     return toReturn;
+
+	internalReset();
   
-  m_organism->GetPhenotype().DivideFailed();
-  
-  const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
-  
-  if (m_mem_array.GetSize() <= mem_space_used) return false;
-  
-  m_mem_array[mem_space_used] = cGenome("a"); 
-  
-  for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
-  //for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
-    
+  /* m_organism->GetPhenotype().DivideFailed();
+		
+		const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
+		
+		if (m_mem_array.GetSize() <= mem_space_used) return false;
+		
+		m_mem_array[mem_space_used] = cGenome("a"); 
+		
+		for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
+		//for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
+	 */    
   return toReturn;
   
 }

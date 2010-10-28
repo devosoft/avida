@@ -407,6 +407,12 @@ void cHardwareGX::internalReset()
   
 }
 
+
+void cHardwareGX::internalResetOnFailedDivide()
+{
+	internalReset();
+}
+
 /*! In cHardwareGX, SingleProcess is something of a misnomer.  Each time this method
   is called, each cProgramid executes a single instruction.
   */
