@@ -34,24 +34,26 @@
   if (path_clicked != nil) {
     [runDirControl setURL:[path_clicked URL]];
   }
-  
-
-  // Get and print out the URL to standard out for debugging purposes
-  NSURL* path_url = [runDirControl URL];
-  NSString* path_str = [path_url path];
-  
-  std::cout << "Path:" << [path_str cStringUsingEncoding:NSASCIIStringEncoding] << std::endl;
 }
 
 - (IBAction) toggleRunState:(id)sender {
   if (currentRun == nil) {
-    currentRun = [[AvidaRun alloc] init];
-    [btnRunState setTitle:@"Pause"];
-    std::cout << "Running..." << std::endl;
+    currentRun = [[AvidaRun alloc] initWithDirectory:[runDirControl URL]];
+    [btnRunState setTitle:@"Pause"];    
   } else {
-    currentRun = nil;
-    [btnRunState setTitle:@"Run"];
-    std::cout << "Paused..." << std::endl;
+    if ([currentRun isPaused]) {
+      [currentRun resume];
+      [btnRunState setTitle:@"Paused"];
+    } else {
+      [currentRun pause];
+      [btnRunState setTitle:@"Run"];      
+    }
+  }
+}
+
+- (void) pathControl: (NSPathControl*) pathControl willDisplayOpenPanel: (NSOpenPanel*) openPanel {
+  if (pathControl == this->runDirControl) {
+    [openPanel setCanCreateDirectories:YES];
   }
 }
 

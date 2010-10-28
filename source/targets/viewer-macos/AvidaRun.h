@@ -9,8 +9,19 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface AvidaRun : NSObject {
+class cCoreViewDriver;
 
+
+@interface AvidaRun : NSObject {
+@protected
+  cCoreViewDriver* driver;
 }
+
+-(id)init;
+-(AvidaRun*)initWithDirectory: (NSURL*) dir;
+
+-(bool)isPaused;
+-(void)pause;
+-(void)resume;
 
 @end

@@ -60,7 +60,7 @@ void cColor::Setup()
 {
   if (SCALE_BRIGHT.GetSize() != 0) return;
 
-  int index = 0;
+//  int index = 0;
 
   SCALE_BRIGHT.Push(cColor(0, 0, 0));
   // SCALE_BRIGHT.Push(cColor(0.2 , 0.2 , 0.2 ));

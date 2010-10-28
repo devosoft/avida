@@ -36,6 +36,7 @@ namespace AvidaTools
     bool MkDir(const cString& dirname, bool verbose = false);
     cString GetCWD();
     cString GetAbsolutePath(const cString& path, const cString& working_dir = GetCWD());
+    inline cString PathAppend(const cString& path, const cString& path_add);
   };
   
   // Utility Functions
@@ -87,5 +88,9 @@ inline int AvidaTools::GridNeighbor(int cell_id, int size_x, int size_y, int dif
   return (new_y * size_x) + new_x;
 }
 
+inline cString AvidaTools::FileSystem::PathAppend(const cString& path, const cString& path_add)
+{
+  return cString(path) + "/" + path_add;
+}
 
 #endif
