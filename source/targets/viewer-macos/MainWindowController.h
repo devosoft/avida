@@ -22,6 +22,6 @@
 -(IBAction)toggleRunState:(id)sender;
 
 // NSPathControlDelegate Protocol
--(void)pathControl:(NSPathControl*)pathControl willDisplayOpenPanel:(NSOpenPanel*)openPanel
+//-(void)pathControl:(NSPathControl*)pathControl willDisplayOpenPanel:(NSOpenPanel*)openPanel
 
 @end

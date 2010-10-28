@@ -51,10 +51,10 @@
   }
 }
 
-- (void) pathControl: (NSPathControl*) pathControl willDisplayOpenPanel: (NSOpenPanel*) openPanel {
-  if (pathControl == this->runDirControl) {
-    [openPanel setCanCreateDirectories:YES];
-  }
-}
-
+//- (void) pathControl: (NSPathControl*) pathControl willDisplayOpenPanel: (NSOpenPanel*) openPanel {
+//  if (pathControl == this->runDirControl) {
+//    [openPanel setCanCreateDirectories:YES];
+//  }
+//}
+//
 @end
