@@ -33,7 +33,8 @@ using namespace AvidaTools;
     tDictionary<cString> defs;
     
     cfg->Load("avida.cfg", defs, config_path, false, false);
-    cWorld* world = new cWorld(cfg, config_path);
+    cWorld* world = cWorld::Initialize(cfg, config_path);
+    if (!world) return nil;
     self->driver = new cCoreViewDriver(world);
   }
   

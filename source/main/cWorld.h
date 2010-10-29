@@ -66,9 +66,6 @@ template<class T> class tDictionary;
 
 class cWorld
 {
-#if USE_tMemTrack
-  tMemTrack<cWorld> mt;
-#endif
 protected:
   cString m_working_dir;
   
@@ -91,16 +88,16 @@ protected:
   
   bool m_own_driver;      // specifies whether this world object should manage its driver object
 
-  // Internal Methods
-  void Setup();
+  cWorld(cAvidaConfig* cfg, const cString& wd) : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng) { ; }
   
-  
+private:
+  cWorld(); // @not_implemented
   cWorld(const cWorld&); // @not_implemented
-  cWorld& operator=(const cWorld&); // @not_implemented
+  cWorld& operator=(const cWorld&); // @not_implemented  
+  
   
 public:
-  cWorld(cAvidaConfig* cfg, const cString& working_dir)
-    : m_working_dir(working_dir), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng) { Setup(); }
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, tList<cString>* errors = NULL);
   virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
@@ -154,6 +151,10 @@ public:
 	
 	//! Calculate the size (in virtual CPU cycles) of the current update.
 	virtual int CalculateUpdateSize();
+  
+protected:
+  // Internal Methods
+  bool setup(tList<cString>* errors);
 };
 
 #endif

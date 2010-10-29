@@ -62,6 +62,8 @@ class cInstSet
 {
 public:
   cWorld* m_world;
+  cString m_name;
+  int m_hw_type;
   cInstLib* m_inst_lib;
   
   struct sInstEntry {
@@ -84,17 +86,16 @@ public:
   bool m_has_energy_costs;
   
   
-  void LoadWithStringList(const cStringList& sl);
-
   cInstSet(); // @not_implemented
 
 public:
-  inline cInstSet(cWorld* world, cInstLib* inst_lib)
-    : m_world(world), m_inst_lib(inst_lib), m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false) { ; }
-  inline cInstSet(const cInstSet& is);
+  inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib)
+    : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_has_costs(false)
+    , m_has_ft_costs(false), m_has_energy_costs(false) { ; }
   inline ~cInstSet() { ; }
-
-  inline cInstSet& operator=(const cInstSet& _in);
+  
+  const cString& GetInstSetName() const { return m_name; }
+  int GetHardwareType() const { return m_hw_type; }
 
   bool OK() const;
 
@@ -152,29 +153,9 @@ public:
   cInstruction GetInstDefault() const { return cInstruction(m_inst_lib->GetInstDefault()); }
   cInstruction GetInstError() const { return cInstruction(255); }
   
-  void LoadFromConfig();
-  void LoadFromLegacyFile(const cString& filename, const cString& working_dir);
+  bool LoadWithStringList(const cStringList& sl, tList<cString>* errors = NULL);
 };
 
-
-inline cInstSet::cInstSet(const cInstSet& is)
-: m_world(is.m_world), m_inst_lib(is.m_inst_lib), m_lib_name_map(is.m_lib_name_map)
-, m_lib_nopmod_map(is.m_lib_nopmod_map), m_mutation_chart(is.m_mutation_chart)
-, m_has_costs(is.m_has_costs), m_has_ft_costs(is.m_has_ft_costs), m_has_energy_costs(is.m_has_energy_costs)
-{
-}
-
-inline cInstSet& cInstSet::operator=(const cInstSet& _in)
-{
-  m_inst_lib = _in.m_inst_lib;
-  m_lib_name_map = _in.m_lib_name_map;
-  m_lib_nopmod_map = _in.m_lib_nopmod_map;
-  m_mutation_chart = _in.m_mutation_chart;
-  m_has_costs = _in.m_has_costs;
-  m_has_ft_costs = _in.m_has_ft_costs;
-  m_has_energy_costs = _in.m_has_energy_costs;
-  return *this;
-}
 
 inline cInstruction cInstSet::GetInst(const cString & in_name) const
 {

@@ -39,7 +39,18 @@
 - (IBAction) toggleRunState:(id)sender {
   if (currentRun == nil) {
     currentRun = [[AvidaRun alloc] initWithDirectory:[runDirControl URL]];
-    [btnRunState setTitle:@"Pause"];    
+    if (currentRun == nil) {
+      NSAlert* alert = [[NSAlert alloc] init];
+      [alert addButtonWithTitle:@"OK"];
+      NSString* pathText = [[runDirControl URL] lastPathComponent];
+      NSString* msgText = [NSString stringWithFormat:@"Unable to load run configuration in \"%@\"", pathText];
+      [alert setMessageText:msgText];
+      [alert setInformativeText:@"Check the run log for details on how to correct your configuration files."];
+      [alert setAlertStyle:NSWarningAlertStyle];
+      [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    } else {
+      [btnRunState setTitle:@"Pause"];
+    }
   } else {
     if ([currentRun isPaused]) {
       [currentRun resume];

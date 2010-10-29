@@ -227,6 +227,7 @@ private:
     
     void AddEntry(cBaseConfigFormatEntry* _entry) { m_entry_list.PushRear(_entry); }
     
+    cStringList& Get() { return m_value; }
     const cStringList& Get() const { return m_value; }
     void Add(const cString& value) { m_value.PushRear(value); }
   };
@@ -311,7 +312,7 @@ public:
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Other configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
   CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
-  CONFIG_ADD_VAR(INST_SET_FORMAT, int, 0, "Instruction set file format.\n0 = Default\n1 = New Style");
+  CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 1, "Load legacy format instruction set file format");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
@@ -726,12 +727,14 @@ public:
   CONFIG_ADD_VAR(CONSENSUS_HOLD_TIME, int, 1, "Number of updates that consensus must be held for.");
   
 
+  // -------- Instruction Set Definition --------
   // Setup technique to define the instruction set in avida.cfg file.
-  CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
+  CONFIG_ADD_CUSTOM_FORMAT(INSTSETS, "Instruction Set Definition");
+  CONFIG_ADD_FORMAT_VAR(INSTSET, "Define an instruction set (must supply name:hw_type=$hardware_type)");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
 	
 	
-  //--------- Reputation config options --------------
+  // -------- Reputation config options --------
   CONFIG_ADD_GROUP(REPUTATION_GROUP, "Reputation Settings");
   CONFIG_ADD_VAR(RAW_MATERIAL_AMOUNT, int, 100, "Number of raw materials an organism starts with");
   CONFIG_ADD_VAR(AUTO_REPUTATION, int, 0, "Is an organism's reputation automatically computed based on its donations\n0=no\n1=increment for each donation + standing\n2=+1 for donations given -1 for donations received\n3=1 for donors -1 for recivers who have not donated\n4=+1 for donors\n5=+1 for donors during task check");

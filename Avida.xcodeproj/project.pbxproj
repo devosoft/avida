@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		7023ED520C0A590200362B9C /* full-suite */ = {
+		7023ED520C0A590200362B9C /* default-suite */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 7023ED590C0A594300362B9C /* Build configuration list for PBXAggregateTarget "full-suite" */;
+			buildConfigurationList = 7023ED590C0A594300362B9C /* Build configuration list for PBXAggregateTarget "default-suite" */;
 			buildPhases = (
 			);
 			dependencies = (
@@ -17,7 +17,7 @@
 				7023ED560C0A590F00362B9C /* PBXTargetDependency */,
 				7023ED580C0A591100362B9C /* PBXTargetDependency */,
 			);
-			name = "full-suite";
+			name = "default-suite";
 			productName = "full-suite";
 		};
 		702A6748121C798D0014F776 /* prepare-package */ = {
@@ -34,6 +34,21 @@
 			);
 			name = "prepare-package";
 			productName = "prepare-package";
+		};
+		70E14E76127B26D10059FB9D /* everything */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 70E14E9A127B271E0059FB9D /* Build configuration list for PBXAggregateTarget "everything" */;
+			buildPhases = (
+			);
+			dependencies = (
+				70E14E7E127B26F30059FB9D /* PBXTargetDependency */,
+				70E14E80127B26F70059FB9D /* PBXTargetDependency */,
+				70E14E82127B26FA0059FB9D /* PBXTargetDependency */,
+				70E14E84127B26FC0059FB9D /* PBXTargetDependency */,
+				70E14E86127B26FF0059FB9D /* PBXTargetDependency */,
+			);
+			name = everything;
+			productName = everything;
 		};
 /* End PBXAggregateTarget section */
 
@@ -351,7 +366,7 @@
 		70A1E7D5126625A500D56AC4 /* viewer-fltk.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */; };
 		70A1E7DE1266261500D56AC4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70A1E7E01266261700D56AC4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
-		70A1E805126626E200D56AC4 /* avida-fltkview in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70A1E7BC1266253E00D56AC4 /* avida-fltkview */; };
+		70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70A1E7BC1266253E00D56AC4 /* avida-fltk */; };
 		70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E86D12663FA100D56AC4 /* cThread.cc */; };
 		70A1E87F126642B100D56AC4 /* Platform.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E87B126640C400D56AC4 /* Platform.cc */; };
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
@@ -368,6 +383,7 @@
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
 		70E14D4C1279FA5B0059FB9D /* cCoreViewDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E14D4A1279FA5B0059FB9D /* cCoreViewDriver.h */; };
 		70E14D4D1279FA5B0059FB9D /* cCoreViewDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* cCoreViewDriver.cpp */; };
+		70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
 		B462B5C10FA0F47D00F379D1 /* cPhenPlastSummary.h in Headers */ = {isa = PBXBuildFile; fileRef = B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */; };
@@ -516,6 +532,41 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7022469C107FC4F10079CD25;
 			remoteInfo = "tcmalloc-1.4";
+		};
+		70E14E7D127B26F30059FB9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DCC3164C07626CF3008F7A48;
+			remoteInfo = avida;
+		};
+		70E14E7F127B26F70059FB9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 700E2AF3085DE50C00CF158A;
+			remoteInfo = "avida-viewer";
+		};
+		70E14E81127B26FA0059FB9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 70A1E7BB1266253E00D56AC4;
+			remoteInfo = "avida-fltk";
+		};
+		70E14E83127B26FC0059FB9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 56F555CF0C3B364E00E2E929;
+			remoteInfo = "avida-text";
+		};
+		70E14E85127B26FF0059FB9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 70B6514B0BEA6FAD002472ED;
+			remoteInfo = "unit-tests";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -680,7 +731,7 @@
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
-				70A1E805126626E200D56AC4 /* avida-fltkview in CopyFiles */,
+				70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1139,7 +1190,7 @@
 		70A1E7B61266250500D56AC4 /* libfltk_jpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_jpeg.a; path = /usr/local/lib/libfltk_jpeg.a; sourceTree = "<absolute>"; };
 		70A1E7B71266250500D56AC4 /* libfltk_png.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_png.a; path = /usr/local/lib/libfltk_png.a; sourceTree = "<absolute>"; };
 		70A1E7B81266250500D56AC4 /* libfltk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk.a; path = /usr/local/lib/libfltk.a; sourceTree = "<absolute>"; };
-		70A1E7BC1266253E00D56AC4 /* avida-fltkview */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-fltkview"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70A1E7BC1266253E00D56AC4 /* avida-fltk */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-fltk"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
 		70A1E86C12663FA100D56AC4 /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
@@ -1497,6 +1548,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */,
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2495,7 +2547,7 @@
 				56F555D00C3B364E00E2E929 /* avida-text */,
 				7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */,
 				706C7B64125F64B000EDB4B9 /* libviewer-core.a */,
-				70A1E7BC1266253E00D56AC4 /* avida-fltkview */,
+				70A1E7BC1266253E00D56AC4 /* avida-fltk */,
 				70823A40126F663A00FA937F /* Avida.app */,
 			);
 			name = Products;
@@ -2676,7 +2728,7 @@
 			);
 			name = "avida-fltk";
 			productName = "avida-fltkview";
-			productReference = 70A1E7BC1266253E00D56AC4 /* avida-fltkview */;
+			productReference = 70A1E7BC1266253E00D56AC4 /* avida-fltk */;
 			productType = "com.apple.product-type.tool";
 		};
 		70B6514B0BEA6FAD002472ED /* unit-tests */ = {
@@ -2755,8 +2807,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7023ED520C0A590200362B9C /* full-suite */,
+				7023ED520C0A590200362B9C /* default-suite */,
+				70E14E76127B26D10059FB9D /* everything */,
 				702A6748121C798D0014F776 /* prepare-package */,
+				70823A3F126F663A00FA937F /* Avida */,
 				DCC3164C07626CF3008F7A48 /* avida */,
 				70DCAC9D097AF7CC002F8733 /* avida-s */,
 				700E2AF3085DE50C00CF158A /* avida-viewer */,
@@ -2766,7 +2820,6 @@
 				7023EC320C0A426900362B9C /* avida-core */,
 				7022469C107FC4F10079CD25 /* tcmalloc-1.4 */,
 				706C7B63125F64B000EDB4B9 /* viewer-core */,
-				70823A3F126F663A00FA937F /* Avida */,
 			);
 		};
 /* End PBXProject section */
@@ -3118,7 +3171,7 @@
 		};
 		702A674F121C79990014F776 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 7023ED520C0A590200362B9C /* full-suite */;
+			target = 7023ED520C0A590200362B9C /* default-suite */;
 			targetProxy = 702A674E121C79990014F776 /* PBXContainerItemProxy */;
 		};
 		706C7B71125F650200EDB4B9 /* PBXTargetDependency */ = {
@@ -3170,6 +3223,31 @@
 			isa = PBXTargetDependency;
 			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
 			targetProxy = 70D1038A124CF80800F25734 /* PBXContainerItemProxy */;
+		};
+		70E14E7E127B26F30059FB9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DCC3164C07626CF3008F7A48 /* avida */;
+			targetProxy = 70E14E7D127B26F30059FB9D /* PBXContainerItemProxy */;
+		};
+		70E14E80127B26F70059FB9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 700E2AF3085DE50C00CF158A /* avida-viewer */;
+			targetProxy = 70E14E7F127B26F70059FB9D /* PBXContainerItemProxy */;
+		};
+		70E14E82127B26FA0059FB9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 70A1E7BB1266253E00D56AC4 /* avida-fltk */;
+			targetProxy = 70E14E81127B26FA0059FB9D /* PBXContainerItemProxy */;
+		};
+		70E14E84127B26FC0059FB9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 56F555CF0C3B364E00E2E929 /* avida-text */;
+			targetProxy = 70E14E83127B26FC0059FB9D /* PBXContainerItemProxy */;
+		};
+		70E14E86127B26FF0059FB9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 70B6514B0BEA6FAD002472ED /* unit-tests */;
+			targetProxy = 70E14E85127B26FF0059FB9D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3910,6 +3988,48 @@
 			};
 			name = Profile;
 		};
+		70E14E77127B26D10059FB9D /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = everything;
+			};
+			name = Development;
+		};
+		70E14E78127B26D10059FB9D /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = everything;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		70E14E79127B26D10059FB9D /* Deployment-G5 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = everything;
+			};
+			name = "Deployment-G5";
+		};
+		70E14E7A127B26D10059FB9D /* Deployment-Universal */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = everything;
+			};
+			name = "Deployment-Universal";
+		};
+		70E14E7B127B26D10059FB9D /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = everything;
+			};
+			name = Profile;
+		};
 		E626209A0A372B9900C07685 /* Deployment-Universal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4022,7 +4142,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
 		};
-		7023ED590C0A594300362B9C /* Build configuration list for PBXAggregateTarget "full-suite" */ = {
+		7023ED590C0A594300362B9C /* Build configuration list for PBXAggregateTarget "default-suite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7023ED5A0C0A594300362B9C /* Development */,
@@ -4126,6 +4246,18 @@
 				70DCAD1A097AF7CC002F8733 /* Deployment-G5 */,
 				E626209B0A372B9900C07685 /* Deployment-Universal */,
 				70DCAD1B097AF7CC002F8733 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		70E14E9A127B271E0059FB9D /* Build configuration list for PBXAggregateTarget "everything" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70E14E77127B26D10059FB9D /* Development */,
+				70E14E78127B26D10059FB9D /* Deployment */,
+				70E14E79127B26D10059FB9D /* Deployment-G5 */,
+				70E14E7A127B26D10059FB9D /* Deployment-Universal */,
+				70E14E7B127B26D10059FB9D /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;

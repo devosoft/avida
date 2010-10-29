@@ -47,7 +47,18 @@ int main(int argc, char * argv[])
   cAvidaConfig* cfg = new cAvidaConfig();
   Avida::ProcessCmdLineArgs(argc, argv, cfg);
   
-  cWorld* world = new cWorld(cfg, AvidaTools::FileSystem::GetCWD());
+  tList<cString> errors;
+  cWorld* world = cWorld::Initialize(cfg, AvidaTools::FileSystem::GetCWD(), &errors);
+  
+  if (!world) {
+    tListIterator<cString> it(errors);
+    while ((it.Next())) {
+      cerr << "error: " << *it.Get() << endl;
+      delete it.Get();
+    }
+    return -1;
+  }
+
   cAvidaDriver* driver = NULL;
   
   // Test to see if we should be in analyze mode only...
