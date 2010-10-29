@@ -315,6 +315,8 @@ public:
   void DoOutput(cAvidaContext& ctx, const bool on_divide=false);
   //! Add the passed-in value to this organism's output buffer, and check tasks (on_divide=false).
   void DoOutput(cAvidaContext& ctx, const int value);
+  //! Check if we're calling this from a parasite.
+  void DoOutput(cAvidaContext& ctx, const int value, bool is_parasite);
   //! Check tasks based on the passed-in IO buffers and value (on_divide=false).
   void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);  
   
@@ -686,7 +688,7 @@ private:
   void initialize(cAvidaContext& ctx);
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
-  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide);
+  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false);
 };
 
 

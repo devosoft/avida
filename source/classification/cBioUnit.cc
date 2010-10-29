@@ -89,3 +89,10 @@ void cBioUnit::HandleGestation()
 {
   for (int i = 0; i < m_bio_groups.GetSize(); i++) m_bio_groups[i]->HandleBioUnitGestation(this);
 }
+
+bool cBioUnit::IsParasite()
+{
+	if (GetUnitSource() == SRC_PARASITE_INJECT || GetUnitSource() == SRC_PARASITE_FILE_LOAD)
+		return true;
+	return false;
+}

@@ -52,6 +52,7 @@ public:
   virtual const cString& GetUnitSourceArgs() const = 0;
   virtual const cMetaGenome& GetMetaGenome() const = 0;
   virtual const cPhenotype& GetPhenotype() const = 0;
+  virtual bool	IsParasite();
   
   const tArray<cBioGroup*>& GetBioGroups() const { return m_bio_groups; }
   cBioGroup* GetBioGroup(const cString& role) const;

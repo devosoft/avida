@@ -230,6 +230,11 @@ private:
   
   tArray<int> genotype_map;
 
+  tArray<int> tasks_host_current;
+  tArray<int> tasks_host_last;
+  tArray<int> tasks_parasite_current;
+  tArray<int> tasks_parasite_last;
+  
   tArray<int> task_cur_count;
   tArray<int> task_last_count;
   tArray<double> task_cur_quality;
@@ -555,12 +560,18 @@ public:
   void IncNumMigrations() { num_migrations++; }
 
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
+  void AddCurHostTask(int task_num) { tasks_host_current[task_num]++; }
+  void AddCurParasiteTask(int task_num) { tasks_parasite_current[task_num]++; }
+  
   void AddCurTaskQuality(int task_num, double quality) 
   {  
 	  task_cur_quality[task_num] += quality;
 	  if (quality > task_cur_max_quality[task_num]) task_cur_max_quality[task_num] = quality;
   }
   void AddLastTask(int task_num) { task_last_count[task_num]++; }
+  void AddLastHostTask(int task_num) { tasks_host_last[task_num]++; }
+  void AddLastParasiteTask(int task_num) { tasks_parasite_last[task_num]++; }
+  
   void AddLastTaskQuality(int task_num, double quality) 
   { 
 	  task_last_quality[task_num] += quality; 
@@ -654,9 +665,15 @@ public:
   int GetTotLineages() const        { return tot_lineages; }
 
   int GetTaskCurCount(int task_num) const { return task_cur_count[task_num]; }
+  int GetTaskHostCurCount(int task_num) const { return tasks_host_current[task_num]; }
+  int GetTaskParasiteCurCount(int task_num) const { return tasks_parasite_current[task_num]; }
   double GetTaskCurQuality(int task_num) const { return task_cur_quality[task_num]/(double)task_cur_count[task_num]; }  
+
   int GetTaskLastCount(int task_num) const {return task_last_count[task_num];}
+  int GetTaskLastHostCount(int task_num) const {return tasks_host_last[task_num];}
+  int GetTaskLastParasiteCount(int task_num) const {return tasks_parasite_last[task_num];}
   double GetTaskLastQuality(int task_num) const {return task_last_quality[task_num]/(double)task_last_count[task_num];}
+  
   double GetTaskMaxCurQuality(int task_num) const { return task_cur_max_quality[task_num];}
   double GetTaskMaxLastQuality(int task_num) const { return task_last_max_quality[task_num];}
   int GetTaskExeCount(int task_num) const { return task_exe_count[task_num]; }
@@ -755,6 +772,8 @@ public:
   void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);
   void PrintTasksData(const cString& filename);
+  void PrintHostTasksData(const cString& filename);
+  void PrintParasiteTasksData(const cString& filename);
   void PrintTasksExeData(const cString& filename);
   void PrintTasksQualData(const cString& filename);
   void PrintDynamicMaxMinData(const cString& filename);

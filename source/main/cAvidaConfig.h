@@ -394,6 +394,7 @@ public:
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task");
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide");
   CONFIG_ADD_VAR(IMMUNITY_REACTION, int, -1, "Reaction ID that provides immunity for successful divide");
+  CONFIG_ADD_VAR(REQUIRE_SINGLE_REACTION, int, 0, "If set to 1, at least one reaction is required for a successful divide");
   CONFIG_ADD_VAR(REQUIRED_BONUS, double, 0.0, "Required bonus to divide");
   CONFIG_ADD_VAR(REQUIRE_EXACT_COPY, int, 0, "Require offspring to be an exact copy (checked before divide mutations)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE, int, -1, "ID of resource required in organism's internal bins for successful\n  divide (resource not consumed)");
@@ -418,11 +419,18 @@ public:
 	
   // -------- Parasite options --------
   CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");
-  CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "What should happen to a parasite when it gives birth?\n0 = Leave the parasite thread state untouched.\n1 = Resets the state of the calling thread");
-  CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks");
+  CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "What should happen to a parasite when it gives birth?\n0 = Leave the parasite thread state untouched.\n1 = Resets the state of the calling thread (for SMT parasites, this must be 1)");
+  CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks - 11*numTasks");
   CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
-  CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles");
-  CONFIG_ADD_VAR(INJECT_PROB_SIGMOID, int, 1, "Inject probs follow a psuedo-sigmoid path - requires INJECT_PROB_FROM_TASKS");
+  CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence)");
+  CONFIG_ADD_VAR(PARASITE_SKIP_REACTIONS, int, 1, "Parasite tasks do not get processed in the environment (1) or they do trigger reactions (0)");
+  CONFIG_ADD_VAR(INJECT_IS_TASK_SPECIFIC, int, 0, "Parasites must match a task done by the host they are trying to infect");
+  CONFIG_ADD_VAR(INJECT_SKIP_FIRST_TASK, int, 0, "They cannot match the first task the host is doing to infect");
+  CONFIG_ADD_VAR(INJECT_DEFAULT_SUCCESS, double, 0.0, "If injection is task specific, with what probability should non-matching parasites infect the host ");
+  CONFIG_ADD_VAR(PARASITE_VIRULENCE, double, -1, "The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment");
+  CONFIG_ADD_VAR(PARASITE_MEM_SPACES, int, 1, "Parasites get their own memory spaces");
+  CONFIG_ADD_VAR(PARASITE_NO_COPY_MUT, int, 0, "Parasites do not get copy mutation rates");
+
 
   // -------- CPU Archetecture
   CONFIG_ADD_GROUP(ARCHETECTURE_GROUP, "Details on how CPU should work");

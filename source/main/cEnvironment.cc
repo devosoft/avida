@@ -1082,8 +1082,12 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const tArray<int>& task_count,
 															tArray<int>& reaction_count, 
                               const tArray<double>& resource_count, 
-                              const tArray<double>& rbins_count) const
-{
+                              const tArray<double>& rbins_count,
+                              bool is_parasite) const
+{  
+  //flag to skip processing of parasite tasks
+  bool skipProcessing = false;
+
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);
   
@@ -1107,7 +1111,12 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     
     // Examine requisites on this reaction
     if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) {
-      continue;
+      if(is_parasite && m_world->GetConfig().PARASITE_SKIP_REACTIONS.Get()){
+        skipProcessing = true;
+      }
+      else {
+        continue;
+      }
     }
     
     
@@ -1126,13 +1135,16 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     // Mark this task as performed...
     result.MarkTask(task_id, task_quality, taskctx.GetTaskValue());
     
-    // And let's process it!
-    DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, 
-                task_quality, task_probability, task_cnt, i, result, taskctx);
+    if(!skipProcessing)
+    {
+      // And let's process it!
+      DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count, 
+                  task_quality, task_probability, task_cnt, i, result, taskctx);
     
-    if (result.ReactionTriggered(i) == true) reaction_count[i]++;
+      if (result.ReactionTriggered(i) == true) reaction_count[i]++;
 
-    // Note: the reaction is actually marked as being performed inside DoProcesses.
+      // Note: the reaction is actually marked as being performed inside DoProcesses.
+    }
   }  
   
   return result.GetActive();
