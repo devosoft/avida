@@ -45,6 +45,8 @@
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
 		4A69A5FF127752BB0013EE02 /* cDynamicCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A69A5FE127752BB0013EE02 /* cDynamicCount.cc */; };
 		4A69A603127752CA0013EE02 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A69A602127752CA0013EE02 /* cDynamicCount.h */; };
+		4A69A6EB127C9B700013EE02 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A69A6E9127C9B700013EE02 /* cGradientCount.h */; };
+		4A69A6EC127C9B700013EE02 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A69A6EA127C9B700013EE02 /* cGradientCount.cc */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -704,6 +706,8 @@
 		42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeTopologyNetwork.h; sourceTree = "<group>"; };
 		4A69A5FE127752BB0013EE02 /* cDynamicCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDynamicCount.cc; sourceTree = "<group>"; };
 		4A69A602127752CA0013EE02 /* cDynamicCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDynamicCount.h; sourceTree = "<group>"; };
+		4A69A6E9127C9B700013EE02 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
+		4A69A6EA127C9B700013EE02 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -2262,6 +2266,8 @@
 				7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */,
 				7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */,
 				7070E46B12104A660056BE1E /* cDemePlaceholderUnit.h */,
+				4A69A6E9127C9B700013EE02 /* cGradientCount.h */,
+				4A69A6EA127C9B700013EE02 /* cGradientCount.cc */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -2453,6 +2459,7 @@
 				7070E46D12104A660056BE1E /* cDemePlaceholderUnit.h in Headers */,
 				7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */,
 				4A69A603127752CA0013EE02 /* cDynamicCount.h in Headers */,
+				4A69A6EB127C9B700013EE02 /* cGradientCount.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2888,6 +2895,7 @@
 				70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */,
 				70A1E87F126642B100D56AC4 /* Platform.cc in Sources */,
 				4A69A5FF127752BB0013EE02 /* cDynamicCount.cc in Sources */,
+				4A69A6EC127C9B700013EE02 /* cGradientCount.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

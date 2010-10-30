@@ -22,7 +22,7 @@ private:
   void UpdateCount();
 
 public:
-  cGradientCount(int in_peakx, int in_peaky, double int_spread, double in_height, int in_updatestep, int in_worldx, int in_worldy, int in_geometry);
+  cGradientCount(int in_peakx, int in_peaky, double in_spread, double in_height, int in_updatestep, int in_worldx, int in_worldy, int in_geometry);
   
 };
 

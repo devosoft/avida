@@ -43,8 +43,8 @@ cDynamicCount::cDynamicCount(int peaks, double in_min_height, double in_radius_r
   SetYdiffuse(0);
   SetYgravity(0);
   
-  Rbase = Rbase*((double(in_worldx)/100.0)+(double(in_worldy)/100.0))/2.0;
-  Rrange = Rrange*((double(in_worldx)/100.0)+(double(in_worldy)/100.0))/2.0;
+  Rbase = Rbase*((double(in_worldx)+(double(in_worldy))))/2.0;
+  Rrange = Rrange*((double(in_worldx)+(double(in_worldy))))/2.0;
 
 
   m_updatestep = in_updatestep;
