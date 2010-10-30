@@ -85,23 +85,24 @@ public:
   void SetSize(int num_resources);
   void SetCellResources(int cell_id, const tArray<double> & res);
 
-  void Setup(const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,
-             const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
-             const double& in_ydiffuse, const double& in_ygravity,
-             const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
-             const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
-             const int& in_outflowY, tArray<cCellResource> *in_cell_list_ptr,
-             tArray<int> *in_cell_id_list_ptr, const int& verbosity_level,
-             const bool& isdynamic, const int& in_peaks,
-             const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
-             const double& in_ah, const double& in_ar,
-             const double& in_acx, const double& in_acy,
-             const double& in_hstepscale, const double& in_rstepscale,
-             const double& in_cstepscalex, const double& in_cstepscaley,
-             const double& in_hstep, const double& in_rstep,
-             const double& in_cstepx, const double& in_cstepy,
-             const int& in_updatestep
-             ); //JW
+void Setup(const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,
+	   const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
+	   const double& in_ydiffuse, const double& in_ygravity,
+	   const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
+	   const int& in_outflowX1, const int& in_outflowX2, const int& in_outflowY1, 
+	   const int& in_outflowY2, tArray<cCellResource> *in_cell_list_ptr,
+	   tArray<int> *in_cell_id_list_ptr, const int& verbosity_level,
+	   const bool& isdynamic, const int& in_peaks,
+	   const double& in_min_height, const double& in_min_radius, const double& in_radius_range,
+	   const double& in_ah, const double& in_ar,
+	   const double& in_acx, const double& in_acy,
+	   const double& in_hstepscale, const double& in_rstepscale,
+	   const double& in_cstepscalex, const double& in_cstepscaley,
+	   const double& in_hstep, const double& in_rstep,
+	   const double& in_cstepx, const double& in_cstepy,
+	   const int& in_updatestep, const int& in_peakx, const int& in_peaky,
+	   const double& in_spread, const double& in_height, const bool& isgradient
+	   ); //JW
              
   int GetResourceCountID(const cString& res_name);
   void SetInflow(const cString& name, const double _inflow);

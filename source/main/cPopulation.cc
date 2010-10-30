@@ -303,7 +303,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetCStepscaleX(), res->GetCStepscaleY(),
                            res->GetHStep(), res->GetRStep(),
                            res->GetCStepX(), res->GetCStepY(),
-                           res->GetUpdateStep()
+                           res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
+			   res->GetSpread(), res->GetHeight(), res->GetGradient()
                            ); //JW
 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
@@ -5520,7 +5521,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity) {
                            res->GetCStepscaleX(), res->GetCStepscaleY(),
                            res->GetHStep(), res->GetRStep(),
                            res->GetCStepX(), res->GetCStepY(),
-                           res->GetUpdateStep()
+                           res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
+			   res->GetSpread(), res->GetHeight(), res->GetGradient()
                            ); //JW
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {

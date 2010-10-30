@@ -802,6 +802,81 @@ bool cEnvironment::LoadMutation(cString desc)
   return true;
 }
 
+bool cEnvironment::LoadGradientResource(cString desc) //JW
+{
+   if (desc.GetSize() == 0) {
+    cerr << "Warning: Gradient Resource line with no resources listed." << endl;
+    return false;
+  }
+  
+  while (desc.GetSize() > 0) {
+    cString cur_resource = desc.PopWord();
+    const cString name = cur_resource.Pop(':');
+    
+    /* If resource does not already exist create it, however if it already
+     exists (for instance was created as a cell resource) return an error*/
+    
+    cResource* new_resource;
+    if (! resource_lib.DoesResourceExist(name)) {
+      new_resource = resource_lib.AddResource(name);
+    } else {
+      cerr << "Error: resource " << name << " already exists." << endl;
+      return false;
+    }
+    
+    new_resource->SetGeometry("grid");
+    new_resource->SetInitial(0.0);
+    new_resource->SetOutflow(1.0);
+    new_resource->SetXDiffuse(0.0);
+    new_resource->SetYDiffuse(0.0);
+    new_resource->SetXGravity(0.0);
+    new_resource->SetYGravity(0.0);
+    new_resource->SetGradient(true);
+    
+    while (cur_resource.GetSize() != 0) {
+      cString var_entry = cur_resource.Pop(':');
+      cString var_name;
+      cString var_value;
+      const cString var_type = cStringUtil::Stringf("gradient resource '%s'", static_cast<const char*>(name));
+      // Parse this entry.
+      if (!ParseSetting(var_entry, var_name, var_value, var_type)) {
+        return false;
+      }
+      
+      if (var_name == "peakx") {
+        /*if(peaks > MAX_PEAKS){
+	  cerr << "Error: peaks of " << name << " exceeds limits of " << MAX_PEAKS << endl;
+	  return false;
+	}*/
+        new_resource->SetPeakX( var_value.AsInt() );
+      }
+      else if (var_name == "peaky") {
+        if (!AssertInputDouble(var_value, "peaky", var_type)) return false;
+        new_resource->SetPeakY( var_value.AsDouble() );
+      }
+      else if (var_name == "spread") {
+        if (!AssertInputDouble(var_value, "spread", var_type)) return false;
+        new_resource->SetSpread( var_value.AsDouble() );
+      }
+      else if (var_name == "height") {
+        if (!AssertInputDouble(var_value, "height", var_type)) return false;
+        new_resource->SetHeight( var_value.AsDouble() );
+      }
+      else if (var_name == "updatestep") {
+        if (!AssertInputDouble(var_value, "updatestep", var_type)) return false;
+        new_resource->SetUpdateStep( var_value.AsInt() );
+      }
+      else {
+        cerr << "Error: Unknown variable '" << var_name
+        << "' in gradient resource '" << name << "'" << endl;
+        return false;
+      }
+    }
+  }
+  
+  return true;  
+}
+
 //Dummy Function for Loading Dynamic Resources
 bool cEnvironment::LoadDynamicResource(cString desc) //JW
 {
@@ -1101,6 +1176,7 @@ bool cEnvironment::LoadLine(cString line)
   else if (type == "CELL") load_ok = LoadCell(line);
   else if (type == "GRID") load_ok = LoadStateGrid(line);
   else if (type == "DYNAMIC_RESOURCE") load_ok = LoadDynamicResource(line); //JW
+  else if (type == "GRADIENT_RESOURCE") load_ok = LoadGradientResource(line); //JW 
   else {
     cerr << "Error: Unknown environment keyword '" << type << "." << endl;
     return false;

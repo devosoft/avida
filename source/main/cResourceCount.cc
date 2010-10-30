@@ -26,6 +26,7 @@
 #include "cResourceCount.h"
 #include "cResource.h"
 #include "cDynamicCount.h"
+#include "cGradientCount.h"
 
 #include "nGeometry.h"
 
@@ -218,7 +219,8 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
 				const double& in_cstepscalex, const double& in_cstepscaley,
 				const double& in_hstep, const double& in_rstep,
 				const double& in_cstepx, const double& in_cstepy,
-				const int& in_updatestep
+				const int& in_updatestep, const int& in_peakx, const int& in_peaky,
+				const double& in_spread, const double& in_height, const bool& isgradient
 				)
 {
   assert(id >= 0 && id < resource_count.GetSize());
@@ -273,6 +275,7 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
            << endl;
     }   
   }
+  
 
   /* recource_count gets only the values for global resources */
 
@@ -301,6 +304,13 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
 			    in_cstepx, in_cstepy, tempx, tempy, in_geometry, in_updatestep); 
       spatial_resource_count[id]->RateAll(0);
     }
+    
+    else if(isgradient){
+      delete spatial_resource_count[id];
+      spatial_resource_count[id] = new cGradientCount(in_peakx, in_peaky, in_spread, in_height, in_updatestep, tempx, tempy, in_geometry);
+      spatial_resource_count[id]->RateAll(0);
+    }
+    
     else{
       spatial_resource_count[id]->SetInitial(initial / spatial_resource_count[id]->GetSize());
       spatial_resource_count[id]->RateAll(spatial_resource_count[id]->GetInitial());

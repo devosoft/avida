@@ -102,6 +102,11 @@ private:
   double cstepx; //JW
   double cstepy; //JW
   int updatestep; //JW
+  int m_peakx;
+  int m_peaky;
+  double m_height;
+  double m_spread;
+  bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;  
 	bool hgt_metabolize;
@@ -151,6 +156,11 @@ public:
   double GetCStepX() const { return cstepx; } //JW
   double GetCStepY() const { return cstepy; } //JW
   int GetUpdateStep() const { return updatestep; } //JW
+  int GetPeakX() { return m_peakx; }
+  int GetPeakY() { return m_peaky; }
+  double GetSpread() { return m_spread; }
+  double GetHeight() { return m_height; }
+  bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
@@ -192,6 +202,11 @@ public:
   void SetCStepX(double _cstepx) { cstepx = _cstepx; } //JW
   void SetCStepY(double _cstepy) { cstepy = _cstepy; } //JW
   void SetUpdateStep(int _updatestep) { updatestep = _updatestep; } //JW
+  void SetPeakX(int _peakx) { m_peakx = _peakx; }
+  void SetPeakY(int _peaky) { m_peaky = _peaky; }
+  void SetSpread(double _spread) { m_spread = _spread; }
+  void SetHeight(double _height) { m_height = _height; }
+  void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, 

@@ -43,12 +43,11 @@ public:
   cDynamicCount(int peaks, double in_min_height, double in_min_radius, double in_radius_range, double in_ah, double in_ar,
 		double in_acx, double in_acy, double in_hstepscale, double in_rstepscale, double in_cstepscalex, double in_cstepscaley, double in_hstep, double in_rstep,
 		double in_cstepx, double in_cstepy, int in_worldx, int in_worldy, int in_geometry, int in_updatestep);
-  cDynamicCount();
   ~cDynamicCount();
   void UpdateCount();
   
 private:  
-  
+   cDynamicCount();
 /*JW This is code adapted from DeJong and Morrison's 
 Dynamic Function generator
 */
