@@ -76,6 +76,12 @@ void cGradientCount::UpdateCount()
 	thisdist = Distance(ii,jj, m_peakx, m_peaky);
 	if(m_spread >= thisdist) {
 	    thisheight = Linmap(thisdist, 0.0, m_spread, m_height, joheight);
+    if(thisdist != 0) {
+      thisheight = thisheight / thisdist;
+      if(thisheight < 0) {
+        thisheight = 0;
+      }
+    }
             //thisheight = 0;
 	} 
 	else {
