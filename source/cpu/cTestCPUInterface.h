@@ -131,7 +131,7 @@ public:
 	//! HGT conjugation (does nothing).
 	void DoHGTConjugation(cAvidaContext& ctx) { }
 	//! HGT mutation (does nothing).
-	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
+	void DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspring) { }
 	//! Receive HGT donation (does nothing).
 	void ReceiveHGTDonation(const cGenome& fragment) { }
   

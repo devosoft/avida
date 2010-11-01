@@ -163,10 +163,6 @@ private:
 public:
   cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation,
             eBioUnitSource src, const cString& src_args = "");
-  cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
-            int parent_generation, eBioUnitSource src, const cString& src_args = "");
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set,
-            int parent_generation, eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
   
   // --------  cBioUnit Methods  --------

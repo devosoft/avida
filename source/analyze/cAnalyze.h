@@ -116,7 +116,6 @@ private:
   bool exit_on_error;
 
   cWorld* m_world;
-  cInstSet& inst_set;
   cAvidaContext& m_ctx;
   cAnalyzeJobQueue m_jobqueue;
 

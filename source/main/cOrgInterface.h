@@ -130,7 +130,7 @@ public:
 	
 	virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
 	virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
-	virtual void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) = 0;
+	virtual void DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspring) = 0;
 	virtual void ReceiveHGTDonation(const cGenome& fragment) = 0;
   
   virtual void Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;

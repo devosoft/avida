@@ -172,7 +172,7 @@ public:
 	//! Called when this organism "requests" an HGT conjugation.
 	void DoHGTConjugation(cAvidaContext& ctx);
 	//! Perform an HGT mutation on this offspring.
-	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
+	void DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspring);
 
 protected:
 	//! Place the fragment at the location of best match.

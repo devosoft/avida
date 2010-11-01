@@ -586,8 +586,8 @@ public:
   void IncTaskExeCount(int task_num, int task_count) { task_exe_count[task_num] += task_count; }
   void ZeroTasks();
   
-  void AddLastSense(int res_comb_index) { sense_last_count[res_comb_index]++; }
-  void IncLastSenseExeCount(int res_comb_index, int count) { sense_last_exe_count[res_comb_index]+= count; }
+  void AddLastSense(int res_comb_index) { /*sense_last_count[res_comb_index]++;*/ }
+  void IncLastSenseExeCount(int res_comb_index, int count) { /*sense_last_exe_count[res_comb_index]+= count;*/ }
     
   // internal resource bins and use of internal resources
   void AddCurInternalTask(int task_num) { task_internal_cur_count[task_num]++; }

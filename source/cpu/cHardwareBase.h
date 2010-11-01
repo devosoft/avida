@@ -60,7 +60,6 @@ class cHardwareBase
 protected:
   cWorld* m_world;
   cOrganism* m_organism;     // Organism using this hardware.
-  int m_inst_set_id;
   cInstSet* m_inst_set;      // Instruction set being used.
   cHardwareTracer* m_tracer; // Set this if you want execution traced.
 
@@ -96,17 +95,15 @@ protected:
   cHardwareBase& operator=(const cHardwareBase&); // @not_implemented
 
 public:
-  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id);
+  cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set);
   virtual ~cHardwareBase() { ; }
   
   // interrupt types
   enum interruptTypes {MSG_INTERRUPT = 0, MOVE_INTERRUPT};
-
-  int GetInstSetID() const { return m_inst_set_id; }
   
   // --------  Organism  ---------
   cOrganism* GetOrganism() { return m_organism; }
-  const cInstSet& GetInstSet() { return *m_inst_set; }
+  const cInstSet& GetInstSet() const { return *m_inst_set; }
 
 
   // --------  Core Functionality  --------

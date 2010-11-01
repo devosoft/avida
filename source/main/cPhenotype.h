@@ -314,7 +314,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                  tArray<int>& insts_triggered, bool is_parasite=false);
+                  tArray<cString>& insts_triggered, bool is_parasite=false);
 
   // State saving and loading, and printing...
   void PrintStatus(std::ostream& fp) const;

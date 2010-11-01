@@ -136,9 +136,8 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism,
-                                     cInstSet* in_inst_set, int inst_set_id)
-: cHardwareBase(world, in_organism, in_inst_set, inst_set_id), m_mem_array(1)
+cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+: cHardwareBase(world, in_organism, in_inst_set), m_mem_array(1)
 , m_mem_lbls(Pow(NUM_NOPS, MAX_MEMSPACE_LABEL) / MEM_LBLS_HASH_FACTOR)
 , m_thread_lbls(Pow(NUM_NOPS, MAX_THREAD_LABEL) / THREAD_LBLS_HASH_FACTOR)
 {
@@ -694,7 +693,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 
 bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
 {
-  assert(bu->GetMetaGenome().GetHardwareType() == GetType() && bu->GetMetaGenome().GetInstSetID() == GetInstSetID());
+  assert(bu->GetMetaGenome().GetHardwareType() == GetType() && bu->GetMetaGenome().GetInstSet() == m_inst_set->GetInstSetName());
   
   cCodeLabel label;
   label.ReadString(bu->GetUnitSourceArgs());
@@ -989,7 +988,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   m_mem_array[mem_space_used].Resize(write_head_pos);
   m_organism->OffspringGenome().SetGenome(m_mem_array[mem_space_used]);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
 	
   // Handle Divide Mutations...
   Divide_DoMutations(ctx, mut_multiplier);

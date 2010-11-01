@@ -214,30 +214,31 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 }
 
 
-cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is)
+cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg)
 {
   assert(org != NULL);
 	
-  int inst_set_id = (is == NULL) ? mg.GetInstSetID() : -1;
-  cInstSet* inst_set = (is == NULL) ? m_inst_sets[0] : is;
+  int inst_set_id = m_is_name_map.GetWithDefault(mg.GetInstSet(), -1);
+  if (inst_set_id == -1) return NULL;
   
-  cHardwareBase* hw = 0;
-	
+  cInstSet* inst_set = m_inst_sets[inst_set_id];
+  
+  cHardwareBase* hw = 0;	
   switch (mg.GetHardwareType()) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      hw = new cHardwareCPU(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareCPU(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_SMT:
-      hw = new cHardwareSMT(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareSMT(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      hw = new cHardwareTransSMT(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareTransSMT(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      hw = new cHardwareExperimental(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareExperimental(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_GX:
-      hw = new cHardwareGX(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareGX(ctx, m_world, org, inst_set);
       break;
     default:
       cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);

@@ -200,7 +200,7 @@ protected:
   cHardwareSMT& operator=(const cHardwareSMT&); // @not_implemented
   
 public:
-  cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
+  cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareSMT() { ; }
 
   static cInstLib* GetInstLib() { return s_inst_slib; }

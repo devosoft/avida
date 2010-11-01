@@ -230,7 +230,7 @@ private:
 
   
 public:
-  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
+  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareExperimental() { ; }
   
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }

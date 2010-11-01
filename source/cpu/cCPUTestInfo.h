@@ -40,7 +40,6 @@
 #endif
 
 class cHardwareTracer;
-class cInstSet;
 class cOrganism;
 class cPhenotype;
 class cResourceHistory;
@@ -67,7 +66,6 @@ private:
 	bool use_manual_inputs;     // Do we have inputs that we must use?
 	tArray<int> manual_inputs;  //   if so, use these.
   cHardwareTracer* m_tracer;
-  cInstSet* m_inst_set;
   cMutationRates m_mut_rates;
   
   int m_cur_sg;
@@ -103,7 +101,6 @@ public:
   void UseManualInputs(tArray<int> inputs) {use_manual_inputs = true; use_random_inputs = false; manual_inputs = inputs;}
   void ResetInputMode() {use_manual_inputs = false; use_random_inputs = false;}
   void SetTraceExecution(cHardwareTracer* tracer = NULL) { m_tracer = tracer; }
-  void SetInstSet(cInstSet* inst_set = NULL) { m_inst_set = inst_set; }
   void SetResourceOptions(int res_method = RES_INITIAL, cResourceHistory* res = NULL, int update = 0, int cpu_cycle_offset = 0)
     { m_res_method = (eTestCPUResourceMethod)res_method; m_res = res; m_res_update = update; m_res_cpu_cycle_offset = cpu_cycle_offset; }
   
@@ -115,7 +112,6 @@ public:
   bool GetTraceTaskOrder() const { return trace_task_order; }
   bool GetUseRandomInputs() const { return use_random_inputs; }
   bool GetTraceExecution() const { return (m_tracer); }
-  cInstSet* GetInstSet() const { return m_inst_set; }
 	bool GetUseManualInputs() const { return use_manual_inputs; }
 	tArray<int> GetTestCPUInputs() const { return used_inputs; }
   cHardwareTracer *GetTracer() { return m_tracer; }

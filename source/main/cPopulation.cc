@@ -321,12 +321,12 @@ void cPopulation::InitiatePop()
   const cString& filename = m_world->GetConfig().START_ORGANISM.Get();
   
   if (filename != "-" && filename != "") {
-    if (!cGenomeUtil::LoadGenome(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet(), start_org)) {
-      cerr << "Error: Unable to load start creature" << endl;
+    if (!cGenomeUtil::LoadGenome(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetDefaultInstSet(), start_org)) {
+      cerr << "Error: Unable to load start organism" << endl;
       exit(-1);
     }
     if (start_org.GetSize() != 0) {
-      Inject(start_org, SRC_ORGANISM_FILE_LOAD);
+      Inject(cMetaGenome(m_world->GetConfig().HARDWARE_TYPE.Get(), m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName(), start_org), SRC_ORGANISM_FILE_LOAD);
     }
     else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
   } else {
@@ -566,7 +566,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   // Pre-check target hardware
   const cHardwareBase& hw = target_organism->GetHardware();
   if (hw.GetType() != parent->GetMetaGenome().GetHardwareType() ||
-      hw.GetInstSetID() != parent->GetMetaGenome().GetInstSetID() ||
+      hw.GetInstSet().GetInstSetName() != parent->GetMetaGenome().GetInstSet() ||
       hw.GetNumThreads() == m_world->GetConfig().MAX_CPU_THREADS.Get()) return false;
   
   //Handle host specific injection
@@ -624,7 +624,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   
   // Attempt actual parasite injection
   
-  cMetaGenome mg(parent->GetMetaGenome().GetHardwareType(), parent->GetMetaGenome().GetInstSetID(), injected_code);
+  cMetaGenome mg(parent->GetMetaGenome().GetHardwareType(), parent->GetMetaGenome().GetInstSet(), injected_code);
   cParasite* parasite = new cParasite(m_world, mg, parent->GetPhenotype().GetGeneration(), SRC_PARASITE_INJECT, label);
   
   if (!target_organism->ParasiteInfectHost(parasite)) {
@@ -1607,7 +1607,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
         int cellid = source_deme.GetCellID(i);
         if (GetCell(cellid).IsOccupied()) {          
           int lineage = GetCell(cellid).GetOrganism()->GetLineageLabel();
-          cGenome genome = GetCell(cellid).GetOrganism()->GetGenome();
+          const cMetaGenome& genome = GetCell(cellid).GetOrganism()->GetMetaGenome();
           InjectGenome(cellid, SRC_DEME_REPLICATE, genome, lineage);
         }
       }
@@ -1723,14 +1723,14 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // genome that we're going to seed the target with.
   if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
     // @JEB Original germlines
-    cCPUMemory next_germ(source_deme.GetGermline().GetLatest());
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+    cMetaGenome next_germ(source_deme.GetGermline().GetLatest());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(next_germ.GetInstSet());
     cAvidaContext ctx(m_world, m_world->GetRandom());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<next_germ.GetSize(); ++i) {
         if (m_world->GetRandom().P(m_world->GetConfig().GERMLINE_COPY_MUT.Get())) {
-          next_germ[i] = instset.GetRandomInst(ctx);
+          next_germ.GetGenome()[i] = instset.GetRandomInst(ctx);
         }
       }
     }
@@ -1738,13 +1738,13 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     if ((m_world->GetConfig().GERMLINE_INS_MUT.Get() > 0.0)
         && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_INS_MUT.Get())) {
       const unsigned int mut_line = ctx.GetRandom().GetUInt(next_germ.GetSize() + 1);
-      next_germ.Insert(mut_line, instset.GetRandomInst(ctx));
+      next_germ.GetGenome().Insert(mut_line, instset.GetRandomInst(ctx));
     }
     
     if ((m_world->GetConfig().GERMLINE_DEL_MUT.Get() > 0.0)
         && m_world->GetRandom().P(m_world->GetConfig().GERMLINE_DEL_MUT.Get())) {
       const unsigned int mut_line = ctx.GetRandom().GetUInt(next_germ.GetSize());
-      next_germ.Remove(mut_line);
+      next_germ.GetGenome().Remove(mut_line);
     }
     
     // Replace the target deme's germline with the source deme's, and add the newly-
@@ -1776,7 +1776,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
     // create a new genome by mutation
     cMetaGenome mg(germline_genotype->GetProperty("genome").AsString());
     cCPUMemory new_genome(mg.GetGenome());
-    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSetID());
+    const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
     cAvidaContext ctx(m_world, m_world->GetRandom());
     
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
@@ -1873,7 +1873,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
  @todo Fix lineage label on injected genomes.
  @todo Different strategies for non-random placement.
  */
-void cPopulation::SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src) {
+void cPopulation::SeedDeme(cDeme& deme, cMetaGenome& genome, eBioUnitSource src) {
   // Kill all the organisms in the deme.
   deme.KillAll();
   
@@ -1893,7 +1893,7 @@ void cPopulation::SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src) {
   // Create the specified number of organisms in the deme.
   for(int i=0; i< m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
     int cellid = DemeSelectInjectionCell(_deme, i);
-    InjectGenome(cellid, src, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome());
+    InjectGenome(cellid, src, cMetaGenome(bg->GetProperty("genome").AsString()));
     DemePostInjection(_deme, cell_array[cellid]);
     _deme.AddFounder(bg);
   }
@@ -1928,7 +1928,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       //       from tracking cGenomes to tracking cGenotypes.  But that's a pain,
       //       because the cGenotype* from cOrganism::GetGenotype may not live after
       //       a call to cDeme::KillAll.
-      std::vector<std::pair<cGenome,int> > xfer; // List of genomes we're going to transfer.
+      std::vector<std::pair<cMetaGenome,int> > xfer; // List of genomes we're going to transfer.
       
       switch(m_world->GetConfig().DEMES_ORGANISM_SELECTION.Get()) {
         case 0: { // Random w/ replacement (meaning, we don't prevent the same genotype from
@@ -1936,7 +1936,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           while((int)xfer.size() < m_world->GetConfig().DEMES_REPLICATE_SIZE.Get()) {
             int cellid = source_deme.GetCellID(random.GetUInt(source_deme.GetSize()));
             if (cell_array[cellid].IsOccupied()) {
-              xfer.push_back(std::make_pair(cell_array[cellid].GetOrganism()->GetGenome(),
+              xfer.push_back(std::make_pair(cell_array[cellid].GetOrganism()->GetMetaGenome(),
                                             cell_array[cellid].GetOrganism()->GetLineageLabel()));
             }
           }
@@ -1946,7 +1946,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
           for(int i=0; i<m_world->GetConfig().DEMES_REPLICATE_SIZE.Get(); ++i) {
             int cellid = source_deme.GetCellID(i);
             if (cell_array[cellid].IsOccupied()) {
-              xfer.push_back(std::make_pair(cell_array[cellid].GetOrganism()->GetGenome(),
+              xfer.push_back(std::make_pair(cell_array[cellid].GetOrganism()->GetMetaGenome(),
                                             cell_array[cellid].GetOrganism()->GetLineageLabel()));
             }
           }
@@ -1970,7 +1970,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       
       // And now populate the source and target.
       int j=0;
-      for(std::vector<std::pair<cGenome,int> >::iterator i=xfer.begin(); i!=xfer.end(); ++i, ++j) {
+      for(std::vector<std::pair<cMetaGenome,int> >::iterator i=xfer.begin(); i!=xfer.end(); ++i, ++j) {
         int cellid = DemeSelectInjectionCell(source_deme, j);
         InjectGenome(cellid, SRC_DEME_REPLICATE, i->first, i->second);
         DemePostInjection(source_deme, cell_array[cellid]);
@@ -2326,7 +2326,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme) {
       if (cell_array[source_cellid].IsOccupied() && random.P(m_world->GetConfig().DEMES_PROB_ORG_TRANSFER.Get())) {
         // Moves to the target; save the genome and lineage label of organism being transfered.
         cOrganism* seed = cell_array[source_cellid].GetOrganism();
-        cGenome genome = seed->GetGenome();
+        const cMetaGenome& genome = seed->GetMetaGenome();
         int lineage = seed->GetLineageLabel();
         seed = 0; // We're done with the seed organism.
         
@@ -2351,7 +2351,7 @@ void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cPheno
 {
   // phenotype can be NULL
   
-  InjectGenome(_cell_id, SRC_DEME_REPLICATE, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome());
+  InjectGenome(_cell_id, SRC_DEME_REPLICATE, cMetaGenome(bg->GetProperty("genome").AsString()));
   
   // At this point, the cell had better be occupied...
   assert(GetCell(_cell_id).IsOccupied());
@@ -4597,7 +4597,7 @@ bool cPopulation::OK()
  * this organism.
  **/
 
-void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id, double merit, int lineage_label, double neutral)
+void cPopulation::Inject(const cMetaGenome& genome, eBioUnitSource src, int cell_id, double merit, int lineage_label, double neutral)
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -4635,7 +4635,7 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
     if (m_world->GetConfig().DEMES_SEED_METHOD.Get() == 0) {
       if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 1) {
         if (deme.GetGermline().Size()==0) {  
-          deme.GetGermline().Add(GetCell(cell_id).GetOrganism()->GetGenome());
+          deme.GetGermline().Add(GetCell(cell_id).GetOrganism()->GetMetaGenome());
         }
       }
     }
@@ -4662,8 +4662,7 @@ void cPopulation::Inject(const cGenome & genome, eBioUnitSource src, int cell_id
   else if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
     //find the genotype we just created from the genome, and save it
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
-    cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - genotypes need metagenomes
-    cDemePlaceholderUnit unit(src, tmp_genome);
+    cDemePlaceholderUnit unit(src, genome);
     cBioGroup* genotype = m_world->GetClassificationManager().GetBioGroupManager("genotype")->ClassifyNewBioUnit(&unit);
     deme.ReplaceGermline(genotype);
     genotype->RemoveBioUnit(&unit);
@@ -4676,7 +4675,7 @@ void cPopulation::InjectParasite(const cString& label, const cGenome& injected_c
   // target_organism-> target_organism->GetHardware().GetCurThread()
   if (target_organism == NULL) return;
   
-  cMetaGenome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSetID(), injected_code);
+  cMetaGenome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSet().GetInstSetName(), injected_code);
   cParasite* parasite = new cParasite(m_world, mg, 0, SRC_PARASITE_FILE_LOAD, label);
   
   if (target_organism->ParasiteInfectHost(parasite)) {
@@ -4852,7 +4851,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, int lineage_label)
+void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cMetaGenome& genome, int lineage_label)
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -4861,13 +4860,12 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& g
   
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
-  cMetaGenome tmp_genome(m_world->GetConfig().HARDWARE_TYPE.Get(), 1, genome); // @TODO - genotypes need metagenomes
-  cOrganism* new_organism = new cOrganism(m_world, ctx, tmp_genome, -1, src);
+  cOrganism* new_organism = new cOrganism(m_world, ctx, genome, -1, src);
   
   // Setup the phenotype...
   cPhenotype& phenotype = new_organism->GetPhenotype();
   
-  phenotype.SetupInject(genome);
+  phenotype.SetupInject(genome.GetGenome());
   
   // Classify this new organism
   m_world->GetClassificationManager().ClassifyNewBioUnit(new_organism);

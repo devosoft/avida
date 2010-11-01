@@ -101,7 +101,6 @@ cAnalyze::cAnalyze(cWorld* world)
 , arg_variables(26)
 , exit_on_error(true)
 , m_world(world)
-, inst_set(world->GetHardwareManager().GetInstSet())
 , m_ctx(world->GetDefaultContext())
 , m_jobqueue(world)
 , m_resources(NULL)
@@ -168,6 +167,8 @@ void cAnalyze::LoadOrganism(cString cur_string)
   
   // Output information about loading file.
   cout << "Loading: " << filename << '\n';
+  
+  
   
   // Setup the genome...
   cGenome genome( cGenomeUtil::LoadGenome(filename, m_world->GetWorkingDir(), inst_set) );

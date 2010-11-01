@@ -309,9 +309,8 @@ tInstLib<cHardwareGX::tMethod>* cHardwareGX::initInstLib(void)
 /*! Construct a cHardwareGX instance from the passed-in cOrganism.  This amounts to
 creating an initial cProgramid from in_organism's genome.
 */
-cHardwareGX::cHardwareGX(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism,
-                         cInstSet* in_inst_set, int inst_set_id)
-: cHardwareBase(world, in_organism, in_inst_set, inst_set_id)
+cHardwareGX::cHardwareGX(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+: cHardwareBase(world, in_organism, in_inst_set)
 {
   m_last_unique_id_assigned = 0;
   m_functions = s_inst_slib->GetFunctions();
@@ -2060,7 +2059,7 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
   cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome = m_organism->GetGenome();
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   m_organism->GetPhenotype().SetLinesCopied(m_organism->GetGenome().GetSize());
   
   Divide_DoMutations(ctx);
@@ -3627,7 +3626,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
   child_genome.Resize(1);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS) std::cout << "-=OFFSPRING=-" << endl;
   for(programid_list::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
     (*i)->AppendLinearGenome(child_genome);
@@ -3745,7 +3744,7 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
   child_genome = m_programids[write_head.GetMemSpace()]->GetMemory();
   child_genome = cGenomeUtil::Crop(child_genome, 0, child_end);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
 
 
   // Handle Divide Mutations...

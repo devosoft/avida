@@ -63,6 +63,7 @@ public:
   inline bool HasEntry(const cString& name) const { return m_hash.HasEntry(name); }
   inline bool Find(const cString& name, T& out_data) const { return m_hash.Find(name, out_data); }
   inline T Get(const cString& name) const { T rval; m_hash.Find(name, rval); return rval; }
+  inline T GetWithDefault(const cString& name, const T& def) const;
   inline void Remove(const cString& name) { m_hash.Remove(name); }
   inline bool Remove(const cString& name, T& data) { return m_hash.Remove(name, data); }
   inline void Clear() { m_hash.ClearAll(); }
@@ -107,7 +108,17 @@ public:
     }
     return best_match;
   }
+  
+  
 };
+
+template<class T> inline T tDictionary<T>::GetWithDefault(const cString& name, const T& def) const
+{
+  T rval;
+  if (m_hash.Find(name, rval)) return rval;
+  return def;
+}
+
 
 
 template <class T> class tDictionaryNoCase

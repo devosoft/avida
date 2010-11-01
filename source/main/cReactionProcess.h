@@ -60,7 +60,7 @@ private:
   double deme_fraction; //!< Fraction of process reward that is applied to the organism's deme.
   bool is_germline;         // Apply reward to germline propensity instead of bonus?
   cString match_string;	 // Bit string to match if this is a match string reaction
-  int inst_id;           // Instruction to be triggered if reaction successful.
+  cString inst;           // Instruction to be triggered if reaction successful.
   bool depletable;       // Does completing consume resource?
                          // (This is not quite redundant with an infinite resource
                          // because it allows the resource level to be sensed @JEB)
@@ -90,7 +90,6 @@ public:
     , sterilize(false)
     , deme_fraction(0.0)
     , is_germline(false)
-    , inst_id(-1)
     , depletable(true)
     , m_ppmethod(DEFAULT)
     , detect(NULL)
@@ -109,7 +108,7 @@ public:
   double GetKsubM() const { return k_sub_m; }
   cResource* GetProduct() const { return product; }
   double GetConversion() const { return conversion; }
-  int GetInstID() const { return inst_id; }
+  const cString& GetInst() const { return inst; }
   bool GetDepletable() const { return depletable; }
   double GetLethal() const { return lethal; }
   bool GetSterilize() const { return sterilize; }
@@ -130,7 +129,7 @@ public:
   void SetKsubM(double _in) { k_sub_m = _in; }
   void SetProduct(cResource* _in) { product = _in; }
   void SetConversion(double _in) { conversion = _in; }
-  void SetInstID(int _in) { inst_id = _in; }
+  void SetInst(const cString& _in) { inst = _in; }
   void SetDepletable(bool _in) { depletable = _in; }
   void SetLethal(double _in) { lethal = _in; }
   void SetSterile(int _in) { sterilize = _in; }

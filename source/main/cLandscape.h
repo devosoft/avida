@@ -50,7 +50,6 @@ class cLandscape
 {
 private:
   cWorld* m_world;
-  const cInstSet& inst_set;
   cCPUTestInfo m_cpu_test_info;
   cGenome base_genome;
   cGenome peak_genome;
@@ -131,7 +130,6 @@ public:
   inline void SetCPUTestInfo(const cCPUTestInfo& in_cpu_test_info) 
   { 
       m_cpu_test_info = in_cpu_test_info; 
-      m_cpu_test_info.SetInstSet(const_cast<cInstSet*>(&inst_set));
   }
 
   void SampleProcess(cAvidaContext& ctx);

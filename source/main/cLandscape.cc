@@ -37,12 +37,11 @@
 #include "cWorld.h"
 
 
-cLandscape::cLandscape(cWorld* world, const cGenome& in_genome, const cInstSet& in_inst_set)
-: m_world(world), inst_set(in_inst_set), base_genome(1), peak_genome(1), trials(1), m_min_found(0),
+cLandscape::cLandscape(cWorld* world, const cGenome& in_genome)
+: m_world(world), base_genome(1), peak_genome(1), trials(1), m_min_found(0),
   m_max_trials(0), site_count(NULL)
 {
   Reset(in_genome);
-  m_cpu_test_info.SetInstSet(const_cast<cInstSet*>(&inst_set));
 }
 
 cLandscape::~cLandscape()

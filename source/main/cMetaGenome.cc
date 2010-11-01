@@ -33,7 +33,7 @@ cMetaGenome::cMetaGenome(const cString& gen_str)
 {
   cString str = gen_str;
   m_hw_type = str.Pop(',').AsInt();
-  m_inst_set_id = str.Pop(',').AsInt();
+  m_inst_set = str.Pop(',');
   m_genome = cGenome(str);
 }
 
@@ -45,9 +45,9 @@ void cMetaGenome::Load(const tDictionary<cString>& props)
     m_hw_type = 0; // Default when not found, for backwards compatibility
   }
   if (props.HasEntry("inst_set")) {
-    m_inst_set_id = props.Get("inst_set").AsInt();
+    m_inst_set = props.Get("inst_set");
   } else {
-    m_inst_set_id = 0; // Default when not found, for backwards compatibility
+    m_inst_set = "(unknown)"; // Default when not found, for backwards compatibility
   }
   assert(props.HasEntry("sequence"));
   m_genome = cGenome(props.Get("sequence"));
@@ -56,11 +56,11 @@ void cMetaGenome::Load(const tDictionary<cString>& props)
 void cMetaGenome::Save(cDataFile& df)
 {
   df.Write(m_hw_type, "Hardware Type ID", "hw_type");
-  df.Write(m_inst_set_id, "Inst Set ID" , "inst_set");
+  df.Write(m_inst_set, "Inst Set Name" , "inst_set");
   df.Write(m_genome.AsString(), "Genome Sequence", "sequence");
 }
 
 cString cMetaGenome::AsString() const
 {
-  return cStringUtil::Stringf("%d,%d,%s", m_hw_type, m_inst_set_id, (const char*)m_genome.AsString());
+  return cStringUtil::Stringf("%d,%s,%s", m_hw_type, (const char*)m_inst_set, (const char*)m_genome.AsString());
 }

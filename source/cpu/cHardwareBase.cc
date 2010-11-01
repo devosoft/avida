@@ -49,8 +49,8 @@
 using namespace AvidaTools;
 
 
-cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)
-: m_world(world), m_organism(in_organism), m_inst_set_id(inst_set_id), m_inst_set(inst_set), m_tracer(NULL)
+cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_energy_costs(m_inst_set->HasEnergyCosts())
 {
@@ -268,7 +268,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 	// HGT is a location-dependent random process; each type is tested over in
 	// cPopulationInterface.
 	if(m_world->GetConfig().ENABLE_HGT.Get()) {
-		m_organism->GetOrgInterface().DoHGTMutation(ctx, offspring_genome);
+		m_organism->GetOrgInterface().DoHGTMutation(ctx, m_organism->OffspringGenome());
 	}
   
   // Divide Mutations
@@ -1067,7 +1067,7 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
         m_organism->GetPhenotype().ReduceEnergy(energy_req);  
         
         // tracking sleeping organisms
-        cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
+        cString instName = m_inst_set->GetName(cur_inst);
         if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
            instName == cString("sleep3") || instName == cString("sleep4")) {
           cPopulation& pop = m_world->GetPopulation();

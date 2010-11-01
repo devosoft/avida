@@ -95,85 +95,7 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genom
   
   initialize(ctx);
 }
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
-                     int parent_generation, eBioUnitSource src, const cString& src_args)
-  : m_world(world)
-  , m_phenotype(world, parent_generation)
-  , m_src(src)
-  , m_src_args(src_args)
-  , m_initial_genome(hw_type, inst_set_id, genome)
-  , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
-  , m_interface(NULL)
-  , m_lineage_label(-1)
-  , m_lineage(NULL)
-  , m_input_pointer(0)
-  , m_input_buf(world->GetEnvironment().GetInputSize())
-  , m_output_buf(world->GetEnvironment().GetOutputSize())
-  , m_received_messages(RECEIVED_MESSAGES_SIZE)
-  , m_cur_sg(0)
-  , m_sent_value(0)
-  , m_sent_active(false)
-  , m_test_receive_pos(0)
-  , m_pher_drop(false)
-  , frac_energy_donating(m_world->GetConfig().ENERGY_SHARING_PCT.Get())
-  , m_max_executed(-1)
-  , m_is_running(false)
-  , m_is_sleeping(false)
-  , m_is_dead(false)
-  , killed_event(false)
-  , m_net(NULL)
-  , m_msg(0)
-  , m_opinion(0)
-  , m_neighborhood(0)
-  , m_self_raw_materials(world->GetConfig().RAW_MATERIAL_AMOUNT.Get())
-  , m_other_raw_materials(0)
-  , m_num_donate(0)
-  , m_num_donate_received(0)
-  , m_amount_donate_received(0)
-  , m_num_reciprocate(0)
-  , m_failed_reputation_increases(0)
-  , m_tag(make_pair(-1, 0))
-{
-  m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome);
 
-  initialize(ctx);
-}
-
-cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set, int parent_generation,
-                     eBioUnitSource src, const cString& src_args)
-  : m_world(world)
-  , m_phenotype(world, parent_generation)
-  , m_src(src)
-  , m_src_args(src_args)
-  , m_initial_genome(genome)
-  , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
-  , m_interface(NULL)
-  , m_lineage_label(-1)
-  , m_lineage(NULL)
-  , m_input_pointer(0)
-  , m_input_buf(world->GetEnvironment().GetInputSize())
-  , m_output_buf(world->GetEnvironment().GetOutputSize())
-  , m_received_messages(RECEIVED_MESSAGES_SIZE)
-  , m_cur_sg(0)
-  , m_sent_value(0)
-  , m_sent_active(false)
-  , m_test_receive_pos(0)
-  , m_pher_drop(false)
-  , frac_energy_donating(m_world->GetConfig().ENERGY_SHARING_PCT.Get())
-  , m_max_executed(-1)
-  , m_is_running(false)
-  , m_is_sleeping(false)
-  , m_is_dead(false)
-  , killed_event(false)
-  , m_net(NULL)
-  , m_msg(0)
-  , m_opinion(0)
-  , m_neighborhood(0)
-{
-  m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome, inst_set);
-  
-  initialize(ctx);
-}
 
 
 void cOrganism::initialize(cAvidaContext& ctx)
@@ -410,7 +332,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   global_res_change.SetAll(0.0);
   tArray<double> deme_res_change(deme_resource_count.GetSize());
   deme_res_change.SetAll(0.0);
-  tArray<int> insts_triggered;
+  tArray<cString> insts_triggered;
   
   tBuffer<int>* received_messages_point = &m_received_messages;
   if (!m_world->GetConfig().SAVE_RECEIVED.Get()) received_messages_point = NULL;
@@ -470,10 +392,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
   //update deme resources
   m_interface->UpdateDemeResources(deme_res_change);  
 
-  for (int i = 0; i < insts_triggered.GetSize(); i++) {
-    const int cur_inst = insts_triggered[i];
-    m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst));
-  }
+  for (int i = 0; i < insts_triggered.GetSize(); i++) 
+    m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
 }
 
 void cOrganism::NetGet(cAvidaContext& ctx, int& value, int& seq)
@@ -628,18 +548,16 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
     // Do the testing of tasks performed...
     m_output_buf.Add(value);
     tArray<double> res_change(resource_count.GetSize());
-    tArray<int> insts_triggered;
+    tArray<cString> insts_triggered;
 
     cTaskContext taskctx(this, m_input_buf, m_output_buf, other_input_list, other_output_list,
                          m_hardware->GetExtendedMemory());
     m_phenotype.TestOutput(ctx, taskctx, resource_count, m_phenotype.GetCurRBinsAvail(), res_change, insts_triggered);
     m_interface->UpdateResources(res_change);
     
-    for (int i = 0; i < insts_triggered.GetSize(); i++) {
-      const int cur_inst = insts_triggered[i];
-      m_hardware->ProcessBonusInst(ctx, cInstruction(cur_inst) );
-    }
-}
+    for (int i = 0; i < insts_triggered.GetSize(); i++)
+      m_hardware->ProcessBonusInst(ctx, m_hardware->GetInstSet().GetInst(insts_triggered[i]));
+  }
   
   return true;
 }

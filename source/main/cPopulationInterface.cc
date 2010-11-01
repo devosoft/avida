@@ -844,7 +844,7 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
  There is the possibility that more than one HGT mutation occurs when this method 
  is called.
  */
-void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
+void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspring) {
 	InitHGTSupport();
 	
 	// first, gather up all the fragments that we're going to be inserting into this offspring:
@@ -900,15 +900,15 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 		cGenomeUtil::substring_match location;
 		switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
 			case 0: { // random selection
-				HGTMatchPlacement(ctx, offspring, i, location);
+				HGTMatchPlacement(ctx, offspring.GetGenome(), i, location);
 				break;
 			}
 			case 1: { // random selection with redundant instruction trimming
-				HGTTrimmedPlacement(ctx, offspring, i, location);
+				HGTTrimmedPlacement(ctx, offspring.GetGenome(), i, location);
 				break;
 			}
 			case 2: { // random selection and random placement
-				HGTRandomPlacement(ctx, offspring, i, location);
+				HGTRandomPlacement(ctx, offspring.GetGenome(), i, location);
 				break;
 			}
 			default: { // error
@@ -929,7 +929,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 				break;
 			}
 			case 2: { // replace the instructions in the fragment with random instructions.
-				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet();
+				const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(offspring.GetInstSet());
 				for(int j=0; j<i->GetSize(); ++j) {
 					(*i)[j] = instset.GetRandomInst(ctx);
 				}
@@ -945,11 +945,11 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 		// be extended in the same way as fragment selection if need be.
 		if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
 			// insert the fragment just after the final location:
-			offspring.Insert(location.end, *i);
+			offspring.GetGenome().Insert(location.end, *i);
 		} else {
 			// replacement: replace [begin,end) instructions in the genome with the fragment,
 			// respecting circularity.
-			offspring.Replace(*i, location.begin, location.end);
+			offspring.GetGenome().Replace(*i, location.begin, location.end);
 		}
 		
 		// stats tracking:

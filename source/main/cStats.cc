@@ -228,51 +228,53 @@ cStats::cStats(cWorld* world)
   // This block calculates how many slots we need to
   // make for paying attention to different label combinations 
   // Require sense instruction to be present then die if not at least 2 NOPs
-  
-  bool sense_used = m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense") )
-                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-unit") )
-                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-m100") );
-  if (sense_used)
-  {
-    if (m_world->GetHardwareManager().GetInstSet().GetNumNops() < 2)
-    {
-      cerr << "Error: If you have a sense instruction in your instruction set, then";
-      cerr << "you MUST also include at least two NOPs in your instruction set. " << endl; exit(1);
-    }
-  
-    int on = 1;
-    int max_sense_label_length = 0;
-    while (on < m_world->GetNumResources())
-    {
-      max_sense_label_length++;
-      sense_size += on;
-      on *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
-    }
-    sense_size += on;
-    
-    sense_last_count.Resize( sense_size );
-    sense_last_count.SetAll(0);
-      
-    sense_last_exe_count.Resize( sense_size );
-    sense_last_exe_count.SetAll(0);
-    
-    sense_names.Resize( sense_size );
-    int assign_index = 0;
-    int num_per = 1;
-    for (int i=0; i<= max_sense_label_length; i++)
-    {
-      for (int j=0; j< num_per; j++)
-      {
-        sense_names[assign_index] = (on > 1) ? 
-          cStringUtil::Stringf("sense_res.%i-%i", j*on, (j+1)*on-1) :
-          cStringUtil::Stringf("sense_res.%i", j);
-    
-        assign_index++;
-      }
-      on /= m_world->GetHardwareManager().GetInstSet().GetNumNops();
-      num_per *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
-    }
-  }
+
+  // @DMB - This code makes assumptions about instruction sets that may not hold true under multiple inst sets.
+  //      - This sort of functionality should be reimplemented as instruction set stats or something similar
+//  bool sense_used = m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense") )
+//                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-unit") )
+//                ||  m_world->GetHardwareManager().GetInstSet().InstInSet( cStringUtil::Stringf("sense-m100") );
+//  if (sense_used)
+//  {
+//    if (m_world->GetHardwareManager().GetInstSet().GetNumNops() < 2)
+//    {
+//      cerr << "Error: If you have a sense instruction in your instruction set, then";
+//      cerr << "you MUST also include at least two NOPs in your instruction set. " << endl; exit(1);
+//    }
+//  
+//    int on = 1;
+//    int max_sense_label_length = 0;
+//    while (on < m_world->GetNumResources())
+//    {
+//      max_sense_label_length++;
+//      sense_size += on;
+//      on *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+//    }
+//    sense_size += on;
+//    
+//    sense_last_count.Resize( sense_size );
+//    sense_last_count.SetAll(0);
+//      
+//    sense_last_exe_count.Resize( sense_size );
+//    sense_last_exe_count.SetAll(0);
+//    
+//    sense_names.Resize( sense_size );
+//    int assign_index = 0;
+//    int num_per = 1;
+//    for (int i=0; i<= max_sense_label_length; i++)
+//    {
+//      for (int j=0; j< num_per; j++)
+//      {
+//        sense_names[assign_index] = (on > 1) ? 
+//          cStringUtil::Stringf("sense_res.%i-%i", j*on, (j+1)*on-1) :
+//          cStringUtil::Stringf("sense_res.%i", j);
+//    
+//        assign_index++;
+//      }
+//      on /= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+//      num_per *= m_world->GetHardwareManager().GetInstSet().GetNumNops();
+//    }
+//  }
   // End sense tracking initialization
 
   genotype_map.Resize( m_world->GetConfig().WORLD_X.Get() * m_world->GetConfig().WORLD_Y.Get() );
@@ -2890,11 +2892,10 @@ void cStats::PrintShadedAltruists(const cString& filename) {
     if(cell.IsOccupied()) {
 			org = cell.GetOrganism();
 			
-			cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
-			const int num_inst = m_world->GetNumInstructions();
+			const cInstSet& inst_set = m_world->GetHardwareManager().GetDefaultInstSet();
+			const int num_inst = inst_set.GetSize();
 			for (int i = 0; i < num_inst; i++) { 
-				if ((inst_set.GetName(i) == "donate-shadedgb") && 
-						(org->GetPhenotype().GetTestCPUInstCount().GetSize() > 0)) {
+				if ((inst_set.GetName(i) == "donate-shadedgb") && (org->GetPhenotype().GetTestCPUInstCount().GetSize() > 0)) {
 					shade_of_gb = org->GetPhenotype().GetTestCPUInstCount()[i];
 				} 
 			}

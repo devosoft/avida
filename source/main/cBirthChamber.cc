@@ -423,8 +423,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     return ret;
   }
   // If we made it this far, RECOMBINATION will happen!
-  cGenome genome0 = old_entry->genome.GetGenome();
-  cGenome genome1 = offspring.GetGenome();
+  cMetaGenome genome0(old_entry->genome);
+  cMetaGenome genome1(offspring);
   double meritOrEnergy0;
   double meritOrEnergy1;
 
@@ -447,22 +447,22 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 
   // If we are NOT modular...
   if (num_modules == 0) {
-    DoBasicRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoBasicRecombination(ctx, genome0.GetGenome(), genome1.GetGenome(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we ARE modular, and continuous...
   else if (continuous_regions == 1) {
-    DoModularContRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoModularContRecombination(ctx, genome0.GetGenome(), genome1.GetGenome(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we are NOT continuous, but NO shuffling...
   else if (shuffle_regions == 0) {
-    DoModularNonContRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoModularNonContRecombination(ctx, genome0.GetGenome(), genome1.GetGenome(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // If there IS shuffling (NON-continuous required)
   else {
-    DoModularShuffleRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoModularShuffleRecombination(ctx, genome0.GetGenome(), genome1.GetGenome(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // Should there be a 2-fold cost to sex?
@@ -472,13 +472,10 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   const tArray<cBioGroup*>* parent0_groups = &old_entry->groups;
   const tArray<cBioGroup*>* parent1_groups = &parent->GetBioGroups();
   
-  const int hw_type = offspring.GetHardwareType();
-  const int inst_set_id = offspring.GetInstSetID();
-
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);
-    child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
-    child_array[1] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+    child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+    child_array[1] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
     
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
@@ -501,7 +498,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     merit_array.Resize(1);
 
     if (ctx.GetRandom().GetDouble() < 0.5) {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+      child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
         meritOrEnergy0 = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
@@ -512,7 +509,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       SetupGenotypeInfo(child_array[0], parent0_groups, parent1_groups);
     } 
     else {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+      child_array[0] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy1);
         meritOrEnergy1 = child_array[1]->GetPhenotype().ConvertEnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy());

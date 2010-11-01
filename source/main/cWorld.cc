@@ -169,11 +169,6 @@ void cWorld::GetEvents(cAvidaContext& ctx)
   m_event_list->Process(ctx);
 }
 
-int cWorld::GetNumInstructions()
-{
-  return m_hw_mgr->GetInstSet().GetSize();
-}
-
 int cWorld::GetNumResources()
 {
   return m_env->GetResourceLib().GetSize();

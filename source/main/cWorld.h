@@ -126,7 +126,6 @@ public:
   bool GetTestSterilize() const { return m_test_sterilize; }
   
   // Convenience Accessors
-  int GetNumInstructions();
   int GetNumResources();
   int GetNumResourceSpecs();
   inline int GetVerbosity() { return m_conf->VERBOSITY.Get(); }

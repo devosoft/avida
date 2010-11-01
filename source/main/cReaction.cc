@@ -74,10 +74,10 @@ bool cReaction::MultiplyValue(double value_mult, int process_num)
   return true;
 }
 
-bool cReaction::ModifyInst(int inst_id, int process_num) 
+bool cReaction::ModifyInst(const cString& inst, int process_num) 
 {
   if (process_num >= process_list.GetSize() || process_num < 0) return false;
-  process_list.GetPos(process_num)->SetInstID(inst_id);
+  process_list.GetPos(process_num)->SetInst(inst);
   return true;
 }
 

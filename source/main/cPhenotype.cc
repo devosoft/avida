@@ -1286,7 +1286,7 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                             const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                            tArray<int>& insts_triggered, bool is_parasite)
+                            tArray<cString>& insts_triggered, bool is_parasite)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
