@@ -44,6 +44,8 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation)
 , initialized(false)
 , energy_store(0.0)
 , cur_task_count(m_world->GetEnvironment().GetNumTasks())
+, cur_para_tasks(m_world->GetEnvironment().GetNumTasks())
+, cur_host_tasks(m_world->GetEnvironment().GetNumTasks())
 , cur_internal_task_count(m_world->GetEnvironment().GetNumTasks())
 , eff_task_count(m_world->GetEnvironment().GetNumTasks())
 , cur_task_quality(m_world->GetEnvironment().GetNumTasks())  
@@ -59,6 +61,8 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation)
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
+, last_para_tasks(m_world->GetEnvironment().GetNumTasks())
+, last_host_tasks(m_world->GetEnvironment().GetNumTasks())
 , last_internal_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_task_quality(m_world->GetEnvironment().GetNumTasks())
 , last_task_value(m_world->GetEnvironment().GetNumTasks())
@@ -125,7 +129,9 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_energy_bonus         = in_phen.cur_energy_bonus;                   
   cur_num_errors           = in_phen.cur_num_errors;                         
   cur_num_donates          = in_phen.cur_num_donates;                       
-  cur_task_count           = in_phen.cur_task_count;                
+  cur_task_count           = in_phen.cur_task_count;  
+  cur_para_tasks           = in_phen.cur_para_tasks;
+  cur_host_tasks           = in_phen.cur_host_tasks;
   eff_task_count           = in_phen.eff_task_count;
   cur_internal_task_count  = in_phen.cur_internal_task_count;
   cur_task_quality         = in_phen.cur_task_quality;    
@@ -161,6 +167,8 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   last_num_errors          = in_phen.last_num_errors; 
   last_num_donates         = in_phen.last_num_donates;
   last_task_count          = in_phen.last_task_count;
+  last_host_tasks          = in_phen.last_host_tasks;
+  last_para_tasks          = in_phen.last_para_tasks;
   last_internal_task_count = in_phen.last_internal_task_count;
   last_task_quality        = in_phen.last_task_quality;
   last_internal_task_quality=in_phen.last_internal_task_quality;
@@ -353,6 +361,8 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   cur_task_count.SetAll(0);
   cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
+  cur_host_tasks.SetAll(0);
+  cur_para_tasks.SetAll(0);
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
@@ -383,6 +393,8 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   last_num_errors           = parent_phenotype.last_num_errors;
   last_num_donates          = parent_phenotype.last_num_donates;
   last_task_count           = parent_phenotype.last_task_count;
+  last_host_tasks           = parent_phenotype.last_host_tasks;
+  last_para_tasks           = parent_phenotype.last_para_tasks;
   last_internal_task_count  = parent_phenotype.last_internal_task_count;
   last_task_quality         = parent_phenotype.last_task_quality;
   last_task_value           = parent_phenotype.last_task_value;
@@ -541,6 +553,8 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_para_tasks.SetAll(0);
+  cur_host_tasks.SetAll(0);
   cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
@@ -569,6 +583,8 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   last_num_errors = 0;
   last_num_donates = 0;
   last_task_count.SetAll(0);
+  last_host_tasks.SetAll(0);
+  last_para_tasks.SetAll(0);
   last_internal_task_count.SetAll(0);
   last_task_quality.SetAll(0);
   last_task_value.SetAll(0);
@@ -741,6 +757,8 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
+  last_host_tasks           = cur_host_tasks;
+  last_para_tasks           = cur_para_tasks;
   last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value           = cur_task_value;
@@ -761,6 +779,14 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_host_tasks.SetAll(0);
+  
+  //LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and resonable assumptions
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
+  {     
+    last_para_tasks = cur_para_tasks;
+    cur_para_tasks.SetAll(0);
+  }
   cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
@@ -922,6 +948,8 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
+  last_host_tasks           = cur_host_tasks;
+  last_para_tasks           = cur_para_tasks;
   last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
   last_task_value			= cur_task_value;
@@ -941,6 +969,13 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_host_tasks.SetAll(0);
+  //LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and resonable assumptions
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
+  {
+    last_para_tasks = cur_para_tasks;
+    cur_para_tasks.SetAll(0);
+  }
   cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
@@ -1099,6 +1134,8 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_host_tasks.SetAll(0);
+  cur_para_tasks.SetAll(0);
   cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_rbins_total.SetAll(0);
@@ -1125,6 +1162,8 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   last_num_errors          = clone_phenotype.last_num_errors;
   last_num_donates         = clone_phenotype.last_num_donates;
   last_task_count          = clone_phenotype.last_task_count;
+  last_host_tasks          = clone_phenotype.last_host_tasks;
+  last_para_tasks          = clone_phenotype.last_para_tasks;
   last_internal_task_count = clone_phenotype.last_internal_task_count;
   last_rbins_total         = clone_phenotype.last_rbins_total;
   last_rbins_avail         = clone_phenotype.last_rbins_avail;
@@ -1247,7 +1286,7 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                             const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                            tArray<int>& insts_triggered)
+                            tArray<int>& insts_triggered, bool is_parasite)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
@@ -1266,7 +1305,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cReactionResult& result = *m_reaction_result;
   
   // Run everything through the environment.
-  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in); //NEED different eff_task_count and cur_reaction_count for deme resource
+  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in, is_parasite); //NEED different eff_task_count and cur_reaction_count for deme resource
   
   // If nothing was found, stop here.
   if (found == false) {
@@ -1292,6 +1331,18 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
     if (result.TaskDone(i) == true) {
       cur_task_count[i]++;
       eff_task_count[i]++;
+      
+      //update parasite/host task tracking appropriately
+      if(is_parasite)
+      {
+        cur_para_tasks[i]++;
+      }
+      else
+      {
+        cur_host_tasks[i]++;
+      }
+      
+      
       if (result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
       
       // if we want to generate and age-task histogram
@@ -1317,8 +1368,8 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       int prev_num_tasks = 0;
       int cur_num_tasks = 0;
       for (int j=0; j< num_tasks; j++) {
-	if (last_task_count[j]>0) prev_num_tasks++;
-	if (cur_task_count[j]>0) cur_num_tasks++;
+        if (last_task_count[j]>0) prev_num_tasks++;
+        if (cur_task_count[j]>0) cur_num_tasks++;
       }
       m_world->GetStats().AddOtherTaskCounts(i, prev_num_tasks, cur_num_tasks);
     }
@@ -1335,7 +1386,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       // If applicable, add in the penalty.
       switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
       case 0: { // no penalty
-	break;
+        break;
       }
       case 1: { // "learning" cost
 	if (cur_reaction_count[i] == 1) {
@@ -1755,6 +1806,8 @@ void cPhenotype::NewTrial()
   last_num_errors           = cur_num_errors;
   last_num_donates          = cur_num_donates;
   last_task_count           = cur_task_count;
+  last_host_tasks           = cur_host_tasks;
+  last_para_tasks           = cur_para_tasks;
   last_internal_task_count  = cur_internal_task_count;
   last_task_quality         = cur_task_quality;
   last_internal_task_quality= cur_internal_task_quality;
@@ -1774,6 +1827,8 @@ void cPhenotype::NewTrial()
   cur_num_errors  = 0;
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
+  cur_host_tasks.SetAll(0);
+  cur_para_tasks.SetAll(0);
   cur_internal_task_count.SetAll(0);
   eff_task_count.SetAll(0);
   cur_task_quality.SetAll(0);
@@ -2017,3 +2072,13 @@ double cPhenotype::GetResourcesConsumed()
 	return r; 
 }
 
+//Deep copy parasite task count
+void cPhenotype::SetLastParasiteTaskCount(tArray<int> oldParaPhenotype)
+{
+  assert(initialized == true);
+  
+  for(int i=0;i<oldParaPhenotype.GetSize();i++)
+  {
+    last_para_tasks[i] = oldParaPhenotype[i];
+  }
+}

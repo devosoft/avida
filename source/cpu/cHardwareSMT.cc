@@ -172,6 +172,11 @@ void cHardwareSMT::internalReset()
   m_organism->ClearParasites();
 }
 
+void cHardwareSMT::internalResetOnFailedDivide()
+{
+	internalReset();
+}
+
 void cHardwareSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space)
 {
   for (int i = 0; i < NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();

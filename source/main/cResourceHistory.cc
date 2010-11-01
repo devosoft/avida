@@ -92,9 +92,9 @@ void cResourceHistory::AddEntry(int update, const tArray<double>& values)
   m_entries[new_entry].values = values;
 }
 
-bool cResourceHistory::LoadFile(const cString& filename)
+bool cResourceHistory::LoadFile(const cString& filename, const cString& working_dir)
 {
-  cInitFile file(filename);
+  cInitFile file(filename, working_dir);
   
   if (!file.WasOpened()) {
 //    tConstListIterator<cString> err_it(file.GetErrors());

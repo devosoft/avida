@@ -181,7 +181,7 @@ protected:
 
 
   void internalReset();
-  
+  void internalResetOnFailedDivide();
   
 	int calcCopiedSize(const int parent_size, const int child_size);
   

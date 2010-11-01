@@ -105,6 +105,8 @@ public:
   void HandleBioUnitGestation(cBioUnit* bu);
   void RemoveBioUnit(cBioUnit* bu);
   
+  void RemoveActiveReference();
+  
   int GetDepth() const { return m_depth; }
   int GetNumUnits() const { return m_num_organisms; }
   

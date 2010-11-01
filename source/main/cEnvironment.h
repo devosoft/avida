@@ -137,7 +137,7 @@ public:
   cEnvironment(cWorld* world);
   ~cEnvironment();
 
-  bool Load(const cString& filename);  // Reads the environment from disk.
+  bool Load(const cString& filename, const cString& working_dir);  // Reads the environment from disk.
   bool LoadLine(cString line);  // Reads in a single environment configuration line
 
   // Interaction with the organisms
@@ -152,7 +152,8 @@ public:
 
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const tArray<int>& task_count, tArray<int>& reaction_count,
-                  const tArray<double>& resource_count, const tArray<double>& rbins_count) const;
+                  const tArray<double>& resource_count, const tArray<double>& rbins_count,
+                  bool is_parasite=false) const;
 
   // Accessors
   int GetNumTasks() const { return m_tasklib.GetSize(); }

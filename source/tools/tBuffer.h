@@ -54,7 +54,7 @@ private:
   int total;           // Total inputs ever...
   int last_total;      // Total inputs at time of last ZeroNumAdds.
 public:
-  tBuffer(const int size) : data(size), offset(0), total(0), last_total(0) { ; }
+  explicit tBuffer(const int size) : data(size), offset(0), total(0), last_total(0) { ; }
   tBuffer(const tBuffer<T> & in) : data(in.data), offset(in.offset), total(in.total), last_total(in.last_total) { ; }
   ~tBuffer() { ; }
 
@@ -87,8 +87,10 @@ public:
 
   T operator[](int i) const
   {
+//    assert(i < total);
     int index = offset - i - 1;
     if (index < 0)  index += data.GetSize();
+    assert(index >= 0 && index < data.GetSize());
     return data[index];
   }
 

@@ -25,32 +25,25 @@
 #ifndef cHardwareManager_h
 #define cHardwareManager_h
 
-#ifndef cTestCPU_h
 #include "cTestCPU.h"
-#endif
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
+#include "tDictionary.h"
 
 class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
 class cMetaGenome;
 class cOrganism;
+class cStringList;
 class cWorld;
+template<typename T> class tList;
 
 
 class cHardwareManager
 {
-#if USE_tMemTrack
-  tMemTrack<cHardwareManager> mt;
-#endif
 private:
   cWorld* m_world;
-  cInstSet* m_inst_set;
+  tArray<cInstSet*> m_inst_sets;
+  tDictionary<int> m_is_name_map;
   int m_cpu_count;
   
   
@@ -63,14 +56,22 @@ public:
   cHardwareManager(cWorld* world);
   ~cHardwareManager();
   
+  bool LoadInstSets(tList<cString>* errors = NULL);
+  bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, tList<cString>* errors = NULL);
+  
   cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is = NULL);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
-  const cInstSet& GetInstSet() const { return *m_inst_set; }
-  cInstSet& GetInstSet() { return *m_inst_set; }
+  const cInstSet& GetInstSet() const { return *m_inst_sets[0]; }
+  cInstSet& GetInstSet() { return *m_inst_sets[0]; }
 
-  const cInstSet& GetInstSet(int isid) const { return *m_inst_set; }
-  cInstSet& GetInstSet(int isid) { return *m_inst_set; }
+  const cInstSet& GetInstSet(int isid) const { return *m_inst_sets[isid]; }
+  cInstSet& GetInstSet(int isid) { return *m_inst_sets[isid]; }
+  
+  int GetNumInstSets() const { return m_inst_sets.GetSize(); }
+  
+private:
+  bool loadInstSet(int hw_type, const cString& name, cStringList& sl, tList<cString>* errors);
 };
 
 #endif

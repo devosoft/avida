@@ -511,13 +511,8 @@ void cTaskLib::SetupTests(cTaskContext& ctx) const
     test_inputs[i] = (num_inputs > i) ? input_buffer[i] : 0;
   }
 
-// @TODO - unitialized output buffer?
-// Per valgrind, the output buffer can be uninitialized when passed into here.
-// However, checking that the output buffer actually contains values yeilds consistency differences.
-// Leaving as it was for now.
-//  int test_output = 0;
-//  if (ctx.GetOutputBuffer().GetNumStored()) ctx.GetOutputBuffer()[0];
-  int test_output = ctx.GetOutputBuffer()[0];
+  int test_output = 0;
+  if (ctx.GetOutputBuffer().GetNumStored()) test_output = ctx.GetOutputBuffer()[0];
   
   
   // Setup logic_out to test the output for each logical combination...

@@ -123,6 +123,8 @@ private:
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
   tArray<int> cur_task_count;                 // Total times each task was performed
+  tArray<int> cur_para_tasks;                 // Total times each task was performed by the parasite @LZ
+  tArray<int> cur_host_tasks;                 // Total times each task was done by JUST the host @LZ
   tArray<int> cur_internal_task_count;        // Total times each task was performed using internal resources
   tArray<int> eff_task_count;                 // Total times each task was performed (resetable during the life of the organism)
   tArray<double> cur_task_quality;            // Average (total?) quality with which each task was performed
@@ -144,9 +146,10 @@ private:
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
-  
+
   cReactionResult* m_reaction_result;
   
+
 
   // 3. These mark the status of "in progess" variables at the last divide.
   double last_merit_base;         // Either constant or based on genome length.
@@ -155,6 +158,8 @@ private:
   int last_num_errors;
   int last_num_donates;
   tArray<int> last_task_count;
+  tArray<int> last_para_tasks;
+  tArray<int> last_host_tasks;                // Last task counts from hosts only, before last divide @LZ
   tArray<int> last_internal_task_count;
   tArray<double> last_task_quality;
   tArray<double> last_task_value;
@@ -169,6 +174,8 @@ private:
   double last_fitness;            // Used to determine sterilization.
   int last_cpu_cycles_used;
   double cur_child_germline_propensity;   // chance of child being a germline cell; @JEB
+  
+  
 
   // 4. Records from this organism's life...
   int num_divides_failed; //Number of failed divide events @LZ
@@ -307,7 +314,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                  tArray<int>& insts_triggered);
+                  tArray<int>& insts_triggered, bool is_parasite=false);
 
   // State saving and loading, and printing...
   void PrintStatus(std::ostream& fp) const;
@@ -364,6 +371,8 @@ public:
   int GetCurNumErrors() const { assert(initialized == true); return cur_num_errors; }
   int GetCurNumDonates() const { assert(initialized == true); return cur_num_donates; }
   const tArray<int>& GetCurTaskCount() const { assert(initialized == true); return cur_task_count; }
+  const tArray<int>& GetCurHostTaskCount() const { assert(initialized == true); return cur_host_tasks; }
+  const tArray<int>& GetCurParasiteTaskCount() const { assert(initialized == true); return cur_para_tasks; }
   const tArray<int>& GetCurInternalTaskCount() const { assert(initialized == true); return cur_internal_task_count; }
   void ClearEffTaskCount() { assert(initialized == true); eff_task_count.SetAll(0); }
   const tArray<double> & GetCurTaskQuality() const { assert(initialized == true); return cur_task_quality; }
@@ -396,6 +405,9 @@ public:
   int GetLastNumErrors() const { assert(initialized == true); return last_num_errors; }
   int GetLastNumDonates() const { assert(initialized == true); return last_num_donates; }
   const tArray<int>& GetLastTaskCount() const { assert(initialized == true); return last_task_count; }
+  const tArray<int>& GetLastHostTaskCount() const { assert(initialized == true); return last_host_tasks; }
+  const tArray<int>& GetLastParasiteTaskCount() const { assert(initialized == true); return last_para_tasks; }
+  void  SetLastParasiteTaskCount(tArray<int>  oldParaPhenotype);
   const tArray<int>& GetLastInternalTaskCount() const { assert(initialized == true); return last_internal_task_count; }
   const tArray<double>& GetLastTaskQuality() const { assert(initialized == true); return last_task_quality; }
   const tArray<double>& GetLastTaskValue() const { assert(initialized == true); return last_task_value; }
@@ -610,8 +622,10 @@ public:
 	void  ResetNumNewUniqueReactions()  {num_new_unique_reactions =0; }
 	double GetResourcesConsumed(); 
 
-  //LZ
+  //LZ - Parasite Etc. Helpers
   void DivideFailed();
+  void UpdateParasiteTasks() { last_para_tasks = cur_para_tasks; cur_para_tasks.SetAll(0); return; }
+
 
   
   void RefreshEnergy();

@@ -21,12 +21,14 @@
  *
  */
 
+#include "AvidaTools.h"
+
 #include "avida.h"
 #include "cAvidaConfig.h"
 #include "cDefaultAnalyzeDriver.h"
 #include "cDefaultRunDriver.h"
 #include "cWorld.h"
-#include "Platform.h"
+#include "defs.h"
 
 using namespace std;
 
@@ -41,7 +43,26 @@ int main(int argc, char * argv[])
   cAvidaConfig* cfg = new cAvidaConfig();
   Avida::ProcessCmdLineArgs(argc, argv, cfg);
   
-  cWorld* world = new cWorld(cfg);
+  tList<cString> errors;
+  cWorld* world = cWorld::Initialize(cfg, AvidaTools::FileSystem::GetCWD(), &errors);
+
+  if (!world) {
+    tListIterator<cString> it(errors);
+    while ((it.Next())) {
+      cerr << "error: " << *it.Get() << endl;
+      delete it.Get();
+    }
+    return -1;
+  }
+  
+  const int rand_seed = world->GetConfig().RANDOM_SEED.Get();
+  cout << "Random Seed: " << rand_seed;
+  if (rand_seed != world->GetRandom().GetSeed()) cout << " -> " << world->GetRandom().GetSeed();
+  cout << endl;
+
+  if (world->GetConfig().VERBOSITY.Get() > VERBOSE_NORMAL)
+    cout << "Data Directory: " << world->GetDataFileManager().GetTargetDir() << endl;
+
   cAvidaDriver* driver = NULL;
 
   if (world->GetConfig().ANALYZE_MODE.Get() > 0) {

@@ -339,7 +339,7 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)
 {
   if (m_net) m_net->valid = false;
-  doOutput(ctx, m_input_buf, m_output_buf, on_divide);
+  doOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
 }
 
 
@@ -347,23 +347,30 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
 {
   m_output_buf.Add(value);
   NetValidate(ctx, value);
-  doOutput(ctx, m_input_buf, m_output_buf, false);
+  doOutput(ctx, m_input_buf, m_output_buf, false, false);
 }
 
+void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite)
+{
+  m_output_buf.Add(value);
+  NetValidate(ctx, value);  
+  doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite);
+}
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
 {
   output_buffer.Add(value);
   NetValidate(ctx, value);
-  doOutput(ctx, input_buffer, output_buffer, false);
+  doOutput(ctx, input_buffer, output_buffer, false, false);
 }
 
 
 void cOrganism::doOutput(cAvidaContext& ctx, 
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
-                         const bool on_divide)
-{
+                         const bool on_divide,
+                         bool is_parasite)
+{  
   const int deme_id = m_interface->GetDemeID();
   const tArray<double> & global_resource_count = m_interface->GetResources();
   const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id);
@@ -437,7 +444,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
-                                               insts_triggered);
+                                               insts_triggered, is_parasite);
 											   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -795,13 +802,33 @@ bool cOrganism::Divide_CheckViable()
   
   const int required_reaction = m_world->GetConfig().REQUIRED_REACTION.Get();
   const int immunity_reaction = m_world->GetConfig().IMMUNITY_REACTION.Get();
-  if (required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0)   {
+  const int single_reaction = m_world->GetConfig().REQUIRE_SINGLE_REACTION.Get();
+
+  if (single_reaction == 0 && required_reaction != -1 && m_phenotype.GetCurReactionCount()[required_reaction] == 0)   {
     if (immunity_reaction == -1 || m_phenotype.GetCurReactionCount()[immunity_reaction] == 0) {  
       Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
           cStringUtil::Stringf("Lacks required reaction (%d)", required_reaction));
       return false; //  (divide fails)
     }
   }
+  
+  if(single_reaction != 0)
+  {
+    bool toFail = true;
+    tArray<int> reactionCounts = m_phenotype.GetCurReactionCount();
+    for (int i=0; i<reactionCounts.GetSize(); i++)
+    {
+      if (reactionCounts[i] > 0) toFail = false;
+    }
+    
+    if(toFail)
+    {
+      Fault(FAULT_LOC_DIVIDE, FAULT_TYPE_ERROR,
+            cStringUtil::Stringf("Lacks any reaction required for divide"));
+      return false; //  (divide fails)
+    }
+  }
+  
   
   // Test for required resource availability (must be stored in an internal resource bin)
   const int required_resource = m_world->GetConfig().REQUIRED_RESOURCE.Get();

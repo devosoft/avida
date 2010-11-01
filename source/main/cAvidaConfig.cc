@@ -25,7 +25,8 @@
 
 #include "cAvidaConfig.h"
 
-#include <fstream>
+#include "AvidaTools.h"
+
 #include "defs.h"
 #include "cActionLibrary.h"
 #include "cDriverManager.h"
@@ -33,6 +34,11 @@
 #include "cInitFile.h"
 #include "cStringIterator.h"
 #include "tDictionary.h"
+
+#include <fstream>
+
+using namespace AvidaTools;
+
 
 cMutex cAvidaConfig::global_list_mutex;
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
@@ -57,18 +63,18 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
   }
 }
 
-void cAvidaConfig::Load(const cString& filename, bool crash_if_not_found)
+void cAvidaConfig::Load(const cString& filename, const cString& working_dir, bool crash_if_not_found)
 {
   tDictionary<cString> mappings;
-  Load(filename, mappings, crash_if_not_found);
+  Load(filename, mappings, working_dir, crash_if_not_found);
 }
 
 
 void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& mappings,
-			bool crash_if_not_found, bool warn_default)
+                        const cString& working_dir, bool crash_if_not_found, bool warn_default)
 {
   // Load the contents from the file.
-  cInitFile init_file(filename, mappings);
+  cInitFile init_file(filename, mappings, working_dir);
   
   if (!init_file.WasOpened()) {
     tConstListIterator<cString> err_it(init_file.GetErrors());
@@ -84,7 +90,7 @@ void cAvidaConfig::Load(const cString& filename, const tDictionary<cString>& map
       // If we failed to open the config file, try creating it.
       cDriverManager::Status().NotifyWarning(
         cString("configuration file '") + filename + "' not found, creating default config...");
-      Print(filename);
+      Print(FileSystem::GetAbsolutePath(filename, working_dir));
     }
   }
   

@@ -25,6 +25,7 @@
 
 #include "cInitFile.h"
 
+#include "AvidaTools.h"
 #include "cFile.h"
 #include "cStringIterator.h"
 
@@ -32,24 +33,26 @@
 using namespace std;
 
 
-cInitFile::cInitFile(const cString& filename) : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
-{
-  tSmartArray<sLine*> lines;
-  m_opened = LoadFile(filename, lines);
-  PostProcess(lines);
-}
-
-cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappings)
+cInitFile::cInitFile(const cString& filename, const cString& working_dir)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
-  InitMappings(mappings);
   tSmartArray<sLine*> lines;
-  m_opened = LoadFile(filename, lines);
-  PostProcess(lines);
+  m_opened = loadFile(filename, lines, working_dir);
+  postProcess(lines);
+}
+
+cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir)
+  : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
+{
+  initMappings(mappings);
+  tSmartArray<sLine*> lines;
+  m_opened = loadFile(filename, lines, working_dir);
+  postProcess(lines);
 }
 
 
-cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_found(false), m_opened(false), m_ftype("unknown")
+cInitFile::cInitFile(istream& in_stream, const cString& working_dir)
+  : m_filename("(stream)"), m_found(false), m_opened(false), m_ftype("unknown")
 {
   if (in_stream.good() == false) {
     m_errors.PushRear(new cString("Bad stream, unable to process."));
@@ -63,16 +66,24 @@ cInitFile::cInitFile(istream& in_stream) : m_filename("(stream)"), m_found(false
   std::string linebuf;
   while (std::getline(in_stream, linebuf)) {
     cString cur_line(linebuf.c_str());
-    if (cur_line[0] == '#' && cur_line[1] == '!') ProcessCommand(cur_line, lines, m_filename, linenum);
+    if (cur_line[0] == '#') processCommand(cur_line, lines, m_filename, linenum, working_dir);
     else lines.Push(new sLine(cur_line, m_filename, linenum));    
     linenum++;
   }
   
-  PostProcess(lines);
+  postProcess(lines);
 }
 
 
-void cInitFile::InitMappings(const tDictionary<cString>& mappings)
+cInitFile::~cInitFile()
+{
+  for (int i = 0; i < m_lines.GetSize(); i++) delete m_lines[i];
+  cString* errstr = NULL;
+  while ((errstr = m_errors.Pop())) delete errstr;
+}
+
+
+void cInitFile::initMappings(const tDictionary<cString>& mappings)
 {
   tList<cString> names;
   mappings.GetKeys(names);
@@ -86,9 +97,9 @@ void cInitFile::InitMappings(const tDictionary<cString>& mappings)
 }
 
 
-bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
+bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir)
 {
-  cFile file(filename);
+  cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
   if (!file.IsOpen()) {
     m_errors.PushRear(new cString(cStringUtil::Stringf("Unable to open file '%s'.", (const char*)filename)));
     return false;   // The file must be opened!
@@ -103,8 +114,8 @@ bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
   while (!file.Eof() && file.ReadLine(buf)) {
     linenum++;
 
-    if (buf.GetSize() > 1 && buf[0] == '#' && buf[1] == '!') {
-      if (!ProcessCommand(buf, lines, filename, linenum)) return false;
+    if (buf.GetSize() && buf[0] == '#') {
+      if (!processCommand(buf, lines, filename, linenum, working_dir)) return false;
     } else {
       lines.Push(new sLine(buf, filename, linenum));
     }
@@ -115,35 +126,82 @@ bool cInitFile::LoadFile(const cString& filename, tSmartArray<sLine*>& lines)
 }
 
 
-bool cInitFile::ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum)
+bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum, const cString& working_dir)
 {
   cString cmd = cmdstr.PopWord();
   
-  if (cmd == "#!include") {
-    cString dir = cmdstr.PopWord();
+  if (cmd == "#include" || cmd == "#import") {
+    cString path = cmdstr.PopWord();
+    cString mapping;
+    
+    // Grab mapping name, if specified
+    if (path.Find('=') >= 0) {
+      mapping = path.Pop('=');
+    }
+    
+    // Strip quotes
+    if (path[0] == '<' || path[0] == '"') {
+      int lidx = path.GetSize() - 1;
+      if ((path[0] == '"' && path[lidx] != '"') || (path[0] == '<' && path[lidx] != '>')) {
+        m_errors.PushRear(new cString(cStringUtil::Stringf("%s:%d: syntax error processing include directive",
+                                                           (const char*)filename, linenum)));
+        return false;
+      }
+      path = path.Substring(1, path.GetSize() - 2);
+    }
+    
+    // Handle mapping, if specified
+    if (mapping.GetSize()) m_mappings.Find(mapping, path);
+    
+    if (cmd != "#import" || !m_imported_files.HasString(path)) {
+      // Attempt to include the specified file
+      if (!loadFile(path, lines, working_dir)) {
+        m_errors.PushRear(new cString(cStringUtil::Stringf("%s:%d: unable to process include directive",
+                                                           (const char*)filename, linenum)));
+        return false;
+      }
+    }
+  } else if (cmd == "#filetype") {
+    cString ft = cmdstr.PopWord();
+    if (m_ftype != "unknown" && m_ftype != ft) {
+      m_errors.PushRear(new cString(cStringUtil::Stringf("%s:%d: duplicate filetype directive",
+                                                         (const char*)filename, linenum)));
+      return false;
+    }
+    m_ftype = ft;
+  } else if (cmd == "#format") {
+    if (m_format.GetSize() != 0) {
+      m_errors.PushRear(new cString(cStringUtil::Stringf("%s:%d: duplicate format directive",
+                                                         (const char*)filename, linenum)));
+      return false;
+    }
+    m_format.Load(cmdstr);
+  } else if (cmd == "#define") {
     cString mapping = cmdstr.PopWord();
-    if (mapping.GetSize()) m_mappings.Find(mapping, dir);
-    bool success = LoadFile(dir, lines);
-    if (!success) m_errors.PushRear(new cString(cStringUtil::Stringf("%f:%d: Unable to process include directive.",
-                                                                     (const char*)filename, linenum)));
-    return success;
+    if (mapping.GetSize()) {
+      cString value = cmdstr.PopWord();
+      value.Trim();
+      
+      if (value.GetSize()) {
+        m_mappings.Set(mapping, value);
+      } else {
+        m_mappings.Remove(mapping);
+      }
+    } else {
+      m_errors.PushRear(new cString(cStringUtil::Stringf("%s:%d: invalid define directive",
+                                                         (const char*)filename, linenum)));      
+      return false;
+    }
   }
   
-  m_errors.PushRear(new cString("Unrecognized processing directive."));
-  return false;
+  return true;
 }
 
 
-void cInitFile::PostProcess(tSmartArray<sLine*>& lines)
+void cInitFile::postProcess(tSmartArray<sLine*>& lines)
 {
-  if (lines.GetSize() >= 2) {
-    cString type_line = lines[0]->line;
-    cString format_line = lines[1]->line;
-    
-    if (type_line.PopWord() == "#filetype") m_ftype = type_line.PopWord();
-    if (format_line.PopWord() == "#format") m_format.Load(format_line);
-  }
-
+  m_mappings.Clear();
+  m_imported_files.Clear();
   
   // We're going to handle this compression in multiple passes to make it
   // clean and easy.

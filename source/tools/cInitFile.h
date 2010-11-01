@@ -70,14 +70,9 @@ private:
   tArray<sLine*> m_lines;
   cString m_ftype;
   cStringList m_format;
+  cStringList m_imported_files;
   
   tDictionary<cString> m_mappings;
-
-  
-  void InitMappings(const tDictionary<cString>& mappings);
-  bool LoadFile(const cString& filename, tSmartArray<sLine*>& lines);
-  bool ProcessCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum);
-  void PostProcess(tSmartArray<sLine*>& lines);
 
   
   cInitFile(const cInitFile&); // @not_implemented
@@ -85,15 +80,10 @@ private:
   
 
 public:
-  cInitFile(const cString& filename);
-  cInitFile(const cString& filename, const tDictionary<cString>& mappings);
-  cInitFile(std::istream& in_stream);
-  ~cInitFile()
-  {
-    for (int i = 0; i < m_lines.GetSize(); i++) delete m_lines[i];
-    cString* errstr = NULL;
-    while ((errstr = m_errors.Pop())) delete errstr;
-  }
+  cInitFile(const cString& filename, const cString& working_dir);
+  cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir);
+  cInitFile(std::istream& in_stream, const cString& working_dir);
+  ~cInitFile();
   
   bool WasFound() const { return m_found; }
   bool WasOpened() const { return m_opened; }
@@ -163,6 +153,13 @@ public:
 
   const cString& GetFiletype() { return m_ftype; }
   const cStringList& GetFormat() { return m_format; }
+
+
+private:
+  void initMappings(const tDictionary<cString>& mappings);
+  bool loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir);
+  bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum, const cString& working_dir);
+  void postProcess(tSmartArray<sLine*>& lines);
 };
 
 #endif

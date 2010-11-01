@@ -227,6 +227,7 @@ private:
     
     void AddEntry(cBaseConfigFormatEntry* _entry) { m_entry_list.PushRear(_entry); }
     
+    cStringList& Get() { return m_value; }
     const cStringList& Get() const { return m_value; }
     void Add(const cString& value) { m_value.PushRear(value); }
   };
@@ -311,7 +312,7 @@ public:
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Other configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
   CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
-  CONFIG_ADD_VAR(INST_SET_FORMAT, int, 0, "Instruction set file format.\n0 = Default\n1 = New Style");
+  CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 1, "Load legacy format instruction set file format");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
@@ -361,6 +362,7 @@ public:
   
   // -------- Birth and Death config options --------
   CONFIG_ADD_GROUP(REPRODUCTION_GROUP, "Birth and Death config options");
+	CONFIG_ADD_VAR(DIVIDE_FAILURE_RESETS, int, 0, "When Divide fails, organisms are interally reset");
   CONFIG_ADD_VAR(BIRTH_METHOD, int, 0, "Which organism should be replaced when a birth occurs?\n0 = Random organism in neighborhood\n1 = Oldest in neighborhood\n2 = Largest Age/Merit in neighborhood\n3 = None (use only empty cells in neighborhood)\n4 = Random from population (Mass Action)\n5 = Oldest in entire population\n6 = Random within deme\n7 = Organism faced by parent\n8 = Next grid cell (id+1)\n9 = Largest energy used in entire population\n10 = Largest energy used in neighborhood\n11 = Local neighborhood dispersal");
   CONFIG_ADD_VAR(PREFER_EMPTY, int, 1, "Overide BIRTH_METHOD to preferentially choose empty cells for offsping?");
   CONFIG_ADD_VAR(ALLOW_PARENT, int, 1, "Should parents be considered when deciding where to place offspring?");
@@ -393,6 +395,7 @@ public:
   CONFIG_ADD_VAR(IMMUNITY_TASK, int, -1, "Task providing immunity from the required task");
   CONFIG_ADD_VAR(REQUIRED_REACTION, int, -1, "Reaction ID required for successful divide");
   CONFIG_ADD_VAR(IMMUNITY_REACTION, int, -1, "Reaction ID that provides immunity for successful divide");
+  CONFIG_ADD_VAR(REQUIRE_SINGLE_REACTION, int, 0, "If set to 1, at least one reaction is required for a successful divide");
   CONFIG_ADD_VAR(REQUIRED_BONUS, double, 0.0, "Required bonus to divide");
   CONFIG_ADD_VAR(REQUIRE_EXACT_COPY, int, 0, "Require offspring to be an exact copy (checked before divide mutations)");
   CONFIG_ADD_VAR(REQUIRED_RESOURCE, int, -1, "ID of resource required in organism's internal bins for successful\n  divide (resource not consumed)");
@@ -417,11 +420,18 @@ public:
 	
   // -------- Parasite options --------
   CONFIG_ADD_GROUP(PARASITE_GROUP, "Parasite config options");
-  CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "What should happen to a parasite when it gives birth?\n0 = Leave the parasite thread state untouched.\n1 = Resets the state of the calling thread");
-  CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks");
+  CONFIG_ADD_VAR(INJECT_METHOD, int, 0, "What should happen to a parasite when it gives birth?\n0 = Leave the parasite thread state untouched.\n1 = Resets the state of the calling thread (for SMT parasites, this must be 1)");
+  CONFIG_ADD_VAR(INJECT_PROB_FROM_TASKS, int, 1, "Inject occurs based on probability from performing tasks - 11*numTasks");
   CONFIG_ADD_VAR(INJECT_STERILIZES_HOST, int, 0, "Infection causes host steralization");
-  CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles");
-  CONFIG_ADD_VAR(INJECT_PROB_SIGMOID, int, 1, "Inject probs follow a psuedo-sigmoid path - requires INJECT_PROB_FROM_TASKS");
+  CONFIG_ADD_VAR(INJECT_IS_VIRULENT, int, 0, "Infection causes host steralization and takes all cpu cycles (setting this to 1 will override inject_virulence)");
+  CONFIG_ADD_VAR(PARASITE_SKIP_REACTIONS, int, 1, "Parasite tasks do not get processed in the environment (1) or they do trigger reactions (0)");
+  CONFIG_ADD_VAR(INJECT_IS_TASK_SPECIFIC, int, 0, "Parasites must match a task done by the host they are trying to infect");
+  CONFIG_ADD_VAR(INJECT_SKIP_FIRST_TASK, int, 0, "They cannot match the first task the host is doing to infect");
+  CONFIG_ADD_VAR(INJECT_DEFAULT_SUCCESS, double, 0.0, "If injection is task specific, with what probability should non-matching parasites infect the host ");
+  CONFIG_ADD_VAR(PARASITE_VIRULENCE, double, -1, "The probabalistic percentage of cpu cycles allocated to the parasite instead of the host. Ensure INJECT_IS_VIRULENT is set to 0. This only works for single infection at the moment");
+  CONFIG_ADD_VAR(PARASITE_MEM_SPACES, int, 1, "Parasites get their own memory spaces");
+  CONFIG_ADD_VAR(PARASITE_NO_COPY_MUT, int, 0, "Parasites do not get copy mutation rates");
+
 
   // -------- CPU Archetecture
   CONFIG_ADD_GROUP(ARCHETECTURE_GROUP, "Details on how CPU should work");
@@ -717,12 +727,14 @@ public:
   CONFIG_ADD_VAR(CONSENSUS_HOLD_TIME, int, 1, "Number of updates that consensus must be held for.");
   
 
+  // -------- Instruction Set Definition --------
   // Setup technique to define the instruction set in avida.cfg file.
-  CONFIG_ADD_CUSTOM_FORMAT(INST_SET_NEW, "Instruction Set Definition");
+  CONFIG_ADD_CUSTOM_FORMAT(INSTSETS, "Instruction Set Definition");
+  CONFIG_ADD_FORMAT_VAR(INSTSET, "Define an instruction set (must supply name:hw_type=$hardware_type)");
   CONFIG_ADD_FORMAT_VAR(INST, "Instruction entry in the instruction set");
 	
 	
-  //--------- Reputation config options --------------
+  // -------- Reputation config options --------
   CONFIG_ADD_GROUP(REPUTATION_GROUP, "Reputation Settings");
   CONFIG_ADD_VAR(RAW_MATERIAL_AMOUNT, int, 100, "Number of raw materials an organism starts with");
   CONFIG_ADD_VAR(AUTO_REPUTATION, int, 0, "Is an organism's reputation automatically computed based on its donations\n0=no\n1=increment for each donation + standing\n2=+1 for donations given -1 for donations received\n3=1 for donors -1 for recivers who have not donated\n4=+1 for donors\n5=+1 for donors during task check");
@@ -813,9 +825,10 @@ public:
 	
 #endif
   
-  inline void Load(const cString& filename) { Load(filename, false); }
-  void Load(const cString& filename, bool crash_if_not_found);
-  void Load(const cString& filename, const tDictionary<cString>& mappings, bool crash_if_not_found = false, bool warn_default = true);
+  inline void Load(const cString& filename, const cString& working_dir) { Load(filename, working_dir, false); }
+  void Load(const cString& filename, const cString& working_dir, bool crash_if_not_found);
+  void Load(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir,
+            bool crash_if_not_found = false, bool warn_default = true);
   void Print(const cString& filename);
   void Status();
   void PrintReview();

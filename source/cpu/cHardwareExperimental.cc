@@ -295,6 +295,12 @@ void cHardwareExperimental::internalReset()
   m_io_expire = m_world->GetConfig().IO_EXPIRE.Get();
 }
 
+
+void cHardwareExperimental::internalResetOnFailedDivide()
+{
+	internalReset();
+}
+
 void cHardwareExperimental::cLocalThread::Reset(cHardwareExperimental* in_hardware, int in_id)
 {
   m_id = in_id;

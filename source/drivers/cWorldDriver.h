@@ -35,6 +35,10 @@ class cString;
 // This class is an abstract base class that is used by actions within
 // a cWorld to notify its driver of various states and conditions.
 
+enum eDriverPauseState {
+  DRIVER_PAUSED,
+  DRIVER_UNPAUSED
+};
 
 class cWorldDriver : public virtual cDMObject
 {

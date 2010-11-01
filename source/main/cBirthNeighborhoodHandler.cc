@@ -35,6 +35,13 @@ cBirthNeighborhoodHandler::cBirthNeighborhoodHandler(cWorld* world, cBirthChambe
   m_entries.Resize(world->GetConfig().WORLD_X.Get() * world->GetConfig().WORLD_Y.Get());
 }
 
+cBirthNeighborhoodHandler::~cBirthNeighborhoodHandler()
+{
+  for (int i = 0; i < m_entries.GetSize(); i++) {
+    m_bc->ClearEntry(m_entries[i]);
+  }
+}
+
 
 cBirthEntry* cBirthNeighborhoodHandler::SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent)
 {

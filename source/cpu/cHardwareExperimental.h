@@ -311,6 +311,7 @@ private:
   // --------  Core Execution Methods  --------
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
   void internalReset();
+	void internalResetOnFailedDivide();
   
   
   // --------  Stack Manipulation  --------

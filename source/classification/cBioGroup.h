@@ -88,11 +88,12 @@ public:
   
   int GetReferenceCount() const { return m_a_refs + m_p_refs; }
   int GetActiveReferenceCount() const { return m_a_refs; }
-  void AddActiveReference() { m_a_refs++; assert(m_a_refs >= 0); }
-  void RemoveActiveReference() { m_a_refs--; assert(m_a_refs >= 0); }
   int GetPassiveReferenceCount() const { return m_p_refs; }
-  void AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
-  void RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }
+
+  virtual void AddActiveReference() { m_a_refs++; assert(m_a_refs >= 0); }
+  virtual void RemoveActiveReference() { m_a_refs--; assert(m_a_refs >= 0); }
+  virtual void AddPassiveReference() { m_p_refs++; assert(m_p_refs >= 0); }
+  virtual void RemovePassiveReference() { m_p_refs--; assert(m_p_refs >= 0); }
   
   template<typename T> void AttachData(T* data)
   {

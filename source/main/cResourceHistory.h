@@ -58,7 +58,7 @@ public:
   bool GetResourceLevelsForUpdate(int update, tArray<double>& levels, bool exact = false) const;
   void AddEntry(int update, const tArray<double>& values);
   
-  bool LoadFile(const cString& filename);
+  bool LoadFile(const cString& filename, const cString& working_dir);
 };
 
 #endif

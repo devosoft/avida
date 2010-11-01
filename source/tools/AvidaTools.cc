@@ -13,7 +13,6 @@
 
 #include "cEntryHandle.h"
 #include "cRCObject.h"
-#include "cString.h"
 
 #include <iostream>
 #include <cerrno>
@@ -34,6 +33,14 @@
 #  define mode_t unsigned int
 # endif
 #endif
+
+#if AVIDA_PLATFORM(WINDOWS)
+# include <direct.h>
+#else
+# include <unistd.h>
+#endif
+
+#define MAXIMUM_DIRECTORY_LENGTH 2048
 
 
 using namespace std;
@@ -66,5 +73,26 @@ bool AvidaTools::FileSystem::MkDir(const cString& dirname, bool verbose)
 
   if (verbose) cout << " found." << endl;
   return true;
+}
+
+cString AvidaTools::FileSystem::GetCWD()
+{
+  cString cwd_str;
+  
+  char* dirbuf = new char[MAXIMUM_DIRECTORY_LENGTH];    
+  char* cwd = getcwd(dirbuf, MAXIMUM_DIRECTORY_LENGTH);
+  if (cwd != NULL) cwd_str = cwd;
+  delete [] dirbuf;
+  
+  return cwd_str;
+}
+
+cString AvidaTools::FileSystem::GetAbsolutePath(const cString& path, const cString& working_dir)
+{
+  if (path.GetSize() == 0 || (path[0] != '/' && path[0] != '\\')) {
+    return (cString(working_dir) + "/" + path);
+  }
+  
+  return path;
 }
 

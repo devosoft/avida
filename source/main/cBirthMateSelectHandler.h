@@ -48,6 +48,7 @@ private:
   
 public:
   cBirthMateSelectHandler(cBirthChamber* bc) : m_bc(bc) { ; }
+  ~cBirthMateSelectHandler();
   
   cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent);
 };

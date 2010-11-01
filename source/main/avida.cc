@@ -24,6 +24,7 @@
 
 #include "avida.h"
 
+#include "AvidaTools.h"
 #include "defs.h"
 #include "cActionLibrary.h"
 #include "cAnalyzeGenotype.h"
@@ -45,6 +46,7 @@
 
 
 using namespace std;
+using namespace AvidaTools;
 
 
 namespace Avida {
@@ -276,7 +278,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   delete [] args;
 
   // Load configuration file
-  cfg->Load(config_filename, defs, crash_if_not_found, flag_warn_default);
+  cfg->Load(config_filename, defs, FileSystem::GetCWD(), crash_if_not_found, flag_warn_default);
   
 
   // Process Command Line Flags

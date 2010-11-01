@@ -757,6 +757,15 @@ void cHardwareCPU::internalReset()
 	m_last_cell_data = std::make_pair(false, 0);
 }
 
+void cHardwareCPU::internalResetOnFailedDivide()
+{
+	internalReset();
+	m_mal_active = true;
+	m_advance_ip = false;
+}
+
+
+
 void cHardwareCPU::cLocalThread::operator=(const cLocalThread& in_thread)
 {
   m_id = in_thread.m_id;
@@ -1642,8 +1651,11 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Make sure this divide will produce a viable offspring.
   const bool viable = Divide_CheckViable(ctx, div_point, child_size);
-  if (viable == false) return false;
-  
+  if (viable == false)
+	{
+		return false;
+	}
+	
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
   cGenome& child_genome = m_organism->OffspringGenome().GetGenome();

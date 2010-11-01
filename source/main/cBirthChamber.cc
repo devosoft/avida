@@ -43,6 +43,14 @@
 
 using namespace AvidaTools;
 
+cBirthChamber::~cBirthChamber()
+{
+  for (tArrayMap<int, cBirthSelectionHandler*>::iterator it = m_handler_map.begin(); it != m_handler_map.end(); it++) {
+    delete it->Value();
+  }
+  
+}
+
 cBirthSelectionHandler* cBirthChamber::getSelectionHandler(int hw_type)
 {
   cBirthSelectionHandler* handler = NULL;
@@ -121,6 +129,7 @@ void cBirthChamber::ClearEntry(cBirthEntry& entry)
   for (int i = 0; i < entry.groups.GetSize(); i++) {
     entry.groups[i]->RemoveActiveReference();
   }
+  entry.groups.Resize(0);
 }
 
 
@@ -407,14 +416,11 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   // If we couldn't find a waiting entry, this one was saved -- stop here!
   if (old_entry == NULL) return false;
 
-  // We have now found a waiting entry.  Mark it no longer waiting and use it.
-  // @TODO - should this really be cleared here? It removes references before we are actually done with the bio groups
-  ClearEntry(*old_entry);
-
   // If we are NOT recombining, handle that here.
-  if (parent_phenotype.CrossNum() == 0 || 
-      ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
-    return DoPairAsexBirth(ctx, *old_entry, offspring, *parent, child_array, merit_array);
+  if (parent_phenotype.CrossNum() == 0 || ctx.GetRandom().GetDouble() > m_world->GetConfig().RECOMBINATION_PROB.Get()) {
+    bool ret = DoPairAsexBirth(ctx, *old_entry, offspring, *parent, child_array, merit_array);
+    ClearEntry(*old_entry);
+    return ret;
   }
   // If we made it this far, RECOMBINATION will happen!
   cGenome genome0 = old_entry->genome.GetGenome();
@@ -518,6 +524,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     }
   } 
 
+  ClearEntry(*old_entry);
   return true;
 }
 

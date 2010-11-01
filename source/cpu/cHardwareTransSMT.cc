@@ -172,6 +172,15 @@ void cHardwareTransSMT::internalReset()
   m_organism->ClearParasites();
 }
 
+
+//TODO: Need to handle different divide methods here, for example not resetting parasites when divide method
+//also doesn't reset parasites. - LZ
+void cHardwareTransSMT::internalResetOnFailedDivide()
+{
+	internalReset();
+  AdvanceIP() = false;
+}
+
 void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_space)
 {
   for (int i = 0; i < NUM_LOCAL_STACKS; i++) local_stacks[i].Clear();
@@ -208,13 +217,31 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
   for (int i = 0; i < num_inst_exec; i++) {
     // Setup the hardware for the next instruction to be executed.
     m_cur_thread++;
-    if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
-
+		//Ignore incremeting the thread, set it to be the parasite, unless we draw something lower thean 0.8
+		//Then set it to the parasite
+		double parasiteVirulence = m_world->GetConfig().PARASITE_VIRULENCE.Get();
+		if (parasiteVirulence != -1) {
+      
+			double probThread = ctx.GetRandom().GetDouble();
+      
+      //Default to the first thread
+			m_cur_thread = 0;
+			if (probThread < parasiteVirulence)
+			{
+        //LZ- this only works for MAX_THREADS 2 right now
+				m_cur_thread = 1;
+			}
+		};
+		
+		//If we don't have a parasite, this will fix it. 
+    if (m_cur_thread >= m_threads.GetSize())
+		{
+			m_cur_thread = 0;			
+		}    
+    
     if(m_threads[m_cur_thread].skipExecution)
       m_cur_thread++;
-	
-    if (m_cur_thread >= m_threads.GetSize()) m_cur_thread = 0;
-    
+	    
     if (!ThreadIsRunning()) continue;
     
     AdvanceIP() = true;
@@ -637,6 +664,9 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
     return false; // (inject fails)
   }  
   
+  //update the parasites tasks
+	m_organism->GetPhenotype().UpdateParasiteTasks();
+  
   m_mem_array[mem_space_used].Resize(end_pos);
   cCPUMemory injected_code = m_mem_array[mem_space_used];
 	
@@ -670,7 +700,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
   label.ReadString(bu->GetUnitSourceArgs());
   
   // Inject fails if the memory space is already in use
-  if (label.GetSize() == 0 || MemorySpaceExists(label)) return false;
+  if (label.GetSize() == 0 || MemorySpaceExists(label)) { return false; }
   
   int thread_id = m_threads.GetSize();
   
@@ -697,7 +727,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
   m_threads[thread_id].owner = bu;
   
   if(m_world->GetConfig().INJECT_IS_VIRULENT.Get())
-    m_threads[m_cur_thread].skipExecution = true;
+    m_threads[0].skipExecution = true;
   
   return true;
 }
@@ -1137,6 +1167,18 @@ bool cHardwareTransSMT::Inst_SetMemory(cAvidaContext& ctx)
 {
   ReadLabel(MAX_MEMSPACE_LABEL);
   
+  if(ThreadGetOwner()->IsParasite())
+  {
+		if(m_world->GetConfig().PARASITE_MEM_SPACES.Get())
+		{
+      //If parasites get their own memory spaces, just prefix them with 4 nops (1 more than the hosts can possibly access) - LZ
+			GetLabel().AddNop(1);
+			GetLabel().AddNop(1);
+			GetLabel().AddNop(1);
+			GetLabel().AddNop(1);
+		}
+  }
+	
   if (GetLabel().GetSize() == 0) {
     GetHead(nHardware::HEAD_FLOW).Set(0, 0);
   } else {
@@ -1165,15 +1207,21 @@ bool cHardwareTransSMT::Inst_HeadRead(cAvidaContext& ctx)
 	
   // Mutations only occur on the read, for the moment.
   int read_inst = 0;
+  bool toMutate = true;
   
-  if (m_organism->TestCopyMut(ctx)) {
+  if(m_world->GetConfig().PARASITE_NO_COPY_MUT.Get())
+  {
+    //Parasites should not have any copy mutations;
+    if(ThreadGetOwner()->IsParasite()) toMutate = false;
+  }
+  
+  if (m_organism->TestCopyMut(ctx) && toMutate) {
     read_inst = m_inst_set->GetRandomInst(ctx).GetOp();
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
 
-  
-  read_inst = GetHead(head_id).GetInst().GetOp();
+  //read_inst = GetHead(head_id).GetInst().GetOp();
   Stack(dst).Push(read_inst);
   ReadInst(read_inst);
 	
@@ -1355,7 +1403,8 @@ bool cHardwareTransSMT::Inst_IO(cAvidaContext& ctx)
 	
   // Do the "put" component
   const int value_out = Stack(src).Top();
-  m_organism->DoOutput(ctx, value_out);  // Check for tasks compleated.
+  
+  m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->IsParasite());  // Check for tasks compleated.
 	
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
@@ -1420,6 +1469,17 @@ bool cHardwareTransSMT::Inst_ThreadKill(cAvidaContext& ctx)
 bool cHardwareTransSMT::Inst_Inject(cAvidaContext& ctx)
 {
   ReadLabel(MAX_MEMSPACE_LABEL);
+  
+  if(ThreadGetOwner()->IsParasite())
+  {
+		if(m_world->GetConfig().PARASITE_MEM_SPACES.Get())
+		{
+			GetLabel().AddNop(1);
+			GetLabel().AddNop(1);
+			GetLabel().AddNop(1);
+			GetLabel().AddNop(1);
+		}
+  }
   
   double mut_multiplier = 1.0;	
   return InjectParasite(ctx, mut_multiplier);
@@ -1570,18 +1630,20 @@ bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
   bool toReturn =  Divide_Main(ctx);
   if(toReturn)
     return toReturn;
+
+	//internalReset();
   
   m_organism->GetPhenotype().DivideFailed();
-  
+		
   const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
-  
+		
   if (m_mem_array.GetSize() <= mem_space_used) return false;
-  
+		
   m_mem_array[mem_space_used] = cGenome("a"); 
-  
+		
   for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
   //for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
-    
+	     
   return toReturn;
   
 }

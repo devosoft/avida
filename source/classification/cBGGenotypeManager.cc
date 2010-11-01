@@ -50,6 +50,12 @@ cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
 
 cBGGenotypeManager::~cBGGenotypeManager()
 {
+  tAutoRelease<tIterator<cBGGenotype> > list_it(m_active_sz[0].Iterator());
+  while (list_it->Next() != NULL) {
+    assert(list_it->Get()->GetActiveReferenceCount() == 0);
+    removeGenotype(list_it->Get());
+  }
+  
   assert(m_historic.GetSize() == 0);
   assert(m_best == 0);
   delete m_dcm;
@@ -74,9 +80,7 @@ void cBGGenotypeManager::UpdateReset()
   }
 
   tAutoRelease<tIterator<cBGGenotype> > list_it(m_historic.Iterator());
-  while (list_it->Next() != NULL) if (!list_it->Get()->GetReferenceCount()) {
-    removeGenotype(list_it->Get());
-  }
+  while (list_it->Next() != NULL) if (!list_it->Get()->GetReferenceCount()) this->removeGenotype(list_it->Get());
 }
 
 
@@ -286,7 +290,7 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   if (m_coalescent == genotype) m_coalescent = NULL;
 
   // Handle best genotype pointer
-  bool was_best = (old_size == m_best);
+  bool was_best = (old_size && old_size == m_best);
   if (was_best && m_active_sz[old_size].GetSize() == 0) {
     for (m_best--; m_best > 0; m_best--) if (m_active_sz[m_best].GetSize()) break;
   }

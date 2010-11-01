@@ -86,6 +86,8 @@ STATS_OUT_FILE(PrintMessageLog,             message_log.dat     );
 STATS_OUT_FILE(PrintInterruptData,          interrupt.dat       );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
+STATS_OUT_FILE(PrintHostTasksData,          host_tasks.dat      );
+STATS_OUT_FILE(PrintParasiteTasksData,      parasite_tasks.dat  );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
 STATS_OUT_FILE(PrintNewTasksData,			newtasks.dat		);
 STATS_OUT_FILE(PrintNewReactionData,		newreactions.dat	);
@@ -187,6 +189,8 @@ public:                                                                         
 }                                                                                         /* 13 */ \
 
 POP_OUT_FILE(PrintPhenotypeData,       phenotype_count.dat );
+POP_OUT_FILE(PrintHostPhenotypeData,      host_phenotype_count.dat );
+POP_OUT_FILE(PrintParasitePhenotypeData,  parasite_phenotype_count.dat );
 POP_OUT_FILE(PrintPhenotypeStatus,     phenotype_status.dat);
 POP_OUT_FILE(PrintDemeTestamentStats,  deme_testament.dat  );
 POP_OUT_FILE(PrintCurrentMeanDemeDensity,  deme_currentMeanDensity.dat  );
@@ -1865,7 +1869,7 @@ public:
       creature_file = largs.PopWord();
     else
       creature_file = m_world->GetConfig().START_ORGANISM.Get();
-    m_reference = cGenomeUtil::LoadGenome(creature_file, world->GetHardwareManager().GetInstSet());
+    m_reference = cGenomeUtil::LoadGenome(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager().GetInstSet());
     
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
@@ -1972,7 +1976,7 @@ public:
     int sum_num_organisms = 0;
     
     // load the reference genome
-    cGenome reference_genome(cGenomeUtil::LoadGenome(m_creature, m_world->GetHardwareManager().GetInstSet()));    
+    cGenome reference_genome(cGenomeUtil::LoadGenome(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet()));    
     
     // cycle over all genotypes
     tAutoRelease<tIterator<cBioGroup> > it;
@@ -3158,6 +3162,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintInterruptData>("PrintInterruptData");
   action_lib->Register<cActionPrintTotalsData>("PrintTotalsData");
   action_lib->Register<cActionPrintTasksData>("PrintTasksData");
+  action_lib->Register<cActionPrintHostTasksData>("PrintHostTasksData");
+  action_lib->Register<cActionPrintParasiteTasksData>("PrintParasiteTasksData");
   action_lib->Register<cActionPrintTasksExeData>("PrintTasksExeData");
   action_lib->Register<cActionPrintNewTasksData>("PrintNewTasksData");
   action_lib->Register<cActionPrintNewReactionData>("PrintNewReactionData");
@@ -3190,6 +3196,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
   // Population Out Files
   action_lib->Register<cActionPrintPhenotypeData>("PrintPhenotypeData");
+  action_lib->Register<cActionPrintParasitePhenotypeData>("PrintParasitePhenotypeData");
+  action_lib->Register<cActionPrintHostPhenotypeData>("PrintHostPhenotypeData");
   action_lib->Register<cActionPrintPhenotypeStatus>("PrintPhenotypeStatus");
   
   action_lib->Register<cActionPrintDemeTestamentStats>("PrintDemeTestamentStats");

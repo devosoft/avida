@@ -24,6 +24,8 @@
 
 #include "cWorld.h"
 
+#include "AvidaTools.h"
+
 #include "avida.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
@@ -40,6 +42,18 @@
 
 #include <cassert>
 
+using namespace AvidaTools;
+
+
+cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, tList<cString>* errors)
+{
+  cWorld* world = new cWorld(cfg, working_dir);
+  if (!world->setup(errors)) {
+    delete world;
+    world = NULL;
+  }
+  return world;
+}
 
 cWorld::~cWorld()
 {
@@ -67,31 +81,37 @@ cWorld::~cWorld()
 }
 
 
-void cWorld::Setup()
+bool cWorld::setup(tList<cString>* errors)
 {
+  bool success = true;
+  
   m_own_driver = true;
   m_driver = new cFallbackWorldDriver();
   
   // Setup Random Number Generator
-  const int rand_seed = m_conf->RANDOM_SEED.Get();
-  cout << "Random Seed: " << rand_seed;
-  m_rng.ResetSeed(rand_seed);
-  if (rand_seed != m_rng.GetSeed()) cout << " -> " << m_rng.GetSeed();
-  cout << endl;
+  m_rng.ResetSeed(m_conf->RANDOM_SEED.Get());
   
-  m_data_mgr = new cDataFileManager(m_conf->DATA_DIR.Get(), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
-  if (m_conf->VERBOSITY.Get() > VERBOSE_NORMAL)
-    cout << "Data Directory: " << m_data_mgr->GetTargetDir() << endl;
+  m_data_mgr = new cDataFileManager(FileSystem::GetAbsolutePath(m_conf->DATA_DIR.Get(), m_working_dir), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
+  
+  // Initialize the hardware manager, loading all of the instruction sets
   m_hw_mgr = new cHardwareManager(this);
+  if (m_conf->INST_SET_LOAD_LEGACY.Get()) {
+    if (!m_hw_mgr->ConvertLegacyInstSetFile(m_conf->INST_SET.Get(), m_conf->INSTSETS.Get(), errors)) success = false;
+  }
+  if (!m_hw_mgr->LoadInstSets(errors)) success = false;
+  if (m_hw_mgr->GetNumInstSets() == 0) {
+    if (errors) errors->PushRear(new cString("no instruction sets defined"));
+    success = false;
+  }
   
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
-  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get())) {
-    cerr << "error: unable to load environment" << endl;
-    Avida::Exit(-1);
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
+    if (errors) errors->PushRear(new cString("unable to load environment"));
+    success = false;
   }
   
   // Setup Stats Object
@@ -126,10 +146,12 @@ void cWorld::Setup()
   
   // Setup Event List
   m_event_list = new cEventList(this);
-  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get())) {
-    cerr << "error: unable to load events" << endl;
-    Avida::Exit(-1);
+  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir)) {
+    if (errors) errors->PushRear(new cString("unable to load environment"));
+    success = false;
   }
+  
+  return success;
 }
 
 cAnalyze& cWorld::GetAnalyze()

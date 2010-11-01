@@ -61,7 +61,7 @@ private:
 
 public:
   cBirthChamber(cWorld* world) : m_world(world) { ; }
-  ~cBirthChamber() { ; }
+  ~cBirthChamber();
 
   // Handle manipulations & tests of genome.  Return false if divide process
   // should halt.  Place offspring in child_array.
