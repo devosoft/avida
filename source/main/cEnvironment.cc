@@ -817,11 +817,10 @@ bool cEnvironment::LoadGradientResource(cString desc) //JW
      exists (for instance was created as a cell resource) return an error*/
     
     cResource* new_resource;
-    if (! resource_lib.DoesResourceExist(name)) {
+    if (!resource_lib.DoesResourceExist(name)) {
       new_resource = resource_lib.AddResource(name);
     } else {
-      cerr << "Error: resource " << name << " already exists." << endl;
-      return false;
+      new_resource = resource_lib.GetResource(name);
     }
     
     new_resource->SetGeometry("grid");

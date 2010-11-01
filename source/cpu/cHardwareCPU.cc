@@ -3852,8 +3852,15 @@ bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx) //JW
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
   int reg_to_set = FindModifiedRegister(REG_BX);
   
-  for(int i = 0; i < res_count.GetSize(); i++) {
-    if(res_count[i] > 0.0) GetRegister(reg_to_set) = i;
+/*  for(int i = 0; i < res_count.GetSize(); i++) {
+    if(res_count[i] > 0.0) GetRegister(reg_to_set) = i;*/
+  
+  double max_resource = 0.0;
+  for (int i = 0; i < res_count.GetSize(); i++) {
+    if (res_count[i] > max_resource) {
+      max_resource = res_count[i];
+      GetRegister(reg_to_set) = i;
+    }
   }
     
   return true;
