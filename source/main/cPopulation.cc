@@ -4409,7 +4409,7 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
     
     // Loads "num_units" preferrentially, but will fall back to "num_cpus" if present
     assert(tmp.props->HasEntry("num_cpus") || tmp.props->HasEntry("num_units"));
-    tmp.num_cpus = (tmp.props->HasEntry("num_units") ? tmp.props->Get("num_units").AsInt() : tmp.props->Get("num_cpus").AsInt();
+    tmp.num_cpus = (tmp.props->HasEntry("num_units")) ? tmp.props->Get("num_units").AsInt() : tmp.props->Get("num_cpus").AsInt();
     
     // Process resident cell ids
     cString cellstr(tmp.props->Get("cells"));
