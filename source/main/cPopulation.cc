@@ -4476,7 +4476,9 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
     // Fix Parent IDs
     cString nparentstr;
     int pcount = 0;
-    cStringList opidlist(genotypes[i].props->Get("parents"), ',');
+    cString lparentstr = genotypes[i].props->Get("parents");
+    if (lparentstr == "(none)") lparentstr = "";
+    cStringList opidlist(lparentstr, ',');
     while (opidlist.GetSize()) {
       int opid = opidlist.Pop().AsInt();
       int npid = -1;
