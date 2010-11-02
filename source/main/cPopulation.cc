@@ -489,7 +489,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
           cCPUTestInfo test_info;
           cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
           test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-          test_cpu->TestGenome(ctx, test_info, parent_organism->GetHardware().GetMemory()); // Use the true genome
+          cMetaGenome mg(parent_organism->GetMetaGenome());
+          mg.SetGenome(parent_organism->GetHardware().GetMemory()); 
+          test_cpu->TestGenome(ctx, test_info, mg); // Use the true genome
           if (pc_phenotype & 1) {  // If we must update the merit
             parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
           }
@@ -666,7 +668,9 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     cCPUTestInfo test_info;
     cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
     test_info.UseManualInputs(target_cell.GetInputs()); // Test using what the environment will be
-    test_cpu->TestGenome(ctx, test_info, in_organism->GetHardware().GetMemory());  // Use the true genome
+    cMetaGenome mg(in_organism->GetMetaGenome());
+    mg.SetGenome(in_organism->GetHardware().GetMemory());
+    test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
     
     if (pc_phenotype & 1)
       in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit()); 

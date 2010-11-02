@@ -257,7 +257,7 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
   for (int line_num = 0; line_num < max_line; line_num++) {
     int cur_inst = base_genome[line_num].GetOp();
     mod_genome.Remove(line_num);
-    mg.GetGenome() = mod_genome;
+    mg.SetGenome(mod_genome);
     ProcessGenome(ctx, testcpu, mg);
     if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
     mod_genome.Insert(line_num, cInstruction(cur_inst));
@@ -284,7 +284,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
       mod_genome.Insert(line_num, cInstruction(inst_num));
-      mg.GetGenome() = mod_genome;
+      mg.SetGenome(mod_genome);
       ProcessGenome(ctx, testcpu, mg);
       if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       mod_genome.Remove(line_num);

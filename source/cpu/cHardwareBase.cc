@@ -619,7 +619,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome().GetGenome());
+  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
   delete testcpu;
   
@@ -712,7 +712,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome().GetGenome());
+  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
   delete testcpu;
   
