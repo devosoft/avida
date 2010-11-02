@@ -85,6 +85,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
     m_src = SRC_ORGANISM_FILE_LOAD;
   }
   m_src_args = props.Get("src_args");
+  if (m_src_args == "(none)") m_src_args = "";
   
   m_genome.Load(props);
   
@@ -108,6 +109,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
   } else if (props.HasEntry("parent_id")) { // Backwards compatible load
     m_parent_str = props.Get("parent_id");
   }
+  if (m_parent_str == "(none)") m_parent_str = "";
   cStringList parents(m_parent_str,',');
 
   m_parents.Resize(parents.GetSize());
@@ -200,7 +202,7 @@ void cBGGenotype::Save(cDataFile& df)
   
   df.Write(m_id, "ID", "id");
   df.Write(Avida::BioUnitSourceMap[m_src], "Source", "src");
-  df.Write(m_src_args, "Source Args", "src_args");
+  df.Write(m_src_args.GetSize() ? m_src_args : "(none)", "Source Args", "src_args");
 
   cString str("");
   if (m_parents.GetSize()) {
@@ -209,7 +211,7 @@ void cBGGenotype::Save(cDataFile& df)
       str += cStringUtil::Stringf(",%d", m_parents[i]->GetID());
     }
   }
-  df.Write(str, "Parent ID(s)", "parents");
+  df.Write((str.GetSize()) ? str : "(none)", "Parent ID(s)", "parents");
   
   df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
   df.Write(m_total_organisms, "Total number of organisms that ever existed", "total_units");

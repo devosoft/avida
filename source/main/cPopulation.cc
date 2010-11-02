@@ -4373,10 +4373,10 @@ public:
   
   
   inline sTmpGenotype() : id_num(-1), props(NULL) { ; }
-  inline bool operator<(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }
-  inline bool operator>(const sTmpGenotype& rhs) const { return id_num > rhs.id_num; }
-  inline bool operator<=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
-  inline bool operator>=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
+  inline bool operator<(const sTmpGenotype& rhs) const { return id_num > rhs.id_num; }
+  inline bool operator>(const sTmpGenotype& rhs) const { return id_num < rhs.id_num; }
+  inline bool operator<=(const sTmpGenotype& rhs) const { return id_num >= rhs.id_num; }
+  inline bool operator>=(const sTmpGenotype& rhs) const { return id_num <= rhs.id_num; }
 };  
 
 
@@ -4436,17 +4436,18 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
     // @blw preserve compatability with older .spop files that don't have lineage labels
     assert(tmp.lineage_labels.GetSize() == 0 || tmp.lineage_labels.GetSize() == tmp.num_cpus);
   }
-  
+
   // Sort genotypes in ascending order according to their id_num
   tArrayUtils::QSort(genotypes);
-  
   
   cBioGroupManager* bgm = m_world->GetClassificationManager().GetBioGroupManager("genotype");
   for (int i = 0; i < genotypes.GetSize(); i++) {
     // Fix Parent IDs
     cString nparentstr;
     int pcount = 0;
-    cStringList opidlist(genotypes[i].props->Get("parents"), ',');
+    cString lparentstr = genotypes[i].props->Get("parents");
+    if (lparentstr == "(none)") lparentstr = "";
+    cStringList opidlist(lparentstr, ',');
     while (opidlist.GetSize()) {
       int opid = opidlist.Pop().AsInt();
       int npid = -1;
