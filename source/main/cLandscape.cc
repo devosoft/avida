@@ -153,7 +153,7 @@ void cLandscape::Process(cAvidaContext& ctx)
   
   // Calculate the complexity...
   
-  double max_ent = log((double) inst_set.GetSize());
+  double max_ent = log((double) m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize());
   total_entropy = 0;
   for (int i = 0; i < base_genome.GetSize(); i++) {
     // Per-site entropy is the log of the number of legal states for that
@@ -162,7 +162,7 @@ void cLandscape::Process(cAvidaContext& ctx)
   }
   complexity = base_genome.GetSize() - total_entropy;
   
-  m_num_found = base_genome.GetSize() * (inst_set.GetSize() - 1);
+  m_num_found = base_genome.GetSize() * (m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize() - 1);
 }
 
 
@@ -172,14 +172,14 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome
                               int cur_distance, int start_line)
 {
   const int max_line = base_genome.GetSize() - cur_distance + 1;
-  const int inst_size = inst_set.GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(cur_genome);
   cGenome& mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = start_line; line_num < max_line; line_num++) {
-    int cur_inst = base_genome[line_num].GetOp();
+    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
     
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
@@ -211,14 +211,14 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   // Get the info about the base creature.
   ProcessBase(ctx, testcpu);
   const int max_line = base_genome.GetSize();
-  const int inst_size = inst_set.GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(base_genome);
   cGenome& mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {
-    int cur_inst = base_genome[line_num].GetOp();
+    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
     df.Write(cur_inst, "Original Instruction");
 
     // Loop through all instructions...
@@ -255,7 +255,7 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
   
   // Loop through all the lines of genome, testing all deletions.
   for (int line_num = 0; line_num < max_line; line_num++) {
-    int cur_inst = base_genome[line_num].GetOp();
+    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
     mod_genome.Remove(line_num);
     mg.SetGenome(mod_genome);
     ProcessGenome(ctx, testcpu, mg);
@@ -274,7 +274,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
   ProcessBase(ctx, testcpu);
   
   const int max_line = base_genome.GetSize();
-  const int inst_size = inst_set.GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(base_genome);
   cCPUMemory mod_genome = mg.GetGenome();
@@ -402,7 +402,7 @@ void cLandscape::PredictWProcess(cAvidaContext& ctx, cDataFile& df, int update)
   
   // Calculate the complexity...
   
-  double max_ent = log(static_cast<double>(inst_set.GetSize()));
+  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize()));
   total_entropy = 0;
   for (int i = 0; i < base_genome.GetSize(); i++) {
     total_entropy += (log(static_cast<double>(site_count[i] + 1)) / max_ent);
@@ -444,7 +444,7 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
   
   for (int row = 0; row < genome_size; row++) {
     double max_line_fitness = 1.0;
-    int base_inst = base_genome[row].GetOp();
+    int base_inst = base_genome.GetGenome()[row].GetOp();
     for (int col = 0; col < inst_size; col++) {
       if (col == base_inst) continue; // Only consider changes to line!
       double & cur_fitness = fitness_chart(row, col);
@@ -499,7 +499,7 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
       ctx.GetRandom().Choose(genome_size, mut_lines);
       test_fitness = 1.0;
       for (int j = 0; j < num_muts && test_fitness != 0.0; j++) {	
-        int base_inst = base_genome[ mut_lines[j] ].GetOp();
+        int base_inst = base_genome.GetGenome()[ mut_lines[j] ].GetOp();
         int mut_inst = ctx.GetRandom().GetUInt(inst_size);
         while (mut_inst == base_inst) mut_inst = ctx.GetRandom().GetUInt(inst_size);
         test_fitness *= fitness_chart(mut_lines[j], mut_inst);
@@ -537,7 +537,7 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
   
   // Calculate the complexity...
   
-  double max_ent = log(static_cast<double>(inst_set.GetSize()));
+  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize()));
   total_entropy = 0;
   for (int i = 0; i < base_genome.GetSize(); i++) {
     total_entropy += (log(static_cast<double>(site_count[i] + 1)) / max_ent);
@@ -552,28 +552,29 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
 {
   distance = 1;
   
-  cGenome mod_genome(base_genome);
+  cMetaGenome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
 
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
+  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
   
   ProcessBase(ctx, testcpu);
   
   // Loop through all the lines of genome, testing each line.
   for (int line_num = 0; line_num < genome_size; line_num++) {
-    cInstruction cur_inst( base_genome[line_num] );
+    cInstruction cur_inst( base_genome.GetGenome()[line_num] );
     
     for (int i = 0; i < trials; i++) {
       // Choose the new instruction for that line...
-      cInstruction new_inst( inst_set.GetRandomInst(ctx) );
+      cInstruction new_inst(inst_set.GetRandomInst(ctx) );
       if (cur_inst == new_inst) { i--; continue; }
       
       // Make the change, and test it!
-      mod_genome[line_num] = new_inst;
+      mod_genome.GetGenome()[line_num] = new_inst;
       ProcessGenome(ctx, testcpu, mod_genome);
     }
     
-    mod_genome[line_num] = cur_inst;
+    mod_genome.GetGenome()[line_num] = cur_inst;
   }
   
   delete testcpu;
@@ -582,11 +583,11 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
 
 void cLandscape::RandomProcess(cAvidaContext& ctx)
 {
-  cGenome mod_genome(base_genome);
+  cMetaGenome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-
+  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
   ProcessBase(ctx, testcpu);
   
   int mut_num;
@@ -602,14 +603,14 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
     
     // Choose the new instructions for those lines...
     for (mut_num = 0; mut_num < distance; mut_num++) {
-      const cInstruction new_inst( inst_set.GetRandomInst(ctx) );
-      const cInstruction & cur_inst = base_genome[ mut_lines[mut_num] ];
+      const cInstruction new_inst(inst_set.GetRandomInst(ctx));
+      const cInstruction& cur_inst = base_genome.GetGenome()[ mut_lines[mut_num] ];
       if (cur_inst == new_inst) {
         mut_num--;
         continue;
       }
       
-      mod_genome[ mut_lines[mut_num] ] = new_inst;
+      mod_genome.GetGenome()[ mut_lines[mut_num] ] = new_inst;
     }
     
     // And test it!
@@ -619,7 +620,7 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
     
     // And reset the genome.
     for (mut_num = 0; mut_num < distance; mut_num++) {
-      mod_genome[ mut_lines[mut_num] ] = base_genome[ mut_lines[mut_num] ];
+      mod_genome.GetGenome()[ mut_lines[mut_num] ] = base_genome.GetGenome()[ mut_lines[mut_num] ];
     }
   }
   
@@ -634,14 +635,14 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
 {
   // First, resize the fitness_chart.
   const int max_line = base_genome.GetSize();
-  const int inst_size = inst_set.GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   fitness_chart.ResizeClear(max_line, inst_size);
   
-  cGenome mod_genome(base_genome);
+  cMetaGenome mod_genome(base_genome);
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {
-    int cur_inst = base_genome[line_num].GetOp();
+    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
     
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
@@ -650,25 +651,26 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
         continue;
       }
       
-      mod_genome[line_num].SetOp(inst_num);
+      mod_genome.GetGenome()[line_num].SetOp(inst_num);
       ProcessGenome(ctx, testcpu, mod_genome);
       fitness_chart(line_num, inst_num) = m_cpu_test_info.GetColonyFitness();
     }
     
-    mod_genome[line_num].SetOp(cur_inst);
+    mod_genome.GetGenome()[line_num].SetOp(cur_inst);
   }
 }
 
 void cLandscape::TestPairs(cAvidaContext& ctx)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-
+  cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
+  
   ProcessBase(ctx, testcpu);
   if (base_fitness == 0.0) return;
   
   BuildFitnessChart(ctx, testcpu);
   
-  cGenome mod_genome(base_genome);
+  cMetaGenome mod_genome(base_genome);
   const int genome_size = base_genome.GetSize();
   
   tArray<int> mut_lines(2);
@@ -682,7 +684,7 @@ void cLandscape::TestPairs(cAvidaContext& ctx)
     // Choose the new instructions for those lines...
     for (int mut_num = 0; mut_num < 2; mut_num++) {
       const cInstruction new_inst( inst_set.GetRandomInst(ctx) );
-      const cInstruction& cur_inst = base_genome[ mut_lines[mut_num] ];
+      const cInstruction& cur_inst = base_genome.GetGenome()[ mut_lines[mut_num] ];
       if (cur_inst == new_inst) {
         mut_num--;
         continue;
@@ -707,8 +709,8 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
   BuildFitnessChart(ctx, testcpu);
   
   const int max_line = base_genome.GetSize();
-  const int inst_size = inst_set.GetSize();
-  cGenome mod_genome(base_genome);
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
+  cMetaGenome mod_genome(base_genome);
   cInstruction inst1, inst2;
   
   // Loop through all the lines of genome, testing trying all combinations.
@@ -718,10 +720,10 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
       // Loop through all instructions...
       for (int inst1_num = 0; inst1_num < inst_size; inst1_num++) {
         inst1.SetOp(inst1_num);
-        if (inst1 == base_genome[line1_num]) continue;
+        if (inst1 == base_genome.GetGenome()[line1_num]) continue;
         for (int inst2_num = 0; inst2_num < inst_size; inst2_num++) {
           inst2.SetOp(inst2_num);
-          if (inst2 == base_genome[line2_num]) continue;
+          if (inst2 == base_genome.GetGenome()[line2_num]) continue;
           TestMutPair(ctx, testcpu, mod_genome, line1_num, line2_num, inst1, inst2);
         } // inst2_num loop
       } //inst1_num loop;
@@ -736,12 +738,13 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
 void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  cGenome cur_genome(base_genome);
-  cCPUMemory mod_genome(base_genome);
+  cMetaGenome cur_genome(base_genome);
+  cMetaGenome mg(base_genome);
+  cCPUMemory mod_genome = mg.GetGenome();
 
   int gen = 0;
   
-  const int inst_size = inst_set.GetSize();
+  const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   double pos_frac = 1.0;
   
   distance = 1;
@@ -759,12 +762,13 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
     
     // Try Insertion Mutations.
     
-    mod_genome = cur_genome;
+    mod_genome = cur_genome.GetGenome();
     for (int line_num = 0; line_num <= max_line; line_num++) {
       // Loop through all instructions...
       for (int inst_num = 0; inst_num < inst_size; inst_num++) {
         mod_genome.Insert(line_num, cInstruction(inst_num));
-        ProcessGenome(ctx, testcpu, mod_genome);
+        mg.SetGenome(mod_genome);
+        ProcessGenome(ctx, testcpu, mg);
         mod_genome.Remove(line_num);
       }
     }
@@ -772,9 +776,10 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
     // Try all deletion mutations.
     
     for (int line_num = 0; line_num < max_line; line_num++) {
-      int cur_inst = cur_genome[line_num].GetOp();
+      int cur_inst = cur_genome.GetGenome()[line_num].GetOp();
       mod_genome.Remove(line_num);
-      ProcessGenome(ctx, testcpu, mod_genome);
+      mg.SetGenome(mod_genome);
+      ProcessGenome(ctx, testcpu, mg);
       mod_genome.Insert(line_num, cInstruction(cur_inst));
     }
     
@@ -803,16 +808,16 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 }
 
 
-double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
+double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& mod_genome, int line1, int line2,
                                const cInstruction& mut1, const cInstruction& mut2)
 {
-  mod_genome[line1] = mut1;
-  mod_genome[line2] = mut2;
+  mod_genome.GetGenome()[line1] = mut1;
+  mod_genome.GetGenome()[line2] = mut2;
   testcpu->TestGenome(ctx, m_cpu_test_info, mod_genome);
   double combo_fitness = m_cpu_test_info.GetColonyFitness() / base_fitness;
   
-  mod_genome[line1] = base_genome[line1];
-  mod_genome[line2] = base_genome[line2];
+  mod_genome.GetGenome()[line1] = base_genome.GetGenome()[line1];
+  mod_genome.GetGenome()[line2] = base_genome.GetGenome()[line2];
   
   double mut1_fitness = fitness_chart(line1, mut1.GetOp()) / base_fitness;
   double mut2_fitness = fitness_chart(line2, mut2.GetOp()) / base_fitness;
@@ -869,7 +874,7 @@ void cLandscape::PrintStats(cDataFile& df, int update)
 void cLandscape::PrintEntropy(cDataFile& df)
 {
   df.WriteComment("Entropy Data");
-  double max_ent = log(static_cast<double>(inst_set.GetSize()));
+  double max_ent = log(static_cast<double>(m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize()));
   for (int j = 0; j < base_genome.GetSize(); j++) df.WriteAnonymous(log(static_cast<double>(site_count[j] + 1)) / max_ent);
   df.Endl();
 }
