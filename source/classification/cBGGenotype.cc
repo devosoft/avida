@@ -85,6 +85,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
     m_src = SRC_ORGANISM_FILE_LOAD;
   }
   m_src_args = props.Get("src_args");
+  if (m_src_args == "(none)") m_src_args = "";
   
   m_genome.Load(props);
   
@@ -200,7 +201,7 @@ void cBGGenotype::Save(cDataFile& df)
   
   df.Write(m_id, "ID", "id");
   df.Write(Avida::BioUnitSourceMap[m_src], "Source", "src");
-  df.Write(m_src_args, "Source Args", "src_args");
+  df.Write(m_src_args.GetSize() ? m_src_args : "(none)", "Source Args", "src_args");
 
   cString str("");
   if (m_parents.GetSize()) {
