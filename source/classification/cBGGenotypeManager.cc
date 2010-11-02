@@ -39,6 +39,7 @@ using namespace AvidaTools;
 
 cBGGenotypeManager::cBGGenotypeManager(cWorld* world)
   : m_world(world)
+  , m_active_sz(1)
   , m_coalescent(NULL)
   , m_best(0)
   , m_next_id(1)
