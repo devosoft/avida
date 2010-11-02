@@ -37,9 +37,8 @@
 #include "cWorld.h"
 
 
-cLandscape::cLandscape(cWorld* world, const cGenome& in_genome)
-: m_world(world), base_genome(1), peak_genome(1), trials(1), m_min_found(0),
-  m_max_trials(0), site_count(NULL)
+cLandscape::cLandscape(cWorld* world, const cMetaGenome& in_genome)
+: m_world(world), trials(1), m_min_found(0), m_max_trials(0), site_count(NULL)
 {
   Reset(in_genome);
 }
@@ -49,7 +48,7 @@ cLandscape::~cLandscape()
   if (site_count != NULL) delete [] site_count;
 }
 
-void cLandscape::Reset(const cGenome & in_genome)
+void cLandscape::Reset(const cMetaGenome& in_genome)
 {
   base_genome       = in_genome;
   peak_genome       = in_genome;
@@ -93,7 +92,7 @@ void cLandscape::Reset(const cGenome & in_genome)
   m_num_found = 0;
 }
 
-double cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome)
+double cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& in_genome)
 {
   testcpu->TestGenome(ctx, m_cpu_test_info, in_genome);
   
@@ -169,13 +168,14 @@ void cLandscape::Process(cAvidaContext& ctx)
 
 // For distances greater than one, this needs to be called recursively.
 
-void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome,
+void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& cur_genome,
                               int cur_distance, int start_line)
 {
   const int max_line = base_genome.GetSize() - cur_distance + 1;
   const int inst_size = inst_set.GetSize();
   
-  cGenome mod_genome(cur_genome);
+  cMetaGenome mg(cur_genome);
+  cGenome& mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = start_line; line_num < max_line; line_num++) {
@@ -187,10 +187,10 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cu
       
       mod_genome[line_num].SetOp(inst_num);
       if (cur_distance <= 1) {
-        ProcessGenome(ctx, testcpu, mod_genome);
+        ProcessGenome(ctx, testcpu, mg);
         if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       } else {
-        Process_Body(ctx, testcpu, mod_genome, cur_distance - 1, line_num + 1);
+        Process_Body(ctx, testcpu, mg, cur_distance - 1, line_num + 1);
       }
     }
     
@@ -213,7 +213,8 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   const int max_line = base_genome.GetSize();
   const int inst_size = inst_set.GetSize();
   
-  cGenome mod_genome(base_genome);
+  cMetaGenome mg(base_genome);
+  cGenome& mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {
@@ -227,7 +228,7 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
         fitness = base_fitness;
       } else {
         mod_genome[line_num].SetOp(inst_num);
-        fitness = ProcessGenome(ctx, testcpu, mod_genome);
+        fitness = ProcessGenome(ctx, testcpu, mg);
       }
       df.Write(fitness, "Mutation Fitness (instruction = column_number - 2)");
     }
@@ -249,13 +250,15 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
   ProcessBase(ctx, testcpu);
   
   const int max_line = base_genome.GetSize();
-  cCPUMemory mod_genome(base_genome);
+  cMetaGenome mg(base_genome);
+  cCPUMemory mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing all deletions.
   for (int line_num = 0; line_num < max_line; line_num++) {
     int cur_inst = base_genome[line_num].GetOp();
     mod_genome.Remove(line_num);
-    ProcessGenome(ctx, testcpu, mod_genome);
+    mg.GetGenome() = mod_genome;
+    ProcessGenome(ctx, testcpu, mg);
     if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
     mod_genome.Insert(line_num, cInstruction(cur_inst));
   }
@@ -273,14 +276,16 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
   const int max_line = base_genome.GetSize();
   const int inst_size = inst_set.GetSize();
   
-  cCPUMemory mod_genome(base_genome);
+  cMetaGenome mg(base_genome);
+  cCPUMemory mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing all insertions.
   for (int line_num = 0; line_num <= max_line; line_num++) {
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
       mod_genome.Insert(line_num, cInstruction(inst_num));
-      ProcessGenome(ctx, testcpu, mod_genome);
+      mg.GetGenome() = mod_genome;
+      ProcessGenome(ctx, testcpu, mg);
       if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       mod_genome.Remove(line_num);
     }

@@ -523,45 +523,12 @@ bool cGenomeUtil::LoadGenome(const cString& filename, const cString& working_dir
   return success;
 }
 
-cGenome cGenomeUtil::LoadInternalGenome(istream& fp, const cInstSet& inst_set)
-{
-  assert(fp.good()); // Invalid stream to load genome from!
-  
-  int num_lines = -1;
-  fp >> num_lines;
-  
-  if (num_lines <= 0) { return cGenome(1); }
-  
-  // Setup the code array...
-  cGenome new_genome(num_lines);
-  cString cur_line;
-  
-  for (int line_num = 0; line_num < new_genome.GetSize(); line_num++) {
-    fp >> cur_line;
-    new_genome[line_num] = inst_set.GetInst(cur_line);
-    
-    if (new_genome[line_num] == inst_set.GetInstError()) {
-      // You're using the wrong instruction set!  YOU FOOL!
-      cerr << "Cannot load creature from stream:" << endl
-      << "       Unknown line: " << cur_line << endl;
-    }
-  }
-  return new_genome;
-}
 
-void cGenomeUtil::SaveGenome(ostream& fp, const cInstSet& inst_set,
-                           const cGenome & gen)
+void cGenomeUtil::SaveGenome(ostream& fp, const cInstSet& inst_set, const cGenome& gen)
 {
   for (int i = 0; i < gen.GetSize(); i++) {
     fp << inst_set.GetName(gen[i]) << endl;
   }
-}
-
-void cGenomeUtil::SaveInternalGenome(ostream& fp, const cInstSet& inst_set,
-                                   const cGenome & gen)
-{
-  fp << gen.GetSize() << endl;
-  SaveGenome(fp, inst_set, gen);
 }
 
 

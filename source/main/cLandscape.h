@@ -29,8 +29,8 @@
 #ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
 #endif
-#ifndef cGenome_h
-#include "cGenome.h"
+#ifndef cMetaGenome_h
+#include "cMetaGenome.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -51,8 +51,8 @@ class cLandscape
 private:
   cWorld* m_world;
   cCPUTestInfo m_cpu_test_info;
-  cGenome base_genome;
-  cGenome peak_genome;
+  cMetaGenome base_genome;
+  cMetaGenome peak_genome;
   double base_fitness;
   double base_merit;
   double base_gestation;
@@ -98,23 +98,15 @@ private:
   int m_num_found;
 
 
-  void BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu);
-  double ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome);
-  void ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu);
-  void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
-
-  double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
-                     const cInstruction& mut1, const cInstruction& mut2);
-
   cLandscape(); // @not_implemented
   cLandscape(const cLandscape&); // @not_implemented
   cLandscape& operator=(const cLandscape&); // @not_implemented
 
 public:
-  cLandscape(cWorld* world, const cGenome& in_genome, const cInstSet& in_inst_set);
+  cLandscape(cWorld* world, const cMetaGenome& in_genome);
   ~cLandscape();
 
-  void Reset(const cGenome& in_genome);
+  void Reset(const cMetaGenome& in_genome);
 
   void Process(cAvidaContext& ctx);
   void ProcessDelete(cAvidaContext& ctx);
@@ -146,7 +138,7 @@ public:
   void PrintEntropy(cDataFile& fp);
   void PrintSiteCount(cDataFile& fp);
 
-  inline const cGenome& GetPeakGenome() { return peak_genome; }
+  inline const cMetaGenome& GetPeakGenome() { return peak_genome; }
   inline double GetAveFitness() { return total_fitness / total_count; }
   inline double GetAveSqrFitness() { return total_sqr_fitness / total_count; }
   inline double GetPeakFitness() { return peak_fitness; }
@@ -180,6 +172,16 @@ public:
   inline int GetNumTrials() const { return trials; }
   inline double GetTotalEntropy() const { return total_entropy; }
   inline double GetComplexity() const { return complexity; }
+  
+  
+private:
+  void BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu);
+  double ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& in_genome);
+  void ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu);
+  void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& cur_genome, int cur_distance, int start_line);
+  
+  double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& mod_genome, int line1, int line2,
+                     const cInstruction& mut1, const cInstruction& mut2);  
 };
 
 #endif

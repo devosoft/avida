@@ -117,10 +117,8 @@ public:
   
   static bool LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set, cGenome& out_genome);
   static cGenome LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set);
-  static cGenome LoadInternalGenome(std::istream& fp, const cInstSet& inst_set);
   static void SaveGenome(std::ostream& fp, const cInstSet& inst_set, const cGenome& gen);
-  static void SaveInternalGenome(std::ostream& fp, const cInstSet& inst_set, const cGenome& gen);
-  
+ 
   // ========= Genome Construction =========
   static cGenome RandomGenome(cAvidaContext& ctx, int length, const cInstSet& inst_set);
   static cGenome RandomGenomeWithoutZeroRedundantsPlusRepro(cAvidaContext& ctx, int length, const cInstSet& inst_set);

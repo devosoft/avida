@@ -208,24 +208,21 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 }
 
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome)
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
-  TestGenome_Body(ctx, test_info, mg, 0);
+  TestGenome_Body(ctx, test_info, genome, 0);
   ctx.ClearTestMode();
   
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome,
-                          ofstream& out_fp)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, ofstream& out_fp)
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
-  TestGenome_Body(ctx, test_info, mg, 0);
+  TestGenome_Body(ctx, test_info, genome, 0);
 
   ////////////////////////////////////////////////////////////////
   // IsViable() == false
@@ -348,7 +345,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 }
 
 
-void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename, int update)
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const cMetaGenome& genome, cString filename, int update)
 {
   if (filename == "") filename.Set("archive/%03d-unnamed.org", genome.GetSize());
     
@@ -437,7 +434,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
   df.Endl();
   
   // Display the genome
-  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
+  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome.GetGenome());
   
   m_world->GetDataFileManager().Remove(filename);
 }
@@ -452,7 +449,7 @@ void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename
   if (filename == "") filename.Set("archive/%03d-unnamed.org", mg.GetGenome().GetSize());
   
   cCPUTestInfo test_info;
-  TestGenome(ctx, test_info, mg.GetGenome());
+  TestGenome(ctx, test_info, mg);
   
   // Open the file...
   cDataFile& df = m_world->GetDataFile(filename);
