@@ -240,7 +240,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDemeCellEvent.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
-  ${MAIN_DIR}/cFitnessMatrix.cc
   ${MAIN_DIR}/cGenome.cc
   ${MAIN_DIR}/cGenomeUtil.cc
   ${MAIN_DIR}/cInstruction.cc
@@ -249,7 +248,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cMetaGenome.cc
   ${MAIN_DIR}/cMutationLib.cc
   ${MAIN_DIR}/cMutationRates.cc
-  ${MAIN_DIR}/cMxCodeArray.cc
   ${MAIN_DIR}/cOrganism.cc
   ${MAIN_DIR}/cOrgMessage.cc
   ${MAIN_DIR}/cParasite.cc

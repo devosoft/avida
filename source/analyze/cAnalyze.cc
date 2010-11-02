@@ -46,7 +46,6 @@
 #include "cCPUTestInfo.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
-#include "cFitnessMatrix.h"
 #include "cGenomeUtil.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
@@ -4687,59 +4686,6 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     df.Write(pair_pos_count,  "Count of beneficial knockouts after paired knockout tests.");
     df.Endl();
   }
-}
-
-
-void cAnalyze::CommandFitnessMatrix(cString cur_string)
-{
-  if (m_world->GetVerbosity() >= VERBOSE_ON) cout << "Calculating fitness matrix for batch " << cur_batch << endl;
-  else cout << "Calculating fitness matrix..." << endl;
-  
-  cout << "Warning: considering only first genotype of the batch!" << endl;
-  
-  // Load in the variables...
-  int depth_limit = 4;
-  if (cur_string.GetSize() != 0) depth_limit = cur_string.PopWord().AsInt();
-  
-  double fitness_threshold_ratio = .9;
-  if (cur_string.GetSize() != 0) fitness_threshold_ratio = cur_string.PopWord().AsDouble();
-  
-  int ham_thresh  = 1;
-  if (cur_string.GetSize() != 0) ham_thresh = cur_string.PopWord().AsInt();
-  
-  double error_rate_min = 0.005;
-  if (cur_string.GetSize() != 0) error_rate_min = cur_string.PopWord().AsDouble();
-  
-  double error_rate_max = 0.05;
-  if (cur_string.GetSize() != 0) error_rate_max = cur_string.PopWord().AsDouble();
-  
-  double error_rate_step = 0.005;
-  if (cur_string.GetSize() != 0) error_rate_step = cur_string.PopWord().AsDouble();
-  
-  double vect_fmax = 1.1;
-  if (cur_string.GetSize() != 0) vect_fmax = cur_string.PopWord().AsDouble();
-  
-  double vect_fstep = .1;
-  if (cur_string.GetSize() != 0) vect_fstep = cur_string.PopWord().AsDouble();
-  
-  int diag_iters = 200;
-  if (cur_string.GetSize() != 0) diag_iters = cur_string.PopWord().AsInt();
-  
-  int write_ham_vector = 0;
-  if (cur_string.GetSize() != 0) write_ham_vector = cur_string.PopWord().AsInt();
-  
-  int write_full_vector = 0;
-  if (cur_string.GetSize() != 0) write_full_vector = cur_string.PopWord().AsInt();
-  
-  // Consider only the first genotypes in this batch...
-  tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
-  cAnalyzeGenotype * genotype = batch_it.Next();
-  
-  cFitnessMatrix matrix(m_world, genotype->GetGenome(), &inst_set);
-  
-  matrix.CalcFitnessMatrix(depth_limit, fitness_threshold_ratio, ham_thresh, error_rate_min,
-                           error_rate_max, error_rate_step, vect_fmax, vect_fstep, diag_iters,
-                           write_ham_vector, write_full_vector );
 }
 
 
@@ -9387,7 +9333,6 @@ void cAnalyze::SetupCommandDefLibrary()
   AddLibraryDef("PRINT_RESOURCE_FITNESS_MAP", &cAnalyze::CommandPrintResourceFitnessMap);
   
   // Individual organism analysis...
-  AddLibraryDef("FITNESS_MATRIX", &cAnalyze::CommandFitnessMatrix);
   AddLibraryDef("MAP", &cAnalyze::CommandMapTasks);  // Deprecated...
   AddLibraryDef("MAP_TASKS", &cAnalyze::CommandMapTasks);
   AddLibraryDef("AVERAGE_MODULARITY", &cAnalyze::CommandAverageModularity);
