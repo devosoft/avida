@@ -75,6 +75,18 @@ void cDemeTopologyNetwork::ProcessUpdate() {
 }
 
 
+/*! Called when the organism living in cell u dies.
+ */
+void cDemeTopologyNetwork::OrganismDeath(cPopulationCell& u) {
+	if(m_world->GetConfig().DEME_NETWORK_REMOVE_NODE_ON_DEATH.Get()) {
+		CellVertexMap::iterator ui=m_cv.find(u.GetID());
+		if(ui!=m_cv.end()) {
+			boost::clear_vertex(ui->second, m_network);
+		}
+	}
+}
+
+
 /*! Connect u->v with weight w.
  */
 void cDemeTopologyNetwork::Connect(cPopulationCell& u, cPopulationCell& v, double w) {
