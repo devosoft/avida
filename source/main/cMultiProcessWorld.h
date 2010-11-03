@@ -44,6 +44,7 @@
 class cMultiProcessWorld : public cWorld
 	{
 	private:
+		cMultiProcessWorld(); // @not_implemented
 		cMultiProcessWorld(const cMultiProcessWorld&); // @not_implemented
 		cMultiProcessWorld& operator=(const cMultiProcessWorld&); // @not_implemented
 		
@@ -56,9 +57,12 @@ class cMultiProcessWorld : public cWorld
 		int m_universe_y; //!< Y coordinate of this world.
 		int m_universe_popsize; //!< Total size of the population, delayed one update.
 		
+		//! Constructor (prefer Initialize).
+		cMultiProcessWorld(cAvidaConfig* cfg, const cString& cwd, boost::mpi::environment& env, boost::mpi::communicator& worldcomm);
+
 	public:
-		//! Constructor.
-		cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environment& env, boost::mpi::communicator& world);
+		//! Create and initialize a cMultiProcessWorld.
+		static cMultiProcessWorld* Initialize(cAvidaConfig* cfg, const cString& cwd, boost::mpi::environment& env, boost::mpi::communicator& worldcomm);
 		
 		//! Destructor.
 		virtual ~cMultiProcessWorld() { }

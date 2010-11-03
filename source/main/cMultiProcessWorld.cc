@@ -62,15 +62,28 @@ struct migration_message {
 };
 
 
+/*! Create and initialize a cMultiProcessWorld.
+ */
+cMultiProcessWorld* cMultiProcessWorld::Initialize(cAvidaConfig* cfg, const cString& cwd, boost::mpi::environment& env, boost::mpi::communicator& worldcomm)
+{
+  cMultiProcessWorld* world = new cMultiProcessWorld(cfg, cwd, env, worldcomm);
+  if (!world->setup(NULL)) {
+    delete world;
+    world = NULL;
+  }
+  return world;
+}
+
+
 /*! Constructor.
  
  Since we're running in a multi-process environment from a single command line,
  we need to tweak the random seed and data dirs a bit.
  */
-cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg, boost::mpi::environment& env, boost::mpi::communicator& world) 
-: cWorld(cfg)
+cMultiProcessWorld::cMultiProcessWorld(cAvidaConfig* cfg, const cString& cwd, boost::mpi::environment& env, boost::mpi::communicator& worldcomm) 
+: cWorld(cfg, cwd)
 , m_mpi_env(env)
-, m_mpi_world(world)
+, m_mpi_world(worldcomm)
 , m_universe_dim(0)
 , m_universe_x(0)
 , m_universe_y(0)

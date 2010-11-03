@@ -9,6 +9,7 @@ project :
         <include>main
         <include>platform
         <include>tools
+        <include>tools/platform
         <include>utils
         <include>viewer-core
         <define>BOOST_IS_AVAILABLE
@@ -111,8 +112,7 @@ lib avida-core :
     main/cStats.cc
     main/cTaskLib.cc
     main/cWorld.cc
-    tools/platform/cThread.cc
-    tools/platform/PlatformExpert.cc
+    tools/AvidaTools.cc
     tools/cArgContainer.cc
     tools/cArgSchema.cc
     tools/cBitArray.cc
@@ -122,7 +122,6 @@ lib avida-core :
     tools/cDataFile.cc
     tools/cDataFileManager.cc
     tools/cDataManager_Base.cc
-    tools/cDefaultMessageDisplay.cc
     tools/cFile.cc
     tools/cDemeProbSchedule.cc
     tools/cHelpAlias.cc
@@ -143,8 +142,9 @@ lib avida-core :
     tools/cStringIterator.cc
     tools/cStringList.cc
     tools/cStringUtil.cc
-    tools/Tools.cc
     tools/cWeightedIndex.cc
+    tools/platform/cThread.cc
+    tools/platform/Platform.cc
     : <link>static <threading>multi
     ;
 
