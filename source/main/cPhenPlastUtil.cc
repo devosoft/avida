@@ -85,6 +85,6 @@ cPhenPlastSummary* cPhenPlastUtil::TestPlasticity(cAvidaContext& ctx, cWorld* wo
 {
   cCPUTestInfo test_info;
   // @TODO - phenplastgenotype should take a metagenome and pull its own config setting
-  cPhenPlastGenotype pp(mg.GetGenome(), world->GetConfig().GENOTYPE_PHENPLAST_CALC.Get(), test_info, world, ctx);
+  cPhenPlastGenotype pp(mg, world->GetConfig().GENOTYPE_PHENPLAST_CALC.Get(), test_info, world, ctx);
   return new cPhenPlastSummary(pp);
 }

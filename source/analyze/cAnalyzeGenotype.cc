@@ -509,7 +509,7 @@ void cAnalyzeGenotype::CheckPhenPlast() const
   if (m_phenplast_stats == NULL) {
     cCPUTestInfo test_info;
     
-    cPhenPlastGenotype pp(m_genome.GetGenome(), 1000, test_info, m_world, m_world->GetDefaultContext());
+    cPhenPlastGenotype pp(m_genome, 1000, test_info, m_world, m_world->GetDefaultContext());
     m_phenplast_stats = new cPhenPlastSummary(pp);
   }
 }
@@ -536,7 +536,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   }
   
   // Handling recalculation here
-  cPhenPlastGenotype recalc_data(m_genome.GetGenome(), num_trials, *test_info, m_world, ctx);
+  cPhenPlastGenotype recalc_data(m_genome, num_trials, *test_info, m_world, ctx);
   
   // The most likely phenotype will be assigned to the phenotype stats
   const cPlasticPhenotype* likely_phenotype = recalc_data.GetMostLikelyPhenotype();

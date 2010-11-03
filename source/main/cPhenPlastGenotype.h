@@ -32,8 +32,8 @@
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-#ifndef cGenome_h
-#include "cGenome.h"
+#ifndef cMetaGenome_h
+#include "cMetaGenome.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -82,7 +82,7 @@ class cPhenPlastGenotype
 
     typedef set<cPhenotype*, cPhenotype::lt_phenotype  > UniquePhenotypes;  //Actually, these are cPlasticPhenotypes*
     tList<cPlasticPhenotype> m_plastic_phenotypes;  //This will store a list of our unique plastic phenotype pointers  
-    cGenome m_genome;
+    cMetaGenome m_genome;
 
     int m_num_trials;  
     UniquePhenotypes m_unique;
@@ -104,7 +104,7 @@ class cPhenPlastGenotype
     void Process(cCPUTestInfo& test_info, cWorld* world, cAvidaContext& ctx);
 
   public:
-    cPhenPlastGenotype(const cGenome& in_genome, int num_trails, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx);
+    cPhenPlastGenotype(const cMetaGenome& in_genome, int num_trails, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx);
     ~cPhenPlastGenotype();
     
     // Accessors

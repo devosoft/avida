@@ -27,7 +27,7 @@
 #include <cmath>
 #include <cfloat>
 
-cPhenPlastGenotype::cPhenPlastGenotype(const cGenome& in_genome, int num_trials, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx)
+cPhenPlastGenotype::cPhenPlastGenotype(const cMetaGenome& in_genome, int num_trials, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx)
 : m_genome(in_genome), m_num_trials(num_trials), m_world(world)
 {
   // Override input mode if more than one recalculation requested
@@ -47,10 +47,10 @@ cPhenPlastGenotype::~cPhenPlastGenotype()
 
 void cPhenPlastGenotype::Process(cCPUTestInfo& test_info, cWorld* world, cAvidaContext& ctx)
 {
-  cTestCPU * test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+  cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
 
-  if (m_num_trials > 1)
-    test_info.UseRandomInputs(true);
+  if (m_num_trials > 1) test_info.UseRandomInputs(true);
+  
   for (int k = 0; k < m_num_trials; k++){
     test_cpu->TestGenome(ctx, test_info, m_genome);
     //Is this a new phenotype?
