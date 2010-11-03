@@ -64,6 +64,7 @@ public:
 
   const cInstSet& GetInstSet(const cString& name) const { return *m_inst_sets[m_is_name_map.Get(name)]; }
   cInstSet& GetInstSet(const cString& name) { return *m_inst_sets[m_is_name_map.Get(name)]; }
+  const cInstSet& GetInstSet(int i) const { return *m_inst_sets[i]; }
   
   const cInstSet& GetDefaultInstSet() const { return *m_inst_sets[0]; }
   

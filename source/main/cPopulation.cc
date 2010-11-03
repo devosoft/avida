@@ -3032,7 +3032,8 @@ void cPopulation::PrintDemeTotalAvgEnergy() {
 	df_fit.Endl();
 }
 
-void cPopulation::PrintDemeGestationTime() {
+void cPopulation::PrintDemeGestationTime()
+{
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
   cDataFile & df_gest = m_world->GetDataFile("deme_gest_time.dat");
@@ -3057,44 +3058,41 @@ void cPopulation::PrintDemeGestationTime() {
   df_gest.Endl();
 }
 
-void cPopulation::PrintDemeInstructions() {  
+void cPopulation::PrintDemeInstructions()
+{  
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
-  const int num_inst = m_world->GetNumInstructions();
   
   for (int deme_id = 0; deme_id < num_demes; deme_id++) {
-    cString filename;
-    filename.Set("deme_instruction-%d.dat", deme_id);
-    cDataFile & df_inst = m_world->GetDataFile(filename); 
-    cString comment;
-    comment.Set("Number of times each instruction is exectued in deme %d",
-                deme_id);
-    df_inst.WriteComment(comment);
-    df_inst.WriteTimeStamp();
-    df_inst.Write(stats.GetUpdate(), "update");
-    
-    tArray<cIntSum> single_deme_inst(num_inst);
-    
-    const cDeme & cur_deme = deme_array[deme_id];
-    for (int i = 0; i < cur_deme.GetSize(); i++) {
-      int cur_cell = cur_deme.GetCellID(i);
-      if (cell_array[cur_cell].IsOccupied() == false) continue;
-      cPhenotype & phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+    for (int is_id = 0; is_id < m_world->GetHardwareManager().GetNumInstSets(); is_id++) {
+      const cString& inst_set = m_world->GetHardwareManager().GetInstSet(is_id).GetInstSetName();
+      int num_inst = m_world->GetHardwareManager().GetInstSet(is_id).GetSize();
       
-      for (int j = 0; j < num_inst; j++) {
-        single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
-      } 
-    }
+      cDataFile& df_inst = m_world->GetDataFile(cStringUtil::Stringf("deme_instruction-%d-%s.dat", deme_id, (const char*)inst_set)); 
+      df_inst.WriteComment(cStringUtil::Stringf("Number of times each instruction is exectued in deme %d", deme_id));
+      df_inst.WriteTimeStamp();
+      df_inst.Write(stats.GetUpdate(), "update");
     
-    for (int j = 0; j < num_inst; j++) {
-      comment.Set("Inst %d", j);
-      df_inst.Write((int) single_deme_inst[j].Sum(), comment);
+      tArray<cIntSum> single_deme_inst(num_inst);
+      
+      const cDeme& cur_deme = deme_array[deme_id];
+      for (int i = 0; i < cur_deme.GetSize(); i++) {
+        int cur_cell = cur_deme.GetCellID(i);
+        if (!cell_array[cur_cell].IsOccupied()) continue;
+        if (cell_array[cur_cell].GetOrganism()->GetMetaGenome().GetInstSet() != inst_set) continue;
+        cPhenotype& phenotype = GetCell(cur_cell).GetOrganism()->GetPhenotype();
+        
+        for (int j = 0; j < num_inst; j++) single_deme_inst[j].Add(phenotype.GetLastInstCount()[j]);
+      }
+      
+      for (int j = 0; j < num_inst; j++) df_inst.Write((int)single_deme_inst[j].Sum(), cStringUtil::Stringf("Inst %d", j));
+      df_inst.Endl();    
     }
-    df_inst.Endl();    
   }
 }
 
-void cPopulation::PrintDemeLifeFitness() {
+void cPopulation::PrintDemeLifeFitness()
+{
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
   cDataFile & df_life_fit = m_world->GetDataFile("deme_lifetime_fitness.dat");
@@ -4077,16 +4075,10 @@ void cPopulation::UpdateOrganismStats()
   
   for (int i = 0; i < cell_array.GetSize(); i++) {
     // Only look at cells with organisms in them.
-    if (cell_array[i].IsOccupied() == false) {
-      
-      // Genotype map needs zero for all non-occupied cells
-      
-      stats.SetGenoMapElement(i, 0);
-      continue;
-    }
+    if (!cell_array[i].IsOccupied()) continue;
     
-    cOrganism * organism = cell_array[i].GetOrganism();
-    const cPhenotype & phenotype = organism->GetPhenotype();
+    cOrganism* organism = cell_array[i].GetOrganism();
+    const cPhenotype& phenotype = organism->GetPhenotype();
     const cMerit cur_merit = phenotype.GetMerit();
     const double cur_fitness = phenotype.GetFitness();
     const int cur_gestation_time = phenotype.GetGestationTime();
@@ -4105,11 +4097,11 @@ void cPopulation::UpdateOrganismStats()
     stats.SumLogDivMutRate().Push(log(organism->MutationRates().GetDivMutProb() /organism->GetPhenotype().GetDivType()));
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
-    stats.SetGenoMapElement(i, organism->GetBioGroup("genotype")->GetID());
     
 #if INSTRUCTION_COUNT
-    for (int j = 0; j < m_world->GetNumInstructions(); j++) {
-      stats.SumExeInst()[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+    cString inst_set_name = organism->GetMetaGenome().GetInstSet();
+    for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
+      stats.InstExeCountsForInstSet(inst_set_name)[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
 #endif
     
