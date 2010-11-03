@@ -78,7 +78,7 @@ protected:
   tSmartArray<int> m_ext_mem;
   bool m_implicit_repro_active;
   
-	// -------- Bit masks ---------------
+	// --------  Bit masks  ---------
 	static const unsigned int MASK_SIGNBIT = 0x7FFFFFFF;	
 	static const unsigned int MASK24       = 0xFFFFFF;
 

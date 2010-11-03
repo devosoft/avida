@@ -96,6 +96,12 @@ bool cWorld::setup(tList<cString>* errors)
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
   
+  
+  // Setup Stats Object
+  m_stats = new cStats(this);
+  m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
+
+  
   // Initialize the hardware manager, loading all of the instruction sets
   m_hw_mgr = new cHardwareManager(this);
   if (m_conf->INST_SET_LOAD_LEGACY.Get()) {
@@ -107,6 +113,7 @@ bool cWorld::setup(tList<cString>* errors)
     success = false;
   }
   
+  
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
   if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
@@ -114,14 +121,7 @@ bool cWorld::setup(tList<cString>* errors)
     success = false;
   }
   
-  // Setup Stats Object
-  m_stats = new cStats(this);
-  m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
     
-  const cInstSet& inst_set = m_hw_mgr->GetInstSet();
-  for (int i = 0; i < inst_set.GetSize(); i++)
-    m_stats->SetInstName(i, inst_set.GetName(i));
-  
   // @MRR CClade Tracking
 //	if (m_conf->TRACK_CCLADES.Get() > 0)
 //		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
