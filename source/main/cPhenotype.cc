@@ -27,7 +27,6 @@
 
 #include "cEnvironment.h"
 #include "cDeme.h"
-#include "cHardwareManager.h"
 #include "cOrganism.h"
 #include "cReactionResult.h"
 #include "cTaskState.h"
@@ -39,7 +38,7 @@
 using namespace std;
 
 
-cPhenotype::cPhenotype(cWorld* world, int parent_generation)
+cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 : m_world(world)
 , initialized(false)
 , energy_store(0.0)
@@ -53,7 +52,6 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation)
 , cur_internal_task_quality(m_world->GetEnvironment().GetNumTasks())
 , cur_rbins_total(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_rbins_avail(m_world->GetEnvironment().GetResourceLib().GetSize())
-, cur_collect_spec_counts(m_world->GetNumResourceSpecs())
 , cur_reaction_count(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_reaction_add_reward(m_world->GetEnvironment().GetReactionLib().GetSize())
 , cur_sense_count(m_world->GetStats().GetSenseSize())
@@ -82,6 +80,12 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation)
     generation = parent_generation;
     if (m_world->GetConfig().GENERATION_INC_METHOD.Get() != GENERATION_INC_BOTH) generation++;
   }
+  
+  double num_resources = m_world->GetEnvironment().GetResourceLib().GetSize();
+  if (num_resources <= 0 || num_nops <= 0) return;
+  double most_nops_needed = ceil(log(num_resources) / log((double)num_nops));
+  cur_collect_spec_counts.Resize((pow((double)num_nops, most_nops_needed + 1.0) - 1.0) / ((double)num_nops - 1.0));
+  
 }
 
 cPhenotype::~cPhenotype()

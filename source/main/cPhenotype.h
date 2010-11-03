@@ -281,7 +281,7 @@ private:
   
 public:
   cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
-  cPhenotype(cWorld* world, int parent_generation);
+  cPhenotype(cWorld* world, int parent_generation, int num_nops);
 
 
   cPhenotype(const cPhenotype&); 

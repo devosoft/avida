@@ -174,20 +174,6 @@ int cWorld::GetNumResources()
   return m_env->GetResourceLib().GetSize();
 }
 
-// Given number of resources and number of nops, how many possible collect-type resource specifications exist?
-// If no nops or no resources, return 0
-int cWorld::GetNumResourceSpecs()
-{
-  int num_resources = GetEnvironment().GetResourceLib().GetSize();
-  int num_nops = GetHardwareManager().GetInstSet().GetNumNops();
-  
-  if (num_resources <= 0 || num_nops <= 0) { return 0; }
-  
-  double most_nops_needed = ceil(log((double)num_resources)/log((double)num_nops));
-  double numerator = pow((double)num_nops, most_nops_needed + 1) - 1;
-  double denominator = (double)(num_nops - 1);
-  return (int)(numerator / denominator);
-}
 
 void cWorld::SetDriver(cWorldDriver* driver, bool take_ownership)
 {
