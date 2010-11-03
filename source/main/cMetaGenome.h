@@ -29,7 +29,9 @@
 #include "cString.h"
 
 class cDataFile;
+class cHardwareManager;
 template <typename T> class tDictionary;
+template <typename T> class tList;
 
 class cMetaGenome
 {
@@ -65,6 +67,9 @@ public:
 
   void Load(const tDictionary<cString>& props);
   void Save(cDataFile& df);
+  
+  bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, tList<cString>* errors = NULL);
+  void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
 };
 
 

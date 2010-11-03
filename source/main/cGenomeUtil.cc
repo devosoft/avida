@@ -484,44 +484,44 @@ cGenome cGenomeUtil::Join(const cGenome & genome1, const cGenome & genome2)
   return out_genome;
 }
 
-cGenome cGenomeUtil::LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set)
-{
-  cGenome new_genome(0);
-  if (!LoadGenome(filename, working_dir, inst_set, new_genome)) {
-    cerr << "Error: Unable to load genome" << endl;
-    exit(1);
-  }
-  return new_genome;
-}
-
-bool cGenomeUtil::LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set, cGenome& out_genome)
-{
-  cInitFile input_file(filename, working_dir);
-  bool success = true;
-  
-  if (!input_file.WasOpened()) return false;
-  
-  // Setup the code array...
-  cGenome new_genome(input_file.GetNumLines());
-  
-  for (int line_num = 0; line_num < new_genome.GetSize(); line_num++) {
-    cString cur_line = input_file.GetLine(line_num);
-    new_genome[line_num] = inst_set.GetInst(cur_line);
-    
-    if (new_genome[line_num] == inst_set.GetInstError()) {
-      // You're using the wrong instruction set!  YOU FOOL!
-      if (success) {
-        cerr << "Error: Cannot load organism '" << filename << "'" << endl;
-        success = false;
-      }
-      cerr << "       Unknown line: " << cur_line << " (best match is '" << inst_set.FindBestMatch(cur_line) << "')" << endl;
-    }
-  }
-  
-  if (new_genome.GetSize() == 0) cerr << "Warning: Genome size is 0!" << endl;
-  if (success) out_genome = new_genome;
-  return success;
-}
+//cGenome cGenomeUtil::LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set)
+//{
+//  cGenome new_genome(0);
+//  if (!LoadGenome(filename, working_dir, inst_set, new_genome)) {
+//    cerr << "Error: Unable to load genome" << endl;
+//    exit(1);
+//  }
+//  return new_genome;
+//}
+//
+//bool cGenomeUtil::LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set, cGenome& out_genome)
+//{
+//  cInitFile input_file(filename, working_dir);
+//  bool success = true;
+//  
+//  if (!input_file.WasOpened()) return false;
+//  
+//  // Setup the code array...
+//  cGenome new_genome(input_file.GetNumLines());
+//  
+//  for (int line_num = 0; line_num < new_genome.GetSize(); line_num++) {
+//    cString cur_line = input_file.GetLine(line_num);
+//    new_genome[line_num] = inst_set.GetInst(cur_line);
+//    
+//    if (new_genome[line_num] == inst_set.GetInstError()) {
+//      // You're using the wrong instruction set!  YOU FOOL!
+//      if (success) {
+//        cerr << "Error: Cannot load organism '" << filename << "'" << endl;
+//        success = false;
+//      }
+//      cerr << "       Unknown line: " << cur_line << " (best match is '" << inst_set.FindBestMatch(cur_line) << "')" << endl;
+//    }
+//  }
+//  
+//  if (new_genome.GetSize() == 0) cerr << "Warning: Genome size is 0!" << endl;
+//  if (success) out_genome = new_genome;
+//  return success;
+//}
 
 
 void cGenomeUtil::SaveGenome(ostream& fp, const cInstSet& inst_set, const cGenome& gen)

@@ -142,7 +142,7 @@ bool cWorld::setup(tList<cString>* errors)
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 
   m_pop = new cPopulation(this);
-  m_pop->InitiatePop();
+  if (!m_pop->InitiatePop(errors)) success = false;
   
   // Setup Event List
   m_event_list = new cEventList(this);

@@ -315,23 +315,25 @@ cPopulation::cPopulation(cWorld* world)
   
 }
 
-void cPopulation::InitiatePop()
+bool cPopulation::InitiatePop(tList<cString>* errors)
 {  
-  cGenome start_org(0);
+  cMetaGenome start_org;
   const cString& filename = m_world->GetConfig().START_ORGANISM.Get();
   
   if (filename != "-" && filename != "") {
-    if (!cGenomeUtil::LoadGenome(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetDefaultInstSet(), start_org)) {
-      cerr << "Error: Unable to load start organism" << endl;
-      exit(-1);
-    }
+    if (!start_org.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), errors)) return false;
     if (start_org.GetSize() != 0) {
-      Inject(cMetaGenome(m_world->GetConfig().HARDWARE_TYPE.Get(), m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName(), start_org), SRC_ORGANISM_FILE_LOAD);
+      Inject(start_org, SRC_ORGANISM_FILE_LOAD);
+    } else {
+      // @TODO - better means of reporting warnings
+      cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
     }
-    else cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
   } else {
+    // @TODO - better means of reporting warnings
     cerr << "Warning: No start organism specified." << endl;
   }
+  
+  return true;
 }
 
 

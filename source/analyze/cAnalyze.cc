@@ -3819,8 +3819,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
       << oo_conditional_entropy << " "
       << min_new_info << " " << complexity << "   ";
     
-    int hamm_dist = cGenomeUtil::FindHammingDistance(genotype->GetGenome(),
-                                                     used_genotype->GetGenome());
+    int hamm_dist = cGenomeUtil::FindHammingDistance(genotype->GetGenome(), used_genotype->GetGenome());
     total_dist += hamm_dist;
     cpx_fp << hamm_dist << " " << total_dist << "   ";
     
