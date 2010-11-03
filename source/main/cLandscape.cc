@@ -560,6 +560,9 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
   
   ProcessBase(ctx, testcpu);
   
+  // Set to default number of trials if trials has not been specified
+  if (trials == 0) trials = inst_set.GetSize() - 1;
+  
   // Loop through all the lines of genome, testing each line.
   for (int line_num = 0; line_num < genome_size; line_num++) {
     cInstruction cur_inst( base_genome.GetGenome()[line_num] );
@@ -589,6 +592,9 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
   ProcessBase(ctx, testcpu);
+  
+  // Set to default number of trials if trials has not been specified
+  if (trials == 0) trials = inst_set.GetSize() - 1;
   
   int mut_num;
   tArray<int> mut_lines(distance);

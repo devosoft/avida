@@ -139,13 +139,12 @@ public:
   }
   
 private:
-  void LoadGenome(tArray<tList<cLandscape> >& batches, const cGenome& genome)
+  void LoadGenome(tArray<tList<cLandscape> >& batches, const cMetaGenome& genome)
   {
     cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
 
     for (int dist = batches.GetSize(); dist >= 1; dist--) {
-      cLandscape* land = new cLandscape(m_world, genome, inst_set);
+      cLandscape* land = new cLandscape(m_world, genome);
       land->SetDistance(dist);
       land->SetTrials(m_trials);
       batches[dist - 1].PushRear(land);
@@ -254,12 +253,11 @@ public:
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        land = new cLandscape(m_world, genotype->GetGenome());
         land->SetDistance(m_dist);
         m_batch.PushRear(land);
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::Process));
@@ -313,7 +311,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
     cDataFile& sdf = m_world->GetDataFile(m_filename);
     
     if (ctx.GetAnalyzeMode()) {
@@ -334,7 +331,7 @@ public:
         cDataFile& gdf = m_world->GetDataFile(gfn);
         
         // Create the landscape object and process the dump
-        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        cLandscape land(m_world, genotype->GetGenome());
         land.ProcessDump(ctx, gdf);
         land.PrintStats(sdf, -1);
         
@@ -409,12 +406,11 @@ public:
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        land = new cLandscape(m_world, genotype->GetGenome());
         land->SetDistance(m_dist);
         m_batch.PushRear(land);
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::ProcessDelete));
@@ -484,12 +480,11 @@ public:
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        land = new cLandscape(m_world, genotype->GetGenome());
         land->SetDistance(m_dist);
         m_batch.PushRear(land);
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::ProcessInsert));
@@ -541,7 +536,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
     cDataFile& df = m_world->GetDataFile(m_filename);
 
     if (ctx.GetAnalyzeMode()) {
@@ -556,7 +550,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        cLandscape land(m_world, genotype->GetGenome());
         land.PredictWProcess(ctx, df);
       }
       m_world->GetDataFileManager().Remove(m_filename);
@@ -592,7 +586,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
     cDataFile& df = m_world->GetDataFile(m_filename);
 
     if (ctx.GetAnalyzeMode()) {
@@ -607,7 +600,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        cLandscape land(m_world, genotype->GetGenome());
         land.PredictNuProcess(ctx, df);
       }
       m_world->GetDataFileManager().Remove(m_filename);
@@ -661,12 +654,11 @@ public:
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        cLandscape* land = new cLandscape(m_world, genotype->GetGenome());
         land->SetDistance(m_dist);
         land->SetTrials(m_trials);
         m_batch.PushRear(land);
@@ -710,7 +702,6 @@ public:
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_trials = largs.PopWord().AsInt();
-    if (m_trials == 0) m_trials = m_world->GetHardwareManager().GetInstSet().GetSize() - 1;
   }
   
   static const cString GetDescription()
@@ -733,12 +724,11 @@ public:
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        cLandscape* land = new cLandscape(m_world, genotype->GetGenome());
         land->SetTrials(m_trials);
         m_batch.PushRear(land);
         jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::SampleProcess));
@@ -786,8 +776,6 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
-    
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Calculating Hill Climb on batch ");
@@ -801,7 +789,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        cLandscape land(m_world, genotype->GetGenome(), inst_set);
+        cLandscape land(m_world, genotype->GetGenome());
         land.HillClimb(ctx, df);
       }
       m_world->GetDataFileManager().Remove(m_filename);
@@ -850,7 +838,6 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cMutationalNeighborhood* mutn = NULL;
-    cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
     
     if (ctx.GetAnalyzeMode()) {
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
@@ -865,7 +852,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        mutn = new cMutationalNeighborhood(m_world, genotype->GetGenome(), inst_set, m_target);
+        mutn = new cMutationalNeighborhood(m_world, genotype->GetGenome(), m_target);
         m_batch.PushRear(new sBatchEntry(mutn, genotype->GetDepth()));
         jobqueue.AddJob(new tAnalyzeJob<cMutationalNeighborhood>(mutn, &cMutationalNeighborhood::Process));
       }
@@ -935,12 +922,11 @@ public:
       }
       
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
-      cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while ((genotype = batch_it.Next())) {
-        cLandscape* land = new cLandscape(m_world, genotype->GetGenome(), inst_set);
+        cLandscape* land = new cLandscape(m_world, genotype->GetGenome());
         if (m_sample_size) {
           land->SetTrials(m_sample_size);
           jobqueue.AddJob(new tAnalyzeJob<cLandscape>(land, &cLandscape::TestPairs));
@@ -1004,7 +990,7 @@ private:
     void Process(cAvidaContext& ctx)
     {
       if (m_org->GetTestFitness(ctx) > 0.0 && m_cland) {
-        m_land = new cLandscape(m_world, m_org->GetGenome(), m_world->GetHardwareManager().GetInstSet());
+        m_land = new cLandscape(m_world, m_org->GetMetaGenome());
         m_land->SetDistance(1);
         m_land->Process(ctx);
       }
@@ -1082,7 +1068,7 @@ public:
         // save into archive
         if (m_save_genotypes) {
           name.Set("archive/%s.org", static_cast<const char *>(name));
-          testcpu->PrintGenome(ctx, organism->GetGenome(), name);
+          testcpu->PrintGenome(ctx, organism->GetMetaGenome(), name);
         }
       }
       delete testcpu;
