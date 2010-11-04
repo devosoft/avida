@@ -763,6 +763,8 @@ public:
   CONFIG_ADD_VAR(DEME_NETWORK_REQUIRES_CONNECTEDNESS, int, 1, "Whether the deme's network must be connected before an actual fitness is calculated.");
   CONFIG_ADD_VAR(DEME_NETWORK_TOPOLOGY_FITNESS, int, 0, "Network measure used to determine fitness; see cDemeTopologyNetwork.h.");
   CONFIG_ADD_VAR(DEME_NETWORK_LINK_DECAY, int, 0, "Number of updates after which a link decays; 0=no decay (default).");
+	CONFIG_ADD_VAR(DEME_NETWORK_REMOVE_NODE_ON_DEATH, int, 0, "Whether death of an organism in\nthe deme removes its links;\n0=no (default);\n1=yes.");
+
 	
   // -------- Horizontal Gene Transfer (HGT) config options --------
   CONFIG_ADD_GROUP(HGT_GROUP, "Horizontal gene transfer settings");

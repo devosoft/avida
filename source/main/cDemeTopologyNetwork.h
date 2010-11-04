@@ -107,7 +107,7 @@ public:
 	virtual void Select(cPopulationCell& s, int x);
 	
 	//! Called when the organism living in cell u dies.
-	virtual void OrganismDeath(cPopulationCell& u) { }
+	virtual void OrganismDeath(cPopulationCell& u);
 	
 	//! Returns a network-defined fitness.
 	virtual double Fitness(bool record_stats=true) const;
