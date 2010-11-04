@@ -28,42 +28,16 @@
 
 #include <iostream>
 
-#ifndef cAnalyzeJobQueue_h
 #include "cAnalyzeJobQueue.h"
-#endif
-#ifndef cAvidaContext_h
 #include "cAvidaContext.h"
-#endif
-#ifndef cGenotypeBatch_h
 #include "cGenotypeBatch.h"
-#endif
-#ifndef cFlexVar_h
 #include "cFlexVar.h"
-#endif
-#ifndef cRandom_h
 #include "cRandom.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef cStringList_h
 #include "cStringList.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
-#ifndef tMatrix_h
 #include "tMatrix.h"
-#endif
-#ifndef tHashMap_h
 #include "tHashMap.h"
-#endif
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
 
 
 const int MAX_BATCHES = 2000;
@@ -86,9 +60,6 @@ template <class T> class tDataEntryCommand;
 
 class cAnalyze {
   friend class cAnalyzeScreen;
-#if USE_tMemTrack
-  tMemTrack<cAnalyze> mt;
-#endif
 
 private:
   int cur_batch;
