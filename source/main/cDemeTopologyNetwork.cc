@@ -82,6 +82,8 @@ void cDemeTopologyNetwork::OrganismDeath(cPopulationCell& u) {
 		CellVertexMap::iterator ui=m_cv.find(u.GetID());
 		if(ui!=m_cv.end()) {
 			boost::clear_vertex(ui->second, m_network);
+			boost::remove_vertex(ui->second, m_network);
+			m_cv.erase(ui);
 		}
 	}
 }
