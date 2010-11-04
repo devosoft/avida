@@ -2004,6 +2004,8 @@ public:
         testcpu->PrintGenome(ctx, genome, cStringUtil::Stringf("archive/%s.org", (const char*)(bg->GetProperty("name").AsString())));
         delete testcpu;
       }
+      
+      df.Endl();
     }
     df.WriteRaw(cStringUtil::Stringf("# ave fitness from Test CPU's: %d\n", sum_fitness / sum_num_organisms));
 
