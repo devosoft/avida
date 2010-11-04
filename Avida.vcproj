@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;;&quot;$(ProjectDir)source\platform&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools\platform&quot;;&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
 				PreprocessorDefinitions="NOMACROS;DEBUG;WIN32;_WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -193,6 +193,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\AvidaTools.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\actions\cAction.h"
 				>
 			</File>
@@ -301,14 +305,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\classification\cBGSpecies.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\classification\cBGSpeciesManager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\classification\cBioGroup.h"
 				>
 			</File>
@@ -369,10 +365,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cBlockStruct.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cChangeList.h"
 				>
 			</File>
@@ -385,7 +377,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\cConditionVariable.h"
+				RelativePath=".\source\tools\platform\cConditionVariable.h"
 				>
 			</File>
 			<File
@@ -417,10 +409,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cCycleCheck.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cDataFile.h"
 				>
 			</File>
@@ -434,10 +422,6 @@
 			</File>
 			<File
 				RelativePath=".\source\drivers\cDefaultAnalyzeDriver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cDefaultMessageDisplay.h"
 				>
 			</File>
 			<File
@@ -522,14 +506,6 @@
 			</File>
 			<File
 				RelativePath=".\source\main\cFitnessMatrix.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cFixedBlock.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cFixedCoords.h"
 				>
 			</File>
 			<File
@@ -629,14 +605,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cID.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cIndexedBlockStruct.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cInitFile.h"
 				>
 			</File>
@@ -689,18 +657,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cMessageClass.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cMessageClosure.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cMessageType.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\main\cMetaGenome.h"
 				>
 			</File>
@@ -733,7 +689,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\cMutex.h"
+				RelativePath=".\source\tools\platform\cMutex.h"
 				>
 			</File>
 			<File
@@ -849,10 +805,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cRefBlock.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\main\cResource.h"
 				>
 			</File>
@@ -877,15 +829,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\cRWLock.h"
+				RelativePath=".\source\tools\platform\cRWLock.h"
 				>
 			</File>
 			<File
 				RelativePath=".\source\main\cSaleItem.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cScaledBlock.h"
 				>
 			</File>
 			<File
@@ -985,7 +933,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\cThread.h"
+				RelativePath=".\source\tools\platform\cThread.h"
 				>
 			</File>
 			<File
@@ -993,15 +941,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cUInt.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\platform\msvc2005\pdcurses\curses.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cVerifierSuiteRecurser.h"
 				>
 			</File>
 			<File
@@ -1045,19 +985,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\FloatingPoint.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\functions.h"
+				RelativePath=".\source\tools\platform\FloatingPoint.h"
 				>
 			</File>
 			<File
 				RelativePath=".\source\actions\LandscapeActions.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\lightweight_test.h"
 				>
 			</File>
 			<File
@@ -1085,11 +1017,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\platform.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\platform\PlatformExpert.h"
+				RelativePath=".\source\tools\platform\Platform.h"
 				>
 			</File>
 			<File
@@ -1209,15 +1137,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\Tools.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\tRCPtr.h"
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\tRLockPtr.h"
+				RelativePath=".\source\tools\platform\tRLockPtr.h"
 				>
 			</File>
 			<File
@@ -1229,7 +1153,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\tThreadSpecific.h"
+				RelativePath=".\source\tools\platform\tThreadSpecific.h"
 				>
 			</File>
 			<File
@@ -1250,6 +1174,10 @@
 			>
 			<File
 				RelativePath=".\source\main\avida.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\AvidaTools.cc"
 				>
 			</File>
 			<File
@@ -1313,14 +1241,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\classification\cBGSpecies.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\classification\cBGSpeciesManager.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\classification\cBioGroup.cc"
 				>
 			</File>
@@ -1373,10 +1293,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cBlockStruct.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cChangeList.cc"
 				>
 			</File>
@@ -1409,10 +1325,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\tools\cCycleCheck.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cDataFile.cc"
 				>
 			</File>
@@ -1426,10 +1338,6 @@
 			</File>
 			<File
 				RelativePath=".\source\drivers\cDefaultAnalyzeDriver.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cDefaultMessageDisplay.cc"
 				>
 			</File>
 			<File
@@ -1562,10 +1470,6 @@
 			</File>
 			<File
 				RelativePath=".\source\targets\avida-viewer\cHistScreen.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\cIndexedBlockStruct.cc"
 				>
 			</File>
 			<File
@@ -1733,10 +1637,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\targets\avida-viewer\cScreen.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\classification\cSexualAncestry.cc"
 				>
 			</File>
@@ -1805,8 +1705,26 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\cThread.cc"
+				RelativePath=".\source\tools\platform\cThread.cc"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\source\targets\avida-viewer\cView.cc"
@@ -1841,7 +1759,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\platform\PlatformExpert.cc"
+				RelativePath=".\source\tools\platform\Platform.cc"
 				>
 			</File>
 			<File
@@ -1854,10 +1772,6 @@
 			</File>
 			<File
 				RelativePath=".\source\actions\SaveLoadActions.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\tools\Tools.cc"
 				>
 			</File>
 			<File
