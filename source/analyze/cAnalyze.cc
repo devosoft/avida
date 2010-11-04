@@ -170,10 +170,11 @@ void cAnalyze::LoadOrganism(cString cur_string)
   
   
   // Setup the genome...
-  cGenome genome( cGenomeUtil::LoadGenome(filename, m_world->GetWorkingDir(), inst_set) );
+  cMetaGenome genome;
+  genome.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
   
   // Construct the new genotype..
-  cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, genome, inst_set);
+  cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, genome);
   
   // Determine the organism's original name -- strip off directory...
   while (filename.Find('/') != -1) filename.Pop('/');
@@ -189,206 +190,6 @@ void cAnalyze::LoadOrganism(cString cur_string)
   batch[cur_batch].SetAligned(false);
 }
 
-void cAnalyze::LoadBasicDump(cString cur_string)
-{
-  // LOAD_BASE_DUMP
-  
-  cString filename = cur_string.PopWord();
-  
-  cout << "Loading: " << filename << '\n';
-  
-  cInitFile input_file(filename, m_world->GetWorkingDir());
-  if (!input_file.WasOpened()) {
-    tConstListIterator<cString> err_it(input_file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    if (exit_on_error) exit(1);
-  }
-  
-  // Setup the genome...
-  
-  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
-    cString cur_line = input_file.GetLine(line_id);
-    
-    // Setup the genotype for this line...
-    cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, cur_line.PopWord(), inst_set);
-    int num_cpus = cur_line.PopWord().AsInt();
-    int id_num = cur_line.PopWord().AsInt();
-    cString name = cStringUtil::Stringf("org-%d", id_num);
-    
-    genotype->SetNumCPUs(num_cpus);
-    genotype->SetID(id_num);
-    genotype->SetName(name);
-    
-    // Add this genotype to the proper batch.
-    batch[cur_batch].List().PushRear(genotype);
-  }
-  
-  // Adjust the flags on this batch
-  batch[cur_batch].SetLineage(false);
-  batch[cur_batch].SetAligned(false);
-}
-
-void cAnalyze::LoadDetailDump(cString cur_string)
-{
-  cerr << "Warning: Use of LOAD_DETAIL_DUMP is deprecated.  Use \"LOAD\" instead." << endl;
-  // LOAD_DETAIL_DUMP
-  
-  cString filename = cur_string.PopWord();
-  
-  cout << "Loading: " << filename << '\n';
-  
-  cInitFile input_file(filename, m_world->GetWorkingDir());
-  if (!input_file.WasOpened()) {
-    tConstListIterator<cString> err_it(input_file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-    if (exit_on_error) exit(1);
-  }
-  
-  // Setup the genome...
-  
-  for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
-    cString cur_line = input_file.GetLine(line_id);
-    
-    // Setup the genotype for this line...
-    
-    int id_num      = cur_line.PopWord().AsInt();
-    int parent_id   = cur_line.PopWord().AsInt();
-    int parent_dist = cur_line.PopWord().AsInt();
-    int num_cpus    = cur_line.PopWord().AsInt();
-    int total_cpus  = cur_line.PopWord().AsInt();
-    int length      = cur_line.PopWord().AsInt();
-    double merit    = cur_line.PopWord().AsDouble();
-    int gest_time   = cur_line.PopWord().AsInt();
-    double fitness  = cur_line.PopWord().AsDouble();
-    int update_born = cur_line.PopWord().AsInt();
-    int update_dead = cur_line.PopWord().AsInt();
-    int depth       = cur_line.PopWord().AsInt();
-    cString name = cStringUtil::Stringf("org-%d", id_num);
-    
-    cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, cur_line.PopWord(), inst_set);
-    
-    genotype->SetID(id_num);
-    genotype->SetParentID(parent_id);
-    genotype->SetParentDist(parent_dist);
-    genotype->SetNumCPUs(num_cpus);
-    genotype->SetTotalCPUs(total_cpus);
-    genotype->SetLength(length);
-    genotype->SetMerit(merit);
-    genotype->SetGestTime(gest_time);
-    genotype->SetFitness(fitness);
-    genotype->SetUpdateBorn(update_born);
-    genotype->SetUpdateDead(update_dead);
-    genotype->SetDepth(depth);
-    genotype->SetName(name);
-    
-    // Add this genotype to the proper batch.
-    batch[cur_batch].List().PushRear(genotype);
-  }
-  
-  // Adjust the flags on this batch
-  batch[cur_batch].SetLineage(false);
-  batch[cur_batch].SetAligned(false);
-}
-
-void cAnalyze::LoadMultiDetail(cString cur_string)
-{
-  // LOAD_MULTI_DETAIL
-  
-  int start_UD = cur_string.PopWord().AsInt();
-  int step_UD = cur_string.PopWord().AsInt();
-  int stop_UD = cur_string.PopWord().AsInt();
-  cString data_directory = PopDirectory(cur_string, "./");
-  cur_batch = cur_string.PopWord().AsInt();
-  
-  if (step_UD == 0) {
-    cerr << "Error: LOAD_MULTI_DETAIL must have a non-zero value for step."
-    << endl;
-    return;
-  }
-  
-  int num_steps = (stop_UD - start_UD) / step_UD + 1;
-  if (num_steps > 1000) {
-    cerr << "Warning: Loading over 1000 files in LOAD_MULTI_DETAIL!"
-    << endl;
-  }
-  
-  if (m_world->GetVerbosity() >= VERBOSE_ON) {
-    cout << "Loading in " << num_steps
-    << " detail files from update " << start_UD
-    << " to update " << stop_UD
-    << endl;
-  } else {
-    cout << "Running LOAD_MULTI_DETAIL" << endl;
-  }
-  
-  for (int cur_UD = start_UD; cur_UD <= stop_UD; cur_UD += step_UD) {
-    cString filename = cStringUtil::Stringf("detail_pop.%d", cur_UD);
-    
-    cout << "Loading '" << filename
-      << "' into batch " << cur_batch
-      << endl;
-    
-    cInitFile input_file(filename, m_world->GetWorkingDir());
-    if (!input_file.WasOpened()) {
-      tConstListIterator<cString> err_it(input_file.GetErrors());
-      const cString* errstr = NULL;
-      while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-      cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
-      if (exit_on_error) exit(1);
-    }
-    
-    // Setup the genome...
-    
-    for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
-      cString cur_line = input_file.GetLine(line_id);
-      
-      // Setup the genotype for this line...
-      
-      int id_num      = cur_line.PopWord().AsInt();
-      int parent_id   = cur_line.PopWord().AsInt();
-      int parent_dist = cur_line.PopWord().AsInt();
-      int num_cpus    = cur_line.PopWord().AsInt();
-      int total_cpus  = cur_line.PopWord().AsInt();
-      int length      = cur_line.PopWord().AsInt();
-      double merit    = cur_line.PopWord().AsDouble();
-      int gest_time   = cur_line.PopWord().AsInt();
-      double fitness  = cur_line.PopWord().AsDouble();
-      int update_born = cur_line.PopWord().AsInt();
-      int update_dead = cur_line.PopWord().AsInt();
-      int depth       = cur_line.PopWord().AsInt();
-      cString name = cStringUtil::Stringf("org-%d", id_num);
-      
-      cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, cur_line.PopWord(), inst_set);
-      
-      genotype->SetID(id_num);
-      genotype->SetParentID(parent_id);
-      genotype->SetParentDist(parent_dist);
-      genotype->SetNumCPUs(num_cpus);
-      genotype->SetTotalCPUs(total_cpus);
-      genotype->SetLength(length);
-      genotype->SetMerit(merit);
-      genotype->SetGestTime(gest_time);
-      genotype->SetFitness(fitness);
-      genotype->SetUpdateBorn(update_born);
-      genotype->SetUpdateDead(update_dead);
-      genotype->SetDepth(depth);
-      genotype->SetName(name);
-      
-      // Add this genotype to the proper batch.
-      batch[cur_batch].List().PushRear(genotype);
-    }
-    
-    // Adjust the flags on this batch
-    batch[cur_batch].SetLineage(false);
-    batch[cur_batch].SetAligned(false);
-    
-    cur_batch++;
-  }
-}
 
 void cAnalyze::LoadSequence(cString cur_string)
 {
@@ -9287,9 +9088,6 @@ void cAnalyze::SetupCommandDefLibrary()
   if (command_lib.GetSize() != 0) return; // Library already setup.
   
   AddLibraryDef("LOAD_ORGANISM", &cAnalyze::LoadOrganism);
-  AddLibraryDef("LOAD_BASE_DUMP", &cAnalyze::LoadBasicDump);
-  AddLibraryDef("LOAD_DETAIL_DUMP", &cAnalyze::LoadDetailDump);
-  AddLibraryDef("LOAD_MULTI_DETAIL", &cAnalyze::LoadMultiDetail);
   AddLibraryDef("LOAD_SEQUENCE", &cAnalyze::LoadSequence);
   AddLibraryDef("LOAD_RESOURCES", &cAnalyze::LoadResources);
   AddLibraryDef("LOAD", &cAnalyze::LoadFile);

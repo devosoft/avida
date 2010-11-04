@@ -228,9 +228,6 @@ private:
   
   // Loading methods...
   void LoadOrganism(cString cur_string);
-  void LoadBasicDump(cString cur_string);
-  void LoadDetailDump(cString cur_string);
-  void LoadMultiDetail(cString cur_string);
   void LoadSequence(cString cur_string);
   // Clears the current time oriented list of resources and loads in a new one
   // from a file specified by the user, or resource.dat by default.
