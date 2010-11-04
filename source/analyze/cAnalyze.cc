@@ -202,7 +202,9 @@ void cAnalyze::LoadSequence(cString cur_string)
   cout << "Loading: " << sequence << endl;
   
   // Setup the genotype...
-  cAnalyzeGenotype * genotype = new cAnalyzeGenotype(m_world, sequence, inst_set);
+  const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+  cMetaGenome genome(is.GetHardwareType(), is.GetInstSetName(), sequence);
+  cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, genome);
   
   genotype->SetNumCPUs(1);      // Initialize to a single organism.
   if (seq_name == "") {
@@ -1568,8 +1570,7 @@ void cAnalyze::SampleOffspring(cString cur_string)
         offspring_genotype->SetNumCPUs(offspring_genotype->GetNumCPUs() + 1);
       }
       else {
-        cAnalyzeGenotype* offspring_genotype =
-          new cAnalyzeGenotype(m_world, test_info.GetTestOrganism(0)->OffspringGenome().GetGenome(), inst_set);
+        cAnalyzeGenotype* offspring_genotype = new cAnalyzeGenotype(m_world, test_info.GetTestOrganism(0)->OffspringGenome());
         offspring_genotype->SetID(parent_genotype->GetID());
         offspring_genotype->SetNumCPUs(1);
         offspring_list.Push(offspring_genotype);
