@@ -37,7 +37,7 @@ using namespace AvidaTools;
 
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry, double inxdiffuse, double inydiffuse,
                                    double inxgravity, double inygravity)
-  : grid(inworld_x * inworld_y), m_initial(0.0)
+: grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
   int i;
  
@@ -59,7 +59,7 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry,
 /* Setup a single spatial resource using default flow amounts  */
 
 cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry)
-  : grid(inworld_x * inworld_y), m_initial(0.0)
+: grid(inworld_x * inworld_y), m_initial(0.0), m_modified(false)
 {
   int i;
  
@@ -78,7 +78,7 @@ cSpatialResCount::cSpatialResCount(int inworld_x, int inworld_y, int ingeometry)
    SetPointers();
 }
 
-cSpatialResCount::cSpatialResCount() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0)
+cSpatialResCount::cSpatialResCount() : m_initial(0.0), xdiffuse(1.0), ydiffuse(1.0), xgravity(0.0), ygravity(0.0), m_modified(false)
 {
   geometry = nGeometry::GLOBAL;
 }

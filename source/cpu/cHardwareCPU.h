@@ -523,6 +523,8 @@ private:
   bool Inst_SenseFacedResource1(cAvidaContext& ctx);
   bool Inst_SenseFacedResource2(cAvidaContext& ctx);
   bool Inst_SenseResourceID(cAvidaContext& ctx); //JW
+  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); //APW
+  bool Inst_SenseDiffFaced(cAvidaContext& ctx); //APW
   
   // Resources
   bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);

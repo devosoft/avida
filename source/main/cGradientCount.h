@@ -15,6 +15,8 @@ private:
   double m_spread;
   int m_updatestep;
   int m_counter;
+  int m_clock;
+  int m_counter2;
   int MapToWorld(int wx,int wy,int x,int y);
   double Distance(double x1, double x2, double y1, double y2);
   double Linmap(double dy, double dx1, double dx2, double rx1, double rx2);

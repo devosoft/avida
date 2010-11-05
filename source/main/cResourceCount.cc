@@ -466,6 +466,7 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
         resource_count[i] += res_change[i];
       assert(resource_count[i] >= 0.0);
     } else {
+      double temp = spatial_resource_count[i]->Element(cell_id).GetAmount();
       spatial_resource_count[i]->Rate(cell_id, res_change[i]);
 
       /* Ideally the state of the cell's resource should not be set till
@@ -476,6 +477,10 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
     
       spatial_resource_count[i]->State(cell_id);
       // cout << "BDB in cResourceCount::ModifyCell id = " << i << " cell = " << cell_id << " amount[41] = " << spatial_resource_count[i]->GetAmount(41) << endl;
+    
+      if(spatial_resource_count[i]->Element(cell_id).GetAmount() != temp){
+        spatial_resource_count[i]->SetModified(true);
+      }
     }
   }
 }

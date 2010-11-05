@@ -53,6 +53,7 @@ private:
   int    world_x, world_y, num_cells;
   /* instead of creating a new array use the existing one from cResource */
   tArray<cCellResource> *cell_list_ptr;
+  bool m_modified;
   
 public:
   cSpatialResCount();
@@ -102,6 +103,8 @@ public:
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
   virtual void UpdateCount() {}
   void ResetResourceCounts();
+  void SetModified(bool in_modified) { m_modified = in_modified; }
+  bool GetModified() { return m_modified; }
 };
 
 #endif

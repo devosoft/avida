@@ -243,6 +243,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareCPU::Inst_SenseResourceID, nInstFlag::STALL), //JW
+    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareCPU::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL), //APW
+    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareCPU::Inst_SenseDiffFaced, nInstFlag::STALL), //APW
     
     tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-resource1", &cHardwareCPU::Inst_SenseResource1, nInstFlag::STALL),
@@ -3864,10 +3866,7 @@ bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx) //JW
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
   int reg_to_set = FindModifiedRegister(REG_BX);
   
-/*  for(int i = 0; i < res_count.GetSize(); i++) {
-    if(res_count[i] > 0.0) GetRegister(reg_to_set) = i;*/
-  
-  double max_resource = 0.0;
+  double max_resource = 0.0;    //if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
   for (int i = 0; i < res_count.GetSize(); i++) {
     if (res_count[i] > max_resource) {
       max_resource = res_count[i];
@@ -3875,6 +3874,42 @@ bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx) //JW
     }
   }
     
+  return true;
+}
+
+bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx) //APW
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  // check if this is a valid group
+  if(m_organism->HasOpinion()) {
+    int opinion = m_organism->GetOpinion().first;
+    int reg_to_set = FindModifiedRegister(REG_BX);
+    double res_opinion = res_count[opinion];
+    GetRegister(reg_to_set) = res_opinion;
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) //APW
+{
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor != NULL) {                             //this if constraint keeps this from running in the test CPU
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+    if(m_organism->HasOpinion()) {
+      int opinion = m_organism->GetOpinion().first;
+      int reg_to_set = FindModifiedRegister(REG_CX);
+      
+      cPopulationCell& mycell = m_world->GetPopulation().GetCell(m_organism->GetCellID());
+      int faced_id = mycell.GetCellFaced().GetID();
+      double faced_res = m_world->GetPopulation().GetCellResources(faced_id); 
+      
+      double res_diff = faced_res - res_count[opinion];
+      GetRegister(reg_to_set) = res_diff;
+      
+      cout << res_diff << "  ";
+      
+    }
+  }
   return true;
 }
 
