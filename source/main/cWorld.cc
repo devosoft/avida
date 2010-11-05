@@ -97,6 +97,14 @@ bool cWorld::setup(tList<cString>* errors)
   m_env = new cEnvironment(this);
   
   
+  // Initialize the default environment...
+  // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
+    if (errors) errors->PushRear(new cString("unable to load environment"));
+    success = false;
+  }
+  
+  
   // Setup Stats Object
   m_stats = new cStats(this);
   m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
@@ -110,14 +118,6 @@ bool cWorld::setup(tList<cString>* errors)
   if (!m_hw_mgr->LoadInstSets(errors)) success = false;
   if (m_hw_mgr->GetNumInstSets() == 0) {
     if (errors) errors->PushRear(new cString("no instruction sets defined"));
-    success = false;
-  }
-  
-  
-  // Initialize the default environment...
-  // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
-  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
-    if (errors) errors->PushRear(new cString("unable to load environment"));
     success = false;
   }
   
