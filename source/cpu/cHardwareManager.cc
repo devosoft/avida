@@ -182,7 +182,7 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 			default_filename = cHardwareGX::GetDefaultInstFilename();
 			break;      
 		default:
-      if (errors) errors->PushRear(new cString("Unknown/Unsupported HARDWARE_TYPE specified"));
+      if (errors) errors->PushRear(new cString("unknown/unsupported HARDWARE_TYPE specified"));
       return false;
   }
   
@@ -229,7 +229,9 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
   
   cInstSet* inst_set = m_inst_sets[inst_set_id];
   
-  cHardwareBase* hw = 0;	
+  if (inst_set->GetHardwareType() != mg.GetHardwareType()) return NULL;
+  
+  cHardwareBase* hw = 0;
   switch (mg.GetHardwareType()) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
       hw = new cHardwareCPU(ctx, m_world, org, inst_set);
@@ -247,7 +249,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       hw = new cHardwareGX(ctx, m_world, org, inst_set);
       break;
     default:
-      cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);
+      cDriverManager::Status().SignalError("unknown/unsupported HARDWARE_TYPE specified", -1);
       break;
   }
   

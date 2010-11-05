@@ -78,6 +78,7 @@ bool cMetaGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, 
   if (!input_file.WasOpened()) return false;
   
   const cInstSet& is = hwm.GetDefaultInstSet();
+  m_hw_type = is.GetHardwareType();
   m_inst_set = is.GetInstSetName();
   cGenome new_seq(input_file.GetNumLines());
   
