@@ -199,12 +199,17 @@ const tArray<int>& cPopulationInterface::GetInputs() const
   return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
 }
 
-const tArray<double> & cPopulationInterface::GetResources()
+const tArray<double>& cPopulationInterface::GetResources()
 {
   return m_world->GetPopulation().GetCellResources(m_cell_id);
 }
 
-const tArray<double> & cPopulationInterface::GetDemeResources(int deme_id)
+const tArray<double>& cPopulationInterface::GetFacedCellResources()
+{
+  return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID());
+}
+
+const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id)
 {
   return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id);
 }

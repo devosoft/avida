@@ -94,6 +94,7 @@ public:
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const tArray<int>& GetInputs() const = 0;
   virtual const tArray<double>& GetResources() = 0;
+  virtual const tArray<double>& GetFacedCellResources() = 0;
   virtual const tArray<double>& GetDemeResources(int deme_id) = 0;  
   virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
   virtual void UpdateResources(const tArray<double>& res_change) = 0;

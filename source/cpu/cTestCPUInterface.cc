@@ -78,6 +78,11 @@ const tArray<double>& cTestCPUInterface::GetResources()
   return m_testcpu->GetResources();  
 }
 
+const tArray<double>& cTestCPUInterface::GetFacedCellResources()
+{
+  return m_testcpu->GetFacedCellResources();  
+}
+
 const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id) {
   return m_testcpu->GetDemeResources(deme_id);
 }

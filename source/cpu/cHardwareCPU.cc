@@ -3892,23 +3892,15 @@ bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx) //APW
 
 bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) //APW
 {
-  cOrganism * neighbor = m_organism->GetNeighbor();
-  if (neighbor != NULL) {                             //this if constraint keeps this from running in the test CPU
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
-    if(m_organism->HasOpinion()) {
-      int opinion = m_organism->GetOpinion().first;
-      int reg_to_set = FindModifiedRegister(REG_CX);
-      
-      cPopulationCell& mycell = m_world->GetPopulation().GetCell(m_organism->GetCellID());
-      int faced_id = mycell.GetCellFaced().GetID();
-      double faced_res = m_world->GetPopulation().GetCellResources(faced_id); 
-      
-      double res_diff = faced_res - res_count[opinion];
-      GetRegister(reg_to_set) = res_diff;
-      
-      cout << res_diff << "  ";
-      
-    }
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  if(m_organism->HasOpinion()) {
+    int opinion = m_organism->GetOpinion().first;
+    int reg_to_set = FindModifiedRegister(REG_CX);
+    
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources()[opinion]; 
+    
+    double res_diff = faced_res - res_count[opinion];
+    GetRegister(reg_to_set) = res_diff;
   }
   return true;
 }

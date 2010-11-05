@@ -81,6 +81,7 @@ public:
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
   const tArray<double>& GetResources();
+  const tArray<double>& GetFacedCellResources();
   const tArray<double>& GetDemeResources(int deme_id);
   const tArray< tArray<int> >& GetCellIdLists();  
   void UpdateResources(const tArray<double>& res_change);

@@ -72,6 +72,7 @@ private:
 
   // Actual CPU resources.
   cResourceCount m_resource_count;
+  cResourceCount m_faced_cell_resource_count;
   cResourceCount m_deme_resource_count;
   
   
@@ -107,6 +108,7 @@ public:
 
   inline int GetReceiveValue();
   inline const tArray<double>& GetResources();
+  inline const tArray<double>& GetFacedCellResources();
   inline const tArray<double>& GetDemeResources(int deme_id);
   inline const tArray< tArray<int> >& GetCellIdLists();
   
@@ -139,6 +141,11 @@ inline int cTestCPU::GetReceiveValue()
 inline const tArray<double>& cTestCPU::GetResources()
 {
     return m_resource_count.GetResources();
+}
+
+inline const tArray<double>& cTestCPU::GetFacedCellResources()
+{
+  return m_faced_cell_resource_count.GetResources();
 }
 
 inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id)
