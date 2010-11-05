@@ -260,3 +260,14 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
   assert(hw != 0);
   return hw;
 }
+
+bool cHardwareManager::RegisterInstSet(const cString& name, cInstSet* inst_set)
+{
+  if (m_is_name_map.HasEntry(name)) return false;
+  
+  int inst_set_id = m_inst_sets.GetSize();
+  m_inst_sets.Push(inst_set);
+  m_is_name_map.Set(name, inst_set_id);  
+  
+  return true;
+}

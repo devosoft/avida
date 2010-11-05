@@ -749,7 +749,6 @@ public:
   void PrintDivideMutData(const cString& filename);
   void PrintMutationRateData(const cString& filename);
   void PrintInstructionData(const cString& filename, const cString& inst_set);
-  void PrintGenotypeMap(const cString& filename);
   void PrintMarketData(const cString& filename);
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);

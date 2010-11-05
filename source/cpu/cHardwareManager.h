@@ -70,6 +70,8 @@ public:
   
   int GetNumInstSets() const { return m_inst_sets.GetSize(); }
   
+  bool RegisterInstSet(const cString& name, cInstSet* inst_set);
+  
 private:
   bool loadInstSet(int hw_type, const cString& name, cStringList& sl, tList<cString>* errors);
 };

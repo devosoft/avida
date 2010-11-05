@@ -5279,18 +5279,23 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
     }
     
     const cInstSet& original_inst_set = m_world->GetHardwareManager().GetInstSet(genotype->GetGenome().GetInstSet());
-    cInstSet modify_inst_set = genotype->GetInstructionSet();
-      
+    cInstSet* modify_inst_set = new cInstSet(original_inst_set);
+    cString isname = cString(genotype->GetGenome().GetInstSet()) + ":analyze_redundancy_by_inst_failure";
+    if (!m_world->GetHardwareManager().RegisterInstSet(isname, modify_inst_set)) {
+      delete modify_inst_set;
+      modify_inst_set = &m_world->GetHardwareManager().GetInstSet(isname);
+    }
+    
     // Modify the instruction set to include the current probability of failure.
     int num_pr_fail_insts = 0;
-    for (int j=0; j<modify_inst_set.GetSize(); j++)
+    for (int j = 0; j < modify_inst_set->GetSize(); j++)
     {
-      cString inst_name = modify_inst_set.GetName(j);
-      cInstruction inst = modify_inst_set.GetInst(inst_name);
+      cString inst_name = modify_inst_set->GetName(j);
+      cInstruction inst = modify_inst_set->GetInst(inst_name);
       if (original_inst_set.GetProbFail(inst) > 0) num_pr_fail_insts++;
-      modify_inst_set.SetProbFail(inst, 0);
+      modify_inst_set->SetProbFail(inst, 0);
     }
-    genotype->SetInstructionSet(modify_inst_set);
+    genotype->GetGenome().SetInstSet(isname);
   
     // Avoid unintentional use with no instructions having a chance of failure
     if (num_pr_fail_insts == 0) {
@@ -5313,13 +5318,12 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
         double fc = exp(log10_fc*log(10.0));
         
         // Modify the instruction set to include the current probability of failure.
-        modify_inst_set = genotype->GetInstructionSet();
-        for (int j = 0; j < modify_inst_set.GetSize(); j++) {
-          cString inst_name = modify_inst_set.GetName(j);
-          cInstruction inst = modify_inst_set.GetInst(inst_name);
-          if (original_inst_set.GetProbFail(inst) > 0) modify_inst_set.SetProbFail(inst, fc);
+        *modify_inst_set = original_inst_set;
+        for (int j = 0; j < modify_inst_set->GetSize(); j++) {
+          cString inst_name = modify_inst_set->GetName(j);
+          cInstruction inst = modify_inst_set->GetInst(inst_name);
+          if (original_inst_set.GetProbFail(inst) > 0) modify_inst_set->SetProbFail(inst, fc);
         }
-        genotype->SetInstructionSet(modify_inst_set);
         
         // Recalculate the requested number of times
         double chance = 0;
@@ -6563,6 +6567,9 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   // Load in the variables...
   cString filename("inst_analyze.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  cString isname = m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
+  if (cur_string.GetSize() != 0) isname = cur_string.PopWord();
+  const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(isname);
   const int num_insts = inst_set.GetSize();
   
   // Setup the file...
@@ -6645,6 +6652,8 @@ void cAnalyze::AnalyzeInstructions(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
+    if (genotype->GetGenome().GetInstSet() != isname) continue;
+    
     // Setup for counting...
     tArray<int> inst_bin(num_insts);
     for (int i = 0; i < num_insts; i++) inst_bin[i] = 0;
@@ -6703,6 +6712,9 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   // Load in the variables...
   cString filename("inst_analyze.dat");
   if (cur_string.GetSize() != 0) filename = cur_string.PopWord();
+  cString isname = m_world->GetHardwareManager().GetDefaultInstSet().GetInstSetName();
+  if (cur_string.GetSize() != 0) isname = cur_string.PopWord();
+  const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(isname);
   const int num_insts = inst_set.GetSize();
   
   // Setup the file...
@@ -6723,6 +6735,7 @@ void cAnalyze::AnalyzeInstPop(cString cur_string)
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
   cAnalyzeGenotype * genotype = NULL;
   while ((genotype = batch_it.Next()) != NULL) {
+    if (genotype->GetGenome().GetInstSet() != isname) continue;
     
     num_orgs++; 
     
