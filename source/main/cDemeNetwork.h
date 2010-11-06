@@ -101,6 +101,11 @@ protected:
 	
 	cWorld* m_world; //!< The world.
 	cDeme& m_deme; //!< The owning deme.
+
+private:
+	cDemeNetwork();
+	cDemeNetwork(const cDemeNetwork&);
+	cDemeNetwork& operator=(const cDemeNetwork&);	
 };
 
 #endif

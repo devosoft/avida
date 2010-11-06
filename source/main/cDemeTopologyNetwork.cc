@@ -81,9 +81,17 @@ void cDemeTopologyNetwork::OrganismDeath(cPopulationCell& u) {
 	if(m_world->GetConfig().DEME_NETWORK_REMOVE_NODE_ON_DEATH.Get()) {
 		CellVertexMap::iterator ui=m_cv.find(u.GetID());
 		if(ui!=m_cv.end()) {
+			// it would be nice if this worked generally:
 			boost::clear_vertex(ui->second, m_network);
-			boost::remove_vertex(ui->second, m_network);
-			m_cv.erase(ui);
+			// but, warning: this can trigger a double-delete bug if there are self-loops.
+			
+			// it would also be nice to do this:
+			//			boost::remove_vertex(ui->second, m_network);
+			//			m_cv.erase(ui);
+			// but because we're using a vecS for the vertex list, this invalidates *all*
+			// the other vertex descriptors in m_cv.  we also can't change to a listS
+			// because some of the functionality over in cDemeNetworkUtils.h requires
+			// a vecS.  oh well.
 		}
 	}
 }
@@ -92,6 +100,11 @@ void cDemeTopologyNetwork::OrganismDeath(cPopulationCell& u) {
 /*! Connect u->v with weight w.
  */
 void cDemeTopologyNetwork::Connect(cPopulationCell& u, cPopulationCell& v, double w) {
+	// no self-loops:
+	if(u.GetID() == v.GetID()) {
+		return;
+	}
+	
 	// find or create the vertex for u
 	CellVertexMap::iterator ui=m_cv.find(u.GetID());
 	if(ui==m_cv.end()) {
@@ -103,6 +116,9 @@ void cDemeTopologyNetwork::Connect(cPopulationCell& u, cPopulationCell& v, doubl
 	if(vi==m_cv.end()) {
 		vi = m_cv.insert(std::make_pair(v.GetID(), boost::add_vertex(vertex_properties(v.GetPosition(), v.GetID()), m_network))).first;
 	}
+	
+	// sanity
+	assert(ui->second != vi->second);
 	
 	// create the edge if it doesn't already exist
 	std::pair<Network::edge_descriptor,bool> e = boost::edge(ui->second, vi->second, m_network);

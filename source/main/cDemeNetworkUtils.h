@@ -169,7 +169,7 @@ double clustering_coefficient(const Network& network) {
   // For each vertex in the graph, calculate the number of edges between vertices in the neighborhood.
   typename Network::vertex_iterator vi, vi_end;
   std::vector<double> cluster_coeffs;
-  for(tie(vi,vi_end)=vertices(network); vi!=vi_end; ++vi) {
+  for(boost::tie(vi,vi_end)=vertices(network); vi!=vi_end; ++vi) {
     // Get the list of vertices which are in the neighborhood of vi.
     typedef typename Network::adjacency_iterator adjacency_iterator;
     std::pair<adjacency_iterator, adjacency_iterator> adjacent = boost::adjacent_vertices(*vi, network);
