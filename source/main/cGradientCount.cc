@@ -59,7 +59,7 @@ void cGradientCount::UpdateCount()
     m_counter = m_updatestep;
     m_counter2 = 0;
   }
-       
+  
   if(m_counter < m_updatestep) return;  //only update resource values at declared update timesteps
   
   double thisdist, thisheight;
@@ -76,6 +76,8 @@ void cGradientCount::UpdateCount()
             thisheight = 0;  //keep resources from going negative
           }
         }
+/*        if(thisheight > 1)
+          thisheight = m_height / m_height; //cause 'peaks' to be flat plateaus with max of 1  */
       } 
       else {
         thisheight = 0;
@@ -84,8 +86,6 @@ void cGradientCount::UpdateCount()
       int thiscell = MapToWorld(GetX(),GetY(),ii,jj);
       Element(jj*GetX()+ii).SetInitial(thisheight);
       Element(jj*GetX()+ii).SetAmount(thisheight);
-      
-      
     }
   }   
   ResetResourceCounts();

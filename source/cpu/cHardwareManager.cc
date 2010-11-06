@@ -205,9 +205,10 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
     int energy_cost = cur_line.PopWord().AsInt();
     double prob_fail = cur_line.PopWord().AsDouble();
     int addl_time_cost = cur_line.PopWord().AsInt();
+    double res_cost = cur_line.PopWord().AsDouble();//APW
     
-    str_list.PushRear(cStringUtil::Stringf("INST %s:redundancy=%d:cost=%d:initial_cost=%d:energy_cost=%d:prob_fail=%f:addl_time_cost=%d",
-                                           (const char*)inst_name, redundancy, cost, ft_cost, energy_cost, prob_fail, addl_time_cost));
+    str_list.PushRear(cStringUtil::Stringf("INST %s:redundancy=%d:cost=%d:initial_cost=%d:energy_cost=%d:prob_fail=%f:addl_time_cost=%d:res_cost=%d",
+                                           (const char*)inst_name, redundancy, cost, ft_cost, energy_cost, prob_fail, addl_time_cost, res_cost)); //APW
   }
   
   return true;

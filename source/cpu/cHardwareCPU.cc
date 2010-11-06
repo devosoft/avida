@@ -3896,9 +3896,7 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) //APW
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
     int reg_to_set = FindModifiedRegister(REG_CX);
-    
-    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources()[opinion]; 
-    
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources()[opinion];     
     double res_diff = faced_res - res_count[opinion];
     GetRegister(reg_to_set) = res_diff;
   }

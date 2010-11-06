@@ -562,6 +562,10 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);
   cur_rbins_avail.SetAll(0);
+  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   //APW
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();}  //A concern is that this will override any bin contents in reloaded organisms, but does SavePopulation save those anyway?
+  cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -800,6 +804,10 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   else {
     cur_rbins_avail.SetAll(0);
   }
+  if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();  //APW a worry is that this will override split settings
+  } 
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -988,6 +996,10 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   }
   else {
     cur_rbins_avail.SetAll(0);
+  }
+  if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();  //APW a worry is that this will override split settings
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
@@ -2082,3 +2094,4 @@ void cPhenotype::SetLastParasiteTaskCount(tArray<int> oldParaPhenotype)
     last_para_tasks[i] = oldParaPhenotype[i];
   }
 }
+

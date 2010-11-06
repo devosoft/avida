@@ -75,6 +75,7 @@ public:
     double prob_fail;         // probability of failing to execute inst
     int addl_time_cost;       // additional time added to age for executing instruction
     int inst_code;            // instruction binary code
+    double res_cost;             // resources (from bins) required to execute inst //APW
   };
   tSmartArray<sInstEntry> m_lib_name_map;
   
@@ -84,14 +85,14 @@ public:
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
-  
+  bool m_has_res_costs;  //APW
   
   cInstSet(); // @not_implemented
 
 public:
   inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib)
     : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_has_costs(false)
-    , m_has_ft_costs(false), m_has_energy_costs(false) { ; }
+    , m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false) { ; }//APW
   inline ~cInstSet() { ; }
   
   const cString& GetInstSetName() const { return m_name; }
@@ -110,6 +111,7 @@ public:
   double GetProbFail(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].prob_fail; }
   int GetAddlTimeCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].addl_time_cost; }
   int GetInstructionCode(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].inst_code; }
+  double GetResCost(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].res_cost; }//APW
   
   int GetLibFunctionIndex(const cInstruction& inst) const { return m_lib_name_map[inst.GetOp()].lib_fun_id; }
 
@@ -128,7 +130,8 @@ public:
   bool HasCosts() const { return m_has_costs; }
   bool HasFTCosts() const { return m_has_ft_costs; }
   bool HasEnergyCosts() const { return m_has_energy_costs; }
-
+  bool HasResCosts() const { return m_has_res_costs; }//APW
+  
   // Instruction Analysis.
   int IsNop(const cInstruction& inst) const { return (inst.GetOp() < m_lib_nopmod_map.GetSize()); }
   bool IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }

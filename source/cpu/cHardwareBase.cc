@@ -52,11 +52,11 @@ using namespace AvidaTools;
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)
 : m_world(world), m_organism(in_organism), m_inst_set_id(inst_set_id), m_inst_set(inst_set), m_tracer(NULL)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-, m_has_energy_costs(m_inst_set->HasEnergyCosts())
+, m_has_energy_costs(m_inst_set->HasEnergyCosts()) , m_has_res_costs(m_inst_set->HasResCosts())  /*APW*/
 {
 	m_task_switching_cost=0;
 	int switch_cost =  world->GetConfig().TASK_SWITCH_PENALTY.Get();
-	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | switch_cost);
+	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | switch_cost);/*APW*/
   m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() ||
@@ -83,6 +83,11 @@ void cHardwareBase::Reset(cAvidaContext& ctx)
   if (m_has_energy_costs) {
     m_inst_energy_cost.Resize(num_inst_cost);
     for (int i = 0; i < num_inst_cost; i++) m_inst_energy_cost[i] = m_inst_set->GetEnergyCost(cInstruction(i));
+  }
+  
+  if (m_has_res_costs) {
+    m_inst_res_cost.Resize(num_inst_cost);
+    for (int i = 0; i < num_inst_cost; i++) m_inst_res_cost[i] = m_inst_set->GetResCost(cInstruction(i));
   }
   
   internalReset();
@@ -1084,7 +1089,32 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
     }
   }
 	
-	// If task switching costs need to be paid off...
+  if (m_has_res_costs = true) {
+    double res_req = m_inst_res_cost[cur_inst.GetOp()]; //APW
+    int cellID = m_organism->GetCellID();
+    
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+    tArray<double> res_change(res_count.GetSize());
+    res_change.SetAll(0.0);
+    
+    if((cellID != -1) && (res_req > 0.0)) { // guard against running in the test cpu.
+      const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+      double res_stored = m_organism->GetRBin(resource);
+      
+      if (res_stored >= res_req) {
+				m_inst_res_cost[cur_inst.GetOp()] = 0.0;
+        
+				// subtract res used from current bin
+        m_organism->AddToRBin(resource, res_req * -1); 
+      } 
+      if (res_stored < res_req && m_world->GetStats().GetUpdate() != 0) {
+      /*  m_organism->GetPhenotype().SetToDie(); */ // no more, you're dead...  (eviler laugh)
+				return false;
+      }
+    }
+  }
+	
+  // If task switching costs need to be paid off...
 	if (m_task_switching_cost > 0) { 
 		m_task_switching_cost--;
 		// update deme level stats
