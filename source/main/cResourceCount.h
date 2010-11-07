@@ -101,7 +101,8 @@ void Setup(const int& id, const cString& name, const double& initial, const doub
 	   const double& in_hstep, const double& in_rstep,
 	   const double& in_cstepx, const double& in_cstepy,
 	   const int& in_updatestep, const int& in_peakx, const int& in_peaky,
-	   const double& in_spread, const double& in_height, const bool& isgradient
+	   const double& in_height, const double& in_spread, const double& in_plateau, const int& in_decay, 
+     const bool& isgradient
 	   ); //JW
              
   int GetResourceCountID(const cString& res_name);

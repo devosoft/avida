@@ -13,9 +13,10 @@ private:
   int m_peaky;
   double m_height;
   double m_spread;
+  double m_plateau;
+  int m_decay;
   int m_updatestep;
   int m_counter;
-  int m_clock;
   int m_counter2;
   int MapToWorld(int wx,int wy,int x,int y);
   double Distance(double x1, double x2, double y1, double y2);
@@ -24,7 +25,7 @@ private:
   void UpdateCount();
 
 public:
-  cGradientCount(int in_peakx, int in_peaky, double in_spread, double in_height, int in_updatestep, int in_worldx, int in_worldy, int in_geometry);
+  cGradientCount(int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, int in_updatestep, int in_worldx, int in_worldy, int in_geometry);
   
 };
 

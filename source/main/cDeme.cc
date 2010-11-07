@@ -590,7 +590,8 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
                            res->GetHStep(), res->GetRStep(),
                            res->GetCStepX(), res->GetCStepY(),
                            res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
-			   res->GetSpread(), res->GetHeight(), res->GetGradient()
+                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
+                           res->GetGradient()
                            ); //JW
   
   if(res->GetEnergyResource()) {

@@ -853,13 +853,21 @@ bool cEnvironment::LoadGradientResource(cString desc) //JW
         if (!AssertInputDouble(var_value, "peaky", var_type)) return false;
         new_resource->SetPeakY( var_value.AsDouble() );
       }
+      else if (var_name == "height") {
+        if (!AssertInputDouble(var_value, "height", var_type)) return false;
+        new_resource->SetHeight( var_value.AsDouble() );
+      }
       else if (var_name == "spread") {
         if (!AssertInputDouble(var_value, "spread", var_type)) return false;
         new_resource->SetSpread( var_value.AsDouble() );
       }
-      else if (var_name == "height") {
-        if (!AssertInputDouble(var_value, "height", var_type)) return false;
-        new_resource->SetHeight( var_value.AsDouble() );
+      else if (var_name == "plateau") {
+        if (!AssertInputDouble(var_value, "plateau", var_type)) return false;
+        new_resource->SetPlateau( var_value.AsDouble() );
+      }
+      else if (var_name == "decay") {
+        if (!AssertInputInt(var_value, "decay", var_type)) return false;
+        new_resource->SetDecay( var_value.AsInt() );
       }
       else if (var_name == "updatestep") {
         if (!AssertInputDouble(var_value, "updatestep", var_type)) return false;
@@ -991,7 +999,7 @@ bool cEnvironment::LoadDynamicResource(cString desc) //JW
         new_resource->SetCStepY( var_value.AsDouble() );
       }
       else if (var_name == "updatestep") {
-        if (!AssertInputDouble(var_value, "updatestep", var_type)) return false;
+        if (!AssertInputInt(var_value, "updatestep", var_type)) return false;
         new_resource->SetUpdateStep( var_value.AsInt() );
       }
       else {

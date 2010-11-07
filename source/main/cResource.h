@@ -105,7 +105,9 @@ private:
   int m_peakx;
   int m_peaky;
   double m_height;
-  double m_spread;
+  double m_spread;    
+  double m_plateau;
+  int m_decay;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;  
@@ -158,8 +160,10 @@ public:
   int GetUpdateStep() const { return updatestep; } //JW
   int GetPeakX() { return m_peakx; }
   int GetPeakY() { return m_peaky; }
-  double GetSpread() { return m_spread; }
   double GetHeight() { return m_height; }
+  double GetSpread() { return m_spread; }
+  double GetPlateau() { return m_plateau; }
+  int GetDecay() { return m_decay; }
   bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
@@ -204,8 +208,10 @@ public:
   void SetUpdateStep(int _updatestep) { updatestep = _updatestep; } //JW
   void SetPeakX(int _peakx) { m_peakx = _peakx; }
   void SetPeakY(int _peaky) { m_peaky = _peaky; }
-  void SetSpread(double _spread) { m_spread = _spread; }
   void SetHeight(double _height) { m_height = _height; }
+  void SetSpread(double _spread) { m_spread = _spread; }
+  void SetPlateau(double _plateau) { m_plateau = _plateau; }
+  void SetDecay(int _decay) { m_decay = _decay; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);

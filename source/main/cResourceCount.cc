@@ -220,7 +220,8 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
 				const double& in_hstep, const double& in_rstep,
 				const double& in_cstepx, const double& in_cstepy,
 				const int& in_updatestep, const int& in_peakx, const int& in_peaky,
-				const double& in_spread, const double& in_height, const bool& isgradient
+				const double& in_height, const double& in_spread, const double& in_plateau, const int& in_decay, 
+        const bool& isgradient
 				)
 {
   assert(id >= 0 && id < resource_count.GetSize());
@@ -307,7 +308,7 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
     
     else if(isgradient){
       delete spatial_resource_count[id];
-      spatial_resource_count[id] = new cGradientCount(in_peakx, in_peaky, in_spread, in_height, in_updatestep, tempx, tempy, in_geometry);
+      spatial_resource_count[id] = new cGradientCount(in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay, in_updatestep, tempx, tempy, in_geometry);
       spatial_resource_count[id]->RateAll(0);
     }
     

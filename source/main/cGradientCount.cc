@@ -2,14 +2,13 @@
 #include <cmath>
 #include <iostream>
 
-cGradientCount::cGradientCount(int in_peakx, int in_peaky, double in_spread, double in_height, int in_updatestep, int in_worldx, int in_worldy, int in_geometry) : m_peakx(in_peakx),
-m_peaky(in_peaky), m_spread(in_spread), m_height(in_height), m_updatestep(in_updatestep)
+cGradientCount::cGradientCount(int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, int in_updatestep, int in_worldx, int in_worldy, int in_geometry) : m_peakx(in_peakx),
+m_peaky(in_peaky), m_height(in_height), m_spread(in_spread), m_plateau(in_plateau), m_decay(in_decay), m_updatestep(in_updatestep)
 {
   ResizeClear(in_worldx, in_worldy, in_geometry);
   m_counter = m_updatestep;
   m_counter2 = 0;
   UpdateCount();
-  m_clock = 100;
 }
 
 
@@ -55,12 +54,12 @@ void cGradientCount::UpdateCount()
   m_counter++;
   
   if(GetModified()){                    //once a resource cone has been 'bitten', start the clock that counts down to when the entire peak will be refreshed (carcass rots for only so long before disappearing)
-    if(m_counter2++ < m_clock) return;
-    m_counter = m_updatestep;
+    if(m_counter2++ < m_decay) return;
+    m_counter = m_decay;
     m_counter2 = 0;
   }
   
-  if(m_counter < m_updatestep) return;  //only update resource values at declared update timesteps
+  if(m_counter < m_decay) return;  //only update resource values at declared update timesteps
   
   double thisdist, thisheight;
   double min_height = 0;
@@ -72,16 +71,14 @@ void cGradientCount::UpdateCount()
         thisheight = Linmap(thisdist, 0.0, m_spread, m_height, min_height);
         if(thisdist != 0) {
           thisheight = m_height / thisdist; //divide the height at the center of the cone (peak) by the distance from the center to get the height for this cell
-          if(thisheight < 0) {
+          if(thisheight < 0)
             thisheight = 0;  //keep resources from going negative
-          }
         }
-/*        if(thisheight > 1)
-          thisheight = m_height / m_height; //cause 'peaks' to be flat plateaus with max of 1  */
-      } 
-      else {
-        thisheight = 0;
+        if(thisheight > 1)
+          thisheight = m_plateau; //cause 'peaks' to be flat plateaus with plateau value; you'll get cylindrical builds whereever thisheight would be >1 (area where thisdist <= m_height)  */
       }
+      else
+        thisheight = 0;
       
       int thiscell = MapToWorld(GetX(),GetY(),ii,jj);
       Element(jj*GetX()+ii).SetInitial(thisheight);
