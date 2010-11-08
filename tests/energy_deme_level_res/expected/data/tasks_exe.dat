@@ -1,0 +1,18 @@
+# Avida tasks execution data
+# Mon Nov  8 16:40:45 2010
+# First column gives the current update, all further columns give the number
+# of times the particular task has been executed this update.
+#  1: Update
+#  2: Echo
+#  3: Nand
+
+10 40 8 
+20 150 30 
+30 308 62 
+40 567 114 
+50 943 192 
+60 972 197 
+70 63 14 
+80 216 48 
+90 563 120 
+100 1066 227 
