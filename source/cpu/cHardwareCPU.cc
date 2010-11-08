@@ -611,6 +611,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("mark-cell-with-id", &cHardwareCPU::Inst_MarkCellWithID),
     tInstLibEntry<tMethod>("mark-cell-with-vitality", &cHardwareCPU::Inst_MarkCellWithVitality),
     tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
+    //tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID),  //APW
 
 		
 		// Synchronization
@@ -8427,7 +8428,13 @@ bool cHardwareCPU::Inst_GetID(cAvidaContext& ctx)
   return true;
 }
 
-
+/*bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetFacedOrgID();
+  return true;
+} */ //APW
 
 
 
