@@ -595,7 +595,7 @@ public:
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
-  void IncSenseCount(const int i) { assert(initialized == true); cur_sense_count[i]++; }  
+  void IncSenseCount(const int i) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
   
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }

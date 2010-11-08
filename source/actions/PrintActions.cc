@@ -260,6 +260,9 @@ public:
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "instruction_histogram.dat";
+    }
     
     if (m_filename == "") m_filename.Set("instruction_histogram-%s.dat", (const char*)m_inst_set);
   }

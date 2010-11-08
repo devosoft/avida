@@ -1351,14 +1351,14 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       
       // if we want to generate and age-task histogram
       if (m_world->GetConfig().AGE_POLY_TRACKING.Get()) {
-	m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
+        m_world->GetStats().AgeTaskEvent(taskctx.GetOrganism()->GetID(), i, time_used);
       }
     }
     
     if (result.TaskQuality(i) > 0) {
       cur_task_quality[i] += result.TaskQuality(i) * refract_factor;
       if (result.UsedEnvResource() == false) {
-	cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
+        cur_internal_task_quality[i] += result.TaskQuality(i) * refract_factor;
       }
     }
 		
@@ -1389,39 +1389,39 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       // then consider it to be a task switch.
       // If applicable, add in the penalty.
       switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
-      case 0: { // no penalty
-        break;
-      }
-      case 1: { // "learning" cost
-	if (cur_reaction_count[i] == 1) {
-	  ++num_new_unique_reactions;
-	}
-	break;
-      }
-      case 2: { // "retooling" cost
-	if (last_task_id == -1) {
-	  last_task_id = i;
-	}					
-	if (last_task_id != i) {
-	  num_new_unique_reactions++;
-	  last_task_id = i;
-	}
-	break;
-      }
-      case 3: { // centrifuge
-	// task switching cost is calculated based on 
-	// the distance between the two tasks.
-	
-	int distance = abs(i - last_task_id);
-	num_new_unique_reactions += distance;
-	last_task_id = i;
-	
-	break;
-      }
-      default: {
-	assert(false);
-	break;
-      }
+        case 0: { // no penalty
+          break;
+        }
+        case 1: { // "learning" cost
+          if (cur_reaction_count[i] == 1) {
+            ++num_new_unique_reactions;
+          }
+          break;
+        }
+        case 2: { // "retooling" cost
+          if (last_task_id == -1) {
+            last_task_id = i;
+          }					
+          if (last_task_id != i) {
+            num_new_unique_reactions++;
+            last_task_id = i;
+          }
+          break;
+        }
+        case 3: { // centrifuge
+          // task switching cost is calculated based on 
+          // the distance between the two tasks.
+          
+          int distance = abs(i - last_task_id);
+          num_new_unique_reactions += distance;
+          last_task_id = i;
+          
+          break;
+        }
+        default: {
+          assert(false);
+          break;
+        }
       }
     }		
   }
@@ -1506,11 +1506,11 @@ void cPhenotype::Sterilize()
 void cPhenotype::PrintStatus(ostream& fp) const
 {
   fp << "  MeritBase:"
-     << CalcSizeMerit()
-     << " Bonus:" << cur_bonus
-     << " Errors:" << cur_num_errors
-     << " Donates:" << cur_num_donates
-     << '\n';
+  << CalcSizeMerit()
+  << " Bonus:" << cur_bonus
+  << " Errors:" << cur_num_errors
+  << " Donates:" << cur_num_donates
+  << '\n';
   
   fp << "  Task Count (Quality):";
   for (int i = 0; i < cur_task_count.GetSize(); i++) {
@@ -1542,51 +1542,51 @@ int cPhenotype::CalcSizeMerit() const
   int out_size;
   
   switch (m_world->GetConfig().BASE_MERIT_METHOD.Get()) {
-  case BASE_MERIT_COPIED_SIZE:
-    out_size = copied_size;
-    break;
-  case BASE_MERIT_EXE_SIZE:
-    out_size = executed_size;
-    break;
-  case BASE_MERIT_FULL_SIZE:
-    out_size = genome_length;
-    break;
-  case BASE_MERIT_LEAST_SIZE:
-    out_size = genome_length;
-    if (out_size > copied_size) out_size = copied_size;
-    if (out_size > executed_size)    out_size = executed_size;
-    break;
-  case BASE_MERIT_SQRT_LEAST_SIZE:
-    out_size = genome_length;
-    if (out_size > copied_size) out_size = copied_size;
-    if (out_size > executed_size)    out_size = executed_size;
-    out_size = (int) sqrt((double) out_size);
-    break;
-  case BASE_MERIT_NUM_BONUS_INST:
-    if (m_world->GetConfig().FITNESS_VALLEY.Get()){
-      if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
-	  bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
-	out_size = 1;
-	break;
-      }            
-    }
-    if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {
-      out_size = 1 + bonus_instruction_count;
-    }
-    else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {
-      out_size = genome_length - (bonus_instruction_count -1);
-    }
-    else {
-      out_size = 1; // The extra 1 point is so the orgs are not jilted by the scheduler.
-    }
-    break;
-  case BASE_MERIT_GESTATION_TIME:
-    out_size = cpu_cycles_used;
-    break;
-  case BASE_MERIT_CONST:
-  default:
-    out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
-    break;
+    case BASE_MERIT_COPIED_SIZE:
+      out_size = copied_size;
+      break;
+    case BASE_MERIT_EXE_SIZE:
+      out_size = executed_size;
+      break;
+    case BASE_MERIT_FULL_SIZE:
+      out_size = genome_length;
+      break;
+    case BASE_MERIT_LEAST_SIZE:
+      out_size = genome_length;
+      if (out_size > copied_size) out_size = copied_size;
+      if (out_size > executed_size)    out_size = executed_size;
+      break;
+    case BASE_MERIT_SQRT_LEAST_SIZE:
+      out_size = genome_length;
+      if (out_size > copied_size) out_size = copied_size;
+      if (out_size > executed_size)    out_size = executed_size;
+      out_size = (int) sqrt((double) out_size);
+      break;
+    case BASE_MERIT_NUM_BONUS_INST:
+      if (m_world->GetConfig().FITNESS_VALLEY.Get()){
+        if (bonus_instruction_count >= m_world->GetConfig().FITNESS_VALLEY_START.Get() && 
+            bonus_instruction_count <= m_world->GetConfig().FITNESS_VALLEY_STOP.Get()){
+          out_size = 1;
+          break;
+        }            
+      }
+      if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()>0) {
+        out_size = 1 + bonus_instruction_count;
+      }
+      else if (m_world->GetConfig().MERIT_BONUS_EFFECT.Get()<0) {
+        out_size = genome_length - (bonus_instruction_count -1);
+      }
+      else {
+        out_size = 1; // The extra 1 point is so the orgs are not jilted by the scheduler.
+      }
+      break;
+    case BASE_MERIT_GESTATION_TIME:
+      out_size = cpu_cycles_used;
+      break;
+    case BASE_MERIT_CONST:
+    default:
+      out_size = m_world->GetConfig().BASE_CONST_MERIT.Get();
+      break;
   }
   
   return out_size;
@@ -1604,12 +1604,12 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
 {
   double out_fitness = 0;
   switch (m_world->GetConfig().FITNESS_METHOD.Get()) {
-  case 0: // Normal
-    assert(_gestation_time > 0);
-    out_fitness = _merit_base * _bonus / _gestation_time;
-    break;
-    
-  case 1: // Sigmoidal returns (should be used with an additive reward)
+    case 0: // Normal
+      assert(_gestation_time > 0);
+      out_fitness = _merit_base * _bonus / _gestation_time;
+      break;
+      
+    case 1: // Sigmoidal returns (should be used with an additive reward)
     {
       assert(_gestation_time > 0);
       out_fitness = 0;
@@ -1617,19 +1617,19 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
       double converted_bonus = (_bonus - m_world->GetConfig().DEFAULT_BONUS.Get()) * m_world->GetConfig().FITNESS_COEFF_2.Get() / (1 + _bonus * m_world->GetConfig().FITNESS_COEFF_2.Get() ) ;
       out_fitness = _merit_base * exp(converted_bonus * log(m_world->GetConfig().FITNESS_COEFF_1.Get())) / _gestation_time;
     }
-    break;
-    
-  case 2: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
+      break;
+      
+    case 2: //Activity of one enzyme in pathway altered (with diminishing returns and a cost for each executed instruction)
     {
       out_fitness = 0;
       double net_bonus = _bonus +  - m_world->GetConfig().DEFAULT_BONUS.Get();
       out_fitness = net_bonus / (net_bonus + 1)* exp (_gestation_time * log(1 - m_world->GetConfig().FITNESS_COEFF_1.Get())); 
     }
-    break;
+      break;
       
-  default:
-    cout << "Unknown FITNESS_METHOD!" << endl;
-    exit(1);
+    default:
+      cout << "Unknown FITNESS_METHOD!" << endl;
+      exit(1);
   }
   
   return out_fitness;
