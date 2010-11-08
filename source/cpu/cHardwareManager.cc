@@ -46,6 +46,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
 : m_world(world), m_cpu_count(0)
 {
   cString filename = world->GetConfig().INST_SET.Get();
+  m_is_name_map.SetDefault(-1);
 
 }
 

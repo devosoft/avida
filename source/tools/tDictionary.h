@@ -48,6 +48,7 @@ template <class T> class tDictionary
 {
 private:
   tHashMap<cString, T> m_hash;
+  T m_default;
 
   tDictionary(const tDictionary&); // @not_implemented
 
@@ -56,13 +57,15 @@ public:
   inline tDictionary() { ; }
   inline tDictionary(int in_hash_size) : m_hash(in_hash_size) { ; }
   
+  inline void SetDefault(const T& def) { m_default = def; }
+  
   // The following methods just call the encapsulated tHashMap
   inline bool OK() const { return m_hash.OK(); }
   inline int GetSize() const { return m_hash.GetSize(); }
   inline void Set(const cString& name, T data) { m_hash.Set(name, data); }
   inline bool HasEntry(const cString& name) const { return m_hash.HasEntry(name); }
   inline bool Find(const cString& name, T& out_data) const { return m_hash.Find(name, out_data); }
-  inline T Get(const cString& name) const { T rval; m_hash.Find(name, rval); return rval; }
+  inline T Get(const cString& name) const { T rval = m_default; m_hash.Find(name, rval); return rval; }
   inline T GetWithDefault(const cString& name, const T& def) const;
   inline void Remove(const cString& name) { m_hash.Remove(name); }
   inline bool Remove(const cString& name, T& data) { return m_hash.Remove(name, data); }

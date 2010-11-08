@@ -457,7 +457,7 @@ void cStats::CalcFidelity()
   // after a mutation occurs, that it will be the original instruction again;
   // This needs to be adjusted for!
   
-  double ave_num_insts;
+  double ave_num_insts = 0.0;
   for (tArrayMap<cString, tArray<cString> >::iterator it = m_is_inst_names_map.begin(); it != m_is_inst_names_map.end(); it++) {
     ave_num_insts += (*it).Value().GetSize();
   }
