@@ -1,0 +1,13 @@
+# Avida resource data
+# Mon Nov  8 16:15:51 2010
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+
+0 
+5 
+10 
+15 
+20 
+25 
+30 

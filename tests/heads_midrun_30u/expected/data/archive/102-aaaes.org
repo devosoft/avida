@@ -1,0 +1,131 @@
+# Mon Nov  8 16:16:03 2010
+# Filename........: archive/102-aaaes.org
+# Update Output...: 30
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 3355443200.000000
+# Gestation Time..: 266
+# Fitness.........: 12614448.120301
+# Errors..........: 1
+# Genome Size.....: 102
+# Copied Size.....: 102
+# Executed Size...: 100
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 1 (1.000000)
+# nand 1 (1.000000)
+# and 1 (1.000000)
+# orn 1 (1.000000)
+# or 1 (1.000000)
+# andn 1 (1.000000)
+# nor 1 (1.000000)
+# xor 1 (1.000000)
+# equ 1 (1.000000)
+
+
+h-alloc
+add
+dec
+add
+push
+nop-B
+h-search
+IO
+nop-C
+IO
+swap
+nand
+nand
+nop-B
+nand
+nop-C
+IO
+nop-C
+push
+push
+swap
+nop-C
+nop-A
+set-flow
+push
+nand
+nop-C
+nand
+nop-C
+nop-C
+if-label
+h-divide
+nop-C
+pop
+nop-C
+nop-B
+h-alloc
+IO
+nop-C
+nand
+nop-A
+if-label
+sub
+nand
+nop-C
+if-label
+if-less
+mov-head
+nop-C
+nop-A
+nand
+nop-C
+h-divide
+IO
+nop-C
+set-flow
+nop-C
+add
+nop-C
+IO
+IO
+IO
+nop-A
+pop
+nand
+set-flow
+h-copy
+nand
+inc
+h-copy
+add
+sub
+set-flow
+add
+swap
+nand
+IO
+swap
+IO
+h-search
+h-copy
+nand
+nand
+h-copy
+pop
+nop-C
+nand
+IO
+h-copy
+nand
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+h-copy
+h-copy
+h-copy
+h-copy
+mov-head
+nop-A
+nop-B
