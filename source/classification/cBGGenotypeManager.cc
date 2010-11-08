@@ -180,7 +180,7 @@ cBioGroup* cBGGenotypeManager::GetBioGroup(int bg_id)
 
 cBioGroup* cBGGenotypeManager::LoadBioGroup(const tDictionary<cString>& props)
 {
-  cBGGenotype* bg = new cBGGenotype(this, m_next_id++, props); 
+  cBGGenotype* bg = new cBGGenotype(this, m_next_id++, props, m_world); 
   m_historic.Push(bg, &bg->m_handle);
   return bg;
 }

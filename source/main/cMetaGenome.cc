@@ -40,18 +40,25 @@ cMetaGenome::cMetaGenome(const cString& gen_str)
   m_genome = cGenome(str);
 }
 
-void cMetaGenome::Load(const tDictionary<cString>& props)
+void cMetaGenome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
 {
   if (props.HasEntry("hw_type")) {
     m_hw_type = props.Get("hw_type").AsInt();
   } else {
-    m_hw_type = 0; // Default when not found, for backwards compatibility
+    m_hw_type = -1; // Default when not found, for backwards compatibility
   }
   if (props.HasEntry("inst_set")) {
     m_inst_set = props.Get("inst_set");
   } else {
-    m_inst_set = "(unknown)"; // Default when not found, for backwards compatibility
+    m_inst_set = "(default)"; // Default when not found, for backwards compatibility
   }
+  
+  if (m_inst_set == "(default)") {
+    const cInstSet& is = hwm.GetDefaultInstSet();
+    m_hw_type = is.GetHardwareType();
+    m_inst_set = is.GetInstSetName();
+  }
+  
   assert(props.HasEntry("sequence"));
   m_genome = cGenome(props.Get("sequence"));
 }

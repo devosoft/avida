@@ -25,26 +25,17 @@
 #ifndef cBGGenotype_h
 #define cBGGenotype_h
 
-#ifndef cBioGroup_h
 #include "cBioGroup.h"
-#endif
-#ifndef cCountTracker_h
 #include "cCountTracker.h"
-#endif
-#ifndef cDoubleSum_h
 #include "cDoubleSum.h"
-#endif
-#ifndef cMetaGenome_h
 #include "cMetaGenome.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
 
 
 class cAvidaContext;
 class cBGGenotypeManager;
 class cEntryHandle;
+class cWorld;
 
 
 class cBGGenotype : public cBioGroup
@@ -91,7 +82,7 @@ private:
     
   
   cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents);
-  cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props);
+  cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props, cWorld* world);
   
 public:
   ~cBGGenotype();

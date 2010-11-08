@@ -188,7 +188,7 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
   
   if (filename == "" || filename == "-") {
     filename = default_filename;
-    cDriverManager::Status().NotifyComment(cString("Using default instruction set: ") + filename);
+    cDriverManager::Status().NotifyComment(cString("using default instruction set: ") + filename);
     // set INST_SET so that the proper name will show up in the text viewer
     m_world->GetConfig().INST_SET.Set(filename);
   }
@@ -225,14 +225,13 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
   assert(org != NULL);
 	
   int inst_set_id = m_is_name_map.GetWithDefault(mg.GetInstSet(), -1);
-  if (inst_set_id == -1) return NULL;
+  if (inst_set_id == -1) return NULL; // No valid instruction set found
   
   cInstSet* inst_set = m_inst_sets[inst_set_id];
-  
-  if (inst_set->GetHardwareType() != mg.GetHardwareType()) return NULL;
+  if (inst_set->GetHardwareType() != mg.GetHardwareType()) return NULL; // inst_set/hw_type mismatch
   
   cHardwareBase* hw = 0;
-  switch (mg.GetHardwareType()) {
+  switch (inst_set->GetHardwareType()) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
       hw = new cHardwareCPU(ctx, m_world, org, inst_set);
       break;

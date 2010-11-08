@@ -62,8 +62,8 @@ public:
   cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
-  const cInstSet& GetInstSet(const cString& name) const { return *m_inst_sets[m_is_name_map.Get(name)]; }
-  cInstSet& GetInstSet(const cString& name) { return *m_inst_sets[m_is_name_map.Get(name)]; }
+  inline const cInstSet& GetInstSet(const cString& name) const;
+  inline cInstSet& GetInstSet(const cString& name);
   const cInstSet& GetInstSet(int i) const { return *m_inst_sets[i]; }
   
   const cInstSet& GetDefaultInstSet() const { return *m_inst_sets[0]; }
@@ -75,5 +75,16 @@ public:
 private:
   bool loadInstSet(int hw_type, const cString& name, cStringList& sl, tList<cString>* errors);
 };
+
+
+inline const cInstSet& cHardwareManager::GetInstSet(const cString& name) const
+{
+  return (name == "(default)") ? *m_inst_sets[0] : *m_inst_sets[m_is_name_map.Get(name)];
+}
+
+inline cInstSet& cHardwareManager::GetInstSet(const cString& name)
+{
+  return (name == "(default)") ? *m_inst_sets[0] : *m_inst_sets[m_is_name_map.Get(name)];
+}
 
 #endif

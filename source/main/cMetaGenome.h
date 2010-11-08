@@ -42,7 +42,7 @@ private:
  
   
 public:
-  cMetaGenome() : m_hw_type(-1), m_inst_set(-1) { ; }
+  cMetaGenome() : m_hw_type(-1), m_inst_set("(default)") { ; }
   cMetaGenome(int hw, const cString& is, const cGenome& gen) : m_hw_type(hw), m_inst_set(is), m_genome(gen) { ; }
   explicit cMetaGenome(const cString& gen_str);
   cMetaGenome(const cMetaGenome& mg) : m_hw_type(mg.m_hw_type), m_inst_set(mg.m_inst_set), m_genome(mg.m_genome) { ; }
@@ -65,7 +65,7 @@ public:
   cMetaGenome& operator=(const cMetaGenome& mg)
     { m_hw_type = mg.m_hw_type; m_inst_set = mg.m_inst_set; m_genome = mg.m_genome; return *this; }
 
-  void Load(const tDictionary<cString>& props);
+  void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
   void Save(cDataFile& df);
   
   bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, tList<cString>* errors = NULL);

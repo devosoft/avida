@@ -30,7 +30,9 @@
 #include "cPhenotype.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
+#include "cWorld.h"
 #include "tDictionary.h"
+
 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
   : cBioGroup(in_id)
@@ -67,7 +69,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
 }
 
 
-cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props)
+cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props, cWorld* world)
 : cBioGroup(in_id)
 , m_mgr(mgr)
 , m_handle(NULL)
@@ -87,7 +89,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
   m_src_args = props.Get("src_args");
   if (m_src_args == "(none)") m_src_args = "";
   
-  m_genome.Load(props);
+  m_genome.Load(props, world->GetHardwareManager());
   
   if (props.HasEntry("gen_born")) {
     m_generation_born = props.Get("gen_born").AsInt();

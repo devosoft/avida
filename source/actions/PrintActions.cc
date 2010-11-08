@@ -230,6 +230,9 @@ public:
     largs.Trim();
     if (largs.GetSize()) m_filename = largs.PopWord();
     if (largs.GetSize()) m_inst_set = largs.PopWord();
+    else {
+      if (m_filename == "") m_filename = "instruction.dat";
+    }
     
     if (m_filename == "") m_filename.Set("instruction-%s.dat", (const char*)m_inst_set);
   }
@@ -3226,6 +3229,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintMarketData>("PrintMarketData");
   action_lib->Register<cActionPrintSenseData>("PrintSenseData");
   action_lib->Register<cActionPrintSenseExeData>("PrintSenseExeData");
+  action_lib->Register<cActionPrintInstructionData>("PrintInstructionData");
   action_lib->Register<cActionPrintInternalTasksData>("PrintInternalTasksData");
   action_lib->Register<cActionPrintInternalTasksQualData>("PrintInternalTasksQualData");
   action_lib->Register<cActionPrintSleepData>("PrintSleepData");
