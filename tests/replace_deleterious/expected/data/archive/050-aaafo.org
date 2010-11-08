@@ -1,0 +1,79 @@
+# Mon Nov  8 16:03:56 2010
+# Filename........: archive/050-aaafo.org
+# Update Output...: 500
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 94.000000
+# Gestation Time..: 184
+# Fitness.........: 0.510870
+# Errors..........: 1
+# Genome Size.....: 50
+# Copied Size.....: 50
+# Executed Size...: 47
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 1 (1.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+h-alloc
+h-search
+nop-C
+nop-A
+mov-head
+nop-C
+nop-C
+nop-C
+pop
+add
+nop-C
+nop-C
+nop-C
+nand
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+if-label
+swap
+IO
+nop-C
+nop-C
+nop-C
+h-alloc
+nand
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+IO
+nop-C
+dec
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide1RS
+mov-head
+nop-A
+nop-B

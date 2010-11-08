@@ -1,0 +1,67 @@
+# Mon Nov  8 16:02:46 2010
+# Filename........: archive/041-aaaab.org
+# Update Output...: 0
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 100.000000
+# Gestation Time..: 41
+# Fitness.........: 2.439024
+# Errors..........: 0
+# Genome Size.....: 41
+# Copied Size.....: 41
+# Executed Size...: 41
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# optimize 1 (0.490570)
+# optimize 1 (0.385065)
+# optimize 1 (0.685292)
+# optimize 1 (0.863239)
+# optimize 1 (0.483222)
+# optimize 1 (0.611628)
+
+
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+repro

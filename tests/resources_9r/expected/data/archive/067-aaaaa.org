@@ -1,0 +1,96 @@
+# Mon Nov  8 16:03:57 2010
+# Filename........: archive/067-aaaaa.org
+# Update Output...: 100
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 67.000000
+# Gestation Time..: 220
+# Fitness.........: 0.304545
+# Errors..........: 0
+# Genome Size.....: 67
+# Copied Size.....: 67
+# Executed Size...: 67
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 2 (2.000000)
+# nand 3 (3.000000)
+# and 1 (1.000000)
+# orn 2 (2.000000)
+# or 2 (2.000000)
+# andn 1 (1.000000)
+# nor 2 (2.000000)
+# xor 1 (1.000000)
+# equ 1 (1.000000)
+
+
+nop-A
+set-flow
+h-alloc
+set-flow
+nop-A
+mov-head
+nop-C
+h-divide
+h-search
+IO
+nop-C
+dec
+nand
+h-copy
+IO
+nop-C
+if-less
+nop-C
+swap
+swap-stk
+nand
+nop-C
+if-label
+pop
+nand
+nop-C
+IO
+nop-A
+push
+nop-C
+inc
+nop-B
+h-copy
+pop
+h-copy
+nand
+nop-C
+IO
+h-copy
+h-copy
+nand
+push
+IO
+IO
+nop-C
+h-copy
+h-copy
+h-copy
+h-copy
+inc
+h-copy
+if-label
+nop-C
+if-label
+mov-head
+nop-A
+h-copy
+swap-stk
+h-copy
+nop-A
+h-copy
+h-copy
+h-copy
+h-copy
+pop
+h-copy
+h-divide

@@ -1,0 +1,34 @@
+# Avida tasks quality data
+# Mon Nov  8 16:04:05 2010
+# First column gives the current update, rest give average and max task quality
+#  1: Update
+#  2: Not Average
+#  3: Not Max
+#  4: Nand Average
+#  5: Nand Max
+#  6: And Average
+#  7: And Max
+#  8: OrNot Average
+#  9: OrNot Max
+# 10: Or Average
+# 11: Or Max
+# 12: AndNot Average
+# 13: AndNot Max
+# 14: Nor Average
+# 15: Nor Max
+# 16: Xor Average
+# 17: Xor Max
+# 18: Equals Average
+# 19: Equals Max
+
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+10 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 
+20 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 
+30 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 
+40 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 
+50 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 
+60 1 1 1 1 0 0 1 1 1 1 0 0 0 0 0 0 0 0 
+70 1 1 1 1 0 0 1 1 1 1 0 0 0 0 0 0 0 0 
+80 1 1 1 1 0 0 1 1 1 1 0 0 0 0 0 0 0 0 
+90 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 
+100 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 

@@ -1,0 +1,78 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Mon Nov  8 16:03:01 2010
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+208 org:divide (none) 2,2 28 214 41 4.54419e+27 41 1.10834e+26 21 8 -1 1 0 instset-heads.cfg bababbaabbaaabbbabbaabaababaababaaaabbabc 13,14,15,17,33,34,35,36,95,113,114,115,132,133,134,136,150,152,153,154,155,172,173,174,175,176,192,194 7,5,20,30,11,6,5,21,4,4,3,4,12,6,13,6,20,5,32,7,1,31,20,35,1,1,39,7 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+277 org:divide (none) 257,259 8 36 41 1.22236e+28 41 2.98137e+26 104 60 -1 6 0 instset-heads.cfg babaabaabbaaabababbaabaababaababaaaabaabc 0,18,19,20,39,40,61,199 19,15,23,29,23,23,24,38 0,0,0,0,0,0,0,0 
+75 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg babababababaabbbababbaaabaabaababbbbbbaac 73 40 0 
+213 org:divide (none) 212,204 2 190 41 5.62237e+27 41 1.37131e+26 40 12 -1 3 0 instset-heads.cfg babaabaabbaaabababbaabaababaababaaaabbabc 38,58 40,18 0,0 
+305 org:divide (none) 297,297 15 54 41 2.10964e+30 41 5.14546e+28 109 78 -1 10 0 instset-heads.cfg babaabaabbbaaaaaabbaabaababaababaaabbaabc 3,24,84,104,105,124,143,162,163,164,165,181,182,184,186 36,9,24,24,13,17,9,14,13,11,40,14,16,29,23 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+259 org:divide (none) 248,213 1 10 41 4.47658e+27 41 1.09185e+26 71 52 -1 9 0 instset-heads.cfg babaabaabbaaabababbbabaababaababaaaabaabc 1 27 0 
+329 org:divide (none) 248,248 3 3 41 2.42343e+30 41 5.91081e+28 142 99 -1 9 0 instset-heads.cfg babaabaabbbaabababbbabaababaababaaabbaabc 99,138,159 37,1,1 0,0,0 
+76 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg bbaaabbabaaabbaaaabbaabbbbabbbbaababbaaac 74 40 0 
+53 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg aababbbbbbaaabbbbbbbabaabaabbbbaabaaaaabc 51 40 0 
+283 org:divide (none) 257,257 9 100 41 1.94898e+28 41 4.75361e+26 107 62 -1 6 0 instset-heads.cfg babaabaabbaabaababbaabaababaababaaaabaabc 2,23,42,43,122,123,160,161,180 12,21,37,31,27,26,10,9,9 0,0,0,0,0,0,0,0,0 
+297 org:divide (none) 246 17 149 41 1.05883e+31 41 2.58251e+29 101 71 -1 9 0 instset-heads.cfg babaabaabbbaaaaaabbaabaababaababaaaabaabc 4,5,45,64,65,66,71,85,110,125,169,170,171,183,185,190,191 14,7,4,39,31,21,6,18,40,8,12,24,16,13,17,33,12 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+303 org:divide (none) 283,277 1 1 41 1.80406e+27 41 4.40014e+25 121 76 -1 7 0 instset-heads.cfg babaabaabbaabbababbaabaababaababaaaabaabc 60 23 0 
+326 org:divide (none) 322,319 8 23 41 7.2684e+30 41 1.77278e+29 146 97 -1 12 0 instset-heads.cfg babaabbabbbabaaaabaaabaababaababaaaabaabc 6,28,31,47,48,68,87,108 1,7,31,4,17,28,28,12 0,0,0,0,0,0,0,0 
+292 org:divide (none) 285,283 1 1 41 0 0 0 146 69 -1 8 0 instset-heads.cfg babaabaabbaabaababbbabaabbbaababaaaabaabc 62 30 0 
+315 org:divide (none) 297,297 33 105 41 1.17178e+34 41 2.85799e+32 127 86 -1 10 0 instset-heads.cfg babaabaabbbaaaaaabaaabaababaababaaaabaabc 7,8,9,25,27,29,46,49,50,67,70,72,86,88,89,90,91,92,93,106,107,111,112,126,127,145,146,147,166,167,168,187,188 40,30,8,2,10,21,36,21,15,37,29,11,33,40,36,25,33,29,28,33,30,28,24,23,29,34,31,29,27,38,28,10,13 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+285 org:divide (none) 279,238 1 6 41 1.00236e+28 41 2.44478e+26 140 63 -1 7 0 instset-heads.cfg babaabaabbbaaaababbbabaabbbaababaaaabaabc 21 18 0 
+331 org:divide (none) 326,326 2 2 41 3.32932e+30 41 8.12029e+28 155 99 -1 13 0 instset-heads.cfg babaaababbbabaaaabaaabaababaababaaaabaabc 10,30 2,0 0,0 
+151 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg bababbbababbbaabbaabbbaaababababbabbbabac 149 40 0 
+266 org:divide (none) 248,257 3 27 41 4.89704e+28 41 1.1944e+27 135 56 -1 9 0 instset-heads.cfg babaabaabbaaaaababbbabaababaababaaaabaabc 22,37,179 12,11,23 0,0,0 
+13 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg babababaaabbbbaabbbbaabbbbbabaabbbbabbaac 11 40 0 
+301 org:divide (none) 208,208 2 2 41 1.94845e+27 41 4.75233e+25 74 73 -1 2 0 instset-heads.cfg bababbaabbaaabbbabbaabbababaababaaaabbabc 12,193 14,9 0,0 
+133 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg bababbbaabbbaababaabaabaababbababaabbabbc 131 40 0 
+248 org:divide (none) 244,213 32 287 41 1.76744e+30 41 4.31084e+28 117 46 -1 8 0 instset-heads.cfg babaabaabbbaabababbbabaababaababaaaabaabc 16,41,55,56,57,59,75,76,77,78,94,96,97,98,100,101,116,117,118,119,121,135,137,139,140,158,177,178,195,196,197,198 23,40,28,12,5,20,20,12,34,38,19,40,16,39,13,22,0,0,3,25,28,0,5,14,20,13,14,40,24,22,6,39 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+56 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg abaababaaabbaaababbabaabbaabaaabababaabac 54 40 0 
+332 org:divide (none) 326,305 1 1 41 0 0 0 148 100 -1 13 0 instset-heads.cfg babaabbabbbabaaaabaaabaababaababaaabbaabc 26 11 0 
+34 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg babaabaabaaaabbbbabaabbbbababbbbbaaabbbac 32 40 0 
+313 org:divide (none) 297,297 1 2 41 2.03776e+28 41 4.97013e+26 127 85 -1 10 0 instset-heads.cfg babaabaabbbaaaaaabbaabaababaaaabaaaabaabc 189 39 0 
+221 org:divide (none) 213,213 1 110 41 1.84587e+28 41 4.50213e+26 63 26 -1 4 0 instset-heads.cfg babaabaabbaaaaababbaabaababaababaaaabbabc 141 16 0 
+244 org:divide (none) 238,238 2 49 41 3.24316e+29 41 7.91015e+27 108 45 -1 7 0 instset-heads.cfg babaabaabbbaaaababbbabaababaababaaaabaabc 44,103 9,32 0,0 
+150 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg bababbaaabbbbbaaabbaaabbabababaabbabbaabc 148 40 0 
+219 org:divide (none) 208,208 3 9 41 3.36395e+27 41 8.20475e+25 62 25 -1 2 0 instset-heads.cfg bababbaaabaaabbbabbaabaababaababaaaabbabc 52,53,156 13,3,2 0,0,0 
+229 org:divide (none) 221,221 4 104 41 1.29215e+29 41 3.15158e+27 77 31 -1 5 0 instset-heads.cfg babaabaabbaaaaababbbabaababaababaaaabbabc 109,128,129,130 38,16,32,38 0,0,0,0 
+321 org:divide (none) 315,315 1 2 41 1.96927e+29 41 4.80311e+27 142 95 -1 11 0 instset-heads.cfg babbabaabbbaaaaaabaaabaababaababaaaabaabc 69 20 0 
+252 org:divide (none) 248,248 5 31 41 3.9443e+28 41 9.62025e+26 128 48 -1 9 0 instset-heads.cfg babaabaabbbaabababbbabaabbbaababaaaabaabc 63,80,81,82,83 23,15,14,23,23 0,0,0,0,0 
+330 org:divide (none) 248,248 1 1 41 0 0 0 142 99 -1 9 0 instset-heads.cfg babaabaabbbaabababbbabaababaababaaaabaabb 79 44 0 
+299 org:divide (none) 248,283 1 5 41 8.48872e+27 41 2.07042e+26 125 72 -1 9 0 instset-heads.cfg babaabaabbaabaababbbabaababaababaaaabaabc 102 13 0 
+304 org:divide (none) 248,283 1 1 41 0 0 0 134 77 -1 9 0 instset-heads.cfg babaabaabbbaabababbaabaababaababaaaabaabc 120 25 0 
+318 org:divide (none) 314,297 1 2 41 0 0 0 129 91 -1 8 0 instset-heads.cfg babaabaabbbaaaababbaabaabbbaababaaaabaabc 142 18 0 
+153 org:random (none) (none) 1 1 41 0 0 0 0 -1 -1 0 0 instset-heads.cfg aabbabaabbaabbbbbbbababaababaaaabaababaac 151 40 0 
+314 org:divide (none) 298,297 1 3 41 1.65268e+29 41 4.03093e+27 124 85 -1 7 0 instset-heads.cfg bbbaabaabbbaaaababbaabaabbbaababaaaabaabc 144 29 0 
+316 org:divide (none) 248,248 1 5 41 1.12292e+29 41 2.73884e+27 129 86 -1 9 0 instset-heads.cfg babaabaabbbaabababbbabaababaababaaaababbc 157 1 0 
+322 org:divide (none) 315,315 0 2 41 5.46121e+30 41 1.332e+29 142 95 97 11 0 instset-heads.cfg babaabaabbbabaaaabaaabaababaababaaaabaabc 
+319 org:divide (none) 315,315 0 4 41 2.18965e+31 41 5.34061e+29 135 92 97 11 0 instset-heads.cfg babaabbabbbaaaaaabaaabaababaababaaaabaabc 
+265 org:divide (none) 221,260 0 24 41 1.42164e+28 41 3.46743e+26 124 54 94 5 0 instset-heads.cfg babaabaabbaaaaababbaabaabbbaababaaaabaabc 
+298 org:divide (none) 265,265 0 10 41 2.3566e+28 41 5.74781e+26 139 72 91 6 0 instset-heads.cfg bbbaabaabbaaaaababbaabaabbbaababaaaabaabc 
+257 org:divide (none) 221,246 0 68 41 7.18646e+28 41 1.7528e+27 120 51 91 5 0 instset-heads.cfg babaabaabbaaaaababbaabaababaababaaaabaabc 
+246 org:divide (none) 244 0 45 41 4.55886e+28 41 1.11192e+27 114 46 79 8 0 instset-heads.cfg babaabaabbbaaaababbaabaababaababaaaabaabc 
+238 org:divide (none) 229,221 0 80 41 2.69653e+28 41 6.5769e+26 88 40 78 6 0 instset-heads.cfg babaabaabbbaaaababbbabaababaababaaaabbabc 
+279 org:divide (none) 257,252 0 2 41 1.0094e+28 41 2.46196e+26 139 61 67 6 0 instset-heads.cfg babaabaabbaaaaababbbabaabbbaababaaaabaabc 
+2 org:random (none) (none) 0 134 41 9.09365e+24 41 2.21796e+23 0 -1 59 0 0 instset-heads.cfg bababbaabbaaabbbabbaabaababaababaaabbbabc 
+260 org:divide (none) 238,252 0 2 41 3.93194e+27 41 9.5901e+25 120 52 57 7 0 instset-heads.cfg babaabaabbbaaaababbbabaabbbaababaaaabaabc 
+204 org:divide (none) 2,2 0 29 41 2.64786e+26 41 6.45819e+24 18 7 20 1 0 instset-heads.cfg bababbaabbaaabababbaabaababaababaaabbbabc 
+212 org:divide (none) 208,208 0 4 41 4.41833e+26 41 1.07764e+25 39 12 17 2 0 instset-heads.cfg babaabaabbaaabbbabbaabaababaababaaaabbabc 

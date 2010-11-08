@@ -1,0 +1,79 @@
+# Mon Nov  8 16:03:54 2010
+# Filename........: archive/050-aaacj.org
+# Update Output...: 280
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 47.000000
+# Gestation Time..: 185
+# Fitness.........: 0.254054
+# Errors..........: 0
+# Genome Size.....: 50
+# Copied Size.....: 50
+# Executed Size...: 47
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# not 0 (0.000000)
+# nand 0 (0.000000)
+# and 0 (0.000000)
+# orn 0 (0.000000)
+# or 0 (0.000000)
+# andn 0 (0.000000)
+# nor 0 (0.000000)
+# xor 0 (0.000000)
+# equ 0 (0.000000)
+
+
+h-alloc
+h-search
+nop-C
+nop-A
+mov-head
+nop-C
+add
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nand
+nop-C
+swap
+nop-C
+add
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+nop-C
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide1RS
+mov-head
+nop-A
+nop-B

@@ -1,0 +1,107 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Mon Nov  8 16:04:06 2010
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+393 org:divide (none) 335 1 1 172 0 0 0 19 97 -1 3 0 instset-heads.cfg raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaucavcqgfcqapqeccthzscpvccpqcxaqnccxxbcglutycasvab 56 177 0 
+347 org:divide (none) 2 1 2 50 69.75 181 0.385359 13 88 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccfhzscpcccpqcxaqnccxxbcgdutycasvab 52 88 0 
+370 org:divide (none) 174 1 1 50 0 0 0 18 93 -1 5 0 instset-heads.cfg rycavcqgfcqapqeccthzscpccbpqcxaqbccxebctdutycasvab 19 239 0 
+2 org:file_load (none) (none) 22 452 50 335.31 177.729 1.88666 0 -1 -1 0 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 0,1,3,37,48,49,54,55,59,65,73,74,75,80,81,82,84,86,91,92,93,95 3,121,176,154,121,87,154,55,55,176,120,121,88,177,153,54,55,88,6,120,21,54 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
+392 org:divide (none) 378 1 1 50 0 0 0 22 97 -1 2 0 instset-heads.cfg cpqcxaqnccxxbcgdutydasvabrucavcqgfcqapqeccthzscpcc 36 103 0 
+277 org:divide (none) 249 2 2 50 53.6159 178 0.301213 18 71 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzsfpcccpqcxaqnccxxbczdutycasvab 30,41 3,6 0,0 
+300 org:divide (none) 36 1 2 49 246.929 173.667 1.42195 19 78 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqncxxbcjdutycasvab 29 154 0 
+323 org:divide (none) 299 2 4 51 272.996 182.333 1.49732 13 84 -1 3 0 instset-heads.cfg rucavcqgfcqapqeycctgzscpcccpdczaqnccxxbcgdutycasvab 7,96 182,181 0,0 
+346 org:divide (none) 140 1 2 50 47 179 0.26257 14 88 -1 2 0 instset-heads.cfg rucavcqgfrqapqeccthzsipcccpqcxaqnccxxbcgdutycasvab 2 56 0 
+360 org:divide (none) 2 1 2 50 47 179 0.26257 14 91 -1 1 0 instset-heads.cfg rucavcqgfmqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 4 23 0 
+395 org:divide (none) 2 1 1 50 0 0 0 22 99 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzsypcccpqcxaqnccxxbcgdutycasvab 57 154 0 
+349 org:divide (none) 2 2 2 50 238.279 177.5 1.34261 14 88 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxpcgdutycasvab 5,16 8,14 0,0 
+394 org:divide (none) 134 1 1 50 0 0 0 24 98 -1 2 0 instset-heads.cfg rufavcqgfcqapqeccthzscpcccpqcxaqnccxxbcedutycasvau 33 89 0 
+210 org:divide (none) 2 3 11 50 258.293 177.6 1.45446 9 55 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqczaqnccxxbcgdutycasvab 8,76,87 121,154,177 0,0,0 
+164 org:divide (none) 2 3 6 50 257.232 177.8 1.44674 7 43 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzrcpcccpqcxaqnccxxbcgdutycasvab 6,14,15 87,121,153 0,0,0 
+355 org:divide (none) 210 1 1 50 0 0 0 14 89 -1 2 0 instset-heads.cfg ruravcqgfcqapqeccthzscpcccpqczaqnccxxbcgdutycasvab 67 387 0 
+401 org:divide (none) 2 1 1 50 0 0 0 16 100 -1 1 0 instset-heads.cfg rucavcqgxcqapqeccthzscpxccpqcxaqnccxxbcgdutycasvab 9 3 0 
+359 org:divide (none) 270 1 2 50 62.427 178 0.350714 21 90 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccciqcoaqncjxxbcjdutycasvab 10 55 0 
+201 org:divide (none) 173 1 3 50 59.3255 179 0.331428 9 51 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpzcxmqnccxxbcgdutycasvab 42 89 0 
+270 org:divide (none) 36 2 3 50 246.755 177.667 1.38902 18 70 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqncjxxbcjdutycasvab 11,21 154,153 0,0 
+387 org:divide (none) 2 1 1 50 0 0 0 18 96 -1 1 0 instset-heads.cfg pucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 66 243 0 
+364 org:divide (none) 2 2 2 49 514.864 173.5 2.96675 20 91 -1 1 0 instset-heads.cfg rucavcqgfcqapqecctzscpcccpqcxaqnccxxbcgdutycasvab 47,58 153,173 0,0 
+341 org:divide (none) 36 1 2 50 287.112 177.667 1.61539 23 87 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxjbcjdutycasvab 38 177 0 
+134 org:divide (none) 2 9 48 50 358.132 176.731 2.02637 9 36 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcedutycasvab 12,22,23,32,34,43,51,53,61 154,121,154,176,88,153,13,154,20 0,0,0,0,0,0,0,0,0 
+386 org:divide (none) 210 1 1 49 0 0 0 15 96 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqczaqccxxbcgdutycasvab 89 154 0 
+363 org:divide (none) 2 1 1 50 0 0 0 14 91 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgduyycasvab 70 253 0 
+317 org:divide (none) 2 2 3 50 274.036 178 1.53953 17 82 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxqbcgdutycasvab 13,24 6,20 0,0 
+310 org:divide (none) 2 1 3 51 285.264 181.667 1.57017 12 80 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbbcgdutycasvab 88 121 0 
+379 org:divide (none) 2 1 1 50 0 0 0 15 95 -1 1 0 instset-heads.cfg rucavcqgfcqapqezcthzscpcccpqcxaqnccxxbcgdutycasvab 71 154 0 
+356 org:divide (none) 164 1 1 50 0 0 0 14 89 -1 2 0 instset-heads.cfg rucavlqgfcqapqeccthzrcpcccpqcxaqnccxxbcgdutycasvab 17 363 0 
+396 org:divide (none) 2 1 1 50 0 0 0 15 99 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnncxxbcgdutycasvab 83 55 0 
+373 org:divide (none) 362 1 1 49 0 0 0 21 94 -1 2 0 instset-heads.cfg rscavcqgfcqapqeccthzscpcccpqcxaqncxxbcgdutycasvab 27 241 0 
+327 org:divide (none) 140 1 1 50 0 0 0 13 84 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzsipccwpqcxaqnccxxbcgdutycasvab 18 644 0 
+292 org:divide (none) 135 2 5 51 244.251 182.75 1.33677 12 76 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqnxaqnccxxecgdputycasvab 77,78 122,121 0,0 
+384 org:divide (none) 358 1 1 49 0 0 0 24 96 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcdutycasvnb 26 121 0 
+361 org:divide (none) 300 1 1 49 0 0 0 21 91 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqncxxbcjduiycaqvab 20 286 0 
+391 org:divide (none) 164 1 1 50 0 0 0 15 97 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzrcpcccpqcxaqnccxxbcgdptycasvab 97 96 0 
+368 org:divide (none) 337 1 2 51 53.6159 181 0.29622 25 93 -1 3 0 instset-heads.cfg rucavcqgfcqapqeccthzsdpcccpqcxiaqnccxxbcedutycasvab 69 56 0 
+345 org:divide (none) 134 2 3 50 282.3 178 1.58595 23 87 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcodutycasvab 63,64 177,176 0,0 
+322 org:divide (none) 295 1 1 96 0 0 0 13 83 -1 2 0 instset-heads.cfg aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaauckvcqgfcqarqeccthzscpwcccpqcxaqnccxxbcgdutycasvab 25 559 0 
+397 org:divide (none) 2 1 1 49 0 0 0 22 99 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcaqwccxxbcgdutycasvab 60 22 0 
+374 org:divide (none) 341 1 1 50 0 0 0 25 94 -1 3 0 instset-heads.cfg rucavcqgfcqapqbccthzscpccccqcxaqnccxjbcjdutycasvab 28 177 0 
+389 org:divide (none) 233 1 1 49 0 0 0 15 97 -1 5 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcqaqnccqxbcuutycasvab 90 124 0 
+366 org:divide (none) 134 1 1 50 0 0 0 24 92 -1 2 0 instset-heads.cfg rucsvcqgfcqapqeccthzscpcccpqcxaqnccxxbcedutycasvab 31 211 0 
+381 org:divide (none) 2 1 1 50 0 0 0 15 95 -1 1 0 instset-heads.cfg rucaqcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 79 154 0 
+358 org:divide (none) 134 1 1 49 197.206 174 1.13337 23 90 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcdutycasvab 35 120 0 
+399 org:divide (none) 2 1 1 50 0 0 0 22 100 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgduwycasvab 50 55 0 
+330 org:divide (none) 2 1 1 50 0 0 0 18 84 -1 1 0 instset-heads.cfg hucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutycasvab 46 880 0 
+376 org:divide (none) 341 1 1 49 0 0 0 25 94 -1 3 0 instset-heads.cfg ucavcqgfcqapqeccthzscpcccpqcxaqnccxjbcjdutycasvab 39 206 0 
+357 org:divide (none) 36 1 1 50 0 0 0 24 90 -1 2 0 instset-heads.cfg rucavxqgfcqapqeccthzscpcccpqcxaqnccxxbcjdutycasvab 40 594 0 
+375 org:divide (none) 266 2 2 49 184 173 1.06358 15 94 -1 5 0 instset-heads.cfg rucavcqgfcqapqdctczscpcccpqcxaqnccxxbggautycasvab 98,99 54,54 0,0 
+352 org:divide (none) 210 1 2 50 53.6159 178 0.301213 14 88 -1 2 0 instset-heads.cfg rucavcqifcqapqeccthzscpcccpqczaqnccxxbcgdutycasvab 85 55 0 
+398 org:divide (none) 2 1 1 50 0 0 0 19 99 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnycxxbcgdutycasvab 45 88 0 
+388 org:divide (none) 134 1 1 50 0 0 0 23 96 -1 2 0 instset-heads.cfg rusavcqgfcqapqeccthzscpcccpqcxaqnccxxbcedutycasvab 62 123 0 
+400 org:divide (none) 2 1 1 50 0 0 0 16 100 -1 1 0 instset-heads.cfg rucavcqgfcqapqeccthzvcpcccpqcxaqnccxxbcgdutycasvab 94 19 0 
+331 org:divide (none) 307 1 2 49 63.6514 171 0.372231 14 85 -1 4 0 instset-heads.cfg rucavcqgfcqapqecthzscpcqbpacxaqrccxxbctdutycasvab 68 52 0 
+390 org:divide (none) 134 1 1 50 0 0 0 23 97 -1 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxapnccxxbcedutycasvab 72 152 0 
+233 org:divide (none) 181 0 2 49 258.951 174 1.48822 9 60 100 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcqaqncclxbcuutycasvab 
+169 org:divide (none) 100 0 5 49 249.915 173.667 1.43893 7 43 100 3 0 instset-heads.cfg rucavcqgfcqapqectczscpcccpqcxaqnccxxbcgautycasvab 
+36 org:divide (none) 2 0 23 50 409.346 177.725 2.30342 2 12 99 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcjdutycasvab 
+378 org:divide (none) 2 0 1 50 243.683 150 1.62455 21 94 97 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqnccxxbcgdutydasvab 
+335 org:divide (none) 314 0 1 87 346.801 326 1.06381 18 85 97 2 0 instset-heads.cfg raaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaucavcqgfcqapqeccthzscpvccpqcxaqnccxxbcglutycasvab 
+362 org:divide (none) 2 0 1 49 314.038 174 1.80481 20 91 97 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcxaqncxxbcgdutycasvab 
+266 org:divide (none) 169 0 3 49 254.496 173 1.47108 11 69 97 4 0 instset-heads.cfg rucavcqgfcqapqdctczscpcccpqcxaqnccxxbcgautycasvab 
+174 org:divide (none) 138 0 8 50 263.349 173.7 1.51607 10 45 94 4 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqbccxebctdutycasvab 
+337 org:divide (none) 134 0 3 50 491.258 176.667 2.78022 23 86 94 2 0 instset-heads.cfg rucavcqgfcqapqeccthzsdpcccpqcxaqnccxxbcedutycasvab 
+295 org:divide (none) 2 0 1 51 228.167 182.5 1.24976 12 77 91 1 0 instset-heads.cfg ruckvcqgfcqapqeccthzscpwcccpqcxaqnccxxbcgdutycasvab 
+249 org:divide (none) 36 0 1 50 62.427 178 0.350714 17 63 90 2 0 instset-heads.cfg rucavcqgfcqapqeccthzsfpcccpqcxaqnccxxbcjdutycasvab 
+135 org:divide (none) 2 0 7 50 258.085 178.75 1.44397 6 36 88 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqnxaqnccxxecgdutycasvab 
+314 org:divide (none) 2 0 1 50 226.849 178 1.27443 17 82 88 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpvccpqcxaqnccxxbcglutycasvab 
+140 org:divide (none) 2 0 11 50 262.589 177.733 1.47744 6 38 88 1 0 instset-heads.cfg rucavcqgfcqapqeccthzsipcccpqcxaqnccxxbcgdutycasvab 
+299 org:divide (none) 210 0 1 50 249.708 178 1.40285 12 78 85 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpdczaqnccxxbcgdutycasvab 
+307 org:divide (none) 90 0 1 49 209.901 172 1.22035 13 79 85 3 0 instset-heads.cfg rucavcqgfcqapqecthzscpccbpqcxaqrccxxbctdutycasvab 
+90 org:divide (none) 63 0 13 50 362.215 174.722 2.07332 4 25 82 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxxbctdutycasvab 
+138 org:divide (none) 90 0 11 50 427.977 173.722 2.46386 8 37 82 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxebctdutycasvab 
+43 org:divide (none) 2 0 8 50 243.244 177.667 1.36929 2 12 78 1 0 instset-heads.cfg rucavcqgfcqapqecctczscpcccpqcxaqnccxxbcgdutycasvab 
+61 org:divide (none) 37 0 8 50 247.382 178 1.38978 3 18 68 2 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcqaqnccxxbcgdutycasvab 
+181 org:divide (none) 61 0 1 49 219.303 174 1.26036 7 46 60 3 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcqaqnccxxbcgutycasvab 
+173 org:divide (none) 2 0 1 50 201.493 178 1.13199 8 45 57 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpzcxaqnccxxbcgdutycasvab 
+100 org:divide (none) 43 0 2 49 257.79 174.667 1.47601 4 26 45 2 0 instset-heads.cfg rucavcqgfcqapqectczscpcccpqcxaqnccxxbcgdutycasvab 
+63 org:divide (none) 2 0 1 50 428.927 178 2.4097 3 18 26 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpccbpqcxaqnccxxbcgdutycasvab 
+37 org:divide (none) 2 0 1 50 254.924 178.5 1.42824 2 12 25 1 0 instset-heads.cfg rucavcqgfcqapqeccthzscpcccpqcraqnccxxbcgdutycasvab 

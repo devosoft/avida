@@ -1,0 +1,283 @@
+# Mon Nov  8 16:02:48 2010
+# Filename........: archive/041-no_name.org
+# Update Output...: 0
+# Is Viable.......: 1
+# Repro Cycle Size: 0
+# Depth to Viable.: 0
+# 
+# Generation: 0
+# Merit...........: 100.000000
+# Gestation Time..: 41
+# Fitness.........: 2.439024
+# Errors..........: 0
+# Genome Size.....: 41
+# Copied Size.....: 41
+# Executed Size...: 41
+# Offspring.......: SELF
+# 
+# Tasks Performed:
+# optimize 1 (0.448650)
+# optimize 1 (0.901128)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (1.000000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (1.000000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (1.000000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+# optimize 1 (0.001000)
+
+
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add1
+IObuf-add0
+IObuf-add0
+IObuf-add0
+IObuf-add1
+IObuf-add1
+IObuf-add1
+IObuf-add0
+IObuf-add1
+repro-sex

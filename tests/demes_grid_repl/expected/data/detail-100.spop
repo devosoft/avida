@@ -1,0 +1,116 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Mon Nov  8 16:03:23 2010
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+703 org:divide (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccvcccccccccccccccccccccccccccccccccaccccccccccccccccccccccccccccutycasvab 9754 264 -1 
+657 deme:replicate (none) (none) 1 2 100 97 387 0.250646 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccdccccccccccccccccccccccccccccgccccccccccccccccccccccccccccccccccccccutycasvab 2755 296 -1 
+680 deme:replicate (none) (none) 2 2 101 0 0 0 0 79 -1 0 0 instset-heads.cfg cceccccccccccccccccccccccccccccccccccccccutacasvabrucavcccccccccccccccccccccccccccccccccccccfcccccccc 2155,9855 710,710 -1,-1 
+634 deme:replicate (none) (none) 2 3 100 97 387 0.250646 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccbccccccccccccccccccccccccccccccccchvccccccccccccccccccccccocccccccccutycasvab 55,66 263,264 -1,-1 
+709 org:divide (none) 664 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccrbccccjcccccqcccccccccccccutykasvab 8346 265 -1 
+663 deme:replicate (none) (none) 2 2 100 87 377 0.230769 0 79 -1 0 0 instset-heads.cfg rucavccccjccccccccchcccccccccccccccccccccycccccccccccccccccscccccccccccccccccccccccccccccccutycasvab 4955,9255 176,176 -1,-1 
+686 org:divide (none) 657 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavccccccccccccccccccdccccccccccccccccccccccccccccgcccccccccccccccccccccccccccoccccccccccutycasvab 2765 297 -1 
+640 deme:replicate (none) (none) 1 2 100 0 0 0 0 79 -1 0 0 instset-heads.cfg cccccccucccccccccccccccccccccccccccccccccutecasvabrucavccccccccccccccccccccccccccccccccccccccccqcccc 955 674 -1 
+318 deme:replicate (none) (none) 4 8 100 97 388 0.25 0 39 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccccccccccccccccccccccccccutycasvab 155,1455,8754,8755 263,230,231,263 -1,-1,-1,-1 
+643 deme:replicate (none) (none) 1 2 100 97 387 0.250646 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccczccccccccccccdcccccccccccccccccccccccccccccccccccccccccccutycasvab 7255 296 -1 
+666 deme:replicate (none) (none) 3 3 100 97 387 0.250646 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccvcccccccccccccccccccccccccccccccccccccccccccccoccccccccccccccccutycasvab 1755,6355,6356 263,197,198 -1,-1,-1 
+712 org:divide (none) 659 1 1 99 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccckcccccccccccccjccccccccgcccccccccccccccyccccccccnccccccccccutycasvab 844 264 -1 
+689 org:divide (none) 318 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucaqcccccccccccccccccccccccckcccccccccccccccccciccccccccccccccccccccccccccccccccccccccccccutycasvab 165 332 -1 
+714 org:divide (none) 677 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccwccccccccccccccckcccccccccccccccccccccccccccccccccxcccccccccccceccccccccccccutycasvab 9454 264 -1 
+691 org:divide (none) 669 1 1 99 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcscccccccccccccclckccccocccccccccmcccccccccccccccccccccccccccccciccccscccccccccccccccutycasvab 7564 264 -1 
+668 deme:replicate (none) (none) 4 4 100 97 386 0.251295 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccqccccczccchcccccccccicccccccccccccccutycasvab 7054,7055,8246,8255 283,283,283,250 -1,-1,-1,-1 
+1 org:file_load (none) (none) 33 466 100 97 389 0.249357 0 -1 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 255,555,556,755,766,1855,1866,3055,3155,3455,3655,3665,3755,4445,4455,4655,5155,5166,5255,5444,5455,5555,5855,6555,6556,6755,6765,6855,8046,8055,9155,9355,9755 296,296,264,263,231,263,297,263,230,296,230,231,296,231,296,263,230,231,263,231,197,296,263,230,264,197,231,263,297,263,296,263,263 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 
+671 deme:replicate (none) (none) 3 3 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccfccutycasvab 3544,3555,7955 264,263,263 -1,-1,-1 
+717 org:divide (none) 655 1 1 108 0 0 0 1 93 -1 1 0 instset-heads.cfg aaaaaaaarucavcccccccccccccccccccwccccccccdccccccccccgcccwccccccccccccccccccccccccccccccccccccccccccutycasvab 3344 264 -1 
+648 deme:replicate (none) (none) 2 3 101 98 393 0.249364 0 79 -1 0 0 instset-heads.cfg rucavccacccccccccccccccccccchcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 2445,2455 231,263 -1,-1 
+326 deme:replicate (none) (none) 4 6 100 0 0 0 0 39 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccujycasvab 355,5655,7655,9955 627,660,660,660 -1,-1,-1,-1 
+694 org:divide (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccxcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 266 264 -1 
+705 org:divide (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccclcccccccccccccccccccccccccutycasvab 6846 264 -1 
+682 org:divide (none) 660 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavccccccccccccceccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccccccccccutycasvab 4345 313 -1 
+659 deme:replicate (none) (none) 1 2 99 96 383 0.250653 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccckcccccccccccccccccccccccccccccccccccccccccccccccnccccccccccutycasvab 855 263 -1 
+636 deme:replicate (none) (none) 3 3 100 97 386 0.251295 0 79 -1 0 0 instset-heads.cfg rucavctccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 455,8155,8165 263,263,231 -1,-1,-1 
+721 org:divide (none) 663 1 1 101 0 0 0 1 94 -1 1 0 instset-heads.cfg rucavccccjccccccccchccclcccccccchcccccccccycccccccccccccccccscccccccccccccccccccccccccccccccutycasvab 4944 176 -1 
+652 deme:replicate (none) (none) 2 3 99 96 384 0.25 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccvccccccccccccccccccccccccccccccccccccccccccutycasvab 2855,2866 263,297 -1,-1 
+675 deme:replicate (none) (none) 3 3 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccclccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 1355,1364,8855 296,264,263 -1,-1,-1 
+698 org:divide (none) 636 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavctcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccwccccccccccccccutycasvab 464 264 -1 
+683 org:divide (none) 653 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavcccccccccccccccccnccccccccccccccccccccccccccccccccccccjcccccccccccccccccccccccccccccccttycasvab 6046 297 -1 
+660 deme:replicate (none) (none) 1 2 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccccccccccutycasvab 4355 248 -1 
+706 org:divide (none) 1 1 1 101 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccecccccccccccccccccccccccnccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3145 264 -1 
+637 deme:replicate (none) (none) 4 4 101 98 391 0.250639 0 79 -1 0 0 instset-heads.cfg rucavccccccccccqccccccccbccccccccccccccccccccccccvccccccccccccccccccccccccccccccccccccccccccutycasvab 654,655,7845,7855 276,276,276,243 -1,-1,-1,-1 
+672 deme:replicate (none) (none) 3 3 100 97 386 0.251295 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccdccccccccczcccccccccccccccqccccccccccccccccccccccccutycasvab 5055,5064,8455 259,259,292 -1,-1,-1 
+695 org:divide (none) 666 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccvccccccccccccccclcccccccccccccccccccccccccccccocnccccccccccccccutycasvab 1744 231 -1 
+718 org:divide (none) 641 1 1 99 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccoccccccccccccccqcccccccctucccccccccccccccccccccccccccutycasvab 1045 246 -1 
+664 deme:replicate (none) (none) 1 2 100 97 387 0.250646 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccrbccccjcccccqcccccccccccccutycasvab 8355 238 -1 
+710 org:divide (none) 671 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccmcpcccccccccccccccfccutycasvab 7944 264 -1 
+687 org:divide (none) 1 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 5554 263 -1 
+641 deme:replicate (none) (none) 3 3 99 96 384 0.25 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccqcccccccccccccccccccccccccccccccccccccutycasvab 1055,2255,2256 247,247,280 -1,-1,-1 
+711 org:divide (none) 1 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccvcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 9364 231 -1 
+688 org:divide (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccjtycasvab 9145 264 -1 
+665 deme:replicate (none) (none) 2 2 100 0 0 0 0 79 -1 0 0 instset-heads.cfg wucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 5755,7355 685,677 -1,-1 
+642 deme:replicate (none) (none) 2 2 100 0 0 0 0 79 -1 0 0 instset-heads.cfg aucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 1155,1255 652,652 -1,-1 
+692 org:divide (none) 675 1 1 101 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccjcccccccccclccccccccccccccccccccccccicccccccccccccccccccqccccccccccccccccccccccccutycasvab 8846 259 -1 
+669 deme:replicate (none) (none) 2 2 99 96 382 0.251309 0 79 -1 0 0 instset-heads.cfg rucavcscccccccccccccclccccccjcccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 2955,7555 267,300 -1,-1 
+646 deme:replicate (none) (none) 1 2 100 87 378 0.230159 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccyccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 2055 164 -1 
+715 org:divide (none) 318 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccycccccccciccccccccccccccccccccccccccccccccccccccccccutycasvab 1456 231 -1 
+704 org:divide (none) 667 1 1 103 0 0 0 1 92 -1 1 0 instset-heads.cfg aaarucavccccccccucccccccccccccmcccccccccccccccccccccccccccccwcccccccccccccccccccccccccccccccccutycasvab 6445 264 -1 
+635 deme:replicate (none) (none) 2 3 99 96 384 0.25 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccaccccccccccccccccccccccpcccccccccccccccccccccccccccccccccccccccccccccutycasvab 6146,6155 231,263 -1,-1 
+681 org:divide (none) 1 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccufycasvab 3764 297 -1 
+658 deme:replicate (none) (none) 2 2 102 90 386 0.233161 0 79 -1 0 0 instset-heads.cfg aarucavccccccccccccccccccccccccccccuccccccccccccccccccccccccccccccccccccwccccccccccccccccccccutycasvab 1555,3855 230,230 -1,-1 
+650 deme:replicate (none) (none) 2 3 101 98 392 0.25 0 79 -1 0 0 instset-heads.cfg rucavccccccccccqccccccccbccccccbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 4155,4156 309,309 -1,-1 
+696 org:divide (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgcutycasvab 3065 264 -1 
+673 deme:replicate (none) (none) 2 2 100 0 0 0 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccwcccccccccccccccccccccccccccccccccccccccccccccccccccccuuycasvab 2655,8555 627,693 -1,-1 
+719 org:divide (none) 658 1 1 112 0 0 0 1 94 -1 1 0 instset-heads.cfg aaaaaaaaaaaarucavccccccccccccccccccccccccccccuccccccccccccccccccccccccccccccccccccwccccccccccccccccccccutycasvab 1556 198 -1 
+667 deme:replicate (none) (none) 2 2 102 99 395 0.250633 0 79 -1 0 0 instset-heads.cfg aarucavccccccccccccccccccccccmcccccccccccccccccccccccccccccwcccccccccccccccccccccccccccccccccutycasvab 6455,6655 263,296 -1,-1 
+690 org:divide (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg eucavccccccccccccccccccccccccccccccccccccacccccccccccccccccecccccccccccccceccccccccccccccccutycasvab 5245 264 -1 
+713 org:divide (none) 1 1 1 99 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 4656 264 -1 
+644 deme:replicate (none) (none) 1 2 100 0 0 0 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccpcccccccccccqcccccccccccccccutyjasvab 1655 315 -1 
+723 org:divide (none) 663 1 1 100 0 0 0 1 94 -1 1 0 instset-heads.cfg rucavccccjccccccccchcccccccccccccccccccccycccccccccccccccccsmccccccccccccccccccccccccccccccutycasvab 9264 176 -1 
+677 deme:replicate (none) (none) 2 2 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccckcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 8955,9455 263,263 -1,-1 
+700 org:divide (none) 672 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccdccccccccczccmccccccccccccqccccccccccccccccccccccccutycasvab 8445 258 -1 
+654 deme:replicate (none) (none) 3 3 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccqccccccccccccccccccccccccccccccccccccccccccutycasvab 3255,5955,5965 276,243,276 -1,-1,-1 
+309 deme:replicate (none) (none) 3 11 100 97 389 0.249357 0 39 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccaccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 1955,1964,5355 263,297,263 -1,-1,-1 
+676 deme:replicate (none) (none) 4 4 100 97 387 0.250646 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccecccccccccccccccccfccccccccccccccccccccccccccutycasvab 6254,6255,9045,9055 264,296,264,263 -1,-1,-1,-1 
+653 deme:replicate (none) (none) 1 2 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccnccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 6055 296 -1 
+699 org:divide (none) 309 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccaccccccccccccccccxccccccccccccccccccccccccccccccccccccccdccutycasvab 5366 264 -1 
+722 org:divide (none) 646 1 1 99 0 0 0 1 94 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccycccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 2064 165 -1 
+716 org:divide (none) 677 1 1 100 0 0 0 1 93 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccckcccccccccccccccccccccccccccccccccccecccccccccccccccccccccccutycasvab 8946 264 -1 
+647 deme:replicate (none) (none) 2 3 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccczccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 6945,6955 264,263 -1,-1 
+693 org:divide (none) 1 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccrccccccccccccccccccccccccccccccccccccccccccccccccccccutycaivab 3445 264 -1 
+670 deme:replicate (none) (none) 3 3 100 97 387 0.250646 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccpccccccciccccccccccccccccccccccccccccccccccccccccutycasvab 2354,2355,7755 231,263,263 -1,-1,-1 
+697 org:divide (none) 1 1 1 101 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccdccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 5865 297 -1 
+651 deme:replicate (none) (none) 2 3 100 97 385 0.251948 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccchccoccbccccccmccccccgcccpcccccccccccccccccccccccccccccccccccutycasvab 4855,4866 263,264 -1,-1 
+720 org:divide (none) 658 1 1 112 0 0 0 1 94 -1 1 0 instset-heads.cfg aaaaaaaaaaaprucavcccoccccccccccccccccccccccccucwccccccccccccccccccccccccccccccccccwcczcccccccwcccccccccutycasvab 3865 198 -1 
+674 deme:replicate (none) (none) 2 2 99 0 0 0 0 79 -1 0 0 instset-heads.cfg rucavcccccccgccccccccccccccccccccccccccccccccccccccccccccccccccccccwcccccccvccccccccccccccutycasvaw 2555,8655 660,660 -1,-1 
+708 org:divide (none) 667 1 1 102 0 0 0 1 92 -1 1 0 instset-heads.cfg aaarucvccccccccccccccccccccccmccccccccccccwccccccccccccccccwcccccccccccccccccccccccccccccccccutycasvab 6645 264 -1 
+662 deme:replicate (none) (none) 1 2 100 49 331 0.148036 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccrcccmccccutyvasvab 4555 32 -1 
+685 org:divide (none) 669 1 1 99 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavcscccrcccccccccclccccccjcccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 2965 267 -1 
+707 org:divide (none) 643 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccczccccccccczccdcccccccccccccccccccccccccccccccccccccccccccutycasvab 7244 264 -1 
+316 deme:replicate (none) (none) 3 6 100 49 338 0.14497 0 39 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutyxasvab 4255,4755,7455 317,327,322 -1,-1,-1 
+661 deme:replicate (none) (none) 1 2 100 97 388 0.25 0 79 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccxcccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3955 263 -1 
+684 org:divide (none) 654 1 1 100 0 0 0 1 91 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccqcccccqccccccccccccccccccccccccccccccccccccccccccutycasvab 3265 275 -1 
+701 org:divide (none) 670 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccpccccccciccccccccccccccccccccccccccccccccccccccccutycnsvab 7745 273 -1 
+724 org:divide (none) 662 1 1 100 0 0 0 1 99 -1 1 0 instset-heads.cfg ccccccccccccccccccccccccccccccccrcccmccccutyvasvabrucavccccccccccccccccccccpcccccccccccccccccccccccc 4566 33 -1 
+678 deme:replicate (none) (none) 4 4 100 88 378 0.232804 0 79 -1 0 0 instset-heads.cfg rucavcccccccccccccccccodccccccccccccccuccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 4054,4055,9555,9566 231,263,263,231 -1,-1,-1,-1 
+655 deme:replicate (none) (none) 1 2 104 101 401 0.25187 0 79 -1 0 0 instset-heads.cfg aaaarucavcccccccccccccccccccwccccccccdccccccccccgcccwccccccccccccccccccccccccccccccccccccccccccutycasvab 3355 263 -1 
+679 deme:replicate (none) (none) 4 4 100 97 384 0.252604 0 79 -1 0 0 instset-heads.cfg rucavccccctcccccccccccccccccccccccicccccccccccccccccccccccccccccccccccccccccccccczcccccccccutycasvab 7155,7164,9655,9665 296,297,296,231 -1,-1,-1,-1 
+702 org:divide (none) 661 1 1 100 0 0 0 1 92 -1 1 0 instset-heads.cfg rycavccccccccccccccccccccccccccccccccxcccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3945 264 -1 

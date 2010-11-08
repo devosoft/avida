@@ -1,0 +1,30 @@
+# Avida Dominant Data
+# Mon Nov  8 16:02:49 2010
+#  1: Update
+#  2: Average Merit of the Dominant Genotype
+#  3: Average Gestation Time of the Dominant Genotype
+#  4: Average Fitness of the Dominant Genotype
+#  5: Repro Rate?
+#  6: Size of Dominant Genotype
+#  7: Copied Size of Dominant Genotype
+#  8: Executed Size of Dominant Genotype
+#  9: Abundance of Dominant Genotype
+# 10: Number of Births
+# 11: Number of Dominant Breed True?
+# 12: Dominant Gene Depth
+# 13: Dominant Breed In
+# 14: Max Fitness?
+# 15: Genotype ID of Dominant Genotype
+# 16: Name of the Dominant Genotype
+
+0 0 0 0 0 100 0 0 1 0 0 0 0 0 1 100-aaaaa 
+10 0 0 0 0 100 0 0 180 0 0 0 0 0 1 100-aaaaa 
+20 97 389 0.249357 0.00257069 100 100 97 173 0 0 0 0 0.249357 4 100-aaaad 
+30 97 389 0.249357 0.00257069 100 100 97 174 0 0 0 0 0.252604 5 100-aaaae 
+40 97 389 0.249357 0.00257069 100 100 97 173 26 26 0 0 0.253264 5 100-aaaae 
+50 97 389 0.249357 0.00257069 100 100 97 172 14 13 0 0 0.253264 5 100-aaaae 
+60 97 389 0.249357 0.00257069 100 100 97 285 0 0 0 0 0.251948 5 100-aaaae 
+70 97 389 0.249357 0.00257069 100 100 97 285 0 0 0 0 0.254593 5 100-aaaae 
+80 97 389 0.249357 0.00257069 100 100 97 280 0 0 0 0 0.254593 5 100-aaaae 
+90 97 389 0.249357 0.00257069 100 100 97 279 30 28 0 0 0.254593 5 100-aaaae 
+100 97 389 0.249357 0.00257069 100 100 97 275 25 25 0 0 0.253927 5 100-aaaae 

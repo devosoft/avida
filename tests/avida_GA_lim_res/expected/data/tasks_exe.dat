@@ -1,0 +1,23 @@
+# Avida tasks execution data
+# Mon Nov  8 16:02:46 2010
+# First column gives the current update, all further columns give the number
+# of times the particular task has been executed this update.
+#  1: Update
+#  2: Optimize
+#  3: Optimize
+#  4: Optimize
+#  5: Optimize
+#  6: Optimize
+#  7: Optimize
+
+0 9 9 9 9 9 9 
+10 186 186 186 186 186 186 
+20 222 222 222 222 222 222 
+30 225 225 225 225 225 225 
+40 225 225 225 225 225 225 
+50 225 225 225 225 225 225 
+60 225 225 225 225 225 225 
+70 225 225 225 225 225 225 
+80 225 225 225 225 225 225 
+90 225 225 225 225 225 225 
+100 225 225 225 225 225 225 
