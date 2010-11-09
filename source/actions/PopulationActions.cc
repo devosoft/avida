@@ -191,7 +191,7 @@ public:
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
       cSequence& seq = mg.GetSequence();
-      for (int j = 0; i < m_length; j++) {
+      for (int j = 0; j < m_length; j++) {
         cInstruction inst = is.GetRandomInst(ctx);
         while (is.GetRedundancy(inst) == 0) inst = is.GetRandomInst(ctx);
         seq[j] = inst;
