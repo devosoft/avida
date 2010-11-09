@@ -81,6 +81,7 @@ bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHar
 {
   tArraySet<cString> custom_directives;
   custom_directives.Add("inst_set");
+  custom_directives.Add("hw_type");
   
   cInitFile input_file(fname, wdir, &custom_directives);
   if (errors) errors->Append(input_file.GetErrors());
@@ -92,12 +93,22 @@ bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHar
   
   if (input_file.GetCustomDirectives().HasEntry("inst_set")) {
     cString isname = input_file.GetCustomDirectives().Get("inst_set");
+    isname.Trim();
     if (hwm.IsInstSet(isname)) {
       is = &hwm.GetInstSet(isname);
     } else {
       if (errors) errors->PushRear(new cString(cStringUtil::Stringf("invalid instruction set '%s' defined in organism '%s'",
                                                                     (const char*)isname, (const char*)fname)));
       return false;
+    }
+  }
+  
+  if (input_file.GetCustomDirectives().HasEntry("hw_type")) {
+    m_hw_type = input_file.GetCustomDirectives().Get("hw_type").AsInt();
+    if (is->GetHardwareType() != m_hw_type) {
+      if (errors) errors->PushRear(new cString(cStringUtil::Stringf("hardware type mismatch in organism '%s': is = %d, org = %d",
+                                                                    (const char*)fname, is->GetHardwareType(), m_hw_type)));
+      return false;      
     }
   }
   
@@ -129,6 +140,7 @@ bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHar
 void cGenome::SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm)
 {
   df.WriteRaw(cString("#inst_set ") + m_inst_set);
+  df.WriteRaw(cStringUtil::Stringf("#hw_type %d", m_hw_type));
   cInstSet& is = hwm.GetInstSet(m_inst_set);
   
   for (int i = 0; i < m_seq.GetSize(); i++) {
