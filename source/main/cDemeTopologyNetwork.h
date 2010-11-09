@@ -125,6 +125,11 @@ protected:
 	Network m_network; //!< Underlying network model.
 	CellVertexMap m_cv; //!< Map of cell ids to vertex descriptors.
 	double m_link_length_sum; //!< Sum of all link lengths, at connection.
+	
+private:
+	cDemeTopologyNetwork();
+	cDemeTopologyNetwork(const cDemeTopologyNetwork&);
+	cDemeTopologyNetwork& operator=(const cDemeTopologyNetwork&);
 };
 
 #endif
