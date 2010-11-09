@@ -696,7 +696,7 @@ void cOrganism::PrintFinalStatus(ostream& fp, int time_used, int time_allocated)
   } else {
     fp << endl;
     fp << "# Final Memory: " << m_hardware->GetMemory().AsString() << endl;
-    fp << "# Child Memory: " << m_offspring_genome.GetGenome().AsString() << endl;
+    fp << "# Child Memory: " << m_offspring_genome.GetSequence().AsString() << endl;
   }
 }
 

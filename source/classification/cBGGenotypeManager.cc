@@ -110,7 +110,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
       stats.SumGenotypeAge().Add(age, abundance);
       stats.SumAbundance().Add(abundance);
       stats.SumGenotypeDepth().Add(bg->GetDepth(), abundance);
-      stats.SumSize().Add(bg->GetMetaGenome().GetGenome().GetSize(), abundance);
+      stats.SumSize().Add(bg->GetMetaGenome().GetSequence().GetSize(), abundance);
       
       // Calculate this genotype's contribution to entropy
       // - when p = 1.0, partial_ent calculation would return -0.0. This may propagate
@@ -140,7 +140,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   stats.SetDomCopiedSize(dom_genotype->GetCopiedSize());
   stats.SetDomExeSize(dom_genotype->GetExecutedSize());
   
-  stats.SetDomSize(dom_genotype->GetMetaGenome().GetGenome().GetSize());
+  stats.SetDomSize(dom_genotype->GetMetaGenome().GetSequence().GetSize());
   stats.SetDomID(dom_genotype->GetID());
   stats.SetDomName(dom_genotype->GetName());
   
@@ -158,7 +158,7 @@ void cBGGenotypeManager::UpdateStats(cStats& stats)
   
   stats.SetDomAbundance(dom_genotype->GetNumUnits());
   stats.SetDomGeneDepth(dom_genotype->GetDepth());
-  stats.SetDomSequence(dom_genotype->GetMetaGenome().GetGenome().AsString());
+  stats.SetDomSequence(dom_genotype->GetMetaGenome().GetSequence().AsString());
   
 }
 
@@ -212,7 +212,7 @@ tIterator<cBioGroup>* cBGGenotypeManager::Iterator()
 
 cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGroup*>* parents, tArrayMap<cString, cString>* hints)
 {
-  int list_num = hashGenome(bu->GetMetaGenome().GetGenome());
+  int list_num = hashGenome(bu->GetMetaGenome().GetSequence());
   
   cBGGenotype* found = NULL;
 
@@ -237,7 +237,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
       while (list_it->Next() != NULL) {
         if (list_it->Get()->GetID() == gid) {
           found = list_it->Get();
-          m_active_hash[hashGenome(found->GetMetaGenome().GetGenome())].Push(found);
+          m_active_hash[hashGenome(found->GetMetaGenome().GetSequence())].Push(found);
           found->m_handle->Remove(); // Remove from historic list
           m_active_sz[found->GetNumUnits()].PushRear(found, &found->m_handle);
           found->NotifyNewBioUnit(bu);
@@ -245,7 +245,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
           if (found->GetNumUnits() > m_best) {
             m_best = found->GetNumUnits();
             found->SetThreshold();
-            found->SetName(nameGenotype(found->GetMetaGenome().GetGenome().GetSize()));
+            found->SetName(nameGenotype(found->GetMetaGenome().GetSequence().GetSize()));
             NotifyListeners(found, BG_EVENT_ADD_THRESHOLD);
           }          
         }
@@ -275,7 +275,7 @@ cBGGenotype* cBGGenotypeManager::ClassifyNewBioUnit(cBioUnit* bu, tArray<cBioGro
     if (found->GetNumUnits() > m_best) {
       m_best = found->GetNumUnits();
       found->SetThreshold();
-      found->SetName(nameGenotype(found->GetMetaGenome().GetGenome().GetSize()));
+      found->SetName(nameGenotype(found->GetMetaGenome().GetSequence().GetSize()));
       NotifyListeners(found, BG_EVENT_ADD_THRESHOLD);
     }
   }
@@ -314,7 +314,7 @@ void cBGGenotypeManager::AdjustGenotype(cBGGenotype* genotype, int old_size, int
   
   if (!genotype->IsThreshold() && (new_size >= m_world->GetConfig().THRESHOLD.Get() || genotype == getBest())) {
     genotype->SetThreshold();
-    genotype->SetName(nameGenotype(genotype->GetMetaGenome().GetGenome().GetSize()));
+    genotype->SetName(nameGenotype(genotype->GetMetaGenome().GetSequence().GetSize()));
     NotifyListeners(genotype, BG_EVENT_ADD_THRESHOLD);
   }
 }
@@ -378,7 +378,7 @@ void cBGGenotypeManager::removeGenotype(cBGGenotype* genotype)
   if (genotype->GetActiveReferenceCount()) return;    
   
   if (genotype->IsActive()) {
-    int list_num = hashGenome(genotype->GetMetaGenome().GetGenome());
+    int list_num = hashGenome(genotype->GetMetaGenome().GetSequence());
     m_active_hash[list_num].Remove(genotype);
     genotype->Deactivate(m_world->GetStats().GetUpdate());
     m_historic.Push(genotype, &genotype->m_handle);

@@ -780,7 +780,7 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-													 GetOrganism()->GetGenome(),
+													 GetOrganism()->GetMetaGenome().GetSequence(),
 													 fragments);
 	target->GetOrganism()->GetOrgInterface().ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);
 }
@@ -830,7 +830,7 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-													 source->GetOrganism()->GetGenome(),
+													 source->GetOrganism()->GetMetaGenome().GetSequence(),
 													 fragments);
 	ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);	
 }
@@ -874,7 +874,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspr
 				// this is a little hackish, but this is the cleanest way to make sure
 				// that all downstream stuff works right.
 				cell.ClearFragments();
-				cell.AddGenomeFragments(cell.GetOrganism()->GetGenome());
+				cell.AddGenomeFragments(cell.GetOrganism()->GetMetaGenome().GetSequence());
 				break;
 			}
 			default: { // error
@@ -900,15 +900,15 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspr
 		cGenomeUtil::substring_match location;
 		switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
 			case 0: { // random selection
-				HGTMatchPlacement(ctx, offspring.GetGenome(), i, location);
+				HGTMatchPlacement(ctx, offspring.GetSequence(), i, location);
 				break;
 			}
 			case 1: { // random selection with redundant instruction trimming
-				HGTTrimmedPlacement(ctx, offspring.GetGenome(), i, location);
+				HGTTrimmedPlacement(ctx, offspring.GetSequence(), i, location);
 				break;
 			}
 			case 2: { // random selection and random placement
-				HGTRandomPlacement(ctx, offspring.GetGenome(), i, location);
+				HGTRandomPlacement(ctx, offspring.GetSequence(), i, location);
 				break;
 			}
 			default: { // error
@@ -945,11 +945,11 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspr
 		// be extended in the same way as fragment selection if need be.
 		if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
 			// insert the fragment just after the final location:
-			offspring.GetGenome().Insert(location.end, *i);
+			offspring.GetSequence().Insert(location.end, *i);
 		} else {
 			// replacement: replace [begin,end) instructions in the genome with the fragment,
 			// respecting circularity.
-			offspring.GetGenome().Replace(*i, location.begin, location.end);
+			offspring.GetSequence().Replace(*i, location.begin, location.end);
 		}
 		
 		// stats tracking:

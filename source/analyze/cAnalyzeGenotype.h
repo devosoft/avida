@@ -288,7 +288,7 @@ public:
   void SetLineageLabel(int _label) { lineage_label = _label; }
 
   void SetParentMuts(const cString & in_muts) { parent_muts = in_muts; }
-  void SetMutSteps(const cString in_muts) { m_genome.GetGenome().GetMutationSteps().Set(in_muts); }
+  void SetMutSteps(const cString in_muts) { m_genome.GetSequence().GetMutationSteps().Set(in_muts); }
   
   void SetTaskOrder(const cString & in_order) { task_order = in_order; }
 
@@ -303,8 +303,8 @@ public:
   // Accessors...
   cWorld* GetWorld() { return m_world; }
 
-  cMetaGenome& GetGenome() { return m_genome; }
-  const cMetaGenome& GetGenome() const { return m_genome; }
+  cMetaGenome& GetMetaGenome() { return m_genome; }
+  const cMetaGenome& GetMetaGenome() const { return m_genome; }
   const cString& GetName() const { return name; }
   const cString& GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }
@@ -341,7 +341,7 @@ public:
   int GetDepth() const { return depth; }
 
   const cString& GetParentMuts() const { return parent_muts; }
-  const cString GetMutSteps() const { const cMutationSteps& ms = m_genome.GetGenome().GetMutationSteps(); return ms.AsString(); }
+  const cString GetMutSteps() const { const cMutationSteps& ms = m_genome.GetSequence().GetMutationSteps(); return ms.AsString(); }
 
   // Knockout accessors
   int GetKO_DeadCount() const;
@@ -393,7 +393,7 @@ public:
   const cString & GetTaskOrder() const { return task_order; }
   cString GetTaskList() const;
 
-  cString GetSequence() const { return m_genome.GetGenome().AsString(); }
+  cString GetSequence() const { return m_genome.GetSequence().AsString(); }
   cString GetHTMLSequence() const;
 
   cString GetMapLink() const {

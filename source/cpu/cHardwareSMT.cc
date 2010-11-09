@@ -142,7 +142,7 @@ cHardwareSMT::cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 {
   m_functions = s_inst_slib->GetFunctions();
 	
-  m_mem_array[0] = in_organism->GetGenome();  // Initialize memory...
+  m_mem_array[0] = in_organism->GetMetaGenome().GetSequence();  // Initialize memory...
   m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
   m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
   Reset(ctx);                            // Setup the rest of the hardware...
@@ -683,7 +683,7 @@ bool cHardwareSMT::ParasiteInfectHost(cBioUnit* bu)
   // Create the memory space and copy in the parasite
   int mem_space = FindMemorySpaceLabel(label, -1);
   assert(mem_space != -1);
-  m_mem_array[mem_space] = bu->GetMetaGenome().GetGenome();
+  m_mem_array[mem_space] = bu->GetMetaGenome().GetSequence();
   
   // Setup the thread
   m_threads[thread_id].Reset(this, mem_space);
@@ -951,7 +951,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   
   // Since the divide will now succeed, set up the information to be sent to the new organism
   m_mem_array[mem_space_used].Resize(write_head_pos);
-  m_organism->OffspringGenome().SetGenome(m_mem_array[mem_space_used]);
+  m_organism->OffspringGenome().SetSequence(m_mem_array[mem_space_used]);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
 	

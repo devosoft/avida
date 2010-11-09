@@ -175,11 +175,11 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(cur_genome);
-  cSequence& mod_genome = mg.GetGenome();
+  cSequence& mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = start_line; line_num < max_line; line_num++) {
-    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
+    int cur_inst = base_genome.GetSequence()[line_num].GetOp();
     
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
@@ -214,11 +214,11 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(base_genome);
-  cSequence& mod_genome = mg.GetGenome();
+  cSequence& mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {
-    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
+    int cur_inst = base_genome.GetSequence()[line_num].GetOp();
     df.Write(cur_inst, "Original Instruction");
 
     // Loop through all instructions...
@@ -251,13 +251,13 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
   
   const int max_line = base_genome.GetSize();
   cMetaGenome mg(base_genome);
-  cCPUMemory mod_genome = mg.GetGenome();
+  cCPUMemory mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing all deletions.
   for (int line_num = 0; line_num < max_line; line_num++) {
-    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
+    int cur_inst = base_genome.GetSequence()[line_num].GetOp();
     mod_genome.Remove(line_num);
-    mg.SetGenome(mod_genome);
+    mg.SetSequence(mod_genome);
     ProcessGenome(ctx, testcpu, mg);
     if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
     mod_genome.Insert(line_num, cInstruction(cur_inst));
@@ -277,14 +277,14 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(base_genome);
-  cCPUMemory mod_genome = mg.GetGenome();
+  cCPUMemory mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing all insertions.
   for (int line_num = 0; line_num <= max_line; line_num++) {
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
       mod_genome.Insert(line_num, cInstruction(inst_num));
-      mg.SetGenome(mod_genome);
+      mg.SetSequence(mod_genome);
       ProcessGenome(ctx, testcpu, mg);
       if (m_cpu_test_info.GetColonyFitness() >= neut_min) site_count[line_num]++;
       mod_genome.Remove(line_num);
@@ -444,7 +444,7 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
   
   for (int row = 0; row < genome_size; row++) {
     double max_line_fitness = 1.0;
-    int base_inst = base_genome.GetGenome()[row].GetOp();
+    int base_inst = base_genome.GetSequence()[row].GetOp();
     for (int col = 0; col < inst_size; col++) {
       if (col == base_inst) continue; // Only consider changes to line!
       double & cur_fitness = fitness_chart(row, col);
@@ -499,7 +499,7 @@ void cLandscape::PredictNuProcess(cAvidaContext& ctx, cDataFile& df, int update)
       ctx.GetRandom().Choose(genome_size, mut_lines);
       test_fitness = 1.0;
       for (int j = 0; j < num_muts && test_fitness != 0.0; j++) {	
-        int base_inst = base_genome.GetGenome()[ mut_lines[j] ].GetOp();
+        int base_inst = base_genome.GetSequence()[ mut_lines[j] ].GetOp();
         int mut_inst = ctx.GetRandom().GetUInt(inst_size);
         while (mut_inst == base_inst) mut_inst = ctx.GetRandom().GetUInt(inst_size);
         test_fitness *= fitness_chart(mut_lines[j], mut_inst);
@@ -565,7 +565,7 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
   
   // Loop through all the lines of genome, testing each line.
   for (int line_num = 0; line_num < genome_size; line_num++) {
-    cInstruction cur_inst( base_genome.GetGenome()[line_num] );
+    cInstruction cur_inst( base_genome.GetSequence()[line_num] );
     
     for (int i = 0; i < trials; i++) {
       // Choose the new instruction for that line...
@@ -573,11 +573,11 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
       if (cur_inst == new_inst) { i--; continue; }
       
       // Make the change, and test it!
-      mod_genome.GetGenome()[line_num] = new_inst;
+      mod_genome.GetSequence()[line_num] = new_inst;
       ProcessGenome(ctx, testcpu, mod_genome);
     }
     
-    mod_genome.GetGenome()[line_num] = cur_inst;
+    mod_genome.GetSequence()[line_num] = cur_inst;
   }
   
   delete testcpu;
@@ -610,13 +610,13 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
     // Choose the new instructions for those lines...
     for (mut_num = 0; mut_num < distance; mut_num++) {
       const cInstruction new_inst(inst_set.GetRandomInst(ctx));
-      const cInstruction& cur_inst = base_genome.GetGenome()[ mut_lines[mut_num] ];
+      const cInstruction& cur_inst = base_genome.GetSequence()[ mut_lines[mut_num] ];
       if (cur_inst == new_inst) {
         mut_num--;
         continue;
       }
       
-      mod_genome.GetGenome()[ mut_lines[mut_num] ] = new_inst;
+      mod_genome.GetSequence()[ mut_lines[mut_num] ] = new_inst;
     }
     
     // And test it!
@@ -626,7 +626,7 @@ void cLandscape::RandomProcess(cAvidaContext& ctx)
     
     // And reset the genome.
     for (mut_num = 0; mut_num < distance; mut_num++) {
-      mod_genome.GetGenome()[ mut_lines[mut_num] ] = base_genome.GetGenome()[ mut_lines[mut_num] ];
+      mod_genome.GetSequence()[ mut_lines[mut_num] ] = base_genome.GetSequence()[ mut_lines[mut_num] ];
     }
   }
   
@@ -648,7 +648,7 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {
-    int cur_inst = base_genome.GetGenome()[line_num].GetOp();
+    int cur_inst = base_genome.GetSequence()[line_num].GetOp();
     
     // Loop through all instructions...
     for (int inst_num = 0; inst_num < inst_size; inst_num++) {
@@ -657,12 +657,12 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
         continue;
       }
       
-      mod_genome.GetGenome()[line_num].SetOp(inst_num);
+      mod_genome.GetSequence()[line_num].SetOp(inst_num);
       ProcessGenome(ctx, testcpu, mod_genome);
       fitness_chart(line_num, inst_num) = m_cpu_test_info.GetColonyFitness();
     }
     
-    mod_genome.GetGenome()[line_num].SetOp(cur_inst);
+    mod_genome.GetSequence()[line_num].SetOp(cur_inst);
   }
 }
 
@@ -690,7 +690,7 @@ void cLandscape::TestPairs(cAvidaContext& ctx)
     // Choose the new instructions for those lines...
     for (int mut_num = 0; mut_num < 2; mut_num++) {
       const cInstruction new_inst( inst_set.GetRandomInst(ctx) );
-      const cInstruction& cur_inst = base_genome.GetGenome()[ mut_lines[mut_num] ];
+      const cInstruction& cur_inst = base_genome.GetSequence()[ mut_lines[mut_num] ];
       if (cur_inst == new_inst) {
         mut_num--;
         continue;
@@ -726,10 +726,10 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
       // Loop through all instructions...
       for (int inst1_num = 0; inst1_num < inst_size; inst1_num++) {
         inst1.SetOp(inst1_num);
-        if (inst1 == base_genome.GetGenome()[line1_num]) continue;
+        if (inst1 == base_genome.GetSequence()[line1_num]) continue;
         for (int inst2_num = 0; inst2_num < inst_size; inst2_num++) {
           inst2.SetOp(inst2_num);
-          if (inst2 == base_genome.GetGenome()[line2_num]) continue;
+          if (inst2 == base_genome.GetSequence()[line2_num]) continue;
           TestMutPair(ctx, testcpu, mod_genome, line1_num, line2_num, inst1, inst2);
         } // inst2_num loop
       } //inst1_num loop;
@@ -746,7 +746,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cMetaGenome cur_genome(base_genome);
   cMetaGenome mg(base_genome);
-  cCPUMemory mod_genome = mg.GetGenome();
+  cCPUMemory mod_genome = mg.GetSequence();
 
   int gen = 0;
   
@@ -768,12 +768,12 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
     
     // Try Insertion Mutations.
     
-    mod_genome = cur_genome.GetGenome();
+    mod_genome = cur_genome.GetSequence();
     for (int line_num = 0; line_num <= max_line; line_num++) {
       // Loop through all instructions...
       for (int inst_num = 0; inst_num < inst_size; inst_num++) {
         mod_genome.Insert(line_num, cInstruction(inst_num));
-        mg.SetGenome(mod_genome);
+        mg.SetSequence(mod_genome);
         ProcessGenome(ctx, testcpu, mg);
         mod_genome.Remove(line_num);
       }
@@ -782,9 +782,9 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
     // Try all deletion mutations.
     
     for (int line_num = 0; line_num < max_line; line_num++) {
-      int cur_inst = cur_genome.GetGenome()[line_num].GetOp();
+      int cur_inst = cur_genome.GetSequence()[line_num].GetOp();
       mod_genome.Remove(line_num);
-      mg.SetGenome(mod_genome);
+      mg.SetSequence(mod_genome);
       ProcessGenome(ctx, testcpu, mg);
       mod_genome.Insert(line_num, cInstruction(cur_inst));
     }
@@ -817,13 +817,13 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& mod_genome, int line1, int line2,
                                const cInstruction& mut1, const cInstruction& mut2)
 {
-  mod_genome.GetGenome()[line1] = mut1;
-  mod_genome.GetGenome()[line2] = mut2;
+  mod_genome.GetSequence()[line1] = mut1;
+  mod_genome.GetSequence()[line2] = mut2;
   testcpu->TestGenome(ctx, m_cpu_test_info, mod_genome);
   double combo_fitness = m_cpu_test_info.GetColonyFitness() / base_fitness;
   
-  mod_genome.GetGenome()[line1] = base_genome.GetGenome()[line1];
-  mod_genome.GetGenome()[line2] = base_genome.GetGenome()[line2];
+  mod_genome.GetSequence()[line1] = base_genome.GetSequence()[line1];
+  mod_genome.GetSequence()[line2] = base_genome.GetSequence()[line2];
   
   double mut1_fitness = fitness_chart(line1, mut1.GetOp()) / base_fitness;
   double mut2_fitness = fitness_chart(line2, mut2.GetOp()) / base_fitness;

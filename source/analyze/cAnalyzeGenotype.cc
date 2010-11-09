@@ -391,8 +391,8 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   tArray<int> ko_effect(length);
   for (int line_num = 0; line_num < length; line_num++) {
     // Save a copy of the current instruction and replace it with "NULL"
-    int cur_inst = mod_genome.GetGenome()[line_num].GetOp();
-    mod_genome.GetGenome()[line_num] = null_inst;
+    int cur_inst = mod_genome.GetSequence()[line_num].GetOp();
+    mod_genome.GetSequence()[line_num] = null_inst;
     cAnalyzeGenotype ko_genotype(m_world, mod_genome);
     ko_genotype.Recalculate(ctx);
     if (check_chart == true) {
@@ -418,7 +418,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     }
     
     // Reset the mod_genome back to the original sequence.
-    mod_genome.GetGenome()[line_num].SetOp(cur_inst);
+    mod_genome.GetSequence()[line_num].SetOp(cur_inst);
   }
   
   // Only continue from here if we are looking at all pairs of knockouts
@@ -449,10 +449,10 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       // Calculate the fitness for this pair of knockouts to determine if its
       // something other than what we expected.
       
-      int cur_inst1 = mod_genome.GetGenome()[line1].GetOp();
-      int cur_inst2 = mod_genome.GetGenome()[line2].GetOp();
-      mod_genome.GetGenome()[line1] = null_inst;
-      mod_genome.GetGenome()[line2] = null_inst;
+      int cur_inst1 = mod_genome.GetSequence()[line1].GetOp();
+      int cur_inst2 = mod_genome.GetSequence()[line2].GetOp();
+      mod_genome.GetSequence()[line1] = null_inst;
+      mod_genome.GetSequence()[line2] = null_inst;
       cAnalyzeGenotype ko_genotype(m_world, mod_genome);
       ko_genotype.Recalculate(ctx);
       
@@ -477,8 +477,8 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       }	
       
       // Reset the mod_genome back to the original sequence.
-      mod_genome.GetGenome()[line1].SetOp(cur_inst1);
-      mod_genome.GetGenome()[line2].SetOp(cur_inst2);
+      mod_genome.GetSequence()[line1].SetOp(cur_inst1);
+      mod_genome.GetSequence()[line2].SetOp(cur_inst2);
     }
   }
   
@@ -567,7 +567,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
     fitness_ratio = GetFitness() / parent_genotype->GetFitness();
     efficiency_ratio = GetEfficiency() / parent_genotype->GetEfficiency();
     comp_merit_ratio = GetCompMerit() / parent_genotype->GetCompMerit();
-    parent_dist = cStringUtil::EditDistance(m_genome.AsString(), parent_genotype->GetGenome().AsString(), parent_muts);
+    parent_dist = cStringUtil::EditDistance(m_genome.GetSequence().AsString(), parent_genotype->GetMetaGenome().GetSequence().AsString(), parent_muts);
     
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
@@ -620,7 +620,7 @@ void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int
 void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
   cSequence new_genome(_sequence);
-  m_genome.SetGenome(new_genome);
+  m_genome.SetSequence(new_genome);
 }
 
 
@@ -760,7 +760,7 @@ cString cAnalyzeGenotype::GetTaskList() const
 
 cString cAnalyzeGenotype::GetHTMLSequence() const
 {
-  cString text_genome = m_genome.GetGenome().AsString();
+  cString text_genome = m_genome.GetSequence().AsString();
   cString html_code("<tt>");
   
   cString diff_info = parent_muts;

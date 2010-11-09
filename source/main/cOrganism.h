@@ -192,8 +192,6 @@ public:
   cPhenotype& GetPhenotype() { return m_phenotype; }
   void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }
 
-  const cSequence& GetGenome() const { return m_initial_genome.GetGenome(); }
-  
   const cMutationRates& MutationRates() const { return m_mut_rates; }
   cMutationRates& MutationRates() { return m_mut_rates; }
   const cLocalMutations& GetLocalMutations() const { return m_mut_info; }

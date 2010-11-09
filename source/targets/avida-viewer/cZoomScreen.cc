@@ -422,7 +422,7 @@ void cZoomScreen::UpdateStats(cHardwareBase& hardware)
   PrintDouble(8, 14, phenotype.GetEnergyBonus());
   PrintDouble(9, 14, phenotype.GetMerit().GetDouble());
   PrintDouble(10, 14, cur_merit.GetDouble());
-  Print(11, 15, "%6d ", genotype ? cMetaGenome(genotype->GetProperty("genome").AsString()).GetGenome().GetSize() : 0);
+  Print(11, 15, "%6d ", genotype ? cMetaGenome(genotype->GetProperty("genome").AsString()).GetSize() : 0);
   Print(12, 15, "%6d ", hardware.GetMemory().GetSize());
   
   Print(13, 15, "%6d ", phenotype.GetCurNumErrors());
@@ -934,7 +934,7 @@ void cZoomScreen::UpdateGenotype(cAvidaContext& ctx)
     cBioGroup* genotype = info.GetActiveGenotype();
     cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(ctx, genotype);
     Print(5, 12, "%9d", genotype->GetNumUnits());
-    Print(6, 12, "%9d", cMetaGenome(genotype->GetProperty("genome").AsString()).GetGenome().GetSize());
+    Print(6, 12, "%9d", cMetaGenome(genotype->GetProperty("genome").AsString()).GetSize());
     PrintDouble(7, 14, metrics->GetLinesCopied());
     PrintDouble(8, 14, metrics->GetLinesExecuted());
     

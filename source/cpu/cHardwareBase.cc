@@ -106,7 +106,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   // Moved to end of function @LZ
 
   // Make sure that neither parent nor child will be below the minimum size.  
-  const int genome_size = m_organism->GetGenome().GetSize();
+  const int genome_size = m_organism->GetMetaGenome().GetSize();
   const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();
   const int min_size = Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
   const int max_size = Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
@@ -242,7 +242,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
   
   int totalMutations = 0;
-  cSequence& offspring_genome = m_organism->OffspringGenome().GetGenome();
+  cSequence& offspring_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -562,7 +562,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 {
   int maxmut = pointmut;
   int totalMutations = 0;
-  cSequence& child_genome = m_organism->OffspringGenome().GetGenome();
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -892,7 +892,7 @@ bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& 
   bool has_mutation = false;
 	
   // Determine what memory this mutation will be affecting.
-  cSequence& target_mem = (trigger == nMutation::TRIGGER_DIVIDE) ? m_organism->OffspringGenome().GetGenome() : GetMemory();
+  cSequence& target_mem = (trigger == nMutation::TRIGGER_DIVIDE) ? m_organism->OffspringGenome().GetSequence() : GetMemory();
 	
   // Loop through all mutations associated with this trigger and test them.
   tConstListIterator<cMutation> mut_it(mut_list);

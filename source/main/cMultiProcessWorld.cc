@@ -45,7 +45,7 @@ struct migration_message {
 	migration_message() { }
 	migration_message(cOrganism* org, const cPopulationCell& cell, double merit, int lineage)
 	: _merit(merit), _lineage(lineage) {
-		_genome = org->GetGenome().AsString();
+		_genome = org->GetSequence().AsString();
 		cell.GetPosition(_x, _y);
 	}
 	

@@ -253,7 +253,7 @@ cHardwareExperimental::cHardwareExperimental(cAvidaContext& ctx, cWorld* world, 
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
-  m_memory = in_organism->GetGenome();  // Initialize memory...
+  m_memory = in_organism->GetMetaGenome().GetSequence();  // Initialize memory...
   Reset(ctx);                            // Setup the rest of the hardware...
 }
 
@@ -1092,7 +1092,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  m_organism->OffspringGenome().SetGenome(m_memory.Crop(div_point, div_point+child_size));
+  m_organism->OffspringGenome().SetSequence(m_memory.Crop(div_point, div_point+child_size));
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   
@@ -2203,7 +2203,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  m_organism->OffspringGenome().SetGenome(m_memory);
+  m_organism->OffspringGenome().SetSequence(m_memory);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   m_organism->GetPhenotype().SetLinesCopied(m_memory.GetSize());
@@ -2216,7 +2216,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   // Perform Copy Mutations...
   if (m_organism->GetCopyMutProb() > 0) { // Skip this if no mutations....
     for (int i = 0; i < m_memory.GetSize(); i++) {
-      if (m_organism->TestCopyMut(ctx)) m_organism->OffspringGenome().GetGenome()[i] = m_inst_set->GetRandomInst(ctx);
+      if (m_organism->TestCopyMut(ctx)) m_organism->OffspringGenome().GetSequence()[i] = m_inst_set->GetRandomInst(ctx);
     }
   }
   

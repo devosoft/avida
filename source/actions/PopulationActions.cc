@@ -141,7 +141,7 @@ public:
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
     cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
-    cSequence& seq = mg.GetGenome();
+    cSequence& seq = mg.GetSequence();
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
     m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
@@ -190,7 +190,7 @@ public:
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
-      cSequence& seq = mg.GetGenome();
+      cSequence& seq = mg.GetSequence();
       for (int j = 0; i < m_length; j++) {
         cInstruction inst = is.GetRandomInst(ctx);
         while (is.GetRedundancy(inst) == 0) inst = is.GetRandomInst(ctx);
@@ -480,7 +480,7 @@ public:
       cMetaGenome genome;
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().InjectParasite(m_label, genome.GetGenome(), i);
+        m_world->GetPopulation().InjectParasite(m_label, genome.GetSequence(), i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -549,7 +549,7 @@ public:
       parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
-        m_world->GetPopulation().InjectParasite(m_label, parasite.GetGenome(), i);
+        m_world->GetPopulation().InjectParasite(m_label, parasite.GetSequence(), i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -1042,7 +1042,7 @@ public:
       if (cell.IsOccupied() == false) continue;
       
       // count the number of target instructions in the genome
-      count = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
+      count = cell.GetOrganism()->GetMetaGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
       
       // decide if it should be killed or not, based on the count and a the kill probability
       if (count >= m_limit) {
@@ -1102,8 +1102,8 @@ public:
 			if (cell.IsOccupied() == false) continue;
 			
 			// get the number of instructions of each type.
-			count1 = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst1));
-			count2 = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst2));
+			count1 = cell.GetOrganism()->GetMetaGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst1));
+			count2 = cell.GetOrganism()->GetMetaGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst2));
 			
 			// decide if it should be killed or not, based on the two counts and a the kill probability
 			if ((count1 >= m_limit) && (count2 >= m_limit)) {
@@ -1179,7 +1179,7 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-				int count = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
+				int count = cell.GetOrganism()->GetMetaGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
 				currentInstCount.Add(count);
         
 				double killprob;
@@ -1280,7 +1280,7 @@ public:
 				
 				// count the number of target instructions in the genome
         const cMetaGenome& mg = cell.GetOrganism()->GetMetaGenome();
-				const cSequence& genome = mg.GetGenome();
+				const cSequence& genome = mg.GetSequence();
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
 				currentMinDist.Add(minDist);
