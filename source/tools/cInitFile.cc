@@ -28,16 +28,17 @@
 #include "AvidaTools.h"
 #include "cFile.h"
 #include "cStringIterator.h"
+#include "tArraySet.h"
 
 
 using namespace std;
 
 
-cInitFile::cInitFile(const cString& filename, const cString& working_dir)
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, const tArraySet<cString>* custom_directives)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   tSmartArray<sLine*> lines;
-  m_opened = loadFile(filename, lines, working_dir);
+  m_opened = loadFile(filename, lines, working_dir, custom_directives);
   postProcess(lines);
 }
 
@@ -97,7 +98,8 @@ void cInitFile::initMappings(const tDictionary<cString>& mappings)
 }
 
 
-bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir)
+bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
+                         const tArraySet<cString>* custom_directives)
 {
   cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
   if (!file.IsOpen()) {
@@ -115,7 +117,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
     linenum++;
 
     if (buf.GetSize() && buf[0] == '#') {
-      if (!processCommand(buf, lines, filename, linenum, working_dir)) return false;
+      if (!processCommand(buf, lines, filename, linenum, working_dir, custom_directives)) return false;
     } else {
       lines.Push(new sLine(buf, filename, linenum));
     }
@@ -126,7 +128,8 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
 }
 
 
-bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum, const cString& working_dir)
+bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
+                               const cString& working_dir, const tArraySet<cString>* custom_directives)
 {
   cString cmd = cmdstr.PopWord();
   
@@ -191,6 +194,13 @@ bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const
       m_errors.PushRear(new cString(cStringUtil::Stringf("%s:%d: invalid define directive",
                                                          (const char*)filename, linenum)));      
       return false;
+    }
+  } else if (custom_directives) {
+    for (int i = 0; i < custom_directives->GetSize(); i++) {
+      if (cmd == (cString("#") + (*custom_directives)[i])) {
+        m_custom_directives.Set((*custom_directives)[i], cmdstr);
+        break;
+      }
     }
   }
   

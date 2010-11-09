@@ -62,6 +62,8 @@ public:
   cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
+  inline bool IsInstSet(const cString& name) const { return m_is_name_map.HasEntry(name); }
+  
   inline const cInstSet& GetInstSet(const cString& name) const;
   inline cInstSet& GetInstSet(const cString& name);
   const cInstSet& GetInstSet(int i) const { return *m_inst_sets[i]; }

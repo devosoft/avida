@@ -29,6 +29,7 @@
 #include "cInstSet.h"
 #include "cHardwareManager.h"
 #include "cStringUtil.h"
+#include "tArraySet.h"
 #include "tDictionary.h"
 
 
@@ -78,29 +79,44 @@ cString cGenome::AsString() const
 bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm,
                                      tList<cString>* errors)
 {
-  cInitFile input_file(fname, wdir);
+  tArraySet<cString> custom_directives;
+  custom_directives.Add("inst_set");
+  
+  cInitFile input_file(fname, wdir, &custom_directives);
   if (errors) errors->Append(input_file.GetErrors());
   bool success = true;
 
   if (!input_file.WasOpened()) return false;
   
-  const cInstSet& is = hwm.GetDefaultInstSet();
-  m_hw_type = is.GetHardwareType();
-  m_inst_set = is.GetInstSetName();
+  const cInstSet* is = &hwm.GetDefaultInstSet();
+  
+  if (input_file.GetCustomDirectives().HasEntry("inst_set")) {
+    cString isname = input_file.GetCustomDirectives().Get("inst_set");
+    if (hwm.IsInstSet(isname)) {
+      is = &hwm.GetInstSet(isname);
+    } else {
+      if (errors) errors->PushRear(new cString(cStringUtil::Stringf("invalid instruction set '%s' defined in organism '%s'",
+                                                                    (const char*)isname, (const char*)fname)));
+      return false;
+    }
+  }
+  
+  m_hw_type = is->GetHardwareType();
+  m_inst_set = is->GetInstSetName();
   cSequence new_seq(input_file.GetNumLines());
   
   for (int line_num = 0; line_num < new_seq.GetSize(); line_num++) {
     cString cur_line = input_file.GetLine(line_num);
-    new_seq[line_num] = is.GetInst(cur_line);
+    new_seq[line_num] = is->GetInst(cur_line);
     
-    if (new_seq[line_num] == is.GetInstError()) {
+    if (new_seq[line_num] == is->GetInstError()) {
       if (success) {
         if (errors) errors->PushRear(new cString(cStringUtil::Stringf("unable to load organism '%s'", (const char*)fname)));
         success = false;
       } else {
         if (errors) errors->PushRear(new cString(cStringUtil::Stringf("  unknown instruction: %s (best match: %s)",
                                                                       (const char*)cur_line,
-                                                                      (const char*)is.FindBestMatch(cur_line))));
+                                                                      (const char*)is->FindBestMatch(cur_line))));
       }
     }    
   }
