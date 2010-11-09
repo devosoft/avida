@@ -28,13 +28,12 @@
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
 #include "cDoubleSum.h"
-#include "cGenome.h"
-#include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cIntSum.h"
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cSequence.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cOrganism.h"
@@ -95,7 +94,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+    cGenome genome;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
@@ -139,8 +139,11 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::RandomGenome(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_RANDOM, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
+    const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+    cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
+    cSequence& seq = mg.GetSequence();
+    for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
+    m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
 
@@ -185,12 +188,18 @@ public:
   {
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
-      cGenome genome;
-      if (m_sex)
-        genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-      else
-        genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, m_world->GetHardwareManager().GetInstSet());
-      m_world->GetPopulation().Inject(genome, SRC_ORGANISM_RANDOM, i, m_merit, m_lineage_label, m_neutral_metric);
+      const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+      cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
+      cSequence& seq = mg.GetSequence();
+      for (int j = 0; i < m_length; j++) {
+        cInstruction inst = is.GetRandomInst(ctx);
+        while (is.GetRedundancy(inst) == 0) inst = is.GetRandomInst(ctx);
+        seq[j] = inst;
+      }
+      if (m_sex) seq[m_length] = is.GetInst("repro-sex");
+      else seq[m_length] = is.GetInst("repro");
+      
+      m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, i, m_merit, m_lineage_label, m_neutral_metric);
     }
   }
 };
@@ -236,7 +245,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+    cGenome genome;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
       m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
   }
@@ -296,7 +306,8 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
     } else {
-      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+      cGenome genome;
+      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
       }
@@ -354,7 +365,8 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
     } else {
-      cGenome genome(m_sequence);
+      const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+      cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
       }
@@ -415,7 +427,8 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
-      cGenome genome(m_sequence);
+      const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
+      cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
@@ -464,9 +477,10 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
     } else {
-      cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+      cGenome genome;
+      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().InjectParasite(m_label, genome, i);
+        m_world->GetPopulation().InjectParasite(m_label, genome.GetSequence(), i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -530,11 +544,12 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
     } else {
-      cGenome genome = cGenomeUtil::LoadGenome(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
-      cGenome parasite = cGenomeUtil::LoadGenome(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+      cGenome genome, parasite;
+      genome.LoadFromDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+      parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
-        m_world->GetPopulation().InjectParasite(m_label, parasite, i);
+        m_world->GetPopulation().InjectParasite(m_label, parasite.GetSequence(), i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -584,7 +599,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+    cGenome genome;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
@@ -650,7 +666,8 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome = cGenomeUtil::LoadGenome(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager().GetInstSet());
+    cGenome genome;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         if (i % m_mod_num == 0) {
@@ -1025,7 +1042,7 @@ public:
       if (cell.IsOccupied() == false) continue;
       
       // count the number of target instructions in the genome
-      count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+      count = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
       
       // decide if it should be killed or not, based on the count and a the kill probability
       if (count >= m_limit) {
@@ -1085,8 +1102,8 @@ public:
 			if (cell.IsOccupied() == false) continue;
 			
 			// get the number of instructions of each type.
-			count1 = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst1));
-			count2 = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst2));
+			count1 = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst1));
+			count2 = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst2));
 			
 			// decide if it should be killed or not, based on the two counts and a the kill probability
 			if ((count1 >= m_limit) && (count2 >= m_limit)) {
@@ -1162,7 +1179,7 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(), m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+				int count = cell.GetOrganism()->GetGenome().GetSequence().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetGenome().GetInstSet()).GetInst(m_inst));
 				currentInstCount.Add(count);
         
 				double killprob;
@@ -1262,9 +1279,10 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-				const cGenome& genome = cell.GetOrganism()->GetGenome();
+        const cGenome& mg = cell.GetOrganism()->GetGenome();
+				const cSequence& genome = mg.GetSequence();
 				const double genomeSize = static_cast<double>(genome.GetSize());
-				int minDist = cGenomeUtil::MinDistBetween(genome, m_world->GetHardwareManager().GetInstSet().GetInst(m_inst));
+				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
 				currentMinDist.Add(minDist);
 				
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));

@@ -35,7 +35,7 @@ int cPhenPlastUtil::GetNumPhenotypes(cAvidaContext& ctx, cWorld* world, cBioGrou
   if (!ps) {
     assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetMetaGenome());
+    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
     bg->AttachData(ps);
   }
   
@@ -48,7 +48,7 @@ double cPhenPlastUtil::GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, c
   if (!ps) {
     assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetMetaGenome());
+    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
     bg->AttachData(ps);
   }
   
@@ -61,7 +61,7 @@ double cPhenPlastUtil::GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBi
   if (!ps) {
     assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetMetaGenome());
+    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
     bg->AttachData(ps);
   }
   
@@ -74,17 +74,17 @@ const tArray<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, c
   if (!ps) {
     assert(dynamic_cast<cBGGenotype*>(bg));
     
-    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetMetaGenome());
+    ps = TestPlasticity(ctx, world, ((cBGGenotype*)bg)->GetGenome());
     bg->AttachData(ps);
   }
   
   return ps->m_task_probabilities;
 }
 
-cPhenPlastSummary* cPhenPlastUtil::TestPlasticity(cAvidaContext& ctx, cWorld* world, const cMetaGenome& mg)
+cPhenPlastSummary* cPhenPlastUtil::TestPlasticity(cAvidaContext& ctx, cWorld* world, const cGenome& mg)
 {
   cCPUTestInfo test_info;
   // @TODO - phenplastgenotype should take a metagenome and pull its own config setting
-  cPhenPlastGenotype pp(mg.GetGenome(), world->GetConfig().GENOTYPE_PHENPLAST_CALC.Get(), test_info, world, ctx);
+  cPhenPlastGenotype pp(mg, world->GetConfig().GENOTYPE_PHENPLAST_CALC.Get(), test_info, world, ctx);
   return new cPhenPlastSummary(pp);
 }

@@ -60,6 +60,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   cCPUTestInfo test_info = m_test_info;
   
   const cGenome& base_genome = m_genotype->GetGenome();
+  const cSequence& base_seq = base_genome.GetSequence();
 
   // Calculate the stats for the genotype we're working with...
   testcpu->TestGenome(ctx, test_info, base_genome);  
@@ -79,13 +80,13 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   // Don't calculate the modularity if the organism doesn't reproduce. i.e. if the fitness is 0
   if (base_fitness > 0.0 && does_tasks) {
     // Set up the instruction set for mapping
-    cInstSet map_inst_set(m_genotype->GetInstructionSet());
+    cInstSet& map_inst_set = m_genotype->GetWorld()->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
     const cInstruction null_inst = map_inst_set.ActivateNullInst();
-    test_info.SetInstSet(&map_inst_set);
 
     // Genome for testing
     const int max_line = base_genome.GetSize();
     cGenome mod_genome(base_genome);
+    cSequence& seq = mod_genome.GetSequence();
     
     // Create and initialize the modularity matrix
     tMatrix<int> mod_matrix(num_tasks, max_line);
@@ -96,9 +97,9 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     
     // Loop through all the lines of code, testing the removal of each.
     for (int line_num = 0; line_num < max_line; line_num++) {
-      int cur_inst = base_genome[line_num].GetOp();
+      int cur_inst = base_seq[line_num].GetOp();
       
-      mod_genome[line_num] = null_inst;
+      seq[line_num] = null_inst;
       
       // Run the modified genome through the Test CPU
       testcpu->TestGenome(ctx, test_info, mod_genome);
@@ -121,7 +122,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
       }
           
       // Reset the mod_genome back to the original sequence.
-      mod_genome[line_num].SetOp(cur_inst);
+      seq[line_num].SetOp(cur_inst);
     }
     
     tArray<int> sites_inv_x_tasks(num_tasks + 1, 0);  // # of inst's involved in 0,1,2,3... tasks    

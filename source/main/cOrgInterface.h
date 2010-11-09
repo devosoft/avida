@@ -37,8 +37,8 @@
 class cAvidaContext;
 class cBioUnit;
 class cDeme;
+class cSequence;
 class cGenome;
-class cMetaGenome;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
@@ -77,7 +77,7 @@ public:
   virtual void SetPrevSeenCellID(int in_id) = 0;
   virtual void SetPrevTaskCellID(int in_id) = 0;
 
-  virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome) = 0;
+  virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome) = 0;
   
   virtual cOrganism* GetNeighbor() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
@@ -106,7 +106,7 @@ public:
   virtual int ReceiveValue() = 0;
   virtual void SellValue(const int data, const int label, const int sell_price, const int org_id) = 0;
   virtual int BuyValue(const int label, const int buy_price) = 0;
-  virtual bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code) = 0;
+  virtual bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code) = 0;
   virtual bool UpdateMerit(double new_merit) = 0;
   virtual bool TestOnDivide() = 0;
   virtual bool SendMessage(cOrgMessage& msg) = 0;
@@ -131,7 +131,7 @@ public:
 	virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
 	virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
 	virtual void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) = 0;
-	virtual void ReceiveHGTDonation(const cGenome& fragment) = 0;
+	virtual void ReceiveHGTDonation(const cSequence& fragment) = 0;
   
   virtual void Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
 

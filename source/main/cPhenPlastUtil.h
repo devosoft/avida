@@ -27,7 +27,7 @@
 
 class cAvidaContext;
 class cBioGroup;
-class cMetaGenome;
+class cGenome;
 class cPhenPlastSummary;
 class cWorld;
 
@@ -44,7 +44,7 @@ public:
   static double GetPhenotypicEntropy(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
   static double GetTaskProbability(cAvidaContext& ctx, cWorld* world, cBioGroup* bg, int task_id);
   static const tArray<double>& GetTaskProbabilities(cAvidaContext& ctx, cWorld* world, cBioGroup* bg);
-  static cPhenPlastSummary* TestPlasticity(cAvidaContext& ctx, cWorld* world, const cMetaGenome& mg);
+  static cPhenPlastSummary* TestPlasticity(cAvidaContext& ctx, cWorld* world, const cGenome& mg);
 };  
 
 

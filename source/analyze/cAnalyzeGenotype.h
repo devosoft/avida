@@ -105,8 +105,7 @@ class cAnalyzeGenotype
   friend class ReadToken;
 private:
   cWorld* m_world;
-  cGenome genome;            // Full Genome
-  cInstSet& m_inst_set;      // Instruction set used in this genome
+  cGenome m_genome;        // Full Genome
   cString name;              // Name, if one was provided in loading
   cCPUTestInfo m_cpu_test_info; // Use this test info
   
@@ -237,8 +236,7 @@ private:
 
 
 public:
-  cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet& in_inst_set);
-  cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstSet& in_inst_set);
+  cAnalyzeGenotype(cWorld* world, const cGenome& genome);
   cAnalyzeGenotype(const cAnalyzeGenotype& _gen);
   ~cAnalyzeGenotype();
   
@@ -263,7 +261,6 @@ public:
   // Set...
   void SetSequence(cString _sequence);
   void SetName(const cString& _name) { name = _name; }
-  void SetInstructionSet(cInstSet& _inst_set) { m_inst_set = _inst_set; }
   void SetAlignedSequence(const cString & _seq) { aligned_sequence = _seq; }
   void SetTag(const cString& _tag) { tag = _tag; }
 
@@ -291,7 +288,7 @@ public:
   void SetLineageLabel(int _label) { lineage_label = _label; }
 
   void SetParentMuts(const cString & in_muts) { parent_muts = in_muts; }
-  void SetMutSteps(const cString in_muts) { genome.GetMutationSteps().Set(in_muts); }
+  void SetMutSteps(const cString in_muts) { m_genome.GetSequence().GetMutationSteps().Set(in_muts); }
   
   void SetTaskOrder(const cString & in_order) { task_order = in_order; }
 
@@ -305,10 +302,10 @@ public:
 
   // Accessors...
   cWorld* GetWorld() { return m_world; }
-  
-  const cGenome & GetGenome() const { return genome; }
+
+  cGenome& GetGenome() { return m_genome; }
+  const cGenome& GetGenome() const { return m_genome; }
   const cString& GetName() const { return name; }
-  const cInstSet& GetInstructionSet() const { return m_inst_set; }
   const cString& GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }
   cString GetAlignmentExecutedFlags() const;
@@ -344,7 +341,7 @@ public:
   int GetDepth() const { return depth; }
 
   const cString& GetParentMuts() const { return parent_muts; }
-  const cString GetMutSteps() const { const cMutationSteps& ms = genome.GetMutationSteps(); return ms.AsString(); }
+  const cString GetMutSteps() const { const cMutationSteps& ms = m_genome.GetSequence().GetMutationSteps(); return ms.AsString(); }
 
   // Knockout accessors
   int GetKO_DeadCount() const;
@@ -396,7 +393,7 @@ public:
   const cString & GetTaskOrder() const { return task_order; }
   cString GetTaskList() const;
 
-  cString GetSequence() const { return genome.AsString(); }
+  cString GetSequence() const { return m_genome.GetSequence().AsString(); }
   cString GetHTMLSequence() const;
 
   cString GetMapLink() const {

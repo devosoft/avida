@@ -175,9 +175,9 @@ void cReactionResult::MultGermline(double value)
 }
 
 
-void cReactionResult::AddInst(int id)
+void cReactionResult::AddInst(const cString& inst)
 {
-  insts_triggered.Push(id);
+  insts_triggered.Push(inst);
 }
 
 double cReactionResult::GetConsumed(int id)

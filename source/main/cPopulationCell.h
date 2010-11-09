@@ -39,7 +39,7 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
-#include "cGenome.h"
+#include "cSequence.h"
 #include "cGenomeUtil.h"
 
 class cHardwareBase;
@@ -149,11 +149,11 @@ public:
 	//! Diffuse genome fragments from this cell to its neighbors.
 	void DiffuseGenomeFragments();
 	//! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
-	void AddGenomeFragments(const cGenome& genome);
+	void AddGenomeFragments(const cSequence& genome);
 	//! Retrieve the number of genome fragments currently found in this cell.
 	unsigned int CountGenomeFragments() const;
 	//! Remove and return the front genome fragment.
-	cGenome PopGenomeFragment();
+	cSequence PopGenomeFragment();
 	//! Retrieve the list of fragments from this cell.
 	fragment_list_type& GetFragments();
 	//! Clear all fragments from this cell, adjust resources as required.

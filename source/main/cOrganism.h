@@ -46,8 +46,8 @@
 #ifndef cLocalMutations_h
 #include "cLocalMutations.h"
 #endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
+#ifndef cGenome_h
+#include "cGenome.h"
 #endif
 #ifndef cMutationRates_h
 #include "cMutationRates.h"
@@ -101,7 +101,7 @@ private:
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   eBioUnitSource m_src;
   cString m_src_args;
-  const cMetaGenome m_initial_genome;         // Initial genome; can never be changed!
+  const cGenome m_initial_genome;         // Initial genome; can never be changed!
   tArray<cBioUnit*> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cLocalMutations m_mut_info;             // Info about possible mutations;
@@ -112,7 +112,7 @@ private:
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
   
 	// Other stats
-  cMetaGenome m_offspring_genome;              // Child genome, while under construction.
+  cGenome m_offspring_genome;              // Child genome, while under construction.
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -161,18 +161,14 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation,
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, int parent_generation,
             eBioUnitSource src, const cString& src_args = "");
-  cOrganism(cWorld* world, cAvidaContext& ctx, int hw_type, int inst_set_id, const cGenome& genome,
-            int parent_generation, eBioUnitSource src, const cString& src_args = "");
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, cInstSet* inst_set,
-            int parent_generation, eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
   
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cMetaGenome& GetMetaGenome() const { return m_initial_genome; }
+  const cGenome& GetGenome() const { return m_initial_genome; }
   
 
   // --------  Support Methods  --------
@@ -196,8 +192,6 @@ public:
   cPhenotype& GetPhenotype() { return m_phenotype; }
   void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }
 
-  const cGenome& GetGenome() const { return m_initial_genome.GetGenome(); }
-  
   const cMutationRates& MutationRates() const { return m_mut_rates; }
   cMutationRates& MutationRates() { return m_mut_rates; }
   const cLocalMutations& GetLocalMutations() const { return m_mut_info; }
@@ -225,7 +219,7 @@ public:
 
   int GetMaxExecuted() const { return m_max_executed; }
   
-  cMetaGenome& OffspringGenome() { return m_offspring_genome; }
+  cGenome& OffspringGenome() { return m_offspring_genome; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }
@@ -344,7 +338,7 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(cBioUnit* parent, const cString& label, const cGenome& genome);
+  bool InjectParasite(cBioUnit* parent, const cString& label, const cSequence& genome);
   bool ParasiteInfectHost(cBioUnit* parasite);
   int GetNumParasites() const { return m_parasites.GetSize(); }
   const tArray<cBioUnit*>& GetParasites() const { return m_parasites; }

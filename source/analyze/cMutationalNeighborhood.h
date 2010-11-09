@@ -25,7 +25,7 @@
 #ifndef cMutationalNeighborhood_h
 #define cMutationalNeighborhood_h
 
-#ifndef cGenome_h
+#ifndef cSequence_h
 #include "cGenome.h"
 #endif
 #ifndef cMutex_h
@@ -248,12 +248,7 @@ private:
 public:
   // Public Methods - Instantiate and Process Only.   All results must be read with a cMutationalNeighborhood object.
   // -----------------------------------------------------------------------------------------------------------------------
-  cMutationalNeighborhood(cWorld* world, const cGenome& genome, const cInstSet& inst_set, int target)
-    : m_world(world), m_initialized(false), m_inst_set(inst_set), m_target(target), m_base_genome(genome)
-  {
-    // Acquire write lock, to prevent any cMutationalNeighborhoodResults instances before computing
-    m_rwlock.WriteLock();
-  }
+  cMutationalNeighborhood(cWorld* world, const cGenome& genome, int target);
   ~cMutationalNeighborhood() { ; }
   
   void Process(cAvidaContext& ctx);
@@ -272,10 +267,10 @@ private:
   void AggregateOneStep(tArray<sStep>& steps, sOneStepAggregate& osa);
 
   void ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
-  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
+  void ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
+  void ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   void ProcessInsertPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
-  void ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cCPUMemory& mod_genome);
+  void ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   void ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, int cur_site, cGenome& mod_genome);
   double ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info, const cGenome& mod_genome,
                               sTwoStep& tdata, const sPendFit& cur, const sPendFit& oth);

@@ -26,15 +26,15 @@
 #ifndef cCPUMemory_h
 #define cCPUMemory_h
 
-#ifndef cGenome_h
-#include "cGenome.h"
+#ifndef cSequence_h
+#include "cSequence.h"
 #endif
 #ifndef tArray_h
 #include "tArray.h"
 #endif
 
 
-class cCPUMemory : public cGenome
+class cCPUMemory : public cSequence
 {
 private:
 	static const unsigned char MASK_COPIED   = 0x01;
@@ -52,11 +52,10 @@ private:
   void prepareInsert(int pos, int num_sites);
 
 public:
-  explicit cCPUMemory(int size = 1)  : cGenome(size), m_flag_array(size) { ClearFlags(); }
   cCPUMemory(const cCPUMemory& in_memory);
-  cCPUMemory(const cGenome& in_genome) : cGenome(in_genome), m_flag_array(in_genome.GetSize()) { ; }
-  cCPUMemory(const cString& in_string) : cGenome(in_string), m_flag_array(in_string.GetSize()) { ; }
-  cCPUMemory(cInstruction* begin, cInstruction* end) : cGenome(begin, end), m_flag_array(GetSize()) { ClearFlags(); }
+  cCPUMemory(const cSequence& in_genome) : cSequence(in_genome), m_flag_array(in_genome.GetSize()) { ; }
+  explicit cCPUMemory(int size = 1)  : cSequence(size), m_flag_array(size) { ClearFlags(); }
+  cCPUMemory(const cString& in_string) : cSequence(in_string), m_flag_array(in_string.GetSize()) { ; }
   ~cCPUMemory() { ; }
 
   inline bool FlagCopied(int pos) const     { return MASK_COPIED   & m_flag_array[pos]; }
@@ -87,7 +86,7 @@ public:
   void Clear()
 	{
 		for (int i = 0; i < m_active_size; i++) {
-			m_genome[i].SetOp(0);
+			m_seq[i].SetOp(0);
 			m_flag_array[i] = 0;
 		}
     m_mutation_steps.Clear();
@@ -100,12 +99,12 @@ public:
   void Resize(int new_size);
   void Copy(int to, int from);
   void Insert(int pos, const cInstruction& inst);
-  void Insert(int pos, const cGenome& genome);
+  void Insert(int pos, const cSequence& genome);
   void Remove(int pos, int num_sites = 1);
-  void Replace(int pos, int num_sites, const cGenome& genome);
+  void Replace(int pos, int num_sites, const cSequence& genome);
 
   void operator=(const cCPUMemory& other_memory);
-  void operator=(const cGenome& other_genome);
+  void operator=(const cSequence& other_genome);
 };
 
 #endif

@@ -51,149 +51,92 @@
 #include <cmath>
 using namespace std;
 
-cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, cString symbol_string, cInstSet& in_inst_set)
-  : m_world(world)
-  , genome(symbol_string)
-  , m_inst_set(in_inst_set)
-  , name("")
-  , m_cpu_test_info()
-  , m_data(new sGenotypeDatastore)
-  , aligned_sequence("")
-  , tag("")
-  , viable(false)
-  , id_num(-1)
-  , parent_id(-1)
-  , parent2_id(-1)
-  , num_cpus(0)
-  , total_cpus(0)
-  , update_born(0)
-  , update_dead(0)
-  , depth(0)
-  , length(0)
-  , copy_length(0)
-  , exe_length(0)
-  , merit(0.0)
-  , gest_time(INT_MAX)
-  , fitness(0.0)
-  , errors(0)
-  , inst_executed_counts(0)
-  , task_counts(0)
-  , task_qualities(0)
-  , internal_task_counts(0)
-  , internal_task_qualities(0)
-  , rbins_total(0)
-  , rbins_avail(0)
-  , collect_spec_counts(0)
-  , fitness_ratio(0.0)
-  , efficiency_ratio(0.0)
-  , comp_merit_ratio(0.0)
-  , parent_dist(0)
-  , ancestor_dist(0)
-  , parent_muts("")
-  , knockout_stats(NULL)
-  , m_land(NULL)
-  , m_phenplast_stats(NULL)
+cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& genome)
+: m_world(world)
+, m_genome(genome)
+, name("")
+, m_cpu_test_info() 
+, m_data(new sGenotypeDatastore)
+, aligned_sequence("")
+, tag("")
+, viable(false)
+, id_num(-1)
+, parent_id(-1)
+, parent2_id(-1)
+, num_cpus(0)
+, total_cpus(0)
+, update_born(0)
+, update_dead(0)
+, depth(0)
+, length(0)
+, copy_length(0)
+, exe_length(0)
+, merit(0.0)
+, gest_time(INT_MAX)
+, fitness(0.0)
+, errors(0)
+, inst_executed_counts(0)
+, task_counts(0)
+, task_qualities(0)
+, internal_task_counts(0)
+, internal_task_qualities(0)
+, rbins_total(0)
+, rbins_avail(0)
+, collect_spec_counts(0)
+, fitness_ratio(0.0)
+, efficiency_ratio(0.0)
+, comp_merit_ratio(0.0)
+, parent_dist(0)
+, ancestor_dist(0)
+, parent_muts("")
+, knockout_stats(NULL)
+, m_land(NULL)
+, m_phenplast_stats(NULL)
 {
-    
-  // Make sure that the sequences jive with the inst_set
-  for (int i = 0; i < genome.GetSize(); i++) {
-    if (genome[i].GetOp() >= m_inst_set.GetSize()) {
-      cString msg("Trying to load instruction ");
-      msg += genome[i].GetOp();
-      msg += ".  Max in set is";
-      msg += (m_inst_set.GetSize() - 1);
-      m_world->GetDriver().RaiseException(msg);
-    }
-  }
-}
-
-cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& _genome, cInstSet& in_inst_set)
-  : m_world(world)
-  , genome(_genome)
-  , m_inst_set(in_inst_set)
-  , name("")
-  , m_cpu_test_info() 
-  , m_data(new sGenotypeDatastore)
-  , aligned_sequence("")
-  , tag("")
-  , viable(false)
-  , id_num(-1)
-  , parent_id(-1)
-  , parent2_id(-1)
-  , num_cpus(0)
-  , total_cpus(0)
-  , update_born(0)
-  , update_dead(0)
-  , depth(0)
-  , length(0)
-  , copy_length(0)
-  , exe_length(0)
-  , merit(0.0)
-  , gest_time(INT_MAX)
-  , fitness(0.0)
-  , errors(0)
-  , inst_executed_counts(0)
-  , task_counts(0)
-  , task_qualities(0)
-  , internal_task_counts(0)
-  , internal_task_qualities(0)
-  , rbins_total(0)
-  , rbins_avail(0)
-  , collect_spec_counts(0)
-  , fitness_ratio(0.0)
-  , efficiency_ratio(0.0)
-  , comp_merit_ratio(0.0)
-  , parent_dist(0)
-  , ancestor_dist(0)
-  , parent_muts("")
-  , knockout_stats(NULL)
-  , m_land(NULL)
-  , m_phenplast_stats(NULL){
   
 }
 
 cAnalyzeGenotype::cAnalyzeGenotype(const cAnalyzeGenotype& _gen)
-  : m_world(_gen.m_world)
-  , genome(_gen.genome)
-  , m_inst_set(_gen.m_inst_set)
-  , name(_gen.name)
-  , m_cpu_test_info(_gen.m_cpu_test_info)  
-  , m_data(_gen.m_data)
-  , aligned_sequence(_gen.aligned_sequence)
-  , tag(_gen.tag)
-  , viable(_gen.viable)
-  , id_num(_gen.id_num)
-  , parent_id(_gen.parent_id)
-  , parent2_id(_gen.parent2_id)
-  , num_cpus(_gen.num_cpus)
-  , total_cpus(_gen.total_cpus)
-  , update_born(_gen.update_born)
-  , update_dead(_gen.update_dead)
-  , depth(_gen.depth)
-  , length(_gen.length)
-  , copy_length(_gen.copy_length)
-  , exe_length(_gen.exe_length)
-  , merit(_gen.merit)
-  , gest_time(_gen.gest_time)
-  , fitness(_gen.fitness)
-  , errors(_gen.errors)
-  , inst_executed_counts(_gen.inst_executed_counts)
-  , task_counts(_gen.task_counts)
-  , task_qualities(_gen.task_qualities)
-  , internal_task_counts(_gen.internal_task_counts)
-  , internal_task_qualities(_gen.internal_task_qualities)
-  , rbins_total(_gen.rbins_total)
-  , rbins_avail(_gen.rbins_avail)
-  , collect_spec_counts(_gen.collect_spec_counts)
-  , fitness_ratio(_gen.fitness_ratio)
-  , efficiency_ratio(_gen.efficiency_ratio)
-  , comp_merit_ratio(_gen.comp_merit_ratio)
-  , parent_dist(_gen.parent_dist)
-  , ancestor_dist(_gen.ancestor_dist)
-  , parent_muts(_gen.parent_muts)
-  , knockout_stats(NULL)
-  , m_land(NULL)
-  , m_phenplast_stats(NULL)
+: m_world(_gen.m_world)
+, m_genome(_gen.m_genome)
+, name(_gen.name)
+, m_cpu_test_info(_gen.m_cpu_test_info)  
+, m_data(_gen.m_data)
+, aligned_sequence(_gen.aligned_sequence)
+, tag(_gen.tag)
+, viable(_gen.viable)
+, id_num(_gen.id_num)
+, parent_id(_gen.parent_id)
+, parent2_id(_gen.parent2_id)
+, num_cpus(_gen.num_cpus)
+, total_cpus(_gen.total_cpus)
+, update_born(_gen.update_born)
+, update_dead(_gen.update_dead)
+, depth(_gen.depth)
+, length(_gen.length)
+, copy_length(_gen.copy_length)
+, exe_length(_gen.exe_length)
+, merit(_gen.merit)
+, gest_time(_gen.gest_time)
+, fitness(_gen.fitness)
+, errors(_gen.errors)
+, inst_executed_counts(_gen.inst_executed_counts)
+, task_counts(_gen.task_counts)
+, task_qualities(_gen.task_qualities)
+, internal_task_counts(_gen.internal_task_counts)
+, internal_task_qualities(_gen.internal_task_qualities)
+, rbins_total(_gen.rbins_total)
+, rbins_avail(_gen.rbins_avail)
+, collect_spec_counts(_gen.collect_spec_counts)
+, fitness_ratio(_gen.fitness_ratio)
+, efficiency_ratio(_gen.efficiency_ratio)
+, comp_merit_ratio(_gen.comp_merit_ratio)
+, parent_dist(_gen.parent_dist)
+, ancestor_dist(_gen.ancestor_dist)
+, parent_muts(_gen.parent_muts)
+, knockout_stats(NULL)
+, m_land(NULL)
+, m_phenplast_stats(NULL)
 {
   if (_gen.knockout_stats != NULL) {
     knockout_stats = new cAnalyzeKnockouts;
@@ -223,17 +166,17 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   
   // A basic macro to link a keyword to a description and Get and Set methods in cAnalyzeGenotype.
 #define ADD_GDATA(TYPE, KEYWORD, DESC, GET, SET, COMP, NSTR, HSTR)                                \
-  {                                                                                               \
-    cString nstr_str(#NSTR), hstr_str(#HSTR);                                                     \
-    cString null_str = "0";                                                                       \
-    if (nstr_str != "0") null_str = NSTR;                                                         \
-    cString html_str = "align=center";                                                            \
-    if (hstr_str != "0") html_str = HSTR;                                                         \
-                                                                                                  \
-    dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                              \
-      (KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str)); \
-  }
-
+{                                                                                               \
+cString nstr_str(#NSTR), hstr_str(#HSTR);                                                     \
+cString null_str = "0";                                                                       \
+if (nstr_str != "0") null_str = NSTR;                                                         \
+cString html_str = "align=center";                                                            \
+if (hstr_str != "0") html_str = HSTR;                                                         \
+\
+dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                              \
+(KEYWORD, DESC, &cAnalyzeGenotype::GET, &cAnalyzeGenotype::SET, COMP, null_str, html_str)); \
+}
+  
   // To add a new keyword connected to a stat in cAnalyzeGenotype, you need to connect all of the pieces here.
   // The ADD_GDATA macro takes eight arguments:
   //  type              : The type of the variables being linked in.
@@ -304,7 +247,7 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   // @JEB There is a difference between these two. parent_muts is based on an alignment. mut_steps is based on recorded mutations during run.
   ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
   ADD_GDATA(const cString (), "mut_steps", "Mutation Steps from Parent", GetMutSteps,   SetMutSteps,   0, "", "");
-
+  
   ADD_GDATA(const cString& (), "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
   ADD_GDATA(cString (),        "sequence", "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
   ADD_GDATA(const cString& (), "alignment", "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
@@ -319,7 +262,7 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   //         versions we should rename these.
   ADD_GDATA(cString (), "link", "Phenotype Map",              GetMapLink,      SetNULL, 0, 0,       0);
   ADD_GDATA(cString (), "html",  "Genome Sequence",            GetHTMLSequence, SetNULL, 0, "(N/A)", "");
-    
+  
   // coarse-grained task stats
   ADD_GDATA(int (), 		"total_task_count","# Different Tasks", 		GetTotalTaskCount, SetNULL, 1, 0, 0);
   ADD_GDATA(int (), 		"total_task_performance_count", "Total Tasks Performed",	GetTotalTaskPerformanceCount, SetNULL, 1, 0, 0);
@@ -350,7 +293,7 @@ tDataCommandManager<cAnalyzeGenotype>* cAnalyzeGenotype::buildDataCommandManager
   ADD_GDATA(int (),     "dom_depth",    "Tree Depth of Dominant Genotype", GetDepth,      SetDepth,      0, 0, 0);
   ADD_GDATA(int (),     "dom_id",       "Dominant Genotype ID",            GetID,         SetID,         0, 0, 0);
   ADD_GDATA(cString (), "dom_sequence", "Dominant Genotype Sequence",      GetSequence,   SetSequence,   0, "(N/A)", "");
-
+  
   
   return dcm;
 #undef ADD_GDATA
@@ -390,7 +333,7 @@ void cAnalyzeGenotype::SetGenotypeData(int data_id, cGenotypeData* data)
 
 int cAnalyzeGenotype::CalcMaxGestation() const
 {
-  return m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * genome.GetSize();
+  return m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * m_genome.GetSize();
 }
 
 void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
@@ -413,13 +356,13 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
   }
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-
+  
   cAvidaContext& ctx = m_world->GetDefaultContext();
   
   // Calculate the base fitness for the genotype we're working with...
   // (This may not have been run already, and cost negligiably more time
   // considering the number of knockouts we need to do.
-  cAnalyzeGenotype base_genotype(m_world, genome, m_inst_set);
+  cAnalyzeGenotype base_genotype(m_world, m_genome);
   base_genotype.Recalculate(ctx);
   double base_fitness = base_genotype.GetFitness();
   const tArray<int> base_task_counts( base_genotype.GetTaskCounts() );
@@ -431,11 +374,10 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     return;
   }
   
-  cGenome mod_genome(genome);
+  cGenome mod_genome(m_genome);
   
-  // Setup a NULL instruction in a special inst set.
-  cInstSet ko_inst_set(m_inst_set);
-  const cInstruction null_inst = ko_inst_set.ActivateNullInst();
+  // Setup a NULL instruction needed for testing
+  const cInstruction null_inst = m_world->GetHardwareManager().GetInstSet(mod_genome.GetInstSet()).ActivateNullInst();
   
   // If we are keeping track of the specific effects on tasks from the
   // knockouts, setup the matrix.
@@ -443,15 +385,15 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     knockout_stats->task_counts.Resize(length);
     knockout_stats->has_chart_info = true;
   }
-
+  
   // Loop through all the lines of code, testing the removal of each.
   // -2=lethal, -1=detrimental, 0=neutral, 1=beneficial
   tArray<int> ko_effect(length);
   for (int line_num = 0; line_num < length; line_num++) {
     // Save a copy of the current instruction and replace it with "NULL"
-    int cur_inst = mod_genome[line_num].GetOp();
-    mod_genome[line_num] = null_inst;
-    cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
+    int cur_inst = mod_genome.GetSequence()[line_num].GetOp();
+    mod_genome.GetSequence()[line_num] = null_inst;
+    cAnalyzeGenotype ko_genotype(m_world, mod_genome);
     ko_genotype.Recalculate(ctx);
     if (check_chart == true) {
       const tArray<int> ko_task_counts( ko_genotype.GetTaskCounts() );
@@ -476,7 +418,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     }
     
     // Reset the mod_genome back to the original sequence.
-    mod_genome[line_num].SetOp(cur_inst);
+    mod_genome.GetSequence()[line_num].SetOp(cur_inst);
   }
   
   // Only continue from here if we are looking at all pairs of knockouts
@@ -507,11 +449,11 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       // Calculate the fitness for this pair of knockouts to determine if its
       // something other than what we expected.
       
-      int cur_inst1 = mod_genome[line1].GetOp();
-      int cur_inst2 = mod_genome[line2].GetOp();
-      mod_genome[line1] = null_inst;
-      mod_genome[line2] = null_inst;
-      cAnalyzeGenotype ko_genotype(m_world, mod_genome, ko_inst_set);
+      int cur_inst1 = mod_genome.GetSequence()[line1].GetOp();
+      int cur_inst2 = mod_genome.GetSequence()[line2].GetOp();
+      mod_genome.GetSequence()[line1] = null_inst;
+      mod_genome.GetSequence()[line2] = null_inst;
+      cAnalyzeGenotype ko_genotype(m_world, mod_genome);
       ko_genotype.Recalculate(ctx);
       
       double ko_fitness = ko_genotype.GetFitness();
@@ -535,8 +477,8 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       }	
       
       // Reset the mod_genome back to the original sequence.
-      mod_genome[line1].SetOp(cur_inst1);
-      mod_genome[line2].SetOp(cur_inst2);
+      mod_genome.GetSequence()[line1].SetOp(cur_inst1);
+      mod_genome.GetSequence()[line2].SetOp(cur_inst2);
     }
   }
   
@@ -554,7 +496,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
 void cAnalyzeGenotype::CheckLand() const
 {
   if (m_land == NULL) {
-    m_land = new cLandscape(m_world, genome, m_inst_set);
+    m_land = new cLandscape(m_world, m_genome);
     m_land->SetCPUTestInfo(m_cpu_test_info);
     m_land->SetDistance(1);
     m_land->Process(m_world->GetDefaultContext());
@@ -566,9 +508,8 @@ void cAnalyzeGenotype::CheckPhenPlast() const
   // Implicit genotype recalculation if required
   if (m_phenplast_stats == NULL) {
     cCPUTestInfo test_info;
-    test_info.SetInstSet(&m_inst_set);
     
-    cPhenPlastGenotype pp(genome, 1000, test_info, m_world, m_world->GetDefaultContext());
+    cPhenPlastGenotype pp(m_genome, 1000, test_info, m_world, m_world->GetDefaultContext());
     m_phenplast_stats = new cPhenPlastSummary(pp);
   }
 }
@@ -577,7 +518,7 @@ void cAnalyzeGenotype::CheckPhenPlast() const
 
 void cAnalyzeGenotype::CalcLandscape(cAvidaContext& ctx)
 {
-  if (m_land == NULL) m_land = new cLandscape(m_world, genome, m_inst_set);
+  if (m_land == NULL) m_land = new cLandscape(m_world, m_genome);
   m_land->SetCPUTestInfo(m_cpu_test_info);
   m_land->SetDistance(1);
   m_land->Process(ctx);
@@ -593,12 +534,10 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
     test_info = new cCPUTestInfo();
     local_test_info.Set(test_info);
   }
-
-  test_info->SetInstSet(&m_inst_set);
-
+  
   // Handling recalculation here
-  cPhenPlastGenotype recalc_data(genome, num_trials, *test_info, m_world, ctx);
- 
+  cPhenPlastGenotype recalc_data(m_genome, num_trials, *test_info, m_world, ctx);
+  
   // The most likely phenotype will be assigned to the phenotype stats
   const cPlasticPhenotype* likely_phenotype = recalc_data.GetMostLikelyPhenotype();
   
@@ -622,17 +561,17 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
   rbins_total           = likely_phenotype->GetLastRBinsTotal();
   rbins_avail           = likely_phenotype->GetLastRBinsAvail();
   collect_spec_counts   = likely_phenotype->GetLastCollectSpecCounts();
-
+  
   // Setup a new parent stats if we have a parent to work with.
   if (parent_genotype != NULL) {
     fitness_ratio = GetFitness() / parent_genotype->GetFitness();
     efficiency_ratio = GetEfficiency() / parent_genotype->GetEfficiency();
     comp_merit_ratio = GetCompMerit() / parent_genotype->GetCompMerit();
-    parent_dist = cStringUtil::EditDistance(genome.AsString(), parent_genotype->GetGenome().AsString(), parent_muts);
- 
+    parent_dist = cStringUtil::EditDistance(m_genome.GetSequence().AsString(), parent_genotype->GetGenome().GetSequence().AsString(), parent_muts);
+    
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }
-
+  
   // Summarize plasticity information if multiple recalculations performed
   if (num_trials > 1){
     if (m_phenplast_stats != NULL)
@@ -645,7 +584,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
 void cAnalyzeGenotype::PrintTasks(ofstream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = task_counts.GetSize();
-
+  
   for (int i = min_task; i < max_task; i++) {
     fp << task_counts[i] << " ";
   }
@@ -654,7 +593,7 @@ void cAnalyzeGenotype::PrintTasks(ofstream& fp, int min_task, int max_task)
 void cAnalyzeGenotype::PrintTasksQuality(ofstream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = task_counts.GetSize();
-
+  
   for (int i = min_task; i < max_task; i++) {
     fp << task_qualities[i] << " ";
   }
@@ -663,7 +602,7 @@ void cAnalyzeGenotype::PrintTasksQuality(ofstream& fp, int min_task, int max_tas
 void cAnalyzeGenotype::PrintInternalTasks(ofstream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = internal_task_counts.GetSize();
-
+  
   for (int i = min_task; i < max_task; i++) {
     fp << internal_task_counts[i] << " ";
   }
@@ -672,7 +611,7 @@ void cAnalyzeGenotype::PrintInternalTasks(ofstream& fp, int min_task, int max_ta
 void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int max_task)
 {
   if (max_task == -1) max_task = internal_task_counts.GetSize();
-
+  
   for (int i = min_task; i < max_task; i++) {
     fp << internal_task_qualities[i] << " ";
   }
@@ -680,8 +619,8 @@ void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int
 
 void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
-  cGenome new_genome(_sequence);
-  genome = new_genome;
+  cSequence new_genome(_sequence);
+  m_genome.SetSequence(new_genome);
 }
 
 
@@ -691,12 +630,12 @@ cString cAnalyzeGenotype::GetAlignmentExecutedFlags() const
   // and the genome sequence, inserting gaps...
   cString aligned_executed_flags = GetExecutedFlags();
   cString aligned_seq = GetAlignedSequence();
-
+  
   for (int i=0; i<aligned_seq.GetSize(); i++)
   {
     if (aligned_seq[i] == '_') aligned_executed_flags.Insert("_", i);
   }
-
+  
   return aligned_executed_flags;
 }
 
@@ -714,7 +653,7 @@ cString cAnalyzeGenotype::DescInstExe(int _inst_id) const
   if(_inst_id > inst_executed_counts.GetSize() || _inst_id < 0) return "";
   
   cString desc("# Times ");
-  desc += GetInstructionSet().GetName(_inst_id);
+  desc += m_world->GetHardwareManager().GetInstSet(m_genome.GetInstSet()).GetName(_inst_id);
   desc += " Executed";
   return desc;
 }
@@ -814,62 +753,62 @@ cString cAnalyzeGenotype::GetTaskList() const
       out_string[i] = '+';
     }
   }
-
+  
   return out_string;
 }
 
 
 cString cAnalyzeGenotype::GetHTMLSequence() const
 {
-  cString text_genome = genome.AsString();
+  cString text_genome = m_genome.GetSequence().AsString();
   cString html_code("<tt>");
-
+  
   cString diff_info = parent_muts;
   char mut_type = 'N';
   int mut_pos = -1;
-
+  
   cString cur_mut = diff_info.Pop(',');
   if (cur_mut != "") {
     mut_type = cur_mut[0];
     cur_mut.ClipFront(1); cur_mut.ClipEnd(1);
     mut_pos = cur_mut.AsInt();
   }
-
+  
   int ins_count = 0;
-  for (int i = 0; i < genome.GetSize(); i++) {
+  for (int i = 0; i < m_genome.GetSize(); i++) {
     char symbol = text_genome[i];
     if (i != mut_pos) html_code += symbol;
     else {
       // Figure out the information for the type of mutation we had...
       cString color;
       if (mut_type == 'M') {
-	color = "#FF0000";	
+        color = "#FF0000";	
       } else if (mut_type == 'I') {
-	color = "#00FF00";
-	ins_count++;
+        color = "#00FF00";
+        ins_count++;
       } else { // if (mut_type == 'D') {
-	color = "#0000FF";
-	symbol = '*';
-	i--;  // Rewind - we didn't read the handle character yet!
+        color = "#0000FF";
+        symbol = '*';
+        i--;  // Rewind - we didn't read the handle character yet!
       }
-
+      
       // Move on to the next mutation...
       cur_mut = diff_info.Pop(',');
       if (cur_mut != "") {
-	mut_type = cur_mut[0];
-	cur_mut.ClipFront(1); cur_mut.ClipEnd(1);
-	mut_pos = cur_mut.AsInt();
-	if (mut_type == 'D') mut_pos += ins_count;
+        mut_type = cur_mut[0];
+        cur_mut.ClipFront(1); cur_mut.ClipEnd(1);
+        mut_pos = cur_mut.AsInt();
+        if (mut_type == 'D') mut_pos += ins_count;
       } else mut_pos = -1;
-
+      
       // Tack on the current symbol...
       cString symbol_string;
       symbol_string.Set("<b><font color=\"%s\">%c</font></b>", static_cast<const char*>(color), symbol);
       html_code += symbol_string;
     }
   }
-
+  
   html_code += "</tt>";
-
+  
   return html_code;
 }

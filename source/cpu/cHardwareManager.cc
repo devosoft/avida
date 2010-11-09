@@ -36,7 +36,7 @@
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
-#include "cMetaGenome.h"
+#include "cGenome.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
@@ -46,6 +46,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
 : m_world(world), m_cpu_count(0)
 {
   cString filename = world->GetConfig().INST_SET.Get();
+  m_is_name_map.SetDefault(-1);
 
 }
 
@@ -145,11 +146,17 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
       }
       return false;
   }  
-  inst_set->LoadWithStringList(sl);
+  if (!inst_set->LoadWithStringList(sl, errors)) return false;
   
   int inst_set_id = m_inst_sets.GetSize();
   m_inst_sets.Push(inst_set);
   m_is_name_map.Set(name, inst_set_id);
+  
+  tArray<cString> names(inst_set->GetSize());
+  for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
+  m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
+  m_world->GetStats().InstExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  
   
   return true;
 }
@@ -176,13 +183,13 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 			default_filename = cHardwareGX::GetDefaultInstFilename();
 			break;      
 		default:
-      if (errors) errors->PushRear(new cString("Unknown/Unsupported HARDWARE_TYPE specified"));
+      if (errors) errors->PushRear(new cString("unknown/unsupported HARDWARE_TYPE specified"));
       return false;
   }
   
   if (filename == "" || filename == "-") {
     filename = default_filename;
-    cDriverManager::Status().NotifyComment(cString("Using default instruction set: ") + filename);
+    cDriverManager::Status().NotifyComment(cString("using default instruction set: ") + filename);
     // set INST_SET so that the proper name will show up in the text viewer
     m_world->GetConfig().INST_SET.Set(filename);
   }
@@ -214,33 +221,35 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 }
 
 
-cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is)
+cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg)
 {
   assert(org != NULL);
 	
-  int inst_set_id = (is == NULL) ? mg.GetInstSetID() : -1;
-  cInstSet* inst_set = (is == NULL) ? m_inst_sets[0] : is;
+  int inst_set_id = m_is_name_map.GetWithDefault(mg.GetInstSet(), -1);
+  if (inst_set_id == -1) return NULL; // No valid instruction set found
+  
+  cInstSet* inst_set = m_inst_sets[inst_set_id];
+  if (inst_set->GetHardwareType() != mg.GetHardwareType()) return NULL; // inst_set/hw_type mismatch
   
   cHardwareBase* hw = 0;
-	
-  switch (mg.GetHardwareType()) {
+  switch (inst_set->GetHardwareType()) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      hw = new cHardwareCPU(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareCPU(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_SMT:
-      hw = new cHardwareSMT(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareSMT(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      hw = new cHardwareTransSMT(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareTransSMT(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      hw = new cHardwareExperimental(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareExperimental(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_GX:
-      hw = new cHardwareGX(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareGX(ctx, m_world, org, inst_set);
       break;
     default:
-      cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);
+      cDriverManager::Status().SignalError("unknown/unsupported HARDWARE_TYPE specified", -1);
       break;
   }
   
@@ -252,4 +261,15 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
   
   assert(hw != 0);
   return hw;
+}
+
+bool cHardwareManager::RegisterInstSet(const cString& name, cInstSet* inst_set)
+{
+  if (m_is_name_map.HasEntry(name)) return false;
+  
+  int inst_set_id = m_inst_sets.GetSize();
+  m_inst_sets.Push(inst_set);
+  m_is_name_map.Set(name, inst_set_id);  
+  
+  return true;
 }

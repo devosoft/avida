@@ -344,13 +344,13 @@ void cView::ExtractCreature()
   cBioGroup* cur_gen = info.GetActiveGenotype();
   cString gen_name = cur_gen->GetProperty("name").AsString();
 
-  cMetaGenome mg = cMetaGenome(cur_gen->GetProperty("genome").AsString());
+  cGenome mg = cGenome(cur_gen->GetProperty("genome").AsString());
   if (gen_name == "(no name)") gen_name.Set("%03d-unnamed", mg.GetSize());
 
   if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", static_cast<const char*>(gen_name));
 
   cTestCPU* testcpu = info.GetWorld().GetHardwareManager().CreateTestCPU();
-  testcpu->PrintGenome(info.GetWorld().GetDefaultContext(), mg.GetGenome(), gen_name);
+  testcpu->PrintGenome(info.GetWorld().GetDefaultContext(), mg, gen_name);
   delete testcpu;
 
   if (cur_screen) {

@@ -113,7 +113,7 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("Return", &cHardwareTransSMT::Inst_Return), // 44
     tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 23
     tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 23
-
+    
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
 	
@@ -136,15 +136,14 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism,
-                                     cInstSet* in_inst_set, int inst_set_id)
-: cHardwareBase(world, in_organism, in_inst_set, inst_set_id), m_mem_array(1)
+cHardwareTransSMT::cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+: cHardwareBase(world, in_organism, in_inst_set), m_mem_array(1)
 , m_mem_lbls(Pow(NUM_NOPS, MAX_MEMSPACE_LABEL) / MEM_LBLS_HASH_FACTOR)
 , m_thread_lbls(Pow(NUM_NOPS, MAX_THREAD_LABEL) / THREAD_LBLS_HASH_FACTOR)
 {
   m_functions = s_inst_slib->GetFunctions();
 	
-  m_mem_array[0] = in_organism->GetGenome();  // Initialize memory...
+  m_mem_array[0] = in_organism->GetGenome().GetSequence();  // Initialize memory...
   m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
   m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
   Reset(ctx);                            // Setup the rest of the hardware...
@@ -241,7 +240,7 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     if(m_threads[m_cur_thread].skipExecution)
       m_cur_thread++;
-	    
+    
     if (!ThreadIsRunning()) continue;
     
     AdvanceIP() = true;
@@ -456,7 +455,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
-                                         const cGenome& search_genome, int pos)
+                                         const cSequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -537,7 +536,7 @@ int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Backward(const cCodeLabel & search_label,
-                                          const cGenome & search_genome, int pos)
+                                          const cSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -679,7 +678,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
   }
 	
   // reset the memory space that was injected
-  m_mem_array[mem_space_used] = cGenome("a"); 
+  m_mem_array[mem_space_used] = cSequence("a"); 
 	
   if (m_world->GetConfig().INJECT_METHOD.Get() == INJECT_METHOD_SPLIT) {
     for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
@@ -694,7 +693,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 
 bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
 {
-  assert(bu->GetMetaGenome().GetHardwareType() == GetType() && bu->GetMetaGenome().GetInstSetID() == GetInstSetID());
+  assert(bu->GetGenome().GetHardwareType() == GetType() && bu->GetGenome().GetInstSet() == m_inst_set->GetInstSetName());
   
   cCodeLabel label;
   label.ReadString(bu->GetUnitSourceArgs());
@@ -720,7 +719,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
   // Create the memory space and copy in the parasite
   int mem_space = FindMemorySpaceLabel(label, -1);
   assert(mem_space != -1);
-  m_mem_array[mem_space] = bu->GetMetaGenome().GetGenome();
+  m_mem_array[mem_space] = bu->GetGenome().GetSequence();
   
   // Setup the thread
   m_threads[thread_id].Reset(this, mem_space);
@@ -880,10 +879,10 @@ inline int cHardwareTransSMT::FindModifiedHead(int default_head)
   }
   
   if (default_head > 240)
-	cout << "uh oh!" << endl;
-
+    cout << "uh oh!" << endl;
+  
   return default_head;
-
+  
 }
 
 inline int cHardwareTransSMT::FindNextStack(int default_stack)
@@ -987,9 +986,9 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   
   // Since the divide will now succeed, set up the information to be sent to the new organism
   m_mem_array[mem_space_used].Resize(write_head_pos);
-  m_organism->OffspringGenome().SetGenome(m_mem_array[mem_space_used]);
+  m_organism->OffspringGenome().SetSequence(m_mem_array[mem_space_used]);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
 	
   // Handle Divide Mutations...
   Divide_DoMutations(ctx, mut_multiplier);
@@ -1009,7 +1008,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   bool parent_alive = m_organism->ActivateDivide(ctx);
 	
   //reset the memory of the memory space that has been divided off
-  m_mem_array[mem_space_used] = cGenome("a"); 
+  m_mem_array[mem_space_used] = cSequence("a"); 
 	
   // Division Methods:
   // 0 - DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
@@ -1026,8 +1025,8 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
         // Reset only the calling thread's state
         for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
         for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
-		if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
-			m_organism->GetPhenotype().ResetMerit(m_organism->GetGenome());
+        if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+          m_organism->GetPhenotype().ResetMerit(m_organism->GetGenome().GetSequence());
         break;
         
       case DIVIDE_METHOD_OFFSPRING:
@@ -1220,7 +1219,7 @@ bool cHardwareTransSMT::Inst_HeadRead(cAvidaContext& ctx)
   } else {
     read_inst = GetHead(head_id).GetInst().GetOp();
   }
-
+  
   //read_inst = GetHead(head_id).GetInst().GetOp();
   Stack(dst).Push(read_inst);
   ReadInst(read_inst);
@@ -1630,20 +1629,20 @@ bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
   bool toReturn =  Divide_Main(ctx);
   if(toReturn)
     return toReturn;
-
+  
 	//internalReset();
   
   m_organism->GetPhenotype().DivideFailed();
-		
+  
   const int mem_space_used = GetHead(nHardware::HEAD_WRITE).GetMemSpace();
-		
+  
   if (m_mem_array.GetSize() <= mem_space_used) return false;
-		
-  m_mem_array[mem_space_used] = cGenome("a"); 
-		
+  
+  m_mem_array[mem_space_used] = cSequence("a"); 
+  
   for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
   //for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
-	     
+  
   return toReturn;
   
 }

@@ -28,9 +28,9 @@
 #include "cTestCPU.h"
 
 
-bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome)
+bool cTestCPUInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome)
 {
-  parent->GetPhenotype().TestDivideReset(parent->GetGenome());
+  parent->GetPhenotype().TestDivideReset(parent->GetGenome().GetSequence());
   // @CAO in the future, we probably want to pass this offspring the test_cpu!
   return true;
 }
@@ -122,7 +122,7 @@ int cTestCPUInterface::BuyValue(const int label, const int buy_price)
 	return m_testcpu->GetReceiveValue();
 }
 
-bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code)
+bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code)
 {
   return false;
 }

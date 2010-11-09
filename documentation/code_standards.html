@@ -196,17 +196,9 @@ int Function ( );
 </pre>
 </li>
 <li>
-  Include statements in header files (<kbd>.h</kbd>) <em>must</em> check for
-  previously defined include guards.  Example:
-<pre>
-#ifndef cPopulation_h
-#include cPopulation_h
-#endif
-</pre>
-</li>
-<li>
-  Include statements in implementation files (<kbd>.cc</kbd>) must
-  <strong>not</strong> check include guards.
+  Include statements in header (<kbd>.h</kbd>) and implementation (<kbd>.cc</kbd>) files must
+  <strong>not</strong> check include guards (no <kbd>#ifndef</kbd> blocks).  This compile time
+  optimization is to be left for the compiler to perform.
 </li>
 </ul>
 

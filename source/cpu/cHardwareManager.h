@@ -31,7 +31,7 @@
 class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
-class cMetaGenome;
+class cGenome;
 class cOrganism;
 class cStringList;
 class cWorld;
@@ -59,19 +59,32 @@ public:
   bool LoadInstSets(tList<cString>* errors = NULL);
   bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, tList<cString>* errors = NULL);
   
-  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is = NULL);
+  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
-  const cInstSet& GetInstSet() const { return *m_inst_sets[0]; }
-  cInstSet& GetInstSet() { return *m_inst_sets[0]; }
-
-  const cInstSet& GetInstSet(int isid) const { return *m_inst_sets[isid]; }
-  cInstSet& GetInstSet(int isid) { return *m_inst_sets[isid]; }
+  inline const cInstSet& GetInstSet(const cString& name) const;
+  inline cInstSet& GetInstSet(const cString& name);
+  const cInstSet& GetInstSet(int i) const { return *m_inst_sets[i]; }
+  
+  const cInstSet& GetDefaultInstSet() const { return *m_inst_sets[0]; }
   
   int GetNumInstSets() const { return m_inst_sets.GetSize(); }
+  
+  bool RegisterInstSet(const cString& name, cInstSet* inst_set);
   
 private:
   bool loadInstSet(int hw_type, const cString& name, cStringList& sl, tList<cString>* errors);
 };
+
+
+inline const cInstSet& cHardwareManager::GetInstSet(const cString& name) const
+{
+  return (name == "(default)") ? *m_inst_sets[0] : *m_inst_sets[m_is_name_map.Get(name)];
+}
+
+inline cInstSet& cHardwareManager::GetInstSet(const cString& name)
+{
+  return (name == "(default)") ? *m_inst_sets[0] : *m_inst_sets[m_is_name_map.Get(name)];
+}
 
 #endif

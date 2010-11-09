@@ -30,7 +30,6 @@
 #include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
-#include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
@@ -608,7 +607,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("mark-cell-with-id", &cHardwareCPU::Inst_MarkCellWithID),
     tInstLibEntry<tMethod>("mark-cell-with-vitality", &cHardwareCPU::Inst_MarkCellWithVitality),
     tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
-
+    
 		
 		// Synchronization
     tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
@@ -662,8 +661,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		// Division of labor instructions
 		tInstLibEntry<tMethod>("get-age", &cHardwareCPU::Inst_GetTimeUsed, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("donate-res-to-deme", &cHardwareCPU::Inst_DonateResToDeme, nInstFlag::STALL),
-
-
+    
+    
     // Must always be the last instruction in the array
     tInstLibEntry<tMethod>("NULL", &cHardwareCPU::Inst_Nop, 0, "True no-operation instruction: does nothing"),
   };
@@ -687,8 +686,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
 
-cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id)
-: cHardwareBase(world, in_organism, in_inst_set, inst_set_id)
+cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set)
+: cHardwareBase(world, in_organism, in_inst_set)
 , m_last_cell_data(false, 0)
 {
   m_functions = s_inst_slib->GetFunctions();
@@ -704,7 +703,7 @@ cHardwareCPU::cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
   
   m_slip_read_head = !m_world->GetConfig().SLIP_COPY_MODE.Get();
   
-  m_memory = in_organism->GetGenome();  // Initialize memory...
+  m_memory = in_organism->GetGenome().GetSequence();  // Initialize memory...
   Reset(ctx);                            // Setup the rest of the hardware...
 }
 
@@ -737,7 +736,7 @@ void cHardwareCPU::internalReset()
   if (m_world->GetConfig().PROMOTERS_ENABLED.Get())
   {
     // Ideally, this shouldn't be hard-coded
-    cInstruction promoter_inst = m_world->GetHardwareManager().GetInstSet().GetInst(cStringUtil::Stringf("promoter"));
+    cInstruction promoter_inst = m_inst_set->GetInst("promoter");
     
     m_promoter_index = -1; // Meaning the last promoter was nothing
     m_promoter_offset = 0;
@@ -1130,7 +1129,7 @@ cHeadCPU cHardwareCPU::FindLabel(int direction)
 // to find search label's match inside another label.
 
 int cHardwareCPU::FindLabel_Forward(const cCodeLabel & search_label,
-                                    const cGenome & search_genome, int pos)
+                                    const cSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
   
@@ -1212,7 +1211,7 @@ int cHardwareCPU::FindLabel_Forward(const cCodeLabel & search_label,
 // to find search label's match inside another label.
 
 int cHardwareCPU::FindLabel_Backward(const cCodeLabel & search_label,
-                                     const cGenome & search_genome, int pos)
+                                     const cSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
   
@@ -1432,10 +1431,10 @@ bool cHardwareCPU::InterruptThread(int interruptType) {
     // interrupt stuff
     const int num_threads = m_threads.GetSize()-1;
     m_threads[num_threads].setMessageTriggerType(interruptMsgType);
-
+    
     int old_thread = m_cur_thread;
     m_cur_thread = num_threads;    
-
+    
     // move all heads to one past beginning of interrupt
     for(int i = 0; i < NUM_HEADS; i++) {
       GetHead(i).Set(search_head.GetPosition());
@@ -1655,13 +1654,13 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
 	
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   
   // Make sure it is an exact copy at this point (before divide mutations) if required
-  if (m_world->GetConfig().REQUIRE_EXACT_COPY.Get() && (m_organism->GetGenome() != child_genome) ) {
+  if (m_world->GetConfig().REQUIRE_EXACT_COPY.Get() && (m_organism->GetGenome().GetSequence() != child_genome) ) {
     return false;
   }
   
@@ -1725,10 +1724,10 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1818,10 +1817,10 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -1911,10 +1910,10 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
-  child_genome = cGenomeUtil::Crop(m_memory, div_point, div_point+child_size);
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  child_genome = m_memory.Crop(div_point, div_point + child_size);
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   
   // Cut off everything in this memory past the divide point.
   m_memory.Resize(div_point);
@@ -3156,7 +3155,7 @@ void cHardwareCPU::Divide_DoTransposons(cAvidaContext& ctx)
   if (!transposon_in_use) return;
   
   static cInstruction transposon_inst = GetInstSet().GetInst(cStringUtil::Stringf("transposon"));
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   
   // Count the number of transposons that are marked as executed
   int tr_count = 0;
@@ -3195,12 +3194,12 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   if (m_organism->GetPhenotype().GetCurBonus() < m_world->GetConfig().REQUIRED_BONUS.Get()) return false;
   
   // Setup child
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
-  child_genome = m_organism->GetGenome();
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  child_genome = m_organism->GetGenome().GetSequence();
   
   
   m_organism->OffspringGenome().SetHardwareType(GetType());
-  m_organism->OffspringGenome().SetInstSetID(GetInstSetID());
+  m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   
   // Do transposon movement and copying before other mutations
   Divide_DoTransposons(ctx);
@@ -3859,7 +3858,7 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
 
 bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin)
 {
- 
+  
   // Set up res_change and max total
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
   tArray<double> res_change(res_count.GetSize());
@@ -4239,14 +4238,15 @@ bool cHardwareCPU::Inst_DonateEditDist(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       int edit_dist = max_dist + 1;
       if (neighbor != NULL) {
-        edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),
-                                                  neighbor->GetGenome());
+        edit_dist = cSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+                                                neighbor->GetGenome().GetSequence());
       }
       if (edit_dist <= max_dist) {
         found = true;
 				
 				// Code to track the edit distance between edt donors and recipients
-				const int edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),neighbor->GetGenome());
+				const int edit_dist = cSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+                                                          neighbor->GetGenome().GetSequence());
 				
 				/*static ofstream edit_file("edit_dists.dat");*/
 				static int num_edit_donates = 0;
@@ -4326,7 +4326,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 		
 		//if neighbor exists, do they have the green beard gene?
 		if (neighbor != NULL) {
-			const cGenome & neighbor_genome = neighbor->GetGenome();
+			const cSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
 			
 			// for each instruction in the genome...
 			for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -4380,14 +4380,12 @@ bool cHardwareCPU::Inst_DonateShadedGreenBeard(cAvidaContext& ctx)
 	
 	// Identify how many shaded green beard donations this organisms made
 	// First figure out what number instruction donate-shadedgb is
-	cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
-	const int num_inst = m_world->GetNumInstructions();
+	const int num_inst = m_inst_set->GetSize();
 	int shade_of_gb = 0;
 	int neighbor_shade_of_gb = 0;
 	int inst_number = 0;
 	for (int i = 0; i < num_inst; i++) { 
-		if ((inst_set.GetName(i) == "donate-shadedgb") && 
-				(phenotype.GetTestCPUInstCount().GetSize() > 0)) {
+		if ((m_inst_set->GetName(i) == "donate-shadedgb") && (phenotype.GetTestCPUInstCount().GetSize() > 0)) {
 			shade_of_gb = phenotype.GetTestCPUInstCount()[i];
 			inst_number = i;
 		}
@@ -4434,7 +4432,8 @@ bool cHardwareCPU::Inst_DonateShadedGreenBeard(cAvidaContext& ctx)
 			if (neighbor_shade_of_gb ==  shade_of_gb) {
 				
 				// Code to track the edit distance between shaded donors and recipients
-				const int edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),neighbor->GetGenome());
+				const int edit_dist = cSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+                                                          neighbor->GetGenome().GetSequence());
 				
 				/*static ofstream gb_file("shaded_gb_dists.dat");*/
 				static int num_gb_donates = 0;
@@ -4510,11 +4509,10 @@ bool cHardwareCPU::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
   const int num_neighbors = m_organism->GetNeighborhoodSize();
 	
 	// Get greenbeard instruction number
-	cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
-	const int num_inst = m_world->GetNumInstructions();
+	const int num_inst = m_inst_set->GetSize();
 	int inst_number = 0;
 	for (int i = 0; i < num_inst; i++) { 
-		if (inst_set.GetName(i) == "donate-tgb") {
+		if (m_inst_set->GetName(i) == "donate-tgb") {
 			inst_number = i;
 		}
 	}
@@ -4583,13 +4581,11 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 	
 	// Identify how many thresh green beard donations this organisms made
 	// First figure out what number instruction donate-threshgb is	
-	cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet();
-	const int num_inst = m_world->GetNumInstructions();
-	int neighbor_thresh_of_gb = 0;
+	const int num_inst = m_inst_set->GetSize();
+  int neighbor_thresh_of_gb = 0;
 	int inst_number = 0;
 	for (int i = 0; i < num_inst; i++) { 
-		if ((inst_set.GetName(i) == "donate-threshgb") && 
-				(phenotype.GetTestCPUInstCount().GetSize() > 0)) {
+		if ((m_inst_set->GetName(i) == "donate-threshgb") && (phenotype.GetTestCPUInstCount().GetSize() > 0)) {
 			inst_number = i;
 		}
 	}
@@ -4622,10 +4618,11 @@ bool cHardwareCPU::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
 			}
 			
 			if (neighbor_thresh_of_gb >= m_world->GetConfig().MIN_GB_DONATE_THRESHOLD.Get() ) {
-				const cGenome & neighbor_genome = neighbor->GetGenome();
+				const cSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
 				
 				// Code to track the edit distance between tgb donors and recipients
-				const int edit_dist = cGenomeUtil::FindEditDistance(m_organism->GetGenome(),neighbor->GetGenome());
+				const int edit_dist = cSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+                                                          neighbor->GetGenome().GetSequence());
 				
 				/*static ofstream tgb_file("thresh_gb_dists.dat");*/
 				static int num_tgb_donates = 0;
@@ -4743,7 +4740,7 @@ bool cHardwareCPU::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
 		if (neighbor != NULL &&
 				neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() >= quanta_donate_thresh) {
 			
-			const cGenome & neighbor_genome = neighbor->GetGenome();
+			const cSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
 			
 			// for each instruction in the genome...
 			for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -4788,7 +4785,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
 {
   // This instruction donates to organisms that have a matching instruction
   // at the same position in their genome AND their parents excuted it.
-
+  
   cPhenotype & phenotype = m_organism->GetPhenotype();
 	
   if (phenotype.GetCurNumDonates() > m_world->GetConfig().MAX_DONATES.Get()) {
@@ -4796,7 +4793,7 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
   }
 	
   int donate_locus = getIP().GetPosition();
-
+  
   phenotype.IncDonates();
   phenotype.SetIsDonorPosition(donate_locus);
   phenotype.IncNumGreenBeardSameLocus();
@@ -4821,11 +4818,11 @@ bool cHardwareCPU::Inst_DonateGreenBeardSameLocus(cAvidaContext& ctx)
     neighbor = m_organism->GetNeighbor();
     // If neighbor exists, AND if their parent attempted to donate at this position.
     if (neighbor != NULL && neighbor->GetPhenotype().IsDonorPositionLast(donate_locus)) {
-      const cGenome & neighbor_genome = neighbor->GetGenome();
+      const cSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
       // See if this organism has a donate at the correct position.
       if (neighbor_genome.GetSize() > donate_locus && neighbor_genome[donate_locus] == getIP().GetInst()) {
-	found = true;
-	break;
+        found = true;
+        break;
       }
     }
 		
@@ -7612,7 +7609,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   tArray<double> cell_resources;
   
   if ( (m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get() >= 0) &&
-     (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
+      (m_world->GetRandom().P(m_world->GetConfig().EXPLOIT_EXPLORE_PROB.Get())) ) {
     num_rotations = ctx.GetRandom().GetUInt(m_organism->GetNeighborhoodSize());
   } else {
     // Find which neighbor has the strongest pheromone
@@ -7641,7 +7638,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
   for (int i = 0; i < num_rotations; i++) mycell.ConnectionList().CircNext();
   
   m_organism->Move(ctx);
-
+  
   return true;
 } //End Inst_Exploit()
 
@@ -7707,7 +7704,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
   }
   
   m_organism->Move(ctx);
-
+  
   return true;
 } //End Inst_ExploitForward5()
 
@@ -7838,7 +7835,7 @@ bool cHardwareCPU::Inst_MoveTarget(cAvidaContext& ctx)
   for(int i = 0; i < num_rotations; i++) {
     mycell.ConnectionList().CircNext();
   }
-
+  
   m_organism->Move(ctx);
   
   return true;
@@ -7947,7 +7944,7 @@ bool cHardwareCPU::Inst_MoveTargetForward3(cAvidaContext& ctx)
   for(int i = 0; i < num_rotations; i++) {
     mycell.ConnectionList().CircNext();
   }
-
+  
   m_organism->Move(ctx);
   
   return true;  

@@ -28,8 +28,8 @@
 #ifndef cMerit_h
 #include "cMerit.h"
 #endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
+#ifndef cGenome_h
+#include "cGenome.h"
 #endif
 
 class cBioGroup;
@@ -38,7 +38,7 @@ class cBioGroup;
 class cBirthEntry
 {
 public:
-  cMetaGenome genome;
+  cGenome genome;
   double energy4Offspring;
   cMerit merit;
   int timestamp; // -1 if empty

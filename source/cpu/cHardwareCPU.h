@@ -200,8 +200,8 @@ protected:
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
+  int FindLabel_Forward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -260,7 +260,7 @@ protected:
   cHardwareCPU& operator=(const cHardwareCPU&); // @not_implemented
 
 public:
-  cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
+  cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareCPU() { ; }
   
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }

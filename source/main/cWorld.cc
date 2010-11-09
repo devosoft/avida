@@ -96,6 +96,20 @@ bool cWorld::setup(tList<cString>* errors)
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
   
+  
+  // Initialize the default environment...
+  // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
+    if (errors) errors->PushRear(new cString("unable to load environment"));
+    success = false;
+  }
+  
+  
+  // Setup Stats Object
+  m_stats = new cStats(this);
+  m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
+
+  
   // Initialize the hardware manager, loading all of the instruction sets
   m_hw_mgr = new cHardwareManager(this);
   if (m_conf->INST_SET_LOAD_LEGACY.Get()) {
@@ -107,21 +121,7 @@ bool cWorld::setup(tList<cString>* errors)
     success = false;
   }
   
-  // Initialize the default environment...
-  // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
-  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
-    if (errors) errors->PushRear(new cString("unable to load environment"));
-    success = false;
-  }
-  
-  // Setup Stats Object
-  m_stats = new cStats(this);
-  m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
     
-  const cInstSet& inst_set = m_hw_mgr->GetInstSet();
-  for (int i = 0; i < inst_set.GetSize(); i++)
-    m_stats->SetInstName(i, inst_set.GetName(i));
-  
   // @MRR CClade Tracking
 //	if (m_conf->TRACK_CCLADES.Get() > 0)
 //		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
@@ -142,7 +142,7 @@ bool cWorld::setup(tList<cString>* errors)
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 
   m_pop = new cPopulation(this);
-  m_pop->InitiatePop();
+  if (!m_pop->InitiatePop(errors)) success = false;
   
   // Setup Event List
   m_event_list = new cEventList(this);
@@ -169,30 +169,11 @@ void cWorld::GetEvents(cAvidaContext& ctx)
   m_event_list->Process(ctx);
 }
 
-int cWorld::GetNumInstructions()
-{
-  return m_hw_mgr->GetInstSet().GetSize();
-}
-
 int cWorld::GetNumResources()
 {
   return m_env->GetResourceLib().GetSize();
 }
 
-// Given number of resources and number of nops, how many possible collect-type resource specifications exist?
-// If no nops or no resources, return 0
-int cWorld::GetNumResourceSpecs()
-{
-  int num_resources = GetEnvironment().GetResourceLib().GetSize();
-  int num_nops = GetHardwareManager().GetInstSet().GetNumNops();
-  
-  if (num_resources <= 0 || num_nops <= 0) { return 0; }
-  
-  double most_nops_needed = ceil(log((double)num_resources)/log((double)num_nops));
-  double numerator = pow((double)num_nops, most_nops_needed + 1) - 1;
-  double denominator = (double)(num_nops - 1);
-  return (int)(numerator / denominator);
-}
 
 void cWorld::SetDriver(cWorldDriver* driver, bool take_ownership)
 {

@@ -33,9 +33,7 @@
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cEnvReqs.h"
-#include "cHardwareManager.h"
 #include "cInitFile.h"
-#include "cInstSet.h"
 #include "nMutation.h"
 #include "cPhenPlastUtil.h"
 #include "cPopulation.h"
@@ -223,7 +221,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc)
       new_process->SetConversion(var_value.AsDouble());
     }
     else if (var_name == "inst") {
-      new_process->SetInstID( m_world->GetHardwareManager().GetInstSet().GetInst(var_value).GetOp() );
+      new_process->SetInst(var_value);
     }
     else if (var_name == "lethal") {
       if (!AssertInputDouble(var_value, "lethal", var_type)) 
@@ -1297,7 +1295,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
 			if(cellid != -1) { // can't do this in the test cpu
 				cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
 				if(cell.CountGenomeFragments() > 0) {
-					cGenome fragment = cell.PopGenomeFragment();
+					cSequence fragment = cell.PopGenomeFragment();
 					consumed = local_task_quality * fragment.GetSize();
 					result.Consume(in_resource->GetID(), fragment.GetSize(), true);
 					m_world->GetStats().GenomeFragmentMetabolized(taskctx.GetOrganism(), fragment);
@@ -1469,10 +1467,8 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     }
     
     // Determine what instructions should be run...
-    const int inst_id = cur_process->GetInstID();
-    if (inst_id >= 0) {
-      result.AddInst(inst_id);
-    }
+    const cString& inst = cur_process->GetInst();
+    if (inst != "") result.AddInst(inst);
     
 		double prob_lethal = cur_process->GetLethal();
 		bool lethal = false;
@@ -1555,7 +1551,7 @@ bool cEnvironment::SetReactionInst(const cString& name, cString inst_name)
 {
   cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
-  found_reaction->ModifyInst( m_world->GetHardwareManager().GetInstSet().GetInst(inst_name).GetOp() );
+  found_reaction->ModifyInst(inst_name);
   return true;
 }
 

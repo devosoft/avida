@@ -2,9 +2,8 @@
  *  cGenome.h
  *  Avida
  *
- *  Called "genome.hh" prior to 12/2/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
- *  Copyright 1993-2003 California Institute of Technology.
+ *  Created by David Bryson on 3/29/09.
+ *  Copyright 2009-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -26,73 +25,53 @@
 #ifndef cGenome_h
 #define cGenome_h
 
-#include <cassert>
-
-#ifndef cInstruction_h
-#include "cInstruction.h"
-#endif
-#ifndef cMutationSteps_h
-#include "cMutationSteps.h"
-#endif
-#ifndef cString_h
+#include "cSequence.h"
 #include "cString.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
 
-/**
- * This class stores the genome of an Avida organism.  Note that once created,
- * a genome should not be modified; only the corresponding memory should be,
- * before creating the genome.  Keeping genome light-weight...
- **/
+class cDataFile;
+class cHardwareManager;
+template <typename T> class tDictionary;
+template <typename T> class tList;
+
+
 class cGenome
 {
-protected:
-  tArray<cInstruction> m_genome;
-  int m_active_size;
-  cMutationSteps m_mutation_steps;
+private:
+  int m_hw_type;
+  cString m_inst_set;
+  cSequence m_seq;
+ 
   
-  
-  virtual void adjustCapacity(int new_size);
-  virtual void prepareInsert(int pos, int num_sites);
-  
-
 public:
-  cGenome() { ; }                                   //! Default constructor
-  explicit cGenome(int _size);                      //! Constructor that builds a 'blank' cGenome of the specified size
-  cGenome(const cGenome& in_genome);                //! Copy constructor
-  cGenome(const cString& in_string);                //! Constructor that builds genome from a string
-  cGenome(const cInstruction* begin, const cInstruction* end);  //! Constructor that builds genome from a range of instructions  
-  virtual ~cGenome();                               //! Virtual destructor; there are subclasses.
-
-  inline int GetSize() const { return m_active_size; }
+  cGenome() : m_hw_type(-1), m_inst_set("(default)") { ; }
+  cGenome(int hw, const cString& is, const cSequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
+  explicit cGenome(const cString& seq_str);
+  cGenome(const cGenome& gen) : m_hw_type(gen.m_hw_type), m_inst_set(gen.m_inst_set), m_seq(gen.m_seq) { ; }
+  
+  inline int GetHardwareType() const { return m_hw_type; }
+  inline const cString& GetInstSet() const { return m_inst_set; }
+  inline const cSequence& GetSequence() const { return m_seq; }
+  inline cSequence& GetSequence() { return m_seq; }
+  
+  inline int GetSize() const { return m_seq.GetSize(); }
+  
+  inline void SetHardwareType(int type) { m_hw_type = type; }
+  inline void SetInstSet(const cString& is) { m_inst_set = is; }
+  inline void SetSequence(const cSequence& seq) { m_seq = seq; }
+  
   cString AsString() const;
   
-  inline cMutationSteps& GetMutationSteps() { return m_mutation_steps; }
-  inline const cMutationSteps& GetMutationSteps() const { return m_mutation_steps; }
+  bool operator==(const cGenome& gen) const
+    { return (m_hw_type == gen.m_hw_type && m_inst_set == gen.m_inst_set && m_seq == gen.m_seq); }
+  cGenome& operator=(const cGenome& gen)
+    { m_hw_type = gen.m_hw_type; m_inst_set = gen.m_inst_set; m_seq = gen.m_seq; return *this; }
+
+  void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
+  void Save(cDataFile& df);
   
-  inline cInstruction& operator[](int idx) { assert(idx >= 0 && idx < m_active_size);  return m_genome[idx]; }
-  inline const cInstruction& operator[](int idx) const { assert(idx >= 0 && idx < m_active_size);  return m_genome[idx]; }
-
-  virtual void Resize(int new_size);
-  virtual void Copy(int to, int from);
-  virtual void Insert(int pos, const cInstruction& inst);
-  virtual void Insert(int pos, const cGenome& genome);
-  virtual void Remove(int pos, int num_sites = 1);
-  virtual void Replace(int pos, int num_sites, const cGenome& genome);
-	//! Replace [begin, end) instructions in this genome with g, respecting genome circularity.
-	virtual void Replace(const cGenome& g, int begin, int end);
-	//! Rotate this genome forward n instructions.
-	virtual void Rotate(int n);
-
-  inline void Append(const cInstruction& in_inst) { Insert(GetSize(), in_inst); }
-  inline void Append(const cGenome& in_genome) { Insert(GetSize(), in_genome); }
-
-  virtual void operator=(const cGenome& other_genome);
-  virtual bool operator==(const cGenome& other_genome) const;
-  virtual bool operator!=(const cGenome& other_genome) const { return !(this->operator==(other_genome)); }
-  virtual bool operator<(const cGenome& other_genome) const { return AsString() < other_genome.AsString(); }
+  bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, tList<cString>* errors = NULL);
+  void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
 };
+
 
 #endif
