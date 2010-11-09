@@ -350,7 +350,7 @@ void cView::ExtractCreature()
   if (cur_screen) cur_screen->Print(20, 0, "Extracting %s...", static_cast<const char*>(gen_name));
 
   cTestCPU* testcpu = info.GetWorld().GetHardwareManager().CreateTestCPU();
-  testcpu->PrintGenome(info.GetWorld().GetDefaultContext(), mg.GetSequence(), gen_name);
+  testcpu->PrintGenome(info.GetWorld().GetDefaultContext(), mg, gen_name);
   delete testcpu;
 
   if (cur_screen) {

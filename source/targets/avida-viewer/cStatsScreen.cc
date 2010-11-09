@@ -103,7 +103,6 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   Print(9,  13, "%5d", stats.GetNumCreatures());
   Print(10, 13, "%5d", stats.GetNumGenotypes());
   Print(11, 13, "%5d", stats.GetNumThreshold());
-  Print(12, 13, "%5d", stats.GetNumSpecies());
 
   Print(2, 37, "%s",  static_cast<const char*>(best_gen->GetProperty("name").AsString()));
   Print(3, 37, "%9d", best_gen->GetID());
@@ -112,12 +111,10 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   PrintDouble(9,  20, (double) stats.GetTotCreatures());
   PrintDouble(10, 20, (double) stats.GetTotGenotypes());
   PrintDouble(11, 20, (double) stats.GetTotThreshold());
-  PrintDouble(12, 20, (double) stats.GetTotSpecies());
 
   PrintDouble(9,  29, stats.GetAveCreatureAge());
   PrintDouble(10, 29, stats.GetAveGenotypeAge());
   PrintDouble(11, 29, stats.GetAveThresholdAge());
-  PrintDouble(12, 29, stats.GetAveSpeciesAge());
 
   PrintDouble(9,  38, log((double) stats.GetNumCreatures()));
   PrintDouble(10, 38, stats.GetEntropy());
