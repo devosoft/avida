@@ -304,10 +304,10 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHStep(), res->GetRStep(),
                            res->GetCStepX(), res->GetCStepY(),
                            res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
-                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),  
+                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
+                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),
                            res->GetGradient()
                            ); //JW
-
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
       deme_res_index++;
@@ -5698,9 +5698,10 @@ void cPopulation::UpdateResourceCount(const int Verbosity) {
                            res->GetCStepX(), res->GetCStepY(),
                            res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
+                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),
                            res->GetGradient()
                            ); //JW
-      m_world->GetStats().SetResourceName(global_res_index, res->GetName());
+      cerr << res->GetMaxX() << " " << res->GetMinX() << endl;
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {

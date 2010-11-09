@@ -108,6 +108,11 @@ private:
   double m_spread;    
   double m_plateau;
   int m_decay;
+  int m_max_x;
+  int m_max_y;
+  int m_min_x;
+  int m_min_y;
+  double m_move_a_scaler;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;  
@@ -164,6 +169,11 @@ public:
   double GetSpread() { return m_spread; }
   double GetPlateau() { return m_plateau; }
   int GetDecay() { return m_decay; }
+  int GetMaxX() { return m_max_x; }
+  int GetMaxY() { return m_max_y; }
+  int GetMinX() { return m_min_x; }
+  int GetMinY() { return m_min_y; }
+  double GetAscaler() { return m_move_a_scaler; }
   bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
@@ -212,6 +222,11 @@ public:
   void SetSpread(double _spread) { m_spread = _spread; }
   void SetPlateau(double _plateau) { m_plateau = _plateau; }
   void SetDecay(int _decay) { m_decay = _decay; }
+  void SetMaxX(int _max_x) { m_max_x = _max_x; }
+  void SetMaxY(int _max_y) { m_max_y = _max_y; }
+  void SetMinX(int _min_x) { m_min_x = _min_x; }
+  void SetMinY(int _min_y) { m_min_y = _min_y; }
+  void SetAscaler(double _move_a_scaler) { m_move_a_scaler = _move_a_scaler; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);

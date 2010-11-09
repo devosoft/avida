@@ -221,6 +221,7 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
 				const double& in_cstepx, const double& in_cstepy,
 				const int& in_updatestep, const int& in_peakx, const int& in_peaky,
 				const double& in_height, const double& in_spread, const double& in_plateau, const int& in_decay, 
+        const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
         const bool& isgradient
 				)
 {
@@ -308,7 +309,9 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
     
     else if(isgradient){
       delete spatial_resource_count[id];
-      spatial_resource_count[id] = new cGradientCount(in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay, in_updatestep, tempx, tempy, in_geometry);
+      spatial_resource_count[id] = new cGradientCount(in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay, 
+                                                      in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
+                                                      tempx, tempy, in_geometry);
       spatial_resource_count[id]->RateAll(0);
     }
     

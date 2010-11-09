@@ -869,8 +869,28 @@ bool cEnvironment::LoadGradientResource(cString desc) //JW
         if (!AssertInputInt(var_value, "decay", var_type)) return false;
         new_resource->SetDecay( var_value.AsInt() );
       }
+      else if (var_name == "max_x") {
+        if (!AssertInputInt(var_value, "max_x", var_type)) return false;
+        new_resource->SetMaxX( var_value.AsInt() );
+      }
+      else if (var_name == "max_y") {
+        if (!AssertInputInt(var_value, "max_y", var_type)) return false;
+        new_resource->SetMaxY( var_value.AsInt() );
+      }
+      else if (var_name == "min_x") {
+        if (!AssertInputInt(var_value, "min_x", var_type)) return false;
+        new_resource->SetMinX( var_value.AsInt() );
+      }
+      else if (var_name == "min_y") {
+        if (!AssertInputInt(var_value, "min_y", var_type)) return false;
+        new_resource->SetMinY( var_value.AsInt() );
+      }
+      else if (var_name == "move_a_scaler") {
+        if (!AssertInputDouble(var_value, "move_a_scaler", var_type)) return false;
+        new_resource->SetAscaler( var_value.AsDouble() );
+      }
       else if (var_name == "updatestep") {
-        if (!AssertInputDouble(var_value, "updatestep", var_type)) return false;
+        if (!AssertInputInt(var_value, "updatestep", var_type)) return false;
         new_resource->SetUpdateStep( var_value.AsInt() );
       }
       else {
