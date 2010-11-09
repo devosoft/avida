@@ -28,7 +28,7 @@
 #include "cBioGroup.h"
 #include "cCountTracker.h"
 #include "cDoubleSum.h"
-#include "cMetaGenome.h"
+#include "cGenome.h"
 #include "cString.h"
 
 
@@ -47,7 +47,7 @@ private:
   
   eBioUnitSource m_src;
   cString m_src_args;
-  cMetaGenome m_genome;
+  cGenome m_genome;
   cString m_name;
     
   struct {
@@ -111,7 +111,7 @@ public:
   // Genotype Specific Methods
   inline const eBioUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
-  inline const cMetaGenome& GetGenome() const { return m_genome; }
+  inline const cGenome& GetGenome() const { return m_genome; }
   inline cString GetGenomeString() const { return m_genome.AsString(); }
   
   inline const cString& GetName() const { return m_name; }

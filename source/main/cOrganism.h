@@ -46,8 +46,8 @@
 #ifndef cLocalMutations_h
 #include "cLocalMutations.h"
 #endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
+#ifndef cGenome_h
+#include "cGenome.h"
 #endif
 #ifndef cMutationRates_h
 #include "cMutationRates.h"
@@ -101,7 +101,7 @@ private:
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   eBioUnitSource m_src;
   cString m_src_args;
-  const cMetaGenome m_initial_genome;         // Initial genome; can never be changed!
+  const cGenome m_initial_genome;         // Initial genome; can never be changed!
   tArray<cBioUnit*> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cLocalMutations m_mut_info;             // Info about possible mutations;
@@ -112,7 +112,7 @@ private:
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
   
 	// Other stats
-  cMetaGenome m_offspring_genome;              // Child genome, while under construction.
+  cGenome m_offspring_genome;              // Child genome, while under construction.
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -161,14 +161,14 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cMetaGenome& genome, int parent_generation,
+  cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, int parent_generation,
             eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
   
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cMetaGenome& GetGenome() const { return m_initial_genome; }
+  const cGenome& GetGenome() const { return m_initial_genome; }
   
 
   // --------  Support Methods  --------
@@ -219,7 +219,7 @@ public:
 
   int GetMaxExecuted() const { return m_max_executed; }
   
-  cMetaGenome& OffspringGenome() { return m_offspring_genome; }
+  cGenome& OffspringGenome() { return m_offspring_genome; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }

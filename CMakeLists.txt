@@ -240,11 +240,11 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDemeCellEvent.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
+  ${MAIN_DIR}/cGenome.cc
   ${MAIN_DIR}/cGenomeUtil.cc
   ${MAIN_DIR}/cInstruction.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cLocalMutations.cc
-  ${MAIN_DIR}/cMetaGenome.cc
   ${MAIN_DIR}/cMutationLib.cc
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cOrganism.cc

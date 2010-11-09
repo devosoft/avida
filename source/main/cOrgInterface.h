@@ -38,7 +38,7 @@ class cAvidaContext;
 class cBioUnit;
 class cDeme;
 class cSequence;
-class cMetaGenome;
+class cGenome;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
@@ -77,7 +77,7 @@ public:
   virtual void SetPrevSeenCellID(int in_id) = 0;
   virtual void SetPrevTaskCellID(int in_id) = 0;
 
-  virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome) = 0;
+  virtual bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome) = 0;
   
   virtual cOrganism* GetNeighbor() = 0;
   virtual bool IsNeighborCellOccupied() = 0;
@@ -130,7 +130,7 @@ public:
 	
 	virtual void DoHGTDonation(cAvidaContext& ctx) = 0;
 	virtual void DoHGTConjugation(cAvidaContext& ctx) = 0;
-	virtual void DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspring) = 0;
+	virtual void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) = 0;
 	virtual void ReceiveHGTDonation(const cSequence& fragment) = 0;
   
   virtual void Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;

@@ -103,7 +103,7 @@ bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
   return true;
 }
 
-void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring, cOrganism* parent, cBirthEntry& entry) const
+void cBirthChamber::StoreAsEntry(const cGenome& offspring, cOrganism* parent, cBirthEntry& entry) const
 {
   entry.genome = offspring;
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
@@ -180,7 +180,7 @@ void cBirthChamber::GenomeSwap(cSequence& genome0, cSequence& genome1, double& m
 }
 
 
-bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism& parent,
+bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cGenome& offspring, cOrganism& parent,
                                 tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   // This is asexual who doesn't need to wait in the birth chamber
@@ -218,7 +218,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
   return true;
 }
 
-bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const cMetaGenome& new_genome,
+bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const cGenome& new_genome,
                                     cOrganism& parent, tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   // Build both child organisms...
@@ -397,7 +397,7 @@ void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGrou
   organism->SelfClassify(pgrps);
 }
 
-bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent,
+bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent,
                                     tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   cPhenotype& parent_phenotype = parent->GetPhenotype();
@@ -422,8 +422,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     return ret;
   }
   // If we made it this far, RECOMBINATION will happen!
-  cMetaGenome genome0(old_entry->genome);
-  cMetaGenome genome1(offspring);
+  cGenome genome0(old_entry->genome);
+  cGenome genome1(offspring);
   double meritOrEnergy0;
   double meritOrEnergy1;
 

@@ -1,5 +1,5 @@
 /*
- *  cMetaGenome.h
+ *  cGenome.h
  *  Avida
  *
  *  Created by David Bryson on 3/29/09.
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef cMetaGenome_h
-#define cMetaGenome_h
+#ifndef cGenome_h
+#define cGenome_h
 
 #include "cSequence.h"
 #include "cString.h"
@@ -34,7 +34,7 @@ template <typename T> class tDictionary;
 template <typename T> class tList;
 
 
-class cMetaGenome
+class cGenome
 {
 private:
   int m_hw_type;
@@ -43,10 +43,10 @@ private:
  
   
 public:
-  cMetaGenome() : m_hw_type(-1), m_inst_set("(default)") { ; }
-  cMetaGenome(int hw, const cString& is, const cSequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
-  explicit cMetaGenome(const cString& seq_str);
-  cMetaGenome(const cMetaGenome& mg) : m_hw_type(mg.m_hw_type), m_inst_set(mg.m_inst_set), m_seq(mg.m_seq) { ; }
+  cGenome() : m_hw_type(-1), m_inst_set("(default)") { ; }
+  cGenome(int hw, const cString& is, const cSequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
+  explicit cGenome(const cString& seq_str);
+  cGenome(const cGenome& gen) : m_hw_type(gen.m_hw_type), m_inst_set(gen.m_inst_set), m_seq(gen.m_seq) { ; }
   
   inline int GetHardwareType() const { return m_hw_type; }
   inline const cString& GetInstSet() const { return m_inst_set; }
@@ -61,10 +61,10 @@ public:
   
   cString AsString() const;
   
-  bool operator==(const cMetaGenome& mg) const
-    { return (m_hw_type == mg.m_hw_type && m_inst_set == mg.m_inst_set && m_seq == mg.m_seq); }
-  cMetaGenome& operator=(const cMetaGenome& mg)
-    { m_hw_type = mg.m_hw_type; m_inst_set = mg.m_inst_set; m_seq = mg.m_seq; return *this; }
+  bool operator==(const cGenome& gen) const
+    { return (m_hw_type == gen.m_hw_type && m_inst_set == gen.m_inst_set && m_seq == gen.m_seq); }
+  cGenome& operator=(const cGenome& gen)
+    { m_hw_type = gen.m_hw_type; m_inst_set = gen.m_inst_set; m_seq = gen.m_seq; return *this; }
 
   void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
   void Save(cDataFile& df);

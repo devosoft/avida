@@ -36,7 +36,7 @@
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
-#include "cMetaGenome.h"
+#include "cGenome.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
@@ -221,7 +221,7 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 }
 
 
-cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg)
+cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg)
 {
   assert(org != NULL);
 	

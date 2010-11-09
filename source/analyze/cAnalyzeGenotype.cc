@@ -51,7 +51,7 @@
 #include <cmath>
 using namespace std;
 
-cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cMetaGenome& genome)
+cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& genome)
 : m_world(world)
 , m_genome(genome)
 , name("")
@@ -374,7 +374,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
     return;
   }
   
-  cMetaGenome mod_genome(m_genome);
+  cGenome mod_genome(m_genome);
   
   // Setup a NULL instruction needed for testing
   const cInstruction null_inst = m_world->GetHardwareManager().GetInstSet(mod_genome.GetInstSet()).ActivateNullInst();

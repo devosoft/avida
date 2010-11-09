@@ -31,8 +31,8 @@
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
 #endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
+#ifndef cGenome_h
+#include "cGenome.h"
 #endif
 #ifndef cGenotypeData_h
 #include "cGenotypeData.h"
@@ -105,7 +105,7 @@ class cAnalyzeGenotype
   friend class ReadToken;
 private:
   cWorld* m_world;
-  cMetaGenome m_genome;        // Full Genome
+  cGenome m_genome;        // Full Genome
   cString name;              // Name, if one was provided in loading
   cCPUTestInfo m_cpu_test_info; // Use this test info
   
@@ -236,7 +236,7 @@ private:
 
 
 public:
-  cAnalyzeGenotype(cWorld* world, const cMetaGenome& genome);
+  cAnalyzeGenotype(cWorld* world, const cGenome& genome);
   cAnalyzeGenotype(const cAnalyzeGenotype& _gen);
   ~cAnalyzeGenotype();
   
@@ -303,8 +303,8 @@ public:
   // Accessors...
   cWorld* GetWorld() { return m_world; }
 
-  cMetaGenome& GetGenome() { return m_genome; }
-  const cMetaGenome& GetGenome() const { return m_genome; }
+  cGenome& GetGenome() { return m_genome; }
+  const cGenome& GetGenome() const { return m_genome; }
   const cString& GetName() const { return name; }
   const cString& GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }

@@ -40,7 +40,7 @@
 using namespace std;
 
 
-cMutationalNeighborhood::cMutationalNeighborhood(cWorld* world, const cMetaGenome& genome, int target)
+cMutationalNeighborhood::cMutationalNeighborhood(cWorld* world, const cGenome& genome, int target)
   : m_world(world), m_initialized(false), m_inst_set(m_world->GetHardwareManager().GetInstSet(genome.GetInstSet()))
   , m_target(target), m_base_genome(genome)
 {
@@ -217,7 +217,7 @@ void cMutationalNeighborhood::ProcessOneStepPoint(cAvidaContext& ctx, cTestCPU* 
   const int inst_size = m_inst_set.GetSize();
   sStep& odata = m_onestep_point[cur_site];
   
-  cMetaGenome mod_genome(m_base_genome);
+  cGenome mod_genome(m_base_genome);
   cSequence& seq = mod_genome.GetSequence();
   
   // Loop through all the lines of genome, testing trying all combinations.
@@ -242,7 +242,7 @@ void cMutationalNeighborhood::ProcessOneStepInsert(cAvidaContext& ctx, cTestCPU*
   const int inst_size = m_inst_set.GetSize();
   sStep& odata = m_onestep_insert[cur_site];
   
-  cMetaGenome mod_genome(m_base_genome);
+  cGenome mod_genome(m_base_genome);
   cSequence& seq = mod_genome.GetSequence();
   seq.Insert(cur_site, cInstruction(0));
   
@@ -262,7 +262,7 @@ void cMutationalNeighborhood::ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU*
 {
   sStep& odata = m_onestep_delete[cur_site];
   
-  cMetaGenome mod_genome(m_base_genome);
+  cGenome mod_genome(m_base_genome);
   cSequence& seq = mod_genome.GetSequence();
   seq.Remove(cur_site);
 
@@ -273,7 +273,7 @@ void cMutationalNeighborhood::ProcessOneStepDelete(cAvidaContext& ctx, cTestCPU*
 
 
 double cMutationalNeighborhood::ProcessOneStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                     const cMetaGenome& mod_genome, sStep& odata, int cur_site)
+                                                     const cGenome& mod_genome, sStep& odata, int cur_site)
 {
   // Run the modified genome through the Test CPU
   testcpu->TestGenome(ctx, test_info, mod_genome);
@@ -331,7 +331,7 @@ double cMutationalNeighborhood::ProcessOneStepGenome(cAvidaContext& ctx, cTestCP
 
 
 void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                  int cur_site, cMetaGenome& mod_genome)
+                                                  int cur_site, cGenome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
   cSequence& seq = mod_genome.GetSequence();
@@ -356,7 +356,7 @@ void cMutationalNeighborhood::ProcessTwoStepPoint(cAvidaContext& ctx, cTestCPU* 
 
 
 void cMutationalNeighborhood::ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                   int cur_site, cMetaGenome& mod_genome)
+                                                   int cur_site, cGenome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
   const int mod_size = mod_genome.GetSize();
@@ -378,7 +378,7 @@ void cMutationalNeighborhood::ProcessTwoStepInsert(cAvidaContext& ctx, cTestCPU*
 
 
 void cMutationalNeighborhood::ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                   int cur_site, cMetaGenome& mod_genome)
+                                                   int cur_site, cGenome& mod_genome)
 {
   const int mod_size = mod_genome.GetSize();
   cSequence& seq = mod_genome.GetSequence();
@@ -396,7 +396,7 @@ void cMutationalNeighborhood::ProcessTwoStepDelete(cAvidaContext& ctx, cTestCPU*
 
 
 void cMutationalNeighborhood::ProcessInsertPointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                      int cur_site, cMetaGenome& mod_genome)
+                                                      int cur_site, cGenome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
   cSequence& seq = mod_genome.GetSequence();
@@ -424,7 +424,7 @@ void cMutationalNeighborhood::ProcessInsertPointCombo(cAvidaContext& ctx, cTestC
 
 
 void cMutationalNeighborhood::ProcessInsertDeleteCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                       int cur_site, cMetaGenome& mod_genome)
+                                                       int cur_site, cGenome& mod_genome)
 {
   cSequence& seq = mod_genome.GetSequence();
   sTwoStep& tdata = m_insert_delete[cur_site];
@@ -444,7 +444,7 @@ void cMutationalNeighborhood::ProcessInsertDeleteCombo(cAvidaContext& ctx, cTest
 
 
 void cMutationalNeighborhood::ProcessDeletePointCombo(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                      int cur_site, cMetaGenome& mod_genome)
+                                                      int cur_site, cGenome& mod_genome)
 {
   const int inst_size = m_inst_set.GetSize();
   cSequence& seq = mod_genome.GetSequence();
@@ -470,7 +470,7 @@ void cMutationalNeighborhood::ProcessDeletePointCombo(cAvidaContext& ctx, cTestC
 
 
 double cMutationalNeighborhood::ProcessTwoStepGenome(cAvidaContext& ctx, cTestCPU* testcpu, cCPUTestInfo& test_info,
-                                                     const cMetaGenome& mod_genome, sTwoStep& tdata,
+                                                     const cGenome& mod_genome, sTwoStep& tdata,
                                                      const sPendFit& cur, const sPendFit& oth)
 {
   // Run the modified genome through the Test CPU

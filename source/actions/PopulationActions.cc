@@ -94,7 +94,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cMetaGenome genome;
+    cGenome genome;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
@@ -140,7 +140,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-    cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
+    cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
     cSequence& seq = mg.GetSequence();
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
     m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
@@ -189,7 +189,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
+      cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
       cSequence& seq = mg.GetSequence();
       for (int j = 0; i < m_length; j++) {
         cInstruction inst = is.GetRandomInst(ctx);
@@ -245,7 +245,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cMetaGenome genome;
+    cGenome genome;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
       m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
@@ -306,7 +306,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
     } else {
-      cMetaGenome genome;
+      cGenome genome;
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
@@ -366,7 +366,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cMetaGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
+      cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
       }
@@ -428,7 +428,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cMetaGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
+      cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
@@ -477,7 +477,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
     } else {
-      cMetaGenome genome;
+      cGenome genome;
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().InjectParasite(m_label, genome.GetSequence(), i);
@@ -544,7 +544,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
     } else {
-      cMetaGenome genome, parasite;
+      cGenome genome, parasite;
       genome.LoadFromDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
@@ -599,7 +599,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cMetaGenome genome;
+    cGenome genome;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
@@ -666,7 +666,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cMetaGenome genome;
+    cGenome genome;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
@@ -1279,7 +1279,7 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-        const cMetaGenome& mg = cell.GetOrganism()->GetGenome();
+        const cGenome& mg = cell.GetOrganism()->GetGenome();
 				const cSequence& genome = mg.GetSequence();
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
@@ -2666,7 +2666,7 @@ protected:
 						m_world->GetPopulation().KillOrganism(cell);
 						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
 					} else {
-						cMetaGenome genome(cell.GetOrganism()->GetGenome());
+						cGenome genome(cell.GetOrganism()->GetGenome());
 						m_world->GetPopulation().KillOrganism(cell);
 						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_RANDOM, genome);
 					}

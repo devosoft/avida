@@ -29,8 +29,8 @@
 #ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
 #endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
+#ifndef cGenome_h
+#include "cGenome.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -51,8 +51,8 @@ class cLandscape
 private:
   cWorld* m_world;
   cCPUTestInfo m_cpu_test_info;
-  cMetaGenome base_genome;
-  cMetaGenome peak_genome;
+  cGenome base_genome;
+  cGenome peak_genome;
   double base_fitness;
   double base_merit;
   double base_gestation;
@@ -103,10 +103,10 @@ private:
   cLandscape& operator=(const cLandscape&); // @not_implemented
 
 public:
-  cLandscape(cWorld* world, const cMetaGenome& in_genome);
+  cLandscape(cWorld* world, const cGenome& in_genome);
   ~cLandscape();
 
-  void Reset(const cMetaGenome& in_genome);
+  void Reset(const cGenome& in_genome);
 
   void Process(cAvidaContext& ctx);
   void ProcessDelete(cAvidaContext& ctx);
@@ -138,7 +138,7 @@ public:
   void PrintEntropy(cDataFile& fp);
   void PrintSiteCount(cDataFile& fp);
 
-  inline const cMetaGenome& GetPeakGenome() { return peak_genome; }
+  inline const cGenome& GetPeakGenome() { return peak_genome; }
   inline double GetAveFitness() { return total_fitness / total_count; }
   inline double GetAveSqrFitness() { return total_sqr_fitness / total_count; }
   inline double GetPeakFitness() { return peak_fitness; }
@@ -176,11 +176,11 @@ public:
   
 private:
   void BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu);
-  double ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& in_genome);
+  double ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome);
   void ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu);
-  void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& cur_genome, int cur_distance, int start_line);
+  void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
   
-  double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome& mod_genome, int line1, int line2,
+  double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
                      const cInstruction& mut1, const cInstruction& mut2);  
 };
 

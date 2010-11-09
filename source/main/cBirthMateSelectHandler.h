@@ -50,7 +50,7 @@ public:
   cBirthMateSelectHandler(cBirthChamber* bc) : m_bc(bc) { ; }
   ~cBirthMateSelectHandler();
   
-  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent);
+  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent);
 };
 
 #endif

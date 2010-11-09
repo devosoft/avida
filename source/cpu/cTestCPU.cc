@@ -207,7 +207,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
 }
 
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome)
 {
   ctx.SetTestMode();
   test_info.Clear();
@@ -217,7 +217,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMe
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, ofstream& out_fp)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, ofstream& out_fp)
 {
   ctx.SetTestMode();
   test_info.Clear();
@@ -250,7 +250,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMe
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, int cur_depth)
+bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth)
 {
   assert(cur_depth < test_info.generation_tests);
 
@@ -344,7 +344,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
 }
 
 
-void cTestCPU::PrintGenome(cAvidaContext& ctx, const cMetaGenome& genome, cString filename, int update)
+void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename, int update)
 {
   if (filename == "") filename.Set("archive/%03d-unnamed.org", genome.GetSize());
     
@@ -443,7 +443,7 @@ void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename
 {
   if (!bg->HasProperty("genome")) return;
   
-  cMetaGenome mg(bg->GetProperty("genome").AsString());
+  cGenome mg(bg->GetProperty("genome").AsString());
   
   if (filename == "") filename.Set("archive/%03d-unnamed.org", mg.GetSequence().GetSize());
   

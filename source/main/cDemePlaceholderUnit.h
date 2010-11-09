@@ -28,8 +28,8 @@
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
 #endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
+#ifndef cGenome_h
+#include "cGenome.h"
 #endif
 #ifndef cPhenotype_h
 #include "cPhenotype.h"
@@ -44,16 +44,16 @@ class cDemePlaceholderUnit : public cBioUnit
 private:
   eBioUnitSource m_src;
   cString m_src_args;
-  cMetaGenome m_genome;
+  cGenome m_genome;
   cPhenotype m_phenotype;
   
 public:
-  cDemePlaceholderUnit(eBioUnitSource src, const cMetaGenome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
+  cDemePlaceholderUnit(eBioUnitSource src, const cGenome& mg) : m_src(src), m_src_args(""), m_genome(mg) { ; }
   ~cDemePlaceholderUnit() { ; }
   
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cMetaGenome& GetGenome() const { return m_genome; }
+  const cGenome& GetGenome() const { return m_genome; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 };
 

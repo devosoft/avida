@@ -26,13 +26,13 @@
 
 #include <vector>
 
-#include "cMetaGenome.h"
+#include "cGenome.h"
 
 
 class cGermline
 {
 protected:
-	std::vector<cMetaGenome> m_germline;
+	std::vector<cGenome> m_germline;
 
   cGermline(const cGermline&); // @not_implmented
   
@@ -40,8 +40,8 @@ protected:
 public:
   cGermline() { ; }
     
-	cMetaGenome& GetLatest() { return m_germline.back(); }
-	void Add(const cMetaGenome& genome) { m_germline.push_back(genome); }
+	cGenome& GetLatest() { return m_germline.back(); }
+	void Add(const cGenome& genome) { m_germline.push_back(genome); }
 	unsigned int Size() const { return m_germline.size(); }
 };
 

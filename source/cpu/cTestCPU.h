@@ -43,9 +43,9 @@
 
 class cAvidaContext;
 class cBioGroup;
-class cMetaGenome;
+class cGenome;
 class cInstSet;
-class cMetaGenome;
+class cGenome;
 class cResourceCount;
 class cResourceHistory;
 class cWorld;
@@ -77,7 +77,7 @@ private:
   
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
-  bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, int cur_depth);
+  bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
 
   
   cTestCPU(); // @not_implemented
@@ -94,10 +94,10 @@ public:
   cTestCPU(cWorld* world);
   ~cTestCPU() { }
   
-  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome);
-  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, std::ofstream& out_fp);
+  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome);
+  bool TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, std::ofstream& out_fp);
   
-  void PrintGenome(cAvidaContext& ctx, const cMetaGenome& genome, cString filename = "", int update = -1);
+  void PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString filename = "", int update = -1);
   void PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename = "", int update = -1);
 
   inline int GetInput();

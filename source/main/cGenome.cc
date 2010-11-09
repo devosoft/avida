@@ -1,5 +1,5 @@
 /*
- *  cMetaGenome.cc
+ *  cGenome.cc
  *  Avida
  *
  *  Created by David on 12/21/09.
@@ -22,7 +22,7 @@
  *
  */
 
-#include "cMetaGenome.h"
+#include "cGenome.h"
 
 #include "cDataFile.h"
 #include "cInitFile.h"
@@ -32,7 +32,7 @@
 #include "tDictionary.h"
 
 
-cMetaGenome::cMetaGenome(const cString& seq_str)
+cGenome::cGenome(const cString& seq_str)
 {
   cString str = seq_str;
   m_hw_type = str.Pop(',').AsInt();
@@ -40,7 +40,7 @@ cMetaGenome::cMetaGenome(const cString& seq_str)
   m_seq = cSequence(str);
 }
 
-void cMetaGenome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
+void cGenome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
 {
   if (props.HasEntry("hw_type")) {
     m_hw_type = props.Get("hw_type").AsInt();
@@ -63,19 +63,19 @@ void cMetaGenome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
   m_seq = cSequence(props.Get("sequence"));
 }
 
-void cMetaGenome::Save(cDataFile& df)
+void cGenome::Save(cDataFile& df)
 {
   df.Write(m_hw_type, "Hardware Type ID", "hw_type");
   df.Write(m_inst_set, "Inst Set Name" , "inst_set");
   df.Write(m_seq.AsString(), "Genome Sequence", "sequence");
 }
 
-cString cMetaGenome::AsString() const
+cString cGenome::AsString() const
 {
   return cStringUtil::Stringf("%d,%s,%s", m_hw_type, (const char*)m_inst_set, (const char*)m_seq.AsString());
 }
 
-bool cMetaGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm,
+bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm,
                                      tList<cString>* errors)
 {
   cInitFile input_file(fname, wdir);
@@ -110,7 +110,7 @@ bool cMetaGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, 
 }
 
 
-void cMetaGenome::SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm)
+void cGenome::SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm)
 {
   df.WriteRaw(cString("#inst_set ") + m_inst_set);
   cInstSet& is = hwm.GetInstSet(m_inst_set);

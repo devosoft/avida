@@ -127,7 +127,7 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   PrintDouble(2, 62, metrics->GetFitness());
   PrintDouble(3, 62, metrics->GetMerit());
   PrintDouble(4, 62, metrics->GetGestationTime());
-  Print(5, 62, "%7d", cMetaGenome(best_gen->GetProperty("genome").AsString()).GetSize());
+  Print(5, 62, "%7d", cGenome(best_gen->GetProperty("genome").AsString()).GetSize());
   PrintDouble(6, 62, metrics->GetLinesCopied());
   PrintDouble(7, 62, metrics->GetLinesExecuted());
   Print(8, 62, "%7d", best_gen->GetNumUnits());

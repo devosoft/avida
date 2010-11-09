@@ -31,7 +31,7 @@
 class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
-class cMetaGenome;
+class cGenome;
 class cOrganism;
 class cStringList;
 class cWorld;
@@ -59,7 +59,7 @@ public:
   bool LoadInstSets(tList<cString>* errors = NULL);
   bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, tList<cString>* errors = NULL);
   
-  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg);
+  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
   inline const cInstSet& GetInstSet(const cString& name) const;

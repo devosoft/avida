@@ -81,7 +81,7 @@ const tArray<double>& cPhenPlastUtil::GetTaskProbabilities(cAvidaContext& ctx, c
   return ps->m_task_probabilities;
 }
 
-cPhenPlastSummary* cPhenPlastUtil::TestPlasticity(cAvidaContext& ctx, cWorld* world, const cMetaGenome& mg)
+cPhenPlastSummary* cPhenPlastUtil::TestPlasticity(cAvidaContext& ctx, cWorld* world, const cGenome& mg)
 {
   cCPUTestInfo test_info;
   // @TODO - phenplastgenotype should take a metagenome and pull its own config setting

@@ -69,7 +69,7 @@ public:
   void SetPrevSeenCellID(int in_id) { ; }
   void SetPrevTaskCellID(int in_id) { ; }
 
-  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome);
+  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
@@ -131,7 +131,7 @@ public:
 	//! HGT conjugation (does nothing).
 	void DoHGTConjugation(cAvidaContext& ctx) { }
 	//! HGT mutation (does nothing).
-	void DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspring) { }
+	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
 	//! Receive HGT donation (does nothing).
 	void ReceiveHGTDonation(const cSequence& fragment) { }
   
