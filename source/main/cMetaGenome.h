@@ -25,7 +25,7 @@
 #ifndef cMetaGenome_h
 #define cMetaGenome_h
 
-#include "cGenome.h"
+#include "cSequence.h"
 #include "cString.h"
 
 class cDataFile;
@@ -33,30 +33,31 @@ class cHardwareManager;
 template <typename T> class tDictionary;
 template <typename T> class tList;
 
+
 class cMetaGenome
 {
 private:
   int m_hw_type;
   cString m_inst_set;
-  cGenome m_genome;
+  cSequence m_genome;
  
   
 public:
   cMetaGenome() : m_hw_type(-1), m_inst_set("(default)") { ; }
-  cMetaGenome(int hw, const cString& is, const cGenome& gen) : m_hw_type(hw), m_inst_set(is), m_genome(gen) { ; }
+  cMetaGenome(int hw, const cString& is, const cSequence& gen) : m_hw_type(hw), m_inst_set(is), m_genome(gen) { ; }
   explicit cMetaGenome(const cString& gen_str);
   cMetaGenome(const cMetaGenome& mg) : m_hw_type(mg.m_hw_type), m_inst_set(mg.m_inst_set), m_genome(mg.m_genome) { ; }
   
   inline int GetHardwareType() const { return m_hw_type; }
   inline const cString& GetInstSet() const { return m_inst_set; }
-  inline const cGenome& GetGenome() const { return m_genome; }
-  inline cGenome& GetGenome() { return m_genome; }
+  inline const cSequence& GetGenome() const { return m_genome; }
+  inline cSequence& GetGenome() { return m_genome; }
   
   inline int GetSize() const { return m_genome.GetSize(); }
   
   inline void SetHardwareType(int type) { m_hw_type = type; }
   inline void SetInstSet(const cString& is) { m_inst_set = is; }
-  inline void SetGenome(const cGenome& gen) { m_genome = gen; }
+  inline void SetGenome(const cSequence& gen) { m_genome = gen; }
   
   cString AsString() const;
   

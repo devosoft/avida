@@ -23,7 +23,7 @@
 
 #include "defs.h"
 #if BOOST_IS_AVAILABLE
-#include "cGenome.h"
+#include "cSequence.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cMerit.h"
@@ -250,7 +250,7 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 			
 			GetPopulation().InjectGenome(target_cell,
 																	 SRC_ORGANISM_RANDOM, // for right now, we'll treat this as a random organism injection
-																	 cGenome(cString(migrant._genome.c_str())), // genome unpacked from message
+																	 cSequence(cString(migrant._genome.c_str())), // genome unpacked from message
 																	 migrant._lineage); // lineage label
 			// oh!  update its merit, too:
 			GetPopulation().GetCell(target_cell).GetOrganism()->UpdateMerit(migrant._merit);

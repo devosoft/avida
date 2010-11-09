@@ -26,8 +26,8 @@
 #ifndef cGenomeUtil_h
 #define cGenomeUtil_h
 
-#ifndef cGenome_h
-#include "cGenome.h"
+#ifndef cSequence_h
+#include "cSequence.h"
 #endif
 #include <vector>
 #include <deque>
@@ -38,27 +38,7 @@ class cInstSet;
 
 class cGenomeUtil
 {
-private:
-  cGenomeUtil(); // @not_implemented
-  
 public:
-  // ========= Detection =========
-  static int FindInst(const cGenome& gen, const cInstruction& inst, int start_index = 0);
-	static int CountInst(const cGenome& gen, const cInstruction& inst);
-	static int MinDistBetween(const cGenome& gen, const cInstruction& inst);
-	
-  static bool HasInst(const cGenome& gen, const cInstruction& inst)
-  {
-    return ( FindInst(gen, inst) >= 0 ) ? true : false;
-  }
-
-  // === Genetic distance tools ===
-  static int FindOverlap(const cGenome& gen1, const cGenome& gen2, int offset = 0);
-  static int FindHammingDistance(const cGenome& gen1, const cGenome& gen2, int offset = 0);
-  static int FindBestOffset(const cGenome& gen1, const cGenome& gen2);
-  static int FindSlidingDistance(const cGenome& gen1, const cGenome& gen2);
-  static int FindEditDistance(const cGenome& gen1, const cGenome& gen2);
-
 	/*! Substring match record.
 	 
 	 The intent behind a substring match record is that it specifies where a match
@@ -96,33 +76,14 @@ public:
 	};
 	
 	//! Find (one of) the best matches of substring in base.
-	static substring_match FindSubstringMatch(const cGenome& base, const cGenome& substring);	
+	static substring_match FindSubstringMatch(const cSequence& base, const cSequence& substring);	
 	//! Find (one of) the best unbiased matches of substring in base, respecting genome circularity.
-	static substring_match FindUnbiasedCircularMatch(cAvidaContext& ctx, const cGenome& base, const cGenome& substring);
-	typedef std::deque<cGenome> fragment_list_type; //!< Type for the list of genome fragments.
+	static substring_match FindUnbiasedCircularMatch(cAvidaContext& ctx, const cSequence& base, const cSequence& substring);
+	typedef std::deque<cSequence> fragment_list_type; //!< Type for the list of genome fragments.
 	//! Split a genome into a list of fragments, each with the given mean size and variance, and add them to the given fragment list.
-	static void RandomSplit(cAvidaContext& ctx, double mean, double variance, const cGenome& genome, fragment_list_type& fragments);
+	static void RandomSplit(cAvidaContext& ctx, double mean, double variance, const cSequence& genome, fragment_list_type& fragments);
 	//! Randomly shuffle the instructions within genome in-place.
-	static void RandomShuffle(cAvidaContext& ctx, cGenome& genome);
-	
-  // ===== Construction methods =====
-  static cGenome Crop(const cGenome& genome, int start, int end);
-  static cGenome Cut(const cGenome& genome, int start, int end);
-  static cGenome Join(const cGenome& genome1, const cGenome& genome2);
-
-  // ========= Genome-File Interaction =========
-  // Saving and loading of files.  These functions assume that the genome is
-  // the only thing in the file unless 'Internal' is in the function name
-  // (Internal genomes must begin with a number that indicates genome length)
-  
-//  static bool LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set, cGenome& out_genome);
-//  static cGenome LoadGenome(const cString& filename, const cString& working_dir, const cInstSet& inst_set);
-  static void SaveGenome(std::ostream& fp, const cInstSet& inst_set, const cGenome& gen);
- 
-  // ========= Genome Construction =========
-  static cGenome RandomGenome(cAvidaContext& ctx, int length, const cInstSet& inst_set);
-  static cGenome RandomGenomeWithoutZeroRedundantsPlusRepro(cAvidaContext& ctx, int length, const cInstSet& inst_set);
-  static cGenome RandomGenomeWithoutZeroRedundantsPlusReproSex(cAvidaContext& ctx, int length, const cInstSet& inst_set);
+	static void RandomShuffle(cAvidaContext& ctx, cSequence& genome);
 };
 
 #endif

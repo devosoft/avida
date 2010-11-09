@@ -43,7 +43,7 @@
 
 class cAvidaContext;
 class cBirthSelectionHandler;
-class cGenome;
+class cSequence;
 class cOrganism;
 class cWorld;
 
@@ -75,8 +75,8 @@ public:
 private:
   cBirthSelectionHandler* getSelectionHandler(int hw_type);
   
-  bool RegionSwap(cGenome& genome0, cGenome& genome1, int start0, int end0, int start1, int end1);
-  void GenomeSwap(cGenome& genome0, cGenome& genome1, double& merit0, double& merit1);
+  bool RegionSwap(cSequence& genome0, cSequence& genome1, int start0, int end0, int start1, int end1);
+  void GenomeSwap(cSequence& genome0, cSequence& genome1, double& merit0, double& merit1);
   
   bool DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring_genome, cOrganism& parent,
                    tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);
@@ -84,12 +84,12 @@ private:
                        tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array);
   
 
-  void DoBasicRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1, double& merit0, double& merit1);
-  void DoModularContRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
+  void DoBasicRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1, double& merit0, double& merit1);
+  void DoModularContRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
                                   double& merit0, double& merit1);
-  void DoModularNonContRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
+  void DoModularNonContRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
                                      double& merit0, double& merit1);
-  void DoModularShuffleRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
+  void DoModularShuffleRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
                                      double& merit0, double& merit1);
   
   void SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGroup*>* p0grps, const tArray<cBioGroup*>* p1grps = NULL);

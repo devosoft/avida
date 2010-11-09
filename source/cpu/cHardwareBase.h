@@ -39,7 +39,7 @@
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
-#include "cGenome.h"
+#include "cSequence.h"
 
 using namespace std;
 
@@ -205,9 +205,9 @@ public:
 	
 	// -------- HGT --------
 	//! Retrieve a genome fragment extending downstream from the read head.
-	virtual cGenome GetGenomeFragment(unsigned int downstream);
+	virtual cSequence GetGenomeFragment(unsigned int downstream);
 	//! Insert a genome fragment at the current write head.
-	virtual void InsertGenomeFragment(const cGenome& fragment);
+	virtual void InsertGenomeFragment(const cSequence& fragment);
   
 protected:
   // --------  Core Execution Methods  --------
@@ -234,9 +234,9 @@ protected:
 
   
   // --------  Mutation Helper Methods  --------
-  bool doUniformMutation(cAvidaContext& ctx, cGenome& genome);
+  bool doUniformMutation(cAvidaContext& ctx, cSequence& genome);
   void doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head);
-  void doSlipMutation(cAvidaContext& ctx, cGenome& genome, int from = -1);
+  void doSlipMutation(cAvidaContext& ctx, cSequence& genome, int from = -1);
   
 
   // --------  Organism Execution Property Calculation  --------
@@ -251,13 +251,13 @@ protected:
   
 
   // --------  Mutation Triggers  --------
-  void TriggerMutations_Body(cAvidaContext& ctx, int type, cGenome& target_memory, cHeadCPU& cur_head);
+  void TriggerMutations_Body(cAvidaContext& ctx, int type, cSequence& target_memory, cHeadCPU& cur_head);
   bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-																		cGenome& target_memory, cHeadCPU& cur_head, const double rate);
+																		cSequence& target_memory, cHeadCPU& cur_head, const double rate);
   bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);
+																	 cSequence& target_memory, cHeadCPU& cur_head, const double rate);
   int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cGenome& target_memory, cHeadCPU& cur_head, const double rate);  
+																	 cSequence& target_memory, cHeadCPU& cur_head, const double rate);  
 
 private:
   void checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);

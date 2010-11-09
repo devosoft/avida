@@ -29,8 +29,7 @@
 #include "cBioGroup.h"
 #include "cDeme.h"
 #include "cEnvironment.h"
-#include "cGenome.h"
-#include "cGenomeUtil.h"
+#include "cSequence.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
@@ -606,7 +605,7 @@ void cOrganism::NotifyDeath()
 
 
 
-bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const cGenome& injected_code)
+bool cOrganism::InjectParasite(cBioUnit* parent, const cString& label, const cSequence& injected_code)
 {
   assert(m_interface);
   return m_interface->InjectParasite(this, parent, label, injected_code);

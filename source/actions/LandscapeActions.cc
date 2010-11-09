@@ -348,7 +348,7 @@ public:
 //        m_world->GetDriver().NotifyComment("Dumping Landscape...");
 //      
 //      // Get the current best genotype
-//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      const cSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
 //
 //      // Create datafile for genotype landscape (best-${update}.land)
 //      cString gfn("best-");
@@ -558,7 +558,7 @@ public:
 //      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
 //        m_world->GetDriver().NotifyComment("Predicting W Landscape...");
 //      
-//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      const cSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
 //      cLandscape land(m_world, best_genome, inst_set);
 //      land.PredictWProcess(ctx, df, m_world->GetStats().GetUpdate());
     }
@@ -608,7 +608,7 @@ public:
 //      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
 //        m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
 //      
-//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      const cSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
 //      cLandscape land(m_world, best_genome, inst_set);
 //      land.PredictNuProcess(ctx, df, m_world->GetStats().GetUpdate());
     }
@@ -797,7 +797,7 @@ public:
 //      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
 //        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
 //      
-//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      const cSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
 //      cLandscape land(m_world, best_genome, inst_set);
 //      land.HillClimb(ctx, m_world->GetDataFile(m_filename));
     }
@@ -861,7 +861,7 @@ public:
 //      if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
 //        m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
 //      
-//      const cGenome& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
+//      const cSequence& best_genome = m_world->GetClassificationManager().GetBestGenotype()->GetGenome();
 //      mutn = new cMutationalNeighborhood(m_world, best_genome, inst_set, m_target);
 //
 //      m_batch.PushRear(new sBatchEntry(mutn, m_world->GetStats().GetUpdate()));

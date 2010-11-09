@@ -29,7 +29,6 @@
 #include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
-#include "cGenomeUtil.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
@@ -434,7 +433,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cMetaGenome& genome, cStrin
   df.Endl();
   
   // Display the genome
-  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome.GetGenome());
+  genome.GetGenome().SaveInstructions(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet());
   
   m_world->GetDataFileManager().Remove(filename);
 }
@@ -539,7 +538,7 @@ void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename
   df.Endl();
   
   // Display the genome
-  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), mg.GetGenome());
+  mg.GetGenome().SaveInstructions(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet());
   
   m_world->GetDataFileManager().Remove(filename);
 }

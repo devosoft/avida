@@ -34,8 +34,6 @@
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
-#include "cGenome.h"
-#include "cGenomeUtil.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHistogram.h"
@@ -46,6 +44,7 @@
 #include "cPlasticPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cSequence.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
@@ -1924,14 +1923,14 @@ public:
     tAutoRelease<tIterator<cBioGroup> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     it->Next();
-    cGenome best_genome = cMetaGenome(it->Get()->GetProperty("genome").AsString()).GetGenome();
-    dom_dist = cGenomeUtil::FindHammingDistance(m_reference.GetGenome(), best_genome);
+    cSequence best_genome = cMetaGenome(it->Get()->GetProperty("genome").AsString()).GetGenome();
+    dom_dist = cSequence::FindHammingDistance(m_reference.GetGenome(), best_genome);
     hamming_m1 += dom_dist;
     hamming_m2 += dom_dist*dom_dist;
     count += it->Get()->GetNumUnits();
     // now cycle over the remaining genotypes
     while ((it->Next())) {
-      int dist = cGenomeUtil::FindHammingDistance(m_reference.GetGenome(), cMetaGenome(it->Get()->GetProperty("genome").AsString()).GetGenome());
+      int dist = cSequence::FindHammingDistance(m_reference.GetGenome(), cMetaGenome(it->Get()->GetProperty("genome").AsString()).GetGenome());
       hamming_m1 += dist;
       hamming_m2 += dist*dist;
       count += it->Get()->GetNumUnits();
@@ -1940,7 +1939,7 @@ public:
     hamming_m1 /= static_cast<double>(count);
     hamming_m2 /= static_cast<double>(count);
     
-    double hamming_best = cGenomeUtil::FindHammingDistance(m_reference.GetGenome(), best_genome);
+    double hamming_best = cSequence::FindHammingDistance(m_reference.GetGenome(), best_genome);
     
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
@@ -2031,8 +2030,8 @@ public:
       df.Write(bg->GetProperty("name").AsString(), "Genotype Name");
       df.Write(bg->GetProperty("fitness").AsDouble(), "Fitness");
       df.Write(num_orgs, "Abundance");
-      df.Write(cGenomeUtil::FindHammingDistance(reference_genome.GetGenome(), genome.GetGenome()), "Hamming distance to reference");
-      df.Write(cGenomeUtil::FindEditDistance(reference_genome.GetGenome(), genome.GetGenome()), "Levenstein distance to reference");
+      df.Write(cSequence::FindHammingDistance(reference_genome.GetGenome(), genome.GetGenome()), "Hamming distance to reference");
+      df.Write(cSequence::FindEditDistance(reference_genome.GetGenome(), genome.GetGenome()), "Levenstein distance to reference");
       df.Write(genome.AsString(), "Genome");
       
       // save into archive
@@ -2322,8 +2321,8 @@ public:
     }
     
     // Build the concensus genotype...
-    cGenome& con_genome = mg.GetGenome();
-    con_genome = cGenome(con_length);
+    cSequence& con_genome = mg.GetGenome();
+    con_genome = cSequence(con_length);
     double total_entropy = 0.0;
     for (int i = 0; i < MAX_GENOME_LENGTH; i++) {
       const int mode = inst_hist[i].GetMode();
@@ -2361,7 +2360,7 @@ public:
     cDoubleSum distance_sum;
     while ((it->Next())) {
       const int num_organisms = it->Get()->GetNumUnits();
-      const int cur_dist = cGenomeUtil::FindEditDistance(con_genome, cMetaGenome(it->Get()->GetProperty("genome").AsString()).GetGenome());
+      const int cur_dist = cSequence::FindEditDistance(con_genome, cMetaGenome(it->Get()->GetProperty("genome").AsString()).GetGenome());
       distance_sum.Add(cur_dist, num_organisms);
     }
     
@@ -2370,7 +2369,7 @@ public:
     //    cGenotype* con_genotype = classmgr.FindGenotype(con_genome, -1);
     
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
-    const int best_dist = cGenomeUtil::FindEditDistance(con_genome, cMetaGenome(it->Next()->GetProperty("genome").AsString()).GetGenome());
+    const int best_dist = cSequence::FindEditDistance(con_genome, cMetaGenome(it->Next()->GetProperty("genome").AsString()).GetGenome());
     
     const double ave_dist = distance_sum.Average();
     const double var_dist = distance_sum.Variance();
@@ -2482,7 +2481,7 @@ public:
 			occupied_cells.pop_back();
 			cOrganism* b = m_world->GetPopulation().GetCell(occupied_cells.back()).GetOrganism(); 
 			occupied_cells.pop_back();
-			edit_distance.Add(cGenomeUtil::FindEditDistance(a->GetGenome(), b->GetGenome()));
+			edit_distance.Add(cSequence::FindEditDistance(a->GetGenome(), b->GetGenome()));
 		}
 		
 		df.Write(m_world->GetStats().GetUpdate(), "Update [update]");

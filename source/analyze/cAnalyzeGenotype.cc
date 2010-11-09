@@ -619,7 +619,7 @@ void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int
 
 void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
-  cGenome new_genome(_sequence);
+  cSequence new_genome(_sequence);
   m_genome.SetGenome(new_genome);
 }
 

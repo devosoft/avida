@@ -44,6 +44,9 @@ namespace AvidaTools
   template <typename T> inline T Max(T op1, T op2) { return (op1 > op2) ? op1 : op2; }
   template <typename T> inline T Range(T value, T min, T max);
   
+  inline int Abs(int val) { return (val < 0) ? -val : val; }
+  inline double Abs(double val) { return (val < 0.0) ? -val : val; }
+  
   inline int Mod(int value, int base) { value %= base; return (value < 0) ? (value + base) : value; }
   inline int Pow(int bas, int expon);
   inline double Log(double value) { assert(value > 0.0); return log(value); }

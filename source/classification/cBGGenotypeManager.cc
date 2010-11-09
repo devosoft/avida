@@ -26,7 +26,7 @@
 
 #include "cBGGenotype.h"
 #include "cDataFile.h"
-#include "cGenome.h"
+#include "cSequence.h"
 #include "cStats.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
@@ -346,7 +346,7 @@ cFlexVar cBGGenotypeManager::GetBioGroupProperty(const cBGGenotype* genotype, co
 
 
 
-unsigned int cBGGenotypeManager::hashGenome(const cGenome& genome) const
+unsigned int cBGGenotypeManager::hashGenome(const cSequence& genome) const
 {
   unsigned int total = 0;
   

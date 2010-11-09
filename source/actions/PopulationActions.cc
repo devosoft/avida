@@ -28,13 +28,12 @@
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
 #include "cDoubleSum.h"
-#include "cGenome.h"
-#include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cIntSum.h"
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cSequence.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cOrganism.h"
@@ -141,8 +140,9 @@ public:
   void Process(cAvidaContext& ctx)
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-    cGenome genome = cGenomeUtil::RandomGenome(ctx, m_length, is);
-    cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), genome);
+    cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
+    cSequence& seq = mg.GetGenome();
+    for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
     m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
   }
 };
@@ -189,13 +189,16 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cGenome genome;
-      if (m_sex)
-        genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusReproSex(ctx, m_length, is);
-      else
-        genome = cGenomeUtil::RandomGenomeWithoutZeroRedundantsPlusRepro(ctx, m_length, is);
+      cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
+      cSequence& seq = mg.GetGenome();
+      for (int j = 0; i < m_length; j++) {
+        cInstruction inst = is.GetRandomInst(ctx);
+        while (is.GetRedundancy(inst) == 0) inst = is.GetRandomInst(ctx);
+        seq[j] = inst;
+      }
+      if (m_sex) seq[m_length] = is.GetInst("repro-sex");
+      else seq[m_length] = is.GetInst("repro");
       
-      cMetaGenome mg(is.GetHardwareType(), is.GetInstSetName(), genome);
       m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, i, m_merit, m_lineage_label, m_neutral_metric);
     }
   }
@@ -363,7 +366,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cMetaGenome genome(is.GetHardwareType(), is.GetInstSetName(), cGenome(m_sequence));
+      cMetaGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
       }
@@ -425,7 +428,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cMetaGenome genome(is.GetHardwareType(), is.GetInstSetName(), cGenome(m_sequence));
+      cMetaGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
@@ -1039,8 +1042,7 @@ public:
       if (cell.IsOccupied() == false) continue;
       
       // count the number of target instructions in the genome
-      count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(),
-                                     m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
+      count = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
       
       // decide if it should be killed or not, based on the count and a the kill probability
       if (count >= m_limit) {
@@ -1100,10 +1102,8 @@ public:
 			if (cell.IsOccupied() == false) continue;
 			
 			// get the number of instructions of each type.
-			count1 = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(),
-                                      m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst1));
-			count2 = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(),
-                                      m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst2));
+			count1 = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst1));
+			count2 = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst2));
 			
 			// decide if it should be killed or not, based on the two counts and a the kill probability
 			if ((count1 >= m_limit) && (count2 >= m_limit)) {
@@ -1179,8 +1179,7 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-				int count = cGenomeUtil::CountInst(cell.GetOrganism()->GetGenome(),
-                                           m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
+				int count = cell.GetOrganism()->GetGenome().CountInst(m_world->GetHardwareManager().GetInstSet(cell.GetOrganism()->GetMetaGenome().GetInstSet()).GetInst(m_inst));
 				currentInstCount.Add(count);
         
 				double killprob;
@@ -1281,9 +1280,9 @@ public:
 				
 				// count the number of target instructions in the genome
         const cMetaGenome& mg = cell.GetOrganism()->GetMetaGenome();
-				const cGenome& genome = mg.GetGenome();
+				const cSequence& genome = mg.GetGenome();
 				const double genomeSize = static_cast<double>(genome.GetSize());
-				int minDist = cGenomeUtil::MinDistBetween(genome, m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
+				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
 				currentMinDist.Add(minDist);
 				
 				int ratioNumerator = min(genomeSize, pow(m_exprWeight*minDist, m_exponent));

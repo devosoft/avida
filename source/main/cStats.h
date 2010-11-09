@@ -37,7 +37,7 @@
 #include "defs.h"
 #include "cBioGroupListener.h"
 #include "cDoubleSum.h"
-#include "cGenome.h"
+#include "cSequence.h"
 #include "cGenomeUtil.h"
 #include "cIntSum.h"
 #include "cOrganism.h"
@@ -1037,9 +1037,9 @@ private:
 	cDoubleSum m_hgt_inserted; //!< Total length of inserted genome fragments.
 public:
 	//! Called when an organism metabolizes a genome fragment.
-	void GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment);
+	void GenomeFragmentMetabolized(cOrganism* organism, const cSequence& fragment);
 	//! Called when an organism inserts a genome fragment.
-	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location);
+	void GenomeFragmentInserted(cOrganism* organism, const cSequence& fragment, const cGenomeUtil::substring_match& location);
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
 	

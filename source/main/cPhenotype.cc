@@ -329,7 +329,7 @@ bool cPhenotype::OK()
  *     - this is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenome& _genome)
+void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSequence& _genome)
 {
   // Copy divide values from parent, which should already be setup.
   merit = parent_phenotype.merit;
@@ -534,7 +534,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
  *     - This is the first method run on an otherwise freshly built phenotype.
  **/
 
-void cPhenotype::SetupInject(const cGenome & _genome)
+void cPhenotype::SetupInject(const cSequence & _genome)
 {
   // Setup reasonable initial values injected organism...
   genome_length   = _genome.GetSize();
@@ -703,7 +703,7 @@ void cPhenotype::SetupInject(const cGenome & _genome)
 }
 
 
-void cPhenotype::ResetMerit(const cGenome & _cgenome)
+void cPhenotype::ResetMerit(const cSequence & _cgenome)
 {
   int cur_merit_base = CalcSizeMerit();
   const int merit_default_bonus = m_world->GetConfig().MERIT_DEFAULT_BONUS.Get();
@@ -722,7 +722,7 @@ void cPhenotype::ResetMerit(const cGenome & _cgenome)
  * This function is run whenever an organism executes a successful divide.
  **/
 
-void cPhenotype::DivideReset(const cGenome & _genome)
+void cPhenotype::DivideReset(const cSequence & _genome)
 {
   assert(time_used >= 0);
   assert(initialized == true);
@@ -921,7 +921,7 @@ void cPhenotype::DivideReset(const cGenome & _genome)
  * and copied size in its merit.
  **/
 
-void cPhenotype::TestDivideReset(const cGenome & _genome)
+void cPhenotype::TestDivideReset(const cSequence & _genome)
 {
   assert(time_used > 0);
   assert(initialized == true);
@@ -1930,7 +1930,7 @@ void cPhenotype::NewTrial()
  * by another call (like NewTrial). It is a subset of DivideReset @JEB
  **/
 
-void cPhenotype::TrialDivideReset(const cGenome & _genome)
+void cPhenotype::TrialDivideReset(const cSequence & _genome)
 {
   int cur_merit_base = CalcSizeMerit();
   

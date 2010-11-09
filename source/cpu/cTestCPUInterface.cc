@@ -122,7 +122,7 @@ int cTestCPUInterface::BuyValue(const int label, const int buy_price)
 	return m_testcpu->GetReceiveValue();
 }
 
-bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code)
+bool cTestCPUInterface::InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code)
 {
   return false;
 }

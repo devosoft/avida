@@ -37,7 +37,7 @@ cMetaGenome::cMetaGenome(const cString& gen_str)
   cString str = gen_str;
   m_hw_type = str.Pop(',').AsInt();
   m_inst_set = str.Pop(',');
-  m_genome = cGenome(str);
+  m_genome = cSequence(str);
 }
 
 void cMetaGenome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
@@ -60,7 +60,7 @@ void cMetaGenome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
   }
   
   assert(props.HasEntry("sequence"));
-  m_genome = cGenome(props.Get("sequence"));
+  m_genome = cSequence(props.Get("sequence"));
 }
 
 void cMetaGenome::Save(cDataFile& df)
@@ -87,7 +87,7 @@ bool cMetaGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, 
   const cInstSet& is = hwm.GetDefaultInstSet();
   m_hw_type = is.GetHardwareType();
   m_inst_set = is.GetInstSetName();
-  cGenome new_seq(input_file.GetNumLines());
+  cSequence new_seq(input_file.GetNumLines());
   
   for (int line_num = 0; line_num < new_seq.GetSize(); line_num++) {
     cString cur_line = input_file.GetLine(line_num);

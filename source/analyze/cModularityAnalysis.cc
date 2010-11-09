@@ -60,7 +60,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   cCPUTestInfo test_info = m_test_info;
   
   const cMetaGenome& base_genome = m_genotype->GetGenome();
-  const cGenome& base_seq = base_genome.GetGenome();
+  const cSequence& base_seq = base_genome.GetGenome();
 
   // Calculate the stats for the genotype we're working with...
   testcpu->TestGenome(ctx, test_info, base_genome);  
@@ -86,7 +86,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
     // Genome for testing
     const int max_line = base_genome.GetSize();
     cMetaGenome mod_genome(base_genome);
-    cGenome& seq = mod_genome.GetGenome();
+    cSequence& seq = mod_genome.GetGenome();
     
     // Create and initialize the modularity matrix
     tMatrix<int> mod_matrix(num_tasks, max_line);

@@ -175,7 +175,7 @@ void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cMetaGenome
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(cur_genome);
-  cGenome& mod_genome = mg.GetGenome();
+  cSequence& mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = start_line; line_num < max_line; line_num++) {
@@ -214,7 +214,7 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
   cMetaGenome mg(base_genome);
-  cGenome& mod_genome = mg.GetGenome();
+  cSequence& mod_genome = mg.GetGenome();
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {

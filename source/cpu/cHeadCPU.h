@@ -44,7 +44,7 @@
  **/
 
 class cCodeLabel;
-class cGenome;
+class cSequence;
 class cInstruction;
 class cString;
 
@@ -60,8 +60,8 @@ protected:
   
   void fullAdjust(int mem_size = -1);
 
-  int FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
-  int FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_mem, int pos);
+  int FindLabel_Forward(const cCodeLabel& search_label, const cSequence& search_mem, int pos);
+  int FindLabel_Backward(const cCodeLabel& search_label, const cSequence& search_mem, int pos);
   
 
 public:

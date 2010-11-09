@@ -242,7 +242,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
   
   int totalMutations = 0;
-  cGenome& offspring_genome = m_organism->OffspringGenome().GetGenome();
+  cSequence& offspring_genome = m_organism->OffspringGenome().GetGenome();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -436,7 +436,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 }
 
 
-bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cGenome& genome)
+bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cSequence& genome)
 {
   
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
@@ -477,9 +477,9 @@ void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 // to another random position and continued reading to the end.
 // This can cause large deletions or tandem duplications.
 // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
-void cHardwareBase::doSlipMutation(cAvidaContext& ctx, cGenome& genome, int from)
+void cHardwareBase::doSlipMutation(cAvidaContext& ctx, cSequence& genome, int from)
 {
-  cGenome genome_copy = cGenome(genome);
+  cSequence genome_copy = cSequence(genome);
   
   // All combinations except beginning to past end allowed
   if (from < 0) from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
@@ -562,7 +562,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 {
   int maxmut = pointmut;
   int totalMutations = 0;
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
+  cSequence& child_genome = m_organism->OffspringGenome().GetGenome();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -796,7 +796,7 @@ int cHardwareBase::PointMutate(cAvidaContext& ctx, const double mut_rate)
   return num_muts;
 }
 
-void cHardwareBase::TriggerMutations_Body(cAvidaContext& ctx, int type, cGenome& target_memory, cHeadCPU& cur_head)
+void cHardwareBase::TriggerMutations_Body(cAvidaContext& ctx, int type, cSequence& target_memory, cHeadCPU& cur_head)
 {
   const int pos = cur_head.GetPosition();
 	
@@ -818,7 +818,7 @@ void cHardwareBase::TriggerMutations_Body(cAvidaContext& ctx, int type, cGenome&
 
 
 bool cHardwareBase::TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-                                                 cGenome& target_memory, cHeadCPU& cur_head, const double rate)
+                                                 cSequence& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The rate we have stored indicates the probability that a single
   // mutation will occur anywhere in the genome.
@@ -835,7 +835,7 @@ bool cHardwareBase::TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMuta
 }
 
 bool cHardwareBase::TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-                                                cGenome& target_memory, cHeadCPU& cur_head, const double rate)
+                                                cSequence& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The rate we have stored is the probability for a mutation at this single
   // position in the genome.
@@ -848,7 +848,7 @@ bool cHardwareBase::TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutat
 }
 
 int cHardwareBase::TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-                                                cGenome& target_memory, cHeadCPU& cur_head, const double rate)
+                                                cSequence& target_memory, cHeadCPU& cur_head, const double rate)
 {
   // The probability we have stored is per-site, so we can pull a random
   // number from a binomial distribution to determine the number of mutations
@@ -892,7 +892,7 @@ bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& 
   bool has_mutation = false;
 	
   // Determine what memory this mutation will be affecting.
-  cGenome& target_mem = (trigger == nMutation::TRIGGER_DIVIDE) ? m_organism->OffspringGenome().GetGenome() : GetMemory();
+  cSequence& target_mem = (trigger == nMutation::TRIGGER_DIVIDE) ? m_organism->OffspringGenome().GetGenome() : GetMemory();
 	
   // Loop through all mutations associated with this trigger and test them.
   tConstListIterator<cMutation> mut_it(mut_list);
@@ -1134,9 +1134,9 @@ void cHardwareBase::ReceiveFlash()
 
 /*! Retrieve a fragment of this organism's genome that extends downstream from the read head.
  */
-cGenome cHardwareBase::GetGenomeFragment(unsigned int downstream) {
+cSequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 	cHeadCPU tmp(GetHead(nHardware::HEAD_READ));
-	cGenome fragment(downstream);
+	cSequence fragment(downstream);
 	for(; downstream>0; --downstream, tmp.Advance()) { 
 		fragment.Append(tmp.GetInst());
 	}
@@ -1145,7 +1145,7 @@ cGenome cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 
 /*! Insert a genome fragment at the current write head.
  */
-void cHardwareBase::InsertGenomeFragment(const cGenome& fragment) {
+void cHardwareBase::InsertGenomeFragment(const cSequence& fragment) {
 	cHeadCPU& wh = GetHead(nHardware::HEAD_WRITE);
 	wh.GetMemory().Insert(wh.GetPosition(), fragment);
 	wh.Adjust();

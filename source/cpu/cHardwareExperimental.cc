@@ -28,7 +28,6 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
-#include "cGenomeUtil.h"
 #include "cHardwareManager.h"
 #include "cHardwareTracer.h"
 #include "cInstSet.h"
@@ -1093,7 +1092,7 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  m_organism->OffspringGenome().SetGenome(cGenomeUtil::Crop(m_memory, div_point, div_point+child_size));
+  m_organism->OffspringGenome().SetGenome(m_memory.Crop(div_point, div_point+child_size));
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
   

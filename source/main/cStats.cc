@@ -3023,13 +3023,13 @@ void cStats::PrintDemeNetworkTopology(const cString& filename) {
 
 /*! Called when an organism metabolizes a genome fragment.
  */
-void cStats::GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment) {
+void cStats::GenomeFragmentMetabolized(cOrganism* organism, const cSequence& fragment) {
 	m_hgt_metabolized.Add(fragment.GetSize());
 }
 
 /*! Called when a fragment is inserted into an offspring's genome via HGT.
  */
-void cStats::GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location) {
+void cStats::GenomeFragmentInserted(cOrganism* organism, const cSequence& fragment, const cGenomeUtil::substring_match& location) {
 	m_hgt_inserted.Add(fragment.GetSize());
 }
 

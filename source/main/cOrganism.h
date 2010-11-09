@@ -192,7 +192,7 @@ public:
   cPhenotype& GetPhenotype() { return m_phenotype; }
   void SetPhenotype(cPhenotype& _in_phenotype) { m_phenotype = _in_phenotype; }
 
-  const cGenome& GetGenome() const { return m_initial_genome.GetGenome(); }
+  const cSequence& GetGenome() const { return m_initial_genome.GetGenome(); }
   
   const cMutationRates& MutationRates() const { return m_mut_rates; }
   cMutationRates& MutationRates() { return m_mut_rates; }
@@ -340,7 +340,7 @@ public:
 
   
   // --------  Parasite Interactions  --------
-  bool InjectParasite(cBioUnit* parent, const cString& label, const cGenome& genome);
+  bool InjectParasite(cBioUnit* parent, const cString& label, const cSequence& genome);
   bool ParasiteInfectHost(cBioUnit* parasite);
   int GetNumParasites() const { return m_parasites.GetSize(); }
   const tArray<cBioUnit*>& GetParasites() const { return m_parasites; }

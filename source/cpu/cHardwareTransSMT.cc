@@ -455,7 +455,7 @@ cHeadCPU cHardwareTransSMT::FindLabel(int direction)
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
-                                         const cGenome& search_genome, int pos)
+                                         const cSequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -536,7 +536,7 @@ int cHardwareTransSMT::FindLabel_Forward(const cCodeLabel& search_label,
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
 int cHardwareTransSMT::FindLabel_Backward(const cCodeLabel & search_label,
-                                          const cGenome & search_genome, int pos)
+                                          const cSequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -678,7 +678,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
   }
 	
   // reset the memory space that was injected
-  m_mem_array[mem_space_used] = cGenome("a"); 
+  m_mem_array[mem_space_used] = cSequence("a"); 
 	
   if (m_world->GetConfig().INJECT_METHOD.Get() == INJECT_METHOD_SPLIT) {
     for (int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
@@ -1008,7 +1008,7 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   bool parent_alive = m_organism->ActivateDivide(ctx);
 	
   //reset the memory of the memory space that has been divided off
-  m_mem_array[mem_space_used] = cGenome("a"); 
+  m_mem_array[mem_space_used] = cSequence("a"); 
 	
   // Division Methods:
   // 0 - DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.
@@ -1638,7 +1638,7 @@ bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
 		
   if (m_mem_array.GetSize() <= mem_space_used) return false;
 		
-  m_mem_array[mem_space_used] = cGenome("a"); 
+  m_mem_array[mem_space_used] = cSequence("a"); 
 		
   for(int x = 0; x < nHardware::NUM_HEADS; x++) GetHead(x).Reset(this, 0);
   //for(int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();

@@ -25,7 +25,7 @@
 #ifndef cMutationalNeighborhood_h
 #define cMutationalNeighborhood_h
 
-#ifndef cGenome_h
+#ifndef cSequence_h
 #include "cMetaGenome.h"
 #endif
 #ifndef cMutex_h

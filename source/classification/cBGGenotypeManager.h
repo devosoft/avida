@@ -45,7 +45,7 @@
 #endif
 
 class cBGGenotype;
-class cGenome;
+class cSequence;
 class cWorld;
 template <class T> class tDataCommandManager;
 
@@ -97,7 +97,7 @@ public:
   cFlexVar GetBioGroupProperty(const cBGGenotype* genotype, const cString& prop) const;
   
 private:
-  unsigned int hashGenome(const cGenome& genome) const;
+  unsigned int hashGenome(const cSequence& genome) const;
   cString nameGenotype(int size);
   
   void removeGenotype(cBGGenotype* genotype);

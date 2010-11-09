@@ -426,7 +426,7 @@ cHeadCPU cHardwareSMT::FindLabel(int direction)
 // Search forwards for search_label from _after_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const cGenome& search_genome, int pos)
+int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const cSequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
 	
@@ -506,7 +506,7 @@ int cHardwareSMT::FindLabel_Forward(const cCodeLabel& search_label, const cGenom
 // Search backwards for search_label from _before_ position pos in the
 // memory.  Return the first line _after_ the the found label.  It is okay
 // to find search label's match inside another label.
-int cHardwareSMT::FindLabel_Backward(const cCodeLabel& search_label, const cGenome& search_genome, int pos)
+int cHardwareSMT::FindLabel_Backward(const cCodeLabel& search_label, const cSequence& search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
 	
@@ -628,7 +628,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
     return false; // (inject fails)
   }
   if (end_pos < MIN_INJECT_SIZE) {
-    m_mem_array[mem_space_used] = cGenome("a"); 
+    m_mem_array[mem_space_used] = cSequence("a"); 
     m_organism->Fault(FAULT_LOC_INJECT, FAULT_TYPE_ERROR, "inject: new size too small");
     return false; // (inject fails)
   }  
@@ -645,7 +645,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
   }
 	
   // reset the memory space that was injected
-  m_mem_array[mem_space_used] = cGenome("a"); 
+  m_mem_array[mem_space_used] = cSequence("a"); 
 	
   for (int x = 0; x < NUM_EXTENDED_HEADS; x++) GetHead(x).Reset(this, IP().GetMemSpace());
   for (int x = 0; x < NUM_LOCAL_STACKS; x++) Stack(x).Clear();
@@ -973,7 +973,7 @@ bool cHardwareSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   bool parent_alive = m_organism->ActivateDivide(ctx);
 	
   //reset the memory of the memory space that has been divided off
-  m_mem_array[mem_space_used] = cGenome("a"); 
+  m_mem_array[mem_space_used] = cSequence("a"); 
 	
   // 3 Division Methods:
   // 1) DIVIDE_METHOD_OFFSPRING - Create a child, leave parent state untouched.

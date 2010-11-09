@@ -28,8 +28,8 @@
 
 #include <fstream>
 
-#ifndef cGenome_h
-#include "cGenome.h"
+#ifndef cSequence_h
+#include "cSequence.h"
 #endif
 #ifndef cMerit_h
 #include "cMerit.h"
@@ -292,19 +292,19 @@ public:
 	
   bool OK();
 
-  void ResetMerit(const cGenome & _cgenome);
+  void ResetMerit(const cSequence & _cgenome);
   void Sterilize();
   // Run when being setup *as* and offspring.
-  void SetupOffspring(const cPhenotype & parent_phenotype, const cGenome & _genome);
+  void SetupOffspring(const cPhenotype & parent_phenotype, const cSequence & _genome);
 
   // Run when being setup as an injected organism.
-  void SetupInject(const cGenome & _genome);
+  void SetupInject(const cSequence & _genome);
 
   // Run when this organism successfully executes a divide.
-  void DivideReset(const cGenome & _genome);
+  void DivideReset(const cSequence & _genome);
   
   // Same as DivideReset(), but only run in test CPUs.
-  void TestDivideReset(const cGenome & _genome);
+  void TestDivideReset(const cSequence & _genome);
 
   // Run when an organism is being forced to replicate, but not at the end
   // of its replication cycle.  Assume exact clone with no mutations.
@@ -393,7 +393,7 @@ public:
 
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
-  void  TrialDivideReset(const cGenome & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
+  void  TrialDivideReset(const cSequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
