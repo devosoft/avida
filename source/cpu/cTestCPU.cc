@@ -134,7 +134,7 @@ bool cTestCPU::ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int
   cOrganism & organism = *( test_info.org_array[cur_depth] );
 
   // Determine how long this organism should be tested for...
-  int time_allocated = m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * organism.GetMetaGenome().GetSize();
+  int time_allocated = m_world->GetConfig().TEST_CPU_TIME_MOD.Get() * organism.GetGenome().GetSize();
   time_allocated += m_res_cpu_cycle_offset; // If the resource offset has us starting at a different time, adjust @JEB
 
   // Prepare the inputs...
@@ -319,7 +319,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   // Case 3:  ////////////////////////////////////
   bool is_ancestor = false;
   for (int anc_depth = 0; anc_depth < cur_depth; anc_depth++) {
-    if (organism->OffspringGenome() == test_info.org_array[anc_depth]->GetMetaGenome()){
+    if (organism->OffspringGenome() == test_info.org_array[anc_depth]->GetGenome()){
       is_ancestor = true;
       const int cur_cycle = cur_depth - anc_depth;
       if (test_info.max_cycle < cur_cycle) test_info.max_cycle = cur_cycle;
@@ -381,7 +381,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cMetaGenome& genome, cStrin
     df.WriteComment(c.Set("Gestation Time..: %d", phenotype.GetGestationTime()));
     df.WriteComment(c.Set("Fitness.........: %f", phenotype.GetFitness()));
     df.WriteComment(c.Set("Errors..........: %d", phenotype.GetLastNumErrors()));
-    df.WriteComment(c.Set("Genome Size.....: %d", organism->GetMetaGenome().GetSize()));
+    df.WriteComment(c.Set("Genome Size.....: %d", organism->GetGenome().GetSize()));
     df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
     df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
     
@@ -486,7 +486,7 @@ void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename
     df.WriteComment(c.Set("Gestation Time..: %d", phenotype.GetGestationTime()));
     df.WriteComment(c.Set("Fitness.........: %f", phenotype.GetFitness()));
     df.WriteComment(c.Set("Errors..........: %d", phenotype.GetLastNumErrors()));
-    df.WriteComment(c.Set("Genome Size.....: %d", organism->GetMetaGenome().GetSize()));
+    df.WriteComment(c.Set("Genome Size.....: %d", organism->GetGenome().GetSize()));
     df.WriteComment(c.Set("Copied Size.....: %d", phenotype.GetCopiedSize()));
     df.WriteComment(c.Set("Executed Size...: %d", phenotype.GetExecutedSize()));
     

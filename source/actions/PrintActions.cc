@@ -282,7 +282,7 @@ public:
     const int num_cells = population.GetSize();
     for (int x = 0; x < num_cells; x++) {
       cPopulationCell& cell = population.GetCell(x);
-      if (cell.IsOccupied() && cell.GetOrganism()->GetMetaGenome().GetInstSet() == is.GetInstSetName()) {
+      if (cell.IsOccupied() && cell.GetOrganism()->GetGenome().GetInstSet() == is.GetInstSetName()) {
         // access this CPU's code block
         cCPUMemory& cpu_mem = cell.GetOrganism()->GetHardware().GetMemory();
         const int mem_size = cpu_mem.GetSize();
@@ -1455,7 +1455,7 @@ public:
       for (int i = 0; i < pop.GetSize(); i++)
       {
         if (pop.GetCell(i).IsOccupied() == false) continue;  //Skip unoccupied cells
-        aligned.Push(pop.GetCell(i).GetOrganism()->GetMetaGenome().GetSequence().AsString());
+        aligned.Push(pop.GetCell(i).GetOrganism()->GetGenome().GetSequence().AsString());
       }
       AlignStringArray(aligned);  //Align our population genomes
     }
@@ -1613,7 +1613,7 @@ public:
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
       cAnalyzeGenotype* genotype = NULL;
       while((genotype = batch_it.Next())){
-        tAutoRelease<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(genotype->GetMetaGenome(), m_num_trials, test_info, m_world, ctx));
+        tAutoRelease<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(genotype->GetGenome(), m_num_trials, test_info, m_world, ctx));
         PrintPPG(fot, ppgen, genotype->GetID(), genotype->GetParents());
       }
       m_world->GetDataFileManager().Remove(this_path);
@@ -2116,7 +2116,7 @@ public:
       
       // create a test-cpu for the current creature
       cCPUTestInfo test_info;
-      testcpu->TestGenome(ctx, test_info, organism->GetMetaGenome());
+      testcpu->TestGenome(ctx, test_info, organism->GetGenome());
       cPhenotype& test_phenotype = test_info.GetTestPhenotype();
       cPhenotype& phenotype = organism->GetPhenotype();
       
@@ -2481,7 +2481,7 @@ public:
 			occupied_cells.pop_back();
 			cOrganism* b = m_world->GetPopulation().GetCell(occupied_cells.back()).GetOrganism(); 
 			occupied_cells.pop_back();
-			edit_distance.Add(cSequence::FindEditDistance(a->GetMetaGenome().GetSequence(), b->GetMetaGenome().GetSequence()));
+			edit_distance.Add(cSequence::FindEditDistance(a->GetGenome().GetSequence(), b->GetGenome().GetSequence()));
 		}
 		
 		df.Write(m_world->GetStats().GetUpdate(), "Update [update]");
@@ -2830,7 +2830,7 @@ public:
         if (pop->GetCell(cell_num).IsOccupied() == true) {
           cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
           cCPUTestInfo test_info;
-          testcpu->TestGenome(ctx, test_info, organism->GetMetaGenome());
+          testcpu->TestGenome(ctx, test_info, organism->GetGenome());
           cPhenotype& test_phenotype = test_info.GetTestPhenotype();
           for (int k = 0; k < num_tasks; k++) {
             if (test_phenotype.GetLastTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k)); 

@@ -40,7 +40,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   , m_handle(NULL)
   , m_src(founder->GetUnitSource())
   , m_src_args(founder->GetUnitSourceArgs())
-  , m_genome(founder->GetMetaGenome())
+  , m_genome(founder->GetGenome())
   , m_name("001-no_name")
   , m_threshold(false)
   , m_active(true)
@@ -303,7 +303,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
   }
   
   // Compare the genomes
-  return (m_genome == bu->GetMetaGenome());
+  return (m_genome == bu->GetGenome());
 }
 
 void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)

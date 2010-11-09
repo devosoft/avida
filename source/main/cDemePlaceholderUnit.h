@@ -53,7 +53,7 @@ public:
   
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cMetaGenome& GetMetaGenome() const { return m_genome; }
+  const cMetaGenome& GetGenome() const { return m_genome; }
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 };
 

@@ -62,7 +62,7 @@ public:
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cMetaGenome& GetMetaGenome() const { return m_initial_genome; }  
+  const cMetaGenome& GetGenome() const { return m_initial_genome; }  
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 
   // --------  cParasite Methods  --------

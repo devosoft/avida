@@ -567,7 +567,7 @@ void cAnalyzeGenotype::Recalculate(cAvidaContext& ctx, cCPUTestInfo* test_info, 
     fitness_ratio = GetFitness() / parent_genotype->GetFitness();
     efficiency_ratio = GetEfficiency() / parent_genotype->GetEfficiency();
     comp_merit_ratio = GetCompMerit() / parent_genotype->GetCompMerit();
-    parent_dist = cStringUtil::EditDistance(m_genome.GetSequence().AsString(), parent_genotype->GetMetaGenome().GetSequence().AsString(), parent_muts);
+    parent_dist = cStringUtil::EditDistance(m_genome.GetSequence().AsString(), parent_genotype->GetGenome().GetSequence().AsString(), parent_muts);
     
     ancestor_dist = parent_genotype->GetAncestorDist() + parent_dist;
   }

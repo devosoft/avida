@@ -106,7 +106,7 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   // Moved to end of function @LZ
 
   // Make sure that neither parent nor child will be below the minimum size.  
-  const int genome_size = m_organism->GetMetaGenome().GetSize();
+  const int genome_size = m_organism->GetGenome().GetSize();
   const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();
   const int min_size = Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
   const int max_size = Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
@@ -599,7 +599,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
 {
   cPhenotype & phenotype = m_organism->GetPhenotype();
-  phenotype.CopyTrue() = ( m_organism->OffspringGenome() == m_organism->GetMetaGenome() );
+  phenotype.CopyTrue() = ( m_organism->OffspringGenome() == m_organism->GetGenome() );
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
@@ -674,7 +674,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   // Ideally, we won't have reversions and sterilizations turned on at the
   // same time, but if we do, give revert the priority.
   if (revert == true) {
-    m_organism->OffspringGenome() = m_organism->GetMetaGenome();
+    m_organism->OffspringGenome() = m_organism->GetGenome();
   }
   
   if (sterilize == true) {
@@ -692,7 +692,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
 bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
 {
   cPhenotype & phenotype = m_organism->GetPhenotype();
-  phenotype.CopyTrue() = (m_organism->OffspringGenome() == m_organism->GetMetaGenome());
+  phenotype.CopyTrue() = (m_organism->OffspringGenome() == m_organism->GetGenome());
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
@@ -771,7 +771,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   // Ideally, we won't have reversions and sterilizations turned on at the
   // same time, but if we do, give revert the priority.
   if (revert == true) {
-	  m_organism->OffspringGenome() = m_organism->GetMetaGenome();
+	  m_organism->OffspringGenome() = m_organism->GetGenome();
   }
   
   if (sterilize == true) {

@@ -142,7 +142,7 @@ cHardwareSMT::cHardwareSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_orga
 {
   m_functions = s_inst_slib->GetFunctions();
 	
-  m_mem_array[0] = in_organism->GetMetaGenome().GetSequence();  // Initialize memory...
+  m_mem_array[0] = in_organism->GetGenome().GetSequence();  // Initialize memory...
   m_mem_array[0].Resize(m_mem_array[0].GetSize() + 1);
   m_mem_array[0][m_mem_array[0].GetSize() - 1] = cInstruction();
   Reset(ctx);                            // Setup the rest of the hardware...
@@ -657,7 +657,7 @@ bool cHardwareSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier)
 
 bool cHardwareSMT::ParasiteInfectHost(cBioUnit* bu)
 {
-  assert(bu->GetMetaGenome().GetHardwareType() == GetType() && bu->GetMetaGenome().GetInstSet() == m_inst_set->GetInstSetName());
+  assert(bu->GetGenome().GetHardwareType() == GetType() && bu->GetGenome().GetInstSet() == m_inst_set->GetInstSetName());
   
   cCodeLabel label;
   label.ReadString(bu->GetUnitSourceArgs());
@@ -683,7 +683,7 @@ bool cHardwareSMT::ParasiteInfectHost(cBioUnit* bu)
   // Create the memory space and copy in the parasite
   int mem_space = FindMemorySpaceLabel(label, -1);
   assert(mem_space != -1);
-  m_mem_array[mem_space] = bu->GetMetaGenome().GetSequence();
+  m_mem_array[mem_space] = bu->GetGenome().GetSequence();
   
   // Setup the thread
   m_threads[thread_id].Reset(this, mem_space);

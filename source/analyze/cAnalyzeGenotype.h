@@ -303,8 +303,8 @@ public:
   // Accessors...
   cWorld* GetWorld() { return m_world; }
 
-  cMetaGenome& GetMetaGenome() { return m_genome; }
-  const cMetaGenome& GetMetaGenome() const { return m_genome; }
+  cMetaGenome& GetGenome() { return m_genome; }
+  const cMetaGenome& GetGenome() const { return m_genome; }
   const cString& GetName() const { return name; }
   const cString& GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }

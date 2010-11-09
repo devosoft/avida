@@ -59,7 +59,7 @@ void cModularityAnalysis::CalcFunctionalModularity(cAvidaContext& ctx)
   cTestCPU* testcpu = m_genotype->GetWorld()->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info = m_test_info;
   
-  const cMetaGenome& base_genome = m_genotype->GetMetaGenome();
+  const cMetaGenome& base_genome = m_genotype->GetGenome();
   const cSequence& base_seq = base_genome.GetSequence();
 
   // Calculate the stats for the genotype we're working with...

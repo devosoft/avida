@@ -50,7 +50,7 @@ public:
   
   virtual eBioUnitSource GetUnitSource() const = 0;
   virtual const cString& GetUnitSourceArgs() const = 0;
-  virtual const cMetaGenome& GetMetaGenome() const = 0;
+  virtual const cMetaGenome& GetGenome() const = 0;
   virtual const cPhenotype& GetPhenotype() const = 0;
   virtual bool	IsParasite();
   

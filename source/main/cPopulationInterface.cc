@@ -780,7 +780,7 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-													 GetOrganism()->GetMetaGenome().GetSequence(),
+													 GetOrganism()->GetGenome().GetSequence(),
 													 fragments);
 	target->GetOrganism()->GetOrgInterface().ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);
 }
@@ -830,7 +830,7 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
-													 source->GetOrganism()->GetMetaGenome().GetSequence(),
+													 source->GetOrganism()->GetGenome().GetSequence(),
 													 fragments);
 	ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);	
 }
@@ -874,7 +874,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cMetaGenome& offspr
 				// this is a little hackish, but this is the cleanest way to make sure
 				// that all downstream stuff works right.
 				cell.ClearFragments();
-				cell.AddGenomeFragments(cell.GetOrganism()->GetMetaGenome().GetSequence());
+				cell.AddGenomeFragments(cell.GetOrganism()->GetGenome().GetSequence());
 				break;
 			}
 			default: { // error
