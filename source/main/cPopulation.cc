@@ -314,13 +314,13 @@ cPopulation::cPopulation(cWorld* world)
   
 }
 
-bool cPopulation::InitiatePop(tList<cString>* errors)
+bool cPopulation::InitiatePop(cUserFeedback* feedback)
 {  
   cGenome start_org;
   const cString& filename = m_world->GetConfig().START_ORGANISM.Get();
   
   if (filename != "-" && filename != "") {
-    if (!start_org.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), errors)) return false;
+    if (!start_org.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback)) return false;
     if (start_org.GetSize() != 0) {
       Inject(start_org, SRC_ORGANISM_FILE_LOAD);
     } else {
@@ -4379,9 +4379,14 @@ bool cPopulation::LoadPopulation(const cString& filename, int cellid_offset, int
   
   cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
-    tConstListIterator<cString> err_it(input_file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) m_world->GetDriver().RaiseException(*errstr);
+    const cUserFeedback& feedback = input_file.GetFeedback();
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
+        case cUserFeedback::WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
+        default:                      m_world->GetDriver().NotifyComment(feedback.GetMessage(i)); break;
+      };
+    }
     return false;
   }
   

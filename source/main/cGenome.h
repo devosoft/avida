@@ -30,6 +30,7 @@
 
 class cDataFile;
 class cHardwareManager;
+class cUserFeedback;
 template <typename T> class tDictionary;
 template <typename T> class tList;
 
@@ -69,7 +70,7 @@ public:
   void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
   void Save(cDataFile& df);
   
-  bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, tList<cString>* errors = NULL);
+  bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cUserFeedback* errors = NULL);
   void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
 };
 

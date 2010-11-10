@@ -40,13 +40,7 @@
 #include "cStringUtil.h"
 #include "tList.h"
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-
+class cUserFeedback;
 template <class T> class tDictionary;
 
 using namespace std;
@@ -145,9 +139,6 @@ public:                                                                    \
 
 
 class cAvidaConfig {
-#if USE_tMemTrack
-  tMemTrack<cAvidaConfig> mt;
-#endif
 private:
   // The cBaseConfigEntry class is a bass class for all configuration entries.
   // It is used to manage the various types of entries in a dynamic fashion.
@@ -825,10 +816,8 @@ public:
 	
 #endif
   
-  inline void Load(const cString& filename, const cString& working_dir) { Load(filename, working_dir, false); }
-  void Load(const cString& filename, const cString& working_dir, bool crash_if_not_found);
-  void Load(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir,
-            bool crash_if_not_found = false, bool warn_default = true);
+  bool Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback = NULL,
+            const tDictionary<cString>* mappings = NULL, bool warn_default = true);
   void Print(const cString& filename);
   void Status();
   void PrintReview();

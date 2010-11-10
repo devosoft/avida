@@ -48,6 +48,7 @@
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
+#include "cUserFeedback.h"
 #include "cWorld.h"
 #include "tAutoRelease.h"
 
@@ -627,11 +628,11 @@ bool cEnvironment::LoadCell(cString desc)
   return true;
 }
 
-bool cEnvironment::LoadReaction(cString desc)
+bool cEnvironment::LoadReaction(cString desc, cUserFeedback* feedback)
 {
   // Make sure this reaction has a description...
   if (desc.GetSize() == 0) {
-    cerr << "Error: Each reaction must include a name and trigger." << endl;
+    if (feedback) feedback->Error("each reaction must include a name and trigger");
     return false;
   }
   
@@ -647,8 +648,7 @@ bool cEnvironment::LoadReaction(cString desc)
   // Make sure this reaction hasn't already been loaded with a different
   // definition.
   if (new_reaction->GetTask() != NULL) {
-    cerr << "Warning: Re-defining reaction '" << name << "'." << endl;
-    // return false;
+    if (feedback) feedback->Warning("re-defining reaction '%s'", (const char*)name);
   }
   
   // Finish loading in this reaction.
@@ -657,16 +657,8 @@ bool cEnvironment::LoadReaction(cString desc)
   
   // Load the task trigger
   cEnvReqs envreqs;
-  tList<cString> errors;
-  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, &errors);
-  if (cur_task == NULL || errors.GetSize() > 0) {
-    cString* err_str;
-    while ((err_str = errors.Pop()) != NULL) {
-      cerr << *err_str << endl;
-      delete err_str;
-    }
-    return false;
-  }
+  cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, feedback);
+  if (cur_task == NULL || (feedback && feedback->GetNumErrors())) return false;
   new_reaction->SetTask(cur_task);      // Attack task to reaction.
   
   while (desc.GetSize()) {
@@ -677,20 +669,17 @@ bool cEnvironment::LoadReaction(cString desc)
     // Determine the type of each argument and process it.
     if (entry_type == "process") {
       if (LoadReactionProcess(new_reaction, desc_entry) == false) {
-        cerr << "...failed in loading reaction-process..." << endl;
+        if (feedback) feedback->Error("failed in loading reaction-process...");
         return false;
       }
     }
     else if (entry_type == "requisite") {
       if (LoadReactionRequisite(new_reaction, desc_entry) == false) {
-        cerr << "...failed in loading reaction-requisite..." << endl;
+        if (feedback) feedback->Error("failed in loading reaction-requisite...");
         return false;
       }
-    }
-    else {
-      cerr << "Unknown entry type '" << entry_type
-      << "' in reaction '" << name << "'"
-      << endl;
+    }else {
+      if (feedback) feedback->Error("unknown entry type '%s' in reaction '%s'", (const char*)entry_type, (const char*)name);
       return false;
     }
   }
@@ -801,7 +790,7 @@ bool cEnvironment::LoadMutation(cString desc)
 }
 
 
-bool cEnvironment::LoadStateGrid(cString desc)
+bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
 {
   // First component is the name
   cString name = desc.Pop(':');
@@ -820,18 +809,10 @@ bool cEnvironment::LoadStateGrid(cString desc)
   schema.AddEntry("grid", 1, cArgSchema::SCHEMA_STRING);
   
   // Load the Arguments
-  tList<cString> errors;
-  tAutoRelease<cArgContainer> args(cArgContainer::Load(desc, schema, &errors));
+  tAutoRelease<cArgContainer> args(cArgContainer::Load(desc, schema, feedback));
   
   // Check for errors loading the arguments
-  if (args.IsNull() || errors.GetSize() > 0) {
-    cString* err_str;
-    while ((err_str = errors.Pop()) != NULL) {
-      cerr << "error: " << *err_str << endl;
-      delete err_str;
-    }
-    return false;
-  }
+  if (args.IsNull() || (feedback && feedback->GetNumErrors())) return false;
   
   // Extract and validate the arguments
   int width = args->GetInt(0);
@@ -841,7 +822,7 @@ bool cEnvironment::LoadStateGrid(cString desc)
   int initfacing = args->GetInt(4);
   
   if (initx >= width || inity >= height) {
-    cerr << "error: initx and inity must not exceed (width - 1) and (height - 1)" << endl;
+    if (feedback) feedback->Error("initx and inity must not exceed (width - 1) and (height - 1)");
     return false;
   }
   
@@ -862,7 +843,7 @@ bool cEnvironment::LoadStateGrid(cString desc)
     // Check for duplicate state definition
     for (int i = 0; i < states.GetSize(); i++) {
       if (statename == states[i]) {
-        cerr << "error: duplicate state identifier for state grid " << name << endl;
+        if (feedback) feedback->Error("duplicate state identifier for state grid %s", (const char*)name);
         return false;
       }
     }
@@ -876,7 +857,7 @@ bool cEnvironment::LoadStateGrid(cString desc)
     state_sense.Push(state_sense_value);
   }
   if (states.GetSize() == 0) {
-    cerr << "error: no states defined for state grid " << name << endl;
+    if (feedback) feedback->Error("no states defined for state grid %s", (const char*)name);
     return false;
   }
   
@@ -896,13 +877,13 @@ bool cEnvironment::LoadStateGrid(cString desc)
       }
     }
     if (!found) {
-      cerr << "error: state identifier undefined for cell (" << (cell / width) << ", "
-      << (cell % width) << ") in state grid " << name << endl;
+      if (feedback) feedback->Error("state identifier undefined for cell (%d, %d) in state grid %s",
+                                    (cell / width), (cell % width), (const char*)name);
       return false;
     }
   }
   if (cell != lgrid.GetSize() || gridstr.GetSize() > 0) {
-    cerr << "error: grid definition size mismatch for state grid " << name << endl;
+    if (feedback) feedback->Error("grid definition size mismatch for state grid %s", (const char*)name);
     return false;
   }
   
@@ -955,7 +936,7 @@ bool cEnvironment::LoadSetActive(cString desc)
   return true;
 }
 
-bool cEnvironment::LoadLine(cString line) 
+bool cEnvironment::LoadLine(cString line, cUserFeedback* feedback) 
 
 /* Routine to read in a line from the enviroment file and hand that line
  line to the approprate routine to process it.                         */ 
@@ -965,46 +946,44 @@ bool cEnvironment::LoadLine(cString line)
   
   bool load_ok = true;
   if (type == "RESOURCE") load_ok = LoadResource(line);
-  else if (type == "REACTION") load_ok = LoadReaction(line);
+  else if (type == "REACTION") load_ok = LoadReaction(line, feedback);
   else if (type == "MUTATION") load_ok = LoadMutation(line);
   else if (type == "SET_ACTIVE") load_ok = LoadSetActive(line);
   else if (type == "CELL") load_ok = LoadCell(line);
-  else if (type == "GRID") load_ok = LoadStateGrid(line);
+  else if (type == "GRID") load_ok = LoadStateGrid(line, feedback);
   else {
-    cerr << "Error: Unknown environment keyword '" << type << "." << endl;
+    if (feedback) feedback->Error("unknown environment keyword '%s'", (const char*)type);
     return false;
   }
   
   if (load_ok == false) {
-    cerr << "...failed in loading '" << type << "'..." << endl;
+    if (feedback) feedback->Error("failed in loading '%s'", (const char*)type);
     return false;
   }
   
   return true;
 }
 
-bool cEnvironment::Load(const cString& filename, const cString& working_dir)
+bool cEnvironment::Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback)
 {
   cInitFile infile(filename, working_dir);
   if (!infile.WasOpened()) {
-    tConstListIterator<cString> err_it(infile.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    cerr << "Error: Failed to load environment '" << filename << "'." << endl;
+    if (feedback) feedback->Append(infile.GetFeedback());
+    if (feedback) feedback->Error("failed to load environment '%s'", (const char*)filename);
     return false;
   }
   
   for (int line_id = 0; line_id < infile.GetNumLines(); line_id++) {
     // Load the next line from the file.
-    bool load_ok = LoadLine(infile.GetLine(line_id));
+    bool load_ok = LoadLine(infile.GetLine(line_id), feedback);
     if (load_ok == false) return false;
   }
   
   // Make sure that all pre-declared reactions have been loaded correctly.
   for (int i = 0; i < reaction_lib.GetSize(); i++) {
     if (reaction_lib.GetReaction(i)->GetTask() == NULL) {
-      cerr << "Error: Pre-declared reaction '"
-      << reaction_lib.GetReaction(i)->GetName() << "' never defined." << endl;
+      if (feedback) feedback->Error("pre-declared reaction '%s' never defined",
+                                    (const char*)reaction_lib.GetReaction(i)->GetName());
       return false;
     }
   }

@@ -66,6 +66,7 @@
 #include "cSchedule.h"
 #include "cStringIterator.h"
 #include "cTestCPU.h"
+#include "cUserFeedback.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "tAnalyzeJob.h"
@@ -131,11 +132,16 @@ void cAnalyze::RunFile(cString filename)
   
   cInitFile analyze_file(filename, m_world->GetWorkingDir());
   if (!analyze_file.WasOpened()) {
-    tConstListIterator<cString> err_it(analyze_file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    cerr << "Warning: Cannot load file: \"" << filename << "\"." << endl
-    << "...creating it..." << endl;
+    const cUserFeedback& feedback = analyze_file.GetFeedback();
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+    cerr << "warning: creating default file: '" << filename << "'" << endl;
     ofstream fp(filename);
     fp << "################################################################################################" << endl
       << "# This file is used to setup avida when it is in analysis-only mode, which can be triggered by"   << endl
@@ -146,9 +152,7 @@ void cAnalyze::RunFile(cString filename)
       << "################################################################################################" << endl
       << endl; 
     fp.close();
-    //if (exit_on_error) exit(1);
-  }
-  else {
+  } else {
     LoadCommandList(analyze_file, command_list);
     ProcessCommands(command_list);
   }
@@ -710,17 +714,22 @@ void cAnalyze::LoadFile(cString cur_string)
   
   cInitFile input_file(filename, m_world->GetWorkingDir());
   if (!input_file.WasOpened()) {
-    tConstListIterator<cString> err_it(input_file.GetErrors());
-    const cString* errstr = NULL;
-    while ((errstr = err_it.Next())) cerr << "Error: " << *errstr << endl;
-    cerr << "Error: Cannot load file: \"" << filename << "\"." << endl;
+    const cUserFeedback& feedback = input_file.GetFeedback();
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
     if (exit_on_error) exit(1);
   }
   
   const cString filetype = input_file.GetFiletype();
   if (filetype != "population_data" &&  // Deprecated
       filetype != "genotype_data") {
-    cerr << "Error: Cannot load files of type \"" << filetype << "\"." << endl;
+    cerr << "error: cannot load files of type \"" << filetype << "\"." << endl;
     if (exit_on_error) exit(1);
   }
   
@@ -7933,8 +7942,17 @@ void cAnalyze::MutationRevert(cString cur_string)
 
 void cAnalyze::EnvironmentSetup(cString cur_string)
 {
+  cUserFeedback feedback;
   cout << "Running environment command: " << endl << "  " << cur_string << endl;  
-  m_world->GetEnvironment().LoadLine(cur_string);
+  m_world->GetEnvironment().LoadLine(cur_string, &feedback);
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::ERROR:    cerr << "error: "; break;
+      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
+  }  
 }
 
 

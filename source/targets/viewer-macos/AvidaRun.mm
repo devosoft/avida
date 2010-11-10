@@ -12,6 +12,7 @@
 
 #include "cAvidaConfig.h"
 #include "cCoreViewDriver.h"
+#include "cUserFeedback.h"
 #include "cWorld.h"
 #include "tDictionary.h"
 
@@ -30,10 +31,35 @@ using namespace AvidaTools;
   if (self) { 
     cAvidaConfig* cfg = new cAvidaConfig;
     cString config_path([[dir path] cStringUsingEncoding:NSASCIIStringEncoding]);
-    tDictionary<cString> defs;
     
-    cfg->Load("avida.cfg", defs, config_path, false, false);
-    cWorld* world = cWorld::Initialize(cfg, config_path);
+    cUserFeedback feedback;
+    if (!cfg->Load("avida.cfg", config_path, &feedback, NULL, false)) {
+      for (int i = 0; i < feedback.GetNumMessages(); i++) {
+        switch (feedback.GetMessageType(i)) {
+          case cUserFeedback::ERROR:    cerr << "error: "; break;
+          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          default: break;
+        };
+        cerr << feedback.GetMessage(i) << endl;
+      }
+      
+      return nil;
+    }
+    
+    
+    cWorld* world = cWorld::Initialize(cfg, config_path, &feedback);
+    
+    
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+    
+    
     if (!world) return nil;
     self->driver = new cCoreViewDriver(world);
   }

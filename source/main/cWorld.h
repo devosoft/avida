@@ -60,6 +60,7 @@ class cMerit;
 class cPopulationCell;
 class cStats;
 class cTestCPU;
+class cUserFeedback;
 class cWorldDriver;
 template<class T> class tDataEntry;
 template<class T> class tDictionary;
@@ -97,7 +98,7 @@ private:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, tList<cString>* errors = NULL);
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL);
   virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
@@ -155,7 +156,7 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(tList<cString>* errors);
+  bool setup(cUserFeedback* errors);
 };
 
 #endif

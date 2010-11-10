@@ -30,33 +30,13 @@
 #ifndef cEnvironment_h
 #define cEnvironment_h
 
-#ifndef cMutationLib_h
 #include "cMutationLib.h"
-#endif
-#ifndef cMutationRates_h
 #include "cMutationRates.h"
-#endif
-#ifndef cReactionLib_h
 #include "cReactionLib.h"
-#endif
-#ifndef cResourceLib_h
 #include "cResourceLib.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef cTaskLib_h
 #include "cTaskLib.h"
-#endif
-#ifndef tList_h
 #include "tList.h"
-#endif
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
 
 #include <set>
 
@@ -71,12 +51,10 @@ class cReactionResult;
 class cStateGrid;
 template <class T> class tBuffer;
 class cTaskContext;
+class cUserFeedback;
 class cWorld;
 
 class cEnvironment {
-#if USE_tMemTrack
-  tMemTrack<cEnvironment> mt;
-#endif
 private:
   cWorld* m_world;
   
@@ -109,9 +87,9 @@ private:
   bool LoadReactionRequisite(cReaction * reaction, cString desc);
   bool LoadResource(cString desc);
   bool LoadCell(cString desc);
-  bool LoadReaction(cString desc);
+  bool LoadReaction(cString desc, cUserFeedback* feedback);
   bool LoadMutation(cString desc);
-  bool LoadStateGrid(cString desc);
+  bool LoadStateGrid(cString desc, cUserFeedback* feedback);
 
   bool LoadSetActive(cString desc);
 
@@ -134,8 +112,8 @@ public:
   cEnvironment(cWorld* world);
   ~cEnvironment();
 
-  bool Load(const cString& filename, const cString& working_dir);  // Reads the environment from disk.
-  bool LoadLine(cString line);  // Reads in a single environment configuration line
+  bool Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback = NULL);
+  bool LoadLine(cString line, cUserFeedback* feedback = NULL);  // Reads in a single environment configuration line
 
   // Interaction with the organisms
   void SetupInputs(cAvidaContext& ctx, tArray<int>& input_array, bool random = true) const;

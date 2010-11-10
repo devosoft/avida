@@ -34,6 +34,7 @@ class cInstSet;
 class cGenome;
 class cOrganism;
 class cStringList;
+class cUserFeedback;
 class cWorld;
 template<typename T> class tList;
 
@@ -56,8 +57,8 @@ public:
   cHardwareManager(cWorld* world);
   ~cHardwareManager();
   
-  bool LoadInstSets(tList<cString>* errors = NULL);
-  bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, tList<cString>* errors = NULL);
+  bool LoadInstSets(cUserFeedback* feedback = NULL);
+  bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, cUserFeedback* feedback = NULL);
   
   cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
@@ -75,7 +76,7 @@ public:
   bool RegisterInstSet(const cString& name, cInstSet* inst_set);
   
 private:
-  bool loadInstSet(int hw_type, const cString& name, cStringList& sl, tList<cString>* errors);
+  bool loadInstSet(int hw_type, const cString& name, cStringList& sl, cUserFeedback* feedback);
 };
 
 

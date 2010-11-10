@@ -26,6 +26,7 @@
 #define tDataCommandManager_h
 
 #include "cStringUtil.h"
+#include "cUserFeedback.h"
 #include "tDataEntry.h"
 #include "tDataEntryCommand.h"
 #include "tDictionary.h"
@@ -55,7 +56,7 @@ public:
   
   const tArray<cString>& GetEntryNames() const { return m_entry_names; }
 
-  tDataEntryCommand<TargetType>* GetDataCommand(const cString& cmd, cString** error_str = NULL) const
+  tDataEntryCommand<TargetType>* GetDataCommand(const cString& cmd, cString* error_str = NULL) const
   {
     cString arg_list = cmd;
     cString idx = arg_list.Pop(':');
@@ -67,15 +68,15 @@ public:
     }
     
     if (error_str) {
-      (*error_str) = new cString(cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", *entry_name,
-                                                      *(m_entry_dict.NearMatch(entry_name))));
+      (*error_str) = cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", *entry_name,
+                                                      *(m_entry_dict.NearMatch(entry_name)));
     }
     
     return NULL;
   }
   
   void LoadCommandList(cStringList arg_list, tList<tDataEntryCommand<TargetType> >& output_list,
-                       tList<cString>* errors = NULL) const
+                       cUserFeedback* feedback = NULL) const
   {
     if (arg_list.GetSize() == 0) {
       // If no args were given, load all of the stats.
@@ -87,10 +88,10 @@ public:
         output_list.PushRear(new tDataEntryCommand<TargetType>(data_entries[i]));
     } else {
       while (arg_list.GetSize() != 0) {
-        cString* error_str = NULL;
-        tDataEntryCommand<TargetType>* cur_command = GetDataCommand(arg_list.Pop());
+        cString error_str;
+        tDataEntryCommand<TargetType>* cur_command = GetDataCommand(arg_list.Pop(), &error_str);
         if (cur_command) output_list.PushRear(cur_command);
-        if (errors && error_str) errors->PushRear(error_str);
+        if (feedback && error_str != "") feedback->Error(error_str);
       }
     }
   }

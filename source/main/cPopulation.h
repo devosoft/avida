@@ -122,7 +122,7 @@ public:
   cPopulation(cWorld* world);
   ~cPopulation();
 
-  bool InitiatePop(tList<cString>* errors = NULL);
+  bool InitiatePop(cUserFeedback* errors = NULL);
 
   void InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, int lineage_label = 0);
 

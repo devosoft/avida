@@ -76,15 +76,14 @@ cString cGenome::AsString() const
   return cStringUtil::Stringf("%d,%s,%s", m_hw_type, (const char*)m_inst_set, (const char*)m_seq.AsString());
 }
 
-bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm,
-                                     tList<cString>* errors)
+bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cUserFeedback* feedback)
 {
   tArraySet<cString> custom_directives;
   custom_directives.Add("inst_set");
   custom_directives.Add("hw_type");
   
   cInitFile input_file(fname, wdir, &custom_directives);
-  if (errors) errors->Append(input_file.GetErrors());
+  if (feedback) feedback->Append(input_file.GetFeedback());
   bool success = true;
 
   if (!input_file.WasOpened()) return false;
@@ -97,8 +96,8 @@ bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHar
     if (hwm.IsInstSet(isname)) {
       is = &hwm.GetInstSet(isname);
     } else {
-      if (errors) errors->PushRear(new cString(cStringUtil::Stringf("invalid instruction set '%s' defined in organism '%s'",
-                                                                    (const char*)isname, (const char*)fname)));
+      if (feedback) feedback->Error("invalid instruction set '%s' defined in organism '%s'",
+                                    (const char*)isname, (const char*)fname);
       return false;
     }
   }
@@ -106,8 +105,8 @@ bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHar
   if (input_file.GetCustomDirectives().HasEntry("hw_type")) {
     m_hw_type = input_file.GetCustomDirectives().Get("hw_type").AsInt();
     if (is->GetHardwareType() != m_hw_type) {
-      if (errors) errors->PushRear(new cString(cStringUtil::Stringf("hardware type mismatch in organism '%s': is = %d, org = %d",
-                                                                    (const char*)fname, is->GetHardwareType(), m_hw_type)));
+      if (feedback) feedback->Error("hardware type mismatch in organism '%s': is = %d, org = %d",
+                                    (const char*)fname, is->GetHardwareType(), m_hw_type);
       return false;      
     }
   }
@@ -122,12 +121,11 @@ bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHar
     
     if (new_seq[line_num] == is->GetInstError()) {
       if (success) {
-        if (errors) errors->PushRear(new cString(cStringUtil::Stringf("unable to load organism '%s'", (const char*)fname)));
+        if (feedback) feedback->Error("unable to load organism '%s'", (const char*)fname);
         success = false;
       } else {
-        if (errors) errors->PushRear(new cString(cStringUtil::Stringf("  unknown instruction: %s (best match: %s)",
-                                                                      (const char*)cur_line,
-                                                                      (const char*)is->FindBestMatch(cur_line))));
+        if (feedback) feedback->Error("  unknown instruction: %s (best match: %s)",
+                                      (const char*)cur_line, (const char*)is->FindBestMatch(cur_line));
       }
     }    
   }

@@ -56,6 +56,7 @@ using namespace std;
 
 class cAvidaContext;
 class cStringList;
+class cUserFeedback;
 class cWorld;
 
 class cInstSet
@@ -153,7 +154,7 @@ public:
   cInstruction GetInstDefault() const { return cInstruction(m_inst_lib->GetInstDefault()); }
   cInstruction GetInstError() const { return cInstruction(255); }
   
-  bool LoadWithStringList(const cStringList& sl, tList<cString>* errors = NULL);
+  bool LoadWithStringList(const cStringList& sl, cUserFeedback* errors = NULL);
 };
 
 

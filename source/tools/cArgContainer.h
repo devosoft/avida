@@ -25,14 +25,11 @@
 #ifndef cArgContainer_h
 #define cArgContainer_h
 
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef tArray_h
 #include "tArray.h"
-#endif
 
 class cArgSchema;
+class cUserFeedback;
 template <class T> class tList;
 
 // A generic argument container that will load in named arguments from a string
@@ -50,7 +47,7 @@ private:
   cArgContainer& operator=(const cArgContainer&); // @not_implemented
   
 public:
-  static cArgContainer* Load(cString args, const cArgSchema& schema, tList<cString>* errors = NULL);
+  static cArgContainer* Load(cString args, const cArgSchema& schema, cUserFeedback* feedback = NULL);
   
   inline int GetInt(int i) const { return m_ints[i]; }
   inline double GetDouble(int i) const { return m_doubles[i]; }

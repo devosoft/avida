@@ -28,6 +28,7 @@
 
 #include "cArgSchema.h"
 #include "cDeme.h"
+#include "cEnvironment.h"
 #include "cEnvReqs.h"
 #include "cTaskState.h"
 #include "cPopulation.h"
@@ -35,9 +36,9 @@
 #include "cOrgMessagePredicate.h"
 #include "cOrgMovementPredicate.h"
 #include "cStateGrid.h"
+#include "cUserFeedback.h"
 #include "tArrayUtils.h"
 #include "tHashMap.h"
-#include "cEnvironment.h"
 
 #include "Platform.h"
 
@@ -74,7 +75,7 @@ inline double cTaskLib::FractionalReward(unsigned int supplied, unsigned int cor
   return static_cast<double>(32 - bit_diff) / 32.0; 
 }
 
-cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, tList<cString>* errors)
+cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   // Determine if this task is already in the active library.
   for (int i = 0; i < task_array.GetSize(); i++) {
@@ -368,41 +369,41 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   // Matching Tasks
   if (name == "matchstr") 
-    Load_MatchStr(name, info, envreqs, errors);
+    Load_MatchStr(name, info, envreqs, feedback);
   else if (name == "match_number")
-    Load_MatchNumber(name, info, envreqs, errors);
+    Load_MatchNumber(name, info, envreqs, feedback);
 	else if (name == "matchprodstr") 
-    Load_MatchProdStr(name, info, envreqs, errors);
+    Load_MatchProdStr(name, info, envreqs, feedback);
 
   
   // Sequence Tasks
   if (name == "sort_inputs")
-    Load_SortInputs(name, info, envreqs, errors);
+    Load_SortInputs(name, info, envreqs, feedback);
   else if (name == "fibonacci_seq")
-    Load_FibonacciSequence(name, info, envreqs, errors);
+    Load_FibonacciSequence(name, info, envreqs, feedback);
   
   // Math Tasks
   if (name == "mult")
-    Load_Mult(name, info, envreqs, errors);
+    Load_Mult(name, info, envreqs, feedback);
   else if (name == "div")
-    Load_Div(name, info, envreqs, errors);
+    Load_Div(name, info, envreqs, feedback);
   else if (name == "log")
-    Load_Log(name, info, envreqs, errors);
+    Load_Log(name, info, envreqs, feedback);
   else if (name == "log2")
-    Load_Log2(name, info, envreqs, errors);
+    Load_Log2(name, info, envreqs, feedback);
   else if (name == "log10")
-    Load_Log10(name, info, envreqs, errors);
+    Load_Log10(name, info, envreqs, feedback);
   else if (name == "sqrt")
-    Load_Sqrt(name, info, envreqs, errors);
+    Load_Sqrt(name, info, envreqs, feedback);
   else if (name == "sine")
-    Load_Sine(name, info, envreqs, errors);
+    Load_Sine(name, info, envreqs, feedback);
   else if (name == "cosine")
-    Load_Cosine(name, info, envreqs, errors);
+    Load_Cosine(name, info, envreqs, feedback);
   
   
   // Optimization Tasks
   if (name == "optimize")
-    Load_Optimize(name, info, envreqs, errors);
+    Load_Optimize(name, info, envreqs, feedback);
   
   // Communication Tasks
   if (name == "comm_echo")
@@ -451,37 +452,33 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   
   // Optimization Tasks
   if (name == "sg_path_traversal")
-    Load_SGPathTraversal(name, info, envreqs, errors);  
+    Load_SGPathTraversal(name, info, envreqs, feedback);  
   
   if (name == "form-group")
-    Load_FormSpatialGroup(name, info, envreqs, errors);
+    Load_FormSpatialGroup(name, info, envreqs, feedback);
 	
   if (name == "form-group-id")
-    Load_FormSpatialGroupWithID(name, info, envreqs, errors);
+    Load_FormSpatialGroupWithID(name, info, envreqs, feedback);
 	
   if (name == "live-on-patch-id")
-    Load_LiveOnPatchRes(name, info, envreqs, errors);
+    Load_LiveOnPatchRes(name, info, envreqs, feedback);
 	
   // String matching
   if(name == "all-ones")
-    Load_AllOnes(name, info, envreqs, errors);
+    Load_AllOnes(name, info, envreqs, feedback);
   else if (name == "royal-road")
-    Load_RoyalRoad(name, info, envreqs, errors);
+    Load_RoyalRoad(name, info, envreqs, feedback);
   else if (name == "royal-road-wd")
-    Load_RoyalRoadWithDitches(name, info, envreqs, errors);
+    Load_RoyalRoadWithDitches(name, info, envreqs, feedback);
   
   // Division of labor
   if(name == "opinion_is") {
-    Load_OpinionIs(name, info, envreqs, errors);
+    Load_OpinionIs(name, info, envreqs, feedback);
   }
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
-    if (errors != NULL && errors->GetSize() == 0) {
-      cString* err_str = new cString();
-      err_str->Set("Unknown task entry '%s'.", static_cast<const char*>(name));
-      errors->PushRear(err_str);
-    }
+    if (feedback && feedback->GetNumErrors() == 0) feedback->Error("unknown task entry '%s'", (const char*)name);
     return NULL;
   }
   
@@ -489,8 +486,7 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   return task_array[start_size];
 }
 
-void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs,
-                       cArgContainer* args)
+void cTaskLib::NewTask(const cString& name, const cString& desc, tTaskTest task_fun, int reqs, cArgContainer* args)
 {
   if (reqs & REQ_NEIGHBOR_INPUT) use_neighbor_input = true;
   if (reqs & REQ_NEIGHBOR_OUTPUT) use_neighbor_output = true;
@@ -2044,14 +2040,14 @@ double cTaskLib::Task_Math3in_AM(cTaskContext& ctx) const //((X+Y)^2+(Y+Z)^2)
 }
 
 
-void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);
   schema.AddEntry("partial",0, 0);
   schema.AddEntry("binary",1,1);
   schema.AddEntry("pow",0,2.0);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   envreqs.SetMinOutputs(args->GetString(0).GetSize());
   if (args) NewTask(name, "MatchStr", &cTaskLib::Task_MatchStr, 0, args);
 }
@@ -2156,7 +2152,7 @@ cString cTaskLib::GetMatchString(int x)
 }
 
 
-void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);		
@@ -2164,7 +2160,7 @@ void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEn
   schema.AddEntry("binary",1,1);
   schema.AddEntry("pow",0,2.0);
 	schema.AddEntry("tag",2,-1);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
   envreqs.SetMinOutputs(args->GetString(0).GetSize());
 	m_strings.push_back(args->GetString(0));
   if (args) NewTask(name, "MatchProdStr", &cTaskLib::Task_MatchStr, 0, args);
@@ -2259,7 +2255,7 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2269,7 +2265,7 @@ void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnv
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Match Number", &cTaskLib::Task_MatchNumber, 0, args);
 }
 
@@ -2291,7 +2287,7 @@ double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2302,7 +2298,7 @@ void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvR
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) {
     envreqs.SetMinInputs(args->GetInt(0));
     envreqs.SetMinOutputs(args->GetInt(0) * 2);
@@ -2430,7 +2426,7 @@ public:
 };
 
 
-void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2439,7 +2435,7 @@ void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr
   // Double Arguments
   schema.AddEntry("penalty", 0, 0.0);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   
   if (args) NewTask(name, "Fibonacci Sequence", &cTaskLib::Task_FibonacciSequence, 0, args);
 }
@@ -2472,7 +2468,7 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2488,7 +2484,7 @@ void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReq
   schema.AddEntry("thresh", 3, -1.0);
   schema.AddEntry("threshMax", 4, -1.0);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) {
     if (args->GetInt(1)) {
       envreqs.SetMinOutputs(args->GetInt(2)*args->GetInt(3));
@@ -2805,7 +2801,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2814,7 +2810,7 @@ void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& e
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Multiplication", &cTaskLib::Task_Mult, 0, args);
 }
 
@@ -2850,7 +2846,7 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2859,7 +2855,7 @@ void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs& en
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Division", &cTaskLib::Task_Div, 0, args);
 }
 
@@ -2895,7 +2891,7 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2904,7 +2900,7 @@ void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs& en
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Logarithm (natural)", &cTaskLib::Task_Log, 0, args);
 }
 
@@ -2937,7 +2933,7 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2946,7 +2942,7 @@ void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs& e
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Logarithm (base-2)", &cTaskLib::Task_Log2, 0, args);
 }
 
@@ -2978,7 +2974,7 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -2987,7 +2983,7 @@ void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& 
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Logarithm (base-10)", &cTaskLib::Task_Log10, 0, args);
 }
 
@@ -3020,7 +3016,7 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -3029,7 +3025,7 @@ void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& e
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Square Root", &cTaskLib::Task_Sqrt, 0, args);
 }
 
@@ -3062,7 +3058,7 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -3071,7 +3067,7 @@ void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& e
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Sine", &cTaskLib::Task_Sine, 0, args);
 }
 
@@ -3105,7 +3101,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
 
 
 void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs,
-			   tList<cString>* errors)
+			   cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -3114,7 +3110,7 @@ void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs&
   // Double Arguments
   schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "Cosine", &cTaskLib::Task_Cosine, 0, args);
 }
 
@@ -3394,7 +3390,7 @@ double cTaskLib::Task_EventKilled(cTaskContext& ctx) const
 
 
 
-void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
 
@@ -3409,7 +3405,7 @@ void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, 
 //  schema.AddEntry("halflife", 0, cArgSchema::SCHEMA_DOUBLE);
 //  schema.AddEntry("base", 1, 2.0);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "State Grid Path Traversal", &cTaskLib::Task_SGPathTraversal, 0, args);
 }
 
@@ -3490,14 +3486,14 @@ double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const
 
 
 void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr,
-				     cEnvReqs& envreqs, tList<cString>* errors)
+				     cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
   // Integer Arguments
   schema.AddEntry("group_size", 0, 1);
   
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "FormSpatialGroups", &cTaskLib::Task_FormSpatialGroup, 0, args);
 }
 
@@ -3530,7 +3526,7 @@ double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
    max number of members. */
 
 void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr,
-					   cEnvReqs& envreqs, tList<cString>* errors)
+					   cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
@@ -3538,7 +3534,7 @@ void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& a
   schema.AddEntry("group_size", 0, 1);
   schema.AddEntry("group_id", 1, 1);
     
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "FormSpatialGroupWithID", &cTaskLib::Task_FormSpatialGroupWithID, 0, args);
   
   // Add this group id to the list in the instructions file. 
@@ -3580,13 +3576,13 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 }
 
 /* Reward organisms for having a given group-id.*/
-void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   
   schema.AddEntry("patch_id", 0, 1);
 
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "LiveOnPatchRes", &cTaskLib::Task_LiveOnPatchRes, 0, args);
 	
   // Add this patch id to the list in the instructions file. 
@@ -3615,11 +3611,11 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
 
 
 
-void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);		
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
   envreqs.SetMinOutputs(args->GetInt(0));
   if (args) NewTask(name, "all-ones", &cTaskLib::Task_AllOnes, 0, args);
 }
@@ -3639,12 +3635,12 @@ double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);
   schema.AddEntry("block_count", 1, 0);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
   envreqs.SetMinOutputs(args->GetInt(0));
   if (args) NewTask(name, "royal-road", &cTaskLib::Task_RoyalRoad, 0, args);
 }
@@ -3677,14 +3673,14 @@ double cTaskLib::Task_RoyalRoad(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors)
+void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback)
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);
   schema.AddEntry("block_count", 1, 0);
   schema.AddEntry("width", 2, 0);
   schema.AddEntry("height", 3, 0);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);	
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);	
   envreqs.SetMinOutputs(args->GetInt(0));
   if (args) NewTask(name, "royal-road-wd", &cTaskLib::Task_RoyalRoadWithDitches, 0, args);
 }
@@ -3770,10 +3766,10 @@ double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 	
 	
 //! Load the command line for checking an opinion.
-void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, tList<cString>* errors) {
+void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback) {
   cArgSchema schema;
   schema.AddEntry("opinion", 0, cArgSchema::SCHEMA_INT);
-  cArgContainer* args = cArgContainer::Load(argstr, schema, errors);
+  cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if(args) {
     NewTask(name, "Whether organism's opinion is set to value.", &cTaskLib::Task_OpinionIs, 0, args);
   }

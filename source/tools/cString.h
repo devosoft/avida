@@ -28,6 +28,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <cstdarg>
 #include <string>
 #include <cstring>
 #include <cassert>
@@ -199,7 +200,8 @@ public:
 
 
   // Additional modifiers
-  cString& Set(const char * fmt, ...);
+  cString& Set(const char* fmt, ...);
+  cString& Set(const char* fmt, va_list args);
 
   cString& Insert(const char in, int pos = 0, int excise = 0) { return InsertStr(1, &in, pos, excise); }
   cString& Insert(const char* in, int pos = 0, int excise = 0) { return InsertStr(strlen(in), in, pos, excise); }

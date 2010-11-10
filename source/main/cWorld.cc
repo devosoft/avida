@@ -33,22 +33,23 @@
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
+#include "cFallbackWorldDriver.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
 #include "cStats.h"
 #include "cTestCPU.h"
-#include "cFallbackWorldDriver.h"
+#include "cUserFeedback.h"
 
 #include <cassert>
 
 using namespace AvidaTools;
 
 
-cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, tList<cString>* errors)
+cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback)
 {
   cWorld* world = new cWorld(cfg, working_dir);
-  if (!world->setup(errors)) {
+  if (!world->setup(feedback)) {
     delete world;
     world = NULL;
   }
@@ -81,7 +82,7 @@ cWorld::~cWorld()
 }
 
 
-bool cWorld::setup(tList<cString>* errors)
+bool cWorld::setup(cUserFeedback* feedback)
 {
   bool success = true;
   
@@ -99,8 +100,7 @@ bool cWorld::setup(tList<cString>* errors)
   
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
-  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir)) {
-    if (errors) errors->PushRear(new cString("unable to load environment"));
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir, feedback)) {
     success = false;
   }
   
@@ -113,11 +113,11 @@ bool cWorld::setup(tList<cString>* errors)
   // Initialize the hardware manager, loading all of the instruction sets
   m_hw_mgr = new cHardwareManager(this);
   if (m_conf->INST_SET_LOAD_LEGACY.Get()) {
-    if (!m_hw_mgr->ConvertLegacyInstSetFile(m_conf->INST_SET.Get(), m_conf->INSTSETS.Get(), errors)) success = false;
+    if (!m_hw_mgr->ConvertLegacyInstSetFile(m_conf->INST_SET.Get(), m_conf->INSTSETS.Get(), feedback)) success = false;
   }
-  if (!m_hw_mgr->LoadInstSets(errors)) success = false;
+  if (!m_hw_mgr->LoadInstSets(feedback)) success = false;
   if (m_hw_mgr->GetNumInstSets() == 0) {
-    if (errors) errors->PushRear(new cString("no instruction sets defined"));
+    if (feedback) feedback->Error("no instruction sets defined");
     success = false;
   }
   
@@ -142,12 +142,12 @@ bool cWorld::setup(tList<cString>* errors)
   m_test_sterilize = (sterilize_fatal || sterilize_neg || sterilize_neut || sterilize_pos || sterilize_taskloss);
 
   m_pop = new cPopulation(this);
-  if (!m_pop->InitiatePop(errors)) success = false;
+  if (!m_pop->InitiatePop(feedback)) success = false;
   
   // Setup Event List
   m_event_list = new cEventList(this);
   if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir)) {
-    if (errors) errors->PushRear(new cString("unable to load environment"));
+    if (feedback) feedback->Error("unable to load event file");
     success = false;
   }
   

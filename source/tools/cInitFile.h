@@ -28,8 +28,8 @@
 
 #include "cString.h"
 #include "cStringList.h"
+#include "cUserFeedback.h"
 #include "tDictionary.h"
-#include "tList.h"
 #include "tSmartArray.h"
 
 #include <iostream>
@@ -44,7 +44,7 @@ private:
   cString m_filename;
   bool m_found;
   bool m_opened;
-  mutable tList<cString> m_errors;
+  mutable cUserFeedback m_feedback;
   
   struct sLine {
     cString line;
@@ -77,7 +77,7 @@ public:
   
   bool WasFound() const { return m_found; }
   bool WasOpened() const { return m_opened; }
-  const tList<cString>& GetErrors() const { return m_errors; }
+  const cUserFeedback& GetFeedback() const { return m_feedback; }
   const tDictionary<cString>& GetCustomDirectives() const { return m_custom_directives; }
   
   void Save(const cString& in_filename = "");
