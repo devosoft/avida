@@ -1049,6 +1049,9 @@ private:
 	cDoubleSum m_incoming; //!< Number of incoming migration events.
 
 public:
+	typedef std::map<std::string, double> profiling_stats_t; //!< Structure to hold average profiling statistics.
+	typedef std::map<std::string, cDoubleSum> avg_profiling_stats_t; //!< Structure to hold statistics for one network.
+
 	//! Record information about an organism migrating from this population.
 	void OutgoingMigrant(const cOrganism* org);
 	
@@ -1057,6 +1060,15 @@ public:
 	
 	//! Print multiprocess data.
 	void PrintMultiProcessData(const cString& filename);
+	
+	//! Track profiling data.
+	void ProfilingData(const profiling_stats_t& pf);
+	
+	//! Print profiling data.
+	void PrintProfilingData(const cString& filename);
+	
+protected:
+	avg_profiling_stats_t m_profiling; //!< Profiling statistics.
 };
 
 

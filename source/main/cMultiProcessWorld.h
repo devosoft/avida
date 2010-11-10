@@ -28,10 +28,12 @@
 #include <boost/mpi.hpp>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
+#include <boost/timer.hpp>
 #include <vector>
 
 #include "cWorld.h"
 #include "cAvidaConfig.h"
+#include "cStats.h"
 
 /*! Multi-process Avida world.
  
@@ -56,6 +58,11 @@ class cMultiProcessWorld : public cWorld
 		int m_universe_x; //!< X coordinate of this world.
 		int m_universe_y; //!< Y coordinate of this world.
 		int m_universe_popsize; //!< Total size of the universe, delayed one update.
+		
+		boost::timer m_update_timer; //!< Tracks the clock-time of updates.
+		boost::timer m_post_update_timer; //!< Tracks the clock-time of post-update processing.
+		boost::timer m_calc_update_timer; //!< Tracks the clock-time of calculating the update size.
+		cStats::profiling_stats_t m_pf; //!< Buffers profiling stats until the post-update step.
 		
 		//! Constructor (prefer Initialize).
 		cMultiProcessWorld(cAvidaConfig* cfg, const cString& cwd, boost::mpi::environment& env, boost::mpi::communicator& worldcomm);

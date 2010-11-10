@@ -3217,3 +3217,28 @@ void cStats::PrintMultiProcessData(const cString& filename) {
 	m_outgoing.Clear();
 	m_incoming.Clear();
 }
+
+/*! Track profiling data.
+ */
+void cStats::ProfilingData(const profiling_stats_t& pf) {
+	for(profiling_stats_t::const_iterator i=pf.begin(); i!=pf.end(); ++i) {
+		m_profiling[i->first].Add(i->second);
+	}
+}
+
+/*! Print profiling data.
+ */
+void cStats::PrintProfilingData(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+
+  df.WriteComment("Profiling statistics");
+  df.WriteTimeStamp();
+	df.Write(GetUpdate(), "Update [update]");
+	
+	for(avg_profiling_stats_t::iterator i=m_profiling.begin(); i!=m_profiling.end(); ++i) {
+		df.Write(i->second.Average(), i->first.c_str());
+	}
+	df.Endl();
+
+	m_profiling.clear();
+}

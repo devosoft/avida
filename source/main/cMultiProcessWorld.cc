@@ -39,6 +39,10 @@
 #include <cmath>
 #include <boost/optional.hpp>
 
+// these strings are used for recording stats; they're the headers for output files.
+static const char* UPDATE="mean update time [ut]";
+static const char* POSTUPDATE="mean post-update time [post]";
+static const char* CALCUPDATE="mean calc-update time [calc]";
 
 /*! Message that is sent from one cMultiProcessWorld to another during organism
  migration.
@@ -254,6 +258,10 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 	namespace mpi = boost::mpi;
 	using namespace boost;
 	
+	// restart the timer for this method, and get the elapsed time for the past update:
+	m_pf[UPDATE] = m_update_timer.elapsed();
+	m_post_update_timer.restart();
+	
 	// wait until we're sure that this process has sent all its messages:
 	mpi::wait_all(m_reqs.begin(), m_reqs.end());
 	m_reqs.clear();
@@ -263,7 +271,7 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 	// barrier, which means that every process must reach the barrier before any are allowed
 	// to proceed.  since we just finished waiting for all communication to complete,
 	// this means that all messages must have been received, too.
-	m_mpi_world.barrier();
+	m_mpi_world.barrier();	
 	
 	// now, receive all the messages, but store them in order by source and tag:
 	typedef std::map<int,migration_message> rx_tag_t;
@@ -320,6 +328,14 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 	// processes is really speedy and manages to migrate another org to this world
 	// before we finished the probe-loop.
 	m_mpi_world.barrier();
+
+	// record profiling stats:
+	m_pf[POSTUPDATE] = m_post_update_timer.elapsed();
+	GetStats().ProfilingData(m_pf);
+	m_pf.clear();
+	
+	// restart the update timer!
+	m_update_timer.restart();
 }
 
 
@@ -344,6 +360,7 @@ int cMultiProcessWorld::CalculateUpdateSize()
 {
 	namespace mpi = boost::mpi;
 	using namespace boost;
+	m_calc_update_timer.restart();
 	
 	int update_size=0;
 	switch(GetConfig().MP_SCHEDULING_STYLE.Get()) {
@@ -377,6 +394,8 @@ int cMultiProcessWorld::CalculateUpdateSize()
 			GetDriver().RaiseFatalException(-1, "Unrecognized MP_SCHEDULING_STYLE.");
 		}
 	}
+	
+	m_pf[CALCUPDATE] = m_calc_update_timer.elapsed();
 	return update_size;
 }
 
