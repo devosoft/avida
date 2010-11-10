@@ -80,16 +80,13 @@ lib avida-core :
     main/cDemeCellEvent.cc
     main/cEnvironment.cc
     main/cEventList.cc
-    main/cFitnessMatrix.cc
     main/cGenome.cc
     main/cGenomeUtil.cc
     main/cInstruction.cc
     main/cLandscape.cc
     main/cLocalMutations.cc
-    main/cMetaGenome.cc
     main/cMutationLib.cc
     main/cMutationRates.cc
-    main/cMxCodeArray.cc
     main/cOrganism.cc
     main/cOrgMessage.cc
     main/cParasite.cc
@@ -107,6 +104,7 @@ lib avida-core :
     main/cResourceCount.cc
     main/cResourceHistory.cc
     main/cResourceLib.cc
+    main/cSequence.cc
     main/cSpatialCountElem.cc
     main/cSpatialResCount.cc
     main/cStats.cc

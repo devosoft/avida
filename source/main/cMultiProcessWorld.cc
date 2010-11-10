@@ -50,7 +50,7 @@ struct migration_message {
 	//! Initializing constructor.
 	migration_message(cOrganism* org, const cPopulationCell& cell, double merit, int lineage)
 	: _merit(merit), _lineage(lineage) {
-		_genome = org->GetSequence().AsString();
+		_genome = org->GetGenome().GetSequence().AsString();
 		cell.GetPosition(_x, _y);
 	}
 	
@@ -305,7 +305,7 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 			
 			GetPopulation().InjectGenome(target_cell,
 																	 SRC_ORGANISM_RANDOM, // for right now, we'll treat this as a random organism injection
-																	 cSequence(cString(migrant._genome.c_str())), // genome unpacked from message
+																	 cGenome(cString(migrant._genome.c_str())), // genome unpacked from message
 																	 migrant._lineage); // lineage label
 			// oh!  update its merit, too:
 			GetPopulation().GetCell(target_cell).GetOrganism()->UpdateMerit(migrant._merit);
