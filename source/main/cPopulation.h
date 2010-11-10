@@ -90,8 +90,7 @@ private:
   tArray<tList<cSaleItem> > market;   // list of lists of items for sale, each list goes with 1 label
   tArrayMap<int, tSmartArray<cOrganism*> > group_list;
   //std::map<int, std::vector<cOrganism*> > group_list; //Keeps track of which organisms are in which group.
-
-
+  
   tVector<pair<int,int> > *sleep_log;
   
   // Data Tracking...

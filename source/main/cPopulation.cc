@@ -87,7 +87,7 @@ using namespace std;
 using namespace AvidaTools;
 
 
-cPopulation::cPopulation(cWorld* world)
+cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
 , schedule(NULL)
 //, resource_count(world->GetEnvironment().GetResourceLib().GetSize())
@@ -3462,6 +3462,26 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
         double msr = m_world->GetRandom().GetDouble();
         if (msr > max_msr) {
           max_msr = msr;
+          cell_id = i;
+        }
+      }
+    }
+    KillOrganism(cell_array[cell_id]);
+  }
+  
+  // Handle Pop Cap Eldest (if enabled)  
+  // Pop Cap Eldest Added sets a population limit whereby oldest in entire population is one killed (as in POPULATION CAP), 
+  // but incoming offspring is born in place as determined by BIRTH METHOD (e.g. facing cell), rather than wherever the 
+  // (killed) oldest was.//APW
+  int pop_eldest = m_world->GetConfig().POP_CAP_ELDEST.Get();
+  if (pop_eldest > 0 && num_organisms >= pop_eldest) {
+    double max_age = 0.0;
+    int cell_id = 0;
+    for (int i = 0; i < cell_array.GetSize(); i++) {
+      if (cell_array[i].IsOccupied() && cell_array[i].GetID() != parent_cell.GetID()) {       
+        double age = cell_array[i].GetOrganism()->GetPhenotype().GetAge();
+        if (age > max_age) {
+          max_age = age;
           cell_id = i;
         }
       }
