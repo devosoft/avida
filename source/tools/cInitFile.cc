@@ -103,7 +103,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
 {
   cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
   if (!file.IsOpen()) {
-    m_errors.PushRear(new cString(cStringUtil::Stringf("Unable to open file '%s'.", (const char*)filename)));
+    m_errors.PushRear(new cString(cStringUtil::Stringf("unable to open file '%s'.", (const char*)filename)));
     return false;   // The file must be opened!
   }
   

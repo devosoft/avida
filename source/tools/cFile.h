@@ -26,14 +26,7 @@
 #ifndef cFile_h
 #define cFile_h
 
-#ifndef cString_h
 #include "cString.h"
-#endif
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
 
 #include <fstream>
 
@@ -46,9 +39,6 @@
 
 class cFile
 {
-#if USE_tMemTrack
-  tMemTrack<cFile> mt;
-#endif
 private:
   cFile(const cFile&); // @not_implemented
   cFile& operator=(const cFile&); // @not_implemented
@@ -102,7 +92,7 @@ public:
   /**
    * Reads the next line in the file.
    **/
-  bool ReadLine(cString & in_string);
+  bool ReadLine(cString& in_string);
   
   // Tests
   bool IsOpen() const { return is_open; }
