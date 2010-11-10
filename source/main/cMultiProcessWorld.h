@@ -55,7 +55,7 @@ class cMultiProcessWorld : public cWorld
 		int m_universe_dim; //!< Dimension (x & y) of the universe (number of worlds along the side of a grid of worlds).
 		int m_universe_x; //!< X coordinate of this world.
 		int m_universe_y; //!< Y coordinate of this world.
-		int m_universe_popsize; //!< Total size of the population, delayed one update.
+		int m_universe_popsize; //!< Total size of the universe, delayed one update.
 		
 		//! Constructor (prefer Initialize).
 		cMultiProcessWorld(cAvidaConfig* cfg, const cString& cwd, boost::mpi::environment& env, boost::mpi::communicator& worldcomm);
@@ -69,6 +69,9 @@ class cMultiProcessWorld : public cWorld
 		
 		//! Migrate this organism to a different world.
 		virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage);
+
+		//! Returns true if an organism should be migrated to a different world, false otherwise.
+		virtual bool TestForMigration();
 		
 		//! Returns true if the given cell is on the boundary of the world, false otherwise.
 		virtual bool IsWorldBoundary(const cPopulationCell& cell);

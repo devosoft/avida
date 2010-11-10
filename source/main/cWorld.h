@@ -138,6 +138,9 @@ public:
 	//! Migrate this organism to a different world (does nothing here; see cMultiProcessWorld).
 	virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage) { }
 
+	//! Returns true if an organism should be migrated to a different world.
+	virtual bool TestForMigration() { return false; }
+		
 	//! Returns true if the given cell is on the boundary of the world, false otherwise.
 	virtual bool IsWorldBoundary(const cPopulationCell& cell) { return false; }
 	

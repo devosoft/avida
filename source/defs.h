@@ -209,6 +209,11 @@ enum eSELECTION_TYPE {
   SELECTION_TYPE_TOURNAMENT
 };
 
+enum eMP_SCHEDULING {
+	MP_SCHEDULING_NULL = 0,
+	MP_SCHEDULING_INTEGRATED
+};
+
 enum eVerbosity {
   VERBOSE_SILENT = 0,   // 0: No output at all
   VERBOSE_NORMAL,       // 1: Notification at start of commands.

@@ -383,11 +383,11 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
   // to a different world.  We check this here so that 1) we avoid all the extra
   // work below in the case of a migration event and 2) so that we don't mess up
   // and mistakenly kill the parent.
-  if (m_world->GetConfig().ENABLE_MP.Get() && (m_world->GetConfig().MP_MIGRATION_P.Get() > 0.0)) {
+  if (m_world->GetConfig().ENABLE_MP.Get()) {
     tArray<cOrganism*> non_migrants;
     tArray<cMerit> non_migrant_merits;
     for (int i=0; i<offspring_array.GetSize(); ++i) {
-      if (m_world->GetRandom().P(m_world->GetConfig().MP_MIGRATION_P.Get())) {
+			if (m_world->TestForMigration()) {
         // this offspring is outta here!
         m_world->MigrateOrganism(offspring_array[i], parent_cell, merit_array[i], parent_organism->GetLineageLabel());
         delete offspring_array[i]; // this offspring isn't hanging around.
