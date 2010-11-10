@@ -50,7 +50,7 @@ struct migration_message {
 	//! Initializing constructor.
 	migration_message(cOrganism* org, const cPopulationCell& cell, double merit, int lineage)
 	: _merit(merit), _lineage(lineage) {
-		_genome = org->GetGenome().GetSequence().AsString();
+		_genome = org->GetGenome().AsString();
 		cell.GetPosition(_x, _y);
 	}
 	
