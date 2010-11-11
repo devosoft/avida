@@ -21,13 +21,13 @@
  *
  */
 
-#include "defs.h"
+#include "Avida.h"
+
 #if BOOST_IS_AVAILABLE
 #include <boost/mpi.hpp>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 
-#include "avida.h"
 #include "cAvidaConfig.h"
 #include "AvidaTools.h"
 #include "cDefaultAnalyzeDriver.h"
@@ -73,9 +73,6 @@ int main(int argc, char * argv[])
   
   driver->Run();
 
-  // Exit Nicely
-  //Avida::Exit(0);
-  
   return 0;
 }
 

@@ -25,12 +25,7 @@
 
 #include "cAnalyze.h"
 
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <queue>
-#include <stack>
+#include "Avida.h"
 
 #include "cActionLibrary.h"
 #include "cAnalyzeCommand.h"
@@ -77,7 +72,12 @@
 #include "tHashMap.h"
 #include "tMatrix.h"
 
-#include "defs.h"
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <queue>
+#include <stack>
 
 #include <cerrno>
 extern "C" {

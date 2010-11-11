@@ -26,6 +26,21 @@
 #ifndef cOrganism_h
 #define cOrganism_h
 
+#include "cBioUnit.h"
+#include "cCPUMemory.h"
+#include "cGenomeTestMetrics.h"
+#include "cGenome.h"
+#include "cMutationRates.h"
+#include "cPhenotype.h"
+#include "cOrgInterface.h"
+#include "cOrgSeqMessage.h"
+#include "cOrgSourceMessage.h"
+#include "cOrgMessage.h"
+#include "tArray.h"
+#include "tBuffer.h"
+#include "tList.h"
+#include "tSmartArray.h"
+
 #include <deque>
 #include <iostream>
 #include <set>
@@ -33,53 +48,6 @@
 #include <vector>
 #include <utility>
 #include <map>
-
-#ifndef cBioUnit_h
-#include "cBioUnit.h"
-#endif
-#ifndef cCPUMemory_h
-#include "cCPUMemory.h"
-#endif
-#ifndef cGenomeTestMetrics_h
-#include "cGenomeTestMetrics.h"
-#endif
-#ifndef cLocalMutations_h
-#include "cLocalMutations.h"
-#endif
-#ifndef cGenome_h
-#include "cGenome.h"
-#endif
-#ifndef cMutationRates_h
-#include "cMutationRates.h"
-#endif
-#ifndef cPhenotype_h
-#include "cPhenotype.h"
-#endif
-#ifndef cOrgInterface_h
-#include "cOrgInterface.h"
-#endif
-#ifndef cOrgSeqMessage_h
-#include "cOrgSeqMessage.h"
-#endif
-#ifndef cOrgSourceMessage_h
-#include "cOrgSourceMessage.h"
-#endif
-#ifndef cOrgMessage_h
-#include "cOrgMessage.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tBuffer_h
-#include "tBuffer.h"
-#endif
-#ifndef tList_h
-#include "tList.h"
-#endif
-#ifndef tSmartArray_h
-#include "tSmartArray.h"
-#endif
-
 
 class cAvidaContext;
 class cBioGroup;
@@ -104,7 +72,6 @@ private:
   const cGenome m_initial_genome;         // Initial genome; can never be changed!
   tArray<cBioUnit*> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
-  cLocalMutations m_mut_info;             // Info about possible mutations;
   cOrgInterface* m_interface;             // Interface back to the population.
   int m_id;                               // unique id for each org, is just the number it was born
   int m_lineage_label;                    // a lineages tag; inherited unchanged in offspring
@@ -194,8 +161,6 @@ public:
 
   const cMutationRates& MutationRates() const { return m_mut_rates; }
   cMutationRates& MutationRates() { return m_mut_rates; }
-  const cLocalMutations& GetLocalMutations() const { return m_mut_info; }
-  cLocalMutations& GetLocalMutations() { return m_mut_info; }
   
   const cOrgInterface& GetOrgInterface() const { assert(m_interface); return *m_interface; }
   cOrgInterface& GetOrgInterface() { assert(m_interface); return *m_interface; }

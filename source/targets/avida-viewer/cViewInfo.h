@@ -8,13 +8,14 @@
 #ifndef cViewInfo_h
 #define cViewInfo_h
 
+#include "Avida.h"
+
 #include "cBioGroup.h"
 #include "cInstSet.h"
 #include "cMerit.h"
 #include "cTextWindow.h"
 #include "cView_Base.h"
 #include "cWorld.h"
-#include "defs.h"
 
 class cEnvironment;
 class cPopulation;

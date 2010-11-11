@@ -32,7 +32,7 @@
 template<typename T> inline T cASCPPParameter::Get() const
 {
   if (strcmp(m_nobj->GetType(), typeid(T).name()) != 0)
-    Avida::Exit(AS_EXIT_INTERNAL_ERROR); // @AS_TODO - report type mismatch error
+    exit(AS_EXIT_INTERNAL_ERROR); // @AS_TODO - report type mismatch error
   return (T)m_nobj->GetObject();
 }
 

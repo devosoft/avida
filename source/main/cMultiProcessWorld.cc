@@ -21,7 +21,8 @@
  *
  */
 
-#include "defs.h"
+#include "Avida.h"
+
 #if BOOST_IS_AVAILABLE
 #include "cSequence.h"
 #include "cOrganism.h"

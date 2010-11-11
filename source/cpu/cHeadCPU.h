@@ -26,18 +26,11 @@
 #ifndef cHeadCPU_h
 #define cHeadCPU_h
 
-#ifndef cCPUMemory_h
+#include "Avida.h"
+
 #include "cCPUMemory.h"
-#endif
-#ifndef cHardwareBase_h
 #include "cHardwareBase.h"
-#endif
-#ifndef cInstSet_h
 #include "cInstSet.h"
-#endif
-#ifndef defs_h
-#include "defs.h"
-#endif
 
 /**
  * The cHeadCPU class contains a pointer to locations in memory for a CPU.

@@ -25,15 +25,7 @@
 #ifndef tSmartArray_h
 #define tSmartArray_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-#ifndef tArray_h
 #include "tArray.h"
-#endif
 
 #include <cassert>
 
@@ -44,9 +36,6 @@ static const int SMRT_SHRINK_TEST_FACTOR = 4;
 
 template <class T> class tSmartArray
 {
-#if USE_tMemTrack
-  tMemTrack<tSmartArray<T> > mt;
-#endif
 private:
   
   T* m_data;    // Data Array

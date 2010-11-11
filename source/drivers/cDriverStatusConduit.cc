@@ -24,8 +24,6 @@
 
 #include "cDriverStatusConduit.h"
 
-#include "avida.h"
-
 #include "cString.h"
 
 #include <iostream>
@@ -38,7 +36,7 @@ void cDriverStatusConduit::SignalError(const cString& msg, int exit_code)
   cerr << "error: " << msg << endl;
   if (exit_code) {
     cerr << "exiting..." << endl;
-    Avida::Exit(exit_code);
+    exit(exit_code);
   }
 }
 

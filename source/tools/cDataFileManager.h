@@ -20,12 +20,6 @@
 #include "tDictionary.h"
 #endif
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 
 /**
  * This class helps to manage a collection of data files. It is possible
@@ -36,10 +30,8 @@ class cDataFile;
 class cString;
 template <class T> class tList; // aggregate
 
-class cDataFileManager {
-#if USE_tMemTrack
-  tMemTrack<cDataFileManager> mt;
-#endif
+class cDataFileManager
+{
 private:
   cString m_target_dir;
   tDictionary<cDataFile*> m_datafiles;

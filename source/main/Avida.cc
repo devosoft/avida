@@ -22,10 +22,9 @@
  *
  */
 
-#include "avida.h"
+#include "Avida.h"
 
 #include "AvidaTools.h"
-#include "defs.h"
 #include "cActionLibrary.h"
 #include "cAnalyzeGenotype.h"
 #include "cAvidaConfig.h"
@@ -68,6 +67,11 @@ const char* const BioUnitSourceMap[] = {
   "para:inject", // SRC_PARASITE_INJECT
   "testcpu", // SRC_TEST_CPU
 };
+  
+static void Exit(int exit_code) {
+  signal(SIGINT, SIG_IGN);          // Ignore all future interupts.
+  exit(exit_code);
+}
   
 void Initialize()
 {
@@ -116,9 +120,6 @@ cString GetVersion()
 #if INSTRUCTION_COUNT
   version += " inst_cnt";
 #endif
-#if USE_tMemTrack
-  version += " memt";
-#endif
   
   return version;
 }
@@ -154,7 +155,9 @@ void PrintVersionBanner()
   cout << "--------------------------------------------------------------------------------" << endl << endl;
 }
 
-void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
+  
+
+static void processArgs(cStringList &argv, cAvidaConfig* cfg)
 {
   int argc = argv.GetSize();
   int arg_num = 1;              // Argument number being looked at.
@@ -327,13 +330,7 @@ void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg)
   for(int i=0; i<argc; i++){
     sl.PushRear(argv[i]);
   }
-  ProcessArgs(sl, cfg);
-}
-
-void Exit(int exit_code)
-{
-  signal(SIGINT, SIG_IGN);          // Ignore all future interupts.
-  exit(exit_code);
+  processArgs(sl, cfg);
 }
 
 };

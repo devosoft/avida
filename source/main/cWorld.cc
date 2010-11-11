@@ -24,9 +24,9 @@
 
 #include "cWorld.h"
 
+#include "Avida.h"
 #include "AvidaTools.h"
 
-#include "avida.h"
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
 #include "cBioGroupManager.h"

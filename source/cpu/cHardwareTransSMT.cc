@@ -29,8 +29,6 @@
 #include "cInstLib.h"
 #include "cInstSet.h"
 #include "cHardwareTracer.h"
-#include "cMutation.h"
-#include "cMutationLib.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cRandom.h"
@@ -40,7 +38,6 @@
 #include "tInstLibEntry.h"
 
 #include "AvidaTools.h"
-#include "nMutation.h"
 
 #include <iomanip>
 

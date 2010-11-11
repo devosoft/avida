@@ -30,12 +30,6 @@
 #include "cAction.h"
 #endif
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 #include "tList.h"
 
 
@@ -50,9 +44,6 @@ class cWorld;
 
 class cEventList
 {
-#if USE_tMemTrack
-  tMemTrack<cEventList> mt;
-#endif
 public:
 
   // Event Trigger Type ====================================================================

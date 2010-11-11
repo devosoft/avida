@@ -26,44 +26,22 @@
 #ifndef cHardwareCPU_h
 #define cHardwareCPU_h
 
+#include "Avida.h"
+
+#include "cCodeLabel.h"
+#include "cHeadCPU.h"
+#include "cCPUMemory.h"
+#include "cCPUStack.h"
+#include "cHardwareBase.h"
+#include "cString.h"
+#include "cStats.h"
+#include "tArray.h"
+#include "tInstLib.h"
+
+#include "nHardware.h"
+
 #include <iomanip>
 #include <vector>
-
-
-#ifndef cCodeLabel_h
-#include "cCodeLabel.h"
-#endif
-#ifndef cHeadCPU_h
-#include "cHeadCPU.h"
-#endif
-#ifndef cCPUMemory_h
-#include "cCPUMemory.h"
-#endif
-#ifndef cCPUStack_h
-#include "cCPUStack.h"
-#endif
-#ifndef cHardwareBase_h
-#include "cHardwareBase.h"
-#endif
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef cStats_h
-#include "cStats.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tInstLib_h
-#include "tInstLib.h"
-#endif
-
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef nHardware_h
-#include "nHardware.h"
-#endif
 
 /**
  * Each organism may have a cHardwareCPU structure which keeps track of the
@@ -74,7 +52,6 @@
 
 class cInstLib;
 class cInstSet;
-class cMutation;
 class cOrganism;
 
 

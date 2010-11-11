@@ -36,12 +36,6 @@
 #include "cRCObject.h"
 #include "tRCPtr.h"
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 #define MAX_STRING_LENGTH 4096
 #define CONTINUE_LINE_CHAR '\\'
 
@@ -52,9 +46,6 @@
 
 class cString
 {
-#if USE_tMemTrack
-  tMemTrack<cString> mt;
-#endif
 protected:
   inline void CopyOnWrite();
 

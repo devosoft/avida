@@ -57,7 +57,6 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, i
   , m_src(src)
   , m_src_args(src_args)
   , m_initial_genome(genome)
-  , m_mut_info(world->GetEnvironment().GetMutationLib(), genome.GetSize())
   , m_interface(NULL)
   , m_lineage_label(-1)
   , m_lineage(NULL)

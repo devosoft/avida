@@ -24,12 +24,12 @@
 
 #include "cAnalyzeJobQueue.h"
 
+#include "Avida.h"
+
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 #include "Platform.h"
-
-#include "defs.h"
 
 
 cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world)

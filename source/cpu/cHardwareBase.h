@@ -117,7 +117,6 @@ public:
   // --------  Helper methods  --------
   virtual int GetType() const = 0;
   virtual bool SupportsSpeculative() const = 0;
-  virtual bool OK() = 0;
   virtual void PrintStatus(std::ostream& fp) = 0;
   void SetTrace(cHardwareTracer* tracer) { m_tracer = tracer; }
   void SetupExtendedMemory(const tArray<int>& ext_mem) { m_ext_mem = ext_mem; }
@@ -182,8 +181,6 @@ public:
     
   // --------  Mutation  --------
   virtual int PointMutate(cAvidaContext& ctx, const double mut_rate);
-  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger);
-  virtual bool TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head);
 
   
   // --------  Input/Output Buffers  --------
@@ -192,7 +189,7 @@ public:
   
   
   // --------  State Transfer  --------
-  virtual void InheritState(cHardwareBase& in_hardware){ ; }
+  virtual void InheritState(cHardwareBase& in_hardware) { ; }
   
   
   // --------  Alarm  --------
@@ -213,7 +210,7 @@ protected:
   // --------  Core Execution Methods  --------
   bool SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst);
   virtual void internalReset() = 0;
-	virtual void internalResetOnFailedDivide() =0;
+	virtual void internalResetOnFailedDivide() = 0;
   
   
   // --------  No-Operation Instruction  --------
@@ -249,15 +246,6 @@ protected:
   unsigned Divide_DoExactMutations(cAvidaContext& ctx, double mut_multiplier = 1.0, const int pointmut = INT_MAX);
   bool Divide_TestFitnessMeasures1(cAvidaContext& ctx);
   
-
-  // --------  Mutation Triggers  --------
-  void TriggerMutations_Body(cAvidaContext& ctx, int type, cSequence& target_memory, cHeadCPU& cur_head);
-  bool TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-																		cSequence& target_memory, cHeadCPU& cur_head, const double rate);
-  bool TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cSequence& target_memory, cHeadCPU& cur_head, const double rate);
-  int TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-																	 cSequence& target_memory, cHeadCPU& cur_head, const double rate);  
 
 private:
   void checkImplicitRepro(cAvidaContext& ctx, bool exec_last_inst = false);

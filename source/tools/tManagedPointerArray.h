@@ -25,23 +25,12 @@
 #ifndef tManagedPointerArray_h
 #define tManagedPointerArray_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-#ifndef tArray_h
 #include "tArray.h"
-#endif
 
 #include <cassert>
 
 template <class T> class tManagedPointerArray
 {
-#if USE_tMemTrack
-  tMemTrack<tManagedPointerArray<T> > mt;
-#endif
 private:
   T** m_data;  // Data Elements
   int m_size;  // Number of Elements

@@ -23,13 +23,13 @@
 
 #include "AvidaTools.h"
 
-#include "avida.h"
+#include "Avida.h"
+
 #include "cAvidaConfig.h"
 #include "cDefaultAnalyzeDriver.h"
 #include "cDefaultRunDriver.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
-#include "defs.h"
 
 using namespace std;
 
@@ -77,9 +77,6 @@ int main(int argc, char * argv[])
   cout << endl;
   
   driver->Run();
-
-  // Exit Nicely
-  Avida::Exit(0);
   
   return 0;
 }

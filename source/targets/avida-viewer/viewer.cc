@@ -23,9 +23,9 @@
 
 #include <csignal>
 
+#include "Avida.h"
 #include "AvidaTools.h"
 
-#include "avida.h"
 #include "cAvidaConfig.h"
 #include "cTextViewerAnalyzeDriver.h"
 #include "cDriverManager.h"
@@ -68,9 +68,6 @@ int main(int argc, char * argv[])
   }
 
   driver->Run();
-  
-  // Exit Nicely
-  Avida::Exit(0);
   
   return 0;
 }

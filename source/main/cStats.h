@@ -26,15 +26,9 @@
 #ifndef cStats_h
 #define cStats_h
 
-#include <cassert>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <map>
-#include <set>
+#include "Avida.h"
 
 #include "AvidaTools.h"
-#include "defs.h"
 #include "cBioGroupListener.h"
 #include "cDoubleSum.h"
 #include "cSequence.h"
@@ -48,6 +42,13 @@
 #include "tArrayMap.h"
 #include "tDataManager.h"
 #include "tMatrix.h"
+
+#include <cassert>
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
 
 class cWorld;
 class cOrganism;

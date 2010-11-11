@@ -25,12 +25,9 @@
 #ifndef cBioUnit_h
 #define cBioUnit_h
 
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef tArray_h
+#include "Avida.h"
+
 #include "tArray.h"
-#endif
 
 class cBioGroup;
 class cGenome;

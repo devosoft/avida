@@ -26,11 +26,9 @@
 #ifndef cInstruction_h
 #define cInstruction_h
 
-#include <cassert>
+#include "Avida.h"
 
-#ifndef defs_h
-#include "defs.h"
-#endif
+#include <cassert>
 
 class cInstruction
 {

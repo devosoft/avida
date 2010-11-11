@@ -35,9 +35,6 @@ class cWorld;
 
 class cAvidaContext
 {
-#if USE_tMemTrack
-  tMemTrack<cAvidaContext> mt;
-#endif
 private:
   cWorld* m_world;
   cRandom* m_rng;

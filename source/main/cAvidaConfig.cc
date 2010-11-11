@@ -25,9 +25,9 @@
 
 #include "cAvidaConfig.h"
 
+#include "Avida.h"
 #include "AvidaTools.h"
 
-#include "defs.h"
 #include "cActionLibrary.h"
 #include "cDriverManager.h"
 #include "cDriverStatusConduit.h"

@@ -25,24 +25,13 @@
 #ifndef cBGGenotypeManager_h
 #define cBGGenotypeManager_h
 
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef cBioGroupManager_h
+#include "Avida.h"
+
 #include "cBioGroupManager.h"
-#endif
-#ifndef cFlexVar_h
 #include "cFlexVar.h"
-#endif
-#ifndef tIterator_h
 #include "tIterator.h"
-#endif
-#ifndef tManagedPointerArray_h
 #include "tManagedPointerArray.h"
-#endif
-#ifndef tSparseVectorList_h
 #include "tSparseVectorList.h"
-#endif
 
 class cBGGenotype;
 class cSequence;

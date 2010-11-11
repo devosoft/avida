@@ -46,10 +46,8 @@
 #ifndef cHardwareGX_h
 #define cHardwareGX_h
 
-#include <iomanip>
-#include <vector>
-#include <list>
-#include <utility>
+#include "Avida.h"
+
 #include "cCodeLabel.h"
 #include "cHeadCPU.h"
 #include "cCPUMemory.h"
@@ -59,13 +57,16 @@
 #include "cStats.h"
 #include "tArray.h"
 #include "tInstLib.h"
-#include "defs.h"
 #include "nHardware.h"
 #include "tBuffer.h"
 
+#include <iomanip>
+#include <vector>
+#include <list>
+#include <utility>
+
 class cInstLib;
 class cInstSet;
-class cMutation;
 class cOrganism;
 
 /*! Each organism may have a cHardwareGX structure that keeps track of the 

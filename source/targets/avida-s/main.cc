@@ -22,7 +22,7 @@
  *
  */
 
-#include "avida.h"
+#include "Avida.h"
 #include "Platform.h"
 
 #include "ASCoreLib.h"
@@ -69,20 +69,20 @@ int main (int argc, char * const argv[])
       
       if (!semantic_check.WasSuccessful()) {
         std::cerr << "error: semantics check failed" << std::endl;
-        Avida::Exit(AS_EXIT_FAIL_SEMANTIC);
+        exit(AS_EXIT_FAIL_SEMANTIC);
       }
       
       cDirectInterpretASTVisitor interpeter(&global_symtbl);
       int exit_code = interpeter.Interpret(tree);
       
-      Avida::Exit(exit_code);
+      exit(exit_code);
     } else {
       std::cerr << "error: parse failed" << std::endl;
-      Avida::Exit(AS_EXIT_FAIL_PARSE);
+      exit(AS_EXIT_FAIL_PARSE);
     }
   } else {
     std::cerr << "error: unable to open script" << std::endl;
-    Avida::Exit(AS_EXIT_FILE_NOT_FOUND);
+    exit(AS_EXIT_FILE_NOT_FOUND);
   }
   
   return AS_EXIT_UNKNOWN;

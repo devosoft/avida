@@ -26,15 +26,10 @@
 #ifndef cReactionProcess_h
 #define cReactionProcess_h
 
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef nReaction_h
-#include "nReaction.h"
-#endif
-#ifndef STRING_HH
+#include "Avida.h"
+
 #include "cString.h"
-#endif
+#include "nReaction.h"
 
 #include <iostream>
 

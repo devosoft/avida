@@ -21,7 +21,8 @@
  *
  */
 
-#include "defs.h" // Must be first.
+#include "Avida.h"
+
 #if BOOST_IS_AVAILABLE
 #include <iterator>
 #include "cDemeTopologyNetwork.h"

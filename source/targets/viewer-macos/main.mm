@@ -23,7 +23,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "avida.h"
+#include "Avida.h"
 
 
 int main(int argc, char *argv[])

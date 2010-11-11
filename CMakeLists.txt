@@ -224,7 +224,7 @@ LIST(APPEND ALL_INC_DIRS ${DRIVERS_DIR})
 # The main directory
 SET(MAIN_DIR ${PROJECT_SOURCE_DIR}/source/main)
 SET(MAIN_SOURCES
-  ${MAIN_DIR}/avida.cc
+  ${MAIN_DIR}/Avida.cc
   ${MAIN_DIR}/cAvidaConfig.cc
   ${MAIN_DIR}/cBirthChamber.cc
   ${MAIN_DIR}/cBirthDemeHandler.cc
@@ -244,8 +244,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cGenomeUtil.cc
   ${MAIN_DIR}/cInstruction.cc
   ${MAIN_DIR}/cLandscape.cc
-  ${MAIN_DIR}/cLocalMutations.cc
-  ${MAIN_DIR}/cMutationLib.cc
   ${MAIN_DIR}/cMutationRates.cc
   ${MAIN_DIR}/cOrganism.cc
   ${MAIN_DIR}/cOrgMessage.cc

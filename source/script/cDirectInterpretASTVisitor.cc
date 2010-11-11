@@ -27,7 +27,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "avida.h"
+#include "Avida.h"
 #include "AvidaScript.h"
 
 #include "cASFunction.h"
@@ -2885,7 +2885,7 @@ void cDirectInterpretASTVisitor::reportError(ASDirectInterpretError_t err, const
   }
   va_end(vargs);
   
-  Avida::Exit(AS_EXIT_FAIL_INTERPRET);
+  exit(AS_EXIT_FAIL_INTERPRET);
   
 #undef ERR_ENDL
 #undef VA_ARG_STR

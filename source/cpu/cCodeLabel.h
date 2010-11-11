@@ -26,18 +26,11 @@
 #ifndef cCodeLabel_h
 #define cCodeLabel_h
 
-#ifndef nHardware_h
-#include "nHardware.h"
-#endif
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef cString_h
+#include "Avida.h"
+
 #include "cString.h"
-#endif
-#ifndef tArray_h
+#include "nHardware.h"
 #include "tArray.h"
-#endif
 
 /**
  * The cCodeLabel class is used to identify a label within the genotype of

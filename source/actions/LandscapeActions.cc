@@ -24,6 +24,8 @@
 
 #include "LandscapeActions.h"
 
+#include "Avida.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
@@ -47,8 +49,6 @@
 #include "tAnalyzeJob.h"
 #include "tAnalyzeJobBatch.h"
 #include "tSmartArray.h"
-
-#include "defs.h"
 
 
 class cActionAnalyzeLandscape : public cAction  // @parallelized

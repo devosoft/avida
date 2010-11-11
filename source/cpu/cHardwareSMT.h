@@ -25,37 +25,17 @@
 #ifndef cHardwareSMT_h
 #define cHardwareSMT_h
 
-#ifndef defs_h
-#include "defs.h"
-#endif
+#include "Avida.h"
 
-#ifndef cCodeLabel_h
 #include "cCodeLabel.h"
-#endif
-#ifndef cCPUMemory_h
 #include "cCPUMemory.h"
-#endif
-#ifndef cCPUStack_h
 #include "cCPUStack.h"
-#endif
-#ifndef cHeadCPU_h
 #include "cHeadCPU.h"
-#endif
-#ifndef cHardwareBase_h
 #include "cHardwareBase.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef tHashMap_h
 #include "tHashMap.h"
-#endif
-#ifndef tInstLib_h
 #include "tInstLib.h"
-#endif
-#ifndef tManagedPointerArray_h
 #include "tManagedPointerArray.h"
-#endif
 
 
 class cHardwareSMT : public cHardwareBase
