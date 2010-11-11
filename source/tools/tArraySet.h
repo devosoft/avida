@@ -25,6 +25,8 @@
 #ifndef tArraySet_h
 #define tArraySet_h
 
+#include <cassert>
+
 template <class T> class tArraySet
 {
 private:

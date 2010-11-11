@@ -289,6 +289,10 @@
 		7039884E09F00D030052ACE7 /* avida.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
 		7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
 		7039885009F00D080052ACE7 /* events.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D809EE8501001AEA89 /* events.cfg */; };
+		7042DF14128C90240062501F /* AvidaViewer.h in Headers */ = {isa = PBXBuildFile; fileRef = 7042DF12128C90240062501F /* AvidaViewer.h */; };
+		7042DF15128C90240062501F /* AvidaViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7042DF13128C90240062501F /* AvidaViewer.cc */; };
+		7042DF2D128C90E60062501F /* cCoreViewListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 7042DF2C128C90E60062501F /* cCoreViewListener.h */; };
+		7042DF30128C91BE0062501F /* cCocoaListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7042DF2F128C91BE0062501F /* cCocoaListener.mm */; };
 		704368D60C31991500A05ABA /* ASTree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 704368CC0C3198F200A05ABA /* ASTree.cc */; };
 		7044019812785C8B00368ECC /* AvidaRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7044019712785C8B00368ECC /* AvidaRun.mm */; };
 		70440597128B317500368ECC /* cUserFeedback.h in Headers */ = {isa = PBXBuildFile; fileRef = 70440595128B317500368ECC /* cUserFeedback.h */; };
@@ -952,6 +956,11 @@
 		70422A23091B141000A5E67F /* cAnalyzeFunction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeFunction.h; sourceTree = "<group>"; };
 		70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeGenotype.cc; sourceTree = "<group>"; };
 		70422A25091B141000A5E67F /* cAnalyzeGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyzeGenotype.h; sourceTree = "<group>"; };
+		7042DF12128C90240062501F /* AvidaViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaViewer.h; sourceTree = "<group>"; };
+		7042DF13128C90240062501F /* AvidaViewer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AvidaViewer.cc; sourceTree = "<group>"; };
+		7042DF2C128C90E60062501F /* cCoreViewListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cCoreViewListener.h; sourceTree = "<group>"; };
+		7042DF2E128C91BE0062501F /* cCocoaListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cCocoaListener.h; sourceTree = "<group>"; };
+		7042DF2F128C91BE0062501F /* cCocoaListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cCocoaListener.mm; sourceTree = "<group>"; };
 		704368CC0C3198F200A05ABA /* ASTree.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ASTree.cc; sourceTree = "<group>"; };
 		704368CD0C3198F200A05ABA /* ASTree.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ASTree.h; sourceTree = "<group>"; };
 		704368F50C32E6AB00A05ABA /* cFlexVar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cFlexVar.h; sourceTree = "<group>"; };
@@ -1846,6 +1855,8 @@
 				70823AB4126F781700FA937F /* main.mm */,
 				7044019612785C8B00368ECC /* AvidaRun.h */,
 				7044019712785C8B00368ECC /* AvidaRun.mm */,
+				7042DF2E128C91BE0062501F /* cCocoaListener.h */,
+				7042DF2F128C91BE0062501F /* cCocoaListener.mm */,
 			);
 			name = "viewer-macos";
 			sourceTree = "<group>";
@@ -1918,6 +1929,7 @@
 		70A1E324125CDF2B00D56AC4 /* viewer-core */ = {
 			isa = PBXGroup;
 			children = (
+				7042DF2C128C90E60062501F /* cCoreViewListener.h */,
 				70A1E325125CDF2B00D56AC4 /* cCoreView_Info.cc */,
 				70A1E326125CDF2B00D56AC4 /* cCoreView_Info.h */,
 				70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */,
@@ -1925,6 +1937,8 @@
 				70A1E329125CDF2B00D56AC4 /* LAYOUT */,
 				70E14D4A1279FA5B0059FB9D /* cCoreViewDriver.h */,
 				70E14D4B1279FA5B0059FB9D /* cCoreViewDriver.cpp */,
+				7042DF12128C90240062501F /* AvidaViewer.h */,
+				7042DF13128C90240062501F /* AvidaViewer.cc */,
 			);
 			path = "viewer-core";
 			sourceTree = "<group>";
@@ -2571,6 +2585,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				70E14D4C1279FA5B0059FB9D /* cCoreViewDriver.h in Headers */,
+				7042DF14128C90240062501F /* AvidaViewer.h in Headers */,
+				7042DF2D128C90E60062501F /* cCoreViewListener.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3039,6 +3055,7 @@
 				706C7B6C125F64CC00EDB4B9 /* cColor.cc in Sources */,
 				706C7B6D125F64D300EDB4B9 /* cGUIWidget.cc in Sources */,
 				70E14D4D1279FA5B0059FB9D /* cCoreViewDriver.cpp in Sources */,
+				7042DF15128C90240062501F /* AvidaViewer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3050,6 +3067,7 @@
 				70823AB9126F781700FA937F /* main.mm in Sources */,
 				704D974E1277629D00776779 /* MainWindowController.mm in Sources */,
 				7044019812785C8B00368ECC /* AvidaRun.mm in Sources */,
+				7042DF30128C91BE0062501F /* cCocoaListener.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

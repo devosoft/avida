@@ -28,16 +28,28 @@
 #include "cAvidaDriver.h"
 #include "cWorldDriver.h"
 
+#include "cConditionVariable.h"
+#include "cMutex.h"
+#include "cThread.h"
+#include "tArraySet.h"
+
+class cCoreViewListener;
 class cWorld;
 
 
-class cCoreViewDriver : public cAvidaDriver, public cWorldDriver
+class cCoreViewDriver : public cThread, public cWorldDriver
 {
 private:
   cWorld* m_world;
+  
+  cMutex m_mutex;
+  cConditionVariable m_pause_cv;
   eDriverPauseState m_pause_state;
+  bool m_done;
   bool m_paused;
   
+  tArraySet<cCoreViewListener*> m_listeners;
+
   
   cCoreViewDriver(); // @not_implemented
   cCoreViewDriver(const cCoreViewDriver&); // @not_implemented
@@ -48,13 +60,11 @@ public:
   cCoreViewDriver(cWorld* world);
   ~cCoreViewDriver();
   
-  void Run();
-  
   // Driver Actions
   void SignalBreakpoint() { ; }
-  void SetDone() { ; }
-  void SetPause() { m_pause_state = DRIVER_PAUSED; m_paused = true; }
-  void Resume() { m_pause_state = DRIVER_UNPAUSED; m_paused = false; }
+  void SetDone() { m_mutex.Lock(); m_done = true; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
+  void SetPause() { m_mutex.Lock(); m_pause_state = DRIVER_PAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
+  void Resume() { m_mutex.Lock(); m_pause_state = DRIVER_UNPAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
   
   void RaiseException(const cString& in_string);
   void RaiseFatalException(int exit_code, const cString& in_string);
@@ -66,6 +76,12 @@ public:
   
   eDriverPauseState GetPauseState() const { return m_pause_state; }
   bool IsPaused() const { return m_paused; }
+  
+  void AttachListener(cCoreViewListener* listener) { m_listeners.Add(listener); }
+  void DetachListener(cCoreViewListener* listener) { m_listeners.Remove(listener); }
+
+protected:
+  void Run();
 };
 
 #endif
