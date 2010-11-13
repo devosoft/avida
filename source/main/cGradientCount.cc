@@ -94,10 +94,11 @@ void cGradientCount::UpdateCount()
   if (m_counter == m_decay) {
     cRandom rand;
     m_peakx = /*m_world->GetRandom()*/rand.GetUInt(m_min_x, m_max_x);
-    m_peaky = /*m_world->GetRandom()*/rand.GetUInt(m_min_y, m_max_y);      
+    m_peaky = /*m_world->GetRandom()*/rand.GetUInt(m_min_y, m_max_y); 
+    SetModified(false);
   }
   
-  
+
   // move cones by moving m_peakx & m_peaky, but only if the cone has not been bitten
   //issues: how to store 'new' peakx, peaky data
   //      how to esnure movement only when not yet bitten

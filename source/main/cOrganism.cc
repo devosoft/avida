@@ -275,7 +275,7 @@ void cOrganism::SetRBin(const int index, const double value)
 void cOrganism::AddToRBin(const int index, const double value) 
 { 
 	m_phenotype.AddToCurRBinAvail(index, value);
-	
+
 	if(value > 0)
 	{ m_phenotype.AddToCurRBinTotal(index, value); }
 }  
@@ -1032,6 +1032,9 @@ void cOrganism::Move(cAvidaContext& ctx)
   
   // Actually perform the move
   m_interface->Move(ctx, fromcellID, destcellID);
+  
+  // Check to make sure the organism is still alive
+  if (m_phenotype.GetToDelete()) return;
   
   // updates movement predicates
   m_world->GetStats().Move(*this);

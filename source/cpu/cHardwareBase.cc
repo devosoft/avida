@@ -1058,7 +1058,7 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // with executing an instruction and only return true when that instruction
 // should proceed.
 bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
-{
+{ 
 #if INSTRUCTION_COSTS
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
@@ -1089,10 +1089,10 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
     }
   }
 	
-  if (m_has_res_costs = true) {
-    double res_req = m_inst_res_cost[cur_inst.GetOp()]; //APW
+  if (m_has_res_costs) {
+    double res_req = m_inst_set->GetResCost(cur_inst); //APW
     int cellID = m_organism->GetCellID();
-    
+
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
     tArray<double> res_change(res_count.GetSize());
     res_change.SetAll(0.0);
@@ -1100,15 +1100,15 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
     if((cellID != -1) && (res_req > 0.0)) { // guard against running in the test cpu.
       const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
       double res_stored = m_organism->GetRBin(resource);
-      
+
       if (res_stored >= res_req) {
-				m_inst_res_cost[cur_inst.GetOp()] = 0.0;
+//				m_inst_res_cost[cur_inst.GetOp()] = 0.0;
         
 				// subtract res used from current bin
         m_organism->AddToRBin(resource, res_req * -1); 
       } 
-      if (res_stored < res_req && m_world->GetStats().GetUpdate() != 0) {
-      /*  m_organism->GetPhenotype().SetToDie(); */ // no more, you're dead...  (eviler laugh)
+      if (res_stored < res_req) {
+        m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
 				return false;
       }
     }
