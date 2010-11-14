@@ -99,17 +99,7 @@ void cGradientCount::UpdateCount()
   }
   
 
-  // move cones by moving m_peakx & m_peaky, but only if the cone has not been bitten
-  //issues: how to store 'new' peakx, peaky data
-  //      how to esnure movement only when not yet bitten
-  
-/*  if (m_world->GetStats().GetUpdate() == 0) {
-    moveYscaler = 0.5;
-    cerr << (moveYscaler) << endl;
-    movesignx = 1.0;
-    movesigny = 1.0;
-  }*/ 
-  
+  // move cones by moving m_peakx & m_peaky, but only if the cone has not been bitten  
   moveYscaler = m_move_a_scaler * moveYscaler * (1 - moveYscaler); 
 
   double temp_peakx = m_peakx + moveYscaler;
@@ -120,11 +110,11 @@ void cGradientCount::UpdateCount()
 
   m_peakx = m_peakx + (movesignx * moveYscaler)+.5;
   
-  
   if (temp_peaky > (m_max_y - m_height)) movesigny = -1.0;
   if (temp_peaky < (m_min_y + m_height)) movesigny = 1.0;
     
   m_peaky = m_peaky + (movesigny * moveYscaler)+.5; 
+
     
   double thisdist;
   double thisheight = 0.0;

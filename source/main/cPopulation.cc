@@ -849,6 +849,13 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   KillOrganism(cell_array[cell_id]);
 }
 
+//Attack organism faced by this one, if there is an organism in front.
+void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
+{
+  cPopulationCell& loser_cell = GetCell(loser);
+  KillOrganism(loser_cell);
+}  //APW	
+
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
 {
   // do we actually have something to kill?

@@ -75,7 +75,7 @@ public:
     double prob_fail;         // probability of failing to execute inst
     int addl_time_cost;       // additional time added to age for executing instruction
     int inst_code;            // instruction binary code
-    double res_cost;          // resources (from bins) required to execute inst //APW
+    double res_cost;          // resources (from bins) required to execute inst (this is the 5th column after instname //APW
   };
   tSmartArray<sInstEntry> m_lib_name_map;
   

@@ -904,7 +904,9 @@ public:
   bool Inst_MarkCellWithID(cAvidaContext& ctx);
   bool Inst_MarkCellWithVitality(cAvidaContext& ctx);
   bool Inst_GetID(cAvidaContext& ctx);
-  
+  bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); //APW
+  bool Inst_GetFacedOrgID(cAvidaContext& ctx);  //APW
+  bool Inst_AttackFacedOrg(cAvidaContext& ctx);  //APW
 	
 private:
 	std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.

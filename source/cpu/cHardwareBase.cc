@@ -1104,8 +1104,11 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
       if (res_stored >= res_req) {
 //				m_inst_res_cost[cur_inst.GetOp()] = 0.0;
         
-				// subtract res used from current bin
-        m_organism->AddToRBin(resource, res_req * -1); 
+				// subtract res used from current bin by adding negative value
+        double cost = res_req * -1.0;
+        m_organism->AddToRBin(resource, cost); 
+        double res_store = m_organism->GetRBin(resource);
+//        cout << "res_before:" << res_stored << " " << "cost" << cost << "  " << "res_after" << res_store << "  ";
       } 
       if (res_stored < res_req) {
         m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)

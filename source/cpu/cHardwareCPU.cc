@@ -611,8 +611,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("mark-cell-with-id", &cHardwareCPU::Inst_MarkCellWithID),
     tInstLibEntry<tMethod>("mark-cell-with-vitality", &cHardwareCPU::Inst_MarkCellWithVitality),
     tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
-    //tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID),  //APW
-
+    tInstLibEntry<tMethod>("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff),  //APW
+    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID),  //APW
+    tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg),  //APW
 		
 		// Synchronization
     tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
@@ -651,7 +652,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 
 		// Group formation instructions
 		tInstLibEntry<tMethod>("join-group", &cHardwareCPU::Inst_JoinGroup, nInstFlag::STALL),
-	        tInstLibEntry<tMethod>("kill-group-member", &cHardwareCPU::Inst_KillGroupMember, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("kill-group-member", &cHardwareCPU::Inst_KillGroupMember, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-my-group", &cHardwareCPU::Inst_NumberOrgsInMyGroup, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, nInstFlag::STALL),
 		
@@ -8386,7 +8387,7 @@ bool cHardwareCPU::Inst_ReadFacedCellData(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = m_organism->GetFacedCellData();
+  GetRegister(out_reg) = m_organism->GetFacedCellData() - m_organism->GetVitality();
   return true;
 }
 
@@ -8428,14 +8429,68 @@ bool cHardwareCPU::Inst_GetID(cAvidaContext& ctx)
   return true;
 }
 
-/*bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
+bool cHardwareCPU::Inst_GetFacedVitalityDiff(cAvidaContext& ctx)
+//Get vitality of organism faced by this one, if there is an organism in front.
 {
   assert(m_organism != 0);
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if( (neighbor == NULL) || (neighbor->IsDead()) ) {
+    return false;  
+  }
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = m_organism->GetFacedOrgID();
+  GetRegister(out_reg) = m_organism->GetVitality() - neighbor->GetVitality();
   return true;
-} */ //APW
+}  //APW
 
+bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
+//Get ID of organism faced by this one, if there is an organism in front.
+{
+  assert(m_organism != 0);
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if( (neighbor == NULL) || (neighbor->IsDead()) ) {
+    return false;  
+  }
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = neighbor->GetID();
+  return true;
+}  //APW
+
+//Attack organism faced by this one, if there is an organism in front.
+bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  cOrganism * target = m_organism->GetNeighbor();
+  if( (target == NULL) || (target->IsDead()) ) {
+    return false;  
+  }
+    int attacker_cell = m_organism->GetCellID();
+    int target_cell = target->GetCellID();
+    
+    bool kill_attacker = true;
+    double attacker_vitality = m_organism->GetVitality();
+    double target_vitality = target->GetVitality();
+    
+    double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+    double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    
+    double decider = ctx.GetRandom().GetDouble(1);
+    
+    kill_attacker = (attacker_odds < decider);
+    //  kill_target = (target_odds < decider);
+    
+    if (decider > attacker_odds && decider > target_odds){
+//    cout << "attacker_odds:"<<attacker_odds<< "  " << "target_odds:"<<target_odds << "  " << "decider:"<<decider<<"  "<<"killed_nobody" << '\n';
+      return false;
+    }
+    if (kill_attacker){
+      m_world->GetPopulation().AttackFacedOrg(ctx, attacker_cell);
+//      cout << "attacker_odds:"<<attacker_odds<< "  " << "target_odds:"<<target_odds << "  " << "decider:"<<decider<<"  "<< "killed_attacker" <<  '\n';
+      return true;
+    }
+    m_world->GetPopulation().AttackFacedOrg(ctx, target_cell);
+//        cout << "attacker_odds:"<<attacker_odds<< "  " << "target_odds:"<<target_odds << "  " << "decider:"<<decider<<"  "<< "killed_target" <<  '\n';
+    return true;
+  }  //APW		
 
 
 /*! Called when the organism that owns this CPU has received a flash from a neighbor. */
