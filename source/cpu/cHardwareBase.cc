@@ -1107,11 +1107,14 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 				// subtract res used from current bin by adding negative value
         double cost = res_req * -1.0;
         m_organism->AddToRBin(resource, cost); 
-        double res_store = m_organism->GetRBin(resource);
+        
+//        double res_store = m_organism->GetRBin(resource);
 //        cout << "res_before:" << res_stored << " " << "cost" << cost << "  " << "res_after" << res_store << "  ";
       } 
       if (res_stored < res_req) {
         m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
+        
+//        cout << "res_before:" << res_stored << " " << "res_req" << res_req << "  ";
 				return false;
       }
     }

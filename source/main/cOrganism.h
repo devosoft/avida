@@ -282,6 +282,7 @@ public:
   tBuffer<int>& GetInputBuf() { return m_input_buf; }
   tBuffer<int>& GetOutputBuf() { return m_output_buf; }
   void Die() { m_interface->Die(); m_is_dead = true; }
+  void KillCellID(int target) { m_interface->KillCellID(target); }
   void Kaboom(int dist) { m_interface->Kaboom(dist);}
   void SpawnDeme() { m_interface->SpawnDeme(); }
   bool GetSentActive() { return m_sent_active; }

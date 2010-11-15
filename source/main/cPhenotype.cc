@@ -562,9 +562,9 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);
   cur_rbins_avail.SetAll(0);
-  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   //APW //A concern is that this will override any bin contents in reloaded organisms, but does SavePopulation save those anyway?
+  if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   //APW
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
   }
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
@@ -802,13 +802,12 @@ void cPhenotype::DivideReset(const cGenome & _genome)
     // resources available are split in half -- the offspring gets the other half
     for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
   }
-  else if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
-    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();  //APW a worry is that this will override split settings
-  } 
-  else {
-    cur_rbins_avail.SetAll(0);
+  else if (m_world->GetConfig().DIVIDE_METHOD.Get() != 0) {
+        cur_rbins_avail.SetAll(0);
   }
+  else {
+    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] = cur_rbins_avail[i];}  
+  } 
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);

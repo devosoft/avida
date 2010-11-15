@@ -235,6 +235,12 @@ void cPopulationInterface::Die()
   m_world->GetPopulation().KillOrganism(cell);
 }
 
+void cPopulationInterface::KillCellID(int target)
+{
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(target);
+  m_world->GetPopulation().KillOrganism(cell);
+}
+
 void cPopulationInterface::Kaboom(int distance)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);

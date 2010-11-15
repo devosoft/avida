@@ -903,6 +903,7 @@ public:
   bool Inst_ReadFacedCellDataFreshness(cAvidaContext& ctx);
   bool Inst_MarkCellWithID(cAvidaContext& ctx);
   bool Inst_MarkCellWithVitality(cAvidaContext& ctx);
+  bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetID(cAvidaContext& ctx);
   bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); //APW
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);  //APW

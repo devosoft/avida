@@ -87,6 +87,7 @@ public:
   void UpdateResources(const tArray<double>& res_change);
   void UpdateDemeResources(const tArray<double>& res_change) {;}
   void Die();
+  void KillCellID(int target);
   void Kaboom(int distance);
   void SpawnDeme();
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message

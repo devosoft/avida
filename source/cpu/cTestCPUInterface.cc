@@ -101,6 +101,10 @@ void cTestCPUInterface::Die()
 {
 }
 
+void cTestCPUInterface::KillCellID(int target)
+{
+}
+
 void cTestCPUInterface::Kaboom(int distance)
 {
   (void) distance;
