@@ -602,7 +602,7 @@
         {
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_06C4AF4AE3614229955ACE796D614658"
             {
-            "SourcePath" = "8:..\\documentation\\images\\AvidaLogo.gif"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\images\\AvidaLogo.gif"
             "TargetName" = "8:AvidaLogo.gif"
             "Tag" = "8:"
             "Folder" = "8:_0FB7934A9A334067B98C2A6D6B063E4B"
@@ -622,7 +622,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0C9E4B1689C745A982D218E70AEFD363"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.inc.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.inc.html"
             "TargetName" = "8:help.inc.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -642,7 +642,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0D7CB1CBDE8C4139A1F47894684EEF7B"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Logic.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Logic.html"
             "TargetName" = "8:help.Logic.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -662,7 +662,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0EF63925E69A49AB87214E56FBAB989C"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.push.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.push.html"
             "TargetName" = "8:help.push.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -682,7 +682,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1050A10682124E82A47F98A1F3DFAFE1"
             {
-            "SourcePath" = "8:..\\support\\config\\instset-heads-sex.cfg"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\instset-heads-sex.cfg"
             "TargetName" = "8:instset-heads-sex.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -702,7 +702,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_12DAE5B2925A49B1A84C6DFFA25FE49A"
             {
-            "SourcePath" = "8:..\\documentation\\avida_overview.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\avida_overview.html"
             "TargetName" = "8:avida_overview.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -722,7 +722,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_152B7F74CD464519A05BF40404343217"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.h-divide.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.h-divide.html"
             "TargetName" = "8:help.h-divide.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -742,7 +742,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_15EFA1A0845A4638B62EF9B0BF715290"
             {
-            "SourcePath" = "8:..\\documentation\\structure.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\structure.html"
             "TargetName" = "8:structure.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -762,7 +762,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_176759508A6B4679A3FAEBD496B841AE"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.CPU.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.CPU.html"
             "TargetName" = "8:help.CPU.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -782,7 +782,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_178C77041A54416498A8D7D450B9EAF8"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.swap-stk.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.swap-stk.html"
             "TargetName" = "8:help.swap-stk.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -802,7 +802,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_18E325383352433EBFE3D03C3EA213D4"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.swap.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.swap.html"
             "TargetName" = "8:help.swap.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -822,7 +822,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1C5F71CC5CDC43C0A12B84A6F481BAEB"
             {
-            "SourcePath" = "8:..\\documentation\\energy_model.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\energy_model.html"
             "TargetName" = "8:energy_model.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -842,7 +842,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_256E3798410349BB83ABB3D7A13A8EB3"
             {
-            "SourcePath" = "8:..\\documentation\\code_life_cycle.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_life_cycle.html"
             "TargetName" = "8:code_life_cycle.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -862,7 +862,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_279435002E2F4ED5BB26BE616DEE0C59"
             {
-            "SourcePath" = "8:..\\support\\config\\analyze.cfg"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\analyze.cfg"
             "TargetName" = "8:analyze.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -882,7 +882,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2F73A128FE4E40CB8C9475D8C02B6D5D"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.pop.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.pop.html"
             "TargetName" = "8:help.pop.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -922,7 +922,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_31942DFE72CE4C998FCF05674386DF7C"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.shift-r.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.shift-r.html"
             "TargetName" = "8:help.shift-r.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -942,7 +942,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_32D371FFB50B4BC3A56D38D3327881F6"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Tasks.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Tasks.html"
             "TargetName" = "8:help.Tasks.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -962,7 +962,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A69FBD555A249FAA5CFB3C14EE72581"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Mutation.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Mutation.html"
             "TargetName" = "8:help.Mutation.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -982,7 +982,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3B6820C698BB433181AD9CF8EA4498BB"
             {
-            "SourcePath" = "8:..\\documentation\\analyze.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\analyze.html"
             "TargetName" = "8:analyze.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1002,7 +1002,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3DE977ADCAD64B2B8AB96E78A6EBFE3B"
             {
-            "SourcePath" = "8:..\\support\\config\\events.cfg"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\events.cfg"
             "TargetName" = "8:events.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -1022,7 +1022,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3EAEFE1205904821B0767C4AEC9A2AF7"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.if-n-equ.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.if-n-equ.html"
             "TargetName" = "8:help.if-n-equ.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1042,7 +1042,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_439FE78E969D4E14A16B1035307B1929"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Population.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Population.html"
             "TargetName" = "8:help.Population.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1062,7 +1062,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_441613A6C908435CAF68106194CFC631"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.jmp-head.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.jmp-head.html"
             "TargetName" = "8:help.jmp-head.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1082,7 +1082,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_46D6A3D3C1644ECCB4D0341299BA0D0A"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Complement-Label.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Complement-Label.html"
             "TargetName" = "8:help.Complement-Label.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1102,7 +1102,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_47F0FE24EFE3403AA1C718F96616FEFB"
             {
-            "SourcePath" = "8:..\\documentation\\config.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\config.html"
             "TargetName" = "8:config.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1122,7 +1122,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_49C3FB9C80A04BA69C6E8E18C57AF474"
             {
-            "SourcePath" = "8:..\\documentation\\code_genome.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_genome.html"
             "TargetName" = "8:code_genome.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1142,7 +1142,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B7FE750D9974D5FBB51309B531A916C"
             {
-            "SourcePath" = "8:..\\support\\config\\instset-transsmt.cfg"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\instset-transsmt.cfg"
             "TargetName" = "8:instset-transsmt.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -1162,7 +1162,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_55EBC023B6244995B67FD5D333F03E17"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Heads.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Heads.html"
             "TargetName" = "8:help.Heads.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1182,7 +1182,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5C93A769B0AB4DAFA9958491202A960F"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\todo.help"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\todo.help"
             "TargetName" = "8:todo.help"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1202,7 +1202,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5CD9664CA31F43168A81BA6C7A8829E4"
             {
-            "SourcePath" = "8:..\\support\\config\\environment.cfg"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\environment.cfg"
             "TargetName" = "8:environment.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -1222,7 +1222,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5FD73CA5CF9B49E6B9DE7F03539261A8"
             {
-            "SourcePath" = "8:..\\documentation\\code_instruction.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_instruction.html"
             "TargetName" = "8:code_instruction.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1242,7 +1242,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_613232B99C4542E19FEF023B91AD140B"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.nand.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.nand.html"
             "TargetName" = "8:help.nand.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1262,7 +1262,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6D6C7D0238A94096ACFF810243029343"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Memory.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Memory.html"
             "TargetName" = "8:help.Memory.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1282,7 +1282,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_75CA88B87821493A82DD6F7C83B46E95"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Genotype.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Genotype.html"
             "TargetName" = "8:help.Genotype.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1302,7 +1302,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_771C4068EE4F4D26B139C6BA87C72A01"
             {
-            "SourcePath" = "8:..\\documentation\\svn.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\svn.html"
             "TargetName" = "8:svn.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1322,7 +1322,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7AECBF75144243F68F427C538E5CB257"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.shift-l.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.shift-l.html"
             "TargetName" = "8:help.shift-l.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1342,7 +1342,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7B003E8E87C447E4A001FCE1BF18E51A"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.sub.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.sub.html"
             "TargetName" = "8:help.sub.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1362,7 +1362,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7C15C97412BA4B1A8D7657581DCAB4C8"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\notations.help"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\notations.help"
             "TargetName" = "8:notations.help"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1382,7 +1382,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7CB11489A6824B9482733A646FB19319"
             {
-            "SourcePath" = "8:..\\support\\config\\default-heads.org"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\default-heads.org"
             "TargetName" = "8:default-heads.org"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -1402,7 +1402,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7DEE449F87994F11B7F2224FB6DA1DEE"
             {
-            "SourcePath" = "8:..\\documentation\\as_overview.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\as_overview.html"
             "TargetName" = "8:as_overview.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1422,7 +1422,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7E1E4AFF80AF41C9BF4B36D3BA4EBDB3"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.mov-head.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.mov-head.html"
             "TargetName" = "8:help.mov-head.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1442,7 +1442,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7E54F0313E91464F8AC53F08F94950A7"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.dec.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.dec.html"
             "TargetName" = "8:help.dec.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1462,7 +1462,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_80E7CBD099664CE187433117F4CA8B89"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Bitwise.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Bitwise.html"
             "TargetName" = "8:help.Bitwise.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1482,7 +1482,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8632275B63AB4044A4AA6F02067F4E3C"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Genome.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Genome.html"
             "TargetName" = "8:help.Genome.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1502,7 +1502,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8805EB177FED4D028906B3AD699C13D5"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.CPU-cycle.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.CPU-cycle.html"
             "TargetName" = "8:help.CPU-cycle.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1522,7 +1522,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_88C66B976BEE4B5B93D2D1481DF2EB47"
             {
-            "SourcePath" = "8:..\\documentation\\code_death_birth.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_death_birth.html"
             "TargetName" = "8:code_death_birth.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1542,7 +1542,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A332DE597BE4B3F8E14193512C4ED54"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.if-less.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.if-less.html"
             "TargetName" = "8:help.if-less.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1562,7 +1562,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A7FD90FB67D4867A2C8FF87EA65566E"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.h-copy.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.h-copy.html"
             "TargetName" = "8:help.h-copy.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1582,7 +1582,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9055E433C8C24C029A7CB1D19968AF4D"
             {
-            "SourcePath" = "8:..\\support\\config\\default-transsmt.org"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\default-transsmt.org"
             "TargetName" = "8:default-transsmt.org"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -1602,7 +1602,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_922E1D302CF7483D85C2ACFCF2BD97ED"
             {
-            "SourcePath" = "8:..\\support\\config\\default-heads-sex.org"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\default-heads-sex.org"
             "TargetName" = "8:default-heads-sex.org"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -1622,7 +1622,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9955D41A76F448F6833F9A6DAD1510CE"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Registers.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Registers.html"
             "TargetName" = "8:help.Registers.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1642,7 +1642,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99A83D10318A422FB29216E0990C88A2"
             {
-            "SourcePath" = "8:..\\documentation\\environment.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\environment.html"
             "TargetName" = "8:environment.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1662,7 +1662,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9A823EAA2C4B4AC789971D48FF83D326"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.nop-instructions.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.nop-instructions.html"
             "TargetName" = "8:help.nop-instructions.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1682,7 +1682,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A1AFD848F08244ECBACF1146D4712F1D"
             {
-            "SourcePath" = "8:..\\documentation\\code_environment.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_environment.html"
             "TargetName" = "8:code_environment.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1702,7 +1702,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A9ADF2A9050B484698752420E31AA637"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.h-search.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.h-search.html"
             "TargetName" = "8:help.h-search.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1722,7 +1722,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AA3F87ED1270400982D9E36988A549EF"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.IO.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.IO.html"
             "TargetName" = "8:help.IO.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1742,7 +1742,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B249CA6CD1A44D458DDD387B35791680"
             {
-            "SourcePath" = "8:..\\documentation\\print_data.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\print_data.html"
             "TargetName" = "8:print_data.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1762,7 +1762,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B26D6FA9AE5B41DDBEFED6D2C8392257"
             {
-            "SourcePath" = "8:..\\support\\config\\avida.cfg"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\avida.cfg"
             "TargetName" = "8:avida.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -1782,7 +1782,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C1445366A0294BAA944A4F847B73D80B"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Organism.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Organism.html"
             "TargetName" = "8:help.Organism.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1802,7 +1802,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C305B90A6DD94128B53387486906CA99"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\inst.help"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\inst.help"
             "TargetName" = "8:inst.help"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1822,7 +1822,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C37129EB9340489D86E274F991F025BC"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Nop-Register-Notation.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Nop-Register-Notation.html"
             "TargetName" = "8:help.Nop-Register-Notation.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1842,7 +1842,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C48AF1C00AF341AB93D214E41BA41608"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.if-label.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.if-label.html"
             "TargetName" = "8:help.if-label.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1862,7 +1862,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C5C7EBF14BAC463391EFCB6067A5E036"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Label.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Label.html"
             "TargetName" = "8:help.Label.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1882,7 +1882,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C77237222FBB4390BCFAF81E40AD6215"
             {
-            "SourcePath" = "8:..\\documentation\\images\\cpu2.gif"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\images\\cpu2.gif"
             "TargetName" = "8:cpu2.gif"
             "Tag" = "8:"
             "Folder" = "8:_0FB7934A9A334067B98C2A6D6B063E4B"
@@ -1902,7 +1902,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CC2C4246387F4B15BE04A4B370F4114F"
             {
-            "SourcePath" = "8:..\\documentation\\code_task.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_task.html"
             "TargetName" = "8:code_task.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -1922,7 +1922,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CC9E39181CA346DDB49ADC161C485DF7"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\components.help"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\components.help"
             "TargetName" = "8:components.help"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1942,7 +1942,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD42DA1342F64C09A94846871971FFA9"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Input-Output.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Input-Output.html"
             "TargetName" = "8:help.Input-Output.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1962,7 +1962,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D446FA919E484E618BF265CBB4768BEF"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.set-flow.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.set-flow.html"
             "TargetName" = "8:help.set-flow.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -1982,7 +1982,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D9FEA95153964988AD46B9B7F8CA1EC4"
             {
-            "SourcePath" = "8:..\\documentation\\inst_set.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\inst_set.html"
             "TargetName" = "8:inst_set.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2002,7 +2002,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DF5E305F3EC14B79B154A0441F75F11D"
             {
-            "SourcePath" = "8:..\\documentation\\cpu_tour.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\cpu_tour.html"
             "TargetName" = "8:cpu_tour.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2022,7 +2022,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E463D74191604E1AAFF62F00CC7F0220"
             {
-            "SourcePath" = "8:..\\documentation\\actions.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\actions.html"
             "TargetName" = "8:actions.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2042,7 +2042,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E6A496FA7C664E458B8C96D5761813E7"
             {
-            "SourcePath" = "8:..\\documentation\\code_standards.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_standards.html"
             "TargetName" = "8:code_standards.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2062,7 +2062,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E734B63FE64047FD8C1F4619A389FD46"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Instruction.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Instruction.html"
             "TargetName" = "8:help.Instruction.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -2082,7 +2082,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E8448E26B2294947B1FBA764B4218082"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Stack.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Stack.html"
             "TargetName" = "8:help.Stack.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -2102,7 +2102,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E9E2206B5F794BE7ABC414B2EE298A6D"
             {
-            "SourcePath" = "8:..\\documentation\\main.css"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\main.css"
             "TargetName" = "8:main.css"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2122,7 +2122,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EB7B8218F5D04A869A287CE1F1EC6C10"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.h-alloc.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.h-alloc.html"
             "TargetName" = "8:help.h-alloc.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -2142,7 +2142,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ECD90A10757C4096BFD9067A67F20A01"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.Nop-Head-Notation.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.Nop-Head-Notation.html"
             "TargetName" = "8:help.Nop-Head-Notation.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -2162,7 +2162,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EFCE025FB9DD4B019EF23545D191E26C"
             {
-            "SourcePath" = "8:..\\documentation\\code_c++_intro.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\code_c++_intro.html"
             "TargetName" = "8:code_c++_intro.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2182,7 +2182,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F6F95E9A2B6549D49A7394BB3056758D"
             {
-            "SourcePath" = "8:..\\documentation\\analyze_samples.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\analyze_samples.html"
             "TargetName" = "8:analyze_samples.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2202,7 +2202,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F853F066C47B492886ED2065DA9694C2"
             {
-            "SourcePath" = "8:..\\support\\config\\instset-heads.cfg"
+            "SourcePath" = "8:..\\..\\..\\..\\support\\config\\instset-heads.cfg"
             "TargetName" = "8:instset-heads.cfg"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
@@ -2222,7 +2222,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F90A3F78C92B41B4B44F4D82E71DD8DD"
             {
-            "SourcePath" = "8:..\\documentation\\events.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\events.html"
             "TargetName" = "8:events.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2242,7 +2242,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FA1FC72456C74F8783E9AC8A2EAB6CA7"
             {
-            "SourcePath" = "8:..\\documentation\\index.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\index.html"
             "TargetName" = "8:index.html"
             "Tag" = "8:"
             "Folder" = "8:_7B6E42C15076454497119B3319F77CE3"
@@ -2262,7 +2262,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE307ADD6D4941CE91AA2F127693604F"
             {
-            "SourcePath" = "8:..\\documentation\\glossary\\help.add.html"
+            "SourcePath" = "8:..\\..\\..\\..\\documentation\\glossary\\help.add.html"
             "TargetName" = "8:help.add.html"
             "Tag" = "8:"
             "Folder" = "8:_62C9B745E9BD44D3B937A42A62EC68E2"
@@ -2867,7 +2867,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3547E7E10C78406791D4C46B86EB90D6"
             {
-            "SourcePath" = "8:..\\Release\\Avida.exe"
+            "SourcePath" = "8:..\\..\\..\\..\\Release\\Avida.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F4DE2B307FF54EF19010CEB8ADB3BBF2"
