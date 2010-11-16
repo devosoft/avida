@@ -206,7 +206,6 @@
 		7023ECDC0C0A44CC00362B9C /* cScriptObject.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52DF0992FD8000B2B507 /* cScriptObject.cc */; };
 		7023ECDD0C0A44CE00362B9C /* cSymbolTable.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702F52A80992F8F600B2B507 /* cSymbolTable.cc */; };
 		7023ECDE0C0A44D800362B9C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
-		702A6759121C7A050014F776 /* README.txt in work */ = {isa = PBXBuildFile; fileRef = 702A6727121C788E0014F776 /* README.txt */; };
 		702A675C121C7A5F0014F776 /* AvidaLogo.gif in work:documentation:images */ = {isa = PBXBuildFile; fileRef = 70920C5D0A9CCE2C00757CDB /* AvidaLogo.gif */; };
 		702A675D121C7A5F0014F776 /* cpu2.gif in work:documentation:images */ = {isa = PBXBuildFile; fileRef = 70920C5E0A9CCE2C00757CDB /* cpu2.gif */; };
 		702A675E121C7A690014F776 /* actions.html in work:documentation */ = {isa = PBXBuildFile; fileRef = 707CE7490AA333060022D19C /* actions.html */; };
@@ -588,7 +587,6 @@
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
-				702A6759121C7A050014F776 /* README.txt in work */,
 			);
 			name = work;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -927,7 +925,6 @@
 		702A670C121C73EE0014F776 /* inst.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = inst.help; sourceTree = "<group>"; };
 		702A670D121C73EE0014F776 /* notations.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = notations.help; sourceTree = "<group>"; };
 		702A670E121C73EE0014F776 /* todo.help */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = todo.help; sourceTree = "<group>"; };
-		702A6727121C788E0014F776 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		702D4EF508DA5328007BA469 /* cEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEnvironment.h; sourceTree = "<group>"; };
 		702D4EF608DA5328007BA469 /* cPopulationInterface.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPopulationInterface.h; sourceTree = "<group>"; };
 		702D4EFC08DA5341007BA469 /* cEnvironment.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEnvironment.cc; sourceTree = "<group>"; };
@@ -1436,13 +1433,6 @@
 		D7FB16D50ED62684002E939E /* cOrgMessage.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrgMessage.cc; sourceTree = "<group>"; };
 		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* Avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Avida.cc; sourceTree = "<group>"; };
-		DCC315C1076253A5008F7A48 /* hist_map.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_map.cc; sourceTree = "<group>"; };
-		DCC315C2076253A5008F7A48 /* hist_map2.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = hist_map2.cc; sourceTree = "<group>"; };
-		DCC315C3076253A5008F7A48 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		DCC315C4076253A5008F7A48 /* matlabify.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = matlabify.cc; sourceTree = "<group>"; };
-		DCC315CE076253A5008F7A48 /* environment.rotate */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = environment.rotate; sourceTree = "<group>"; };
-		DCC315D0076253A5008F7A48 /* task_event_gen.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.cc; sourceTree = "<group>"; };
-		DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = task_event_gen.old.cc; sourceTree = "<group>"; };
 		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1732,14 +1722,6 @@
 				707AF2DD09EE8501001AEA89 /* misc */,
 			);
 			name = config;
-			sourceTree = "<group>";
-		};
-		702A6725121C788E0014F776 /* Installer */ = {
-			isa = PBXGroup;
-			children = (
-				702A6727121C788E0014F776 /* README.txt */,
-			);
-			path = Installer;
 			sourceTree = "<group>";
 		};
 		70422A1B091B141000A5E67F /* analyze */ = {
@@ -2193,10 +2175,8 @@
 			children = (
 				DCC30C670762539A008F7A48 /* Main Source */,
 				70920C1A0A9CCE2C00757CDB /* Documentation */,
-				702A6725121C788E0014F776 /* Installer */,
 				70A1E4B01266249900D56AC4 /* Libraries */,
 				707AF2D209EE8501001AEA89 /* Support */,
-				DCC315B6076253A5008F7A48 /* Utilities */,
 				DCC3164E07626CF3008F7A48 /* Products */,
 				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
 			);
@@ -2492,37 +2472,6 @@
 				70440595128B317500368ECC /* cUserFeedback.h */,
 			);
 			path = tools;
-			sourceTree = "<group>";
-		};
-		DCC315B6076253A5008F7A48 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				DCC315BC076253A5008F7A48 /* hist_map */,
-				DCC315C4076253A5008F7A48 /* matlabify.cc */,
-				DCC315C5076253A5008F7A48 /* task_events */,
-			);
-			name = Utilities;
-			path = source/utils;
-			sourceTree = "<group>";
-		};
-		DCC315BC076253A5008F7A48 /* hist_map */ = {
-			isa = PBXGroup;
-			children = (
-				DCC315C1076253A5008F7A48 /* hist_map.cc */,
-				DCC315C2076253A5008F7A48 /* hist_map2.cc */,
-				DCC315C3076253A5008F7A48 /* Makefile */,
-			);
-			path = hist_map;
-			sourceTree = "<group>";
-		};
-		DCC315C5076253A5008F7A48 /* task_events */ = {
-			isa = PBXGroup;
-			children = (
-				DCC315CE076253A5008F7A48 /* environment.rotate */,
-				DCC315D0076253A5008F7A48 /* task_event_gen.cc */,
-				DCC315D1076253A5008F7A48 /* task_event_gen.old.cc */,
-			);
-			path = task_events;
 			sourceTree = "<group>";
 		};
 		DCC3164E07626CF3008F7A48 /* Products */ = {

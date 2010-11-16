@@ -121,7 +121,10 @@ bool cWorld::setup(cUserFeedback* feedback)
     success = false;
   }
   
-    
+  // If there were errors loading at this point, it is perilous to try to go further (pop depends on an instruction set)
+  if (!success) return success;
+  
+  
   // @MRR CClade Tracking
 //	if (m_conf->TRACK_CCLADES.Get() > 0)
 //		m_class_mgr->LoadCCladeFounders(m_conf->TRACK_CCLADES_IDS.Get());
