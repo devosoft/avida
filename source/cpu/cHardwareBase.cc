@@ -1100,7 +1100,6 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
     if((cellID != -1) && (res_req > 0.0)) { // guard against running in the test cpu.
       const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
       double res_stored = m_organism->GetRBin(resource);
-
       if (res_stored >= res_req) {
 //				m_inst_res_cost[cur_inst.GetOp()] = 0.0;
         
@@ -1109,12 +1108,12 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
         m_organism->AddToRBin(resource, cost); 
         
 //        double res_store = m_organism->GetRBin(resource);
-//        cout << "res_before:" << res_stored << " " << "cost" << cost << "  " << "res_after" << res_store << "  ";
+//        cout << "res_before:" << res_stored << " " << "cost" << cost << "  " << "res_after" << res_store << '\n';
       } 
       if (res_stored < res_req) {
         m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
         
-//        cout << "res_before:" << res_stored << " " << "res_req" << res_req << "  ";
+//        cout << "res_before:" << res_stored << " " << "res_req" << res_req << "  " << "died" << '\n';
 				return false;
       }
     }

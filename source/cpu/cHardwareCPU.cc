@@ -8495,7 +8495,7 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   kill_attacker = (attacker_odds < decider);
   
   if (decider > attacker_odds && decider > target_odds){
-    return false;
+    return true;
   }
   if (kill_attacker) {
     m_organism->Die();

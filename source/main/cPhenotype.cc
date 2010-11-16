@@ -370,7 +370,11 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cGenom
   // parent's resources have already been halved or reset in DivideReset;
   // offspring gets that value (half or 0) too.
   for (int i = 0; i < cur_rbins_avail.GetSize(); i++)
-    cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
+    if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   //APW
+      const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+      cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
+    }
+    else cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];  
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -561,10 +565,9 @@ void cPhenotype::SetupInject(const cGenome & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);
-  cur_rbins_avail.SetAll(0);
-  if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   //APW
+  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   //APW
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
   }
   else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
@@ -797,17 +800,14 @@ void cPhenotype::DivideReset(const cGenome & _genome)
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
-  cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
     // resources available are split in half -- the offspring gets the other half
     for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
   }
   else if (m_world->GetConfig().DIVIDE_METHOD.Get() != 0) {
-        cur_rbins_avail.SetAll(0);
+    cur_rbins_avail.SetAll(0);
+    cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   }
-  else {
-    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] = cur_rbins_avail[i];}  
-  } 
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -990,17 +990,11 @@ void cPhenotype::TestDivideReset(const cGenome & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
-    // resources available are split in half -- the offspring gets the other half
-    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
-  }
-  else if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {
+  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   //APW
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();  //APW a worry is that this will override split settings
-  } 
-  else {
-    cur_rbins_avail.SetAll(0);
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
   }
+  else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
