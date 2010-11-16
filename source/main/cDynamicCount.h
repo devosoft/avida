@@ -29,10 +29,6 @@
 #include "cSpatialResCount.h"
 #endif
 
-#ifndef defs_h
-#include "defs.h"
-#endif
-
 
 class cDynamicCount : public cSpatialResCount
 {
@@ -93,7 +89,7 @@ double* R;  /* R controls the slope of the peaks
                          right circular cones.*/
 
 double** x;
-//double x[NUMBER_PEAKS][NUMBER_DIM]; /* These are the spatial coordinates */
+//double x[NUMBER_PEAKS][2]; /* These are the spatial coordinates */
 
 int* IUPH;
 int* IUPR;
@@ -102,7 +98,7 @@ int** IUPC;
 /*
 int IUPH[NUMBER_PEAKS];
 int IUPR[NUMBER_PEAKS];
-int IUPC[NUMBER_PEAKS][NUMBER_DIM];
+int IUPC[NUMBER_PEAKS][2];
 */
 
 
@@ -162,7 +158,7 @@ double Rminpct; /* This ways equals Rbase/Rmax, and is set in
 
 double Ah;  /* The A value for changing the peak heights */
 double Ar;  /* The A value for changing the peak slopes */
-double Ac[NUMBER_DIM]; /* An Ac value is needed for each 
+double Ac[2]; /* An Ac value is needed for each 
                     spatial dimension as contained in NoDim.*/
 
 /*  Since the logistics function creates step sizes that 
@@ -176,7 +172,7 @@ double Ac[NUMBER_DIM]; /* An Ac value is needed for each
     
 double Hstepscale;
 double Rstepscale;
-double cstepscale[NUMBER_DIM];/* One for each spatial
+double cstepscale[2];/* One for each spatial
                                        dimension */
 
 /*  These variables contain the step sizes.
@@ -187,14 +183,14 @@ double cstepscale[NUMBER_DIM];/* One for each spatial
 
 double Hstep; 
 double Rstep;
-double cstep[NUMBER_DIM]; /* Need one for each 
+double cstep[2]; /* Need one for each 
                                     Dimension from above */
 //JW End                                    
 
 double** raw_grid;
 int* ChangedPeaks;
 
-double df1(double coord[NUMBER_DIM]);
+double df1(double coord[2]);
 void df1_init();
 void df1_chg_R(int NoToChg, int* Peaks);
 void df1_chg_H (int NoToChg, int* Peaks);

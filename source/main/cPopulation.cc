@@ -5765,7 +5765,7 @@ void  cPopulation::LeaveGroup(cOrganism* org, int group_id)
   map<int,int>::iterator it = m_groups.find(group_id);
   if (it != m_groups.end()) m_groups[group_id]--;
   
-  for (unsigned int i = 0; i < group_list[group_id].GetSize(); i++) {
+  for (int i = 0; i < group_list[group_id].GetSize(); i++) {
     if (group_list[group_id][i] == org) {  
       unsigned int last = group_list[group_id].GetSize()-1;
       group_list[group_id].Swap(i,last);

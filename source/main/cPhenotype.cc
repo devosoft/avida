@@ -373,12 +373,17 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   // parent's resources have already been halved or reset in DivideReset;
   // offspring gets that value (half or 0) too.
-  for (int i = 0; i < cur_rbins_avail.GetSize(); i++)
+  cur_rbins_avail.SetAll(0);
+  for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
     if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   //APW
-      const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
       cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
     }
-    else cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];  
+    if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {   //APW
+      cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
+      cur_rbins_avail[resource] = cur_rbins_avail[resource] + m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
+    } 
+  }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);

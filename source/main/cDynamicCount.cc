@@ -33,7 +33,7 @@ cDynamicCount::cDynamicCount()
 cDynamicCount::cDynamicCount(int peaks, double in_min_height, double in_radius_range, double in_min_radius, double in_ah, double in_ar,
 			    double in_acx, double in_acy, double in_hstepscale, double in_rstepscale, double in_cstepscalex, double in_cstepscaley, double in_hstep, double in_rstep,
 			    double in_cstepx, double in_cstepy, int in_worldx, int in_worldy, int in_geometry, int in_updatestep) : H(NULL), R(NULL), x(NULL), 
-			    IUPH(NULL), IUPR(NULL), IUPC(NULL), NoPeaks(peaks), NoDim(NUMBER_DIM), Hbase(in_min_height), Hrange(in_radius_range), Hmax(0), Hminpct(0),
+			    IUPH(NULL), IUPR(NULL), IUPC(NULL), NoPeaks(peaks), NoDim(2), Hbase(in_min_height), Hrange(in_radius_range), Hmax(0), Hminpct(0),
 			    Rbase(in_min_radius), Rrange(in_radius_range), Rmax(0), Rminpct(0), Ah(in_ah), Ar(in_ar), Hstepscale(in_hstepscale), Rstepscale(in_rstepscale), 
 			    Hstep(in_hstep), Rstep(in_rstep)
 {
@@ -64,7 +64,7 @@ cDynamicCount::cDynamicCount(int peaks, double in_min_height, double in_radius_r
   cstep[1] = in_cstepy;
   
   for(int i = 0; i < NoPeaks; i++){
-    x[i] = new double[NUMBER_DIM];
+    x[i] = new double[2];
   }
   
   IUPH = new int[NoPeaks];
@@ -79,7 +79,7 @@ cDynamicCount::cDynamicCount(int peaks, double in_min_height, double in_radius_r
   }
   
   for(int i = 0; i < NoPeaks; i++){
-    IUPC[i] = new int[NUMBER_DIM];
+    IUPC[i] = new int[2];
   }
   
   raw_grid = new double*[GetX()];
@@ -233,7 +233,7 @@ Morrison's Dynamic Function Generator
 #define max(a, b) (a > b) ? a : b
 /*
 int df1_flip (void);                    prototype for df1_flip 
-double df1 (double coord[NUMBER_DIM]);  prototype for df1 
+double df1 (double coord[2]);  prototype for df1 
 void  df1_init ();        prototype for df1_init 
 void df1_chg_R (int NoToChg, int Peaks[NUMBER_PEAKS]);
                                      prototype for df1_chg_R 
@@ -248,7 +248,7 @@ void df1_chg_c (int CoordNo, int NoToChg, int Peaks[NUMBER_PEAKS]);
   specified by the n-dimensional vector coord        
 ************************************************************/
 
-double cDynamicCount::df1(double coord[NUMBER_DIM])
+double cDynamicCount::df1(double coord[2])
 {
   double z, zi, sum;
   int i, j;
@@ -276,7 +276,7 @@ double cDynamicCount::df1(double coord[NUMBER_DIM])
   return z;
 }
 
-/*    end of function df1(coord[NUMBER_DIM])         */
+/*    end of function df1(coord[2])         */
 /**************************************************/
 
 /* Start of function df1_init 
@@ -288,7 +288,7 @@ void cDynamicCount::df1_init ()
 
 
 /*  This uses the values set in df1.h for NoPeaks,
-    NoDim, Ah, Ar, and Ac[NUMBER_DIM]
+    NoDim, Ah, Ar, and Ac[2]
 */
 
 {
