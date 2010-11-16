@@ -228,7 +228,7 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     const cInstruction& cur_inst = IP().GetInst();
 		
     // Test if costs have been paid and it is okay to execute this now...
-    bool exec = SingleProcess_PayCosts(ctx, cur_inst);
+    bool exec = SingleProcess_PayPreCosts(ctx, cur_inst);
 		
     // Now execute the instruction...
     if (exec == true) {
@@ -238,7 +238,7 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
         exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
       }
       
-      if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
+      if (exec == true) if (SingleProcess_ExecuteInst(ctx, cur_inst)) SingleProcess_PayPostCosts(ctx, cur_inst);
       			
       // Some instruction (such as jump) may turn advance_ip off.  Ususally
       // we now want to move to the next instruction in the memory.

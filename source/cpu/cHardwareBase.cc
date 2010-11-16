@@ -915,7 +915,7 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
-bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
 #if INSTRUCTION_COSTS
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
@@ -976,6 +976,13 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   }
 #endif
   return true;
+}
+
+
+void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+{
+#if INSTRUCTION_COSTS
+#endif
 }
 
 
