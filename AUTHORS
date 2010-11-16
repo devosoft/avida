@@ -2,7 +2,7 @@ The Avida Digital Life Platform
 --------------------------------------------------------------------------------
 by Charles Ofria
 
-Lead Developers: David Bryson (Avida) and Kaben Nanlohy (Avida-ED)
+Lead Developer: David Bryson (Avida and Avida-ED)
 
 Portions by Brian Baer, Jeffrey Barrick, Benjamin Beckmann, Jeffrey Clune,
 Travis Collier, Art Covert, Evan Dorn, Sherri Goings, Heather Goldsby,
@@ -15,8 +15,8 @@ Santiago Elena, Richard Lenski, Philip McKinley, Robert Pennock, Thomas
 Schmidt, Robert Schwartz, Eric Torng, Jialan Wang, Daniel Weise, and Gabriel
 Yedid
 
-Copyright (C) 1999-2007 Michigan State University.
-Copyright (C) 1993-2003 California Institute of Technology.
+Copyright 1999-2010 Michigan State University.
+Copyright 1993-2003 California Institute of Technology.
 
 
 This project has been funded by the National Science Foundation, DARPA, 
@@ -27,4 +27,4 @@ Portions of the design were supported by NSF grant #PHY91-15574, NSF grant
 and the 1993 SUNY Stony Brook URECA program.
 
 
-Revised 2007-07-10 DMB
+Revised 2010-11-16 DMB
