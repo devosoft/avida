@@ -36,7 +36,7 @@
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
-#include "cMetaGenome.h"
+#include "cGenome.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
@@ -46,6 +46,7 @@ cHardwareManager::cHardwareManager(cWorld* world)
 : m_world(world), m_cpu_count(0)
 {
   cString filename = world->GetConfig().INST_SET.Get();
+  m_is_name_map.SetDefault(-1);
 
 }
 
@@ -55,7 +56,7 @@ cHardwareManager::~cHardwareManager()
 }
 
 
-bool cHardwareManager::LoadInstSets(tList<cString>* errors)
+bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
 {
   const cStringList& cfg_list = m_world->GetConfig().INSTSETS.Get();
   cStringList* cur_list = NULL;
@@ -69,12 +70,12 @@ bool cHardwareManager::LoadInstSets(tList<cString>* errors)
       if (cur_list) {
         cur_list->PushRear(cfg_list.GetLine(line_id));
       } else {
-        if (errors) errors->PushRear(new cString("disassociated INST definition, no INSTSET defined"));
+        if (feedback) feedback->Error("disassociated INST definition, no INSTSET defined");
         success = false;
       }
     } else if (line_type == "INSTSET") {
       if (cur_list) {
-        if (!loadInstSet(hw_type, name, *cur_list, errors)) success = false;
+        if (!loadInstSet(hw_type, name, *cur_list, feedback)) success = false;
         delete cur_list;
         cur_list = NULL;
       }
@@ -90,13 +91,13 @@ bool cHardwareManager::LoadInstSets(tList<cString>* errors)
       name = is_def_str.Pop(':');
       name.Trim();
       if (!name.GetSize()) {
-        if (errors) errors->PushRear(new cString("instruction set name not found"));
+        if (feedback) feedback->Error("instruction set name not found");
         success = false;
         continue;
       }
       
       // Process arguments on the INSTSET line
-      cArgContainer* args = cArgContainer::Load(is_def_str, schema, errors);
+      cArgContainer* args = cArgContainer::Load(is_def_str, schema, feedback);
       if (!args) {
         success = false;
         continue;
@@ -109,14 +110,14 @@ bool cHardwareManager::LoadInstSets(tList<cString>* errors)
   }
   
   if (cur_list) {
-    if (!loadInstSet(hw_type, name, *cur_list, errors)) success = false;
+    if (!loadInstSet(hw_type, name, *cur_list, feedback)) success = false;
     delete cur_list;
   }
   
   return success;
 }
 
-bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList& sl, tList<cString>* errors)
+bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList& sl, cUserFeedback* feedback)
 {
   // Current list in progress, create actual cInstSet instance and process it
   cInstSet* inst_set = NULL;
@@ -138,23 +139,25 @@ bool cHardwareManager::loadInstSet(int hw_type, const cString& name, cStringList
       inst_set = new cInstSet(m_world, name, hw_type, cHardwareGX::GetInstLib());
       break;      
     default:
-      if (errors) {
-        cString* errstr = new cString(cStringUtil::Stringf("unknown/unsupported hw_type specified for instset '%s'",
-                                                           (const char*)name));
-        errors->PushRear(errstr);
-      }
+      if (feedback) feedback->Error("unknown/unsupported hw_type specified for instset '%s'", (const char*)name);
       return false;
   }  
-  inst_set->LoadWithStringList(sl);
+  if (!inst_set->LoadWithStringList(sl, feedback)) return false;
   
   int inst_set_id = m_inst_sets.GetSize();
   m_inst_sets.Push(inst_set);
   m_is_name_map.Set(name, inst_set_id);
   
+  tArray<cString> names(inst_set->GetSize());
+  for (int i = 0; i < inst_set->GetSize(); i++) names[i] = inst_set->GetName(i);
+  m_world->GetStats().SetInstNames(inst_set->GetInstSetName(), names);
+  m_world->GetStats().InstExeCountsForInstSet(inst_set->GetInstSetName()).Resize(inst_set->GetSize());
+  
+  
   return true;
 }
 
-bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& str_list, tList<cString>* errors)
+bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& str_list, cUserFeedback* feedback)
 {
   // Setup the instruction library and collect the default filename
   cString default_filename;
@@ -176,13 +179,13 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 			default_filename = cHardwareGX::GetDefaultInstFilename();
 			break;      
 		default:
-      if (errors) errors->PushRear(new cString("Unknown/Unsupported HARDWARE_TYPE specified"));
+      if (feedback) feedback->Error("unknown/unsupported HARDWARE_TYPE specified");
       return false;
   }
   
   if (filename == "" || filename == "-") {
     filename = default_filename;
-    cDriverManager::Status().NotifyComment(cString("Using default instruction set: ") + filename);
+    if (feedback) feedback->Notify("using default instruction set: %s", (const char*)filename);
     // set INST_SET so that the proper name will show up in the text viewer
     m_world->GetConfig().INST_SET.Set(filename);
   }
@@ -191,7 +194,7 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
   cInitFile file(filename, m_world->GetWorkingDir());
   
   if (!file.WasOpened()) {
-    if (errors) errors->Append(file.GetErrors());
+    if (feedback) feedback->Append(file.GetFeedback());
     return false;
   }
   
@@ -215,33 +218,35 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 }
 
 
-cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cMetaGenome& mg, cInstSet* is)
+cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg)
 {
   assert(org != NULL);
 	
-  int inst_set_id = (is == NULL) ? mg.GetInstSetID() : -1;
-  cInstSet* inst_set = (is == NULL) ? m_inst_sets[0] : is;
+  int inst_set_id = m_is_name_map.GetWithDefault(mg.GetInstSet(), -1);
+  if (inst_set_id == -1) return NULL; // No valid instruction set found
+  
+  cInstSet* inst_set = m_inst_sets[inst_set_id];
+  if (inst_set->GetHardwareType() != mg.GetHardwareType()) return NULL; // inst_set/hw_type mismatch
   
   cHardwareBase* hw = 0;
-	
-  switch (mg.GetHardwareType()) {
+  switch (inst_set->GetHardwareType()) {
     case HARDWARE_TYPE_CPU_ORIGINAL:
-      hw = new cHardwareCPU(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareCPU(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_SMT:
-      hw = new cHardwareSMT(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareSMT(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_TRANSSMT:
-      hw = new cHardwareTransSMT(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareTransSMT(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_EXPERIMENTAL:
-      hw = new cHardwareExperimental(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareExperimental(ctx, m_world, org, inst_set);
       break;
     case HARDWARE_TYPE_CPU_GX:
-      hw = new cHardwareGX(ctx, m_world, org, inst_set, inst_set_id);
+      hw = new cHardwareGX(ctx, m_world, org, inst_set);
       break;
     default:
-      cDriverManager::Status().SignalError("Unknown/Unsupported HARDWARE_TYPE specified", -1);
+      cDriverManager::Status().SignalError("unknown/unsupported HARDWARE_TYPE specified", -1);
       break;
   }
   
@@ -253,4 +258,15 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
   
   assert(hw != 0);
   return hw;
+}
+
+bool cHardwareManager::RegisterInstSet(const cString& name, cInstSet* inst_set)
+{
+  if (m_is_name_map.HasEntry(name)) return false;
+  
+  int inst_set_id = m_inst_sets.GetSize();
+  m_inst_sets.Push(inst_set);
+  m_is_name_map.Set(name, inst_set_id);  
+  
+  return true;
 }

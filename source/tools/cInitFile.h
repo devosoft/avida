@@ -26,36 +26,25 @@
 #ifndef cInitFile_h
 #define cInitFile_h
 
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef cStringList_h
 #include "cStringList.h"
-#endif
-#ifndef tDictionary_h
+#include "cUserFeedback.h"
 #include "tDictionary.h"
-#endif
-#ifndef tList_h
-#include "tList.h"
-#endif
-#ifndef tSmartArray_h
 #include "tSmartArray.h"
-#endif
-
 
 #include <iostream>
 
-/**
- * A class to handle initialization files.
- **/
+template<typename T> class tArraySet;
 
+
+// A class to handle initialization files.
 class cInitFile
 {
 private:
   cString m_filename;
   bool m_found;
   bool m_opened;
-  mutable tList<cString> m_errors;
+  mutable cUserFeedback m_feedback;
   
   struct sLine {
     cString line;
@@ -73,6 +62,7 @@ private:
   cStringList m_imported_files;
   
   tDictionary<cString> m_mappings;
+  tDictionary<cString> m_custom_directives;
 
   
   cInitFile(const cInitFile&); // @not_implemented
@@ -80,14 +70,15 @@ private:
   
 
 public:
-  cInitFile(const cString& filename, const cString& working_dir);
+  cInitFile(const cString& filename, const cString& working_dir, const tArraySet<cString>* custom_directives = NULL);
   cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir);
   cInitFile(std::istream& in_stream, const cString& working_dir);
   ~cInitFile();
   
   bool WasFound() const { return m_found; }
   bool WasOpened() const { return m_opened; }
-  const tList<cString>& GetErrors() const { return m_errors; }
+  const cUserFeedback& GetFeedback() const { return m_feedback; }
+  const tDictionary<cString>& GetCustomDirectives() const { return m_custom_directives; }
   
   void Save(const cString& in_filename = "");
   
@@ -157,8 +148,10 @@ public:
 
 private:
   void initMappings(const tDictionary<cString>& mappings);
-  bool loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir);
-  bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum, const cString& working_dir);
+  bool loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
+                const tArraySet<cString>* custom_directives = NULL);
+  bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
+                      const cString& working_dir, const tArraySet<cString>* custom_directives = NULL);
   void postProcess(tSmartArray<sLine*>& lines);
 };
 

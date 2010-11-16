@@ -34,7 +34,7 @@
 #include "cAnalyzeGenotype.h"
 #include "cDriverManager.h"
 #include "cDriverStatusConduit.h"
-#include "cGenome.h"
+#include "cSequence.h"
 #include "cGenomeUtil.h"
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
@@ -121,7 +121,7 @@ namespace ASAnalyzeLib {
     bool id_inc = input_file.GetFormat().HasString("id");
     
     // Setup the genome...
-    cGenome default_genome(1);
+    cSequence default_genome(1);
     int load_count = 0;
     cGenotypeBatch* batch = new cGenotypeBatch;
     

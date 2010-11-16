@@ -45,7 +45,7 @@ private:
 public:
   cBirthDemeHandler(cWorld* world, cBirthChamber* bc);
   
-  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent);
+  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent);
 };
 
 #endif

@@ -1,10 +1,9 @@
 /*
- *  defs.h
+ *  avida.h
  *  Avida
  *
- *  Called "defs.hh" prior to 12/7/05.
  *  Copyright 1999-2010 Michigan State University. All rights reserved.
- *  Copyright 1993-2003 California Institute of Technology.
+ *  Copyright 1993-2001 California Institute of Technology.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -23,8 +22,9 @@
  *
  */
 
-#ifndef defs_h
-#define defs_h
+#ifndef avida_h
+#define avida_h
+
 
 #define VERSION "2.11.0"
 #define VERSION_TAG "(TBA)"
@@ -46,27 +46,14 @@
 #ifndef FATAL_WARNINGS
 #define FATAL_WARNINGS 0
 #endif
+
+
 /* By default, Boost is not available.  To enable Boost, either modify your environment,
  alter your build settings, or change this value -- BUT BE CAREFUL NOT TO CHECK IT IN LIKE THAT!
  */
 #ifndef BOOST_IS_AVAILABLE
 #define BOOST_IS_AVAILABLE 0
 #endif
-
-//JW Constants for Dynamic Function Generator
-#ifndef NUMBER_DIM 
-#define NUMBER_DIM 2
-#endif
-
-#ifndef  MAX_DIM
-#define  MAX_DIM 10
-#endif
-
-#ifndef  MAX_PEAKS
-#define  MAX_PEAKS 100
-#endif
-
-// #define SPECIES_TEST
 
 
 // Finally, if we have turned off Assertions, define NDEBUG
@@ -222,6 +209,11 @@ enum eSELECTION_TYPE {
   SELECTION_TYPE_TOURNAMENT
 };
 
+enum eMP_SCHEDULING {
+	MP_SCHEDULING_NULL = 0,
+	MP_SCHEDULING_INTEGRATED
+};
+
 enum eVerbosity {
   VERBOSE_SILENT = 0,   // 0: No output at all
   VERBOSE_NORMAL,       // 1: Notification at start of commands.
@@ -247,9 +239,21 @@ enum eBioUnitSource {
   SRC_TEST_CPU
 };
 
-namespace Avida {
+
+class cAvidaConfig;
+class cString;
+
+namespace Avida
+{
+  void Initialize();
+  
+  cString GetVersion();
+  void PrintVersionBanner();
+  
+  void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg);
+
+
   extern const char* const BioUnitSourceMap[];
 };
-
 
 #endif

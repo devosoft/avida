@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1060</int>
 		<string key="IBDocument.SystemVersion">10F569</string>
-		<string key="IBDocument.InterfaceBuilderVersion">804</string>
+		<string key="IBDocument.InterfaceBuilderVersion">788</string>
 		<string key="IBDocument.AppKitVersion">1038.29</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">804</string>
+			<string key="NS.object.0">788</string>
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -921,12 +921,12 @@
 						<object class="NSTextField" id="42314814">
 							<reference key="NSNextResponder" ref="439893737"/>
 							<int key="NSvFlags">292</int>
-							<string key="NSFrame">{{17, 20}, {53, 17}}</string>
+							<string key="NSFrame">{{17, 20}, {108, 17}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="196212114">
-								<int key="NSCellFlags">68288064</int>
-								<int key="NSCellFlags2">4195328</int>
+								<int key="NSCellFlags">70385217</int>
+								<int key="NSCellFlags2">4195392</int>
 								<string key="NSContents">Update:</string>
 								<object class="NSFont" key="NSSupport" id="794461695">
 									<string key="NSName">LucidaGrande</string>
@@ -1554,6 +1554,14 @@
 						<reference key="destination" ref="452075587"/>
 					</object>
 					<int key="connectionID">572</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">txtUpdate</string>
+						<reference key="source" ref="452075587"/>
+						<reference key="destination" ref="42314814"/>
+					</object>
+					<int key="connectionID">575</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2791,7 +2799,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">572</int>
+			<int key="maxID">575</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2856,11 +2864,13 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>btnRunState</string>
 							<string>runDirControl</string>
+							<string>txtUpdate</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NSButton</string>
 							<string>NSPathControl</string>
+							<string>NSTextField</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -2869,6 +2879,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>btnRunState</string>
 							<string>runDirControl</string>
+							<string>txtUpdate</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2879,6 +2890,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">runDirControl</string>
 								<string key="candidateClassName">NSPathControl</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">txtUpdate</string>
+								<string key="candidateClassName">NSTextField</string>
 							</object>
 						</object>
 					</object>

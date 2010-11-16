@@ -1,9 +1,9 @@
 /*
- *  nGeometry.h
+ *  cCocoaListener.h
  *  Avida
  *
- *  Created by David on 10/5/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Created by David on 11/11/10.
+ *  Copyright 2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,38 +22,23 @@
  *
  */
 
-#ifndef nMutation_h
-#define nMutation_h
+#ifndef cCocoaListener_h
+#define cCocoaListener_h
 
-namespace nMutation {
-  enum {
-    TRIGGER_NONE = 0,
-    TRIGGER_UPDATE,
-    TRIGGER_DIVIDE,
-    TRIGGER_PARENT,
-    TRIGGER_WRITE,
-    TRIGGER_READ,
-    TRIGGER_EXEC,
-    NUM_TRIGGERS
-  };
+#include "cCoreViewListener.h"
 
-  enum {
-    SCOPE_GENOME = 0,
-    SCOPE_LOCAL,
-    SCOPE_GLOBAL,
-    SCOPE_PROP,
-    SCOPE_SPREAD
-  };
+#import "MainWindowController.h"
 
-  enum {
-    TYPE_POINT = 0,
-    TYPE_INSERT,
-    TYPE_DELETE,
-    TYPE_HEAD_INC,
-    TYPE_HEAD_DEC,
-    TYPE_TEMP,
-    TYPE_KILL
-  };
-}
+
+class cCocoaListener : public cCoreViewListener
+{
+private:
+  MainWindowController* m_win_ctrl;
+  
+public:
+  cCocoaListener(MainWindowController* win_ctrl) : m_win_ctrl(win_ctrl) { ; }
+  
+  void NotifyUpdate(int update);
+};
 
 #endif

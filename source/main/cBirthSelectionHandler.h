@@ -28,7 +28,7 @@
 class cAvidaContext;
 class cBirthChamber;
 class cBirthEntry;
-class cMetaGenome;
+class cGenome;
 class cOrganism;
 
 
@@ -38,7 +38,7 @@ public:
   cBirthSelectionHandler() { ; }
   virtual ~cBirthSelectionHandler() = 0;
   
-  virtual cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent) = 0;
+  virtual cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent) = 0;
 };
 
 #endif

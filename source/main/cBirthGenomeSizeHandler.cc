@@ -25,7 +25,7 @@
 #include "cBirthGenomeSizeHandler.h"
 
 #include "cBirthChamber.h"
-#include "cMetaGenome.h"
+#include "cGenome.h"
 
 
 cBirthGenomeSizeHandler::~cBirthGenomeSizeHandler()
@@ -36,7 +36,7 @@ cBirthGenomeSizeHandler::~cBirthGenomeSizeHandler()
 }
 
 
-cBirthEntry* cBirthGenomeSizeHandler::SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent)
+cBirthEntry* cBirthGenomeSizeHandler::SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent)
 {
   int offspring_length = offspring.GetSize();
   

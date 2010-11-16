@@ -34,7 +34,6 @@
 #include "cBirthMateSelectHandler.h"
 #include "cBirthNeighborhoodHandler.h"
 #include "cClassificationManager.h"
-#include "cGenomeUtil.h"
 #include "cOrganism.h"
 #include "cWorld.h"
 #include "cStats.h"
@@ -104,7 +103,7 @@ bool cBirthChamber::ValidBirthEntry(const cBirthEntry& entry) const
   return true;
 }
 
-void cBirthChamber::StoreAsEntry(const cMetaGenome& offspring, cOrganism* parent, cBirthEntry& entry) const
+void cBirthChamber::StoreAsEntry(const cGenome& offspring, cOrganism* parent, cBirthEntry& entry) const
 {
   entry.genome = offspring;
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
@@ -133,7 +132,7 @@ void cBirthChamber::ClearEntry(cBirthEntry& entry)
 }
 
 
-bool cBirthChamber::RegionSwap(cGenome& genome0, cGenome& genome1, int start0, int end0, int start1, int end1)
+bool cBirthChamber::RegionSwap(cSequence& genome0, cSequence& genome1, int start0, int end0, int start1, int end1)
 {
    assert( start0 >= 0  &&  start0 < genome0.GetSize() );
    assert( end0   >= 0  &&  end0   < genome0.GetSize() );
@@ -154,24 +153,24 @@ bool cBirthChamber::RegionSwap(cGenome& genome0, cGenome& genome1, int start0, i
    } 
 
    if (size0 > 0 && size1 > 0) {
-     cGenome cross0 = cGenomeUtil::Crop(genome0, start0, end0);
-     cGenome cross1 = cGenomeUtil::Crop(genome1, start1, end1);
+     cSequence cross0 = genome0.Crop(start0, end0);
+     cSequence cross1 = genome1.Crop(start1, end1);
      genome0.Replace(start0, size0, cross1);
      genome1.Replace(start1, size1, cross0);
    } else if (size0 > 0) {
-     cGenome cross0 = cGenomeUtil::Crop(genome0, start0, end0);
+     cSequence cross0 = genome0.Crop(start0, end0);
      genome1.Replace(start1, size1, cross0);
    } else if (size1 > 0) {
-     cGenome cross1 = cGenomeUtil::Crop(genome1, start1, end1);
+     cSequence cross1 = genome1.Crop(start1, end1);
      genome0.Replace(start0, size0, cross1);
    }
 
    return true;
 }
 
-void cBirthChamber::GenomeSwap(cGenome& genome0, cGenome& genome1, double& merit0, double& merit1)
+void cBirthChamber::GenomeSwap(cSequence& genome0, cSequence& genome1, double& merit0, double& merit1)
 {
-  cGenome genome0_tmp = genome0;
+  cSequence genome0_tmp = genome0;
   genome0 = genome1; 
   genome1 = genome0_tmp; 
 
@@ -181,7 +180,7 @@ void cBirthChamber::GenomeSwap(cGenome& genome0, cGenome& genome1, double& merit
 }
 
 
-bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism& parent,
+bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cGenome& offspring, cOrganism& parent,
                                 tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   // This is asexual who doesn't need to wait in the birth chamber
@@ -219,7 +218,7 @@ bool cBirthChamber::DoAsexBirth(cAvidaContext& ctx, const cMetaGenome& offspring
   return true;
 }
 
-bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const cMetaGenome& new_genome,
+bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_entry, const cGenome& new_genome,
                                     cOrganism& parent, tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   // Build both child organisms...
@@ -241,7 +240,7 @@ bool cBirthChamber::DoPairAsexBirth(cAvidaContext& ctx, const cBirthEntry& old_e
 
 
 
-void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
+void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
                                          double& merit0, double& merit1)
 {
   double start_frac = ctx.GetRandom().GetDouble();
@@ -270,7 +269,7 @@ void cBirthChamber::DoBasicRecombination(cAvidaContext& ctx, cGenome& genome0, c
   } 
 }
 
-void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
+void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
                                                double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -305,7 +304,7 @@ void cBirthChamber::DoModularContRecombination(cAvidaContext& ctx, cGenome& geno
   } 
 }
 
-void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
+void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
                                                   double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -339,7 +338,7 @@ void cBirthChamber::DoModularNonContRecombination(cAvidaContext& ctx, cGenome& g
   } 
 }
 
-void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, cGenome& genome0, cGenome& genome1,
+void cBirthChamber::DoModularShuffleRecombination(cAvidaContext& ctx, cSequence& genome0, cSequence& genome1,
                                                    double& merit0, double& merit1)
 {
   const int num_modules = m_world->GetConfig().MODULE_NUM.Get();
@@ -398,7 +397,7 @@ void cBirthChamber::SetupGenotypeInfo(cOrganism* organism, const tArray<cBioGrou
   organism->SelfClassify(pgrps);
 }
 
-bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent,
+bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent,
                                     tArray<cOrganism*>& child_array, tArray<cMerit>& merit_array)
 {
   cPhenotype& parent_phenotype = parent->GetPhenotype();
@@ -423,8 +422,8 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     return ret;
   }
   // If we made it this far, RECOMBINATION will happen!
-  cGenome genome0 = old_entry->genome.GetGenome();
-  cGenome genome1 = offspring.GetGenome();
+  cGenome genome0(old_entry->genome);
+  cGenome genome1(offspring);
   double meritOrEnergy0;
   double meritOrEnergy1;
 
@@ -447,22 +446,22 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
 
   // If we are NOT modular...
   if (num_modules == 0) {
-    DoBasicRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoBasicRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we ARE modular, and continuous...
   else if (continuous_regions == 1) {
-    DoModularContRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoModularContRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // If we are NOT continuous, but NO shuffling...
   else if (shuffle_regions == 0) {
-    DoModularNonContRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoModularNonContRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // If there IS shuffling (NON-continuous required)
   else {
-    DoModularShuffleRecombination(ctx, genome0, genome1, meritOrEnergy0, meritOrEnergy1);
+    DoModularShuffleRecombination(ctx, genome0.GetSequence(), genome1.GetSequence(), meritOrEnergy0, meritOrEnergy1);
   }
 
   // Should there be a 2-fold cost to sex?
@@ -472,13 +471,10 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
   const tArray<cBioGroup*>* parent0_groups = &old_entry->groups;
   const tArray<cBioGroup*>* parent1_groups = &parent->GetBioGroups();
   
-  const int hw_type = offspring.GetHardwareType();
-  const int inst_set_id = offspring.GetInstSetID();
-
   if (two_fold_cost == 0) {	// Build the two organisms.
     child_array.Resize(2);
-    child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
-    child_array[1] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+    child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+    child_array[1] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
     
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
@@ -501,7 +497,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
     merit_array.Resize(1);
 
     if (ctx.GetRandom().GetDouble() < 0.5) {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+      child_array[0] = new cOrganism(m_world, ctx, genome0, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy0);
         meritOrEnergy0 = child_array[0]->GetPhenotype().ConvertEnergyToMerit(child_array[0]->GetPhenotype().GetStoredEnergy());
@@ -512,7 +508,7 @@ bool cBirthChamber::SubmitOffspring(cAvidaContext& ctx, const cMetaGenome& offsp
       SetupGenotypeInfo(child_array[0], parent0_groups, parent1_groups);
     } 
     else {
-      child_array[0] = new cOrganism(m_world, ctx, hw_type, inst_set_id, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
+      child_array[0] = new cOrganism(m_world, ctx, genome1, parent_phenotype.GetGeneration(), SRC_ORGANISM_DIVIDE);
       if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
         child_array[0]->GetPhenotype().SetEnergy(meritOrEnergy1);
         meritOrEnergy1 = child_array[1]->GetPhenotype().ConvertEnergyToMerit(child_array[1]->GetPhenotype().GetStoredEnergy());

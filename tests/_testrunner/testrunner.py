@@ -37,9 +37,9 @@ import dircache
 import fnmatch
 import getopt
 import os
-import popen2
 import shutil
 import string
+import subprocess
 import sys
 import tempfile
 import threading
@@ -387,12 +387,12 @@ class cTest:
           
 
     # Run test app, capturing output and exitcode
-    p = popen2.Popen4("cd %s; %s %s" % (rundir, self.app, self.args))
+    p = subprocess.Popen("cd %s; %s %s" % (rundir, self.app, self.args), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     
     # Process output from app
     # Note: must at least swallow app output so that the process output buffer does not fill and block execution
     if settings.has_key("_verbose"): print
-    for line in p.fromchild:
+    for line in p.stdout:
       if settings.has_key("_verbose"):
         sys.stdout.write("%s output: %s" % (self.name, line))
         sys.stdout.flush()
@@ -454,22 +454,33 @@ class cTest:
             return retlines
           # } // End of getStrippedLines()
           
-          # Generate the diff between the two files, ignoring comments and blank lines
-          differ = difflib.Differ()
-          elines = getStrippedLines(path)
-          tlines = getStrippedLines(expectstruct[key][0])
-          diff = list(differ.compare(tlines, elines))
-
           match = True
-          for line in diff:
-            if line[0] != ' ':
-              expectstruct[key][2] = cTest.DONOTMATCH
-              if settings.has_key("show-diff"):
-                expectstruct[key][2] += "\n\n"
-                for l in diff: expectstruct[key][2] += l
-                expectstruct[key][2] += "\n"
-              match = False
-              break
+          
+          
+          if os.path.getsize(expectstruct[key][0]) < 1024:
+            # Generate the diff between the two files, ignoring comments and blank lines
+            differ = difflib.Differ()
+            elines = getStrippedLines(path)
+            tlines = getStrippedLines(expectstruct[key][0])
+            diff = list(differ.compare(tlines, elines))
+  
+            for line in diff:
+              if line[0] != ' ':
+                expectstruct[key][2] = cTest.DONOTMATCH
+                if settings.has_key("show-diff"):
+                  expectstruct[key][2] += "\n\n"
+                  for l in diff: expectstruct[key][2] += l
+                  expectstruct[key][2] += "\n"
+                match = False
+                break
+          else:
+            elines = getStrippedLines(path)
+            tlines = getStrippedLines(expectstruct[key][0])
+            for i in range(len(elines)):
+              if elines[i] != tlines[i]:
+                expectstruct[key][2] = cTest.DONOTMATCH
+                match = False
+                break
           
           expectstruct[key][1] = match
     
@@ -530,8 +541,8 @@ class cTest:
       res_start = resource.getrusage(resource.RUSAGE_CHILDREN)
       
       # Run test app, capturing output and exitcode
-      p = popen2.Popen4("cd %s; %s %s" % (rundir, self.app, self.args))
-      for line in p.fromchild: pass      
+      p = subprocess.Popen("cd %s; %s %s" % (rundir, self.app, self.args), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+      for line in p.stdout: pass      
       exitcode = p.wait()
       
       res_end = resource.getrusage(resource.RUSAGE_CHILDREN)

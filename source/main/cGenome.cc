@@ -2,9 +2,8 @@
  *  cGenome.cc
  *  Avida
  *
- *  Called "genome.cc" prior to 12/2/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
- *  Copyright 1993-2003 California Institute of Technology.
+ *  Created by David on 12/21/09.
+ *  Copyright 2009-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -24,265 +23,126 @@
  */
 
 #include "cGenome.h"
-#include <iterator>
+
+#include "cDataFile.h"
+#include "cInitFile.h"
+#include "cInstSet.h"
+#include "cHardwareManager.h"
+#include "cStringUtil.h"
+#include "tArraySet.h"
+#include "tDictionary.h"
 
 
-using namespace std;
-
-
-const int MEMORY_INCREASE_MINIMUM = 5;
-const double MEMORY_INCREASE_FACTOR = 1.5;
-const double MEMORY_SHRINK_TEST_FACTOR = 4.0;
-
-
-cGenome::cGenome(int _size)
-  : m_genome(_size), m_active_size(_size)
+cGenome::cGenome(const cString& seq_str)
 {
+  cString str = seq_str;
+  m_hw_type = str.Pop(',').AsInt();
+  m_inst_set = str.Pop(',');
+  m_seq = cSequence(str);
 }
 
-cGenome::cGenome(const cGenome & in_genome)
-  : m_genome(in_genome.GetSize()), m_active_size(in_genome.GetSize()), m_mutation_steps(in_genome.GetMutationSteps())
+void cGenome::Load(const tDictionary<cString>& props, cHardwareManager& hwm)
 {
-  for (int i = 0; i < m_active_size; i++)  m_genome[i] = in_genome[i];
-}
-
-cGenome::cGenome(const cString & in_string)
-{
-  cString tmp_string(in_string);
-  tmp_string.RemoveChar('_');  // Remove all blanks from alignments...
-
-  m_active_size = tmp_string.GetSize();
-  m_genome.ResizeClear(m_active_size);
-  for (int i = 0; i < m_active_size; i++) {
-    m_genome[i].SetSymbol(tmp_string[i]);
+  if (props.HasEntry("hw_type")) {
+    m_hw_type = props.Get("hw_type").AsInt();
+  } else {
+    m_hw_type = -1; // Default when not found, for backwards compatibility
   }
-}
-
-
-/*! This constructor is used to build a new cGenome from a range of instructions.
-It expects STL semantics for an iterator range.  We're avoiding templating this
-(for now).  Refactor if a new range type is needed.
-*/
-cGenome::cGenome(const cInstruction* begin, const cInstruction* end) : m_active_size(0)
-{
-  m_genome.Resize(std::distance(begin,end));
-  for(const cInstruction* i=begin; i!=end; i++, m_active_size++) {
-		m_genome[m_active_size] = *i;
-	}
-}
-
-
-cGenome::~cGenome()
-{
-}
-
-
-void cGenome::adjustCapacity(int new_size)
-{
-  assert(new_size > 0);
-  
-  // Make sure we're really changing the size...
-  if (new_size == m_active_size) return;
-  
-  const int array_size = m_genome.GetSize();
-  
-  // Determine if we need to adjust the allocated array sizes...
-  if (new_size > array_size || new_size * MEMORY_SHRINK_TEST_FACTOR < array_size) {
-    int new_array_size = (int) (new_size * MEMORY_INCREASE_FACTOR);
-    const int new_array_min = new_size + MEMORY_INCREASE_MINIMUM;
-		if (new_array_min > new_array_size) new_array_size = new_array_min;
-    m_genome.Resize(new_array_size);
+  if (props.HasEntry("inst_set")) {
+    m_inst_set = props.Get("inst_set");
+  } else {
+    m_inst_set = "(default)"; // Default when not found, for backwards compatibility
   }
   
-  // And just change the m_active_size once we're sure it will be in range.
-  m_active_size = new_size;
-}
-
-void cGenome::prepareInsert(int pos, int num_sites)
-{
-  assert(pos >= 0 && pos <= m_active_size); // Must insert at a legal position!
-  assert(num_sites > 0); // Must insert positive number of lines!
+  if (m_inst_set == "(default)") {
+    const cInstSet& is = hwm.GetDefaultInstSet();
+    m_hw_type = is.GetHardwareType();
+    m_inst_set = is.GetInstSetName();
+  }
   
-  // Re-adjust the size...
-  const int old_size = m_active_size;
-  const int new_size = m_active_size + num_sites;
-  adjustCapacity(new_size);
-  
-  // Shift any sites needed...
-  for (int i = old_size - 1; i >= pos; i--) m_genome[i + num_sites] = m_genome[i];
+  assert(props.HasEntry("sequence"));
+  m_seq = cSequence(props.Get("sequence"));
 }
 
-
-void cGenome::Copy(int to, int from)
+void cGenome::Save(cDataFile& df)
 {
-  assert(to   >= 0   && to   < m_active_size);
-  assert(from >= 0   && from < m_active_size);
-  m_genome[to] = m_genome[from];
+  df.Write(m_hw_type, "Hardware Type ID", "hw_type");
+  df.Write(m_inst_set, "Inst Set Name" , "inst_set");
+  df.Write(m_seq.AsString(), "Genome Sequence", "sequence");
 }
- 
-
-// Return the genome as an alphabetic string
 
 cString cGenome::AsString() const
 {
-  cString out_string(m_active_size);
-  for (int i = 0; i < m_active_size; i++) {
-    out_string[i] = m_genome[i].GetSymbol();
+  return cStringUtil::Stringf("%d,%s,%s", m_hw_type, (const char*)m_inst_set, (const char*)m_seq.AsString());
+}
+
+bool cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cUserFeedback* feedback)
+{
+  tArraySet<cString> custom_directives;
+  custom_directives.Add("inst_set");
+  custom_directives.Add("hw_type");
+  
+  cInitFile input_file(fname, wdir, &custom_directives);
+  if (feedback) feedback->Append(input_file.GetFeedback());
+  bool success = true;
+
+  if (!input_file.WasOpened()) return false;
+  
+  const cInstSet* is = &hwm.GetDefaultInstSet();
+  
+  if (input_file.GetCustomDirectives().HasEntry("inst_set")) {
+    cString isname = input_file.GetCustomDirectives().Get("inst_set");
+    isname.Trim();
+    if (hwm.IsInstSet(isname)) {
+      is = &hwm.GetInstSet(isname);
+    } else {
+      if (feedback) feedback->Error("invalid instruction set '%s' defined in organism '%s'",
+                                    (const char*)isname, (const char*)fname);
+      return false;
+    }
   }
-
-  return out_string;
+  
+  if (input_file.GetCustomDirectives().HasEntry("hw_type")) {
+    m_hw_type = input_file.GetCustomDirectives().Get("hw_type").AsInt();
+    if (is->GetHardwareType() != m_hw_type) {
+      if (feedback) feedback->Error("hardware type mismatch in organism '%s': is = %d, org = %d",
+                                    (const char*)fname, is->GetHardwareType(), m_hw_type);
+      return false;      
+    }
+  }
+  
+  m_hw_type = is->GetHardwareType();
+  m_inst_set = is->GetInstSetName();
+  cSequence new_seq(input_file.GetNumLines());
+  
+  for (int line_num = 0; line_num < new_seq.GetSize(); line_num++) {
+    cString cur_line = input_file.GetLine(line_num);
+    new_seq[line_num] = is->GetInst(cur_line);
+    
+    if (new_seq[line_num] == is->GetInstError()) {
+      if (success) {
+        if (feedback) feedback->Error("unable to load organism '%s'", (const char*)fname);
+        success = false;
+      } else {
+        if (feedback) feedback->Error("  unknown instruction: %s (best match: %s)",
+                                      (const char*)cur_line, (const char*)is->FindBestMatch(cur_line));
+      }
+    }    
+  }
+  
+  if (success) m_seq = new_seq;
+  return success;
 }
 
 
-void cGenome::Resize(int new_size)
+void cGenome::SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm)
 {
-  assert(new_size >= 0);
+  df.WriteRaw(cString("#inst_set ") + m_inst_set);
+  df.WriteRaw(cStringUtil::Stringf("#hw_type %d", m_hw_type));
+  cInstSet& is = hwm.GetInstSet(m_inst_set);
   
-  const int old_size = m_active_size;
-  adjustCapacity(new_size);
-  
-  for (int i = old_size; i < new_size; i++) m_genome[i].SetOp(0);
+  for (int i = 0; i < m_seq.GetSize(); i++) {
+    df.Write(is.GetName(m_seq[i]), "Instruction", "inst");
+    df.Endl();
+  }
 }
-
-void cGenome::Insert(int pos, const cInstruction& inst)
-{
-  assert(pos >= 0);
-  assert(pos <= m_genome.GetSize());
-  
-  prepareInsert(pos, 1);
-  m_genome[pos] = inst;
-}
-
-void cGenome::Insert(int pos, const cGenome& genome)
-{
-  assert(pos >= 0);
-  assert(pos <= m_genome.GetSize());
-  
-  prepareInsert(pos, genome.GetSize());
-  for (int i = 0; i < genome.GetSize(); i++) m_genome[i + pos] = genome[i];
-}
-
-void cGenome::Remove(int pos, int num_sites)
-{
-  assert(num_sites > 0);                    // Must remove something...
-  assert(pos >= 0);                         // Removal must be in genome
-  assert(pos + num_sites <= m_active_size); // Cannot extend past end of genome
-  
-  const int new_size = m_active_size - num_sites;
-  for (int i = pos; i < new_size; i++) m_genome[i] = m_genome[i + num_sites];
-  adjustCapacity(new_size);
-}
-
-void cGenome::Replace(int pos, int num_sites, const cGenome& genome)
-{
-  assert(pos >= 0);                         // Replace must be in genome
-  assert(num_sites >= 0);                   // Cannot replace negative
-  assert(pos + num_sites <= m_active_size); // Cannot extend past end!
-  
-  const int size_change = genome.GetSize() - num_sites;
-  
-  // First, get the size right
-  if (size_change > 0) prepareInsert(pos, size_change);
-  else if (size_change < 0) Remove(pos, -size_change);
-  
-  // Now just copy everything over!
-  for (int i = 0; i < genome.GetSize(); i++) m_genome[i + pos] = genome[i];
-}
-
-/*! Replace [begin, end) instructions in this genome with g, respecting genome circularity.
- 
- This method replaces [begin,end) instructions in this genome with those in g.  Begin and end
- follow STL-iterator semantics, which is to say that end "points" to **one past** the last
- instruction that will be replaced.
- 
- Also, circularity of the genome is respected, which means that if end < begin 
- (the instructions that are being replaced wrap-around the end of the genome), then
- the replacement will too.
- 
- Caveat: if length([begin,end)) != length(g), all size changes are made at end.
- */
-void cGenome::Replace(const cGenome& g, int begin, int end) {
-	if(begin == end) {
-		// we're actually doing an insertion...
-		Insert(begin, g);
-	} else if(begin < end) {
-		// no wrap-around
-		Replace(begin, end-begin, g);
-	} else {
-		// replacement wraps around the end.  two different replacements to do now:
-		// [begin, size) and [0, end).
-		
-		// first, replace the [begin, size) region of this genome with as much of g
-		// as we can get.
-		int tail_size = std::min(GetSize()-begin, g.GetSize());
-		cGenome tail(&g[0], &g[0]+tail_size);
-		Replace(begin, GetSize()-begin, tail);
-
-		// now, replace the [0, end) region or remove it if the whole fragment
-		// was already copied in:
-		if(tail_size != g.GetSize()) {
-			cGenome head(&g[0]+tail_size, &g[0]+g.GetSize());
-			Replace(0, end, head);
-		} else if(end > 0) {
-			Remove(0, end);
-		}
-	}
-}
-
-/*! Rotate this genome forward n instructions.
- 
- "Rotation" in this sense means to move instructions from begin->end, with instructions
- at the end wrapping around to the beginning.  Specifically, given a genome
- [0... n... m-n... m], Rotate(n) moves instructions to create [m-n... m, 0... n].
- 
- Negative rotation is supported, and moves instructions from the beginning to the end.
- */
-void cGenome::Rotate(int n) {
-	assert(n < m_active_size);
-	if(n==0) { return; }
-
-	cInstruction* begin = &operator[](0);
-	cInstruction* end = &operator[](0) + GetSize();
-	
-	if(n > 0) {
-		// forward
-		cGenome head(end-n, end);
-		cGenome tail(begin, end-n);
-		head.Append(tail);
-		operator=(head);
-	} else {
-		assert(false);
-		// backward
-		cGenome head(begin, begin-n); // n is < 0, so this is addition.
-		cGenome tail(begin-n, end);
-		tail.Append(head);
-		operator=(tail);
-	}
-}
-
-
-void cGenome::operator=(const cGenome& other_genome)
-{
-  m_active_size = other_genome.m_active_size;
-  m_genome.ResizeClear(m_active_size);
-  
-  // Now that both code arrays are the same size, copy the other one over
-  for (int i = 0; i < m_active_size; i++) m_genome[i] = other_genome[i];
-  
-  m_mutation_steps = other_genome.m_mutation_steps;
-}
-
-
-bool cGenome::operator==(const cGenome& other_genome) const
-{
-  // Make sure the sizes are the same.
-  if (m_active_size != other_genome.m_active_size) return false;
-  
-  // Then go through line by line.
-  for (int i = 0; i < m_active_size; i++)
-    if (m_genome[i] != other_genome[i]) return false;
-  
-  return true;
-}
-
-

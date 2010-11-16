@@ -1,10 +1,9 @@
 /*
- *  avida.h
+ *  AvidaViewer.cc
  *  Avida
  *
- *  Called "avida.hh" prior to 12/2/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
- *  Copyright 1993-2001 California Institute of Technology.
+ *  Created by David on 11/11/10.
+ *  Copyright 2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -23,25 +22,9 @@
  *
  */
 
-#ifndef avida_h
-#define avida_h
+#include "AvidaViewer.h"
 
-class cAvidaConfig;
-class cString;
-class cStringList;
+#include "cCoreViewListener.h"
 
-namespace Avida
-{
-  void Initialize();
-  
-  cString GetVersion();
-  void PrintVersionBanner();
-  
-  void ProcessArgs(cStringList &argv, cAvidaConfig* cfg);
-  void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg);
 
-  //! This function properly shuts down the Avida program.
-  void Exit(int exit_code);
-};
-
-#endif
+cCoreViewListener::~cCoreViewListener() { ; }

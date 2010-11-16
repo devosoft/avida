@@ -41,6 +41,8 @@ public:
   tArrayMap() { ; }
   tArrayMap(const tArrayMap& am) : m_map(am.m_map) { ; }
   
+  int GetSize() const { return m_map.GetSize(); }
+  
   void Set(const KeyType& key, const ValueType& value)
   {
     for (int i = 0; i < m_map.GetSize(); i++) {

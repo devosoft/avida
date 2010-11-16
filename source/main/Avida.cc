@@ -22,10 +22,9 @@
  *
  */
 
-#include "avida.h"
+#include "Avida.h"
 
 #include "AvidaTools.h"
-#include "defs.h"
 #include "cActionLibrary.h"
 #include "cAnalyzeGenotype.h"
 #include "cAvidaConfig.h"
@@ -33,6 +32,7 @@
 #include "cModularityAnalysis.h"
 #include "cString.h"
 #include "cStringIterator.h"
+#include "cUserFeedback.h"
 #include "tDictionary.h"
 
 
@@ -67,6 +67,11 @@ const char* const BioUnitSourceMap[] = {
   "para:inject", // SRC_PARASITE_INJECT
   "testcpu", // SRC_TEST_CPU
 };
+  
+static void Exit(int exit_code) {
+  signal(SIGINT, SIG_IGN);          // Ignore all future interupts.
+  exit(exit_code);
+}
   
 void Initialize()
 {
@@ -115,9 +120,6 @@ cString GetVersion()
 #if INSTRUCTION_COUNT
   version += " inst_cnt";
 #endif
-#if USE_tMemTrack
-  version += " memt";
-#endif
   
   return version;
 }
@@ -153,7 +155,9 @@ void PrintVersionBanner()
   cout << "--------------------------------------------------------------------------------" << endl << endl;
 }
 
-void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
+  
+
+static void processArgs(cStringList &argv, cAvidaConfig* cfg)
 {
   int argc = argv.GetSize();
   int arg_num = 1;              // Argument number being looked at.
@@ -168,7 +172,6 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   }
   
   cString config_filename = "avida.cfg";
-  bool crash_if_not_found = false;
   tDictionary<cString> sets;
   tDictionary<cString> defs;
   
@@ -213,6 +216,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       << "  -v[ersion]            Prints the version number" << endl
       << "  -v0 -v1 -v2 -v3 -v4   Set output verbosity to 0..4" << endl
       << "  -w[arn]               Warn when default config settings are used." << endl
+      << "  --generate-config     Generate the default configration files" << endl
       << endl;
       
       exit(0);
@@ -265,7 +269,10 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
       }
       arg_num++;  if (arg_num < argc) cur_arg = args[arg_num];
       config_filename = cur_arg;
-      crash_if_not_found = true;
+    } else if (cur_arg == "--generate-config") {
+      cerr << "Generating default avida.cfg" << endl;
+      cfg->Print(FileSystem::PathAppend(FileSystem::GetCWD(), "avida.cfg"));
+      exit(0);
     } else {
       cerr << "Error: Unknown Option '" << args[arg_num] << "'" << endl
       << "Type: \"" << args[0] << " -h\" for a full option list." << endl;
@@ -278,7 +285,17 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
   delete [] args;
 
   // Load configuration file
-  cfg->Load(config_filename, defs, FileSystem::GetCWD(), crash_if_not_found, flag_warn_default);
+  cUserFeedback feedback;
+  cfg->Load(config_filename, FileSystem::GetCWD(), &feedback, &defs, flag_warn_default);
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::ERROR:    cerr << "error: "; break;
+      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
+  }
+  if (feedback.GetNumErrors()) exit(-1);
   
 
   // Process Command Line Flags
@@ -294,7 +311,7 @@ void ProcessArgs(cStringList &argv, cAvidaConfig* cfg)
     sets.GetKeys(keys);
     cString* keystr = NULL;
     while ((keystr = keys.Pop())) {
-      cerr << "Error: Unrecognized command line configuration setting '" << *keystr << "'." << endl;
+      cerr << "error: unrecognized command line configuration setting '" << *keystr << "'." << endl;
     }
     exit(1);
   }
@@ -313,13 +330,7 @@ void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg)
   for(int i=0; i<argc; i++){
     sl.PushRear(argv[i]);
   }
-  ProcessArgs(sl, cfg);
-}
-
-void Exit(int exit_code)
-{
-  signal(SIGINT, SIG_IGN);          // Ignore all future interupts.
-  exit(exit_code);
+  processArgs(sl, cfg);
 }
 
 };

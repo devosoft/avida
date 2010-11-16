@@ -26,24 +26,13 @@
 #ifndef cResourceCount_h
 #define cResourceCount_h
 
-#ifndef cSpatialResCount_h
+#include "Avida.h"
+
 #include "cSpatialResCount.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef tArray_h
 #include "tArray.h"
-#endif
-#ifndef tMatrix_h
 #include "tMatrix.h"
-#endif
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef nGeometry_h
 #include "nGeometry.h"
-#endif
 #ifndef tArrayMap_h
 #include "tArrayMap.h"
 #endif

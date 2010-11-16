@@ -26,42 +26,21 @@
 #ifndef cHardwareExperimental_h
 #define cHardwareExperimental_h
 
+#include "Avida.h"
+
+#include "cCodeLabel.h"
+#include "nHardware.h"
+#include "cHeadCPU.h"
+#include "cCPUMemory.h"
+#include "cHardwareBase.h"
+#include "cStats.h"
+#include "cString.h"
+#include "tArray.h"
+#include "tInstLib.h"
+#include "tManagedPointerArray.h"
+
 #include <cstring>
 #include <iomanip>
-
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef cCodeLabel_h
-#include "cCodeLabel.h"
-#endif
-#ifndef nHardware_h
-#include "nHardware.h"
-#endif
-#ifndef cHeadCPU_h
-#include "cHeadCPU.h"
-#endif
-#ifndef cCPUMemory_h
-#include "cCPUMemory.h"
-#endif
-#ifndef cHardwareBase_h
-#include "cHardwareBase.h"
-#endif
-#ifndef cStats_h
-#include "cStats.h"
-#endif
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tManagedPointerArray_h
-#include "tManagedPointerArray.h"
-#endif
-#ifndef tInstLib_h
-#include "tInstLib.h"
-#endif
 
 /**
  * Each organism may have a cHardwareExperimental structure which keeps track of the
@@ -230,7 +209,7 @@ private:
 
   
 public:
-  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
+  cHardwareExperimental(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareExperimental() { ; }
   
   static tInstLib<cHardwareExperimental::tMethod>* GetInstLib() { return s_inst_slib; }

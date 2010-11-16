@@ -107,7 +107,7 @@ public:
 	virtual void Select(cPopulationCell& s, int x);
 	
 	//! Called when the organism living in cell u dies.
-	virtual void OrganismDeath(cPopulationCell& u) { }
+	virtual void OrganismDeath(cPopulationCell& u);
 	
 	//! Returns a network-defined fitness.
 	virtual double Fitness(bool record_stats=true) const;
@@ -125,6 +125,11 @@ protected:
 	Network m_network; //!< Underlying network model.
 	CellVertexMap m_cv; //!< Map of cell ids to vertex descriptors.
 	double m_link_length_sum; //!< Sum of all link lengths, at connection.
+	
+private:
+	cDemeTopologyNetwork();
+	cDemeTopologyNetwork(const cDemeTopologyNetwork&);
+	cDemeTopologyNetwork& operator=(const cDemeTopologyNetwork&);
 };
 
 #endif

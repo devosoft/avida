@@ -28,18 +28,13 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <cstdarg>
 #include <string>
 #include <cstring>
 #include <cassert>
 
 #include "cRCObject.h"
 #include "tRCPtr.h"
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
 
 #define MAX_STRING_LENGTH 4096
 #define CONTINUE_LINE_CHAR '\\'
@@ -51,9 +46,6 @@
 
 class cString
 {
-#if USE_tMemTrack
-  tMemTrack<cString> mt;
-#endif
 protected:
   inline void CopyOnWrite();
 
@@ -199,7 +191,8 @@ public:
 
 
   // Additional modifiers
-  cString& Set(const char * fmt, ...);
+  cString& Set(const char* fmt, ...);
+  cString& Set(const char* fmt, va_list args);
 
   cString& Insert(const char in, int pos = 0, int excise = 0) { return InsertStr(1, &in, pos, excise); }
   cString& Insert(const char* in, int pos = 0, int excise = 0) { return InsertStr(strlen(in), in, pos, excise); }

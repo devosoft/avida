@@ -29,6 +29,7 @@
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cStringUtil.h"
+#include "cUserFeedback.h"
 #include "cWorld.h"
 #include "cWorldDriver.h"
 
@@ -120,7 +121,7 @@ bool cInstSet::InstInSet(const cString& in_name) const
   return false;
 }
 
-bool cInstSet::LoadWithStringList(const cStringList& sl, tList<cString>* errors)
+bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback)
 {
   cArgSchema schema(':');
   
@@ -157,17 +158,14 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, tList<cString>* errors)
     int fun_id = m_inst_lib->GetIndex(inst_name);
     if (fun_id == -1) {
       // Oh oh!  Didn't find an instruction!
-      if (errors) {
-        cString* errorstr = new cString("Unknown instruction '");
-        *errorstr += inst_name + "' (Best match = '" + m_inst_lib->GetNearMatch(inst_name) + "').";
-        errors->PushRear(errorstr);
-      }
+      if (feedback) feedback->Error("unknown instruction '%s' (Best match = '%s')",
+                                    (const char*)inst_name, (const char*)m_inst_lib->GetNearMatch(inst_name));
       success = false;
       continue;
     }
     
     // Load the arguments for this instruction
-    cArgContainer* args = cArgContainer::Load(cur_line, schema, errors);
+    cArgContainer* args = cArgContainer::Load(cur_line, schema, feedback);
     if (!args) {
       success = false;
       continue;
@@ -175,20 +173,19 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, tList<cString>* errors)
     
     // Check to make sure we are not inserting the special NULL instruction
     if (fun_id == m_inst_lib->GetInstNull()) {
-      if (errors) errors->PushRear(new cString("Invalid use of NULL instruction"));
+      if (feedback) feedback->Error("invalid use of NULL instruction");
       success = false;
       continue;
     }
     
     int redundancy = args->GetInt(0);
     if (redundancy < 0) {
-      m_world->GetDriver().NotifyWarning(cString("Instruction '") + inst_name + "' has negative redundancy, ignoring.");
+      if (feedback) feedback->Warning("instruction '%s' has negative redundancy, ignoring...", (const char*)inst_name);
       continue;
     }
     if (redundancy > 256) {
-      cString msg("Max redundancy is 256.  Resetting redundancy of \"");
-      msg += inst_name; msg += "\" from "; msg += redundancy; msg += " to 256.";
-      m_world->GetDriver().NotifyWarning(msg);
+      if (feedback) feedback->Warning("max redundancy is 256, resetting redundancy of '%s' from %d to 256",
+                                      (const char*) inst_name, redundancy);
       redundancy = 256;
     }
     
@@ -227,7 +224,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, tList<cString>* errors)
           m_lib_name_map[inst_id].inst_code = ((~0) >> ((sizeof(int) * 8) - inst_code_len)) & inst_id;
           break;
         default:
-          if (errors) errors->PushRear(new cString("Invalid default instruction code type."));
+          if (feedback) feedback->Error("invalid default instruction code type");
           success = false;
           break;
       }
@@ -237,7 +234,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, tList<cString>* errors)
         inst_code_val <<= 1;
         if (inst_code[i] == '1') inst_code_val |= 1;
         else if (inst_code[i] != '0') {
-          if (errors) errors->PushRear(new cString("Invalid character in instruction code, must be 0 or 1."));
+          if (feedback) feedback->Error("invalid character in instruction code, must be 0 or 1");
           success = false;
           break;
         }
@@ -251,7 +248,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, tList<cString>* errors)
     if ((*m_inst_lib)[fun_id].IsNop()) {
       // Assert nops are at the _beginning_ of an inst_set.
       if (m_lib_name_map.GetSize() != (m_lib_nopmod_map.GetSize() + 1)) {
-        if (errors) errors->PushRear(new cString("Invalid NOP placement, all NOPs must be listed first."));
+        if (feedback) feedback->Error("invalid NOP placement, all NOPs must be listed first");
         success = false;
       }
 

@@ -26,56 +26,29 @@
 #ifndef cStats_h
 #define cStats_h
 
+#include "Avida.h"
+
+#include "AvidaTools.h"
+#include "cBioGroupListener.h"
+#include "cDoubleSum.h"
+#include "cSequence.h"
+#include "cGenomeUtil.h"
+#include "cIntSum.h"
+#include "cOrganism.h"
+#include "cRunningAverage.h"
+#include "cRunningStats.h"
+#include "nGeometry.h"
+#include "tArray.h"
+#include "tArrayMap.h"
+#include "tDataManager.h"
+#include "tMatrix.h"
+
 #include <cassert>
 #include <fstream>
 #include <iostream>
 #include <vector>
 #include <map>
 #include <set>
-
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef cBioGroupListener_h
-#include "cBioGroupListener.h"
-#endif
-#ifndef cDoubleSum_h
-#include "cDoubleSum.h"
-#endif
-#ifndef cGenome_h
-#include "cGenome.h"
-#endif
-#ifndef cGenomeUtil_h
-#include "cGenomeUtil.h"
-#endif
-#ifndef cIntSum_h
-#include "cIntSum.h"
-#endif
-#ifndef cOrganism_h
-#include "cOrganism.h"
-#endif
-#ifndef cRunningAverage_h
-#include "cRunningAverage.h"
-#endif
-#ifndef cRunningStats_h
-#include "cRunningStats.h"
-#endif
-#ifndef AvidaTools_h
-#include "AvidaTools.h"
-#endif
-#ifndef nGeometry_h
-#include "nGeometry.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tDataManager_h
-#include "tDataManager.h"
-#endif
-#ifndef tMatrix_h
-#include "tMatrix.h"
-#endif
-
 
 class cWorld;
 class cOrganism;
@@ -84,6 +57,7 @@ class cOrgMessagePredicate;
 class cOrgMovementPredicate;
 class cDeme;
 class cGermline;
+
 
 struct flow_rate_tuple {
   cIntSum orgCount;
@@ -97,21 +71,20 @@ struct flow_rate_tuple {
 
 class cStats : public cBioGroupListener
 {
-#if USE_tMemTrack
-  tMemTrack<cStats> mt;
-#endif
 private:
   cWorld* m_world;
   
-  // Time scales...
+  tDataManager<cStats> m_data_manager;
+
+  
+  // --------  Time scales  ---------
   int m_update;
   int sub_update;
   double avida_time;
 
-  // The data manager handles printing user-formated output files.
-  tDataManager<cStats> data_manager;
 
-  //// By Creature Sums ////  (Cleared and resummed by population each update)
+  
+  // --------  Organism Sums  ---------  (Cleared and resummed by population each update)
   cDoubleSum sum_merit;
   cDoubleSum sum_mem_size;
   cDoubleSum sum_creature_age;
@@ -125,9 +98,9 @@ private:
 
   cRunningStats sum_div_mut_rate;
   cRunningStats sum_log_div_mut_rate;
-
-  //// By Genotype Sums ////  (Cleared and resummed by population each update)
-
+  
+  
+  // --------  Genotype Sums  ---------  (Cleared and resummed by population each update)
   cDoubleSum sum_gestation;
   cDoubleSum sum_fitness;
   cDoubleSum sum_repro_rate;
@@ -142,26 +115,18 @@ private:
 
   cDoubleSum sum_genotype_age;
 
-  // breed/geneological stats
   cDoubleSum sum_abundance;
   cDoubleSum sum_genotype_depth;
-
-
-  //// By Threshold Sums ////  (Cleared and resummed by population each update)
 
   cDoubleSum sum_threshold_age;
 
 
-  //// By Species Sums ////  (Cleared and resummed by population each update)
-
-  cDoubleSum sum_species_age;
-
-
-  // Instruction Counts (DM)
-  tArray<cIntSum> sum_exe_inst_array;
+  // --------  Instruction Counts  ---------
+  tArrayMap<cString, tArray<cString> > m_is_inst_names_map;
+  tArrayMap<cString, tArray<cIntSum> > m_is_exe_inst_map;
 
 
-  // Calculated stats
+  // --------  Calculated Stats  ---------
   double entropy;
   double species_entropy;
   double energy;
@@ -171,7 +136,7 @@ private:
   // For tracking of advantageous mutations
   double max_viable_fitness;
 
-  // Dominant Genotype
+  // --------  Dominant Genotype  ---------
   double dom_merit;
   double dom_gestation;
   double dom_repro_rate;
@@ -198,6 +163,8 @@ private:
   cString dom_sequence;
   int coal_depth;
 
+
+  // --------  Population Stats  ---------
   int num_births;
   int num_deaths;
   int num_breed_in;
@@ -207,8 +174,6 @@ private:
   int num_genotypes;
   int num_genotypes_historic;
   int num_threshold;
-  int num_species;
-  int num_thresh_species;
   int num_lineages;
   int num_executed;
   int num_parasites;
@@ -223,18 +188,18 @@ private:
   int tot_organisms;
   int tot_genotypes;
   int tot_threshold;
-  int tot_species;
-  int tot_thresh_species;
   int tot_lineages;
   int tot_executed;
-  
-  tArray<int> genotype_map;
 
+  
+  // --------  Parasite Task Stats  ---------
   tArray<int> tasks_host_current;
   tArray<int> tasks_host_last;
   tArray<int> tasks_parasite_current;
   tArray<int> tasks_parasite_last;
   
+
+  // --------  Organism Task Stats  ---------
   tArray<int> task_cur_count;
   tArray<int> task_last_count;
   tArray<double> task_cur_quality;
@@ -247,7 +212,6 @@ private:
   tArray<int> cur_task_count;
   tArray<int> new_reaction_count;
   
-  // Stats for internal resource bins and use of internal resources
   tArray<int> task_internal_cur_count;
   tArray<int> task_internal_last_count;
   tArray<double> task_internal_cur_quality;
@@ -266,30 +230,35 @@ private:
   tArray< tArray<double> > spatial_res_count;
 
   tArray<cString> task_names;
-  tArray<cString> inst_names;
   tArray<cString> reaction_names;
   tArray<cString> resource_names;
 
-  // Resampling Statistics @AWC - 06/29/06
+
+  
+  // --------  Resampling Stats  ---------
   int num_resamplings;
   int num_failedResamplings;
   
-  // State variables
+
+  // --------  State Variables  ---------
   int last_update;
 
-  // Stats for market econ
+
+  // --------  Market Stats  ---------
   int num_bought;
   int num_sold;
   int num_used;
   int num_own_used;
   
-  // Stats for how sense instruction is being used
+
+  // --------  Sense Instruction Stats  ---------
   int sense_size;
   tArray<int> sense_last_count;
   tArray<int> sense_last_exe_count;
   tArray<cString> sense_names;
 
-  // Stats for competitions
+
+  // --------  Competition Stats  ---------
   tArray<double> avg_trial_fitnesses;
   double avg_competition_fitness;
   double min_competition_fitness;
@@ -299,9 +268,8 @@ private:
   double max_competition_copied_fitness;  
   int num_orgs_replicated;
 
-//  tArray<int> numAsleep;
-  
-  // simple deme stats
+
+  // --------  Deme Stats  ---------
   cIntSum sum_deme_age;
   cIntSum sum_deme_birth_count;
   cIntSum sum_deme_last_birth_count;
@@ -326,22 +294,26 @@ private:
   //(event flow rate, (deme pop size, events killed))
   std::map<int, flow_rate_tuple > flow_rate_tuples;
 
-  // deme predicate stats
+
+  // --------  Deme Predicate Stats  ---------
   tMatrix<int> relative_pos_event_count;
   tMatrix<int> relative_pos_pred_sat;
 	std::map<cString, int> demeResourceThresholdPredicateMap;
 
-  // Speculative Execution Stats
+  
+  // --------  Speculative Execution Stats  ---------
   int m_spec_total;
   int m_spec_num;
   int m_spec_waste;
   
-  // Number of organisms killed by kill actions
+
+  // --------  Organism Kill Stats  ---------
   cIntSum sum_orgs_killed;
   cIntSum sum_unoccupied_cell_kill_attempts;
   cIntSum sum_cells_scanned_at_kill;
   
-  // Number of migrations that have been made
+
+  // --------  Migration Stats  ---------
   int num_migrations;
   
 
@@ -383,7 +355,7 @@ public:
   int GetDomBreedOut() const { return dom_breed_out; }
   int GetDomAbundance() const { return dom_abundance; }
   int GetDomGeneDepth() const { return dom_gene_depth; }
-  const cString & GetDomSequence() const { return dom_sequence; }
+  const cString& GetDomSequence() const { return dom_sequence; }
 
   int GetSenseSize() const { return sense_size; }
 
@@ -406,12 +378,10 @@ public:
   void SetDomGeneDepth(int in_depth) { dom_gene_depth = in_depth; }
   void SetDomSequence(const cString & in_seq) { dom_sequence = in_seq; }
 
-  void SetGenoMapElement(int i, int in_geno) { genotype_map[i] = in_geno; }
   void SetCoalescentGenotypeDepth(int in_depth) {coal_depth = in_depth;}
 
   inline void SetNumGenotypes(int new_genotypes, int num_historic);
-  inline void SetNumCreatures(int new_creatures);
-  inline void SetNumThreshSpecies(int new_thresh_species);
+  inline void SetNumCreatures(int new_creatures) { num_creatures = new_creatures; }
   inline void SetBreedTrueCreatures(int in_num_breed_true_creatures);
   inline void SetNumParasites(int in_num_parasites);
   inline void SetNumNoBirthCreatures(int in_num_no_birth_creatures);
@@ -444,7 +414,6 @@ public:
   cDoubleSum& SumAbundance()     { return sum_abundance; }
   cDoubleSum& SumGenotypeDepth() { return sum_genotype_depth; }
   cDoubleSum& SumThresholdAge()  { return sum_threshold_age; }
-  cDoubleSum& SumSpeciesAge()    { return sum_species_age; }
 
   cDoubleSum& SumNeutralMetric() { return sum_neutral_metric; }
   cDoubleSum& SumLineageLabel()  { return sum_lineage_label; }
@@ -484,7 +453,7 @@ public:
 #if INSTRUCTION_COUNT
   void ZeroInst();
 #endif
-  tArray<cIntSum>& SumExeInst() { return sum_exe_inst_array; }
+  tArray<cIntSum>& InstExeCountsForInstSet(const cString& inst_set) { return m_is_exe_inst_map[inst_set]; }
 
   // And constant versions of the above...
   const cDoubleSum& SumFitness() const       { return sum_fitness; }
@@ -498,7 +467,6 @@ public:
   const cDoubleSum& SumAbundance() const     { return sum_abundance; }
   const cDoubleSum& SumGenotypeDepth() const { return sum_genotype_depth; }
   const cDoubleSum& SumThresholdAge() const  { return sum_threshold_age; }
-  const cDoubleSum& SumSpeciesAge() const    { return sum_species_age; }
 
   const cDoubleSum& SumNeutralMetric() const { return sum_neutral_metric; }
   const cDoubleSum& SumLineageLabel() const  { return sum_lineage_label; }
@@ -535,8 +503,8 @@ public:
 
   const std::map<int, flow_rate_tuple >&  FlowRateTuples() const { return flow_rate_tuples; }
 
-  void IncResamplings() { ++num_resamplings; }  // @AWC 06/29/06
-  void IncFailedResamplings() { ++num_failedResamplings; }  // @AWC 06/29/06
+  void IncResamplings() { ++num_resamplings; }
+  void IncFailedResamplings() { ++num_failedResamplings; }
 
   void CalcEnergy();
   void CalcFidelity();
@@ -546,8 +514,6 @@ public:
   void AddGenotype() { tot_genotypes++; }
   void RemoveGenotype(int id_num, int parent_id, int parent_distance, int depth, int max_abundance,
                       int parasite_abundance, int age, int length);
-  void AddSpecies() { tot_species++; num_species++; }
-  void RemoveSpecies(int id_num, int parent_id, int max_gen_abundance, int max_abundance, int age);
   void AddLineage() { tot_lineages++; num_lineages++; }
   void RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
                      int total_genotypes, double fitness, double lineage_stat1, double lineage_stat2 );
@@ -586,8 +552,8 @@ public:
   void IncTaskExeCount(int task_num, int task_count) { task_exe_count[task_num] += task_count; }
   void ZeroTasks();
   
-  void AddLastSense(int res_comb_index) { sense_last_count[res_comb_index]++; }
-  void IncLastSenseExeCount(int res_comb_index, int count) { sense_last_exe_count[res_comb_index]+= count; }
+  void AddLastSense(int res_comb_index) { /*sense_last_count[res_comb_index]++;*/ }
+  void IncLastSenseExeCount(int res_comb_index, int count) { /*sense_last_exe_count[res_comb_index]+= count;*/ }
     
   // internal resource bins and use of internal resources
   void AddCurInternalTask(int task_num) { task_internal_cur_count[task_num]++; }
@@ -612,11 +578,9 @@ public:
   
   void SetResources(const tArray<double> &_in) { resource_count = _in; }
   void SetResourcesGeometry(const tArray<int> &_in) { resource_geometry = _in;}
-  void SetSpatialRes(const tArray< tArray<double> > &_in) { 
-    spatial_res_count = _in;
-  }
+  void SetSpatialRes(const tArray< tArray<double> > &_in) { spatial_res_count = _in; }
 
-  void SetInstName(int id, const cString & name) { assert(id < inst_names.GetSize()); inst_names[id] = name; }
+  void SetInstNames(const cString& inst_set, const tArray<cString>& names) { m_is_inst_names_map[inst_set] = names; }
   void SetReactionName(int id, const cString & name) { reaction_names[id] = name; }
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
@@ -647,8 +611,6 @@ public:
   int GetNumGenotypes() const       { return num_genotypes; }
   int GetNumGenotypesHistoric() const { return num_genotypes_historic; }
   int GetNumThreshold() const       { return num_threshold; }
-  int GetNumSpecies() const         { return num_species; }
-  int GetNumThreshSpecies() const   { return num_thresh_species; }
   int GetNumLineages() const        { return num_lineages; }
   int GetNumParasites() const       { return num_parasites; }
   int GetNumNoBirthCreatures() const{ return num_no_birth_creatures; }
@@ -660,8 +622,6 @@ public:
   int GetTotCreatures() const       { return tot_organisms; }
   int GetTotGenotypes() const       { return tot_genotypes; }
   int GetTotThreshold() const       { return tot_threshold; }
-  int GetTotSpecies() const         { return tot_species; }
-  int GetTotThreshSpecies() const   { return tot_thresh_species; }
   int GetTotLineages() const        { return tot_lineages; }
 
   int GetTaskCurCount(int task_num) const { return task_cur_count[task_num]; }
@@ -724,7 +684,6 @@ public:
   int GetCoalescentDepth() const   { return coal_depth; }
 
   double GetAveThresholdAge() const { return sum_threshold_age.Average(); }
-  double GetAveSpeciesAge() const { return sum_species_age.Average(); }
 
   double GetMaxFitness() const { return max_fitness; }
   double GetMaxMerit() const { return max_merit; }
@@ -790,8 +749,7 @@ public:
   void PrintTimeData(const cString& filename);
   void PrintDivideMutData(const cString& filename);
   void PrintMutationRateData(const cString& filename);
-  void PrintInstructionData(const cString& filename);
-  void PrintGenotypeMap(const cString& filename);
+  void PrintInstructionData(const cString& filename, const cString& inst_set);
   void PrintMarketData(const cString& filename);
   void PrintSenseData(const cString& filename);
   void PrintSenseExeData(const cString& filename);
@@ -1080,9 +1038,9 @@ private:
 	cDoubleSum m_hgt_inserted; //!< Total length of inserted genome fragments.
 public:
 	//! Called when an organism metabolizes a genome fragment.
-	void GenomeFragmentMetabolized(cOrganism* organism, const cGenome& fragment);
+	void GenomeFragmentMetabolized(cOrganism* organism, const cSequence& fragment);
 	//! Called when an organism inserts a genome fragment.
-	void GenomeFragmentInserted(cOrganism* organism, const cGenome& fragment, const cGenomeUtil::substring_match& location);
+	void GenomeFragmentInserted(cOrganism* organism, const cSequence& fragment, const cGenomeUtil::substring_match& location);
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
 	
@@ -1092,6 +1050,9 @@ private:
 	cDoubleSum m_incoming; //!< Number of incoming migration events.
 
 public:
+	typedef std::map<std::string, double> profiling_stats_t; //!< Structure to hold average profiling statistics.
+	typedef std::map<std::string, cDoubleSum> avg_profiling_stats_t; //!< Structure to hold statistics for one network.
+
 	//! Record information about an organism migrating from this population.
 	void OutgoingMigrant(const cOrganism* org);
 	
@@ -1100,6 +1061,15 @@ public:
 	
 	//! Print multiprocess data.
 	void PrintMultiProcessData(const cString& filename);
+	
+	//! Track profiling data.
+	void ProfilingData(const profiling_stats_t& pf);
+	
+	//! Print profiling data.
+	void PrintProfilingData(const cString& filename);
+	
+protected:
+	avg_profiling_stats_t m_profiling; //!< Profiling statistics.
 };
 
 
@@ -1108,16 +1078,6 @@ inline void cStats::SetNumGenotypes(int new_genotypes, int num_historic)
   num_genotypes_last = num_genotypes;
   num_genotypes = new_genotypes;
   num_genotypes_historic = num_historic;
-}
-
-inline void cStats::SetNumCreatures(int new_creatures)
-{
-  num_creatures = new_creatures;
-}
-
-inline void cStats::SetNumThreshSpecies(int new_thresh_species)
-{
-  num_thresh_species = new_thresh_species;
 }
 
 inline void cStats::SetBreedTrueCreatures(int in_num_breed_true_creatures)

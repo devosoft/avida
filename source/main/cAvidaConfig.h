@@ -40,13 +40,7 @@
 #include "cStringUtil.h"
 #include "tList.h"
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-
+class cUserFeedback;
 template <class T> class tDictionary;
 
 using namespace std;
@@ -145,9 +139,6 @@ public:                                                                    \
 
 
 class cAvidaConfig {
-#if USE_tMemTrack
-  tMemTrack<cAvidaConfig> mt;
-#endif
 private:
   // The cBaseConfigEntry class is a bass class for all configuration entries.
   // It is used to manage the various types of entries in a dynamic fashion.
@@ -440,11 +431,9 @@ public:
 
   
   // -------- Pprocessing of multiple, distributed populations config options --------
-  CONFIG_ADD_GROUP(MP_GROUP, "Config options for multiple, distibuted populations");
+  CONFIG_ADD_GROUP(MP_GROUP, "Config options for multiple, distributed populations");
   CONFIG_ADD_VAR(ENABLE_MP, int, 0, "Enable multi-process Avida; 0=disabled (default),\n1=enabled.");
-  CONFIG_ADD_VAR(MP_SCHEDULING_STYLE, int, 0, "Style of scheduling:\n0=non-MP aware (default)\n1=MP aware");
-  CONFIG_ADD_VAR(MP_MIGRATION_STYLE, int, 0, "Style of migration:\n0=mass action, probabilistic (default)\n1=spatial, using boundary cells");
-  CONFIG_ADD_VAR(MP_MIGRATION_P, double, 0.0, "Probability of offspring migration between worlds (default=0.0).");
+  CONFIG_ADD_VAR(MP_SCHEDULING_STYLE, int, 0, "Style of scheduling:\n0=non-MP aware (default)\n1=MP aware, integrated across worlds.");
 	
   
   // -------- Deme config options --------
@@ -766,6 +755,8 @@ public:
   CONFIG_ADD_VAR(DEME_NETWORK_REQUIRES_CONNECTEDNESS, int, 1, "Whether the deme's network must be connected before an actual fitness is calculated.");
   CONFIG_ADD_VAR(DEME_NETWORK_TOPOLOGY_FITNESS, int, 0, "Network measure used to determine fitness; see cDemeTopologyNetwork.h.");
   CONFIG_ADD_VAR(DEME_NETWORK_LINK_DECAY, int, 0, "Number of updates after which a link decays; 0=no decay (default).");
+	CONFIG_ADD_VAR(DEME_NETWORK_REMOVE_NODE_ON_DEATH, int, 0, "Whether death of an organism in\nthe deme removes its links;\n0=no (default);\n1=yes.");
+
 	
   // -------- Horizontal Gene Transfer (HGT) config options --------
   CONFIG_ADD_GROUP(HGT_GROUP, "Horizontal gene transfer settings");
@@ -828,10 +819,8 @@ public:
 	
 #endif
   
-  inline void Load(const cString& filename, const cString& working_dir) { Load(filename, working_dir, false); }
-  void Load(const cString& filename, const cString& working_dir, bool crash_if_not_found);
-  void Load(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir,
-            bool crash_if_not_found = false, bool warn_default = true);
+  bool Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback = NULL,
+            const tDictionary<cString>* mappings = NULL, bool warn_default = true);
   void Print(const cString& filename);
   void Status();
   void PrintReview();

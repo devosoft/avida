@@ -26,14 +26,7 @@
 #ifndef cChangeList_h
 #define cChangeList_h
 
-#ifndef tArray_h
 #include "tArray.h"
-#endif
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
 
 
 /**
@@ -44,9 +37,6 @@
 
 class cChangeList
 {
-#if USE_tMemTrack
-  tMemTrack<cChangeList> mt;
-#endif
 protected:
   /*
   Note that size of m_change_list is size of m_change_tracking, and that

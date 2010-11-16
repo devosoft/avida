@@ -45,7 +45,7 @@ class cAvidaContext;
 class cBioGroup;
 class cGenome;
 class cInstSet;
-class cMetaGenome;
+class cGenome;
 class cResourceCount;
 class cResourceHistory;
 class cWorld;
@@ -78,7 +78,7 @@ private:
   
 
   bool ProcessGestation(cAvidaContext& ctx, cCPUTestInfo& test_info, int cur_depth);
-  bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, int cur_depth);
+  bool TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth);
 
   
   cTestCPU(); // @not_implemented

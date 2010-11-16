@@ -25,7 +25,6 @@
 
 #include "cString.h"
 
-#include <cstdarg>
 #include <cstdio>
 
 
@@ -322,13 +321,21 @@ bool cString::IsSubstring(const cString & in_string, int start) const
 
 // -- Modifiers --
 
-cString & cString::Set(const char * fmt, ...)
+cString& cString::Set(const char * fmt, ...)
 {
   va_list argp;
   char buf[MAX_STRING_LENGTH];
   va_start(argp, fmt);
   vsprintf(buf, fmt, argp);
   va_end(argp);
+  (*this) = buf;
+  return *this;
+}
+
+cString& cString::Set(const char * fmt, va_list args)
+{
+  char buf[MAX_STRING_LENGTH];
+  vsprintf(buf, fmt, args);
   (*this) = buf;
   return *this;
 }

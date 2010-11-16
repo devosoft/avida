@@ -29,7 +29,6 @@
 #include "cBioGroup.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
-#include "cGenomeUtil.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cHardwareStatusPrinter.h"
@@ -216,20 +215,17 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
-  TestGenome_Body(ctx, test_info, mg, 0);
+  TestGenome_Body(ctx, test_info, genome, 0);
   ctx.ClearTestMode();
   
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome,
-                          ofstream& out_fp)
+bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, ofstream& out_fp)
 {
   ctx.SetTestMode();
   test_info.Clear();
-  cMetaGenome mg(m_world->GetConfig().HARDWARE_TYPE.Get(), 0, genome); // @TODO - fix test cpu metagenome handling
-  TestGenome_Body(ctx, test_info, mg, 0);
+  TestGenome_Body(ctx, test_info, genome, 0);
 
   ////////////////////////////////////////////////////////////////
   // IsViable() == false
@@ -258,7 +254,7 @@ bool cTestCPU::TestGenome(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGe
   return test_info.is_viable;
 }
 
-bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cMetaGenome& genome, int cur_depth)
+bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, const cGenome& genome, int cur_depth)
 {
   assert(cur_depth < test_info.generation_tests);
 
@@ -288,17 +284,14 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   if (test_info.org_array[cur_depth] != NULL) {
     delete test_info.org_array[cur_depth];
   }
-  cOrganism* organism = NULL;
-  
-  if (test_info.GetInstSet()) organism = new cOrganism(m_world, ctx, genome, test_info.GetInstSet(), -1, SRC_TEST_CPU);
-  else organism = new cOrganism(m_world, ctx, genome, -1, SRC_TEST_CPU);
+  cOrganism* organism = new cOrganism(m_world, ctx, genome, -1, SRC_TEST_CPU);
   
   // Copy the test mutation rates
   organism->MutationRates().Copy(test_info.MutationRates());
   
   test_info.org_array[cur_depth] = organism;
   organism->SetOrgInterface(ctx, new cTestCPUInterface(this, test_info, cur_depth));
-  organism->GetPhenotype().SetupInject(genome.GetGenome());
+  organism->GetPhenotype().SetupInject(genome.GetSequence());
 
   // Run the current organism.
   ProcessGestation(ctx, test_info, cur_depth);
@@ -330,7 +323,7 @@ bool cTestCPU::TestGenome_Body(cAvidaContext& ctx, cCPUTestInfo& test_info, cons
   // Case 3:  ////////////////////////////////////
   bool is_ancestor = false;
   for (int anc_depth = 0; anc_depth < cur_depth; anc_depth++) {
-    if (organism->OffspringGenome().GetGenome() == test_info.org_array[anc_depth]->GetGenome()){
+    if (organism->OffspringGenome() == test_info.org_array[anc_depth]->GetGenome()){
       is_ancestor = true;
       const int cur_cycle = cur_depth - anc_depth;
       if (test_info.max_cycle < cur_cycle) test_info.max_cycle = cur_cycle;
@@ -444,7 +437,7 @@ void cTestCPU::PrintGenome(cAvidaContext& ctx, const cGenome& genome, cString fi
   df.Endl();
   
   // Display the genome
-  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), genome);
+  genome.GetSequence().SaveInstructions(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet());
   
   m_world->GetDataFileManager().Remove(filename);
 }
@@ -454,12 +447,12 @@ void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename
 {
   if (!bg->HasProperty("genome")) return;
   
-  cMetaGenome mg(bg->GetProperty("genome").AsString());
+  cGenome mg(bg->GetProperty("genome").AsString());
   
-  if (filename == "") filename.Set("archive/%03d-unnamed.org", mg.GetGenome().GetSize());
+  if (filename == "") filename.Set("archive/%03d-unnamed.org", mg.GetSequence().GetSize());
   
   cCPUTestInfo test_info;
-  TestGenome(ctx, test_info, mg.GetGenome());
+  TestGenome(ctx, test_info, mg);
   
   // Open the file...
   cDataFile& df = m_world->GetDataFile(filename);
@@ -549,7 +542,7 @@ void cTestCPU::PrintBioGroup(cAvidaContext& ctx, cBioGroup* bg, cString filename
   df.Endl();
   
   // Display the genome
-  cGenomeUtil::SaveGenome(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet(), mg.GetGenome());
+  mg.GetSequence().SaveInstructions(df.GetOFStream(), test_info.GetTestOrganism()->GetHardware().GetInstSet());
   
   m_world->GetDataFileManager().Remove(filename);
 }

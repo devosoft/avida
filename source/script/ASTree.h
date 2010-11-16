@@ -25,11 +25,10 @@
 #ifndef ASTree_h
 #define ASTree_h
 
+#include "Avida.h"
 #include "AvidaScript.h"
 
 #include "cString.h"
-
-#include "defs.h"
 
 #include "tList.h"
 #include "tManagedPointerArray.h"

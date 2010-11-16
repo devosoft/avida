@@ -40,7 +40,7 @@
 
 class cAvidaContext;
 class cDeme;
-class cGenome;
+class cSequence;
 class cPopulation;
 class cOrgMessage;
 class cOrganism;
@@ -93,7 +93,7 @@ public:
   void SetPrevSeenCellID(int in_id) { m_prevseen_cell_id = in_id; }
   void SetPrevTaskCellID(int in_id) { m_prev_task_cell = in_id; }
 
-  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome);
+  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
@@ -121,7 +121,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide();
   //! Send a message to the faced organism.
@@ -178,15 +178,15 @@ public:
 
 protected:
 	//! Place the fragment at the location of best match.
-	void HGTMatchPlacement(cAvidaContext& ctx, const cGenome& offspring,
+	void HGTMatchPlacement(cAvidaContext& ctx, const cSequence& offspring,
 												 fragment_list_type::iterator& selected,
 												 substring_match& location);
 	//! Place the fragment at the location of best match, with redundant instructions trimmed.
-	void HGTTrimmedPlacement(cAvidaContext& ctx, const cGenome& offspring,
+	void HGTTrimmedPlacement(cAvidaContext& ctx, const cSequence& offspring,
 													 fragment_list_type::iterator& selected,
 													 substring_match& location);	
 	//! Place the fragment at a random location.
-	void HGTRandomPlacement(cAvidaContext& ctx, const cGenome& offspring,
+	void HGTRandomPlacement(cAvidaContext& ctx, const cSequence& offspring,
 													fragment_list_type::iterator& selected,
 													substring_match& location);
 	//! Support for stateful HGT mutations.
@@ -197,12 +197,15 @@ protected:
 	//! Initialize HGT support.
 	inline void InitHGTSupport() { if(!m_hgt_support) { m_hgt_support = new HGTSupport(); } }
 	//! Called when this organism is the receiver of an HGT donation.
-	void ReceiveHGTDonation(const cGenome& fragment);
+	void ReceiveHGTDonation(const cSequence& fragment);
   
   
 public:
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);
+  
+  void BeginSleep();
+  void EndSleep();
 };
 
 #endif

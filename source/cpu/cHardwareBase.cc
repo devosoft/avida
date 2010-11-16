@@ -31,9 +31,6 @@
 #include "cHardwareManager.h"
 #include "cHeadCPU.h"
 #include "cInstSet.h"
-#include "cMutation.h"
-#include "cMutationLib.h"
-#include "nMutation.h"
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cPopulation.h"
@@ -49,8 +46,8 @@
 using namespace AvidaTools;
 
 
-cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set, int inst_set_id)
-: m_world(world), m_organism(in_organism), m_inst_set_id(inst_set_id), m_inst_set(inst_set), m_tracer(NULL)
+cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
+: m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
 , m_has_energy_costs(m_inst_set->HasEnergyCosts()) , m_has_res_costs(m_inst_set->HasResCosts())  /*APW*/
 {
@@ -247,7 +244,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
   if (!min_genome_size || min_genome_size < MIN_GENOME_LENGTH) min_genome_size = MIN_GENOME_LENGTH;
   
   int totalMutations = 0;
-  cGenome& offspring_genome = m_organism->OffspringGenome().GetGenome();
+  cSequence& offspring_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -273,7 +270,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 	// HGT is a location-dependent random process; each type is tested over in
 	// cPopulationInterface.
 	if(m_world->GetConfig().ENABLE_HGT.Get()) {
-		m_organism->GetOrgInterface().DoHGTMutation(ctx, offspring_genome);
+		m_organism->GetOrgInterface().DoHGTMutation(ctx, m_organism->OffspringGenome());
 	}
   
   // Divide Mutations
@@ -441,7 +438,7 @@ int cHardwareBase::Divide_DoMutations(cAvidaContext& ctx, double mut_multiplier,
 }
 
 
-bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cGenome& genome)
+bool cHardwareBase::doUniformMutation(cAvidaContext& ctx, cSequence& genome)
 {
   
   int mut = ctx.GetRandom().GetUInt((m_inst_set->GetSize() * 2) + 1);
@@ -482,9 +479,9 @@ void cHardwareBase::doUniformCopyMutation(cAvidaContext& ctx, cHeadCPU& head)
 // to another random position and continued reading to the end.
 // This can cause large deletions or tandem duplications.
 // Unlucky organisms might exceed the allowed length (randomly) if these mutations occur.
-void cHardwareBase::doSlipMutation(cAvidaContext& ctx, cGenome& genome, int from)
+void cHardwareBase::doSlipMutation(cAvidaContext& ctx, cSequence& genome, int from)
 {
-  cGenome genome_copy = cGenome(genome);
+  cSequence genome_copy = cSequence(genome);
   
   // All combinations except beginning to past end allowed
   if (from < 0) from = ctx.GetRandom().GetInt(genome_copy.GetSize() + 1);
@@ -567,7 +564,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 {
   int maxmut = pointmut;
   int totalMutations = 0;
-  cGenome& child_genome = m_organism->OffspringGenome().GetGenome();
+  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
   
   m_organism->GetPhenotype().SetDivType(mut_multiplier);
   
@@ -604,7 +601,7 @@ unsigned cHardwareBase::Divide_DoExactMutations(cAvidaContext& ctx, double mut_m
 bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
 {
   cPhenotype & phenotype = m_organism->GetPhenotype();
-  phenotype.CopyTrue() = ( m_organism->OffspringGenome() == m_organism->GetMetaGenome() );
+  phenotype.CopyTrue() = ( m_organism->OffspringGenome() == m_organism->GetGenome() );
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
@@ -624,7 +621,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome().GetGenome());
+  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
   delete testcpu;
   
@@ -679,7 +676,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
   // Ideally, we won't have reversions and sterilizations turned on at the
   // same time, but if we do, give revert the priority.
   if (revert == true) {
-    m_organism->OffspringGenome() = m_organism->GetMetaGenome();
+    m_organism->OffspringGenome() = m_organism->GetGenome();
   }
   
   if (sterilize == true) {
@@ -697,7 +694,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures(cAvidaContext& ctx)
 bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
 {
   cPhenotype & phenotype = m_organism->GetPhenotype();
-  phenotype.CopyTrue() = (m_organism->OffspringGenome() == m_organism->GetMetaGenome());
+  phenotype.CopyTrue() = (m_organism->OffspringGenome() == m_organism->GetGenome());
   phenotype.ChildFertile() = true;
 	
   // Only continue if we're supposed to do a fitness test on divide...
@@ -717,7 +714,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
   cCPUTestInfo test_info;
   test_info.UseRandomInputs();
-  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome().GetGenome());
+  testcpu->TestGenome(ctx, test_info, m_organism->OffspringGenome());
   const double child_fitness = test_info.GetGenotypeFitness();
   delete testcpu;
   
@@ -776,7 +773,7 @@ bool cHardwareBase::Divide_TestFitnessMeasures1(cAvidaContext& ctx)
   // Ideally, we won't have reversions and sterilizations turned on at the
   // same time, but if we do, give revert the priority.
   if (revert == true) {
-	  m_organism->OffspringGenome() = m_organism->GetMetaGenome();
+	  m_organism->OffspringGenome() = m_organism->GetGenome();
   }
   
   if (sterilize == true) {
@@ -799,140 +796,6 @@ int cHardwareBase::PointMutate(cAvidaContext& ctx, const double mut_rate)
   }
   
   return num_muts;
-}
-
-void cHardwareBase::TriggerMutations_Body(cAvidaContext& ctx, int type, cGenome& target_memory, cHeadCPU& cur_head)
-{
-  const int pos = cur_head.GetPosition();
-	
-  switch (type) {
-		case nMutation::TYPE_POINT:
-			target_memory[pos] = m_inst_set->GetRandomInst(ctx);
-			break;
-		case nMutation::TYPE_INSERT:
-		case nMutation::TYPE_DELETE:
-		case nMutation::TYPE_HEAD_INC:
-		case nMutation::TYPE_HEAD_DEC:
-		case nMutation::TYPE_TEMP:
-		case nMutation::TYPE_KILL:
-		default:
-      m_world->GetDriver().RaiseException("Mutation type not implemented!");
-			break;
-  };
-}
-
-
-bool cHardwareBase::TriggerMutations_ScopeGenome(cAvidaContext& ctx, const cMutation* cur_mut,
-                                                 cGenome& target_memory, cHeadCPU& cur_head, const double rate)
-{
-  // The rate we have stored indicates the probability that a single
-  // mutation will occur anywhere in the genome.
-  
-  if (ctx.GetRandom().P(rate) == true) {
-    // We must create a temporary head and use it to randomly determine the
-    // position in the genome to be mutated.
-    cHeadCPU tmp_head(cur_head);
-    tmp_head.AbsSet(ctx.GetRandom().GetUInt(target_memory.GetSize()));
-    TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
-    return true;
-  }
-  return false;
-}
-
-bool cHardwareBase::TriggerMutations_ScopeLocal(cAvidaContext& ctx, const cMutation* cur_mut,
-                                                cGenome& target_memory, cHeadCPU& cur_head, const double rate)
-{
-  // The rate we have stored is the probability for a mutation at this single
-  // position in the genome.
-	
-  if (ctx.GetRandom().P(rate) == true) {
-    TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, cur_head);
-    return true;
-  }
-  return false;
-}
-
-int cHardwareBase::TriggerMutations_ScopeGlobal(cAvidaContext& ctx, const cMutation* cur_mut,
-                                                cGenome& target_memory, cHeadCPU& cur_head, const double rate)
-{
-  // The probability we have stored is per-site, so we can pull a random
-  // number from a binomial distribution to determine the number of mutations
-  // that should occur.
-	
-  const int num_mut =
-	ctx.GetRandom().GetRandBinomial(target_memory.GetSize(), rate);
-	
-  if (num_mut > 0) {
-    for (int i = 0; i < num_mut; i++) {
-      cHeadCPU tmp_head(cur_head);
-      tmp_head.AbsSet(ctx.GetRandom().GetUInt(target_memory.GetSize()));
-      TriggerMutations_Body(ctx, cur_mut->GetType(), target_memory, tmp_head);
-    }
-  }
-	
-  return num_mut;
-}
-
-// Trigger mutations of a specific type.  Outside triggers cannot specify
-// a head since hardware types are not known.
-bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger)
-{
-  // Only update triggers should happen from the outside!
-  assert(trigger == nMutation::TRIGGER_UPDATE);
-	
-  // Assume instruction pointer is the intended target (if one is even
-  // needed!
-	
-  return TriggerMutations(ctx, trigger, IP());
-}
-
-bool cHardwareBase::TriggerMutations(cAvidaContext& ctx, int trigger, cHeadCPU& cur_head)
-{
-  // Collect information about mutations from the organism.
-  cLocalMutations& mut_info = m_organism->GetLocalMutations();
-  const tList<cMutation>& mut_list = mut_info.GetMutationLib().GetMutationList(trigger);
-	
-  // If we have no mutations for this trigger, stop here.
-  if (mut_list.GetSize() == 0) return false;
-  bool has_mutation = false;
-	
-  // Determine what memory this mutation will be affecting.
-  cGenome& target_mem = (trigger == nMutation::TRIGGER_DIVIDE) ? m_organism->OffspringGenome().GetGenome() : GetMemory();
-	
-  // Loop through all mutations associated with this trigger and test them.
-  tConstListIterator<cMutation> mut_it(mut_list);
-	
-  while (mut_it.Next() != NULL) {
-    const cMutation* cur_mut = mut_it.Get();
-    const int mut_id = cur_mut->GetID();
-    const int scope = cur_mut->GetScope();
-    const double rate = mut_info.GetRate(mut_id);
-    switch (scope) {
-			case nMutation::SCOPE_GENOME:
-				if (TriggerMutations_ScopeGenome(ctx, cur_mut, target_mem, cur_head, rate)) {
-					has_mutation = true;
-					mut_info.IncCount(mut_id);
-				}
-				break;
-			case nMutation::SCOPE_LOCAL:
-			case nMutation::SCOPE_PROP:
-				if (TriggerMutations_ScopeLocal(ctx, cur_mut, target_mem, cur_head, rate)) {
-					has_mutation = true;
-					mut_info.IncCount(mut_id);
-				}
-				break;
-			case nMutation::SCOPE_GLOBAL:
-			case nMutation::SCOPE_SPREAD:
-				int num_muts = TriggerMutations_ScopeGlobal(ctx, cur_mut, target_mem, cur_head, rate);
-				if (num_muts > 0) {
-					has_mutation = true;
-					mut_info.IncCount(mut_id, num_muts);
-				}
-        break;
-    }
-  }
-	
-  return has_mutation;
 }
 
 
@@ -1057,31 +920,21 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // This method will test to see if all costs have been paid associated
 // with executing an instruction and only return true when that instruction
 // should proceed.
-bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 { 
 #if INSTRUCTION_COSTS
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-    int cellID = m_organism->GetCellID();
 		
-    if((cellID != -1) && (energy_req > 0.0)) { // guard against running in the test cpu.
+    if (energy_req > 0.0) {
       if (m_organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
 				m_inst_energy_cost[cur_inst.GetOp()] = 0.0;
 				// subtract energy used from current org energy.
         m_organism->GetPhenotype().ReduceEnergy(energy_req);  
         
         // tracking sleeping organisms
-        cString instName = m_world->GetHardwareManager().GetInstSet().GetName(cur_inst);
-        if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
-           instName == cString("sleep3") || instName == cString("sleep4")) {
-          cPopulation& pop = m_world->GetPopulation();
-          if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
-            pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
-          }
-          m_organism->SetSleeping(true);
-          m_organism->GetOrgInterface().GetDeme()->IncSleepingCount();
-        }
+        if (m_inst_set->ShouldSleep(cur_inst)) m_organism->SetSleeping(true);
       } else {
         m_organism->GetPhenotype().SetToDie();
 				return false; // no more, your died...  (evil laugh)
@@ -1161,6 +1014,13 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
 }
 
 
+void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
+{
+#if INSTRUCTION_COSTS
+#endif
+}
+
+
 //! Called when the organism that owns this CPU has received a flash from a neighbor.
 void cHardwareBase::ReceiveFlash()
 {
@@ -1169,9 +1029,9 @@ void cHardwareBase::ReceiveFlash()
 
 /*! Retrieve a fragment of this organism's genome that extends downstream from the read head.
  */
-cGenome cHardwareBase::GetGenomeFragment(unsigned int downstream) {
+cSequence cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 	cHeadCPU tmp(GetHead(nHardware::HEAD_READ));
-	cGenome fragment(downstream);
+	cSequence fragment(downstream);
 	for(; downstream>0; --downstream, tmp.Advance()) { 
 		fragment.Append(tmp.GetInst());
 	}
@@ -1180,7 +1040,7 @@ cGenome cHardwareBase::GetGenomeFragment(unsigned int downstream) {
 
 /*! Insert a genome fragment at the current write head.
  */
-void cHardwareBase::InsertGenomeFragment(const cGenome& fragment) {
+void cHardwareBase::InsertGenomeFragment(const cSequence& fragment) {
 	cHeadCPU& wh = GetHead(nHardware::HEAD_WRITE);
 	wh.GetMemory().Insert(wh.GetPosition(), fragment);
 	wh.Adjust();

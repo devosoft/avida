@@ -53,15 +53,7 @@
 
 */
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-#ifndef tArray_h
 #include "tArray.h"
-#endif
 
 #include <cassert>
 
@@ -70,9 +62,6 @@
  **/ 
 
 template <class T> class tMatrix {
-#if USE_tMemTrack
-  tMemTrack<tMatrix<T> > mt;
-#endif
 protected:
   // Internal Variables
   tArray<T> * data;  // Data Elements

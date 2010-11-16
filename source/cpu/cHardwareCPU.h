@@ -26,44 +26,22 @@
 #ifndef cHardwareCPU_h
 #define cHardwareCPU_h
 
+#include "Avida.h"
+
+#include "cCodeLabel.h"
+#include "cHeadCPU.h"
+#include "cCPUMemory.h"
+#include "cCPUStack.h"
+#include "cHardwareBase.h"
+#include "cString.h"
+#include "cStats.h"
+#include "tArray.h"
+#include "tInstLib.h"
+
+#include "nHardware.h"
+
 #include <iomanip>
 #include <vector>
-
-
-#ifndef cCodeLabel_h
-#include "cCodeLabel.h"
-#endif
-#ifndef cHeadCPU_h
-#include "cHeadCPU.h"
-#endif
-#ifndef cCPUMemory_h
-#include "cCPUMemory.h"
-#endif
-#ifndef cCPUStack_h
-#include "cCPUStack.h"
-#endif
-#ifndef cHardwareBase_h
-#include "cHardwareBase.h"
-#endif
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef cStats_h
-#include "cStats.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tInstLib_h
-#include "tInstLib.h"
-#endif
-
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef nHardware_h
-#include "nHardware.h"
-#endif
 
 /**
  * Each organism may have a cHardwareCPU structure which keeps track of the
@@ -74,7 +52,6 @@
 
 class cInstLib;
 class cInstSet;
-class cMutation;
 class cOrganism;
 
 
@@ -200,8 +177,8 @@ protected:
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
   void ReadLabel(int max_size=nHardware::MAX_LABEL_SIZE);
   cHeadCPU FindLabel(int direction);
-  int FindLabel_Forward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
-  int FindLabel_Backward(const cCodeLabel & search_label, const cGenome& search_genome, int pos);
+  int FindLabel_Forward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
+  int FindLabel_Backward(const cCodeLabel & search_label, const cSequence& search_genome, int pos);
   cHeadCPU FindLabel(const cCodeLabel & in_label, int direction);
   const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
   cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
@@ -260,7 +237,7 @@ protected:
   cHardwareCPU& operator=(const cHardwareCPU&); // @not_implemented
 
 public:
-  cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set, int inst_set_id);
+  cHardwareCPU(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareCPU() { ; }
   
   static tInstLib<tMethod>* GetInstLib() { return s_inst_slib; }

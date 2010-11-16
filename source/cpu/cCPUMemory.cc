@@ -28,7 +28,7 @@
 using namespace std;
 
 
-cCPUMemory::cCPUMemory(const cCPUMemory& in_memory) : cGenome(in_memory), m_flag_array(in_memory.GetSize())
+cCPUMemory::cCPUMemory(const cCPUMemory& in_memory) : cSequence(in_memory), m_flag_array(in_memory.GetSize())
 {
   for (int i = 0; i < m_flag_array.GetSize(); i++) m_flag_array[i] = in_memory.m_flag_array[i];
 }
@@ -36,8 +36,8 @@ cCPUMemory::cCPUMemory(const cCPUMemory& in_memory) : cGenome(in_memory), m_flag
 
 void cCPUMemory::adjustCapacity(int new_size)
 {
-  cGenome::adjustCapacity(new_size);
-  if (m_genome.GetSize() != m_flag_array.GetSize()) m_flag_array.Resize(m_genome.GetSize()); 
+  cSequence::adjustCapacity(new_size);
+  if (m_seq.GetSize() != m_flag_array.GetSize()) m_flag_array.Resize(m_seq.GetSize()); 
 }
 
 
@@ -52,7 +52,7 @@ void cCPUMemory::prepareInsert(int pos, int num_sites)
   adjustCapacity(new_size);
   
   // Shift any sites needed...
-  for (int i = old_size - 1; i >= pos; i--) m_genome[i + num_sites] = m_genome[i];
+  for (int i = old_size - 1; i >= pos; i--) m_seq[i + num_sites] = m_seq[i];
   for (int i = old_size - 1; i >= pos; i--) m_flag_array[i + num_sites] = m_flag_array[i];
 }
 
@@ -74,7 +74,7 @@ void cCPUMemory::Resize(int new_size)
   adjustCapacity(new_size);
   
   for (int i = old_size; i < new_size; i++) {
-    m_genome[i].SetOp(0);
+    m_seq[i].SetOp(0);
     m_flag_array[i] = 0;
   }
 }
@@ -94,11 +94,11 @@ void cCPUMemory::ResizeOld(int new_size)
 void cCPUMemory::Copy(int to, int from)
 {
   assert(to >= 0);
-  assert(to < m_genome.GetSize());
+  assert(to < m_seq.GetSize());
   assert(from >= 0);
-  assert(from < m_genome.GetSize());
+  assert(from < m_seq.GetSize());
   
-  m_genome[to] = m_genome[from];
+  m_seq[to] = m_seq[from];
   m_flag_array[to] = m_flag_array[from];
 }
 
@@ -106,21 +106,21 @@ void cCPUMemory::Copy(int to, int from)
 void cCPUMemory::Insert(int pos, const cInstruction& inst)
 {
   assert(pos >= 0);
-  assert(pos <= m_genome.GetSize());
+  assert(pos <= m_seq.GetSize());
 
   prepareInsert(pos, 1);
-  m_genome[pos] = inst;
+  m_seq[pos] = inst;
   m_flag_array[pos] = 0;
 }
 
-void cCPUMemory::Insert(int pos, const cGenome& genome)
+void cCPUMemory::Insert(int pos, const cSequence& genome)
 {
   assert(pos >= 0);
-  assert(pos <= m_genome.GetSize());
+  assert(pos <= m_seq.GetSize());
 
   prepareInsert(pos, genome.GetSize());
   for (int i = 0; i < genome.GetSize(); i++) {
-    m_genome[i + pos] = genome[i];
+    m_seq[i + pos] = genome[i];
     m_flag_array[i + pos] = 0;
   }
 }
@@ -133,13 +133,13 @@ void cCPUMemory::Remove(int pos, int num_sites)
 
   const int new_size = m_active_size - num_sites;
   for (int i = pos; i < new_size; i++) {
-    m_genome[i] = m_genome[i + num_sites];
+    m_seq[i] = m_seq[i + num_sites];
     m_flag_array[i] = m_flag_array[i + num_sites];
   }
   adjustCapacity(new_size);
 }
 
-void cCPUMemory::Replace(int pos, int num_sites, const cGenome& genome)
+void cCPUMemory::Replace(int pos, int num_sites, const cSequence& genome)
 {
   assert(pos >= 0);                         // Replace must be in genome
   assert(num_sites >= 0);                   // Cannot replace negative
@@ -153,7 +153,7 @@ void cCPUMemory::Replace(int pos, int num_sites, const cGenome& genome)
   
   // Now just copy everything over!
   for (int i = 0; i < genome.GetSize(); i++) {
-    m_genome[i + pos] = genome[i];
+    m_seq[i + pos] = genome[i];
     m_flag_array[i + pos] = 0;
   }
 }
@@ -165,19 +165,19 @@ void cCPUMemory::operator=(const cCPUMemory& other_memory)
   
   // Fill in the new information...
   for (int i = 0; i < m_active_size; i++) {
-    m_genome[i] = other_memory.m_genome[i];
+    m_seq[i] = other_memory.m_seq[i];
     m_flag_array[i] = other_memory.m_flag_array[i];
   }
 }
 
 
-void cCPUMemory::operator=(const cGenome& other_genome)
+void cCPUMemory::operator=(const cSequence& other_genome)
 {
   adjustCapacity(other_genome.GetSize());
   
   // Fill in the new information...
   for (int i = 0; i < m_active_size; i++) {
-    m_genome[i] = other_genome[i];
+    m_seq[i] = other_genome[i];
     m_flag_array[i] = 0;
   }
 }

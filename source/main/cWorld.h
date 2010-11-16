@@ -38,12 +38,6 @@
 #include "cRandom.h"
 #endif
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 
 #include <cassert>
 
@@ -60,6 +54,7 @@ class cMerit;
 class cPopulationCell;
 class cStats;
 class cTestCPU;
+class cUserFeedback;
 class cWorldDriver;
 template<class T> class tDataEntry;
 template<class T> class tDictionary;
@@ -97,7 +92,7 @@ private:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, tList<cString>* errors = NULL);
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL);
   virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
@@ -126,9 +121,7 @@ public:
   bool GetTestSterilize() const { return m_test_sterilize; }
   
   // Convenience Accessors
-  int GetNumInstructions();
   int GetNumResources();
-  int GetNumResourceSpecs();
   inline int GetVerbosity() { return m_conf->VERBOSITY.Get(); }
   inline void SetVerbosity(int v) { m_conf->VERBOSITY.Set(v); }
 
@@ -140,6 +133,9 @@ public:
 	//! Migrate this organism to a different world (does nothing here; see cMultiProcessWorld).
 	virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage) { }
 
+	//! Returns true if an organism should be migrated to a different world.
+	virtual bool TestForMigration() { return false; }
+		
 	//! Returns true if the given cell is on the boundary of the world, false otherwise.
 	virtual bool IsWorldBoundary(const cPopulationCell& cell) { return false; }
 	
@@ -154,7 +150,7 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(tList<cString>* errors);
+  bool setup(cUserFeedback* errors);
 };
 
 #endif

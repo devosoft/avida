@@ -27,7 +27,7 @@
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cHardwareManager.h"
-#include "cMetaGenome.h"
+#include "cGenome.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
@@ -39,7 +39,7 @@ cGenomeTestMetrics::cGenomeTestMetrics(cAvidaContext& ctx, cBioGroup* bg)
   tAutoRelease<cTestCPU> testcpu(ctx.GetWorld()->GetHardwareManager().CreateTestCPU());
   
   cCPUTestInfo test_info;
-  testcpu->TestGenome(ctx, test_info, cMetaGenome(bg->GetProperty("genome").AsString()).GetGenome());
+  testcpu->TestGenome(ctx, test_info, cGenome(bg->GetProperty("genome").AsString()));
   
   m_is_viable = test_info.IsViable();
   

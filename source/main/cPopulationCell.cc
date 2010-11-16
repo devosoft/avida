@@ -321,7 +321,7 @@ void cPopulationCell::DiffuseGenomeFragments() {
  As a safety measure, we also remove old fragments to conserve memory.  Specifically, we
  remove old fragments until at most HGT_MAX_FRAGMENTS_PER_CELL fragments remain.
  */
-void cPopulationCell::AddGenomeFragments(const cGenome& genome) {
+void cPopulationCell::AddGenomeFragments(const cSequence& genome) {
 	assert(genome.GetSize()>0); // oh, sweet sanity.
 	InitHGTSupport();
 	
@@ -353,11 +353,11 @@ unsigned int cPopulationCell::CountGenomeFragments() const {
 
 /*! Remove and return a random genome fragment.
  */
-cGenome cPopulationCell::PopGenomeFragment() {
+cSequence cPopulationCell::PopGenomeFragment() {
 	assert(m_hgt!=0);
 	fragment_list_type::iterator i = m_hgt->fragments.begin();
 	std::advance(i, m_world->GetRandom().GetUInt(0, m_hgt->fragments.size()));	
-	cGenome tmp = *i;
+	cSequence tmp = *i;
 	m_hgt->fragments.erase(i);
 	return tmp;
 }

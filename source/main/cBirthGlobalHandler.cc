@@ -32,7 +32,7 @@ cBirthGlobalHandler::~cBirthGlobalHandler()
   m_bc->ClearEntry(m_entry);
 }
 
-cBirthEntry* cBirthGlobalHandler::SelectOffspring(cAvidaContext& ctx, const cMetaGenome& offspring, cOrganism* parent)
+cBirthEntry* cBirthGlobalHandler::SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent)
 {
   if (!m_bc->ValidBirthEntry(m_entry)) {
     m_bc->StoreAsEntry(offspring, parent, m_entry);

@@ -30,7 +30,9 @@
 #include "cPhenotype.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
+#include "cWorld.h"
 #include "tDictionary.h"
+
 
 cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents)
   : cBioGroup(in_id)
@@ -38,7 +40,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   , m_handle(NULL)
   , m_src(founder->GetUnitSource())
   , m_src_args(founder->GetUnitSourceArgs())
-  , m_genome(founder->GetMetaGenome())
+  , m_genome(founder->GetGenome())
   , m_name("001-no_name")
   , m_threshold(false)
   , m_active(true)
@@ -63,11 +65,11 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, 
   }
   if (m_parents.GetSize()) m_depth = m_parents[0]->GetDepth() + 1;
   if (m_src != SRC_ORGANISM_FILE_LOAD) m_breed_in.Inc();
-  m_name.Set("%03d-no_name", m_genome.GetGenome().GetSize());
+  m_name.Set("%03d-no_name", m_genome.GetSequence().GetSize());
 }
 
 
-cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props)
+cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props, cWorld* world)
 : cBioGroup(in_id)
 , m_mgr(mgr)
 , m_handle(NULL)
@@ -87,7 +89,7 @@ cBGGenotype::cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<c
   m_src_args = props.Get("src_args");
   if (m_src_args == "(none)") m_src_args = "";
   
-  m_genome.Load(props);
+  m_genome.Load(props, world->GetHardwareManager());
   
   if (props.HasEntry("gen_born")) {
     m_generation_born = props.Get("gen_born").AsInt();
@@ -215,7 +217,7 @@ void cBGGenotype::Save(cDataFile& df)
   
   df.Write(m_num_organisms, "Number of currently living organisms", "num_units");
   df.Write(m_total_organisms, "Total number of organisms that ever existed", "total_units");
-  df.Write(m_genome.GetGenome().GetSize(), "Genome Length", "length");
+  df.Write(m_genome.GetSequence().GetSize(), "Genome Length", "length");
   df.Write(m_merit.Average(), "Average Merit", "merit");
   df.Write(m_gestation_time.Average(), "Average Gestation Time", "gest_time");
   df.Write(m_fitness.Average(), "Average Fitness", "fitness");
@@ -301,7 +303,7 @@ bool cBGGenotype::Matches(cBioUnit* bu)
   }
   
   // Compare the genomes
-  return (m_genome == bu->GetMetaGenome());
+  return (m_genome == bu->GetGenome());
 }
 
 void cBGGenotype::NotifyNewBioUnit(cBioUnit* bu)

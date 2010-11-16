@@ -24,8 +24,13 @@
 
 #include "cParasite.h"
 
-cParasite::cParasite(cWorld* world, const cMetaGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args)
-  : m_src(src), m_src_args(src_args), m_initial_genome(genome), m_phenotype(world, parent_generation)
+#include "cHardwareManager.h"
+#include "cInstSet.h"
+
+
+cParasite::cParasite(cWorld* world, const cGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args)
+  : m_src(src), m_src_args(src_args), m_initial_genome(genome)
+  , m_phenotype(world, parent_generation, world->GetHardwareManager().GetInstSet(genome.GetInstSet()).GetNumNops())
 {
   // @TODO - properly construct cPhenotype
 }

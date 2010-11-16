@@ -24,9 +24,9 @@
 
 #include <csignal>
 
+#include "Avida.h"
 #include "AvidaTools.h"
 
-#include "avida.h"
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
 #include "cWorld.h"
@@ -67,9 +67,6 @@ int main(int argc, char * argv[])
   // Turn control over to the driver!
   driver = new cDriver_FLTKViewer(world);
   driver->Run();
-  
-  // Exit Nicely
-  Avida::Exit(0);
   
   return 0;
 }

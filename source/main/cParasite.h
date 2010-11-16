@@ -28,8 +28,8 @@
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
 #endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
+#ifndef cGenome_h
+#include "cGenome.h"
 #endif
 #ifndef cPhenotype_h
 #include "cPhenotype.h"
@@ -46,7 +46,7 @@ class cParasite : public cBioUnit
 private:
   eBioUnitSource m_src;
   cString m_src_args;
-  const cMetaGenome m_initial_genome;
+  const cGenome m_initial_genome;
   cPhenotype m_phenotype;
   
   
@@ -56,13 +56,13 @@ private:
   
 
 public:
-  cParasite(cWorld* world, const cMetaGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
+  cParasite(cWorld* world, const cGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
   ~cParasite() { ; }
   
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cMetaGenome& GetMetaGenome() const { return m_initial_genome; }  
+  const cGenome& GetGenome() const { return m_initial_genome; }  
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 
   // --------  cParasite Methods  --------

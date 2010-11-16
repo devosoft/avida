@@ -39,7 +39,6 @@ cCPUTestInfo::cCPUTestInfo(int max_tests)
   , use_random_inputs(false)
   , use_manual_inputs(false)
   , m_tracer(NULL)
-  , m_inst_set(NULL)
   , m_cur_sg(0)
   , org_array(max_tests)
   , m_res_method(RES_INITIAL)
@@ -67,11 +66,6 @@ cCPUTestInfo& cCPUTestInfo::operator=(const cCPUTestInfo& test_info)
   m_tracer = NULL;
   if (test_info.m_tracer) {
     *m_tracer = *test_info.m_tracer;
-  }
-  m_inst_set = NULL;
-  if (test_info.m_inst_set)
-  {
-    *m_inst_set = *test_info.m_inst_set;
   }
   m_mut_rates = test_info.m_mut_rates;
   m_cur_sg = test_info.m_cur_sg;

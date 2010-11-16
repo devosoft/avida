@@ -8,21 +8,12 @@
 #ifndef cScreen_h
 #define cScreen_h
 
-#ifndef cInstSet_h
+#include "Avida.h"
+
 #include "cInstSet.h"
-#endif
-#ifndef cMerit_h
 #include "cMerit.h"
-#endif
-#ifndef cTextWindow_h
 #include "cTextWindow.h"
-#endif
-#ifndef cViewInfo_h
 #include "cViewInfo.h"
-#endif
-#ifndef defs_h
-#include "defs.h"
-#endif
 
 class cAvidaContext;
 class cEnvironment;

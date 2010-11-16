@@ -34,38 +34,23 @@ using namespace std;
 
 bool cFile::Open(cString _fname, ios::openmode flags)
 {
-  if( IsOpen() ) Close();    // If a file is already open, clost it first.
+  if (IsOpen()) Close();    // If a file is already open, clost it first.
   fp.open(_fname, flags);  // Open the new file.
 
   // Test if there was an error, and if so, try again!
-  int err_id = fp.fail();
-  if( err_id ){
+  if (fp.fail()) {
     fp.clear();
     fp.open(_fname, flags);
   }
 
-  // If there is still an error, determine its type and report it.
-  err_id = fp.fail();
-  if (err_id){
-    cString error_desc = "?? Unknown Error??";
-
-    // See if we can determine a more exact error type.
-    if (err_id == EACCES) error_desc = "Access denied";
-    else if (err_id == EINVAL) error_desc = "Invalid open flag or access mode";
-    else if (err_id == ENOENT) error_desc = "File or path not found";
-    else if (_fname.Find('~') != -1) error_desc = "Tildes do not get expanded";
-
-    // Print the error.
-    cerr << "Error: Unable to open file '" << _fname << "' : " << error_desc << endl;
-    return false;
-  }
-
+  if (fp.fail()) return false;
+  
   m_openmode = flags;
   filename = _fname;
   is_open = true;
 
   // Return true only if there were no problems...
-  return( fp.good() && !fp.fail() );
+  return (fp.good() && !fp.fail());
 }
 
 bool cFile::Close()
@@ -78,7 +63,7 @@ bool cFile::Close()
   return false;
 }
 
-bool cFile::ReadLine(cString & in_string)
+bool cFile::ReadLine(cString& in_string)
 {
   std::string linebuf;
   std::getline(fp, linebuf);

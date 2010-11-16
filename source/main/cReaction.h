@@ -73,7 +73,7 @@ public:
   bool MultiplyValue(double value_mult, int process_num = 0); 
 
   // This method will modify the instruction triggered by this process
-  bool ModifyInst(int inst_id, int process_num = 0); 
+  bool ModifyInst(const cString& inst, int process_num = 0); 
 
   // These methods will modify the min/max count of the requisite for this process
   bool SetMinTaskCount(int min_count, int requisite_num = 0); 

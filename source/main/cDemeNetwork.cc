@@ -21,7 +21,8 @@
  *
  */
 
-#include "defs.h" // Must be first.
+#include "Avida.h"
+
 #include "cDeme.h"
 #include "cDemeNetwork.h"
 #include "cWorld.h"

@@ -25,26 +25,17 @@
 #ifndef cBGGenotype_h
 #define cBGGenotype_h
 
-#ifndef cBioGroup_h
 #include "cBioGroup.h"
-#endif
-#ifndef cCountTracker_h
 #include "cCountTracker.h"
-#endif
-#ifndef cDoubleSum_h
 #include "cDoubleSum.h"
-#endif
-#ifndef cMetaGenome_h
-#include "cMetaGenome.h"
-#endif
-#ifndef cString_h
+#include "cGenome.h"
 #include "cString.h"
-#endif
 
 
 class cAvidaContext;
 class cBGGenotypeManager;
 class cEntryHandle;
+class cWorld;
 
 
 class cBGGenotype : public cBioGroup
@@ -56,7 +47,7 @@ private:
   
   eBioUnitSource m_src;
   cString m_src_args;
-  cMetaGenome m_genome;
+  cGenome m_genome;
   cString m_name;
     
   struct {
@@ -91,7 +82,7 @@ private:
     
   
   cBGGenotype(cBGGenotypeManager* mgr, int in_id, cBioUnit* founder, int update, tArray<cBioGroup*>* parents);
-  cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props);
+  cBGGenotype(cBGGenotypeManager* mgr, int in_id, const tDictionary<cString>& props, cWorld* world);
   
 public:
   ~cBGGenotype();
@@ -120,7 +111,7 @@ public:
   // Genotype Specific Methods
   inline const eBioUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
-  inline const cMetaGenome& GetMetaGenome() const { return m_genome; }
+  inline const cGenome& GetGenome() const { return m_genome; }
   inline cString GetGenomeString() const { return m_genome.AsString(); }
   
   inline const cString& GetName() const { return m_name; }

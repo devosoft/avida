@@ -1,10 +1,9 @@
 /*
- *  MyCodeArrayLessThan.h
+ *  cCocoaListener.mm
  *  Avida
  *
- *  Called "my_code_array_less_than.hh" prior to 12/5/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
- *  Copyright 1993-2003 California Institute of Technology.
+ *  Created by David on 11/11/10.
+ *  Copyright 2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -23,17 +22,13 @@
  *
  */
 
-#ifndef MyCodeArrayLessThan_h
-#define MyCodeArrayLessThan_h
+#include "cCocoaListener.h"
 
-#ifndef cMxCodeArray_h
-#include "cMxCodeArray.h"
-#endif
+#include <cassert>
 
-class MyCodeArrayLessThan
+void cCocoaListener::NotifyUpdate(int update)
 {
-public:
-  bool operator()(const cMxCodeArray& x, const cMxCodeArray& y) const { return x < y; }
-};
-
-#endif
+  assert(m_win_ctrl.txtUpdate != nil);
+  NSString* str = [NSString stringWithFormat:@"Update: %d", update];
+  [m_win_ctrl.txtUpdate setStringValue:str];
+}

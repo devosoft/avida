@@ -28,21 +28,12 @@
 #include "cAvidaDriver.h"
 #include "cWorldDriver.h"
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-
 class cString;
 class cWorld;
 
+
 class cDefaultAnalyzeDriver : public cAvidaDriver, public cWorldDriver
 {
-#if USE_tMemTrack
-  tMemTrack<cDefaultAnalyzeDriver> mt;
-#endif
 private:
   cDefaultAnalyzeDriver(); // @not_implemented
   cDefaultAnalyzeDriver(const cDefaultAnalyzeDriver&); // @not_implemented

@@ -69,7 +69,7 @@ public:
   void SetPrevSeenCellID(int in_id) { ; }
   void SetPrevTaskCellID(int in_id) { ; }
 
-  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cMetaGenome& offspring_genome);
+  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
@@ -95,7 +95,7 @@ public:
   int ReceiveValue();
   void SellValue(const int data, const int label, const int sell_price, const int org_id);
   int BuyValue(const int label, const int buy_price);
-  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cGenome& injected_code);
+  bool InjectParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
   bool UpdateMerit(double new_merit);
   bool TestOnDivide() { return false; }
   int GetFacing() { return 0; }
@@ -135,12 +135,15 @@ public:
 	//! HGT mutation (does nothing).
 	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) { }
 	//! Receive HGT donation (does nothing).
-	void ReceiveHGTDonation(const cGenome& fragment) { }
+	void ReceiveHGTDonation(const cSequence& fragment) { }
   
   void Move(cAvidaContext& ctx, int src_id, int dest_id) { ; }
   
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
+  
+  void BeginSleep() { ; }
+  void EndSleep() { ; }
 };
 
 #endif

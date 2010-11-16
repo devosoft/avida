@@ -25,29 +25,16 @@
 #ifndef cBioGroup_h
 #define cBioGroup_h
 
-#include <typeinfo>
+#include "Avida.h"
 
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef cBioGroupData_h
 #include "cBioGroupData.h"
-#endif
-#ifndef cBioUnit_h
 #include "cBioUnit.h"
-#endif
-#ifndef cFlexVar_h
 #include "cFlexVar.h"
-#endif
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef tArray_h
 #include "tArray.h"
-#endif
-#ifndef tArrayMap_h
 #include "tArrayMap.h"
-#endif
+
+#include <typeinfo>
 
 class cDataFile;
 

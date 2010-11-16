@@ -11,15 +11,7 @@
 #ifndef cRandom_h
 #define cRandom_h
 
-#ifndef cMutex_h
 #include "cMutex.h"
-#endif
-
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
 
 #include <algorithm>
 #include <ctime>
@@ -36,9 +28,6 @@ template <class T> class tArray;
 
 class cRandom
 {
-#if USE_tMemTrack
-  tMemTrack<cRandom> mt;
-#endif
 protected:
   // Internal members
   int seed;

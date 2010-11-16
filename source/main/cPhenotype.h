@@ -28,8 +28,8 @@
 
 #include <fstream>
 
-#ifndef cGenome_h
-#include "cGenome.h"
+#ifndef cSequence_h
+#include "cSequence.h"
 #endif
 #ifndef cMerit_h
 #include "cMerit.h"
@@ -281,7 +281,7 @@ private:
   
 public:
   cPhenotype() : m_world(NULL), m_reaction_result(NULL) { ; } // Will not construct a valid cPhenotype! Only exists to support incorrect cDeme tArray usage.
-  cPhenotype(cWorld* world, int parent_generation);
+  cPhenotype(cWorld* world, int parent_generation, int num_nops);
 
 
   cPhenotype(const cPhenotype&); 
@@ -292,19 +292,19 @@ public:
 	
   bool OK();
 
-  void ResetMerit(const cGenome & _cgenome);
+  void ResetMerit(const cSequence & _cgenome);
   void Sterilize();
   // Run when being setup *as* and offspring.
-  void SetupOffspring(const cPhenotype & parent_phenotype, const cGenome & _genome);
+  void SetupOffspring(const cPhenotype & parent_phenotype, const cSequence & _genome);
 
   // Run when being setup as an injected organism.
-  void SetupInject(const cGenome & _genome);
+  void SetupInject(const cSequence & _genome);
 
   // Run when this organism successfully executes a divide.
-  void DivideReset(const cGenome & _genome);
+  void DivideReset(const cSequence & _genome);
   
   // Same as DivideReset(), but only run in test CPUs.
-  void TestDivideReset(const cGenome & _genome);
+  void TestDivideReset(const cSequence & _genome);
 
   // Run when an organism is being forced to replicate, but not at the end
   // of its replication cycle.  Assume exact clone with no mutations.
@@ -314,7 +314,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                  tArray<int>& insts_triggered, bool is_parasite=false);
+                  tArray<cString>& insts_triggered, bool is_parasite=false);
 
   // State saving and loading, and printing...
   void PrintStatus(std::ostream& fp) const;
@@ -393,7 +393,7 @@ public:
 
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
-  void  TrialDivideReset(const cGenome & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
+  void  TrialDivideReset(const cSequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
@@ -595,7 +595,7 @@ public:
   void IncTimeUsed(int i=1) { assert(initialized == true); time_used+=i; trial_time_used+=i; }
   void IncErrors()   { assert(initialized == true); cur_num_errors++; }
   void IncDonates()   { assert(initialized == true); cur_num_donates++; }
-  void IncSenseCount(const int i) { assert(initialized == true); cur_sense_count[i]++; }  
+  void IncSenseCount(const int i) { /*assert(initialized == true); cur_sense_count[i]++;*/ }  
   
   bool& IsInjected() { assert(initialized == true); return is_injected; }
   bool& IsModifier() { assert(initialized == true); return is_modifier; }

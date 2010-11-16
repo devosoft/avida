@@ -26,18 +26,8 @@
 #ifndef tBuffer_h
 #define tBuffer_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
-#ifndef cString_h
 #include "cString.h"
-#endif
-#ifndef tArray_h
 #include "tArray.h"
-#endif
 
 #include <cassert>
 #include <iostream>
@@ -45,9 +35,6 @@
 
 template <class T> class tBuffer
 {
-#if USE_tMemTrack
-  tMemTrack<tBuffer<T> > mt;
-#endif
 private:
   tArray<T> data;      // Contents of buffer...
   int offset;          // Position in buffer to next write.

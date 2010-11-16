@@ -25,15 +25,12 @@
 #ifndef cBioUnit_h
 #define cBioUnit_h
 
-#ifndef defs_h
-#include "defs.h"
-#endif
-#ifndef tArray_h
+#include "Avida.h"
+
 #include "tArray.h"
-#endif
 
 class cBioGroup;
-class cMetaGenome;
+class cGenome;
 class cPhenotype;
 class cString;
 
@@ -50,7 +47,7 @@ public:
   
   virtual eBioUnitSource GetUnitSource() const = 0;
   virtual const cString& GetUnitSourceArgs() const = 0;
-  virtual const cMetaGenome& GetMetaGenome() const = 0;
+  virtual const cGenome& GetGenome() const = 0;
   virtual const cPhenotype& GetPhenotype() const = 0;
   virtual bool	IsParasite();
   

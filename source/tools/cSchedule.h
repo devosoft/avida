@@ -26,12 +26,6 @@
 #ifndef cSchedule_h
 #define cSchedule_h
 
-#if USE_tMemTrack
-# ifndef tMemTrack_h
-#  include "tMemTrack.h"
-# endif
-#endif
-
 class cDeme;
 class cMerit;
 class cChangeList;
@@ -43,9 +37,6 @@ class cChangeList;
  **/
 class cSchedule
 {
-#if USE_tMemTrack
-  tMemTrack<cSchedule> mt;
-#endif
 protected:
   int item_count;
   cChangeList* m_change_list;
