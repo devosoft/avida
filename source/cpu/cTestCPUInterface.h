@@ -139,6 +139,9 @@ public:
   
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
+  
+  void BeginSleep() { ; }
+  void EndSleep() { ; }
 };
 
 #endif

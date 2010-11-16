@@ -1037,3 +1037,16 @@ void cPopulationInterface::LeaveGroup(int group_id)
 }
 
 
+void cPopulationInterface::BeginSleep()
+{
+  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)
+    m_world->GetPopulation().AddBeginSleep(m_cell_id, m_world->GetStats().GetUpdate());
+  GetDeme()->IncSleepingCount();
+}
+
+void cPopulationInterface::EndSleep()
+{
+  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1)
+    m_world->GetPopulation().AddEndSleep(m_cell_id, m_world->GetStats().GetUpdate());
+  GetDeme()->DecSleepingCount();
+}

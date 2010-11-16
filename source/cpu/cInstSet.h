@@ -135,6 +135,7 @@ public:
   bool IsLabel(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsLabel(); }
   bool IsPromoter(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).IsPromoter(); }
   bool ShouldStall(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldStall(); }
+  bool ShouldSleep(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).ShouldSleep(); }
   
   unsigned int GetFlags(const cInstruction& inst) const { return m_inst_lib->Get(GetLibFunctionIndex(inst)).GetFlags(); }
 

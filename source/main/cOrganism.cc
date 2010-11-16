@@ -1302,10 +1302,9 @@ bool cOrganism::CanReceiveString(int string_tag, int amount)
 	
 }
 
-bool cOrganism::IsInterrupted() {
-  for(int k = 0; k< GetHardware().GetNumThreads(); ++k)
-    if(GetHardware().GetThreadMessageTriggerType(k) != -1)
-      return true;
+bool cOrganism::IsInterrupted()
+{
+  for (int k = 0; k< GetHardware().GetNumThreads(); ++k) if (GetHardware().GetThreadMessageTriggerType(k) != -1) return true;
   return false;
 }
 

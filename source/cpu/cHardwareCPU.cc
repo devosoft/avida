@@ -470,11 +470,11 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     
 	  
     // Sleep and time
-    tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sleep1", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sleep2", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sleep3", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
-    tInstLibEntry<tMethod>("sleep4", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sleep", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL & nInstFlag::SLEEP),
+    tInstLibEntry<tMethod>("sleep1", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL & nInstFlag::SLEEP),
+    tInstLibEntry<tMethod>("sleep2", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL & nInstFlag::SLEEP),
+    tInstLibEntry<tMethod>("sleep3", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL & nInstFlag::SLEEP),
+    tInstLibEntry<tMethod>("sleep4", &cHardwareCPU::Inst_Sleep, nInstFlag::STALL & nInstFlag::SLEEP),
     tInstLibEntry<tMethod>("time", &cHardwareCPU::Inst_GetUpdate, nInstFlag::STALL),
     
     // Promoter Model
@@ -6578,11 +6578,9 @@ bool cHardwareCPU::Inst_GetEnergyRequestStatus(cAvidaContext& ctx) {
 } //End Inst_GetEnergyRequestStatus()
 
 
-bool cHardwareCPU::Inst_GetFacedEnergyRequestStatus(cAvidaContext& ctx) {
-  
-  if(m_organism->GetCellID() < 0) {
-    return false;
-  }	
+bool cHardwareCPU::Inst_GetFacedEnergyRequestStatus(cAvidaContext& ctx)
+{  
+  if (m_organism->GetCellID() < 0) return false;
   
   cOrganism * neighbor = m_organism->GetNeighbor();
   
@@ -6604,29 +6602,22 @@ bool cHardwareCPU::Inst_GetFacedEnergyRequestStatus(cAvidaContext& ctx) {
 } //End Inst_GetFacedEnergyRequestStatus()
 
 
-bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx) {
-  cPopulation& pop = m_world->GetPopulation();
-  int cellID = m_organism->GetCellID();
-  // Fail if we're running in the test CPU.
-  if(cellID < 0) return false;
-  
-  if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
-    pop.AddEndSleep(cellID, m_world->GetStats().GetUpdate());
-  }
+bool cHardwareCPU::Inst_Sleep(cAvidaContext& ctx)
+{
   m_organism->SetSleeping(false);  //this instruction get executed at the end of a sleep cycle
-  GetOrganism()->GetOrgInterface().GetDeme()->DecSleepingCount();
   
   cPhenotype& phenotype = m_organism->GetPhenotype();
   if (m_world->GetConfig().APPLY_ENERGY_METHOD.Get() == 2) {
     phenotype.RefreshEnergy();
     phenotype.ApplyToEnergyStore();
     double newMerit = phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy() * phenotype.GetEnergyUsageRatio());
-    pop.UpdateMerit(cellID, newMerit);
+    m_organism->UpdateMerit(newMerit);
   }
   return true;
 }
 
-bool cHardwareCPU::Inst_GetUpdate(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_GetUpdate(cAvidaContext& ctx)
+{
   const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = m_world->GetStats().GetUpdate();
   return true;

@@ -921,25 +921,15 @@ bool cHardwareBase::SingleProcess_PayCosts(cAvidaContext& ctx, const cInstructio
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
-    int cellID = m_organism->GetCellID();
 		
-    if((cellID != -1) && (energy_req > 0.0)) { // guard against running in the test cpu.
+    if (energy_req > 0.0) {
       if (m_organism->GetPhenotype().GetStoredEnergy() >= energy_req) {
 				m_inst_energy_cost[cur_inst.GetOp()] = 0.0;
 				// subtract energy used from current org energy.
         m_organism->GetPhenotype().ReduceEnergy(energy_req);  
         
         // tracking sleeping organisms
-        cString instName = m_inst_set->GetName(cur_inst);
-        if( instName == cString("sleep") || instName == cString("sleep1") || instName == cString("sleep2") ||
-           instName == cString("sleep3") || instName == cString("sleep4")) {
-          cPopulation& pop = m_world->GetPopulation();
-          if(m_world->GetConfig().LOG_SLEEP_TIMES.Get() == 1) {
-            pop.AddBeginSleep(cellID,m_world->GetStats().GetUpdate());
-          }
-          m_organism->SetSleeping(true);
-          m_organism->GetOrgInterface().GetDeme()->IncSleepingCount();
-        }
+        if (m_inst_set->ShouldSleep(cur_inst)) m_organism->SetSleeping(true);
       } else {
         m_organism->GetPhenotype().SetToDie();
 				return false; // no more, your died...  (evil laugh)

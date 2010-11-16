@@ -189,7 +189,7 @@ public:
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }
 
-  void SetSleeping(bool in_sleeping) { m_is_sleeping = in_sleeping; }
+  inline void SetSleeping(bool in_sleeping);
   bool IsSleeping() { return m_is_sleeping; }
   
   bool IsDead() { return m_is_dead; }
@@ -662,6 +662,16 @@ inline double cOrganism::GetTestMerit(cAvidaContext& ctx) const {
 inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
   return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetColonyFitness();
 }
+
+
+inline void cOrganism::SetSleeping(bool sleeping)
+{
+  m_is_sleeping = sleeping;
+  
+  if (sleeping) m_interface->BeginSleep();
+  else m_interface->EndSleep();
+}
+
 
 #endif
 
