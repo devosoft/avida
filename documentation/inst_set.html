@@ -29,6 +29,9 @@ define how that instruction should be used.  The exact format is as follows:
 supports preprocessor includes (of the form <code>#include $filename</code>) that may be used to separate
 settings into multiple files.</p>
 
+<p>Multiple instruction sets with unique names may be defined.  All <code>INST</code> statements must follow the
+<code>INSTSET</code> statement defining the instruction set.</p>
+
 
 <p>The following options may be specified (as <code>name=value</code>, separated by colons):
 <dl>
