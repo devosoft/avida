@@ -285,7 +285,6 @@ public:
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
-  CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution\n(pre-execute instructions that don't affect other organisms)");
   CONFIG_ADD_VAR(POPULATION_CAP, int, 0, "Carrying capacity in number of organisms (use 0 for no cap)");
   
@@ -302,8 +301,6 @@ public:
   // -------- Configuration File config options --------
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Other configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
-  CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
-  CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 1, "Load legacy format instruction set file format");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
@@ -807,6 +804,9 @@ public:
   CONFIG_ADD_VAR(SPECIES_RECORDING, int, 0, "1 = full, 2 = limited search (parent only)");
   CONFIG_ADD_VAR(SPECIES_PRINT, int, 0, "0/1 (off/on) Print out all species?");
   CONFIG_ADD_VAR(LOG_SPECIES, bool, 0, "0/1 (off/on) toggle to print file.");
+  CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
+  CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
+  CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 1, "Load legacy format instruction set file format");
 
 
   // -------- UNDER CONSTRUCTION ----------
