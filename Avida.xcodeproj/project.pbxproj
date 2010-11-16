@@ -1084,7 +1084,7 @@
 		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
 		70823A40126F663A00FA937F /* Avida.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avida.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		70823A42126F663A00FA937F /* Avida-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Avida-Info.plist"; path = "../../Avida-Info.plist"; sourceTree = "<group>"; };
+		70823A42126F663A00FA937F /* Avida-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Avida-Info.plist"; path = "viewer-macos/Avida-Info.plist"; sourceTree = "<group>"; };
 		70823AAD126F781700FA937F /* AvidaAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AvidaAppDelegate.h; path = "viewer-macos/AvidaAppDelegate.h"; sourceTree = "<group>"; };
 		70823AAE126F781700FA937F /* AvidaAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AvidaAppDelegate.m; path = "viewer-macos/AvidaAppDelegate.m"; sourceTree = "<group>"; };
 		70823AB1126F781700FA937F /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
