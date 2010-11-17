@@ -1,3 +1,6 @@
+#inst_set transsmt
+#hw_type 2
+
 Search       #  1:  Find organism end.
 Nop-C        #  2:  - Match CD:AB
 Nop-D
