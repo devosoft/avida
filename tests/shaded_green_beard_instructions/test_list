@@ -1,7 +1,7 @@
 ;--- Begin Test Configuration File (test_list) ---
 [main]
 ; Command line arguments to pass to the application
-args = -s 1 -c avida.cfg -set INST_SET inst_set.SexDonateGbshadedEdtKinRndNopx -set MERIT_GIVEN 5 -set MERIT_RECEIVED 50 -set MAX_DONATE_KIN_DIST 1 -set MAX_DONATE_EDIT_DIST 15 -set MIN_GB_DONATE_THRESHOLD 80 -set MAX_DONATES 100 -set PRECALC_PHENOTYPE 4 -set BIRTH_METHOD 0
+args = 
 
 app = %(default_app)s
 nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
