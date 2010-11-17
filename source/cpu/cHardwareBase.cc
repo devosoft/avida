@@ -941,37 +941,7 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
       }
     }
   }
-	
-  if (m_has_res_costs) {
-    double res_req = m_inst_set->GetResCost(cur_inst); //APW
-    int cellID = m_organism->GetCellID();
-
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
-    tArray<double> res_change(res_count.GetSize());
-    res_change.SetAll(0.0);
-    
-    if((cellID != -1) && (res_req > 0.0)) { // guard against running in the test cpu.
-      const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-      double res_stored = m_organism->GetRBin(resource);
-      if (res_stored >= res_req) {
-//				m_inst_res_cost[cur_inst.GetOp()] = 0.0;
-        
-				// subtract res used from current bin by adding negative value
-        double cost = res_req * -1.0;
-        m_organism->AddToRBin(resource, cost); 
-        
-//        double res_store = m_organism->GetRBin(resource);
-//        cout << "res_before:" << res_stored << " " << "cost" << cost << "  " << "res_after" << res_store << '\n';
-      } 
-      if (res_stored < res_req) {
-        m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
-        
-//        cout << "res_before:" << res_stored << " " << "res_req" << res_req << "  " << "died" << '\n';
-				return false;
-      }
-    }
-  }
-	
+		
   // If task switching costs need to be paid off...
 	if (m_task_switching_cost > 0) { 
 		m_task_switching_cost--;
@@ -1018,6 +988,37 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
 {
 #if INSTRUCTION_COSTS
 #endif
+  
+  if (m_has_res_costs) {
+    double res_req = m_inst_set->GetResCost(cur_inst); //APW
+    int cellID = m_organism->GetCellID();
+    
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+    tArray<double> res_change(res_count.GetSize());
+    res_change.SetAll(0.0);
+    
+    if((cellID != -1) && (res_req > 0.0)) { // guard against running in the test cpu.
+      const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+      double res_stored = m_organism->GetRBin(resource);
+      if (res_stored >= res_req) {
+        //				m_inst_res_cost[cur_inst.GetOp()] = 0.0;
+        
+				// subtract res used from current bin by adding negative value
+        double cost = res_req * -1.0;
+        m_organism->AddToRBin(resource, cost); 
+        
+        //        double res_store = m_organism->GetRBin(resource);
+        //        cout << "res_before:" << res_stored << " " << "cost" << cost << "  " << "res_after" << res_store << '\n';
+      } 
+      if (res_stored < res_req) {
+        m_organism->GetPhenotype().SetToDie();  // no more, you're dead...  (eviler laugh)
+        
+        //        cout << "res_before:" << res_stored << " " << "res_req" << res_req << "  " << "died" << '\n';
+				return;
+      }
+    }
+  }
+  
 }
 
 
