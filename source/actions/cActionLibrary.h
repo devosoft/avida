@@ -25,16 +25,12 @@
 #ifndef cActionLibrary_h
 #define cActionLibrary_h
 
-#ifndef cAction_h
 #include "cAction.h"
-#endif
-#ifndef tObjectFactory_h
 #include "tObjectFactory.h"
-#endif
-
 
 class cWorld;
 class cString;
+
 
 class cActionLibrary
 {
@@ -44,8 +40,6 @@ private:
   tObjectFactoryNoCase<cAction* (cWorld*, const cString&)> m_factory;
   tDictionary<ClassDescFunction> m_desc_funcs;
   
-  static cActionLibrary* buildDefaultActionLibrary();
-
   cActionLibrary() { ; }
 
   
@@ -78,6 +72,10 @@ public:
     return "(Not Available)";
   }  
   const cString DescribeAll() const;
+  
+  
+private:
+  static cActionLibrary* buildDefaultActionLibrary();
 };
 
 
