@@ -75,7 +75,8 @@ class cMultiProcessWorld : public cWorld
 		virtual ~cMultiProcessWorld() { }
 		
 		//! Migrate this organism to a different world.
-		virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& cell, const cMerit& merit, int lineage);
+		virtual void MigrateOrganism(cOrganism* org, const cPopulationCell& cell,
+																 const cMerit& merit, int lineage);
 
 		//! Returns true if an organism should be migrated to a different world, false otherwise.
 		virtual bool TestForMigration();

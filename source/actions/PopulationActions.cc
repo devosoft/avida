@@ -2320,6 +2320,11 @@ public:
 	
 	static const cString GetDescription() { return "No arguments."; }
 	
+	virtual void Process(cAvidaContext& ctx) {
+		cAbstractCompeteDemes::Process(ctx);
+		m_message_counter.Reset();
+	}
+
 	//! Calculate the current fitness of this deme.
 	virtual double Fitness(cDeme& deme) {
 		return pow((double)received_data(deme) + 1.0, 2.0);
