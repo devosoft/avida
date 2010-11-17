@@ -64,7 +64,7 @@ lib avida-core :
     drivers/cDriverManager.cc
     drivers/cDriverStatusConduit.cc
     drivers/cFallbackWorldDriver.cc
-    main/avida.cc
+    main/Avida.cc
     main/cAvidaConfig.cc
     main/cBirthChamber.cc
     main/cBirthDemeHandler.cc
@@ -84,8 +84,6 @@ lib avida-core :
     main/cGenomeUtil.cc
     main/cInstruction.cc
     main/cLandscape.cc
-    main/cLocalMutations.cc
-    main/cMutationLib.cc
     main/cMutationRates.cc
     main/cOrganism.cc
     main/cOrgMessage.cc
@@ -120,8 +118,8 @@ lib avida-core :
     tools/cDataFile.cc
     tools/cDataFileManager.cc
     tools/cDataManager_Base.cc
-    tools/cFile.cc
     tools/cDemeProbSchedule.cc
+    tools/cFile.cc
     tools/cHelpAlias.cc
     tools/cHelpManager.cc
     tools/cHelpType.cc
