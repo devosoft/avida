@@ -26,42 +26,20 @@
 #ifndef cPopulation_h
 #define cPopulation_h
 
+#include "cBirthChamber.h"
+#include "cDeme.h"
+#include "cOrgInterface.h"
+#include "cPopulationInterface.h"
+#include "cResourceCount.h"
+#include "cString.h"
+#include "cWorld.h"
+#include "tArray.h"
+#include "tList.h"
+#include "tVector.h"
+
 #include <fstream>
 #include <map>
 
-
-#ifndef cBirthChamber_h
-#include "cBirthChamber.h"
-#endif
-#ifndef cDeme_h
-#include "cDeme.h"
-#endif
-#ifndef cOrgInterface_h
-#include "cOrgInterface.h"
-#endif
-#ifndef cPopulationInterface_h
-#include "cPopulationInterface.h"
-#endif
-#ifndef cResourceCount_h
-#include "cResourceCount.h"
-#endif
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef cWorld_h
-#include "cWorld.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef tList_h
-#include "tList.h"
-#endif
-#ifndef tVector_h
-#include "tVector.h"
-#endif
-
-#include "cInstSet.h"
 
 class cAvidaContext;
 class cBioUnit;

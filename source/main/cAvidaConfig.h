@@ -32,13 +32,13 @@
 // be transparently set at compile time and allow the programmer to easily
 // add in new settings with a single line of code.
 
-#include <iostream>
-
 #include "cMutex.h"
 #include "cString.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
 #include "tList.h"
+
+#include <iostream>
 
 class cUserFeedback;
 template <class T> class tDictionary;
@@ -304,8 +304,6 @@ public:
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
-  CONFIG_ADD_VAR(START_ORGANISM, cString, "default-heads.org", "Organism to seed the population");
-  CONFIG_ADD_ALIAS(START_CREATURE);
   
   
   // -------- Mutation config options --------
@@ -799,6 +797,8 @@ public:
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
   CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 1, "Load legacy format instruction set file format");
+  CONFIG_ADD_VAR(START_ORGANISM, cString, "-", "Organism to seed the population");
+  CONFIG_ADD_ALIAS(START_CREATURE);
 
 
   // -------- UNDER CONSTRUCTION ----------

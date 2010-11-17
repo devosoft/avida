@@ -25,11 +25,14 @@
 
 #include "cPopulation.h"
 
+#include "AvidaTools.h"
+
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
+#include "cCPUTestInfo.h"
 #include "cCodeLabel.h"
 #include "cConstBurstSchedule.h"
 #include "cConstSchedule.h"
@@ -51,23 +54,20 @@
 #include "cPopulationCell.h"
 #include "cProbSchedule.h"
 #include "cProbDemeProbSchedule.h"
+#include "cRandom.h"
 #include "cResource.h"
 #include "cResourceCount.h"
 #include "cSaleItem.h"
 #include "cStats.h"
+#include "cTestCPU.h"
 #include "cTopology.h"
 #include "cWorld.h"
-#include "cTopology.h"
-#include "cTestCPU.h"
-#include "cCPUTestInfo.h"
-#include "cRandom.h"
 #include "tArrayUtils.h"
 #include "tKVPair.h"
 #include "tHashMap.h"
 #include "tManagedPointerArray.h"
-#include "cHardwareCPU.h"
 
-#include "AvidaTools.h"
+#include "cHardwareCPU.h"
 
 #include <fstream>
 #include <vector>
@@ -77,9 +77,6 @@
 #include <cfloat>
 #include <cmath>
 #include <climits>
-
-/* MJM - required to build under Visual Studio 2005.
- * Fixes error "'numeric_limits' is not a member of 'std'" */
 #include <limits>
 
 using namespace std;
@@ -324,12 +321,10 @@ bool cPopulation::InitiatePop(cUserFeedback* feedback)
     if (start_org.GetSize() != 0) {
       Inject(start_org, SRC_ORGANISM_FILE_LOAD);
     } else {
-      // @TODO - better means of reporting warnings
-      cerr << "Warning: Zero length start organism, not injecting into initial population." << endl;
+      if (feedback) feedback->Warning("zero length start organism, not injecting into initial population");
     }
   } else {
-    // @TODO - better means of reporting warnings
-    cerr << "Warning: No start organism specified." << endl;
+    if (feedback) feedback->Warning("no start organism specified");
   }
   
   return true;

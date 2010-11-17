@@ -24,11 +24,14 @@
 
 #include "PopulationActions.h"
 
+#include "AvidaTools.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
 #include "cDoubleSum.h"
 #include "cHardwareManager.h"
+#include "cInstSet.h"
 #include "cIntSum.h"
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
@@ -38,8 +41,6 @@
 #include "cWorld.h"
 #include "cOrganism.h"
 #include "cEnvironment.h"
-
-#include "AvidaTools.h"
 
 #include <map>
 #include <set>

@@ -144,12 +144,12 @@ void cAnalyze::RunFile(cString filename)
     cerr << "warning: creating default file: '" << filename << "'" << endl;
     ofstream fp(filename);
     fp << "################################################################################################" << endl
-      << "# This file is used to setup avida when it is in analysis-only mode, which can be triggered by"   << endl
-      << "# running \"avida -a\"."                                                                          << endl
-      << "# "                                                                                               << endl
-      << "# Please see the documentation in doc/analyze_mode.html for information on how to use analyze"    << endl
-      << "# mode, or the file doc/analyze_samples.html for guidelines on writing programs."                 << endl
-      << "################################################################################################" << endl
+       << "# This file is used to setup avida when it is in analysis-only mode, which can be triggered by"   << endl
+       << "# running \"avida -a\"."                                                                          << endl
+       << "# "                                                                                               << endl
+       << "# Please see the documentation in documentation/analyze.html for information on how to use"       << endl
+       << "# analyze mode."                                                                                  << endl
+       << "################################################################################################" << endl
       << endl; 
     fp.close();
   } else {
