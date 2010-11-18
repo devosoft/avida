@@ -26,8 +26,8 @@
 #define avida_h
 
 
-#define VERSION "2.11.0"
-#define VERSION_TAG "(TBA)"
+#define VERSION "2.12.0"
+#define VERSION_TAG "Biounit"
 
 
 // -= Configurable Features

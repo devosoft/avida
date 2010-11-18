@@ -1,0 +1,89 @@
+Avida 2.12 Release Notes
+
+The following items are major features and changes present in this release of
+Avida.  See the repository commit logs at http://avida.devosoft.org for details
+of other changes.
+
+
+New Features:
+
+- Multiple Simulataneous Instruction Sets/Hardware Types
+
+    Avida now supports experiments in which organisms running different
+    instruction sets and/or hardware types may coexist in the population
+    simultaneously.  
+
+
+Enhancements:
+
+- Completely New Classification Framework
+
+   The classification system has been redesigned to be much more flexible and
+   extensible.  Conceptually, the classification system takes living entities
+   (bio-units) and places them into groups (bio-groups) as appropriate.
+   Bio-units/groups include enhanced source tracking and full support for
+   extended genome information (necessary for multiple instruction set support
+   and future enhancements).
+
+- New, High-Performance Genotype Tracking
+
+   Rewritten for the new classification system, the genotype tracking system
+   performance was also improved significantly.  The new data structures
+   used by the genotype manager no longer degrade under heavy load (high-
+   genotype count).
+
+- Significantly Improved Large Population Support
+
+   The new genotype tracking system allows Avida to scale to larger populations
+   with nearly linear performance (i.e. a 20000 organism population will take
+   a little more than twice as long as a 10000 organism population).
+
+
+Changes:
+
+- New Instruction Set Configuration Format
+
+   A new, avida.cfg based instruction set configuration format has been
+   introduced.  The new format allows for the specification of multiple, named
+   instruction sets.  Additionally, options must now be specified by name and
+   may be listed in any order following the instruction name.  See the
+   documentation regarding instruction sets for further details.
+
+- Organism File Hardware Type and Instruction Set Directives
+
+   Organism files now support the use of #inst_set ${name} and #hw_type ${num}
+   directives.  These directives inform avida what instruction set and
+   hardware type a particular organism file should use when loaded (Inject, etc)
+   If the directives are not included, the default (first) instruction set will
+   be used.
+
+- START_CREATURE/START_ORGANISM Now Deprecated
+
+   Use Inject actions at the beginning of your experiment to specify exactly
+   how you would like the experiment to be seeded.
+
+- HARDWARE_TYPE Setting and INST_SET File Deprecated
+
+   Use the new instruction set format instead.  Backward compatibility may be
+   activated by setting the avida.cfg option INST_SET_LOAD_LEGACY to 1.  The
+   name of the instruction set will be the filename/path specified in INST_SET.
+
+- Old Style Species and "Lineage" (Clade) Tracking Removed
+
+   These features relied on the old classification system that has been replaced
+   Species and clade tracking will return in a future version, implemented
+   under the new classification system.
+
+Deprecated features will be removed in the next version of Avida.
+
+
+Known Issues:
+
+- The PARENT_MUT_RATE setting will cause the parent's genome to mutate when
+  it gives birth, but currently it is not treated like a second offspring, so
+  the genotype will not be changed, and in general it cannot act with many
+  other settings (like mutation reversions)
+
+- BIRTH_METHOD 7 is currently a local birth method, but not grouped with the
+  rest of them.  This required a special condition in cBirthChamber.cc for
+  local recombination and in cPopulation.cc for offspring facing parent.
