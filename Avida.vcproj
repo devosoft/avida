@@ -121,7 +121,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;;&quot;$(ProjectDir)source\platform&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)source\tools\platform&quot;;&quot;$(ProjectDir)source\tools&quot;;&quot;$(ProjectDir)source\targets\avida-viewer&quot;;&quot;$(ProjectDir)source\platform\msvc2005&quot;;&quot;$(ProjectDir)source\platform\msvc2005\pdcurses&quot;;&quot;$(ProjectDir)source\main&quot;;&quot;$(ProjectDir)source\drivers&quot;;&quot;$(ProjectDir)source\cpu&quot;;&quot;$(ProjectDir)source\classification&quot;;&quot;$(ProjectDir)source\analyze&quot;;&quot;$(ProjectDir)source\actions&quot;;&quot;$(ProjectDir)source&quot;"
 				PreprocessorDefinitions="NOMACROS;NDEBUG;WIN32;_WIN32"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
