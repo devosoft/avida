@@ -2770,6 +2770,71 @@ public:
   }
 };
 
+class cActionDumpIDGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpIDGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("id_grid.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    
+  //  fp << "id_grid" <<  m_world->GetStats().GetUpdate() << "= [ ..." << endl;
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetID() : -1;
+        fp << id << " ";
+      }
+      fp << endl;
+    }
+    //  fp << "];" << endl;
+    m_world->GetDataFileManager().Remove(filename);    
+  }
+};
+
+class cActionDumpVitalityGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpVitalityGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+  
+  //  fp << "id_grid" <<  m_world->GetStats().GetUpdate() << "= [ ..." << endl;
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetVitality() : -1;
+        fp << id << " ";
+      }
+      fp << endl;
+    }
+       //   fp << "];" << endl;
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 
 class cActionDumpSleepGrid : public cAction
 {
@@ -3347,6 +3412,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
+  action_lib->Register<cActionDumpIDGrid>("DumpIDGrid");
+  action_lib->Register<cActionDumpVitalityGrid>("DumpVitalityGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   

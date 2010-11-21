@@ -239,8 +239,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareCPU::Inst_SenseResourceID, nInstFlag::STALL), //JW
-    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareCPU::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL), //APW
-    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareCPU::Inst_SenseDiffFaced, nInstFlag::STALL), //APW
+    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareCPU::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareCPU::Inst_SenseDiffFaced, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-resource1", &cHardwareCPU::Inst_SenseResource1, nInstFlag::STALL),
@@ -300,6 +300,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("rotate-to-occupied-cell", &cHardwareCPU::Inst_RotateOccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-next-occupied-cell", &cHardwareCPU::Inst_RotateNextOccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-event-cell", &cHardwareCPU::Inst_RotateEventCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-uphill", &cHardwareCPU::Inst_RotateUphill, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
@@ -307,6 +308,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-cell-x", &cHardwareCPU::Inst_GetCellPositionX),
     tInstLibEntry<tMethod>("get-cell-y", &cHardwareCPU::Inst_GetCellPositionY),
     tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
+    tInstLibEntry<tMethod>("get-north-offset", &cHardwareCPU::Inst_GetDirectionOffNorth),    
     
     // State Grid instructions
     tInstLibEntry<tMethod>("sg-move", &cHardwareCPU::Inst_SGMove),
@@ -608,9 +610,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("mark-cell-with-vitality", &cHardwareCPU::Inst_MarkCellWithVitality),
     tInstLibEntry<tMethod>("get-res-stored", &cHardwareCPU::Inst_GetResStored),
     tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
-    tInstLibEntry<tMethod>("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff, nInstFlag::STALL),  //APW
-    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL),  //APW
-    tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL),  //APW
+    tInstLibEntry<tMethod>("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL), 
     
 		
 		// Synchronization
@@ -3863,23 +3865,22 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   return true;
 }
 
-bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx) //JW
+bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 {
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
-  int reg_to_set = FindModifiedRegister(REG_BX);
-  
-  double max_resource = 0.0;    //if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+  int reg_to_set = FindModifiedRegister(REG_BX);  
+  double max_resource = 0.0;    
+  // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
   for (int i = 0; i < res_count.GetSize(); i++) {
     if (res_count[i] > max_resource) {
       max_resource = res_count[i];
       GetRegister(reg_to_set) = i;
     }
-  }
-    
+  }    
   return true;
 }
 
-bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx) //APW
+bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
 {
   const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
   // check if this is a valid group
@@ -3892,13 +3893,13 @@ bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx) //APW
   return true;
 }
 
-bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) //APW
+bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) 
 {
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(); 
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
-    int reg_to_set = FindModifiedRegister(REG_CX);
-    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources()[opinion];     
+    int reg_to_set = FindModifiedRegister(REG_BX);
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources()[opinion];  
     double res_diff = faced_res - res_count[opinion];
     GetRegister(reg_to_set) = res_diff;
   }
@@ -5564,6 +5565,37 @@ bool cHardwareCPU::Inst_RotateEventCell(cAvidaContext& ctx) {
   return true;
 }
 
+bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
+{
+  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();
+  
+  int opinion = 0;
+  
+  if(m_organism->HasOpinion()) opinion = m_organism->GetOpinion().first; 
+  
+  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(); 
+  
+  double max_res = 0;
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    m_organism->Rotate(1);
+    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(); 
+    if (faced_res[opinion] > max_res) {
+      max_res = faced_res[opinion];
+    }
+  } 
+  
+  if (max_res > current_res[opinion]) {
+    for(int i = 0; i < actualNeighborhoodSize; i++) {
+      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(); 
+      if (faced_res[opinion] != max_res) m_organism->Rotate(1);
+    }
+  }
+    double res_diff = max_res - current_res[opinion];
+    int reg_to_set = FindModifiedRegister(REG_BX);
+    GetRegister(reg_to_set) = res_diff;
+    return true;
+}
+
 bool cHardwareCPU::Inst_SetCopyMut(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -6744,6 +6776,22 @@ bool cHardwareCPU::Inst_GetDistanceFromDiagonal(cAvidaContext& ctx) {
     GetRegister(reg) = (int)floor((pos.first - pos.second)/2.0);
   }
   //  std::cerr<<"x = "<<pos.first<<"  y = "<<pos.second<<"  ans = "<<GetRegister(reg)<<std::endl;
+  return true;
+}
+
+bool cHardwareCPU::Inst_GetDirectionOffNorth(cAvidaContext& ctx) {
+  int facing = m_organism->GetFacing();
+  int north_offset = 0;
+  if (facing == 0) north_offset = 4;
+  else if (facing == 1) north_offset = -3;
+  else if (facing == 3) north_offset = -2;
+  else if (facing == 2) north_offset = -1;
+  else if (facing == 6) north_offset = 0;
+  else if (facing == 7) north_offset = 1;
+  else if (facing == 5) north_offset = 2;
+  else if (facing == 4) north_offset = 3;
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = north_offset;
   return true;
 }
 
@@ -8423,7 +8471,7 @@ bool cHardwareCPU::Inst_MarkCellWithVitality(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_GetID(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  const int out_reg = FindModifiedRegister(REG_CX);
+  const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = m_organism->GetID();
   return true;
 }
@@ -8441,7 +8489,7 @@ bool cHardwareCPU::Inst_GetFacedVitalityDiff(cAvidaContext& ctx)
   const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = m_organism->GetVitality() - neighbor->GetVitality();
   return true;
-}  //APW
+}
 
 bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
 //Get ID of organism faced by this one, if there is an organism in front.
@@ -8456,7 +8504,7 @@ bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
   const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = neighbor->GetID();
   return true;
-}  //APW
+}
 
 //Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
 bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
@@ -8491,8 +8539,7 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   }
   m_organism->KillCellID(target_cell);
   return true;
-}  //APW		
-
+} 		
 
 /*! Called when the organism that owns this CPU has received a flash from a neighbor. */
 void cHardwareCPU::ReceiveFlash() {
@@ -9113,10 +9160,14 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
   
 	// check if this is a valid group
 	if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
-	
+  
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
-		// subtract org from group
+    
+    //return false if org setting opinion to current one (avoid paying costs for not switching)
+    if (opinion == prop_group_id) return false;
+    
+		// otherwise, subtract org from current group
 		m_organism->LeaveGroup(opinion);
   }
 	

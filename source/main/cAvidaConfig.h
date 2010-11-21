@@ -288,7 +288,7 @@ public:
   CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution\n(pre-execute instructions that don't affect other organisms)");
   CONFIG_ADD_VAR(POPULATION_CAP, int, 0, "Carrying capacity in number of organisms (use 0 for no cap)");
-  CONFIG_ADD_VAR(POP_CAP_ELDEST, int, 0, "Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring."); //APW
+  CONFIG_ADD_VAR(POP_CAP_ELDEST, int, 0, "Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring."); 
   
   
   // -------- Topology config options --------
@@ -590,8 +590,8 @@ public:
   CONFIG_ADD_VAR(RETURN_STORED_ON_DEATH, bool, 1, "Return an organism's stored resources to the world when it dies?");
   CONFIG_ADD_VAR(SPLIT_ON_DIVIDE, bool, 1, "Split mother cell's resources between two daughter cells on division?");
   CONFIG_ADD_VAR(COLLECT_SPECIFIC_RESOURCE, int, 0, "Resource to be collected by the \"collect-specific\" instruction.");
-  CONFIG_ADD_VAR(RESOURCE_GIVEN_ON_INJECT, double, 0.0, "Units of collect-specific resources given on inject.");  //APW
-  CONFIG_ADD_VAR(RESOURCE_GIVEN_AT_BIRTH, double, 0.0, "Units of collect-specific resources given to offspring upon birth.");  //APW
+  CONFIG_ADD_VAR(RESOURCE_GIVEN_ON_INJECT, double, 0.0, "Units of collect-specific resources given on inject.");  
+  CONFIG_ADD_VAR(RESOURCE_GIVEN_AT_BIRTH, double, 0.0, "Units of collect-specific resources given to offspring upon birth (will be added to SPLIT_ON_DIVIDE amount for collect-specific resource if both enabled.");  
   
   
   // -------- Analyze config options --------
@@ -686,7 +686,7 @@ public:
   
   // -------- Synchronization config options --------
   CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
-  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal?");
+  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)"); //APW
   CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_SELECTION_TYPE, int, 0, "0 = 50% chance\n1 = binned vitality based");
   CONFIG_ADD_VAR(VITALITY_BIN_EXTREMES, double, 1.0, "vitality multiplier for extremes (> 1 stddev from the mean population age)");
   CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");

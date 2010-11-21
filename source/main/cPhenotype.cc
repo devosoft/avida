@@ -376,10 +376,10 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
   cur_rbins_avail.SetAll(0);
   for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-    if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   //APW
+    if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   
       cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
     }
-    if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {   //APW
+    if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {   
       cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
       cur_rbins_avail[resource] = cur_rbins_avail[resource] + m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
     } 
@@ -574,7 +574,7 @@ void cPhenotype::SetupInject(const cSequence & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);
-  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   //APW
+  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
     cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
   }
@@ -999,7 +999,7 @@ void cPhenotype::TestDivideReset(const cSequence & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   //APW
+  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
     const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
     cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
   }

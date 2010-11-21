@@ -500,8 +500,8 @@ private:
   bool Inst_SenseFacedResource1(cAvidaContext& ctx);
   bool Inst_SenseFacedResource2(cAvidaContext& ctx);
   bool Inst_SenseResourceID(cAvidaContext& ctx); //JW
-  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); //APW
-  bool Inst_SenseDiffFaced(cAvidaContext& ctx); //APW
+  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
+  bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
   
   // Resources
   bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);
@@ -574,11 +574,13 @@ private:
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateNextUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateEventCell(cAvidaContext& ctx);
+  bool Inst_RotateUphill(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);
   bool Inst_GetCellPositionX(cAvidaContext& ctx);
   bool Inst_GetCellPositionY(cAvidaContext& ctx);
+  bool Inst_GetDirectionOffNorth(cAvidaContext& ctx);  
   
   // State Grid Sensory/Movement
   bool Inst_SGMove(cAvidaContext& ctx);
@@ -882,9 +884,9 @@ public:
   bool Inst_MarkCellWithVitality(cAvidaContext& ctx);
   bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetID(cAvidaContext& ctx);
-  bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); //APW
-  bool Inst_GetFacedOrgID(cAvidaContext& ctx);  //APW
-  bool Inst_AttackFacedOrg(cAvidaContext& ctx);  //APW
+  bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); 
+  bool Inst_GetFacedOrgID(cAvidaContext& ctx);  
+  bool Inst_AttackFacedOrg(cAvidaContext& ctx);  
 	
 private:
 	std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.

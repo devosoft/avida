@@ -753,6 +753,7 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
   
   if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
+    if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return;
     bool kill_source = true;
     switch (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get()) {
       case 0: // 50% chance, no modifiers
@@ -836,8 +837,7 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
   }
 }
 
-
-//Kill Random Organism in Group (But Not Self)!! JW
+// Kill Random Organism in Group (But Not Self)!! JW
 void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *org)
 {
   //Check to make sure we are not killing self!
@@ -854,12 +854,12 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   KillOrganism(cell_array[cell_id]);
 }
 
-//Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
+// Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
 void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
   cPopulationCell& loser_cell = GetCell(loser);
   KillOrganism(loser_cell);
-}  //APW	
+}
 
 void cPopulation::KillOrganism(cPopulationCell& in_cell)
 {
@@ -3482,7 +3482,7 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
   // Handle Pop Cap Eldest (if enabled)  
   // Pop Cap Eldest Added sets a population limit whereby oldest in entire population is one killed (as in POPULATION CAP), 
   // but incoming offspring is born in place as determined by BIRTH METHOD (e.g. facing cell), rather than wherever the 
-  // (killed) oldest was.//APW
+  // (killed) oldest was.
   int pop_eldest = m_world->GetConfig().POP_CAP_ELDEST.Get();
   if (pop_eldest > 0 && num_organisms >= pop_eldest) {
     double max_age = 0.0;

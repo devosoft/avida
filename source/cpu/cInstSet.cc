@@ -86,7 +86,7 @@ cInstruction cInstSet::ActivateNullInst()
   m_lib_name_map[inst_id].energy_cost = 0;
   m_lib_name_map[inst_id].prob_fail = 0.0;
   m_lib_name_map[inst_id].addl_time_cost = 0;
-  m_lib_name_map[inst_id].res_cost = 0.0;   //APW
+  m_lib_name_map[inst_id].res_cost = 0.0; 
   
   return cInstruction(inst_id);
 }
@@ -134,7 +134,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
 
   // Double
   schema.AddEntry("prob_fail", 0, 0.0);
-  schema.AddEntry("res_cost", 1, 0.0);  //APW
+  schema.AddEntry("res_cost", 1, 0.0);  
   
   // String  
   schema.AddEntry("inst_code", 0, "");
@@ -206,12 +206,12 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     m_lib_name_map[inst_id].energy_cost = args->GetInt(3);
     m_lib_name_map[inst_id].prob_fail = args->GetDouble(1);
     m_lib_name_map[inst_id].addl_time_cost = args->GetInt(4);
-    m_lib_name_map[inst_id].res_cost = args->GetDouble(0); //APW
+    m_lib_name_map[inst_id].res_cost = args->GetDouble(0); 
     
     if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
     if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;
     if (m_lib_name_map[inst_id].energy_cost) m_has_energy_costs = true;
-    if (m_lib_name_map[inst_id].res_cost) m_has_res_costs = true;   //APW
+    if (m_lib_name_map[inst_id].res_cost) m_has_res_costs = true;   
     
     // Parse the instruction code
     cString inst_code = args->GetString(0);

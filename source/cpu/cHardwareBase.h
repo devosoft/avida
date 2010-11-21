@@ -67,12 +67,12 @@ protected:
   int m_inst_cost;
   tArray<int> m_inst_ft_cost;
   tArray<double> m_inst_energy_cost;
-  tArray<double> m_inst_res_cost; //APW
+  tArray<double> m_inst_res_cost; 
   bool m_has_any_costs;
   bool m_has_costs;
   bool m_has_ft_costs;
   bool m_has_energy_costs;
-  bool m_has_res_costs; //APW
+  bool m_has_res_costs; 
 	int m_task_switching_cost;
   
   // --------  Base Hardware Feature Support  ---------
