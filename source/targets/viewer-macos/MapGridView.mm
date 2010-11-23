@@ -1,8 +1,8 @@
 //
-//  MainWindowController.h
+//  MapGridView.m
 //  Avida
 //
-//  Created by David Bryson on 10/21/10.
+//  Created by David on 11/23/10.
 //  Copyright 2010 Michigan State University. All rights reserved.
 //
 //
@@ -21,35 +21,39 @@
 //  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-#import <Foundation/Foundation.h>
+#import "MapGridView.h"
 
-@class AvidaRun;
-class cCocoaListener;
 
-@interface MainWindowController : NSObject {
-  IBOutlet NSPathControl* runDirControl;
-  IBOutlet NSButton* btnRunState;
-  @public IBOutlet NSTextField* txtUpdate;
-  
-  AvidaRun* currentRun;
-  cCocoaListener* viewListener;
-  NSThread* viewThread;
+@implementation MapGridView
+
+- (id) initWithFrame: (NSRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code here.
+    }
+    return self;
 }
 
--(void)awakeFromNib;
+- (void) drawRect: (NSRect)dirtyRect {
+  [[NSColor blackColor] set];
+  [NSBezierPath fillRect:dirtyRect];
+  
+  NSRect gridCellRect;
+  gridCellRect.size.width = 9.0;
+  gridCellRect.size.height = 9.0;
 
--(IBAction)setRunDir:(id)sender;
--(IBAction)toggleRunState:(id)sender;
+  for (int i = 0; i < 60; i++) {
+    for (int j = 0; j < 60; j++) {
+      gridCellRect.origin = NSMakePoint(10.0 * i, 10.0 * j);
+      [[NSColor blueColor] set];
+      [NSBezierPath fillRect:gridCellRect];
+    }
+  }
+}
 
-// NSPathControlDelegate Protocol
--(void)pathControl:(NSPathControl*)pathControl willDisplayOpenPanel:(NSOpenPanel*)openPanel;
 
--(void)dealloc;
--(void)finalize;
-
--(void)viewRunLoop:(id)object;
-
-@property (readonly, assign) NSTextField* txtUpdate;
-
+- (BOOL) isOpaque {
+  return YES;
+}
 
 @end

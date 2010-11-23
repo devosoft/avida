@@ -1,8 +1,8 @@
 //
-//  MainWindowController.h
+//  MapGridView.h
 //  Avida
 //
-//  Created by David Bryson on 10/21/10.
+//  Created by David on 11/23/10.
 //  Copyright 2010 Michigan State University. All rights reserved.
 //
 //
@@ -21,35 +21,16 @@
 //  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
-@class AvidaRun;
-class cCocoaListener;
 
-@interface MainWindowController : NSObject {
-  IBOutlet NSPathControl* runDirControl;
-  IBOutlet NSButton* btnRunState;
-  @public IBOutlet NSTextField* txtUpdate;
-  
-  AvidaRun* currentRun;
-  cCocoaListener* viewListener;
-  NSThread* viewThread;
+@interface MapGridView : NSView {
+
 }
 
--(void)awakeFromNib;
+- (id)initWithFrame:(NSRect)frame;
 
--(IBAction)setRunDir:(id)sender;
--(IBAction)toggleRunState:(id)sender;
-
-// NSPathControlDelegate Protocol
--(void)pathControl:(NSPathControl*)pathControl willDisplayOpenPanel:(NSOpenPanel*)openPanel;
-
--(void)dealloc;
--(void)finalize;
-
--(void)viewRunLoop:(id)object;
-
-@property (readonly, assign) NSTextField* txtUpdate;
-
+- (void)drawRect:(NSRect)rect;
+- (BOOL)isOpaque;
 
 @end

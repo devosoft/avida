@@ -45,6 +45,7 @@
   
   currentRun = nil;
   viewListener = NULL;
+  viewThread = nil;
 }
 
 - (IBAction) setRunDir:(id)sender {
@@ -71,13 +72,19 @@
     } else {
       if (!viewListener) viewListener = new cCocoaListener(self);
       [currentRun attachListener:viewListener];
+      
+      if (viewThread == nil) {
+        viewThread = [[NSThread alloc] initWithTarget:self selector:@selector(viewRunLoop:) object:nil];
+        [viewThread start];
+      }
+      
       [btnRunState setTitle:@"Pause"];
       [txtUpdate setStringValue:@"Update: 0"];
     }
   } else {
     if ([currentRun isPaused]) {
       [currentRun resume];
-      [btnRunState setTitle:@"Paused"];
+      [btnRunState setTitle:@"Pause"];
     } else {
       [currentRun pause];
       [btnRunState setTitle:@"Run"];      
@@ -85,7 +92,7 @@
   }
 }
 
-- (void) pathControl: (NSPathControl*) pathControl willDisplayOpenPanel: (NSOpenPanel*) openPanel {
+- (void) pathControl:(NSPathControl*)pathControl willDisplayOpenPanel: (NSOpenPanel*) openPanel {
   if (pathControl == self->runDirControl) {
     [openPanel setCanCreateDirectories:YES];
   }
@@ -101,6 +108,16 @@
   delete viewListener;
   viewListener = NULL;
   [super finalize];
+}
+
+
+- (void) viewRunLoop:(id)object {
+  NSAutoreleasePool* main_pool = [[NSAutoreleasePool alloc] init];
+  NSRunLoop* runloop = [NSRunLoop currentRunLoop];
+  
+  // TODO - do the run loop
+  
+  [main_pool release];
 }
 
 @end

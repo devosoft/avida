@@ -83,7 +83,9 @@ protected:
   
   bool m_own_driver;      // specifies whether this world object should manage its driver object
 
-  cWorld(cAvidaConfig* cfg, const cString& wd) : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng) { ; }
+  cWorld(cAvidaConfig* cfg, const cString& wd)
+    : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng), m_class_mgr(NULL), m_data_mgr(NULL)
+    , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL) { ; }
   
 private:
   cWorld(); // @not_implemented
