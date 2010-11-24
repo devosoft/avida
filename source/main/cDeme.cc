@@ -565,13 +565,13 @@ void cDeme::ModifyDemeResCount(const tArray<double> & res_change, const int abso
   deme_resource_count.ModifyCell(res_change, relative_cell_id);
 }
 
-void cDeme::SetupDemeRes(int id, cResource * res, int verbosity) {
+void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) {               //APW random mapping ', cWorld* world'
   const double decay = 1.0 - res->GetOutflow();
   //addjust the resources cell list pointer here if we want CELL env. commands to be replicated in each deme
   
   int* temp = &id;
   
-  deme_resource_count.Setup(*temp, res->GetName(), res->GetInitial(), 
+  deme_resource_count.Setup(world, *temp, res->GetName(), res->GetInitial(),                //APW random mapping 'world, '
 			   res->GetInflow(), decay,
 			   res->GetGeometry(), res->GetXDiffuse(),
 			   res->GetXGravity(), res->GetYDiffuse(), 

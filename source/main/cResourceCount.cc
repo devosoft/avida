@@ -204,7 +204,7 @@ void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
   }
 }
 
-void cResourceCount::Setup(const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,
+void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                  //APW random mapping 'cWorld* world, '
 				const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
 				const double& in_ydiffuse, const double& in_ygravity,
 				const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
@@ -309,7 +309,7 @@ void cResourceCount::Setup(const int& id, const cString& name, const double& ini
     
     else if(isgradient){
       delete spatial_resource_count[id];
-      spatial_resource_count[id] = new cGradientCount(in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay, 
+      spatial_resource_count[id] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                 //APW random mapping 'world, '
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
                                                       tempx, tempy, in_geometry);
       spatial_resource_count[id]->RateAll(0);

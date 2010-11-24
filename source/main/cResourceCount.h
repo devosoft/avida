@@ -76,7 +76,7 @@ public:
   void SetSize(int num_resources);
   void SetCellResources(int cell_id, const tArray<double> & res);
 
-void Setup(const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,
+void Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                      //APW random mapping 'cWorld* world, '
 	   const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
 	   const double& in_ydiffuse, const double& in_ygravity,
 	   const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,

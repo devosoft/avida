@@ -23,10 +23,10 @@ updates) is reached, whichever comes first.
   Peak values are refreshed to match initial height, spread, and plateau, but the placement of the refreshed peak is random
 within the min/max x and y area. */
 
-cGradientCount::cGradientCount(int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, 
+cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, 
                                int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatecount, 
                                int in_worldx, int in_worldy, int in_geometry) : 
-                               m_peakx(in_peakx), m_peaky(in_peaky), m_height(in_height), m_spread(in_spread), m_plateau(in_plateau), m_decay(in_decay),
+                               m_world(world), m_peakx(in_peakx), m_peaky(in_peaky), m_height(in_height), m_spread(in_spread), m_plateau(in_plateau), m_decay(in_decay),
                                m_max_x(in_max_x), m_max_y(in_max_y), m_min_x(in_min_x), m_min_y(in_min_y), m_move_a_scaler(in_move_a_scaler)
 {
   ResizeClear(in_worldx, in_worldy, in_geometry);
@@ -66,19 +66,16 @@ void cGradientCount::UpdateCount()
   if (has_edible && m_counter < m_decay && GetModified()) return; 
   
   if (m_counter == m_decay) {
-    //      m_peakx = m_world->GetRandom().GetUInt(m_min_x, m_max_x);
-    //      m_peaky = m_world->GetRandom().GetUInt(m_min_y, m_max_y); 
-    cRandom rand;
-    int old_peakx = m_peakx;
-    int old_peaky = m_peaky;
-    m_peakx = rand.GetUInt(m_min_x + m_height, m_max_x - m_height);
-    m_peaky = rand.GetUInt(m_min_y + m_height, m_max_y - m_height);
-  // guard against peaks getting repeatedly generated at same point when the attacks are coming too quick  
-    if (m_peakx == old_peakx && m_peaky == old_peaky) {
-      m_peakx = rand.GetUInt(m_min_x + m_height, m_max_x - m_height);
-      m_peaky = rand.GetUInt(m_min_y + m_height, m_max_y - m_height);     
-    }    
-    if (m_min_x == 5 && m_min_y == 5 && m_max_x == 14 && m_max_y == 14)
+//    cRandom rand;                                                                                  //APW random mapping
+//    int old_peakx = m_peakx;                                                                      //APW random mapping
+//    int old_peaky = m_peaky;                                                                      //APW random mapping
+    m_peakx = m_world->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height);                 
+    m_peaky = m_world->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height);
+  // guard against peaks getting repeatedly generated at same point when the attacks are coming too quick  //APW random mapping
+//    if (m_peakx == old_peakx && m_peaky == old_peaky) {                                                   //APW random mapping
+//      m_peakx = m_world->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height);                     //APW random mapping
+ //     m_peaky = m_world->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height);                     //APW random mapping
+ //   }    
     SetModified(false);
   }
   

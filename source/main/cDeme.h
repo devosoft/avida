@@ -274,7 +274,7 @@ public:
   double GetCellEnergy(int absolute_cell_id) const;
   double GetAndClearCellEnergy(int absolute_cell_id);
   void GiveBackCellEnergy(int absolute_cell_id, double value);
-  void SetupDemeRes(int id, cResource * res, int verbosity);
+  void SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world);                 //APW random mapping ', cWorld* world'
   void UpdateDemeRes() { deme_resource_count.GetResources(); }
   void Update(double time_step) { deme_resource_count.Update(time_step); }
   int GetRelativeCellID(int absolute_cell_id) const { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
