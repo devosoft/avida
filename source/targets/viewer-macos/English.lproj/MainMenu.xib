@@ -995,7 +995,7 @@
 							<reference key="NSSuperview" ref="439893737"/>
 							<string key="NSClassName">NSView</string>
 						</object>
-						<object class="NSCustomView" id="899057860">
+						<object class="NSCustomView" id="644973890">
 							<reference key="NSNextResponder" ref="439893737"/>
 							<int key="NSvFlags">274</int>
 							<string key="NSFrame">{{20, 45}, {408, 408}}</string>
@@ -1492,6 +1492,14 @@
 						<reference key="destination" ref="42314814"/>
 					</object>
 					<int key="connectionID">575</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">mapView</string>
+						<reference key="source" ref="452075587"/>
+						<reference key="destination" ref="644973890"/>
+					</object>
+					<int key="connectionID">577</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2054,7 +2062,7 @@
 							<reference ref="775917288"/>
 							<reference ref="15502047"/>
 							<reference ref="277053249"/>
-							<reference ref="899057860"/>
+							<reference ref="644973890"/>
 						</object>
 						<reference key="parent" ref="972006081"/>
 					</object>
@@ -2239,7 +2247,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">576</int>
-						<reference key="object" ref="899057860"/>
+						<reference key="object" ref="644973890"/>
 						<reference key="parent" ref="439893737"/>
 					</object>
 				</object>
@@ -2698,7 +2706,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">576</int>
+			<int key="maxID">577</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2762,12 +2770,14 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>btnRunState</string>
+							<string>mapView</string>
 							<string>runDirControl</string>
 							<string>txtUpdate</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NSButton</string>
+							<string>MapGridView</string>
 							<string>NSPathControl</string>
 							<string>NSTextField</string>
 						</object>
@@ -2777,6 +2787,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>btnRunState</string>
+							<string>mapView</string>
 							<string>runDirControl</string>
 							<string>txtUpdate</string>
 						</object>
@@ -2785,6 +2796,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">btnRunState</string>
 								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mapView</string>
+								<string key="candidateClassName">MapGridView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">runDirControl</string>

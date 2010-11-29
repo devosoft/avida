@@ -1,9 +1,9 @@
 /*
- *  cCoreView_Info.cc
+ *  cCoreView_ClassificationInfo.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
  *  This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
  *
  */
 
-#include "cCoreView_Info.h"
+#include "cCoreView_ClassificationInfo.h"
 
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
@@ -33,53 +33,26 @@
 #include "tAutoRelease.h"
 #include "tIterator.h"
 
-cCoreView_Info::cCoreView_Info(cWorld * in_world, int total_colors)
+
+cCoreView_ClassificationInfo::cCoreView_ClassificationInfo(cWorld* in_world, const cString& role, int total_colors)
   : m_world(in_world)
-  , m_population(in_world->GetPopulation())
+  , m_role(role)
   , m_color_chart_id(total_colors, -1)
   , m_color_chart_ptr(total_colors, NULL)
   , m_threshold_colors(total_colors * 5 / 6)
   , m_next_color(0)
-  , m_pause_level(PAUSE_OFF)
-  , m_step_organism_id(-1)
-  , m_step_organism_thread(-1)
-{
-  // Redirect standard output...
-  std::cout.rdbuf(m_cout_stream.rdbuf());
-  std::cerr.rdbuf(m_cerr_stream.rdbuf());
-}
-
-cCoreView_Info::~cCoreView_Info()
 {
 }
 
-///////////////////////
-// Helper Methods...
 
-void cCoreView_Info::FlushOut()
-{
-  m_cout_list.Load(m_cout_stream.str().c_str(), '\n');  // Load the stored stream...
-  m_cout_stream.str("");  // Clear the streams.
-}
-
-void cCoreView_Info::FlushErr()
-{
-  m_cerr_list.Load(m_cerr_stream.str().c_str(), '\n');  // Load the stored stream...
-  m_cerr_stream.str("");  // Clear the streams.
-}
-
-
-/////////////////////////
-//  Other functions...
-
-void cCoreView_Info::SetupUpdate()
+void cCoreView_ClassificationInfo::Update()
 {
   const int num_colors = m_color_chart_id.GetSize();
   cBitArray free_color(num_colors);   // Keep track of genotypes still using their color.
   free_color.SetAll();
 
   // Loop through all genotypes that should be colors to mark those that we can clear out.
-  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+  tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager(m_role)->Iterator());
   int count = 0;
   while (count < num_colors && it->Next()) {
     const int cur_color = getMapColor(it->Get())->color;
@@ -98,7 +71,7 @@ void cCoreView_Info::SetupUpdate()
   }
 
   // Setup genotypes above threshold.
-  it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
+  it.Set(m_world->GetClassificationManager().GetBioGroupManager(m_role)->Iterator());
   count = 0;
   while (it->Next() && count < m_threshold_colors) {
     if (getMapColor(it->Get())->color < 0) {
@@ -117,44 +90,11 @@ void cCoreView_Info::SetupUpdate()
 }
 
 
-void cCoreView_Info::EnterStepMode(int org_id)
+cCoreView_ClassificationInfo::MapColor* cCoreView_ClassificationInfo::getMapColor(cBioGroup* bg)
 {
-  SetPauseLevel(PAUSE_ADVANCE_INST);
-  SetStepOrganism(org_id);
-}
-
-void cCoreView_Info::ExitStepMode()
-{
-  SetPauseLevel(PAUSE_ON);
-  SetStepOrganism(-1);
-}
-
-bool cCoreView_Info::TogglePause()
-{
-  // If pause is off, turn it on.
-  if (m_pause_level == PAUSE_OFF) {
-    SetPauseLevel(PAUSE_ON);
-    return true;
-  }
-
-  // Otherwise pause is on; carefully turn it off.
-  if (m_pause_level == PAUSE_ADVANCE_INST) ExitStepMode();
-
-  // Clean up any faults we may have been tracking in step mode.
-//   if (info.GetActiveCell()->IsOccupied()) {
-//     info.GetActiveCell()->GetOrganism()->GetPhenotype().SetFault("");
-//   }
-  SetPauseLevel(PAUSE_OFF);
-
-  return false;
-}
-
-
-sMapColor* cCoreView_Info::getMapColor(cBioGroup* bg)
-{
-  sMapColor* mc = bg->GetData<sMapColor>();
+  MapColor* mc = bg->GetData<MapColor>();
   if (!mc) {
-    mc = new sMapColor;
+    mc = new MapColor;
     bg->AttachData(mc);
   }
   return mc;

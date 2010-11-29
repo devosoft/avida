@@ -24,16 +24,19 @@
 #import <Foundation/Foundation.h>
 
 @class AvidaRun;
+@class MapGridView;
 class cCocoaListener;
 
 @interface MainWindowController : NSObject {
   IBOutlet NSPathControl* runDirControl;
   IBOutlet NSButton* btnRunState;
-  @public IBOutlet NSTextField* txtUpdate;
+  IBOutlet NSTextField* txtUpdate;
+  IBOutlet MapGridView* mapView;
   
   AvidaRun* currentRun;
   cCocoaListener* viewListener;
-  NSThread* viewThread;
+  
+  int update;
 }
 
 -(void)awakeFromNib;
@@ -47,9 +50,10 @@ class cCocoaListener;
 -(void)dealloc;
 -(void)finalize;
 
--(void)viewRunLoop:(id)object;
+-(void)handleMap:(id)object;
+-(void)handleUpdate:(id)object;
 
-@property (readonly, assign) NSTextField* txtUpdate;
+@property (readwrite, assign) int update;
 
 
 @end

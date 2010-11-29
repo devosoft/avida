@@ -27,6 +27,7 @@
 #include "cAvidaContext.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
+#include "cCoreView_Map.h"
 #include "cCoreViewListener.h"
 #include "cDriverManager.h"
 #include "cHardwareBase.h"
@@ -41,7 +42,7 @@
 #include <iostream>
 
 
-cCoreViewDriver::cCoreViewDriver(cWorld* world) : m_world(world), m_done(false), m_paused(false)
+cCoreViewDriver::cCoreViewDriver(cWorld* world) : m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
 {
   cDriverManager::Register(this);
 
@@ -54,6 +55,8 @@ cCoreViewDriver::~cCoreViewDriver()
   m_mutex.Unlock();
   m_pause_cv.Broadcast();
   Join();
+  
+  delete m_map;
   
   cDriverManager::Unregister(this);
   delete m_world;
@@ -112,8 +115,13 @@ void cCoreViewDriver::Run()
     population.ProcessPostUpdate(ctx);
     
     
+    if (m_map) m_map->UpdateMaps(population);
     for (int i = 0; i < m_listeners.GetSize(); i++) {
-      m_listeners[i]->NotifyUpdate(stats.GetUpdate());
+      if (m_listeners[i]->WantsMap()) {
+        m_map->Retain();
+        m_listeners[i]->NotifyMap(m_map);
+      }
+      if (m_listeners[i]->WantsUpdate()) m_listeners[i]->NotifyUpdate(stats.GetUpdate());
     }
     
     
@@ -158,4 +166,11 @@ void cCoreViewDriver::NotifyComment(const cString& in_string)
 void cCoreViewDriver::NotifyWarning(const cString& in_string)
 {
   std::cout << "Warning: " << in_string << std::endl;
+}
+
+void cCoreViewDriver::AttachListener(cCoreViewListener* listener)
+{
+  m_listeners.Add(listener);
+  
+  if (listener->WantsMap() && !m_map) m_map = new cCoreView_Map(m_world);
 }

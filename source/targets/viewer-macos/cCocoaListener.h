@@ -35,10 +35,19 @@ class cCocoaListener : public cCoreViewListener
 private:
   MainWindowController* m_win_ctrl;
   
+  cCoreView_Map* m_map;
+  
 public:
   cCocoaListener(MainWindowController* win_ctrl) : m_win_ctrl(win_ctrl) { ; }
   
+  bool WantsMap() { return true; }
+  bool WantsUpdate() { return true; }
+  
+  void NotifyMap(cCoreView_Map* map);
   void NotifyUpdate(int update);
+  
+  
+  cCoreView_Map* GetMap() { return m_map; }
 };
 
 #endif

@@ -25,14 +25,19 @@
 #ifndef cCoreViewListener_h
 #define cCoreViewListener_h
 
+class cCoreView_Map;
+
+
 class cCoreViewListener
 {
 public:
   virtual ~cCoreViewListener() = 0;
   
+  virtual bool WantsMap() = 0;
+  virtual bool WantsUpdate() = 0;
   
-  virtual void NotifyUpdate(int update) = 0;
+  virtual void NotifyMap(cCoreView_Map* map) { ; }
+  virtual void NotifyUpdate(int update) { ; }
 };
-
 
 #endif

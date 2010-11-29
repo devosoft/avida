@@ -26,9 +26,16 @@
 
 #include <cassert>
 
+
+void cCocoaListener::NotifyMap(cCoreView_Map* map)
+{
+  m_map = map;
+  [m_win_ctrl performSelectorOnMainThread:@selector(handleMap:) withObject:nil waitUntilDone:NO];
+}
+
+
 void cCocoaListener::NotifyUpdate(int update)
 {
-  assert(m_win_ctrl.txtUpdate != nil);
-  NSString* str = [NSString stringWithFormat:@"Update: %d", update];
-  [m_win_ctrl.txtUpdate setStringValue:str];
+  m_win_ctrl.update = update;
+  [m_win_ctrl performSelectorOnMainThread:@selector(handleUpdate:) withObject:nil waitUntilDone:NO];
 }

@@ -24,6 +24,7 @@
 #import "MainWindowController.h"
 
 #import "AvidaRun.h"
+#import "MapGridView.h"
 
 #include "cCocoaListener.h"
 
@@ -31,7 +32,7 @@
 
 @implementation MainWindowController
 
-@synthesize txtUpdate;
+@synthesize update;
 
 - (void) awakeFromNib {
   // Initialized the default path of the runDirControl to the user's documents directory
@@ -45,7 +46,6 @@
   
   currentRun = nil;
   viewListener = NULL;
-  viewThread = nil;
 }
 
 - (IBAction) setRunDir:(id)sender {
@@ -72,11 +72,6 @@
     } else {
       if (!viewListener) viewListener = new cCocoaListener(self);
       [currentRun attachListener:viewListener];
-      
-      if (viewThread == nil) {
-        viewThread = [[NSThread alloc] initWithTarget:self selector:@selector(viewRunLoop:) object:nil];
-        [viewThread start];
-      }
       
       [btnRunState setTitle:@"Pause"];
       [txtUpdate setStringValue:@"Update: 0"];
@@ -110,14 +105,13 @@
   [super finalize];
 }
 
+- (void) handleMap: (id)object {
+  [mapView updateState: viewListener->GetMap()];
+}
 
-- (void) viewRunLoop:(id)object {
-  NSAutoreleasePool* main_pool = [[NSAutoreleasePool alloc] init];
-  NSRunLoop* runloop = [NSRunLoop currentRunLoop];
-  
-  // TODO - do the run loop
-  
-  [main_pool release];
+- (void) handleUpdate: (id)object {
+  NSString* str = [NSString stringWithFormat:@"Update: %d", update];
+  [txtUpdate setStringValue:str]; 
 }
 
 @end

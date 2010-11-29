@@ -23,6 +23,8 @@
 
 #import "MapGridView.h"
 
+#include "cCoreView_Map.h"
+
 
 @implementation MapGridView
 
@@ -30,6 +32,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code here.
+      map_width = 0;
+      map_height = 0;
     }
     return self;
 }
@@ -42,10 +46,26 @@
   gridCellRect.size.width = 9.0;
   gridCellRect.size.height = 9.0;
 
-  for (int i = 0; i < 60; i++) {
-    for (int j = 0; j < 60; j++) {
+  for (int i = 0; i < map_width; i++) {
+    for (int j = 0; j < map_height; j++) {
       gridCellRect.origin = NSMakePoint(10.0 * i, 10.0 * j);
-      [[NSColor blueColor] set];
+      switch (map_colors[i * map_width + j]) {
+        case -4:  continue;
+        case -3:  [[NSColor darkGrayColor] set]; break;
+        case -2:  [[NSColor grayColor] set]; break;
+        case -1:  [[NSColor whiteColor] set]; break;
+        case 0:   [[NSColor greenColor] set]; break;
+        case 1:   [[NSColor redColor] set]; break;
+        case 2:   [[NSColor blueColor] set]; break;
+        case 3:   [[NSColor cyanColor] set]; break;
+        case 4:   [[NSColor yellowColor] set]; break;
+        case 5:   [[NSColor magentaColor] set]; break;
+        case 6:   [[NSColor orangeColor] set]; break;
+        case 7:   [[NSColor purpleColor] set]; break;
+        case 8:   [[NSColor brownColor] set]; break;
+        case 9:   [[NSColor lightGrayColor] set]; break;
+        default:  [[NSColor darkGrayColor] set]; break;
+      }
       [NSBezierPath fillRect:gridCellRect];
     }
   }
@@ -54,6 +74,17 @@
 
 - (BOOL) isOpaque {
   return YES;
+}
+
+- (void) updateState: (cCoreView_Map*)state {
+  map_width = state->GetWidth();
+  map_height = state->GetHeight();
+  
+  map_colors = state->GetColors();
+  
+  state->Release();
+  
+  [self setNeedsDisplay:YES];
 }
 
 @end

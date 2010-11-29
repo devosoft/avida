@@ -23,14 +23,23 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "tArray.h"
+
+class cCoreView_Map;
+
 
 @interface MapGridView : NSView {
-
+  int map_width;
+  int map_height;
+  
+  tArray<int> map_colors;
 }
 
 - (id)initWithFrame:(NSRect)frame;
 
 - (void)drawRect:(NSRect)rect;
 - (BOOL)isOpaque;
+
+- (void)updateState:(cCoreView_Map*)state;
 
 @end

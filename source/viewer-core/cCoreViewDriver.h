@@ -33,6 +33,7 @@
 #include "cThread.h"
 #include "tArraySet.h"
 
+class cCoreView_Map;
 class cCoreViewListener;
 class cWorld;
 
@@ -47,6 +48,8 @@ private:
   eDriverPauseState m_pause_state;
   bool m_done;
   bool m_paused;
+  
+  cCoreView_Map* m_map;
   
   tArraySet<cCoreViewListener*> m_listeners;
 
@@ -77,7 +80,7 @@ public:
   eDriverPauseState GetPauseState() const { return m_pause_state; }
   bool IsPaused() const { return m_paused; }
   
-  void AttachListener(cCoreViewListener* listener) { m_listeners.Add(listener); }
+  void AttachListener(cCoreViewListener* listener);
   void DetachListener(cCoreViewListener* listener) { m_listeners.Remove(listener); }
 
 protected:
