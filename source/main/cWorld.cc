@@ -49,7 +49,7 @@ using namespace AvidaTools;
 cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback)
 {
   cWorld* world = new cWorld(cfg, working_dir);
-  if (!world->setup(feedback)) {
+  if (!world->setup(feedback)) { 
     delete world;
     world = NULL;
   }

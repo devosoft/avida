@@ -40,6 +40,10 @@
 #ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
 #endif
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
+
 
 class cAvidaContext;
 class cBioGroup;
@@ -48,7 +52,6 @@ class cInstSet;
 class cGenome;
 class cResourceCount;
 class cResourceHistory;
-class cWorld;
 
 
 class cTestCPU
@@ -138,17 +141,17 @@ inline int cTestCPU::GetReceiveValue()
   return receive_array[cur_receive++];
 }
 
-inline const tArray<double>& cTestCPU::GetResources()
+inline const tArray<double>& cTestCPU::GetResources()    //APW random mapping ' world'
 {
-    return m_resource_count.GetResources();
+  return m_resource_count.GetResources(); //
 }
 
-inline const tArray<double>& cTestCPU::GetFacedCellResources()
+inline const tArray<double>& cTestCPU::GetFacedCellResources()    //APW random mapping ' world'
 {
   return m_faced_cell_resource_count.GetResources();
 }
-
-inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id)
+ 
+inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id)    //APW random mapping ' world'
 {
     return m_deme_resource_count.GetResources();
 }

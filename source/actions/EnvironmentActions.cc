@@ -255,7 +255,7 @@ public:
 class cActionChangeEnvironment : public cAction
 {
 private:
-  cWorld* world;          //APW random mapping
+  cWorld *world;          //APW random mapping
   cString env_string;
   
 public:

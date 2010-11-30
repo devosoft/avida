@@ -32,12 +32,18 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
   ResizeClear(in_worldx, in_worldy, in_geometry);
   m_counter = 0;
   moveYscaler = 0.5;
-  movesignx = 1.0;
-  movesigny = 1.0;
-  UpdateCount();
+  movesignx = m_world->GetDefaultContext().GetRandom().GetInt(-1,2);
+  if (movesignx == 0) {
+    if (m_world->GetDefaultContext().GetRandom().GetUInt(0,2)) {
+      movesigny = 1;
+    }
+    else movesigny = -1;
+  }
+  else movesigny = m_world->GetDefaultContext().GetRandom().GetInt(-1,2);
+  UpdateCount(&m_world->GetDefaultContext());
   m_peakx = in_peakx;
   m_peaky = in_peaky;
-  UpdateCount();
+  UpdateCount(&m_world->GetDefaultContext());
 }
 
 double cGradientCount::Distance(double x1, double y1, double x2, double y2) //calculate linear distance from cone peak
@@ -45,8 +51,9 @@ double cGradientCount::Distance(double x1, double y1, double x2, double y2) //ca
   return(sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)));
 }
 
-void cGradientCount::UpdateCount()
+void cGradientCount::UpdateCount(cAvidaContext* ctx)
 {  
+  if(ctx == NULL) ctx = &(m_world->GetDefaultContext());
   bool has_edible = false;
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left)
   for (int ii = 0; ii < GetX() && !has_edible; ii++) {
@@ -69,13 +76,21 @@ void cGradientCount::UpdateCount()
 //    cRandom rand;                                                                                  //APW random mapping
 //    int old_peakx = m_peakx;                                                                      //APW random mapping
 //    int old_peaky = m_peaky;                                                                      //APW random mapping
-    m_peakx = m_world->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height);                 
-    m_peaky = m_world->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height);
+    m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
+    m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
   // guard against peaks getting repeatedly generated at same point when the attacks are coming too quick  //APW random mapping
 //    if (m_peakx == old_peakx && m_peaky == old_peaky) {                                                   //APW random mapping
 //      m_peakx = m_world->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height);                     //APW random mapping
  //     m_peaky = m_world->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height);                     //APW random mapping
- //   }    
+ //   }
+    movesignx = ctx->GetRandom().GetInt(-1,2);
+    if (movesignx == 0) {
+      if (ctx->GetRandom().GetUInt(0,2)) {
+        movesigny = 1;
+      }
+      else movesigny = -1;
+    }
+    else movesigny = ctx->GetRandom().GetInt(-1,2);
     SetModified(false);
   }
   

@@ -86,7 +86,7 @@ using namespace std;
 using namespace AvidaTools;
 
 
-cPopulation::cPopulation(cWorld* world)  
+cPopulation::cPopulation(cWorld* world)  //APW random mapping ', world'§
 : m_world(world)
 , schedule(NULL)
 //, resource_count(world->GetEnvironment().GetResourceLib().GetSize())

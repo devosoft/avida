@@ -31,6 +31,7 @@
 #include "cSpatialResCount.h"
 #include "cString.h"
 #include "tArray.h"
+#include "cAvidaContext.h"
 #include "tMatrix.h"
 #include "nGeometry.h"
 #ifndef tArrayMap_h
@@ -42,6 +43,7 @@ class cWorld;
 class cResourceCount
 {
 private:
+  cWorld* m_world;
   mutable tArray<cString> resource_name;
   mutable tArray<double> resource_initial;  // Initial quantity of each resource
   mutable tArray<double> resource_count;  // Current quantity of each resource
@@ -59,7 +61,7 @@ private:
   // Setup the update process to use lazy evaluation...
   mutable double update_time;     // Portion of an update compleated...
   mutable double spatial_update_time;
-  void DoUpdates() const;         // Update resource count based on update time
+  void DoUpdates(cAvidaContext* ctx = NULL) const;         // Update resource count based on update time
 
   // A few constants to describe update process...
   static const double UPDATE_STEP;   // Fraction of an update per step
@@ -105,7 +107,7 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
 
   int GetSize(void) const { return resource_count.GetSize(); }
   const tArray<double>& ReadResources(void) const { return resource_count; }
-  const tArray<double>& GetResources() const;
+  const tArray<double>& GetResources() const; 
   const tArray<double>& GetCellResources(int cell_id) const;
   const tArray<int>& GetResourcesGeometry() const;
   int GetResourceGeometry(int res_id) const { return geometry[res_id]; }

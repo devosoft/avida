@@ -5,6 +5,10 @@
 #include "cSpatialResCount.h"
 #endif
 
+#ifndef cAvidaContext_h
+#include "cAvidaContext.h"
+#endif
+
 class cWorld;
 
 class cGradientCount : public cSpatialResCount
@@ -29,7 +33,7 @@ private:
   double movesignx;
   double movesigny;
   double Distance(double x1, double x2, double y1, double y2);
-  void UpdateCount();
+  void UpdateCount(cAvidaContext* ctx);
 
 
 public:
