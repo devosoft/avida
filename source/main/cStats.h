@@ -968,6 +968,7 @@ protected:
 	dblq m_switching;
 	dblq m_deme_diversity;
 	dblq m_shannon_div;
+  dblq m_shannon_div_norm;
 	dblq m_num_orgs_perf_reaction;
 	cDoubleSum m_deme_reaction_diversity; //!< Mean number of different reactions performed by the deme
   cDoubleSum m_deme_switch_pen; //!< Mean number of different reactions performed by an org in the deme
@@ -980,6 +981,8 @@ public:
 		m_switching.push_back(switch_pen); m_deme_diversity.push_back(deme_div);
 		m_shannon_div.push_back(shannon_div);
 		m_num_orgs_perf_reaction.push_back(num_orgs_perf_reaction);
+    double norm_shan = shannon_div / (log((double)num_orgs_perf_reaction));
+    m_shannon_div_norm.push_back(norm_shan);
 		
 	}
 		

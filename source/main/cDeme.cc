@@ -1134,13 +1134,13 @@ double cDeme::GetShannonMutualInformation()
       pj = ptask_array[j];
 
       if (pi && pj && pij) {
-	shannon_change= (pij * log(pij / (pi * pj)));
-	shannon_sum += shannon_change;
+        shannon_change= (pij * log(pij / (pi * pj)));
+        shannon_sum += shannon_change;
       }
     }
   }
 	
-  shannon_sum /= log((double)m_num_active);
+//  shannon_sum /= log((double)m_num_active);
   
   delete ptask_array;
   return shannon_sum;
