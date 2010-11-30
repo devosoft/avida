@@ -44,6 +44,7 @@ class cCocoaListener;
 -(IBAction)setRunDir:(id)sender;
 -(IBAction)toggleRunState:(id)sender;
 
+
 // NSPathControlDelegate Protocol
 -(void)pathControl:(NSPathControl*)pathControl willDisplayOpenPanel:(NSOpenPanel*)openPanel;
 

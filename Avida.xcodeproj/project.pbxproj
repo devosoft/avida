@@ -69,6 +69,11 @@
 		700E2996085A1F6000CF158A /* avida in Create work dir */ = {isa = PBXBuildFile; fileRef = DCC3164D07626CF3008F7A48 /* avida */; };
 		700E2B87085DE54400CF158A /* avida-viewer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 700E2B83085DE50C00CF158A /* avida-viewer */; };
 		701324FA129C28D300839392 /* MapGridView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 701324F9129C28D300839392 /* MapGridView.mm */; };
+		7013263212A5778C00839392 /* Avida-ED-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7013263112A5778C00839392 /* Avida-ED-MainWindow.xib */; };
+		7013264212A58DB200839392 /* pause_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 7013263E12A58DB200839392 /* pause_blue.png */; };
+		7013264312A58DB200839392 /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 7013263F12A58DB200839392 /* pause.png */; };
+		7013264412A58DB200839392 /* play_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 7013264012A58DB200839392 /* play_blue.png */; };
+		7013264512A58DB200839392 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = 7013264112A58DB200839392 /* play.png */; };
 		701B342F11E4CC1E00FEF49A /* cSexualAncestry.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B342D11E4CC1E00FEF49A /* cSexualAncestry.h */; };
 		701B343011E4CC1E00FEF49A /* cSexualAncestry.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */; };
 		701B356011E7744D00FEF49A /* tHashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 701B355F11E7744D00FEF49A /* tHashMap.h */; };
@@ -388,6 +393,7 @@
 		70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
+		70F6114412A5A3D700FE2D78 /* AvidaEDController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70F6114312A5A3D700FE2D78 /* AvidaEDController.mm */; };
 		B462B5C10FA0F47D00F379D1 /* cPhenPlastSummary.h in Headers */ = {isa = PBXBuildFile; fileRef = B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
@@ -809,6 +815,11 @@
 		70100BD7108F8F4F005999F0 /* cRunningStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRunningStats.h; sourceTree = "<group>"; };
 		701324F8129C28D300839392 /* MapGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapGridView.h; sourceTree = "<group>"; };
 		701324F9129C28D300839392 /* MapGridView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapGridView.mm; sourceTree = "<group>"; };
+		7013263112A5778C00839392 /* Avida-ED-MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "Avida-ED-MainWindow.xib"; sourceTree = "<group>"; };
+		7013263E12A58DB200839392 /* pause_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause_blue.png; path = Resources/pause_blue.png; sourceTree = "<group>"; };
+		7013263F12A58DB200839392 /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause.png; path = Resources/pause.png; sourceTree = "<group>"; };
+		7013264012A58DB200839392 /* play_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = play_blue.png; path = Resources/play_blue.png; sourceTree = "<group>"; };
+		7013264112A58DB200839392 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = play.png; path = Resources/play.png; sourceTree = "<group>"; };
 		7013845F09028B3E0087ED2E /* cAvidaConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaConfig.h; sourceTree = "<group>"; };
 		7013846009028B3E0087ED2E /* cAvidaConfig.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAvidaConfig.cc; sourceTree = "<group>"; };
 		70166B8D0B519CFE009533A5 /* cTaskState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cTaskState.h; sourceTree = "<group>"; };
@@ -1428,6 +1439,8 @@
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
 		70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConstBurstSchedule.h; sourceTree = "<group>"; };
 		70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cConstBurstSchedule.cc; sourceTree = "<group>"; };
+		70F6114212A5A3D700FE2D78 /* AvidaEDController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDController.h; sourceTree = "<group>"; };
+		70F6114312A5A3D700FE2D78 /* AvidaEDController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDController.mm; sourceTree = "<group>"; };
 		70F7DAEF09290468009E311D /* cClassificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cClassificationManager.h; sourceTree = "<group>"; };
 		70F7DAF009290468009E311D /* cClassificationManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationManager.cc; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
@@ -1853,6 +1866,8 @@
 				7042DF2F128C91BE0062501F /* cCocoaListener.mm */,
 				701324F8129C28D300839392 /* MapGridView.h */,
 				701324F9129C28D300839392 /* MapGridView.mm */,
+				70F6114212A5A3D700FE2D78 /* AvidaEDController.h */,
+				70F6114312A5A3D700FE2D78 /* AvidaEDController.mm */,
 			);
 			path = "viewer-macos";
 			sourceTree = "<group>";
@@ -1860,8 +1875,13 @@
 		70823ABB126F784600FA937F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				7013263E12A58DB200839392 /* pause_blue.png */,
+				7013263F12A58DB200839392 /* pause.png */,
+				7013264012A58DB200839392 /* play_blue.png */,
+				7013264112A58DB200839392 /* play.png */,
 				70823AB0126F781700FA937F /* InfoPlist.strings */,
 				70823AB2126F781700FA937F /* MainMenu.xib */,
+				7013263112A5778C00839392 /* Avida-ED-MainWindow.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2787,6 +2807,11 @@
 			files = (
 				70823AB7126F781700FA937F /* InfoPlist.strings in Resources */,
 				70823AB8126F781700FA937F /* MainMenu.xib in Resources */,
+				7013263212A5778C00839392 /* Avida-ED-MainWindow.xib in Resources */,
+				7013264212A58DB200839392 /* pause_blue.png in Resources */,
+				7013264312A58DB200839392 /* pause.png in Resources */,
+				7013264412A58DB200839392 /* play_blue.png in Resources */,
+				7013264512A58DB200839392 /* play.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3033,6 +3058,7 @@
 				7044019812785C8B00368ECC /* AvidaRun.mm in Sources */,
 				7042DF30128C91BE0062501F /* cCocoaListener.mm in Sources */,
 				701324FA129C28D300839392 /* MapGridView.mm in Sources */,
+				70F6114412A5A3D700FE2D78 /* AvidaEDController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
