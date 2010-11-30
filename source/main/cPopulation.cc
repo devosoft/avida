@@ -4093,9 +4093,9 @@ void cPopulation::UpdateOrganismStats()
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
     
 #if INSTRUCTION_COUNT
-    cString inst_set_name = organism->GetGenome().GetInstSet();
+    tArray<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet(organism->GetGenome().GetInstSet());
     for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
-      stats.InstExeCountsForInstSet(inst_set_name)[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
+      inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
 #endif
     
