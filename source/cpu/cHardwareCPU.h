@@ -887,6 +887,7 @@ public:
   bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); 
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);  
   bool Inst_AttackFacedOrg(cAvidaContext& ctx);  
+  bool Inst_GetAttackOdds(cAvidaContext& ctx);
 	
 private:
 	std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.

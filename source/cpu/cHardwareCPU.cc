@@ -613,6 +613,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-attack-odds", &cHardwareCPU::Inst_GetAttackOdds, nInstFlag::STALL), 
     
 		
 		// Synchronization
@@ -8516,7 +8517,6 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
 
-//  int attacker_cell = m_organism->GetCellID();
   int target_cell = target->GetCellID();
   
   bool kill_attacker = true;
@@ -8525,10 +8525,9 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   
   double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
   double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
-  
   double decider = ctx.GetRandom().GetDouble(1);
   
-  kill_attacker = (attacker_odds < decider);
+  kill_attacker = ((attacker_odds > target_odds && decider > target_odds && decider < attacker_odds) || (target_odds > attacker_odds && decider < attacker_odds));
   
   if (decider > attacker_odds && decider > target_odds){
     return true;
@@ -8540,6 +8539,35 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   m_organism->KillCellID(target_cell);
   return true;
 } 		
+
+//Get odds of winning or tieing in a fight. This will use vitality bins if those are set.
+bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+
+  int target_cell = target->GetCellID();
+  
+  double attacker_vitality = m_organism->GetVitality();
+  double target_vitality = target->GetVitality();
+  
+  double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+  double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  
+  double odds_I_dont_die;
+  if (attacker_odds > target_odds) {
+    odds_I_dont_die = 1 - target_odds;
+  }
+  else odds_I_dont_die = 1 - attacker_odds;
+  
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = odds_I_dont_die;
+  return true;
+} 	
 
 /*! Called when the organism that owns this CPU has received a flash from a neighbor. */
 void cHardwareCPU::ReceiveFlash() {
