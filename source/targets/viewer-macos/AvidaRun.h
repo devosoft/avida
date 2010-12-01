@@ -23,9 +23,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+@protocol CoreViewListener;
 
 class cCoreViewDriver;
-class cCoreViewListener;
 
 
 @interface AvidaRun : NSObject {
@@ -36,14 +36,17 @@ class cCoreViewListener;
 -(id)init;
 -(AvidaRun*)initWithDirectory: (NSURL*) dir;
 
+-(void)dealloc;
+-(void)finalize;
+
+
 -(bool)isPaused;
 -(void)pause;
 -(void)resume;
+-(void)end;
 
--(void)attachListener: (cCoreViewListener*)listener;
--(void)detachListener: (cCoreViewListener*)listener;
 
--(void)dealloc;
--(void)finalize;
+-(void)attachListener: (id<CoreViewListener>) listener;
+-(void)detachListener: (id<CoreViewListener>) listener;
 
 @end

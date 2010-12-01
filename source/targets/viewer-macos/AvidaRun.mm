@@ -23,6 +23,8 @@
 
 #import "AvidaRun.h"
 
+#import "CoreViewListener.h"
+
 #include "AvidaTools.h"
 
 #include "cAvidaConfig.h"
@@ -39,6 +41,7 @@ using namespace AvidaTools;
 - (id) init {
   return nil;
 }
+
 
 - (AvidaRun*) initWithDirectory: (NSURL*) dir {
   self = [super init];
@@ -61,9 +64,7 @@ using namespace AvidaTools;
       return nil;
     }
     
-    
     cWorld* world = cWorld::Initialize(cfg, config_path, &feedback);
-    
     
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
@@ -83,27 +84,6 @@ using namespace AvidaTools;
   return self;
 }
 
-- (bool) isPaused {
-  return (self->driver->GetPauseState() == DRIVER_PAUSED);
-}
-
-- (void) pause {
-  driver->SetPause();
-}
-
-- (void) resume {
-  driver->Resume();
-}
-
-
-- (void) attachListener: (cCoreViewListener*)listener {
-  if (driver) driver->AttachListener(listener);
-}
-
-- (void) detachListener: (cCoreViewListener*)listener {
-  if (driver) driver->DetachListener(listener);
-}
-
 
 - (void) dealloc {
   delete driver;
@@ -111,10 +91,42 @@ using namespace AvidaTools;
   [super dealloc];
 }
 
+
 - (void) finalize { 
   delete driver;
   driver = NULL;
   [super finalize];
 }
+
+
+- (bool) isPaused {
+  return (self->driver->GetPauseState() == DRIVER_PAUSED);
+}
+
+
+- (void) pause {
+  driver->SetPause();
+}
+
+
+- (void) resume {
+  driver->Resume();
+}
+
+
+- (void) end {
+  driver->SetDone();
+}
+
+
+- (void) attachListener: (id<CoreViewListener>)listener {
+  if (driver) driver->AttachListener([listener listener]);
+}
+
+
+- (void) detachListener: (id<CoreViewListener>)listener {
+  if (driver) driver->DetachListener([listener listener]);
+}
+
 
 @end

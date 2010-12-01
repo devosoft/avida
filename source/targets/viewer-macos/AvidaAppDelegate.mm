@@ -23,14 +23,24 @@
 
 #import "AvidaAppDelegate.h"
 
+#import "AvidaMainWindowController.h"
 #import "AvidaEDController.h"
+
 
 @implementation AvidaAppDelegate
 
-@synthesize window;
-
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	// Insert code here to initialize your application 
+}
+
+
+- (IBAction)newAvida: (id)sender {
+  AvidaMainWindowController* ctrl = [[AvidaMainWindowController alloc] initWithAppDelegate:self];
+  if (ctrl == nil) {
+    NSLog(@"Error loading Avida-MainWindow NIB");
+  } else {
+    [windows addObject:ctrl];
+  }
 }
 
 
@@ -42,6 +52,7 @@
     [windows addObject:ctrl];
   }
 }
+
 
 - (void)removeWindow: (id)sender {
   [windows removeObject:sender];

@@ -24,12 +24,10 @@
 #import <Cocoa/Cocoa.h>
 
 @interface AvidaAppDelegate : NSObject <NSApplicationDelegate> {
-  NSWindow* window;
   NSMutableSet* windows;
 }
 
-@property (assign) IBOutlet NSWindow *window;
-
+-(IBAction)newAvida:(id)sender;
 -(IBAction)newAvidaED:(id)sender;
 
 -(void)removeWindow:(id)sender;

@@ -21,26 +21,38 @@
 //  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
+#import "CoreViewListener.h"
+
+@class AvidaAppDelegate;
 @class AvidaRun;
 @class MapGridView;
-class cCocoaListener;
 
-@interface MainWindowController : NSObject {
+
+@interface AvidaMainWindowController : NSWindowController <CoreViewListener, NSPathControlDelegate, NSWindowDelegate> {
   IBOutlet NSPathControl* runDirControl;
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
   IBOutlet MapGridView* mapView;
   
-  AvidaRun* currentRun;
-  cCocoaListener* viewListener;
+  AvidaAppDelegate* app;
   
-  int update;
+  AvidaRun* currentRun;
+  cCoreViewListener* listener;
 }
 
--(void)awakeFromNib;
+// Init and Dealloc Methods
+-(id)initWithAppDelegate:(AvidaAppDelegate*)delegate;
 
+-(void)dealloc;
+-(void)finalize;
+
+// NSWindowController Methods
+-(void)windowDidLoad;
+
+
+// Actions
 -(IBAction)setRunDir:(id)sender;
 -(IBAction)toggleRunState:(id)sender;
 
@@ -48,13 +60,16 @@ class cCocoaListener;
 // NSPathControlDelegate Protocol
 -(void)pathControl:(NSPathControl*)pathControl willDisplayOpenPanel:(NSOpenPanel*)openPanel;
 
--(void)dealloc;
--(void)finalize;
 
--(void)handleMap:(id)object;
--(void)handleUpdate:(id)object;
+// NSWindowDelegate Protocol
+-(void)windowWillClose:(NSNotification*)notification;
 
-@property (readwrite, assign) int update;
 
+// Listener Methods
+-(void)handleMap:(CoreViewMap*)object;
+-(void)handleUpdate:(CoreViewUpdate*)object;
+
+
+@property (readonly) cCoreViewListener* listener;
 
 @end
