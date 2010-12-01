@@ -48,6 +48,7 @@
 -(void)dealloc;
 -(void)finalize;
 
+
 // NSWindowController Methods
 -(void)windowDidLoad;
 
@@ -66,10 +67,10 @@
 
 
 // Listener Methods
+@property (readonly) cCoreViewListener* listener;
+
 -(void)handleMap:(CoreViewMap*)object;
 -(void)handleUpdate:(CoreViewUpdate*)object;
 
-
-@property (readonly) cCoreViewListener* listener;
 
 @end

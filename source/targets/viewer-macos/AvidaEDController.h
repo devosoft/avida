@@ -23,12 +23,14 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "CoreViewListener.h"
+
 @class AvidaAppDelegate;
 @class AvidaRun;
 @class MapGridView;
 
 
-@interface AvidaEDController : NSWindowController <NSWindowDelegate> {
+@interface AvidaEDController : NSWindowController <CoreViewListener, NSWindowDelegate> {
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
   IBOutlet MapGridView* mapView;
@@ -36,7 +38,7 @@
   AvidaAppDelegate* app;
   
   AvidaRun* currentRun;
-  
+  cCoreViewListener* listener;
 }
 
 // Init and Dealloc Methods
@@ -46,6 +48,11 @@
 -(void)finalize;
 
 
+// NSWindowController Methods
+-(void)windowDidLoad;
+
+
+// Actions
 -(IBAction)toggleRunState:(id)sender;
 
 
@@ -54,8 +61,10 @@
 
 
 // Listener Methods
--(void)handleMap:(id)object;
--(void)handleUpdate:(id)object;
+@property (readonly) cCoreViewListener* listener;
+
+-(void)handleMap:(CoreViewMap*)object;
+-(void)handleUpdate:(CoreViewUpdate*)object;
 
 
 @end

@@ -32,8 +32,6 @@
 
 @implementation AvidaMainWindowController
 
-@synthesize listener;
-
 - (id)initWithAppDelegate: (AvidaAppDelegate*)delegate {
   self = [super initWithWindowNibName:@"Avida-MainWindow"];
   
@@ -130,6 +128,9 @@
   }
   [app removeWindow:self];
 }
+
+
+@synthesize listener;
 
 
 - (void) handleMap: (CoreViewMap*)pkg {

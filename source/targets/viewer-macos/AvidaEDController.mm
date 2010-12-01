@@ -25,6 +25,7 @@
 
 #import "AvidaAppDelegate.h"
 #import "AvidaRun.h"
+#import "MapGridView.h"
 
 
 @implementation AvidaEDController
@@ -34,6 +35,10 @@
   
   if (self != nil) {
     app = delegate;
+
+    currentRun = nil;
+    listener = NULL;
+    
     [self showWindow:self];
   }
   
@@ -42,16 +47,21 @@
 
 
 - (void) dealloc {
-//  delete viewListener;
-//  viewListener = NULL;
+  delete listener;
+  listener = NULL;
   [super dealloc];
 }
 
 
 - (void) finalize {
-//  delete viewListener;
-//  viewListener = NULL;
+  delete listener;
+  listener = NULL;
   [super finalize];
+}
+
+
+- (void) windowDidLoad {
+  [btnRunState setState:NSOffState];
 }
 
 
@@ -75,8 +85,8 @@
       [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
       [sender setState:NSOffState];
     } else {
-//      if (!viewListener) viewListener = new cCocoaListener(self);
-//      [currentRun attachListener:viewListener];
+      if (!listener) listener = new cMainThreadListener(self);
+      [currentRun attachListener:self];
       
       [txtUpdate setStringValue:@"Time (updates): 0"];
     }
@@ -99,14 +109,17 @@
 }
 
 
-- (void) handleMap: (id)object {
-//  [mapView updateState: viewListener->GetMap()];
+@synthesize listener;
+
+
+- (void) handleMap: (CoreViewMap*)pkg {
+  [mapView updateState: [pkg map]];
 }
 
 
-- (void) handleUpdate: (id)object {
-//  NSString* str = [NSString stringWithFormat:@"Update: %d", update];
-//  [txtUpdate setStringValue:str]; 
+- (void) handleUpdate: (CoreViewUpdate*)pkg {
+  NSString* str = [NSString stringWithFormat:@"Update: %d", [pkg update]];
+  [txtUpdate setStringValue:str]; 
 }
 
 
