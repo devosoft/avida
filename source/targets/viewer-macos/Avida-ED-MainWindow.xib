@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="20"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -807,6 +807,22 @@
 					</object>
 					<int key="connectionID">102</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="845741461"/>
+						<reference key="destination" ref="1001"/>
+					</object>
+					<int key="connectionID">103</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">mainSplitView</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="845741461"/>
+					</object>
+					<int key="connectionID">104</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -863,6 +879,7 @@
 							<reference ref="889602660"/>
 						</object>
 						<reference key="parent" ref="1006"/>
+						<string key="objectName">Main Split View</string>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">22</int>
@@ -1326,7 +1343,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">102</int>
+			<int key="maxID">104</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1350,12 +1367,14 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>btnRunState</string>
+							<string>mainSplitView</string>
 							<string>mapView</string>
 							<string>txtUpdate</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NSButton</string>
+							<string>NSSplitView</string>
 							<string>MapGridView</string>
 							<string>NSTextField</string>
 						</object>
@@ -1365,6 +1384,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>btnRunState</string>
+							<string>mainSplitView</string>
 							<string>mapView</string>
 							<string>txtUpdate</string>
 						</object>
@@ -1373,6 +1393,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">btnRunState</string>
 								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mainSplitView</string>
+								<string key="candidateClassName">NSSplitView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">mapView</string>

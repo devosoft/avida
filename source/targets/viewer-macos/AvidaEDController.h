@@ -30,10 +30,11 @@
 @class MapGridView;
 
 
-@interface AvidaEDController : NSWindowController <CoreViewListener, NSWindowDelegate> {
+@interface AvidaEDController : NSWindowController <CoreViewListener, NSSplitViewDelegate, NSWindowDelegate> {
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
   IBOutlet MapGridView* mapView;
+  IBOutlet NSSplitView* mainSplitView;
   
   AvidaAppDelegate* app;
   
@@ -54,6 +55,12 @@
 
 // Actions
 -(IBAction)toggleRunState:(id)sender;
+
+
+// NSSplitViewDelegate Protocol
+-(BOOL)splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview;
+-(CGFloat)splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex;
+-(CGFloat)splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex;
 
 
 // NSWindowDelegate Protocol

@@ -100,7 +100,33 @@
 }
 
 
-- (void)windowWillClose: (NSNotification*)notification {
+- (BOOL) splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview {
+  if (splitView == mainSplitView && subview == [[splitView subviews] objectAtIndex:0]) {
+    return YES;
+  }
+  
+  return NO;
+}
+
+
+-(CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex {
+  return proposedMax;
+}
+
+
+-(CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex {
+  if (splitView == mainSplitView && dividerIndex == 0) {
+    NSView* subview = [[splitView subviews] objectAtIndex:dividerIndex];
+    NSRect subviewFrame = subview.frame;
+    CGFloat frameOrigin = subviewFrame.origin.x;
+    
+    return frameOrigin + 150;
+  }
+  
+  return proposedMin;
+}
+
+- (void) windowWillClose: (NSNotification*)notification {
   if (currentRun != nil) {
     [currentRun end];
     currentRun = nil;
