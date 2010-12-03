@@ -28,10 +28,15 @@
 
 
 @interface AvidaEDController : NSWindowController <CoreViewListener, NSSplitViewDelegate, NSWindowDelegate> {
+  IBOutlet NSView* analyzeView;
+  IBOutlet NSView* orgView;
+  IBOutlet NSView* popView;
+  
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
   IBOutlet MapGridView* mapView;
   IBOutlet NSSplitView* mainSplitView;
+  IBOutlet NSSplitView* popSplitView;
   
   AvidaAppDelegate* app;
   
@@ -55,9 +60,10 @@
 
 
 // NSSplitViewDelegate Protocol
+-(void)splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize;
 -(BOOL)splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview;
--(CGFloat)splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex;
--(CGFloat)splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex;
+-(CGFloat)splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index;
+-(CGFloat)splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index;
 
 
 // NSWindowDelegate Protocol

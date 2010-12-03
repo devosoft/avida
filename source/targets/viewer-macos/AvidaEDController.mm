@@ -24,6 +24,12 @@
 #import "AvidaRun.h"
 #import "MapGridView.h"
 
+static const float MAIN_SPLIT_LEFT_MIN = 150.0;
+static const float MAIN_SPLIT_RIGHT_MIN = 550.0;
+static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
+static const float POP_SPLIT_LEFT_MIN = 230.0;
+static const float POP_SPLIT_RIGHT_MIN = 300.0;
+static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 @implementation AvidaEDController
 
@@ -58,6 +64,7 @@
 
 
 - (void) windowDidLoad {
+  [mainSplitView replaceSubview:[[mainSplitView subviews] objectAtIndex:1] with:popView];
   [btnRunState setState:NSOffState];
 }
 
@@ -97,28 +104,83 @@
 }
 
 
-- (BOOL) splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview {
-  if (splitView == mainSplitView && subview == [[splitView subviews] objectAtIndex:0]) {
-    return YES;
+-(void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
+  if (splitView == mainSplitView) {
+    NSView* leftView = [[splitView subviews] objectAtIndex:0];
+    NSView* rightView = [[splitView subviews] objectAtIndex:1];
+    NSRect newFrame = [splitView frame];
+    NSRect leftFrame = [leftView frame];
+    NSRect rightFrame = [rightView frame];
+    
+    float dividerThickness = [splitView dividerThickness];
+    
+    int diffWidth = newFrame.size.width - oldSize.width;
+    
+    if ((leftFrame.size.width <= MAIN_SPLIT_LEFT_MIN && diffWidth < 0) || diffWidth > 0) {
+      rightFrame.size.width += diffWidth;
+      leftFrame.size.width = newFrame.size.width - rightFrame.size.width - dividerThickness;
+    } else if (rightFrame.size.width <= MAIN_SPLIT_RIGHT_MIN && diffWidth < 0) {
+      leftFrame.size.width += diffWidth;
+      rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
+    } else {
+      leftFrame.size.width += diffWidth * MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE;
+      rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
+    }
+    
+    leftFrame.size.height = newFrame.size.height;
+    leftFrame.origin = NSMakePoint(0, 0);
+    rightFrame.size.height = newFrame.size.height;
+    rightFrame.origin.x = leftFrame.size.width + dividerThickness;
+    
+    [leftView setFrame:leftFrame];
+    [rightView setFrame:rightFrame];
+  } else if (splitView == popSplitView) {
+    NSView* leftView = [[splitView subviews] objectAtIndex:0];
+    NSView* rightView = [[splitView subviews] objectAtIndex:1];
+    NSRect newFrame = [splitView frame];
+    NSRect leftFrame = [leftView frame];
+    NSRect rightFrame = [rightView frame];
+    
+    float dividerThickness = [splitView dividerThickness];
+    
+    int diffWidth = newFrame.size.width - oldSize.width;
+    
+    leftFrame.size.height = newFrame.size.height;
+    leftFrame.origin = NSMakePoint(0, 0);
+    if ((rightFrame.size.width <= POP_SPLIT_RIGHT_MIN && diffWidth < 0) || diffWidth > 0) {
+      leftFrame.size.width += diffWidth;
+    } else if (leftFrame.size.width > POP_SPLIT_LEFT_MIN) {
+      leftFrame.size.width += diffWidth * POP_SPLIT_LEFT_PROPORTIONAL_RESIZE;
+    }
+    
+    rightFrame.size.width = newFrame.size.width - leftFrame.size.width - dividerThickness;
+    rightFrame.size.height = newFrame.size.height;
+    rightFrame.origin.x = leftFrame.size.width + dividerThickness;
+    
+    [leftView setFrame:leftFrame];
+    [rightView setFrame:rightFrame];
   }
+}
+
+
+- (BOOL) splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview {
+  if (splitView == mainSplitView && subview == [[splitView subviews] objectAtIndex:0]) return YES;
+  else if (splitView == popSplitView && subview == [[splitView subviews] objectAtIndex:1]) return YES;
   
   return NO;
 }
 
 
--(CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex {
+-(CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index {
+  if (splitView == mainSplitView) return proposedMax - MAIN_SPLIT_RIGHT_MIN;
+  else if (splitView == popSplitView) return proposedMax - POP_SPLIT_RIGHT_MIN;
   return proposedMax;
 }
 
 
--(CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex {
-  if (splitView == mainSplitView && dividerIndex == 0) {
-    NSView* subview = [[splitView subviews] objectAtIndex:dividerIndex];
-    NSRect subviewFrame = subview.frame;
-    CGFloat frameOrigin = subviewFrame.origin.x;
-    
-    return frameOrigin + 150;
-  }
+-(CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index {
+  if (splitView == mainSplitView) return proposedMin + MAIN_SPLIT_LEFT_MIN;
+  else if (splitView == popSplitView) return proposedMin + POP_SPLIT_LEFT_MIN;
   
   return proposedMin;
 }
