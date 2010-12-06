@@ -42,6 +42,8 @@
 #include "cWorldDriver.h"
 #include "nHardware.h"
 #include "tArrayUtils.h"
+#include "cStateGrid.h" //JW
+
 
 using namespace AvidaTools;
 
@@ -112,6 +114,10 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   const double size_range = m_world->GetConfig().OFFSPRING_SIZE_RANGE.Get();
   const int min_size = Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
   const int max_size = Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
+  
+  const cStateGrid& sg = m_organism->GetStateGrid(); //JW
+  if(m_world->GetConfig().STATE_GRID_REQUIRED.Get() && sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]) != 0) return false; //JW
+
   
   if (child_size < min_size || child_size > max_size) {
     ORG_FAULT(cStringUtil::Stringf("Invalid offspring length (%d)", child_size));

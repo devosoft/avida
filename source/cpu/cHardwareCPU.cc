@@ -5650,43 +5650,94 @@ bool cHardwareCPU::Inst_SGMove(cAvidaContext& ctx)
   int& y = m_ext_mem[1];
   
   const int facing = m_ext_mem[2];
-  
+  // JW
   // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
   switch (facing) {
     case 0: // N
-      if (++y == sg.GetHeight()) y = 0;
+      //if (++y == sg.GetHeight()) y = 0;
+      if (++y == sg.GetHeight())
+      {
+	--y;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
       break;
       
     case 1: // NE
-      if (++x == sg.GetWidth()) x = 0;
-      if (++y == sg.GetHeight()) y = 0;
+      if (++x == sg.GetWidth())
+      {
+	--x;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
+      if (++y == sg.GetHeight())
+      {
+	--y;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
       break;
       
     case 2: // E
-      if (++x == sg.GetWidth()) x = 0;
+      if (++x == sg.GetWidth())
+      {
+	--x;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
       break;
       
     case 3: // SE
-      if (++x == sg.GetWidth()) x = 0;
-      if (--y == -1) y = sg.GetHeight() - 1;
+      if (++x == sg.GetWidth())
+      {
+	--x;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
+      if (--y == -1)
+      {
+	++y;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      };
       break;
       
     case 4: // S
-      if (--y == -1) y = sg.GetHeight() - 1;
+      if (--y == -1)
+      {
+	++y;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      };
       break;
       
     case 5: // SW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (--y == -1) y = sg.GetHeight() - 1;
+      if (--x == -1)
+      {
+	++x;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
+
+      if (--y == -1)
+      {
+	++y;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      };
       break;
       
     case 6: // W
-      if (--x == -1) x = sg.GetWidth() - 1;
+      if (--x == -1)
+      {
+	++x;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
       break;
       
     case 7: // NW
-      if (--x == -1) x = sg.GetWidth() - 1;
-      if (++y == sg.GetHeight()) y = 0;
+      if (--x == -1)
+      {
+	++x;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
+
+      if (++y == sg.GetHeight())
+      {
+	--y;
+	m_ext_mem[2] = ctx.GetRandom().GetUInt(8);
+      }
       break;
       
     default:
@@ -5695,7 +5746,7 @@ bool cHardwareCPU::Inst_SGMove(cAvidaContext& ctx)
   
   // Increment state observed count
   m_ext_mem[3 + sg.GetStateAt(x, y)]++;
-  
+  if(m_world->GetConfig().SPIT_STATE_GRID.Get()) cout << x << " " << y << endl;
   // Save this location in the movement history
   m_ext_mem.Push(sg.GetIDFor(x, y));
   return true;
@@ -5720,6 +5771,7 @@ bool cHardwareCPU::Inst_SGSense(cAvidaContext& ctx)
   const cStateGrid& sg = m_organism->GetStateGrid();
   const int reg_used = FindModifiedRegister(REG_BX);
   GetRegister(reg_used) = sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]);
+  if(sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]) == 1) m_organism->IncSensed(); //JW
   return true; 
 }
 

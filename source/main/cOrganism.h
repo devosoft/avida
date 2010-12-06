@@ -103,6 +103,8 @@ private:
   bool m_is_running;       // Does this organism have the CPU?
   bool m_is_sleeping;      // Is this organism sleeping?
   bool m_is_dead;          // Is this organism dead?
+  unsigned m_has_sensed; //JW
+
 
   bool killed_event;
   
@@ -150,6 +152,11 @@ public:
   void PrintStatus(std::ostream& fp, const cString& next_name);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
+  
+  void IncSensed() { m_has_sensed++;} //JW
+  void ClearSensed() {m_has_sensed = 0;} //JW
+  unsigned GetSensed() {return m_has_sensed;} //JW
+
   
   void NewTrial();
   

@@ -4249,6 +4249,8 @@ void cPopulation::UpdateOrganismStats()
     
     // Increment the age of this organism.
     organism->GetPhenotype().IncAge();
+    organism->ClearSensed(); //JW
+
   }
   
   stats.SetBreedTrueCreatures(num_breed_true);

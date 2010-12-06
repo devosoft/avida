@@ -569,9 +569,18 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
     const cStateGrid& sg = GetStateGrid();
     
     tArray<int> sg_state(3 + sg.GetNumStates(), 0);
-    sg_state[0] = sg.GetInitialX();
-    sg_state[1] = sg.GetInitialY();
-    sg_state[2] = sg.GetInitialFacing();
+    
+    if(sg.GetRandom()){
+      sg_state[0] = ctx.GetRandom().GetUInt(sg.GetWidth());
+      sg_state[1] = ctx.GetRandom().GetUInt(sg.GetHeight());
+      sg_state[2] = ctx.GetRandom().GetUInt(8);
+    }
+	
+    else{	
+      sg_state[0] = sg.GetInitialX();
+      sg_state[1] = sg.GetInitialY();
+      sg_state[2] = sg.GetInitialFacing(); 
+    }
     
     m_hardware->SetupExtendedMemory(sg_state);
   }

@@ -815,6 +815,9 @@ public:
   // -------- UNDER CONSTRUCTION ----------
   CONFIG_ADD_GROUP(DEVEL_GROUP, "IN DEVELOPMENT (May not function correctly)");
   CONFIG_ADD_VAR(WORLD_Z, int, 1, "Depth of the Avida world");
+  CONFIG_ADD_VAR(STATE_GRID_REQUIRED, bool, 0, "Organism must be in a 0 state cell in state grid to reproduce");
+  CONFIG_ADD_VAR(SPIT_STATE_GRID, bool, 0, "Spit out position on state grid");
+
 
 	
 #endif
