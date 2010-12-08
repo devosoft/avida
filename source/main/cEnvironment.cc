@@ -946,6 +946,9 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 {  
   //flag to skip processing of parasite tasks
   bool skipProcessing = false;
+	
+	if (is_parasite && m_world->GetConfig().PARASITE_SKIP_REACTIONS.Get())
+		skipProcessing = true;
 
   // Do setup for reaction tests...
   m_tasklib.SetupTests(taskctx);
@@ -970,10 +973,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     
     // Examine requisites on this reaction
     if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) {
-      if(is_parasite && m_world->GetConfig().PARASITE_SKIP_REACTIONS.Get()){
-        skipProcessing = true;
-      }
-      else {
+      if(!skipProcessing){
         continue;
       }
     }
@@ -1116,7 +1116,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
                                const int reaction_id, cReactionResult& result, cTaskContext& taskctx) const
 {
   const int num_process = process_list.GetSize();
-  
+	  
   tLWConstListIterator<cReactionProcess> process_it(process_list);
   for (int i = 0; i < num_process; i++) {
     // See if this requisite batch can be satisfied.
