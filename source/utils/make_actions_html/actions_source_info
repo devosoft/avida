@@ -212,6 +212,14 @@
   Print out the grid of takss that organisms do. For each organism, tasks are first 
   encoded as a binary string (e.g. 100000001 means that organism is doing NOT and EQU
   and then reported as a base-10 number (257 in the example above).
+=== Action DumpHostTaskGrid ===
+  Print out the grid of takss that host organisms did in the last gestation cycle. For 
+  each host, tasks are first encoded as a binary string (e.g. 100000001 means that 
+  organism is doing NOT and EQU and then reported as a base-10 number (257 in the example above).
+=== Action DumpParasiteTaskGrid ===
+  Print out the grid of tasks that parasites did last gestation. For each parasite, tasks are first 
+  encoded as a binary string (e.g. 100000001 means that organism is doing NOT and EQU
+  and then reported as a base-10 number (257 in the example above).
 === Action DumpDonorGrid ===
   Print out the grid of organisms who donated their merit.
 === Action DumpRecieverGrid ===
