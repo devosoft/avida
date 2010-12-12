@@ -79,13 +79,15 @@ private:
   double ydiffuse;
   double ygravity;
   bool deme_resource;
+  bool org_resources;
   bool energy_resource;  // only implemented for spacial resource
   tArray<cCellResource> cell_list;
-  tArray<int> cell_id_list;  
+  tArray<int> cell_id_list;
 	bool hgt_metabolize;
-  
+	bool collectable;
+
   cResource(); // @not_implemented
-  
+
 public:
   cResource(const cString& _name, int _id);
   ~cResource() { ; }
@@ -113,6 +115,7 @@ public:
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
+  bool GetCollectable() { return collectable; }
 
   void SetInitial(double _initial) { initial = _initial; }
   void SetInflow (double _inflow ) { inflow  = _inflow; }
@@ -130,11 +133,13 @@ public:
   void SetXGravity(double _xgravity) { xgravity = _xgravity; }
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
+  void SetCollectable(int _collectable) { collectable = _collectable; }
   bool SetDemeResource(cString _deme_resource);
+  bool SetOrgResource(cString _org_resource);
   bool SetEnergyResource(cString _energy_resource);
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
-  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, 
+  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,
                           double _inflow, double _outflow);
   void SetCellIdList(tArray<int>& id_list); //SLG partial resources
 	void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }

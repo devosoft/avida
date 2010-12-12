@@ -32,11 +32,12 @@ private:
   tArray<double> resources_produced;
   tArray<double> resources_detected;  //Initialize to -1.0
   tArray<double> internal_resources_consumed;
+  tArray<double> internal_resources_produced;
   tArray<bool> tasks_done;
   tArray<double> tasks_quality;
   tArray<double> tasks_value;
   tArray<bool> reactions_triggered;
-  tArray<double> reaction_add_bonus; 
+  tArray<double> reaction_add_bonus;
   tArray<double> task_plasticity;
   double energy_add;
   double bonus_add;
@@ -52,9 +53,9 @@ private:
   double deme_add_bonus; //!< Additive bonus applied to the deme as a result of this reaction.
   double deme_mult_bonus; //!< Multiplicative bonus applied to the deme as a result of this reaction.
   bool active_deme_reaction; //!< Whether this reaction result includes a deme merit component.
-  
+
   inline void ActivateReaction();
-  
+
   cReactionResult(); // @not_implemented
   cReactionResult(const cReactionResult&); // @not_implemented
   cReactionResult& operator=(const cReactionResult&); // @not_implemented
@@ -66,10 +67,10 @@ public:
   bool GetActive() const { return active_reaction; }
   bool GetActiveDeme() const { return active_deme_reaction; }
   void Invalidate() { active_reaction = false; }
-  
+
 
   void Consume(int id, double num, bool is_env_resource);
-  void Produce(int id, double num);
+  void Produce(int id, double num, bool is_env_resource);
   void Detect(int id, double num);
   void Lethal(bool flag);
   void Sterilize(bool flag);
@@ -85,12 +86,13 @@ public:
   void MultGermline(double value);
 
   void AddInst(const cString& inst);
-  
+
   double GetConsumed(int id);
   double GetProduced(int id);
   double GetDetected(int id);
   double GetInternalConsumed(int id);
-  bool GetLethal();  
+  double GetInternalProduced(int id);
+  bool GetLethal();
   bool GetSterilize();
   bool ReactionTriggered(int id);
   bool TaskDone(int id);

@@ -56,6 +56,7 @@ private:
   bool depletable;       // Does completing consume resource?
                          // (This is not quite redundant with an infinite resource
                          // because it allows the resource level to be sensed @JEB)
+  bool internal;
   ePHENPLAST_BONUS_METHOD m_ppmethod;  //@MRR How does one handle phenotypically plastic tasks?
 
   // Resource detection
@@ -63,7 +64,7 @@ private:
   double detection_threshold; // Min quantity of resource to register present
   double detection_error; // Var of Detection Event (as % of resource present)
 
-  
+
   cReactionProcess(const cReactionProcess&); // @not_implemented
   cReactionProcess& operator=(const cReactionProcess&); // @not_implemented
 
@@ -87,6 +88,7 @@ public:
     , detect(NULL)
     , detection_threshold(0.0)
     , detection_error(0.0)
+    , internal(false)
   {
   }
   ~cReactionProcess() { ; }
@@ -111,6 +113,7 @@ public:
   double GetDetectionThreshold() const { return detection_threshold; }
   double GetDetectionError() const { return detection_error; }
   cString GetMatchString() const { return match_string; }
+  double GetInternal() const { return internal; }
 
   void SetResource(cResource* _in) { resource = _in; }
   void SetValue(double _in) { value = _in; }
@@ -132,6 +135,7 @@ public:
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }
   void SetMatchString(cString _in) { match_string = _in; }
+  void SetInternal(bool _in) { internal = _in; }
 };
 
 #endif
