@@ -12,6 +12,8 @@
  *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
  *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
@@ -32,7 +34,7 @@ cCellResource::cCellResource()
 {
 }
 
-cCellResource::cCellResource(int _cell_id, double _initial, double _inflow,
+cCellResource::cCellResource(int _cell_id, double _initial, double _inflow, 
                              double _outflow)
   : cell_id(_cell_id)
   , initial(_initial)
@@ -40,7 +42,7 @@ cCellResource::cCellResource(int _cell_id, double _initial, double _inflow,
   , outflow(_outflow)
 {
 }
-
+  
 cResource::cResource(const cString & _name, int _id)
   : name(_name)
   , id(_id)
@@ -63,7 +65,6 @@ cResource::cResource(const cString & _name, int _id)
   , deme_resource(false)
   , energy_resource(false)
   , hgt_metabolize(false)
-  , collectable(true)
 {
 }
 
@@ -82,7 +83,7 @@ bool cResource::SetGeometry(cString _geometry)
      } else if (_geometry == "torus") {
           geometry = nGeometry::TORUS;
           return true;
-     }
+     } 
 	 else if (_geometry == "partial") {
           geometry = nGeometry::PARTIAL;
           return true;
@@ -98,7 +99,7 @@ void cResource::SetCellIdList(tArray<int>& id_list) {
 
 /* Set if the resource is going to be accessable by demes */
 bool cResource::SetDemeResource(cString _deme_resource) {
-  _deme_resource.ToLower();\
+  _deme_resource.ToLower();
   if ((_deme_resource == "false") || (_deme_resource == "0")) {
     deme_resource = false;
     return true;
@@ -122,7 +123,7 @@ bool cResource::SetEnergyResource(cString _energy_resource) {
   return false;
 }
 
-/* Return a pointer to cell resource with a given cell id, if there is no
+/* Return a pointer to cell resource with a given cell id, if there is no 
    cell resource with that id return NULL */
 cCellResource *cResource::GetCellResourcePtr(int _id) {
 
@@ -140,7 +141,7 @@ cCellResource *cResource::GetCellResourcePtr(int _id) {
 }
 
 /* Update the values of given cell resource */
-void cResource::UpdateCellResource(cCellResource *_CellResourcePtr, double _initial,
+void cResource::UpdateCellResource(cCellResource *_CellResourcePtr, double _initial, 
                         double _inflow, double _outflow) {
   _CellResourcePtr->SetInitial(_initial);
   _CellResourcePtr->SetInflow(_inflow);

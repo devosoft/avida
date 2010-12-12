@@ -38,7 +38,7 @@ class cActionInjectResource : public cAction
 private:
   cString m_res_name;
   double m_res_count;
-
+  
 public:
   cActionInjectResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
   {
@@ -66,7 +66,7 @@ class cActionInjectScaledResource : public cAction
 private:
   cString m_res_name;
   double m_res_count;
-
+  
 public:
   cActionInjectScaledResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
   {
@@ -74,9 +74,9 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     double ave_merit = m_world->GetStats().SumMerit().Average();
@@ -98,7 +98,7 @@ class cActionOutflowScaledResource : public cAction
 private:
   cString m_res_name;
   double m_res_percent;
-
+  
 public:
   cActionOutflowScaledResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_percent(0.0)
   {
@@ -106,9 +106,9 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_res_percent = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string res_name> <double res_percent>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     double ave_merit = m_world->GetStats().SumMerit().Average();
@@ -116,11 +116,11 @@ public:
     ave_merit /= m_world->GetConfig().AVE_TIME_SLICE.Get();
 
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-
+    
     double res_level = m_world->GetPopulation().GetResource(res->GetID());
     double scaled_perc = 1 / (1 + ave_merit * (1 - m_res_percent) / m_res_percent);
     res_level -= res_level * scaled_perc;
-
+    
     if (res != NULL) m_world->GetPopulation().UpdateResource(res->GetID(), res_level);
   }
 };
@@ -132,7 +132,7 @@ class cActionSetResource : public cAction
 private:
   cString m_res_name;
   double m_res_count;
-
+  
 public:
   cActionSetResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
   {
@@ -140,9 +140,9 @@ public:
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
@@ -155,7 +155,7 @@ class cActionSetDemeResource : public cAction
 	private:
 		cString m_res_name;
 		double m_res_count;
-
+		
 	public:
 		cActionSetDemeResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
 		{
@@ -163,9 +163,9 @@ class cActionSetDemeResource : public cAction
 			if (largs.GetSize()) m_res_name = largs.PopWord();
 			if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
 		}
-
+		
 		static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
-
+		
 		void Process(cAvidaContext& ctx)
 		{
 			cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
@@ -183,15 +183,15 @@ class cActionSetDemeResource : public cAction
 class cZeroResources : public cAction
 {
 private:
-
+  
 public:
   cZeroResources(cWorld* world, const cString& args) : cAction(world, args)
   {
     cString largs(args);
   }
-
+  
   static const cString GetDescription() { return "Arguments: none"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
@@ -211,19 +211,19 @@ private:
   cString m_res_name;
   double m_res_count;
   int m_res_id;
-
+  
 public:
   cActionSetCellResource(cWorld* world, const cString& args) : cAction(world, args), m_cell_list(0), m_res_name(""), m_res_count(0.0)
   {
     cString largs(args);
-    if (largs.GetSize())
+    if (largs.GetSize()) 
     {
       cString s = largs.PopWord();
-      m_cell_list = cStringUtil::ReturnArray(s);
+      m_cell_list = cStringUtil::ReturnArray(s);    
     }
     if (largs.GetSize()) m_res_name = largs.PopWord();
     if (largs.GetSize()) m_res_count = largs.PopWord().AsDouble();
-
+    
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
     assert(res);
     m_res_id = res->GetID(); // Save the id so we don't have to do many string conversions
@@ -254,16 +254,16 @@ class cActionChangeEnvironment : public cAction
 {
 private:
   cString env_string;
-
+  
 public:
   cActionChangeEnvironment(cWorld* world, const cString& args) : cAction(world, args), env_string("")
   {
     cString largs(args);
     if (largs.GetSize()) env_string = largs;
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string env_string>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().LoadLine(env_string);
@@ -281,7 +281,7 @@ class cActionSetReactionValue : public cAction
 private:
   cString m_name;
   double m_value;
-
+  
 public:
   cActionSetReactionValue(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_value(0.0)
   {
@@ -289,9 +289,9 @@ public:
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <double value>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().SetReactionValue(ctx, m_name, m_value);
@@ -304,7 +304,7 @@ class cActionSetReactionValueMult : public cAction
 private:
   cString m_name;
   double m_value;
-
+  
 public:
   cActionSetReactionValueMult(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_value(0.0)
   {
@@ -312,9 +312,9 @@ public:
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <double value>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().SetReactionValueMult(m_name, m_value);
@@ -327,7 +327,7 @@ class cActionSetReactionInst : public cAction
 private:
   cString m_name;
   cString m_inst;
-
+  
 public:
   cActionSetReactionInst(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_inst("")
   {
@@ -335,9 +335,9 @@ public:
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_inst = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <string inst>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().SetReactionInst(m_name, m_inst);
@@ -349,7 +349,7 @@ class cActionSetReactionMinTaskCount : public cAction
 private:
   cString m_name;
   int m_min_count;
-
+  
 public:
   cActionSetReactionMinTaskCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_min_count(0)
   {
@@ -357,9 +357,9 @@ public:
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_min_count = largs.PopWord().AsInt();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <int min_count>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().SetReactionMinTaskCount(m_name, m_min_count);
@@ -371,7 +371,7 @@ class cActionSetReactionMaxTaskCount : public cAction
 private:
   cString m_name;
   int m_max_count;
-
+  
 public:
   cActionSetReactionMaxTaskCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_max_count(0)
   {
@@ -379,9 +379,9 @@ public:
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_max_count = largs.PopWord().AsInt();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <int max_count>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().SetReactionMaxTaskCount(m_name, m_max_count);
@@ -393,7 +393,7 @@ class cActionSetReactionTask : public cAction
 private:
   cString m_name;
   cString m_task;
-
+  
 public:
   cActionSetReactionTask(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_task("")
   {
@@ -401,9 +401,9 @@ public:
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_task = largs.PopWord();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <string task_name>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     bool success = m_world->GetEnvironment().SetReactionTask(m_name, m_task);
@@ -416,7 +416,7 @@ class cActionSetResourceInflow : public cAction
 private:
   cString m_name;
   double m_inflow;
-
+  
 public:
   cActionSetResourceInflow(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_inflow(0.0)
   {
@@ -424,9 +424,9 @@ public:
     if (largs.GetSize()) m_name = largs.PopWord();
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string resource_name> <int inflow>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().SetResourceInflow(m_name, m_inflow);
@@ -436,12 +436,12 @@ public:
 };
 
 /* Set the inflow of a given deme.  Currently only works for global (deme) resources.
-
+ 
  Parameters:
  deme id - the deme whose resource to set
  name - the name of the resource
  inflow - value to set as amount of resource added
-
+ 
  */
 
 class cActionSetDemeResourceInflow : public cAction
@@ -450,7 +450,7 @@ class cActionSetDemeResourceInflow : public cAction
     int m_demeid;
     cString m_name;
     double m_inflow;
-
+    
   public:
     cActionSetDemeResourceInflow(cWorld* world, const cString& args) : cAction(world, args), m_demeid(-1), m_name(""), m_inflow(0.0)
     {
@@ -458,15 +458,15 @@ class cActionSetDemeResourceInflow : public cAction
       if (largs.GetSize()) m_demeid = largs.PopWord().AsInt();
       if (largs.GetSize()) m_name = largs.PopWord();
       if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
-
+      
       assert(m_inflow >= 0);
       assert(m_demeid >= 0);
       assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
-
+      
     }
-
+    
     static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <int inflow>"; }
-
+    
     void Process(cAvidaContext& ctx)
     {
       m_world->GetEnvironment().SetResourceInflow(m_name, m_inflow);
@@ -481,7 +481,7 @@ class cActionSetResourceOutflow : public cAction
 private:
   cString m_name;
   double m_outflow;
-
+  
 public:
   cActionSetResourceOutflow(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_outflow(0.0)
   {
@@ -491,9 +491,9 @@ public:
     assert(m_outflow <= 1.0);
     assert(m_outflow >= 0.0);
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string resource_name> <int outflow>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().SetResourceOutflow(m_name, m_outflow);
@@ -503,12 +503,12 @@ public:
 };
 
 /* Set the outflow (decay) of a given deme.  Currently only works for global (deme) resources.
-
+ 
 Parameters:
    deme id - the deme whose resource to set
    name - the name of the resource
    outflow - value to set as percentage of the resource decayed continuously
-
+ 
 */
 
 class cActionSetDemeResourceOutflow : public cAction
@@ -517,7 +517,7 @@ class cActionSetDemeResourceOutflow : public cAction
     int m_demeid;
     cString m_name;
     double m_outflow;
-
+    
   public:
     cActionSetDemeResourceOutflow(cWorld* world, const cString& args) : cAction(world, args), m_demeid(-1), m_name(""), m_outflow(0.0)
     {
@@ -530,15 +530,15 @@ class cActionSetDemeResourceOutflow : public cAction
       assert(m_outflow >= 0.0);
       assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
     }
-
+    
     static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <int outflow>"; }
-
+    
     void Process(cAvidaContext& ctx)
     {
       m_world->GetEnvironment().SetResourceOutflow(m_name, m_outflow);
       //This doesn't actually update the rate in the population, so...
       m_world->GetPopulation().GetDeme(m_demeid).GetDemeResources().SetDecay(m_name, 1-m_outflow);
-
+      
     }
   };
 
@@ -547,7 +547,7 @@ class cActionSetEnvironmentInputs : public cAction
 {
 private:
   tArray<int> m_inputs;
-
+  
 public:
   cActionSetEnvironmentInputs(cWorld* world, const cString& args) : cAction(world, args), m_inputs()
   {
@@ -555,33 +555,33 @@ public:
     if (largs.GetSize()) m_inputs.Push(largs.PopWord().AsInt());
     if (largs.GetSize()) m_inputs.Push(largs.PopWord().AsInt());
     if (largs.GetSize()) m_inputs.Push(largs.PopWord().AsInt());
-
+        
     if ( m_inputs.GetSize() != 3 )
     {
       cerr << "Must have exactly 3 inputs for SetEnvironmentInputs action." << endl;
       exit(1);
     }
-
+    
     if ( (m_inputs[0] >> 24 != 15) || (m_inputs[1] >> 24 != 51) || (m_inputs[2] >> 24 != 85) )
     {
       cerr << "Inputs must begin 0F, 33, 55 for SetEnvironmentInputs" << endl;
       cerr << "They are: " << m_inputs[0] << " " << m_inputs[1] << " " << m_inputs[2] << endl;
-      exit(1);
+      exit(1);    
     }
-
+    
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int input_1> <int input_2> <int input_3> "; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     //First change the environmental inputs
     cEnvironment& env = m_world->GetEnvironment();
     env.SetSpecificInputs(m_inputs);
-
+    
     //Now immediately change the inputs in each cell and
     //clear the input array of each organism so changes take effect
-
+    
     cPopulation& pop = m_world->GetPopulation();
     pop.ResetInputs(ctx);
   }
@@ -593,21 +593,21 @@ class cActionSetEnvironmentRandomMask : public cAction
 {
 private:
   unsigned int m_mask;
-
+  
 public:
   cActionSetEnvironmentRandomMask(cWorld* world, const cString& args) : cAction(world, args), m_mask(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_mask = largs.PopWord().AsInt();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int mask>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     // First change the environmental input mask
     m_world->GetEnvironment().SetSpecificRandomMask(m_mask);
-
+    
     // Now immediately change the inputs in each cell and clear the input array of each organism so changes take effect
     m_world->GetPopulation().ResetInputs(ctx);
   }
@@ -622,7 +622,7 @@ private:
   int m_task;
   int m_arg;
   int m_value;
-
+  
 public:
   cActionSetTaskArgInt(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value(0)
   {
@@ -631,9 +631,9 @@ public:
     if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
     if (largs.GetSize()) m_value = largs.PopWord().AsInt();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int task> <int arg> <int value>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cEnvironment& env = m_world->GetEnvironment();
@@ -658,9 +658,9 @@ public:
 		cString largs(args);
 		if (largs.GetSize()) m_res_name = largs.PopWord();
 	}
-
+		
 	static const cString GetDescription() { return "Arguments: <string reaction_name>"; }
-
+		
 	void Process(cAvidaContext& ctx)
 	{
 		int time = m_world->GetStats().GetUpdate();
@@ -678,7 +678,7 @@ class cActionSetSeasonalResource1Kyears_1To_1 : public cAction {
 private:
 	cString m_res_name;
 	double m_scale;
-
+		
 public:
 	cActionSetSeasonalResource1Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), m_scale(1.0)
 	{
@@ -686,9 +686,9 @@ public:
 		if (largs.GetSize()) m_res_name = largs.PopWord();
 		if (largs.GetSize()) m_scale = largs.PopWord().AsDouble();
 	}
-
+		
 	static const cString GetDescription() { return "Arguments: <string reaction_name> <double scale>"; }
-
+	
 	void Process(cAvidaContext& ctx)
 	{
 		int time = m_world->GetStats().GetUpdate();
@@ -697,7 +697,7 @@ public:
 			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);			
 	}
 };
 
@@ -709,7 +709,7 @@ class cActionSetSeasonalResource10Kyears_1To_1 : public cAction {
 private:
 	cString m_res_name;
 	double m_scale;
-
+	
 public:
 	cActionSetSeasonalResource10Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), m_scale(1.0)
 	{
@@ -718,9 +718,9 @@ public:
 		if (largs.GetSize()) m_scale = largs.PopWord().AsDouble();
 
 	}
-
+	
 	static const cString GetDescription() { return "Arguments: <string reaction_name> <double scale>"; }
-
+	
 	void Process(cAvidaContext& ctx)
 	{
 		int time = m_world->GetStats().GetUpdate();
@@ -729,7 +729,7 @@ public:
 			m_res_count = 0.0;
 		cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
 		if (res != NULL)
-			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+			m_world->GetPopulation().SetResource(res->GetID(), m_res_count);			
 	}
 };
 
@@ -758,9 +758,9 @@ public:
     if (largs.GetSize()) phaseShift = largs.PopWord().AsDouble();
     if (largs.GetSize()) initY = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <string amplitude> <string pi/frequence> <phaseShift*pi> <string initial_Y>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     int time = m_world->GetStats().GetUpdate();
@@ -773,7 +773,7 @@ public:
 
 
 /**
-Sets energy model config value NumInstBefore0Energy
+Sets energy model config value NumInstBefore0Energy 
  */
 
 class cActionSetNumInstBefore0Energy : public cAction
@@ -787,9 +787,9 @@ public:
     cString largs(args);
     if (largs.GetSize()) newValue = largs.PopWord().AsInt();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int new_value>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetConfig().NUM_CYCLES_EXC_BEFORE_0_ENERGY.Set(newValue);
@@ -818,14 +818,14 @@ public:
     if (largs.GetSize()) phaseShift = largs.PopWord().AsDouble();
     if (largs.GetSize()) initY = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string reaction_name> <string amplitude> <string pi/frequence> <phaseShift*pi> <string initial_Y>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     int time = m_world->GetStats().GetUpdate();
     m_res_count = ampliture*(sin(pi/frequency1*x-pi*phaseShift1)+1+cos(pi/frequency2*x-pi*phaseShift1)+1)/4;
-
+    
     std::cout << "Update " << time << " Y = " << m_res_count << std::endl;
 //    std::cout << m_res_count <<" = " << amplitude <<" * sin("<<frequency <<" * " << time <<" - "<< phaseShift<<") + "<<initY<<std::endl;
     cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
@@ -841,7 +841,7 @@ private:
   int m_task;
   int m_arg;
   double m_value;
-
+  
 public:
   cActionSetTaskArgDouble(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value(0.0)
   {
@@ -850,9 +850,9 @@ public:
     if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
     if (largs.GetSize()) m_value = largs.PopWord().AsDouble();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int task> <int arg> <double value>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cEnvironment& env = m_world->GetEnvironment();
@@ -871,7 +871,7 @@ private:
   int m_task;
   int m_arg;
   cString m_value;
-
+  
 public:
   cActionSetTaskArgString(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value("")
   {
@@ -880,9 +880,9 @@ public:
     if (largs.GetSize()) m_arg = largs.PopWord().AsInt();
     if (largs.GetSize()) m_value = largs;
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int task> <int arg> <string value>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cEnvironment& env = m_world->GetEnvironment();
@@ -896,12 +896,12 @@ public:
 
 class cActionSetOptimizeMinMax : public cAction
   {
-
+    
   public:
     cActionSetOptimizeMinMax(cWorld* world, const cString& args) : cAction(world, args) { ; }
-
+    
     static const cString GetDescription() { return "No Arguments"; }
-
+    
     void Process(cAvidaContext& ctx)
     {
       cEnvironment& env = m_world->GetEnvironment();
@@ -910,7 +910,7 @@ class cActionSetOptimizeMinMax : public cAction
         double maxFx = 0.0;
         double minFx = 0.0;
         bool first = true;
-
+        
         for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
           cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
           if (cell.IsOccupied() == false) continue;
@@ -941,9 +941,9 @@ private:
   bool m_static_pos;
   int m_total_events; // total number of unique event to create; they may overlab
   bool m_static_position;
-
+  
 public:
-  cActionDelayedDemeEvent(cWorld* world, const cString& args) :
+  cActionDelayedDemeEvent(cWorld* world, const cString& args) : 
     cAction(world, args)
   , m_x1(-1)
   , m_y1(-1)
@@ -964,9 +964,9 @@ public:
     if (largs.GetSize()) m_static_position = static_cast<bool>(largs.PopWord().AsInt());
     if (largs.GetSize()) m_total_events = largs.PopWord().AsInt();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_events>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cPopulation& pop = m_world->GetPopulation();
@@ -988,9 +988,9 @@ private:
   int m_total_events_per_slot_min; // minimum number of unique event to create per slot; they may overlab
   int m_tolal_event_flow_levels; // total number of evenly spaced event flow levels; not all flow levels will be represented in a single deme
   bool m_static_position;
-
+  
 public:
-  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args) :
+  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args) : 
     cAction(world, args)
   , m_x1(-1)
   , m_y1(-1)
@@ -1017,9 +1017,9 @@ public:
     if (largs.GetSize()) m_total_events_per_slot_min = largs.PopWord().AsInt();
     if (largs.GetSize()) m_tolal_event_flow_levels = largs.PopWord().AsInt();
   }
-
+  
   static const cString GetDescription() { return "Arguments: <int x1> <int y1> <int x2> <int y2> <int delay> <int duraion> <bool static_position> <int total_slots_per_deme> <int total_events_per_slot_max> <int total_events_per_slot_min> <int tolal_event_flow_levels>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     cPopulation& pop = m_world->GetPopulation();
@@ -1033,15 +1033,15 @@ public:
 class cActionSetFracDemeTreatable : public cAction {
 private:
 	double factionTreatable; // total number of unique event to create; they may overlab
-
+	
 public:
 	cActionSetFracDemeTreatable(cWorld* world, const cString& args) : cAction(world, args), factionTreatable(0.0) {
 		cString largs(args);
 		if (largs.GetSize()) factionTreatable = largs.PopWord().AsDouble();
 	}
-
+	
 	static const cString GetDescription() { return "Arguments: <double factionTreatable>"; }
-
+	
 	void Process(cAvidaContext& ctx) {
 		cPopulation& pop = m_world->GetPopulation();
 		int numDemes = pop.GetNumDemes();
@@ -1059,20 +1059,20 @@ class cActionSetConfig : public cAction
 private:
   cString m_cvar;
   cString m_value;
-
+  
 public:
   cActionSetConfig(cWorld* world, const cString& args) : cAction(world, args)
   {
     cString largs(args);
     if (largs.GetSize()) m_cvar = largs.PopWord();
     if (largs.GetSize()) m_value = largs.PopWord();
-
+    
     if (!m_world->GetConfig().HasEntry(m_cvar))
       m_world->GetDriver().RaiseFatalException(-2, "Config variable specified in SetConfig action exist");
   }
-
+  
   static const cString GetDescription() { return "Arguments: <string config_var> <string value>"; }
-
+  
   void Process(cAvidaContext& ctx)
   {
     m_world->GetConfig().Set(m_cvar, m_value);
@@ -1093,7 +1093,6 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetDemeResource>("SetDemeResource");
   action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");
-  action_lib->Register<cActionSetCellResource>("SetOrgResource");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
 
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
@@ -1121,6 +1120,6 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetTaskArgDouble>("SetTaskArgDouble");
   action_lib->Register<cActionSetTaskArgString>("SetTaskArgString");
   action_lib->Register<cActionSetOptimizeMinMax>("SetOptimizeMinMax");
-
+  
   action_lib->Register<cActionSetConfig>("SetConfig");
 }

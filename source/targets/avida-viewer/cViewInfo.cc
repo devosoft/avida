@@ -35,9 +35,9 @@ cViewInfo::cViewInfo(cWorld* world, cView_Base* view)
   thread_lock = -1;
   step_organism_id = -1;
   map_mode=0;
-
+  
   // Handle genotype managing...
-
+  
   for (int i = 0; i < NUM_SYMBOLS; i++) {
     genotype_chart[i] = NULL;
     symbol_chart[i] = (char) (i + 'A');
@@ -61,7 +61,7 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
   typedef char (*SymbolMethod)(const cPopulationCell & cell);
   SymbolMethod map_method = NULL;
   SymbolMethod color_method = NULL;
-
+  
   switch (map_mode) {
     case MAP_BASIC:
       if (use_color) color_method = &cSymbolUtil::GetBasicSymbol;
@@ -91,7 +91,6 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
       break;
     case MAP_THREAD:
       //if (use_color) color_method = &cSymbolUtil::GetThreadSymbol;
-      if (use_color) color_method = &cSymbolUtil::GetThreadSymbol;
       map_method = &cSymbolUtil::GetThreadSymbol;
       break;
     case MAP_LINEAGE:
@@ -99,26 +98,26 @@ void cViewInfo::SetupSymbolMaps(int map_mode, bool use_color)
       else map_method = &cSymbolUtil::GetLineageSymbol;
       break;
   }
-
+  
   const int num_cells = m_world->GetPopulation().GetSize();
   map.Resize(num_cells);
   color_map.Resize(num_cells);
-
+  
   for (int i = 0; i < num_cells; i++) {
     if (map_method == 0) map[i] = 0;
     else map[i] = (*map_method)(m_world->GetPopulation().GetCell(i));
-
+    
     if (color_method == 0) color_map[i] = 0;
     else color_map[i] = (*color_method)(m_world->GetPopulation().GetCell(i));
   }
-
+  
 }
 
 
 void cViewInfo::UpdateSymbols()
 {
   // First, clean up the genotype_chart.
-
+  
   int i, pos;
   for (i = 0; i < NUM_SYMBOLS; i++) {
     if (genotype_chart[i]) {
@@ -132,7 +131,7 @@ void cViewInfo::UpdateSymbols()
         }
         rank++;
       }
-
+      
       if (pos < 0) genotype_chart[i] = NULL;
       if (pos >= NUM_SYMBOLS) {
         if (genotype_chart[i]->GetProperty("threshold").AsBool())
@@ -142,9 +141,9 @@ void cViewInfo::UpdateSymbols()
       }
     }
   }
-
+  
   // Now, fill in any missing spaces...
-
+  
   tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
   cBioGroup* bg = it->Next();
   for (int i = 0; bg && i < SYMBOL_THRESHOLD; bg = it->Next(), i++) {
@@ -173,7 +172,7 @@ cBioGroup* cViewInfo::GetActiveGenotype()
   if (active_cell != NULL && active_cell->IsOccupied()) {
     return active_cell->GetOrganism()->GetBioGroup("genotype");
   }
-
+  
   return NULL;
 }
 

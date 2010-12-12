@@ -30,7 +30,6 @@ cReactionResult::cReactionResult(const int num_resources,
   , resources_produced(num_resources)
   , resources_detected(num_resources)
   , internal_resources_consumed(num_resources)
-  , internal_resources_produced(num_resources)
   , tasks_done(num_tasks)
   , tasks_quality(num_tasks)
   , tasks_value(num_tasks)
@@ -50,7 +49,6 @@ void cReactionResult::ActivateReaction()
   resources_produced.SetAll(0.0);
   resources_detected.SetAll(-1.0);
   internal_resources_consumed.SetAll(0.0);
-  internal_resources_produced.SetAll(0.0);
   tasks_done.SetAll(false);
   tasks_quality.SetAll(0.0);
   tasks_value.SetAll(0.0);
@@ -79,22 +77,17 @@ void cReactionResult::Consume(int id, double num, bool is_env_resource)
 {
   ActivateReaction();
   if(is_env_resource) { resources_consumed[id] += num; }
-  else {
-    used_env_resource = false;
+  else { 
+    used_env_resource = false; 
     internal_resources_consumed[id] += num;
   }
 }
 
 
-void cReactionResult::Produce(int id, double num, bool is_env_resource)
+void cReactionResult::Produce(int id, double num)
 {
   ActivateReaction();
-
-  if(is_env_resource) { resources_produced[id] += num; }
-  else {
-    used_env_resource = false;
-    internal_resources_produced[id] += num;
-  }
+  resources_produced[id] += num;
 }
 
 
@@ -207,12 +200,6 @@ double cReactionResult::GetInternalConsumed(int id)
 {
   if (GetActive() == false) return 0.0;
   return internal_resources_consumed[id];
-}
-
-double cReactionResult::GetInternalProduced(int id)
-{
-  if (GetActive() == false) return 0.0;
-  return internal_resources_produced[id];
 }
 
 bool cReactionResult::GetLethal()
