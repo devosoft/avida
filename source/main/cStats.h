@@ -70,17 +70,17 @@ class cStats : public cBioGroupListener
 {
 private:
   cWorld* m_world;
-  
+
   tDataManager<cStats> m_data_manager;
 
-  
+
   // --------  Time scales  ---------
   int m_update;
   int sub_update;
   double avida_time;
 
 
-  
+
   // --------  Organism Sums  ---------  (Cleared and resummed by population each update)
   cDoubleSum sum_merit;
   cDoubleSum sum_mem_size;
@@ -95,8 +95,8 @@ private:
 
   cRunningStats sum_div_mut_rate;
   cRunningStats sum_log_div_mut_rate;
-  
-  
+
+
   // --------  Genotype Sums  ---------  (Cleared and resummed by population each update)
   cDoubleSum sum_gestation;
   cDoubleSum sum_fitness;
@@ -188,13 +188,13 @@ private:
   int tot_lineages;
   int tot_executed;
 
-  
+
   // --------  Parasite Task Stats  ---------
   tArray<int> tasks_host_current;
   tArray<int> tasks_host_last;
   tArray<int> tasks_parasite_current;
   tArray<int> tasks_parasite_last;
-  
+
 
   // --------  Organism Task Stats  ---------
   tArray<int> task_cur_count;
@@ -208,7 +208,7 @@ private:
   tArray<int> prev_task_count;
   tArray<int> cur_task_count;
   tArray<int> new_reaction_count;
-  
+
   tArray<int> task_internal_cur_count;
   tArray<int> task_internal_last_count;
   tArray<double> task_internal_cur_quality;
@@ -221,7 +221,7 @@ private:
   tArray<double> m_reaction_cur_add_reward;
   tArray<double> m_reaction_last_add_reward;
   tArray<int> m_reaction_exe_count;
-  
+
   tArray<double> resource_count;
   tArray<int> resource_geometry;
   tArray< tArray<double> > spatial_res_count;
@@ -231,11 +231,11 @@ private:
   tArray<cString> resource_names;
 
 
-  
+
   // --------  Resampling Stats  ---------
   int num_resamplings;
   int num_failedResamplings;
-  
+
 
   // --------  State Variables  ---------
   int last_update;
@@ -246,7 +246,7 @@ private:
   int num_sold;
   int num_used;
   int num_own_used;
-  
+
 
   // --------  Sense Instruction Stats  ---------
   int sense_size;
@@ -262,7 +262,7 @@ private:
   double max_competition_fitness;
   double avg_competition_copied_fitness;
   double min_competition_copied_fitness;
-  double max_competition_copied_fitness;  
+  double max_competition_copied_fitness;
   int num_orgs_replicated;
 
 
@@ -281,13 +281,13 @@ private:
 
   cIntSum sum_deme_events_killed;
   cIntSum sum_deme_events_kill_attempts;
-  
+
   cDoubleSum EnergyTestamentToFutureDeme;
   cDoubleSum EnergyTestamentToNeighborOrganisms;
   cDoubleSum EnergyTestamentToDemeOrganisms;
   cDoubleSum EnergyTestamentAcceptedByOrganisms;
   cDoubleSum EnergyTestamentAcceptedByDeme;
-  
+
   //(event flow rate, (deme pop size, events killed))
   std::map<int, flow_rate_tuple > flow_rate_tuples;
 
@@ -297,22 +297,22 @@ private:
   tMatrix<int> relative_pos_pred_sat;
 	std::map<cString, int> demeResourceThresholdPredicateMap;
 
-  
+
   // --------  Speculative Execution Stats  ---------
   int m_spec_total;
   int m_spec_num;
   int m_spec_waste;
-  
+
 
   // --------  Organism Kill Stats  ---------
   cIntSum sum_orgs_killed;
   cIntSum sum_unoccupied_cell_kill_attempts;
   cIntSum sum_cells_scanned_at_kill;
-  
+
 
   // --------  Migration Stats  ---------
   int num_migrations;
-  
+
 
   cStats(); // @not_implemented
   cStats(const cStats&); // @not_implemented
@@ -321,7 +321,7 @@ private:
 public:
   cStats(cWorld* world);
   ~cStats() { ; }
-  
+
   void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu);
 
   void SetupPrintDatabase();
@@ -436,15 +436,15 @@ public:
   cDoubleSum& SumDemeMerit()   { return sum_deme_merit; }
   cDoubleSum& SumDemeGenerationsPerLifetime()   { return sum_deme_generations_per_lifetime; }
 
-  cIntSum& SumDemeEventsKilled()          { return sum_deme_events_killed; }  
+  cIntSum& SumDemeEventsKilled()          { return sum_deme_events_killed; }
   cIntSum& SumDemeAttemptsToKillEvents()          { return sum_deme_events_kill_attempts; }
-  
+
   cDoubleSum& SumEnergyTestamentToFutureDeme() { return EnergyTestamentToFutureDeme;}
   cDoubleSum& SumEnergyTestamentToNeighborOrganisms() { return EnergyTestamentToNeighborOrganisms; }
   cDoubleSum& SumEnergyTestamentToDemeOrganisms() { return EnergyTestamentToDemeOrganisms; }
   cDoubleSum& SumEnergyTestamentAcceptedByOrganisms() { return EnergyTestamentAcceptedByOrganisms; }
   cDoubleSum& SumEnergyTestamentAcceptedByDeme() { return EnergyTestamentAcceptedByDeme; }
-  
+
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 
 #if INSTRUCTION_COUNT
@@ -491,7 +491,7 @@ public:
 
   const cIntSum& SumDemeEventsKilled() const          { return sum_deme_events_killed; }
   const cIntSum& SumDemeAttemptsToKillEvents() const  { return sum_deme_events_kill_attempts; }
-  
+
   const cDoubleSum& SumEnergyTestamentToFutureDeme() const { return EnergyTestamentToFutureDeme;}
   const cDoubleSum& SumEnergyTestamentToNeighborOrganisms() const { return EnergyTestamentToNeighborOrganisms; }
   const cDoubleSum& SumEnergyTestamentToDemeOrganisms() const { return EnergyTestamentToDemeOrganisms; }
@@ -514,9 +514,9 @@ public:
   void AddLineage() { tot_lineages++; num_lineages++; }
   void RemoveLineage(int id_num, int parent_id, int update_born, double generation_born, int total_CPUs,
                      int total_genotypes, double fitness, double lineage_stat1, double lineage_stat2 );
-				
+
   void IncExecuted() { num_executed++; }
-  
+
   void AddNumOrgsKilled(long num) { sum_orgs_killed.Add(num); }
 	void AddNumUnoccupiedCellAttemptedToKill(long num) { sum_unoccupied_cell_kill_attempts.Add(num); }
   void AddNumCellsScannedAtKill(long num) { sum_cells_scanned_at_kill.Add(num); }
@@ -525,33 +525,33 @@ public:
   void AddCurTask(int task_num) { task_cur_count[task_num]++; }
   void AddCurHostTask(int task_num) { tasks_host_current[task_num]++; }
   void AddCurParasiteTask(int task_num) { tasks_parasite_current[task_num]++; }
-  
-  void AddCurTaskQuality(int task_num, double quality) 
-  {  
+
+  void AddCurTaskQuality(int task_num, double quality)
+  {
 	  task_cur_quality[task_num] += quality;
 	  if (quality > task_cur_max_quality[task_num]) task_cur_max_quality[task_num] = quality;
   }
   void AddLastTask(int task_num) { task_last_count[task_num]++; }
   void AddLastHostTask(int task_num) { tasks_host_last[task_num]++; }
   void AddLastParasiteTask(int task_num) { tasks_parasite_last[task_num]++; }
-  
-  void AddLastTaskQuality(int task_num, double quality) 
-  { 
-	  task_last_quality[task_num] += quality; 
+
+  void AddLastTaskQuality(int task_num, double quality)
+  {
+	  task_last_quality[task_num] += quality;
 	  if (quality > task_last_max_quality[task_num]) task_last_max_quality[task_num] = quality;
   }
   void AddNewTaskCount(int task_num) {new_task_count[task_num]++; }
   void AddOtherTaskCounts(int task_num, int prev_tasks, int cur_tasks) {
-	  prev_task_count[task_num] += prev_tasks; 
+	  prev_task_count[task_num] += prev_tasks;
 	  cur_task_count[task_num] += cur_tasks;
   }
   void AddNewReactionCount(int reaction_num) {new_reaction_count[reaction_num]++; }
   void IncTaskExeCount(int task_num, int task_count) { task_exe_count[task_num] += task_count; }
   void ZeroTasks();
-  
+
   void AddLastSense(int res_comb_index) { /*sense_last_count[res_comb_index]++;*/ }
   void IncLastSenseExeCount(int res_comb_index, int count) { /*sense_last_exe_count[res_comb_index]+= count;*/ }
-    
+
   // internal resource bins and use of internal resources
   void AddCurInternalTask(int task_num) { task_internal_cur_count[task_num]++; }
   void AddCurInternalTaskQuality(int task_num, double quality)
@@ -565,14 +565,14 @@ public:
   	task_internal_last_quality[task_num] += quality;
   	if(quality > task_internal_last_max_quality[task_num]) task_internal_last_max_quality[task_num] = quality;
   }
-  
+
   void AddCurReaction(int reaction) { m_reaction_cur_count[reaction]++; }
   void AddLastReaction(int reaction) { m_reaction_last_count[reaction]++; }
   void AddCurReactionAddReward(int reaction, double reward) { m_reaction_cur_add_reward[reaction] += reward; }
   void AddLastReactionAddReward(int reaction, double reward) { m_reaction_last_add_reward[reaction] += reward; }
   void IncReactionExeCount(int reaction, int count) { m_reaction_exe_count[reaction] += count; }
   void ZeroReactions();
-  
+
   void SetResources(const tArray<double> &_in) { resource_count = _in; }
   void SetResourcesGeometry(const tArray<int> &_in) { resource_geometry = _in;}
   void SetSpatialRes(const tArray< tArray<double> > &_in) { spatial_res_count = _in; }
@@ -582,8 +582,8 @@ public:
   void SetResourceName(int id, const cString & name) { resource_names[id] = name; }
 
   void SetCompetitionTrialFitnesses(tArray<double> _in) { avg_trial_fitnesses = _in; }
-  void SetCompetitionFitnesses(double _in_avg, double _in_min, double _in_max, double _in_cp_avg, double _in_cp_min, double _in_cp_max) 
-    { avg_competition_fitness = _in_avg; min_competition_fitness = _in_min; max_competition_fitness = _in_max; 
+  void SetCompetitionFitnesses(double _in_avg, double _in_min, double _in_max, double _in_cp_avg, double _in_cp_min, double _in_cp_max)
+    { avg_competition_fitness = _in_avg; min_competition_fitness = _in_min; max_competition_fitness = _in_max;
       avg_competition_copied_fitness = _in_cp_avg; min_competition_copied_fitness = _in_cp_min; max_competition_copied_fitness = _in_cp_max; }
   void SetCompetitionOrgsReplicated(int _in) { num_orgs_replicated = _in; }
 
@@ -592,8 +592,8 @@ public:
   void AddMarketItemSold() { num_sold++; }
   void AddMarketItemUsed() { num_used++; }
   void AddMarketOwnItemUsed() { num_own_used++; }
-  
-  
+
+
   void AddSpeculative(int spec) { m_spec_total += spec; m_spec_num++; }
   void AddSpeculativeWaste(int waste) { m_spec_waste += waste; }
 
@@ -624,17 +624,17 @@ public:
   int GetTaskCurCount(int task_num) const { return task_cur_count[task_num]; }
   int GetTaskHostCurCount(int task_num) const { return tasks_host_current[task_num]; }
   int GetTaskParasiteCurCount(int task_num) const { return tasks_parasite_current[task_num]; }
-  double GetTaskCurQuality(int task_num) const { return task_cur_quality[task_num]/(double)task_cur_count[task_num]; }  
+  double GetTaskCurQuality(int task_num) const { return task_cur_quality[task_num]/(double)task_cur_count[task_num]; }
 
   int GetTaskLastCount(int task_num) const {return task_last_count[task_num];}
   int GetTaskLastHostCount(int task_num) const {return tasks_host_last[task_num];}
   int GetTaskLastParasiteCount(int task_num) const {return tasks_parasite_last[task_num];}
   double GetTaskLastQuality(int task_num) const {return task_last_quality[task_num]/(double)task_last_count[task_num];}
-  
+
   double GetTaskMaxCurQuality(int task_num) const { return task_cur_max_quality[task_num];}
   double GetTaskMaxLastQuality(int task_num) const { return task_last_max_quality[task_num];}
   int GetTaskExeCount(int task_num) const { return task_exe_count[task_num]; }
-  
+
   // internal resource bins and use of internal resources
   int GetInternalTaskCurCount(int task_num) const { return task_internal_cur_count[task_num]; }
   double GetInternalTaskCurQuality(int task_num) const { return task_internal_cur_quality[task_num]/(double)task_internal_cur_count[task_num]; }
@@ -700,7 +700,7 @@ public:
 
   double GetAveSpeculative() const { return (m_spec_num) ? ((double)m_spec_total / (double)m_spec_num) : 0.0; }
   int GetSpeculativeWaste() const { return m_spec_waste; }
-  
+
   double GetAvgNumOrgsKilled() const { return sum_orgs_killed.Average(); }
   double GetAvgNumCellsScannedAtKill() const { return sum_cells_scanned_at_kill.Average(); }
   int GetNumMigrations() const { return num_migrations; }
@@ -724,6 +724,7 @@ public:
   void PrintParasiteData(const cString& filename);
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
+  void PrintThreadsData(const cString& filename);
 	void PrintMessageData(const cString& filename);
   void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);
@@ -760,24 +761,24 @@ public:
   void PrintMigrationData(const cString& filename);
   void PrintGroupsFormedData(const cString& filename);
 	void PrintGroupIds(const cString& filename);
-  
+
   // deme predicate stats
   void IncEventCount(int x, int y);
   void IncPredSat(int cell_id);
   void PrintPredSatFracDump(const cString& filename);
-	
+
 	void AddDemeResourceThresholdPredicate(cString& name);
 	void IncDemeResourceThresholdPredicate(cString& name);
 	void PrintDemeResourceThresholdPredicate(const cString& filename);
 
-  void addOrgLocations(std::vector<std::pair<int, int> >); 
+  void addOrgLocations(std::vector<std::pair<int, int> >);
   void PrintDemeRepOrgLocation(const cString& filename);
 
   // -------- Messaging support --------
 public:
   //! Type for a list of pointers to message predicates.
   typedef std::vector<cOrgMessagePredicate*> message_pred_ptr_list;
-  
+
   //! Called for every message successfully sent anywhere in the population.
   void SentMessage(const cOrgMessage& msg);
   //! Adds a predicate that will be evaluated for each message.
@@ -790,7 +791,7 @@ public:
 	void LogMessage(const cOrgMessage& msg, bool dropped, bool lost);
 	//! Prints logged messages.
 	void PrintMessageLog(const cString& filename);
-	
+
 protected:
   /*! List of all active message predicates.  The idea here is that the predicates,
   rather than cStats / cOrgMessage / etc., do the tracking of particular messages
@@ -807,9 +808,9 @@ protected:
 	};
 	typedef std::vector<message_log_entry_t> message_log_t; //!< Type for message log.
 	message_log_t m_message_log; //!< Log for messages.
-	
+
   // -------- End messaging support --------
-  
+
 
   // -------- Movement support -------------
 public:
@@ -821,7 +822,7 @@ protected:
   movement_pred_ptr_list m_movement_predicates;
   // -------- End movement support --------
 
-  
+
   // -------- Deme replication support --------
 public:
   //! Called immediately prior to deme replacement.
@@ -833,7 +834,7 @@ public:
   //! Print statistics about deme replication.
   void PrintDemeReplicationData(const cString& filename);
 
-	
+
 	void PrintDemeTreatableReplicationData(const cString& filename);
 	void PrintDemeUntreatableReplicationData(const cString& filename);
 	void PrintDemeTreatableCount(const cString& filename);
@@ -869,12 +870,12 @@ public:
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
   int GetNumOccupiedDemes() { return m_num_occupied_demes; }
-  
 
-	
+
+
 protected:
   int m_deme_num_repls; //!< Number of deme replications since last PrintDemeReplicationData.
-	int m_total_deme_num_repls; //!< Total number of deme replications ever.	
+	int m_total_deme_num_repls; //!< Total number of deme replications ever.
   cDoubleSum m_deme_gestation_time; //!< Gestation time for demes - mean age at deme replication.
   cDoubleSum m_deme_births; //!< Mean number of births in replicated demes.
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
@@ -895,32 +896,32 @@ protected:
   cDoubleSum m_deme_merit_untreatable; //!< Mean merit of replicated untreatable demes.
   cDoubleSum m_deme_generation_untreatable; //!< Mean generation of replicated untreatable demes.
 	cDoubleSum m_deme_density_untreatable; //!< Mean density of replicated untreatable demes.
-	
+
 	t_founder_map m_deme_founders; //!< Data structure to track the founders of demes.
-  
-  
+
+
   // -------- Deme competition support --------
 public:
   //! Called immediately prior to deme competition.
   void CompeteDemes(const std::vector<double>& fitness);
   //! Print data regarding deme competition.
   void PrintDemeCompetitionData(const cString& filename);
-  
+
 private:
   std::vector<double> m_deme_fitness; //!< Fitness of each deme during last deme competition.
-	
+
 	// -------- Cell data support --------
 public:
 	//! Prints the cell data from every cell in the population.
 	void PrintCellData(const cString& filename);
-	
+
 	// -------- Opinion support --------
 public:
 	//! Prints the current opinions of all organisms in the population.
 	void PrintCurrentOpinions(const cString& filename);
 	//! Prints the average number of organism with set opinions
 	void PrintOpinionsSetPerDeme(const cString& filename);
-	
+
 	// -------- Synchronization support --------
 public:
 	typedef std::vector<int> CellFlashes; //!< Typedef for a list of cell IDs.
@@ -948,7 +949,7 @@ public:
 		cOrganism::Opinion consensus;
 		int cell_id;
 	};
-	
+
 	typedef std::vector<ConsensusRecord> Consensi; //!< Typedef for a map of update -> Consensus records.
 	//! Called when a deme reaches consensus.
 	void ConsensusReached(const cDeme& deme, cOrganism::Opinion consensus, int cellid);
@@ -958,7 +959,7 @@ public:
 	void PrintSimpleConsensusData(const cString& filename);
 protected:
 	Consensi m_consensi; //!< Tracks when demes have reached consensus.
-	
+
 // ----------Division of Labor support --------
 protected:
 	typedef std::deque<double> dblq;
@@ -971,7 +972,7 @@ protected:
   cDoubleSum m_deme_switch_pen; //!< Mean number of different reactions performed by an org in the deme
 	cDoubleSum m_deme_num_res; //!< Mean number of resources used by the deme before replication
 	cDoubleSum m_deme_num_res_on_hand; //!< Mean number of resources the deme currently has
-	
+
 public:
 	void IncDemeReactionDiversityReplicationData(double deme_div, double switch_pen,  \
 																							  double shannon_div, double num_orgs_perf_reaction) {
@@ -980,11 +981,11 @@ public:
 		m_num_orgs_perf_reaction.push_back(num_orgs_perf_reaction);
     double norm_shan = shannon_div / (log((double)num_orgs_perf_reaction));
     m_shannon_div_norm.push_back(norm_shan);
-		
+
 	}
-		
+
 	void PrintAgePolyethismData(const cString& filename);
-	void AgeTaskEvent(int org_id, int task_id, int org_age); 
+	void AgeTaskEvent(int org_id, int task_id, int org_age);
 	//! Get number of deme replications
 	int GetNumDemeReplications() { return m_total_deme_num_repls; }
 
@@ -992,13 +993,13 @@ public:
 protected:
 	std::map<int, cDoubleSum> reaction_age_map;
 
-	
+
 // -------- Reputation support ---------
-public: 
+public:
 	// Print statistics about reputation
 	void PrintReputationData(const cString& filename);
 	void PrintDirectReciprocityData(const cString& filename);
-	void IncDonateToDonor() { m_donate_to_donor++; } 
+	void IncDonateToDonor() { m_donate_to_donor++; }
 	void IncDonateToFacing() { m_donate_to_facing++; }
 	void PrintStringMatchData(const cString& filename);
 	void AddStringBitsMatchedValue(cString name, int value) { m_string_bits_matched[name].Add(value); }
@@ -1007,22 +1008,22 @@ public:
 	void IncPerfectMatchOrg() { m_perfect_match_org.Add(1); }
 	void PrintShadedAltruists(const cString& filename);
 
-protected: 
-	int m_donate_to_donor; 
+protected:
+	int m_donate_to_donor;
 	int m_donate_to_facing;
 	std::map <cString, cDoubleSum> m_string_bits_matched;
 	cDoubleSum m_perfect_match;
 	cDoubleSum m_perfect_match_org;
 	std::map <int, int> m_tags;
-	
+
 	// -------- Deme network support --------
 public:
 	typedef std::map<std::string, double> network_stats_t; //!< Structure to hold statistics for one network.
 	typedef std::map<std::string, cDoubleSum> avg_network_stats_t; //!< Structure to hold average statistics for many networks.
-	
+
 	//! Track named network stats.
 	void NetworkTopology(const network_stats_t& ns);
-	
+
 	//! Print network statistics.
 	void PrintDemeNetworkData(const cString& filename);
 
@@ -1031,7 +1032,7 @@ public:
 
 protected:
 	avg_network_stats_t m_network_stats; //!< Network statistics.
-	
+
 	// -------- HGT support --------
 private:
 	cDoubleSum m_hgt_metabolized; //!< Total length of metabolized genome fragments.
@@ -1043,7 +1044,7 @@ public:
 	void GenomeFragmentInserted(cOrganism* organism, const cSequence& fragment, const cGenomeUtil::substring_match& location);
 	//! Print HGT statistics.
 	void PrintHGTData(const cString& filename);
-	
+
 	// -------- Multiprocess support --------
 private:
 	cDoubleSum m_outgoing; //!< Number of outgoing migration events.
@@ -1055,19 +1056,19 @@ public:
 
 	//! Record information about an organism migrating from this population.
 	void OutgoingMigrant(const cOrganism* org);
-	
+
 	//! Record information about an organism migrating into this population.
 	void IncomingMigrant(const cOrganism* org);
-	
+
 	//! Print multiprocess data.
 	void PrintMultiProcessData(const cString& filename);
-	
+
 	//! Track profiling data.
 	void ProfilingData(const profiling_stats_t& pf);
-	
+
 	//! Print profiling data.
 	void PrintProfilingData(const cString& filename);
-	
+
 protected:
 	avg_profiling_stats_t m_profiling; //!< Profiling statistics.
 };
