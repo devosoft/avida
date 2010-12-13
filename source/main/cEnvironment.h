@@ -37,7 +37,8 @@
 #include <set>
 
 
-
+class cContextPhenotype;
+class cContextReactionRequisite;
 class cAvidaContext;
 class cReaction;
 class cReactionRequisite;
@@ -99,7 +100,7 @@ public:
   bool TestOutput(cAvidaContext& ctx, cReactionResult& result, cTaskContext& taskctx,
                   const tArray<int>& task_count, tArray<int>& reaction_count,
                   const tArray<double>& resource_count, const tArray<double>& rbins_count,
-                  bool is_parasite=false) const;
+                  bool is_parasite=false, cContextPhenotype* context_phenotype = 0) const;
 
   // Accessors
   int GetNumTasks() const { return m_tasklib.GetSize(); }
@@ -153,6 +154,7 @@ private:
   
   bool LoadReactionProcess(cReaction* reaction, cString desc, cUserFeedback* feedback);
   bool LoadReactionRequisite(cReaction* reaction, cString desc, cUserFeedback* feedback);
+  bool LoadContextReactionRequisite(cReaction* reaction, cString desc, cUserFeedback* feedback); 
   bool LoadResource(cString desc, cUserFeedback* feedback);
   bool LoadCell(cString desc, cUserFeedback* feedback);
   bool LoadReaction(cString desc, cUserFeedback* feedback);
@@ -163,6 +165,8 @@ private:
                             const tList<cReactionProcess>& req_proc, bool& force_mark_task) const;
   
   bool TestRequisites(const tList<cReactionRequisite>& req_list, int task_count, 
+                      const tArray<int>& reaction_count, const bool on_divide = false) const;
+  bool TestContextRequisites(const tList<cContextReactionRequisite>& req_list, int task_count, 
                       const tArray<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 
                    const tArray<double>& resource_count, const tArray<double>& rbin_count,

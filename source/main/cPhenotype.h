@@ -75,6 +75,7 @@
  *************************************************************************/
 
 class cAvidaContext;
+class cContextPhenotype;
 class cEnvironment;
 template <class T> class tBuffer;
 template <class T> class tList;
@@ -311,7 +312,7 @@ public:
   bool TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs);
   bool TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                   const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                  tArray<cString>& insts_triggered, bool is_parasite=false);
+                  tArray<cString>& insts_triggered, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);
 
   // State saving and loading, and printing...
   void PrintStatus(std::ostream& fp) const;

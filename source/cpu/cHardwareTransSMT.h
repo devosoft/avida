@@ -25,6 +25,7 @@
 #include "Avida.h"
 
 #include "cCodeLabel.h"
+#include "cContextPhenotype.h"
 #include "cCPUMemory.h"
 #include "cCPUStack.h"
 #include "cHeadCPU.h"
@@ -68,6 +69,7 @@ protected:
     cCodeLabel read_label;
     cCodeLabel next_label;
     bool running;
+    cContextPhenotype context_phenotype;
     
     // If this thread was spawned by Inject, this will point to the biounit of the parasite running the thread.
     // Otherwise, it will be NULL.
@@ -245,7 +247,10 @@ public:
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu);
 	
-  
+  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add); 
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin); 
+  bool FindModifiedResource(int& start_index, int& end_index, int& spec_id); 
+
 private:
   // ---------- Instruction Library -----------
 
@@ -296,6 +301,7 @@ private:
   bool Inst_Return(cAvidaContext& ctx);         // 47
   bool Inst_IfGreaterEqual(cAvidaContext& ctx); //48
   bool Inst_Divide_Erase(cAvidaContext& ctx); //49
+  bool Inst_Collect(cAvidaContext& ctx);        //50 
   
 };
 

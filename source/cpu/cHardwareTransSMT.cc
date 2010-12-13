@@ -23,6 +23,7 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
+#include "cEnvironment.h"
 #include "cInstLib.h"
 #include "cInstSet.h"
 #include "cHardwareTracer.h"
@@ -107,6 +108,7 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("Return", &cHardwareTransSMT::Inst_Return), // 44
     tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 23
     tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 23
+    tInstLibEntry<tMethod>("Collect", &cHardwareTransSMT::Inst_Collect), // 23 
     
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -999,8 +1001,8 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   }
 #endif
 	
-  bool parent_alive = m_organism->ActivateDivide(ctx);
-	
+  //bool parent_alive = m_organism->ActivateDivide(ctx);
+  bool parent_alive = m_organism->ActivateDivide(ctx, &m_threads[m_cur_thread].context_phenotype);
   //reset the memory of the memory space that has been divided off
   m_mem_array[mem_space_used] = cSequence("a"); 
 	
@@ -1397,8 +1399,7 @@ bool cHardwareTransSMT::Inst_IO(cAvidaContext& ctx)
   // Do the "put" component
   const int value_out = Stack(src).Top();
   
-  m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->IsParasite());  // Check for tasks compleated.
-	
+  m_organism->DoOutput(ctx, value_out, ThreadGetOwner()->IsParasite(), &m_threads[m_cur_thread].context_phenotype);  // Check for tasks compleated.
   // Do the "get" component
   const int value_in = m_organism->GetNextInput();
   Stack(dst).Push(value_in);
@@ -1639,4 +1640,201 @@ bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)
   
   return toReturn;
   
+}
+
+
+bool cHardwareTransSMT::Inst_Collect(cAvidaContext& ctx)
+{
+  return DoCollect(ctx, true, true);
+}
+
+
+/* Helper function to reduce code redundancy in the Inst_Collect variations,
+ * including Inst_Destroy.
+ * Does all the heavy lifting of external resource collection/destruction.
+ *
+ * env_remove   - specifies whether the collected resources should be removed from
+ *                the environment
+ * internal_add - specifies whether the collected resources should be added to
+ *                the organism's internal resources.
+ */
+bool cHardwareTransSMT::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add)
+{
+  int start_bin, end_bin, bin_used, spec_id;
+
+  bool finite_resources_exist = FindModifiedResource(start_bin, end_bin, spec_id);
+  if (!finite_resources_exist) { return true; }
+
+  // Add this specification
+  m_organism->IncCollectSpecCount(spec_id);
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+
+  if (start_bin == end_bin)
+  { // resource completely specified
+    bin_used = start_bin;
+  } else {
+    switch (m_world->GetConfig().MULTI_ABSORB_TYPE.Get())
+    {
+      case 0:
+        bin_used = ctx.GetRandom().GetInt(start_bin, end_bin + 1);  // since the max passed to GetInt() will never be returned
+        break;
+      case 1:
+        bin_used = start_bin;
+        break;
+      case 2:
+        bin_used = end_bin;
+        break;
+      case 3:
+        bin_used = -1; // not really, of course!  This just functions as a flag to say we are using a range.
+        break;
+      default:
+        bin_used = ctx.GetRandom().GetInt(start_bin, end_bin + 1);  // arbitrary choice of the default.  Shouldn't matter, since it shouldn't be needed...
+        break;
+    }
+  }
+
+
+  bool one_possible = false;
+
+  for(int count=0; count<res_count.GetSize();count++)
+  {
+    if(m_world->GetEnvironment().GetResourceLib().GetResource(count)->GetCollectable())
+    {
+      one_possible = true;
+//      cout << "R" << count << ":" << "collectable";
+    }
+  }
+
+  if(!one_possible)
+    return false;
+
+
+  if(bin_used > res_count.GetSize() - 1 || ((bin_used != -1 ) && !m_world->GetEnvironment().GetResourceLib().GetResource(bin_used)->GetCollectable()))
+  {
+    // Pick randomly.
+    do
+    {
+      bin_used = ctx.GetRandom().GetInt(0, res_count.GetSize());
+    } while (!m_world->GetEnvironment().GetResourceLib().GetResource(bin_used)->GetCollectable());
+  }
+
+
+
+  DoActualCollect(ctx, bin_used, env_remove, internal_add, start_bin, end_bin);
+
+  return true;
+}
+
+
+bool cHardwareTransSMT::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin)
+{
+
+  // Set up res_change and max total
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  tArray<double> res_change(res_count.GetSize());
+  res_change.SetAll(0.0);
+  double total = m_organism->GetRBinsTotal();
+  double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
+
+	/* Remove resource(s) from environment if env_remove is set;
+   * add resource(s) to internal resource bins if internal_add is set
+   * (and this would not fill the bin beyond max).
+   */
+  if(bin_used >= 0)
+  {
+    res_change[bin_used] = 0;
+
+    if(res_count[bin_used] > 1)
+      res_change[bin_used] = -1; // * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
+
+
+    if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
+    {m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]);}
+
+    if(!env_remove)
+    {res_change[bin_used] = 0.0;}
+  }
+  else
+  {
+    int num_bins = end_bin - start_bin;
+    for(int i = start_bin; i <= end_bin; i++)
+    {
+      res_change[i] = -1 / num_bins; // * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get() / num_bins);
+      if(internal_add && (max < 0 || (total + -1 * res_change[i]) <= max))
+      {m_organism->AddToRBin(i, -1 * res_change[i]);}
+
+      if(!env_remove)
+      {res_change[i] = 0.0;}
+    }
+  }
+
+  // Update resource counts to reflect res_change
+  m_organism->GetOrgInterface().UpdateResources(res_change);
+
+  return true;
+}
+
+/* Convert modifying NOPs to the index of a resource. If there are fewer
+ * than the number of NOPs required to specify a resource, find the subset
+ * of resources.  (Motivation: can evolve to be more specific if there is
+ * an advantage.)
+ *
+ * @blw
+ * PLEASE NOTE: This does not work well (indeed, will crash) when the number
+ * of resources is not a power of the number of nops.  Until I figure out a
+ * way to fix the mapping without introducing specification ease bias, please
+ * just put some unused dummy resources in your environment file.  This is a
+ * horrible excuse for a "fix" but it works.
+ *
+ * Mostly ripped from Jeff B.'s DoSense(); meant to be a helper function for
+ * DoSense, Inst_Collect, and anything else that wants to use this type of
+ * resource NOP-specification.
+ *
+ * returns true if successful, false otherwise
+ *
+ * start_index and end_index of resource range are "returned" via their
+ * respective arguments; any int at all may be passed to these, as it will just
+ * get overwritten.  (Obviously, if the resource is fully specified,
+ * start_index == end_index.)
+ *
+ * spec_id is the id number of the specification
+ */
+
+bool cHardwareTransSMT::FindModifiedResource(int& start_index, int& end_index, int& spec_id)
+{
+  int num_resources = m_organism->GetOrgInterface().GetResources().GetSize();
+
+  //if there are no resources, translation cannot be successful; return false
+  if (num_resources <= 0)
+  {return false;}
+
+  //calculate the maximum number of NOPs necessary to completely specify a resource
+  int num_nops = GetInstSet().GetNumNops();
+  int max_label_length = (int)(ceil(log((double)num_resources) / log((double)num_nops)));
+
+  //attempt to read a label of the maximum length
+  ReadLabel(max_label_length);
+
+  //find the length of the label that was actually read
+  int real_label_length = GetLabel().GetSize();
+
+  // save the specification id
+  spec_id = GetLabel().AsIntUnique(num_nops);
+
+  /* find start and end resource indices specified by the label */
+
+  cCodeLabel start_label = cCodeLabel(GetLabel());
+  cCodeLabel   end_label = cCodeLabel(GetLabel());
+
+  //fill out any labels that are not maximum length
+  for (int i = 0; i < max_label_length - real_label_length; i++){
+    start_label.AddNop(0);
+    end_label.AddNop(num_nops - 1);
+  }
+
+  //translate into resource indices
+  start_index = start_label.AsInt(num_nops);
+  end_index   =   end_label.AsInt(num_nops);
+
+  return true;
 }

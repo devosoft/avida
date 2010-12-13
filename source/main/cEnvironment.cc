@@ -25,6 +25,8 @@
 
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
+#include "cContextPhenotype.h"
+#include "cContextReactionRequisite.h"
 #include "cEnvReqs.h"
 #include "cInitFile.h"
 #include "cOrganism.h"
@@ -269,6 +271,11 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cUserF
         return false;
       }
     }
+    else if ( var_name == "internal") { 
+      if (!AssertInputBool(var_value, "internal", var_type, feedback)) 
+        return false; 
+      new_process->SetInternal(var_value.AsInt()); 
+    }
     else {
       if (feedback) feedback->Error("unknown process variable '%s' in reaction '%s'",
                                     (const char*)var_name, (const char*)reaction->GetName());
@@ -338,6 +345,68 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cUse
   
   return true;
 }
+
+
+bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString desc, cUserFeedback* feedback)
+{
+  cContextReactionRequisite* new_requisite = reaction->AddContextRequisite();
+
+  // Loop through all entries in description.
+  while (desc.GetSize() > 0) {
+    // Entries are divided by colons.
+    cString var_entry = desc.Pop(':');
+    cString var_name;
+    cString var_value;
+    const cString var_type = cStringUtil::Stringf("reaction '%s' requisite", static_cast<const char*>(reaction->GetName()));
+
+    // Parse this entry.
+    if (!ParseSetting(var_entry, var_name, var_value, var_type, feedback)) return false;
+
+    // Now that we know we have a variable name and its value, set it!
+    if (var_name == "reaction") {
+      cReaction* test_reaction = reaction_lib.GetReaction(var_value);
+      if (!AssertInputValid(test_reaction, "reaction", var_type, var_value, feedback)) {
+        return false;
+      }
+      new_requisite->AddReaction(test_reaction);
+    }
+    else if (var_name == "noreaction") {
+      cReaction* test_reaction = reaction_lib.GetReaction(var_value);
+      if (!AssertInputValid(test_reaction,"noreaction",var_type, var_value, feedback)) {
+        return false;
+      }
+      new_requisite->AddNoReaction(test_reaction);
+    }
+    else if (var_name == "min_count") {
+      if (!AssertInputInt(var_value, "min_count", var_type, feedback)) return false;
+      new_requisite->SetMinTaskCount(var_value.AsInt());
+    }
+    else if (var_name == "max_count") {
+      if (!AssertInputInt(var_value, "max_count", var_type, feedback)) return false;
+      new_requisite->SetMaxTaskCount(var_value.AsInt());
+    }
+    else if (var_name == "divide_only") {
+      if (!AssertInputInt(var_value, "divide_only", var_type, feedback)) return false;
+      new_requisite->SetDivideOnly(var_value.AsInt());
+    }
+        else if (var_name == "min_tot_count") {
+          if (!AssertInputInt(var_value, "min_tot_count", var_type, feedback)) return false;
+          new_requisite->SetMinTotReactionCount(var_value.AsInt());
+    }
+        else if (var_name == "max_tot_count") {
+          if (!AssertInputInt(var_value, "max_tot_count", var_type, feedback)) return false;
+          new_requisite->SetMaxTotReactionCount(var_value.AsInt());
+    }
+    else {
+      if (feedback) feedback->Error("unknown requisite variable '%s' in reaction '%s'",
+                                    (const char*)var_name, (const char*)reaction->GetName());
+      return false;
+    }
+  }
+
+  return true;
+}
+
 
 
 bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
@@ -449,6 +518,10 @@ bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
           if (feedback) feedback->Error("in %s, %s must be true or false", (const char*)var_type, (const char*)var_value);
           return false;
         }
+      }
+      else if (var_name == "collectable") {
+        if(!AssertInputBool(var_value, "collectable", var_type, feedback)) return false;
+          new_resource->SetCollectable(var_value.AsInt());
       }
       else if (var_name == "energy") {
         if (!new_resource->SetEnergyResource( var_value )) {
@@ -658,7 +731,14 @@ bool cEnvironment::LoadReaction(cString desc, cUserFeedback* feedback)
         if (feedback) feedback->Error("failed in loading reaction-requisite...");
         return false;
       }
-    }else {
+    }
+    else if (entry_type == "context_requisite") {
+      if (LoadContextReactionRequisite(new_reaction, desc_entry, feedback) == false) {
+        if (feedback) feedback->Error("failed in loading reaction-requisite...");
+        return false;
+      }
+    }
+    else {
       if (feedback) feedback->Error("unknown entry type '%s' in reaction '%s'", (const char*)entry_type, (const char*)name);
       return false;
     }
@@ -942,7 +1022,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 															tArray<int>& reaction_count, 
                               const tArray<double>& resource_count, 
                               const tArray<double>& rbins_count,
-                              bool is_parasite) const
+                              bool is_parasite, cContextPhenotype* context_phenotype) const
 {  
   //flag to skip processing of parasite tasks
   bool skipProcessing = false;
@@ -978,6 +1058,29 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
       }
     }
     
+
+    if (context_phenotype != 0) {
+      tArray<int> blank_tasks;
+      tArray<int> blank_reactions;
+      blank_tasks.ResizeClear(task_count.GetSize());
+      for(int count=0;count<task_count.GetSize();count++) {
+        blank_tasks[count] = 0;
+      }
+      blank_reactions.ResizeClear(this->GetReactionLib().GetSize());
+      for(int count=0;count<reaction_count.GetSize();count++) {
+        blank_reactions[count] = 0;
+      }
+      context_phenotype->AddTaskCounts(blank_tasks.GetSize(), blank_tasks);
+      context_phenotype->AddReactionCounts(blank_reactions.GetSize(), blank_reactions);
+      int context_task_count = context_phenotype->GetTaskCounts()[task_id];
+      if(TestContextRequisites(cur_reaction->GetContextRequisites(), context_task_count, context_phenotype->GetReactionCounts(), on_divide) == false) {
+        if(!skipProcessing) {  // for those parasites again
+          continue;
+        }
+      }
+    }
+
+
     
     const double task_quality = m_tasklib.TestOutput(taskctx);
     assert(task_quality >= 0.0);
@@ -1029,6 +1132,72 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
   for (int i = 0; i < num_reqs; i++) {
     // See if this requisite batch can be satisfied.
     const cReactionRequisite* cur_req = req_it.Next();
+    bool satisfied = true;
+    
+    // Have all reactions been met?
+    tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
+    while (reaction_it.Next() != NULL) {
+      int react_id = reaction_it.Get()->GetID();
+      if (reaction_count[react_id] == 0) {
+        satisfied = false;
+        break;
+      }
+    }
+    if (satisfied == false) continue;
+    
+    // Have all no-reactions been met?
+    tLWConstListIterator<cReaction> noreaction_it(cur_req->GetNoReactions());
+    while (noreaction_it.Next() != NULL) {
+      int react_id = noreaction_it.Get()->GetID();
+      if (reaction_count[react_id] != 0) {
+        satisfied = false;
+        break;
+      }
+    }
+    if (satisfied == false) continue;
+    
+    // Have all task counts been met?
+    if (task_count < cur_req->GetMinTaskCount()) continue;
+    if (task_count >= cur_req->GetMaxTaskCount()) continue;
+
+	// Have all total reaction counts been met?
+	int tot_reactions = 0;
+	for (int i=0; i<reaction_count.GetSize(); i++)
+		tot_reactions += reaction_count[i];
+	if (tot_reactions < cur_req->GetMinTotReactionCount()) continue;
+	if (tot_reactions >= cur_req->GetMaxTotReactionCount()) continue;
+
+    
+    // Have divide task reqs been met?
+    // If div_type is 0 we only check on IO, if 1 we only check on divide,
+    // if 2 we check always
+    int div_type = cur_req->GetDivideOnly();
+    if (div_type == 1 && !on_divide) continue;
+    if (div_type == 0 && on_divide) continue;
+    
+    return true;
+  }
+  
+  return false;
+}
+
+
+bool cEnvironment::TestContextRequisites(const tList<cContextReactionRequisite>& req_list,
+                                  int task_count, const tArray<int>& reaction_count, const bool on_divide) const
+{
+  const int num_reqs = req_list.GetSize();
+  
+  // If there are no requisites, there is nothing to meet!
+  // (unless this is a check upon dividing, in which case we want the default to be to not check the task
+  // and only if the requisite has been added to check it
+  if (num_reqs == 0) {
+	  return !on_divide;
+  }
+  
+  tLWConstListIterator<cContextReactionRequisite> req_it(req_list);
+  for (int i = 0; i < num_reqs; i++) {
+    // See if this requisite batch can be satisfied.
+    const cContextReactionRequisite* cur_req = req_it.Next();
     bool satisfied = true;
     
     // Have all reactions been met?
@@ -1183,14 +1352,19 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
       bool using_rbins = false;  //default: not using resource bins
       
       if (may_use_rbins) assert(rbins_count.GetSize() > res_id);
-        
+
+      if(cur_process->GetInternal())
+      {
+        consumed = rbins_count[res_id];
+        using_rbins = true;
+      }
       /* Check to see if we do want to use this resource from a bin instead of the environment:
        * - Can we use the resource bins?
        * - Is there anything in the bin for this resource?
        * - Is the usable fraction in the bin strictly greater than the threshold fraction
        *   of what we could consume from the outside environment?
        */
-      if (may_use_rbins && rbins_count[res_id] > 0 && 
+      else if (may_use_rbins && rbins_count[res_id] > 0 && 
           (m_world->GetConfig().USE_STORED_FRACTION.Get() * rbins_count[res_id]) > 
           (m_world->GetConfig().ENV_FRACTION_THRESHOLD.Get() * consumed)
           ) {
@@ -1324,7 +1498,11 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     if (product != NULL) {
       int product_id = product->GetID();
       double product_size = consumed * cur_process->GetConversion();
-      result.Produce(product_id, product_size);
+      if(!cur_process->GetInternal())
+        result.Produce(product_id, product_size, true);
+      else
+        result.Produce(product_id, product_size, false);
+
     }
     
     // Determine what instructions should be run...

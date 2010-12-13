@@ -21,7 +21,7 @@
  */
 
 #include "cPhenotype.h"
-
+#include "cContextPhenotype.h"
 #include "cEnvironment.h"
 #include "cDeme.h"
 #include "cOrganism.h"
@@ -1287,7 +1287,7 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
                             const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                            tArray<cString>& insts_triggered, bool is_parasite)
+                            tArray<cString>& insts_triggered, bool is_parasite, cContextPhenotype* context_phenotype)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
@@ -1306,7 +1306,7 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   cReactionResult& result = *m_reaction_result;
   
   // Run everything through the environment.
-  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in, is_parasite); //NEED different eff_task_count and cur_reaction_count for deme resource
+  bool found = env.TestOutput(ctx, result, taskctx, eff_task_count, cur_reaction_count, res_in, rbins_in, is_parasite, context_phenotype); //NEED different eff_task_count and cur_reaction_count for deme resource
   
   // If nothing was found, stop here.
   if (found == false) {
@@ -1343,7 +1343,9 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
         cur_host_tasks[i]++;
       }
       
-      
+      if(context_phenotype != 0) {
+        context_phenotype->GetTaskCounts()[i]++;
+      }
       if (result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
       
       // if we want to generate and age-task histogram
@@ -1382,6 +1384,9 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       m_world->GetStats().AddNewReactionCount(i);
     }
     if (result.ReactionTriggered(i) == true) {
+      if(context_phenotype != 0) {
+ 	context_phenotype->GetReactionCounts()[i]++;
+      }
       // If the organism has not performed this task,
       // then consider it to be a task switch.
       // If applicable, add in the penalty.
@@ -1465,9 +1470,9 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
   if (result.UsedEnvResource() == false) {
     double rbin_diff;
     for (int i = 0; i < num_resources; i++) {
-      rbin_diff = result.GetInternalConsumed(i);
+      rbin_diff = result.GetInternalConsumed(i) - result.GetInternalProduced(i); ;
       cur_rbins_avail[i] -= rbin_diff;
-      if(rbin_diff > 0) { cur_rbins_total[i] += rbin_diff; }
+      if(rbin_diff != 0) { cur_rbins_total[i] += rbin_diff; }
     }
   }
   

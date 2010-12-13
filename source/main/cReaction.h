@@ -33,6 +33,7 @@
 class cTaskEntry;
 class cReactionProcess;
 class cReactionRequisite;
+class cContextReactionRequisite;
 
 class cReaction
 {
@@ -42,7 +43,9 @@ private:
   cTaskEntry* task;
   tList<cReactionProcess> process_list;
   tList<cReactionRequisite> requisite_list;
+  tList<cContextReactionRequisite> context_requisite_list;
   bool active;
+  bool internal;
 
 
   cReaction(); // @not_implemented
@@ -58,23 +61,25 @@ public:
   cTaskEntry* GetTask() { return task; }
   const tList<cReactionProcess>& GetProcesses() { return process_list; }
   const tList<cReactionRequisite>& GetRequisites() { return requisite_list; }
+  const tList<cContextReactionRequisite>& GetContextRequisites() { return context_requisite_list; }
   bool GetActive() const { return active; }
 
   void SetTask(cTaskEntry* _task) { task = _task; }
   cReactionProcess* AddProcess();
   cReactionRequisite* AddRequisite();
+  cContextReactionRequisite* AddContextRequisite();
   void SetActive(bool in_active = true) { active = in_active; }
-
+  void SetInternal(bool in_internal = true) { internal = in_internal; }
   // These methods will modify the value of the process listed.
   bool ModifyValue(double new_value, int process_num = 0);
-  bool MultiplyValue(double value_mult, int process_num = 0); 
+  bool MultiplyValue(double value_mult, int process_num = 0);
 
   // This method will modify the instruction triggered by this process
-  bool ModifyInst(const cString& inst, int process_num = 0); 
+  bool ModifyInst(const cString& inst, int process_num = 0);
 
   // These methods will modify the min/max count of the requisite for this process
-  bool SetMinTaskCount(int min_count, int requisite_num = 0); 
-  bool SetMaxTaskCount(int max_count, int requisite_num = 0); 
+  bool SetMinTaskCount(int min_count, int requisite_num = 0);
+  bool SetMaxTaskCount(int max_count, int requisite_num = 0);
 
   double GetValue(int process_num = 0);
 };

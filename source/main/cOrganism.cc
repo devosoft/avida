@@ -24,6 +24,7 @@
 
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
+#include "cContextPhenotype.h"
 #include "cDeme.h"
 #include "cEnvironment.h"
 #include "cSequence.h"
@@ -253,10 +254,10 @@ void cOrganism::DoInput(tBuffer<int>& input_buffer, tBuffer<int>& output_buffer,
 }
 
 
-void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide)
+void cOrganism::DoOutput(cAvidaContext& ctx, const bool on_divide, cContextPhenotype* context_phenotype)
 {
   if (m_net) m_net->valid = false;
-  doOutput(ctx, m_input_buf, m_output_buf, on_divide, false);
+  doOutput(ctx, m_input_buf, m_output_buf, on_divide, false, context_phenotype);
 }
 
 
@@ -267,11 +268,11 @@ void cOrganism::DoOutput(cAvidaContext& ctx, const int value)
   doOutput(ctx, m_input_buf, m_output_buf, false, false);
 }
 
-void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite)
+void cOrganism::DoOutput(cAvidaContext& ctx, const int value, bool is_parasite, cContextPhenotype* context_phenotype) 
 {
   m_output_buf.Add(value);
-  NetValidate(ctx, value);  
-  doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite);
+  NetValidate(ctx, value);
+  doOutput(ctx, m_input_buf, m_output_buf, false, (bool)is_parasite, context_phenotype); 
 }
 
 void cOrganism::DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value)
@@ -286,7 +287,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                          tBuffer<int>& input_buffer, 
                          tBuffer<int>& output_buffer,
                          const bool on_divide,
-                         bool is_parasite)
+                         bool is_parasite, 
+                         cContextPhenotype* context_phenotype)
 {  
   const int deme_id = m_interface->GetDemeID();
   const tArray<double> & global_resource_count = m_interface->GetResources();
@@ -361,7 +363,7 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
-                                               insts_triggered, is_parasite);
+                                               insts_triggered, is_parasite, context_phenotype);
 											   
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
@@ -765,12 +767,12 @@ bool cOrganism::Divide_CheckViable()
 // This gets called after a successful divide to deal with the child. 
 // Returns true if parent lives through this process.
 
-bool cOrganism::ActivateDivide(cAvidaContext& ctx)
+bool cOrganism::ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_phenotype)
 {
   assert(m_interface);
   // Test tasks one last time before actually dividing, pass true so 
   // know that should only test "divide" tasks here
-  DoOutput(ctx, true);
+  DoOutput(ctx, true, context_phenotype);
   
   // Handle successful divide consumption of require resource
   const int required_resource = m_world->GetConfig().REQUIRED_RESOURCE.Get();

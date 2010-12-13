@@ -48,6 +48,7 @@
 
 class cAvidaContext;
 class cBioGroup;
+class cContextPhenotype;
 class cEnvironment;
 class cHardwareBase;
 class cInstSet;
@@ -268,14 +269,14 @@ public:
   /* These different flavors of DoOutput are "frontends" to the main DoOutput
   that follows - One DoOutput to rule them all, etc., etc. */
   //! Check tasks based on the current state of this organism's IO & message buffers.
-  void DoOutput(cAvidaContext& ctx, const bool on_divide=false);
+  // void DoOutput(cAvidaContext& ctx, const bool on_divide=false);
+  void DoOutput(cAvidaContext& ctx, const bool on_divide=false, cContextPhenotype* context_phenotype = 0); 
   //! Add the passed-in value to this organism's output buffer, and check tasks (on_divide=false).
   void DoOutput(cAvidaContext& ctx, const int value);
   //! Check if we're calling this from a parasite.
-  void DoOutput(cAvidaContext& ctx, const int value, bool is_parasite);
+  void DoOutput(cAvidaContext& ctx, const int value, bool is_parasite, cContextPhenotype* context_phenotype);
   //! Check tasks based on the passed-in IO buffers and value (on_divide=false).
-  void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);  
-  
+  void DoOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const int value);    
   
   void ClearInput() { m_input_buf.Clear(); }
   void ResetInput() {m_input_pointer = 0; m_input_buf.Clear(); };
@@ -284,7 +285,7 @@ public:
   
   // --------  Divide Methods  --------
   bool Divide_CheckViable();
-  bool ActivateDivide(cAvidaContext& ctx);
+  bool ActivateDivide(cAvidaContext& ctx, cContextPhenotype* context_phenotype = 0);
   
   
   // --------  Networking Support  --------
@@ -644,7 +645,7 @@ private:
   void initialize(cAvidaContext& ctx);
   
   /*! The main DoOutput function.  The DoOutputs above all forward to this function. */
-  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false);
+  void doOutput(cAvidaContext& ctx, tBuffer<int>& input_buffer, tBuffer<int>& output_buffer, const bool on_divide, bool is_parasite=false, cContextPhenotype* context_phenotype = 0);
 };
 
 
