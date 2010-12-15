@@ -197,7 +197,10 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(const cString& (), "name",         "Genotype Name",                 GetName,           SetName,       0, 0, 0);
   ADD_GDATA(bool (),           "viable",       "Is Viable (0/1)",               GetViable,         SetViable,     5, 0, 0);
   ADD_GDATA(int (),            "id",           "Genotype ID",                   GetID,             SetID,         0, 0, 0);
+  ADD_GDATA(int (),            "src",          "Genotype Source",               GetSource,         SetSource,     0, 0, 0);
+  ADD_GDATA(const cString& (), "src_args",     "Genotype Source Arguments",     GetSourceArgs,     SetSourceArgs, 0, "(none)", 0);
   ADD_GDATA(const cString& (), "tag",          "Genotype Tag",                  GetTag,            SetTag,        0, "(none)","");
+  ADD_GDATA(const cString& (), "parents",      "Parent String",                 GetParents,        SetParents,    0, "(none)", 0);
   ADD_GDATA(int (),            "parent_id",    "Parent ID",                     GetParentID,       SetParentID,   0, 0, 0);
   ADD_GDATA(int (),            "parent2_id",   "Second Parent ID (sexual orgs)",GetParent2ID,      SetParent2ID,  0, 0, 0);
   ADD_GDATA(int (),            "parent_dist",  "Parent Distance",               GetParentDist,     SetParentDist, 0, 0, 0);
@@ -205,6 +208,8 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(int (),            "lineage",      "Unique Lineage Label",          GetLineageLabel,   SetLineageLabel, 0, 0, 0);
   ADD_GDATA(int (),            "num_cpus",     "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
   ADD_GDATA(int (),            "total_cpus",   "Total CPUs Ever",               GetTotalCPUs,      SetTotalCPUs,  0, 0, 0);
+  ADD_GDATA(int (),            "num_units",    "Number of CPUs",                GetNumCPUs,        SetNumCPUs,    0, 0, 0);
+  ADD_GDATA(int (),            "total_units",  "Total CPUs Ever",               GetTotalCPUs,      SetTotalCPUs,  0, 0, 0);
   ADD_GDATA(int (),            "length",       "Genome Length",                 GetLength,         SetLength,     4, 0, 0);
   ADD_GDATA(int (),            "copy_length",  "Copied Length",                 GetCopyLength,     SetCopyLength, 0, 0, 0);
   ADD_GDATA(int (),            "exe_length",   "Executed Length",               GetExeLength,      SetExeLength,  0, 0, 0);
@@ -219,8 +224,12 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(int (),            "mate_id",      "Mate Selection ID Number",      GetMateID,         SetMateID,     0, 0, 0);
   ADD_GDATA(double (),         "fitness_ratio","Fitness Ratio",                 GetFitnessRatio,   SetNULL,       5, 0, 0);
   ADD_GDATA(int (),            "update_born",  "Update Born",                   GetUpdateBorn,     SetUpdateBorn, 0, 0, 0);
+  ADD_GDATA(int (),            "gen_born",     "Update Born",                   GetUpdateBorn,     SetUpdateBorn, 0, 0, 0);
   ADD_GDATA(int (),            "update_dead",  "Update Dead",                   GetUpdateDead,     SetUpdateDead, 0, 0, 0);
-  ADD_GDATA(int (),            "depth",        "Tree Depth",                    GetDepth,          SetDepth,      0, 0, 0);
+  ADD_GDATA(int (),            "update_deactivated",  "Update Dead",            GetUpdateDead,     SetUpdateDead, 0, 0, 0);
+  ADD_GDATA(int (),            "depth",        "Tree Depth",                    GetDepth,          SetDepth,      0, 0, 0);  
+  ADD_GDATA(const cString& (), "cells",        "Cells",                         GetCells,          SetCells,      0, 0, 0);
+  ADD_GDATA(const cString& (), "gest_offset",  "Gest Offsets",                  GetGestOffsets,    SetGestOffsets, 0, 0, 0);
   ADD_GDATA(double (),         "frac_dead",    "Fraction Mutations Lethal",     GetFracDead,       SetNULL,       0, 0, 0);
   ADD_GDATA(double (),         "frac_neg",     "Fraction Mutations Detrimental",GetFracNeg,        SetNULL,       0, 0, 0);
   ADD_GDATA(double (),         "frac_neut",    "Fraction Mutations Neutral",    GetFracNeut,       SetNULL,       0, 0, 0);
@@ -245,9 +254,11 @@ dcm->Add(KEYWORD, new tDataEntryOfType<cAnalyzeGenotype, TYPE>                  
   ADD_GDATA(const cString& (), "parent_muts", "Mutations from Parent", GetParentMuts,   SetParentMuts, 0, "(none)", "");
   ADD_GDATA(const cString (), "mut_steps", "Mutation Steps from Parent", GetMutSteps,   SetMutSteps,   0, "", "");
   
-  ADD_GDATA(const cString& (), "task_order", "Task Performance Order", GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
-  ADD_GDATA(cString (),        "sequence", "Genome Sequence",               GetSequence,     SetSequence,   0, "(N/A)", "");
-  ADD_GDATA(const cString& (), "alignment", "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
+  ADD_GDATA(const cString& (), "task_order", "Task Performance Order",  GetTaskOrder,    SetTaskOrder,  0, "(none)", "");
+  ADD_GDATA(int (),            "hw_type",    "Hardware Type",           GetHWType,       SetHWType,   0, "(N/A)", "");
+  ADD_GDATA(const cString& (), "inst_set",   "Instruction Set",         GetInstSet,      SetInstSet,   0, "(N/A)", "");
+  ADD_GDATA(cString (),        "sequence",   "Genome Sequence",         GetSequence,     SetSequence,   0, "(N/A)", "");
+  ADD_GDATA(const cString& (), "alignment",  "Aligned Sequence",        GetAlignedSequence, SetAlignedSequence, 0, "(N/A)", "");
   
   ADD_GDATA(cString (), "executed_flags", "Executed Flags",             GetExecutedFlags, SetNULL, 0, "(N/A)", "");
   ADD_GDATA(cString (), "alignment_executed_flags", "Alignment Executed Flags", GetAlignmentExecutedFlags, SetNULL, 0, "(N/A)", "");
@@ -612,6 +623,51 @@ void cAnalyzeGenotype::PrintInternalTasksQuality(ofstream& fp, int min_task, int
   for (int i = min_task; i < max_task; i++) {
     fp << internal_task_qualities[i] << " ";
   }
+}
+
+void cAnalyzeGenotype::SetParents(const cString& parent_str)
+{
+  cString lps(parent_str);
+  if (lps.GetSize()) parent_id = lps.Pop(',').AsInt();
+  if (lps.GetSize()) parent2_id = lps.Pop(',').AsInt();
+}
+
+void cAnalyzeGenotype::SetParentID(int _parent_id)
+{
+  parent_id = _parent_id;
+  if (parent_id >= 0) {
+    if (parent2_id >= 0) {
+      m_parent_str = cStringUtil::Stringf("%d,%d", parent_id, parent2_id);
+    } else {
+      m_parent_str = cStringUtil::Stringf("%d", parent_id);
+    }
+  } else {
+    m_parent_str = "";
+  }
+}
+
+void cAnalyzeGenotype::SetParent2ID(int _parent2_id)
+{
+  parent2_id = _parent2_id;
+  if (parent_id >= 0) {
+    if (parent2_id >= 0) {
+      m_parent_str = cStringUtil::Stringf("%d,%d", parent_id, parent2_id);
+    } else {
+      m_parent_str = cStringUtil::Stringf("%d", parent_id);
+    }
+  } else {
+    m_parent_str = "";
+  }
+}
+
+void cAnalyzeGenotype::SetHWType(int hw_type)
+{
+  m_genome.SetHardwareType(hw_type);
+}
+
+void cAnalyzeGenotype::SetInstSet(const cString& inst_set)
+{
+  m_genome.SetInstSet(inst_set);
 }
 
 void cAnalyzeGenotype::SetSequence(cString _sequence)
