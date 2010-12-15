@@ -738,7 +738,20 @@ void cAnalyze::LoadFile(cString cur_string)
   // Construct a linked list of data types that can be loaded...
   tList< tDataEntryCommand<cAnalyzeGenotype> > output_list;
   tListIterator< tDataEntryCommand<cAnalyzeGenotype> > output_it(output_list);
-  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(input_file.GetFormat(), output_list);
+  cUserFeedback feedback;
+  cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(input_file.GetFormat(), output_list, &feedback);
+  
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::ERROR:    cerr << "error: "; break;
+      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
+  }  
+  
+  if (feedback.GetNumErrors()) return;
+  
   bool id_inc = input_file.GetFormat().HasString("id");
   
   // Setup the genome...
