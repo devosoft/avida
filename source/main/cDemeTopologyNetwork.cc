@@ -337,7 +337,8 @@ void cDemeTopologyNetwork::PrintTopology(cDataFile& df) const {
 		df.Write(m_deme.GetDemeID(), "Deme ID [deme]");
 		df.Write(m_network[boost::source(*ei, m_network)]._cell_id, "Source [src]");
 		df.Write(m_network[boost::target(*ei, m_network)]._cell_id, "Destination [dst]");
-		df.Write(m_world->GetStats().GetUpdate() - m_network[*ei]._t, "Age [age]");
+		df.Write(m_world->GetStats().GetUpdate() - m_network[*ei]._t, "Current link age [age]");
+		df.Write(m_world->GetConfig().DEME_NETWORK_LINK_DECAY.Get(), "Link age limit [agelimit]");		
 		df.Endl();
 	}
 }

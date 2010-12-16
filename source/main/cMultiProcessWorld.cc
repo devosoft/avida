@@ -54,12 +54,19 @@ struct migration_message {
 	: _merit(merit), _lineage(lineage) {
 		_genome = org->GetGenome().AsString();
 		cell.GetPosition(_x, _y);
+		_generation = org->GetPhenotype().GetGeneration();
 	}
+
+	//! Finish unpacking an organism from this message.
+	void unpack(cOrganism* org) {
+		org->UpdateMerit(_merit);
+		org->GetPhenotype().SetGeneration(_generation);
+	}	
 	
 	//! Serializer, used to (de)marshal organisms for migration.
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
-		ar & _genome & _merit & _lineage & _x & _y;
+		ar & _genome & _merit & _lineage & _x & _y & _generation;
 	}
 	
 	std::string _genome; //!< Genome of the migrating organism.
@@ -67,6 +74,7 @@ struct migration_message {
 	int _lineage; //!< Lineage label of this organism in its orginating population.
 	int _x; //!< X-coordinate of the cell from which this migrant originated.
 	int _y; //!< Y-coordinate of the cell from which this migrant originated.
+	int _generation; //!< Generation of this organism.
 };
 
 
@@ -313,8 +321,8 @@ void cMultiProcessWorld::ProcessPostUpdate(cAvidaContext& ctx) {
 																	 SRC_ORGANISM_RANDOM, // for right now, we'll treat this as a random organism injection
 																	 cGenome(cString(migrant._genome.c_str())), // genome unpacked from message
 																	 migrant._lineage); // lineage label
-			// oh!  update its merit, too:
-			GetPopulation().GetCell(target_cell).GetOrganism()->UpdateMerit(migrant._merit);
+			// unpack the rest from the message:
+			migrant.unpack(GetPopulation().GetCell(target_cell).GetOrganism());
 			GetStats().IncomingMigrant(GetPopulation().GetCell(target_cell).GetOrganism());
 		}
 	}
