@@ -327,6 +327,7 @@
 		705B10411073AF05002242E6 /* instset-heads.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10361073AC1F002242E6 /* instset-heads.cfg */; };
 		7062242812A4C3A100E210C1 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
+		7068E89E12BABC2A00B4EEEA /* SubtleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7068E89D12BABC2A00B4EEEA /* SubtleSplitView.m */; };
 		706C7B6A125F64C400EDB4B9 /* cCoreView_ClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* cCoreView_ClassificationInfo.cc */; };
 		706C7B6B125F64C600EDB4B9 /* cCoreView_Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */; };
 		706C7B6C125F64CC00EDB4B9 /* cColor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E32B125CDF2B00D56AC4 /* cColor.cc */; };
@@ -1069,6 +1070,8 @@
 		705B10361073AC1F002242E6 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads.cfg"; sourceTree = "<group>"; };
 		705FD5F9123A81A8002DE4B2 /* tSparseVectorList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSparseVectorList.h; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
+		7068E89C12BABC2A00B4EEEA /* SubtleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubtleSplitView.h; sourceTree = "<group>"; };
+		7068E89D12BABC2A00B4EEEA /* SubtleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubtleSplitView.m; sourceTree = "<group>"; };
 		7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayUtils.h; sourceTree = "<group>"; };
 		706C6F480B83E69D003174C1 /* cSaleItem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSaleItem.h; sourceTree = "<group>"; };
 		706C6FFD0B83F254003174C1 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
@@ -1876,6 +1879,8 @@
 				701324F9129C28D300839392 /* MapGridView.mm */,
 				70F6114212A5A3D700FE2D78 /* AvidaEDController.h */,
 				70F6114312A5A3D700FE2D78 /* AvidaEDController.mm */,
+				7068E89C12BABC2A00B4EEEA /* SubtleSplitView.h */,
+				7068E89D12BABC2A00B4EEEA /* SubtleSplitView.m */,
 			);
 			path = "viewer-macos";
 			sourceTree = "<group>";
@@ -3075,6 +3080,7 @@
 				7042DF30128C91BE0062501F /* CoreViewListener.mm in Sources */,
 				701324FA129C28D300839392 /* MapGridView.mm in Sources */,
 				70F6114412A5A3D700FE2D78 /* AvidaEDController.mm in Sources */,
+				7068E89E12BABC2A00B4EEEA /* SubtleSplitView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

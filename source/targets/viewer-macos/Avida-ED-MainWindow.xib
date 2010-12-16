@@ -1276,6 +1276,7 @@
 					<string>105.IBEditorWindowLastContentRect</string>
 					<string>105.IBPluginDependency</string>
 					<string>105.IBViewBoundsToFrameTransform</string>
+					<string>106.CustomClassName</string>
 					<string>106.IBPluginDependency</string>
 					<string>106.IBViewBoundsToFrameTransform</string>
 					<string>106.IBViewIntegration.shadowBlurRadius</string>
@@ -1357,6 +1358,7 @@
 					<string>{{1368, 810}, {820, 698}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform"/>
+					<string>SubtleSplitView</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">P4AAAL+AAABCJAAAxDOAAA</bytes>
@@ -1560,6 +1562,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">source/targets/viewer-macos/MapGridView.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">SubtleSplitView</string>
+					<string key="superclassName">NSSplitView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">source/targets/viewer-macos/SubtleSplitView.h</string>
 					</object>
 				</object>
 			</object>
