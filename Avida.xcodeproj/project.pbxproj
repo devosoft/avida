@@ -2785,7 +2785,6 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 2.4";
-			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,
@@ -3651,6 +3650,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Development;
 		};
@@ -3674,6 +3674,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				ZERO_LINK = NO;
 			};
 			name = Deployment;
@@ -3696,6 +3697,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = "Deployment-G5";
 		};
@@ -3717,6 +3719,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = "Deployment-Universal";
 		};
@@ -3738,6 +3741,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Profile;
 		};

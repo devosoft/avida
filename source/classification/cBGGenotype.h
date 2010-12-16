@@ -106,7 +106,7 @@ public:
 
   
   // Genotype Specific Methods
-  inline const eBioUnitSource GetSource() const { return m_src; }
+  inline eBioUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
   inline const cGenome& GetGenome() const { return m_genome; }
   inline cString GetGenomeString() const { return m_genome.AsString(); }

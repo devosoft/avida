@@ -23,7 +23,7 @@
 #define cUserFeedback_h
 
 #include "cString.h"
-#include "tSmartArray.h";
+#include "tSmartArray.h"
 
 #include <cstdarg>
 
