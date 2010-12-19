@@ -2845,6 +2845,52 @@ public:
   }
 };
 
+
+
+/* Dumps the task grid of the last task performed by each organism. */
+class cActionDumpLastTaskGrid : public cAction
+  {
+  private:
+    cString m_filename;
+    
+  public:
+    cActionDumpLastTaskGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+    {
+      cString largs(args);
+      if (largs.GetSize()) m_filename = largs.PopWord();  
+    }
+    static const cString GetDescription() { return "Arguments: [string fname='']"; }
+    void Process(cAvidaContext& ctx)
+    {
+      cString filename(m_filename);
+      if (filename == "") filename.Set("grid_last_task.%d.dat", m_world->GetStats().GetUpdate());
+      ofstream& fp = m_world->GetDataFileOFStream(filename);
+      
+      cPopulation* pop = &m_world->GetPopulation();
+      int task_id;      
+      for (int i = 0; i < pop->GetWorldX(); i++) {
+        for (int j = 0; j < pop->GetWorldY(); j++) {
+          int cell_num = i * pop->GetWorldX() + j;
+          if (pop->GetCell(cell_num).IsOccupied() == true) {
+            cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+            task_id = organism->GetPhenotype().GetLastTaskID();
+          } else {
+            task_id = -1;
+          }
+          fp << m_world->GetStats().GetUpdate() << " " << cell_num << " "  << task_id << endl;
+        }
+      }
+      
+      m_world->GetDataFileManager().Remove(filename);
+    }
+  };
+
+
+
+
+
+//Dump the reaction grid from the last gestation cycle, so skip the 
+//test cpu, and just use what the phenotype has. 
 //LZ - dump task grid for only the hosts, skip the test cpu and just output the last
 //gestation cycle tasks.
 class cActionDumpHostTaskGrid : public cAction
@@ -3444,11 +3490,10 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
+  action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
 	action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
   action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
-
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
-
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");
   action_lib->Register<cActionDumpEnergyGrid>("DumpEnergyGrid");
