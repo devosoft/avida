@@ -40,7 +40,7 @@
 
 
 cHardwareManager::cHardwareManager(cWorld* world)
-: m_world(world), m_cpu_count(0)
+: m_world(world)
 {
   cString filename = world->GetConfig().INST_SET.Get();
   m_is_name_map.SetDefault(-1);
@@ -248,7 +248,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
   
   // Are we tracing the execution of this cpu?
   if (m_world->GetConfig().TRACE_EXECUTION.Get()) {
-    cString filename =  cStringUtil::Stringf("trace-%d.trace", m_cpu_count++);
+    cString filename =  cStringUtil::Stringf("trace-%d.trace", org->GetID());
     hw->SetTrace(new cHardwareStatusPrinter(m_world->GetDataFileOFStream(filename)));
   }
   

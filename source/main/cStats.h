@@ -1071,6 +1071,11 @@ public:
 
 protected:
 	avg_profiling_stats_t m_profiling; //!< Profiling statistics.
+	
+	// -------- Support for organism locations --------
+public:
+	//! Print organism locations.
+	void PrintOrganismLocation(const cString& filename);
 };
 
 

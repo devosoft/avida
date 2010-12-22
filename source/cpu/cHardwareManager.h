@@ -42,8 +42,6 @@ private:
   cWorld* m_world;
   tArray<cInstSet*> m_inst_sets;
   tDictionary<int> m_is_name_map;
-  int m_cpu_count;
-  
   
   cHardwareManager(); // @not_implemented
   cHardwareManager(const cHardwareManager&); // @not_implemented
