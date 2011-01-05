@@ -58,9 +58,9 @@ public:
 
 private:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 4;
+  static const int NUM_REGISTERS = 6;
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
-  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
+  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX, REG_GX, REG_HX };
   static const int NUM_NOPS = NUM_REGISTERS;
   
   
@@ -434,6 +434,7 @@ private:
   bool Inst_HeadCopy_NoLabel(cAvidaContext& ctx);
   bool Inst_SearchS(cAvidaContext& ctx);
   bool Inst_SearchS_Direct(cAvidaContext& ctx);
+  bool Inst_SearchS_Seq(cAvidaContext& ctx);
   bool Inst_SearchF(cAvidaContext& ctx);
   bool Inst_SearchF_Direct(cAvidaContext& ctx);
   bool Inst_SearchB(cAvidaContext& ctx);

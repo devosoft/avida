@@ -71,9 +71,10 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     cNOPEntry("nop-B", REG_BX),
     cNOPEntry("nop-C", REG_CX),
     cNOPEntry("nop-D", REG_DX),
-
     cNOPEntry("nop-E", REG_EX),
     cNOPEntry("nop-F", REG_FX),
+    cNOPEntry("nop-G", REG_GX),
+    cNOPEntry("nop-H", REG_HX),
 };
   
   static const tInstLibEntry<tMethod> s_f_array[] = {
@@ -82,53 +83,54 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
      in the same order in tInstLibEntry<tMethod> s_f_array, and these entries must
      be the first elements of s_f_array.
      */
-    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
-    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, (nInstFlag::DEFAULT | nInstFlag::NOP), "No-operation; modifies other instructions"),
-
+    tInstLibEntry<tMethod>("nop-A", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-B", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-C", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-D", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-E", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
     tInstLibEntry<tMethod>("nop-F", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-G", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
+    tInstLibEntry<tMethod>("nop-H", &cHardwareExperimental::Inst_Nop, nInstFlag::NOP, "No-operation; modifies other instructions"),
 
     tInstLibEntry<tMethod>("NULL", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
     tInstLibEntry<tMethod>("nop-X", &cHardwareExperimental::Inst_Nop, 0, "True no-operation instruction: does nothing"),
 
     
     // Standard Conditionals
-    tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, nInstFlag::DEFAULT, "Execute next instruction if ?BX?!=?CX?, else skip it"),
-    tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, nInstFlag::DEFAULT, "Execute next instruction if ?BX? < ?CX?, else skip it"),
+    tInstLibEntry<tMethod>("if-n-equ", &cHardwareExperimental::Inst_IfNEqu, 0, "Execute next instruction if ?BX?!=?CX?, else skip it"),
+    tInstLibEntry<tMethod>("if-less", &cHardwareExperimental::Inst_IfLess, 0, "Execute next instruction if ?BX? < ?CX?, else skip it"),
     tInstLibEntry<tMethod>("if-not-0", &cHardwareExperimental::Inst_IfNotZero, 0, "Execute next instruction if ?BX? != 0, else skip it"),
     tInstLibEntry<tMethod>("if-equ-0", &cHardwareExperimental::Inst_IfEqualZero, 0, "Execute next instruction if ?BX? == 0, else skip it"),
     tInstLibEntry<tMethod>("if-gtr-0", &cHardwareExperimental::Inst_IfGreaterThanZero, 0, "Execute next instruction if ?BX? > 0, else skip it"),
     tInstLibEntry<tMethod>("if-less-0", &cHardwareExperimental::Inst_IfLessThanZero, 0, "Execute next instruction if ?BX? < 0, else skip it"),
-    tInstLibEntry<tMethod>("if-gtr-X", &cHardwareExperimental::Inst_IfGtrX),
-    tInstLibEntry<tMethod>("if-equ-X", &cHardwareExperimental::Inst_IfEquX),
+    tInstLibEntry<tMethod>("if-gtr-x", &cHardwareExperimental::Inst_IfGtrX),
+    tInstLibEntry<tMethod>("if-equ-x", &cHardwareExperimental::Inst_IfEquX),
 
     tInstLibEntry<tMethod>("if-cons", &cHardwareExperimental::Inst_IfConsensus, 0, "Execute next instruction if ?BX? in consensus, else skip it"),
     tInstLibEntry<tMethod>("if-cons-24", &cHardwareExperimental::Inst_IfConsensus24, 0, "Execute next instruction if ?BX[0:23]? in consensus , else skip it"),
     tInstLibEntry<tMethod>("if-less-cons", &cHardwareExperimental::Inst_IfLessConsensus, 0, "Execute next instruction if Count(?BX?) < Count(?CX?), else skip it"),
     tInstLibEntry<tMethod>("if-less-cons-24", &cHardwareExperimental::Inst_IfLessConsensus24, 0, "Execute next instruction if Count(?BX[0:23]?) < Count(?CX[0:23]?), else skip it"),
 
-    tInstLibEntry<tMethod>("if-stk-gtr", &cHardwareExperimental::Inst_IfStackGreater, nInstFlag::DEFAULT, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
+    tInstLibEntry<tMethod>("if-stk-gtr", &cHardwareExperimental::Inst_IfStackGreater, 0, "Execute next instruction if the top of the current stack > inactive stack, else skip it"),
 
     // Core ALU Operations
-    tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, nInstFlag::DEFAULT, "Remove top number from stack and place into ?BX?"),
-    tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, nInstFlag::DEFAULT, "Copy number from ?BX? and place it into the stack"),
-    tInstLibEntry<tMethod>("swap-stk", &cHardwareExperimental::Inst_SwitchStack, nInstFlag::DEFAULT, "Toggle which stack is currently being used"),
-    tInstLibEntry<tMethod>("swap-stk-top", &cHardwareExperimental::Inst_SwapStackTop, nInstFlag::DEFAULT, "Swap the values at the top of both stacks"),
-    tInstLibEntry<tMethod>("swap", &cHardwareExperimental::Inst_Swap, nInstFlag::DEFAULT, "Swap the contents of ?BX? with ?CX?"),
+    tInstLibEntry<tMethod>("pop", &cHardwareExperimental::Inst_Pop, 0, "Remove top number from stack and place into ?BX?"),
+    tInstLibEntry<tMethod>("push", &cHardwareExperimental::Inst_Push, 0, "Copy number from ?BX? and place it into the stack"),
+    tInstLibEntry<tMethod>("swap-stk", &cHardwareExperimental::Inst_SwitchStack, 0, "Toggle which stack is currently being used"),
+    tInstLibEntry<tMethod>("swap-stk-top", &cHardwareExperimental::Inst_SwapStackTop, 0, "Swap the values at the top of both stacks"),
+    tInstLibEntry<tMethod>("swap", &cHardwareExperimental::Inst_Swap, 0, "Swap the contents of ?BX? with ?CX?"),
     
-    tInstLibEntry<tMethod>("shift-r", &cHardwareExperimental::Inst_ShiftR, nInstFlag::DEFAULT, "Shift bits in ?BX? right by one (divide by two)"),
-    tInstLibEntry<tMethod>("shift-l", &cHardwareExperimental::Inst_ShiftL, nInstFlag::DEFAULT, "Shift bits in ?BX? left by one (multiply by two)"),
-    tInstLibEntry<tMethod>("inc", &cHardwareExperimental::Inst_Inc, nInstFlag::DEFAULT, "Increment ?BX? by one"),
-    tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, nInstFlag::DEFAULT, "Decrement ?BX? by one"),
+    tInstLibEntry<tMethod>("shift-r", &cHardwareExperimental::Inst_ShiftR, 0, "Shift bits in ?BX? right by one (divide by two)"),
+    tInstLibEntry<tMethod>("shift-l", &cHardwareExperimental::Inst_ShiftL, 0, "Shift bits in ?BX? left by one (multiply by two)"),
+    tInstLibEntry<tMethod>("inc", &cHardwareExperimental::Inst_Inc, 0, "Increment ?BX? by one"),
+    tInstLibEntry<tMethod>("dec", &cHardwareExperimental::Inst_Dec, 0, "Decrement ?BX? by one"),
 
-    tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, nInstFlag::DEFAULT, "Add BX to CX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, nInstFlag::DEFAULT, "Subtract CX from BX and place the result in ?BX?"),
-    tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, nInstFlag::DEFAULT, "Nand BX by CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("add", &cHardwareExperimental::Inst_Add, 0, "Add BX to CX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("sub", &cHardwareExperimental::Inst_Sub, 0, "Subtract CX from BX and place the result in ?BX?"),
+    tInstLibEntry<tMethod>("nand", &cHardwareExperimental::Inst_Nand, 0, "Nand BX by CX and place the result in ?BX?"),
     
-    tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, (nInstFlag::DEFAULT | nInstFlag::STALL), "Output ?BX?, and input new number back into ?BX?"),
-    tInstLibEntry<tMethod>("IO-expire", &cHardwareExperimental::Inst_TaskIOExpire, (nInstFlag::DEFAULT | nInstFlag::STALL), "Output ?BX?, and input new number back into ?BX?, if the number has not yet expired"),
+    tInstLibEntry<tMethod>("IO", &cHardwareExperimental::Inst_TaskIO, nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?"),
+    tInstLibEntry<tMethod>("IO-expire", &cHardwareExperimental::Inst_TaskIOExpire, nInstFlag::STALL, "Output ?BX?, and input new number back into ?BX?, if the number has not yet expired"),
     tInstLibEntry<tMethod>("input", &cHardwareExperimental::Inst_TaskInput, nInstFlag::STALL, "Input new number into ?BX?"),
     tInstLibEntry<tMethod>("output", &cHardwareExperimental::Inst_TaskOutput, nInstFlag::STALL, "Output ?BX?"),
     tInstLibEntry<tMethod>("output-zero", &cHardwareExperimental::Inst_TaskOutputZero, nInstFlag::STALL, "Output ?BX?"),
@@ -148,6 +150,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("search-s-direct", &cHardwareExperimental::Inst_SearchS_Direct, 0, "Find direct template from genome start and move the flow head"),
     tInstLibEntry<tMethod>("search-f-direct", &cHardwareExperimental::Inst_SearchF_Direct, 0, "Find direct template forward and move the flow head"),
     tInstLibEntry<tMethod>("search-b-direct", &cHardwareExperimental::Inst_SearchB_Direct, 0, "Find direct template backward and move the flow head"),
+    tInstLibEntry<tMethod>("search-s-seq", &cHardwareExperimental::Inst_SearchS_Seq, 0, "Find complement template from genome start and move the flow head"),
 
     tInstLibEntry<tMethod>("mov-head", &cHardwareExperimental::Inst_MoveHead, nInstFlag::DEFAULT, "Move head ?IP? to the flow head"),
     tInstLibEntry<tMethod>("mov-head-if-n-equ", &cHardwareExperimental::Inst_MoveHeadIfNEqu, nInstFlag::DEFAULT, "Move head ?IP? to the flow head if ?BX? != ?CX?"),
@@ -224,7 +227,7 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
   for (int i = 0; i < f_size; i++) functions[i] = s_f_array[i].GetFunction();
 
 	const int def = 0;
-  const int null_inst = 6;
+  const int null_inst = 8;
   
   return new tInstLib<tMethod>(f_size, s_f_array, n_names, nop_mods, functions, def, null_inst);
 }
@@ -1831,6 +1834,16 @@ bool cHardwareExperimental::Inst_SearchS_Direct(cAvidaContext& ctx)
 {
   ReadLabel();
   cHeadCPU found_pos = FindLabelStart(true);
+  getHead(nHardware::HEAD_FLOW).Set(found_pos);
+  getHead(nHardware::HEAD_FLOW).Advance();
+  return true;
+}
+
+bool cHardwareExperimental::Inst_SearchS_Seq(cAvidaContext& ctx)
+{
+  ReadLabel();
+  GetLabel().Rotate(1, NUM_NOPS);
+  cHeadCPU found_pos = FindNopSequenceStart(true);
   getHead(nHardware::HEAD_FLOW).Set(found_pos);
   getHead(nHardware::HEAD_FLOW).Advance();
   return true;

@@ -375,7 +375,7 @@
 		70A1E7D5126625A500D56AC4 /* viewer-fltk.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */; };
 		70A1E7DE1266261500D56AC4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70A1E7E01266261700D56AC4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
-		70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70A1E7BC1266253E00D56AC4 /* avida-fltk */; };
+		70A1E805126626E200D56AC4 /* avida-fltkview in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70A1E7BC1266253E00D56AC4 /* avida-fltkview */; };
 		70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E86D12663FA100D56AC4 /* cThread.cc */; };
 		70A1E87F126642B100D56AC4 /* Platform.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E87B126640C400D56AC4 /* Platform.cc */; };
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
@@ -750,7 +750,7 @@
 			dstPath = work;
 			dstSubfolderSpec = 16;
 			files = (
-				70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */,
+				70A1E805126626E200D56AC4 /* avida-fltkview in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1223,7 +1223,7 @@
 		70A1E7B61266250500D56AC4 /* libfltk_jpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_jpeg.a; path = /usr/local/lib/libfltk_jpeg.a; sourceTree = "<absolute>"; };
 		70A1E7B71266250500D56AC4 /* libfltk_png.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_png.a; path = /usr/local/lib/libfltk_png.a; sourceTree = "<absolute>"; };
 		70A1E7B81266250500D56AC4 /* libfltk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk.a; path = /usr/local/lib/libfltk.a; sourceTree = "<absolute>"; };
-		70A1E7BC1266253E00D56AC4 /* avida-fltk */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-fltk"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70A1E7BC1266253E00D56AC4 /* avida-fltkview */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-fltkview"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
 		70A1E86C12663FA100D56AC4 /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
@@ -2536,7 +2536,7 @@
 				56F555D00C3B364E00E2E929 /* avida-text */,
 				7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */,
 				706C7B64125F64B000EDB4B9 /* libviewer-core.a */,
-				70A1E7BC1266253E00D56AC4 /* avida-fltk */,
+				70A1E7BC1266253E00D56AC4 /* avida-fltkview */,
 				70823A40126F663A00FA937F /* Avida.app */,
 			);
 			name = Products;
@@ -2723,7 +2723,7 @@
 			);
 			name = "avida-fltk";
 			productName = "avida-fltkview";
-			productReference = 70A1E7BC1266253E00D56AC4 /* avida-fltk */;
+			productReference = 70A1E7BC1266253E00D56AC4 /* avida-fltkview */;
 			productType = "com.apple.product-type.tool";
 		};
 		70B6514B0BEA6FAD002472ED /* unit-tests */ = {
