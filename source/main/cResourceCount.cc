@@ -426,12 +426,12 @@ const tArray<int> & cResourceCount::GetResourcesGeometry() const
   return geometry;
 }
 
-const tArray< tArray<double> > &  cResourceCount::GetSpatialRes()
+const tArray< tArray<double> > &  cResourceCount::GetSpatialRes(cAvidaContext* ctx)
 {
   const int num_spatial_resources = spatial_resource_count.GetSize();
   if (num_spatial_resources > 0) {
     const int num_cells = spatial_resource_count[0]->GetSize();
-    DoUpdates();
+    DoUpdates(ctx);
     for (int i = 0; i < num_spatial_resources; i++) {
       for (int j = 0; j < num_cells; j++) {
 	curr_spatial_res_cnt[i][j] = spatial_resource_count[i]->GetAmount(j);

@@ -111,7 +111,7 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
   const tArray<double>& GetCellResources(int cell_id, cAvidaContext* ctx) const; //JW
   const tArray<int>& GetResourcesGeometry() const;
   int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
-  const tArray<tArray<double> >& GetSpatialRes();
+  const tArray<tArray<double> >& GetSpatialRes(cAvidaContext* ctx); //JW
   const tArray<tArray<int> >& GetCellIdLists() const { return cell_lists; }
   void Modify(const tArray<double>& res_change);
   void Modify(int id, double change);

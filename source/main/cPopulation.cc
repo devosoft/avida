@@ -4272,7 +4272,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext* ctx) //JW
   stats.SetMinGenomeLength(min_genome_length);
   
   stats.SetResources(resource_count.GetResources(ctx)); //JW
-  stats.SetSpatialRes(resource_count.GetSpatialRes());
+  stats.SetSpatialRes(resource_count.GetSpatialRes(ctx)); //JW
   stats.SetResourcesGeometry(resource_count.GetResourcesGeometry());
 }
 
