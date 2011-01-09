@@ -502,12 +502,12 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
   const int max_executed = m_organism->GetMaxExecuted();
   if((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
       || phenotype.GetToDie() == true) {
-    m_organism->Die();
+    m_organism->Die(&ctx);
   }
   
   // Kill organisms that have no active programids.
   if(m_programids.size() == 0) {
-    m_organism->Die();
+    m_organism->Die(&ctx);
   }
   
   m_organism->SetRunning(false);
@@ -2053,7 +2053,7 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
 
 bool cHardwareGX::Inst_SpawnDeme(cAvidaContext& ctx)
 {
-  m_organism->SpawnDeme();
+  m_organism->SpawnDeme(&ctx); //JW
   return true;
 }
 
@@ -2061,7 +2061,7 @@ bool cHardwareGX::Inst_Kazi(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0, &ctx); //JW
   return true;
 }
 
@@ -2069,13 +2069,13 @@ bool cHardwareGX::Inst_Kazi5(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5, &ctx); //JW
   return true;
 }
 
 bool cHardwareGX::Inst_Die(cAvidaContext& ctx)
 {
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true; 
 }
 
@@ -2270,8 +2270,8 @@ bool cHardwareGX::DoSense(cAvidaContext& ctx, int conversion_method, double base
 {
   // Returns the log2 amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources() + 
-    m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID());
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx) + //JW
+    m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), &ctx); //JW
 
   // Arbitrarily set to BX since the conditionals use this directly.
   int reg_to_set = REG_BX;

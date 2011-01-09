@@ -225,7 +225,7 @@ void cPopulationCell::ResetInputs(cAvidaContext& ctx)
 }
 
 
-void cPopulationCell::InsertOrganism(cOrganism* new_org)
+void cPopulationCell::InsertOrganism(cOrganism* new_org, cAvidaContext* ctx) //JW
 {
   assert(new_org != NULL);
   assert(m_organism == NULL);
@@ -247,7 +247,7 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0) {
     // uptake all the cells energy
-    double uptake_energy = UptakeCellEnergy(1.0);
+    double uptake_energy = UptakeCellEnergy(1.0, ctx); //JW
     if(uptake_energy != 0.0) {
       // update energy and merit
       cPhenotype& phenotype = m_organism->GetPhenotype();
@@ -257,7 +257,7 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
   }
 }
 
-cOrganism * cPopulationCell::RemoveOrganism()
+cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext* ctx) //JW
 {
   if (m_organism == NULL) return NULL;   // Nothing to do!
 	
@@ -265,21 +265,21 @@ cOrganism * cPopulationCell::RemoveOrganism()
   cOrganism * out_organism = m_organism;
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0
 		 && m_world->GetConfig().FRAC_ENERGY_DECAY_AT_DEME_BIRTH.Get() != 1.0) { // hack
-    m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get());
+    m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get(), ctx); //JW
   }
   m_organism = NULL;
   m_hardware = NULL;
   return out_organism;
 }
 
-double cPopulationCell::UptakeCellEnergy(double frac_to_uptake) {
+double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext* ctx) {
   assert(0.0 <= frac_to_uptake);
   assert(frac_to_uptake <= 1.0);
 	
-  double cell_energy = m_world->GetPopulation().GetDeme(m_deme_id).GetAndClearCellEnergy(m_cell_id);  
+  double cell_energy = m_world->GetPopulation().GetDeme(m_deme_id).GetAndClearCellEnergy(m_cell_id, ctx); //JW  
   double uptakeAmount = cell_energy * frac_to_uptake;
   cell_energy -= uptakeAmount;
-  m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, cell_energy);
+  m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, cell_energy, ctx);
   return uptakeAmount;
 }
 

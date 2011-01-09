@@ -292,8 +292,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                          bool is_parasite)
 {  
   const int deme_id = m_interface->GetDemeID();
-  const tArray<double> & global_resource_count = m_interface->GetResources();
-  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id);
+  const tArray<double> & global_resource_count = m_interface->GetResources(&ctx); //JW
+  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, &ctx); //JW
   const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
@@ -514,7 +514,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
   
   if (completed) {
     assert(m_interface);
-    const tArray<double>& resource_count = m_interface->GetResources();
+    const tArray<double>& resource_count = m_interface->GetResources(&ctx); //JW
     
     tList<tBuffer<int> > other_input_list;
     tList<tBuffer<int> > other_output_list;
@@ -976,12 +976,12 @@ void cOrganism::Move(cAvidaContext& ctx)
     cDeme* deme = GetDeme();
     
     if (drop_mode == 0) {
-      deme->AddPheromone(fromcellID, pher_amount / 2);
-      deme->AddPheromone(destcellID, pher_amount / 2);
+      deme->AddPheromone(fromcellID, pher_amount / 2, &ctx); //JW
+      deme->AddPheromone(destcellID, pher_amount / 2, &ctx); //JW
     } else if(drop_mode == 1) {
-      deme->AddPheromone(fromcellID, pher_amount);
+      deme->AddPheromone(fromcellID, pher_amount, &ctx); //JW
     } else if(drop_mode == 2) {
-      deme->AddPheromone(destcellID, pher_amount);
+      deme->AddPheromone(destcellID, pher_amount, &ctx); //JW
     }
   } // End laying pheromone
   

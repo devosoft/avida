@@ -107,8 +107,8 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
 
   int GetSize(void) const { return resource_count.GetSize(); }
   const tArray<double>& ReadResources(void) const { return resource_count; }
-  const tArray<double>& GetResources() const; 
-  const tArray<double>& GetCellResources(int cell_id) const;
+  const tArray<double>& GetResources(cAvidaContext* ctx) const; //JW
+  const tArray<double>& GetCellResources(int cell_id, cAvidaContext* ctx) const; //JW
   const tArray<int>& GetResourcesGeometry() const;
   int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
   const tArray<tArray<double> >& GetSpatialRes();

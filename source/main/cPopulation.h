@@ -126,53 +126,53 @@ public:
 
   bool InitiatePop(cUserFeedback* errors = NULL);
 
-  void InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, int lineage_label = 0);
+  void InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, cAvidaContext* ctx, int lineage_label = 0); //JW
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring_genome, cOrganism* parent_organism);
   bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
   
   // Inject an organism from the outside world.
-  void Inject(const cGenome& genome, eBioUnitSource src, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0);
+  void Inject(const cGenome& genome, eBioUnitSource src, cAvidaContext* ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); //JW
   void InjectParasite(const cString& label, const cSequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
-  void KillOrganism(cPopulationCell& in_cell);
+  void KillOrganism(cPopulationCell& in_cell, cAvidaContext* ctx); //JW
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
   void MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id);
 
   // Specialized functionality
-  void Kaboom(cPopulationCell& in_cell, int distance=0);
+  void Kaboom(cPopulationCell& in_cell, cAvidaContext* ctx, int distance=0); //JW
   void AddSellValue(const int data, const int label, const int sell_price, const int org_id, const int cell_id);
   int BuyValue(const int label, const int buy_price, const int cell_id);
-  void SwapCells(int cell_id1, int cell_id2);
+  void SwapCells(int cell_id1, int cell_id2, cAvidaContext* ctx); //JW
 
   // Deme-related methods
   //! Compete all demes with each other based on the given competition type.
   void CompeteDemes(int competition_type);
   
   //! Compete all demes with each other based on the given vector of fitness values.
-  void CompeteDemes(const std::vector<double>& calculated_fitness);
+  void CompeteDemes(const std::vector<double>& calculated_fitness, cAvidaContext* ctx); //JW
 
   //! Replicate all demes based on the given replication trigger.
-  void ReplicateDemes(int rep_trigger);
+  void ReplicateDemes(int rep_trigger, cAvidaContext* ctx);
 
   //! Helper method to replicate deme
-  void ReplicateDeme(cDeme & source_deme);
+  void ReplicateDeme(cDeme & source_deme, cAvidaContext* ctx);
 
   //! Helper method that replaces a target deme with the given source deme.
-  void ReplaceDeme(cDeme& source_deme, cDeme& target_deme);
+  void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext* ctx); //JW
   
   //! Helper method that seeds a deme from the given genome.
-  void SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src);
+  void SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src, cAvidaContext* ctx); //JW
 
   //! Helper method that seeds a deme from the given genotype.
-  void SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src);
+  void SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvidaContext* ctx); //JW
   
   //! Helper method that seeds a target deme from the organisms in the source deme.
-  bool SeedDeme(cDeme& source_deme, cDeme& target_deme);
+  bool SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext* ctx); //JW
 
   //! Helper method that determines the cell into which an organism will be placed during deme replication.
   int DemeSelectInjectionCell(cDeme& deme, int sequence=0);
@@ -180,20 +180,20 @@ public:
   //! Helper method that performs any post-injection fixups on the cell in the given deme.
   void DemePostInjection(cDeme& deme, cPopulationCell& cell);
   
-  void DivideDemes();
+  void DivideDemes(cAvidaContext* ctx); //JW
   void ResetDemes();
-  void CopyDeme(int deme1_id, int deme2_id);
-  void SpawnDeme(int deme1_id, int deme2_id=-1);
+  void CopyDeme(int deme1_id, int deme2_id, cAvidaContext* ctx); //JW
+  void SpawnDeme(int deme1_id, cAvidaContext* ctx, int deme2_id=-1); //JW
   void AddDemePred(cString type, int times);
 
-  void CheckImplicitDemeRepro(cDeme& deme);
+  void CheckImplicitDemeRepro(cDeme& deme, cAvidaContext* ctx);
   
   // Deme-related stats methods
-  void PrintDemeAllStats();
+  void PrintDemeAllStats(cAvidaContext* ctx); //JW
   void PrintDemeTestamentStats(const cString& filename);
 	void PrintCurrentMeanDemeDensity(const cString& filename);
   void PrintDemeEnergySharingStats();
-  void PrintDemeEnergyDistributionStats();
+  void PrintDemeEnergyDistributionStats(cAvidaContext* ctx); //JW
   void PrintDemeOrganismEnergyDistributionStats();
   void PrintDemeDonor();
   void PrintDemeFitness();
@@ -203,13 +203,13 @@ public:
   void PrintDemeMerit();
   void PrintDemeMutationRate();
   void PrintDemeReceiver();
-  void PrintDemeResource();
-  void PrintDemeGlobalResources();
-  void PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id) const;
+  void PrintDemeResource(cAvidaContext* ctx); //JW
+  void PrintDemeGlobalResources(cAvidaContext* ctx); //JW
+  void PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext* ctx) const; //JW
   void PrintDemeSpatialEnergyData() const;
   void PrintDemeSpatialSleepData() const;
   void PrintDemeTasks();
-	void PrintDemeTotalAvgEnergy();
+	void PrintDemeTotalAvgEnergy(cAvidaContext* ctx); //JW
   
   // Print deme founders
   void DumpDemeFounders(ofstream& fp);
@@ -228,11 +228,11 @@ public:
   void ProcessUpdateCellActions(cAvidaContext& ctx);
 
   // Clear all but a subset of cells...
-  void SerialTransfer(int transfer_size, bool ignore_deads);
+  void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext* ctx); //JW
 
   // Saving and loading...
   bool SavePopulation(const cString& filename);
-  bool LoadPopulation(const cString& filename, int cellid_offset=0, int lineage_offset=0);
+  bool LoadPopulation(const cString& filename, cAvidaContext* ctx, int cellid_offset=0, int lineage_offset=0); //JW
   bool DumpMemorySummary(std::ofstream& fp);
 
   bool OK();
@@ -244,10 +244,10 @@ public:
   cDeme& GetDeme(int i) { return deme_array[i]; }
 
   cPopulationCell& GetCell(int in_num) { return cell_array[in_num]; }
-  const tArray<double>& GetResources() const { return resource_count.GetResources(); }
-  const tArray<double>& GetCellResources(int cell_id) const { return resource_count.GetCellResources(cell_id); }
-  const tArray<double>& GetDemeResources(int deme_id) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(); }
-  const tArray<double>& GetDemeCellResources(int deme_id, int cell_id) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id) ); }
+  const tArray<double>& GetResources(cAvidaContext* ctx) const { return resource_count.GetResources(ctx); } //JW
+  const tArray<double>& GetCellResources(int cell_id, cAvidaContext* ctx) const { return resource_count.GetCellResources(cell_id, ctx); } //JW
+  const tArray<double>& GetDemeResources(int deme_id, cAvidaContext* ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetResources(ctx); } //JW 
+  const tArray<double>& GetDemeCellResources(int deme_id, int cell_id, cAvidaContext* ctx) { return GetDeme(deme_id).GetDemeResourceCount().GetCellResources( GetDeme(deme_id).GetRelativeCellID(cell_id), ctx ); } //JW
   const tArray< tArray<int> >& GetCellIdLists() const { return resource_count.GetCellIdLists(); }
 
   cBirthChamber& GetBirthChamber(int id) { (void) id; return birth_chamber; }
@@ -310,13 +310,13 @@ public:
 	
 	// -------- Population mixing support --------
 	//! Mix all organisms in the population.
-	void MixPopulation();
+	void MixPopulation(cAvidaContext* ctx); //JW
 
 private:
   void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
   
   // Methods to place offspring in the population.
-  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, bool parent_ok = true);
+  cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, cAvidaContext* ctx, bool parent_ok = true); //JW
   void PositionAge(cPopulationCell& parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionMerit(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
   void PositionEnergyUsed(cPopulationCell & parent_cell, tList<cPopulationCell>& found_list, bool parent_ok);
@@ -326,14 +326,14 @@ private:
   void FindEmptyCell(tList<cPopulationCell>& cell_list, tList<cPopulationCell>& found_list);
   
   // Update statistics collecting...
-  void UpdateDemeStats();
-  void UpdateOrganismStats();
+  void UpdateDemeStats(cAvidaContext* ctx); //JW
+  void UpdateOrganismStats(cAvidaContext* ctx); //JW
   
   void InjectClone(int cell_id, cOrganism& orig_org, eBioUnitSource src);
   void CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& parent);
   
   //! Helper method that adds a founder organism to a deme, and sets up its phenotype
-  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cPhenotype* _phenotype = NULL);
+  void SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext* ctx, cPhenotype* _phenotype = NULL); //JW
   
   void CCladeSetupOrganism(cOrganism* organism); 
 	

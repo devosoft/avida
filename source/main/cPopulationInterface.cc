@@ -199,19 +199,19 @@ const tArray<int>& cPopulationInterface::GetInputs() const
   return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
 }
 
-const tArray<double>& cPopulationInterface::GetResources()
+const tArray<double>& cPopulationInterface::GetResources(cAvidaContext* ctx) //JW
 {
-  return m_world->GetPopulation().GetCellResources(m_cell_id);
+  return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); //JW
 }
 
-const tArray<double>& cPopulationInterface::GetFacedCellResources()
+const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext* ctx) //JW
 {
-  return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID());
+  return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); //JW 
 }
 
-const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id)
+const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext* ctx) //JW
 {
-  return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id);
+  return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); //JW
 }
 
 const tArray< tArray<int> >& cPopulationInterface::GetCellIdLists()
@@ -229,32 +229,32 @@ void cPopulationInterface::UpdateDemeResources(const tArray<double> & res_change
   return m_world->GetPopulation().UpdateDemeCellResources(res_change, m_cell_id);
 }
 
-void cPopulationInterface::Die()
+void cPopulationInterface::Die(cAvidaContext* ctx) //JW
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  m_world->GetPopulation().KillOrganism(cell);
+  m_world->GetPopulation().KillOrganism(cell, ctx);
 }
 
-void cPopulationInterface::KillCellID(int target)
+void cPopulationInterface::KillCellID(int target, cAvidaContext* ctx) //JW
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(target);
-  m_world->GetPopulation().KillOrganism(cell);
+  m_world->GetPopulation().KillOrganism(cell, ctx); //JW
 }
 
-void cPopulationInterface::Kaboom(int distance)
+void cPopulationInterface::Kaboom(int distance, cAvidaContext* ctx) //JW
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  m_world->GetPopulation().Kaboom(cell, distance);
+  m_world->GetPopulation().Kaboom(cell, ctx, distance); //JW
 }
 
-void cPopulationInterface::SpawnDeme()
+void cPopulationInterface::SpawnDeme(cAvidaContext* ctx) //JW
 {
   // const int num_demes = m_world->GetPopulation().GetNumDemes();
 	
   // Spawn the current deme; no target ID will put it into a random deme.
   const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();
 	
-  m_world->GetPopulation().SpawnDeme(deme_id);
+  m_world->GetPopulation().SpawnDeme(deme_id, ctx); //JW
 }
 
 cOrgSinkMessage* cPopulationInterface::NetReceive()

@@ -395,20 +395,20 @@ void cResourceCount::Update(double in_time)
  }
 
  
-const tArray<double> & cResourceCount::GetResources() const
+const tArray<double> & cResourceCount::GetResources(cAvidaContext* ctx) const //JW
 {
-  DoUpdates();
+  DoUpdates(ctx); //JW
   return resource_count;
 }
  
-const tArray<double> & cResourceCount::GetCellResources(int cell_id) const
+const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaContext* ctx) const //JW
 
   // Get amount of the resource for a given cell in the grid.  If it is a
   // global resource pass out the entire content of that resource.
 
 {
   int num_resources = resource_count.GetSize();
-  DoUpdates();
+  DoUpdates(ctx);
 
   for (int i = 0; i < num_resources; i++) {
      if (geometry[i] == nGeometry::GLOBAL || geometry[i]==nGeometry::PARTIAL) {

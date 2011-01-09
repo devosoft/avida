@@ -214,7 +214,7 @@ int cDeme::GetNumOrgsWithOpinion() const
   return count;
 }
 
-void cDeme::ProcessUpdate()
+void cDeme::ProcessUpdate(cAvidaContext* ctx)
 {
   // test deme predicate
   for (int i = 0; i < deme_pred_list.Size(); i++) {
@@ -254,7 +254,8 @@ void cDeme::ProcessUpdate()
             orgPhenotype.ReduceEnergy(orgPhenotype.GetStoredEnergy()*m_world->GetConfig().ATTACK_DECAY_RATE.Get());
           }
           //remove energy from cell... organism might not takeup all of a cell's energy
-          tArray<double> cell_resources = deme_resource_count.GetCellResources(eventCell);  // uses global cell_id; is this a problem
+	  //JW
+          tArray<double> cell_resources = deme_resource_count.GetCellResources(eventCell, ctx);  // uses global cell_id; is this a problem
           cell_resources[res->GetID()] *= m_world->GetConfig().ATTACK_DECAY_RATE.Get();
           deme_resource_count.ModifyCell(cell_resources, eventCell);
         }
@@ -476,13 +477,13 @@ void cDeme::UpdateGenerationsPerLifetime(double old_avg_founder_generation, tArr
 }
 
 /*! Check every cell in this deme for a living organism.  If found, kill it. */
-void cDeme::KillAll()
+void cDeme::KillAll(cAvidaContext* ctx) //JW
 {
   last_org_count = GetOrgCount();
   for (int i=0; i<GetSize(); ++i) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(cell_ids[i]);
     if(cell.IsOccupied()) {
-      m_world->GetPopulation().KillOrganism(cell);
+      m_world->GetPopulation().KillOrganism(cell, ctx); //JW
     }
   }
 
@@ -600,14 +601,14 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
   }
 }
 
-double cDeme::GetCellEnergy(int absolute_cell_id) const
+double cDeme::GetCellEnergy(int absolute_cell_id, cAvidaContext* ctx) const
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
 
   double total_energy = 0.0;
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); //JW
   
   // sum all energy resources
   for (int i = 0; i < energy_res_ids.GetSize(); i++) {
@@ -620,14 +621,14 @@ double cDeme::GetCellEnergy(int absolute_cell_id) const
   return total_energy;
 }
 
-double cDeme::GetAndClearCellEnergy(int absolute_cell_id)
+double cDeme::GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext* ctx) //JW
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
   
   double total_energy = 0.0;
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); //JW
   
   // sum all energy resources
   for (int i = 0; i < energy_res_ids.GetSize(); i++) {
@@ -643,13 +644,13 @@ double cDeme::GetAndClearCellEnergy(int absolute_cell_id)
   return total_energy;
 }
 
-void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value)
+void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext* ctx) //JW
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
   
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); //JW
   
   double amount_per_resource = value / energy_res_ids.GetSize();
   
@@ -746,7 +747,7 @@ bool cDeme::KillCellEvent(const int eventID)
   return false;
 }
 
-double cDeme::CalculateTotalEnergy() const
+double cDeme::CalculateTotalEnergy(cAvidaContext* ctx) const
 {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get());
   
@@ -759,7 +760,7 @@ double cDeme::CalculateTotalEnergy() const
       cPhenotype& phenotype = organism->GetPhenotype();
       energy_sum += phenotype.GetStoredEnergy();
     } else {
-      double energy_in_cell = GetCellEnergy(cellid);
+      double energy_in_cell = GetCellEnergy(cellid, ctx);
       energy_sum += energy_in_cell * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get();
     }
   }
@@ -987,7 +988,7 @@ void cDeme::AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times)
   }
 }
 
-void cDeme::AddPheromone(int absolute_cell_id, double value)
+void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext* ctx) //JW
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
@@ -995,7 +996,7 @@ void cDeme::AddPheromone(int absolute_cell_id, double value)
   //  cPopulation& pop = m_world->GetPopulation();
   
   int relative_cell_id = GetRelativeCellID(absolute_cell_id);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, ctx); //JW
   
   for (int i = 0; i < deme_resource_count.GetSize(); i++) {
     if (strcmp(deme_resource_count.GetResName(i), "pheromone") == 0) {
@@ -1019,14 +1020,14 @@ void cDeme::AddPheromone(int absolute_cell_id, double value)
   
 } //End AddPheromone()
 
-double cDeme::GetSpatialResource(int rel_cellid, int resource_id) const
+double cDeme::GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext* ctx) const //JW
 {
   assert(rel_cellid >= 0);
   assert(rel_cellid < GetSize());
   assert(resource_id >= 0);
   assert(resource_id < deme_resource_count.GetSize());
   
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(rel_cellid);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(rel_cellid, ctx); //JW
   return cell_resources[resource_id];
 }
 

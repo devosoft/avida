@@ -80,16 +80,16 @@ public:
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
-  const tArray<double>& GetResources();
-  const tArray<double>& GetFacedCellResources();
-  const tArray<double>& GetDemeResources(int deme_id);
+  const tArray<double>& GetResources(cAvidaContext* ctx); //JW
+  const tArray<double>& GetFacedCellResources(cAvidaContext* ctx); //JW
+  const tArray<double>& GetDemeResources(int deme_id, cAvidaContext* ctx); //JW
   const tArray< tArray<int> >& GetCellIdLists();  
   void UpdateResources(const tArray<double>& res_change);
   void UpdateDemeResources(const tArray<double>& res_change) {;}
-  void Die();
-  void KillCellID(int target);
-  void Kaboom(int distance);
-  void SpawnDeme();
+  void Die(cAvidaContext* ctx); //JW
+  void KillCellID(int target, cAvidaContext* ctx); //JW
+  void Kaboom(int distance, cAvidaContext* ctx); //JW
+  void SpawnDeme(cAvidaContext* ctx); //JW
   cOrgSinkMessage* NetReceive() { return NULL; } // @DMB - todo: receive message
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) { return false; } // @DMB - todo: validate message
   int ReceiveValue();

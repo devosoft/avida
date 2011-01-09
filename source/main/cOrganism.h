@@ -247,10 +247,10 @@ public:
   int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); }
   tBuffer<int>& GetInputBuf() { return m_input_buf; }
   tBuffer<int>& GetOutputBuf() { return m_output_buf; }
-  void Die() { m_interface->Die(); m_is_dead = true; }
-  void KillCellID(int target) { m_interface->KillCellID(target); }
-  void Kaboom(int dist) { m_interface->Kaboom(dist);}
-  void SpawnDeme() { m_interface->SpawnDeme(); }
+  void Die(cAvidaContext* ctx) { m_interface->Die(ctx); m_is_dead = true; } //JW
+  void KillCellID(int target, cAvidaContext* ctx) { m_interface->KillCellID(target, ctx); } //JW
+  void Kaboom(int dist, cAvidaContext* ctx) { m_interface->Kaboom(dist,ctx);} //JW
+  void SpawnDeme(cAvidaContext* ctx) { m_interface->SpawnDeme(ctx); } //JW
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }

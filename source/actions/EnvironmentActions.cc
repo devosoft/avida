@@ -240,7 +240,7 @@ public:
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
-      tArray<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id);
+      tArray<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, &ctx); //JW
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
         counts[res->GetID()] = m_res_count;

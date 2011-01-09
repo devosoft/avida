@@ -110,9 +110,9 @@ public:
   void ResetInputs(cAvidaContext& ctx);
 
   inline int GetReceiveValue();
-  inline const tArray<double>& GetResources();
-  inline const tArray<double>& GetFacedCellResources();
-  inline const tArray<double>& GetDemeResources(int deme_id);
+  inline const tArray<double>& GetResources(cAvidaContext* ctx); //JW
+  inline const tArray<double>& GetFacedCellResources(cAvidaContext* ctx); //JW
+  inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext* ctx); //JW
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -141,19 +141,19 @@ inline int cTestCPU::GetReceiveValue()
   return receive_array[cur_receive++];
 }
 
-inline const tArray<double>& cTestCPU::GetResources()    //APW random mapping ' world'
+inline const tArray<double>& cTestCPU::GetResources(cAvidaContext* ctx)    //APW random mapping ' world'
 {
-  return m_resource_count.GetResources(); //
+  return m_resource_count.GetResources(ctx); //JW
 }
 
-inline const tArray<double>& cTestCPU::GetFacedCellResources()    //APW random mapping ' world'
+inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext* ctx)    //APW random mapping ' world'
 {
-  return m_faced_cell_resource_count.GetResources();
+  return m_faced_cell_resource_count.GetResources(ctx); //JW
 }
  
-inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id)    //APW random mapping ' world'
+inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext* ctx)    //APW random mapping ' world'
 {
-    return m_deme_resource_count.GetResources();
+    return m_deme_resource_count.GetResources(ctx); //JW
 }
 
 inline const tArray< tArray<int> >& cTestCPU::GetCellIdLists()

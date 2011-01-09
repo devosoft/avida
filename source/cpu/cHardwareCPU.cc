@@ -812,7 +812,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   m_organism->SetRunning(true);
   
   if (!speculative && m_spec_die) {
-    m_organism->Die();
+    m_organism->Die(&ctx);
     m_organism->SetRunning(false);
     return false;
   }
@@ -941,7 +941,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
     if (speculative) m_spec_die = true;
-    else m_organism->Die();
+    else m_organism->Die(&ctx);
   }
   if (!speculative && phenotype.GetToDelete()) m_spec_die = true;
   
@@ -2210,7 +2210,7 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); //JW
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -2234,7 +2234,7 @@ bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); //JW
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -2258,7 +2258,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); //JW
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -2282,7 +2282,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); //JW
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -3192,7 +3192,7 @@ bool cHardwareCPU::Inst_ReproDeme(cAvidaContext& ctx) {
 		return false; // in test CPU
 	
 	// this function will become to depend on a predicate, but I am still thinking of how to do this (BEB)
-	sourceDeme->ReplicateDeme();
+	sourceDeme->ReplicateDeme(); 
 	return true;
 }
 
@@ -3292,7 +3292,7 @@ bool cHardwareCPU::Inst_TaskPutResetInputsRepro(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
 {
-  m_organism->SpawnDeme();
+  m_organism->SpawnDeme(&ctx);
   return true;
 }
 
@@ -3300,7 +3300,7 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0, &ctx); //JW
   return true;
 }
 
@@ -3316,13 +3316,13 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5, &ctx); //JW
   return true;
 }
 
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3340,7 +3340,7 @@ bool  cHardwareCPU::Inst_Suicide(cAvidaContext& ctx)
 		// Add points as determined by config file to the deme.
 		m_organism->GetDeme()->AddNumberOfPoints(m_world->GetConfig().DEMES_PROTECTION_POINTS.Get());
 		m_organism->GetDeme()->AddSuicide();
-		m_organism->Die();
+		m_organism->Die(&ctx);
 	}
 	return true;
 }
@@ -3354,7 +3354,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx)
     return false;  // in test CPU
   deme->IncreaseTotalEnergyTestament(stored_energy);
   m_world->GetStats().SumEnergyTestamentToFutureDeme().Add(stored_energy);
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3379,7 +3379,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx)
     m_organism->Rotate(1);
   }
   m_world->GetStats().SumEnergyTestamentToNeighborOrganisms().Add(stored_energy);
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3389,7 +3389,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme(cAvidaContext& ctx) {
   
   m_organism->DivideOrgTestamentAmongDeme(stored_energy);
   m_world->GetStats().SumEnergyTestamentToDemeOrganisms().Add(stored_energy);
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3592,8 +3592,8 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
 {
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources() + 
-  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID());
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx) + //JW
+  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), &ctx); //JW
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
@@ -3706,43 +3706,43 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
 
 bool cHardwareCPU::Inst_SenseResource0(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 0);
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 0, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseResource1(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 1);
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 1, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseResource2(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 2);
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 2, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource0(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 0);
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 0, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource1(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 1);
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 1, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource2(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 2);
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 2, &ctx);
 }
 
 
-bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid)
+bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvidaContext* ctx) //JW
 {
   assert(resid >= 0);
   
   cPopulation& pop = m_world->GetPopulation();
   
-  const tArray<double> & res_count = pop.GetCellResources(cell_id) +
-  pop.GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id);
+  const tArray<double> & res_count = pop.GetCellResources(cell_id, ctx) + //JW
+  pop.GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id, ctx); //JW
   
   // Make sure we have the resource requested
   if (resid >= res_count.GetSize()) return false;
@@ -3780,9 +3780,9 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid)
  * spec_id is the id number of the specification
  */
 
-bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index, int& spec_id)
+bool cHardwareCPU::FindModifiedResource(cAvidaContext* ctx, int& start_index, int& end_index, int& spec_id) //JW
 {
-  int num_resources = m_organism->GetOrgInterface().GetResources().GetSize();
+  int num_resources = m_organism->GetOrgInterface().GetResources(ctx).GetSize(); //JW
   
   //if there are no resources, translation cannot be successful; return false
   if (num_resources <= 0)
@@ -3832,7 +3832,7 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
 {
   int start_bin, end_bin, bin_used, spec_id;
   
-  bool finite_resources_exist = FindModifiedResource(start_bin, end_bin, spec_id);
+  bool finite_resources_exist = FindModifiedResource(&ctx, start_bin, end_bin, spec_id); //JW
   if (!finite_resources_exist) { return true; }
   
   // Add this specification
@@ -3868,7 +3868,7 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
 
 bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 {
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
   int reg_to_set = FindModifiedRegister(REG_BX);  
   double max_resource = 0.0;    
   // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
@@ -3883,7 +3883,7 @@ bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
 {
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
   // check if this is a valid group
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
@@ -3896,11 +3896,11 @@ bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) 
 {
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(); 
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
     int reg_to_set = FindModifiedRegister(REG_BX);
-    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources()[opinion];  
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx)[opinion];  //JW
     double res_diff = faced_res - res_count[opinion];
     GetRegister(reg_to_set) = res_diff;
   }
@@ -3911,7 +3911,7 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
 {
   
   // Set up res_change and max total
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
   tArray<double> res_change(res_count.GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();
@@ -4006,8 +4006,8 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
 {
   // These are the current levels of resources at this cell:
-  const tArray<double> resources = m_organism->GetOrgInterface().GetResources() + 
-  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID());
+  const tArray<double> resources = m_organism->GetOrgInterface().GetResources(&ctx) + //JW
+  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), &ctx); //JW
   
   // Now we loop through the different reactions, checking to see if their
   // required resources are below what's available.  If so, we skip ahead an
@@ -5281,33 +5281,33 @@ bool cHardwareCPU::Inst_DecreaseEnergyDonation(cAvidaContext& ctx)
 
 // Move a fraction of the given resource present at the current cell to the specified cell.
 // Note: This function doesn't work with deme-level resources.
-void cHardwareCPU::DoResourceDonatePercent(const int to_cell, const int resource_id, const double frac_resource_given)
+void cHardwareCPU::DoResourceDonatePercent(cAvidaContext* ctx, const int to_cell, const int resource_id, const double frac_resource_given)
 {
   assert(to_cell >= 0);
   assert(resource_id >= 0);
   assert(frac_resource_given >= 0);
   assert(frac_resource_given <= 1);
   
-  const tArray<double> &resources = m_organism->GetOrgInterface().GetResources(); 
+  const tArray<double> &resources = m_organism->GetOrgInterface().GetResources(ctx); //JW
   if(resource_id >= resources.GetSize()) return;
   
   const double amount = max(0.0, frac_resource_given * resources[resource_id]);
   
-  DoResourceDonateAmount(to_cell, resource_id, amount);
+  DoResourceDonateAmount(ctx, to_cell, resource_id, amount); //JW
   
 } //End DoResourceDonatePercent()
 
 
 // Donate a portion of the given resource present at the current cell to the specified cell.
 // Note: This function doesn't work with deme-level resources.
-void cHardwareCPU::DoResourceDonateAmount(const int to_cell, const int resource_id, const double amount)
+void cHardwareCPU::DoResourceDonateAmount(cAvidaContext* ctx, const int to_cell, const int resource_id, const double amount)
 {  
   assert(to_cell >= 0);
   assert(amount >= 0);
   assert(resource_id >= 0);
   
-  const tArray<double> &src_resources = m_organism->GetOrgInterface().GetResources();
-  const tArray<double> &dest_resources = m_world->GetPopulation().GetCellResources(to_cell);
+  const tArray<double> &src_resources = m_organism->GetOrgInterface().GetResources(ctx); //JW
+  const tArray<double> &dest_resources = m_world->GetPopulation().GetCellResources(to_cell, ctx); //JW
   
   assert(resource_id < src_resources.GetSize());
   assert(resource_id < dest_resources.GetSize());
@@ -5356,7 +5356,7 @@ bool cHardwareCPU::DonateResourceX(cAvidaContext& ctx, const int res_id)
     return false;
   }
   
-  DoResourceDonatePercent(faced_cell, res_id, pct);
+  DoResourceDonatePercent(&ctx, faced_cell, res_id, pct); //JW
   
   return true;
   
@@ -5574,12 +5574,12 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   
   if(m_organism->HasOpinion()) opinion = m_organism->GetOpinion().first; 
   
-  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(); 
+  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(&ctx); //JW
   
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
     m_organism->Rotate(1);
-    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(); 
+    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); //JW
     if (faced_res[opinion] > max_res) {
       max_res = faced_res[opinion];
     }
@@ -5587,7 +5587,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   
   if (max_res > current_res[opinion]) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
-      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(); 
+      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); //JW
       if (faced_res[opinion] != max_res) m_organism->Rotate(1);
     }
   }
@@ -6922,7 +6922,7 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
     // Death to organisms that refuse to use promoters!
     else if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 1)
     {
-      m_organism->Die();
+      m_organism->Die(&ctx); //JW
     }
     else
     {
@@ -6990,7 +6990,7 @@ bool cHardwareCPU::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SenseRegulate(cAvidaContext& ctx)
 {
   unsigned int bits = 0;
-  const tArray<double> & res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> & res_count = m_organism->GetOrgInterface().GetResources(&ctx);
   assert (res_count.GetSize() != 0);
   for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
   {
@@ -7449,7 +7449,7 @@ bool cHardwareCPU::DoSenseFacing(cAvidaContext& ctx, int conversion_method, doub
   
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const tArray<double> & res_count = m_world->GetPopulation().GetCellResources(faced_id); 
+  const tArray<double> & res_count = m_world->GetPopulation().GetCellResources(faced_id, &ctx); //JW 
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
@@ -7633,7 +7633,7 @@ bool cHardwareCPU::DoSensePheromone(cAvidaContext& ctx, int cellid)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); //JW
   double pher_amount = 0;
   
   if(deme_resource_count.GetSize() == 0) return false;
@@ -7678,7 +7678,7 @@ bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEF
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(&ctx); //JW
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -7757,7 +7757,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
     for (int i = 0; i < mycell.ConnectionList().GetSize(); i++) {
       
       phero_amount = 0;
-      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); //JW
       
       for (int j = 0; j < deme_resource_count.GetSize(); j++) {
         if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -7821,7 +7821,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
       }
       
       phero_amount = 0;
-      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); //JW
       
       for (int j = 0; j < deme_resource_count.GetSize(); j++) {
         if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -7886,7 +7886,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
       }
       
       phero_amount = 0;
-      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); //JW
       
       for (int j = 0; j < deme_resource_count.GetSize(); j++) {
         if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -8108,7 +8108,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   int relative_cell_id = deme.GetRelativeCellID(cellid);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); //JW
   
   int cell_data;
   
@@ -8121,7 +8121,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   for(int i = 0; i < mycell.ConnectionList().GetSize(); i++) {
     
     phero_amount = 0;
-    cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+    cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); //JW
     
     for (int j = 0; j < deme_resource_count.GetSize(); j++) {
       if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -8208,7 +8208,7 @@ bool cHardwareCPU::Inst_IfPheromone(cAvidaContext& ctx)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); //JW
   
   if(deme_resource_count.GetSize() == 0) return false;
   
@@ -8242,7 +8242,7 @@ bool cHardwareCPU::Inst_IfNotPheromone(cAvidaContext& ctx)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); //JW
   
   if(deme_resource_count.GetSize() == 0) return false;
   
@@ -8294,7 +8294,7 @@ bool cHardwareCPU::Inst_DropPheromone(cAvidaContext& ctx)
      deme.AddPheromone(destcellID, pher_amount);
      }
      */
-    deme.AddPheromone(cellid, pher_amount);
+    deme.AddPheromone(cellid, pher_amount, &ctx); //JW
     
     // Write some logging information if LOG_PHEROMONE is set.  This is done
     // out here so that non-pheromone moves are recorded.
@@ -8585,10 +8585,10 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
     return true;
   }
   if (kill_attacker) {
-    m_organism->Die();
+    m_organism->Die(&ctx);
     return true;
   }
-  m_organism->KillCellID(target_cell);
+  m_organism->KillCellID(target_cell, &ctx); //JW
   return true;
 } 		
 

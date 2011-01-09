@@ -28,6 +28,7 @@
 #include "cAvidaContext.h"
 #include "cCodeLabel.h"
 #include "cCPUTestInfo.h"
+#include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cHeadCPU.h"
 #include "cInstSet.h"
@@ -115,9 +116,12 @@ bool cHardwareBase::Divide_CheckViable(cAvidaContext& ctx, const int parent_size
   const int min_size = Max(MIN_GENOME_LENGTH, static_cast<int>(genome_size / size_range));
   const int max_size = Min(MAX_GENOME_LENGTH, static_cast<int>(genome_size * size_range));
   
-  const cStateGrid& sg = m_organism->GetStateGrid(); //JW
-  if(m_world->GetConfig().STATE_GRID_REQUIRED.Get() && sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]) != 0) return false; //JW
-
+  cEnvironment& env = m_world->GetEnvironment();
+  
+  if(env.GetNumStateGrids() > 0) {
+    const cStateGrid& sg = m_organism->GetStateGrid(); //JW
+    if(m_world->GetConfig().STATE_GRID_REQUIRED.Get() && sg.SenseStateAt(m_ext_mem[0], m_ext_mem[1]) != 0) return false; //JW
+  }
   
   if (child_size < min_size || child_size > max_size) {
     ORG_FAULT(cStringUtil::Stringf("Invalid offspring length (%d)", child_size));
@@ -998,7 +1002,7 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
   if (m_has_res_costs) {
     double res_req = m_inst_set->GetResCost(cur_inst); 
     
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
     tArray<double> res_change(res_count.GetSize());
     res_change.SetAll(0.0);
     

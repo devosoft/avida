@@ -82,8 +82,8 @@ private:
   // @WRE: Statistic for movement
   int m_visits; // The number of times Avidians move into the cell
 
-  void InsertOrganism(cOrganism* new_org);
-  cOrganism* RemoveOrganism();
+  void InsertOrganism(cOrganism* new_org, cAvidaContext* ctx); //JW
+  cOrganism* RemoveOrganism(cAvidaContext* ctx); //JW
 
 
 public:
@@ -139,7 +139,7 @@ public:
 
   inline bool IsOccupied() const { return m_organism != NULL; }
 
-  double UptakeCellEnergy(double frac_to_uptake);
+  double UptakeCellEnergy(double frac_to_uptake, cAvidaContext* ctx); //JW
 
   bool OK();
 

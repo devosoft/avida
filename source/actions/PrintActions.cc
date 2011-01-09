@@ -2857,7 +2857,7 @@ public:
     
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
-        const tArray<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i);
+        const tArray<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, &ctx); //JW
         double max_resource = 0.0;    
         // if more than one resource is available, return the resource with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
         for (int h = 0; h < res_count.GetSize(); h++) {
@@ -3079,7 +3079,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeAllStats();
+    m_world->GetPopulation().PrintDemeAllStats(&ctx);
   }
 };
 
@@ -3090,7 +3090,7 @@ public:
 	static const cString GetDescription() { return "No Arguments"; }
 	
 	void Process(cAvidaContext& ctx) {
-		m_world->GetPopulation().PrintDemeTotalAvgEnergy();
+		m_world->GetPopulation().PrintDemeTotalAvgEnergy(&ctx); //JW
 	}
 };
 
@@ -3116,7 +3116,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeEnergyDistributionStats();
+    m_world->GetPopulation().PrintDemeEnergyDistributionStats(&ctx); //JW
   }
 };
 
@@ -3169,7 +3169,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeResource();
+    m_world->GetPopulation().PrintDemeResource(&ctx); //JW
   }
 };
 
@@ -3182,7 +3182,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeGlobalResources();
+    m_world->GetPopulation().PrintDemeGlobalResources(&ctx); //JW
   }
 };
 
