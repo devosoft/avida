@@ -28,6 +28,10 @@
 #ifndef cSpatialResCount_h
 #define cSpatialResCount_h
 
+#ifndef cAvidaContext_h
+#include "cAvidaContext.h"
+#endif
+
 #ifndef cSpatialCountElem_h
 #include "cSpatialCountElem.h"
 #endif
@@ -100,7 +104,7 @@ public:
   void SetOutflowX2(int in_outflowX2) { outflowX2 = in_outflowX2; }
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
-  virtual void UpdateCount() {}
+  virtual void UpdateCount(cAvidaContext* ctx) {}
   void ResetResourceCounts();
   void SetModified(bool in_modified) { m_modified = in_modified; }
   bool GetModified() { return m_modified; }

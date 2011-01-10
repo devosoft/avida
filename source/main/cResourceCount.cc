@@ -551,7 +551,7 @@ void cResourceCount::DoUpdates(cAvidaContext* ctx) const
     spatial_update_time -= 1.0;
     for (int i = 0; i < resource_count.GetSize(); i++) {
      if (geometry[i] != nGeometry::GLOBAL && geometry[i] != nGeometry::PARTIAL) {
-        spatial_resource_count[i]->UpdateCount();
+        spatial_resource_count[i]->UpdateCount(ctx);
         spatial_resource_count[i]->Source(inflow_rate[i]);
         spatial_resource_count[i]->Sink(decay_rate[i]);
         if (spatial_resource_count[i]->GetCellListSize() > 0) {
