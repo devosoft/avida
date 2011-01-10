@@ -518,7 +518,7 @@ void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
   }
 }
 ///// Private Methods /////////
-void cResourceCount::DoUpdates() const
+void cResourceCount::DoUpdates(cAvidaContext* ctx) const
 { 
   assert(update_time >= -EPSILON);
 

@@ -122,17 +122,17 @@ void cEnvironmentScreen::DrawReaction()
 void cEnvironmentScreen::Update(cAvidaContext& ctx)
 {
   if(mode==ENVIRONMENT_MODE_RESOURCE)
-    UpdateResource();
+    UpdateResource(&ctx);
   else
-    UpdateReaction();
+    UpdateReaction(&ctx);
   Refresh();
 }
 
-void cEnvironmentScreen::UpdateResource()
+void cEnvironmentScreen::UpdateResource(cAvidaContext* ctx)
 {
   const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
-  const int num_resources = m_world->GetPopulation().GetResources().GetSize();
+  const int num_resources = m_world->GetPopulation().GetResources(ctx).GetSize();
   
   // If there are no resources, then we have nothing to update.
   if (num_resources == 0) return;
@@ -141,7 +141,7 @@ void cEnvironmentScreen::UpdateResource()
   SetBoldColor(COLOR_CYAN);
   for(int i = 0; i < num_resources; i++)
   {
-    Print(i+1, 40, "%7.2f", m_world->GetPopulation().GetResources()[i]);
+    Print(i+1, 40, "%7.2f", m_world->GetPopulation().GetResources(ctx)[i]);
   }
   
   // Highlight the current resource in blue.
@@ -149,7 +149,7 @@ void cEnvironmentScreen::UpdateResource()
   Print(res_selection+1, 1, res_lib.GetResource(res_selection)->GetName());
   Print(res_selection+1, 12, "%7.2f", res_lib.GetResource(res_selection)->GetInflow());
   Print(res_selection+1, 24, "%7.2f", res_lib.GetResource(res_selection)->GetOutflow());
-  Print(res_selection+1, 40, "%7.2f", m_world->GetPopulation().GetResources()[res_selection]);
+  Print(res_selection+1, 40, "%7.2f", m_world->GetPopulation().GetResources(ctx)[res_selection]);
   
   // Print all of the information about the reaction(s) associated with
   // current resource.
@@ -190,7 +190,7 @@ void cEnvironmentScreen::UpdateResource()
   
 }
 
-void cEnvironmentScreen::UpdateReaction()
+void cEnvironmentScreen::UpdateReaction(cAvidaContext* ctx)
 {
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
   const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
@@ -253,7 +253,7 @@ void cEnvironmentScreen::UpdateReaction()
     for(int j=0; j < res_lib.GetSize(); j++) {
       if (res_lib.GetResource(j)->GetName() == cur_resource->GetName()) {
         Print(m_world->GetStats().GetReactions().GetSize()+5+offset, 40, "%7.2f",
-              m_world->GetPopulation().GetResources()[j]);
+              m_world->GetPopulation().GetResources(ctx)[j]);
       }
     }
     offset++;
@@ -270,7 +270,7 @@ void cEnvironmentScreen::DoInput(cAvidaContext& ctx, int in_char)
   switch (in_char) {
     case KEY_DOWN:
       if(mode==ENVIRONMENT_MODE_RESOURCE ) {
-        const int num_resources = m_world->GetPopulation().GetResources().GetSize();
+        const int num_resources = m_world->GetPopulation().GetResources(&ctx).GetSize();
         if (num_resources > 0) {
           last_selection=res_selection;
           res_selection++;
@@ -298,7 +298,7 @@ void cEnvironmentScreen::DoInput(cAvidaContext& ctx, int in_char)
       break;
     case KEY_UP:
       if(mode == ENVIRONMENT_MODE_RESOURCE) {
-        const int num_resources = m_world->GetPopulation().GetResources().GetSize();
+        const int num_resources = m_world->GetPopulation().GetResources(&ctx).GetSize();
         if (num_resources > 0) {
           last_selection = res_selection;
           res_selection--;
