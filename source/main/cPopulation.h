@@ -141,7 +141,7 @@ public:
   
   // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
   // movement that cannot be directly handled in cHardwareCPU.cc
-  void MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id);
+  bool MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id);
 
   // Specialized functionality
   void Kaboom(cPopulationCell& in_cell, cAvidaContext* ctx, int distance=0); //JW

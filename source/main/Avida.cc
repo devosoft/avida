@@ -138,7 +138,7 @@ void PrintVersionBanner()
        << "Benjamin Beckmann, Jeffrey Clune, Brian Connelly, Art Covert, Santiago Elena," << endl
        << "Sherri Goings, Heather Goldsby, David Knoester, Richard Lenski, Philip McKinley," << endl
        << "Dusan Misevic, Elizabeth Ostrowski, Robert Pennock, Matthew Rupp, Eric Torng," << endl
-       << "Michael Vo, Bess Walker, and Gabriel Yedid" << endl << endl;
+       << "Michael Vo, Aaron Wagner, Bess Walker, and Gabriel Yedid" << endl << endl;
 
   cout << "For a more complete list of contributors, see the AUTHORS file." << endl;
 

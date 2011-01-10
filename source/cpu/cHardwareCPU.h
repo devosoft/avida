@@ -581,6 +581,8 @@ private:
   bool Inst_GetCellPositionX(cAvidaContext& ctx);
   bool Inst_GetCellPositionY(cAvidaContext& ctx);
   bool Inst_GetDirectionOffNorth(cAvidaContext& ctx);  
+  bool Inst_GetNortherly(cAvidaContext& ctx); 
+  bool Inst_GetEasterly(cAvidaContext& ctx);
   
   // State Grid Sensory/Movement
   bool Inst_SGMove(cAvidaContext& ctx);
@@ -888,6 +890,7 @@ public:
   bool Inst_GetFacedOrgID(cAvidaContext& ctx);  
   bool Inst_AttackFacedOrg(cAvidaContext& ctx);  
   bool Inst_GetAttackOdds(cAvidaContext& ctx);
+//  bool Inst_FightFacedOrg(cAvidaContext& ctx); 
 	
 private:
 	std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.

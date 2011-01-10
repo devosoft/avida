@@ -593,6 +593,10 @@ public:
 	bool ReceiveString(int string_tag, int amount, int donor_id); 
 	bool CanReceiveString(int string_tag, int amount); 
 	
+  // get the organism's relative position (from birth place)
+  int GetNortherly() { return m_northerly; }
+	int GetEasterly() { return m_easterly; } 
+  
 protected:
 	// The organism's own raw materials
 	int m_self_raw_materials; 
@@ -616,6 +620,9 @@ protected:
 	// int number of reputation increase failures
 	int m_failed_reputation_increases;
 	std::pair < int, int > m_tag;
+  
+  int m_northerly;
+  int m_easterly;
 	
   /*! Contains all the different data structures needed to 
 	 track strings, production of strings, and donation/trade 

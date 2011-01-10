@@ -747,13 +747,13 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian 
 // movement that cannot be directly handled in cHardwareCPU.cc
-void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id)
+bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_cell_id)
 {
   cPopulationCell& src_cell = GetCell(src_cell_id);
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
   
   if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() && dest_cell.IsOccupied()) {
-    if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return;
+    if (m_world->GetConfig().MOVEMENT_COLLISIONS_LETHAL.Get() == 2) return false;
     bool kill_source = true;
     switch (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get()) {
       case 0: // 50% chance, no modifiers
@@ -772,7 +772,7 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       KillOrganism(src_cell, &ctx); //JW
       
       // Killing the moving organism means that we shouldn't actually do the swap, so return
-      return;
+      return false;
     }
     
     KillOrganism(dest_cell, &ctx); //Jw
@@ -835,6 +835,8 @@ void cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       break;
     }
   }
+  
+  return true;
 }
 
 // Kill Random Organism in Group (But Not Self)!! JW

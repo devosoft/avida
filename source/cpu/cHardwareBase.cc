@@ -52,11 +52,11 @@ using namespace AvidaTools;
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
 : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-, m_has_energy_costs(m_inst_set->HasEnergyCosts()) , m_has_res_costs(m_inst_set->HasResCosts())  /*APW*/
+, m_has_energy_costs(m_inst_set->HasEnergyCosts()) , m_has_res_costs(m_inst_set->HasResCosts())  
 {
 	m_task_switching_cost=0;
 	int switch_cost =  world->GetConfig().TASK_SWITCH_PENALTY.Get();
-	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | switch_cost);/*APW*/
+	m_has_any_costs = (m_has_costs | m_has_ft_costs | m_has_energy_costs | m_has_res_costs | switch_cost);
   m_implicit_repro_active = (m_world->GetConfig().IMPLICIT_REPRO_TIME.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_CPU_CYCLES.Get() ||
                              m_world->GetConfig().IMPLICIT_REPRO_BONUS.Get() ||

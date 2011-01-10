@@ -139,7 +139,7 @@ public:
 
   int GetStateGridID(cAvidaContext& ctx);
 	
-  void Move(cAvidaContext& ctx, int src_id, int dest_id);
+  bool Move(cAvidaContext& ctx, int src_id, int dest_id);
 
 	// Reputation
 	void RotateToGreatestReputation();

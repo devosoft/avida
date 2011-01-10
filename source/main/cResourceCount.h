@@ -43,7 +43,6 @@ class cWorld;
 class cResourceCount
 {
 private:
-  cWorld* m_world;
   mutable tArray<cString> resource_name;
   mutable tArray<double> resource_initial;  // Initial quantity of each resource
   mutable tArray<double> resource_count;  // Current quantity of each resource
@@ -61,7 +60,7 @@ private:
   // Setup the update process to use lazy evaluation...
   mutable double update_time;     // Portion of an update compleated...
   mutable double spatial_update_time;
-  void DoUpdates(cAvidaContext* ctx = NULL) const;         // Update resource count based on update time
+  void DoUpdates() const;         // Update resource count based on update time
 
   // A few constants to describe update process...
   static const double UPDATE_STEP;   // Fraction of an update per step

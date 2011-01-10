@@ -1537,7 +1537,7 @@ bool cHardwareTransSMT::Inst_RotateLeft(cAvidaContext& ctx)
   if (num_neighbors == 0) return false;
   
   // Always rotate at least once.
-  m_organism->Rotate(-1);
+  m_organism->Rotate(1);
   
   return true;
 }
@@ -1551,7 +1551,7 @@ bool cHardwareTransSMT::Inst_RotateRight(cAvidaContext& ctx)
   if (num_neighbors == 0) return false;
   
   // Always rotate at least once.
-  m_organism->Rotate(1);
+  m_organism->Rotate(-1);
   
   return true;
 }

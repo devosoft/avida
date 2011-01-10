@@ -135,7 +135,7 @@ public:
 	virtual void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) = 0;
 	virtual void ReceiveHGTDonation(const cSequence& fragment) = 0;
   
-  virtual void Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
+  virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
 
   virtual void JoinGroup(int group_id) = 0;
   virtual void LeaveGroup(int group_id) = 0;

@@ -87,6 +87,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, i
   , m_num_reciprocate(0)
   , m_failed_reputation_increases(0)
   , m_tag(make_pair(-1, 0))
+  , m_northerly(0)
+  , m_easterly(0)
 
 {
   m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome);
@@ -955,8 +957,32 @@ void cOrganism::Move(cAvidaContext& ctx)
   int fromcellID = GetCellID();
   int destcellID = GetFacedCellID();
   
+  int facing = GetFacing();
+  
   // Actually perform the move
-  m_interface->Move(ctx, fromcellID, destcellID);
+  if (m_interface->Move(ctx, fromcellID, destcellID)) {
+    //APW keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
+    if (facing == 0) m_northerly = m_northerly - 1;       // N
+    else if (facing == 1) {                           // NW
+      m_northerly = m_northerly - 1; 
+      m_easterly = m_easterly - 1;
+    }  
+    else if (facing == 3) m_easterly = m_easterly - 1;    // W
+    else if (facing == 2) {                           // SW
+      m_northerly = m_northerly + 1; 
+      m_easterly = m_easterly - 1;
+    }
+    else if (facing == 6) m_northerly = m_northerly + 1;  // S
+    else if (facing == 7) {                           // SE
+      m_northerly = m_northerly + 1; 
+      m_easterly = m_easterly + 1;
+    }
+    else if (facing == 5) m_easterly = m_easterly + 1;    // E    
+    else if (facing == 4) {                           // NE
+      m_northerly = m_northerly - 1; 
+      m_easterly = m_easterly + 1;
+    }
+  }
   
   // Check to make sure the organism is still alive
   if (m_phenotype.GetToDelete()) return;

@@ -199,20 +199,20 @@ int cPopulationCell::GetFacing()
 		lr = 1; //right
 	
 	if((y==m_y-1) || (y>m_y+1))
-		du = -1; //down
+		du = -1; //up
 	else if((y==m_y+1) || (y<m_y-1))
-		du = 1; //up
+		du = 1; //down
   
 	// This is hackish.
 	// If you change these return values then the directional send tasks, like sent-north, need to be updated.
-	if(lr==0 && du==-1) return 0; //S
-	if(lr==-1 && du==-1) return 1; //SW
-	if(lr==-1 && du==0) return 3; //W
-	if(lr==-1 && du==1) return 2; //NW
-	if(lr==0 && du==1) return 6; //N
-	if(lr==1 && du==1) return 7; //NE
-	if(lr==1 && du==0) return 5; //E
-	if(lr==1 && du==-1) return 4; //SE
+	if(lr==0 && du==-1) return 0; //N
+	else if(lr==-1 && du==-1) return 1; //NW
+	else if(lr==-1 && du==0) return 3; //W
+	else if(lr==-1 && du==1) return 2; //SW
+	else if(lr==0 && du==1) return 6; //S
+	else if(lr==1 && du==1) return 7; //SE
+	else if(lr==1 && du==0) return 5; //E
+	else if(lr==1 && du==-1) return 4; //NE
   
 	assert(false);
   

@@ -309,6 +309,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-cell-y", &cHardwareCPU::Inst_GetCellPositionY),
     tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareCPU::Inst_GetDirectionOffNorth),    
+    tInstLibEntry<tMethod>("get-northerly", &cHardwareCPU::Inst_GetNortherly),    
+    tInstLibEntry<tMethod>("get-easterly", &cHardwareCPU::Inst_GetEasterly),    
     
     // State Grid instructions
     tInstLibEntry<tMethod>("sg-move", &cHardwareCPU::Inst_SGMove),
@@ -614,7 +616,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-attack-odds", &cHardwareCPU::Inst_GetAttackOdds, nInstFlag::STALL), 
-    
+//    tInstLibEntry<tMethod>("fight-faced-org", &cHardwareCPU::Inst_FightFacedOrg, nInstFlag::STALL),     
 		
 		// Synchronization
     tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
@@ -5478,13 +5480,13 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_RotateLeftOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(-1);
+  m_organism->Rotate(1);
   return true;
 }
 
 bool cHardwareCPU::Inst_RotateRightOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(1);
+  m_organism->Rotate(-1);
   return true;
 }
 
@@ -6835,17 +6837,30 @@ bool cHardwareCPU::Inst_GetDistanceFromDiagonal(cAvidaContext& ctx) {
 bool cHardwareCPU::Inst_GetDirectionOffNorth(cAvidaContext& ctx) {
   int facing = m_organism->GetFacing();
   int north_offset = 0;
-  if (facing == 0) north_offset = 4;
-  else if (facing == 1) north_offset = -3;
-  else if (facing == 3) north_offset = -2;
-  else if (facing == 2) north_offset = -1;
-  else if (facing == 6) north_offset = 0;
-  else if (facing == 7) north_offset = 1;
-  else if (facing == 5) north_offset = 2;
-  else if (facing == 4) north_offset = 3;
+  if (facing == 0) north_offset = 0;          //N 
+  else if (facing == 1) north_offset = -1;    //NW
+  else if (facing == 3) north_offset = -2;    //W
+  else if (facing == 2) north_offset = -3;    //SW
+  else if (facing == 6) north_offset = 4;     //S
+  else if (facing == 7) north_offset = 3;     //SE
+  else if (facing == 5) north_offset = 2;     //E
+  else if (facing == 4) north_offset = 1;     //NE
   const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = north_offset;
   return true;
+}
+
+bool cHardwareCPU::Inst_GetNortherly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(REG_AX);
+  GetRegister(out_reg) = m_organism->GetNortherly();
+  return true;  
+}
+
+
+bool cHardwareCPU::Inst_GetEasterly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(REG_CX);
+  GetRegister(out_reg) = m_organism->GetEasterly();
+  return true;  
 }
 
 //// Promoter Model ////
@@ -8620,6 +8635,38 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   GetRegister(out_reg) = odds_I_dont_die;
   return true;
 } 	
+
+//Fight organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
+/*bool cHardwareCPU::Inst_FightFacedOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  int target_cell = target->GetCellID();
+  
+  double attacker_vitality = m_organism->GetVitality();
+  double target_vitality = target->GetVitality();
+  
+  const cInstruction& cur_inst = 'fight';  
+  double attacker_cost = m_inst_set->GetResCost(cur_inst) * ((attacker_vitality) / (attacker_vitality + target_vitality));
+  double target_cost = m_inst_set->GetResCost(cur_inst) *  ((target_vitality) / (attacker_vitality + target_vitality)); 
+  
+  //Attacker will be charged for the fight via instruction set cost. So, we only apply a cost to the target.
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  if (target_cost >= target->GetRBin(resource)) {
+    m_organism->KillCellID(target_cell); 
+  }
+  // subtract res used from current bin by adding negative value
+  else {
+    double cost = target_cost * -1.0;
+    target->AddToRBin(resource, cost); 
+  } 
+  return true;
+}*/
 
 /*! Called when the organism that owns this CPU has received a flash from a neighbor. */
 void cHardwareCPU::ReceiveFlash() {

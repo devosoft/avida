@@ -106,6 +106,9 @@ public:
 	bool BcastAlarm(int jump_label, int bcast_range) { return false; }
   void DivideOrgTestamentAmongDeme(double value) {;}
 	void SendFlash() { }
+  
+  int GetNortherly() {return 0; }
+  int GetEasterly() {return 0; }
 	
 	void RotateToGreatestReputation(){ }
 	void RotateToGreatestReputationWithDifferentTag(int tag){ }
@@ -137,7 +140,7 @@ public:
 	//! Receive HGT donation (does nothing).
 	void ReceiveHGTDonation(const cSequence& fragment) { }
   
-  void Move(cAvidaContext& ctx, int src_id, int dest_id) { ; }
+  bool Move(cAvidaContext& ctx, int src_id, int dest_id) { ; }
   
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }

@@ -1031,9 +1031,9 @@ void cPopulationInterface::ReceiveHGTDonation(const cSequence& fragment) {
 }
 
 
-void cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
+bool cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
 {
-  m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
+  return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
 }
 
 
