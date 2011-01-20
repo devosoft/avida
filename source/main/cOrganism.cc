@@ -362,11 +362,13 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 		  }
 	  }
   }
-
+  
+	
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
                                                insts_triggered, is_parasite, context_phenotype);
 											   
+	
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double cur_merit = m_phenotype.CalcCurrentMerit();

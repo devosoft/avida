@@ -614,7 +614,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
     }
     else
       return false;
-    }
+  }
 
 
   // Attempt actual parasite injection
