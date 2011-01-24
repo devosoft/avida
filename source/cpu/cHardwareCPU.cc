@@ -5786,7 +5786,10 @@ bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
 	// In TestCPU, movement fails...
   if (m_organism->GetCellID() == -1) return false;
 	
-  m_organism->Move(ctx);
+  bool move_success = m_organism->Move(ctx);
+  
+  const int out_reg = FindModifiedRegister(REG_BX);   //APW
+  GetRegister(out_reg) = move_success;                           //APW
   
   return true;
 }

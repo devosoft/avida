@@ -437,7 +437,7 @@ public:
   
   // -------- BDC Movement ---------
 public:
-  void Move(cAvidaContext& ctx);
+  bool Move(cAvidaContext& ctx);
 
   
   /***** context switch********/

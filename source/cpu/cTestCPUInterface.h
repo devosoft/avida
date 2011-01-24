@@ -140,7 +140,7 @@ public:
 	//! Receive HGT donation (does nothing).
 	void ReceiveHGTDonation(const cSequence& fragment) { }
   
-  bool Move(cAvidaContext& ctx, int src_id, int dest_id) { ; }
+  bool Move(cAvidaContext& ctx, int src_id, int dest_id) { return false; }
   
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
