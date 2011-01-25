@@ -22,6 +22,7 @@ updates) is reached, whichever comes first.
   Once bitten, peaks will not move again until refreshed.
   Peak values are refreshed to match initial height, spread, and plateau, but the placement of the refreshed peak is random
 within the min/max x and y area. */
+/*cGradientCount cannot access the random number generator at the very first update. Thus, it uses the random seed initially*/
 
 cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, 
                                int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatecount, 
@@ -73,16 +74,8 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   if (has_edible && m_counter < m_decay && GetModified()) return; 
   
   if (m_counter == m_decay) {
-//    cRandom rand;                                                                                  //APW random mapping
-//    int old_peakx = m_peakx;                                                                      //APW random mapping
-//    int old_peaky = m_peaky;                                                                      //APW random mapping
     m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
     m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
-  // guard against peaks getting repeatedly generated at same point when the attacks are coming too quick  //APW random mapping
-//    if (m_peakx == old_peakx && m_peaky == old_peaky) {                                                   //APW random mapping
-//      m_peakx = m_world->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height);                     //APW random mapping
- //     m_peaky = m_world->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height);                     //APW random mapping
- //   }
     movesignx = ctx->GetRandom().GetInt(-1,2);
     if (movesignx == 0) {
       if (ctx->GetRandom().GetUInt(0,2)) {
