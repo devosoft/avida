@@ -6854,14 +6854,14 @@ bool cHardwareCPU::Inst_GetDirectionOffNorth(cAvidaContext& ctx) {
 }
 
 bool cHardwareCPU::Inst_GetNortherly(cAvidaContext& ctx) {
-  const int out_reg = FindModifiedRegister(REG_AX);
+  const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = m_organism->GetNortherly();
   return true;  
 }
 
 
 bool cHardwareCPU::Inst_GetEasterly(cAvidaContext& ctx) {
-  const int out_reg = FindModifiedRegister(REG_CX);
+  const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = m_organism->GetEasterly();
   return true;  
 }
