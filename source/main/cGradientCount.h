@@ -29,6 +29,7 @@ private:
   double moveYscaler;
   int m_updatestep;
   int m_counter;
+  int move_counter;
   int m_counter2;
   double movesignx;
   double movesigny;

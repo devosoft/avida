@@ -32,6 +32,7 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
 {
   ResizeClear(in_worldx, in_worldy, in_geometry);
   m_counter = 0;
+  move_counter = 1;
   moveYscaler = 0.5;
   movesignx = m_world->GetDefaultContext().GetRandom().GetInt(-1,2);
   if (movesignx == 0) {
@@ -95,19 +96,25 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   //first, to get smooth movements, we only allow either the x or y direction change to be evaluated in a single update
   //second, we then decide the change of direction based on the current direction so that peak can't 'jump' from -1 to 1, 
   //without first changing to 0
+  //finally, we only do this only after every 20 updates to slow the frequency of path changes
   int choosesign = ctx->GetRandom().GetInt(0,3);
   
-  if (choosesign == 1) {
-    if (movesignx == -1) movesignx = ctx->GetRandom().GetInt(-1,1); 
-    else if (movesignx == 1) movesignx = ctx->GetRandom().GetInt(0,2);
-    else movesignx = ctx->GetRandom().GetInt(-1,2);
+  if (move_counter == 20) {
+    move_counter = 1;
+    
+    if (choosesign == 1) {
+      if (movesignx == -1) movesignx = ctx->GetRandom().GetInt(-1,1); 
+      else if (movesignx == 1) movesignx = ctx->GetRandom().GetInt(0,2);
+      else movesignx = ctx->GetRandom().GetInt(-1,2);
+    }
+    
+    if (choosesign == 2){ 
+      if (movesigny == -1) movesigny = ctx->GetRandom().GetInt(-1,1); 
+      else if (movesigny == 1) movesigny = ctx->GetRandom().GetInt(0,2);
+      else movesigny = ctx->GetRandom().GetInt(-1,2);
+    }
   }
-  
-  if (choosesign == 2){ 
-    if (movesigny == -1) movesigny = ctx->GetRandom().GetInt(-1,1); 
-    else if (movesigny == 1) movesigny = ctx->GetRandom().GetInt(0,2);
-    else movesigny = ctx->GetRandom().GetInt(-1,2);
-  }
+  else move_counter = move_counter++;
   
   double temp_peakx = m_peakx + (moveYscaler * movesignx);
   double temp_peaky = m_peaky + (moveYscaler * movesigny);
