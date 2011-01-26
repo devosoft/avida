@@ -22,7 +22,7 @@ updates) is reached, whichever comes first.
   Once bitten, peaks will not move again until refreshed.
   Peak values are refreshed to match initial height, spread, and plateau, but the placement of the refreshed peak is random
 within the min/max x and y area. */
-/*cGradientCount cannot access the random number generator at the very first update. Thus, it uses the random seed initially*/
+/*cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially*/
 
 cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, 
                                int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatecount, 
@@ -76,7 +76,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   if (m_counter == m_decay) {
     m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
     m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
-    movesignx = ctx->GetRandom().GetInt(-1,2);
+    movesignx = ctx->GetRandom().GetInt(-1,2);  //why not allowing 0?
     if (movesignx == 0) {
       if (ctx->GetRandom().GetUInt(0,2)) {
         movesigny = 1;
@@ -87,11 +87,30 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     SetModified(false);
   }
   
-  // move cones by moving m_peakx & m_peaky, but only if the cone has not been bitten  
+  // move cones by moving m_peakx & m_peaky, but only if the cone has not been bitten 
+  // keep cones inside their bounding boxes; bounce them if they hit the edge
   moveYscaler = m_move_a_scaler * moveYscaler * (1 - moveYscaler); 
   
-  double temp_peakx = m_peakx + moveYscaler;
-  double temp_peaky = m_peaky + moveYscaler;
+  //we use movesign to determine direction of peak movement
+  //first, to get smooth movements, we only allow either the x or y direction change to be evaluated in a single update
+  //second, we then decide the change of direction based on the current direction so that peak can't 'jump' from -1 to 1, 
+  //without first changing to 0
+  int choosesign = ctx->GetRandom().GetInt(0,3);
+  
+  if (choosesign == 1) {
+    if (movesignx == -1) movesignx = ctx->GetRandom().GetInt(-1,1); 
+    else if (movesignx == 1) movesignx = ctx->GetRandom().GetInt(0,2);
+    else movesignx = ctx->GetRandom().GetInt(-1,2);
+  }
+  
+  if (choosesign == 2){ 
+    if (movesigny == -1) movesigny = ctx->GetRandom().GetInt(-1,1); 
+    else if (movesigny == 1) movesigny = ctx->GetRandom().GetInt(0,2);
+    else movesigny = ctx->GetRandom().GetInt(-1,2);
+  }
+  
+  double temp_peakx = m_peakx + (moveYscaler * movesignx);
+  double temp_peaky = m_peaky + (moveYscaler * movesigny);
   
   if (temp_peakx > (m_max_x - m_height)) movesignx = -1.0;
   if (temp_peakx < (m_min_x + m_height)) movesignx = 1.0; 
