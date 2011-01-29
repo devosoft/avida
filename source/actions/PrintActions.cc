@@ -2466,8 +2466,8 @@ public:
 				++oiter;
 			}
 		}
-
-		std::random_shuffle(occupied_cells.begin(), occupied_cells.end());
+		cRandomStdAdaptor rng(ctx.GetRandom());
+		std::random_shuffle(occupied_cells.begin(), occupied_cells.end(), rng);
 		if(occupied_cells.size() % 2) {
 			occupied_cells.pop_back();
 		}

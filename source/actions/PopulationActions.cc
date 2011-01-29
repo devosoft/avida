@@ -2722,6 +2722,7 @@ public:
 					}
 					
 					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
+					assert(deme.GetGermline().Size()>0);
 					m_world->GetPopulation().KillOrganism(cell);
 					m_world->GetPopulation().InjectGenome(cell.GetID(), SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
 					m_world->GetPopulation().DemePostInjection(deme, cell);

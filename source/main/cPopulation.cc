@@ -4618,7 +4618,10 @@ void cPopulation::Inject(const cGenome& genome, eBioUnitSource src, int cell_id,
 
   cell_array[cell_id].GetOrganism()->SetLineageLabel(lineage_label);
 
-  if (GetNumDemes() > 1) {
+	
+	// the following bit of code is required for proper germline support.
+	// even if there's only one deme!!
+	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
 
     // If we're using germlines, then we have to be a little careful here.
