@@ -3432,6 +3432,13 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
     }
     KillOrganism(cell_array[cell_id]);
   }
+	
+	// increment the number of births in the **parent deme**.  in the case of a
+	// migration, only the origin has its birth count incremented.
+  if (deme_array.GetSize() > 0) {
+    const int deme_id = parent_cell.GetDemeID();
+    deme_array[deme_id].IncBirthCount();
+  }
 
   // Decide if offspring will migrate to another deme -- if migrating we ignore the birth method.
   if (m_world->GetConfig().MIGRATION_RATE.Get() > 0.0 &&
@@ -3461,7 +3468,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
       out_cell_id = deme_array[deme_id].GetCellID(out_pos);
     }
 
-    deme_array[deme_id].IncBirthCount();
     GetCell(out_cell_id).SetMigrant();
     return GetCell(out_cell_id);
   }
@@ -3474,7 +3480,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
   if ((m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
       && m_world->GetRandom().P(m_world->GetConfig().DEMES_MIGRATION_RATE.Get()))
   {
-    deme_array[parent_cell.GetDemeID()].IncBirthCount();
     return PositionDemeMigration(parent_cell, parent_ok);
   }
 
@@ -3509,12 +3514,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
   }
 
   if (birth_method == POSITION_OFFSPRING_DEME_RANDOM) {
-    deme_array[parent_cell.GetDemeID()].IncBirthCount();
     return PositionDemeRandom(parent_cell.GetDemeID(), parent_cell, parent_ok);
   }
   else if (birth_method == POSITION_OFFSPRING_PARENT_FACING) {
-    const int deme_id = parent_cell.GetDemeID();
-    deme_array[deme_id].IncBirthCount();
     return parent_cell.GetCellFaced();
   }
   else if (birth_method == POSITION_OFFSPRING_NEXT_CELL) {
@@ -3596,11 +3598,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, bo
         // Nothing is in list if no empty cells are found...
         break;
     }
-  }
-
-  if (deme_array.GetSize() > 0) {
-    const int deme_id = parent_cell.GetDemeID();
-    deme_array[deme_id].IncBirthCount();
   }
 
   // If there are no possibilities, return parent.
