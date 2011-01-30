@@ -863,10 +863,12 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
 		deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
   }
 
-  // If HGT is turned on, this organism's genome needs to be split up into fragments
+  // If HGT is turned on and there's a possibility of natural competence,
+	// this organism's genome needs to be split up into fragments
   // and deposited in its cell.  We then also have to add the size of this genome to
   // the HGT resource.
-  if (m_world->GetConfig().ENABLE_HGT.Get()) {
+  if(m_world->GetConfig().ENABLE_HGT.Get()
+		 && (m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)) {
     in_cell.AddGenomeFragments(organism->GetGenome().GetSequence());
   }
 

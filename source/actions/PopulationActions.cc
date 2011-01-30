@@ -3439,7 +3439,7 @@ public:
  
  This event, in combination with a method for deme competition, can be used to model
  the different biologically-inspired approaches to group selection, specifically
- Wilson's and Traulsen's models.
+ Wilson's model.
  */
 class cActionMixPopulation : public cAction {
 public:

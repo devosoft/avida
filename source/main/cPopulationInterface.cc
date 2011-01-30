@@ -835,7 +835,7 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 
 /*! Perform an HGT mutation on this offspring. 
  
- HGT mutations are location-dependent, hence they are piped through the populatin
+ HGT mutations are location-dependent, hence they are piped through the population
  interface as opposed to being implemented in the CPU or organism.
 
  There is the possibility that more than one HGT mutation occurs when this method 
@@ -896,15 +896,15 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
 		cGenomeUtil::substring_match location;
 		switch(m_world->GetConfig().HGT_FRAGMENT_SELECTION.Get()) {
-			case 0: { // random selection
+			case 0: { // match placement
 				HGTMatchPlacement(ctx, offspring.GetSequence(), i, location);
 				break;
 			}
-			case 1: { // random selection with redundant instruction trimming
+			case 1: { // match placement with redundant instruction trimming
 				HGTTrimmedPlacement(ctx, offspring.GetSequence(), i, location);
 				break;
 			}
-			case 2: { // random selection and random placement
+			case 2: { // random placement
 				HGTRandomPlacement(ctx, offspring.GetSequence(), i, location);
 				break;
 			}
