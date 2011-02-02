@@ -2438,61 +2438,97 @@ public:
   }
 };
 
-/*! Calculate and print average edit distance between organisms in the current population.
-
- Here we calculate the average edit distance between sample_size pairs of organisms
- from the current population, selected at random with replacement.
+/*! Calculate and print average edit distance of organisms within and among demes.
+ 
+ Parameters:
+ sample_size: Number of organism pairs to sample
+ filename: File in which to output stats
  */
 class cActionPrintEditDistance : public cAction {
 public:
   cActionPrintEditDistance(cWorld* world, const cString& args)
 	: cAction(world, args)
-	, m_sample_size(100)
+	, m_sample_size(-1)
 	, m_filename("edit_distance.dat") {
     cString largs(args);
 		if(largs.GetSize()) { m_sample_size = static_cast<unsigned int>(largs.PopWord().AsInt()); }
     if(largs.GetSize()) {	m_filename = largs.PopWord();	}
   }
 
-  static const cString GetDescription() { return "Arguments: [sample_size [filename]]"; }
+  static const cString GetDescription() { return "Arguments: [sample size [filename]]"; }
 
+	/*! Calculate our various edit distances.
+	 
+	 We have two different measures that we want to look at:
+	 1) population-wide genetic variance
+	 2) within-deme genetic variance	 
+	 */
   void Process(cAvidaContext& ctx) {
+		assert(m_world->GetPopulation().GetNumDemes() > 0);
+
 		cDataFile& df = m_world->GetDataFile(m_filename);
-		std::vector<int> occupied_cells(m_world->GetPopulation().GetNumOrganisms());
-		std::vector<int>::iterator oiter=occupied_cells.begin();
+		
+		// within deme edit distance:
+		cDoubleSum within_deme_ed;
+		std::vector<cOrganism*> organisms;
+		organisms.reserve(m_world->GetPopulation().GetNumOrganisms());
+		
+		for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
+			cDeme& deme = m_world->GetPopulation().GetDeme(i);
+			for(int j=0; j<deme.GetSize(); ++j) {
+				cOrganism* org = deme.GetOrganism(j);
+				if(org != 0) {
+					organisms.push_back(org);
+				}
+			}
+			within_deme_ed.Add(average_edit_distance(organisms, ctx));
+			organisms.clear();
+		}
+		
+		// among deme edit distance:
 		for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
-			if(m_world->GetPopulation().GetCell(i).IsOccupied()) {
-				*oiter = i;
-				++oiter;
+			cOrganism* org = m_world->GetPopulation().GetCell(i).GetOrganism();
+			if(org != 0) {
+				organisms.push_back(org);
 			}
 		}
-		cRandomStdAdaptor rng(ctx.GetRandom());
-		std::random_shuffle(occupied_cells.begin(), occupied_cells.end(), rng);
-		if(occupied_cells.size() % 2) {
-			occupied_cells.pop_back();
-		}
-
-		unsigned int max_pairs = occupied_cells.size()/2;
-		unsigned int sample_pairs = std::min(m_sample_size, max_pairs);
-
-		cDoubleSum edit_distance;
-		for(unsigned int i=0; i<sample_pairs; ++i) {
-			cOrganism* a = m_world->GetPopulation().GetCell(occupied_cells.back()).GetOrganism();
-			occupied_cells.pop_back();
-			cOrganism* b = m_world->GetPopulation().GetCell(occupied_cells.back()).GetOrganism();
-			occupied_cells.pop_back();
-			edit_distance.Add(cSequence::FindEditDistance(a->GetGenome().GetSequence(), b->GetGenome().GetSequence()));
-		}
-
+		double among_deme_ed = average_edit_distance(organisms, ctx);		
+		
 		df.Write(m_world->GetStats().GetUpdate(), "Update [update]");
-		df.Write(edit_distance.N(), "Number of pairs in sample [pairs]");
-		df.Write(edit_distance.Average(), "Average edit distance [distance]");
+		df.Write(within_deme_ed.Average(), "Mean deme edit distance [deme]");
+		df.Write(among_deme_ed, "Mean population edit distance [population]");
 		df.Endl();
 	}
 
+protected:
+	//! Calculate the average edit distance of the given container of organisms.
+	double average_edit_distance(std::vector<cOrganism*> organisms, cAvidaContext& ctx) {
+		cRandomStdAdaptor rng(ctx.GetRandom());
+		std::random_shuffle(organisms.begin(), organisms.end(), rng);
+		if(organisms.size() % 2) {
+			organisms.pop_back();
+		}
+		
+		unsigned int sample_pairs = organisms.size()/2;
+		if(m_sample_size > 0) {
+			sample_pairs = std::min(m_sample_size, sample_pairs);
+		}
+		
+		cDoubleSum edit_distance;
+		for(unsigned int i=0; i<sample_pairs; ++i) {
+			cOrganism* a = organisms.back();
+			organisms.pop_back();
+			cOrganism* b = organisms.back();
+			organisms.pop_back();
+			edit_distance.Add(cSequence::FindEditDistance(a->GetGenome().GetSequence(), b->GetGenome().GetSequence()));
+		}
+		
+		return edit_distance.Average();
+	}
+	
 private:
 	unsigned int m_sample_size; //!< Number of pairs of organisms to sample for diversity calculation.
-  cString m_filename;
+  cString m_filename; //!< Filename in which to write the various edit distances.
 };
 
 
