@@ -288,7 +288,7 @@ public:
   void CompeteOrganisms(cAvidaContext& ctx, int competition_type, int parents_survive);
   
   // Let users change environmental variables durning the run @BDB 22-Feb-2008
-  void UpdateResourceCount(const int Verbosity, cWorld* world);                            //APW random mapping ', cWorld* world'
+  void UpdateResourceCount(const int Verbosity, cWorld* world);                            
 	
 	// Adds an organism to a group
 	void JoinGroup(cOrganism* org, int group_id);

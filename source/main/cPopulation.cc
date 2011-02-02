@@ -86,7 +86,7 @@ using namespace std;
 using namespace AvidaTools;
 
 
-cPopulation::cPopulation(cWorld* world)  //APW random mapping ', world'§
+cPopulation::cPopulation(cWorld* world)  
 : m_world(world)
 , schedule(NULL)
 //, resource_count(world->GetEnvironment().GetResourceLib().GetSize())
@@ -284,7 +284,7 @@ cPopulation::cPopulation(cWorld* world)  //APW random mapping ', world'§
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
-      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),                     //APW random mapping ' world'
+      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),                     
                            res->GetInflow(), decay,
                            res->GetGeometry(), res->GetXDiffuse(),
                            res->GetXGravity(), res->GetYDiffuse(), 
@@ -305,13 +305,15 @@ cPopulation::cPopulation(cWorld* world)  //APW random mapping ', world'§
                            res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),
+                           res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
+                           res->GetHaloAnchorX(), res->GetHaloAnchorY(),
                            res->GetGradient()
                            ); //JW
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {
-        GetDeme(j).SetupDemeRes(deme_res_index, res, world->GetVerbosity(), world);                                  //APW random mapping ', world'
+        GetDeme(j).SetupDemeRes(deme_res_index, res, world->GetVerbosity(), world);                                  
         // could add deme resources to global resource stats here
       }
     } else {
@@ -5686,7 +5688,7 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
  middle of a run.  This is designed to work with cActionChangeEnvironment
  routine BDB 22-Feb-2008 */
 
-void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                      //APW random mapping ', cWorld* world'
+void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
   const cResourceLib & resource_lib = environment.GetResourceLib();
   int global_res_index = -1;
   int deme_res_index = -1;
@@ -5709,7 +5711,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {     
     if (!res->GetDemeResource()) {
       global_res_index++;
       const double decay = 1.0 - res->GetOutflow();
-      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),                       //APW random mapping 'world, '
+      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),                       
                            res->GetInflow(), decay,
                            res->GetGeometry(), res->GetXDiffuse(),
                            res->GetXGravity(), res->GetYDiffuse(), 
@@ -5730,13 +5732,15 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {     
                            res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),
+                           res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
+                           res->GetHaloAnchorX(), res->GetHaloAnchorY(),
                            res->GetGradient()
                            ); //JW
       cerr << res->GetMaxX() << " " << res->GetMinX() << endl;
     } else if (res->GetDemeResource()) {
       deme_res_index++;
       for(int j = 0; j < GetNumDemes(); j++) {
-        GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);                                                //APW random mapping ', world'
+        GetDeme(j).SetupDemeRes(deme_res_index, res, Verbosity, world);                                                
         // could add deme resources to global resource stats here
       }
     } else {

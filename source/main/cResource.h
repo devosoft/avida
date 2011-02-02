@@ -113,6 +113,11 @@ private:
   int m_min_x;
   int m_min_y;
   double m_move_a_scaler;
+  int m_halo;
+  int m_halo_inner_radius;
+  int m_halo_width;
+  int m_halo_anchor_x;
+  int m_halo_anchor_y;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;  
@@ -174,6 +179,11 @@ public:
   int GetMinX() { return m_min_x; }
   int GetMinY() { return m_min_y; }
   double GetAscaler() { return m_move_a_scaler; }
+  int GetHalo() { return m_halo;}
+  int GetHaloInnerRadius() { return m_halo_inner_radius; }
+  int GetHaloWidth() { return m_halo_width; }
+  int GetHaloAnchorX() { return m_halo_anchor_x; }
+  int GetHaloAnchorY() { return m_halo_anchor_y; }
   bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
@@ -227,6 +237,11 @@ public:
   void SetMinX(int _min_x) { m_min_x = _min_x; }
   void SetMinY(int _min_y) { m_min_y = _min_y; }
   void SetAscaler(double _move_a_scaler) { m_move_a_scaler = _move_a_scaler; }
+  void SetHalo(int _halo) { m_halo = _halo; }
+  void SetHaloInnerRadius(int _halo_inner_radius) { m_halo_inner_radius = _halo_inner_radius; }
+  void SetHaloWidth(int _halo_width) { m_halo_width = _halo_width; }
+  void SetHaloAnchorX(int _halo_anchor_x) { m_halo_anchor_x = _halo_anchor_x; }
+  void SetHaloAnchorY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);

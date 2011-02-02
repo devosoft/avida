@@ -77,7 +77,7 @@ public:
   void SetSize(int num_resources);
   void SetCellResources(int cell_id, const tArray<double> & res);
 
-void Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                      //APW random mapping 'cWorld* world, '
+void Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                      
 	   const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
 	   const double& in_ydiffuse, const double& in_ygravity,
 	   const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
@@ -95,8 +95,10 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
 	   const int& in_updatestep, const int& in_peakx, const int& in_peaky,
 	   const double& in_height, const double& in_spread, const double& in_plateau, const int& in_decay, 
      const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
+     const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
+     const int& in_halo_anchor_x, const int& in_halo_anchor_y,
      const bool& isgradient
-	   ); //JW
+	   ); 
              
   int GetResourceCountID(const cString& res_name);
   void SetInflow(const cString& name, const double _inflow);

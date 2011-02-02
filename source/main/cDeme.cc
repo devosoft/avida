@@ -566,13 +566,13 @@ void cDeme::ModifyDemeResCount(const tArray<double> & res_change, const int abso
   deme_resource_count.ModifyCell(res_change, relative_cell_id);
 }
 
-void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) {               //APW random mapping ', cWorld* world'
+void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) {               
   const double decay = 1.0 - res->GetOutflow();
   //addjust the resources cell list pointer here if we want CELL env. commands to be replicated in each deme
   
   int* temp = &id;
   
-  deme_resource_count.Setup(world, *temp, res->GetName(), res->GetInitial(),                //APW random mapping 'world, '
+  deme_resource_count.Setup(world, *temp, res->GetName(), res->GetInitial(),                
 			   res->GetInflow(), decay,
 			   res->GetGeometry(), res->GetXDiffuse(),
 			   res->GetXGravity(), res->GetYDiffuse(), 
@@ -592,7 +592,9 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                            res->GetCStepX(), res->GetCStepY(),
                            res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
-                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),
+                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),
+                           res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
+                           res->GetHaloAnchorX(), res->GetHaloAnchorY(),
                            res->GetGradient()
                            ); //JW
   

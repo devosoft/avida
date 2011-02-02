@@ -274,7 +274,7 @@ public:
   double GetCellEnergy(int absolute_cell_id, cAvidaContext* ctx) const; //JW
   double GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext* ctx); //JW
   void GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext* ctx); //JW
-  void SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world);                 //APW random mapping ', cWorld* world'
+  void SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world);                 
   void UpdateDemeRes(cAvidaContext* ctx) { deme_resource_count.GetResources(ctx); } //JW
   void Update(double time_step) { deme_resource_count.Update(time_step); }
   int GetRelativeCellID(int absolute_cell_id) const { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size

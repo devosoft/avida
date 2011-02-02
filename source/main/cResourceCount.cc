@@ -204,7 +204,7 @@ void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
   }
 }
 
-void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                  //APW random mapping 'cWorld* world, '
+void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                  
 				const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
 				const double& in_ydiffuse, const double& in_ygravity,
 				const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
@@ -222,6 +222,8 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
 				const int& in_updatestep, const int& in_peakx, const int& in_peaky,
 				const double& in_height, const double& in_spread, const double& in_plateau, const int& in_decay, 
         const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
+        const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
+        const int& in_halo_anchor_x, const int& in_halo_anchor_y,
         const bool& isgradient
 				)
 {
@@ -309,9 +311,10 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
     
     else if(isgradient){
       delete spatial_resource_count[id];
-      spatial_resource_count[id] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                 //APW random mapping 'world, '
+      spatial_resource_count[id] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
-                                                      tempx, tempy, in_geometry);
+                                                      tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, in_halo_width,
+                                                      in_halo_anchor_x, in_halo_anchor_y);
       spatial_resource_count[id]->RateAll(0);
     }
     

@@ -255,7 +255,7 @@ public:
 class cActionChangeEnvironment : public cAction
 {
 private:
-  cWorld *world;          //APW random mapping
+  cWorld *world;          
   cString env_string;
   
 public:
@@ -270,7 +270,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     m_world->GetEnvironment().LoadLine(env_string);
-    m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity(), world);           //APW random mapping ', world'
+    m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity(), world);          
   }
 };
 

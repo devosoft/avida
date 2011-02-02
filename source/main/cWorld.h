@@ -92,7 +92,7 @@ private:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL); //APW random mapping
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL); 
   virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
@@ -150,7 +150,7 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(cUserFeedback* errors); //APW random mapping
+  bool setup(cUserFeedback* errors); 
 
 };
 

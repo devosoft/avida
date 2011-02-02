@@ -141,17 +141,17 @@ inline int cTestCPU::GetReceiveValue()
   return receive_array[cur_receive++];
 }
 
-inline const tArray<double>& cTestCPU::GetResources(cAvidaContext* ctx)    //APW random mapping ' world'
+inline const tArray<double>& cTestCPU::GetResources(cAvidaContext* ctx)    
 {
   return m_resource_count.GetResources(ctx); //JW
 }
 
-inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext* ctx)    //APW random mapping ' world'
+inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext* ctx)   
 {
   return m_faced_cell_resource_count.GetResources(ctx); //JW
 }
  
-inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext* ctx)    //APW random mapping ' world'
+inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext* ctx)    
 {
     return m_deme_resource_count.GetResources(ctx); //JW
 }

@@ -983,7 +983,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
       m_easterly = m_easterly + 1;
     }
   }
-  else return false;              //APW
+  else return false;              
   
   // Check to make sure the organism is still alive
   if (m_phenotype.GetToDelete()) return false;
@@ -1031,7 +1031,7 @@ bool cOrganism::Move(cAvidaContext& ctx)
     // then create new thread and load its registers
     m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
   }
-  return true;    //APW
+  return true;    
 } //End cOrganism::Move()
 
 bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range) {

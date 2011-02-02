@@ -767,6 +767,26 @@ bool cEnvironment::LoadGradientResource(cString desc, cUserFeedback* feedback) /
         if (!AssertInputInt(var_value, "updatestep", var_type, feedback)) return false;
         new_resource->SetUpdateStep( var_value.AsInt() );
       }
+      else if (var_name == "halo") {
+        if (!AssertInputInt(var_value, "halo", var_type, feedback)) return false;
+        new_resource->SetHalo( var_value.AsInt() );
+      }
+      else if (var_name == "halo_inner_radius") {
+        if (!AssertInputInt(var_value, "halo_inner_radius", var_type, feedback)) return false;
+        new_resource->SetHaloInnerRadius( var_value.AsInt() );
+      }
+      else if (var_name == "halo_anchor_x") {
+        if (!AssertInputInt(var_value, "halo_halo_anchor_x", var_type, feedback)) return false;
+        new_resource->SetHaloAnchorX( var_value.AsInt() );
+      }
+      else if (var_name == "halo_anchor_y") {
+        if (!AssertInputInt(var_value, "halo_halo_anchor_y", var_type, feedback)) return false;
+        new_resource->SetHaloAnchorY( var_value.AsInt() );
+      }
+      else if (var_name == "halo_width") {
+        if (!AssertInputInt(var_value, "halo_width", var_type, feedback)) return false;
+        new_resource->SetHaloWidth( var_value.AsInt() );
+      }
       else {
         if (feedback) feedback->Error("unknown variable '%s' in gradient resource '%s'",
                                       (const char*)var_name, (const char*)name);

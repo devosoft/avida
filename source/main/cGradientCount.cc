@@ -26,9 +26,12 @@ within the min/max x and y area. */
 
 cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, 
                                int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatecount, 
-                               int in_worldx, int in_worldy, int in_geometry) : 
-                               m_world(world), m_peakx(in_peakx), m_peaky(in_peaky), m_height(in_height), m_spread(in_spread), m_plateau(in_plateau), m_decay(in_decay),
-                               m_max_x(in_max_x), m_max_y(in_max_y), m_min_x(in_min_x), m_min_y(in_min_y), m_move_a_scaler(in_move_a_scaler)
+                               int in_worldx, int in_worldy, int in_geometry, int in_halo, int in_halo_inner_radius, int in_halo_width,
+                               int in_halo_anchor_x, int in_halo_anchor_y) : 
+                               m_world(world), m_peakx(in_peakx), m_peaky(in_peaky), m_height(in_height), m_spread(in_spread), m_plateau(in_plateau), 
+                               m_decay(in_decay), m_max_x(in_max_x), m_max_y(in_max_y), m_min_x(in_min_x), m_min_y(in_min_y), 
+                               m_move_a_scaler(in_move_a_scaler), m_halo(in_halo), m_halo_inner_radius(in_halo_inner_radius), m_halo_width(in_halo_width),
+                               m_halo_anchor_x(in_halo_anchor_x), m_halo_anchor_y(in_halo_anchor_y)
 {
   ResizeClear(in_worldx, in_worldy, in_geometry);
   m_counter = 0;
@@ -75,9 +78,15 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   if (has_edible && m_counter < m_decay && GetModified()) return; 
   
   if (m_counter == m_decay) {
-    m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
-    m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
-    movesignx = ctx->GetRandom().GetInt(-1,2);  //why not allowing 0?
+    if (m_halo != 1) {
+      m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
+      m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
+    }
+    if (m_halo == 1) {
+      m_peakx = ctx->GetRandom().GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width, m_halo_anchor_x + m_halo_inner_radius + m_halo_width + 1);                 
+      m_peaky = m_halo_anchor_y + sqrt ((m_halo_inner_radius * m_halo_inner_radius) - ((m_peakx - m_halo_anchor_x) * (m_peakx - m_halo_anchor_x)));
+    }
+    movesignx = ctx->GetRandom().GetInt(-1,2);  
     if (movesignx == 0) {
       if (ctx->GetRandom().GetUInt(0,2)) {
         movesigny = 1;
@@ -119,16 +128,35 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   double temp_peakx = m_peakx + (moveYscaler * movesignx);
   double temp_peaky = m_peaky + (moveYscaler * movesigny);
   
-  if (temp_peakx > (m_max_x - m_height)) movesignx = -1.0;
-  if (temp_peakx < (m_min_x + m_height)) movesignx = 1.0; 
-  
-  m_peakx = m_peakx + (movesignx * moveYscaler)+.5;
-  
-  if (temp_peaky > (m_max_y - m_height)) movesigny = -1.0;
-  if (temp_peaky < (m_min_y + m_height)) movesigny = 1.0;
-  
-  m_peaky = m_peaky + (movesigny * moveYscaler)+.5; 
-  
+  if (m_halo == 1) {
+    if (choosesign == 1) {
+      if (temp_peakx > (m_halo_anchor_x + m_halo_inner_radius + m_halo_width - m_height)) movesignx = -1.0;    
+      if (temp_peakx < (m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height)) movesignx = 1.0; 
+      m_peakx = m_peakx + (movesignx * moveYscaler)+.5;       
+      int peakx_dist_from_center = m_peakx - m_halo_anchor_x;
+      m_peaky = m_halo_anchor_y + sqrt ((m_halo_inner_radius * m_halo_inner_radius) - (peakx_dist_from_center * peakx_dist_from_center));
+//            cout << peakx_dist_from_center << '\n' << m_peakx << '\n' << m_peaky << '\n';
+    }
+    
+    if (choosesign == 2) {
+      if (temp_peaky > (m_halo_anchor_y + m_halo_inner_radius + m_halo_width - m_height)) movesigny = -1.0;
+      if (temp_peaky < (m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height)) movesigny = 1.0;
+      m_peaky = m_peaky + (movesigny * moveYscaler)+.5; 
+      int peaky_dist_from_center = m_peaky - m_halo_anchor_y;
+      m_peakx = m_halo_anchor_x + sqrt ((m_halo_inner_radius * m_halo_inner_radius) - (peaky_dist_from_center * peaky_dist_from_center));
+            cout << peaky_dist_from_center << '\n' << m_peakx << '\n' << m_peaky << '\n';
+    }
+  }
+  else {
+    if (temp_peakx > (m_max_x - m_height)) movesignx = -1.0;
+    if (temp_peakx < (m_min_x + m_height)) movesignx = 1.0; 
+    
+    if (temp_peaky > (m_max_y - m_height)) movesigny = -1.0;
+    if (temp_peaky < (m_min_y + m_height)) movesigny = 1.0;
+    
+    m_peakx = m_peakx + (movesignx * moveYscaler)+.5;
+    m_peaky = m_peaky + (movesigny * moveYscaler)+.5; 
+  }  
   
   double thisdist;
   double thisheight = 0.0;
