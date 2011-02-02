@@ -811,7 +811,7 @@ cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
       }
       
       // Check that the label matches and has examined the full sequence of nops
-      if (size_matched == search_label.GetSize()) {
+       if (size_matched == search_label.GetSize()) {
         pos--;
         const int found_pos = pos.GetPosition();
         
@@ -824,9 +824,9 @@ cHeadCPU cHardwareExperimental::FindNopSequenceForward(bool mark_executed)
         // Return Head pointed at last NOP of label sequence
         return cHeadCPU(this, found_pos, ip.GetMemSpace());
       }
-      
-      continue; 
     }
+    
+    if (pos.GetPosition() == ip.GetPosition()) break;
     pos++;
   }
   
