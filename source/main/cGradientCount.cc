@@ -69,7 +69,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       }
     }
   }
-  
+
   // once a resource cone has been 'bitten', start the clock that counts down to when the entire peak will be
   // refreshed (carcass rots for only so long before disappearing)
   if (has_edible && GetModified()) m_counter++;
@@ -134,8 +134,9 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       if (temp_peakx < (m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height)) movesignx = 1.0; 
       m_peakx = m_peakx + (movesignx * moveYscaler)+.5;       
       int peakx_dist_from_center = m_peakx - m_halo_anchor_x;
-      m_peaky = m_halo_anchor_y + sqrt ((m_halo_inner_radius * m_halo_inner_radius) - (peakx_dist_from_center * peakx_dist_from_center));
-//            cout << peakx_dist_from_center << '\n' << m_peakx << '\n' << m_peaky << '\n';
+      int max_varx = max ((m_halo_inner_radius * m_halo_inner_radius), (peakx_dist_from_center * peakx_dist_from_center));
+      int min_varx = min ((m_halo_inner_radius * m_halo_inner_radius), (peakx_dist_from_center * peakx_dist_from_center));
+      m_peaky = m_halo_anchor_y + sqrt (max_varx - min_varx);
     }
     
     if (choosesign == 2) {
@@ -143,8 +144,9 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       if (temp_peaky < (m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height)) movesigny = 1.0;
       m_peaky = m_peaky + (movesigny * moveYscaler)+.5; 
       int peaky_dist_from_center = m_peaky - m_halo_anchor_y;
-      m_peakx = m_halo_anchor_x + sqrt ((m_halo_inner_radius * m_halo_inner_radius) - (peaky_dist_from_center * peaky_dist_from_center));
-            cout << peaky_dist_from_center << '\n' << m_peakx << '\n' << m_peaky << '\n';
+      int max_vary = max ((m_halo_inner_radius * m_halo_inner_radius), (peaky_dist_from_center * peaky_dist_from_center));
+      int min_vary = min ((m_halo_inner_radius * m_halo_inner_radius), (peaky_dist_from_center * peaky_dist_from_center));
+      m_peakx = m_halo_anchor_x + sqrt (max_vary - min_vary);
     }
   }
   else {
