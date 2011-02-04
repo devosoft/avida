@@ -25,12 +25,13 @@ within the min/max x and y area. */
 /*cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially*/
 
 cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, 
-                               int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatecount, 
+                               int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatestep,  
                                int in_worldx, int in_worldy, int in_geometry, int in_halo, int in_halo_inner_radius, int in_halo_width,
                                int in_halo_anchor_x, int in_halo_anchor_y) : 
                                m_world(world), m_peakx(in_peakx), m_peaky(in_peaky), m_height(in_height), m_spread(in_spread), m_plateau(in_plateau), 
                                m_decay(in_decay), m_max_x(in_max_x), m_max_y(in_max_y), m_min_x(in_min_x), m_min_y(in_min_y), 
-                               m_move_a_scaler(in_move_a_scaler), m_halo(in_halo), m_halo_inner_radius(in_halo_inner_radius), m_halo_width(in_halo_width),
+                               m_move_a_scaler(in_move_a_scaler), m_updatestep(in_updatestep), 
+                               m_halo(in_halo), m_halo_inner_radius(in_halo_inner_radius), m_halo_width(in_halo_width),
                                m_halo_anchor_x(in_halo_anchor_x), m_halo_anchor_y(in_halo_anchor_y)
 {
   ResizeClear(in_worldx, in_worldy, in_geometry);
@@ -111,12 +112,11 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   //first, to get smooth movements, we only allow either the x or y direction change to be evaluated in a single update
   //second, we then decide the change of direction based on the current direction so that peak can't 'jump' from -1 to 1, 
   //without first changing to 0
-  //finally, we only do this only after every 20 updates to slow the frequency of path changes
+  //finally, we only do this only after every when # updates since last change = updatestep to slow the frequency of path changes
   int choosesign = ctx->GetRandom().GetInt(0,3);
   
-  if (move_counter == 5) {
+  if (move_counter == m_updatestep) {
     move_counter = 1;
-    
     if (choosesign == 1) {
       if (movesignx == -1) movesignx = ctx->GetRandom().GetInt(-1,1); 
       else if (movesignx == 1) movesignx = ctx->GetRandom().GetInt(0,2);
@@ -136,16 +136,24 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   
   if (m_halo == 1) {
     double current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
-    if (choosesign == 1) {
-      if (temp_peakx > (m_halo_anchor_x + m_halo_inner_radius + m_halo_width - m_height)) movesignx = -1.0;    
-      if (temp_peakx < (m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height)) movesignx = 1.0; 
-      m_peakx = m_peakx + (movesignx * moveYscaler)+.5;       
-    }
+    double current_angle = atan((m_peakx - m_halo_anchor_x) / (m_peaky - m_halo_anchor_y));
     
-    if (choosesign == 2) {
-      if (temp_peaky > (m_halo_anchor_y + m_halo_inner_radius + m_halo_width - m_height)) movesigny = -1.0;
-      if (temp_peaky < (m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height)) movesigny = 1.0;
-      m_peaky = m_peaky + (movesigny * moveYscaler)+.5; 
+    //choose to change orbit (0) or direction (1)
+    
+    int random_shift = ctx->GetRandom().GetUInt(0,2);
+    if (random_shift == 0) {
+      int orbit_shift = ctx->GetRandom().GetInt(0,2);
+      if (orbit_shift == 0) current_orbit = current_orbit - 1;
+      if (orbit_shift == 1) current_orbit = current_orbit + 1;
+    if (current_orbit >= m_halo_inner_radius + m_halo_width + 1) current_orbit = current_orbit - 1;
+    if (current_orbit <= m_halo_inner_radius) current_orbit = current_orbit + 1;   
+    }
+    if (random_shift == 1) {
+      int angle_shift = ctx->GetRandom().GetInt(0,2);
+      if (angle_shift == 0) current_angle = current_angle - 10; //10 needs to be config option
+      if (angle_shift == 1) current_angle = current_angle + 10;   
+    m_peakx = cos(current_angle) * current_orbit;
+    m_peaky = sin(current_angle) * current_orbit;     
     }
   }
   else {

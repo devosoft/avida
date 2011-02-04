@@ -313,8 +313,8 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
       delete spatial_resource_count[id];
       spatial_resource_count[id] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
-                                                      tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, in_halo_width,
-                                                      in_halo_anchor_x, in_halo_anchor_y);
+                                                      tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
+                                                      in_halo_width, in_halo_anchor_x, in_halo_anchor_y);
       spatial_resource_count[id]->RateAll(0);
     }
     
