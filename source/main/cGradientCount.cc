@@ -46,8 +46,14 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
   }
   else movesigny = m_world->GetDefaultContext().GetRandom().GetInt(-1,2);
   UpdateCount(&m_world->GetDefaultContext());
-  m_peakx = in_peakx;
-  m_peaky = in_peaky;
+  if (m_halo == 1) {
+    m_peakx = m_halo_anchor_x + m_halo_inner_radius;
+    m_peaky = m_halo_anchor_y + m_halo_inner_radius;
+  }
+  else {
+    m_peakx = in_peakx;
+    m_peaky = in_peaky;
+  }
   UpdateCount(&m_world->GetDefaultContext());
 }
 
@@ -108,7 +114,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   //finally, we only do this only after every 20 updates to slow the frequency of path changes
   int choosesign = ctx->GetRandom().GetInt(0,3);
   
-  if (move_counter == 20) {
+  if (move_counter == 5) {
     move_counter = 1;
     
     if (choosesign == 1) {
@@ -129,24 +135,17 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   double temp_peaky = m_peaky + (moveYscaler * movesigny);
   
   if (m_halo == 1) {
+    double current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
     if (choosesign == 1) {
       if (temp_peakx > (m_halo_anchor_x + m_halo_inner_radius + m_halo_width - m_height)) movesignx = -1.0;    
       if (temp_peakx < (m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height)) movesignx = 1.0; 
       m_peakx = m_peakx + (movesignx * moveYscaler)+.5;       
-      int peakx_dist_from_center = m_peakx - m_halo_anchor_x;
-      int max_varx = max ((m_halo_inner_radius * m_halo_inner_radius), (peakx_dist_from_center * peakx_dist_from_center));
-      int min_varx = min ((m_halo_inner_radius * m_halo_inner_radius), (peakx_dist_from_center * peakx_dist_from_center));
-      m_peaky = m_halo_anchor_y + sqrt (max_varx - min_varx);
     }
     
     if (choosesign == 2) {
       if (temp_peaky > (m_halo_anchor_y + m_halo_inner_radius + m_halo_width - m_height)) movesigny = -1.0;
       if (temp_peaky < (m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height)) movesigny = 1.0;
       m_peaky = m_peaky + (movesigny * moveYscaler)+.5; 
-      int peaky_dist_from_center = m_peaky - m_halo_anchor_y;
-      int max_vary = max ((m_halo_inner_radius * m_halo_inner_radius), (peaky_dist_from_center * peaky_dist_from_center));
-      int min_vary = min ((m_halo_inner_radius * m_halo_inner_radius), (peaky_dist_from_center * peaky_dist_from_center));
-      m_peakx = m_halo_anchor_x + sqrt (max_vary - min_vary);
     }
   }
   else {
