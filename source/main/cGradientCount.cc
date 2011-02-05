@@ -48,8 +48,9 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
   else movesigny = m_world->GetDefaultContext().GetRandom().GetInt(-1,2);
   UpdateCount(&m_world->GetDefaultContext());
   if (m_halo == 1) {
-    m_peakx = m_halo_anchor_x + m_halo_inner_radius;
-    m_peaky = m_halo_anchor_y + m_halo_inner_radius;
+    m_peakx = m_halo_anchor_x + m_halo_inner_radius + m_height + 1;
+    m_peaky = m_halo_anchor_y + m_halo_inner_radius + m_height + 1;
+    halo_dir = 1;
   }
   else {
     m_peakx = in_peakx;
@@ -89,7 +90,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
       m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
     }
-    if (m_halo == 1) {
+    else if (m_halo == 1) {
       m_peakx = ctx->GetRandom().GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width, m_halo_anchor_x + m_halo_inner_radius + m_halo_width + 1);                 
       m_peaky = m_halo_anchor_y + sqrt ((m_halo_inner_radius * m_halo_inner_radius) - ((m_peakx - m_halo_anchor_x) * (m_peakx - m_halo_anchor_x)));
     }
@@ -112,7 +113,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   //first, to get smooth movements, we only allow either the x or y direction change to be evaluated in a single update
   //second, we then decide the change of direction based on the current direction so that peak can't 'jump' from -1 to 1, 
   //without first changing to 0
-  //finally, we only do this only after every when # updates since last change = updatestep to slow the frequency of path changes
+  //finally, we only do this only when # updates since last change = updatestep to slow the frequency of path changes
   int choosesign = ctx->GetRandom().GetInt(0,3);
   
   if (move_counter == m_updatestep) {
@@ -135,26 +136,48 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   double temp_peaky = m_peaky + (moveYscaler * movesigny);
   
   if (m_halo == 1) {
-    double current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
-    double current_angle = atan((m_peakx - m_halo_anchor_x) / (m_peaky - m_halo_anchor_y));
+    //we add 1 to distance to account for the anchor grid cell
+    int current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
+    double rad_current_angle = atan2(m_peaky - m_halo_anchor_y, m_peakx - m_halo_anchor_x);
+    int deg_current_angle = rad_current_angle * 57.2957795 + .5;
     
-    //choose to change orbit (0) or direction (1)
+    //choose to change orbit (0) or direction (1)    
+    if (move_counter == m_updatestep) {
+      int random_shift = ctx->GetRandom().GetUInt(0,2);
+      //if changing orbit, choose to go in or out one orbit (one orbit = sqrt(2) in order to shift x & y)
+      if (random_shift == 0) {
+        cout << "change orbit!: " ;
+        orbit_shift = ctx->GetRandom().GetUInt(0,2); 
+        if (orbit_shift == 0) {
+          current_orbit = current_orbit - 1.5;
+          cout << "-1" << '\n';}
+        else if (orbit_shift == 1) {
+          current_orbit = current_orbit + 1.5;  
+          cout << "+1" << '\n';}
+      }
+      //if changing direction of rotation, we just switch from - to + or vice versa
+      else if (random_shift == 1) {
+        halo_dir = halo_dir * -1; 
+        cout << "change rotation!: " << halo_dir << '\n';
+      }
+    }
+    //if changing nothing (move_counter < updatestep), continue rotate in same direction on current orbit
+    m_peakx = (cos((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
+    m_peaky = (sin((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_y; 
+     
+    //we have to check again that we are still within the halo because rounding errors appear to make it possible for the resource
+    //to pop out of the halo when changing the angle/direction
+    current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
+    if (current_orbit > (m_halo_inner_radius + m_halo_width - m_height)) {
+      current_orbit = m_halo_inner_radius + m_halo_width - m_height;
+      cout << "chose first" << '\n';}
+    else if (current_orbit < (m_halo_inner_radius + m_height)) {
+      current_orbit = m_halo_inner_radius + m_height;
+      cout << "chose second" << '\n';}
+    m_peakx = (cos((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
+    m_peaky = (sin((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_y;
     
-    int random_shift = ctx->GetRandom().GetUInt(0,2);
-    if (random_shift == 0) {
-      int orbit_shift = ctx->GetRandom().GetInt(0,2);
-      if (orbit_shift == 0) current_orbit = current_orbit - 1;
-      if (orbit_shift == 1) current_orbit = current_orbit + 1;
-    if (current_orbit >= m_halo_inner_radius + m_halo_width + 1) current_orbit = current_orbit - 1;
-    if (current_orbit <= m_halo_inner_radius) current_orbit = current_orbit + 1;   
-    }
-    if (random_shift == 1) {
-      int angle_shift = ctx->GetRandom().GetInt(0,2);
-      if (angle_shift == 0) current_angle = current_angle - 10; //10 needs to be config option
-      if (angle_shift == 1) current_angle = current_angle + 10;   
-    m_peakx = cos(current_angle) * current_orbit;
-    m_peaky = sin(current_angle) * current_orbit;     
-    }
+    cout << current_orbit << "  " << deg_current_angle << '\n';
   }
   else {
     if (temp_peakx > (m_max_x - m_height)) movesignx = -1.0;
