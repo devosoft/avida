@@ -40,6 +40,9 @@ private:
   double movesigny;
   double Distance(double x1, double x2, double y1, double y2);
   void UpdateCount(cAvidaContext* ctx);
+  int orbit_shift;
+  int angle_shift;
+  int halo_dir;
 
 
 public:

@@ -140,19 +140,19 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     int current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
     double rad_current_angle = atan2(m_peaky - m_halo_anchor_y, m_peakx - m_halo_anchor_x);
     int deg_current_angle = rad_current_angle * 57.2957795 + .5;
-    
+        
     //choose to change orbit (0) or direction (1)    
     if (move_counter == m_updatestep) {
       int random_shift = ctx->GetRandom().GetUInt(0,2);
-      //if changing orbit, choose to go in or out one orbit (one orbit = sqrt(2) in order to shift x & y)
+      //if changing orbit, choose to go in or out one orbit
       if (random_shift == 0) {
         cout << "change orbit!: " ;
         orbit_shift = ctx->GetRandom().GetUInt(0,2); 
         if (orbit_shift == 0) {
-          current_orbit = current_orbit - 1.5;
+          current_orbit = current_orbit - 1;
           cout << "-1" << '\n';}
         else if (orbit_shift == 1) {
-          current_orbit = current_orbit + 1.5;  
+          current_orbit = current_orbit + 1;  
           cout << "+1" << '\n';}
       }
       //if changing direction of rotation, we just switch from - to + or vice versa
@@ -162,9 +162,10 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       }
     }
     //if changing nothing (move_counter < updatestep), continue rotate in same direction on current orbit
-    m_peakx = (cos((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
-    m_peaky = (sin((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_y; 
-     
+    m_peakx = (cos((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
+    m_peaky = (sin((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_y; 
+    
+    
     //we have to check again that we are still within the halo because rounding errors appear to make it possible for the resource
     //to pop out of the halo when changing the angle/direction
     current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
@@ -174,8 +175,9 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     else if (current_orbit < (m_halo_inner_radius + m_height)) {
       current_orbit = m_halo_inner_radius + m_height;
       cout << "chose second" << '\n';}
-    m_peakx = (cos((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
-    m_peaky = (sin((deg_current_angle + halo_dir) * 0.0174532925)) * current_orbit + m_halo_anchor_y;
+    
+    m_peakx = (cos((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
+    m_peaky = (sin((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_y; 
     
     cout << current_orbit << "  " << deg_current_angle << '\n';
   }
