@@ -48,8 +48,8 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
   else movesigny = m_world->GetDefaultContext().GetRandom().GetInt(-1,2);
   UpdateCount(&m_world->GetDefaultContext());
   if (m_halo == 1) {
-    m_peakx = m_halo_anchor_x + m_halo_inner_radius + m_height + 1;
-    m_peaky = m_halo_anchor_y + m_halo_inner_radius + m_height + 1;
+    m_peakx = m_halo_anchor_x + m_halo_inner_radius + m_height + m_halo_width/2 + 1;
+    m_peaky = m_halo_anchor_y + m_halo_inner_radius + m_height + m_halo_width/2 + 1;
     halo_dir = 1;
   }
   else {
@@ -135,49 +135,53 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   double temp_peakx = m_peakx + (moveYscaler * movesignx);
   double temp_peaky = m_peaky + (moveYscaler * movesigny);
   
+  const double PI = 3.14159265358979323846;
+  
   if (m_halo == 1) {
     //we add 1 to distance to account for the anchor grid cell
-    int current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
+    int current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, abs(m_peakx), abs(m_peaky));
     double rad_current_angle = atan2(m_peaky - m_halo_anchor_y, m_peakx - m_halo_anchor_x);
-    int deg_current_angle = rad_current_angle * 57.2957795 + .5;
+    int deg_current_angle = rad_current_angle * 180/PI;
         
     //choose to change orbit (0) or direction (1)    
     if (move_counter == m_updatestep) {
       int random_shift = ctx->GetRandom().GetUInt(0,2);
-      //if changing orbit, choose to go in or out one orbit
+      //if changing orbit, choose to go in or out one orbit (we use sqrt(2) so that x^2 & y^2 can be = 1)
       if (random_shift == 0) {
         cout << "change orbit!: " ;
         orbit_shift = ctx->GetRandom().GetUInt(0,2); 
         if (orbit_shift == 0) {
-          current_orbit = current_orbit - 1;
+          current_orbit = current_orbit - sqrt(2);
           cout << "-1" << '\n';}
         else if (orbit_shift == 1) {
-          current_orbit = current_orbit + 1;  
+          current_orbit = current_orbit + sqrt(2);  
           cout << "+1" << '\n';}
       }
-      //if changing direction of rotation, we just switch from - to + or vice versa
+      //if changing direction of rotation, we just switch from - to + or vice versa (we use
       else if (random_shift == 1) {
         halo_dir = halo_dir * -1; 
-        cout << "change rotation!: " << halo_dir << '\n';
+        cout << "change rotation!: " << halo_dir <<'\n';
       }
     }
-    //if changing nothing (move_counter < updatestep), continue rotate in same direction on current orbit
-    m_peakx = (cos((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
-    m_peaky = (sin((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_y; 
     
+    //if changing nothing (move_counter < updatestep), continue rotate in same direction on current orbit
+    double min_rotate_angle = (360/((current_orbit - 1) * 8)) * 5;
+    m_peakx = (cos((deg_current_angle + halo_dir * min_rotate_angle) * PI/180)) * current_orbit + m_halo_anchor_x;
+    m_peaky = (sin((deg_current_angle + halo_dir * min_rotate_angle) * PI/180)) * current_orbit + m_halo_anchor_y; 
     
     //we have to check again that we are still within the halo because rounding errors appear to make it possible for the resource
     //to pop out of the halo when changing the angle/direction
-    current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, m_peakx, m_peaky) + 1;
+    current_orbit = Distance(m_halo_anchor_x, m_halo_anchor_y, abs(m_peakx), abs(m_peaky));
     if (current_orbit > (m_halo_inner_radius + m_halo_width - m_height)) {
       current_orbit = m_halo_inner_radius + m_halo_width - m_height;
       cout << "chose first" << '\n';}
     else if (current_orbit < (m_halo_inner_radius + m_height)) {
       current_orbit = m_halo_inner_radius + m_height;
       cout << "chose second" << '\n';}
-    
-    m_peakx = (cos((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_x;
-    m_peaky = (sin((deg_current_angle + halo_dir*5) * 0.0174532925)) * current_orbit + m_halo_anchor_y; 
+
+    min_rotate_angle = (360/((current_orbit - 1) * 8)) * 5;
+    m_peakx = (cos((deg_current_angle + halo_dir * min_rotate_angle) * PI/180)) * current_orbit + m_halo_anchor_x;
+    m_peaky = (sin((deg_current_angle + halo_dir * min_rotate_angle) * PI/180)) * current_orbit + m_halo_anchor_y; 
     
     cout << current_orbit << "  " << deg_current_angle << '\n';
   }
