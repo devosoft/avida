@@ -67,7 +67,6 @@ cResource::cResource(const cString & _name, int _id)
   , ygravity(0.0)
   , deme_resource(false)
   , energy_resource(false)
-  , hgt_metabolize(false)
   , dynamic_resource(false) //JW
   , peaks(0) //JW
   , min_height(0.0) //JW
@@ -87,7 +86,11 @@ cResource::cResource(const cString & _name, int _id)
   , cstepx(0.0) //JW
   , cstepy(0.0) //JW
   , updatestep(0.0) //JW
-
+  , m_peakx(0)
+  , m_peaky(0)
+  , m_height(0)
+  , isgradient(false)
+  , hgt_metabolize(false)
 {
 }
 
