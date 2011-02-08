@@ -590,9 +590,10 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                            res->GetCStepscaleX(), res->GetCStepscaleY(),
                            res->GetHStep(), res->GetRStep(),
                            res->GetCStepX(), res->GetCStepY(),
-                           res->GetUpdateStep(), res->GetPeakX(), res->GetPeakY(),
+                           res->GetUpdateDynamic(), res->GetPeakX(), res->GetPeakY(),
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
-                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),
+                           res->GetMaxX(), res->GetMaxY(), res->GetMinX(), res->GetMinY(), 
+                           res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(),
                            res->GetGradient()

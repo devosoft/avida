@@ -38,7 +38,7 @@ public:
   
   cDynamicCount(int peaks, double in_min_height, double in_min_radius, double in_radius_range, double in_ah, double in_ar,
 		double in_acx, double in_acy, double in_hstepscale, double in_rstepscale, double in_cstepscalex, double in_cstepscaley, double in_hstep, double in_rstep,
-		double in_cstepx, double in_cstepy, int in_worldx, int in_worldy, int in_geometry, int in_updatestep);
+		double in_cstepx, double in_cstepy, int in_worldx, int in_worldy, int in_geometry, int in_update_dynamic);
   ~cDynamicCount();
   void UpdateCount();
   
@@ -197,7 +197,7 @@ void df1_chg_H (int NoToChg, int* Peaks);
 void df1_chg_c(int CoordNo, int NoToChg, int* Peaks);
 int df1_flip();
 
-int m_updatestep;
+int m_update_dynamic;
 int m_counter;
 };
 

@@ -26,16 +26,16 @@ private:
   int m_min_x;
   int m_min_y;
   double m_move_a_scaler;
+  int m_updatestep;
   int m_halo;
   int m_halo_inner_radius;
   int m_halo_width;
   int m_halo_anchor_x;
   int m_halo_anchor_y;
   double moveYscaler;
-  int m_updatestep;
+  
   int m_counter;
   int move_counter;
-  int m_counter2;
   double movesignx;
   double movesigny;
   double Distance(double x1, double x2, double y1, double y2);

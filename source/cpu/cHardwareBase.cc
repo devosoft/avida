@@ -1000,6 +1000,7 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
 #endif
   
   if (m_has_res_costs) {
+    
     double res_req = m_inst_set->GetResCost(cur_inst); 
     
     const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW

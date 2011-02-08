@@ -101,7 +101,7 @@ private:
   double rstep; //JW
   double cstepx; //JW
   double cstepy; //JW
-  int updatestep; //JW
+  int update_dynamic; //JW
   int m_peakx;
   int m_peaky;
   double m_height;
@@ -113,6 +113,7 @@ private:
   int m_min_x;
   int m_min_y;
   double m_move_a_scaler;
+  int m_updatestep; 
   int m_halo;
   int m_halo_inner_radius;
   int m_halo_width;
@@ -167,7 +168,7 @@ public:
   double GetRStep() const { return rstep; } //JW
   double GetCStepX() const { return cstepx; } //JW
   double GetCStepY() const { return cstepy; } //JW
-  int GetUpdateStep() const { return updatestep; } //JW
+  int GetUpdateDynamic() const { return update_dynamic; } //JW
   int GetPeakX() { return m_peakx; }
   int GetPeakY() { return m_peaky; }
   double GetHeight() { return m_height; }
@@ -179,6 +180,7 @@ public:
   int GetMinX() { return m_min_x; }
   int GetMinY() { return m_min_y; }
   double GetAscaler() { return m_move_a_scaler; }
+  int GetUpdateStep() const { return m_updatestep; } //JW
   int GetHalo() { return m_halo;}
   int GetHaloInnerRadius() { return m_halo_inner_radius; }
   int GetHaloWidth() { return m_halo_width; }
@@ -225,7 +227,7 @@ public:
   void SetRStep(double _rstep) { rstep = _rstep; } //JW
   void SetCStepX(double _cstepx) { cstepx = _cstepx; } //JW
   void SetCStepY(double _cstepy) { cstepy = _cstepy; } //JW
-  void SetUpdateStep(int _updatestep) { updatestep = _updatestep; } //JW
+  void SetUpdateDynamic(int _update_dynamic) { update_dynamic = _update_dynamic; } //JW
   void SetPeakX(int _peakx) { m_peakx = _peakx; }
   void SetPeakY(int _peaky) { m_peaky = _peaky; }
   void SetHeight(double _height) { m_height = _height; }
@@ -237,6 +239,7 @@ public:
   void SetMinX(int _min_x) { m_min_x = _min_x; }
   void SetMinY(int _min_y) { m_min_y = _min_y; }
   void SetAscaler(double _move_a_scaler) { m_move_a_scaler = _move_a_scaler; }
+  void SetUpdateStep(int _updatestep) { m_updatestep = _updatestep; } 
   void SetHalo(int _halo) { m_halo = _halo; }
   void SetHaloInnerRadius(int _halo_inner_radius) { m_halo_inner_radius = _halo_inner_radius; }
   void SetHaloWidth(int _halo_width) { m_halo_width = _halo_width; }

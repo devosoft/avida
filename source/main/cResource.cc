@@ -85,7 +85,7 @@ cResource::cResource(const cString & _name, int _id)
   , rstep(0.0) //JW
   , cstepx(0.0) //JW
   , cstepy(0.0) //JW
-  , updatestep(0.0) //JW
+  , update_dynamic(0) //JW
   , m_peakx(0)
   , m_peaky(0)
   , m_height(0)
@@ -97,6 +97,7 @@ cResource::cResource(const cString & _name, int _id)
   , m_min_x(0)
   , m_min_y(0)
   , m_move_a_scaler(0.0)
+  , m_updatestep(0)
   , m_halo(0)
   , m_halo_inner_radius(0)
   , m_halo_width(0)

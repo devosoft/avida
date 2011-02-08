@@ -912,9 +912,9 @@ bool cEnvironment::LoadDynamicResource(cString desc, cUserFeedback* feedback) //
         if (!AssertInputDouble(var_value, "cstepy", var_type, feedback)) return false;
         new_resource->SetCStepY( var_value.AsDouble() );
       }
-      else if (var_name == "updatestep") {
-        if (!AssertInputInt(var_value, "updatestep", var_type, feedback)) return false;
-        new_resource->SetUpdateStep( var_value.AsInt() );
+      else if (var_name == "update_dynamic") {
+        if (!AssertInputInt(var_value, "update_dynamic", var_type, feedback)) return false;
+        new_resource->SetUpdateDynamic( var_value.AsInt() );
       }
       else {
         if (feedback) feedback->Error("unknown variable '%s' in dynamic resource '%s'",
