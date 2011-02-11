@@ -119,6 +119,7 @@ private:
   int m_halo_width;
   int m_halo_anchor_x;
   int m_halo_anchor_y;
+  int m_move_speed;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;  
@@ -186,6 +187,7 @@ public:
   int GetHaloWidth() { return m_halo_width; }
   int GetHaloAnchorX() { return m_halo_anchor_x; }
   int GetHaloAnchorY() { return m_halo_anchor_y; }
+  int GetMoveSpeed() { return m_move_speed; }
   bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
@@ -245,6 +247,7 @@ public:
   void SetHaloWidth(int _halo_width) { m_halo_width = _halo_width; }
   void SetHaloAnchorX(int _halo_anchor_x) { m_halo_anchor_x = _halo_anchor_x; }
   void SetHaloAnchorY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
+  void SetMoveSpeed(int _move_speed) { m_move_speed = _move_speed; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);

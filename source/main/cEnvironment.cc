@@ -783,6 +783,10 @@ bool cEnvironment::LoadGradientResource(cString desc, cUserFeedback* feedback) /
         if (!AssertInputInt(var_value, "halo_halo_anchor_y", var_type, feedback)) return false;
         new_resource->SetHaloAnchorY( var_value.AsInt() );
       }
+      else if (var_name == "move_speed") {
+        if (!AssertInputInt(var_value, "move_speed", var_type, feedback)) return false;
+        new_resource->SetMoveSpeed( var_value.AsInt() );
+      }
       else if (var_name == "halo_width") {
         if (!AssertInputInt(var_value, "halo_width", var_type, feedback)) return false;
         new_resource->SetHaloWidth( var_value.AsInt() );

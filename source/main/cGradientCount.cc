@@ -125,48 +125,52 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   if (move_counter == m_updatestep) {
     move_counter = 1;
     //halo resources orbit at a fixed org walking distance from an anchor point
-    //if halo width > the height of the halo resource, the resource will be bounded inside the halo 
+    //if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
     //halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
     //    between the anchor point and any orbit
     if (m_halo == 1) {    //choose to change orbit (0) or direction (1)    
+      int old_peakx = m_peakx;
+      int old_peaky = m_peaky;
       int random_shift = ctx->GetRandom().GetUInt(0,2);
       //if changing orbit, choose to go in or out one orbit
-      //then figure out if we need change the x or the y to shift orbit
+      //then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
       if (random_shift == 0) {
-        orbit_shift = ctx->GetRandom().GetUInt(0,2); 
-        if (orbit_shift == 0) {
-          current_orbit = current_orbit - 1; 
-          if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-            m_peaky = m_peaky - 1;
-          else 
-            m_peakx = m_peakx - 1;
-        }
-        else if (orbit_shift == 1) {
-          current_orbit = current_orbit + 1;  
-          if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-            m_peaky = m_peaky + 1;
-          else 
-            m_peakx = m_peakx + 1;
-        }
-        //we have to check that we are still goin to be within the halo
-        //we add 1 to inner radius (and to orbit) to account for anchor cell and to height to account for center res peak cell        
-        if (current_orbit > (m_halo_inner_radius + m_halo_width - m_height + 2)) {
-          //if we go out of bounds, we take two steps back (e.g. take a step in rather than taking a step out)
-          current_orbit = current_orbit - 2;
-          if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-            m_peaky = m_peaky - 2;
-          else 
-            m_peakx = m_peakx - 2;
-        }
-        else if (current_orbit < (m_halo_inner_radius + m_height + 2)) {
-          current_orbit = current_orbit + 2;
-          if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-            m_peaky = m_peaky + 2;
-          else 
-            m_peakx = m_peakx + 2;          
+        //do nothing if there's no room to change orbit
+        if (m_halo_width > (m_height * 2)) {
+          orbit_shift = ctx->GetRandom().GetUInt(0,2); 
+          if (orbit_shift == 0) {
+            current_orbit = current_orbit - 1; 
+            if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
+              m_peaky = m_peaky - 1;
+            else 
+              m_peakx = m_peakx - 1;
+          }
+          else if (orbit_shift == 1) {
+            current_orbit = current_orbit + 1;  
+            if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
+              m_peaky = m_peaky + 1;
+            else 
+              m_peakx = m_peakx + 1;
+          }
+          //we have to check that we are still going to be within the halo after an orbit change       
+          if (current_orbit > (m_halo_inner_radius + m_halo_width - m_height + 2)) {
+            //if we go out of bounds, we need to go the other way instead
+            current_orbit = current_orbit - 2;
+            if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
+              m_peaky = old_peaky + 1;
+            else 
+              m_peakx = old_peakx + 1;
+          }
+          else if (current_orbit < (m_halo_inner_radius + m_height + 2)) {
+            current_orbit = current_orbit + 2;
+            if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
+              m_peaky = m_peaky - 1;
+            else 
+              m_peakx = m_peakx - 1;          
+          }
         }
       }
-      //if changing direction of rotation, we just switch from - to + or vice versa
+      //if changing direction of rotation, we just switch sign of rotation
       else if (random_shift == 1) {
         halo_dir = halo_dir * -1; 
       }
@@ -201,6 +205,8 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     cout << "distance x: " << abs(m_halo_anchor_x - m_peakx) << "  " << "distance y: " <<  abs(m_halo_anchor_y - m_peaky) << '\n';
     
     if (changling == 1) {
+      //check to make sure the move will not put peak beyond the bounds of the orbit
+      //if it will go beyond the bounds of the orbit, wrap around the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
       int next_posx = m_peakx + (halo_dir * m_move_speed);
       int max_orbit_x = m_halo_anchor_x + current_orbit - 1;
       int min_orbit_x = m_halo_anchor_x - current_orbit + 1;
@@ -208,6 +214,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       if (next_posx > max_orbit_x) {
         m_peakx = max_orbit_x;
         if (m_peaky < m_halo_anchor_y) {
+          //wrapping this corner means changing the sign of the movement once we switch from moving on x to moving on y
           halo_dir = halo_dir * -1;
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x)); 
         }

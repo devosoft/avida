@@ -223,7 +223,7 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
 				const double& in_height, const double& in_spread, const double& in_plateau, const int& in_decay, 
         const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
         const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
-        const int& in_halo_anchor_x, const int& in_halo_anchor_y,
+        const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
         const bool& isgradient
 				)
 {
@@ -314,7 +314,7 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
       spatial_resource_count[id] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
                                                       tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
-                                                      in_halo_width, in_halo_anchor_x, in_halo_anchor_y);
+                                                      in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed);
       spatial_resource_count[id]->RateAll(0);
     }
     

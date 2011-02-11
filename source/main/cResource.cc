@@ -103,6 +103,7 @@ cResource::cResource(const cString & _name, int _id)
   , m_halo_width(0)
   , m_halo_anchor_x(0)
   , m_halo_anchor_y(0)
+  , m_move_speed(0)
   , isgradient(false)
   , hgt_metabolize(false)
 {

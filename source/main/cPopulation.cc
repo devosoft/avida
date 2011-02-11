@@ -306,7 +306,7 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(),
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
-                           res->GetHaloAnchorX(), res->GetHaloAnchorY(),
+                           res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetGradient()
                            ); //JW
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
@@ -5733,7 +5733,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
-                           res->GetHaloAnchorX(), res->GetHaloAnchorY(),
+                           res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetGradient()
                            ); //JW
       cerr << res->GetMaxX() << " " << res->GetMinX() << endl;

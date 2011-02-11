@@ -32,6 +32,7 @@ private:
   int m_halo_width;
   int m_halo_anchor_x;
   int m_halo_anchor_y;
+  int m_move_speed;
   double moveYscaler;
   
   int m_counter;
@@ -43,6 +44,7 @@ private:
   int orbit_shift;
   int angle_shift;
   int halo_dir;
+  int changling;
 
 
 public:
@@ -50,7 +52,7 @@ public:
   cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay,              
                  int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatestep, 
                  int in_worldx, int in_worldy, int in_geometry,int in_halo, int in_halo_inner_radius, int in_halo_width,
-                 int in_halo_anchor_x, int in_halo_anchor_y);
+                 int in_halo_anchor_x, int in_halo_anchor_y, int in_move_speed);
 
 };
 
