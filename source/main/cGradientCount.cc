@@ -135,26 +135,26 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       //if changing orbit, choose to go in or out one orbit
       //then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
       if (random_shift == 0) {
-        //do nothing if there's no room to change orbit
+        //do nothing unless there's room to change orbit
         if (m_halo_width > (m_height * 2)) {
           orbit_shift = ctx->GetRandom().GetUInt(0,2); 
           if (orbit_shift == 0) {
             current_orbit = current_orbit - 1; 
             if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-              m_peaky = m_peaky - 1;
+              m_peaky = old_peaky - 1;
             else 
-              m_peakx = m_peakx - 1;
+              m_peakx = old_peakx - 1;
           }
           else if (orbit_shift == 1) {
             current_orbit = current_orbit + 1;  
             if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
-              m_peaky = m_peaky + 1;
+              m_peaky = old_peaky + 1;
             else 
-              m_peakx = m_peakx + 1;
+              m_peakx = old_peakx + 1;
           }
           //we have to check that we are still going to be within the halo after an orbit change       
           if (current_orbit > (m_halo_inner_radius + m_halo_width - m_height + 2)) {
-            //if we go out of bounds, we need to go the other way instead
+            //if we go out of bounds, we need to go the other way instead (taking two steps back on orbit since we already took one in the wrong direction)
             current_orbit = current_orbit - 2;
             if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
               m_peaky = old_peaky + 1;
@@ -164,11 +164,13 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
           else if (current_orbit < (m_halo_inner_radius + m_height + 2)) {
             current_orbit = current_orbit + 2;
             if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
-              m_peaky = m_peaky - 1;
+              m_peaky = old_peaky - 1;
             else 
-              m_peakx = m_peakx - 1;          
+              m_peakx = old_peakx - 1;          
           }
         }
+        //if there was no room to change orbit, change the direction instead of the orbit
+        else random_shift = 1;
       }
       //if changing direction of rotation, we just switch sign of rotation
       else if (random_shift == 1) {
