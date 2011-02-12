@@ -92,19 +92,25 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     if (m_halo != 1) {
       m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
       m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
+      movesignx = ctx->GetRandom().GetInt(-1,2);  
+      if (movesignx == 0) {
+        if (ctx->GetRandom().GetUInt(0,2)) {
+          movesigny = 1;
+        }
+        else movesigny = -1;
+      }
+      else movesigny = ctx->GetRandom().GetInt(-1,2);
     }
     else if (m_halo == 1) {
-      m_peakx = ctx->GetRandom().GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width, m_halo_anchor_x + m_halo_inner_radius + m_halo_width + 1);                 
-      m_peaky = m_halo_anchor_y + sqrt ((m_halo_inner_radius * m_halo_inner_radius) - ((m_peakx - m_halo_anchor_x) * (m_peakx - m_halo_anchor_x)));
+      int chooseEW = ctx->GetRandom().GetUInt(0,2);
+        if (chooseEW == 0)
+          m_peakx = ctx->GetRandom().GetUInt(m_halo_anchor_x - m_halo_inner_radius, m_halo_anchor_x - m_halo_inner_radius - m_halo_width + 1);
+        else m_peakx = ctx->GetRandom().GetUInt(m_halo_anchor_x + m_halo_inner_radius, m_halo_anchor_x + m_halo_inner_radius + m_halo_width - 1); 
+      int chooseNS = ctx->GetRandom().GetUInt(0,2);
+        if (chooseNS == 0) 
+          m_peaky = ctx->GetRandom().GetUInt(m_halo_anchor_y - m_halo_inner_radius, m_halo_anchor_y - m_halo_inner_radius - m_halo_width + 1);
+        else m_peaky = ctx->GetRandom().GetUInt(m_halo_anchor_y + m_halo_inner_radius, m_halo_anchor_y + m_halo_inner_radius + m_halo_width - 1);
     }
-    movesignx = ctx->GetRandom().GetInt(-1,2);  
-    if (movesignx == 0) {
-      if (ctx->GetRandom().GetUInt(0,2)) {
-        movesigny = 1;
-      }
-      else movesigny = -1;
-    }
-    else movesigny = ctx->GetRandom().GetInt(-1,2);
     SetModified(false);
   }
   
@@ -204,7 +210,6 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       changling = 1;
     else 
       changling = -1;
-    cout << "distance x: " << abs(m_halo_anchor_x - m_peakx) << "  " << "distance y: " <<  abs(m_halo_anchor_y - m_peaky) << '\n';
     
     if (changling == 1) {
       //check to make sure the move will not put peak beyond the bounds (at corner) of the orbit
@@ -223,7 +228,6 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
         else
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
         changling = changling * -1;
-        cout << "next_posx: " << next_posx << "  min_orbit_x: " << min_orbit_x << "   max_orbit_x: " <<  max_orbit_x  << "  planned: " << abs(m_peakx - current_x) <<'\n'; 
       }
       else if (next_posx < min_orbit_x) { 
         m_peakx = min_orbit_x;          
@@ -233,11 +237,9 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
           halo_dir = halo_dir * -1;
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
         }
-        changling = changling * -1;
-        cout << "min_orbit_x: " << min_orbit_x << "max_orbit_x: " << max_orbit_x << '\n';          
+        changling = changling * -1;          
       }
       else {
-        cout << "here" << '\n';
         m_peakx = m_peakx + (halo_dir * m_move_speed);     
       }
     }
@@ -254,9 +256,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
           halo_dir = halo_dir * -1;
           m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
         }
-        changling = changling * -1;
-        cout << "min_orbit_y: " << min_orbit_y << "max_orbit_y: " << max_orbit_y << '\n'; 
-        
+        changling = changling * -1; 
       }
       else if (next_posy < min_orbit_y) { 
         m_peaky = min_orbit_y;          
@@ -266,14 +266,12 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
         }
         else 
           m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
-        changling = changling * -1;
-        cout << "min_orbit_y: " << min_orbit_y << "max_orbit_y: " << max_orbit_y << '\n';         
+        changling = changling * -1;      
       }
       else {
         m_peaky = m_peaky + (halo_dir * m_move_speed);  
       }
     }
-    cout << '\n' << "orbit: " << current_orbit << "  " << "halo_dir: " << halo_dir << "  " << "x: " << m_peakx << " " << "y: " << m_peaky << '\n';
   } 
   
   else {
@@ -303,17 +301,24 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
    */
   
   
+  //to speed things up, we only check cells within the possible spread of the peak
+  //note that, at the moment, you must also create a global dummy resource (id = 0) with a negative or 0 initial value 'under' gradient resources 
+  //    otherwise you end up with an unwanted additional gradient resource forming at 0,0 because Avida doesn't like having cells with res value = Null
   double thisdist;
   double thisheight = 0.0;
+  int max_pos_x = min(int(m_peakx + m_spread + 1), GetX() - 1);
+  int min_pos_x = max(int(m_peakx - m_spread - 1), 0);
+  int max_pos_y = min(int(m_peaky + m_spread + 1), GetY() - 1);
+  int min_pos_y = max(int(m_peaky - m_spread - 1), 0);
   
-  for (int ii = 0; ii < GetX(); ii++) {
-    for (int jj = 0; jj < GetY(); jj++) {
+  for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
+    for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
       thisdist = Distance(ii, jj, m_peakx, m_peaky);
       if (m_spread >= thisdist) {
   // determine individual cells values and add one to distance from center (e.g. so that center point = radius 1, not 0)
           thisheight = m_height / (thisdist + 1);       
   // create cylindrical profiles of resources whereever thisheight would be >1 (area where thisdist + 1 <= m_height) and slopes outside of that range
-  // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value; you'll get 
+  // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
         if (thisheight >= 1 && m_plateau >= 0.0) thisheight = m_plateau; 
       }
       else
