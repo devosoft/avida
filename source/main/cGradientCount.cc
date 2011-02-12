@@ -207,27 +207,27 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     cout << "distance x: " << abs(m_halo_anchor_x - m_peakx) << "  " << "distance y: " <<  abs(m_halo_anchor_y - m_peaky) << '\n';
     
     if (changling == 1) {
-      //check to make sure the move will not put peak beyond the bounds of the orbit
-      //if it will go beyond the bounds of the orbit, wrap around the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
+      //check to make sure the move will not put peak beyond the bounds (at corner) of the orbit
+      //if it will go beyond the bounds of the orbit, turn the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
       int next_posx = m_peakx + (halo_dir * m_move_speed);
       int max_orbit_x = m_halo_anchor_x + current_orbit - 1;
       int min_orbit_x = m_halo_anchor_x - current_orbit + 1;
       int current_x = m_peakx;
       if (next_posx > max_orbit_x) {
         m_peakx = max_orbit_x;
-        if (m_peaky < m_halo_anchor_y) {
-          //wrapping this corner means changing the sign of the movement once we switch from moving on x to moving on y
+        if (m_peaky > m_halo_anchor_y) {
+          //turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
           halo_dir = halo_dir * -1;
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x)); 
         }
         else
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
         changling = changling * -1;
-        cout << "next_posx: " << next_posx << "  min_orbit_x: " << min_orbit_x << "   max_orbit_x: " << "max_orbit_x << planned: " << abs(m_peakx - current_x) <<'\n'; 
+        cout << "next_posx: " << next_posx << "  min_orbit_x: " << min_orbit_x << "   max_orbit_x: " <<  max_orbit_x  << "  planned: " << abs(m_peakx - current_x) <<'\n'; 
       }
       else if (next_posx < min_orbit_x) { 
         m_peakx = min_orbit_x;          
-        if (m_peaky < m_halo_anchor_y) 
+        if (m_peaky > m_halo_anchor_y) 
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
         else {
           halo_dir = halo_dir * -1;
