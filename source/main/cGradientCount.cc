@@ -35,7 +35,8 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
                                m_halo(in_halo), m_halo_inner_radius(in_halo_inner_radius), m_halo_width(in_halo_width),
                                m_halo_anchor_x(in_halo_anchor_x), m_halo_anchor_y(in_halo_anchor_y), m_move_speed(in_move_speed)
 {
-  if(m_move_speed >= 2*(m_halo_inner_radius+m_halo_width) && m_halo_inner_radius+m_halo_width != 0){
+  if(m_move_speed >= 2*(m_halo_inner_radius+m_halo_width) && m_halo_inner_radius+m_halo_width != 0
+    && m_move_speed != 0){
     m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");
     assert(false);
   }				
