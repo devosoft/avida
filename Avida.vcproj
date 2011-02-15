@@ -389,6 +389,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cContextPhenotype.h"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cContextReactionRequisite.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\tools\cCoords.h"
 				>
 			</File>
@@ -1282,6 +1290,10 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\cConstSchedule.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cContextPhenotype.cc"
 				>
 			</File>
 			<File
