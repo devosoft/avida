@@ -206,7 +206,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     m_lib_name_map[inst_id].energy_cost = args->GetInt(3);
     m_lib_name_map[inst_id].prob_fail = args->GetDouble(0);
     m_lib_name_map[inst_id].addl_time_cost = args->GetInt(4);
-    m_lib_name_map[inst_id].res_cost = args->GetDouble(1); //APW
+    m_lib_name_map[inst_id].res_cost = args->GetDouble(1); 
     
     if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
     if (m_lib_name_map[inst_id].ft_cost) m_has_ft_costs = true;

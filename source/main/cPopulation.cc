@@ -862,10 +862,88 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
 void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
   cPopulationCell& loser_cell = GetCell(loser);
-  KillOrganism(loser_cell, &ctx); //JW;
+  KillOrganism(loser_cell, &ctx); 
 }
 
-void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext* ctx) //JW
+//Kill random org in population. This requires all (candidate) orgs to be in a valid group.
+void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_groups)
+{
+  //Select and find our target org.  
+  int target_group = 0;
+  int target_pos_in_group = 0;
+  double target_vitality = 0.0;
+  int target_cell_id = 0;
+  //Find the total number of orgs living in groups in the world.
+  int i = 0;
+  int org_list_size = 0;
+  while (i < num_groups) {
+    org_list_size = org_list_size + group_list[i].GetSize();
+    i = i + 1;
+  }
+  //If nobody else is around, there's no one to kill
+  if (org_list_size == 1) return;
+  //Otherwise, choose a random number for our target org.
+  while(true) {
+    int target_for_death = ctx.GetRandom().GetUInt(0, org_list_size);
+    //Find out which group that org lives in.
+    int j = 0;
+    int running_count = 0;
+    //Stop searching once we have stepped through to the org we are looking for.
+    while (running_count < target_for_death) {
+      //Otherwise, step through the groups looking for the one that would have our target org.
+      running_count = running_count + group_list[j].GetSize();
+      cout <<  group_list[j].GetSize() << '\n';
+      j = j + 1;
+    }
+    //If we never went through that first loop (j=0), we find our target in the first populated group.
+    if (j == 0) {
+      while (group_list[j].GetSize() == 0) {
+        j = j + 1;
+        target_group = j;
+        target_pos_in_group = target_for_death;
+      }
+    }
+    //Otherwise, if j > 0 and our running count just exceeded the target org num, then our target must be within the last group.
+    else {
+      //subtract 1 from j since we were incrementing after evaluating.
+      target_group = j - 1; 
+      target_pos_in_group = target_for_death - (running_count - group_list[target_group].GetSize());
+    }
+    cOrganism* target_org = group_list[target_group][target_pos_in_group];
+    target_cell_id = group_list[target_group][target_pos_in_group]->GetCellID();
+    target_vitality = target_org->GetVitality();
+    //Make sure this isn't self and that the target is alive.
+    if (target_org == org || target_org->IsDead()) continue;
+    else break;
+  }
+  //Use vitality settings to decide who wins this battle.
+  bool kill_attacker = true;
+  int attacker_cell = org->GetCellID();
+  if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 0) 
+    // 50% chance, no modifiers
+      kill_attacker = ctx.GetRandom().P(0.5);
+  else if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 1) {
+    //vitality based
+    double attacker_vitality = org->GetVitality(); 
+    double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+    double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    double decider = ctx.GetRandom().GetDouble(1);
+    
+    kill_attacker = ((attacker_odds > target_odds && decider > target_odds && decider < attacker_odds) || (target_odds > attacker_odds && decider < attacker_odds));
+    
+    if (decider > attacker_odds && decider > target_odds){
+      return;
+    }
+  }
+  int loser_cell = 0;
+  if (kill_attacker) loser_cell = attacker_cell;
+  else loser_cell = target_cell_id;
+  
+  KillOrganism(cell_array[loser_cell], &ctx);
+  return;
+} 
+
+void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext* ctx) 
 {
   // do we actually have something to kill?
   if (in_cell.IsOccupied() == false) return;
@@ -5721,7 +5799,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetOutflowX2(), res->GetOutflowY1(), 
                            res->GetOutflowY2(), res->GetCellListPtr(),
                            res->GetCellIdListPtr(), Verbosity,
-			   res->GetDynamicResource(), res->GetPeaks(), 
+                           res->GetDynamicResource(), res->GetPeaks(), 
                            res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
                            res->GetAh(), res->GetAr(),
                            res->GetAcx(), res->GetAcy(),
@@ -5735,7 +5813,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetGradient()
-                           ); //JW
+                           ); 
       cerr << res->GetMaxX() << " " << res->GetMinX() << endl;
     } else if (res->GetDemeResource()) {
       deme_res_index++;

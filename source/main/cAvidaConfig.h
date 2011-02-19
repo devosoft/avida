@@ -686,7 +686,7 @@ public:
   
   // -------- Synchronization config options --------
   CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
-  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)"); //APW
+  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)"); 
   CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_SELECTION_TYPE, int, 0, "0 = 50% chance\n1 = binned vitality based");
   CONFIG_ADD_VAR(VITALITY_BIN_EXTREMES, double, 1.0, "vitality multiplier for extremes (> 1 stddev from the mean population age)");
   CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");

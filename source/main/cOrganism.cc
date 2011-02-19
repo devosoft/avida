@@ -161,8 +161,9 @@ double cOrganism::GetVitality() const {
   double age_stddev = m_world->GetStats().SumCreatureAge().StdDeviation();
   int org_age = m_phenotype.GetAge();
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-  double res_level = m_phenotype.GetCurRBinAvail(resource);
-  
+  double res_level = 0.0;
+  if (resource >= 0) 
+    res_level = m_phenotype.GetCurRBinAvail(resource);
   double vitality = 0.0;
   
   if (org_age < (mean_age - age_stddev) || org_age > (mean_age + age_stddev)) {

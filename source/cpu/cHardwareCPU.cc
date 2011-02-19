@@ -615,6 +615,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-random-org", &cHardwareCPU::Inst_AttackRandomOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-attack-odds", &cHardwareCPU::Inst_GetAttackOdds, nInstFlag::STALL), 
 //    tInstLibEntry<tMethod>("fight-faced-org", &cHardwareCPU::Inst_FightFacedOrg, nInstFlag::STALL),     
 		
@@ -8583,32 +8584,51 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   assert(m_organism != 0);
   
   if (!m_organism->IsNeighborCellOccupied()) return false;
-
+  
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
-
+  
   int target_cell = target->GetCellID();
   
+  
+  //Use vitality settings to decide who wins this battle.
   bool kill_attacker = true;
-  double attacker_vitality = m_organism->GetVitality();
-  double target_vitality = target->GetVitality();
-  
-  double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
-  double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
-  double decider = ctx.GetRandom().GetDouble(1);
-  
-  kill_attacker = ((attacker_odds > target_odds && decider > target_odds && decider < attacker_odds) || (target_odds > attacker_odds && decider < attacker_odds));
-  
-  if (decider > attacker_odds && decider > target_odds){
-    return true;
+  if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 0) 
+    // 50% chance, no modifiers
+    kill_attacker = ctx.GetRandom().P(0.5);
+  else if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 1) {
+    double attacker_vitality = m_organism->GetVitality();
+    double target_vitality = target->GetVitality();
+    
+    double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+    double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    double decider = ctx.GetRandom().GetDouble(1);
+    
+    kill_attacker = ((attacker_odds > target_odds && decider > target_odds && decider < attacker_odds) || (target_odds > attacker_odds && decider < attacker_odds));
+    
+    if (decider > attacker_odds && decider > target_odds){
+      return true;
+    }
   }
   if (kill_attacker) {
     m_organism->Die(&ctx);
     return true;
   }
-  m_organism->KillCellID(target_cell, &ctx); //JW
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
   return true;
 } 		
+
+//Attack random org in population. This requires all (candidate) orgs to be in a valid group.
+bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
+{
+	assert(m_organism != 0);
+  //How many valid groups are we dealing with?
+  int num_poss_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
+  //Make sure we are using groups and there are resources out there.
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
+  m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
+  return true;
+}
 
 //Get odds of winning or tieing in a fight. This will use vitality bins if those are set.
 bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
@@ -8619,8 +8639,6 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
-
-  int target_cell = target->GetCellID();
   
   double attacker_vitality = m_organism->GetVitality();
   double target_vitality = target->GetVitality();
@@ -8640,7 +8658,7 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
 } 	
 
 //Fight organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
-/*bool cHardwareCPU::Inst_FightFacedOrg(cAvidaContext& ctx)
+/*bool cHardwareCPU::Inst_FightFacedOrg(cAvidaContext& ctx)  //APW
 {
   assert(m_organism != 0);
   
@@ -9319,12 +9337,11 @@ bool cHardwareCPU::Inst_KillGroupMember(cAvidaContext& ctx)
 	
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
-		// Kill Group in group
+		// Kill organism in group
 		m_world->GetPopulation().KillGroupMember(ctx, opinion, m_organism);
   }
 	return true;
 }
-
 
 //! Gets the number of organisms in the current organism's group 
 //! and places the value in the ?CX? register
