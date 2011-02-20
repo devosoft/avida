@@ -908,10 +908,8 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
       target_group = j - 1; 
       target_pos_in_group = target_for_death - (running_count - group_list[target_group].GetSize()) - 1;
     }
-    
 //    cout << "group0 size:  " << group_list[0].GetSize() << "  group1 size:  " << group_list[1].GetSize() << "  group2 size:  " << group_list[2].GetSize() << '\n';
 //    cout << "target #: " << target_for_death << "  target group: " << target_group << "  target org: " << group_list[target_group][target_pos_in_group] << "  target group size: " << group_list[target_group].GetSize() << "  target pos in group: " << target_pos_in_group << '\n';
-    
     cOrganism* target_org = group_list[target_group][target_pos_in_group];
     target_cell_id = group_list[target_group][target_pos_in_group]->GetCellID();
     target_vitality = target_org->GetVitality();
@@ -930,13 +928,13 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
     double attacker_vitality = org->GetVitality(); 
     double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
     double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    
+    double odds_someone_dies = max(attacker_odds, target_odds);
+    double odds_target_dies = target_odds * odds_someone_dies;
     double decider = ctx.GetRandom().GetDouble(1);
     
-    kill_attacker = ((attacker_odds > target_odds && decider > target_odds && decider < attacker_odds) || (target_odds > attacker_odds && decider < attacker_odds));
-    
-    if (decider > attacker_odds && decider > target_odds){
-      return;
-    }
+    if (decider < 1 - odds_someone_dies) return;
+    else if (decider < (1 - odds_someone_dies) + odds_target_dies) kill_attacker = false;
   }
   int loser_cell = 0;
   if (kill_attacker) loser_cell = attacker_cell;
