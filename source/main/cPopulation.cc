@@ -892,7 +892,6 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
     while (running_count < target_for_death) {
       //Otherwise, step through the groups looking for the one that would have our target org.
       running_count = running_count + group_list[j].GetSize();
-      cout <<  group_list[j].GetSize() << '\n';
       j = j + 1;
     }
     //If we never went through that first loop (j=0), we find our target in the first populated group.
@@ -907,8 +906,12 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
     else {
       //subtract 1 from j since we were incrementing after evaluating.
       target_group = j - 1; 
-      target_pos_in_group = target_for_death - (running_count - group_list[target_group].GetSize());
+      target_pos_in_group = target_for_death - (running_count - group_list[target_group].GetSize()) - 1;
     }
+    
+//    cout << "group0 size:  " << group_list[0].GetSize() << "  group1 size:  " << group_list[1].GetSize() << "  group2 size:  " << group_list[2].GetSize() << '\n';
+//    cout << "target #: " << target_for_death << "  target group: " << target_group << "  target org: " << group_list[target_group][target_pos_in_group] << "  target group size: " << group_list[target_group].GetSize() << "  target pos in group: " << target_pos_in_group << '\n';
+    
     cOrganism* target_org = group_list[target_group][target_pos_in_group];
     target_cell_id = group_list[target_group][target_pos_in_group]->GetCellID();
     target_vitality = target_org->GetVitality();
