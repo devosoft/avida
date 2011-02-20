@@ -8589,26 +8589,25 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
   if (target->IsDead()) return false;  
   
   int target_cell = target->GetCellID();
-  
-  
+    
   //Use vitality settings to decide who wins this battle.
   bool kill_attacker = true;
   if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 0) 
     // 50% chance, no modifiers
     kill_attacker = ctx.GetRandom().P(0.5);
   else if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 1) {
+    //vitality based
     double attacker_vitality = m_organism->GetVitality();
     double target_vitality = target->GetVitality();
-    
     double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
     double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    
+    double odds_someone_dies = max(attacker_odds, target_odds);
+    double odds_target_dies = target_odds * odds_someone_dies;
     double decider = ctx.GetRandom().GetDouble(1);
     
-    kill_attacker = ((attacker_odds > target_odds && decider > target_odds && decider < attacker_odds) || (target_odds > attacker_odds && decider < attacker_odds));
-    
-    if (decider > attacker_odds && decider > target_odds){
-      return true;
-    }
+    if (decider < 1 - odds_someone_dies) return true;
+    else if (decider < (1 - odds_someone_dies) + odds_target_dies) kill_attacker = false;    
   }
   if (kill_attacker) {
     m_organism->Die(&ctx);
