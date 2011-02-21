@@ -4444,8 +4444,8 @@ public:
     assert(m_radius <= world_x);
     assert(m_radius <= world_y);
     assert(m_threshold >= 0.0);
-    assert(m_kill_density >= 0.0);
-    assert(m_kill_density <= 1.0);
+//    assert(m_kill_density >= 0.0);
+//    assert(m_kill_density <= 1.0);
     assert(geometry == nGeometry::GRID || geometry == nGeometry::TORUS);
     
     cDoubleSum resourcesum;

@@ -426,6 +426,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("repro-X", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-Y", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("repro-Z", &cHardwareCPU::Inst_Repro, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("cond-repro", &cHardwareCPU::Inst_ConditionalRepro, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("put-repro", &cHardwareCPU::Inst_TaskPutRepro, nInstFlag::STALL),
     tInstLibEntry<tMethod>("metabolize", &cHardwareCPU::Inst_TaskPutResetInputsRepro, nInstFlag::STALL),        
@@ -3273,6 +3274,16 @@ bool cHardwareCPU::Inst_TaskPutResetInputsRepro(cAvidaContext& ctx)
   
   // return value of put since successful repro would wipe state anyway
   return return_value; 
+}
+
+
+/* The organism can only replicate if the last task it performed is the task with ID 0 */
+bool cHardwareCPU::Inst_ConditionalRepro(cAvidaContext& ctx)
+{
+  if (m_organism->GetPhenotype().GetLastTaskID() == 0) { 
+    return Inst_Repro(ctx);
+  }
+  return false;
 }
 
 bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)

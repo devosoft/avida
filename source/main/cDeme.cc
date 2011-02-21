@@ -1115,7 +1115,6 @@ double cDeme::GetShannonMutualInformation()
     for (int i=0; i<num_org; i++) {
       ptask_array[j] += m_shannon_matrix[i][j];
     }
-    double tmp = ptask_array[j];
     ptask_array[j] /= m_num_active;
   }
 	
@@ -1149,6 +1148,8 @@ double cDeme::GetNumOrgsPerformedReaction()
   return m_num_active;
 }
 
+
+/* Update the task counts for an organism. if we are tracking repro, then the repro count replaces the first task count */
 void cDeme::UpdateShannon(cPopulationCell& cell)
 {
   int org_react_count = 0;
@@ -1159,14 +1160,21 @@ void cDeme::UpdateShannon(cPopulationCell& cell)
     const tArray<int> curr_react =  phenotype.GetCurReactionCount();
     org_row.resize(curr_react.GetSize(), 0.0);
     for (int j=0; j<curr_react.GetSize(); j++) {
-      org_react_count += curr_react[j];
-      org_row[j] = curr_react[j];
+      
+      // we are tracking repro as a task
+      if ((m_world->GetConfig().DEMES_TRACK_SHANNON_INFO.Get() == 2) && (j==0)) {
+        org_row[j] = (phenotype.GetNumDivides() - phenotype.GetNumDivideFailed());
+        org_react_count += org_row[j];
+      } else {
+        org_react_count += curr_react[j];
+        org_row[j] = curr_react[j];
+      }
     }
 		
     if (org_react_count > 0) {
       // normalize the data for the current organism.
       for (int j=0; j<curr_react.GetSize(); j++){
-	if (org_row[j]) org_row[j] /= org_react_count;
+        if (org_row[j]) org_row[j] /= org_react_count;
       }
       m_num_active++;
       m_shannon_matrix.push_back(org_row);
