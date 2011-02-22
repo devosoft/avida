@@ -6,7 +6,7 @@
 <body>
 
 <div class="revision">
-Revised 2006-09-05 DMB
+Revised 2011-02-14 MV
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -61,9 +61,9 @@ find the proper position, and write something to the effect of:
 </p>
 
 <pre>
-void <span class="class">cHardwareCPU</span>::<span class="method">Inst_Minus17</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>)
+bool <span class="class">cHardwareCPU</span>::<span class="method">Inst_Minus17</span>(<span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>)
 {
-  const <span class="class">int</span> <span class="object">reg_used</span> = <span class="method">FindModifiedRegister</span>(nHardwareCPU::REG_BX);
+  const <span class="class">int</span> <span class="object">reg_used</span> = <span class="method">FindModifiedRegister</span>(REG_BX);
   <span class="method">GetRegister</span>(<span class="object">reg_used</span>) -= 17;
   return true;
 }
@@ -89,7 +89,7 @@ well your implementation is going so far.
 <h2>2. Link the instruction name to its method</h2>
 
 For this step, you will need to edit the code file.  You would go into the method
-<span class="class">cHardwareCPU</span>::<span class="method">initInstLib</span>()
+<span class="class">cHardwareCPU</span>::<span class="method">initInstLib</span>(void)
 and add in the line
 
 <pre>
