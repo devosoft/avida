@@ -6,7 +6,7 @@
 <body>
 
 <div class="revision">
-Revised 2006-09-05 DMB
+Revised 2011-02-14 MV
 </div>
 
 <p><a href="index.html">Return to the Index</a></p>
@@ -42,7 +42,7 @@ could double one of their inputs, we might call that task 'times2'.  We would
 then add the line to this file:
 </p>
 <pre>
-double <span class="method">Task_Times2</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const;
+double <span class="method">Task_Times2</span>(<span class="class">cTaskContext</span>& <span class="object">ctx</span>) const;
 </pre>
 
 <p>
@@ -63,11 +63,15 @@ immediately after it.
 </p>
 
 <pre>
-double <span class="class">cTaskLib</span>::<span class="method">Task_Times2</span>(<span class="class">cTaskContext</span>* <span class="object">ctx</span>) const
+double <span class="class">cTaskLib</span>::<span class="method">Task_Times2</span>(<span class="class">cTaskContext</span>& <span class="object">ctx</span>) const
 {
-  const <span class="class">int</span> <span class="object">test_output</span> = <span class="object">ctx</span>-&gt;<span class="object">output_buffer</span>[0];
-  for (<span class="class">int</span> <span class="object">i</span> = 0; <span class="object">i</span> &lt; <span class="object">ctx</span>-&gt;<span class="object">input_buffer</span>.<span class="method">GetNumStored</span>(); <span class="object">i</span>++) {
-    if (2 * <span class="object">ctx</span>-&gt;<span class="object">input_buffer</span>[i] == <span class="object">test_output</span>) {
+  const <span class="class">tBuffer</span><<span class="class">int</span>>& <span class="method">input_buffer</span> = <span class="object">ctx.</span><span class="method">GetInputBuffer</span>();
+  const <span class="class">int </span><span class="object">test_output</span> = <span class="object">ctx</span>.<span class="method">GetInputBuffer</span>()[0];
+  const <span class="class">int</span> <span class="object">input_size</span> = <span class="object">ctx</span>.<span class="method">GetInputBuffer</span>().<span class="method">GetNumStored</span>();
+  for (<span class="class">int</span> <span class="object">i</span> = 0; <span class="object">i</span> < <span class="object">input_size</span> ; <span class="object">i</span>++)
+  {
+    if ( <span class="object">test_output</span> == 2 * <span class="object">input_buffer</span>[<span class="object">i</span>])
+    {
       return 1.0;
     }
   }
