@@ -28,11 +28,10 @@
 #include "cUserFeedback.h"
 #include "cWorld.h"
 
-using namespace std;
-
 
 int main(int argc, char * argv[])
 {
+
   Avida::Initialize();
   
   Avida::PrintVersionBanner();

@@ -299,6 +299,7 @@ SET(TOOLS_SOURCES
   ${TOOLS_DIR}/cIntegratedSchedule.cc
   ${TOOLS_DIR}/cIntegratedScheduleNode.cc
   ${TOOLS_DIR}/cMerit.cc
+  ${TOOLS_DIR}/cOrderedWeightedIndex.cc
   ${TOOLS_DIR}/cProbDemeProbSchedule.cc
   ${TOOLS_DIR}/cProbSchedule.cc
   ${TOOLS_DIR}/cRandom.cc

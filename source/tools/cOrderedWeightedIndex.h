@@ -1,5 +1,5 @@
 /*
- *  cWeightedIndex.h
+ *  cOrderedWeightedIndex.h
  *  Avida
  *
  *  Called "weighted_index.hh" prior to 12/7/05.
@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef cWeightedIndex_h
-#define cWeightedIndex_h
+#ifndef cOrderedWeightedIndex_h
+#define cOrderedWeightedIndex_h
 
 #ifndef tArray_h
 #include "tArray.h"
@@ -31,35 +31,37 @@
 #define NULL 0
 #endif
 
+using namespace std;
 /**
  * This class allows indecies to be assigned a "weight" and then indexed by
  * that weight.
  **/
 
-class cWeightedIndex
+#include <fstream>
+
+class cOrderedWeightedIndex
 {
 protected:
-  int size;
   tArray<double> item_weight;
-  tArray<double> subtree_weight;
+  tArray<double> cum_weight;
+  tArray<int>    item_value;
 
-  
-  cWeightedIndex(); // @not_implemented
-  
+  int Lookup(double weight, int ndxA, int ndxE);
+
 public:
-  cWeightedIndex(int in_size);
-  ~cWeightedIndex();
+  cOrderedWeightedIndex();
+  ~cOrderedWeightedIndex();
 
-  void SetWeight(int id, double weight);
+  void   SetWeight(int value, double weight);
+  
   double GetWeight(int id) { return item_weight[id]; }
+  int    GetValue(int id)  { return item_value[id];  }
 
-  double GetTotalWeight() { return subtree_weight[0]; }
-  int GetSize() const {return size;}
-  int FindPosition(double position, int root_id=0);
+  double GetTotalWeight() { return cum_weight[GetSize()-1]; }
+  int GetSize() const {return item_weight.GetSize();}
+  
+  int FindPosition(double position);
 
-  int GetParent(int id)     { return (id-1) / 2; }
-  int GetLeftChild(int id)  { return 2*id + 1; }
-  int GetRightChild(int id) { return 2*id + 2; }
 };
-
 #endif
+

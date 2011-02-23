@@ -2790,6 +2790,7 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,
@@ -4094,7 +4095,6 @@
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
 				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -falign-labels=16 -ftree-loop-linear -fsched-interblock -fgcse-sm -fgcse-las -mmultiple -mstring";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
 					"-Wextra",
