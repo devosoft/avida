@@ -5790,8 +5790,8 @@ bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
   bool move_success = m_organism->Move(ctx);
   
   const int out_reg = FindModifiedRegister(REG_BX);   
-  GetRegister(out_reg) = move_success;                          
-  
+  GetRegister(out_reg) = move_success;   
+
   return true;
 }
 
