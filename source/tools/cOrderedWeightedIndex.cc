@@ -20,9 +20,10 @@
  *
  */
 
-using namespace std;
 #include "cOrderedWeightedIndex.h"
 #include <iostream>
+
+using namespace std;
 
 
 
