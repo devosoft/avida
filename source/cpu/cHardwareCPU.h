@@ -583,6 +583,8 @@ private:
   bool Inst_GetDirectionOffNorth(cAvidaContext& ctx);  
   bool Inst_GetNortherly(cAvidaContext& ctx); 
   bool Inst_GetEasterly(cAvidaContext& ctx);
+  bool Inst_ZeroEasting(cAvidaContext& ctx);
+  bool Inst_ZeroNorthing(cAvidaContext& ctx);
   
   // State Grid Sensory/Movement
   bool Inst_SGMove(cAvidaContext& ctx);

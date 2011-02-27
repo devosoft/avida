@@ -596,6 +596,8 @@ public:
   // get the organism's relative position (from birth place)
   int GetNortherly() { return m_northerly; }
 	int GetEasterly() { return m_easterly; } 
+	void ClearEasterly() {m_easterly = 0; }
+	void ClearNortherly() {m_northerly = 0; }
   
 protected:
 	// The organism's own raw materials

@@ -310,7 +310,10 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareCPU::Inst_GetDirectionOffNorth),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareCPU::Inst_GetNortherly),    
-    tInstLibEntry<tMethod>("get-easterly", &cHardwareCPU::Inst_GetEasterly),    
+    tInstLibEntry<tMethod>("get-easterly", &cHardwareCPU::Inst_GetEasterly), 
+    tInstLibEntry<tMethod>("zero-easting", &cHardwareCPU::Inst_ZeroEasting),    
+    tInstLibEntry<tMethod>("zero-northing", &cHardwareCPU::Inst_ZeroNorthing),    
+
     
     // State Grid instructions
     tInstLibEntry<tMethod>("sg-move", &cHardwareCPU::Inst_SGMove),
@@ -6865,6 +6868,16 @@ bool cHardwareCPU::Inst_GetEasterly(cAvidaContext& ctx) {
   const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = m_organism->GetEasterly();
   return true;  
+}
+
+bool cHardwareCPU::Inst_ZeroEasting(cAvidaContext& ctx) {
+  m_organism->ClearEasterly();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ZeroNorthing(cAvidaContext& ctx) {
+  m_organism->ClearNortherly();
+  return true;
 }
 
 //// Promoter Model ////
