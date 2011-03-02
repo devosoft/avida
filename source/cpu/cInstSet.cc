@@ -67,7 +67,7 @@ cInstSet& cInstSet::operator=(const cInstSet& _in)
 bool cInstSet::OK() const
 {
   assert(m_lib_nopmod_map.GetSize() < m_lib_name_map.GetSize());
-  assert(m_mutation_index->GetSize() < M_MAX_INSTSET_SIZE);
+  assert(m_mutation_index->GetSize() < MAX_INSTSET_SIZE);
 
   bool redundancy_ok = true;
   for (int id=0; id < GetSize(); id++)
@@ -91,7 +91,7 @@ cInstruction cInstSet::ActivateNullInst()
   const int inst_id = m_lib_name_map.GetSize();
   const int null_fun_id = m_inst_lib->GetInstNull();
   
-  assert(inst_id < M_MAX_INSTSET_SIZE);
+  assert(inst_id < MAX_INSTSET_SIZE);
   
   // Make sure not to activate again if NULL is already active
   for (int i = 0; i < inst_id; i++) if (m_lib_name_map[i].lib_fun_id == null_fun_id) return cInstruction(i);
@@ -207,7 +207,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     
     // Get the ID of the new Instruction
     const int inst_id = m_lib_name_map.GetSize();
-    assert(inst_id < M_MAX_INSTSET_SIZE);
+    assert(inst_id < MAX_INSTSET_SIZE);
     
     // Increase the size of the array...
     m_lib_name_map.Resize(inst_id + 1);
