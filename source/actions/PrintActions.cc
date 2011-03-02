@@ -82,13 +82,13 @@ STATS_OUT_FILE(PrintMessageLog,             message_log.dat     );
 STATS_OUT_FILE(PrintInterruptData,          interrupt.dat       );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
-STATS_OUT_FILE(PrintThreadsData,            threads.dat);
+STATS_OUT_FILE(PrintThreadsData,            threads.dat         );
 STATS_OUT_FILE(PrintHostTasksData,          host_tasks.dat      );
 STATS_OUT_FILE(PrintParasiteTasksData,      parasite_tasks.dat  );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
-STATS_OUT_FILE(PrintNewTasksData,			newtasks.dat		);
-STATS_OUT_FILE(PrintNewReactionData,		newreactions.dat	);
-STATS_OUT_FILE(PrintNewTasksDataPlus,		newtasksplus.dat	);
+STATS_OUT_FILE(PrintNewTasksData,           newtasks.dat	);
+STATS_OUT_FILE(PrintNewReactionData,	    newreactions.dat	);
+STATS_OUT_FILE(PrintNewTasksDataPlus,       newtasksplus.dat	);
 STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
 STATS_OUT_FILE(PrintResourceData,           resource.dat        );
 STATS_OUT_FILE(PrintReactionData,           reactions.dat       );
@@ -112,7 +112,7 @@ STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
 STATS_OUT_FILE(PrintDemeReactionDiversityReplicationData, deme_rx_repl.dat );
 STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat       );
 STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat       );
-STATS_OUT_FILE(PrintDemeTreatableCount,    deme_treatable.dat       );
+STATS_OUT_FILE(PrintDemeTreatableCount,     deme_treatable.dat       );
 
 STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
 STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
@@ -150,11 +150,11 @@ STATS_OUT_FILE(PrintSynchronizationData,    sync.dat            );
 STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
-STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
-STATS_OUT_FILE(PrintDynamicMaxMinData,		maxmin.dat			);
+STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat        );
+STATS_OUT_FILE(PrintDynamicMaxMinData,	    maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
-STATS_OUT_FILE(PrintMigrationData,      migration.dat);
-STATS_OUT_FILE(PrintAgePolyethismData, age_polyethism.dat);
+STATS_OUT_FILE(PrintMigrationData,          migration.dat);
+STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
 
 
 // reputation

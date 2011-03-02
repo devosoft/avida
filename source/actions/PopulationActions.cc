@@ -4932,22 +4932,22 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionInjectSequence>("InjectSequence");
   action_lib->Register<cActionInjectSequenceWithDivMutRate>("InjectSequenceWDivMutRate");
   action_lib->Register<cActionInjectDemes>("InjectDemes");
-	action_lib->Register<cActionInjectModuloDemes>("InjectModuloDemes");
+  action_lib->Register<cActionInjectModuloDemes>("InjectModuloDemes");
   action_lib->Register<cActionInjectDemesFromNest>("InjectDemesFromNest");
   action_lib->Register<cActionInjectDemesRandom>("InjectDemesRandom");
 	
   action_lib->Register<cActionInjectParasite>("InjectParasite");
   action_lib->Register<cActionInjectParasitePair>("InjectParasitePair");
 	
-	action_lib->Register<cActionKillInstLimit>("KillInstLimit");
-	action_lib->Register<cActionKillInstPair>("KillInstPair");
+  action_lib->Register<cActionKillInstLimit>("KillInstLimit");
+  action_lib->Register<cActionKillInstPair>("KillInstPair");
   action_lib->Register<cActionKillProb>("KillProb");
-	action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
-	action_lib->Register<cActionKillFractionInSequence_PopLimit>("KillFractionInSequence_PopLimit");
+  action_lib->Register<cActionKillFractionInSequence>("KillFractionInSequence");
+  action_lib->Register<cActionKillFractionInSequence_PopLimit>("KillFractionInSequence_PopLimit");
 	
-	// Theraputic deme actions
-	action_lib->Register<cAction_TherapyStructuralNumInst>("TherapyStructuralNumInst");
-	action_lib->Register<cAction_TherapyStructuralRatioDistBetweenNearest>("TherapyStructuralRatioDistBetweenNearest");
+  // Theraputic deme actions
+  action_lib->Register<cAction_TherapyStructuralNumInst>("TherapyStructuralNumInst");
+  action_lib->Register<cAction_TherapyStructuralRatioDistBetweenNearest>("TherapyStructuralRatioDistBetweenNearest");
   action_lib->Register< cAction_TherapyDecayDemeResource>("TherapyDecayDemeResource");
 	
 	
@@ -4956,14 +4956,14 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionKillProb>("KillRate");
   action_lib->Register<cActionKillRectangle>("KillRectangle");
   action_lib->Register<cActionSerialTransfer>("SerialTransfer");
-	action_lib->Register<cActionReplaceFromGermline>("ReplaceFromGermline");
+  action_lib->Register<cActionReplaceFromGermline>("ReplaceFromGermline");
   
   action_lib->Register<cActionSetMigrationRate>("SetMigrationRate");
   action_lib->Register<cActionSetMutProb>("SetMutProb");
   action_lib->Register<cActionModMutProb>("ModMutProb");
   action_lib->Register<cActionZeroMuts>("ZeroMuts");
 	
-	action_lib->Register<cActionTrackAllMessages>("TrackAllMessages");
+  action_lib->Register<cActionTrackAllMessages>("TrackAllMessages");
 	
   action_lib->Register<cActionCompeteDemes>("CompeteDemes");
   action_lib->Register<cActionReplicateDemes>("ReplicateDemes");
@@ -4972,28 +4972,28 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionCopyDeme>("CopyDeme");
   action_lib->Register<cActionMixPopulation>("MixPopulation");
 	
-	action_lib->Register<cActionDecayPoints>("DecayPoints");
+  action_lib->Register<cActionDecayPoints>("DecayPoints");
+  
+  action_lib->Register<cActionFlash>("Flash");
 	
-	action_lib->Register<cActionFlash>("Flash");
-	
-	/****AbstractCompeteDemes sub-classes****/
+  /****AbstractCompeteDemes sub-classes****/
 	
   action_lib->Register<cAbstractCompeteDemes_AttackKillAndEnergyConserve>("CompeteDemes_AttackKillAndEnergyConserve");
   action_lib->Register<cAssignRandomCellData>("AssignRandomCellData");
-	action_lib->Register<cActionMeasureDemeNetworks>("MeasureDemeNetworks");
-	action_lib->Register<cActionDistributeData>("DistributeData");
-	action_lib->Register<cActionDistributeDataEfficiently>("DistributeDataEfficiently");
-	action_lib->Register<cActionDistributeDataCheaply>("DistributeDataCheaply");
+  action_lib->Register<cActionMeasureDemeNetworks>("MeasureDemeNetworks");
+  action_lib->Register<cActionDistributeData>("DistributeData");
+  action_lib->Register<cActionDistributeDataEfficiently>("DistributeDataEfficiently");
+  action_lib->Register<cActionDistributeDataCheaply>("DistributeDataCheaply");
 
-	action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
+  action_lib->Register<cActionCompeteDemesByNetwork>("CompeteDemesByNetwork");
   action_lib->Register<cActionIteratedConsensus>("IteratedConsensus");
-	action_lib->Register<cActionCountOpinions>("CountOpinions");
-	action_lib->Register<cActionCountMultipleOpinions>("CountMultipleOpinions");
-	action_lib->Register<cActionDemeReactionDiversity>("DemeReactionDiversity");
-	action_lib->Register<cActionDemeBalanceTwoTasks>("DemeBalanceTwoTasks");
-	action_lib->Register<cActionSynchronization>("Synchronization");
-	action_lib->Register<cActionDesynchronization>("Desynchronization");
-	action_lib->Register<cActionUnitFitness>("UnitFitness");
+  action_lib->Register<cActionCountOpinions>("CountOpinions");
+  action_lib->Register<cActionCountMultipleOpinions>("CountMultipleOpinions");
+  action_lib->Register<cActionDemeReactionDiversity>("DemeReactionDiversity");
+  action_lib->Register<cActionDemeBalanceTwoTasks>("DemeBalanceTwoTasks");
+  action_lib->Register<cActionSynchronization>("Synchronization");
+  action_lib->Register<cActionDesynchronization>("Desynchronization");
+  action_lib->Register<cActionUnitFitness>("UnitFitness");
 	
   action_lib->Register<cActionNewTrial>("NewTrial");
   action_lib->Register<cActionCompeteOrganisms>("CompeteOrganisms");
@@ -5011,18 +5011,18 @@ void RegisterPopulationActions(cActionLibrary* action_lib)
   action_lib->Register<cActionCompeteDemesByTaskCountAndEfficiency>("CompeteDemesByTaskCountAndEfficiency");
   action_lib->Register<cActionCompeteDemesByEnergyDistribution>("CompeteDemesByEnergyDistribution");	
 	
-	/* deme predicate*/
-	action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
+  /* deme predicate*/
+  action_lib->Register<cActionPred_DemeEventMoveCenter>("Pred_DemeEventMoveCenter");
   action_lib->Register<cActionPred_DemeEventMoveBetweenTargets>("Pred_DemeEventMoveBetweenTargets");
   action_lib->Register<cActionPred_DemeEventEventNUniqueIndividualsMovedIntoTarget>("Pred_DemeEventNUniqueIndividualsMovedIntoTarget");
-	action_lib->Register<cActionPred_DemeResourceThresholdPredicate>("DemeResourceThresholdPredicate");
+  action_lib->Register<cActionPred_DemeResourceThresholdPredicate>("DemeResourceThresholdPredicate");
   
   action_lib->Register<cActionKillNBelowResourceThreshold>("KillNBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusBelowResourceThreshold>("KillWithinRadiusBelowResourceThreshold");
   action_lib->Register<cActionKillWithinRadiusMeanBelowResourceThreshold>("KillWithinRadiusMeanBelowResourceThreshold");
-	action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
+  action_lib->Register<cActionKillWithinRadiusBelowResourceThresholdTestAll>("KillWithinRadiusBelowResourceThresholdTestAll");
 	action_lib->Register<cActionKillMeanBelowThresholdPaintable>("KillMeanBelowThresholdPaintable");
 	
-	action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
-	action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
+  action_lib->Register<cActionDiffuseHGTGenomeFragments>("DiffuseHGTGenomeFragments");
+  action_lib->Register<cActionAvidianConjugation>("AvidianConjugation");
 }

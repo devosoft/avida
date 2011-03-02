@@ -267,13 +267,13 @@ cPopulation::cPopulation(cWorld* world)
   for (int i = 0; i < resource_lib.GetSize(); i++) {
     cResource * res = resource_lib.GetResource(i);
 
-		// check to see if this is the hgt resource:
-		if (res->GetHGTMetabolize()) {
-			if (m_hgt_resid != -1) {
-				m_world->GetDriver().RaiseFatalException(-1, "Only one HGT resource is currently supported.");
-			}
-			m_hgt_resid = i;
-		}
+    // check to see if this is the hgt resource:
+    if (res->GetHGTMetabolize()) {
+      if (m_hgt_resid != -1) {
+	m_world->GetDriver().RaiseFatalException(-1, "Only one HGT resource is currently supported.");
+      }
+      m_hgt_resid = i;
+    }
 
     if (!res->GetDemeResource()) {
       global_res_index++;
@@ -300,11 +300,11 @@ cPopulation::cPopulation(cWorld* world)
       exit(1);
     }
   }
-
-	// if HGT is on, make sure there's a resource for it:
-	if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
-		m_world->GetDriver().NotifyWarning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
-	}
+  
+  // if HGT is on, make sure there's a resource for it:
+  if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
+    m_world->GetDriver().NotifyWarning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
+  }
 
 }
 
@@ -857,10 +857,10 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell)
   // Update count statistics...
   num_organisms--;
 
-	// Handle deme updates.
+  // Handle deme updates.
   if (deme_array.GetSize() > 0) {
     deme_array[in_cell.GetDemeID()].DecOrgCount();
-		deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
+    deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
   }
 
   // If HGT is turned on and there's a possibility of natural competence,
@@ -1021,15 +1021,15 @@ void cPopulation::SwapCells(int cell_id1, int cell_id2)
 // based on their fitness. How deme fitness is estimated is specified by
 // competition_type input argument as:
 /*
- 0: deme fitness = 1 (control, random deme selection)
- 1: deme fitness = number of births since last competition (default)
- 2: deme fitness = average organism fitness at the current update (uses parent's fitness, so
- does not work with donations)
- 3: deme fitness = average mutation rate at the current update
- 4: deme fitness = strong rank selection on (parents) fitness (2^-deme fitness rank)
- 5: deme fitness = average organism life (current, not parents) fitness (works with donations)
- 6: deme fitness = strong rank selection on life (current, not parents) fitness
- */
+  0: deme fitness = 1 (control, random deme selection)
+  1: deme fitness = number of births since last competition (default)
+  2: deme fitness = average organism fitness at the current update (uses parent's fitness, so
+     does not work with donations)
+  3: deme fitness = average mutation rate at the current update
+  4: deme fitness = strong rank selection on (parents) fitness (2^-deme fitness rank)
+  5: deme fitness = average organism life (current, not parents) fitness (works with donations)
+  6: deme fitness = strong rank selection on life (current, not parents) fitness
+*/
 //  For ease of use, each organism
 // is setup as if it we just injected into the population.
 
