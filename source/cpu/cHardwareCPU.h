@@ -500,12 +500,13 @@ private:
   
   // Resources
   bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);
-  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
-  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin);
+  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit);
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, int start_bin, int end_bin);
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
   bool Inst_Destroy(cAvidaContext& ctx);
   bool Inst_NopCollect(cAvidaContext& ctx);  
+  bool Inst_CollectUnitProbabilistic(cAvidaContext& ctx);
   bool Inst_CollectSpecific(cAvidaContext& ctx);
   bool Inst_IfResources(cAvidaContext& ctx);  //! Execute the following instruction if all resources are above their min level.
 

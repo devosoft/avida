@@ -248,6 +248,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("collect-no-env-remove", &cHardwareCPU::Inst_CollectNoEnvRemove, nInstFlag::STALL),
     tInstLibEntry<tMethod>("destroy", &cHardwareCPU::Inst_Destroy, nInstFlag::STALL),
     tInstLibEntry<tMethod>("nop-collect", &cHardwareCPU::Inst_NopCollect),
+    tInstLibEntry<tMethod>("collect-unit-prob", &cHardwareCPU::Inst_CollectUnitProbabilistic, nInstFlag::STALL),
     tInstLibEntry<tMethod>("collect-specific", &cHardwareCPU::Inst_CollectSpecific, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("donate-rnd", &cHardwareCPU::Inst_DonateRandom),
@@ -3817,14 +3818,20 @@ bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index, int& s
 
 /* Helper function to reduce code redundancy in the Inst_Collect variations,
  * including Inst_Destroy.
- * Does all the heavy lifting of external resource collection/destruction.
+ * Does all the heavy lifting deciding which resource(s) to collect, then calls
+ * DoActualCollect() to do the environmental resource removal and/or internal
+ * resource addition.
  *
- * env_remove   - specifies whether the collected resources should be removed from
- *                the environment
- * internal_add - specifies whether the collected resources should be added to 
- *                the organism's internal resources.
+ * env_remove    - specifies whether the collected resources should be removed from
+ *                 the environment
+ * internal_add  - specifies whether the collected resources should be added to 
+ *                 the organism's internal resources.
+ * probabilistic - specifies whether the chance of collection success should be based on 
+ *                 the amount of resource in the environment.
+ * unit          - specifies whether collection uses the ABSORB_RESOURCE_FRACTION
+ *                 configuration or always collects 1 unit of resource.
  */
-bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add)
+bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit)
 {
   int start_bin, end_bin, bin_used, spec_id;
   
@@ -3857,13 +3864,11 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
     }
   }
   
-  DoActualCollect(ctx, bin_used, env_remove, internal_add, start_bin, end_bin);
-  
-  return true;
+  return DoActualCollect(ctx, bin_used, env_remove, internal_add, probabilistic, unit, start_bin, end_bin);
 }
 
 
-bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin)
+bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, int start_bin, int end_bin)
 {
   
   // Set up res_change and max total
@@ -3873,14 +3878,29 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
   double total = m_organism->GetRBinsTotal();
   double max = m_world->GetConfig().MAX_TOTAL_STORED.Get();
   
-	/* Remove resource(s) from environment if env_remove is set;
+	/* First, if collection is probabilistic, check to see if it succeeds.
+   *
+   * If so, remove resource(s) from environment if env_remove is set;
    * add resource(s) to internal resource bins if internal_add is set
    * (and this would not fill the bin beyond max).
    */
   if(bin_used >= 0)
   {
-    res_change[bin_used] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
+    if (probabilistic) {
+      double success_chance = res_count[bin_used] / double(m_world->GetConfig().COLLECT_PROB_DIVISOR.Get());
+      if (success_chance < ctx.GetRandom().GetDouble())
+      { return false; }  // we define not collecting as failure
+    }
     
+    // Collect a unit (if possible) or some ABSORB_RESOURCE_FRACTION
+    if (unit) {
+      if (res_count[bin_used] >= 1.0) {res_change[bin_used] = -1.0;}
+      else {return false;}  // failure: not enough to collect
+    }
+    else {
+      res_change[bin_used] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get());
+    }
+
     if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
     {m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]);}
     
@@ -3890,9 +3910,38 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
   else
   {
     int num_bins = end_bin - start_bin;
+    
+    /* Again, if collection is probabilistic, first check to see if it succeeds.
+     * For multi-absorb, we either collect all or none, and the probabilistic 
+     * check is against the average of the resources.
+     */
+    if (probabilistic) {
+      double res_sum = 0.0;
+      for (int i = start_bin; i <= end_bin; i++) {res_sum += res_count[i];}
+      double success_chance = res_sum / num_bins / double(m_world->GetConfig().COLLECT_PROB_DIVISOR.Get());
+      if (success_chance < ctx.GetRandom().GetDouble())
+      { return false; }  // collect nothing; failure
+    }
+    
     for(int i = start_bin; i <= end_bin; i++)
     {
-      res_change[i] = -1 * (res_count[bin_used] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get() / num_bins);
+      if (unit) {
+        /* BLW: "unit" collection for multi-absorb is odd.  The objective is to collect 1 unit 
+         * in total, so in fact only a fraction of a unit is collected for each resource.
+         * 
+         * Moreover, as opposed to the unit collect failure that is detected for a 
+         * single-resource unit collect, no failure is detected for this fractional unit
+         * collection.  This is because I don't wish to move away from treating
+         * each resource in a separate iteration of the loop.  If this code is ever
+         * actually used by someone who cares about failure, a little refactoring is
+         * advised.
+         */
+         if (res_count[bin_used] >= (1.0 / num_bins)) {res_change[i] = -1.0 / num_bins; }
+      }
+      else {
+        res_change[i] = -1 * (res_count[i] * m_world->GetConfig().ABSORB_RESOURCE_FRACTION.Get() / num_bins);
+      }
+      
       if(internal_add && (max < 0 || (total + -1 * res_change[i]) <= max))
       {m_organism->AddToRBin(i, -1 * res_change[i]);}
       
@@ -3900,7 +3949,7 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
       {res_change[i] = 0.0;}
     }
   }
-  
+ 
   // Update resource counts to reflect res_change
   m_organism->GetOrgInterface().UpdateResources(res_change);
   
@@ -3914,7 +3963,7 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
  */
 bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, true, true);
+  return DoCollect(ctx, true, true, false, false);
 }
 
 /* Like Inst_Collect, but the collected resources are not removed from the
@@ -3922,7 +3971,7 @@ bool cHardwareCPU::Inst_Collect(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_CollectNoEnvRemove(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, false, true);
+  return DoCollect(ctx, false, true, false, false);
 }
 
 /* Collects resource from the environment but does not add it to the organism,
@@ -3930,24 +3979,34 @@ bool cHardwareCPU::Inst_CollectNoEnvRemove(cAvidaContext& ctx)
  */
 bool cHardwareCPU::Inst_Destroy(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, true, false);
+  return DoCollect(ctx, true, false, false, false);
 }
 
 /* A no-op, nop-modified in the same way as the "collect" instructions:
  * Does not remove resource from environment, does not add resource to organism */
 bool cHardwareCPU::Inst_NopCollect(cAvidaContext& ctx)
 {
-  return DoCollect(ctx, false, false);
+  return DoCollect(ctx, false, false, false, false);
 }
 
-/* Takes resource(s) from the environment and adds them to the internal resource
- * bins of the organism.
+/* Collects one unit of resource from the environment and adds it to the internal 
+ * resource bins of the organism.  The probability of the instruction succeeding 
+ * is given by the level of that resource divided by the COLLECT_PROB_DIVISOR 
+ * config option.
+ */
+bool cHardwareCPU::Inst_CollectUnitProbabilistic(cAvidaContext& ctx)
+{
+  return DoCollect(ctx, true, true, true, true);
+}
+
+/* Takes the resource specified by the COLLECT_RESOURCE_SPECIFIC config option
+ * from the environment and adds it to the internal resource bins of the organism.
  */
 bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 {
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
   double res_before = m_organism->GetRBin(resource);
-  bool success = DoActualCollect(ctx, resource, true, true, 0, 0);
+  bool success = DoActualCollect(ctx, resource, true, true, false, false, 0, 0);
   double res_after = m_organism->GetRBin(resource);
   GetRegister(FindModifiedRegister(REG_BX)) = (int)(res_after - res_before);
   return success;
