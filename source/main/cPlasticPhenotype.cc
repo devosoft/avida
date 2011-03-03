@@ -27,7 +27,7 @@
 bool cPlasticPhenotype::AddObservation( cCPUTestInfo& test_info )
 {
   cPhenotype& test_phenotype = test_info.GetTestPhenotype();
-  if (test_phenotype == *this ){
+  if (cPhenotype::Compare(&test_phenotype, this) == 0 ) {   // Test if phenotypes are equal.
     if (m_num_observations == 0){
       m_env_inputs = test_info.GetTestCPUInputs();
       SetExecutedFlags(test_info);
