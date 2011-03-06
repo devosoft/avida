@@ -213,9 +213,10 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   
   if (m_halo == 1) { 
     //what quadrant we are in determines whether we are changing x's or y's (= changling)
+    //if we are on a corner, we just stick with the current changling
     if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
       changling = 1;
-    else 
+    else if (abs(m_halo_anchor_y - m_peaky) < abs(m_halo_anchor_x - m_peakx))
       changling = -1;
     
     if (changling == 1) {
@@ -227,28 +228,24 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       int current_x = m_peakx;
       if (next_posx > max_orbit_x) {
         m_peakx = max_orbit_x;
-        if (m_peaky > m_halo_anchor_y) {
+        if (m_peaky > m_halo_anchor_y) {      //failing
           //turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
           halo_dir = halo_dir * -1;
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x)); 
         }
-        else
-          m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
+        else m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
         changling = changling * -1;
       }
       else if (next_posx < min_orbit_x) { 
         m_peakx = min_orbit_x;          
-        if (m_peaky > m_halo_anchor_y) 
-          m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
-        else {
+        if (m_peaky > m_halo_anchor_y) m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
+        else {                              //failing
           halo_dir = halo_dir * -1;
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
         }
         changling = changling * -1;          
       }
-      else {
-        m_peakx = m_peakx + (halo_dir * m_move_speed);     
-      }
+      else m_peakx = m_peakx + (halo_dir * m_move_speed);   
     }
     else {
       int next_posy = m_peaky + (halo_dir * m_move_speed);
@@ -257,8 +254,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       int current_y = m_peaky;
       if (next_posy > max_orbit_y) {
         m_peaky = max_orbit_y;
-        if (m_peakx < m_halo_anchor_x) 
-          m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
+        if (m_peakx < m_halo_anchor_x) m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
         else {
           halo_dir = halo_dir * -1;
           m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
@@ -271,13 +267,10 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
           halo_dir = halo_dir * -1;
           m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
         }
-        else 
-          m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
+        else m_peakx = m_peakx + halo_dir * (m_move_speed - abs(m_peaky - current_y));
         changling = changling * -1;      
       }
-      else {
-        m_peaky = m_peaky + (halo_dir * m_move_speed);  
-      }
+      else m_peaky = m_peaky + (halo_dir * m_move_speed);  
     }
   } 
   

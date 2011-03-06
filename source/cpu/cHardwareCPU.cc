@@ -5580,12 +5580,12 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   
   if(m_organism->HasOpinion()) opinion = m_organism->GetOpinion().first; 
   
-  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(&ctx); //JW
+  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(&ctx); 
   
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
     m_organism->Rotate(1);
-    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); //JW
+    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); 
     if (faced_res[opinion] > max_res) {
       max_res = faced_res[opinion];
     }
@@ -5593,7 +5593,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   
   if (max_res > current_res[opinion]) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
-      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); //JW
+      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx);
       if (faced_res[opinion] != max_res) m_organism->Rotate(1);
     }
   }
