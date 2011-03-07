@@ -43,7 +43,6 @@
 			dependencies = (
 				70E14E7E127B26F30059FB9D /* PBXTargetDependency */,
 				70E14E80127B26F70059FB9D /* PBXTargetDependency */,
-				70E14E82127B26FA0059FB9D /* PBXTargetDependency */,
 				70E14E84127B26FC0059FB9D /* PBXTargetDependency */,
 				70E14E86127B26FF0059FB9D /* PBXTargetDependency */,
 			);
@@ -345,8 +344,6 @@
 		70823AB8126F781700FA937F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 70823AB2126F781700FA937F /* MainMenu.xib */; };
 		70823AB9126F781700FA937F /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70823AB4126F781700FA937F /* main.mm */; };
 		70823ABD126F788900FA937F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823ABC126F788900FA937F /* Cocoa.framework */; };
-		70823ABF126F78B100FA937F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823ABE126F78B100FA937F /* AppKit.framework */; };
-		70823AC1126F78B100FA937F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823AC0126F78B100FA937F /* Foundation.framework */; };
 		70823AC2126F78C100FA937F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70823ABC126F788900FA937F /* Cocoa.framework */; };
 		70823D0E1270DBF900FA937F /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
 		70823D131270DC0D00FA937F /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
@@ -356,26 +353,6 @@
 		7099D6021215BB9500EB3E46 /* cGenomeTestMetrics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7099D6001215BB9500EB3E46 /* cGenomeTestMetrics.cc */; };
 		709A1EEB0EB6C42D006090AF /* cOrgMovementPredicate.h in Headers */ = {isa = PBXBuildFile; fileRef = 709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */; };
 		709A1EEC0EB6C42D006090AF /* cResourceHistory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */; };
-		70A1E7C41266258C00D56AC4 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E4B1126624D800D56AC4 /* AGL.framework */; };
-		70A1E7C51266258C00D56AC4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E4B3126624D800D56AC4 /* ApplicationServices.framework */; };
-		70A1E7C61266258D00D56AC4 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E4B5126624D800D56AC4 /* Carbon.framework */; };
-		70A1E7C71266258D00D56AC4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E4B7126624D800D56AC4 /* CoreServices.framework */; };
-		70A1E7C81266258E00D56AC4 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E4B9126624D800D56AC4 /* IOKit.framework */; };
-		70A1E7C91266258E00D56AC4 /* libfltk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E7B81266250500D56AC4 /* libfltk.a */; };
-		70A1E7CA1266258F00D56AC4 /* libfltk_forms.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E7B31266250500D56AC4 /* libfltk_forms.a */; };
-		70A1E7CB1266258F00D56AC4 /* libfltk_gl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E7B41266250500D56AC4 /* libfltk_gl.a */; };
-		70A1E7CC1266259000D56AC4 /* libfltk_images.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E7B51266250500D56AC4 /* libfltk_images.a */; };
-		70A1E7CD1266259000D56AC4 /* libfltk_jpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E7B61266250500D56AC4 /* libfltk_jpeg.a */; };
-		70A1E7CE1266259100D56AC4 /* libfltk_png.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E7B71266250500D56AC4 /* libfltk_png.a */; };
-		70A1E7D01266259200D56AC4 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70A1E4BB126624D800D56AC4 /* OpenGL.framework */; };
-		70A1E7D11266259F00D56AC4 /* cDriver_FLTKViewer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E341125CDF9F00D56AC4 /* cDriver_FLTKViewer.cc */; };
-		70A1E7D2126625A000D56AC4 /* cFLTKGridView.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E345125CDF9F00D56AC4 /* cFLTKGridView.cc */; };
-		70A1E7D3126625A100D56AC4 /* cFLTKLegend.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E347125CDF9F00D56AC4 /* cFLTKLegend.cc */; };
-		70A1E7D4126625A200D56AC4 /* fltk-defs.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E34B125CDF9F00D56AC4 /* fltk-defs.cc */; };
-		70A1E7D5126625A500D56AC4 /* viewer-fltk.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */; };
-		70A1E7DE1266261500D56AC4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
-		70A1E7E01266261700D56AC4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
-		70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70A1E7BC1266253E00D56AC4 /* avida-fltk */; };
 		70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E86D12663FA100D56AC4 /* cThread.cc */; };
 		70A1E87F126642B100D56AC4 /* Platform.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E87B126640C400D56AC4 /* Platform.cc */; };
 		70A33CF60D8DCBB4008EF976 /* ASCoreLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A33CF50D8DCBB4008EF976 /* ASCoreLib.cc */; };
@@ -504,27 +481,6 @@
 			remoteGlobalIDString = 706C7B63125F64B000EDB4B9;
 			remoteInfo = "viewer-core";
 		};
-		70A1E7D6126625B900D56AC4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7023EC320C0A426900362B9C;
-			remoteInfo = "avida-core";
-		};
-		70A1E7D8126625BC00D56AC4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7022469C107FC4F10079CD25;
-			remoteInfo = "tcmalloc-1.4";
-		};
-		70A1E7DA126625C300D56AC4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 706C7B63125F64B000EDB4B9;
-			remoteInfo = "viewer-core";
-		};
 		70C9D5C5108688FA00472C46 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
@@ -566,13 +522,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 700E2AF3085DE50C00CF158A;
 			remoteInfo = "avida-viewer";
-		};
-		70E14E81127B26FA0059FB9D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 70A1E7BB1266253E00D56AC4;
-			remoteInfo = "avida-fltk";
 		};
 		70E14E83127B26FC0059FB9D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -741,16 +690,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				706C7BA4125F658500EDB4B9 /* avida-text in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		70A1E7F61266268800D56AC4 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = work;
-			dstSubfolderSpec = 16;
-			files = (
-				70A1E805126626E200D56AC4 /* avida-fltk in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1118,8 +1057,6 @@
 		70823AB3126F781700FA937F /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = MainMenu.xib; sourceTree = "<group>"; };
 		70823AB4126F781700FA937F /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		70823ABC126F788900FA937F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		70823ABE126F78B100FA937F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		70823AC0126F78B100FA937F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		708BF2FD0AB65DC700A923BF /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
 		708BF3010AB65DD300A923BF /* cEventList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventList.h; sourceTree = "<group>"; };
 		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
@@ -1211,19 +1148,6 @@
 		70A1E34E125CDF9F00D56AC4 /* tFLTKMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFLTKMenu.h; sourceTree = "<group>"; };
 		70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "viewer-fltk.cc"; sourceTree = "<group>"; };
 		70A1E3A9125CEE6500D56AC4 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		70A1E4B1126624D800D56AC4 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
-		70A1E4B3126624D800D56AC4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
-		70A1E4B5126624D800D56AC4 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		70A1E4B7126624D800D56AC4 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
-		70A1E4B9126624D800D56AC4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
-		70A1E4BB126624D800D56AC4 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		70A1E7B31266250500D56AC4 /* libfltk_forms.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_forms.a; path = /usr/local/lib/libfltk_forms.a; sourceTree = "<absolute>"; };
-		70A1E7B41266250500D56AC4 /* libfltk_gl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_gl.a; path = /usr/local/lib/libfltk_gl.a; sourceTree = "<absolute>"; };
-		70A1E7B51266250500D56AC4 /* libfltk_images.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_images.a; path = /usr/local/lib/libfltk_images.a; sourceTree = "<absolute>"; };
-		70A1E7B61266250500D56AC4 /* libfltk_jpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_jpeg.a; path = /usr/local/lib/libfltk_jpeg.a; sourceTree = "<absolute>"; };
-		70A1E7B71266250500D56AC4 /* libfltk_png.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk_png.a; path = /usr/local/lib/libfltk_png.a; sourceTree = "<absolute>"; };
-		70A1E7B81266250500D56AC4 /* libfltk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfltk.a; path = /usr/local/lib/libfltk.a; sourceTree = "<absolute>"; };
-		70A1E7BC1266253E00D56AC4 /* avida-fltk */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "avida-fltk"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
 		70A1E86C12663FA100D56AC4 /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
@@ -1466,7 +1390,6 @@
 		B516AF7A0C91E24600023D53 /* cDemeCellEvent.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cDemeCellEvent.h; path = source/main/cDemeCellEvent.h; sourceTree = SOURCE_ROOT; };
 		BBDE4FF80FC1B06600CC6170 /* cDemePredicate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemePredicate.h; sourceTree = "<group>"; };
 		D7FB16D50ED62684002E939E /* cOrgMessage.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrgMessage.cc; sourceTree = "<group>"; };
-		DCC30FCF0762539D008F7A48 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		DCC3109C0762539E008F7A48 /* Avida.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Avida.cc; sourceTree = "<group>"; };
 		DCC3164D07626CF3008F7A48 /* avida */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = avida; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -1481,8 +1404,6 @@
 				5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */,
 				70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */,
 				70823ABD126F788900FA937F /* Cocoa.framework in Frameworks */,
-				70823ABF126F78B100FA937F /* AppKit.framework in Frameworks */,
-				70823AC1126F78B100FA937F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1528,27 +1449,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		70A1E7BA1266253E00D56AC4 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				70A1E7C41266258C00D56AC4 /* AGL.framework in Frameworks */,
-				70A1E7C51266258C00D56AC4 /* ApplicationServices.framework in Frameworks */,
-				70A1E7C61266258D00D56AC4 /* Carbon.framework in Frameworks */,
-				70A1E7C71266258D00D56AC4 /* CoreServices.framework in Frameworks */,
-				70A1E7C81266258E00D56AC4 /* IOKit.framework in Frameworks */,
-				70A1E7C91266258E00D56AC4 /* libfltk.a in Frameworks */,
-				70A1E7CA1266258F00D56AC4 /* libfltk_forms.a in Frameworks */,
-				70A1E7CB1266258F00D56AC4 /* libfltk_gl.a in Frameworks */,
-				70A1E7CC1266259000D56AC4 /* libfltk_images.a in Frameworks */,
-				70A1E7CD1266259000D56AC4 /* libfltk_jpeg.a in Frameworks */,
-				70A1E7CE1266259100D56AC4 /* libfltk_png.a in Frameworks */,
-				70A1E7D01266259200D56AC4 /* OpenGL.framework in Frameworks */,
-				70A1E7DE1266261500D56AC4 /* libavida-core.a in Frameworks */,
-				70A1E7E01266261700D56AC4 /* libviewer-core.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		70B6514A0BEA6FAD002472ED /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1569,8 +1469,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */,
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
+				70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2027,20 +1927,6 @@
 		70A1E4B01266249900D56AC4 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				70823ABE126F78B100FA937F /* AppKit.framework */,
-				70823AC0126F78B100FA937F /* Foundation.framework */,
-				70A1E7B31266250500D56AC4 /* libfltk_forms.a */,
-				70A1E7B41266250500D56AC4 /* libfltk_gl.a */,
-				70A1E7B51266250500D56AC4 /* libfltk_images.a */,
-				70A1E7B61266250500D56AC4 /* libfltk_jpeg.a */,
-				70A1E7B71266250500D56AC4 /* libfltk_png.a */,
-				70A1E7B81266250500D56AC4 /* libfltk.a */,
-				70A1E4B1126624D800D56AC4 /* AGL.framework */,
-				70A1E4B3126624D800D56AC4 /* ApplicationServices.framework */,
-				70A1E4B5126624D800D56AC4 /* Carbon.framework */,
-				70A1E4B7126624D800D56AC4 /* CoreServices.framework */,
-				70A1E4B9126624D800D56AC4 /* IOKit.framework */,
-				70A1E4BB126624D800D56AC4 /* OpenGL.framework */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
 				70823ABC126F788900FA937F /* Cocoa.framework */,
 			);
@@ -2245,7 +2131,6 @@
 				DCC314D8076253A2008F7A48 /* tools */,
 				70A1E324125CDF2B00D56AC4 /* viewer-core */,
 				70A1E32A125CDF2B00D56AC4 /* viewer-coreGUI */,
-				DCC30FCF0762539D008F7A48 /* Doxyfile */,
 			);
 			name = "Main Source";
 			path = source;
@@ -2536,7 +2421,6 @@
 				56F555D00C3B364E00E2E929 /* avida-text */,
 				7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */,
 				706C7B64125F64B000EDB4B9 /* libviewer-core.a */,
-				70A1E7BC1266253E00D56AC4 /* avida-fltk */,
 				70823A40126F663A00FA937F /* Avida.app */,
 			);
 			name = Products;
@@ -2655,7 +2539,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7023EC340C0A42BC00362B9C /* Build configuration list for PBXNativeTarget "avida-core" */;
 			buildPhases = (
-				7023ECA40C0A435400362B9C /* ShellScript */,
 				7023EC2F0C0A426900362B9C /* Headers */,
 				7023EC300C0A426900362B9C /* Sources */,
 				7023EC310C0A426900362B9C /* Frameworks */,
@@ -2705,26 +2588,6 @@
 			productName = Avida;
 			productReference = 70823A40126F663A00FA937F /* Avida.app */;
 			productType = "com.apple.product-type.application";
-		};
-		70A1E7BB1266253E00D56AC4 /* avida-fltk */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 70A1E7C31266256000D56AC4 /* Build configuration list for PBXNativeTarget "avida-fltk" */;
-			buildPhases = (
-				70A1E7B91266253E00D56AC4 /* Sources */,
-				70A1E7BA1266253E00D56AC4 /* Frameworks */,
-				70A1E7F61266268800D56AC4 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				70A1E7D7126625B900D56AC4 /* PBXTargetDependency */,
-				70A1E7D9126625BC00D56AC4 /* PBXTargetDependency */,
-				70A1E7DB126625C300D56AC4 /* PBXTargetDependency */,
-			);
-			name = "avida-fltk";
-			productName = "avida-fltkview";
-			productReference = 70A1E7BC1266253E00D56AC4 /* avida-fltk */;
-			productType = "com.apple.product-type.tool";
 		};
 		70B6514B0BEA6FAD002472ED /* unit-tests */ = {
 			isa = PBXNativeTarget;
@@ -2810,7 +2673,6 @@
 				DCC3164C07626CF3008F7A48 /* avida */,
 				70DCAC9D097AF7CC002F8733 /* avida-s */,
 				700E2AF3085DE50C00CF158A /* avida-viewer */,
-				70A1E7BB1266253E00D56AC4 /* avida-fltk */,
 				56F555CF0C3B364E00E2E929 /* avida-text */,
 				70B6514B0BEA6FAD002472ED /* unit-tests */,
 				7023EC320C0A426900362B9C /* avida-core */,
@@ -2839,19 +2701,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7023ECA40C0A435400362B9C /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "mkdir -p $DERIVED_FILE_DIR\nif (test -x /usr/bin/svnversion)\nthen svncmd=/usr/bin/svnversion\nelif (test -x /usr/local/bin/svnversion)\nthen svncmd=/usr/local/bin/svnversion\nelif (test -x /usr/local/svn/bin/svnversion)\nthen svncmd=/usr/local/svn/bin/svnversion\nelse\n  echo \"Warning: 'svn' not found, please install subversion\"\n  if [[ ! -f $DERIVED_FILE_DIR/revision.h ]]\n  then\n    echo \"#ifndef revision_h\" > $DERIVED_FILE_DIR/revision.h\n    echo \"#define revision_h\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#define REVISION \\\"???\\\"\" >> $DERIVED_FILE_DIR/revision.h\n    echo \"#endif\" >> $DERIVED_FILE_DIR/revision.h\n  fi\nfi\n\necho \"#ifndef revision_h\" > /tmp/newrev.tmp\necho \"#define revision_h\" >> /tmp/newrev.tmp\necho \\#define REVISION \\\"`$svncmd`\\\" >> /tmp/newrev.tmp\necho \"#endif\" >> /tmp/newrev.tmp\n\nif [[ -f $DERIVED_FILE_DIR/revision.h ]]\nthen\n  revdiff=`diff $DERIVED_FILE_DIR/revision.h /tmp/newrev.tmp`\nelse\n  revdiff=\"yes\"\nfi\n\nif [[ -n \"$revdiff\" ]]\nthen\n  echo \"New revision.h Generated\"\n  cp /tmp/newrev.tmp $DERIVED_FILE_DIR/revision.h\n  touch $SRCROOT/source/main/avida.cc\nfi\n\nrm /tmp/newrev.tmp\n";
-		};
 		70D845480D73677E00601F5A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3085,18 +2934,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		70A1E7B91266253E00D56AC4 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				70A1E7D11266259F00D56AC4 /* cDriver_FLTKViewer.cc in Sources */,
-				70A1E7D2126625A000D56AC4 /* cFLTKGridView.cc in Sources */,
-				70A1E7D3126625A100D56AC4 /* cFLTKLegend.cc in Sources */,
-				70A1E7D4126625A200D56AC4 /* fltk-defs.cc in Sources */,
-				70A1E7D5126625A500D56AC4 /* viewer-fltk.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		70B651490BEA6FAD002472ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3198,21 +3035,6 @@
 			target = 706C7B63125F64B000EDB4B9 /* viewer-core */;
 			targetProxy = 70823D111270DC0200FA937F /* PBXContainerItemProxy */;
 		};
-		70A1E7D7126625B900D56AC4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7023EC320C0A426900362B9C /* avida-core */;
-			targetProxy = 70A1E7D6126625B900D56AC4 /* PBXContainerItemProxy */;
-		};
-		70A1E7D9126625BC00D56AC4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
-			targetProxy = 70A1E7D8126625BC00D56AC4 /* PBXContainerItemProxy */;
-		};
-		70A1E7DB126625C300D56AC4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 706C7B63125F64B000EDB4B9 /* viewer-core */;
-			targetProxy = 70A1E7DA126625C300D56AC4 /* PBXContainerItemProxy */;
-		};
 		70C9D5C6108688FA00472C46 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
@@ -3242,11 +3064,6 @@
 			isa = PBXTargetDependency;
 			target = 700E2AF3085DE50C00CF158A /* avida-viewer */;
 			targetProxy = 70E14E7F127B26F70059FB9D /* PBXContainerItemProxy */;
-		};
-		70E14E82127B26FA0059FB9D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 70A1E7BB1266253E00D56AC4 /* avida-fltk */;
-			targetProxy = 70E14E81127B26FA0059FB9D /* PBXContainerItemProxy */;
 		};
 		70E14E84127B26FC0059FB9D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3282,211 +3099,102 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		56F555D50C3B36AD00E2E929 /* Development */ = {
+		56F555D50C3B36AD00E2E929 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "avida-text";
 			};
-			name = Development;
+			name = Debug;
 		};
-		56F555D60C3B36AD00E2E929 /* Deployment */ = {
+		56F555D60C3B36AD00E2E929 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "avida-text";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		56F555D70C3B36AD00E2E929 /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-text";
-			};
-			name = "Deployment-G5";
-		};
-		56F555D80C3B36AD00E2E929 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-text";
-			};
-			name = "Deployment-Universal";
-		};
-		56F555D90C3B36AD00E2E929 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-text";
-			};
-			name = Profile;
-		};
-		700E2B7F085DE50C00CF158A /* Development */ = {
+		700E2B7F085DE50C00CF158A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "avida-viewer";
 			};
-			name = Development;
+			name = Debug;
 		};
-		700E2B80085DE50C00CF158A /* Deployment */ = {
+		700E2B80085DE50C00CF158A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "avida-viewer";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		7022469E107FC4F20079CD25 /* Development */ = {
+		7022469E107FC4F20079CD25 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				PRODUCT_NAME = "tcmalloc-1.4";
 			};
-			name = Development;
+			name = Debug;
 		};
-		7022469F107FC4F20079CD25 /* Deployment */ = {
+		7022469F107FC4F20079CD25 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				PRODUCT_NAME = "tcmalloc-1.4";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		702246A0107FC4F20079CD25 /* Deployment-G5 */ = {
+		7023EC350C0A42BC00362B9C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				PRODUCT_NAME = "tcmalloc-1.4";
-			};
-			name = "Deployment-G5";
-		};
-		702246A1107FC4F20079CD25 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				PRODUCT_NAME = "tcmalloc-1.4";
-			};
-			name = "Deployment-Universal";
-		};
-		702246A2107FC4F20079CD25 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				PRODUCT_NAME = "tcmalloc-1.4";
-			};
-			name = Profile;
-		};
-		7023EC350C0A42BC00362B9C /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				PRODUCT_NAME = "avida-core";
-				USER_HEADER_SEARCH_PATHS = "source/**";
-			};
-			name = Development;
-		};
-		7023EC360C0A42BC00362B9C /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
 			};
-			name = Deployment;
+			name = Debug;
 		};
-		7023EC370C0A42BC00362B9C /* Deployment-G5 */ = {
+		7023EC360C0A42BC00362B9C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
 				PRODUCT_NAME = "avida-core";
 			};
-			name = "Deployment-G5";
+			name = Release;
 		};
-		7023EC380C0A42BC00362B9C /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				PRODUCT_NAME = "avida-core";
-			};
-			name = "Deployment-Universal";
-		};
-		7023EC390C0A42BC00362B9C /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEPLOYMENT_POSTPROCESSING = NO;
-				PRODUCT_NAME = "avida-core";
-			};
-			name = Profile;
-		};
-		7023ED5A0C0A594300362B9C /* Development */ = {
+		7023ED5A0C0A594300362B9C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "full-suite";
 			};
-			name = Development;
+			name = Debug;
 		};
-		7023ED5B0C0A594300362B9C /* Deployment */ = {
+		7023ED5B0C0A594300362B9C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "full-suite";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		7023ED5C0C0A594300362B9C /* Deployment-G5 */ = {
+		702442D30859E0B00059BD9B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "full-suite";
-			};
-			name = "Deployment-G5";
-		};
-		7023ED5D0C0A594300362B9C /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "full-suite";
-			};
-			name = "Deployment-Universal";
-		};
-		7023ED5E0C0A594300362B9C /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "full-suite";
-			};
-			name = Profile;
-		};
-		702442D30859E0B00059BD9B /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				OTHER_LDFLAGS = (
-					"-multiply_defined",
-					suppress,
-				);
 				PRODUCT_NAME = avida;
 			};
-			name = Development;
+			name = Debug;
 		};
-		702442D40859E0B00059BD9B /* Deployment */ = {
+		702442D40859E0B00059BD9B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				OTHER_LDFLAGS = (
-					"-multiply_defined",
-					suppress,
-				);
 				PRODUCT_NAME = avida;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		702442D80859E0B00059BD9B /* Development */ = {
+		702442D80859E0B00059BD9B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					DEBUG,
-					REVISION_SUPPORT,
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				LLVM_LTO = NO;
+				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wextra",
@@ -3495,152 +3203,66 @@
 					"-Wno-unknown-pragmas",
 				);
 			};
-			name = Development;
+			name = Debug;
 		};
-		702442D90859E0B00059BD9B /* Deployment */ = {
+		702442D90859E0B00059BD9B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = stabs;
-				DEPLOYMENT_POSTPROCESSING = YES;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					REVISION_SUPPORT,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_STRICT_ALIASING = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_UNROLL_LOOPS = YES;
-				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -falign-labels=16 -ftree-loop-linear -fsched-interblock -fgcse-sm -fgcse-las -mmultiple -mstring";
-				STRIP_INSTALLED_PRODUCT = NO;
+				LLVM_LTO = YES;
+				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
 			};
-			name = Deployment;
+			name = Release;
 		};
-		702A6749121C798D0014F776 /* Development */ = {
+		702A6749121C798D0014F776 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "prepare-package";
 			};
-			name = Development;
+			name = Debug;
 		};
-		702A674A121C798D0014F776 /* Deployment */ = {
+		702A674A121C798D0014F776 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = "prepare-package";
-				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		702A674B121C798D0014F776 /* Deployment-G5 */ = {
+		706C7B65125F64B100EDB4B9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "prepare-package";
-			};
-			name = "Deployment-G5";
-		};
-		702A674C121C798D0014F776 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "prepare-package";
-			};
-			name = "Deployment-Universal";
-		};
-		702A674D121C798D0014F776 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "prepare-package";
-			};
-			name = Profile;
-		};
-		706C7B65125F64B100EDB4B9 /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = "viewer-core";
 			};
-			name = Development;
+			name = Debug;
 		};
-		706C7B66125F64B100EDB4B9 /* Deployment */ = {
+		706C7B66125F64B100EDB4B9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
 				PRODUCT_NAME = "viewer-core";
-				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		706C7B67125F64B100EDB4B9 /* Deployment-G5 */ = {
+		70823A43126F663A00FA937F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
-				PRODUCT_NAME = "viewer-core";
-			};
-			name = "Deployment-G5";
-		};
-		706C7B68125F64B100EDB4B9 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
-				PRODUCT_NAME = "viewer-core";
-			};
-			name = "Deployment-Universal";
-		};
-		706C7B69125F64B100EDB4B9 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/lib;
-				PREBINDING = NO;
-				PRODUCT_NAME = "viewer-core";
-			};
-			name = Profile;
-		};
-		70823A43126F663A00FA937F /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -3657,16 +3279,13 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
-			name = Development;
+			name = Debug;
 		};
-		70823A44126F663A00FA937F /* Deployment */ = {
+		70823A44126F663A00FA937F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -3681,428 +3300,52 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		70823A45126F663A00FA937F /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INFOPLIST_FILE = "source/targets/viewer-macos/Avida-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Avida;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-			};
-			name = "Deployment-G5";
-		};
-		70823A46126F663A00FA937F /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INFOPLIST_FILE = "source/targets/viewer-macos/Avida-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Avida;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-			};
-			name = "Deployment-Universal";
-		};
-		70823A47126F663A00FA937F /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INFOPLIST_FILE = "source/targets/viewer-macos/Avida-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Avida;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-			};
-			name = Profile;
-		};
-		70A1E7BE1266253E00D56AC4 /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				INSTALL_PATH = /usr/local/bin;
-				PREBINDING = NO;
-				PRODUCT_NAME = "avida-fltk";
-			};
-			name = Development;
-		};
-		70A1E7BF1266253E00D56AC4 /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/bin;
-				PREBINDING = NO;
-				PRODUCT_NAME = "avida-fltkview";
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-		70A1E7C01266253E00D56AC4 /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/bin;
-				PREBINDING = NO;
-				PRODUCT_NAME = "avida-fltkview";
-			};
-			name = "Deployment-G5";
-		};
-		70A1E7C11266253E00D56AC4 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/bin;
-				PREBINDING = NO;
-				PRODUCT_NAME = "avida-fltkview";
-			};
-			name = "Deployment-Universal";
-		};
-		70A1E7C21266253E00D56AC4 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				INSTALL_PATH = /usr/local/bin;
-				PREBINDING = NO;
-				PRODUCT_NAME = "avida-fltkview";
-			};
-			name = Profile;
-		};
-		70B393DC0944CA6F0018F09D /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				OTHER_LDFLAGS = (
-					"-multiply_defined",
-					suppress,
-				);
-				PRODUCT_NAME = avida;
-			};
-			name = "Deployment-G5";
-		};
-		70B393DD0944CA6F0018F09D /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-multiply_defined",
-					suppress,
-				);
-				PRODUCT_NAME = avida;
-			};
-			name = Profile;
-		};
-		70B393DE0944CA6F0018F09D /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-viewer";
-			};
-			name = "Deployment-G5";
-		};
-		70B393DF0944CA6F0018F09D /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-viewer";
-			};
-			name = Profile;
-		};
-		70B393E00944CA6F0018F09D /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = ppc;
-				DEBUG_INFORMATION_FORMAT = stabs;
-				DEPLOYMENT_POSTPROCESSING = YES;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DYNAMIC_NO_PIC = YES;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_MODEL_PPC64 = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					REVISION_SUPPORT,
-				);
-				GCC_STRICT_ALIASING = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_UNROLL_LOOPS = YES;
-				OTHER_CFLAGS = (
-					"$(OTHER_CFLAGS_QUOTED_1)",
-					"-mpowerpc-gpopt",
-					"-mno-fused-madd",
-					"-falign-loops-max-skip=15",
-					"-falign-jumps-max-skip=15",
-					"-falign-loops=16",
-					"-falign-jumps=16",
-					"-falign-functions=16",
-					"-falign-labels=16",
-					"-ftree-loop-linear",
-					"-fsched-interblock",
-					"-fgcse-sm",
-					"-fgcse-las",
-					"-mmultiple",
-					"-mstring",
-				);
-				OTHER_CFLAGS_QUOTED_1 = "-DCOMPILE_ARCH=\\\"G5\\\"";
-				PREBINDING = NO;
-				STRIP_INSTALLED_PRODUCT = NO;
-				WARNING_CFLAGS = (
-					"-Wextra",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = "Deployment-G5";
-		};
-		70B393E10944CA6F0018F09D /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEPLOYMENT_POSTPROCESSING = NO;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_DYNAMIC_NO_PIC = YES;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					REVISION_SUPPORT,
-				);
-				GCC_STRICT_ALIASING = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_UNROLL_LOOPS = YES;
-				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G5\\\" -mpowerpc-gpopt -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -falign-labels=16 -ftree-loop-linear -fsched-interblock -fgcse-sm -fgcse-las -mmultiple -mstring";
-				PREBINDING = NO;
-				STRIP_INSTALLED_PRODUCT = NO;
-				WARNING_CFLAGS = (
-					"-Wall",
-					"-Wextra",
-					"-Wno-unused-parameter",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = Profile;
-		};
-		70B651580BEA700B002472ED /* Development */ = {
+		70B651580BEA700B002472ED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "unit-tests";
 			};
-			name = Development;
+			name = Debug;
 		};
-		70B651590BEA700B002472ED /* Deployment */ = {
+		70B651590BEA700B002472ED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "unit-tests";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		70B6515A0BEA700B002472ED /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "unit-tests";
-			};
-			name = "Deployment-G5";
-		};
-		70B6515B0BEA700B002472ED /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "unit-tests";
-			};
-			name = "Deployment-Universal";
-		};
-		70B6515C0BEA700B002472ED /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "unit-tests";
-			};
-			name = Profile;
-		};
-		70DCAD18097AF7CC002F8733 /* Development */ = {
+		70DCAD18097AF7CC002F8733 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "avida-s";
 			};
-			name = Development;
+			name = Debug;
 		};
-		70DCAD19097AF7CC002F8733 /* Deployment */ = {
+		70DCAD19097AF7CC002F8733 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "avida-s";
 			};
-			name = Deployment;
+			name = Release;
 		};
-		70DCAD1A097AF7CC002F8733 /* Deployment-G5 */ = {
+		70E14E77127B26D10059FB9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "avida-s";
-			};
-			name = "Deployment-G5";
-		};
-		70DCAD1B097AF7CC002F8733 /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-s";
-			};
-			name = Profile;
-		};
-		70E14E77127B26D10059FB9D /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = everything;
 			};
-			name = Development;
+			name = Debug;
 		};
-		70E14E78127B26D10059FB9D /* Deployment */ = {
+		70E14E78127B26D10059FB9D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = everything;
-				ZERO_LINK = NO;
 			};
-			name = Deployment;
-		};
-		70E14E79127B26D10059FB9D /* Deployment-G5 */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = everything;
-			};
-			name = "Deployment-G5";
-		};
-		70E14E7A127B26D10059FB9D /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = everything;
-			};
-			name = "Deployment-Universal";
-		};
-		70E14E7B127B26D10059FB9D /* Profile */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = everything;
-			};
-			name = Profile;
-		};
-		E626209A0A372B9900C07685 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				OTHER_LDFLAGS = (
-					"-multiply_defined",
-					suppress,
-				);
-				PRODUCT_NAME = avida;
-			};
-			name = "Deployment-Universal";
-		};
-		E626209B0A372B9900C07685 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-s";
-			};
-			name = "Deployment-Universal";
-		};
-		E626209C0A372B9900C07685 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "avida-viewer";
-			};
-			name = "Deployment-Universal";
-		};
-		E626209D0A372B9900C07685 /* Deployment-Universal */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
-				DEBUG_INFORMATION_FORMAT = stabs;
-				DEPLOYMENT_POSTPROCESSING = YES;
-				GCC_ALTIVEC_EXTENSIONS = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_DYNAMIC_NO_PIC = YES;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					REVISION_SUPPORT,
-				);
-				GCC_STRICT_ALIASING = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_UNROLL_LOOPS = YES;
-				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
-				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -falign-labels=16 -ftree-loop-linear -fsched-interblock -fgcse-sm -fgcse-las -mmultiple -mstring";
-				PREBINDING = NO;
-				STRIP_INSTALLED_PRODUCT = NO;
-				WARNING_CFLAGS = (
-					"-Wextra",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
-			name = "Deployment-Universal";
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -4110,170 +3353,119 @@
 		56F555D40C3B36AD00E2E929 /* Build configuration list for PBXNativeTarget "avida-text" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				56F555D50C3B36AD00E2E929 /* Development */,
-				56F555D60C3B36AD00E2E929 /* Deployment */,
-				56F555D70C3B36AD00E2E929 /* Deployment-G5 */,
-				56F555D80C3B36AD00E2E929 /* Deployment-Universal */,
-				56F555D90C3B36AD00E2E929 /* Profile */,
+				56F555D50C3B36AD00E2E929 /* Debug */,
+				56F555D60C3B36AD00E2E929 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		700E2B7E085DE50C00CF158A /* Build configuration list for PBXNativeTarget "avida-viewer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				700E2B7F085DE50C00CF158A /* Development */,
-				700E2B80085DE50C00CF158A /* Deployment */,
-				70B393DE0944CA6F0018F09D /* Deployment-G5 */,
-				E626209C0A372B9900C07685 /* Deployment-Universal */,
-				70B393DF0944CA6F0018F09D /* Profile */,
+				700E2B7F085DE50C00CF158A /* Debug */,
+				700E2B80085DE50C00CF158A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		702246A3107FC5100079CD25 /* Build configuration list for PBXNativeTarget "tcmalloc-1.4" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7022469E107FC4F20079CD25 /* Development */,
-				7022469F107FC4F20079CD25 /* Deployment */,
-				702246A0107FC4F20079CD25 /* Deployment-G5 */,
-				702246A1107FC4F20079CD25 /* Deployment-Universal */,
-				702246A2107FC4F20079CD25 /* Profile */,
+				7022469E107FC4F20079CD25 /* Debug */,
+				7022469F107FC4F20079CD25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		7023EC340C0A42BC00362B9C /* Build configuration list for PBXNativeTarget "avida-core" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7023EC350C0A42BC00362B9C /* Development */,
-				7023EC360C0A42BC00362B9C /* Deployment */,
-				7023EC370C0A42BC00362B9C /* Deployment-G5 */,
-				7023EC380C0A42BC00362B9C /* Deployment-Universal */,
-				7023EC390C0A42BC00362B9C /* Profile */,
+				7023EC350C0A42BC00362B9C /* Debug */,
+				7023EC360C0A42BC00362B9C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		7023ED590C0A594300362B9C /* Build configuration list for PBXAggregateTarget "default-suite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7023ED5A0C0A594300362B9C /* Development */,
-				7023ED5B0C0A594300362B9C /* Deployment */,
-				7023ED5C0C0A594300362B9C /* Deployment-G5 */,
-				7023ED5D0C0A594300362B9C /* Deployment-Universal */,
-				7023ED5E0C0A594300362B9C /* Profile */,
+				7023ED5A0C0A594300362B9C /* Debug */,
+				7023ED5B0C0A594300362B9C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		702442D20859E0B00059BD9B /* Build configuration list for PBXNativeTarget "avida" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				702442D30859E0B00059BD9B /* Development */,
-				702442D40859E0B00059BD9B /* Deployment */,
-				70B393DC0944CA6F0018F09D /* Deployment-G5 */,
-				E626209A0A372B9900C07685 /* Deployment-Universal */,
-				70B393DD0944CA6F0018F09D /* Profile */,
+				702442D30859E0B00059BD9B /* Debug */,
+				702442D40859E0B00059BD9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				702442D80859E0B00059BD9B /* Development */,
-				702442D90859E0B00059BD9B /* Deployment */,
-				70B393E00944CA6F0018F09D /* Deployment-G5 */,
-				E626209D0A372B9900C07685 /* Deployment-Universal */,
-				70B393E10944CA6F0018F09D /* Profile */,
+				702442D80859E0B00059BD9B /* Debug */,
+				702442D90859E0B00059BD9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		702A6750121C79B80014F776 /* Build configuration list for PBXAggregateTarget "prepare-package" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				702A6749121C798D0014F776 /* Development */,
-				702A674A121C798D0014F776 /* Deployment */,
-				702A674B121C798D0014F776 /* Deployment-G5 */,
-				702A674C121C798D0014F776 /* Deployment-Universal */,
-				702A674D121C798D0014F776 /* Profile */,
+				702A6749121C798D0014F776 /* Debug */,
+				702A674A121C798D0014F776 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		706C7B6E125F64F100EDB4B9 /* Build configuration list for PBXNativeTarget "viewer-core" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				706C7B65125F64B100EDB4B9 /* Development */,
-				706C7B66125F64B100EDB4B9 /* Deployment */,
-				706C7B67125F64B100EDB4B9 /* Deployment-G5 */,
-				706C7B68125F64B100EDB4B9 /* Deployment-Universal */,
-				706C7B69125F64B100EDB4B9 /* Profile */,
+				706C7B65125F64B100EDB4B9 /* Debug */,
+				706C7B66125F64B100EDB4B9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		70823A48126F663A00FA937F /* Build configuration list for PBXNativeTarget "Avida" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				70823A43126F663A00FA937F /* Development */,
-				70823A44126F663A00FA937F /* Deployment */,
-				70823A45126F663A00FA937F /* Deployment-G5 */,
-				70823A46126F663A00FA937F /* Deployment-Universal */,
-				70823A47126F663A00FA937F /* Profile */,
+				70823A43126F663A00FA937F /* Debug */,
+				70823A44126F663A00FA937F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
-		};
-		70A1E7C31266256000D56AC4 /* Build configuration list for PBXNativeTarget "avida-fltk" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				70A1E7BE1266253E00D56AC4 /* Development */,
-				70A1E7BF1266253E00D56AC4 /* Deployment */,
-				70A1E7C01266253E00D56AC4 /* Deployment-G5 */,
-				70A1E7C11266253E00D56AC4 /* Deployment-Universal */,
-				70A1E7C21266253E00D56AC4 /* Profile */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		70B651570BEA700B002472ED /* Build configuration list for PBXNativeTarget "unit-tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				70B651580BEA700B002472ED /* Development */,
-				70B651590BEA700B002472ED /* Deployment */,
-				70B6515A0BEA700B002472ED /* Deployment-G5 */,
-				70B6515B0BEA700B002472ED /* Deployment-Universal */,
-				70B6515C0BEA700B002472ED /* Profile */,
+				70B651580BEA700B002472ED /* Debug */,
+				70B651590BEA700B002472ED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		70DCAD17097AF7CC002F8733 /* Build configuration list for PBXNativeTarget "avida-s" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				70DCAD18097AF7CC002F8733 /* Development */,
-				70DCAD19097AF7CC002F8733 /* Deployment */,
-				70DCAD1A097AF7CC002F8733 /* Deployment-G5 */,
-				E626209B0A372B9900C07685 /* Deployment-Universal */,
-				70DCAD1B097AF7CC002F8733 /* Profile */,
+				70DCAD18097AF7CC002F8733 /* Debug */,
+				70DCAD19097AF7CC002F8733 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		70E14E9A127B271E0059FB9D /* Build configuration list for PBXAggregateTarget "everything" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				70E14E77127B26D10059FB9D /* Development */,
-				70E14E78127B26D10059FB9D /* Deployment */,
-				70E14E79127B26D10059FB9D /* Deployment-G5 */,
-				70E14E7A127B26D10059FB9D /* Deployment-Universal */,
-				70E14E7B127B26D10059FB9D /* Profile */,
+				70E14E77127B26D10059FB9D /* Debug */,
+				70E14E78127B26D10059FB9D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

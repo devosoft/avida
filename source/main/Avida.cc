@@ -98,10 +98,6 @@ cString GetVersion()
   version += VERSION_TAG;
   version += ") ";
   
-#ifdef COMPILE_ARCH
-  version += COMPILE_ARCH " ";
-#endif
-
 #ifdef DEBUG
   version += " debug";
 #endif
