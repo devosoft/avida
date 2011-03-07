@@ -106,6 +106,7 @@ public:
 
   
   // Genotype Specific Methods
+  inline bool IsParasite() const { return (m_src == SRC_PARASITE_INJECT || m_src == SRC_PARASITE_FILE_LOAD); }
   inline eBioUnitSource GetSource() const { return m_src; }
   inline const cString& GetSourceArgs() const { return m_src_args; }
   inline const cGenome& GetGenome() const { return m_genome; }

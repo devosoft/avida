@@ -27,6 +27,7 @@
 #include "cAnalyzeGenotype.h"
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
+#include "cBGGenotype.h"
 #include "tArrayUtils.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
@@ -342,6 +343,131 @@ public:
       n[it->Get()->GetDepth() - min] += it->Get()->GetNumUnits();
     }
 
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(min, "Minimum");
+    df.Write(max, "Maximum");
+    for (int i = 0; i < n.GetSize(); i++)  df.WriteAnonymous(n[i]);
+    df.Endl();
+  }
+};
+
+//Depth Histogram for Parasites Only
+class cActionPrintParasiteDepthHistogram : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintParasiteDepthHistogram(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "depth_parasite_histogram.dat"; else m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"depth_parasite_histogram.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    // Output format:    update  min  max  histogram_values...
+    int min = INT_MAX;
+    int max = 0;
+    
+    // Two pass method
+    
+    // Loop through all genotypes getting min and max values
+    cClassificationManager& classmgr = m_world->GetClassificationManager();
+    tAutoRelease<tIterator<cBioGroup> > it;
+    
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        if (bg->GetDepth() < min) min = bg->GetDepth();
+        if (bg->GetDepth() > max) max = bg->GetDepth();
+      }
+    }
+    
+    //crappy hack, but sometimes we wont have parasite genotypes
+    if(min == INT_MAX) min=0;
+    
+    assert(max >= min);
+    
+    // Allocate the array for the bins (& zero)
+    tArray<int> n(max - min + 1);
+    n.SetAll(0);
+    
+    // Loop through all genotypes binning the values
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        n[bg->GetDepth() - min] += bg->GetNumUnits();
+      }
+    }
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(min, "Minimum");
+    df.Write(max, "Maximum");
+    for (int i = 0; i < n.GetSize(); i++)  df.WriteAnonymous(n[i]);
+    df.Endl();
+  }
+};
+
+//Depth Histogram for Parasites Only
+class cActionPrintHostDepthHistogram : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintHostDepthHistogram(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "depth_host_histogram.dat"; else m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"depth_host_histogram.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    // Output format:    update  min  max  histogram_values...
+    int min = INT_MAX;
+    int max = 0;
+    
+    // Two pass method
+    
+    // Loop through all genotypes getting min and max values
+    cClassificationManager& classmgr = m_world->GetClassificationManager();
+    tAutoRelease<tIterator<cBioGroup> > it;
+    
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        if (bg->GetDepth() < min) min = bg->GetDepth();
+        if (bg->GetDepth() > max) max = bg->GetDepth();
+      }
+    }
+    
+    assert(max >= min);
+    
+    // Allocate the array for the bins (& zero)
+    tArray<int> n(max - min + 1);
+    n.SetAll(0);
+    
+    // Loop through all genotypes binning the values
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        n[bg->GetDepth() - min] += bg->GetNumUnits();
+      }
+    }
+    
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     df.Write(min, "Minimum");
@@ -3541,6 +3667,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintData>("PrintData");
   action_lib->Register<cActionPrintInstructionAbundanceHistogram>("PrintInstructionAbundanceHistogram");
   action_lib->Register<cActionPrintDepthHistogram>("PrintDepthHistogram");
+  action_lib->Register<cActionPrintParasiteDepthHistogram>("PrintParasiteDepthHistogram");
+  action_lib->Register<cActionPrintHostDepthHistogram>("PrintHostDepthHistogram");
   action_lib->Register<cActionEcho>("Echo");
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
   //  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");
