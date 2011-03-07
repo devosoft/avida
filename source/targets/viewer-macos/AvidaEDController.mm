@@ -95,7 +95,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
       [txtUpdate setStringValue:@"Time (updates): 0"];
     }
   } else {
-    if ([sender state] == NSOffState) {
+    if ([sender state] == NSOnState) {
       [currentRun resume];
     } else {
       [currentRun pause];
