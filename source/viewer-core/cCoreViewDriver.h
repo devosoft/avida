@@ -71,7 +71,7 @@ public:
   
   // Notifications
   void NotifyComment(const cString& in_string);
-  void NotifyWarning(const cString& in_string);  
+  void NotifyWarning(const cString& in_string);
   
   
   eDriverPauseState GetPauseState() const { return m_pause_state; }

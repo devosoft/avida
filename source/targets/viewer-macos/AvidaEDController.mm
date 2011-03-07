@@ -24,6 +24,8 @@
 #import "AvidaRun.h"
 #import "MapGridView.h"
 
+#include "cCoreView_Map.h"
+
 static const float MAIN_SPLIT_LEFT_MIN = 150.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 550.0;
 static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
@@ -41,6 +43,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
     currentRun = nil;
     listener = NULL;
+    map = NULL;
     
     [self showWindow:self];
   }
@@ -103,8 +106,14 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   }
 }
 
+- (IBAction) changeMapViewMode:(id)sender {
+  // TODO
+  
+}
 
--(void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
+
+
+- (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
   if (splitView == mainSplitView) {
     NSView* leftView = [[splitView subviews] objectAtIndex:0];
     NSView* rightView = [[splitView subviews] objectAtIndex:1];
@@ -198,7 +207,18 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 - (void) handleMap: (CoreViewMap*)pkg {
-  [mapView updateState: [pkg map]];
+  if (!map) {
+    map = [pkg map];
+    [mapViewMode removeAllItems];
+    for (int i = 0; i < map->GetNumModes(); i++) {
+      [mapViewMode addItemWithTitle:[NSString stringWithUTF8String:(const char*)map->GetModeName(i)]];
+    }
+    [mapViewMode selectItemAtIndex:map->GetColorMode()];
+    [mapViewMode setEnabled:TRUE];
+  } else {
+    map = [pkg map];
+  }
+  [mapView updateState: map];
 }
 
 

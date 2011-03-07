@@ -35,6 +35,8 @@
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
   IBOutlet MapGridView* mapView;
+  IBOutlet NSPopUpButton* mapViewMode;
+  IBOutlet NSSlider* mapZoom;
   IBOutlet NSSplitView* mainSplitView;
   IBOutlet NSSplitView* popSplitView;
   
@@ -42,6 +44,7 @@
   
   AvidaRun* currentRun;
   cCoreViewListener* listener;
+  cCoreView_Map* map;
 }
 
 // Init and Dealloc Methods
@@ -57,6 +60,7 @@
 
 // Actions
 -(IBAction)toggleRunState:(id)sender;
+-(IBAction)changeMapViewMode:(id)sender;
 
 
 // NSSplitViewDelegate Protocol
