@@ -331,8 +331,6 @@
 		7068E89E12BABC2A00B4EEEA /* SubtleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7068E89D12BABC2A00B4EEEA /* SubtleSplitView.m */; };
 		706C7B6A125F64C400EDB4B9 /* cCoreView_ClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* cCoreView_ClassificationInfo.cc */; };
 		706C7B6B125F64C600EDB4B9 /* cCoreView_Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */; };
-		706C7B6C125F64CC00EDB4B9 /* cColor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E32B125CDF2B00D56AC4 /* cColor.cc */; };
-		706C7B6D125F64D300EDB4B9 /* cGUIWidget.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E338125CDF2B00D56AC4 /* cGUIWidget.cc */; };
 		706C7B6F125F64F900EDB4B9 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
 		706C7B89125F653B00EDB4B9 /* cScreen_Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C7B86125F653800EDB4B9 /* cScreen_Map.cc */; };
 		706C7BA4125F658500EDB4B9 /* avida-text in CopyFiles */ = {isa = PBXBuildFile; fileRef = 56F555D00C3B364E00E2E929 /* avida-text */; };
@@ -1114,27 +1112,6 @@
 		70A1E326125CDF2B00D56AC4 /* cCoreView_ClassificationInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cCoreView_ClassificationInfo.h; sourceTree = "<group>"; };
 		70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cCoreView_Map.cc; sourceTree = "<group>"; };
 		70A1E328125CDF2B00D56AC4 /* cCoreView_Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cCoreView_Map.h; sourceTree = "<group>"; };
-		70A1E329125CDF2B00D56AC4 /* LAYOUT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LAYOUT; sourceTree = "<group>"; };
-		70A1E32B125CDF2B00D56AC4 /* cColor.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cColor.cc; sourceTree = "<group>"; };
-		70A1E32C125CDF2B00D56AC4 /* cColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cColor.h; sourceTree = "<group>"; };
-		70A1E32D125CDF2B00D56AC4 /* cGUIBaseDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIBaseDraw.h; sourceTree = "<group>"; };
-		70A1E32E125CDF2B00D56AC4 /* cGUIBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIBox.h; sourceTree = "<group>"; };
-		70A1E32F125CDF2B00D56AC4 /* cGUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIButton.h; sourceTree = "<group>"; };
-		70A1E330125CDF2B00D56AC4 /* cGUICanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUICanvas.h; sourceTree = "<group>"; };
-		70A1E331125CDF2B00D56AC4 /* cGUIColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIColor.h; sourceTree = "<group>"; };
-		70A1E332125CDF2B00D56AC4 /* cGUIContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIContainer.h; sourceTree = "<group>"; };
-		70A1E333125CDF2B00D56AC4 /* cGUIEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIEvent.h; sourceTree = "<group>"; };
-		70A1E334125CDF2B00D56AC4 /* cGUIMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIMenu.h; sourceTree = "<group>"; };
-		70A1E335125CDF2B00D56AC4 /* cGUIMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIMenuItem.h; sourceTree = "<group>"; };
-		70A1E336125CDF2B00D56AC4 /* cGUIScrollArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIScrollArea.h; sourceTree = "<group>"; };
-		70A1E337125CDF2B00D56AC4 /* cGUISlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUISlider.h; sourceTree = "<group>"; };
-		70A1E338125CDF2B00D56AC4 /* cGUIWidget.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGUIWidget.cc; sourceTree = "<group>"; };
-		70A1E339125CDF2B00D56AC4 /* cGUIWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIWidget.h; sourceTree = "<group>"; };
-		70A1E33A125CDF2B00D56AC4 /* cGUIWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGUIWindow.h; sourceTree = "<group>"; };
-		70A1E33B125CDF2B00D56AC4 /* tGUIButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUIButton.h; sourceTree = "<group>"; };
-		70A1E33C125CDF2B00D56AC4 /* tGUIMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUIMenu.h; sourceTree = "<group>"; };
-		70A1E33D125CDF2B00D56AC4 /* tGUIMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUIMenuItem.h; sourceTree = "<group>"; };
-		70A1E33E125CDF2B00D56AC4 /* tGUISlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tGUISlider.h; sourceTree = "<group>"; };
 		70A1E340125CDF9F00D56AC4 /* avidalogo.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = avidalogo.xpm; sourceTree = "<group>"; };
 		70A1E341125CDF9F00D56AC4 /* cDriver_FLTKViewer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver_FLTKViewer.cc; sourceTree = "<group>"; };
 		70A1E342125CDF9F00D56AC4 /* cDriver_FLTKViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDriver_FLTKViewer.h; sourceTree = "<group>"; };
@@ -1872,36 +1849,8 @@
 				70A1E326125CDF2B00D56AC4 /* cCoreView_ClassificationInfo.h */,
 				70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */,
 				70A1E328125CDF2B00D56AC4 /* cCoreView_Map.h */,
-				70A1E329125CDF2B00D56AC4 /* LAYOUT */,
 			);
 			path = "viewer-core";
-			sourceTree = "<group>";
-		};
-		70A1E32A125CDF2B00D56AC4 /* viewer-coreGUI */ = {
-			isa = PBXGroup;
-			children = (
-				70A1E32B125CDF2B00D56AC4 /* cColor.cc */,
-				70A1E32C125CDF2B00D56AC4 /* cColor.h */,
-				70A1E32D125CDF2B00D56AC4 /* cGUIBaseDraw.h */,
-				70A1E32E125CDF2B00D56AC4 /* cGUIBox.h */,
-				70A1E32F125CDF2B00D56AC4 /* cGUIButton.h */,
-				70A1E330125CDF2B00D56AC4 /* cGUICanvas.h */,
-				70A1E331125CDF2B00D56AC4 /* cGUIColor.h */,
-				70A1E332125CDF2B00D56AC4 /* cGUIContainer.h */,
-				70A1E333125CDF2B00D56AC4 /* cGUIEvent.h */,
-				70A1E334125CDF2B00D56AC4 /* cGUIMenu.h */,
-				70A1E335125CDF2B00D56AC4 /* cGUIMenuItem.h */,
-				70A1E336125CDF2B00D56AC4 /* cGUIScrollArea.h */,
-				70A1E337125CDF2B00D56AC4 /* cGUISlider.h */,
-				70A1E338125CDF2B00D56AC4 /* cGUIWidget.cc */,
-				70A1E339125CDF2B00D56AC4 /* cGUIWidget.h */,
-				70A1E33A125CDF2B00D56AC4 /* cGUIWindow.h */,
-				70A1E33B125CDF2B00D56AC4 /* tGUIButton.h */,
-				70A1E33C125CDF2B00D56AC4 /* tGUIMenu.h */,
-				70A1E33D125CDF2B00D56AC4 /* tGUIMenuItem.h */,
-				70A1E33E125CDF2B00D56AC4 /* tGUISlider.h */,
-			);
-			path = "viewer-coreGUI";
 			sourceTree = "<group>";
 		};
 		70A1E33F125CDF9F00D56AC4 /* viewer-fltk */ = {
@@ -2134,7 +2083,6 @@
 				70DCAC54097AF730002F8733 /* targets */,
 				DCC314D8076253A2008F7A48 /* tools */,
 				70A1E324125CDF2B00D56AC4 /* viewer-core */,
-				70A1E32A125CDF2B00D56AC4 /* viewer-coreGUI */,
 			);
 			name = "Main Source";
 			path = source;
@@ -2920,8 +2868,6 @@
 			files = (
 				706C7B6A125F64C400EDB4B9 /* cCoreView_ClassificationInfo.cc in Sources */,
 				706C7B6B125F64C600EDB4B9 /* cCoreView_Map.cc in Sources */,
-				706C7B6C125F64CC00EDB4B9 /* cColor.cc in Sources */,
-				706C7B6D125F64D300EDB4B9 /* cGUIWidget.cc in Sources */,
 				70E14D4D1279FA5B0059FB9D /* cCoreViewDriver.cpp in Sources */,
 				7042DF15128C90240062501F /* AvidaViewer.cc in Sources */,
 			);
