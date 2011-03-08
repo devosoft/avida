@@ -49,7 +49,7 @@
 #if AVIDA_PLATFORM(WINDOWS)
 namespace std
 {
-  inline __int64  abs(__int64 i) { return _abs64(i); }
+  /*inline __int64  abs(__int64 i) { return _abs64(i); }*/
 }
 #endif
 

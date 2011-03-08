@@ -34,6 +34,7 @@
 #include "AvidaTools.h"
 
 #include <algorithm>
+#include <numeric>
 #include <string.h>
 
 

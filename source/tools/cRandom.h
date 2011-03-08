@@ -248,7 +248,7 @@ void sample_with_replacement(ForwardIterator first, ForwardIterator last, Output
 
 /*! Convenience function to assign increasing values to a range.
  */
-template <typename ForwardIterator, typename T>
+/*	template <typename ForwardIterator, typename T>
 void iota(ForwardIterator first, ForwardIterator last, T value) {
 	while(first != last) {
 		*first = value;
@@ -256,8 +256,7 @@ void iota(ForwardIterator first, ForwardIterator last, T value) {
 		++value;
 	}
 }
-
-
+*/
 /*! Draw a sample (without replacement) from an input range, copying to the output range.
  */
 template <typename ForwardIterator, typename OutputIterator, typename RNG>
