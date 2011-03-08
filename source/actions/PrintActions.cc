@@ -48,7 +48,6 @@
 #include "cWorldDriver.h"
 #include "tAutoRelease.h"
 #include "tIterator.h"
-#include "tVector.h"
 #include <cmath>
 #include <cerrno>
 #include <map>
@@ -2982,9 +2981,7 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     cPopulation* pop = &m_world->GetPopulation();
-    
-    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    
+        
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int genome_length= 0;
