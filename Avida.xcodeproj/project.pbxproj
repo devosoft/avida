@@ -284,6 +284,8 @@
 		702A67A3121C7AE80014F776 /* notations.help in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A670D121C73EE0014F776 /* notations.help */; };
 		702A67A4121C7AE80014F776 /* todo.help in work:documentation:glossary */ = {isa = PBXBuildFile; fileRef = 702A670E121C73EE0014F776 /* todo.help */; };
 		702F532F0993060A00B2B507 /* avida-s in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70DCAD1C097AF7CC002F8733 /* avida-s */; };
+		7030DB211326C44D00B6DADA /* cOrderedWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7030DB1F1326C44C00B6DADA /* cOrderedWeightedIndex.cc */; };
+		7030DB221326C44D00B6DADA /* cOrderedWeightedIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 7030DB201326C44C00B6DADA /* cOrderedWeightedIndex.h */; };
 		70310E6B0EDD09260044971B /* cStateGrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 70310E690EDD09260044971B /* cStateGrid.h */; };
 		703178AD11AD711B00F81E21 /* cBioGroupData.h in Headers */ = {isa = PBXBuildFile; fileRef = 703178AC11AD711B00F81E21 /* cBioGroupData.h */; };
 		7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */; };
@@ -901,6 +903,8 @@
 		702F52A80992F8F600B2B507 /* cSymbolTable.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSymbolTable.cc; sourceTree = "<group>"; };
 		702F52DE0992FD8000B2B507 /* cScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cScriptObject.h; sourceTree = "<group>"; };
 		702F52DF0992FD8000B2B507 /* cScriptObject.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cScriptObject.cc; sourceTree = "<group>"; };
+		7030DB1F1326C44C00B6DADA /* cOrderedWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrderedWeightedIndex.cc; sourceTree = "<group>"; };
+		7030DB201326C44C00B6DADA /* cOrderedWeightedIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrderedWeightedIndex.h; sourceTree = "<group>"; };
 		70310E690EDD09260044971B /* cStateGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cStateGrid.h; sourceTree = "<group>"; };
 		703178AC11AD711B00F81E21 /* cBioGroupData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBioGroupData.h; sourceTree = "<group>"; };
 		7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastUtil.h; sourceTree = "<group>"; };
@@ -2357,6 +2361,8 @@
 				70B0891D08F7630100FC65FE /* cIntSum.cc */,
 				70B0890308F762EA00FC65FE /* cMerit.h */,
 				70B0891E08F7630100FC65FE /* cMerit.cc */,
+				7030DB201326C44C00B6DADA /* cOrderedWeightedIndex.h */,
+				7030DB1F1326C44C00B6DADA /* cOrderedWeightedIndex.cc */,
 				2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */,
 				2A57A3FD0D6B954D00FC54C7 /* cProbDemeProbSchedule.cc */,
 				70B0890A08F762EA00FC65FE /* cProbSchedule.h */,
@@ -2463,6 +2469,7 @@
 				70440597128B317500368ECC /* cUserFeedback.h in Headers */,
 				70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */,
 				70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */,
+				7030DB221326C44D00B6DADA /* cOrderedWeightedIndex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2903,6 +2910,7 @@
 				70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */,
 				70A1E87F126642B100D56AC4 /* Platform.cc in Sources */,
 				70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */,
+				7030DB211326C44D00B6DADA /* cOrderedWeightedIndex.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
