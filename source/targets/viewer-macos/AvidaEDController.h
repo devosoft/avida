@@ -22,6 +22,9 @@
 
 #import "CoreViewListener.h"
 
+#include "tArrayMap.h"
+
+
 @class AvidaAppDelegate;
 @class AvidaRun;
 @class MapGridView;
@@ -45,6 +48,7 @@
   AvidaRun* currentRun;
   cCoreViewListener* listener;
   cCoreView_Map* map;
+  tArrayMap<int, int> map_mode_to_color;
 }
 
 // Init and Dealloc Methods

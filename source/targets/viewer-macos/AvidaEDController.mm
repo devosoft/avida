@@ -107,7 +107,9 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 - (IBAction) changeMapViewMode:(id)sender {
-  // TODO
+  if (map) {
+    map->SetMode(map_mode_to_color[[mapViewMode indexOfSelectedItem]]);
+  }
   
 }
 
@@ -210,8 +212,12 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   if (!map) {
     map = [pkg map];
     [mapViewMode removeAllItems];
+    map_mode_to_color.Clear();
+    int idx = 0;
     for (int i = 0; i < map->GetNumModes(); i++) {
+      if (map->GetModeType(i) != cCoreView_Map::VIEW_COLOR) continue;
       [mapViewMode addItemWithTitle:[NSString stringWithUTF8String:(const char*)map->GetModeName(i)]];
+      map_mode_to_color[idx++] = i;
     }
     [mapViewMode selectItemAtIndex:map->GetColorMode()];
     [mapViewMode setEnabled:TRUE];
