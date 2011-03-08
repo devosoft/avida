@@ -33,69 +33,69 @@ private:
   int		_size;
   int		_capacity;
   int		_capIncrement;
-
+  
 public:
   tVector(void): _size(0), _capacity(1), _capIncrement(-1) {
     _data = new T[_capacity];
-    #ifdef EXCEPTION_HANDLING
+#ifdef EXCEPTION_HANDLING
     if(_data == NULL) throw InsufficientMemory();
-    #endif
+#endif
   }
-
+  
   tVector(int cap, int incr = -1): _size(0), _capacity(cap),
-				  _capIncrement(incr){
+  _capIncrement(incr){
     _data = new T[_capacity];
-    #ifdef EXCEPTION_HANDLING
+#ifdef EXCEPTION_HANDLING
     if(_data == NULL) throw InsufficientMemory();
-    #endif
+#endif
   }
-
-
+  
+  
   tVector(const tVector &v): _size(v._size), _capacity(v._capacity),
-			   _capIncrement(v._capIncrement)
+  _capIncrement(v._capIncrement)
   {
     _data = new T[_capacity];
-    #ifdef EXCEPTION_HANDLING
+#ifdef EXCEPTION_HANDLING
     if(_data == NULL) throw InsufficientMemory();
-    #endif
+#endif
     for(int i = 0; i < _size; i++) {
       _data[i] = v._data[i];
     }
   }
-
+  
   ~tVector() {
     if(_data) delete [] _data;
   }
-
+  
 public:
   int Size(void) const {
     return _size;
   }
-
+  
   int Capacity(void) const {
     return _capacity;
   }
-
+  
   void Add(T data) {
     if(Size() + 1 > Capacity()) { // if we have to allocate new space, do so
       T* newdata;
       if(_capIncrement == -1) {
-	newdata = new T[Capacity() * 2];
-	#ifdef EXCEPTION_HANDLING
-	if(newdata == NULL) throw InsufficientMemory();
-	#endif
-	_capacity = Capacity() * 2;
+        newdata = new T[Capacity() * 2];
+#ifdef EXCEPTION_HANDLING
+        if(newdata == NULL) throw InsufficientMemory();
+#endif
+        _capacity = Capacity() * 2;
       }
       else {
-	newdata = new T[Capacity() + _capIncrement];
-	#ifdef EXCEPTION_HANDLING
-	if(newdata == NULL) throw InsufficientMemory();
-	#endif
-	_capacity = Capacity() + _capIncrement;
+        newdata = new T[Capacity() + _capIncrement];
+#ifdef EXCEPTION_HANDLING
+        if(newdata == NULL) throw InsufficientMemory();
+#endif
+        _capacity = Capacity() + _capIncrement;
       }
-
+      
       for(int i = 0; i < Size(); i++) {
-	newdata[i] = _data[i];
+        newdata[i] = _data[i];
       }
       newdata[_size++] = data;
       delete [] _data;
@@ -107,17 +107,17 @@ public:
       return;
     }
   }
-
+  
   void Remove(T data) {
     int i, j;
     for (i = 0; _data[i] != data && i < Size(); i++) ;
     if (i < Size()) {
       T *newdata = new T[Capacity()];
       for(j = 0; j < i; j++) {
-	newdata[j] = _data[j];
+        newdata[j] = _data[j];
       }
       for(; j < Size() - 1; j++) {
-	newdata[j] = _data[j + 1];
+        newdata[j] = _data[j + 1];
       }
       delete [] _data;
       _data = newdata;
@@ -126,16 +126,16 @@ public:
     }
     return;
   }
-
+  
   void RemoveAt(int idx) {
     int i;
     if(idx >= 0 && idx < Size()) {
       T *newdata = new T[Capacity()];
       for(i = 0; i < idx; i++) {
-	newdata[i] = _data[i];
+        newdata[i] = _data[i];
       }
       for(; i < Size() - 1; i++) {
-	newdata[i] = _data[i + 1];
+        newdata[i] = _data[i + 1];
       }
       delete [] _data;
       _data = newdata;
@@ -144,13 +144,13 @@ public:
     }
     return;
   }
-
+  
   void Clear(void) {
     delete [] _data;
     _data = new T[Capacity()];
     _size = 0;
   }
-
+  
 public:
   T& operator[](int idx) {
     assert( idx >= 0);
@@ -158,21 +158,21 @@ public:
     if(idx >= 0 && idx < Size()) { // it is in range
       return _data[idx];
     }
-    #ifdef EXCEPTION_HANDLING
+#ifdef EXCEPTION_HANDLING
     throw IndexOutofRangeError(idx);
-    #endif
+#endif
     return _data[0];
   }
-
+  
   T operator[](int idx) const {
     assert( idx >= 0);
     assert( idx < Size());
     if(idx >= 0 && idx < Size()) {
       return _data[idx];
     }
-    #ifdef EXCEPTION_HANDLING
+#ifdef EXCEPTION_HANDLING
     throw IndexOutofRangeError(idx);
-    #endif
+#endif
     return _data[0];
   }
 };
