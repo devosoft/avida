@@ -228,7 +228,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       int current_x = m_peakx;
       if (next_posx > max_orbit_x) {
         m_peakx = max_orbit_x;
-        if (m_peaky > m_halo_anchor_y) {      //failing
+        if (m_peaky > m_halo_anchor_y) {      
           //turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
           halo_dir = halo_dir * -1;
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x)); 
@@ -239,7 +239,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
       else if (next_posx < min_orbit_x) { 
         m_peakx = min_orbit_x;          
         if (m_peaky > m_halo_anchor_y) m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
-        else {                              //failing
+        else {                              
           halo_dir = halo_dir * -1;
           m_peaky = m_peaky + halo_dir * (m_move_speed - abs(m_peakx - current_x));
         }
