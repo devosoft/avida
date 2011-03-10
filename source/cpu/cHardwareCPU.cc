@@ -3874,7 +3874,7 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
 
 bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 {
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
   int reg_to_set = FindModifiedRegister(REG_BX);  
   double max_resource = 0.0;    
   // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
@@ -3889,7 +3889,7 @@ bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
 {
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
   // check if this is a valid group
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
@@ -3902,11 +3902,11 @@ bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) 
 {
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
     int reg_to_set = FindModifiedRegister(REG_BX);
-    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx)[opinion];  //JW
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx)[opinion];  
     double res_diff = faced_res - res_count[opinion];
     GetRegister(reg_to_set) = res_diff;
   }
@@ -5593,7 +5593,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   
   if (max_res > current_res[opinion]) {
     for(int i = 0; i < actualNeighborhoodSize; i++) {
-      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx);
+      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); 
       if (faced_res[opinion] != max_res) m_organism->Rotate(1);
     }
   }
@@ -6845,9 +6845,9 @@ bool cHardwareCPU::Inst_GetDirectionOffNorth(cAvidaContext& ctx) {
   int facing = m_organism->GetFacing();
   int north_offset = 0;
   if (facing == 0) north_offset = 0;          //N 
-  else if (facing == 1) north_offset = -1;    //NW
-  else if (facing == 3) north_offset = -2;    //W
-  else if (facing == 2) north_offset = -3;    //SW
+  else if (facing == 1) north_offset = 7;    //NW
+  else if (facing == 3) north_offset = 6;    //W
+  else if (facing == 2) north_offset = 5;    //SW
   else if (facing == 6) north_offset = 4;     //S
   else if (facing == 7) north_offset = 3;     //SE
   else if (facing == 5) north_offset = 2;     //E
