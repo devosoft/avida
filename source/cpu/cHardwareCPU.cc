@@ -619,6 +619,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("attack-random-org", &cHardwareCPU::Inst_AttackRandomOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-random-when-facing-org", &cHardwareCPU::Inst_AttackRandomWhenFacingOrg, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("get-attack-odds", &cHardwareCPU::Inst_GetAttackOdds, nInstFlag::STALL), 
 //    tInstLibEntry<tMethod>("fight-faced-org", &cHardwareCPU::Inst_FightFacedOrg, nInstFlag::STALL),     
 		
@@ -8634,6 +8635,19 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
 {
 	assert(m_organism != 0);
+  //How many valid groups are we dealing with?
+  int num_poss_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
+  //Make sure we are using groups and there are resources out there.
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
+  m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
+  return true;
+}
+
+//Attack random org in population when facing another org. This requires all (candidate) orgs to be in a valid group.
+bool cHardwareCPU::Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx)
+{
+	assert(m_organism != 0);
+  if (!m_organism->IsNeighborCellOccupied()) return false;
   //How many valid groups are we dealing with?
   int num_poss_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
   //Make sure we are using groups and there are resources out there.
