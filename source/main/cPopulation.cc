@@ -890,13 +890,15 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
   int org_list_size = 0;
   while (i < num_groups) {
     org_list_size = org_list_size + group_list[i].GetSize();
-    i = i + 1;
+    i += 1;
   }
   //If nobody else is around, there's no one to kill
   if (org_list_size == 1) return;
   //Otherwise, choose a random number for our target org.
+  int trials = 0;
   while(true) {
-    int target_for_death = ctx.GetRandom().GetUInt(0, org_list_size);
+    trials += 1;
+    int target_for_death = ctx.GetRandom().GetUInt(0, org_list_size + 1);
     //Find out which group that org lives in.
     int j = 0;
     int running_count = 0;
@@ -920,13 +922,13 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
       target_group = j - 1; 
       target_pos_in_group = target_for_death - (running_count - group_list[target_group].GetSize()) - 1;
     }
-//    cout << "group0 size:  " << group_list[0].GetSize() << "  group1 size:  " << group_list[1].GetSize() << "  group2 size:  " << group_list[2].GetSize() << '\n';
-//    cout << "target #: " << target_for_death << "  target group: " << target_group << "  target org: " << group_list[target_group][target_pos_in_group] << "  target group size: " << group_list[target_group].GetSize() << "  target pos in group: " << target_pos_in_group << '\n';
     cOrganism* target_org = group_list[target_group][target_pos_in_group];
-    target_cell_id = group_list[target_group][target_pos_in_group]->GetCellID();
+    target_cell_id = target_org->GetCellID();
     target_vitality = target_org->GetVitality();
+    //It's possible that nobody else is actually alive. If so, we need to get out of an infinite loop situation after an arbitrary 1000 tries.
+    if (trials > 1000) break;
     //Make sure this isn't self and that the target is alive.
-    if (target_org == org || target_org->IsDead()) continue;
+    else if (target_org == org || target_org->IsDead()) continue;
     else break;
   }
   //Use vitality settings to decide who wins this battle.
@@ -946,7 +948,7 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
     double decider = ctx.GetRandom().GetDouble(1);
     
     if (decider < 1 - odds_someone_dies) return;
-    else if (decider < (1 - odds_someone_dies) + odds_target_dies) kill_attacker = false;
+    else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;
   }
   int loser_cell = 0;
   if (kill_attacker) loser_cell = attacker_cell;

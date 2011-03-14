@@ -298,7 +298,7 @@ public:
 	//Kill Member of the Group (But not org!!!) JW
 	void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
   //Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
-  void AttackFacedOrg(cAvidaContext& ctx, int loser); //APW
+  void AttackFacedOrg(cAvidaContext& ctx, int loser);
   //Kill random org in population. This requires all (candidate) orgs to be in a valid group.
   void AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_groups);
 	// Identifies the number of organisms in a group

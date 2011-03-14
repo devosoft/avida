@@ -8580,8 +8580,6 @@ bool cHardwareCPU::Inst_GetFacedVitalityDiff(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
 //Get ID of organism faced by this one, if there is an organism in front.
 {
-  assert(m_organism != 0);
-  
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
   cOrganism * neighbor = m_organism->GetNeighbor();
@@ -8596,7 +8594,6 @@ bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
   cOrganism* target = m_organism->GetNeighbor();
@@ -8621,7 +8618,7 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
     double decider = ctx.GetRandom().GetDouble(1);
     
     if (decider < 1 - odds_someone_dies) return true;
-    else if (decider < (1 - odds_someone_dies) + odds_target_dies) kill_attacker = false;    
+    else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
   }
   if (kill_attacker) {
     m_organism->Die(&ctx);
@@ -8634,7 +8631,7 @@ bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
 //Attack random org in population. This requires all (candidate) orgs to be in a valid group.
 bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
 {
-	assert(m_organism != 0);
+  assert(m_organism != 0);
   //How many valid groups are we dealing with?
   int num_poss_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
   //Make sure we are using groups and there are resources out there.
@@ -8646,7 +8643,7 @@ bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
 //Attack random org in population when facing another org. This requires all (candidate) orgs to be in a valid group.
 bool cHardwareCPU::Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx)
 {
-	assert(m_organism != 0);
+  assert(m_organism != 0);
   if (!m_organism->IsNeighborCellOccupied()) return false;
   //How many valid groups are we dealing with?
   int num_poss_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
@@ -8660,7 +8657,6 @@ bool cHardwareCPU::Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  
   if (!m_organism->IsNeighborCellOccupied()) return false;
   
   cOrganism* target = m_organism->GetNeighbor();
@@ -8687,8 +8683,7 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
 /*bool cHardwareCPU::Inst_FightFacedOrg(cAvidaContext& ctx)  //APW
 {
   assert(m_organism != 0);
-  
-  if (!m_organism->IsNeighborCellOccupied()) return false;
+ if (!m_organism->IsNeighborCellOccupied()) return false;
   
   cOrganism* target = m_organism->GetNeighbor();
   if (target->IsDead()) return false;  
