@@ -1670,6 +1670,7 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   m_deme_merit.Add(source_deme.GetHeritableDemeMerit().GetDouble());
   m_deme_generation.Add(source_deme.GetGeneration());
 	m_deme_density.Add(source_deme.GetDensity());
+  m_deme_fit_sd.Add(source_deme.GetMeanSDofFitness());
 
 	if(source_deme.isTreatable()) {
 		++m_deme_num_repls_treatable;
@@ -1708,6 +1709,10 @@ void cStats::GermlineReplication(cGermline& source_germline, cGermline& target_g
 }
 
 
+
+
+
+
 /*! Print statistics related to deme replication.  Currently only prints the
 number of deme replications since the last time PrintDemeReplicationData was
 invoked.
@@ -1725,6 +1730,7 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_deme_merit.Average(), "Mean heritable merit of replicated demes [merit]");
   df.Write(m_deme_generation.Average(), "Mean generation of replicated demes [generation]");
   df.Write(m_deme_density.Average(), "Mean density of replicated demes [density]");
+  df.Write(m_deme_fit_sd.Average(), "Mean standard deviation of fitness of organisms within a deme [sddemefit]");
 
   df.Endl();
 
@@ -1734,6 +1740,7 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   m_deme_merit.Clear();
   m_deme_generation.Clear();
 	m_deme_density.Clear();
+  m_deme_fit_sd.Clear();
 }
 
 /*! Print statistics related to deme replication.  Currently only prints the
@@ -3205,6 +3212,59 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 
   df.Endl();
 }
+
+/*! Prints the genotype ids of all organisms within the maximally-fit deme.
+ */
+void cStats::PrintWinningDeme(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+  df.WriteComment("Genotype IDs of the constituent organisms within each deme.");
+	df.WriteTimeStamp();
+  df.WriteColumnDesc("Update [update]");
+  df.WriteColumnDesc("Deme id [demeid]");
+	df.WriteColumnDesc("Deme fitness [fitness]");
+	df.WriteColumnDesc("Number of unique genomes in deme [uniq]");
+  df.WriteColumnDesc("Genome ID [genomeids]");
+  df.FlushComments();
+	
+	std::pair<int, double> max_element = std::make_pair(0, 0.0);
+	bool found_max=false;
+	for(int i=0; i<(int)m_deme_fitness.size(); ++i) {
+		if(m_deme_fitness[i] > max_element.second) {
+			max_element.first = i;
+			max_element.second = m_deme_fitness[i];
+			found_max = true;
+		}
+	}
+  
+	if(!found_max) {
+		return;
+	}
+	
+  df.WriteAnonymous(GetUpdate());
+  df.WriteAnonymous(max_element.first);
+	df.WriteAnonymous(max_element.second);
+	
+	cDeme& deme = m_world->GetPopulation().GetDeme(max_element.first);
+	
+	std::set<int> uniq;
+	std::vector<int> genotypes;
+	
+	for(int i=0; i<deme.GetSize(); ++i) {
+		cOrganism* org=deme.GetOrganism(i);
+		if(org != 0) {
+			genotypes.push_back(org->GetBioGroup("genotype")->GetID());
+			uniq.insert(org->GetBioGroup("genotype")->GetID());
+		}
+	}
+	
+	df.WriteAnonymous((int)uniq.size());
+	
+	for(int i=0; i<(int)genotypes.size(); ++i) {
+		df.WriteAnonymous(genotypes[i]);
+	}
+  df.Endl();
+}
+
 
 /*! Record information about an organism migrating from this population.
  */

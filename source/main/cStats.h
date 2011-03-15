@@ -833,6 +833,7 @@ public:
   void GermlineReplication(cGermline& source_germline, cGermline& target_germline);
   //! Print statistics about deme replication.
   void PrintDemeReplicationData(const cString& filename);
+  
 
 
 	void PrintDemeTreatableReplicationData(const cString& filename);
@@ -866,6 +867,7 @@ public:
   void PrintPerDemeGenPerFounderData(const cString& filename);
 	void PrintDemeMigrationSuicidePoints(const cString& filename);
 	void PrintDemeReactionDiversityReplicationData(const cString& filename);
+  void PrintWinningDeme(const cString& filename);
 
   void IncNumOccupiedDemes() { m_num_occupied_demes++; }
   void ClearNumOccupiedDemes() { m_num_occupied_demes = 0; }
@@ -881,7 +883,9 @@ protected:
   cDoubleSum m_deme_merit; //!< Mean merit of replicated demes.
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
 	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
-  cDoubleSum m_germline_generation; //!< "Generation" accumulator of replicated germlines.
+  cDoubleSum m_deme_fit_sd; //!< Mean standard deviation of fitness of organisms within a deme
+  cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
+  
 
 	int m_deme_num_repls_treatable; //!< Number of deme replications in treatable demes since last PrintDemeReplicationData.
   cDoubleSum m_deme_gestation_time_treatable; //!< Gestation time for treatable demes - mean age at deme replication.

@@ -394,6 +394,7 @@ public:
 	void AddResourcesConsumed(double amt){	m_total_res_consumed += amt; }
 	void UpdateShannon(cPopulationCell& cell);
 	void UpdateShannonAll();
+  double GetMeanSDofFitness(); 
 	
 	
 private:
