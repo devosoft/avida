@@ -619,6 +619,8 @@ public:
   int  GetNumNewUniqueReactions() const {assert(initialized == true);  return num_new_unique_reactions; }
   void  ResetNumNewUniqueReactions()  {num_new_unique_reactions =0; }
   double GetResourcesConsumed(); 
+  tArray<int> GetCumulativeReactionCount();
+  
 
   // @LZ - Parasite Etc. Helpers
   void DivideFailed();

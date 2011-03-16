@@ -2060,3 +2060,19 @@ void cPhenotype::SetLastParasiteTaskCount(tArray<int> oldParaPhenotype)
     last_para_tasks[i] = oldParaPhenotype[i];
   }
 }
+
+/* Return the cumulative reaction count if we aren't resetting on divide. */
+tArray<int> cPhenotype::GetCumulativeReactionCount()
+{ 
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == 0) { 
+    tArray<int> cum_react; 
+    for (int i=0; i<cur_reaction_count.GetSize(); ++i) 
+    {
+      cum_react.Push(cur_reaction_count[i] + last_reaction_count[i]);
+    }
+//    return (cur_reaction_count + last_reaction_count); 
+    return cum_react;
+  } else {
+    return cur_reaction_count;
+  }
+}
