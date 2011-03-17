@@ -29,6 +29,7 @@
 
 #include "cAvidaConfig.h"
 #include "cDriverManager.h"
+#include "cUserFeedback.h"
 #include "cWorld.h"
 
 #include "cDriver_FLTKViewer.h"
@@ -47,18 +48,20 @@ int main(int argc, char * argv[])
   cAvidaConfig* cfg = new cAvidaConfig();
   Avida::ProcessCmdLineArgs(argc, argv, cfg);
 
-  tList<cString> errors;
-  cWorld* world = cWorld::Initialize(cfg, AvidaTools::FileSystem::GetCWD(), &errors);
+  cUserFeedback feedback;
+  cWorld* world = cWorld::Initialize(cfg, AvidaTools::FileSystem::GetCWD(), &feedback);
   
-  if (!world) {
-    tListIterator<cString> it(errors);
-    while ((it.Next())) {
-      cerr << "error: " << *it.Get() << endl;
-      delete it.Get();
-    }
-    return -1;
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::ERROR:    cerr << "error: "; break;
+      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
   }
-
+  
+  if (!world) return -1;
+  
   cAvidaDriver* driver = NULL;
   
   // Test to see if we should be in analyze mode only...
