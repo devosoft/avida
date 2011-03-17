@@ -3961,9 +3961,9 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
     }
 
     if(internal_add && (max < 0 || (total + -1 * res_change[bin_used]) <= max))
-    {m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]);}
+    { m_organism->AddToRBin(bin_used, -1 * res_change[bin_used]); }
     
-    if(!env_remove)
+    if(!env_remove || (max >= 0 && (total + -1 * res_change[bin_used]) > max))
     {res_change[bin_used] = 0.0;}
   }
   else
@@ -4004,7 +4004,7 @@ bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_re
       if(internal_add && (max < 0 || (total + -1 * res_change[i]) <= max))
       {m_organism->AddToRBin(i, -1 * res_change[i]);}
       
-      if(!env_remove)
+      if(!env_remove || (max >= 0 && (total + -1 * res_change[bin_used]) > max))
       {res_change[i] = 0.0;}
     }
   }

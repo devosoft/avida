@@ -1128,6 +1128,7 @@ double cDeme::GetShannonMutualInformation()
   int num_task = m_shannon_matrix[0].size();
   double* ptask_array = new double[num_task];
   // create ptasks
+
   for (int j=0; j<num_task; j++){
     ptask_array[j] =0;
     
@@ -1149,7 +1150,6 @@ double cDeme::GetShannonMutualInformation()
       pij = m_shannon_matrix[i][j]/m_num_active;
       pj = ptask_array[j];
       pij_sum += pij;
-
       if (pi && pj && pij) {
         shannon_change= (pij * log(pij / (pi * pj)));
         shannon_sum += shannon_change;
@@ -1176,14 +1176,14 @@ void cDeme::UpdateShannon(cPopulationCell& cell)
   if (cell.IsOccupied()) {
     cOrganism* organism = cell.GetOrganism();
     cPhenotype& phenotype = organism->GetPhenotype();			
-    const tArray<int> curr_react =  phenotype.GetCurReactionCount();
+    const tArray<int> curr_react =  phenotype.GetCumulativeReactionCount();
     org_row.resize(curr_react.GetSize(), 0.0);
     for (int j=0; j<curr_react.GetSize(); j++) {
       
       // we are tracking repro as a task
       if ((m_world->GetConfig().DEMES_TRACK_SHANNON_INFO.Get() == 2) && (j==0)) {
+        org_react_count += (phenotype.GetNumDivides() - phenotype.GetNumDivideFailed());
         org_row[j] = (phenotype.GetNumDivides() - phenotype.GetNumDivideFailed());
-        org_react_count += org_row[j];
       } else {
         org_react_count += curr_react[j];
         org_row[j] = curr_react[j];

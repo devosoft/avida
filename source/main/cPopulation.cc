@@ -1709,20 +1709,9 @@ void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext* ctx) //JW
   double shannon_div = source_deme.GetShannonMutualInformation();
 
   if (switch_penalties > 0) {
-    switch_penalties = (switch_penalties/30.0)/(source_deme.GetInjectedCount() + source_deme.GetBirthCount());
+    switch_penalties = (switch_penalties)/(source_deme.GetInjectedCount() + source_deme.GetBirthCount());
   }
 
-  int y = 0;
-
-  for (int i=0; i<source_deme.GetSize(); i++) {
-    int cellid = source_deme.GetCellID(i);
-    if (GetCell(cellid).IsOccupied()) {
-
-      cHardwareCPU* c = (cHardwareCPU*) &GetCell(cellid).GetOrganism()->GetHardware();
-      int x = c->GetTaskSwitchingCost();
-      y += x;
-    }
-  }
 
   m_world->GetStats().IncDemeReactionDiversityReplicationData(deme_performed_rx, switch_penalties,
                                                               shannon_div, num_orgs_perf_reaction);
