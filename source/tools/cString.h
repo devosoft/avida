@@ -123,9 +123,13 @@ private:
   };
 
 public:
-  cString(const char* in_str = "") : value(new cStringData(strlen(in_str), in_str))
+  cString(const char* in_str = "")
   {
-    assert( in_str != NULL );     // NULL input string
+    if (in_str) {
+      value = new cStringData(strlen(in_str), in_str);
+    } else {
+      value = new cStringData(0, "");
+    }
     assert( value );  // Memory Allocation Error: Out of Memory
   }
   cString(const char* in, int in_size) : value(new cStringData(in_size, in))

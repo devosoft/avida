@@ -126,7 +126,8 @@ struct cOrgMessagePred_AllData : public cOrgMessagePredicate
   
 	virtual void Print(int update, std::ostream& out) {
 		for(t_message_list::iterator i=m_msgs.begin(); i!=m_msgs.end(); ++i) {
-			out << update << " ALL " << i->GetData() << " " << i->GetLabel() << endl;
+			out << update << " ALL " << i->GetData() << " " << i->GetLabel()
+			<< " " << i->GetSenderCellID() << " " << i->GetReceiverCellID() << endl;
 		}
 	}
 	

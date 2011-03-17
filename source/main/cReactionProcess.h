@@ -84,11 +84,11 @@ public:
     , deme_fraction(0.0)
     , is_germline(false)
     , depletable(true)
+    , internal(false)
     , m_ppmethod(DEFAULT)
     , detect(NULL)
     , detection_threshold(0.0)
     , detection_error(0.0)
-    , internal(false)
   {
   }
   ~cReactionProcess() { ; }

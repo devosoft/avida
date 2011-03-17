@@ -58,10 +58,6 @@
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
 		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
-		4A69A5FF127752BB0013EE02 /* cDynamicCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A69A5FE127752BB0013EE02 /* cDynamicCount.cc */; };
-		4A69A603127752CA0013EE02 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A69A602127752CA0013EE02 /* cDynamicCount.h */; };
-		4A7DA40B12DB9BFF004E6A25 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A7DA40A12DB9BFF004E6A25 /* cGradientCount.cc */; };
-		4A7DA40D12DB9C1B004E6A25 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A7DA40C12DB9C1B004E6A25 /* cGradientCount.h */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -331,6 +327,7 @@
 		705B10411073AF05002242E6 /* instset-heads.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10361073AC1F002242E6 /* instset-heads.cfg */; };
 		7062242812A4C3A100E210C1 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
+		7068E89E12BABC2A00B4EEEA /* SubtleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7068E89D12BABC2A00B4EEEA /* SubtleSplitView.m */; };
 		706C7B6A125F64C400EDB4B9 /* cCoreView_ClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* cCoreView_ClassificationInfo.cc */; };
 		706C7B6B125F64C600EDB4B9 /* cCoreView_Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E327125CDF2B00D56AC4 /* cCoreView_Map.cc */; };
 		706C7B6C125F64CC00EDB4B9 /* cColor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E32B125CDF2B00D56AC4 /* cColor.cc */; };
@@ -389,6 +386,9 @@
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
 		70BB2A2B0E9FA12F008269D2 /* ASAvidaLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */; };
 		70BB2AE20EA5303F008269D2 /* cDriverStatusConduit.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2AC60EA52BD9008269D2 /* cDriverStatusConduit.cc */; };
+		70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C11F3412B944F40092B40D /* cContextPhenotype.cc */; };
+		70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3512B944F40092B40D /* cContextPhenotype.h */; };
+		70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3612B944F40092B40D /* cContextReactionRequisite.h */; };
 		70C9D5C71086890000472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70C9D5CA1086893100472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
@@ -797,10 +797,6 @@
 		42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetworkUtils.h; sourceTree = "<group>"; };
 		42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeTopologyNetwork.cc; sourceTree = "<group>"; };
 		42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeTopologyNetwork.h; sourceTree = "<group>"; };
-		4A69A5FE127752BB0013EE02 /* cDynamicCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDynamicCount.cc; sourceTree = "<group>"; };
-		4A69A602127752CA0013EE02 /* cDynamicCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDynamicCount.h; sourceTree = "<group>"; };
-		4A7DA40A12DB9BFF004E6A25 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
-		4A7DA40C12DB9C1B004E6A25 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -1074,6 +1070,8 @@
 		705B10361073AC1F002242E6 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads.cfg"; sourceTree = "<group>"; };
 		705FD5F9123A81A8002DE4B2 /* tSparseVectorList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSparseVectorList.h; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
+		7068E89C12BABC2A00B4EEEA /* SubtleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubtleSplitView.h; sourceTree = "<group>"; };
+		7068E89D12BABC2A00B4EEEA /* SubtleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubtleSplitView.m; sourceTree = "<group>"; };
 		7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayUtils.h; sourceTree = "<group>"; };
 		706C6F480B83E69D003174C1 /* cSaleItem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cSaleItem.h; sourceTree = "<group>"; };
 		706C6FFD0B83F254003174C1 /* cInstSet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cInstSet.h; sourceTree = "<group>"; };
@@ -1370,6 +1368,9 @@
 		70BCB2470AB7B634003FF331 /* cArgSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cArgSchema.h; sourceTree = "<group>"; };
 		70C054C80A4F6E19002703C1 /* PopulationActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopulationActions.h; sourceTree = "<group>"; };
 		70C054C90A4F6E19002703C1 /* PopulationActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PopulationActions.cc; sourceTree = "<group>"; };
+		70C11F3412B944F40092B40D /* cContextPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cContextPhenotype.cc; sourceTree = "<group>"; };
+		70C11F3512B944F40092B40D /* cContextPhenotype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cContextPhenotype.h; sourceTree = "<group>"; };
+		70C11F3612B944F40092B40D /* cContextReactionRequisite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cContextReactionRequisite.h; sourceTree = "<group>"; };
 		70C1EF4608C393BA00F50912 /* cCodeLabel.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCodeLabel.cc; sourceTree = "<group>"; };
 		70C1EF4708C393BA00F50912 /* cCodeLabel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCodeLabel.h; sourceTree = "<group>"; };
 		70C1EF5808C3948C00F50912 /* cCPUMemory.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cCPUMemory.cc; sourceTree = "<group>"; };
@@ -1877,6 +1878,8 @@
 				701324F9129C28D300839392 /* MapGridView.mm */,
 				70F6114212A5A3D700FE2D78 /* AvidaEDController.h */,
 				70F6114312A5A3D700FE2D78 /* AvidaEDController.mm */,
+				7068E89C12BABC2A00B4EEEA /* SubtleSplitView.h */,
+				7068E89D12BABC2A00B4EEEA /* SubtleSplitView.m */,
 			);
 			path = "viewer-macos";
 			sourceTree = "<group>";
@@ -2297,10 +2300,9 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				4A7DA40C12DB9C1B004E6A25 /* cGradientCount.h */,
-				4A7DA40A12DB9BFF004E6A25 /* cGradientCount.cc */,
-				4A69A602127752CA0013EE02 /* cDynamicCount.h */,
-				4A69A5FE127752BB0013EE02 /* cDynamicCount.cc */,
+				70C11F3412B944F40092B40D /* cContextPhenotype.cc */,
+				70C11F3512B944F40092B40D /* cContextPhenotype.h */,
+				70C11F3612B944F40092B40D /* cContextReactionRequisite.h */,
 				70447BFD0F83B47900E1BF72 /* cBirthSelectionHandler.cc */,
 				709A1EE90EB6C42D006090AF /* cOrgMovementPredicate.h */,
 				709A1EEA0EB6C42D006090AF /* cResourceHistory.cc */,
@@ -2572,9 +2574,9 @@
 				701B356011E7744D00FEF49A /* tHashMap.h in Headers */,
 				7070E46D12104A660056BE1E /* cDemePlaceholderUnit.h in Headers */,
 				7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */,
-				4A69A603127752CA0013EE02 /* cDynamicCount.h in Headers */,
 				70440597128B317500368ECC /* cUserFeedback.h in Headers */,
-				4A7DA40D12DB9C1B004E6A25 /* cGradientCount.h in Headers */,
+				70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */,
+				70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3048,8 +3050,7 @@
 				7099D6021215BB9500EB3E46 /* cGenomeTestMetrics.cc in Sources */,
 				70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */,
 				70A1E87F126642B100D56AC4 /* Platform.cc in Sources */,
-				4A69A5FF127752BB0013EE02 /* cDynamicCount.cc in Sources */,
-				4A7DA40B12DB9BFF004E6A25 /* cGradientCount.cc in Sources */,
+				70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3077,6 +3078,7 @@
 				7042DF30128C91BE0062501F /* CoreViewListener.mm in Sources */,
 				701324FA129C28D300839392 /* MapGridView.mm in Sources */,
 				70F6114412A5A3D700FE2D78 /* AvidaEDController.mm in Sources */,
+				7068E89E12BABC2A00B4EEEA /* SubtleSplitView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3652,6 +3654,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Development;
 		};
@@ -3675,6 +3678,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				ZERO_LINK = NO;
 			};
 			name = Deployment;
@@ -3697,6 +3701,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = "Deployment-G5";
 		};
@@ -3718,6 +3723,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = "Deployment-Universal";
 		};
@@ -3739,6 +3745,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Avida;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Profile;
 		};

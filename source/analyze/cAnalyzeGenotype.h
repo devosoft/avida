@@ -127,6 +127,9 @@ private:
 
   // Group 1 : Load-in Stats (Only obtained if available for input file)
   int id_num;
+  eBioUnitSource m_src;
+  cString m_src_args;
+  cString m_parent_str;
   int parent_id;
   int parent2_id;
   int num_cpus;
@@ -134,6 +137,8 @@ private:
   int update_born;
   int update_dead;
   int depth;
+  cString m_cells;
+  cString m_gest_offsets;
 
   // Group 2 : Basic Execution Stats (Obtained from test CPUs)
   int length;
@@ -256,7 +261,9 @@ public:
   void CalcLandscape(cAvidaContext& ctx);
 
   // Set...
-  void SetSequence(cString _sequence);
+  void SetHWType(int hw_type);
+  void SetInstSet(const cString& inst_set);
+  void SetSequence(cString sequence);
   void SetName(const cString& _name) { name = _name; }
   void SetAlignedSequence(const cString & _seq) { aligned_sequence = _seq; }
   void SetTag(const cString& _tag) { tag = _tag; }
@@ -264,13 +271,18 @@ public:
   void SetViable(bool _viable) { viable = _viable; }
 
   void SetID(int _id) { id_num = _id; }
-  void SetParentID(int _id) { parent_id = _id; }
-  void SetParent2ID(int _id) { parent2_id = _id; }
+  void SetSource(int _src) { m_src = (eBioUnitSource)_src; }
+  void SetSourceArgs(const cString& src_args) { m_src_args = src_args; }
+  void SetParents(const cString& parent_str);
+  void SetParentID(int _parent_id);
+  void SetParent2ID(int _parent_id);
   void SetNumCPUs(int _cpus) { num_cpus = _cpus; }
   void SetTotalCPUs(int _cpus) { total_cpus = _cpus; }
   void SetUpdateBorn(int _born) { update_born = _born; }
   void SetUpdateDead(int _dead) { update_dead = _dead; }
   void SetDepth(int _depth) { depth = _depth; }
+  void SetCells(const cString& cells) { m_cells = cells; }
+  void SetGestOffsets(const cString& gest_offsets) { m_gest_offsets = gest_offsets; }
 
   void SetLength(int _length) { length = _length; }
   void SetCopyLength(int _length) { copy_length = _length; }
@@ -314,7 +326,9 @@ public:
   bool GetViable() const { return viable; }
 
   int GetID() const { return id_num; }
-  cString GetParents() const { return cStringUtil::Stringf("%d,%d", parent_id, parent2_id); }
+  int GetSource() const { return m_src; }
+  const cString& GetSourceArgs() const { return m_src_args; }
+  const cString& GetParents() const { return m_parent_str; }
   int GetParentID() const { return parent_id; }
   int GetParent2ID() const { return parent2_id; }
   int GetParentDist() const { return parent_dist; }
@@ -336,6 +350,8 @@ public:
   int GetUpdateBorn() const { return update_born; }
   int GetUpdateDead() const { return update_dead; }
   int GetDepth() const { return depth; }
+  const cString& GetCells() const { return m_cells; }
+  const cString& GetGestOffsets() const { return m_gest_offsets; }
 
   const cString& GetParentMuts() const { return parent_muts; }
   const cString GetMutSteps() const { const cMutationSteps& ms = m_genome.GetSequence().GetMutationSteps(); return ms.AsString(); }
@@ -390,6 +406,8 @@ public:
   const cString & GetTaskOrder() const { return task_order; }
   cString GetTaskList() const;
 
+  int GetHWType() const { return m_genome.GetHardwareType(); }
+  const cString& GetInstSet() const { return m_genome.GetInstSet(); }
   cString GetSequence() const { return m_genome.GetSequence().AsString(); }
   cString GetHTMLSequence() const;
 

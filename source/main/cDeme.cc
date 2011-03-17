@@ -1134,7 +1134,7 @@ double cDeme::GetShannonMutualInformation()
     for (int i=0; i<num_org; i++) {
       ptask_array[j] += m_shannon_matrix[i][j];
     }
-    
+    double tmp = ptask_array[j];
     ptask_array[j] /= m_num_active;
   }
 	
@@ -1143,11 +1143,13 @@ double cDeme::GetShannonMutualInformation()
   double pij = 0.0;
   double pi = 1.0/m_num_active;
   double pj = 0;
+  double pij_sum = 0.0;
   // calculate shannon mutual information
   for (int i=0; i<num_org; i++) {
     for (int j=0; j<num_task; j++) {
       pij = m_shannon_matrix[i][j]/m_num_active;
       pj = ptask_array[j];
+      pij_sum += pij;
 
       if (pi && pj && pij) {
         shannon_change= (pij * log(pij / (pi * pj)));
@@ -1157,7 +1159,6 @@ double cDeme::GetShannonMutualInformation()
   }
 	
 //  shannon_sum /= log((double)m_num_active);
-  
   delete ptask_array;
   return shannon_sum;
 }

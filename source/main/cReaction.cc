@@ -34,6 +34,7 @@ cReaction::cReaction(const cString & _name, int _id)
   , id(_id)
   , task(NULL)
   , active(true)
+  , internal(false)
 {
 }
 

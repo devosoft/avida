@@ -51,7 +51,7 @@ protected:
   static const int MAX_THREAD_LABEL = 3;
 
   enum tStacks { STACK_AX = 0, STACK_BX, STACK_CX, STACK_DX };
-
+  
   // --------  Performance Constants --------
   static const int MEM_LBLS_HASH_FACTOR = 4; // Sets hast table size to (NUM_NOPS^MAX_MEMSPACE_LABEL) / FACTOR
   static const int THREAD_LBLS_HASH_FACTOR = 4; // Sets hast table size to (NUM_NOPS^MAX_THREAD_LABEL) / FACTOR
@@ -63,35 +63,35 @@ protected:
     cHeadCPU heads[nHardware::NUM_HEADS];
     unsigned char cur_head;
     cCPUStack local_stacks[NUM_LOCAL_STACKS];
-
+    
     bool advance_ip;         // Should the IP advance after this instruction?
-  	bool skipExecution;
+	bool skipExecution;
     cCodeLabel read_label;
     cCodeLabel next_label;
     bool running;
     cContextPhenotype context_phenotype;
-
+    
     // If this thread was spawned by Inject, this will point to the biounit of the parasite running the thread.
     // Otherwise, it will be NULL.
     cBioUnit* owner;
-
+    
     cLocalThread(cHardwareBase* in_hardware = NULL) { Reset(in_hardware); }
     ~cLocalThread() { ; }
-
+    
     void Reset(cHardwareBase* in_hardware, int mem_space = 0);
   };
-
+  
   // --------  Static Variables  --------
   static tInstLib<cHardwareTransSMT::tMethod>* s_inst_slib;
   static tInstLib<cHardwareTransSMT::tMethod>* initInstLib(void);
-
+    
 
   // --------  Member Variables  --------
   const tMethod* m_functions;
 
   // Stacks
   cCPUStack m_global_stacks[NUM_GLOBAL_STACKS];
-
+	
   // Memory
   tManagedPointerArray<cCPUMemory> m_mem_array;
   tHashMap<int, int> m_mem_lbls;
@@ -103,10 +103,10 @@ protected:
   int m_cur_child;
 
   bool SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst);
-
+  	
 
   // --------  Stack Manipulation...  --------
-  inline cCPUStack& Stack(int stack_id);
+  inline cCPUStack& Stack(int stack_id); 
   inline const cCPUStack& Stack(int stack_id) const;
   inline cCPUStack& Stack(int stack_id, int in_thread);
   inline const cCPUStack& Stack(int stack_id, int in_thread) const;
@@ -119,13 +119,13 @@ protected:
   int FindNextStack(int default_stack);
   int FindPreviousStack(int default_stack);
   int FindComplementStack(int base_stack);
-
-
+  
+  
   // --------  Head Manipulation (including IP)  --------
   const bool& AdvanceIP() const { return m_threads[m_cur_thread].advance_ip; }
   bool& AdvanceIP() { return m_threads[m_cur_thread].advance_ip; }
-
-
+  
+  
   // --------  Label Manipulation  -------
   const cCodeLabel& GetLabel() const { return m_threads[m_cur_thread].next_label; }
   cCodeLabel& GetLabel() { return m_threads[m_cur_thread].next_label; }
@@ -142,15 +142,15 @@ protected:
   int FindMemorySpaceLabel(const cCodeLabel& label, int mem_space);
   inline bool MemorySpaceExists(const cCodeLabel& label);
 
-
+  
   // ---------- Thread Manipulation -----------
   int ThreadCreate(const cCodeLabel& label, int mem_space);
   bool ThreadKill(const int thread_id);
   inline bool ThreadKill(const cCodeLabel& in_label);
   inline int FindThreadLabel(const cCodeLabel& label);
   bool ThreadIsRunning() { return m_threads[m_cur_thread].running; }
-
-
+  
+  	
   // ---------- Instruction Helpers -----------
   bool Allocate_Necro(const int new_size);
   bool Allocate_Random(const int old_size, const int new_size);
@@ -160,45 +160,45 @@ protected:
 
   void internalReset();
 	void internalResetOnFailedDivide();
-
-
+  
+  
   int calcCopiedSize(const int parent_size, const int child_size);
-
+  
   bool Divide_Main(cAvidaContext& ctx, double mut_multiplier = 1.0);
   void Inject_DoMutations(cAvidaContext& ctx, double mut_multiplier, cCPUMemory& injected_code);
 
   bool InjectParasite(cAvidaContext& ctx, double mut_multiplier);
 
   bool HeadCopy_ErrorCorrect(double reduction);
-
+  
   void ReadInst(const int in_inst);
-
+	
   inline int NormalizeMemSpace(int mem_space) const;
 
   cHardwareTransSMT(const cHardwareTransSMT&); // @not_implemented
   cHardwareTransSMT& operator=(const cHardwareTransSMT&); // @not_implemented
-
+  
 public:
   cHardwareTransSMT(cAvidaContext& ctx, cWorld* world, cOrganism* in_organism, cInstSet* in_inst_set);
   ~cHardwareTransSMT() { ; }
 
   static cInstLib* GetInstLib() { return s_inst_slib; }
   static cString GetDefaultInstFilename() { return "instset-transsmt.cfg"; }
-
+	
   bool SingleProcess(cAvidaContext& ctx, bool speculative = false);
   void ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst);
-
+	
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_TRANSSMT; }
   bool SupportsSpeculative() const { return false; }
   bool OK();
   void PrintStatus(std::ostream& fp);
-
-
+	
+	
   // --------  Stack Manipulation...  --------
   inline int GetStack(int depth=0, int stack_id=-1, int in_thread=-1) const;
   inline int GetNumStacks() const { return NUM_STACKS; }
-
+	
 
   // --------  Head Manipulation (including IP)  --------
   const cHeadCPU& GetHead(int head_id) const { return m_threads[m_cur_thread].heads[head_id]; }
@@ -206,13 +206,13 @@ public:
   const cHeadCPU& GetHead(int head_id, int thread) const { return m_threads[thread].heads[head_id]; }
   cHeadCPU& GetHead(int head_id, int thread) { return m_threads[thread].heads[head_id];}
   int GetNumHeads() const { return nHardware::NUM_HEADS; }
-
+	
   const cHeadCPU& IP() const { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
   cHeadCPU& IP() { return m_threads[m_cur_thread].heads[nHardware::HEAD_IP]; }
   const cHeadCPU& IP(int thread) const { return m_threads[thread].heads[nHardware::HEAD_IP]; }
   cHeadCPU& IP(int thread) { return m_threads[thread].heads[nHardware::HEAD_IP]; }
-
-
+	  
+  
   // --------  Memory Manipulation  --------
   cCPUMemory& GetMemory() { return m_mem_array[0]; }
   const cCPUMemory& GetMemory() const { return m_mem_array[0]; }
@@ -221,14 +221,14 @@ public:
   const cCPUMemory& GetMemory(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)]; }
   int GetMemSize(int mem_space) const { return m_mem_array[NormalizeMemSpace(mem_space)].GetSize(); }
   int GetNumMemSpaces() const { return m_mem_array.GetSize(); }
-
-
+  
+  
   // --------  Register Manipulation  --------
   int GetRegister(int reg_id) const { return Stack(reg_id).Peek(); }
   int& GetRegister(int reg_id) { return Stack(reg_id).Peek(); }
   int GetNumRegisters() const { return NUM_STACKS; }
-
-
+  
+  
   // --------  Thread Manipulation  --------
   inline bool ThreadSelect(const int thread_id);
   inline bool ThreadSelect(const cCodeLabel& in_label);
@@ -239,17 +239,17 @@ public:
   int GetNumThreads() const { return m_threads.GetSize(); }
   int GetCurThread() const { return m_cur_thread; }
   int GetCurThreadID() const { return m_cur_thread; }
-
+  
   // interrupt current thread
   bool InterruptThread(int interruptType) { return false; }
   int GetThreadMessageTriggerType(int _index) { return -1; }
 
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu);
-
-  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add);
-  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin);
-  bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);
+	
+  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add); 
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin); 
+  bool FindModifiedResource(int& start_index, int& end_index, int& spec_id); 
 
 private:
   // ---------- Instruction Library -----------
@@ -283,7 +283,7 @@ private:
   bool Inst_ValDelete(cAvidaContext& ctx);      // 31
   bool Inst_ValCopy(cAvidaContext& ctx);        // 32
   bool Inst_IO(cAvidaContext& ctx);             // 33
-
+  
   // Additional Instructions
   bool Inst_ThreadCreate(cAvidaContext& ctx);   // 34
   bool Inst_ThreadCancel(cAvidaContext& ctx);   // 35
@@ -300,9 +300,9 @@ private:
   bool Inst_CallLabel(cAvidaContext& ctx);      // 46
   bool Inst_Return(cAvidaContext& ctx);         // 47
   bool Inst_IfGreaterEqual(cAvidaContext& ctx); //48
-  bool Inst_Divide_Erase(cAvidaContext& ctx);   //49
-  bool Inst_Collect(cAvidaContext& ctx);        //50
-
+  bool Inst_Divide_Erase(cAvidaContext& ctx); //49
+  bool Inst_Collect(cAvidaContext& ctx);        //50 
+  
 };
 
 
@@ -317,7 +317,7 @@ inline bool cHardwareTransSMT::ThreadSelect(const int thread_id)
     m_cur_thread = thread_id;
     return true;
   }
-
+  
   return false;
 }
 
@@ -342,10 +342,10 @@ inline void cHardwareTransSMT::ThreadPrev()
 inline int cHardwareTransSMT::GetStack(int depth, int stack_id, int in_thread) const
 {
   if (stack_id<0 || stack_id > NUM_STACKS) stack_id=0;
-
+  
   if (in_thread==-1)
     in_thread=m_cur_thread;
-
+  
   return Stack(stack_id, in_thread).Get(depth);
 }
 
@@ -358,7 +358,7 @@ inline cCPUStack& cHardwareTransSMT::Stack(int stack_id)
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id) const
+inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id) const 
 {
   if (stack_id >= NUM_STACKS) stack_id = 0;
   if (stack_id < NUM_LOCAL_STACKS)
@@ -367,22 +367,22 @@ inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id) const
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread)
+inline cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) 
 {
   if (stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
   if (in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
-
+	
   if (stack_id < NUM_LOCAL_STACKS)
     return m_threads[in_thread].local_stacks[stack_id];
   else
     return m_global_stacks[stack_id % NUM_LOCAL_STACKS];
 }
 
-inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) const
+inline const cCPUStack& cHardwareTransSMT::Stack(int stack_id, int in_thread) const 
 {
   if (stack_id >= NUM_STACKS || stack_id < 0) stack_id = 0;
   if (in_thread >= m_threads.GetSize() || in_thread < 0) in_thread = m_cur_thread;
-
+	
   if (stack_id < NUM_LOCAL_STACKS)
     return m_threads[in_thread].local_stacks[stack_id];
   else
@@ -410,5 +410,6 @@ inline int cHardwareTransSMT::FindThreadLabel(const cCodeLabel& label)
   m_thread_lbls.Find(label.AsInt(NUM_NOPS), thread_id);
   return thread_id;
 }
+
 
 #endif

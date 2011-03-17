@@ -724,6 +724,7 @@ public:
   void PrintParasiteData(const cString& filename);
   void PrintStatsData(const cString& filename);
   void PrintCountData(const cString& filename);
+  void PrintThreadsData(const cString& filename);
 	void PrintMessageData(const cString& filename);
   void PrintInterruptData(const cString& filename);
   void PrintTotalsData(const cString& filename);

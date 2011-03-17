@@ -65,8 +65,12 @@ public:
     }
     
     if (error_str) {
-      (*error_str) = cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", *entry_name,
-                                                      *(m_entry_dict.NearMatch(entry_name)));
+      cString nm = m_entry_dict.NearMatch(entry_name);
+      if (nm.GetSize()) {
+        (*error_str) = cStringUtil::Stringf("data entry '%s' not found, best match is '%s'", (const char*)entry_name, (const char*)nm);
+      } else {
+        (*error_str) = cStringUtil::Stringf("date entry '%s' not found", (const char*)entry_name);
+      }
     }
     
     return NULL;
