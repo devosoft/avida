@@ -19,7 +19,7 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+#include <iostream>
 #include "cInstSet.h"
 
 #include "cArgContainer.h"
@@ -33,30 +33,57 @@
 using namespace std;
 
 
+cInstSet::cInstSet(const cInstSet& _in)
+  : m_world(_in.m_world)
+  , m_name(_in.m_name)
+  , m_hw_type(_in.m_hw_type)
+  , m_inst_lib(_in.m_inst_lib)
+  , m_lib_name_map(_in.m_lib_name_map)
+  , m_mutation_index(NULL)
+  , m_has_costs(_in.m_has_costs)
+  , m_has_ft_costs(_in.m_has_ft_costs)
+  , m_has_energy_costs(_in.m_has_energy_costs)
+  , m_has_res_costs(_in.m_has_res_costs)
+{
+  m_mutation_index = new cOrderedWeightedIndex(*_in.m_mutation_index);
+}
+
+cInstSet& cInstSet::operator=(const cInstSet& _in)
+{
+  m_world = _in.m_world;
+  m_name = _in.m_name;
+  m_hw_type = _in.m_hw_type;
+  m_inst_lib = _in.m_inst_lib;
+  m_lib_name_map = _in.m_lib_name_map;
+  m_mutation_index = NULL;
+  m_has_costs = _in.m_has_costs;
+  m_has_ft_costs = _in.m_has_ft_costs;
+  m_has_energy_costs = _in.m_has_energy_costs;
+  m_has_res_costs = _in.m_has_res_costs;
+
+  m_mutation_index = new cOrderedWeightedIndex(*_in.m_mutation_index);
+  return *this;
+}
+
+
 bool cInstSet::OK() const
 {
-  assert(m_lib_name_map.GetSize() < 255);
   assert(m_lib_nopmod_map.GetSize() < m_lib_name_map.GetSize());
+  assert(m_mutation_index->GetSize() < MAX_INSTSET_SIZE);
 
-  // Make sure that all of the redundancies are represented the appropriate
-  // number of times.
-  tArray<int> test_redundancy2(m_lib_name_map.GetSize());
-  test_redundancy2.SetAll(0);
-  for (int i = 0; i < m_mutation_chart.GetSize(); i++) {
-    int test_id = m_mutation_chart[i];
-    test_redundancy2[test_id]++;
-  }
-  for (int i = 0; i < m_lib_name_map.GetSize(); i++) {
-    assert(m_lib_name_map[i].redundancy == test_redundancy2[i]);
-  }
+  bool redundancy_ok = true;
+  for (int id=0; id < GetSize(); id++)
+      redundancy_ok = redundancy_ok && (m_lib_name_map[id].redundancy == m_mutation_index->GetWeight(id));
 
-  return true;
+  return redundancy_ok;
 }
 
 
 cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
 {
-  return cInstruction(m_mutation_chart[ctx.GetRandom().GetUInt(m_mutation_chart.GetSize())]);
+  double weight = ctx.GetRandom().GetDouble(m_mutation_index->GetTotalWeight());
+  unsigned inst_ndx = m_mutation_index->FindPosition(weight);
+  return cInstruction(inst_ndx);
 }
 
 
@@ -66,7 +93,7 @@ cInstruction cInstSet::ActivateNullInst()
   const int inst_id = m_lib_name_map.GetSize();
   const int null_fun_id = m_inst_lib->GetInstNull();
   
-  assert(inst_id < 255);
+  assert(inst_id < MAX_INSTSET_SIZE);
   
   // Make sure not to activate again if NULL is already active
   for (int i = 0; i < inst_id; i++) if (m_lib_name_map[i].lib_fun_id == null_fun_id) return cInstruction(i);
@@ -123,15 +150,15 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
   cArgSchema schema(':');
   
   // Integer
-  schema.AddEntry("redundancy", 0, 1);
-  schema.AddEntry("cost", 1, 0);
-  schema.AddEntry("initial_cost", 2, 0);
-  schema.AddEntry("energy_cost", 3, 0);
-  schema.AddEntry("addl_time_cost", 4, 0);
+  schema.AddEntry("cost", 0, 0);
+  schema.AddEntry("initial_cost", 1, 0);
+  schema.AddEntry("energy_cost", 2, 0);
+  schema.AddEntry("addl_time_cost", 3, 0);
 
   // Double
   schema.AddEntry("prob_fail", 0, 0.0);
   schema.AddEntry("res_cost", 1, 0.0);  
+  schema.AddEntry("redundancy", 2, 1.0);
   
   // String  
   schema.AddEntry("inst_code", 0, "");
@@ -175,22 +202,16 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
       continue;
     }
     
-    int redundancy = args->GetInt(0);
-    if (redundancy < 0) {
+    double redundancy = args->GetDouble(1);
+    if (redundancy < 0.0) {
       if (feedback) feedback->Warning("instruction '%s' has negative redundancy, ignoring...", (const char*)inst_name);
       continue;
     }
-    if (redundancy > 256) {
-      if (feedback) feedback->Warning("max redundancy is 256, resetting redundancy of '%s' from %d to 256",
-                                      (const char*) inst_name, redundancy);
-      redundancy = 256;
-    }
-    
     
     
     // Get the ID of the new Instruction
     const int inst_id = m_lib_name_map.GetSize();
-    assert(inst_id < 255);
+    assert(inst_id < MAX_INSTSET_SIZE);
     
     // Increase the size of the array...
     m_lib_name_map.Resize(inst_id + 1);
@@ -198,11 +219,11 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     // Setup the new function...
     m_lib_name_map[inst_id].lib_fun_id = fun_id;
     m_lib_name_map[inst_id].redundancy = redundancy;
-    m_lib_name_map[inst_id].cost = args->GetInt(1);
-    m_lib_name_map[inst_id].ft_cost = args->GetInt(2);
-    m_lib_name_map[inst_id].energy_cost = args->GetInt(3);
+    m_lib_name_map[inst_id].cost = args->GetInt(0);
+    m_lib_name_map[inst_id].ft_cost = args->GetInt(1);
+    m_lib_name_map[inst_id].energy_cost = args->GetInt(2);
     m_lib_name_map[inst_id].prob_fail = args->GetDouble(0);
-    m_lib_name_map[inst_id].addl_time_cost = args->GetInt(4);
+    m_lib_name_map[inst_id].addl_time_cost = args->GetInt(3);
     m_lib_name_map[inst_id].res_cost = args->GetDouble(1); 
     
     if (m_lib_name_map[inst_id].cost > 1) m_has_costs = true;
@@ -253,16 +274,20 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
       m_lib_nopmod_map[inst_id] = fun_id;
     }
     
-
-    const int total_redundancy = m_mutation_chart.GetSize();
-    m_mutation_chart.Resize(total_redundancy + redundancy);
-    for (int i = 0; i < redundancy; i++) {
-      m_mutation_chart[total_redundancy + i] = inst_id;
-    }
-    
     // Clean up the argument container for this instruction
     delete args;
   }
-  
+
+  //Setup mutation indexing based on redundancies
+  m_mutation_index = new cOrderedWeightedIndex();
+  for (int id=0; id < m_lib_name_map.GetSize(); id++)
+  {
+     double red = m_lib_name_map[id].redundancy;
+     if (red == 0.0)
+     {
+       continue;
+     }
+     m_mutation_index->SetWeight(id, m_lib_name_map[id].redundancy);
+  }
   return success;
 }

@@ -62,6 +62,8 @@
 		4A587DBA13329E6B0037A393 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587DB613329E6B0037A393 /* cDynamicCount.h */; };
 		4A587DBB13329E6B0037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587DB713329E6B0037A393 /* cGradientCount.cc */; };
 		4A587DBC13329E6B0037A393 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587DB813329E6B0037A393 /* cGradientCount.h */; };
+		4A587EBD1332B1AA0037A393 /* cOrderedWeightedIndex.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587EBB1332B1AA0037A393 /* cOrderedWeightedIndex.cc */; };
+		4A587EBE1332B1AA0037A393 /* cOrderedWeightedIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587EBC1332B1AA0037A393 /* cOrderedWeightedIndex.h */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -805,6 +807,8 @@
 		4A587DB613329E6B0037A393 /* cDynamicCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDynamicCount.h; sourceTree = "<group>"; };
 		4A587DB713329E6B0037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
 		4A587DB813329E6B0037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
+		4A587EBB1332B1AA0037A393 /* cOrderedWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cOrderedWeightedIndex.cc; sourceTree = "<group>"; };
+		4A587EBC1332B1AA0037A393 /* cOrderedWeightedIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrderedWeightedIndex.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -2432,6 +2436,8 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				4A587EBB1332B1AA0037A393 /* cOrderedWeightedIndex.cc */,
+				4A587EBC1332B1AA0037A393 /* cOrderedWeightedIndex.h */,
 				70A1E86912663FA100D56AC4 /* platform */,
 				70A1E87512663FA100D56AC4 /* tBufferedList.h */,
 				70B549ED10B4791B0013E999 /* tArraySet.h */,
@@ -2591,6 +2597,7 @@
 				70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */,
 				4A587DBA13329E6B0037A393 /* cDynamicCount.h in Headers */,
 				4A587DBC13329E6B0037A393 /* cGradientCount.h in Headers */,
+				4A587EBE1332B1AA0037A393 /* cOrderedWeightedIndex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3067,6 +3074,7 @@
 				70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */,
 				4A587DB913329E6B0037A393 /* cDynamicCount.cc in Sources */,
 				4A587DBB13329E6B0037A393 /* cGradientCount.cc in Sources */,
+				4A587EBD1332B1AA0037A393 /* cOrderedWeightedIndex.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4108,7 +4116,6 @@
 				PER_ARCH_CFLAGS_i386 = "-DCOMPILE_ARCH=\\\"Intel\\\"";
 				PER_ARCH_CFLAGS_ppc = "-DCOMPILE_ARCH=\\\"G4-G5\\\" -mno-fused-madd -falign-loops-max-skip=15 -falign-jumps-max-skip=15 -falign-loops=16 -falign-jumps=16 -falign-functions=16 -falign-labels=16 -ftree-loop-linear -fsched-interblock -fgcse-sm -fgcse-las -mmultiple -mstring";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
 					"-Wextra",

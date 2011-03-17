@@ -40,6 +40,9 @@
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
+#ifndef tWeightedIndex_h
+#include "cOrderedWeightedIndex.h"
+#endif
 
 using namespace std;
 
@@ -55,6 +58,8 @@ class cAvidaContext;
 class cStringList;
 class cUserFeedback;
 class cWorld;
+
+const int MAX_INSTSET_SIZE = 255;
 
 class cInstSet
 {
@@ -78,7 +83,8 @@ public:
   tSmartArray<sInstEntry> m_lib_name_map;
   
   tArray<int> m_lib_nopmod_map;
-  tArray<int> m_mutation_chart;     // ID's represented by redundancy values.
+  
+  cOrderedWeightedIndex* m_mutation_index;     // Weighted index for instructions 
   
   bool m_has_costs;
   bool m_has_ft_costs;
@@ -89,9 +95,11 @@ public:
 
 public:
   inline cInstSet(cWorld* world, const cString& name, int hw_type, cInstLib* inst_lib)
-    : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_has_costs(false)
-    , m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false) { ; }
-  inline ~cInstSet() { ; }
+    : m_world(world), m_name(name), m_hw_type(hw_type), m_inst_lib(inst_lib), m_mutation_index(NULL), 
+      m_has_costs(false), m_has_ft_costs(false), m_has_energy_costs(false), m_has_res_costs(false) { ; }
+  cInstSet(const cInstSet&); 
+  cInstSet& operator=(const cInstSet&); 
+  inline ~cInstSet() { if (m_mutation_index != NULL) delete m_mutation_index; }
   
   const cString& GetInstSetName() const { return m_name; }
   int GetHardwareType() const { return m_hw_type; }
