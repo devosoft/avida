@@ -1,3 +1,6 @@
+#inst_set heads_sex
+#hw_type 0
+
 h-alloc    # Allocate space for child
 h-search   # Locate the end of the organism
 nop-C      #

@@ -1,0 +1,34 @@
+#filetype genotype_data
+#format id src src_args parents num_units total_units length merit gest_time fitness gen_born update_born update_deactivated depth hw_type inst_set sequence cells gest_offset lineage 
+# Structured Population Save
+# Wed Nov 17 11:56:56 2010
+#  1: ID
+#  2: Source
+#  3: Source Args
+#  4: Parent ID(s)
+#  5: Number of currently living organisms
+#  6: Total number of organisms that ever existed
+#  7: Genome Length
+#  8: Average Merit
+#  9: Average Gestation Time
+# 10: Average Fitness
+# 11: Generation Born
+# 12: Update Born
+# 13: Update Deactivated
+# 14: Phylogenetic Depth
+# 15: Hardware Type ID
+# 16: Inst Set Name
+# 17: Genome Sequence
+# 18: Occupied Cell IDs
+# 19: Gestation (CPU) Cycle Offsets
+# 20: Lineage Label
+
+1 org:file_load (none) (none) 2 2 100 97 389 0.249357 0 -1 -1 0 0 heads_default wzcagcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab 0,60 329,362 0,0 
+3 org:divide (none) 1 1 1 100 97 388 0.25 1 13 -1 1 0 heads_default wzcagccccccccccccccccccccccccccccccccccccccccccccccccccccnccccccccccccccccccccccccccccacccczvfcaxgab 59 362 0 
+8 org:divide (none) 3 1 1 100 0 0 0 3 39 -1 2 0 heads_default wzcagcccfcccccccccccccccdccccccccccccccccccccccccccccccccnccccccccccccccccccccccccccccacccczvfcaxgab 118 363 0 
+7 org:divide (none) 1 1 1 99 0 0 0 3 39 -1 1 0 heads_default wzcagcccccccccccccccccccccccccccccccccccccccrccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab 119 330 0 
+2 org:file_load (none) (none) 3 3 100 97 389 0.249357 0 -1 -1 0 0 heads_sex wzcagcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab 1740,1800,1919 362,388,329 0,0,0 
+6 org:divide (none) 2,2 1 1 101 0 0 0 3 38 -1 1 0 heads_sex wzcagccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab 1859 363 0 
+5 org:divide (none) 2,2 1 1 100 0 0 0 3 38 -1 1 0 heads_sex wzcagcccccccgcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccczvfcaxgab 1861 387 0 
+4 org:divide (none) 3 2 2 100 97 385 0.251948 2 26 -1 2 0 heads_default wzcagccccccccccccccccccccccccvcccccccccccccccccccccccccccnccccccccccccccccccccccccccccacccczvfcaxgab 3480,3540 363,362 0,0 
+9 org:divide (none) 1 1 1 100 0 0 0 3 40 -1 1 0 heads_default wzcagcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccgcccccccccccczvfcaxgab 3541 330 0 
