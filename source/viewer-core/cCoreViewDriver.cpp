@@ -6,19 +6,16 @@
  *  Copyright 2010 Michigan State University. All rights reserved.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -27,6 +24,7 @@
 #include "cAvidaContext.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
+#include "cCoreView_Map.h"
 #include "cCoreViewListener.h"
 #include "cDriverManager.h"
 #include "cHardwareBase.h"
@@ -41,7 +39,7 @@
 #include <iostream>
 
 
-cCoreViewDriver::cCoreViewDriver(cWorld* world) : m_world(world), m_done(false), m_paused(false)
+cCoreViewDriver::cCoreViewDriver(cWorld* world) : m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
 {
   cDriverManager::Register(this);
 
@@ -54,6 +52,8 @@ cCoreViewDriver::~cCoreViewDriver()
   m_mutex.Unlock();
   m_pause_cv.Broadcast();
   Join();
+  
+  delete m_map;
   
   cDriverManager::Unregister(this);
   delete m_world;
@@ -112,8 +112,13 @@ void cCoreViewDriver::Run()
     population.ProcessPostUpdate(ctx);
     
     
+    if (m_map) m_map->UpdateMaps(population);
     for (int i = 0; i < m_listeners.GetSize(); i++) {
-      m_listeners[i]->NotifyUpdate(stats.GetUpdate());
+      if (m_listeners[i]->WantsMap()) {
+        m_map->Retain();
+        m_listeners[i]->NotifyMap(m_map);
+      }
+      if (m_listeners[i]->WantsUpdate()) m_listeners[i]->NotifyUpdate(stats.GetUpdate());
     }
     
     
@@ -158,4 +163,11 @@ void cCoreViewDriver::NotifyComment(const cString& in_string)
 void cCoreViewDriver::NotifyWarning(const cString& in_string)
 {
   std::cout << "Warning: " << in_string << std::endl;
+}
+
+void cCoreViewDriver::AttachListener(cCoreViewListener* listener)
+{
+  m_listeners.Add(listener);
+  
+  if (listener->WantsMap() && !m_map) m_map = new cCoreView_Map(m_world);
 }

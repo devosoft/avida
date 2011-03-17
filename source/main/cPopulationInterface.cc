@@ -7,19 +7,16 @@
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -54,7 +51,7 @@ namespace std
 #endif
 
 
-cPopulationInterface::cPopulationInterface(cWorld* world) 
+cPopulationInterface::cPopulationInterface(cWorld* world)
 : m_world(world)
 , m_cell_id(-1)
 , m_deme_id(-1)
@@ -75,7 +72,7 @@ cOrganism* cPopulationInterface::GetOrganism() {
 	return GetCell()->GetOrganism();
 }
 
-cPopulationCell* cPopulationInterface::GetCell() { 
+cPopulationCell* cPopulationInterface::GetCell() {
 	return &m_world->GetPopulation().GetCell(m_cell_id);
 }
 
@@ -127,7 +124,7 @@ cOrganism* cPopulationInterface::GetNeighbor()
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-  
+
   return cell.ConnectionList().GetFirst()->GetOrganism();
 }
 
@@ -140,7 +137,7 @@ int cPopulationInterface::GetNumNeighbors()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-  
+
   return cell.ConnectionList().GetSize();
 }
 
@@ -148,7 +145,7 @@ void cPopulationInterface::GetNeighborhoodCellIDs(tArray<int>& list)
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-  
+
   list.Resize(cell.ConnectionList().GetSize());
   tConstListIterator<cPopulationCell> it(cell.ConnectionList());
   int i = 0;
@@ -177,7 +174,7 @@ void cPopulationInterface::Rotate(int direction)
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-	
+
   if (direction >= 0) cell.ConnectionList().CircNext();
   else cell.ConnectionList().CircPrev();
 }
@@ -189,9 +186,9 @@ int cPopulationInterface::GetInputAt(int& input_pointer)
   return cell.GetInputAt(input_pointer);
 }
 
-void cPopulationInterface::ResetInputs(cAvidaContext& ctx) 
-{ 
-  m_world->GetPopulation().GetCell(m_cell_id).ResetInputs(ctx); 
+void cPopulationInterface::ResetInputs(cAvidaContext& ctx)
+{
+  m_world->GetPopulation().GetCell(m_cell_id).ResetInputs(ctx);
 }
 
 const tArray<int>& cPopulationInterface::GetInputs() const
@@ -250,10 +247,10 @@ void cPopulationInterface::Kaboom(int distance, cAvidaContext* ctx) //JW
 void cPopulationInterface::SpawnDeme(cAvidaContext* ctx) //JW
 {
   // const int num_demes = m_world->GetPopulation().GetNumDemes();
-	
+
   // Spawn the current deme; no target ID will put it into a random deme.
   const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();
-	
+
   m_world->GetPopulation().SpawnDeme(deme_id, ctx); //JW
 }
 
@@ -261,7 +258,7 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
 {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-  
+
   switch(m_world->GetConfig().NET_STYLE.Get())
   {
 		case 1: // Receiver Facing
@@ -271,14 +268,14 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
       if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL) return msg;
     }
 			break;
-			
+
 		case 0: // Random Next - First Available
 		default:
     {
       const int num_neighbors = cell.ConnectionList().GetSize();
       for (int i = 0; i < num_neighbors; i++) {
         cell.ConnectionList().CircNext();
-        
+
         cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
         cOrgSinkMessage* msg = NULL;
         if (cur_neighbor != NULL && (msg = cur_neighbor->NetPop()) != NULL ) return msg;
@@ -286,7 +283,7 @@ cOrgSinkMessage* cPopulationInterface::NetReceive()
     }
 			break;
   }
-  
+
   return NULL;
 }
 
@@ -300,19 +297,19 @@ int cPopulationInterface::ReceiveValue()
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-  
+
   const int num_neighbors = cell.ConnectionList().GetSize();
   for (int i = 0; i < num_neighbors; i++) {
     cell.ConnectionList().CircNext();
-    
+
     cOrganism* cur_neighbor = cell.ConnectionList().GetFirst()->GetOrganism();
     if (cur_neighbor == NULL || cur_neighbor->GetSentActive() == false) {
       continue;
     }
-    
+
     return cur_neighbor->RetrieveSentValue();
   }
-  
+
   return 0;
 }
 
@@ -331,7 +328,7 @@ bool cPopulationInterface::InjectParasite(cOrganism* host, cBioUnit* parent, con
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == host);
-  
+
   return m_world->GetPopulation().ActivateParasite(host, parent, label, injected_code);
 }
 
@@ -349,10 +346,10 @@ bool cPopulationInterface::TestOnDivide()
 /*! Internal-use method to consolidate message-sending code.
  */
 bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell) {
-	
+
 	bool dropped=false;
 	bool lost=false;
-	
+
 	static const double drop_prob = m_world->GetConfig().NET_DROP_PROB.Get();
   if((drop_prob > 0.0) && m_world->GetRandom().P(drop_prob)) {
 		// message dropped
@@ -360,22 +357,22 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
 		GetDeme()->messageSendFailed();
 		dropped = true;
 	}
-	
+
 	// Fail if the cell we're facing is not occupied.
   if(!rcell.IsOccupied()) {
 		GetDeme()->messageSendFailed();
 		lost = true;
 	}
-	
+
 	// record this message, regardless of whether it's actually received.
 	if(m_world->GetConfig().NET_LOG_MESSAGES.Get()) {
 		m_world->GetStats().LogMessage(msg, dropped, lost);
 	}
-	
+
 	if(dropped || lost) {
 		return false;
 	}
-	
+
 	cOrganism* recvr = rcell.GetOrganism();
   assert(recvr != 0);
   recvr->ReceiveMessage(msg);
@@ -387,36 +384,36 @@ bool cPopulationInterface::SendMessage(cOrgMessage& msg, cPopulationCell& rcell)
 
 bool cPopulationInterface::SendMessage(cOrgMessage& msg, int cellid) {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(cellid);
-	return SendMessage(msg, cell);	
+	return SendMessage(msg, cell);
 }
 
 
-/*! Send a message to the faced organism, failing if this cell does not have 
+/*! Send a message to the faced organism, failing if this cell does not have
  neighbors or if the cell currently faced is not occupied.
  */
 bool cPopulationInterface::SendMessage(cOrgMessage& msg) {
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
 	assert(cell.IsOccupied()); // This organism; sanity.
-	
+
   cPopulationCell* rcell = cell.ConnectionList().GetFirst();
-  assert(rcell != 0); // Cells should never be null.	
+  assert(rcell != 0); // Cells should never be null.
 	return SendMessage(msg, *rcell);
 }
 
 
-/*! Send a message to the faced organism, failing if this cell does not have 
+/*! Send a message to the faced organism, failing if this cell does not have
  neighbors or if the cell currently faced is not occupied. */
 bool cPopulationInterface::BroadcastMessage(cOrgMessage& msg, int depth) {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied()); // This organism; sanity.
-	
+
 	// Get the set of cells that are within range.
 	std::set<cPopulationCell*> cell_set;
 	cell.GetNeighboringCells(cell_set, depth);
-	
+
 	// Remove this cell from the set!
 	cell_set.erase(&cell);
-	
+
 	// Now, send a message towards each cell:
 	for(std::set<cPopulationCell*>::iterator i=cell_set.begin(); i!=cell_set.end(); ++i) {
 		SendMessage(msg, **i);
@@ -429,15 +426,15 @@ bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
   bool successfully_sent(false);
   cPopulationCell& scell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(scell.IsOccupied()); // This organism; sanity.
-	
+
   const int ALARM_SELF = m_world->GetConfig().ALARM_SELF.Get(); // does an alarm affect the sender; 0=no  non-0=yes
-  
+
   if(bcast_range > 1) { // multi-hop messaging
     cDeme& deme = m_world->GetPopulation().GetDeme(GetDemeID());
     for(int i = 0; i < deme.GetSize(); i++) {
       int possible_receiver_id = deme.GetCellID(i);
       cPopulationCell& rcell = m_world->GetPopulation().GetCell(possible_receiver_id);
-			
+
       if(rcell.IsOccupied() && possible_receiver_id != GetCellID()) {
         //check distance
         pair<int, int> sender_pos = deme.GetCellPosition(GetCellID());
@@ -457,7 +454,7 @@ bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
     for(int i = 0; i < scell.ConnectionList().GetSize(); i++) {
       cPopulationCell* rcell = scell.ConnectionList().GetPos(i);
       assert(rcell != NULL); // Cells should never be null.
-			
+
       // Fail if the cell we're facing is not occupied.
       if(!rcell->IsOccupied())
         continue;
@@ -467,7 +464,7 @@ bool cPopulationInterface::BcastAlarm(int jump_label, int bcast_range) {
       successfully_sent = true;
     }
   }
-  
+
   if(ALARM_SELF) {
     scell.GetOrganism()->moveIPtoAlarmLabel(jump_label);
   }
@@ -489,7 +486,7 @@ void cPopulationInterface::DivideOrgTestamentAmongDeme(double value){
 void cPopulationInterface::SendFlash() {
   cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
   assert(cell.IsOccupied());
-	
+
   for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
     cPopulationCell* neighbor = cell.ConnectionList().GetFirst();
     if(neighbor->IsOccupied()) {
@@ -505,173 +502,173 @@ int cPopulationInterface::GetStateGridID(cAvidaContext& ctx)
 }
 
 /* Rotate an organism to face the neighbor with the highest reputation */
-void cPopulationInterface::RotateToGreatestReputation() 
+void cPopulationInterface::RotateToGreatestReputation()
 {
-	
+
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID());
-	int high_rep=-1; 
+	int high_rep=-1;
 	vector <int> high_rep_orgs;
-	
-	
+
+
 	// loop to find the max reputation
 	for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
 		const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
 		// cell->organism, if occupied, check reputation, etc.
 		if (IsNeighborCellOccupied()) {
 			cOrganism* cur_neighbor = faced_cell->GetOrganism();
-			
-			// if it has high reputation	
+
+			// if it has high reputation
 			if (cur_neighbor->GetReputation() >= high_rep) {
 				if (cur_neighbor->GetReputation() > high_rep) {
 					high_rep = cur_neighbor->GetReputation();
 					high_rep_orgs.clear();
 				}
-				high_rep_orgs.push_back(cur_neighbor->GetID()); 
-			} 
+				high_rep_orgs.push_back(cur_neighbor->GetID());
+			}
 		}
-		
+
 		// check the next neighbor
 		cell.ConnectionList().CircNext();
 	}
-	
+
 	// Pick an organism to donate to
-	
+
 	if (high_rep_orgs.size() > 0) {
-		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size()); 
+		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size());
 		int high_org_id = high_rep_orgs[rand_num];
-		
+
 		for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
 			const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
-			
+
 			if (IsNeighborCellOccupied()) {
-				
+
 				cOrganism* cur_neighbor = faced_cell->GetOrganism();
-				
-				// if it has high reputation	
+
+				// if it has high reputation
 				if (cur_neighbor->GetID() == high_org_id) {
 					break;
 				}
 			}
-			
+
 			cell.ConnectionList().CircNext();
-			
+
 		}
 	}
-	
+
 }
 
-/* Rotate an organism to face the neighbor with the highest reputation 
+/* Rotate an organism to face the neighbor with the highest reputation
  where the neighbor has a different tag than the organism*/
-void cPopulationInterface::RotateToGreatestReputationWithDifferentTag(int tag) 
+void cPopulationInterface::RotateToGreatestReputationWithDifferentTag(int tag)
 {
-	
+
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID());
-	int high_rep=-1; 
+	int high_rep=-1;
 	vector <int> high_rep_orgs;
-	
+
 	// loop to find the max reputation
 	for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
 		const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
 		// cell->organism, if occupied, check reputation, etc.
 		if (IsNeighborCellOccupied()) {
 			cOrganism* cur_neighbor = faced_cell->GetOrganism();
-			
-			// if it has high reputation	
+
+			// if it has high reputation
 			if ((cur_neighbor->GetTagLabel() != tag) && (cur_neighbor->GetReputation() >= high_rep)) {
 				if (cur_neighbor->GetReputation() > high_rep) {
 					high_rep = cur_neighbor->GetReputation();
 					high_rep_orgs.clear();
 				}
-				high_rep_orgs.push_back(cur_neighbor->GetID()); 
-			} 
+				high_rep_orgs.push_back(cur_neighbor->GetID());
+			}
 		}
-		
+
 		// check the next neighbor
 		cell.ConnectionList().CircNext();
 	}
-	
+
 	// Pick an organism to donate to
-	
+
 	if (high_rep_orgs.size() > 0) {
-		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size()); 
+		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size());
 		int high_org_id = high_rep_orgs[rand_num];
-		
+
 		for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
 			const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
-			
+
 			if (IsNeighborCellOccupied()) {
-				
+
 				cOrganism* cur_neighbor = faced_cell->GetOrganism();
-				
-				// if it has high reputation	
+
+				// if it has high reputation
 				if (cur_neighbor->GetID() == high_org_id) {
 					break;
 				}
 			}
-			
+
 			cell.ConnectionList().CircNext();
-			
+
 		}
-		
-		
-		
+
+
+
 	}
-	
+
 }
 
-/* Rotate an organism to face the neighbor with the highest reputation 
+/* Rotate an organism to face the neighbor with the highest reputation
  where the neighbor has a different tag than the organism*/
-void cPopulationInterface::RotateToGreatestReputationWithDifferentLineage(int line) 
+void cPopulationInterface::RotateToGreatestReputationWithDifferentLineage(int line)
 {
-	
+
 	cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID());
-	int high_rep=-1; 
+	int high_rep=-1;
 	vector <int> high_rep_orgs;
-	
+
 	// loop to find the max reputation
 	for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
 		const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
 		// cell->organism, if occupied, check reputation, etc.
 		if (IsNeighborCellOccupied()) {
 			cOrganism* cur_neighbor = faced_cell->GetOrganism();
-			
-			// if it has high reputation	
+
+			// if it has high reputation
 			if ((cur_neighbor->GetLineageLabel() != line) && (cur_neighbor->GetReputation() >= high_rep)) {
 				if (cur_neighbor->GetReputation() > high_rep) {
 					high_rep = cur_neighbor->GetReputation();
 					high_rep_orgs.clear();
 				}
-				high_rep_orgs.push_back(cur_neighbor->GetID()); 
-			} 
+				high_rep_orgs.push_back(cur_neighbor->GetID());
+			}
 		}
-		
+
 		// check the next neighbor
 		cell.ConnectionList().CircNext();
 	}
-	
+
 	// Pick an organism to donate to
-	
+
 	if (high_rep_orgs.size() > 0) {
-		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size()); 
+		unsigned int rand_num = m_world->GetRandom().GetUInt(0, high_rep_orgs.size());
 		int high_org_id = high_rep_orgs[rand_num];
-		
+
 		for(int i=0; i<cell.ConnectionList().GetSize(); ++i) {
 			const cPopulationCell* faced_cell = cell.ConnectionList().GetFirst();
-			
+
 			if (IsNeighborCellOccupied()) {
-				
+
 				cOrganism* cur_neighbor = faced_cell->GetOrganism();
-				
-				// if it has high reputation	
+
+				// if it has high reputation
 				if (cur_neighbor->GetID() == high_org_id) {
 					break;
 				}
 			}
-			
+
 			cell.ConnectionList().CircNext();
-			
+
 		}
-	}	
+	}
 }
 
 /*! Link this organism's cell to the cell it is currently facing.
@@ -688,7 +685,7 @@ void cPopulationInterface::CreateLinkByFacing(double weight) {
 void cPopulationInterface::CreateLinkByXY(int x, int y, double weight) {
 	cDeme* deme = GetDeme(); assert(deme);
 	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	// the static casts here are to fix a problem with -2^31 being sent in as a 
+	// the static casts here are to fix a problem with -2^31 being sent in as a
 	// cell coordinate.  the problem is that a 2s-complement int can hold a negative
 	// number whose absolute value is too large for the int to hold.  when this happens,
 	// abs returns the value unmodified.
@@ -706,7 +703,7 @@ void cPopulationInterface::CreateLinkByXY(int x, int y, double weight) {
 void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
 	cDeme* deme = GetDeme(); assert(deme);
 	cPopulationCell* this_cell = GetCell(); assert(this_cell);
-	// the static casts here are to fix a problem with -2^31 being sent in as a 
+	// the static casts here are to fix a problem with -2^31 being sent in as a
 	// cell coordinate.  the problem is that a 2s-complement int can hold a negative
 	// number whose absolute value is too large for the int to hold.  when this happens,
 	// abs returns the value unmodified.
@@ -718,7 +715,7 @@ void cPopulationInterface::CreateLinkByIndex(int idx, double weight) {
 
 /*! Broadcast a message to all organisms that are connected by this network.
  */
-bool cPopulationInterface::NetworkBroadcast(cOrgMessage& msg) {	
+bool cPopulationInterface::NetworkBroadcast(cOrgMessage& msg) {
 	cDeme* deme = GetDeme(); assert(deme);
 	cPopulationCell* this_cell = GetCell(); assert(this_cell);
 	deme->GetNetwork().BroadcastToNeighbors(*this_cell, msg, this);
@@ -753,13 +750,13 @@ bool cPopulationInterface::NetworkSelect(int x) {
 }
 
 /*! Called when this individual is the donor organism during conjugation.
- 
+
  This method causes this individual to "donate" a fragment of its own genome to
  another organism selected from the population.
  */
 void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 	cPopulationCell* target=0;
-	
+
 	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
 		case 0: { // selected at random from neighborhood
 			std::set<cPopulationCell*> occupied_cell_set;
@@ -788,7 +785,7 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 	}
 	assert(target != 0);
 	fragment_list_type fragments;
-	cGenomeUtil::RandomSplit(ctx, 
+	cGenomeUtil::RandomSplit(ctx,
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
 													 GetOrganism()->GetGenome().GetSequence(),
@@ -798,18 +795,18 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 
 
 /*! Called when this organism "requests" an HGT conjugation.
- 
+
  Technically, organisms don't request an HGT conjugation.  However, this provides
  an alternative to population-level conjugational events.  Specifically, whenever
  an organism replicates, there is the possibility that its offspring conjugates
  with another organism in the population -- that is what we check here.
- 
+
  This method is closely related to HGT donation, except here we're looking for
  the donatOR, instead of the donatEE.
  */
 void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 	cPopulationCell* source=0;
-	
+
 	switch(m_world->GetConfig().HGT_CONJUGATION_METHOD.Get()) {
 		case 0: { // selected at random from neighborhood
 			std::set<cPopulationCell*> occupied_cell_set;
@@ -838,33 +835,33 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 	}
 	assert(source != 0);
 	fragment_list_type fragments;
-	cGenomeUtil::RandomSplit(ctx, 
+	cGenomeUtil::RandomSplit(ctx,
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),
 													 source->GetOrganism()->GetGenome().GetSequence(),
 													 fragments);
-	ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);	
+	ReceiveHGTDonation(fragments[ctx.GetRandom().GetInt(fragments.size())]);
 }
 
 
-/*! Perform an HGT mutation on this offspring. 
- 
+/*! Perform an HGT mutation on this offspring.
+
  HGT mutations are location-dependent, hence they are piped through the populatin
  interface as opposed to being implemented in the CPU or organism.
 
- There is the possibility that more than one HGT mutation occurs when this method 
+ There is the possibility that more than one HGT mutation occurs when this method
  is called.
  */
 void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
 	InitHGTSupport();
-	
+
 	// first, gather up all the fragments that we're going to be inserting into this offspring:
 	// these come from a per-replication conjugational event:
 	if((m_world->GetConfig().HGT_CONJUGATION_P.Get() > 0.0)
 		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_CONJUGATION_P.Get()))) {
 		DoHGTConjugation(ctx);
-	}	
-	
+	}
+
 	// the pending list includes both the fragments selected via the above process,
 	// as well as from population-level conjugational events (see cPopulationActions.cc:cActionAvidianConjugation).
 	fragment_list_type& fragments = m_hgt_support->_pending;
@@ -872,10 +869,10 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 	// these come from "natural" competence (ie, eating the dead):
 	if((m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)
 		 && (ctx.GetRandom().P(m_world->GetConfig().HGT_COMPETENCE_P.Get()))) {
-		
+
 		// get this organism's cell:
 		cPopulationCell& cell = m_world->GetPopulation().GetCell(m_cell_id);
-		
+
 		// the hgt source controls where the genetic material for HGT comes from.
 		switch(m_world->GetConfig().HGT_SOURCE.Get()) {
 			case 0: { // source is other genomes, nothing to do here (default)
@@ -893,19 +890,19 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 				break;
 			}
 		}
-		
+
 		// do we have any fragments available?
 		if(cell.CountGenomeFragments() > 0) {
 			// add a randomly-selected fragment to the list of fragments to be HGT'd,
 			// remove it from the cell, and adjust the level of HGT resource.
 			fragment_list_type::iterator selected=cell.GetFragments().begin();
 			std::advance(selected, ctx.GetRandom().GetInt(cell.GetFragments().size()));
-			fragments.insert(fragments.end(), *selected);			
+			fragments.insert(fragments.end(), *selected);
 			m_world->GetPopulation().AdjustHGTResource(-selected->GetSize());
 			cell.GetFragments().erase(selected);
 		}
 	}
-	
+
 	// now, for each fragment being HGT'd, figure out where to put it:
 	for(fragment_list_type::iterator i=fragments.begin(); i!=fragments.end(); ++i) {
 		cGenomeUtil::substring_match location;
@@ -927,7 +924,7 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 				break;
 			}
 		}
-		
+
 		// at this stage, we have a fragment and a location we're going to put it.
 		// there are various transformations to this fragment that we could perform,
 		// more as controls than anything else.
@@ -949,9 +946,9 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 			default: { // error
 				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_XFORM is set to an invalid value.");
 				break;
-			}				
+			}
 		}
-		
+
 		// do the mutation; we currently support insertions and replacements, but this can
 		// be extended in the same way as fragment selection if need be.
 		if(ctx.GetRandom().P(m_world->GetConfig().HGT_INSERTION_MUT_P.Get())) {
@@ -962,11 +959,11 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring)
 			// respecting circularity.
 			offspring.GetSequence().Replace(*i, location.begin, location.end);
 		}
-		
+
 		// stats tracking:
 		m_world->GetStats().GenomeFragmentInserted(GetOrganism(), *i, location);
 	}
-	
+
 	// clean-up; be sure to empty the pending list so that we don't end up doing an HGT
 	// operation multiple times on the same fragment.
 	fragments.clear();
@@ -988,7 +985,7 @@ void cPopulationInterface::HGTMatchPlacement(cAvidaContext& ctx, const cSequence
  In this fragment selection method, the
  match location within the genome is calculated on a "trimmed" fragment.  Specifically,
  the trimmed fragment has all duplicate instructions at its end removed prior to the match.
- 
+
  Mutations to the offspring are still performed using the entire fragment, so this effectively
  increases the insertion rate.  E.g., hgt(abcde, abcccc) -> abccccde.
  */
@@ -1000,14 +997,14 @@ void cPopulationInterface::HGTTrimmedPlacement(cAvidaContext& ctx, const cSequen
 	while((trimmed.GetSize() >= 2) && (trimmed[trimmed.GetSize()-1] == trimmed[trimmed.GetSize()-2])) {
 		trimmed.Remove(trimmed.GetSize()-1);
 	}
-	
+
 	// find the location within the offspring's genome that best matches the selected fragment:
 	location = cGenomeUtil::FindUnbiasedCircularMatch(ctx, offspring, trimmed);
 }
 
 
 /*! Place the fragment at a random location.
- 
+
  Here we select a random location for the fragment within the offspring.
  The beginning of the fragment location is selected at random, while the end is selected a
  random distance (up to the length of the selected fragment * 2) instructions away.

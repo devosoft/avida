@@ -25,10 +25,11 @@ void cStatsScreen::Draw(cAvidaContext& ctx)
 
   Print(1,  0, "Tot Births.:");
   Print(2,  0, "Breed True.:");
-  Print(3,  0, "Parasites..:");
-  Print(4,  0, "Energy.....:");
-  Print(5,  0, "Max Fitness:");
-  Print(6,  0, "Max Merit..:");
+  Print(3,  0, "Threads....:");
+  Print(4,  0, "Parasites..:");
+  Print(5,  0, "Energy.....:");
+  Print(6,  0, "Max Fitness:");
+  Print(7,  0, "Max Merit..:");
 
   Print(1, 23, "-- Dominant Genotype --");
   Print(2, 23, "Name........:");
@@ -53,6 +54,7 @@ void cStatsScreen::Draw(cAvidaContext& ctx)
   Print(10, 50, "BirthRate:");
   Print(11, 50, "TreeDepth:");
   Print(12, 50, "Gen. Ave.:");
+  Print(13, 50, "Threads..:");
 
 
   int task_num = task_offset;
@@ -95,10 +97,11 @@ void cStatsScreen::Update(cAvidaContext& ctx)
 
   Print(1, 13, "%7d",   stats.GetNumBirths());
   Print(2, 13, "%7d",   stats.GetBreedTrue());
-  Print(3, 13, "%7d",   stats.GetNumParasites());
-  PrintDouble(4, 13, stats.GetEnergy());
-  PrintDouble(5, 13, stats.GetMaxFitness());
-  PrintDouble(6, 13, stats.GetMaxMerit());
+  Print(3, 13, "%7d",   stats.GetNumThreads());
+  Print(4, 13, "%7d",   stats.GetNumParasites());
+  PrintDouble(5, 13, stats.GetEnergy());
+  PrintDouble(6, 13, stats.GetMaxFitness());
+  PrintDouble(7, 13, stats.GetMaxMerit());
 
   Print(9,  13, "%5d", stats.GetNumCreatures());
   Print(10, 13, "%5d", stats.GetNumGenotypes());
@@ -135,7 +138,6 @@ void cStatsScreen::Update(cAvidaContext& ctx)
     PrintDouble(10, 62, ((double) info.GetConfig().AVE_TIME_SLICE.Get()) * metrics->GetFitness() / stats.GetAveMerit());
   }
   Print(11, 62, "%7d", best_gen->GetDepth());
-  // Print(12, 63, "");
 
   PrintDouble(2, 71, stats.GetAveFitness());
   PrintDouble(3, 71, stats.GetAveMerit());
@@ -157,6 +159,7 @@ void cStatsScreen::Update(cAvidaContext& ctx)
   }
   PrintDouble(11, 71, stats.SumGenotypeDepth().Average());
   PrintDouble(12, 71, stats.SumGeneration().Average());
+  PrintDouble(13, 71, (double)stats.GetNumThreads() / (double)stats.GetNumCreatures());
 
   // This section needs to be changed to work with new task_lib @TCC
   int task_num = task_offset;

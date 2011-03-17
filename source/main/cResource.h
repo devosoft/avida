@@ -7,19 +7,16 @@
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software Foundation,
- *  Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -82,6 +79,7 @@ private:
   double ydiffuse;
   double ygravity;
   bool deme_resource;
+  bool org_resources;
   bool energy_resource;  // only implemented for spacial resource
   bool dynamic_resource; //JW
   int peaks; //JW
@@ -122,11 +120,12 @@ private:
   int m_move_speed;
   bool isgradient;
   tArray<cCellResource> cell_list;
-  tArray<int> cell_id_list;  
+  tArray<int> cell_id_list;
 	bool hgt_metabolize;
-  
+	bool collectable;
+
   cResource(); // @not_implemented
-  
+
 public:
   cResource(const cString& _name, int _id);
   ~cResource() { ; }
@@ -192,6 +191,7 @@ public:
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
+  bool GetCollectable() { return collectable; }
 
   void SetInitial(double _initial) { initial = _initial; }
   void SetInflow (double _inflow ) { inflow  = _inflow; }
@@ -209,7 +209,9 @@ public:
   void SetXGravity(double _xgravity) { xgravity = _xgravity; }
   void SetYDiffuse(double _ydiffuse) { ydiffuse = _ydiffuse; }
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
+  void SetCollectable(int _collectable) { collectable = _collectable; }
   bool SetDemeResource(cString _deme_resource);
+  bool SetOrgResource(cString _org_resource);  
   bool SetEnergyResource(cString _energy_resource); 
   void SetDynamicResource(bool _dynamic_resource) { dynamic_resource = _dynamic_resource; } //JW
   void SetPeaks(int _peaks) { peaks = _peaks; } //JW
@@ -251,7 +253,7 @@ public:
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
-  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial, 
+  void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,
                           double _inflow, double _outflow);
   void SetCellIdList(tArray<int>& id_list); //SLG partial resources
 	void SetHGTMetabolize(int _in) { hgt_metabolize = _in; }

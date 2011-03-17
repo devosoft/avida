@@ -6,22 +6,21 @@
 //  Copyright 2010 Michigan State University. All rights reserved.
 //
 //
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; version 2
-//  of the License.
+//  This file is part of Avida.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+//  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+//  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License along with Avida.
+//  If not, see <http://www.gnu.org/licenses/>.
 //
 
 #import "AvidaRun.h"
+
+#import "CoreViewListener.h"
 
 #include "AvidaTools.h"
 
@@ -39,6 +38,7 @@ using namespace AvidaTools;
 - (id) init {
   return nil;
 }
+
 
 - (AvidaRun*) initWithDirectory: (NSURL*) dir {
   self = [super init];
@@ -61,9 +61,7 @@ using namespace AvidaTools;
       return nil;
     }
     
-    
     cWorld* world = cWorld::Initialize(cfg, config_path, &feedback);
-    
     
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
@@ -83,27 +81,6 @@ using namespace AvidaTools;
   return self;
 }
 
-- (bool) isPaused {
-  return (self->driver->GetPauseState() == DRIVER_PAUSED);
-}
-
-- (void) pause {
-  driver->SetPause();
-}
-
-- (void) resume {
-  driver->Resume();
-}
-
-
-- (void) attachListener: (cCoreViewListener*)listener {
-  if (driver) driver->AttachListener(listener);
-}
-
-- (void) detachListener: (cCoreViewListener*)listener {
-  if (driver) driver->DetachListener(listener);
-}
-
 
 - (void) dealloc {
   delete driver;
@@ -111,10 +88,42 @@ using namespace AvidaTools;
   [super dealloc];
 }
 
+
 - (void) finalize { 
   delete driver;
   driver = NULL;
   [super finalize];
 }
+
+
+- (bool) isPaused {
+  return (self->driver->GetPauseState() == DRIVER_PAUSED);
+}
+
+
+- (void) pause {
+  driver->SetPause();
+}
+
+
+- (void) resume {
+  driver->Resume();
+}
+
+
+- (void) end {
+  driver->SetDone();
+}
+
+
+- (void) attachListener: (id<CoreViewListener>)listener {
+  if (driver) driver->AttachListener([listener listener]);
+}
+
+
+- (void) detachListener: (id<CoreViewListener>)listener {
+  if (driver) driver->DetachListener([listener listener]);
+}
+
 
 @end

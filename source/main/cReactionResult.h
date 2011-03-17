@@ -7,19 +7,16 @@
  *  Copyright 1993-2004 California Institute of Technology.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -35,11 +32,12 @@ private:
   tArray<double> resources_produced;
   tArray<double> resources_detected;  //Initialize to -1.0
   tArray<double> internal_resources_consumed;
+  tArray<double> internal_resources_produced;
   tArray<bool> tasks_done;
   tArray<double> tasks_quality;
   tArray<double> tasks_value;
   tArray<bool> reactions_triggered;
-  tArray<double> reaction_add_bonus; 
+  tArray<double> reaction_add_bonus;
   tArray<double> task_plasticity;
   double energy_add;
   double bonus_add;
@@ -55,9 +53,9 @@ private:
   double deme_add_bonus; //!< Additive bonus applied to the deme as a result of this reaction.
   double deme_mult_bonus; //!< Multiplicative bonus applied to the deme as a result of this reaction.
   bool active_deme_reaction; //!< Whether this reaction result includes a deme merit component.
-  
+
   inline void ActivateReaction();
-  
+
   cReactionResult(); // @not_implemented
   cReactionResult(const cReactionResult&); // @not_implemented
   cReactionResult& operator=(const cReactionResult&); // @not_implemented
@@ -69,10 +67,10 @@ public:
   bool GetActive() const { return active_reaction; }
   bool GetActiveDeme() const { return active_deme_reaction; }
   void Invalidate() { active_reaction = false; }
-  
+
 
   void Consume(int id, double num, bool is_env_resource);
-  void Produce(int id, double num);
+  void Produce(int id, double num, bool is_env_resource);
   void Detect(int id, double num);
   void Lethal(bool flag);
   void Sterilize(bool flag);
@@ -88,12 +86,13 @@ public:
   void MultGermline(double value);
 
   void AddInst(const cString& inst);
-  
+
   double GetConsumed(int id);
   double GetProduced(int id);
   double GetDetected(int id);
   double GetInternalConsumed(int id);
-  bool GetLethal();  
+  double GetInternalProduced(int id);
+  bool GetLethal();
   bool GetSterilize();
   bool ReactionTriggered(int id);
   bool TaskDone(int id);

@@ -7,19 +7,16 @@
  *  Copyright 1993-2004 California Institute of Technology.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -33,6 +30,7 @@ cReactionResult::cReactionResult(const int num_resources,
   , resources_produced(num_resources)
   , resources_detected(num_resources)
   , internal_resources_consumed(num_resources)
+  , internal_resources_produced(num_resources)
   , tasks_done(num_tasks)
   , tasks_quality(num_tasks)
   , tasks_value(num_tasks)
@@ -52,6 +50,7 @@ void cReactionResult::ActivateReaction()
   resources_produced.SetAll(0.0);
   resources_detected.SetAll(-1.0);
   internal_resources_consumed.SetAll(0.0);
+  internal_resources_produced.SetAll(0.0);
   tasks_done.SetAll(false);
   tasks_quality.SetAll(0.0);
   tasks_value.SetAll(0.0);
@@ -80,17 +79,22 @@ void cReactionResult::Consume(int id, double num, bool is_env_resource)
 {
   ActivateReaction();
   if(is_env_resource) { resources_consumed[id] += num; }
-  else { 
-    used_env_resource = false; 
+  else {
+    used_env_resource = false;
     internal_resources_consumed[id] += num;
   }
 }
 
 
-void cReactionResult::Produce(int id, double num)
+void cReactionResult::Produce(int id, double num, bool is_env_resource)
 {
   ActivateReaction();
-  resources_produced[id] += num;
+
+  if(is_env_resource) { resources_produced[id] += num; }
+  else {
+    used_env_resource = false;
+    internal_resources_produced[id] += num;
+  }
 }
 
 
@@ -203,6 +207,12 @@ double cReactionResult::GetInternalConsumed(int id)
 {
   if (GetActive() == false) return 0.0;
   return internal_resources_consumed[id];
+}
+
+double cReactionResult::GetInternalProduced(int id)
+{
+  if (GetActive() == false) return 0.0;
+  return internal_resources_produced[id];
 }
 
 bool cReactionResult::GetLethal()

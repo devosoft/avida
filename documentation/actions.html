@@ -9,7 +9,7 @@
 
 <div class="revision">
 Revised 2006-09-03 DMB
-<br>Generated Tue Nov 16 16:47:49 2010 by make_actions_html</div>
+<br>Generated Wed Dec  8 14:18:59 2010 by make_actions_html</div>
 
 <p>
 <a href="index.html">Return to the Index</a> &nbsp;|&nbsp;
@@ -94,8 +94,10 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#DumpExecutionRatioGrid">DumpExecutionRatioGrid</a><br>
       <a href="#DumpFitnessGrid">DumpFitnessGrid</a><br>
       <a href="#DumpGenotypeColorGrid">DumpGenotypeColorGrid</a><br>
+      <a href="#DumpHostTaskGrid">DumpHostTaskGrid</a><br>
       <a href="#DumpLandscape">DumpLandscape</a><br>
       <a href="#DumpMemory">DumpMemory</a><br>
+      <a href="#DumpParasiteTaskGrid">DumpParasiteTaskGrid</a><br>
       <a href="#DumpPhenotypeIDGrid">DumpPhenotypeIDGrid</a><br>
       <a href="#DumpReactionGrid">DumpReactionGrid</a><br>
       <a href="#DumpReceiverGrid">DumpReceiverGrid</a><br>
@@ -149,8 +151,8 @@ For a brief overview of writing a new action, please see <a href="#CreateAction"
       <a href="#NewTrial">NewTrial</a><br>
       <a href="#OutflowScaledResource">OutflowScaledResource</a><br>
       <a href="#PairTestLandscape">PairTestLandscape</a><br>
-      <a href="#Pause">Pause</a><br>
     <td valign="top">
+      <a href="#Pause">Pause</a><br>
       <a href="#PrecalcLandscape">PrecalcLandscape</a><br>
       <a href="#Pred_DemeEventMoveBetweenTargets">Pred_DemeEventMoveBetweenTargets</a><br>
       <a href="#Pred_DemeEventMoveCenter">Pred_DemeEventMoveCenter</a><br>
@@ -1614,11 +1616,32 @@ a single, complete file for each trigger.
   </p>
 </li>
 <li><p>
+  <strong><a name="DumpHostTaskGrid">DumpHostTaskGrid</a></strong>
+  </p>
+  <p>
+    Print out the grid of takss that host organisms did in the last gestation cycle. For 
+  each host, tasks are first encoded as a binary string (e.g. 100000001 means that 
+  organism is doing NOT and EQU and then reported as a base-10 number (257 in the example above).
+
+  </p>
+</li>
+<li><p>
   <strong><a name="DumpMemory">DumpMemory</a></strong>
   <i>[string fname=""]</i>
   </p>
   <p>
     Dump memory summary information.
+
+  </p>
+</li>
+<li><p>
+  <strong><a name="DumpParasiteTaskGrid">DumpParasiteTaskGrid</a></strong>
+  <i>[string fname=""]</i>
+  </p>
+  <p>
+    Print out the grid of tasks that parasites did last gestation. For each parasite, tasks are first 
+  encoded as a binary string (e.g. 100000001 means that organism is doing NOT and EQU
+  and then reported as a base-10 number (257 in the example above).
 
   </p>
 </li>

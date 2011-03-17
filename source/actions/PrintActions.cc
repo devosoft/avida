@@ -6,19 +6,16 @@
  *  Copyright 1999-2010 Michigan State University. All rights reserved.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -2948,9 +2945,106 @@ public:
   }
 };
 
+//LZ - dump task grid for only the hosts, skip the test cpu and just output the last
+//gestation cycle tasks.
+class cActionDumpHostTaskGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpHostTaskGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_task_hosts.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+    
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        int task_sum = 0;
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          cPhenotype& test_phenotype = organism->GetPhenotype();
+          
+          for (int k = 0; k < num_tasks; k++) {
+            if (test_phenotype.GetLastHostTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k)); 
+          }
+        }
+        else { task_sum = -1; }
+        fp << task_sum << " ";
+      }
+      fp << endl;
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+//LZ - dump the parasite tasks, ignoring the test cpu and just output what was in the phenotype for the 
+//last gestation of the parasite. 
+class cActionDumpParasiteTaskGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpParasiteTaskGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_task_parasite.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+    
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        int task_sum = 0;
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          if(organism->GetNumParasites() > 0)
+          {
+            cPhenotype& test_phenotype = organism->GetPhenotype();
+            
+            for (int k = 0; k < num_tasks; k++) {
+              if (test_phenotype.GetLastParasiteTaskCount()[k] > 0) task_sum += static_cast<int>(pow(2.0, k)); 
+            }
+            
+          }
+          else { task_sum = -1; }
+        }
+        else { task_sum = -1; }
+        fp << task_sum << " ";
+      }
+      fp << endl;
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 //Dump the reaction grid from the last gestation cycle, so skip the 
 //test cpu, and just use what the phenotype has. 
-
 class cActionDumpReactionGrid : public cAction
 {
 private:
@@ -3452,6 +3546,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpVitalityGrid>("DumpVitalityGrid");
   action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
+	action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
+  action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
+
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");

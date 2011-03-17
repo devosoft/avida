@@ -1,39 +1,65 @@
 //
-//  MainWindowController.mm
+//  AvidaMainWindowController.mm
 //  Avida
 //
 //  Created by David Bryson on 10/21/10.
 //  Copyright 2010 Michigan State University. All rights reserved.
 //
 //
-//  This program is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU General Public License
-//  as published by the Free Software Foundation; version 2
-//  of the License.
+//  This file is part of Avida.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+//  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+//  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License along with Avida.
+//  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "MainWindowController.h"
+#import "AvidaMainWindowController.h"
 
+#import "AvidaAppDelegate.h"
 #import "AvidaRun.h"
-
-#include "cCocoaListener.h"
+#import "MapGridView.h"
 
 #include <iostream>
 
-@implementation MainWindowController
 
-@synthesize txtUpdate;
+@implementation AvidaMainWindowController
 
-- (void) awakeFromNib {
+- (id)initWithAppDelegate: (AvidaAppDelegate*)delegate {
+  self = [super initWithWindowNibName:@"Avida-MainWindow"];
+  
+  if (self != nil) {
+    app = delegate;
+    
+    currentRun = nil;
+    listener = NULL;
+
+    [self showWindow:self];
+  }
+  
+  return self;
+}
+
+
+- (void) dealloc {
+  delete listener;
+  listener = NULL;
+  [super dealloc];
+}
+
+
+- (void) finalize {
+  delete listener;
+  listener = NULL;
+  [super finalize];
+}
+
+
+- (void) windowDidLoad {
   // Initialized the default path of the runDirControl to the user's documents directory
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSArray* urls = [fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask];
@@ -42,19 +68,17 @@
     NSURL* userDocumentsURL = [urls objectAtIndex:0];
     [runDirControl setURL:userDocumentsURL];
   }
-  
-  currentRun = nil;
-  viewListener = NULL;
 }
 
+
 - (IBAction) setRunDir:(id)sender {
-  
   // Set the current path to a selected sub-component of the path when clicked
   NSPathComponentCell* path_clicked = [runDirControl clickedPathComponentCell];
   if (path_clicked != nil) {
     [runDirControl setURL:[path_clicked URL]];
   }
 }
+
 
 - (IBAction) toggleRunState:(id)sender {
   if (currentRun == nil) {
@@ -69,15 +93,16 @@
       [alert setAlertStyle:NSWarningAlertStyle];
       [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
     } else {
-      if (!viewListener) viewListener = new cCocoaListener(self);
-      [currentRun attachListener:viewListener];
+      if (!listener) listener = new cMainThreadListener(self);
+      [currentRun attachListener:self];
+      
       [btnRunState setTitle:@"Pause"];
       [txtUpdate setStringValue:@"Update: 0"];
     }
   } else {
     if ([currentRun isPaused]) {
       [currentRun resume];
-      [btnRunState setTitle:@"Paused"];
+      [btnRunState setTitle:@"Pause"];
     } else {
       [currentRun pause];
       [btnRunState setTitle:@"Run"];      
@@ -85,22 +110,34 @@
   }
 }
 
-- (void) pathControl: (NSPathControl*) pathControl willDisplayOpenPanel: (NSOpenPanel*) openPanel {
+
+- (void) pathControl:(NSPathControl*)pathControl willDisplayOpenPanel: (NSOpenPanel*) openPanel {
   if (pathControl == self->runDirControl) {
     [openPanel setCanCreateDirectories:YES];
   }
 }
 
-- (void) dealloc {
-  delete viewListener;
-  viewListener = NULL;
-  [super dealloc];
+
+- (void)windowWillClose: (NSNotification *)notification {
+  if (currentRun != nil) {
+    [currentRun end];
+    currentRun = nil;
+  }
+  [app removeWindow:self];
 }
 
-- (void) finalize {
-  delete viewListener;
-  viewListener = NULL;
-  [super finalize];
+
+@synthesize listener;
+
+
+- (void) handleMap: (CoreViewMap*)pkg {
+  [mapView updateState: [pkg map]];
+}
+
+
+- (void) handleUpdate: (CoreViewUpdate*)pkg {
+  NSString* str = [NSString stringWithFormat:@"Update: %d", [pkg update]];
+  [txtUpdate setStringValue:str]; 
 }
 
 @end

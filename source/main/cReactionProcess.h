@@ -7,19 +7,16 @@
  *  Copyright 1993-2004 California Institute of Technology.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -59,6 +56,7 @@ private:
   bool depletable;       // Does completing consume resource?
                          // (This is not quite redundant with an infinite resource
                          // because it allows the resource level to be sensed @JEB)
+  bool internal;
   ePHENPLAST_BONUS_METHOD m_ppmethod;  //@MRR How does one handle phenotypically plastic tasks?
 
   // Resource detection
@@ -66,7 +64,7 @@ private:
   double detection_threshold; // Min quantity of resource to register present
   double detection_error; // Var of Detection Event (as % of resource present)
 
-  
+
   cReactionProcess(const cReactionProcess&); // @not_implemented
   cReactionProcess& operator=(const cReactionProcess&); // @not_implemented
 
@@ -90,6 +88,7 @@ public:
     , detect(NULL)
     , detection_threshold(0.0)
     , detection_error(0.0)
+    , internal(false)
   {
   }
   ~cReactionProcess() { ; }
@@ -114,6 +113,7 @@ public:
   double GetDetectionThreshold() const { return detection_threshold; }
   double GetDetectionError() const { return detection_error; }
   cString GetMatchString() const { return match_string; }
+  double GetInternal() const { return internal; }
 
   void SetResource(cResource* _in) { resource = _in; }
   void SetValue(double _in) { value = _in; }
@@ -135,6 +135,7 @@ public:
   void SetDetectionThreshold(double _in) { detection_threshold = _in; }
   void SetDetectionError(double _in) { detection_error = _in; }
   void SetMatchString(cString _in) { match_string = _in; }
+  void SetInternal(bool _in) { internal = _in; }
 };
 
 #endif

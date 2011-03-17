@@ -7,19 +7,16 @@
  *  Copyright 1993-2001 California Institute of Technology.
  *
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  of the License.
+ *  This file is part of Avida.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  Avida is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *  Avida is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License along with Avida.
+ *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -3178,6 +3175,9 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 	while(m_num_orgs_perf_reaction.size() > 100) {
 		m_num_orgs_perf_reaction.pop_front();
 	}
+  while (m_shannon_div_norm.size() > 100) {
+		m_shannon_div_norm.pop_front();    
+  }
 	
 	if(m_deme_diversity.empty()) {
 		df.Write(0.0, "Mean number of different reactions by deme [demereact]");
@@ -3190,9 +3190,14 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 		df.Write(std::accumulate(m_switching.begin(), m_switching.end(), 0.0)/m_switching.size(), "Mean number of deme switch penalties per org  [orgpen]");
 	}
 	if(m_shannon_div.empty()) {
-		df.Write(0.0, "Mean shannon mutual entropy per deme [shannon]"); 
+		df.Write(0.0, "Mean shannon mutual information per deme [shannon]"); 
 	} else {
 		df.Write(std::accumulate(m_shannon_div.begin(), m_shannon_div.end(), 0.0)/m_shannon_div.size(), "Mean shannon mutual entropy [shannon]");
+	}
+  if(m_shannon_div_norm.empty()) {
+		df.Write(0.0, "Mean shannon normalized mutual information per deme [shannonnorm]"); 
+	} else {
+		df.Write(std::accumulate(m_shannon_div_norm.begin(), m_shannon_div_norm.end(), 0.0)/m_shannon_div_norm.size(), "Mean shannon normalalized mutual information [shannonnorm]");
 	}
 	if(m_num_orgs_perf_reaction.empty()) {
 		df.Write(0.0, "Mean number of orgs that perform a reaction [meanreact]"); 
