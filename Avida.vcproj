@@ -509,10 +509,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\cFitnessMatrix.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\tools\cFlexVar.h"
 				>
 			</File>
@@ -645,10 +641,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\cLocalMutations.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\targets\avida-viewer\cMapScreen.h"
 				>
 			</File>
@@ -661,15 +653,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\cMetaGenome.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\analyze\cModularityAnalysis.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\main\cMutation.h"
 				>
 			</File>
 			<File
@@ -678,10 +662,6 @@
 			</File>
 			<File
 				RelativePath=".\source\analyze\cMutationalNeighborhoodResults.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\main\cMutationLib.h"
 				>
 			</File>
 			<File
@@ -694,10 +674,6 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\platform\cMutex.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\main\cMxCodeArray.h"
 				>
 			</File>
 			<File
@@ -849,6 +825,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cSequence.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\classification\cSexualAncestry.h"
 				>
 			</File>
@@ -949,6 +929,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\cUserFeedback.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\targets\avida-viewer\cView.h"
 				>
 			</File>
@@ -977,10 +961,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\defs.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\actions\DriverActions.h"
 				>
 			</File>
@@ -997,10 +977,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\MyCodeArrayLessThan.h"
-				>
-			</File>
-			<File
 				RelativePath=".\source\main\nGeometry.h"
 				>
 			</File>
@@ -1010,10 +986,6 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\nHashTable.h"
-				>
-			</File>
-			<File
-				RelativePath=".\source\main\nMutation.h"
 				>
 			</File>
 			<File
@@ -1401,10 +1373,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\cFitnessMatrix.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\main\cGenome.cc"
 				>
 			</File>
@@ -1509,10 +1477,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\cLocalMutations.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\targets\avida-viewer\cMapScreen.cc"
 				>
 			</File>
@@ -1525,10 +1489,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\cMetaGenome.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\analyze\cModularityAnalysis.cc"
 				>
 			</File>
@@ -1537,19 +1497,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\source\main\cMutationLib.cc"
-				>
-			</File>
-			<File
 				RelativePath=".\source\main\cMutationRates.cc"
 				>
 			</File>
 			<File
 				RelativePath=".\source\classification\cMutationSteps.cc"
-				>
-			</File>
-			<File
-				RelativePath=".\source\main\cMxCodeArray.cc"
 				>
 			</File>
 			<File
@@ -1642,6 +1594,10 @@
 			</File>
 			<File
 				RelativePath=".\source\tools\cSchedule.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cSequence.cc"
 				>
 			</File>
 			<File

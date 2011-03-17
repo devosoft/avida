@@ -1,35 +1,41 @@
 <html>
 <head>
-  <title>Avida : The Instruction Set File</title>
+  <title>Avida : The Instruction Set</title>
 	<link rel="stylesheet" type="text/css" href="main.css" />
 </head>
 <body>
 
-<div class="revision">Revised 2007-03-20 BEB</div>
+<div class="revision">Revised 2010-11-16 DMB</div>
 
 <p><a href="index.html">Return to the Index</a></p>
 <hr />
 
 <div align="center">
-<h1>The Instruction Set File</h1>
+<h1>The Instruction Set</h1>
 </div>
 
 <p>
-An instruction set file consists of a list of instructions that belong to
-that instruction set, each of which is followed by a series of numbers that
+An instruction set consists of a name and hardware type, followed by a list of instructions that belong to
+that instruction set, each of which may be followed by a series of options that
 define how that instruction should be used.  The exact format is as follows:
 </p>
 <p>
-<code>inst-name redundancy cost ft_cost energy_cost prob_fail</code>
+<code>INSTSET instset-name:hw_type=$hardware_type</code><br />
+<code>INST inst-name[:options]</code><br />
+...
 </p>
 
+<p>Instruction set settings must be included in the avida.cfg file.  For convenience, the avida.cfg file
+supports preprocessor includes (of the form <code>#include $filename</code>) that may be used to separate
+settings into multiple files.</p>
 
+<p>Multiple instruction sets with unique names may be defined.  All <code>INST</code> statements must follow the
+<code>INSTSET</code> statement defining the instruction set.</p>
+
+
+<p>The following options may be specified (as <code>name=value</code>, separated by colons):
 <dl>
-<dt><strong>inst-name</strong></dt>
-<dd>
-  The name of the instruction to include in the described instruction set.
-</dd>
-<dt><strong>redundancy</strong></dt>
+<dt><strong>redundancy</strong> (default = 1)</dt>
 <dd>
   The frequency of the instruction in the set.  One instruction with
   twice the redundancy of another with also have twice the probability
@@ -42,7 +48,7 @@ define how that instruction should be used.  The exact format is as follows:
   The number of CPU cycles required to execute this instruction.  One
   is the default if this value is not specified.
 </dd>
-<dt><strong>ft_cost</strong></dt>
+<dt><strong>initial_cost</strong></dt>
 <dd>
   The additional cost to be paid the first time this instruction is
   executed.  This is used to lower the diversity of instructions 
@@ -52,17 +58,22 @@ define how that instruction should be used.  The exact format is as follows:
 <dd>
   The number of Energy units required to execute this instruction. Zero is the default if this value is not specified.
 </dd>
+<dt><strong>addl_time_cost</strong></dt>
+<dd>
+  The additional cost in terms of phenotype 'age', but not actual instruction cycles.  The default value here is 0.
+</dd>
 <dt><strong>prob_fail</strong>	
 <dd>
   The probability of this instruction not working properly.  If an
   instruction fails it will simply do nothing, but still cost the
   CPU cycles to execute.  The defailt probability of failure is zero.
 </dd>
-		</dl>
-
-<p>
-Normally only the first column of numbers is used in the file.
-</p>
+<dt><strong>inst_code</strong>	
+<dd>
+  String of 1's and 0's defining the numeric value of a instruction as used by certain operations that 'numberate'
+  instruction sequences.
+</dd>
+</dl>
 
 
 <p>&nbsp;</p>
@@ -274,58 +285,6 @@ determine when it has finished producing its offspring.
 This instruction moves the <a href="glossary/help.Heads.html">flow-head</a> to the
 <a href="glossary/help.Memory.html">memory</a>  position denoted in the
 <a href="glossary/help.Nop-Register-Notation.html">?CX?</a>  register.
-
-<p>&nbsp;</p>
-<h2>Other available instructions</h2>
-
-<h3><code>h-push</code> and <code>h-pop</code></h3>
-
-These instructions act siminar to <code>push</code> and <code>pop</code> above,
-but instead of working with registers, the place the position of the 
-<a href="glossary/help.Nop-Head-Notation.html">?IP?</a> on the stack, or put 
-the ?IP? at the position taken from the stack (respectively).
-
-<h3><code>inject</code></h3>
-
-This instruction acts similar to <code>divide</code>, but instead of splitting
-off an offspring, it will remove the section of code between the read and
-write heads, and attempt to inject it into the neighbor that the organism
-is facing.  The label following this instruction will be used; if an
-<em>exact</em> match is found (with no extre nops in it) in the target organism,
-the injected code will be placed immediately after that label.  Otherwise
-the command fails, and the code intended for injection is instead discarded.
-
-<h3><code>rotate-l</code> and <code>rotate-r</code></h3>
-
-These instructions rotate the facing of an organism.  If no label follows,
-the organism will turn one cell in the appropriate direction (left or right).
-If a label is present, it will keep turning in that direction until either
-it has made a full 360 degree turn, or else it finds an organism that
-possesses the complement label.
-
-<h3><code>rotate-label</code></h3>
-
-Rotates the calling organism to the direction specified by the label that follows.  If no label is present the organisms rotates to face south.
-
-<h3><code>div-asex</code></h3>
-Same as h-divide (added for symetry with the divide-sex). 
-
-<h3><code>div-sex</code></h3>
-Divide with recombination. After the offspring genome is created, it is not 
-immediately placed into the population. Instead, it goes into "birth chamber". 
-If there is already another genome there, they recombine. If not, it waits 
-untill the next sexually produced genotype arrives. When another genome arrives
- two random points are picked in the genome, and the area between them is 
-swapped between the two genomes in the birth chamber. Then, they are both placed
-into the population. 
-
-<h3><code>div-asex-w</code></h3>
-Control for the effect of sexual genomes waiting in the birth chamber. There is 
-no recombination here, but each genome must wait in the birth chamber until 
-another one arrives before they are both placed into the population. 
-
-<h3><code>die</code></h3>
-When executed, kills the organism. 
 
 <hr />
 <p><a href="index.html">Return to the Index</a></p>

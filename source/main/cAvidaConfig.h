@@ -32,13 +32,13 @@
 // be transparently set at compile time and allow the programmer to easily
 // add in new settings with a single line of code.
 
-#include <iostream>
-
 #include "cMutex.h"
 #include "cString.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
 #include "tList.h"
+
+#include <iostream>
 
 class cUserFeedback;
 template <class T> class tDictionary;
@@ -285,7 +285,6 @@ public:
   CONFIG_ADD_GROUP(GENERAL_GROUP, "General Settings");
   CONFIG_ADD_VAR(VERBOSITY, int, 1, "0 = No output at all\n1 = Normal output\n2 = Verbose output, detailing progress\n3 = High level of details, as available\n4 = Print Debug Information, as applicable");
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
-  CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution\n(pre-execute instructions that don't affect other organisms)");
   CONFIG_ADD_VAR(POPULATION_CAP, int, 0, "Carrying capacity in number of organisms (use 0 for no cap)");
   CONFIG_ADD_VAR(POP_CAP_ELDEST, int, 0, "Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring."); 
@@ -303,13 +302,9 @@ public:
   // -------- Configuration File config options --------
   CONFIG_ADD_GROUP(CONFIG_FILE_GROUP, "Other configuration Files");
   CONFIG_ADD_VAR(DATA_DIR, cString, "data", "Directory in which config files are found");
-  CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
-  CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 1, "Load legacy format instruction set file format");
   CONFIG_ADD_VAR(EVENT_FILE, cString, "events.cfg", "File containing list of events during run");
   CONFIG_ADD_VAR(ANALYZE_FILE, cString, "analyze.cfg", "File used for analysis mode");
   CONFIG_ADD_VAR(ENVIRONMENT_FILE, cString, "environment.cfg", "File that describes the environment");
-  CONFIG_ADD_VAR(START_ORGANISM, cString, "default-heads.org", "Organism to seed the population");
-  CONFIG_ADD_ALIAS(START_CREATURE);
   
   
   // -------- Mutation config options --------
@@ -537,12 +532,8 @@ public:
 
   // -------- Geneology config options --------
   CONFIG_ADD_GROUP(GENEOLOGY_GROUP, "Geneology");
-  CONFIG_ADD_VAR(TRACK_MAIN_LINEAGE, int, 1, "Keep all ancestors of the active population?\n0=no, 1=yes, 2=yes,w/sexual population");
   CONFIG_ADD_VAR(THRESHOLD, int, 3, "Number of organisms in a genotype needed for it\n  to be considered viable.");
-  CONFIG_ADD_VAR(GENOTYPE_PRINT, int, 0, "0/1 (off/on) Print out all threshold genotypes?");
-  CONFIG_ADD_VAR(GENOTYPE_PRINT_DOM, int, 0, "Print out a genotype if it stays dominant for\n  this many updates. (0 = off)");
   CONFIG_ADD_VAR(TEST_CPU_TIME_MOD, int, 20, "Time allocated in test CPUs (multiple of length)");
-  CONFIG_ADD_VAR(TRACK_PARENT_DIST, bool, 0, "Track parent distance during run. This is unnecessary when track main lineage is on.");
   
 
   // -------- Log File config options --------
@@ -803,13 +794,14 @@ public:
 
   // -------- DEPRECATED ---------
   CONFIG_ADD_GROUP(DEPRECATED_GROUP, "DEPRECATED (New functionality listed in comments)");
-  CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive\nDEPRICATED: use command line options -a[nalyze] or -i[nteractive])");
-  CONFIG_ADD_VAR(REPRO_METHOD, int, 1, "Replace existing organism: 1=yes\nDEPRICATED: Use BIRTH_METHOD 3 instead.");
-  CONFIG_ADD_VAR(LEGACY_GRID_LOCAL_SELECTION, bool, 0, "Enable legacy grid local mate selection.\nDEPRICATED: Birth chameber now uses population structure)");
-  CONFIG_ADD_VAR(SPECIES_THRESHOLD, int, 2, "max failure count for organisms to be same species");
-  CONFIG_ADD_VAR(SPECIES_RECORDING, int, 0, "1 = full, 2 = limited search (parent only)");
-  CONFIG_ADD_VAR(SPECIES_PRINT, int, 0, "0/1 (off/on) Print out all species?");
-  CONFIG_ADD_VAR(LOG_SPECIES, bool, 0, "0/1 (off/on) toggle to print file.");
+  CONFIG_ADD_VAR(ANALYZE_MODE, int, 0, "0 = Disabled\n1 = Enabled\n2 = Interactive\nDEPRECATED: use command line options -a[nalyze] or -i[nteractive])");
+  CONFIG_ADD_VAR(REPRO_METHOD, int, 1, "Replace existing organism: 1=yes\nDEPRECATED: Use BIRTH_METHOD 3 instead.");
+  CONFIG_ADD_VAR(LEGACY_GRID_LOCAL_SELECTION, bool, 0, "Enable legacy grid local mate selection.\nDEPRECATED: Birth chameber now uses population structure)");
+  CONFIG_ADD_VAR(HARDWARE_TYPE, int, 0, "0 = Default, heads-based CPUs\n1 = New SMT CPUs\n2 = Transitional SMT\n3 = Experimental CPU\n4 = Gene Expression CPU");
+  CONFIG_ADD_VAR(INST_SET, cString, "-", "Instruction set file ('-' = use default for hardware type)");
+  CONFIG_ADD_VAR(INST_SET_LOAD_LEGACY, int, 1, "Load legacy format instruction set file format");
+  CONFIG_ADD_VAR(START_ORGANISM, cString, "-", "Organism to seed the population");
+  CONFIG_ADD_ALIAS(START_CREATURE);
 
 
   // -------- UNDER CONSTRUCTION ----------

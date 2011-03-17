@@ -21,10 +21,10 @@ installed. CMake is available from http://www.cmake.org
 
 NCurses, in order to build the console viewer.
 
-Python 2.3 or greater to run consistency tests.
+Python 2.6 or greater to run consistency tests.
 
-On Mac OS X, a separate Xcode project is available. Xcode 2.1 or
-greater is required (2.4 or greater recommended).
+On Mac OS X, a separate Xcode project is available. Xcode 2.4 or
+greater is required.
 
 
 II. GETTING STARTED
@@ -137,4 +137,4 @@ Helpful usage and code documentation can be found in the HTML files in
 the 'documentation' directory.  See index.html.
 
 
-Revised 2010-08-17 DMB
+Revised 2010-11-16 DMB

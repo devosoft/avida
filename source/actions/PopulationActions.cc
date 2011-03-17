@@ -24,11 +24,14 @@
 
 #include "PopulationActions.h"
 
+#include "AvidaTools.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
 #include "cDoubleSum.h"
 #include "cHardwareManager.h"
+#include "cInstSet.h"
 #include "cIntSum.h"
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
@@ -38,8 +41,6 @@
 #include "cWorld.h"
 #include "cOrganism.h"
 #include "cEnvironment.h"
-
-#include "AvidaTools.h"
 
 #include <map>
 #include <set>
@@ -2320,6 +2321,11 @@ public:
 	
 	static const cString GetDescription() { return "No arguments."; }
 	
+	virtual void Process(cAvidaContext& ctx) {
+		cAbstractCompeteDemes::Process(ctx);
+		m_message_counter.Reset();
+	}
+
 	//! Calculate the current fitness of this deme.
 	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) {
 		return pow((double)received_data(deme) + 1.0, 2.0);

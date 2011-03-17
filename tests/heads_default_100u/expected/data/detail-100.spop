@@ -23,38 +23,38 @@
 # 19: Gestation (CPU) Cycle Offsets
 # 20: Lineage Label
 
-1 org:file_load (none) (none) 7 9 100 97 389 0.249357 0 -1 -1 0 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 0,1,58,117,3421,3480,3599 388,388,65,66,330,362,329 0,0,0,0,0,0,0 
-22 org:divide (none) 3 2 2 100 96 386 0.248705 6 79 -1 2 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccecccutycasvab 2,3543 329,330 0,0 
-34 org:divide (none) 24 1 1 99 0 0 0 7 91 -1 3 0 instset-heads.cfg rucavccccccccccccccccccccccccccceccccccccccccccccccccccccccccccccccccsccccccccccccccccccccutycasvab 3 329 0 
-21 org:divide (none) 5 2 2 100 97 388 0.25 6 78 -1 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccchutycasvab 57,116 329,330 0,0 
-10 org:divide (none) 3 1 1 100 97 387 0.250646 5 65 -1 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccvccccccccccccccccccccccccccciccccccccccccccccccutycasvab 239 329 0 
-33 org:divide (none) 1 1 1 100 0 0 0 7 91 -1 1 0 instset-heads.cfg rucavccccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 59 363 0 
-29 org:divide (none) 3 1 1 100 0 0 0 7 89 -1 2 0 instset-heads.cfg rucavcccccccccccvccccccccccccccccccccccccccfcccccccccccccccccccccccccccciccccccccccccccccccutycasvxb 180 396 0 
-6 org:divide (none) 1 1 3 100 97 388 0.25 4 50 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccutycasvab 60 362 0 
-16 org:divide (none) 1 2 2 100 97 386 0.251295 6 75 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccctcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 118,178 32,33 0,0 
-39 org:divide (none) 3 1 1 99 0 0 0 8 100 -1 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 61 33 0 
-7 org:divide (none) 1 5 5 99 96 385 0.249351 4 52 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3422,3482,3483,3541,3542 362,329,363,296,297 0,0,0,0,0 
-30 org:divide (none) 1 1 1 100 0 0 0 7 89 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcutycasvab 62 363 0 
-20 org:divide (none) 10 2 2 100 97 385 0.251948 6 78 -1 3 0 instset-heads.cfg rucavcccccccccccccccccccccccccgcccccccccccccvccccccckccccccccccccccccccciccccccccccccccccccutycasvab 119,179 363,329 0,0 
-26 org:divide (none) 1 1 1 100 97 388 0.25 6 79 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccbczccccccccccccccccccccccccccccccccccccccccccccutycasvab 3539 263 0 
-3 org:divide (none) 1 3 4 100 97 388 0.25 3 38 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 120,181,241 32,362,363 0,0,0 
-17 org:divide (none) 6 2 2 100 97 387 0.250646 6 76 -1 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccmcccccutycasvab 121,182 329,363 0,0 
-35 org:divide (none) 9 1 1 101 0 0 0 7 91 -1 3 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccczfxccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3418 297 0 
-12 org:divide (none) 3 1 1 100 49 337 0.145401 5 66 -1 2 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutynasvab 122 395 0 
-18 org:divide (none) 12 1 1 100 0 0 0 6 77 -1 3 0 instset-heads.cfg cccccccccccccccccccccciccccccccccccccccccutynasvabrucavcccfccccccccccccccccccccccccccccccccccccccccc 123 374 0 
-38 org:divide (none) 27 1 1 101 0 0 0 8 99 -1 3 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccncccccccccccccutzycasvab 176 66 0 
-27 org:divide (none) 16 1 1 100 97 385 0.251948 7 87 -1 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 177 65 0 
-8 org:divide (none) 1 1 1 99 48 381 0.125984 4 53 -1 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuthcasvab 3540 560 0 
-31 org:divide (none) 10 1 1 101 0 0 0 7 90 -1 3 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccccvccccccccccczccccccccccccccciccccccccccccccccccutycasuvab 298 396 0 
-9 org:divide (none) 5 4 4 100 97 388 0.25 4 53 -1 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3477,3537,3597,3598 296,296,330,296 0,0,0,0 
-32 org:divide (none) 7 1 1 99 0 0 0 7 90 -1 2 0 instset-heads.cfg rucavcccccccccccccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3361 316 0 
-19 org:divide (none) 1 2 2 101 88 382 0.230366 6 78 -1 1 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyccccccccccccccccccccutycasvab 3419,3420 297,263 0,0 
-13 org:divide (none) 8 1 1 99 0 0 0 5 66 -1 2 0 instset-heads.cfg cccccccccccccccccccccccccccccccccccccccccuthcasvabrucavcccccccccccccccccccccccccccccccccccccccccccc 3481 544 0 
-36 org:divide (none) 9 1 1 100 0 0 0 7 91 -1 3 0 instset-heads.cfg rucavcccccccccccccccccccscccccccccccccccccfccccccicchccccccccccccccccccccccccccccccccccucccutycasvab 3478 318 0 
-37 org:divide (none) 26 1 1 100 0 0 0 7 92 -1 2 0 instset-heads.cfg rucavcccccccccccccccccccccccmcccccccccccccccbczccccccdcccccccccccccccccccccccccccccccccccccutycasvab 3479 264 0 
-28 org:divide (none) 23 1 1 100 0 0 0 7 88 -1 4 0 instset-heads.cfg cccccccccccccccccccccccccccccccccccccccccutycesvabrucavccccccccccccccccccccccccccccccxjcccccfcccccmc 3536 204 0 
-25 org:divide (none) 9 1 1 100 0 0 0 6 79 -1 3 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccwtycasvab 3538 627 0 
-23 org:divide (none) 14 1 1 100 49 285 0.17193 6 79 -1 3 0 instset-heads.cfg rucavccccccccccccccccccccccccccccccxjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycesvab 3596 263 0 
-24 org:divide (none) 7 0 1 99 96 384 0.25 6 79 92 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
-14 org:divide (none) 5 0 1 100 97 386 0.251295 5 67 91 2 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycasvab 
-5 org:divide (none) 1 0 1 100 97 388 0.25 3 39 87 1 0 instset-heads.cfg rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+1 org:file_load (none) (none) 7 9 100 97 389 0.249357 0 -1 -1 0 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 0,1,58,117,3421,3480,3599 388,388,65,66,330,362,329 0,0,0,0,0,0,0 
+22 org:divide (none) 3 2 2 100 96 386 0.248705 6 79 -1 2 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccecccutycasvab 2,3543 329,330 0,0 
+34 org:divide (none) 24 1 1 99 0 0 0 7 91 -1 3 0 heads_default rucavccccccccccccccccccccccccccceccccccccccccccccccccccccccccccccccccsccccccccccccccccccccutycasvab 3 329 0 
+21 org:divide (none) 5 2 2 100 97 388 0.25 6 78 -1 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccchutycasvab 57,116 329,330 0,0 
+10 org:divide (none) 3 1 1 100 97 387 0.250646 5 65 -1 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccvccccccccccccccccccccccccccciccccccccccccccccccutycasvab 239 329 0 
+33 org:divide (none) 1 1 1 100 0 0 0 7 91 -1 1 0 heads_default rucavccccccccccccccmcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 59 363 0 
+29 org:divide (none) 3 1 1 100 0 0 0 7 89 -1 2 0 heads_default rucavcccccccccccvccccccccccccccccccccccccccfcccccccccccccccccccccccccccciccccccccccccccccccutycasvxb 180 396 0 
+6 org:divide (none) 1 1 3 100 97 388 0.25 4 50 -1 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccccccccutycasvab 60 362 0 
+16 org:divide (none) 1 2 2 100 97 386 0.251295 6 75 -1 1 0 heads_default rucavcccccccccccccccccccccccccccccctcccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 118,178 32,33 0,0 
+39 org:divide (none) 3 1 1 99 0 0 0 8 100 -1 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 61 33 0 
+7 org:divide (none) 1 5 5 99 96 385 0.249351 4 52 -1 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3422,3482,3483,3541,3542 362,329,363,296,297 0,0,0,0,0 
+30 org:divide (none) 1 1 1 100 0 0 0 7 89 -1 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbcutycasvab 62 363 0 
+20 org:divide (none) 10 2 2 100 97 385 0.251948 6 78 -1 3 0 heads_default rucavcccccccccccccccccccccccccgcccccccccccccvccccccckccccccccccccccccccciccccccccccccccccccutycasvab 119,179 363,329 0,0 
+26 org:divide (none) 1 1 1 100 97 388 0.25 6 79 -1 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccbczccccccccccccccccccccccccccccccccccccccccccccutycasvab 3539 263 0 
+3 org:divide (none) 1 3 4 100 97 388 0.25 3 38 -1 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutycasvab 120,181,241 32,362,363 0,0,0 
+17 org:divide (none) 6 2 2 100 97 387 0.250646 6 76 -1 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccdccccccccmcccccutycasvab 121,182 329,363 0,0 
+35 org:divide (none) 9 1 1 101 0 0 0 7 91 -1 3 0 heads_default rucavcccccccccccccccccccccccccccccccccccczfxccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3418 297 0 
+12 org:divide (none) 3 1 1 100 49 337 0.145401 5 66 -1 2 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccciccccccccccccccccccutynasvab 122 395 0 
+18 org:divide (none) 12 1 1 100 0 0 0 6 77 -1 3 0 heads_default cccccccccccccccccccccciccccccccccccccccccutynasvabrucavcccfccccccccccccccccccccccccccccccccccccccccc 123 374 0 
+38 org:divide (none) 27 1 1 101 0 0 0 8 99 -1 3 0 heads_default rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccncccccccccccccutzycasvab 176 66 0 
+27 org:divide (none) 16 1 1 100 97 385 0.251948 7 87 -1 2 0 heads_default rucavcccccccccccccccccccccccccccccctmccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 177 65 0 
+8 org:divide (none) 1 1 1 99 48 381 0.125984 4 53 -1 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccuthcasvab 3540 560 0 
+31 org:divide (none) 10 1 1 101 0 0 0 7 90 -1 3 0 heads_default rucavcccccccccccccccccccccccccccccccccccccccvccccccccccczccccccccccccccciccccccccccccccccccutycasuvab 298 396 0 
+9 org:divide (none) 5 4 4 100 97 388 0.25 4 53 -1 2 0 heads_default rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccutycasvab 3477,3537,3597,3598 296,296,330,296 0,0,0,0 
+32 org:divide (none) 7 1 1 99 0 0 0 7 90 -1 2 0 heads_default rucavcccccccccccccccccscccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 3361 316 0 
+19 org:divide (none) 1 2 2 101 88 382 0.230366 6 78 -1 1 0 heads_default rucavccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccyccccccccccccccccccccutycasvab 3419,3420 297,263 0,0 
+13 org:divide (none) 8 1 1 99 0 0 0 5 66 -1 2 0 heads_default cccccccccccccccccccccccccccccccccccccccccuthcasvabrucavcccccccccccccccccccccccccccccccccccccccccccc 3481 544 0 
+36 org:divide (none) 9 1 1 100 0 0 0 7 91 -1 3 0 heads_default rucavcccccccccccccccccccscccccccccccccccccfccccccicchccccccccccccccccccccccccccccccccccucccutycasvab 3478 318 0 
+37 org:divide (none) 26 1 1 100 0 0 0 7 92 -1 2 0 heads_default rucavcccccccccccccccccccccccmcccccccccccccccbczccccccdcccccccccccccccccccccccccccccccccccccutycasvab 3479 264 0 
+28 org:divide (none) 23 1 1 100 0 0 0 7 88 -1 4 0 heads_default cccccccccccccccccccccccccccccccccccccccccutycesvabrucavccccccccccccccccccccccccccccccxjcccccfcccccmc 3536 204 0 
+25 org:divide (none) 9 1 1 100 0 0 0 6 79 -1 3 0 heads_default rucavcccccccccccccccccccccccccccccccccccccfccccccccchccccccccccccccccccccccccccccccccccccccwtycasvab 3538 627 0 
+23 org:divide (none) 14 1 1 100 49 285 0.17193 6 79 -1 3 0 heads_default rucavccccccccccccccccccccccccccccccxjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycesvab 3596 263 0 
+24 org:divide (none) 7 0 1 99 96 384 0.25 6 79 92 2 0 heads_default rucavcccccccccccccccccccccccccccecccccccccccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
+14 org:divide (none) 5 0 1 100 97 386 0.251295 5 67 91 2 0 heads_default rucavcccccccccccccccccccccccccccccccjcccccfcccccmccccccccccccccccccccccccccccccccccccccccccutycasvab 
+5 org:divide (none) 1 0 1 100 97 388 0.25 3 39 87 1 0 heads_default rucavcccccccccccccccccccccccccccccccccccccfccccccccccccccccccccccccccccccccccccccccccccccccutycasvab 
