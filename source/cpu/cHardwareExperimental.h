@@ -58,9 +58,9 @@ public:
 
 private:
   // --------  Structure Constants  --------
-  static const int NUM_REGISTERS = 4;
+  static const int NUM_REGISTERS = 6;
   static const int NUM_HEADS = nHardware::NUM_HEADS >= NUM_REGISTERS ? nHardware::NUM_HEADS : NUM_REGISTERS;
-  enum tRegisters { REG_AX = 0, REG_BX, REG_CX, REG_DX, REG_EX, REG_FX };
+  enum tRegisters { rAX = 0, rBX, rCX, rDX, rEX, rFX, rGX, rHX, rIX, rJX, rKX, rLX, rMX, rNX, rOX, rPX};
   static const int NUM_NOPS = NUM_REGISTERS;
   
   
@@ -126,8 +126,12 @@ private:
     unsigned char cur_stack;              // 0 = local stack, 1 = global stack.
     unsigned char cur_head;
     
-    bool reading;
+    struct {
+      bool reading_label:1;
+      bool reading_seq:1;
+    };
     cCodeLabel read_label;
+    cCodeLabel read_seq;
     cCodeLabel next_label;
     
     inline cLocalThread() { ; }
@@ -310,9 +314,11 @@ private:
   cHeadCPU FindLabelBackward(bool mark_executed);
   cHeadCPU FindNopSequenceStart(bool mark_executed);
   cHeadCPU FindNopSequenceForward(bool mark_executed);
-  bool& ReadingLabel() { return m_threads[m_cur_thread].reading; }
-  const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
-  cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+  cHeadCPU FindNopSequenceBackward(bool mark_executed);
+  inline const cCodeLabel& GetReadLabel() const { return m_threads[m_cur_thread].read_label; }
+  inline const cCodeLabel& GetReadSequence() const { return m_threads[m_cur_thread].read_seq; }
+  inline cCodeLabel& GetReadLabel() { return m_threads[m_cur_thread].read_label; }
+  inline cCodeLabel& GetReadSequence() { return m_threads[m_cur_thread].read_seq; }
   
   
   // --------  Thread Manipulation  -------
@@ -355,8 +361,7 @@ private:
   inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& src);
   inline void setInternalValue(sInternalValue& dest, int value, const sInternalValue& op1, const sInternalValue& op2);  
 
-  void ReadInst(const int in_inst);
-  void ReadInst_NoLabel(const int in_inst);
+  void ReadInst(cInstruction in_inst);
   
   
   // ---------- Promoter Helper Functions -----------
@@ -424,20 +429,27 @@ private:
   bool Inst_GotoConsensus24(cAvidaContext& ctx);
   bool Inst_JumpHead(cAvidaContext& ctx);
   bool Inst_GetHead(cAvidaContext& ctx);
-  bool Inst_IfLabel(cAvidaContext& ctx);
-  bool Inst_IfLabel_Direct(cAvidaContext& ctx);
+  bool Inst_IfCopiedCompLabel(cAvidaContext& ctx);
+  bool Inst_IfCopiedDirectLabel(cAvidaContext& ctx);
+  bool Inst_IfCopiedCompSeq(cAvidaContext& ctx);
+  bool Inst_IfCopiedDirectSeq(cAvidaContext& ctx);
   bool Inst_HeadDivide(cAvidaContext& ctx);
   bool Inst_HeadDivideSex(cAvidaContext& ctx);
   bool Inst_HeadRead(cAvidaContext& ctx);
   bool Inst_HeadWrite(cAvidaContext& ctx);
   bool Inst_HeadCopy(cAvidaContext& ctx);
-  bool Inst_HeadCopy_NoLabel(cAvidaContext& ctx);
-  bool Inst_SearchS(cAvidaContext& ctx);
-  bool Inst_SearchS_Direct(cAvidaContext& ctx);
-  bool Inst_SearchF(cAvidaContext& ctx);
-  bool Inst_SearchF_Direct(cAvidaContext& ctx);
-  bool Inst_SearchB(cAvidaContext& ctx);
-  bool Inst_SearchB_Direct(cAvidaContext& ctx);
+  bool Inst_Search_Label_Comp_S(cAvidaContext& ctx);
+  bool Inst_Search_Label_Comp_F(cAvidaContext& ctx);
+  bool Inst_Search_Label_Comp_B(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_S(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_F(cAvidaContext& ctx);
+  bool Inst_Search_Label_Direct_B(cAvidaContext& ctx);
+  bool Inst_Search_Seq_Comp_S(cAvidaContext& ctx);
+  bool Inst_Search_Seq_Comp_F(cAvidaContext& ctx);
+  bool Inst_Search_Seq_Comp_B(cAvidaContext& ctx);
+  bool Inst_Search_Seq_Direct_S(cAvidaContext& ctx);
+  bool Inst_Search_Seq_Direct_F(cAvidaContext& ctx);
+  bool Inst_Search_Seq_Direct_B(cAvidaContext& ctx);
   bool Inst_SetFlow(cAvidaContext& ctx);
   
   // Promoter Model

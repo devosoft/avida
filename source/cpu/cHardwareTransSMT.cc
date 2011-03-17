@@ -107,8 +107,9 @@ tInstLib<cHardwareTransSMT::tMethod>* cHardwareTransSMT::initInstLib(void)
     tInstLibEntry<tMethod>("Call-Label", &cHardwareTransSMT::Inst_CallLabel), // 44
     tInstLibEntry<tMethod>("Return", &cHardwareTransSMT::Inst_Return), // 44
     tInstLibEntry<tMethod>("If-Greater-Equal", &cHardwareTransSMT::Inst_IfGreaterEqual), // 23
-    tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 23
-    tInstLibEntry<tMethod>("Collect", &cHardwareTransSMT::Inst_Collect), // 23 
+    tInstLibEntry<tMethod>("Divide-Erase", &cHardwareTransSMT::Inst_Divide_Erase), // 50
+    tInstLibEntry<tMethod>("Divide-Sex-Erase", &cHardwareTransSMT::Inst_Divide_Sex_Erase), // 51
+    tInstLibEntry<tMethod>("Collect", &cHardwareTransSMT::Inst_Collect), // 26
     
     tInstLibEntry<tMethod>("NULL", &cHardwareTransSMT::Inst_Nop) // Last Instruction Always NULL
   };
@@ -695,7 +696,7 @@ bool cHardwareTransSMT::ParasiteInfectHost(cBioUnit* bu)
   label.ReadString(bu->GetUnitSourceArgs());
   
   // Inject fails if the memory space is already in use
-  if (label.GetSize() == 0 || MemorySpaceExists(label)) { return false; }
+  if (label.GetSize() == 0 || MemorySpaceExists(label)) return false;
   
   int thread_id = m_threads.GetSize();
   
@@ -1617,6 +1618,14 @@ bool cHardwareTransSMT::Inst_IfGreaterEqual(cAvidaContext& ctx)      // Execute 
   const int op2 = FindModifiedNextStack(op1);
   if (Stack(op1).Top() > Stack(op2).Top())  IP().Advance();
   return true;
+}
+
+bool cHardwareTransSMT::Inst_Divide_Sex_Erase(cAvidaContext& ctx)
+{
+  m_organism->GetPhenotype().SetDivideSex(true);
+  m_organism->GetPhenotype().SetCrossNum(1);
+  
+  return Inst_Divide_Erase(ctx);
 }
 
 bool cHardwareTransSMT::Inst_Divide_Erase(cAvidaContext& ctx)

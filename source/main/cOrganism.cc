@@ -89,6 +89,9 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, i
   , m_easterly(0)
 
 {
+	// initializing this here because it may be needed during hardware creation:
+	m_id = m_world->GetStats().GetTotCreatures();
+
   m_hardware = m_world->GetHardwareManager().Create(ctx, this, m_initial_genome);
   
   initialize(ctx);
@@ -114,7 +117,6 @@ void cOrganism::initialize(cAvidaContext& ctx)
   }
   
   if (m_world->GetConfig().NET_ENABLED.Get()) m_net = new cNetSupport();
-  m_id = m_world->GetStats().GetTotCreatures();
 	
 	// randomize the amout of raw materials an organism has at its 
 	// disposal.
@@ -363,11 +365,13 @@ void cOrganism::doOutput(cAvidaContext& ctx,
 		  }
 	  }
   }
-
+  
+	
   bool task_completed = m_phenotype.TestOutput(ctx, taskctx, globalAndDeme_resource_count, 
                                                m_phenotype.GetCurRBinsAvail(), globalAndDeme_res_change, 
                                                insts_triggered, is_parasite, context_phenotype);
 											   
+	
   // Handle merit increases that take the organism above it's current population merit
   if (m_world->GetConfig().MERIT_INC_APPLY_IMMEDIATE.Get()) {
     double cur_merit = m_phenotype.CalcCurrentMerit();

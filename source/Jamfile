@@ -74,6 +74,7 @@ lib avida-core :
     main/cBirthMateSelectHandler.cc
     main/cBirthNeighborhoodHandler.cc
     main/cBirthSelectionHandler.cc
+    main/cContextPhenotype.cc
     main/cDeme.cc
     main/cDemeNetwork.cc
     main/cDemeTopologyNetwork.cc

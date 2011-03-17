@@ -37,7 +37,7 @@ protected:
 public:
   cGermline() { ; }
     
-	cGenome& GetLatest() { return m_germline.back(); }
+	cGenome& GetLatest() { assert(m_germline.size() > 0); return m_germline.back(); }
 	void Add(const cGenome& genome) { m_germline.push_back(genome); }
 	unsigned int Size() const { return m_germline.size(); }
 };

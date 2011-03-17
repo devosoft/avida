@@ -629,7 +629,7 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
     }
     else
       return false;
-    }
+  }
 
 
   // Attempt actual parasite injection
@@ -998,10 +998,12 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext* ctx)
 		deme_array[in_cell.GetDemeID()].OrganismDeath(in_cell);
   }
 
-  // If HGT is turned on, this organism's genome needs to be split up into fragments
+  // If HGT is turned on and there's a possibility of natural competence,
+	// this organism's genome needs to be split up into fragments
   // and deposited in its cell.  We then also have to add the size of this genome to
   // the HGT resource.
-  if (m_world->GetConfig().ENABLE_HGT.Get()) {
+  if(m_world->GetConfig().ENABLE_HGT.Get()
+		 && (m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)) {
     in_cell.AddGenomeFragments(organism->GetGenome().GetSequence());
   }
 
@@ -3588,6 +3590,13 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
     }
     KillOrganism(cell_array[cell_id], ctx);
   }
+	
+	// increment the number of births in the **parent deme**.  in the case of a
+	// migration, only the origin has its birth count incremented.
+  if (deme_array.GetSize() > 0) {
+    const int deme_id = parent_cell.GetDemeID();
+    deme_array[deme_id].IncBirthCount();
+  }
 
   // Decide if offspring will migrate to another deme -- if migrating we ignore the birth method.
   if (m_world->GetConfig().MIGRATION_RATE.Get() > 0.0 &&
@@ -3617,7 +3626,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
       out_cell_id = deme_array[deme_id].GetCellID(out_pos);
     }
 
-    deme_array[deme_id].IncBirthCount();
     GetCell(out_cell_id).SetMigrant();
     return GetCell(out_cell_id);
   }
@@ -3630,7 +3638,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   if ((m_world->GetConfig().DEMES_MIGRATION_RATE.Get() > 0.0)
       && m_world->GetRandom().P(m_world->GetConfig().DEMES_MIGRATION_RATE.Get()))
   {
-    deme_array[parent_cell.GetDemeID()].IncBirthCount();
     return PositionDemeMigration(parent_cell, parent_ok);
   }
 
@@ -3665,12 +3672,9 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
   }
 
   if (birth_method == POSITION_OFFSPRING_DEME_RANDOM) {
-    deme_array[parent_cell.GetDemeID()].IncBirthCount();
     return PositionDemeRandom(parent_cell.GetDemeID(), parent_cell, parent_ok);
   }
   else if (birth_method == POSITION_OFFSPRING_PARENT_FACING) {
-    const int deme_id = parent_cell.GetDemeID();
-    deme_array[deme_id].IncBirthCount();
     return parent_cell.GetCellFaced();
   }
   else if (birth_method == POSITION_OFFSPRING_NEXT_CELL) {
@@ -3752,11 +3756,6 @@ cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cA
         // Nothing is in list if no empty cells are found...
         break;
     }
-  }
-
-  if (deme_array.GetSize() > 0) {
-    const int deme_id = parent_cell.GetDemeID();
-    deme_array[deme_id].IncBirthCount();
   }
 
   // If there are no possibilities, return parent.
@@ -4780,7 +4779,10 @@ void cPopulation::Inject(const cGenome& genome, eBioUnitSource src, cAvidaContex
 
   cell_array[cell_id].GetOrganism()->SetLineageLabel(lineage_label);
 
-  if (GetNumDemes() > 1) {
+	
+	// the following bit of code is required for proper germline support.
+	// even if there's only one deme!!
+	if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
     cDeme& deme = deme_array[GetCell(cell_id).GetDemeID()];
 
     // If we're using germlines, then we have to be a little careful here.

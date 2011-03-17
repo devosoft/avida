@@ -1,0 +1,97 @@
+h-alloc
+set-flow
+set-flow
+nop-A
+mov-head
+nop-C
+get-head
+swap
+IO			# AX<-97, BX<-252908703
+rotate-left-one
+get-opinion		# nothing -- no op., BX<--1
+swap			# CX <- 252908703, BX<-0; BX<-69, CX<- -1
+if-label
+IO			# BX <- 856220990
+rotate-left-one
+nand			# BX <- -50332703
+send-msg
+bcast1
+rotate-right-one
+send-msg
+h-divide
+h-copy
+send-msg
+set-opinion		# OP = -50332703, -85622091
+push
+nop-A
+rotate-left-one
+get-cycles		# BX <- 0
+retrieve-msg		# BX,CX <- msg(label,data), BX<--50332703, CX<-252908703(not)
+rotate-right-one
+nand			# BX <- nand(BX,CX) BX <- -1, BX<--202576002 (produces ornot) 
+set-opinion		# opinion <- nand(msg.label, msg.data), OP = -1, OP<--202576002 (ornot)
+h-alloc
+if-less			# if here:
+if-n-equ	
+h-divide		# ... always divide
+nop-C
+if-less			# if nand(msg.label,msg.data) < msg.data:
+bcast1			# 	bcast (likely), bcst ornot
+push
+IO			# opinion, BX <- 1432502763, (credit for ornot) & BX<-1432502763
+bcast1			# bcast BX,CX <- IO
+get-opinion		# BX<- -1, CX<-2, BX<--202576002 (ornot), CX<-3
+set-flow
+nop-A
+dec			# BX <- -2 (important for encoded msg?)
+sub			# BX <- -4 (important for encoded msg?)
+get-opinion		# BX <- -1, CX<-3	
+IO			# output nand(msg.l, msg.d), BX <- 252908703
+nand			# -4, BX<--5
+get-opinion		# BX <- -1, CX<-4; BX<--202576002 (ornot), CX<-4
+rotate-right-one
+if-label
+get-opinion		# BX<--202576002 (ornot), CX<-5 
+get-opinion		# BX <- -1, CX<-5
+add			# BX <- BX + CX, BX<-4; BX<--202575997
+send-msg 		# send BX, CX <- opinion + IO
+donate-res-to-deme
+h-copy
+jmp-head		# ?? watch out..
+dec
+donate-res-to-deme
+rotate-left-one
+if-label
+rotate-left-one
+h-search			
+nop-C
+h-alloc			# BX <- -63, CX<-1
+sub			# BX <- -64
+IO			# BX <- 856220990
+if-n-equ
+get-opinion		# BX <- -1, CX<-7; BX<--202576002 (ornot)
+pop			# CX <- -1; CX<--202576002 (ornot)
+nop-C
+nand			# BX <- -1, CX<-0; CX<-202576001(andnot)
+nop-C
+IO			# BX,CX <- ?, BX<-1432502763; 
+send-msg		# send BX, CX; BX<-1432502763, CX<-202576001(andnot)
+send-msg
+send-msg
+if-less
+if-n-equ
+if-n-equ
+shift-r			# 716251381
+h-divide		
+donate-res-to-deme
+push
+h-search
+h-search
+h-copy
+if-label
+nop-C
+nop-A
+h-divide
+mov-head
+nop-A
+nop-B

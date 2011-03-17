@@ -2722,6 +2722,7 @@ public:
 					}
 					
 					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
+					assert(deme.GetGermline().Size()>0);
 					m_world->GetPopulation().KillOrganism(cell, &ctx); //JW
 					m_world->GetPopulation().InjectGenome(cell.GetID(), SRC_DEME_GERMLINE, deme.GetGermline().GetLatest(), &ctx); //JW
 					m_world->GetPopulation().DemePostInjection(deme, cell);
@@ -3438,7 +3439,7 @@ public:
  
  This event, in combination with a method for deme competition, can be used to model
  the different biologically-inspired approaches to group selection, specifically
- Wilson's and Traulsen's models.
+ Wilson's model.
  */
 class cActionMixPopulation : public cAction {
 public:

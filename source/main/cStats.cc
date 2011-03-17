@@ -3272,3 +3272,22 @@ void cStats::PrintProfilingData(const cString& filename) {
 
 	m_profiling.clear();
 }
+
+/*! Print organism location.
+*/
+void cStats::PrintOrganismLocation(const cString& filename) {
+	cDataFile& df = m_world->GetDataFile(filename);
+	
+  df.WriteComment("Organism location data");
+  df.WriteTimeStamp();
+	
+	for(int i=0; i<m_world->GetPopulation().GetSize(); ++i) {
+		cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
+		if(cell.IsOccupied()) {
+			df.Write(GetUpdate(), "Update [update]");
+			df.Write(i, "Cell ID [cellid]");
+			df.Write(cell.GetOrganism()->GetID(), "Organism ID [orgid]");
+			df.Endl();
+		}
+	}	
+}

@@ -1406,8 +1406,9 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
           break;
         }
         case 1: { // "learning" cost
-          if (cur_reaction_count[i] == 1) {
-            ++num_new_unique_reactions;
+          int n_react = cur_reaction_count[i] -1;
+          if (n_react < m_world->GetConfig().LEARNING_COUNT.Get()) {
+            num_new_unique_reactions += ( m_world->GetConfig().LEARNING_COUNT.Get() - n_react);
           }
           break;
         }
