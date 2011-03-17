@@ -5,7 +5,7 @@
 </head>
 <body>
 
-<div class="revision">Revised 2010-11-16 DMB</div>
+<div class="revision">Revised 2011-03-17 BLW</div>
 
 <p><a href="index.html">Return to the Index</a></p>
 <hr />
@@ -14,8 +14,44 @@
 <h1>The Instruction Set</h1>
 </div>
 
+<p>&nbsp;</p>
+<h2>Specifiying Instruction Sets in avida.cfg</h2>
+
+<p>Instruction sets are actually part of the avida.cfg file.  However, instead of writing the instruction set out in avida.cfg itself, which would be rather long and messy, each instruction set is placed in a separate file.  A preprocessor include (of the form <code>#include $filename</code>) is then used to include each instruction set in avida.cfg.  Multiple instruction sets may be included.  
+</p>
+<p>For example, to include the two instruction sets contained in the files instset-heads.cfg and instset-heads-sex.cfg, these lines are placed in avida.cfg:
+</p>
 <p>
-An instruction set consists of a name and hardware type, followed by a list of instructions that belong to
+<code>#include instset-heads.cfg</code><br />
+<code>#include instset-heads-sex.cfg</code>
+</p>
+<p>You may optionally name each instruction set as you include it.  This allows you to change which file the name refers to when running avida from the command line, using the -def option.  The default avida.cfg contains this line:<br>
+<code>#include INST_SET=instset-heads.cfg</code>
+</p>
+<p>This means you may change which file INST_SET refers (for example, change it to instset-heads-sex.cfg) to on the command line like this:<br>
+<code>./avida -def INST_SET instset-heads-sex.cfg</code><br>
+</p>
+<p>In this case, INST_SET is simply a variable name with no special meaning.  The line might just as easily been <code>#include BOBS_YOUR_UNCLE=instset-heads.cfg</code></p>
+
+
+
+<p>&nbsp;</p>
+<h2>Specifiying the Instruction Set for an Organism</h2>
+
+<p>Organisms in an avida run may have different instruction sets.  Therefore, it is necessary to specify the instruction used by each .org file.  At the top of the .org file you must specify the instruction set with the <code>#inst_set</code> keyword, and the hardware type with the <code>hw_type</code> keyword.  For example, default-heads.org starts with these two lines:
+</p>
+<p>
+<code>#inst_set heads_default</code><br>
+<code>#hw_type 0</code>
+</p>
+<p><b>Note:</b> the name of the instruction set may not be the same as the name of the file containing the instruction set.  (Indeed, one file may contain multiple instruction sets.)  The name of the instruction set is defined inside its .cfg file by the INSTSET keyword, which also defines the hardware type.
+
+
+
+<p>&nbsp;</p>
+<h2>The Structure of an Instruction Set File</h2>
+
+<p>An instruction set consists of a name and hardware type, followed by a list of instructions that belong to
 that instruction set, each of which may be followed by a series of options that
 define how that instruction should be used.  The exact format is as follows:
 </p>
@@ -25,11 +61,7 @@ define how that instruction should be used.  The exact format is as follows:
 ...
 </p>
 
-<p>Instruction set settings must be included in the avida.cfg file.  For convenience, the avida.cfg file
-supports preprocessor includes (of the form <code>#include $filename</code>) that may be used to separate
-settings into multiple files.</p>
-
-<p>Multiple instruction sets with unique names may be defined.  All <code>INST</code> statements must follow the
+<p>Multiple instruction sets with unique names may be defined in the same file.  All <code>INST</code> statements must follow the
 <code>INSTSET</code> statement defining the instruction set.</p>
 
 
@@ -74,6 +106,10 @@ settings into multiple files.</p>
   instruction sequences.
 </dd>
 </dl>
+
+<p>&nbsp;</p>
+<p>For example, to specify that the nand instruction is both twice as common and twice as expensive as other instructions, you would use this line:</p>
+<p><code>INST nand:redundancy=2:cost=2</code>
 
 
 <p>&nbsp;</p>
