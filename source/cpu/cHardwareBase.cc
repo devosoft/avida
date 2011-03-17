@@ -52,7 +52,7 @@ using namespace AvidaTools;
 cHardwareBase::cHardwareBase(cWorld* world, cOrganism* in_organism, cInstSet* inst_set)
 : m_world(world), m_organism(in_organism), m_inst_set(inst_set), m_tracer(NULL)
 , m_has_costs(inst_set->HasCosts()), m_has_ft_costs(inst_set->HasFTCosts())
-, m_has_energy_costs(m_inst_set->HasEnergyCosts()) , m_has_res_costs(m_inst_set->HasResCosts())  
+, m_has_energy_costs(m_inst_set->HasEnergyCosts()), m_has_res_costs(m_inst_set->HasResCosts())  
 {
 	m_task_switching_cost=0;
 	int switch_cost =  world->GetConfig().TASK_SWITCH_PENALTY.Get();
@@ -997,13 +997,11 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
 void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
 #if INSTRUCTION_COSTS
-#endif
-  
   if (m_has_res_costs) {
     
     double res_req = m_inst_set->GetResCost(cur_inst); 
     
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); //JW
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
     tArray<double> res_change(res_count.GetSize());
     res_change.SetAll(0.0);
     
@@ -1020,6 +1018,7 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
       return;
     }
   }
+#endif
 }
 
 

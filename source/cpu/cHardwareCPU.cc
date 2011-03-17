@@ -8669,9 +8669,7 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
   
   double odds_I_dont_die;
-  if (attacker_odds > target_odds) {
-    odds_I_dont_die = 1 - target_odds;
-  }
+  if (attacker_odds > target_odds) odds_I_dont_die = 1 - target_odds;
   else odds_I_dont_die = 1 - attacker_odds;
   
   const int out_reg = FindModifiedRegister(REG_BX);
