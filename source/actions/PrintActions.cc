@@ -2937,6 +2937,49 @@ public:
   }
 };
 
+
+class cActionDumpGenomeLengthGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpGenomeLengthGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_genome_length.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+    
+    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
+    
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        int genome_length= 0;
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true)
+        {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          genome_length = organism->GetGenome().GetSize();
+        }
+        else { genome_length = -1; }
+        fp << genome_length << " ";
+      }
+      fp << endl;
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
 class cActionDumpTaskGrid : public cAction
 {
 private:
@@ -3642,6 +3685,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpExecutionRatioGrid>("DumpExecutionRatioGrid");
   action_lib->Register<cActionDumpCellDataGrid>("DumpCellDataGrid");
   action_lib->Register<cActionDumpSleepGrid>("DumpSleepGrid");
+  action_lib->Register<cActionDumpGenomeLengthGrid>("DumpGenomeLengthGrid");
 
 
   action_lib->Register<cActionPrintNumOrgsKilledData>("PrintNumOrgsKilledData");

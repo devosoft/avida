@@ -1671,12 +1671,12 @@ bool cHardwareTransSMT::DoCollect(cAvidaContext& ctx, bool env_remove, bool inte
 {
   int start_bin, end_bin, bin_used, spec_id;
 
-  bool finite_resources_exist = FindModifiedResource(start_bin, end_bin, spec_id);
+  bool finite_resources_exist = FindModifiedResource(ctx, start_bin, end_bin, spec_id);
   if (!finite_resources_exist) { return true; }
 
   // Add this specification
   m_organism->IncCollectSpecCount(spec_id);
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx);
 
   if (start_bin == end_bin)
   { // resource completely specified
@@ -1739,7 +1739,7 @@ bool cHardwareTransSMT::DoActualCollect(cAvidaContext& ctx, int bin_used, bool e
 {
 
   // Set up res_change and max total
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx);
   tArray<double> res_change(res_count.GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();
@@ -1809,9 +1809,9 @@ bool cHardwareTransSMT::DoActualCollect(cAvidaContext& ctx, int bin_used, bool e
  * spec_id is the id number of the specification
  */
 
-bool cHardwareTransSMT::FindModifiedResource(int& start_index, int& end_index, int& spec_id)
+bool cHardwareTransSMT::FindModifiedResource(cAvidaContext& ctx, int& start_index, int& end_index, int& spec_id)
 {
-  int num_resources = m_organism->GetOrgInterface().GetResources().GetSize();
+  int num_resources = m_organism->GetOrgInterface().GetResources(&ctx).GetSize();
 
   //if there are no resources, translation cannot be successful; return false
   if (num_resources <= 0)

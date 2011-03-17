@@ -1705,8 +1705,6 @@ void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext* ctx) //JW
 
   // calculate how many penalties were accrued by the orgs on average
   double switch_penalties = source_deme.GetNumSwitchingPenalties();
-  //	double num_parents = source_deme.GetNumParents();
-  //	double num_births = source_deme.GetBirthCount();
   double num_orgs_perf_reaction = source_deme.GetNumOrgsPerformedReaction();
   double shannon_div = source_deme.GetShannonMutualInformation();
 

@@ -58,6 +58,10 @@
 		2A57A4000D6B954D00FC54C7 /* cProbDemeProbSchedule.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A57A3FE0D6B954D00FC54C7 /* cProbDemeProbSchedule.h */; };
 		42C27C840FDC22AC00C45B78 /* cDemeNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C7F0FDC22AC00C45B78 /* cDemeNetwork.cc */; };
 		42C27C870FDC22AC00C45B78 /* cDemeTopologyNetwork.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */; };
+		4A587DB913329E6B0037A393 /* cDynamicCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587DB513329E6B0037A393 /* cDynamicCount.cc */; };
+		4A587DBA13329E6B0037A393 /* cDynamicCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587DB613329E6B0037A393 /* cDynamicCount.h */; };
+		4A587DBB13329E6B0037A393 /* cGradientCount.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4A587DB713329E6B0037A393 /* cGradientCount.cc */; };
+		4A587DBC13329E6B0037A393 /* cGradientCount.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A587DB813329E6B0037A393 /* cGradientCount.h */; };
 		5629D8110C3EE14800C5F152 /* cTextWindow.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5629D80D0C3EE13500C5F152 /* cTextWindow.cc */; };
 		5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
@@ -797,6 +801,10 @@
 		42C27C810FDC22AC00C45B78 /* cDemeNetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeNetworkUtils.h; sourceTree = "<group>"; };
 		42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDemeTopologyNetwork.cc; sourceTree = "<group>"; };
 		42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDemeTopologyNetwork.h; sourceTree = "<group>"; };
+		4A587DB513329E6B0037A393 /* cDynamicCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDynamicCount.cc; sourceTree = "<group>"; };
+		4A587DB613329E6B0037A393 /* cDynamicCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDynamicCount.h; sourceTree = "<group>"; };
+		4A587DB713329E6B0037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
+		4A587DB813329E6B0037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -2300,6 +2308,10 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				4A587DB513329E6B0037A393 /* cDynamicCount.cc */,
+				4A587DB613329E6B0037A393 /* cDynamicCount.h */,
+				4A587DB713329E6B0037A393 /* cGradientCount.cc */,
+				4A587DB813329E6B0037A393 /* cGradientCount.h */,
 				70C11F3412B944F40092B40D /* cContextPhenotype.cc */,
 				70C11F3512B944F40092B40D /* cContextPhenotype.h */,
 				70C11F3612B944F40092B40D /* cContextReactionRequisite.h */,
@@ -2577,6 +2589,8 @@
 				70440597128B317500368ECC /* cUserFeedback.h in Headers */,
 				70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */,
 				70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */,
+				4A587DBA13329E6B0037A393 /* cDynamicCount.h in Headers */,
+				4A587DBC13329E6B0037A393 /* cGradientCount.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3051,6 +3065,8 @@
 				70A1E87E126642AE00D56AC4 /* cThread.cc in Sources */,
 				70A1E87F126642B100D56AC4 /* Platform.cc in Sources */,
 				70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */,
+				4A587DB913329E6B0037A393 /* cDynamicCount.cc in Sources */,
+				4A587DBB13329E6B0037A393 /* cGradientCount.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
