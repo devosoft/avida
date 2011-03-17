@@ -29,6 +29,7 @@
 # ifndef mkdir
 #  define mkdir(path, ignored_mode) _mkdir(path)
 # endif
+# define getcwd(buff, buff_len) _getcwd(buff, buff_len)
 # ifndef mode_t
 #  define mode_t unsigned int
 # endif
@@ -89,7 +90,7 @@ cString AvidaTools::FileSystem::GetCWD()
 
 cString AvidaTools::FileSystem::GetAbsolutePath(const cString& path, const cString& working_dir)
 {
-  if (path.GetSize() == 0 || (path[0] != '/' && path[0] != '\\')) {
+	if (path.GetSize() == 0 || (path[0] != '/' && path[0] != '\\' && !(path.IsLetter(0) && path[1] == ':' && path[2] =='\\') )) {
     return (cString(working_dir) + "/" + path);
   }
   

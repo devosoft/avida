@@ -23,7 +23,7 @@
 #include "cOrderedWeightedIndex.h"
 #include <iostream>
 
-using namespace std; 
+using namespace std;
 
 cOrderedWeightedIndex::cOrderedWeightedIndex()
   : item_weight(0)

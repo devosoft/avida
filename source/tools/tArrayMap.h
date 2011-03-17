@@ -40,6 +40,8 @@ public:
   
   int GetSize() const { return m_map.GetSize(); }
   
+  void Clear() { m_map.Resize(0); }
+  
   void Set(const KeyType& key, const ValueType& value)
   {
     for (int i = 0; i < m_map.GetSize(); i++) {

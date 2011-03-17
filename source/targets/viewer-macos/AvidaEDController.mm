@@ -24,6 +24,8 @@
 #import "AvidaRun.h"
 #import "MapGridView.h"
 
+#include "cCoreView_Map.h"
+
 static const float MAIN_SPLIT_LEFT_MIN = 150.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 550.0;
 static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
@@ -41,6 +43,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
     currentRun = nil;
     listener = NULL;
+    map = NULL;
     
     [self showWindow:self];
   }
@@ -95,7 +98,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
       [txtUpdate setStringValue:@"Time (updates): 0"];
     }
   } else {
-    if ([sender state] == NSOffState) {
+    if ([sender state] == NSOnState) {
       [currentRun resume];
     } else {
       [currentRun pause];
@@ -103,8 +106,16 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   }
 }
 
+- (IBAction) changeMapViewMode:(id)sender {
+  if (map) {
+    map->SetMode(map_mode_to_color[[mapViewMode indexOfSelectedItem]]);
+  }
+  
+}
 
--(void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
+
+
+- (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
   if (splitView == mainSplitView) {
     NSView* leftView = [[splitView subviews] objectAtIndex:0];
     NSView* rightView = [[splitView subviews] objectAtIndex:1];
@@ -198,7 +209,22 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 
 - (void) handleMap: (CoreViewMap*)pkg {
-  [mapView updateState: [pkg map]];
+  if (!map) {
+    map = [pkg map];
+    [mapViewMode removeAllItems];
+    map_mode_to_color.Clear();
+    int idx = 0;
+    for (int i = 0; i < map->GetNumModes(); i++) {
+      if (map->GetModeType(i) != cCoreView_Map::VIEW_COLOR) continue;
+      [mapViewMode addItemWithTitle:[NSString stringWithUTF8String:(const char*)map->GetModeName(i)]];
+      map_mode_to_color[idx++] = i;
+    }
+    [mapViewMode selectItemAtIndex:map->GetColorMode()];
+    [mapViewMode setEnabled:TRUE];
+  } else {
+    map = [pkg map];
+  }
+  [mapView updateState: map];
 }
 
 

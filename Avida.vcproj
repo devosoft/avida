@@ -689,6 +689,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\tools\cOrderedWeightedIndex.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\main\cOrganism.h"
 				>
 			</File>
@@ -1518,6 +1522,10 @@
 			</File>
 			<File
 				RelativePath=".\source\targets\avida-viewer\cOptionsScreen.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\tools\cOrderedWeightedIndex.cc"
 				>
 			</File>
 			<File

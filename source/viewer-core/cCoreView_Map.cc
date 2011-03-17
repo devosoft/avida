@@ -36,12 +36,12 @@ cCoreView_Map::cCoreView_Map(cWorld* world)
   , m_color_mode(0)
   , m_symbol_mode(-1)
   , m_tag_mode(-1)
-  , m_scale_max(0)
+  , m_scale_max(10)
 {
   // Setup the available view modes...
   AddViewMode("Genotypes",      &cCoreView_Map::SetColors_Genotype, VIEW_COLOR, COLORS_TYPES, new cCoreView_ClassificationInfo(world, "genotype", 10));
   AddViewMode("Fitness",        &cCoreView_Map::SetColors_Fitness,  VIEW_COLOR, COLORS_SCALE);
-  AddViewMode("_Genome Length", &cCoreView_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);
+  AddViewMode("Genome Length",  &cCoreView_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);
   AddViewMode("Highlight Tags", &cCoreView_Map::SetColors_Tags,     VIEW_COLOR, COLORS_TYPES);
 
   AddViewMode("None",           &cCoreView_Map::TagCells_None,      VIEW_TAGS);

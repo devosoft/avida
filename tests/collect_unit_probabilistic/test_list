@@ -1,0 +1,44 @@
+;--- Begin Test Configuration File (test_list) ---
+[main]
+; Command line arguments to pass to the application
+args = -c avida-probcollect-test.cfg -s 100 -set EVENT_FILE events-probcollect.cfg -set COPY_MUT_PROB 0.0 -set DIVIDE_INS_PROB 0.0 -set DIVIDE_DEL_PROB 0.0 -set USE_RESOURCE_BINS 1 -set RETURN_STORED_ON_DEATH 0 -set ENVIRONMENT_FILE environment-9resource-noinflow.cfg -def INST_SET instset-heads-probcollect.cfg -set REQUIRED_RESOURCE 8 -set REQUIRED_RESOURCE_LEVEL 1 -set COLLECT_PROB_DIVISOR 100
+
+; Note that all the command line options above (except -c, of course) are
+; duplicated in avida-probcollect-test.cfg
+
+; If this test must be recreated because of consistency changes, please
+; choose a seed which produces a run of at least 150 updates or the population
+; rises above 10 individuals before it drops again.
+
+app = %(default_app)s            ; Application path to test
+nonzeroexit = disallow   ; Exit code handling (disallow, allow, or require)
+                         ;  disallow - treat non-zero exit codes as failures
+                         ;  allow - all exit codes are acceptable
+                         ;  require - treat zero exit codes as failures, useful
+                         ;            for creating tests for app error checking
+createdby = BLW             ; Who created the test
+email = blwalker@msu.edu    ; Email address for the test's creator
+
+[consistency]
+enabled = yes            ; Is this test a consistency test?
+long = no                ; Is this test a long test?
+
+[performance]
+enabled = no             ; Is this test a performance test?
+long = no                ; Is this test a long test?
+
+; The following variables can be used in constructing setting values by calling
+; them with %(variable_name)s.  For example see 'app' above.
+;
+; builddir 
+; cpus 
+; default_app 
+; mode 
+; perf_repeat 
+; perf_user_margin 
+; perf_wall_margin 
+; svn 
+; svnmetadir 
+; svnversion 
+; testdir 
+;--- End Test Configuration File ---

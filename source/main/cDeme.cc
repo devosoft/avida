@@ -1203,10 +1203,23 @@ void cDeme::UpdateShannon(cPopulationCell& cell)
 
 void cDeme::UpdateShannonAll()
 {
-  for (int i=0; i<GetSize(); i++) {
+  for (int i=0; i<GetSize(); ++i) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
     UpdateShannon(cell);
   }
 }
 
+
+double cDeme::GetMeanSDofFitness() 
+{
+  cDoubleSum fit; 
+  for (int i=0; i<GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
+    if (cell.IsOccupied()) {
+      cOrganism* organism = cell.GetOrganism();
+      fit.Add(organism->GetPhenotype().GetFitness());
+    }
+  }
+  return fit.StdDeviation();
+}
 

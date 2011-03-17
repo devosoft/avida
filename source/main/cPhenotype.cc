@@ -199,9 +199,9 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   life_fitness             = in_phen.life_fitness; 	
   exec_time_born           = in_phen.exec_time_born;
   birth_update             = in_phen.birth_update;
-	num_new_unique_reactions = in_phen.num_new_unique_reactions;
+  num_new_unique_reactions = in_phen.num_new_unique_reactions;
   last_task_id             = in_phen.last_task_id;
-	res_consumed             = in_phen.res_consumed;  
+  res_consumed             = in_phen.res_consumed;  
   
   // 5. Status Flags...  (updated at each divide)
   to_die                  = in_phen.to_die;		 
@@ -387,8 +387,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
   cur_task_time.SetAll(0.0);  // Added for time tracking; WRE 03-18-07
-  for (int j = 0; j < sensed_resources.GetSize(); j++)
+  for (int j = 0; j < sensed_resources.GetSize(); j++) {
     sensed_resources[j] =  parent_phenotype.sensed_resources[j];
+  }
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -432,9 +433,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
   life_fitness    = fitness; 
   exec_time_born  = parent_phenotype.exec_time_born;  //@MRR treating offspring and parent as siblings; already set in DivideReset
   birth_update    = parent_phenotype.birth_update;    
-	num_new_unique_reactions = 0;
-	last_task_id             = -1;
-	res_consumed             = 0;
+  num_new_unique_reactions = 0;
+  last_task_id             = -1;
+  res_consumed             = 0;
   
   num_thresh_gb_donations = 0;
   num_thresh_gb_donations_last = parent_phenotype.num_thresh_gb_donations_last;
@@ -494,7 +495,7 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
   is_modified   = false;
   is_fertile    = parent_phenotype.last_child_fertile;
   is_mutated    = false;
-  if(m_world->GetConfig().INHERIT_MULTITHREAD.Get()) {
+  if (m_world->GetConfig().INHERIT_MULTITHREAD.Get()) {
     is_multi_thread = parent_phenotype.is_multi_thread;
   } else {
     is_multi_thread = false;
@@ -720,10 +721,11 @@ void cPhenotype::ResetMerit(const cSequence & _cgenome)
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
-	merit = cur_merit_base * cur_bonus;
+  merit = cur_merit_base * cur_bonus;
 	
-  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+  if (m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
     merit = cur_merit_base;
+  }
   
 }
 
@@ -746,7 +748,7 @@ void cPhenotype::DivideReset(const cSequence & _genome)
   if (merit_default_bonus) {
     cur_bonus = merit_default_bonus;
   }
-	merit = cur_merit_base * cur_bonus;
+  merit = cur_merit_base * cur_bonus;
 	
   if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
     merit = cur_merit_base;
@@ -795,9 +797,9 @@ void cPhenotype::DivideReset(const cSequence & _genome)
   cur_task_count.SetAll(0);
   cur_host_tasks.SetAll(0);
   
-  //LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and resonable assumptions
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
-  {     
+  // @LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and
+  //      resonable assumptions
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {     
     last_para_tasks = cur_para_tasks;
     cur_para_tasks.SetAll(0);
   }
@@ -832,9 +834,9 @@ void cPhenotype::DivideReset(const cSequence & _genome)
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR Treating organism as sibling
   birth_update = m_world->GetStats().GetUpdate();   
-	num_new_unique_reactions = 0;
-	last_task_id             = -1;
-	res_consumed             = 0;
+  num_new_unique_reactions = 0;
+  last_task_id             = -1;
+  res_consumed             = 0;
   
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -909,7 +911,8 @@ void cPhenotype::DivideReset(const cSequence & _genome)
   
   // A few final changes if the parent was supposed to be be considered
   // a second child on the divide.
-  if ((m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) || (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)) {
+  if ((m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) ||
+      (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_BIRTH)) {
     gestation_start = 0;
     cpu_cycles_used = 0;
     time_used = 0;
@@ -944,8 +947,9 @@ void cPhenotype::TestDivideReset(const cSequence & _genome)
   }
   merit = cur_merit_base * cur_bonus;
   
-  if(m_world->GetConfig().INHERIT_MERIT.Get() == 0)
+  if (m_world->GetConfig().INHERIT_MERIT.Get() == 0) {
     merit = cur_merit_base;
+  }
   
   genome_length   = _genome.GetSize();
   (void) copied_size;                            // Unchanged
@@ -984,9 +988,9 @@ void cPhenotype::TestDivideReset(const cSequence & _genome)
   cur_num_donates  = 0;
   cur_task_count.SetAll(0);
   cur_host_tasks.SetAll(0);
-  //LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and resonable assumptions
-  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT)
-  {
+  // @LZ: figure out when and where to reset cur_para_tasks, depending on the divide method, and
+  //      resonable assumptions
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     last_para_tasks = cur_para_tasks;
     cur_para_tasks.SetAll(0);
   }
@@ -1025,9 +1029,9 @@ void cPhenotype::TestDivideReset(const cSequence & _genome)
   life_fitness = fitness; 
   exec_time_born += gestation_time;  //@MRR See DivideReset 
   birth_update  = m_world->GetStats().GetUpdate();
-	num_new_unique_reactions = 0;
-	last_task_id             = -1;
-	res_consumed             = 0;
+  num_new_unique_reactions = 0;
+  last_task_id             = -1;
+  res_consumed             = 0;
   
   num_thresh_gb_donations_last = num_thresh_gb_donations;
   num_thresh_gb_donations = 0;
@@ -1121,10 +1125,8 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   energy_testament = 0.0;
   energy_received_buffer = 0.0;
   
-  if(m_world->GetConfig().INHERIT_EXE_RATE.Get() == 0)
-    executionRatio = 1.0;
-  else 
-    executionRatio = clone_phenotype.executionRatio;
+  if (m_world->GetConfig().INHERIT_EXE_RATE.Get() == 0) executionRatio = 1.0;
+  else executionRatio = clone_phenotype.executionRatio;
   
   genome_length   = clone_phenotype.genome_length;
   copied_size     = clone_phenotype.copied_size;
@@ -1158,8 +1160,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_inst_count.SetAll(0);
   cur_sense_count.SetAll(0);  
   cur_task_time.SetAll(0.0);
-  for (int j = 0; j < sensed_resources.GetSize(); j++)
-    sensed_resources[j] =  clone_phenotype.sensed_resources[j];
+  for (int j = 0; j < sensed_resources.GetSize(); j++) {
+    sensed_resources[j] = clone_phenotype.sensed_resources[j];
+  }
   cur_trial_fitnesses.Resize(0); 
   cur_trial_bonuses.Resize(0); 
   cur_trial_times_used.Resize(0); 
@@ -1200,9 +1203,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   life_fitness    = fitness; 
   exec_time_born  = 0;
   birth_update    = m_world->GetStats().GetUpdate();
-	num_new_unique_reactions = clone_phenotype.num_new_unique_reactions;
-	last_task_id             = clone_phenotype.last_task_id;
-	res_consumed             = clone_phenotype.res_consumed;
+  num_new_unique_reactions = clone_phenotype.num_new_unique_reactions;
+  last_task_id             = clone_phenotype.last_task_id;
+  res_consumed             = clone_phenotype.res_consumed;
   
   num_thresh_gb_donations_last = clone_phenotype.num_thresh_gb_donations_last;
   num_thresh_gb_donations  = clone_phenotype.num_thresh_gb_donations;
@@ -1297,8 +1300,9 @@ bool cPhenotype::TestInput(tBuffer<int>& inputs, tBuffer<int>& outputs)
 }
 
 bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
-                            const tArray<double>& res_in, const tArray<double>& rbins_in, tArray<double>& res_change,
-                            tArray<cString>& insts_triggered, bool is_parasite, cContextPhenotype* context_phenotype)
+                            const tArray<double>& res_in, const tArray<double>& rbins_in,
+			    tArray<double>& res_change, tArray<cString>& insts_triggered,
+			    bool is_parasite, cContextPhenotype* context_phenotype)
 {
   assert(initialized == true);
   taskctx.SetTaskStates(&m_task_states);
@@ -1344,17 +1348,15 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       cur_task_count[i]++;
       eff_task_count[i]++;
       
-      //update parasite/host task tracking appropriately
-      if(is_parasite)
-      {
+      // Update parasite/host task tracking appropriately
+      if (is_parasite) {
         cur_para_tasks[i]++;
       }
-      else
-      {
+      else {
         cur_host_tasks[i]++;
       }
       
-      if(context_phenotype != 0) {
+      if (context_phenotype != 0) {
         context_phenotype->GetTaskCounts()[i]++;
       }
       if (result.UsedEnvResource() == false) { cur_internal_task_count[i]++; }
@@ -1395,13 +1397,13 @@ bool cPhenotype::TestOutput(cAvidaContext& ctx, cTaskContext& taskctx,
       m_world->GetStats().AddNewReactionCount(i);
     }
     if (result.ReactionTriggered(i) == true) {
-      if(context_phenotype != 0) {
+      if (context_phenotype != 0) {
  	context_phenotype->GetReactionCounts()[i]++;
       }
       // If the organism has not performed this task,
       // then consider it to be a task switch.
       // If applicable, add in the penalty.
-      switch(m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
+      switch (m_world->GetConfig().TASK_SWITCH_PENALTY_TYPE.Get()) {
         case 0: { // no penalty
           break;
         }
@@ -1762,10 +1764,8 @@ double cPhenotype::ExtractParentEnergy() {
   
   //TODO: add energy_given_at_birth to Stored_energy
   cMerit parentMerit(ConvertEnergyToMerit(GetStoredEnergy() * GetEnergyUsageRatio()));
-	if(parentMerit.GetDouble() > 0.0)
-		SetMerit(parentMerit);
-  else
-		SetToDie();
+  if (parentMerit.GetDouble() > 0.0) SetMerit(parentMerit);
+  else SetToDie();
 	
   return child_energy;
 }
@@ -1987,64 +1987,35 @@ void cPhenotype::TrialDivideReset(const cSequence & _genome)
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
 }
 
-// C O M P A R I S O N    O P E R A T O R S
-
-bool cPhenotype::operator<(const cPhenotype&  rhs) const
-{
-  if (this->GetMerit() < rhs.GetMerit())
-    return true;
+// Arbitrary (but consistant) ordering.
+// Return -1 if lhs is "less", +1 is it is "greater", and 0 otherwise.
+int cPhenotype::Compare(const cPhenotype* lhs, const cPhenotype* rhs) {
+  // Compare first based on merit...
+  if ( lhs->GetMerit() < rhs->GetMerit() ) return -1;
+  else if ( lhs->GetMerit() > rhs->GetMerit() ) return 1;
   
-  if ( this->GetGestationTime() < rhs.GetGestationTime() )
-    return true;
+  // If merits are equal, compare gestation time...
+  if ( lhs->GetGestationTime() < rhs->GetGestationTime() ) return -1;
+  else if ( lhs->GetGestationTime() > rhs->GetGestationTime() ) return 1;
   
-  tArray<int> lhsTasks = this->GetLastTaskCount();
-  tArray<int> rhsTasks = rhs.GetLastTaskCount();
-  for (int k = 0; k < lhsTasks.GetSize(); k++)
-    if (lhsTasks[k] < rhsTasks[k])
-      return true;
+  // If gestation times are also equal, compare each task
+  tArray<int> lhsTasks = lhs->GetLastTaskCount();
+  tArray<int> rhsTasks = rhs->GetLastTaskCount();
+  for (int k = 0; k < lhsTasks.GetSize(); k++) {
+    if (lhsTasks[k] < rhsTasks[k]) return -1;
+    else if (lhsTasks[k] > rhsTasks[k]) return 1;
+  }
   
-  return false;
+  // Assume they are identical.
+  return 0;
 }
 
-bool cPhenotype::operator==(const cPhenotype& rhs) const
-{
-  if (this->GetMerit() != rhs.GetMerit())
-    return false;
-  
-  if ( this->GetGestationTime() != rhs.GetGestationTime() )
-    return false;
-  
-  tArray<int> lhsTasks = this->GetLastTaskCount();
-  tArray<int> rhsTasks = rhs.GetLastTaskCount();
-  for (int k = 0; k < lhsTasks.GetSize(); k++)
-    if (lhsTasks[k] != rhsTasks[k])
-      return false;
-  
-  return true;
+bool cPhenotype::PhenotypeCompare::operator()(const cPhenotype* lhs, const cPhenotype* rhs) const {
+  return cPhenotype::Compare(lhs, rhs) < 0;
 }
 
-bool cPhenotype::operator!=(const cPhenotype& rhs) const
-{
-  return !(*this == rhs);
-}
 
-bool cPhenotype::operator>(const cPhenotype&  rhs) const
-{
-  if (this->GetMerit() > rhs.GetMerit())
-    return true;
   
-  if ( this->GetGestationTime() > rhs.GetGestationTime() )
-    return true;
-  
-  tArray<int> lhsTasks = this->GetLastTaskCount();
-  tArray<int> rhsTasks = rhs.GetLastTaskCount();
-  for (int k = 0; k < lhsTasks.GetSize(); k++)
-    if (lhsTasks[k] > rhsTasks[k])
-      return true;
-  
-  return false;
-}
-
 // Return an integer classifying the organism's energy level as -1=error,0=low,1=med,2=high
 int cPhenotype::GetDiscreteEnergyLevel() const {
   double max_energy = m_world->GetConfig().ENERGY_CAP.Get();

@@ -27,6 +27,7 @@
 #include "cAnalyzeGenotype.h"
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
+#include "cBGGenotype.h"
 #include "tArrayUtils.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
@@ -47,7 +48,6 @@
 #include "cWorldDriver.h"
 #include "tAutoRelease.h"
 #include "tIterator.h"
-#include "tVector.h"
 #include <cmath>
 #include <cerrno>
 #include <map>
@@ -82,13 +82,13 @@ STATS_OUT_FILE(PrintMessageLog,             message_log.dat     );
 STATS_OUT_FILE(PrintInterruptData,          interrupt.dat       );
 STATS_OUT_FILE(PrintTotalsData,             totals.dat          );
 STATS_OUT_FILE(PrintTasksData,              tasks.dat           );
-STATS_OUT_FILE(PrintThreadsData,            threads.dat);
+STATS_OUT_FILE(PrintThreadsData,            threads.dat         );
 STATS_OUT_FILE(PrintHostTasksData,          host_tasks.dat      );
 STATS_OUT_FILE(PrintParasiteTasksData,      parasite_tasks.dat  );
 STATS_OUT_FILE(PrintTasksExeData,           tasks_exe.dat       );
-STATS_OUT_FILE(PrintNewTasksData,			newtasks.dat		);
-STATS_OUT_FILE(PrintNewReactionData,		newreactions.dat	);
-STATS_OUT_FILE(PrintNewTasksDataPlus,		newtasksplus.dat	);
+STATS_OUT_FILE(PrintNewTasksData,           newtasks.dat	);
+STATS_OUT_FILE(PrintNewReactionData,	    newreactions.dat	);
+STATS_OUT_FILE(PrintNewTasksDataPlus,       newtasksplus.dat	);
 STATS_OUT_FILE(PrintTasksQualData,          tasks_quality.dat   );
 STATS_OUT_FILE(PrintResourceData,           resource.dat        );
 STATS_OUT_FILE(PrintReactionData,           reactions.dat       );
@@ -110,9 +110,10 @@ STATS_OUT_FILE(PrintSleepData,              sleep.dat           );
 STATS_OUT_FILE(PrintCompetitionData,        competition.dat     );
 STATS_OUT_FILE(PrintDemeReplicationData,    deme_repl.dat       );
 STATS_OUT_FILE(PrintDemeReactionDiversityReplicationData, deme_rx_repl.dat );
+STATS_OUT_FILE(PrintWinningDeme, deme_winners.dat);
 STATS_OUT_FILE(PrintDemeTreatableReplicationData,    deme_repl_treatable.dat       );
 STATS_OUT_FILE(PrintDemeUntreatableReplicationData,  deme_repl_untreatable.dat       );
-STATS_OUT_FILE(PrintDemeTreatableCount,    deme_treatable.dat       );
+STATS_OUT_FILE(PrintDemeTreatableCount,     deme_treatable.dat       );
 
 STATS_OUT_FILE(PrintDemeCompetitionData,    deme_compete.dat);
 STATS_OUT_FILE(PrintDemeNetworkData,        deme_network.dat);
@@ -150,11 +151,11 @@ STATS_OUT_FILE(PrintSynchronizationData,    sync.dat            );
 STATS_OUT_FILE(PrintDetailedSynchronizationData, sync-detail.dat);
 // @WRE: Added output event for collected visit counts
 STATS_OUT_FILE(PrintCellVisitsData,         visits.dat			);
-STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat);
-STATS_OUT_FILE(PrintDynamicMaxMinData,		maxmin.dat			);
+STATS_OUT_FILE(PrintFlowRateTuples,         flow_rate_tuples.dat        );
+STATS_OUT_FILE(PrintDynamicMaxMinData,	    maxmin.dat			);
 STATS_OUT_FILE(PrintNumOrgsKilledData,      orgs_killed.dat);
-STATS_OUT_FILE(PrintMigrationData,      migration.dat);
-STATS_OUT_FILE(PrintAgePolyethismData, age_polyethism.dat);
+STATS_OUT_FILE(PrintMigrationData,          migration.dat);
+STATS_OUT_FILE(PrintAgePolyethismData,      age_polyethism.dat);
 
 
 // reputation
@@ -342,6 +343,131 @@ public:
       n[it->Get()->GetDepth() - min] += it->Get()->GetNumUnits();
     }
 
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(min, "Minimum");
+    df.Write(max, "Maximum");
+    for (int i = 0; i < n.GetSize(); i++)  df.WriteAnonymous(n[i]);
+    df.Endl();
+  }
+};
+
+//Depth Histogram for Parasites Only
+class cActionPrintParasiteDepthHistogram : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintParasiteDepthHistogram(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "depth_parasite_histogram.dat"; else m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"depth_parasite_histogram.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    // Output format:    update  min  max  histogram_values...
+    int min = INT_MAX;
+    int max = 0;
+    
+    // Two pass method
+    
+    // Loop through all genotypes getting min and max values
+    cClassificationManager& classmgr = m_world->GetClassificationManager();
+    tAutoRelease<tIterator<cBioGroup> > it;
+    
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        if (bg->GetDepth() < min) min = bg->GetDepth();
+        if (bg->GetDepth() > max) max = bg->GetDepth();
+      }
+    }
+    
+    //crappy hack, but sometimes we wont have parasite genotypes
+    if(min == INT_MAX) min=0;
+    
+    assert(max >= min);
+    
+    // Allocate the array for the bins (& zero)
+    tArray<int> n(max - min + 1);
+    n.SetAll(0);
+    
+    // Loop through all genotypes binning the values
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        n[bg->GetDepth() - min] += bg->GetNumUnits();
+      }
+    }
+    
+    cDataFile& df = m_world->GetDataFile(m_filename);
+    df.Write(m_world->GetStats().GetUpdate(), "Update");
+    df.Write(min, "Minimum");
+    df.Write(max, "Maximum");
+    for (int i = 0; i < n.GetSize(); i++)  df.WriteAnonymous(n[i]);
+    df.Endl();
+  }
+};
+
+//Depth Histogram for Parasites Only
+class cActionPrintHostDepthHistogram : public cAction
+{
+private:
+  cString m_filename;
+public:
+  cActionPrintHostDepthHistogram(cWorld* world, const cString& args) : cAction(world, args)
+  {
+    cString largs(args);
+    if (largs == "") m_filename = "depth_host_histogram.dat"; else m_filename = largs.PopWord();
+  }
+  
+  static const cString GetDescription() { return "Arguments: [string fname=\"depth_host_histogram.dat\"]"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    // Output format:    update  min  max  histogram_values...
+    int min = INT_MAX;
+    int max = 0;
+    
+    // Two pass method
+    
+    // Loop through all genotypes getting min and max values
+    cClassificationManager& classmgr = m_world->GetClassificationManager();
+    tAutoRelease<tIterator<cBioGroup> > it;
+    
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        if (bg->GetDepth() < min) min = bg->GetDepth();
+        if (bg->GetDepth() > max) max = bg->GetDepth();
+      }
+    }
+    
+    assert(max >= min);
+    
+    // Allocate the array for the bins (& zero)
+    tArray<int> n(max - min + 1);
+    n.SetAll(0);
+    
+    // Loop through all genotypes binning the values
+    it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
+    while (it->Next()) {
+      cBioGroup* bg = it->Get();
+      if(! dynamic_cast<cBGGenotype*>(bg)->IsParasite())
+      {
+        n[bg->GetDepth() - min] += bg->GetNumUnits();
+      }
+    }
+    
     cDataFile& df = m_world->GetDataFile(m_filename);
     df.Write(m_world->GetStats().GetUpdate(), "Update");
     df.Write(min, "Minimum");
@@ -2957,9 +3083,7 @@ public:
     ofstream& fp = m_world->GetDataFileOFStream(filename);
     
     cPopulation* pop = &m_world->GetPopulation();
-    
-    const int num_tasks = m_world->GetEnvironment().GetNumTasks();
-    
+        
     for (int i = 0; i < pop->GetWorldX(); i++) {
       for (int j = 0; j < pop->GetWorldY(); j++) {
         int genome_length= 0;
@@ -3600,6 +3724,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintDemeGlobalResources>("PrintDemeGlobalResources");
   action_lib->Register<cActionPrintDemeReplicationData>("PrintDemeReplicationData");
 	action_lib->Register<cActionPrintDemeReactionDiversityReplicationData>("PrintDemeReactionDiversityReplicationData");
+  action_lib->Register<cActionPrintWinningDeme>("PrintWinningDeme");
   action_lib->Register<cActionPrintDemeTreatableReplicationData>("PrintDemeTreatableReplicationData");
   action_lib->Register<cActionPrintDemeUntreatableReplicationData>("PrintDemeUntreatableReplicationData");
   action_lib->Register<cActionPrintDemeTreatableCount>("PrintDemeTreatableCount");
@@ -3642,6 +3767,8 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionPrintData>("PrintData");
   action_lib->Register<cActionPrintInstructionAbundanceHistogram>("PrintInstructionAbundanceHistogram");
   action_lib->Register<cActionPrintDepthHistogram>("PrintDepthHistogram");
+  action_lib->Register<cActionPrintParasiteDepthHistogram>("PrintParasiteDepthHistogram");
+  action_lib->Register<cActionPrintHostDepthHistogram>("PrintHostDepthHistogram");
   action_lib->Register<cActionEcho>("Echo");
   action_lib->Register<cActionPrintGenotypeAbundanceHistogram>("PrintGenotypeAbundanceHistogram");
   //  action_lib->Register<cActionPrintSpeciesAbundanceHistogram>("PrintSpeciesAbundanceHistogram");

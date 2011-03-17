@@ -324,7 +324,7 @@ public:
   template<typename V> T* PopValue(V (T::*fun)() const, V value)
   {
     tListNode<T>* node;
-    if (FindNode(fun, value, node)) return RemoveNode(node);
+    if (FindNode(fun, value, node)) return tList<T>::RemoveNode(node);
     return NULL;
   }
   
@@ -338,7 +338,7 @@ public:
   template<typename V> T* PopMax(V (T::*fun)() const)
   {
     tListNode<T>* node;
-    if (FindMax(fun, node)) return RemoveNode(node);
+    if (FindMax(fun, node)) return tList<T>::RemoveNode(node);
     return NULL;
   }
   

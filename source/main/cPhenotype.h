@@ -189,10 +189,10 @@ private:
   int exec_time_born;    // @MRR number of instructions since seed ancestor start
   double gmu_exec_time_born; //@MRR mutation-rate and gestation time scaled time of birth
   int birth_update;      // @MRR update *organism* born
-	tArray<int> testCPU_inst_count;	  // Instruction exection counter as calculated by Test CPU
-	int last_task_id; // id of the previous task
-	int num_new_unique_reactions; // count the number of new unique reactions this organism has performed.
-	double res_consumed; // amount of resources consumed since the organism last turned them over to the deme.
+  tArray<int> testCPU_inst_count;	  // Instruction exection counter as calculated by Test CPU
+  int last_task_id; // id of the previous task
+  int num_new_unique_reactions; // count the number of new unique reactions this organism has performed.
+  double res_consumed; // amount of resources consumed since the organism last turned them over to the deme.
 
   
   // 5. Status Flags...  (updated at each divide)
@@ -614,18 +614,17 @@ public:
   void HalveEnergyUsage();
   void DefaultEnergyUsage();
 	
-	// --- Support for Division of Labor --- //
-	int GetLastTaskID() const { return last_task_id; }
-	int  GetNumNewUniqueReactions() const {assert(initialized == true);  return num_new_unique_reactions; }
-	void  ResetNumNewUniqueReactions()  {num_new_unique_reactions =0; }
-	double GetResourcesConsumed(); 
+  // --- Support for Division of Labor --- //
+  int GetLastTaskID() const { return last_task_id; }
+  int  GetNumNewUniqueReactions() const {assert(initialized == true);  return num_new_unique_reactions; }
+  void  ResetNumNewUniqueReactions()  {num_new_unique_reactions =0; }
+  double GetResourcesConsumed(); 
 
-  //LZ - Parasite Etc. Helpers
+  // @LZ - Parasite Etc. Helpers
   void DivideFailed();
   void UpdateParasiteTasks() { last_para_tasks = cur_para_tasks; cur_para_tasks.SetAll(0); return; }
-
-
   
+
   void RefreshEnergy();
   void ApplyToEnergyStore();
   void EnergyTestament(const double value); //! external energy given to organism
@@ -633,14 +632,12 @@ public:
   void ReceiveDonatedEnergy(const double value);
   double ExtractParentEnergy();
   
-  bool operator<(const cPhenotype& rhs) const;
-  bool operator>(const cPhenotype& rhs) const;
-  bool operator==(const cPhenotype& rhs) const;
-  bool operator!=(const cPhenotype& rhs) const; 
-  
-  struct lt_phenotype{
-    bool operator()(const cPhenotype* lhs, const cPhenotype* rhs) const
-      {return *lhs < *rhs;}   // operator< in cPhenotype
+  // Compare two phenotypes and determine an ordering (arbitrary, but consistant among phenotypes).
+  static int Compare(const cPhenotype* lhs, const cPhenotype* rhs);
+
+  // This pseudo-function is used to help sort phenotypes
+  struct PhenotypeCompare {
+    bool operator()(const cPhenotype* lhs, const cPhenotype* rhs) const;
   };
 };
 

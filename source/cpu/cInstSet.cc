@@ -202,7 +202,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
       continue;
     }
     
-    double redundancy = args->GetDouble(1);
+    double redundancy = args->GetDouble(2);
     if (redundancy < 0.0) {
       if (feedback) feedback->Warning("instruction '%s' has negative redundancy, ignoring...", (const char*)inst_name);
       continue;
