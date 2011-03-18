@@ -24,8 +24,9 @@
 
 #include "AvidaTools.h"
 
+#include "cDriver.h"
+
 #include "cAvidaConfig.h"
-#include "cCoreViewDriver.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
 #include "tDictionary.h"
@@ -74,7 +75,7 @@ using namespace AvidaTools;
     
     
     if (!world) return nil;
-    driver = new cCoreViewDriver(world);
+    driver = new Avida::CoreView::cDriver(world);
     driver->Start();
   }
   

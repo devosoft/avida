@@ -46,8 +46,8 @@
   AvidaAppDelegate* app;
   
   AvidaRun* currentRun;
-  cCoreViewListener* listener;
-  cCoreView_Map* map;
+  Avida::CoreView::cListener* listener;
+  Avida::CoreView::cMap* map;
   tArrayMap<int, int> map_mode_to_color;
 }
 
@@ -79,7 +79,7 @@
 
 
 // Listener Methods
-@property (readonly) cCoreViewListener* listener;
+@property (readonly) Avida::CoreView::cListener* listener;
 
 -(void)handleMap:(CoreViewMap*)object;
 -(void)handleUpdate:(CoreViewUpdate*)object;

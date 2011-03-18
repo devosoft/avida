@@ -24,7 +24,7 @@
 #import "AvidaRun.h"
 #import "MapGridView.h"
 
-#include "cCoreView_Map.h"
+#include "cMap.h"
 
 static const float MAIN_SPLIT_LEFT_MIN = 150.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 550.0;
@@ -215,7 +215,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     map_mode_to_color.Clear();
     int idx = 0;
     for (int i = 0; i < map->GetNumModes(); i++) {
-      if (map->GetModeType(i) != cCoreView_Map::VIEW_COLOR) continue;
+      if (map->GetModeSupportedTypes(i) & Avida::CoreView::MAP_GRID_VIEW_COLOR) continue;
       [mapViewMode addItemWithTitle:[NSString stringWithUTF8String:(const char*)map->GetModeName(i)]];
       map_mode_to_color[idx++] = i;
     }

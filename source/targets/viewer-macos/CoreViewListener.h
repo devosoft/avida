@@ -20,16 +20,20 @@
 
 #include "Foundation/Foundation.h"
 
-#include "cCoreViewListener.h"
+#include "cListener.h"
 
 @class CoreViewMap;
 @class CoreViewUpdate;
 
-class cCoreView_Map;
+namespace Avida {
+  namespace CoreView {
+    class cMap;
+  };
+};
 
 
 @protocol CoreViewListener
-@property (readonly) cCoreViewListener* listener;
+@property (readonly) Avida::CoreView::cListener* listener;
 @optional
 -(void)handleMap:(CoreViewMap*)pkg;
 -(void)handleUpdate:(CoreViewUpdate*)pkg;
@@ -37,10 +41,10 @@ class cCoreView_Map;
 
 
 @interface CoreViewMap : NSObject {
-  cCoreView_Map* m_map;
+  Avida::CoreView::cMap* m_map;
 }
--(id)initWithMap:(cCoreView_Map*)map;
-@property (readonly) cCoreView_Map* map;
+-(id)initWithMap:(Avida::CoreView::cMap*)map;
+@property (readonly) Avida::CoreView::cMap* map;
 @end;
 
 
@@ -52,7 +56,7 @@ class cCoreView_Map;
 @end
 
 
-class cMainThreadListener : public cCoreViewListener
+class cMainThreadListener : public Avida::CoreView::cListener
 {
 private:
   id m_target;
@@ -63,6 +67,6 @@ public:
   bool WantsMap() { return true; }
   bool WantsUpdate() { return true; }
   
-  void NotifyMap(cCoreView_Map* map);
+  void NotifyMap(Avida::CoreView::cMap* map);
   void NotifyUpdate(int update);
 };

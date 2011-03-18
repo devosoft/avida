@@ -22,7 +22,11 @@
 
 #include "tArray.h"
 
-class cCoreView_Map;
+namespace Avida {
+  namespace CoreView {
+    class cMap;
+  };
+};
 
 
 @interface MapGridView : NSView {
@@ -37,6 +41,6 @@ class cCoreView_Map;
 - (void)drawRect:(NSRect)rect;
 - (BOOL)isOpaque;
 
-- (void)updateState:(cCoreView_Map*)state;
+- (void)updateState:(Avida::CoreView::cMap*)state;
 
 @end

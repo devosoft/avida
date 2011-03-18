@@ -24,7 +24,7 @@
 
 
 @implementation CoreViewMap
-- (id) initWithMap: (cCoreView_Map*)map {
+- (id) initWithMap: (Avida::CoreView::cMap*)map {
   m_map = map;
   return self;
 }
@@ -41,7 +41,7 @@
 @end
 
 
-void cMainThreadListener::NotifyMap(cCoreView_Map* map)
+void cMainThreadListener::NotifyMap(Avida::CoreView::cMap* map)
 {
   CoreViewMap* cvm = [[CoreViewMap alloc] initWithMap:map];
   [m_target performSelectorOnMainThread:@selector(handleMap:) withObject:cvm waitUntilDone:NO];

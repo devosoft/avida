@@ -20,7 +20,7 @@
 
 #import "MapGridView.h"
 
-#include "cCoreView_Map.h"
+#include "cMap.h"
 
 
 @implementation MapGridView
@@ -73,7 +73,7 @@
   return YES;
 }
 
-- (void) updateState: (cCoreView_Map*)state {
+- (void) updateState: (Avida::CoreView::cMap*)state {
   map_width = state->GetWidth();
   map_height = state->GetHeight();
   

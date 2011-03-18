@@ -22,12 +22,16 @@
 
 @protocol CoreViewListener;
 
-class cCoreViewDriver;
+namespace Avida {
+  namespace CoreView {
+    class cDriver;    
+  };
+};
 
 
 @interface AvidaRun : NSObject {
 @protected
-  cCoreViewDriver* driver;
+  Avida::CoreView::cDriver* driver;
 }
 
 -(id)init;
