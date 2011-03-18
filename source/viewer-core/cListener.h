@@ -1,5 +1,5 @@
 /*
- *  viewer-core/AvidaViewer.h
+ *  viewer-core/cListener.h
  *  Avida
  *
  *  Created by David on 11/11/10.
@@ -22,9 +22,27 @@
  *
  */
 
-#ifndef AvidaViewer_h
-#define AvidaViewer_h
+#ifndef AvidaCoreViewListener_h
+#define AvidaCoreViewListener_h
 
 
+namespace Avida {
+  namespace CoreView {
+    class cMap;
+    
+    class cListener
+    {
+    public:
+      virtual ~cListener() = 0;
+      
+      virtual bool WantsMap() = 0;
+      virtual bool WantsUpdate() = 0;
+      
+      virtual void NotifyMap(cMap* map) { ; }
+      virtual void NotifyUpdate(int update) { ; }      
+    };
+    
+  };
+};
 
 #endif
