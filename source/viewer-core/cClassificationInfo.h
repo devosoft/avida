@@ -22,14 +22,12 @@
  *
  */
 
-// This is a class to manage information that will be needed throughout the interface.
-
 #ifndef AviaCoreViewClassificationInfo_h
 #define AvidaCoreViewClassificationInfo_h
 
 // The cClassificationInfo object is responsible for holding on to all of the general information about the state of
-// a population in the view.  It does not process any of this information, but allows it to be easily shared by
-// all of the sections of the viewer.
+// a specified classification role for the population in the view.  It does not process any of this information, rather
+// allows it to be easily shared by multiple sections of the viewer.
 //
 // We're assuming that each color has an ID.  The first four are set:
 //  -4 = Black
