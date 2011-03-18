@@ -23,7 +23,7 @@
 
 #include "cDriver.h"
 
-#include "cCoreView_Map.h"
+#include "cMap.h"
 #include "cListener.h"
 
 #include "cAvidaContext.h"
