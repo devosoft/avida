@@ -215,7 +215,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     map_mode_to_color.Clear();
     int idx = 0;
     for (int i = 0; i < map->GetNumModes(); i++) {
-      if (map->GetModeSupportedTypes(i) & Avida::CoreView::MAP_GRID_VIEW_COLOR) continue;
+      if (!(map->GetModeSupportedTypes(i) & Avida::CoreView::MAP_GRID_VIEW_COLOR)) continue;
       [mapViewMode addItemWithTitle:[NSString stringWithUTF8String:(const char*)map->GetModeName(i)]];
       map_mode_to_color[idx++] = i;
     }
