@@ -1,9 +1,10 @@
 /*
- *  cCoreView_Map.h
+ *  viewer-core/cMap.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,128 +18,138 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>, Charles Ofria <ofria@msu.edu>
  */
 
-// This class helps manage the map object in the user inteface.
-
-#ifndef cCoreView_Map_h
-#define cCoreView_Map_h
+#ifndef AvidaCoreViewMap_h
+#define AvidaCoreViewMap_h
 
 #include "cRWLock.h"
 #include "cString.h"
 #include "tArray.h"
 
-class cCoreView_ClassificationInfo;
 class cPopulation;
 class cWorld;
 
 
+namespace Avida {
+  namespace CoreView {
+    
+    // Map Mode/Type Enumerations
+    // --------------------------------------------------------------------------------------------------------------  
+    
+    enum eMapGridViewType { MAP_GRID_VIEW_COLOR = 0x1, MAP_GRID_VIEW_SYMBOLS = 0x2, MAP_GRID_VIEW_TAGS = 0x4 };
 
-class cCoreView_MapMode
-{
-public:
-  cCoreView_MapMode() { ; }
-  virtual ~cCoreView_MapMode() = 0;
-  
-  virtual void Update();
-  virtual const tArray<int>& GetGridValues() const;
-  
-  
-  virtual const cString& GetName() const;
-};
-
-
-
-class cCoreView_Map
-{
-protected:
-  typedef void (cCoreView_Map::*MapUpdateMethod)(cPopulation& pop, int arg);
-
-public:
-  enum eViewType { VIEW_COLOR, VIEW_SYMBOLS, VIEW_TAGS };
-  enum eColorType { COLORS_TYPES, COLORS_SCALE };
-  struct ScaleEntry {
-    int color_index;
-    cString label;
+    
+    // DiscreteScale Base Clase Definition
+    // --------------------------------------------------------------------------------------------------------------  
+    
+    class DiscreteScale
+    {
+    public:
+      struct Entry {
+        int index;
+        cString label;
+      };
+      
+    public:
+      ~DiscreteScale() { ; }
+      
+      virtual int GetScaleRange() const = 0;
+      virtual int GetNumLabeledEntries() const = 0;
+      virtual Entry GetEntry(int index) const = 0;
+    };
+    
+    
+    // MapMode Base Class Definition
+    // --------------------------------------------------------------------------------------------------------------  
+    
+    class cMapMode
+    {
+    public:
+      virtual ~cMapMode() { ; }
+      
+      virtual const cString& GetName() const;
+      virtual const tArray<int>& GetGridValues() const = 0;
+      virtual const tArray<int>& GetValueCounts() const = 0;
+      
+      virtual const DiscreteScale& GetScale() const = 0;
+      
+      virtual int GetSupportedTypes() const = 0;
+      
+      virtual void Update(cPopulation& pop) = 0;
+    };
+    
+    
+    // Map Definition
+    // --------------------------------------------------------------------------------------------------------------  
+    
+    class cMap
+    {
+    protected:
+      int m_width;
+      int m_height;
+      int m_num_viewer_colors;
+      
+      tArray<cMapMode*> m_view_modes;  // List of view modes...
+      int m_color_mode;      // Current map color mode (index into m_view_modes, -1 = off)
+      int m_symbol_mode;     // Current map symbol mode (index into m_view_modes, -1 = off)
+      int m_tag_mode;        // Current map tag mode (index into m_view_modes, -1 = off)
+      
+      cRWLock m_rw_lock;
+      
+      
+    public:
+      cMap(cWorld* world);
+      ~cMap();
+      
+      
+      inline int GetWidth() const { return m_width; }
+      inline int GetHeight() const { return m_height; }
+      
+      
+      inline int GetColorMode() const { return m_color_mode; }
+      inline int GetSymbolMode() const { return m_symbol_mode; }
+      inline int GetTagMode() const { return m_tag_mode; }
+      
+      
+      inline const tArray<int>& GetColors() const { return m_view_modes[m_color_mode]->GetGridValues(); }
+      inline const tArray<int>& GetSymbols() const { return m_view_modes[m_symbol_mode]->GetGridValues(); }
+      inline const tArray<int>& GetTags() const { return m_view_modes[m_tag_mode]->GetGridValues(); }
+      
+      inline const tArray<int>& GetColorCounts() const { return m_view_modes[m_color_mode]->GetValueCounts(); }
+      inline const tArray<int>& GetSymbolCounts() const { return m_view_modes[m_symbol_mode]->GetValueCounts(); }
+      inline const tArray<int>& GetTagCounts() const { return m_view_modes[m_tag_mode]->GetValueCounts(); }
+      
+      inline const DiscreteScale& GetColorScale() const { return m_view_modes[m_color_mode]->GetScale(); }
+      inline const DiscreteScale& GetSymbolScale() const { return m_view_modes[m_symbol_mode]->GetScale(); }
+      inline const DiscreteScale& GetTagScale() const { return m_view_modes[m_tag_mode]->GetScale(); }
+      
+      
+      inline int GetNumModes() const { return m_view_modes.GetSize(); }
+      inline const cString& GetModeName(int idx) const { return m_view_modes[idx]->GetName(); }
+      inline int GetModeSupportedTypes(int idx) const { return m_view_modes[idx]->GetSupportedTypes(); }
+      
+      void SetMode(int mode);
+      inline void SetNumViewerColors(int num_colors) { m_num_viewer_colors = num_colors; }
+      
+      
+      inline void Retain() { m_rw_lock.ReadLock(); }
+      inline void Release() { m_rw_lock.ReadUnlock(); }
+      
+      
+      // Core Viewer Internal Methods
+      void UpdateMaps(cPopulation& pop);
+      
+      
+    protected:
+      void updateMap(cPopulation& pop, int map_id);
+    };
+    
   };
-
-protected:
-  int m_width;
-  int m_height;
-  int m_num_viewer_colors;
-  
-  class cMapViewEntry;
-
-  tArray<cMapViewEntry*> m_view_modes;  // List of view modes...
-  int m_color_mode;      // Current map color mode (index into m_view_modes, -1 = off)
-  int m_symbol_mode;     // Current map symbol mode (index into m_view_modes, -1 = off)
-  int m_tag_mode;        // Current map tag mode (index into m_view_modes, -1 = off)
-
-  tArray<int> m_color_grid;   // This maintains the colors in the current grid.
-  tArray<int> m_symbol_grid;  // Should we have special symbols at each cell?
-  tArray<int> m_tag_grid;     // Track tagged cells.
-
-  tArray<int> m_color_counts; // A count of how many cells are of each color.
-  
-  tArray<ScaleEntry> m_scale_entries;
-  
-  
-  cRWLock m_rw_lock;
-  
-
-public:
-  cCoreView_Map(cWorld* world);
-  ~cCoreView_Map();
-  
-  
-  inline int GetWidth() { return m_width; }
-  inline int GetHeight() { return m_height; }
-
-  inline int GetColorMode() const { return m_color_mode; }
-  inline int GetSymbolMode() const { return m_symbol_mode; }
-  inline int GetTagMode() const { return m_tag_mode; }
-
-  inline const tArray<int>& GetColors() const { return m_color_grid; }
-  inline const tArray<int>& GetSymbols() const { return m_symbol_grid; }
-  inline const tArray<int>& GetTags() const { return m_tag_grid; }
-
-  inline const tArray<int>& GetColorCounts() const { return m_color_counts; }
-  inline int GetColorCount(int idx) const { return m_color_counts[idx]; }
-
-  inline int GetNumModes() const { return m_view_modes.GetSize(); }
-  inline const cString& GetModeName(int id) const { return m_view_modes[id]->GetName(); }
-  inline int GetModeType(int id) const { return m_view_modes[id]->GetViewType(); }
-  inline int GetModeArg(int id) const { return m_view_modes[id]->GetArg(); }
-
-  void SetMode(int mode);
-  inline void SetNumViewerColors(int num_colors) { m_num_viewer_colors = num_colors; }
-  
-  inline void Retain() { m_rw_lock.ReadLock(); }
-  inline void Release() { m_rw_lock.ReadUnlock(); }
-  
-
-  // Core Viewer Internal Methods
-  void UpdateMaps(cPopulation& pop);
-  
-
-protected:
-  int AddViewMode(const cString& name, MapUpdateMethod call, eViewType type, int arg = 0,
-                  cCoreView_ClassificationInfo* info = NULL);
-  
-  void UpdateMap(cPopulation& pop, int map_id);
-
-  
-  void SetColors_Genotype(cPopulation& pop, int ignore);
-  void SetColors_Fitness(cPopulation& pop, int ignore);
-  void SetColors_Length(cPopulation& pop, int ignore);
-  
-  void TagCells_None(cPopulation& pop, int ignore);
-  void TagCells_Task(cPopulation& pop, int task_id);
-  
-  void SetSymbol_Square(cPopulation& pop, int ignore);
-  void SetSymbol_Facing(cPopulation& pop, int ignore);
-
-  
 };
+
+
+
 
 #endif
