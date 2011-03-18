@@ -1,9 +1,10 @@
 /*
- *  cCoreView_Map.cc
+ *  cMap.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
- *  Copyright 1999-2007 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,9 +18,11 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>, Charles Ofria <ofria@msu.edu>
+ *
  */
 
-#include "cCoreView_Map.h"
+#include "cMap.h"
 
 #include "cBioGroup.h"
 #include "cEnvironment.h"
