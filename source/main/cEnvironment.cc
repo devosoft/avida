@@ -1039,7 +1039,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
   int initx = args->GetInt(2);
   int inity = args->GetInt(3);
   int initfacing = args->GetInt(4);
-
+  
   if (initx >= width || inity >= height) {
     if (feedback) feedback->Error("initx and inity must not exceed (width - 1) and (height - 1)");
     return false;
@@ -1120,7 +1120,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
   }
   //This should eventually be changed JW
   m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid, (args->GetInt(5) != 0)));
- // m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
+  //m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
   return true;
 }
 

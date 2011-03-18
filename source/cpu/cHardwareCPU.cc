@@ -309,8 +309,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-north-offset", &cHardwareCPU::Inst_GetDirectionOffNorth),    
     tInstLibEntry<tMethod>("get-northerly", &cHardwareCPU::Inst_GetNortherly),    
     tInstLibEntry<tMethod>("get-easterly", &cHardwareCPU::Inst_GetEasterly), 
-    tInstLibEntry<tMethod>("zero-easting", &cHardwareCPU::Inst_ZeroEasting),    
-    tInstLibEntry<tMethod>("zero-northing", &cHardwareCPU::Inst_ZeroNorthing),    
+    tInstLibEntry<tMethod>("zero-easterly", &cHardwareCPU::Inst_ZeroEasterly),    
+    tInstLibEntry<tMethod>("zero-northerly", &cHardwareCPU::Inst_ZeroNortherly),    
 
     
     // State Grid instructions
@@ -6938,12 +6938,12 @@ bool cHardwareCPU::Inst_GetEasterly(cAvidaContext& ctx) {
   return true;  
 }
 
-bool cHardwareCPU::Inst_ZeroEasting(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_ZeroEasterly(cAvidaContext& ctx) {
   m_organism->ClearEasterly();
   return true;
 }
 
-bool cHardwareCPU::Inst_ZeroNorthing(cAvidaContext& ctx) {
+bool cHardwareCPU::Inst_ZeroNortherly(cAvidaContext& ctx) {
   m_organism->ClearNortherly();
   return true;
 }
