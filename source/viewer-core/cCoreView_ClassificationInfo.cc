@@ -1,9 +1,10 @@
 /*
- *  cCoreView_ClassificationInfo.cc
+ *  viewer-core/cClassificationInfo.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,9 +18,11 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>, Charles Ofria <ofria@msu.edu>
+ *
  */
 
-#include "cCoreView_ClassificationInfo.h"
+#include "cClassificationInfo.h"
 
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
@@ -31,7 +34,7 @@
 #include "tIterator.h"
 
 
-cCoreView_ClassificationInfo::cCoreView_ClassificationInfo(cWorld* in_world, const cString& role, int total_colors)
+Avida::CoreView::cClassificationInfo::cClassificationInfo(cWorld* in_world, const cString& role, int total_colors)
   : m_world(in_world)
   , m_role(role)
   , m_color_chart_id(total_colors, -1)
@@ -42,7 +45,7 @@ cCoreView_ClassificationInfo::cCoreView_ClassificationInfo(cWorld* in_world, con
 }
 
 
-void cCoreView_ClassificationInfo::Update()
+void Avida::CoreView::cClassificationInfo::Update()
 {
   const int num_colors = m_color_chart_id.GetSize();
   cBitArray free_color(num_colors);   // Keep track of genotypes still using their color.
@@ -87,7 +90,7 @@ void cCoreView_ClassificationInfo::Update()
 }
 
 
-cCoreView_ClassificationInfo::MapColor* cCoreView_ClassificationInfo::getMapColor(cBioGroup* bg)
+Avida::CoreView::cClassificationInfo::MapColor* Avida::CoreView::cClassificationInfo::getMapColor(cBioGroup* bg)
 {
   MapColor* mc = bg->GetData<MapColor>();
   if (!mc) {

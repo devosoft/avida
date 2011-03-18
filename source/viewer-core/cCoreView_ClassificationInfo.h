@@ -1,9 +1,10 @@
 /*
- *  cCoreView_Info.h
+ *  viewer-core/cClassificationInfo.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,14 +18,16 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>, Charles Ofria <ofria@msu.edu>
+ *
  */
 
 // This is a class to manage information that will be needed throughout the interface.
 
-#ifndef cCoreView_ClassificationInfo_h
-#define cCoreView_ClassificationInfo_h
+#ifndef AviaCoreViewClassificationInfo_h
+#define AvidaCoreViewClassificationInfo_h
 
-// The cCoreView_Info object is responsible for holding on to all of the general information about the state of
+// The cClassificationInfo object is responsible for holding on to all of the general information about the state of
 // a population in the view.  It does not process any of this information, but allows it to be easily shared by
 // all of the sections of the viewer.
 //
@@ -47,10 +50,6 @@
 // or taking other desparate measures, we should just make the color less vibrant, and eventually become gray.
 // In the case of fitness, black is dead and gray is a fitness seriously below the dominant.
 
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
 #include "cStringList.h"
 #include "tArray.h"
 #include "tList.h"
@@ -59,38 +58,45 @@ class cBioGroup;
 class cPopulation;
 class cWorld;
 
-using namespace std;
 
-class cCoreView_ClassificationInfo {
-protected:
-  cWorld* m_world;
-  cString m_role;
+namespace Avida {
+  namespace CoreView {
 
-  // Constant Inforation setup by specific viewer.
-  tArray<int> m_color_chart_id;
-  tArray<cBioGroup*> m_color_chart_ptr;
-  int m_threshold_colors;
-  int m_next_color;
-  
-
-public:
-  cCoreView_ClassificationInfo(cWorld* in_world, const cString& role, int total_colors);
-  ~cCoreView_ClassificationInfo() { ; }
-
-  // Generic Functions...
-  void Update();
-
-  
-  struct MapColor
-  {
-    char color;
+    // ClassificationInfo Definition
+    // --------------------------------------------------------------------------------------------------------------  
     
-    MapColor() : color(-1) { ; }
+    class cClassificationInfo
+    {
+    protected:
+      cWorld* m_world;
+      cString m_role;
+      
+      // Constant Inforation setup by specific viewer.
+      tArray<int> m_color_chart_id;
+      tArray<cBioGroup*> m_color_chart_ptr;
+      int m_threshold_colors;
+      int m_next_color;
+    
+    public:
+      struct MapColor
+      {
+        char color;
+        
+        MapColor() : color(-1) { ; }
+      };      
+      
+    public:
+      cClassificationInfo(cWorld* in_world, const cString& role, int total_colors);
+      ~cClassificationInfo() { ; }
+      
+      void Update();
+      
+      
+    private:
+      MapColor* getMapColor(cBioGroup* bg);
+    };
+    
   };
-
-
-private:
-  MapColor* getMapColor(cBioGroup* bg);
 };
 
 #endif
