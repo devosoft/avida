@@ -1,5 +1,5 @@
 /*
- *  cCoreViewDriver.cpp
+ *  viewer-core/cDriver.cc
  *  Avida
  *
  *  Created by David on 10/28/10.
