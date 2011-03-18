@@ -3,7 +3,8 @@
  *  Avida
  *
  *  Created by David on 10/28/10.
- *  Copyright 2010 Michigan State University. All rights reserved.
+ *  Copyright 2010-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,6 +18,7 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
  */
 
 #include "cCoreViewDriver.h"
@@ -39,13 +41,13 @@
 #include <iostream>
 
 
-cCoreViewDriver::cCoreViewDriver(cWorld* world) : m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
+Avida::CoreView::cDriver::cDriver(cWorld* world)
+  : m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
 {
   cDriverManager::Register(this);
-
 }
 
-cCoreViewDriver::~cCoreViewDriver()
+Avida::CoreView::cDriver::~cDriver()
 {
   m_mutex.Lock();
   m_done = true;
@@ -59,7 +61,7 @@ cCoreViewDriver::~cCoreViewDriver()
   delete m_world;
 }
 
-void cCoreViewDriver::Run()
+void Avida::CoreView::cDriver::Run()
 {
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
@@ -144,28 +146,29 @@ void cCoreViewDriver::Run()
 }
 
 
-void cCoreViewDriver::RaiseException(const cString& in_string)
+void Avida::CoreView::cDriver::RaiseException(const cString& in_string)
 {
   std::cerr << "Error: " << in_string << std::endl;
 }
 
-void cCoreViewDriver::RaiseFatalException(int exit_code, const cString& in_string)
+void Avida::CoreView::cDriver::RaiseFatalException(int exit_code, const cString& in_string)
 {
   std::cerr << "Error: " << in_string << "  Exiting..." << std::endl;
   exit(exit_code);
 }
 
-void cCoreViewDriver::NotifyComment(const cString& in_string)
+void Avida::CoreView::cDriver::NotifyComment(const cString& in_string)
 {
   std::cout << in_string << std::endl;
 }
 
-void cCoreViewDriver::NotifyWarning(const cString& in_string)
+void Avida::CoreView::cDriver::NotifyWarning(const cString& in_string)
 {
   std::cout << "Warning: " << in_string << std::endl;
 }
 
-void cCoreViewDriver::AttachListener(cCoreViewListener* listener)
+
+void Avida::CoreView::cDriver::AttachListener(cCoreViewListener* listener)
 {
   m_listeners.Add(listener);
   
