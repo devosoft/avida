@@ -370,8 +370,8 @@
 		70C9D5CA1086893100472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
-		70E14D4C1279FA5B0059FB9D /* cCoreViewDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E14D4A1279FA5B0059FB9D /* cCoreViewDriver.h */; };
-		70E14D4D1279FA5B0059FB9D /* cCoreViewDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* cCoreViewDriver.cpp */; };
+		70E14D4C1279FA5B0059FB9D /* cDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 70E14D4A1279FA5B0059FB9D /* cDriver.h */; };
+		70E14D4D1279FA5B0059FB9D /* cDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* cDriver.cpp */; };
 		70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
@@ -1350,8 +1350,8 @@
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
 		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
-		70E14D4A1279FA5B0059FB9D /* cCoreViewDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cCoreViewDriver.h; sourceTree = "<group>"; };
-		70E14D4B1279FA5B0059FB9D /* cCoreViewDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cCoreViewDriver.cpp; sourceTree = "<group>"; };
+		70E14D4A1279FA5B0059FB9D /* cDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDriver.h; sourceTree = "<group>"; };
+		70E14D4B1279FA5B0059FB9D /* cDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver.cpp; sourceTree = "<group>"; };
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
 		70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConstBurstSchedule.h; sourceTree = "<group>"; };
 		70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cConstBurstSchedule.cc; sourceTree = "<group>"; };
@@ -1842,8 +1842,8 @@
 			children = (
 				7042DF12128C90240062501F /* AvidaViewer.h */,
 				7042DF13128C90240062501F /* AvidaViewer.cc */,
-				70E14D4A1279FA5B0059FB9D /* cCoreViewDriver.h */,
-				70E14D4B1279FA5B0059FB9D /* cCoreViewDriver.cpp */,
+				70E14D4A1279FA5B0059FB9D /* cDriver.h */,
+				70E14D4B1279FA5B0059FB9D /* cDriver.cpp */,
 				7042DF2C128C90E60062501F /* cListener.h */,
 				70A1E325125CDF2B00D56AC4 /* cCoreView_ClassificationInfo.cc */,
 				70A1E326125CDF2B00D56AC4 /* cCoreView_ClassificationInfo.h */,
@@ -2425,7 +2425,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70E14D4C1279FA5B0059FB9D /* cCoreViewDriver.h in Headers */,
+				70E14D4C1279FA5B0059FB9D /* cDriver.h in Headers */,
 				7042DF14128C90240062501F /* AvidaViewer.h in Headers */,
 				7042DF2D128C90E60062501F /* cListener.h in Headers */,
 			);
@@ -2868,7 +2868,7 @@
 			files = (
 				706C7B6A125F64C400EDB4B9 /* cCoreView_ClassificationInfo.cc in Sources */,
 				706C7B6B125F64C600EDB4B9 /* cCoreView_Map.cc in Sources */,
-				70E14D4D1279FA5B0059FB9D /* cCoreViewDriver.cpp in Sources */,
+				70E14D4D1279FA5B0059FB9D /* cDriver.cpp in Sources */,
 				7042DF15128C90240062501F /* AvidaViewer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
