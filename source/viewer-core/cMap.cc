@@ -34,25 +34,29 @@
 #include "cClassificationInfo.h"
 
 
-class cFitnessMapMode : public Avida::CoreView::cMapMode, public Avida::CoreView::DiscreteScale
+Avida::CoreView::MapMode::~MapMode() { ; }
+Avida::CoreView::DiscreteScale::~DiscreteScale() { ; }
+
+
+class cFitnessMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
 {
 private:
   static const int SCALE_MAX = 10;
 private:
   tArray<int> m_color_grid;
   tArray<int> m_color_count;
-  tArray<Avida::CoreView::DiscreteScale::Entry> m_scale_labels;
+  tArray<DiscreteScale::Entry> m_scale_labels;
   
 public:
   cFitnessMapMode(cWorld* world) { ; }
-  virtual ~cFitnessMapMode() { ; }
+  ~cFitnessMapMode() { ; }
   
-  // cMapMode Interface
+  // MapMode Interface
   const cString& GetName() const { static const cString name("Fitness"); return name; }
   const tArray<int>& GetGridValues() const { return m_color_grid; }
   const tArray<int>& GetValueCounts() const { return m_color_count; }
   
-  const Avida::CoreView::DiscreteScale& GetScale() const { return *this; }
+  const DiscreteScale& GetScale() const { return *this; }
   
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
 
@@ -62,7 +66,7 @@ public:
   // DiscreteScale Interface
   int GetScaleRange() const { return m_color_count.GetSize(); }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
-  Entry GetEntry(int index) const { return m_scale_labels[index]; }
+  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }
 };
 
 void cFitnessMapMode::Update(cPopulation& pop)
@@ -111,7 +115,7 @@ void cFitnessMapMode::Update(cPopulation& pop)
 }
 
 
-class cGenotypeMapMode : public Avida::CoreView::cMapMode, public Avida::CoreView::DiscreteScale
+class cGenotypeMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
 {
 private:
   static const int NUM_COLORS = 10;
@@ -119,14 +123,14 @@ private:
   Avida::CoreView::cClassificationInfo* m_info;
   tArray<int> m_color_grid;
   tArray<int> m_color_count;
-  tArray<Avida::CoreView::DiscreteScale::Entry> m_scale_labels;
+  tArray<DiscreteScale::Entry> m_scale_labels;
   
 public:
   cGenotypeMapMode(cWorld* world)
   : m_info(new Avida::CoreView::cClassificationInfo(world, "genotype", NUM_COLORS)), m_color_count(NUM_COLORS + 4) { ; }
   virtual ~cGenotypeMapMode() { delete m_info; }
   
-  // cMapMode Interface
+  // MapMode Interface
   const cString& GetName() const { static const cString name("Genotypes"); return name; }
   const tArray<int>& GetGridValues() const { return m_color_grid; }
   const tArray<int>& GetValueCounts() const { return m_color_count; }
@@ -141,7 +145,7 @@ public:
   // DiscreteScale Interface
   int GetScaleRange() const { return m_color_count.GetSize(); }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
-  Entry GetEntry(int index) const { return m_scale_labels[index]; }  
+  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }  
 };
 
 

@@ -53,7 +53,7 @@ namespace Avida {
       };
       
     public:
-      ~DiscreteScale() { ; }
+      virtual ~DiscreteScale() = 0;
       
       virtual int GetScaleRange() const = 0;
       virtual int GetNumLabeledEntries() const = 0;
@@ -64,12 +64,12 @@ namespace Avida {
     // MapMode Base Class Definition
     // --------------------------------------------------------------------------------------------------------------  
     
-    class cMapMode
+    class MapMode
     {
     public:
-      virtual ~cMapMode() { ; }
+      virtual ~MapMode() = 0;
       
-      virtual const cString& GetName() const;
+      virtual const cString& GetName() const = 0;
       virtual const tArray<int>& GetGridValues() const = 0;
       virtual const tArray<int>& GetValueCounts() const = 0;
       
@@ -91,7 +91,7 @@ namespace Avida {
       int m_height;
       int m_num_viewer_colors;
       
-      tArray<cMapMode*> m_view_modes;  // List of view modes...
+      tArray<MapMode*> m_view_modes;  // List of view modes...
       int m_color_mode;      // Current map color mode (index into m_view_modes, -1 = off)
       int m_symbol_mode;     // Current map symbol mode (index into m_view_modes, -1 = off)
       int m_tag_mode;        // Current map tag mode (index into m_view_modes, -1 = off)
