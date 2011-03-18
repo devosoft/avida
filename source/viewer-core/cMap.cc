@@ -164,7 +164,7 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       org->GetBioGroup("genotype")->GetData<Avida::CoreView::cClassificationInfo::MapColor>();
       if (mapcolor) {
         m_color_grid[i] = mapcolor->color;
-        m_color_count[mapcolor->color];
+        m_color_count[mapcolor->color + 4];
       } else {
         m_color_grid[i] = -1;
         m_color_count[3]++;
