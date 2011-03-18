@@ -20,7 +20,7 @@
 
 #include "Foundation/Foundation.h"
 
-#include "cListener.h"
+#include "avida/viewer-core/cListener.h"
 
 @class CoreViewMap;
 @class CoreViewUpdate;

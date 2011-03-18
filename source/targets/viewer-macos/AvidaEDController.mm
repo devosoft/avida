@@ -24,7 +24,7 @@
 #import "AvidaRun.h"
 #import "MapGridView.h"
 
-#include "cMap.h"
+#include "avida/viewer-core/cMap.h"
 
 static const float MAIN_SPLIT_LEFT_MIN = 150.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 550.0;

@@ -22,7 +22,7 @@
  *
  */
 
-#include "cMap.h"
+#include "avida/viewer-core/cMap.h"
 
 #include "cBioGroup.h"
 #include "cEnvironment.h"
@@ -31,7 +31,7 @@
 #include "cPopulationCell.h"
 #include "cWorld.h"
 
-#include "cClassificationInfo.h"
+#include "avida/private/viewer-core/cClassificationInfo.h"
 
 
 Avida::CoreView::MapMode::~MapMode() { ; }

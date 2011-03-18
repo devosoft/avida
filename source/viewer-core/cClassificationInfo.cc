@@ -22,7 +22,7 @@
  *
  */
 
-#include "cClassificationInfo.h"
+#include "avida/private/viewer-core/cClassificationInfo.h"
 
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"

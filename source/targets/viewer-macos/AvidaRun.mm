@@ -24,7 +24,7 @@
 
 #include "AvidaTools.h"
 
-#include "cDriver.h"
+#include "avida/viewer-core/cDriver.h"
 
 #include "cAvidaConfig.h"
 #include "cUserFeedback.h"

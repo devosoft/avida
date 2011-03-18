@@ -20,7 +20,7 @@
 
 #import "MapGridView.h"
 
-#include "cMap.h"
+#include "avida/viewer-core/cMap.h"
 
 
 @implementation MapGridView

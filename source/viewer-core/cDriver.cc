@@ -21,10 +21,10 @@
  *  Authors: David M. Bryson <david@programerror.com>
  */
 
-#include "cDriver.h"
+#include "avida/viewer-core/cDriver.h"
 
-#include "cMap.h"
-#include "cListener.h"
+#include "avida/viewer-core/cMap.h"
+#include "avida/viewer-core/cListener.h"
 
 #include "cAvidaContext.h"
 #include "cChangeList.h"
