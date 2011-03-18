@@ -21,13 +21,14 @@
  *  Authors: David M. Bryson <david@programerror.com>
  */
 
-#include "cCoreViewDriver.h"
+#include "cDriver.h"
+
+#include "cCoreView_Map.h"
+#include "cListener.h"
 
 #include "cAvidaContext.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
-#include "cCoreView_Map.h"
-#include "cCoreViewListener.h"
 #include "cDriverManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
@@ -168,9 +169,9 @@ void Avida::CoreView::cDriver::NotifyWarning(const cString& in_string)
 }
 
 
-void Avida::CoreView::cDriver::AttachListener(cCoreViewListener* listener)
+void Avida::CoreView::cDriver::AttachListener(cListener* listener)
 {
   m_listeners.Add(listener);
   
-  if (listener->WantsMap() && !m_map) m_map = new cCoreView_Map(m_world);
+  if (listener->WantsMap() && !m_map) m_map = new cMap(m_world);
 }
