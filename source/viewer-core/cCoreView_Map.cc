@@ -36,16 +36,14 @@ cCoreView_Map::cCoreView_Map(cWorld* world)
   , m_color_mode(0)
   , m_symbol_mode(-1)
   , m_tag_mode(-1)
-  , m_scale_max(10)
+  , m_num_viewer_colors(-1)
 {
   // Setup the available view modes...
   AddViewMode("Genotypes",      &cCoreView_Map::SetColors_Genotype, VIEW_COLOR, COLORS_TYPES, new cCoreView_ClassificationInfo(world, "genotype", 10));
   AddViewMode("Fitness",        &cCoreView_Map::SetColors_Fitness,  VIEW_COLOR, COLORS_SCALE);
   AddViewMode("Genome Length",  &cCoreView_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);
-  AddViewMode("Highlight Tags", &cCoreView_Map::SetColors_Tags,     VIEW_COLOR, COLORS_TYPES);
 
   AddViewMode("None",           &cCoreView_Map::TagCells_None,      VIEW_TAGS);
-  AddViewMode("Parasite",       &cCoreView_Map::TagCells_Parasite,  VIEW_TAGS);
 
   AddViewMode("Square",         &cCoreView_Map::SetSymbol_Square,   VIEW_SYMBOLS);
   AddViewMode("Facing",         &cCoreView_Map::SetSymbol_Facing,   VIEW_SYMBOLS);
@@ -75,8 +73,8 @@ inline void cCoreView_Map::cMapViewEntry::Update()
 {
   if (m_class_info) m_class_info->Update();
 }
-              
-              
+
+
 void cCoreView_Map::UpdateMaps(cPopulation& pop)
 {
   m_rw_lock.WriteLock();
@@ -128,6 +126,7 @@ void cCoreView_Map::UpdateMap(cPopulation& pop, int map_id)
   (this->*call)(pop, arg);
 }
 
+
 ////////////////////////
 // Protected methods
 
@@ -145,6 +144,7 @@ void cCoreView_Map::SetColors_Genotype(cPopulation& pop, int ignore)
     }
   }
 }
+
 
 void cCoreView_Map::SetColors_Fitness(cPopulation& pop, int ignore)
 {
@@ -192,15 +192,12 @@ void cCoreView_Map::SetColors_Fitness(cPopulation& pop, int ignore)
   }
 }
 
+
 void cCoreView_Map::SetColors_Length(cPopulation& pop, int ignore)
 {
   (void) ignore;
 }
 
-void cCoreView_Map::SetColors_Tags(cPopulation& pop, int ignore)
-{
-  (void) ignore;
-}
 
 void cCoreView_Map::TagCells_None(cPopulation& pop, int ignore)
 {
@@ -208,10 +205,6 @@ void cCoreView_Map::TagCells_None(cPopulation& pop, int ignore)
   m_tag_grid.SetAll(0);
 }
 
-void cCoreView_Map::TagCells_Parasite(cPopulation& pop, int ignore)
-{
-  (void) ignore;
-}
 
 void cCoreView_Map::TagCells_Task(cPopulation& pop, int task_id)
 {
@@ -225,10 +218,12 @@ void cCoreView_Map::TagCells_Task(cPopulation& pop, int task_id)
   }
 }
 
+
 void cCoreView_Map::SetSymbol_Square(cPopulation& pop, int ignore)
 {
   (void) ignore;
 }
+
 
 void cCoreView_Map::SetSymbol_Facing(cPopulation& pop, int ignore)
 {
