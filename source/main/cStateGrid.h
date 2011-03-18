@@ -38,7 +38,6 @@ private:
   tArray<cString> m_states;
   tArray<int> m_sense_values;
   tArray<int> m_grid;
-  bool m_random;
   
   cStateGrid(); // @not_implemented
   cStateGrid(const cStateGrid&); // @not_implemented
@@ -46,7 +45,7 @@ private:
   
 public:
   inline cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states,
-                    const tArray<int>& sense_values, const tArray<int>& grid, bool random);
+                    const tArray<int>& sense_values, const tArray<int>& grid);
   ~cStateGrid() { ; }
   
   inline const cString& GetName() const { return m_name; }
@@ -57,7 +56,6 @@ public:
   inline int GetInitialFacing() const { return m_init_facing; }
   inline int GetNumStates() const { return m_states.GetSize(); }
   inline int GetStateID(const cString& state_name) const;
-  inline bool GetRandom() const { return m_random; }
 
   
   inline int GetIDFor(int x, int y) const { return (y * m_w + x); }
@@ -68,9 +66,9 @@ public:
 
 
 inline cStateGrid::cStateGrid(const cString& name, int w, int h, int x, int y, int f, const tArray<cString>& states,
-                  const tArray<int>& sense_values, const tArray<int>& grid, bool random)
+                  const tArray<int>& sense_values, const tArray<int>& grid)
   : m_name(name), m_w(w), m_h(h), m_init_x(x), m_init_y(y), m_init_facing(f), m_states(states)
-  , m_sense_values(sense_values), m_grid(grid), m_random(random)
+  , m_sense_values(sense_values), m_grid(grid)
 {
   assert(states.GetSize() == sense_values.GetSize());
 }

@@ -371,10 +371,6 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
     Load_MatchNumber(name, info, envreqs, feedback);
 	else if (name == "matchprodstr") 
     Load_MatchProdStr(name, info, envreqs, feedback);
-
-  if(name == "forage")
-    NewTask(name, "Forage", &cTaskLib::Task_Forage); //JW
-
   
   // Sequence Tasks
   if (name == "sort_inputs")
@@ -3257,12 +3253,6 @@ double cTaskLib::Task_Move(cTaskContext& ctx) const
 
 } //End cTaskLib::Task_Move()
 
-
-double cTaskLib::Task_Forage(cTaskContext& ctx) const //JW
-{
-	  cOrganism* org = ctx.GetOrganism();
-	  return 1.0*org->GetSensed();
-}
 
 double cTaskLib::Task_MoveToTarget(cTaskContext& ctx) const
 //Note - a generic version of this is now at - Task_MoveToMovementEvent

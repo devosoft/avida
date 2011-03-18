@@ -1021,7 +1021,6 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
   schema.AddEntry("initx", 2, 0, INT_MAX);
   schema.AddEntry("inity", 3, 0, INT_MAX);
   schema.AddEntry("initfacing", 4, 0, 7);
-  schema.AddEntry("israndom", 5, 0, 1); //JW
 
   // String Arguments
   schema.AddEntry("states", 0, cArgSchema::SCHEMA_STRING);
@@ -1118,9 +1117,8 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
       grid[off + x] = lgrid[loff + x];
     }
   }
-  //This should eventually be changed JW
-  m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid, (args->GetInt(5) != 0)));
-  //m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
+  
+  m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
   return true;
 }
 

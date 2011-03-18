@@ -321,7 +321,6 @@ private:
   // State Grid Tasks
   void Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, cUserFeedback* feedback);
   double Task_SGPathTraversal(cTaskContext& ctx) const;  
-  double Task_Forage(cTaskContext& ctx) const; //JW
 	
 	// reputation
 	double Task_CreatePerfectStrings(cTaskContext& ctx) const; 

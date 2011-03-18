@@ -4325,8 +4325,6 @@ void cPopulation::UpdateOrganismStats(cAvidaContext* ctx) //JW
 
     // Increment the age of this organism.
     organism->GetPhenotype().IncAge();
-    organism->ClearSensed(); //JW
-
   }
 
   stats.SetBreedTrueCreatures(num_breed_true);
