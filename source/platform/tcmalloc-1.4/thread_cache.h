@@ -218,7 +218,7 @@ class ThreadCache {
 
     void PopRange(int N, void **start, void **end) {
       SLL_PopRange(&list_, N, start, end);
-      ASSERT(length_ >= N);
+      ASSERT(length_ >= (unsigned int)N);
       length_ -= N;
       if (length_ < lowater_) lowater_ = length_;
     }
