@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:avida-core/Avida.xcodeproj">
+   </FileRef>
+   <Group
+      location = "container:"
+      name = "Applications">
+      <FileRef
+         location = "group:apps/viewer-macos/viewer-macos.xcodeproj">
+      </FileRef>
+   </Group>
+   <Group
+      location = "container:"
+      name = "Libraries">
+      <FileRef
+         location = "group:libs/apto/Apto.xcodeproj">
+      </FileRef>
+   </Group>
+</Workspace>

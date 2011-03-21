@@ -1,0 +1,6 @@
+[submodule "apps/viewer-macos"]
+	path = apps/viewer-macos
+	url = git://avida.devosoft.org/viewer-macos.git
+[submodule "libs/apto"]
+	path = libs/apto
+	url = git://programerror.com/apto.git
