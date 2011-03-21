@@ -36,7 +36,7 @@
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "nHardware.h"
 #include "tArrayUtils.h"
 

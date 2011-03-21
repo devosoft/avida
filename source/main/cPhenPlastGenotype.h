@@ -60,7 +60,7 @@
 #include "cEnvironment.h"
 #endif
 #ifndef cWorldDriver_h
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #endif
 
 class cAvidaContext;

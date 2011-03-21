@@ -22,10 +22,10 @@
 #ifndef cDMObject_h
 #define cDMObject_h
 
-class cDMObject
+class cDriverManagerObject
 {
 public:
-  virtual ~cDMObject() { ; }
+  virtual ~cDriverManagerObject() { ; }
 };
 
 

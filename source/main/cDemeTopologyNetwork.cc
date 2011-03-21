@@ -29,7 +29,7 @@
 #include "cPopulationInterface.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "cDataFile.h"
 
 static const char* E="edges [e]";

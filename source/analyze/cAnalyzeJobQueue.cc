@@ -25,7 +25,7 @@
 
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "Platform.h"
 
 

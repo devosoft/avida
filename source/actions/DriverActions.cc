@@ -25,7 +25,7 @@
 #include "cActionLibrary.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 
 #include <ctime>
 

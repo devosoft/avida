@@ -43,18 +43,18 @@ class cFitnessMapMode : public Avida::CoreView::MapMode, public Avida::CoreView:
 private:
   static const int SCALE_MAX = 10;
 private:
-  tArray<int> m_color_grid;
-  tArray<int> m_color_count;
-  tArray<DiscreteScale::Entry> m_scale_labels;
+  Apto::Array<int> m_color_grid;
+  Apto::Array<int> m_color_count;
+  Apto::Array<DiscreteScale::Entry> m_scale_labels;
   
 public:
   cFitnessMapMode(cWorld* world) { ; }
   ~cFitnessMapMode() { ; }
   
   // MapMode Interface
-  const cString& GetName() const { static const cString name("Fitness"); return name; }
-  const tArray<int>& GetGridValues() const { return m_color_grid; }
-  const tArray<int>& GetValueCounts() const { return m_color_count; }
+  const Apto::String& GetName() const { static const Apto::String name("Fitness"); return name; }
+  const Apto::Array<int>& GetGridValues() const { return m_color_grid; }
+  const Apto::Array<int>& GetValueCounts() const { return m_color_count; }
   
   const DiscreteScale& GetScale() const { return *this; }
   
@@ -121,9 +121,9 @@ private:
   static const int NUM_COLORS = 10;
 private:
   Avida::CoreView::cClassificationInfo* m_info;
-  tArray<int> m_color_grid;
-  tArray<int> m_color_count;
-  tArray<DiscreteScale::Entry> m_scale_labels;
+  Apto::Array<int> m_color_grid;
+  Apto::Array<int> m_color_count;
+  Apto::Array<DiscreteScale::Entry> m_scale_labels;
   
 public:
   cGenotypeMapMode(cWorld* world)
@@ -131,9 +131,9 @@ public:
   virtual ~cGenotypeMapMode() { delete m_info; }
   
   // MapMode Interface
-  const cString& GetName() const { static const cString name("Genotypes"); return name; }
-  const tArray<int>& GetGridValues() const { return m_color_grid; }
-  const tArray<int>& GetValueCounts() const { return m_color_count; }
+  const Apto::String& GetName() const { static const Apto::String name("Genotypes"); return name; }
+  const Apto::Array<int>& GetGridValues() const { return m_color_grid; }
+  const Apto::Array<int>& GetValueCounts() const { return m_color_count; }
   
   const DiscreteScale& GetScale() const { return *this; }
   

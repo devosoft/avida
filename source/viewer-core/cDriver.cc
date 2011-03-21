@@ -37,13 +37,14 @@
 #include "cStats.h"
 #include "cString.h"
 #include "cStringList.h"
+#include "cUserFeedback.h"
 #include "cWorld.h"
 
 #include <iostream>
 
 
 Avida::CoreView::cDriver::cDriver(cWorld* world)
-  : m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
+: Apto::Thread(), m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
 {
   cDriverManager::Register(this);
 }
@@ -61,6 +62,43 @@ Avida::CoreView::cDriver::~cDriver()
   cDriverManager::Unregister(this);
   delete m_world;
 }
+
+
+Avida::CoreView::cDriver* Avida::CoreView::cDriver::InitWithDirectory(const Apto::String& config_path)
+{
+  cAvidaConfig* cfg = new cAvidaConfig;
+  
+  cUserFeedback feedback;
+  if (!cfg->Load("avida.cfg", static_cast<const char*>(config_path), &feedback, NULL, false)) {
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+    
+    return NULL;
+  }
+  
+  cWorld* world = cWorld::Initialize(cfg, static_cast<const char*>(config_path), &feedback);
+  
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::ERROR:    cerr << "error: "; break;
+      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
+  }
+  
+  
+  if (!world) return NULL;
+  return new Avida::CoreView::cDriver(world);  
+}
+
+
 
 void Avida::CoreView::cDriver::Run()
 {
@@ -116,12 +154,12 @@ void Avida::CoreView::cDriver::Run()
     
     
     if (m_map) m_map->UpdateMaps(population);
-    for (int i = 0; i < m_listeners.GetSize(); i++) {
-      if (m_listeners[i]->WantsMap()) {
+    for (Apto::Set<cListener*>::Iterator it = m_listeners.Begin(); it.Next();) {
+      if ((*it.Get())->WantsMap()) {
         m_map->Retain();
-        m_listeners[i]->NotifyMap(m_map);
+        (*it.Get())->NotifyMap(m_map);
       }
-      if (m_listeners[i]->WantsUpdate()) m_listeners[i]->NotifyUpdate(stats.GetUpdate());
+      if ((*it.Get())->WantsUpdate()) (*it.Get())->NotifyUpdate(stats.GetUpdate());
     }
     
     
@@ -171,7 +209,7 @@ void Avida::CoreView::cDriver::NotifyWarning(const cString& in_string)
 
 void Avida::CoreView::cDriver::AttachListener(cListener* listener)
 {
-  m_listeners.Add(listener);
+  m_listeners.Insert(listener);
   
   if (listener->WantsMap() && !m_map) m_map = new cMap(m_world);
 }

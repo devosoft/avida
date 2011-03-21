@@ -37,7 +37,7 @@
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 
 #include "tArray.h"
 #include "tAutoRelease.h"

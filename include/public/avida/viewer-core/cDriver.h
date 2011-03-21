@@ -25,13 +25,9 @@
 #ifndef AvidaCoreViewDriver_h
 #define AvidaCoreViewDriver_h
 
-#include "cAvidaDriver.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 
-#include "cConditionVariable.h"
-#include "cMutex.h"
-#include "cThread.h"
-#include "tArraySet.h"
+#include "apto/core.h"
 
 class cWorld;
 
@@ -49,20 +45,20 @@ namespace Avida {
     // Driver Definition
     // --------------------------------------------------------------------------------------------------------------  
     
-    class cDriver : public cThread, public cWorldDriver
+    class cDriver : public Apto::Thread, public cWorldDriver
     {
     private:
       cWorld* m_world;
       
-      cMutex m_mutex;
-      cConditionVariable m_pause_cv;
+      Apto::Mutex m_mutex;
+      Apto::ConditionVariable m_pause_cv;
       eDriverPauseState m_pause_state;
       bool m_done;
       bool m_paused;
       
       cMap* m_map;
       
-      tArraySet<cListener*> m_listeners;
+      Apto::Set<cListener*> m_listeners;
       
       
       cDriver(); // @not_implemented
@@ -73,6 +69,9 @@ namespace Avida {
     public:
       cDriver(cWorld* world);
       ~cDriver();
+      
+      static cDriver* InitWithDirectory(const Apto::String& dir);
+      
       
       // Driver Actions
       void SignalBreakpoint() { ; }

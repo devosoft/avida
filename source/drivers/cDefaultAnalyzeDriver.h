@@ -23,7 +23,7 @@
 #define cDefaultAnalyzeDriver_h
 
 #include "cAvidaDriver.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 
 class cString;
 class cWorld;

@@ -29,7 +29,7 @@
 #include "cPhenotype.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 

@@ -31,7 +31,7 @@
 #endif
  
 #ifndef cWorldDriver_h
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #endif
 
 #include "cFLTKBox.h"

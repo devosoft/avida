@@ -60,7 +60,7 @@
 #include "cTestCPU.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "tAnalyzeJob.h"
 #include "tAnalyzeJobBatch.h"
 #include "tDataCommandManager.h"

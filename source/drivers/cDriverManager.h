@@ -27,7 +27,7 @@
 #include "cDriverStatusConduit.h"
 #include "tThreadSpecific.h"
 
-class cDMObject;
+class cDriverManagerObject;
 
 
 class cDriverManager
@@ -35,7 +35,7 @@ class cDriverManager
 private:
   static cDriverManager* s_dm;
   
-  tList<cDMObject> m_objs;
+  tList<cDriverManagerObject> m_objs;
   
   cMutex m_mutex;
   tThreadSpecific<cDriverStatusConduit> m_conduit;
@@ -51,8 +51,8 @@ private:
 public:
   static void Initialize(); // initialize static driver manager.  This method is NOT thread-safe.
 
-  static void Register(cDMObject* obj);
-  static void Unregister(cDMObject* obj);
+  static void Register(cDriverManagerObject* obj);
+  static void Unregister(cDriverManagerObject* obj);
   
   static cDriverStatusConduit& Status();
   static void SetConduit(cDriverStatusConduit* conduit);

@@ -39,7 +39,7 @@
 #endif
 
 #ifndef cWorldDriver_h
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #endif
 
 #ifndef ncurses_defs_h

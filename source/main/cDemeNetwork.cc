@@ -23,7 +23,7 @@
 #include "cDeme.h"
 #include "cDemeNetwork.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 // Conditional includes (these use the BGL).
 #if BOOST_IS_AVAILABLE
 #include "cDemeTopologyNetwork.h"

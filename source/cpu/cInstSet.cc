@@ -28,7 +28,7 @@
 #include "cStringUtil.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 
 using namespace std;
 

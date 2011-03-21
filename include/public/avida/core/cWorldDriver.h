@@ -22,7 +22,7 @@
 #ifndef cWorldDriver_h
 #define cWorldDriver_h
 
-#include "cDMObject.h"
+#include "avida/core/cDriverManagerObject.h"
 
 #include <iostream>
 
@@ -37,7 +37,7 @@ enum eDriverPauseState {
   DRIVER_UNPAUSED
 };
 
-class cWorldDriver : public virtual cDMObject
+class cWorldDriver : public virtual cDriverManagerObject
 {
 private:
   cWorldDriver(const cWorldDriver&); // @not_implemented

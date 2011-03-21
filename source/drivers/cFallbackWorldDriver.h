@@ -23,7 +23,7 @@
 #define cFallbackWorldDriver_h
 
 #include "cDriverManager.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 
 
 class cFallbackWorldDriver : public cWorldDriver

@@ -769,7 +769,6 @@
 		701B355F11E7744D00FEF49A /* tHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tHashMap.h; sourceTree = "<group>"; };
 		701B365B11EE013A00FEF49A /* tIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tIterator.h; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
-		701D9116094B773E008B845F /* cWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		701D912B094B7AC1008B845F /* cAvidaDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaDriver.h; sourceTree = "<group>"; };
 		701D9151094B8483008B845F /* cFallbackWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFallbackWorldDriver.h; sourceTree = "<group>"; };
 		701D915C094B864A008B845F /* cFallbackWorldDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cFallbackWorldDriver.cc; sourceTree = "<group>"; };
@@ -909,6 +908,8 @@
 		703549281333E36800D3865C /* cListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cListener.h; sourceTree = "<group>"; };
 		703549291333E36800D3865C /* cMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cMap.h; sourceTree = "<group>"; };
 		7035492B1333E39300D3865C /* cClassificationInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cClassificationInfo.h; sourceTree = "<group>"; };
+		703549CE1337BB6D00D3865C /* cWorldDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
+		703549CF1337BD3F00D3865C /* cDriverManagerObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cDriverManagerObject.h; sourceTree = "<group>"; };
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
 		70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAnalyzeLib.cc; sourceTree = "<group>"; };
 		70381FDB0EAE2A2A00A97DFD /* ASAvidaNativeObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaNativeObjects.h; sourceTree = "<group>"; };
@@ -1261,7 +1262,6 @@
 		70B549ED10B4791B0013E999 /* tArraySet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArraySet.h; sourceTree = "<group>"; };
 		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unit-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B984220EBB5B7F00A828B1 /* tDMSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDMSingleton.h; sourceTree = "<group>"; };
-		70B9842B0EBB5D4C00A828B1 /* cDMObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDMObject.h; sourceTree = "<group>"; };
 		70B984B40EBB71B500A828B1 /* tDataCommandManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDataCommandManager.h; sourceTree = "<group>"; };
 		70BB2A290E9FA12F008269D2 /* ASAvidaLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaLib.h; sourceTree = "<group>"; };
 		70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAvidaLib.cc; sourceTree = "<group>"; };
@@ -1488,14 +1488,12 @@
 				701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */,
 				701D930B094CAD6B008B845F /* cDefaultRunDriver.h */,
 				701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */,
-				70B9842B0EBB5D4C00A828B1 /* cDMObject.h */,
 				701D92E0094C9E6F008B845F /* cDriverManager.h */,
 				701D9382094CBA69008B845F /* cDriverManager.cc */,
 				70BB2AC20EA4FF25008269D2 /* cDriverStatusConduit.h */,
 				70BB2AC60EA52BD9008269D2 /* cDriverStatusConduit.cc */,
 				701D9151094B8483008B845F /* cFallbackWorldDriver.h */,
 				701D915C094B864A008B845F /* cFallbackWorldDriver.cc */,
-				701D9116094B773E008B845F /* cWorldDriver.h */,
 				70B984220EBB5B7F00A828B1 /* tDMSingleton.h */,
 			);
 			path = drivers;
@@ -1650,6 +1648,7 @@
 		703549231333E32200D3865C /* public */ = {
 			isa = PBXGroup;
 			children = (
+				703549CD1337BB6C00D3865C /* core */,
 				703549261333E36800D3865C /* viewer-core */,
 				703549251333E36800D3865C /* AvidaViewer.h */,
 			);
@@ -1682,6 +1681,15 @@
 				7035492B1333E39300D3865C /* cClassificationInfo.h */,
 			);
 			path = "viewer-core";
+			sourceTree = "<group>";
+		};
+		703549CD1337BB6C00D3865C /* core */ = {
+			isa = PBXGroup;
+			children = (
+				703549CF1337BD3F00D3865C /* cDriverManagerObject.h */,
+				703549CE1337BB6D00D3865C /* cWorldDriver.h */,
+			);
+			path = core;
 			sourceTree = "<group>";
 		};
 		70422A1B091B141000A5E67F /* analyze */ = {
@@ -3182,6 +3190,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				HEADER_SEARCH_PATHS = include/public/;
 				LLVM_LTO = NO;
 				SDKROOT = "";
 				WARNING_CFLAGS = (
@@ -3207,6 +3216,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
+				HEADER_SEARCH_PATHS = include/public/;
 				LLVM_LTO = YES;
 				SDKROOT = "";
 				WARNING_CFLAGS = (
@@ -3239,6 +3249,7 @@
 				HEADER_SEARCH_PATHS = (
 					include/public/,
 					include/private/,
+					../libs/apto/include/,
 				);
 				PRODUCT_NAME = "viewer-core";
 			};
@@ -3251,6 +3262,7 @@
 				HEADER_SEARCH_PATHS = (
 					include/public/,
 					include/private/,
+					../libs/apto/include/,
 				);
 				PRODUCT_NAME = "viewer-core";
 			};

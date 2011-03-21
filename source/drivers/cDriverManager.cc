@@ -21,8 +21,9 @@
 
 #include "cDriverManager.h"
 
+#include "avida/core/cDriverManagerObject.h"
+
 #include "cDriverStatusConduit.h"
-#include "cDMObject.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -32,7 +33,7 @@ cDriverManager* cDriverManager::s_dm = NULL;
 
 cDriverManager::~cDriverManager()
 {
-  cDMObject* obj;
+  cDriverManagerObject* obj;
   while ((obj = m_objs.Pop())) delete obj;
 }
 
@@ -52,7 +53,7 @@ void cDriverManager::Destroy()
   delete s_dm;
 }
 
-void cDriverManager::Register(cDMObject* obj)
+void cDriverManager::Register(cDriverManagerObject* obj)
 {
   assert(s_dm);
   s_dm->m_mutex.Lock();
@@ -60,7 +61,7 @@ void cDriverManager::Register(cDMObject* obj)
   s_dm->m_mutex.Unlock();
 }
 
-void cDriverManager::Unregister(cDMObject* obj)
+void cDriverManager::Unregister(cDriverManagerObject* obj)
 {
   assert(s_dm);
   s_dm->m_mutex.Lock();

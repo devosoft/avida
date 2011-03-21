@@ -315,6 +315,8 @@ LIST(APPEND AVIDA_CORE_SOURCES ${PLATFORM_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${PLATFORM_DIR})
 
 
+LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/public)
+LIST(APPEND ALL_INC_DIRS ${PROJECT_SOURCE_DIR}/include/private)
 
 
 # Create the static library from the master source list

@@ -37,7 +37,7 @@
 #include "cStringUtil.h"
 #include "cTaskContext.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "cStats.h"
 #include "nHardware.h"
 

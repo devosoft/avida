@@ -24,9 +24,7 @@
 #ifndef AvidaCoreViewMap_h
 #define AvidaCoreViewMap_h
 
-#include "cRWLock.h"
-#include "cString.h"
-#include "tArray.h"
+#include "apto/core.h"
 
 class cPopulation;
 class cWorld;
@@ -49,7 +47,7 @@ namespace Avida {
     public:
       struct Entry {
         int index;
-        cString label;
+        Apto::String label;
       };
       
     public:
@@ -69,9 +67,9 @@ namespace Avida {
     public:
       virtual ~MapMode() = 0;
       
-      virtual const cString& GetName() const = 0;
-      virtual const tArray<int>& GetGridValues() const = 0;
-      virtual const tArray<int>& GetValueCounts() const = 0;
+      virtual const Apto::String& GetName() const = 0;
+      virtual const Apto::Array<int>& GetGridValues() const = 0;
+      virtual const Apto::Array<int>& GetValueCounts() const = 0;
       
       virtual const DiscreteScale& GetScale() const = 0;
       
@@ -91,12 +89,12 @@ namespace Avida {
       int m_height;
       int m_num_viewer_colors;
       
-      tArray<MapMode*> m_view_modes;  // List of view modes...
+      Apto::Array<MapMode*> m_view_modes;  // List of view modes...
       int m_color_mode;      // Current map color mode (index into m_view_modes, -1 = off)
       int m_symbol_mode;     // Current map symbol mode (index into m_view_modes, -1 = off)
       int m_tag_mode;        // Current map tag mode (index into m_view_modes, -1 = off)
       
-      cRWLock m_rw_lock;
+      Apto::RWLock m_rw_lock;
       
       
     public:
@@ -113,13 +111,13 @@ namespace Avida {
       inline int GetTagMode() const { return m_tag_mode; }
       
       
-      inline const tArray<int>& GetColors() const { return m_view_modes[m_color_mode]->GetGridValues(); }
-      inline const tArray<int>& GetSymbols() const { return m_view_modes[m_symbol_mode]->GetGridValues(); }
-      inline const tArray<int>& GetTags() const { return m_view_modes[m_tag_mode]->GetGridValues(); }
+      inline const Apto::Array<int>& GetColors() const { return m_view_modes[m_color_mode]->GetGridValues(); }
+      inline const Apto::Array<int>& GetSymbols() const { return m_view_modes[m_symbol_mode]->GetGridValues(); }
+      inline const Apto::Array<int>& GetTags() const { return m_view_modes[m_tag_mode]->GetGridValues(); }
       
-      inline const tArray<int>& GetColorCounts() const { return m_view_modes[m_color_mode]->GetValueCounts(); }
-      inline const tArray<int>& GetSymbolCounts() const { return m_view_modes[m_symbol_mode]->GetValueCounts(); }
-      inline const tArray<int>& GetTagCounts() const { return m_view_modes[m_tag_mode]->GetValueCounts(); }
+      inline const Apto::Array<int>& GetColorCounts() const { return m_view_modes[m_color_mode]->GetValueCounts(); }
+      inline const Apto::Array<int>& GetSymbolCounts() const { return m_view_modes[m_symbol_mode]->GetValueCounts(); }
+      inline const Apto::Array<int>& GetTagCounts() const { return m_view_modes[m_tag_mode]->GetValueCounts(); }
       
       inline const DiscreteScale& GetColorScale() const { return m_view_modes[m_color_mode]->GetScale(); }
       inline const DiscreteScale& GetSymbolScale() const { return m_view_modes[m_symbol_mode]->GetScale(); }
@@ -127,7 +125,7 @@ namespace Avida {
       
       
       inline int GetNumModes() const { return m_view_modes.GetSize(); }
-      inline const cString& GetModeName(int idx) const { return m_view_modes[idx]->GetName(); }
+      inline const Apto::String& GetModeName(int idx) const { return m_view_modes[idx]->GetName(); }
       inline int GetModeSupportedTypes(int idx) const { return m_view_modes[idx]->GetSupportedTypes(); }
       
       void SetMode(int mode);

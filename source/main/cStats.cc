@@ -33,7 +33,7 @@
 #include "cDeme.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "tDataEntry.h"
 #include "cOrgMessage.h"
 #include "cOrgMessagePredicate.h"

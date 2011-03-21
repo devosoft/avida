@@ -42,7 +42,7 @@
 #include "cStats.h"
 #include "cString.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "tAnalyzeJob.h"
 #include "tAnalyzeJobBatch.h"
 #include "tSmartArray.h"

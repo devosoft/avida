@@ -45,7 +45,7 @@
 #include "cSequence.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "cWorldDriver.h"
+#include "avida/core/cWorldDriver.h"
 #include "tAutoRelease.h"
 #include "tIterator.h"
 #include <cmath>
