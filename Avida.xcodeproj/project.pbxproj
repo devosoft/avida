@@ -1047,23 +1047,6 @@
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
 		70A1E325125CDF2B00D56AC4 /* cClassificationInfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationInfo.cc; sourceTree = "<group>"; };
 		70A1E327125CDF2B00D56AC4 /* cMap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMap.cc; sourceTree = "<group>"; };
-		70A1E340125CDF9F00D56AC4 /* avidalogo.xpm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = avidalogo.xpm; sourceTree = "<group>"; };
-		70A1E341125CDF9F00D56AC4 /* cDriver_FLTKViewer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver_FLTKViewer.cc; sourceTree = "<group>"; };
-		70A1E342125CDF9F00D56AC4 /* cDriver_FLTKViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDriver_FLTKViewer.h; sourceTree = "<group>"; };
-		70A1E343125CDF9F00D56AC4 /* cFLTKBaseDraw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKBaseDraw.h; sourceTree = "<group>"; };
-		70A1E344125CDF9F00D56AC4 /* cFLTKBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKBox.h; sourceTree = "<group>"; };
-		70A1E345125CDF9F00D56AC4 /* cFLTKGridView.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cFLTKGridView.cc; sourceTree = "<group>"; };
-		70A1E346125CDF9F00D56AC4 /* cFLTKGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKGridView.h; sourceTree = "<group>"; };
-		70A1E347125CDF9F00D56AC4 /* cFLTKLegend.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cFLTKLegend.cc; sourceTree = "<group>"; };
-		70A1E348125CDF9F00D56AC4 /* cFLTKLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKLegend.h; sourceTree = "<group>"; };
-		70A1E349125CDF9F00D56AC4 /* cFLTKWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKWidget.h; sourceTree = "<group>"; };
-		70A1E34A125CDF9F00D56AC4 /* cFLTKWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFLTKWindow.h; sourceTree = "<group>"; };
-		70A1E34B125CDF9F00D56AC4 /* fltk-defs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "fltk-defs.cc"; sourceTree = "<group>"; };
-		70A1E34C125CDF9F00D56AC4 /* fltk-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fltk-defs.h"; sourceTree = "<group>"; };
-		70A1E34D125CDF9F00D56AC4 /* tFLTKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFLTKButton.h; sourceTree = "<group>"; };
-		70A1E34E125CDF9F00D56AC4 /* tFLTKMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tFLTKMenu.h; sourceTree = "<group>"; };
-		70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "viewer-fltk.cc"; sourceTree = "<group>"; };
-		70A1E3A9125CEE6500D56AC4 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
 		70A1E86C12663FA100D56AC4 /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
@@ -1783,30 +1766,6 @@
 			path = "viewer-core";
 			sourceTree = "<group>";
 		};
-		70A1E33F125CDF9F00D56AC4 /* viewer-fltk */ = {
-			isa = PBXGroup;
-			children = (
-				70A1E3A9125CEE6500D56AC4 /* config.h */,
-				70A1E340125CDF9F00D56AC4 /* avidalogo.xpm */,
-				70A1E341125CDF9F00D56AC4 /* cDriver_FLTKViewer.cc */,
-				70A1E342125CDF9F00D56AC4 /* cDriver_FLTKViewer.h */,
-				70A1E343125CDF9F00D56AC4 /* cFLTKBaseDraw.h */,
-				70A1E344125CDF9F00D56AC4 /* cFLTKBox.h */,
-				70A1E345125CDF9F00D56AC4 /* cFLTKGridView.cc */,
-				70A1E346125CDF9F00D56AC4 /* cFLTKGridView.h */,
-				70A1E347125CDF9F00D56AC4 /* cFLTKLegend.cc */,
-				70A1E348125CDF9F00D56AC4 /* cFLTKLegend.h */,
-				70A1E349125CDF9F00D56AC4 /* cFLTKWidget.h */,
-				70A1E34A125CDF9F00D56AC4 /* cFLTKWindow.h */,
-				70A1E34B125CDF9F00D56AC4 /* fltk-defs.cc */,
-				70A1E34C125CDF9F00D56AC4 /* fltk-defs.h */,
-				70A1E34D125CDF9F00D56AC4 /* tFLTKButton.h */,
-				70A1E34E125CDF9F00D56AC4 /* tFLTKMenu.h */,
-				70A1E34F125CDF9F00D56AC4 /* viewer-fltk.cc */,
-			);
-			path = "viewer-fltk";
-			sourceTree = "<group>";
-		};
 		70A1E4B01266249900D56AC4 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -1841,7 +1800,6 @@
 				70DCAC56097AF730002F8733 /* avida-s */,
 				70DCAC58097AF730002F8733 /* avida-viewer */,
 				701EF27D0BEA5D2300DAE168 /* unit-tests */,
-				70A1E33F125CDF9F00D56AC4 /* viewer-fltk */,
 				56F555DE0C3B402A00E2E929 /* viewer-text */,
 			);
 			path = targets;

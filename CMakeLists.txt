@@ -495,56 +495,6 @@ ENDIF(AVD_GUI_PROTO_TEXT)
 
 
 
-# By default, do not build the console interface to Avida.
-OPTION(AVD_GUI_PROTO_FLTK
-  "Enable building new Avida FLTK graphical interface."
-  OFF
-)
-# Make sure requisites are present for build of console interface.  Give
-# user feedback if they're missing.
-IF(AVD_GUI_PROTO_FLTK)
-  # Locate the fltk GUI package 
-  INCLUDE(${PROJECT_SOURCE_DIR}/CMakeModules/FindFLTK.cmake)
-  IF(NOT FLTK_INCLUDE_PATH)
-    MESSAGE("Unable to locate header files for the FLTK graphics package.  Please set the advanced variable FLTK_INCLUDE_PATH to their location.")
-  ENDIF(NOT FLTK_INCLUDE_PATH)
-  IF(NOT FLTK_BASE_LIBRARY)
-    MESSAGE("Unable to locate 'fltk.lib'.  Please set the advanced variable FLTK_BASE_LIBRARY to its location.")
-  ENDIF(NOT FLTK_BASE_LIBRARY)
-
-  IF(FLTK_BASE_LIBRARY AND FLTK_INCLUDE_PATH)
-
-    INCLUDE_DIRECTORIES(${FLTK_INCLUDE_PATH} source/targets/viewer-fltk)
-    
-    SET(AVIDA_FLTK_VIEWER_DIR source/targets/viewer-fltk)
-    SET(AVIDA_FLTK_VIEWER_SOURCES
-      ${AVIDA_FLTK_VIEWER_DIR}/cDriver_FLTKViewer.cc
-      ${AVIDA_FLTK_VIEWER_DIR}/viewer-fltk.cc
-      ${AVIDA_FLTK_VIEWER_DIR}/fltk-defs.cc
-      ${AVIDA_FLTK_VIEWER_DIR}/cFLTKGridView.cc
-      ${AVIDA_FLTK_VIEWER_DIR}/cFLTKLegend.cc
-    )
-    SOURCE_GROUP(targets\\viewer-fltk FILES ${AVIDA_FLTK_VIEWER_SOURCES})
-    ADD_EXECUTABLE(avida-fltk ${AVIDA_FLTK_VIEWER_SOURCES} ${COREVIEW_SOURCES} ${COREGUI_SOURCES})
-    
-    SET(AVIDA_FLTK_VIEWER_LIBS avidacore ${FLTK_BASE_LIBRARY} ${FLTK_IMAGE_LIBRARY} ${FLTK_JPEG_LIBRARY})
-    IF(NOT MSVC)
-      LIST(APPEND AVIDA_FLTK_VIEWER_LIBS pthread)
-    ENDIF(NOT MSVC)
-    TARGET_LINK_LIBRARIES(avida-fltk ${AVIDA_FLTK_VIEWER_LIBS})
-    SET_TARGET_PROPERTIES(avida-fltk PROPERTIES LINK_FLAGS ${FLTK_PLATFORM_DEPENDENT_LIBS})
-
-    IF(APPLE AND NOT FLTK_APPLE_X11)
-       SET( LINK_FLAGS_avida_fltk ${LINK_FLAGS} "-framework Carbon -framework Cocoa -framework ApplicationServices -lz")
-    ENDIF(APPLE AND NOT FLTK_APPLE_X11)
-
-    INSTALL_TARGETS(/work avida-fltk)
-
-  ENDIF(FLTK_BASE_LIBRARY AND FLTK_INCLUDE_PATH)
-ENDIF(AVD_GUI_PROTO_FLTK)
-
-
-
 OPTION(AVD_TASK_EVENT_GEN
   "Enable building the task_event_gen utility"
   OFF
