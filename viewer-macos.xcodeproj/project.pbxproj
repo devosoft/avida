@@ -1,0 +1,405 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035497513379FBD00D3865C /* Cocoa.framework */; };
+		703549A91337A4B100D3865C /* Avida-ED-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A61337A4B100D3865C /* Avida-ED-MainWindow.xib */; };
+		703549AA1337A4B100D3865C /* Avida-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A71337A4B100D3865C /* Avida-MainWindow.xib */; };
+		703549AB1337A4B100D3865C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A81337A4B100D3865C /* MainMenu.xib */; };
+		703549B01337AD0500D3865C /* AvidaMainWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549AF1337AD0500D3865C /* AvidaMainWindowController.mm */; };
+		703549B31337AD1600D3865C /* AvidaEDController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549B21337AD1600D3865C /* AvidaEDController.mm */; };
+		703549B91337AD2600D3865C /* AvidaAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549B51337AD2600D3865C /* AvidaAppDelegate.mm */; };
+		703549BA1337AD2600D3865C /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549B61337AD2600D3865C /* main.mm */; };
+		703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 703549B81337AD2600D3865C /* SubtleSplitView.m */; };
+		703549C21337AD4300D3865C /* AvidaRun.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BD1337AD4300D3865C /* AvidaRun.mm */; };
+		703549C31337AD4300D3865C /* CoreViewListener.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549BF1337AD4300D3865C /* CoreViewListener.mm */; };
+		703549C41337AD4300D3865C /* MapGridView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 703549C11337AD4300D3865C /* MapGridView.mm */; };
+		703549D41337CAA100D3865C /* pause_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D01337CAA100D3865C /* pause_blue.png */; };
+		703549D51337CAA100D3865C /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D11337CAA100D3865C /* pause.png */; };
+		703549D61337CAA100D3865C /* play_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D21337CAA100D3865C /* play_blue.png */; };
+		703549D71337CAA100D3865C /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = 703549D31337CAA100D3865C /* play.png */; };
+		703549EB1337D25300D3865C /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EA1337D25300D3865C /* libapto.a */; };
+		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
+		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7035497113379FBD00D3865C /* Avida.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avida.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7035497513379FBD00D3865C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		7035497813379FBD00D3865C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		7035497913379FBD00D3865C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		7035497A13379FBD00D3865C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		703549A61337A4B100D3865C /* Avida-ED-MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-ED-MainWindow.xib"; sourceTree = "<group>"; };
+		703549A71337A4B100D3865C /* Avida-MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Avida-MainWindow.xib"; sourceTree = "<group>"; };
+		703549A81337A4B100D3865C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		703549AC1337A54700D3865C /* Avida-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Avida-Info.plist"; sourceTree = "<group>"; };
+		703549AE1337AD0500D3865C /* AvidaMainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaMainWindowController.h; sourceTree = "<group>"; };
+		703549AF1337AD0500D3865C /* AvidaMainWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaMainWindowController.mm; sourceTree = "<group>"; };
+		703549B11337AD1600D3865C /* AvidaEDController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaEDController.h; sourceTree = "<group>"; };
+		703549B21337AD1600D3865C /* AvidaEDController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaEDController.mm; sourceTree = "<group>"; };
+		703549B41337AD2600D3865C /* AvidaAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaAppDelegate.h; sourceTree = "<group>"; };
+		703549B51337AD2600D3865C /* AvidaAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaAppDelegate.mm; sourceTree = "<group>"; };
+		703549B61337AD2600D3865C /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		703549B71337AD2600D3865C /* SubtleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubtleSplitView.h; sourceTree = "<group>"; };
+		703549B81337AD2600D3865C /* SubtleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubtleSplitView.m; sourceTree = "<group>"; };
+		703549BC1337AD4300D3865C /* AvidaRun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvidaRun.h; sourceTree = "<group>"; };
+		703549BD1337AD4300D3865C /* AvidaRun.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AvidaRun.mm; sourceTree = "<group>"; };
+		703549BE1337AD4300D3865C /* CoreViewListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreViewListener.h; sourceTree = "<group>"; };
+		703549BF1337AD4300D3865C /* CoreViewListener.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CoreViewListener.mm; sourceTree = "<group>"; };
+		703549C01337AD4300D3865C /* MapGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapGridView.h; sourceTree = "<group>"; };
+		703549C11337AD4300D3865C /* MapGridView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapGridView.mm; sourceTree = "<group>"; };
+		703549D01337CAA100D3865C /* pause_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause_blue.png; sourceTree = "<group>"; };
+		703549D11337CAA100D3865C /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
+		703549D21337CAA100D3865C /* play_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play_blue.png; sourceTree = "<group>"; };
+		703549D31337CAA100D3865C /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
+		703549EA1337D25300D3865C /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7035496E13379FBD00D3865C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */,
+				703549EB1337D25300D3865C /* libapto.a in Frameworks */,
+				703549F01337D28800D3865C /* libavida-core.a in Frameworks */,
+				703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7035496113379F3F00D3865C = {
+			isa = PBXGroup;
+			children = (
+				703549991337A30500D3865C /* Source */,
+				703549961337A11C00D3865C /* Resources */,
+				7035497413379FBD00D3865C /* Frameworks */,
+				703549C91337AF1300D3865C /* Libraries */,
+				7035497213379FBD00D3865C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7035497213379FBD00D3865C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7035497113379FBD00D3865C /* Avida.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7035497413379FBD00D3865C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7035497513379FBD00D3865C /* Cocoa.framework */,
+				7035497713379FBD00D3865C /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7035497713379FBD00D3865C /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7035497813379FBD00D3865C /* AppKit.framework */,
+				7035497913379FBD00D3865C /* CoreData.framework */,
+				7035497A13379FBD00D3865C /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		703549961337A11C00D3865C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				703549981337A27400D3865C /* Images */,
+				703549971337A12E00D3865C /* NIBs */,
+				7035499E1337A3A200D3865C /* Other */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		703549971337A12E00D3865C /* NIBs */ = {
+			isa = PBXGroup;
+			children = (
+				703549A61337A4B100D3865C /* Avida-ED-MainWindow.xib */,
+				703549A71337A4B100D3865C /* Avida-MainWindow.xib */,
+				703549A81337A4B100D3865C /* MainMenu.xib */,
+			);
+			name = NIBs;
+			path = resources/nibs;
+			sourceTree = "<group>";
+		};
+		703549981337A27400D3865C /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				703549D01337CAA100D3865C /* pause_blue.png */,
+				703549D11337CAA100D3865C /* pause.png */,
+				703549D21337CAA100D3865C /* play_blue.png */,
+				703549D31337CAA100D3865C /* play.png */,
+			);
+			name = Images;
+			path = resources/images;
+			sourceTree = "<group>";
+		};
+		703549991337A30500D3865C /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				7035499A1337A32D00D3865C /* Avida */,
+				7035499B1337A32D00D3865C /* Avida-ED */,
+				7035499C1337A32D00D3865C /* Main */,
+				7035499D1337A32D00D3865C /* Viewer-Core */,
+			);
+			name = Source;
+			path = src;
+			sourceTree = "<group>";
+		};
+		7035499A1337A32D00D3865C /* Avida */ = {
+			isa = PBXGroup;
+			children = (
+				703549AE1337AD0500D3865C /* AvidaMainWindowController.h */,
+				703549AF1337AD0500D3865C /* AvidaMainWindowController.mm */,
+			);
+			name = Avida;
+			path = avida;
+			sourceTree = "<group>";
+		};
+		7035499B1337A32D00D3865C /* Avida-ED */ = {
+			isa = PBXGroup;
+			children = (
+				703549B11337AD1600D3865C /* AvidaEDController.h */,
+				703549B21337AD1600D3865C /* AvidaEDController.mm */,
+			);
+			name = "Avida-ED";
+			path = "src/avida-ed";
+			sourceTree = SOURCE_ROOT;
+		};
+		7035499C1337A32D00D3865C /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				703549B41337AD2600D3865C /* AvidaAppDelegate.h */,
+				703549B51337AD2600D3865C /* AvidaAppDelegate.mm */,
+				703549B71337AD2600D3865C /* SubtleSplitView.h */,
+				703549B81337AD2600D3865C /* SubtleSplitView.m */,
+				703549B61337AD2600D3865C /* main.mm */,
+			);
+			name = Main;
+			path = main;
+			sourceTree = "<group>";
+		};
+		7035499D1337A32D00D3865C /* Viewer-Core */ = {
+			isa = PBXGroup;
+			children = (
+				703549BC1337AD4300D3865C /* AvidaRun.h */,
+				703549BD1337AD4300D3865C /* AvidaRun.mm */,
+				703549BE1337AD4300D3865C /* CoreViewListener.h */,
+				703549BF1337AD4300D3865C /* CoreViewListener.mm */,
+				703549C01337AD4300D3865C /* MapGridView.h */,
+				703549C11337AD4300D3865C /* MapGridView.mm */,
+			);
+			name = "Viewer-Core";
+			path = "viewer-core";
+			sourceTree = "<group>";
+		};
+		7035499E1337A3A200D3865C /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				703549AC1337A54700D3865C /* Avida-Info.plist */,
+			);
+			name = Other;
+			path = resources/other;
+			sourceTree = "<group>";
+		};
+		703549C91337AF1300D3865C /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				703549EA1337D25300D3865C /* libapto.a */,
+				703549EF1337D28800D3865C /* libavida-core.a */,
+				703549ED1337D28200D3865C /* libviewer-core.a */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7035497013379FBD00D3865C /* Avida */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida" */;
+			buildPhases = (
+				7035496D13379FBD00D3865C /* Sources */,
+				7035496E13379FBD00D3865C /* Frameworks */,
+				7035496F13379FBD00D3865C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Avida;
+			productName = Avida;
+			productReference = 7035497113379FBD00D3865C /* Avida.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7035496313379F3F00D3865C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Michigan State University";
+			};
+			buildConfigurationList = 7035496613379F3F00D3865C /* Build configuration list for PBXProject "viewer-macos" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7035496113379F3F00D3865C;
+			productRefGroup = 7035497213379FBD00D3865C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7035497013379FBD00D3865C /* Avida */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7035496F13379FBD00D3865C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				703549A91337A4B100D3865C /* Avida-ED-MainWindow.xib in Resources */,
+				703549AA1337A4B100D3865C /* Avida-MainWindow.xib in Resources */,
+				703549AB1337A4B100D3865C /* MainMenu.xib in Resources */,
+				703549D41337CAA100D3865C /* pause_blue.png in Resources */,
+				703549D51337CAA100D3865C /* pause.png in Resources */,
+				703549D61337CAA100D3865C /* play_blue.png in Resources */,
+				703549D71337CAA100D3865C /* play.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7035496D13379FBD00D3865C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				703549B01337AD0500D3865C /* AvidaMainWindowController.mm in Sources */,
+				703549B31337AD1600D3865C /* AvidaEDController.mm in Sources */,
+				703549B91337AD2600D3865C /* AvidaAppDelegate.mm in Sources */,
+				703549BA1337AD2600D3865C /* main.mm in Sources */,
+				703549BB1337AD2600D3865C /* SubtleSplitView.m in Sources */,
+				703549C21337AD4300D3865C /* AvidaRun.mm in Sources */,
+				703549C31337AD4300D3865C /* CoreViewListener.mm in Sources */,
+				703549C41337AD4300D3865C /* MapGridView.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7035496813379F3F00D3865C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		7035496913379F3F00D3865C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+			};
+			name = Release;
+		};
+		7035498D13379FBD00D3865C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		7035498E13379FBD00D3865C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "resources/other/Avida-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../avida-core/include/public/ ../../libs/apto/include";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7035496613379F3F00D3865C /* Build configuration list for PBXProject "viewer-macos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7035496813379F3F00D3865C /* Debug */,
+				7035496913379F3F00D3865C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7035498F13379FBD00D3865C /* Build configuration list for PBXNativeTarget "Avida" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7035498D13379FBD00D3865C /* Debug */,
+				7035498E13379FBD00D3865C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7035496313379F3F00D3865C /* Project object */;
+}
