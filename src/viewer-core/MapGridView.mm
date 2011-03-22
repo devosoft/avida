@@ -43,7 +43,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       map_height = 0;
       num_colors = 0;
       color_cache = [NSMutableArray arrayWithCapacity:255];
-      zoom = 10.0;
+      zoom = -1;
     }
     return self;
 }
@@ -76,16 +76,17 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
   
+  NSRect bounds = [self bounds];
+
   CGFloat block_size = round(zoom);
-  CGFloat grid_width = 0.0;
-  if (block_size > 5.0) {
-    grid_width = 1.0;
-  }
+  CGFloat grid_width = (block_size > 5.0) ? 1.0 : 0.0;
   
-  // Fill in map background
+  // Determine Map Dimensions
   NSRect mapRect;
   mapRect.size.width = map_width * block_size - grid_width;
   mapRect.size.height = map_height * block_size - grid_width;
+  
+  mapRect.origin = NSMakePoint(round((bounds.size.width - mapRect.size.width) / 2), round((bounds.size.height - mapRect.size.height) / 2));
   [[NSColor blackColor] set];
   [NSBezierPath fillRect:mapRect];
   
@@ -96,7 +97,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
   for (int i = 0; i < map_width; i++) {
     for (int j = 0; j < map_height; j++) {
-      gridCellRect.origin = NSMakePoint(block_size * i, block_size * j);
+      gridCellRect.origin = NSMakePoint(mapRect.origin.x + block_size * i, mapRect.origin.y + block_size * j);
       int color = map_colors[i * map_width + j];
       switch (color) {
         case -4:  continue;
@@ -123,6 +124,15 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   map_colors = state->GetColors();
   num_colors = state->GetColorScale().GetScaleRange();
+
+  if (zoom < 0) {
+    NSRect bounds = [self bounds];
+    double z1 = bounds.size.width / map_width;
+    double z2 = bounds.size.height / map_height;
+    zoom = (z1 > z2) ? z2 : z1;
+    if (zoom > 15.0) zoom = 15.0;
+    zoom = floor(zoom);
+  }
   
   state->Release();
   

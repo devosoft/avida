@@ -230,7 +230,8 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
   } else {
     map = [pkg map];
   }
-  [mapView updateState: map];
+  [mapView updateState:map];
+  [mapZoom setDoubleValue:[mapView zoom]];
 }
 
 
