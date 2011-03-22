@@ -3182,6 +3182,9 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
   while (m_shannon_div_norm.size() > 100) {
 		m_shannon_div_norm.pop_front();
   }
+  while (m_percent_reproductives.size() > 100) {
+		m_percent_reproductives.pop_front();
+  }
 
 	if(m_deme_diversity.empty()) {
 		df.Write(0.0, "Mean number of different reactions by deme [demereact]");
@@ -3207,6 +3210,11 @@ void cStats::PrintDemeReactionDiversityReplicationData(const cString& filename)
 		df.Write(0.0, "Mean number of orgs that perform a reaction [meanreact]");
 	} else {
 		df.Write(std::accumulate(m_num_orgs_perf_reaction.begin(), m_num_orgs_perf_reaction.end(), 0.0)/m_num_orgs_perf_reaction.size(), "Mean number of orgs that perform a reaction [meanreact]");
+	}
+  if(m_percent_reproductives.empty()) {
+		df.Write(0.0, "Mean percent of orgs that replicate [meanperrepros]");
+	} else {
+		df.Write(std::accumulate(m_percent_reproductives.begin(), m_percent_reproductives.end(), 0.0)/m_percent_reproductives.size(), "Mean percent of orgs that replicate [meanperrepros]");
 	}
 
 

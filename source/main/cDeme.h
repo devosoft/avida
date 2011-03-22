@@ -395,6 +395,7 @@ public:
 	void UpdateShannon(cPopulationCell& cell);
 	void UpdateShannonAll();
   double GetMeanSDofFitness(); 
+  double GetPercentReproductives();
 	
 	
 private:
@@ -403,6 +404,7 @@ private:
 	int m_switch_penalties; //! number of task switching penalties accumulated
   std::vector< std::vector<double> > m_shannon_matrix;
 	int m_num_active; // number of active organisms in the lifetime of the deme
+  int m_num_reproductives; // number of organisms that reproduced during the lifetime of the deme
 	
 	
 };

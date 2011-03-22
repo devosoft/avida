@@ -80,6 +80,7 @@ cDeme::cDeme()
   , migrations_in(0)
   , suicides(0)
   , m_network(0)
+  , m_num_reproductives(0)
 {
 }
 
@@ -130,6 +131,7 @@ void cDeme::Setup(int id, const tArray<int> & in_cells, int in_width, cWorld* wo
 	m_total_res_consumed = 0;
 	m_switch_penalties = 0;
 	m_num_active = 0;
+  m_num_reproductives = 0;
 
   
   total_energy_donated = 0.0;
@@ -386,6 +388,8 @@ void cDeme::Reset(bool resetResources, double deme_energy)
   m_switch_penalties = 0;
   m_num_active = 0;
   m_shannon_matrix.clear();
+  m_num_reproductives = 0;
+
   
   numOrgsInterruted = 0;
   
@@ -1158,7 +1162,12 @@ void cDeme::UpdateShannon(cPopulationCell& cell)
     cOrganism* organism = cell.GetOrganism();
     cPhenotype& phenotype = organism->GetPhenotype();			
     const tArray<int> curr_react =  phenotype.GetCumulativeReactionCount();
-    org_row.resize(curr_react.GetSize(), 0.0);
+    org_row.resize(curr_react.GetSize(), 0.0);		
+    // track number of reproductives
+    if ((phenotype.GetNumDivides() - phenotype.GetNumDivideFailed()) > 0) { 
+      m_num_reproductives++; 
+    }
+    
     for (int j=0; j<curr_react.GetSize(); j++) {
       
       // we are tracking repro as a task
@@ -1202,5 +1211,11 @@ double cDeme::GetMeanSDofFitness()
     }
   }
   return fit.StdDeviation();
+}
+
+double cDeme::GetPercentReproductives()
+{
+  double per = (m_num_reproductives/(double)(injected_count + cur_birth_count));
+  return per; 
 }
 

@@ -1572,6 +1572,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
   double switch_penalties = source_deme.GetNumSwitchingPenalties();
   double num_orgs_perf_reaction = source_deme.GetNumOrgsPerformedReaction();
   double shannon_div = source_deme.GetShannonMutualInformation();
+  double per_reproductives = source_deme.GetPercentReproductives();
 
   if (switch_penalties > 0) {
     switch_penalties = (switch_penalties)/(source_deme.GetInjectedCount() + source_deme.GetBirthCount());
@@ -1579,7 +1580,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme)
 
 
   m_world->GetStats().IncDemeReactionDiversityReplicationData(deme_performed_rx, switch_penalties,
-                                                              shannon_div, num_orgs_perf_reaction);
+                                                              shannon_div, num_orgs_perf_reaction, per_reproductives);
 
   //Option to bridge between kin and group selection.
   if (m_world->GetConfig().DEMES_REPLICATION_ONLY_RESETS.Get()) {
