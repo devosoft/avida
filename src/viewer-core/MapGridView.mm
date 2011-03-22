@@ -71,7 +71,6 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
         CGFloat s = sigmoid(1.0 - x, 0.1, 30);
         CGFloat b = sigmoid(x, 0.3, 10);
         [color_cache insertObject:[NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1.0] atIndex:i];
-        std::cout << "c: " << i << "  h: " << h << "  s: " << s << "  b: " << b << std::endl;
       }
     }
   }
