@@ -29,9 +29,13 @@
 #include "cOrganism.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
+#include "cStringUtil.h"
 #include "cWorld.h"
 
 #include "avida/private/viewer-core/cClassificationInfo.h"
+
+#include <cmath>
+#include <iostream>
 
 
 Avida::CoreView::MapMode::~MapMode() { ; }
@@ -41,14 +45,28 @@ Avida::CoreView::DiscreteScale::~DiscreteScale() { ; }
 class cFitnessMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
 {
 private:
-  static const int SCALE_MAX = 10;
+  static const int SCALE_MAX = 201;
+  static const int SCALE_LABELS = 4;
+  static const int RESCALE_TIME_CONSTANT = 40;
+  static const double RESCALE_TOLERANCE;
+  static const double MAX_RESCALE_FACTOR;
 private:
   Apto::Array<int> m_color_grid;
   Apto::Array<int> m_color_count;
   Apto::Array<DiscreteScale::Entry> m_scale_labels;
   
+  double m_cur_min;
+  double m_cur_max;
+  double m_target_min;
+  double m_target_max;
+  double m_rescale_rate_min;
+  double m_rescale_rate_max;
+  
 public:
-  cFitnessMapMode(cWorld* world) { ; }
+  cFitnessMapMode(cWorld* world)
+    : m_color_count(SCALE_MAX + Avida::CoreView::MAP_RESERVED_COLORS), m_scale_labels(SCALE_LABELS)
+    , m_cur_min(0.0), m_cur_max(0.0), m_target_min(0.0), m_target_max(0.0), m_rescale_rate_min(0.0), m_rescale_rate_max(0.0)
+  { ; }
   ~cFitnessMapMode() { ; }
   
   // MapMode Interface
@@ -64,53 +82,103 @@ public:
   
   
   // DiscreteScale Interface
-  int GetScaleRange() const { return m_color_count.GetSize(); }
+  int GetScaleRange() const { return m_color_count.GetSize() - Avida::CoreView::MAP_RESERVED_COLORS; }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
-  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }
+  DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }  
 };
+
+const double cFitnessMapMode::RESCALE_TOLERANCE = 0.1;
+const double cFitnessMapMode::MAX_RESCALE_FACTOR = 0.03;
 
 void cFitnessMapMode::Update(cPopulation& pop)
 {
   m_color_grid.Resize(pop.GetSize());
   
   // Keep track of how many times each color was assigned.
-  m_color_count.Resize(SCALE_MAX);
   m_color_count.SetAll(0);
   
   // Determine the max and min in the population.
-  double max_fit = 3;
-  double min_fit = -2;
+  double max_fit = 0.0;
+  double min_fit = 0.0;
   
   for (int i = 0; i < pop.GetSize(); i++) {
-    cOrganism * org = pop.GetCell(i).GetOrganism();
+    cOrganism* org = pop.GetCell(i).GetOrganism();
     if (org == NULL) continue;
     double fit = org->GetPhenotype().GetFitness();
     if (fit == 0.0) continue;
-    fit = log(fit);
-    // if (fit < min_fit) min_fit = fit;
+//    fit = log2(fit);
     if (fit > max_fit) max_fit = fit;
     if (fit < min_fit) min_fit = fit;
   }
-  double fit_diff = max_fit - min_fit;
-  if (fit_diff == 0.0) fit_diff = 1.0;
+
+  if (m_cur_max == 0.0) {
+    // Reset range
+    m_cur_max = max_fit;
+    m_target_max = max_fit;
+    m_rescale_rate_min = 0.0;
+    m_rescale_rate_max = 0.0;
+    
+    // Update scale labels
+    for (int i = 0; i < m_scale_labels.GetSize(); i++) {
+      m_scale_labels[i].index = (SCALE_MAX / (m_scale_labels.GetSize() - 1)) * i;
+      m_scale_labels[i].label =
+        static_cast<const char*>(cStringUtil::Stringf("%f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
+    }
+  } else {
+    if (max_fit < (1.0 - RESCALE_TOLERANCE) * m_target_max || m_target_max < max_fit) {
+      m_target_max = max_fit * (1.0 + RESCALE_TOLERANCE);
+      m_rescale_rate_max = (m_target_max - m_cur_max) / RESCALE_TIME_CONSTANT;
+    }
+    
+    if (m_rescale_rate_max != 0.0) {
+      if (min_fit <= m_cur_max) {
+        m_cur_max += m_rescale_rate_max;
+      } else {
+        double max_rate = m_cur_max * MAX_RESCALE_FACTOR;
+        m_cur_max += (m_rescale_rate_max < max_rate) ? m_rescale_rate_max : max_rate;
+      }
+      
+      if (fabs(m_target_max - m_cur_max) <= fabs(m_rescale_rate_max)) {
+        m_cur_max = m_target_max;
+        m_rescale_rate_max = 0.0;
+      }
+      
+      // Update scale labels
+      for (int i = 0; i < m_scale_labels.GetSize(); i++) {
+        m_scale_labels[i].index = (SCALE_MAX / (m_scale_labels.GetSize() - 1)) * i;
+        m_scale_labels[i].label =
+          static_cast<const char*>(cStringUtil::Stringf("%f", ((m_cur_max - m_cur_min) / (m_scale_labels.GetSize() - 1)) * i));
+      }
+    }
+  }
   
   // Now fill out the color grid.
   for (int i = 0; i < pop.GetSize(); i++) {
     cOrganism* org = pop.GetCell(i).GetOrganism();
     if (org == NULL) {
-      m_color_grid[i] = 0;
-      m_color_count[0]++;
+      m_color_grid[i] = Avida::CoreView::MAP_RESERVED_COLOR_BLACK;
+      m_color_count[Avida::CoreView::MAP_RESERVED_COLORS - Avida::CoreView::MAP_RESERVED_COLOR_BLACK]++;
       continue;
     }
+
     double fit = org->GetPhenotype().GetFitness();
     if (fit == 0.0) {
-      m_color_grid[i] = 1;
-      m_color_count[1]++;
+      m_color_grid[i] = Avida::CoreView::MAP_RESERVED_COLOR_DARK_GRAY;
+      m_color_count[Avida::CoreView::MAP_RESERVED_COLORS - Avida::CoreView::MAP_RESERVED_COLOR_DARK_GRAY]++;
       continue;
     }
-    fit = log(fit);
-    m_color_grid[i] = 1 + (int) ((SCALE_MAX - 2) * ((fit - min_fit) / fit_diff));
-    m_color_count[m_color_grid[i]]++;
+    
+//    fit = log2(fit);
+    
+    fit = (fit - m_cur_min) / (m_cur_max - m_cur_min);
+    if (fit > 1.0) {
+      m_color_grid[i] = Avida::CoreView::MAP_RESERVED_COLOR_WHITE;
+      m_color_count[Avida::CoreView::MAP_RESERVED_COLORS - Avida::CoreView::MAP_RESERVED_COLOR_WHITE]++;
+    } else {
+      int color = fit * static_cast<double>(SCALE_MAX - 1);
+      m_color_grid[i] = color;
+      m_color_count[color + Avida::CoreView::MAP_RESERVED_COLORS]++;
+    }
   }
 }
 
@@ -127,7 +195,9 @@ private:
   
 public:
   cGenotypeMapMode(cWorld* world)
-  : m_info(new Avida::CoreView::cClassificationInfo(world, "genotype", NUM_COLORS)), m_color_count(NUM_COLORS + 4) { ; }
+    : m_info(new Avida::CoreView::cClassificationInfo(world, "genotype", NUM_COLORS))
+    , m_color_count(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
+  { ; }
   virtual ~cGenotypeMapMode() { delete m_info; }
   
   // MapMode Interface
@@ -143,7 +213,7 @@ public:
   
   
   // DiscreteScale Interface
-  int GetScaleRange() const { return m_color_count.GetSize(); }
+  int GetScaleRange() const { return m_color_count.GetSize() - Avida::CoreView::MAP_RESERVED_COLORS; }
   int GetNumLabeledEntries() const { return m_scale_labels.GetSize(); }
   DiscreteScale::Entry GetEntry(int index) const { return m_scale_labels[index]; }  
 };

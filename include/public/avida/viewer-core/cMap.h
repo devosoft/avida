@@ -37,6 +37,13 @@ namespace Avida {
     // --------------------------------------------------------------------------------------------------------------  
     
     enum eMapGridViewType { MAP_GRID_VIEW_COLOR = 0x1, MAP_GRID_VIEW_SYMBOLS = 0x2, MAP_GRID_VIEW_TAGS = 0x4 };
+    enum eMapGridViewReservedColors {
+      MAP_RESERVED_COLOR_BLACK = -4,
+      MAP_RESERVED_COLOR_DARK_GRAY = -3,
+      MAP_RESERVED_COLOR_LIGHT_GRAY = -2,
+      MAP_RESERVED_COLOR_WHITE = -1,
+      MAP_RESERVED_COLORS = 4
+    };
 
     
     // DiscreteScale Base Clase Definition
