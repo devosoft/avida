@@ -257,8 +257,8 @@ Avida::CoreView::cMap::cMap(cWorld* world)
 {
   // Setup the available view modes...
   m_view_modes.Resize(2);
-  m_view_modes[0] = new cGenotypeMapMode(world);
-  m_view_modes[1] = new cFitnessMapMode(world);
+  m_view_modes[0] = new cFitnessMapMode(world);
+  m_view_modes[1] = new cGenotypeMapMode(world);
 
   
 //  AddViewMode("Genome Length",  &cCoreView_Map::SetColors_Length,   VIEW_COLOR, COLORS_SCALE);
