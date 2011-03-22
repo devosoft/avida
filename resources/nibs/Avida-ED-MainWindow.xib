@@ -604,8 +604,8 @@
 											<string key="NSContents"/>
 											<reference key="NSControlView" ref="214683644"/>
 											<double key="NSMaxValue">15</double>
-											<double key="NSMinValue">0.0</double>
-											<double key="NSValue">9.9803149606299222</double>
+											<double key="NSMinValue">1</double>
+											<double key="NSValue">1</double>
 											<double key="NSAltIncValue">0.0</double>
 											<int key="NSNumberOfTickMarks">0</int>
 											<int key="NSTickMarkPosition">1</int>
@@ -903,6 +903,22 @@
 						<reference key="destination" ref="285489421"/>
 					</object>
 					<int key="connectionID">143</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">changeMapZoom:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="407498129"/>
+					</object>
+					<int key="connectionID">144</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">mapZoom</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="214683644"/>
+					</object>
+					<int key="connectionID">145</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1344,7 +1360,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">143</int>
+			<int key="maxID">145</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1353,11 +1369,16 @@
 					<string key="superclassName">NSWindowController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="changeMapViewMode:">id</string>
+						<string key="changeMapZoom:">id</string>
 						<string key="toggleRunState:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="changeMapViewMode:">
 							<string key="name">changeMapViewMode:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="changeMapZoom:">
+							<string key="name">changeMapZoom:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleRunState:">

@@ -109,11 +109,16 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 - (IBAction) changeMapViewMode:(id)sender {
   if (map) {
     map->SetMode(map_mode_to_color[[mapViewMode indexOfSelectedItem]]);
+    [mapView updateState:map];
   }
   
 }
 
-
+- (IBAction) changeMapZoom:(id)sender {
+  if (map) {
+    [mapView setZoom:[mapZoom doubleValue]];
+  }
+}
 
 - (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize {
   if (splitView == mainSplitView) {
@@ -221,6 +226,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     }
     [mapViewMode selectItemAtIndex:map->GetColorMode()];
     [mapViewMode setEnabled:TRUE];
+    [mapZoom setEnabled:TRUE];
   } else {
     map = [pkg map];
   }

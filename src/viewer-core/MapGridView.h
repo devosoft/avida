@@ -33,9 +33,11 @@ namespace Avida {
   int map_width;
   int map_height;
   int num_colors;
+  double zoom;
   
   Apto::Array<int> map_colors;
   NSMutableArray* color_cache;
+  
 }
 
 - (id)initWithFrame:(NSRect)frame;
@@ -44,5 +46,7 @@ namespace Avida {
 - (BOOL)isOpaque;
 
 - (void)updateState:(Avida::CoreView::cMap*)state;
+
+@property (readwrite, nonatomic) double zoom;
 
 @end

@@ -43,12 +43,13 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       map_height = 0;
       num_colors = 0;
       color_cache = [NSMutableArray arrayWithCapacity:255];
+      zoom = 1.0;
     }
     return self;
 }
 
 - (void) drawRect: (NSRect)dirtyRect {
-  [[NSColor blackColor] set];
+  [[NSColor darkGrayColor] set];
   [NSBezierPath fillRect:dirtyRect];
   
   if (num_colors != [color_cache count]) {
@@ -74,6 +75,15 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       }
     }
   }
+  
+  
+  // Fill in map background
+  NSRect mapRect;
+  mapRect.size.width = map_width * 10.0;
+  mapRect.size.height = map_height * 10.0;
+  [[NSColor blackColor] set];
+  [NSBezierPath fillRect:mapRect];
+  
   
   NSRect gridCellRect;
   gridCellRect.size.width = 9.0;
@@ -101,6 +111,8 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 - (void) updateState: (Avida::CoreView::cMap*)state {
+  state->Retain();
+  
   map_width = state->GetWidth();
   map_height = state->GetHeight();
   
@@ -109,6 +121,12 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   state->Release();
   
+  [self setNeedsDisplay:YES];
+}
+
+@synthesize zoom;
+- (void) setZoom: (double)zval {
+  zoom = zval;
   [self setNeedsDisplay:YES];
 }
 

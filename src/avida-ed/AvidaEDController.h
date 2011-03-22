@@ -65,6 +65,7 @@
 // Actions
 -(IBAction)toggleRunState:(id)sender;
 -(IBAction)changeMapViewMode:(id)sender;
+-(IBAction)changeMapZoom:(id)sender;
 
 
 // NSSplitViewDelegate Protocol
