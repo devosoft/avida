@@ -448,13 +448,13 @@ ENDIF(AVD_GUI_NCURSES)
 
 
 # By default, do not build the console interface to Avida.
-OPTION(AVD_GUI_PROTO_TEXT
-  "Enable building new Avida text interface."
+OPTION(AVD_GUI_PROTOTYPE_TEXT
+  "Enable building new exprimental Avida text interface. THIS MAY NOT COMPILE!"
   OFF
 )
 # Make sure requisites are present for build of console interface.  Give
 # user feedback if they're missing.
-IF(AVD_GUI_PROTO_TEXT)
+IF(AVD_GUI_PROTOTYPE_TEXT)
   # Locate the ncurses screen handling package (for Avida's console
   # interface) and the Qt graphics API (for Avida's graphic interface).
   INCLUDE(${PROJECT_SOURCE_DIR}/CMakeModules/FindNcurses.cmake)
@@ -491,7 +491,7 @@ IF(AVD_GUI_PROTO_TEXT)
     INSTALL_TARGETS(/work avida-text)
 
   ENDIF(NCURSES_LIBRARY AND NCURSES_INCLUDE_PATH)
-ENDIF(AVD_GUI_PROTO_TEXT)
+ENDIF(AVD_GUI_PROTOTYPE_TEXT)
 
 
 
