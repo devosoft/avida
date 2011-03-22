@@ -156,7 +156,6 @@ void Avida::CoreView::cDriver::Run()
     if (m_map) m_map->UpdateMaps(population);
     for (Apto::Set<cListener*>::Iterator it = m_listeners.Begin(); it.Next();) {
       if ((*it.Get())->WantsMap()) {
-        m_map->Retain();
         (*it.Get())->NotifyMap(m_map);
       }
       if ((*it.Get())->WantsUpdate()) (*it.Get())->NotifyUpdate(stats.GetUpdate());
