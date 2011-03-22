@@ -396,7 +396,7 @@ public:
 	void UpdateShannonAll();
   double GetMeanSDofFitness(); 
   double GetPercentReproductives();
-	
+	void ClearShannonInformationStats();
 	
 private:
 	double m_total_res_consumed; //! Amount of resources consumed by deme.

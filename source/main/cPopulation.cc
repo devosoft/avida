@@ -1847,6 +1847,8 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme)
   // to rotate its heritable merit to its current merit.
   if (target_successfully_seeded) target_deme.UpdateDemeMerit(source_deme);
   source_deme.UpdateDemeMerit();
+  source_deme.ClearShannonInformationStats();
+  target_deme.ClearShannonInformationStats();
 
   // do our post-replication stats tracking.
   m_world->GetStats().DemePostReplication(source_deme, target_deme);
@@ -2421,11 +2423,13 @@ int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
 
 
 /*! Helper method to perform any post-injection fixups on the organism/cell that
- was injected into a deme.  Handles all the rotation / facing options.
+ was injected into a deme.  Handles all the rotation / facing options. Also increments
+ the number of organisms injected into the deme.
  */
 void cPopulation::DemePostInjection(cDeme& deme, cPopulationCell& cell) {
   assert(cell.GetID() >= deme.GetCellID(0));
   assert(cell.GetID() <= deme.GetCellID(deme.GetSize()-1));
+  deme.IncInjectedCount();
   switch(m_world->GetConfig().DEMES_ORGANISM_FACING.Get()) {
     case 0: { // Unchanged.
       break;

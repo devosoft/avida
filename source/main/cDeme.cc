@@ -1165,7 +1165,7 @@ void cDeme::UpdateShannon(cPopulationCell& cell)
     org_row.resize(curr_react.GetSize(), 0.0);		
     // track number of reproductives
     if ((phenotype.GetNumDivides() - phenotype.GetNumDivideFailed()) > 0) { 
-      m_num_reproductives++; 
+      ++m_num_reproductives; 
     }
     
     for (int j=0; j<curr_react.GetSize(); j++) {
@@ -1215,7 +1215,19 @@ double cDeme::GetMeanSDofFitness()
 
 double cDeme::GetPercentReproductives()
 {
-  double per = (m_num_reproductives/(double)(injected_count + cur_birth_count));
+  double per = (m_num_reproductives/((double)injected_count + (double)cur_birth_count));
+  if (per > 1) { 
+    int z = 0;
+  }
   return per; 
+}
+
+void cDeme::ClearShannonInformationStats()
+{
+  m_total_res_consumed = 0;
+  m_switch_penalties = 0;
+  m_num_active = 0;
+  m_shannon_matrix.clear();
+  m_num_reproductives = 0;
 }
 
