@@ -32,8 +32,10 @@ namespace Avida {
 @interface MapGridView : NSView {
   int map_width;
   int map_height;
+  int num_colors;
   
   Apto::Array<int> map_colors;
+  NSMutableArray* color_cache;
 }
 
 - (id)initWithFrame:(NSRect)frame;
