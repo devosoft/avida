@@ -304,7 +304,7 @@
 															<string key="NSFrameSize">{155, 683}</string>
 															<reference key="NSSuperview" ref="112924072"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="793145023"/>
+															<reference key="NSNextKeyView" ref="603438324"/>
 															<bool key="NSEnabled">YES</bool>
 															<object class="NSTableHeaderView" key="NSHeaderView" id="197144371">
 																<reference key="NSNextResponder" ref="793145023"/>
@@ -459,7 +459,7 @@
 											<string key="NSFrameSize">{155, 700}</string>
 											<reference key="NSSuperview" ref="680271190"/>
 											<reference key="NSWindow"/>
-											<reference key="NSNextKeyView" ref="112924072"/>
+											<reference key="NSNextKeyView" ref="793145023"/>
 											<int key="NSsFlags">560</int>
 											<reference key="NSVScroller" ref="603438324"/>
 											<reference key="NSHScroller" ref="944570412"/>
@@ -481,6 +481,7 @@
 									<string key="NSFrame">{{165, 0}, {820, 700}}</string>
 									<reference key="NSSuperview" ref="845741461"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView"/>
 									<string key="NSClassName">NSView</string>
 								</object>
 							</array>
@@ -508,6 +509,7 @@
 				<string key="NSFrameSize">{163, 96}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSClassName">NSView</string>
 			</object>
 			<object class="NSCustomView" id="589411611">
@@ -516,6 +518,7 @@
 				<string key="NSFrameSize">{163, 96}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<string key="NSClassName">NSView</string>
 			</object>
 			<object class="NSCustomView" id="276580838">
@@ -599,13 +602,13 @@
 										<reference key="NSNextKeyView" ref="1032778696"/>
 										<bool key="NSEnabled">YES</bool>
 										<object class="NSSliderCell" key="NSCell" id="407498129">
-											<int key="NSCellFlags">-1543373312</int>
+											<int key="NSCellFlags">-1543110912</int>
 											<int key="NSCellFlags2">131072</int>
 											<string key="NSContents"/>
 											<reference key="NSControlView" ref="214683644"/>
 											<double key="NSMaxValue">15</double>
 											<double key="NSMinValue">1</double>
-											<double key="NSValue">1</double>
+											<double key="NSValue">10</double>
 											<double key="NSAltIncValue">0.0</double>
 											<int key="NSNumberOfTickMarks">0</int>
 											<int key="NSTickMarkPosition">1</int>
@@ -764,6 +767,7 @@
 								<string key="NSFrame">{{456, 0}, {364, 700}}</string>
 								<reference key="NSSuperview" ref="227454050"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSClassName">NSView</string>
 							</object>
 						</array>

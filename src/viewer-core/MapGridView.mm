@@ -43,7 +43,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
       map_height = 0;
       num_colors = 0;
       color_cache = [NSMutableArray arrayWithCapacity:255];
-      zoom = 1.0;
+      zoom = 10.0;
     }
     return self;
 }
@@ -76,22 +76,27 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
   
+  CGFloat block_size = round(zoom);
+  CGFloat grid_width = 0.0;
+  if (block_size > 5.0) {
+    grid_width = 1.0;
+  }
   
   // Fill in map background
   NSRect mapRect;
-  mapRect.size.width = map_width * 10.0;
-  mapRect.size.height = map_height * 10.0;
+  mapRect.size.width = map_width * block_size - grid_width;
+  mapRect.size.height = map_height * block_size - grid_width;
   [[NSColor blackColor] set];
   [NSBezierPath fillRect:mapRect];
   
   
   NSRect gridCellRect;
-  gridCellRect.size.width = 9.0;
-  gridCellRect.size.height = 9.0;
+  gridCellRect.size.width = block_size - grid_width;
+  gridCellRect.size.height = block_size - grid_width;
 
   for (int i = 0; i < map_width; i++) {
     for (int j = 0; j < map_height; j++) {
-      gridCellRect.origin = NSMakePoint(10.0 * i, 10.0 * j);
+      gridCellRect.origin = NSMakePoint(block_size * i, block_size * j);
       int color = map_colors[i * map_width + j];
       switch (color) {
         case -4:  continue;
