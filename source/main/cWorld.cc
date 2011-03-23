@@ -114,7 +114,12 @@ bool cWorld::setup(cUserFeedback* feedback)
   }
   if (!m_hw_mgr->LoadInstSets(feedback)) success = false;
   if (m_hw_mgr->GetNumInstSets() == 0) {
-    if (feedback) feedback->Error("no instruction sets defined");
+    if (feedback) {
+      feedback->Error("no instruction sets defined");
+      if (!m_conf->INST_SET_LOAD_LEGACY.Get() && m_conf->INST_SET.Get() != "" && m_conf->INST_SET.Get() != "-") {
+        feedback->Notify("It looks like you are attempting to load a legacy format instruction set file.  Try setting INST_SET_LOAD_LEGACY to 1.");
+      }
+    }
     success = false;
   }
   
