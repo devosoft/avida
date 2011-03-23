@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David on 10/21/09.
- *  Copyright 2009-2010 Michigan State University. All rights reserved.
+ *  Copyright 2009-2011 Michigan State University. All rights reserved.
  *
  *
  *  This file is part of Avida.

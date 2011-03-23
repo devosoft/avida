@@ -2,7 +2,7 @@
  * cTopology.h
  * Avida
  *
- * Copyright 2005-2010 Michigan State University. All rights reserved.
+ * Copyright 2005-2011 Michigan State University. All rights reserved.
  *
  *
  *  This file is part of Avida.

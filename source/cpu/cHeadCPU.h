@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Called "head_cpu.hh" prior to 11/30/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1999-2003 California Institute of Technology.
  *
  *

@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by David Bryson on 1/7/07.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *
  *
  *  This file is part of Avida.

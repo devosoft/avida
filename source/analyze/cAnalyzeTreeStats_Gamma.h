@@ -3,7 +3,7 @@
  *  Avida@vallista
  *
  *  Created by Kaben Nanlohy on 2007.12.03.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *
  *  This file is part of Avida.
  *

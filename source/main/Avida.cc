@@ -2,7 +2,7 @@
  *  avida.cc
  *  Avida
  *
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
@@ -32,10 +32,6 @@
 #include "cUserFeedback.h"
 #include "tDictionary.h"
 
-
-#ifdef REVISION_SUPPORT
-#include "revision.h"
-#endif
 
 #include <iostream>
 #include <csignal>
@@ -90,10 +86,6 @@ cString GetVersion()
 {
   cString version("Avida ");
   version += VERSION;
-#ifdef REVISION_SUPPORT
-  version += " r";
-  version += REVISION;
-#endif
   version += " (";
   version += VERSION_TAG;
   version += ") ";
@@ -125,24 +117,23 @@ void PrintVersionBanner()
   cout << "--------------------------------------------------------------------------------" << endl;
   cout << "by Charles Ofria" << endl << endl;
 
-  cout << "Lead Developers: David M. Bryson (Avida) and Kaben Nanlohy (Avida-ED)" << endl << endl;
+  cout << "Lead Developer: David M. Bryson" << endl << endl;
 
-  cout << "Active contributors include:  Christoph Adami, Brian Baer, Jeffrey Barrick," << endl
-       << "Benjamin Beckmann, Jeffrey Clune, Brian Connelly, Art Covert, Santiago Elena," << endl
-       << "Sherri Goings, Heather Goldsby, David Knoester, Richard Lenski, Philip McKinley," << endl
-       << "Dusan Misevic, Elizabeth Ostrowski, Robert Pennock, Matthew Rupp, Eric Torng," << endl
-       << "Michael Vo, Bess Walker, and Gabriel Yedid" << endl << endl;
+  cout << "Active developers include:" << endl
+       << "Brian Baer, James Bosko, Brian Connelly, Art Covert, Heather Goldsby," << endl
+       << "David Knoester, Philip McKinley, Dusan Misevic, Anu Pakanati, Robert Pennock," << endl
+       << "Matthew Rupp, Aaron Wagner, Bess Walker, Jacob Walker, and Luis Zaman" << endl << endl;
 
   cout << "For a more complete list of contributors, see the AUTHORS file." << endl;
 
   cout << endl;
 
-  cout << "Copyright (C) 1999-2009 Michigan State University." << endl;
+  cout << "Copyright (C) 1999-2011 Michigan State University." << endl;
   cout << "Copyright (C) 1993-2003 California Institute of Technology." << endl << endl;
   
   cout << "Avida comes with ABSOLUTELY NO WARRANTY." << endl;
-  cout << "This is free software, and you are welcome to redistribute it" << endl;
-  cout << "under certain conditions. See file COPYING for details." << endl << endl;
+  cout << "This is free software, and you are welcome to redistribute it under certain" << endl;
+  cout << "conditions. See file COPYING for details." << endl << endl;
 
   cout << "For more information, see: http://avida.devosoft.org/" << endl;
   cout << "--------------------------------------------------------------------------------" << endl << endl;

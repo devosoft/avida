@@ -3,7 +3,7 @@
  *  Avida
  *
  *  Created by Benjamin Beckmann on 5/18/09.
- *  Copyright 2009-2010 Michigan State University. All rights reserved.
+ *  Copyright 2009-2011 Michigan State University. All rights reserved.
  *
  */
 

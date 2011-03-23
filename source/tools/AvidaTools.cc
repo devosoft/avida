@@ -2,7 +2,7 @@
  *  AvidaTools.cc
  *  Avida
  *
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1993-2001 California Institute of Technology
  *
  */

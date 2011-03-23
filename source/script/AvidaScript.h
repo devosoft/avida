@@ -3,7 +3,7 @@
  *  avida_test_language
  *
  *  Created by David on 1/14/06.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *
  *
  *  This file is part of Avida.

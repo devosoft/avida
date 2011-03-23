@@ -4,7 +4,7 @@
  *  Avida
  *
  *  Called "task_lib.cc" prior to 12/5/05.
- *  Copyright 1999-2010 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
  *  Copyright 1993-2003 California Institute of Technology.
  *
  *
