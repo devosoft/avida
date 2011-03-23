@@ -4,27 +4,29 @@ by Charles Ofria
 
 Lead Developer: David Bryson (Avida and Avida-ED)
 
-Portions by Brian Baer, Jeffrey Barrick, Benjamin Beckmann, Jeffrey Clune,
-Travis Collier, Art Covert, Evan Dorn, Sherri Goings, Heather Goldsby,
-George Hagstrom, Dehua Hang, Wei Huang, David Knoester, Dusan Misevic,
-Elizabeth Ostrowski, Matthew Rupp, Jason Stredwick, Michael Vo, Bess Walker,
-Claus Wilke, and Larry Wisne
+Portions by Brian Baer, Jeffrey Barrick, Benjamin Beckmann, James Bosko, Jeffrey Clune,
+Travis Collier, Art Covert, Evan Dorn, Sherri Goings, Heather Goldsby, George Hagstrom,
+Dehua Hang, Wei Huang, David Knoester, Dusan Misevic, Kaben Nanlohy, Elizabeth Ostrowski,
+Matthew Rupp, Jason Stredwick, Michael Vo, Aaron Wagner, Bess Walker, Jacob Walker,
+Claus Wilke, Larry Wisne, and Luis Zaman
 
-With design help from Christoph Adami, C. Titus Brown, Timothy Cooper,
-Santiago Elena, Richard Lenski, Philip McKinley, Robert Pennock, Thomas
-Schmidt, Robert Schwartz, Eric Torng, Jialan Wang, Daniel Weise, and Gabriel
-Yedid
+With design help from Christoph Adami, C. Titus Brown, Timothy Cooper, Santiago Elena,
+Richard Lenski, Philip McKinley, Robert Pennock, Thomas Schmidt, Robert Schwartz, Eric Torng,
+Jialan Wang, Daniel Weise, and Gabriel Yedid.
 
-Copyright 1999-2010 Michigan State University.
+Copyright 1999-2011 Michigan State University.
 Copyright 1993-2003 California Institute of Technology.
 
 
-This project has been funded by the National Science Foundation, DARPA, 
-the Templeton Foundation, and Microsoft Corp.
+This project has been funded by grants or gifts from the National Science Foundation, DARPA, 
+the Templeton Foundation, and Microsoft Corporation.
 
-Portions of the design were supported by NSF grant #PHY91-15574, NSF grant
-#DEB-9981397, a Caltech divisional fellowship, the 1993 Caltech SURF program,
-and the 1993 SUNY Stony Brook URECA program.
+Portions of the design were supported by NSF grants PHY-9115574, DEB-9981397, EIA-0219229,
+DUE-0341484, CCF-0523449, CCF-0643952, CNS-0751155, CCF-0820220, and DBI-0939454 as well as
+fellowships from the NSF, AT&T, Michigan State University (MSU) and Caltech, the MSU
+departments of Computer Science & Engineering, Microbiology & Molecular Genetics,  and Zoology,
+the MSU Quantitative Biology and Modeling Initiative, the MSU Institute for Cyber-Enabled
+Research, the Caltech SURF program, and the SUNY Stony Brook URECA program.
 
 
-Revised 2010-11-16 DMB
+Revised 2011-3-23 CAO
