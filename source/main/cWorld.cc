@@ -97,7 +97,7 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   // Initialize the default environment...
   // This must be after the HardwareManager in case REACTIONS that trigger instructions are used.
-  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir, feedback)) {
+  if (!m_env->Load(m_conf->ENVIRONMENT_FILE.Get(), m_working_dir, *feedback)) {
     success = false;
   }
   

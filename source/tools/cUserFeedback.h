@@ -22,12 +22,14 @@
 #ifndef cUserFeedback_h
 #define cUserFeedback_h
 
+#include "avida/core/cFeedback.h"
+
 #include "cString.h"
 #include "tSmartArray.h"
 
 #include <cstdarg>
 
-class cUserFeedback
+class cUserFeedback : public cFeedback
 {
 public:
   enum eFeedbackType {
@@ -57,12 +59,11 @@ public:
   cUserFeedback() : m_errors(0), m_warnings(0) { ; }
   ~cUserFeedback() { ; }
   
-  inline void Error(const cString& msg) { m_entries.Push(sEntry(ERROR, msg)); m_errors++; }
-  inline void Error(const char* fmt, ...);
-  inline void Warning(const cString& msg) { m_entries.Push(sEntry(WARNING, msg)); m_warnings++; }
-  inline void Warning(const char* fmt, ...);
-  inline void Notify(const cString& msg) { m_entries.Push(sEntry(NOTIFICATION, msg)); }
-  inline void Notify(const char* fmt, ...);
+  // cFeedback Methods
+  void Error(const char* fmt, ...);
+  void Warning(const char* fmt, ...);
+  void Notify(const char* fmt, ...);
+  
   
   int GetNumMessages() const { return m_entries.GetSize(); }
   int GetNumErrors() const { return m_errors; }

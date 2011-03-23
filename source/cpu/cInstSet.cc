@@ -185,7 +185,7 @@ bool cInstSet::LoadWithStringList(const cStringList& sl, cUserFeedback* feedback
     }
     
     // Load the arguments for this instruction
-    cArgContainer* args = cArgContainer::Load(cur_line, schema, feedback);
+    cArgContainer* args = cArgContainer::Load(cur_line, schema, *feedback);
     if (!args) {
       success = false;
       continue;

@@ -43,7 +43,7 @@
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
-#include "cUserFeedback.h"
+#include "cFeedback.h"
 #include "cWorld.h"
 #include "tArray.h"
 #include "tAutoRelease.h"
@@ -64,11 +64,11 @@ cEnvironment::~cEnvironment()
 
 
 bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type,
-                                cUserFeedback* feedback)
+                                cFeedback& feedback)
 {
   // Make sure we have an actual entry to parse.
   if (entry.GetSize() == 0) {
-    if (feedback) feedback->Error("empty setting to parse in %s", (const char*)var_type);
+    feedback.Error("empty setting to parse in %s", (const char*)var_type);
     return false;
   }
 
@@ -78,12 +78,12 @@ bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_v
 
   // Make sure we have both a name and a value...
   if (var_name.GetSize() == 0) {
-    if (feedback) feedback->Error("no variable povided to set to '%s' in '%s'", (const char*)var_value, (const char*)var_type);
+    feedback.Error("no variable povided to set to '%s' in '%s'", (const char*)var_value, (const char*)var_type);
     return false;
   }
 
   if (var_value.GetSize() == 0) {
-    if (feedback) feedback->Error("no value given for '%s' in %s", (const char*)var_name, (const char*)var_type);
+    feedback.Error("no value given for '%s' in %s", (const char*)var_name, (const char*)var_type);
     return false;
   }
 
@@ -93,43 +93,43 @@ bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_v
   return true;
 }
 
-bool cEnvironment::AssertInputInt(const cString& input, const cString& name, const cString& type, cUserFeedback* feedback)
+bool cEnvironment::AssertInputInt(const cString& input, const cString& name, const cString& type, cFeedback& feedback)
 {
   if (input.IsNumeric() == false) {
-    if (feedback) feedback->Error("in %s, %s set to non-integer", (const char*)type, (const char*)name);
+    feedback.Error("in %s, %s set to non-integer", (const char*)type, (const char*)name);
     return false;
   }
   return true;
 }
 
-bool cEnvironment::AssertInputDouble(const cString& input, const cString& name, const cString& type, cUserFeedback* feedback)
+bool cEnvironment::AssertInputDouble(const cString& input, const cString& name, const cString& type, cFeedback& feedback)
 {
   if (input.IsNumber() == false) {
-    if (feedback) feedback->Error("in %s, %s set to non-number", (const char*)type, (const char*)name);
+    feedback.Error("in %s, %s set to non-number", (const char*)type, (const char*)name);
     return false;
   }
   return true;
 }
 
-bool cEnvironment::AssertInputBool(const cString& input, const cString& name, const cString& type, cUserFeedback* feedback)
+bool cEnvironment::AssertInputBool(const cString& input, const cString& name, const cString& type, cFeedback& feedback)
 {
   if (input.IsNumber() == false) {
-    if (feedback) feedback->Error("in %s, %s set to non-number", (const char*)type, (const char*)name);
+    feedback.Error("in %s, %s set to non-number", (const char*)type, (const char*)name);
     return false;
   }
   int value = input.AsInt();
   if ((value != 1) && (value != 0))  {
-    if (feedback) feedback->Error("in %s, %s set to non-bool", (const char*)type, (const char*)name);
+    feedback.Error("in %s, %s set to non-bool", (const char*)type, (const char*)name);
     return false;
   }
   return true;
 }
 
 bool cEnvironment::AssertInputValid(void* input, const cString& name, const cString& type, const cString& value,
-                                    cUserFeedback* feedback)
+                                    cFeedback& feedback)
 {
   if (input == NULL) {
-    if (feedback) feedback->Error("in %s, '%s' setting of '%s' not found",
+    feedback.Error("in %s, '%s' setting of '%s' not found",
                                   (const char*)type, (const char*)name, (const char*)value);
     return false;
   }
@@ -138,7 +138,7 @@ bool cEnvironment::AssertInputValid(void* input, const cString& name, const cStr
 
 
 
-bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cFeedback& feedback)
 {
   cReactionProcess* new_process = reaction->AddProcess();
 
@@ -174,7 +174,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cUserF
       else if (var_value=="enzyme") new_process->SetType(nReaction::PROCTYPE_ENZYME);
       else if (var_value=="exp") new_process->SetType(nReaction::PROCTYPE_EXP);
       else {
-        if (feedback) feedback->Error("unknown reaction process type '%s' found in '%s'",
+        feedback.Error("unknown reaction process type '%s' found in '%s'",
                                       (const char*)var_value, (const char*)reaction->GetName());
         return false;
       }
@@ -267,7 +267,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cUserF
       else if (var_value == "default")
         new_process->SetPhenPlastBonusMethod(DEFAULT);
       else {
-        if (feedback) feedback->Error("invalid setting for phenplastbonus in reaction '%s'", (const char*)reaction->GetName());
+        feedback.Error("invalid setting for phenplastbonus in reaction '%s'", (const char*)reaction->GetName());
         return false;
       }
     }
@@ -277,7 +277,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cUserF
       new_process->SetInternal(var_value.AsInt());
     }
     else {
-      if (feedback) feedback->Error("unknown process variable '%s' in reaction '%s'",
+      feedback.Error("unknown process variable '%s' in reaction '%s'",
                                     (const char*)var_name, (const char*)reaction->GetName());
       return false;
     }
@@ -286,7 +286,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cUserF
   return true;
 }
 
-bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cFeedback& feedback)
 {
   cReactionRequisite* new_requisite = reaction->AddRequisite();
 
@@ -337,7 +337,7 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cUse
 	  new_requisite->SetMaxTotReactionCount(var_value.AsInt());
     }
     else {
-      if (feedback) feedback->Error("unknown requisite variable '%s' in reaction '%s'",
+      feedback.Error("unknown requisite variable '%s' in reaction '%s'",
                                     (const char*)var_name, (const char*)reaction->GetName());
       return false;
     }
@@ -347,7 +347,7 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cUse
 }
 
 
-bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString desc, cFeedback& feedback)
 {
   cContextReactionRequisite* new_requisite = reaction->AddContextRequisite();
 
@@ -398,7 +398,7 @@ bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString des
           new_requisite->SetMaxTotReactionCount(var_value.AsInt());
     }
     else {
-      if (feedback) feedback->Error("unknown requisite variable '%s' in reaction '%s'",
+      feedback.Error("unknown requisite variable '%s' in reaction '%s'",
                                     (const char*)var_name, (const char*)reaction->GetName());
       return false;
     }
@@ -409,10 +409,10 @@ bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString des
 
 
 
-bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadResource(cString desc, cFeedback& feedback)
 {
   if (desc.GetSize() == 0) {
-    if (feedback) feedback->Warning("resource line with no resources listed");
+    feedback.Warning("resource line with no resources listed");
     return false;
   }
 
@@ -456,7 +456,7 @@ bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
       }
       else if (var_name == "geometry") {
         if (!new_resource->SetGeometry( var_value )) {
-          if (feedback) feedback->Error("in %s, %s unknown geometry", (const char*)var_type, (const char*)var_value);
+          feedback.Error("in %s, %s unknown geometry", (const char*)var_type, (const char*)var_value);
           return false;
         }
       }
@@ -515,7 +515,7 @@ bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
       }
       else if (var_name == "deme") {
         if (!new_resource->SetDemeResource( var_value )) {
-          if (feedback) feedback->Error("in %s, %s must be true or false", (const char*)var_type, (const char*)var_value);
+          feedback.Error("in %s, %s must be true or false", (const char*)var_type, (const char*)var_value);
           return false;
         }
       }
@@ -525,10 +525,10 @@ bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
       }
       else if (var_name == "energy") {
         if (!new_resource->SetEnergyResource( var_value )) {
-          if (feedback) feedback->Error("in %s, %s must be true or false", (const char*)var_type, (const char*)var_value);
+          feedback.Error("in %s, %s must be true or false", (const char*)var_type, (const char*)var_value);
           return false;
         } else if (m_world->GetConfig().ENERGY_ENABLED.Get() == 0) {
-          if (feedback) feedback->Error("energy resources can not be used without the energy model");
+          feedback.Error("energy resources can not be used without the energy model");
           return false;
         }
       }
@@ -538,7 +538,7 @@ bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
 				new_resource->SetHGTMetabolize(var_value.AsInt());
 			}
       else {
-        if (feedback) feedback->Error("unknown variable '%s' in resource '%s'", (const char*)var_name, (const char*)name);
+        feedback.Error("unknown variable '%s' in resource '%s'", (const char*)var_name, (const char*)name);
         return false;
       }
     }
@@ -558,11 +558,11 @@ bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
 				|| (new_resource->GetYDiffuse() != 1.0)
 				|| (new_resource->GetYGravity() != 0.0)
 				|| (new_resource->GetDemeResource() != false))) {
-			if (feedback) feedback->Error("misconfigured HGT resource: %s", (const char*)name);
+			feedback.Error("misconfigured HGT resource: %s", (const char*)name);
 			return false;
 		}
 		if(new_resource->GetHGTMetabolize() && !m_world->GetConfig().ENABLE_HGT.Get()) {
-			if (feedback) feedback->Error("resource configured to use HGT, but HGT not enabled");
+			feedback.Error("resource configured to use HGT, but HGT not enabled");
 			return false;
 		}
 
@@ -587,7 +587,7 @@ bool cEnvironment::LoadResource(cString desc, cUserFeedback* feedback)
   return true;
 }
 
-bool cEnvironment::LoadCell(cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadCell(cString desc, cFeedback& feedback)
 
 /*****************************************************************************
  Routine to read in spatial resources loaded in one cell at a time. Syntax:
@@ -599,7 +599,7 @@ bool cEnvironment::LoadCell(cString desc, cUserFeedback* feedback)
 
 {
   if (desc.GetSize() == 0) {
-    if (feedback) feedback->Warning("CELL line with no resources listed");
+    feedback.Warning("CELL line with no resources listed");
     return false;
   }
 
@@ -663,7 +663,7 @@ bool cEnvironment::LoadCell(cString desc, cUserFeedback* feedback)
         tmp_initial = var_value.AsDouble();
       }
       else {
-        if (feedback) feedback->Error("unknown variable '%s' in resource '%s'", (const char*)var_name, (const char*)name);
+        feedback.Error("unknown variable '%s' in resource '%s'", (const char*)var_name, (const char*)name);
         return false;
       }
     }
@@ -681,11 +681,11 @@ bool cEnvironment::LoadCell(cString desc, cUserFeedback* feedback)
   return true;
 }
 
-bool cEnvironment::LoadReaction(cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadReaction(cString desc, cFeedback& feedback)
 {
   // Make sure this reaction has a description...
   if (desc.GetSize() == 0) {
-    if (feedback) feedback->Error("each reaction must include a name and trigger");
+    feedback.Error("each reaction must include a name and trigger");
     return false;
   }
 
@@ -701,7 +701,7 @@ bool cEnvironment::LoadReaction(cString desc, cUserFeedback* feedback)
   // Make sure this reaction hasn't already been loaded with a different
   // definition.
   if (new_reaction->GetTask() != NULL) {
-    if (feedback) feedback->Warning("re-defining reaction '%s'", (const char*)name);
+    feedback.Warning("re-defining reaction '%s'", (const char*)name);
   }
 
   // Finish loading in this reaction.
@@ -711,7 +711,7 @@ bool cEnvironment::LoadReaction(cString desc, cUserFeedback* feedback)
   // Load the task trigger
   cEnvReqs envreqs;
   cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, feedback);
-  if (cur_task == NULL || (feedback && feedback->GetNumErrors())) return false;
+  if (cur_task == NULL) return false;
   new_reaction->SetTask(cur_task);      // Attack task to reaction.
 
   while (desc.GetSize()) {
@@ -722,24 +722,24 @@ bool cEnvironment::LoadReaction(cString desc, cUserFeedback* feedback)
     // Determine the type of each argument and process it.
     if (entry_type == "process") {
       if (LoadReactionProcess(new_reaction, desc_entry, feedback) == false) {
-        if (feedback) feedback->Error("failed in loading reaction-process...");
+        feedback.Error("failed in loading reaction-process...");
         return false;
       }
     }
     else if (entry_type == "requisite") {
       if (LoadReactionRequisite(new_reaction, desc_entry, feedback) == false) {
-        if (feedback) feedback->Error("failed in loading reaction-requisite...");
+        feedback.Error("failed in loading reaction-requisite...");
         return false;
       }
     }
     else if (entry_type == "context_requisite") {
       if (LoadContextReactionRequisite(new_reaction, desc_entry, feedback) == false) {
-        if (feedback) feedback->Error("failed in loading reaction-requisite...");
+        feedback.Error("failed in loading reaction-requisite...");
         return false;
       }
     }
     else {
-      if (feedback) feedback->Error("unknown entry type '%s' in reaction '%s'", (const char*)entry_type, (const char*)name);
+      feedback.Error("unknown entry type '%s' in reaction '%s'", (const char*)entry_type, (const char*)name);
       return false;
     }
   }
@@ -753,7 +753,7 @@ bool cEnvironment::LoadReaction(cString desc, cUserFeedback* feedback)
 }
 
 
-bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadStateGrid(cString desc, cFeedback& feedback)
 {
   // First component is the name
   cString name = desc.Pop(':');
@@ -775,7 +775,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
   tAutoRelease<cArgContainer> args(cArgContainer::Load(desc, schema, feedback));
 
   // Check for errors loading the arguments
-  if (args.IsNull() || (feedback && feedback->GetNumErrors())) return false;
+  if (args.IsNull()) return false;
 
   // Extract and validate the arguments
   int width = args->GetInt(0);
@@ -785,7 +785,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
   int initfacing = args->GetInt(4);
 
   if (initx >= width || inity >= height) {
-    if (feedback) feedback->Error("initx and inity must not exceed (width - 1) and (height - 1)");
+    feedback.Error("initx and inity must not exceed (width - 1) and (height - 1)");
     return false;
   }
 
@@ -806,7 +806,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
     // Check for duplicate state definition
     for (int i = 0; i < states.GetSize(); i++) {
       if (statename == states[i]) {
-        if (feedback) feedback->Error("duplicate state identifier for state grid %s", (const char*)name);
+        feedback.Error("duplicate state identifier for state grid %s", (const char*)name);
         return false;
       }
     }
@@ -820,7 +820,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
     state_sense.Push(state_sense_value);
   }
   if (states.GetSize() == 0) {
-    if (feedback) feedback->Error("no states defined for state grid %s", (const char*)name);
+    feedback.Error("no states defined for state grid %s", (const char*)name);
     return false;
   }
 
@@ -840,13 +840,13 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
       }
     }
     if (!found) {
-      if (feedback) feedback->Error("state identifier undefined for cell (%d, %d) in state grid %s",
+      feedback.Error("state identifier undefined for cell (%d, %d) in state grid %s",
                                     (cell / width), (cell % width), (const char*)name);
       return false;
     }
   }
   if (cell != lgrid.GetSize() || gridstr.GetSize() > 0) {
-    if (feedback) feedback->Error("grid definition size mismatch for state grid %s", (const char*)name);
+    feedback.Error("grid definition size mismatch for state grid %s", (const char*)name);
     return false;
   }
 
@@ -869,7 +869,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cUserFeedback* feedback)
 }
 
 
-bool cEnvironment::LoadSetActive(cString desc, cUserFeedback* feedback)
+bool cEnvironment::LoadSetActive(cString desc, cFeedback& feedback)
 {
   cString item_type = desc.PopWord();
   item_type.ToUpper();
@@ -885,21 +885,21 @@ bool cEnvironment::LoadSetActive(cString desc, cUserFeedback* feedback)
   if (item_type == "REACTION") {
     cReaction* cur_reaction = reaction_lib.GetReaction(item_name);
     if (cur_reaction == NULL) {
-      if (feedback) feedback->Error("unknown REACTION: '%s'", (const char*)item_name);
+      feedback.Error("unknown REACTION: '%s'", (const char*)item_name);
       return false;
     }
     cur_reaction->SetActive(new_active);
   } else if (item_type == "") {
-    if (feedback) feedback->Notify("format: SET_ACTIVE <type> <name> <new_status=true>");
+    feedback.Notify("format: SET_ACTIVE <type> <name> <new_status=true>");
   } else {
-    if (feedback) feedback->Error("cannot deactivate items of type %s", (const char*)item_type);
+    feedback.Error("cannot deactivate items of type %s", (const char*)item_type);
     return false;
   }
 
   return true;
 }
 
-bool cEnvironment::LoadLine(cString line, cUserFeedback* feedback)
+bool cEnvironment::LoadLine(cString line, cFeedback& feedback)
 
 /* Routine to read in a line from the enviroment file and hand that line
  line to the approprate routine to process it.                         */
@@ -914,24 +914,35 @@ bool cEnvironment::LoadLine(cString line, cUserFeedback* feedback)
   else if (type == "CELL") load_ok = LoadCell(line, feedback);
   else if (type == "GRID") load_ok = LoadStateGrid(line, feedback);
   else {
-    if (feedback) feedback->Error("unknown environment keyword '%s'", (const char*)type);
+    feedback.Error("unknown environment keyword '%s'", (const char*)type);
     return false;
   }
 
   if (load_ok == false) {
-    if (feedback) feedback->Error("failed in loading '%s'", (const char*)type);
+    feedback.Error("failed in loading '%s'", (const char*)type);
     return false;
   }
 
   return true;
 }
 
-bool cEnvironment::Load(const cString& filename, const cString& working_dir, cUserFeedback* feedback)
+bool cEnvironment::Load(const cString& filename, const cString& working_dir, cFeedback& feedback)
 {
   cInitFile infile(filename, working_dir);
   if (!infile.WasOpened()) {
-    if (feedback) feedback->Append(infile.GetFeedback());
-    if (feedback) feedback->Error("failed to load environment '%s'", (const char*)filename);
+    for (int i = 0; i < infile.GetFeedback().GetNumMessages(); i++) {
+      switch (infile.GetFeedback().GetMessageType(i)) {
+        case cUserFeedback::ERROR:
+          feedback.Error(infile.GetFeedback().GetMessage(i));
+          break;
+        case cUserFeedback::WARNING:
+          feedback.Warning(infile.GetFeedback().GetMessage(i));
+          break;
+        default:
+          feedback.Notify(infile.GetFeedback().GetMessage(i));
+      }
+    }
+    feedback.Error("failed to load environment '%s'", (const char*)filename);
     return false;
   }
 
@@ -944,7 +955,7 @@ bool cEnvironment::Load(const cString& filename, const cString& working_dir, cUs
   // Make sure that all pre-declared reactions have been loaded correctly.
   for (int i = 0; i < reaction_lib.GetSize(); i++) {
     if (reaction_lib.GetReaction(i)->GetTask() == NULL) {
-      if (feedback) feedback->Error("pre-declared reaction '%s' never defined",
+      feedback.Error("pre-declared reaction '%s' never defined",
                                     (const char*)reaction_lib.GetReaction(i)->GetName());
       return false;
     }

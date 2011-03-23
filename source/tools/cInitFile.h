@@ -67,6 +67,7 @@ private:
   
 
 public:
+  cInitFile(const cString& filename, const cString& working_dir, cFeedback& feedback, const tArraySet<cString>* custom_directives = NULL);
   cInitFile(const cString& filename, const cString& working_dir, const tArraySet<cString>* custom_directives = NULL);
   cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir);
   cInitFile(std::istream& in_stream, const cString& working_dir);

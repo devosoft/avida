@@ -26,7 +26,7 @@
 #include "tArray.h"
 
 class cArgSchema;
-class cUserFeedback;
+class cFeedback;
 template <class T> class tList;
 
 // A generic argument container that will load in named arguments from a string
@@ -44,7 +44,7 @@ private:
   cArgContainer& operator=(const cArgContainer&); // @not_implemented
   
 public:
-  static cArgContainer* Load(cString args, const cArgSchema& schema, cUserFeedback* feedback = NULL);
+  static cArgContainer* Load(cString args, const cArgSchema& schema, cFeedback& feedback);
   
   inline int GetInt(int i) const { return m_ints[i]; }
   inline double GetDouble(int i) const { return m_doubles[i]; }

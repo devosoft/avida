@@ -94,7 +94,7 @@ bool cHardwareManager::LoadInstSets(cUserFeedback* feedback)
       }
       
       // Process arguments on the INSTSET line
-      cArgContainer* args = cArgContainer::Load(is_def_str, schema, feedback);
+      cArgContainer* args = cArgContainer::Load(is_def_str, schema, *feedback);
       if (!args) {
         success = false;
         continue;

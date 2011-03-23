@@ -7954,7 +7954,7 @@ void cAnalyze::EnvironmentSetup(cString cur_string)
 {
   cUserFeedback feedback;
   cout << "Running environment command: " << endl << "  " << cur_string << endl;  
-  m_world->GetEnvironment().LoadLine(cur_string, &feedback);
+  m_world->GetEnvironment().LoadLine(cur_string, feedback);
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
       case cUserFeedback::ERROR:    cerr << "error: "; break;

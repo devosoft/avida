@@ -31,6 +31,7 @@
 #include "cPopulationCell.h"
 #include "cResource.h"
 #include "cStats.h"
+#include "cUserFeedback.h"
 #include "cWorld.h"
 
 class cActionInjectResource : public cAction
@@ -266,7 +267,18 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetEnvironment().LoadLine(env_string);
+    cUserFeedback feedback;
+    m_world->GetEnvironment().LoadLine(env_string, feedback);
+
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+
     m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity());
   }
 };
