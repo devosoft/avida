@@ -1,9 +1,10 @@
 /*
- *  cWorldDriver.h
+ *  core/cWorldDriver.h
  *  Avida
  *
  *  Created by David on 12/10/05.
  *  Copyright 2005-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,10 +18,12 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#ifndef cWorldDriver_h
-#define cWorldDriver_h
+#ifndef AvidaCoreWorldDriver_h
+#define AvidaCoreWorldDriver_h
 
 #include "avida/core/cDriverManagerObject.h"
 

@@ -1,9 +1,9 @@
 /*
- *  viewer-core/cClassificationInfo.h
+ *  private/viewer-core/cClassificationInfo.h
  *  Avida
  *
  *  Created by Charles on 7-9-07
- *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  Copyright 2007-2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *

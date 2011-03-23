@@ -1,5 +1,5 @@
 /*
- *  viewer-core/AvidaViewer.h
+ *  AvidaViewer.h
  *  Avida
  *
  *  Created by David on 11/11/10.
@@ -22,9 +22,11 @@
  *
  */
 
-#ifndef AvidaViewer_h
-#define AvidaViewer_h
+#ifndef AvidaAvidaViewer_h
+#define AvidaAvidaViewer_h
 
-
+#include "avida/viewer-core/cDriver.h"
+#include "avida/viewer-core/cListener.h"
+#include "avida/viewer-core/cMap.h"
 
 #endif

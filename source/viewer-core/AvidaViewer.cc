@@ -24,7 +24,5 @@
 
 #include "avida/AvidaViewer.h"
 
-#include "avida/viewer-core/cListener.h"
-
 
 Avida::CoreView::cListener::~cListener() { ; }
