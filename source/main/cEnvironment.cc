@@ -23,6 +23,8 @@
 
 #include "Avida.h"
 
+#include "avida/core/cFeedback.h"
+
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
 #include "cContextPhenotype.h"
@@ -43,7 +45,6 @@
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTaskEntry.h"
-#include "cFeedback.h"
 #include "cWorld.h"
 #include "tArray.h"
 #include "tAutoRelease.h"
