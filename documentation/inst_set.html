@@ -105,6 +105,15 @@ define how that instruction should be used.  The exact format is as follows:
   String of 1's and 0's defining the numeric value of a instruction as used by certain operations that 'numberate'
   instruction sequences.
 </dd>
+<dt><strong>res_cost</strong>	
+<dd>
+  The cost in units (double) of COLLECT_SPECIFIC_RESOURCE stored in internal bins to execute the instruction. Organisms 
+  that execute an instruction with a res_cost higher than what is internally available will die. Res_cost is not 
+  applied if an instruction fails. In a multi-resource environment, any and all resources can be converted internally 
+  via reactions to a common COLLECT_SPECIFIC_RESOURCE for use with res_cost (COLLECT_SPECIFIC_RESOURCE must still be 
+  declared in environment file, likely with initial=0). Note that the use of res_cost typically needs to be coupled with 
+  RESOURCE_GIVEN_ON_INJECT and RESOURCE_GIVEN_AT_BIRTH in avida.cfg. The default res_cost is 0.
+</dd>
 </dl>
 
 <p>&nbsp;</p>

@@ -247,7 +247,7 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
   const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
       || phenotype.GetToDie()) {
-    m_organism->Die();
+    m_organism->Die(&ctx);
   }
   
   m_organism->SetRunning(false);
@@ -1501,6 +1501,6 @@ bool cHardwareSMT::Inst_ThreadGet(cAvidaContext& ctx)
 
 bool cHardwareSMT::Inst_Apoptosis(cAvidaContext& ctx)
 {
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }

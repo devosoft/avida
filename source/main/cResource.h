@@ -81,6 +81,44 @@ private:
   bool deme_resource;
   bool org_resources;
   bool energy_resource;  // only implemented for spacial resource
+  bool dynamic_resource; //JW
+  int peaks; //JW
+  double min_height; //JW
+  double height_range; //JW
+  double min_radius; //JW
+  double radius_range; //JW
+  double ah; //JW
+  double ar; //JW
+  double acx; //JW
+  double acy; //JW
+  double hstepscale; //JW
+  double rstepscale; //JW
+  double cstepscalex; //JW
+  double cstepscaley; //JW
+  double hstep; //JW
+  double rstep; //JW
+  double cstepx; //JW
+  double cstepy; //JW
+  int update_dynamic; //JW
+  int m_peakx;
+  int m_peaky;
+  double m_height;
+  double m_spread;    
+  double m_plateau;
+  int m_decay;
+  int m_max_x;
+  int m_max_y;
+  int m_min_x;
+  int m_min_y;
+  double m_move_a_scaler;
+  int m_updatestep; 
+  int m_halo;
+  int m_halo_inner_radius;
+  int m_halo_width;
+  int m_halo_anchor_x;
+  int m_halo_anchor_y;
+  int m_move_speed;
+  bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;
 	bool hgt_metabolize;
@@ -112,6 +150,44 @@ public:
   double GetYGravity() const { return ygravity; }
   bool GetDemeResource() const { return deme_resource; }
   bool GetEnergyResource() const { return energy_resource; }
+  bool GetDynamicResource() const { return dynamic_resource; }
+  int GetPeaks() const { return peaks; } //JW
+  double GetMinHeight() const { return min_height; } //JW
+  double GetHeightRange() const { return height_range; } //JW
+  double GetMinRadius() const { return min_radius; } //JW
+  double GetRadiusRange() const { return radius_range; } //JW
+  double GetAh() const { return ah; } //JW
+  double GetAr() const { return ar; } //JW
+  double GetAcx() const { return acx; } //JW
+  double GetAcy() const { return acy; } //JW
+  double GetHStepscale() const { return hstepscale; } //JW
+  double GetRStepscale() const { return rstepscale; } //JW
+  double GetCStepscaleX() const { return cstepscalex; } //JW
+  double GetCStepscaleY() const { return cstepscaley; } //JW
+  double GetHStep() const { return hstep; } //JW
+  double GetRStep() const { return rstep; } //JW
+  double GetCStepX() const { return cstepx; } //JW
+  double GetCStepY() const { return cstepy; } //JW
+  int GetUpdateDynamic() const { return update_dynamic; } //JW
+  int GetPeakX() { return m_peakx; }
+  int GetPeakY() { return m_peaky; }
+  double GetHeight() { return m_height; }
+  double GetSpread() { return m_spread; }
+  double GetPlateau() { return m_plateau; }
+  int GetDecay() { return m_decay; }
+  int GetMaxX() { return m_max_x; }
+  int GetMaxY() { return m_max_y; }
+  int GetMinX() { return m_min_x; }
+  int GetMinY() { return m_min_y; }
+  double GetAscaler() { return m_move_a_scaler; }
+  int GetUpdateStep() const { return m_updatestep; } //JW
+  int GetHalo() { return m_halo;}
+  int GetHaloInnerRadius() { return m_halo_inner_radius; }
+  int GetHaloWidth() { return m_halo_width; }
+  int GetHaloAnchorX() { return m_halo_anchor_x; }
+  int GetHaloAnchorY() { return m_halo_anchor_y; }
+  int GetMoveSpeed() { return m_move_speed; }
+  bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
 	bool GetHGTMetabolize() const { return hgt_metabolize; }
@@ -135,8 +211,46 @@ public:
   void SetYGravity(double _ygravity) { ygravity = _ygravity; }
   void SetCollectable(int _collectable) { collectable = _collectable; }
   bool SetDemeResource(cString _deme_resource);
-  bool SetOrgResource(cString _org_resource);
-  bool SetEnergyResource(cString _energy_resource);
+  bool SetOrgResource(cString _org_resource);  
+  bool SetEnergyResource(cString _energy_resource); 
+  void SetDynamicResource(bool _dynamic_resource) { dynamic_resource = _dynamic_resource; } //JW
+  void SetPeaks(int _peaks) { peaks = _peaks; } //JW
+  void SetMinHeight(double _min_height) { min_height = _min_height; } //JW
+  void SetHeightRange(double _height_range) { height_range = _height_range; } //JW
+  void SetMinRadius(double _min_radius) { min_radius = _min_radius; } //JW
+  void SetRadiusRange(double _radius_range) { radius_range = _radius_range; } //JW
+  void SetAh(double _ah) { ah = _ah; } //JW
+  void SetAr(double _ar) { ar = _ar; } //JW
+  void SetAcx(double _acx) { acx = _acx; } //JW
+  void SetAcy(double _acy) { acy = _acy; } //JW
+  void SetHStepscale(double _hstepscale) { hstepscale = _hstepscale; } //JW
+  void SetRStepscale(double _rstepscale) { rstepscale = _rstepscale; } //JW
+  void SetCStepscaleX(double _cstepscalex) { cstepscalex = _cstepscalex; } //JW
+  void SetCStepscaleY(double _cstepscaley) { cstepscaley = _cstepscaley; } //JW
+  void SetHStep(double _hstep) { hstep = _hstep; } //JW
+  void SetRStep(double _rstep) { rstep = _rstep; } //JW
+  void SetCStepX(double _cstepx) { cstepx = _cstepx; } //JW
+  void SetCStepY(double _cstepy) { cstepy = _cstepy; } //JW
+  void SetUpdateDynamic(int _update_dynamic) { update_dynamic = _update_dynamic; } //JW
+  void SetPeakX(int _peakx) { m_peakx = _peakx; }
+  void SetPeakY(int _peaky) { m_peaky = _peaky; }
+  void SetHeight(double _height) { m_height = _height; }
+  void SetSpread(double _spread) { m_spread = _spread; }
+  void SetPlateau(double _plateau) { m_plateau = _plateau; }
+  void SetDecay(int _decay) { m_decay = _decay; }
+  void SetMaxX(int _max_x) { m_max_x = _max_x; }
+  void SetMaxY(int _max_y) { m_max_y = _max_y; }
+  void SetMinX(int _min_x) { m_min_x = _min_x; }
+  void SetMinY(int _min_y) { m_min_y = _min_y; }
+  void SetAscaler(double _move_a_scaler) { m_move_a_scaler = _move_a_scaler; }
+  void SetUpdateStep(int _updatestep) { m_updatestep = _updatestep; } 
+  void SetHalo(int _halo) { m_halo = _halo; }
+  void SetHaloInnerRadius(int _halo_inner_radius) { m_halo_inner_radius = _halo_inner_radius; }
+  void SetHaloWidth(int _halo_width) { m_halo_width = _halo_width; }
+  void SetHaloAnchorX(int _halo_anchor_x) { m_halo_anchor_x = _halo_anchor_x; }
+  void SetHaloAnchorY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
+  void SetMoveSpeed(int _move_speed) { m_move_speed = _move_speed; }
+  void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);
   void UpdateCellResource(cCellResource *_CellResoucePtr, double _initial,

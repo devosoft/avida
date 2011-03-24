@@ -46,6 +46,7 @@ private:
   tList<cContextReactionRequisite> context_requisite_list;
   bool active;
   bool internal;
+  bool or_requisites; //JW
 
 
   cReaction(); // @not_implemented
@@ -56,6 +57,8 @@ public:
   cReaction(const cString& _name, int _id);
   ~cReaction();
 
+  bool GetOrRequisites() const { return or_requisites; }
+  void SetOrRequisites(bool req) { or_requisites = req; }
   const cString & GetName() const { return name; }
   int GetID() const { return id; }
   cTaskEntry* GetTask() { return task; }

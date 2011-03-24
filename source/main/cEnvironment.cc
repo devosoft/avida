@@ -329,13 +329,13 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cFee
       if (!AssertInputInt(var_value, "divide_only", var_type, feedback)) return false;
       new_requisite->SetDivideOnly(var_value.AsInt());
     }
-	else if (var_name == "min_tot_count") {
-	  if (!AssertInputInt(var_value, "min_tot_count", var_type, feedback)) return false;
-	  new_requisite->SetMinTotReactionCount(var_value.AsInt());
+    else if (var_name == "min_tot_count") {
+      if (!AssertInputInt(var_value, "min_tot_count", var_type, feedback)) return false;
+      new_requisite->SetMinTotReactionCount(var_value.AsInt());
     }
-	else if (var_name == "max_tot_count") {
-	  if (!AssertInputInt(var_value, "max_tot_count", var_type, feedback)) return false;
-	  new_requisite->SetMaxTotReactionCount(var_value.AsInt());
+    else if (var_name == "max_tot_count") {
+      if (!AssertInputInt(var_value, "max_tot_count", var_type, feedback)) return false;
+      new_requisite->SetMaxTotReactionCount(var_value.AsInt());
     }
     else {
       feedback.Error("unknown requisite variable '%s' in reaction '%s'",
@@ -543,7 +543,7 @@ bool cEnvironment::LoadResource(cString desc, cFeedback& feedback)
         return false;
       }
     }
-
+    
     // Prevent misconfiguration of HGT:
 		if(new_resource->GetHGTMetabolize() &&
 			 ((new_resource->GetGeometry() != nGeometry::GLOBAL)
@@ -566,7 +566,7 @@ bool cEnvironment::LoadResource(cString desc, cFeedback& feedback)
 			feedback.Error("resource configured to use HGT, but HGT not enabled");
 			return false;
 		}
-
+    
     // If there are valid values for X/Y1's but not for X/Y2's assume that
     // the user is interested only in one point and set the X/Y2's to the
     // same value as X/Y1's
@@ -739,6 +739,9 @@ bool cEnvironment::LoadReaction(cString desc, cFeedback& feedback)
         return false;
       }
     }
+    else if (entry_type == "or_requisite") { //JW
+      new_reaction->SetOrRequisites(true);
+    }
     else {
       feedback.Error("unknown entry type '%s' in reaction '%s'", (const char*)entry_type, (const char*)name);
       return false;
@@ -753,6 +756,260 @@ bool cEnvironment::LoadReaction(cString desc, cFeedback& feedback)
   return true;
 }
 
+bool cEnvironment::LoadGradientResource(cString desc, cFeedback& feedback) 
+{
+  if (desc.GetSize() == 0) {
+    feedback.Error("gradient resource line with no resources listed");
+    return false;
+  }
+  
+  while (desc.GetSize() > 0) {
+    cString cur_resource = desc.PopWord();
+    const cString name = cur_resource.Pop(':');
+    
+    /* If resource does not already exist create it, however if it already
+     exists (for instance was created as a cell resource) return an error*/
+    
+    cResource* new_resource;
+    if (!resource_lib.DoesResourceExist(name)) {
+      new_resource = resource_lib.AddResource(name);
+    } else {
+      new_resource = resource_lib.GetResource(name);
+    }
+    
+    new_resource->SetGeometry("grid");
+    new_resource->SetInitial(0.0);
+    new_resource->SetOutflow(1.0);
+    new_resource->SetXDiffuse(0.0);
+    new_resource->SetYDiffuse(0.0);
+    new_resource->SetXGravity(0.0);
+    new_resource->SetYGravity(0.0);
+    new_resource->SetGradient(true);
+    
+    while (cur_resource.GetSize() != 0) {
+      cString var_entry = cur_resource.Pop(':');
+      cString var_name;
+      cString var_value;
+      const cString var_type = cStringUtil::Stringf("gradient resource '%s'", static_cast<const char*>(name));
+      // Parse this entry.
+      if (!ParseSetting(var_entry, var_name, var_value, var_type, feedback)) {
+        return false;
+      }
+      
+      if (var_name == "peakx") {
+        /*if(peaks > MAX_PEAKS){
+         cerr << "Error: peaks of " << name << " exceeds limits of " << MAX_PEAKS << endl;
+         return false;
+         }*/
+        new_resource->SetPeakX( var_value.AsInt() );
+      }
+      else if (var_name == "peaky") {
+        if (!AssertInputDouble(var_value, "peaky", var_type, feedback)) return false;
+        new_resource->SetPeakY( var_value.AsDouble() );
+      }
+      else if (var_name == "height") {
+        if (!AssertInputDouble(var_value, "height", var_type, feedback)) return false;
+        new_resource->SetHeight( var_value.AsDouble() );
+      }
+      else if (var_name == "spread") {
+        if (!AssertInputDouble(var_value, "spread", var_type, feedback)) return false;
+        new_resource->SetSpread( var_value.AsDouble() );
+      }
+      else if (var_name == "plateau") {
+        if (!AssertInputDouble(var_value, "plateau", var_type, feedback)) return false;
+        new_resource->SetPlateau( var_value.AsDouble() );
+      }
+      else if (var_name == "decay") {
+        if (!AssertInputInt(var_value, "decay", var_type, feedback)) return false;
+        new_resource->SetDecay( var_value.AsInt() );
+      }
+      else if (var_name == "max_x") {
+        if (!AssertInputInt(var_value, "max_x", var_type, feedback)) return false;
+        new_resource->SetMaxX( var_value.AsInt() );
+      }
+      else if (var_name == "max_y") {
+        if (!AssertInputInt(var_value, "max_y", var_type, feedback)) return false;
+        new_resource->SetMaxY( var_value.AsInt() );
+      }
+      else if (var_name == "min_x") {
+        if (!AssertInputInt(var_value, "min_x", var_type, feedback)) return false;
+        new_resource->SetMinX( var_value.AsInt() );
+      }
+      else if (var_name == "min_y") {
+        if (!AssertInputInt(var_value, "min_y", var_type, feedback)) return false;
+        new_resource->SetMinY( var_value.AsInt() );
+      }
+      else if (var_name == "move_a_scaler") {
+        if (!AssertInputDouble(var_value, "move_a_scaler", var_type, feedback)) return false;
+        new_resource->SetAscaler( var_value.AsDouble() );
+      }
+      else if (var_name == "updatestep") {
+        if (!AssertInputInt(var_value, "updatestep", var_type, feedback)) return false;
+        new_resource->SetUpdateStep( var_value.AsInt() );
+      }
+      else if (var_name == "halo") {
+        if (!AssertInputInt(var_value, "halo", var_type, feedback)) return false;
+        new_resource->SetHalo( var_value.AsInt() );
+      }
+      else if (var_name == "halo_inner_radius") {
+        if (!AssertInputInt(var_value, "halo_inner_radius", var_type, feedback)) return false;
+        new_resource->SetHaloInnerRadius( var_value.AsInt() );
+      }
+      else if (var_name == "halo_anchor_x") {
+        if (!AssertInputInt(var_value, "halo_halo_anchor_x", var_type, feedback)) return false;
+        new_resource->SetHaloAnchorX( var_value.AsInt() );
+      }
+      else if (var_name == "halo_anchor_y") {
+        if (!AssertInputInt(var_value, "halo_halo_anchor_y", var_type, feedback)) return false;
+        new_resource->SetHaloAnchorY( var_value.AsInt() );
+      }
+      else if (var_name == "move_speed") {
+        if (!AssertInputInt(var_value, "move_speed", var_type, feedback)) return false;
+        new_resource->SetMoveSpeed( var_value.AsInt() );
+      }
+      else if (var_name == "halo_width") {
+        if (!AssertInputInt(var_value, "halo_width", var_type, feedback)) return false;
+        new_resource->SetHaloWidth( var_value.AsInt() );
+      }
+      else {
+        feedback.Error("unknown variable '%s' in gradient resource '%s'",
+                                      (const char*)var_name, (const char*)name);
+        return false;
+      }
+    }
+  }
+  
+  return true;  
+}
+
+//Dummy Function for Loading Dynamic Resources
+bool cEnvironment::LoadDynamicResource(cString desc, cFeedback& feedback) //JW
+{
+  if (desc.GetSize() == 0) {
+    feedback.Error("dynamic resource line with no resources listed");
+    return false;
+  }
+  
+  while (desc.GetSize() > 0) {
+    cString cur_resource = desc.PopWord();
+    const cString name = cur_resource.Pop(':');
+    
+    /* If resource does not already exist create it, however if it already
+     exists (for instance was created as a cell resource) return an error*/
+    
+    cResource* new_resource;
+    if (! resource_lib.DoesResourceExist(name)) {
+      new_resource = resource_lib.AddResource(name);
+    } else {
+      feedback.Error("resource %s already exists", (const char*)name);
+      return false;
+    }
+    
+    new_resource->SetGeometry("grid");
+    new_resource->SetInitial(0.0);
+    new_resource->SetOutflow(1.0);
+    new_resource->SetXDiffuse(0.0);
+    new_resource->SetYDiffuse(0.0);
+    new_resource->SetXGravity(0.0);
+    new_resource->SetYGravity(0.0);
+    new_resource->SetDynamicResource(true);
+    
+    while (cur_resource.GetSize() != 0) {
+      cString var_entry = cur_resource.Pop(':');
+      cString var_name;
+      cString var_value;
+      const cString var_type = cStringUtil::Stringf("dynamic resource '%s'", static_cast<const char*>(name));
+      // Parse this entry.
+      if (!ParseSetting(var_entry, var_name, var_value, var_type, feedback)) {
+        return false;
+      }
+      
+      if (var_name == "peaks") {
+        if (!AssertInputInt(var_value, "peaks", var_type, feedback)) return false;
+        /*if(peaks > MAX_PEAKS){
+         cerr << "Error: peaks of " << name << " exceeds limits of " << MAX_PEAKS << endl;
+         return false;
+         }*/
+        new_resource->SetPeaks( var_value.AsInt() );
+      }
+      else if (var_name == "min_height") {
+        if (!AssertInputDouble(var_value, "min_height", var_type, feedback)) return false;
+        new_resource->SetMinHeight( var_value.AsDouble() );
+      }
+      else if (var_name == "height_range") {
+        if (!AssertInputDouble(var_value, "height_range", var_type, feedback)) return false;
+        new_resource->SetHeightRange( var_value.AsDouble() );
+      }
+      else if (var_name == "min_radius") {
+        if (!AssertInputDouble(var_value, "min_radius", var_type, feedback)) return false;
+        new_resource->SetMinRadius( var_value.AsDouble() );
+      }
+      else if (var_name == "radius_range") {
+        if (!AssertInputDouble(var_value, "radius_range", var_type, feedback)) return false;
+        new_resource->SetRadiusRange( var_value.AsDouble() );
+      }
+      else if (var_name == "ah") {
+        if (!AssertInputDouble(var_value, "ah", var_type, feedback)) return false;
+        new_resource->SetAh( var_value.AsDouble() );
+      }
+      else if (var_name == "ar") {
+        if (!AssertInputDouble(var_value, "ar", var_type, feedback)) return false;
+        new_resource->SetAr( var_value.AsDouble() );
+      }
+      else if (var_name == "acx") {
+        if (!AssertInputDouble(var_value, "acx", var_type, feedback)) return false;
+        new_resource->SetAcx( var_value.AsDouble() );
+      }
+      else if (var_name == "acy") {
+        if (!AssertInputDouble(var_value, "acy", var_type, feedback)) return false;
+        new_resource->SetAcy( var_value.AsDouble() );
+      }
+      else if (var_name == "hstepscale") {
+        if (!AssertInputDouble(var_value, "hstepscale", var_type, feedback)) return false;
+        new_resource->SetHStepscale( var_value.AsDouble() );
+      }
+      else if (var_name == "rstepscale") {
+        if (!AssertInputDouble(var_value, "rstepscale", var_type, feedback)) return false;
+        new_resource->SetRStepscale( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepscalex") {
+        if (!AssertInputDouble(var_value, "cstepscalex", var_type, feedback)) return false;
+        new_resource->SetCStepscaleX( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepscaley") {
+        if (!AssertInputDouble(var_value, "cstepscaley", var_type, feedback)) return false;
+        new_resource->SetCStepscaleY( var_value.AsDouble() );
+      }
+      else if (var_name == "hstep") {
+        if (!AssertInputDouble(var_value, "hstep", var_type, feedback)) return false;
+        new_resource->SetHStep( var_value.AsDouble() );
+      }
+      else if (var_name == "rstep") {
+        if (!AssertInputDouble(var_value, "rstep", var_type, feedback)) return false;
+        new_resource->SetRStep( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepx") {
+        if (!AssertInputDouble(var_value, "cstepx", var_type, feedback)) return false;
+        new_resource->SetCStepX( var_value.AsDouble() );
+      }
+      else if (var_name == "cstepy") {
+        if (!AssertInputDouble(var_value, "cstepy", var_type, feedback)) return false;
+        new_resource->SetCStepY( var_value.AsDouble() );
+      }
+      else if (var_name == "update_dynamic") {
+        if (!AssertInputInt(var_value, "update_dynamic", var_type, feedback)) return false;
+        new_resource->SetUpdateDynamic( var_value.AsInt() );
+      }
+      else {
+        feedback.Error("unknown variable '%s' in dynamic resource '%s'",
+                                      (const char*)var_name, (const char*)name);
+        return false;
+      }
+    }
+  }
+  
+  return true;  
+}
 
 bool cEnvironment::LoadStateGrid(cString desc, cFeedback& feedback)
 {
@@ -784,7 +1041,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cFeedback& feedback)
   int initx = args->GetInt(2);
   int inity = args->GetInt(3);
   int initfacing = args->GetInt(4);
-
+  
   if (initx >= width || inity >= height) {
     feedback.Error("initx and inity must not exceed (width - 1) and (height - 1)");
     return false;
@@ -863,9 +1120,8 @@ bool cEnvironment::LoadStateGrid(cString desc, cFeedback& feedback)
       grid[off + x] = lgrid[loff + x];
     }
   }
-
+  
   m_state_grids.Push(new cStateGrid(name, width, height, initx, inity, initfacing, states, state_sense, grid));
-
   return true;
 }
 
@@ -914,6 +1170,8 @@ bool cEnvironment::LoadLine(cString line, cFeedback& feedback)
   else if (type == "SET_ACTIVE") load_ok = LoadSetActive(line, feedback);
   else if (type == "CELL") load_ok = LoadCell(line, feedback);
   else if (type == "GRID") load_ok = LoadStateGrid(line, feedback);
+  else if (type == "DYNAMIC_RESOURCE") load_ok = LoadDynamicResource(line, feedback); //JW
+  else if (type == "GRADIENT_RESOURCE") load_ok = LoadGradientResource(line, feedback); 
   else {
     feedback.Error("unknown environment keyword '%s'", (const char*)type);
     return false;
@@ -1038,7 +1296,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 {
   //flag to skip processing of parasite tasks
   bool skipProcessing = false;
-
+  
 	if (is_parasite && m_world->GetConfig().PARASITE_SKIP_REACTIONS.Get())
 		skipProcessing = true;
 
@@ -1062,9 +1320,9 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     const int task_id = cur_task->GetID();
     const int task_cnt = task_count[task_id];
     const bool on_divide = taskctx.GetOnDivide();
-
+        
     // Examine requisites on this reaction
-    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) {
+    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide, cur_reaction->GetOrRequisites()) == false) { //JW
       if(!skipProcessing){
         continue;
       }
@@ -1114,7 +1372,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
       // And let's process it!
       DoProcesses(ctx, cur_reaction->GetProcesses(), resource_count, rbins_count,
                   task_quality, task_probability, task_cnt, i, result, taskctx);
-
+      
       if (result.ReactionTriggered(i) == true) reaction_count[i]++;
 
       // Note: the reaction is actually marked as being performed inside DoProcesses.
@@ -1129,7 +1387,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 
 
 bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
-                                  int task_count, const tArray<int>& reaction_count, const bool on_divide) const
+                                  int task_count, const tArray<int>& reaction_count, const bool on_divide, const bool req_or) const
 {
   const int num_reqs = req_list.GetSize();
 
@@ -1145,16 +1403,31 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     // See if this requisite batch can be satisfied.
     const cReactionRequisite* cur_req = req_it.Next();
     bool satisfied = true;
-
-    // Have all reactions been met?
-    tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
-    while (reaction_it.Next() != NULL) {
-      int react_id = reaction_it.Get()->GetID();
-      if (reaction_count[react_id] == 0) {
-        satisfied = false;
-        break;
+   
+    // Have any reactions been met? //JW
+    if(req_or) {
+      satisfied = false;
+      tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
+      while (reaction_it.Next() != NULL) {
+        int react_id = reaction_it.Get()->GetID();
+        if (reaction_count[react_id] != 0) {
+          satisfied = true;
+          break;
+        }
       }
     }
+    
+    else {// Have all reactions been met? //JW
+      tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
+      while (reaction_it.Next() != NULL) {
+        int react_id = reaction_it.Get()->GetID();
+        if (reaction_count[react_id] == 0) {
+          satisfied = false;
+          break;
+        }
+      }
+    }
+    
     if (satisfied == false) continue;
 
     // Have all no-reactions been met?
@@ -1238,14 +1511,14 @@ bool cEnvironment::TestContextRequisites(const tList<cContextReactionRequisite>&
     if (task_count < cur_req->GetMinTaskCount()) continue;
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
 
-	// Have all total reaction counts been met?
-	int tot_reactions = 0;
-	for (int i=0; i<reaction_count.GetSize(); i++)
-		tot_reactions += reaction_count[i];
-	if (tot_reactions < cur_req->GetMinTotReactionCount()) continue;
-	if (tot_reactions >= cur_req->GetMaxTotReactionCount()) continue;
-
-
+    // Have all total reaction counts been met?
+    int tot_reactions = 0;
+    for (int i=0; i<reaction_count.GetSize(); i++)
+      tot_reactions += reaction_count[i];
+    if (tot_reactions < cur_req->GetMinTotReactionCount()) continue;
+    if (tot_reactions >= cur_req->GetMaxTotReactionCount()) continue;
+    
+    
     // Have divide task reqs been met?
     // If div_type is 0 we only check on IO, if 1 we only check on divide,
     // if 2 we check always
@@ -1273,12 +1546,12 @@ double cEnvironment::GetTaskProbability(cAvidaContext& ctx, cTaskContext& taskct
   tLWConstListIterator<cReactionProcess> proc_it(req_proc);
   cReactionProcess* cur_proc;
   bool test_plasticity = false;
-   while ( (cur_proc = proc_it.Next()) != NULL){  //Determine whether or not we need to test for plastcity
+  while ( (cur_proc = proc_it.Next()) != NULL){  //Determine whether or not we need to test for plastcity
     ePHENPLAST_BONUS_METHOD pp_meth = cur_proc->GetPhenPlastBonusMethod();
     if (pp_meth != DEFAULT){  //DEFAULT doesn't modify bonuses
       test_plasticity = true;
-    if (pp_meth == FULL_BONUS || pp_meth == FRAC_BONUS)  //These will require us to force a task to be marked
-      force_mark_task = true;
+      if (pp_meth == FULL_BONUS || pp_meth == FRAC_BONUS)  //These will require us to force a task to be marked
+        force_mark_task = true;
     }
   }
   if (test_plasticity){  //We have to test for plasticity, so try to get it
@@ -1307,12 +1580,12 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
 
     ePHENPLAST_BONUS_METHOD pp_meth = cur_process->GetPhenPlastBonusMethod();
     const double task_plasticity_modifier =
-      (pp_meth == NO_BONUS && task_probability != 1.0) ? 0.0 :
-      (pp_meth == FRAC_BONUS) ? task_probability : 1.0;
+    (pp_meth == NO_BONUS && task_probability != 1.0) ? 0.0 :
+    (pp_meth == FRAC_BONUS) ? task_probability : 1.0;
 
     //Phenplast full bonus will use a 1.0 task quality
     const double local_task_quality =
-      (pp_meth == FULL_BONUS || pp_meth == FRAC_BONUS) ? 1.0 : task_quality;
+    (pp_meth == FULL_BONUS || pp_meth == FRAC_BONUS) ? 1.0 : task_quality;
 
     // Determine resource consumption
     double consumed = 0.0;
@@ -1411,7 +1684,7 @@ void cEnvironment::DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>
     result.MarkReaction(reaction_id);
 
     double bonus = consumed * cur_process->GetValue();
-
+    
     if (!cur_process->GetIsGermline())
     {
       // normal bonus

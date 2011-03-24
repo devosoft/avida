@@ -235,6 +235,9 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense", &cHardwareCPU::Inst_SenseLog2, nInstFlag::STALL),           // If you add more sense instructions
     tInstLibEntry<tMethod>("sense-unit", &cHardwareCPU::Inst_SenseUnit, nInstFlag::STALL),      // and want to keep stats, also add
     tInstLibEntry<tMethod>("sense-m100", &cHardwareCPU::Inst_SenseMult100, nInstFlag::STALL),   // the names to cStats::cStats() @JEB
+    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareCPU::Inst_SenseResourceID, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareCPU::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareCPU::Inst_SenseDiffFaced, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-resource1", &cHardwareCPU::Inst_SenseResource1, nInstFlag::STALL),
@@ -295,6 +298,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("rotate-to-occupied-cell", &cHardwareCPU::Inst_RotateOccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-next-occupied-cell", &cHardwareCPU::Inst_RotateNextOccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-event-cell", &cHardwareCPU::Inst_RotateEventCell, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-uphill", &cHardwareCPU::Inst_RotateUphill, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
@@ -302,6 +306,12 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("get-cell-x", &cHardwareCPU::Inst_GetCellPositionX),
     tInstLibEntry<tMethod>("get-cell-y", &cHardwareCPU::Inst_GetCellPositionY),
     tInstLibEntry<tMethod>("dist-from-diag", &cHardwareCPU::Inst_GetDistanceFromDiagonal),
+    tInstLibEntry<tMethod>("get-north-offset", &cHardwareCPU::Inst_GetDirectionOffNorth),    
+    tInstLibEntry<tMethod>("get-northerly", &cHardwareCPU::Inst_GetNortherly),    
+    tInstLibEntry<tMethod>("get-easterly", &cHardwareCPU::Inst_GetEasterly), 
+    tInstLibEntry<tMethod>("zero-easterly", &cHardwareCPU::Inst_ZeroEasterly),    
+    tInstLibEntry<tMethod>("zero-northerly", &cHardwareCPU::Inst_ZeroNortherly),    
+
     
     // State Grid instructions
     tInstLibEntry<tMethod>("sg-move", &cHardwareCPU::Inst_SGMove),
@@ -602,8 +612,14 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("read-faced-cell-freshness", &cHardwareCPU::Inst_ReadFacedCellDataFreshness, nInstFlag::STALL),
     tInstLibEntry<tMethod>("mark-cell-with-id", &cHardwareCPU::Inst_MarkCellWithID),
     tInstLibEntry<tMethod>("mark-cell-with-vitality", &cHardwareCPU::Inst_MarkCellWithVitality),
+    tInstLibEntry<tMethod>("get-res-stored", &cHardwareCPU::Inst_GetResStored),
     tInstLibEntry<tMethod>("get-id", &cHardwareCPU::Inst_GetID),
-    
+    tInstLibEntry<tMethod>("get-faced-vitality-diff", &cHardwareCPU::Inst_GetFacedVitalityDiff, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-faced-org-id", &cHardwareCPU::Inst_GetFacedOrgID, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-faced-org", &cHardwareCPU::Inst_AttackFacedOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-random-org", &cHardwareCPU::Inst_AttackRandomOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("attack-random-when-facing-org", &cHardwareCPU::Inst_AttackRandomWhenFacingOrg, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("get-attack-odds", &cHardwareCPU::Inst_GetAttackOdds, nInstFlag::STALL),     
 		
 		// Synchronization
     tInstLibEntry<tMethod>("flash", &cHardwareCPU::Inst_Flash, nInstFlag::STALL),
@@ -639,10 +655,14 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("if-donor",  &cHardwareCPU::Inst_IfDonor, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("prod-string",  &cHardwareCPU::Inst_ProduceString, nInstFlag::STALL),
 		
+
 		// Group formation instructions
 		tInstLibEntry<tMethod>("join-group", &cHardwareCPU::Inst_JoinGroup, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("kill-group-member", &cHardwareCPU::Inst_KillGroupMember, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-my-group", &cHardwareCPU::Inst_NumberOrgsInMyGroup, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, nInstFlag::STALL),
+		tInstLibEntry<tMethod>("inc-tolerance", &cHardwareCPU::Inst_IncTolerance, nInstFlag::STALL),  // @JJB
+		tInstLibEntry<tMethod>("dec-tolerance", &cHardwareCPU::Inst_DecTolerance, nInstFlag::STALL),  // @JJB
 		
 		// Network creation instructions
 		tInstLibEntry<tMethod>("create-link-facing", &cHardwareCPU::Inst_CreateLinkByFacing, nInstFlag::STALL),
@@ -799,7 +819,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   m_organism->SetRunning(true);
   
   if (!speculative && m_spec_die) {
-    m_organism->Die();
+    m_organism->Die(&ctx);
     m_organism->SetRunning(false);
     return false;
   }
@@ -928,7 +948,7 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
   const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
     if (speculative) m_spec_die = true;
-    else m_organism->Die();
+    else m_organism->Die(&ctx);
   }
   if (!speculative && phenotype.GetToDelete()) m_spec_die = true;
   
@@ -2197,7 +2217,7 @@ bool cHardwareCPU::Inst_IfAboveResLevel(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); 
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -2221,7 +2241,7 @@ bool cHardwareCPU::Inst_IfAboveResLevelEnd(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); 
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -2245,7 +2265,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevel(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); 
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -2269,7 +2289,7 @@ bool cHardwareCPU::Inst_IfNotAboveResLevelEnd(cAvidaContext& ctx) {
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array =  GetOrganism()->GetOrgInterface().GetResources(&ctx); 
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -3179,7 +3199,7 @@ bool cHardwareCPU::Inst_ReproDeme(cAvidaContext& ctx) {
 		return false; // in test CPU
 	
 	// this function will become to depend on a predicate, but I am still thinking of how to do this (BEB)
-	sourceDeme->ReplicateDeme();
+	sourceDeme->ReplicateDeme(); 
 	return true;
 }
 
@@ -3289,7 +3309,7 @@ bool cHardwareCPU::Inst_ConditionalRepro(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_SpawnDeme(cAvidaContext& ctx)
 {
-  m_organism->SpawnDeme();
+  m_organism->SpawnDeme(&ctx);
   return true;
 }
 
@@ -3297,7 +3317,7 @@ bool cHardwareCPU::Inst_Kazi(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(0, &ctx); 
   return true;
 }
 
@@ -3313,13 +3333,13 @@ bool cHardwareCPU::Inst_Kazi5(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_AX);
   double percentProb = ((double) (GetRegister(reg_used) % 100)) / 100.0;
-  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5);
+  if ( ctx.GetRandom().P(percentProb) ) m_organism->Kaboom(5, &ctx); 
   return true;
 }
 
 bool cHardwareCPU::Inst_Die(cAvidaContext& ctx)
 {
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3337,7 +3357,7 @@ bool  cHardwareCPU::Inst_Suicide(cAvidaContext& ctx)
 		// Add points as determined by config file to the deme.
 		m_organism->GetDeme()->AddNumberOfPoints(m_world->GetConfig().DEMES_PROTECTION_POINTS.Get());
 		m_organism->GetDeme()->AddSuicide();
-		m_organism->Die();
+		m_organism->Die(&ctx);
 	}
 	return true;
 }
@@ -3351,7 +3371,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToFutureDeme(cAvidaContext& ctx)
     return false;  // in test CPU
   deme->IncreaseTotalEnergyTestament(stored_energy);
   m_world->GetStats().SumEnergyTestamentToFutureDeme().Add(stored_energy);
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3376,7 +3396,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToNeighborOrganisms(cAvidaContext& ctx)
     m_organism->Rotate(1);
   }
   m_world->GetStats().SumEnergyTestamentToNeighborOrganisms().Add(stored_energy);
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3386,7 +3406,7 @@ bool cHardwareCPU::Inst_RelinquishEnergyToOrganismsInDeme(cAvidaContext& ctx) {
   
   m_organism->DivideOrgTestamentAmongDeme(stored_energy);
   m_world->GetStats().SumEnergyTestamentToDemeOrganisms().Add(stored_energy);
-  m_organism->Die();
+  m_organism->Die(&ctx);
   return true;
 }
 
@@ -3589,8 +3609,8 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
 {
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources() + 
-  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID());
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx) + 
+  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), &ctx); 
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
@@ -3703,43 +3723,43 @@ bool cHardwareCPU::DoSense(cAvidaContext& ctx, int conversion_method, double bas
 
 bool cHardwareCPU::Inst_SenseResource0(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 0);
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 0, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseResource1(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 1);
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 1, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseResource2(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 2);
+  return DoSenseResourceX(REG_BX, m_organism->GetCellID(), 2, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource0(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 0);
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 0, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource1(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 1);
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 1, &ctx);
 }
 
 bool cHardwareCPU::Inst_SenseFacedResource2(cAvidaContext& ctx)
 {
-  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 2);
+  return DoSenseResourceX(REG_BX, m_world->GetPopulation().GetCell(m_organism->GetCellID()).GetCellFaced().GetID(), 2, &ctx);
 }
 
 
-bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid)
+bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvidaContext* ctx) 
 {
   assert(resid >= 0);
   
   cPopulation& pop = m_world->GetPopulation();
   
-  const tArray<double> & res_count = pop.GetCellResources(cell_id) +
-  pop.GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id);
+  const tArray<double> & res_count = pop.GetCellResources(cell_id, ctx) + 
+  pop.GetDemeCellResources(pop.GetCell(cell_id).GetDemeID(), cell_id, ctx); 
   
   // Make sure we have the resource requested
   if (resid >= res_count.GetSize()) return false;
@@ -3777,9 +3797,9 @@ bool cHardwareCPU::DoSenseResourceX(int reg_to_set, int cell_id, int resid)
  * spec_id is the id number of the specification
  */
 
-bool cHardwareCPU::FindModifiedResource(int& start_index, int& end_index, int& spec_id)
+bool cHardwareCPU::FindModifiedResource(cAvidaContext* ctx, int& start_index, int& end_index, int& spec_id) 
 {
-  int num_resources = m_organism->GetOrgInterface().GetResources().GetSize();
+  int num_resources = m_organism->GetOrgInterface().GetResources(ctx).GetSize(); 
   
   //if there are no resources, translation cannot be successful; return false
   if (num_resources <= 0)
@@ -3835,7 +3855,7 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
 {
   int start_bin, end_bin, bin_used, spec_id;
   
-  bool finite_resources_exist = FindModifiedResource(start_bin, end_bin, spec_id);
+  bool finite_resources_exist = FindModifiedResource(&ctx, start_bin, end_bin, spec_id); 
   if (!finite_resources_exist) { return true; }
   
   // Add this specification
@@ -3867,12 +3887,52 @@ bool cHardwareCPU::DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_
   return DoActualCollect(ctx, bin_used, env_remove, internal_add, probabilistic, unit, start_bin, end_bin);
 }
 
+bool cHardwareCPU::Inst_SenseResourceID(cAvidaContext& ctx)
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
+  int reg_to_set = FindModifiedRegister(REG_BX);  
+  double max_resource = 0.0;    
+  // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+  for (int i = 0; i < res_count.GetSize(); i++) {
+    if (res_count[i] > max_resource) {
+      max_resource = res_count[i];
+      GetRegister(reg_to_set) = i;
+    }
+  }    
+  return true;
+}
+
+bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
+  // check if this is a valid group
+  if(m_organism->HasOpinion()) {
+    int opinion = m_organism->GetOpinion().first;
+    int reg_to_set = FindModifiedRegister(REG_BX);
+    double res_opinion = res_count[opinion];
+    GetRegister(reg_to_set) = res_opinion;
+  }
+  return true;
+}
+
+bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx) 
+{
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
+  if(m_organism->HasOpinion()) {
+    int opinion = m_organism->GetOpinion().first;
+    int reg_to_set = FindModifiedRegister(REG_BX);
+    double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx)[opinion];  
+    double res_diff = faced_res - res_count[opinion];
+    GetRegister(reg_to_set) = res_diff;
+  }
+  return true;
+}
 
 bool cHardwareCPU::DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, int start_bin, int end_bin)
 {
   
   // Set up res_change and max total
-  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
   tArray<double> res_change(res_count.GetSize());
   res_change.SetAll(0.0);
   double total = m_organism->GetRBinsTotal();
@@ -4021,8 +4081,8 @@ bool cHardwareCPU::Inst_CollectSpecific(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_IfResources(cAvidaContext& ctx)
 {
   // These are the current levels of resources at this cell:
-  const tArray<double> resources = m_organism->GetOrgInterface().GetResources() + 
-  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID());
+  const tArray<double> resources = m_organism->GetOrgInterface().GetResources(&ctx) + 
+  m_organism->GetOrgInterface().GetDemeResources(m_organism->GetOrgInterface().GetDemeID(), &ctx); 
   
   // Now we loop through the different reactions, checking to see if their
   // required resources are below what's available.  If so, we skip ahead an
@@ -5296,33 +5356,33 @@ bool cHardwareCPU::Inst_DecreaseEnergyDonation(cAvidaContext& ctx)
 
 // Move a fraction of the given resource present at the current cell to the specified cell.
 // Note: This function doesn't work with deme-level resources.
-void cHardwareCPU::DoResourceDonatePercent(const int to_cell, const int resource_id, const double frac_resource_given)
+void cHardwareCPU::DoResourceDonatePercent(cAvidaContext* ctx, const int to_cell, const int resource_id, const double frac_resource_given)
 {
   assert(to_cell >= 0);
   assert(resource_id >= 0);
   assert(frac_resource_given >= 0);
   assert(frac_resource_given <= 1);
   
-  const tArray<double> &resources = m_organism->GetOrgInterface().GetResources(); 
+  const tArray<double> &resources = m_organism->GetOrgInterface().GetResources(ctx); 
   if(resource_id >= resources.GetSize()) return;
   
   const double amount = max(0.0, frac_resource_given * resources[resource_id]);
   
-  DoResourceDonateAmount(to_cell, resource_id, amount);
+  DoResourceDonateAmount(ctx, to_cell, resource_id, amount); 
   
 } //End DoResourceDonatePercent()
 
 
 // Donate a portion of the given resource present at the current cell to the specified cell.
 // Note: This function doesn't work with deme-level resources.
-void cHardwareCPU::DoResourceDonateAmount(const int to_cell, const int resource_id, const double amount)
+void cHardwareCPU::DoResourceDonateAmount(cAvidaContext* ctx, const int to_cell, const int resource_id, const double amount)
 {  
   assert(to_cell >= 0);
   assert(amount >= 0);
   assert(resource_id >= 0);
   
-  const tArray<double> &src_resources = m_organism->GetOrgInterface().GetResources();
-  const tArray<double> &dest_resources = m_world->GetPopulation().GetCellResources(to_cell);
+  const tArray<double> &src_resources = m_organism->GetOrgInterface().GetResources(ctx); 
+  const tArray<double> &dest_resources = m_world->GetPopulation().GetCellResources(to_cell, ctx); 
   
   assert(resource_id < src_resources.GetSize());
   assert(resource_id < dest_resources.GetSize());
@@ -5371,7 +5431,7 @@ bool cHardwareCPU::DonateResourceX(cAvidaContext& ctx, const int res_id)
     return false;
   }
   
-  DoResourceDonatePercent(faced_cell, res_id, pct);
+  DoResourceDonatePercent(&ctx, faced_cell, res_id, pct); 
   
   return true;
   
@@ -5458,7 +5518,7 @@ bool cHardwareCPU::Inst_RotateL(cAvidaContext& ctx)
     if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
     
     // Otherwise keep rotating...
-    m_organism->Rotate(-1);
+    m_organism->Rotate(1);
   }
   return true;
 }
@@ -5486,20 +5546,20 @@ bool cHardwareCPU::Inst_RotateR(cAvidaContext& ctx)
     if (neighbor != NULL && neighbor->GetHardware().FindLabelFull(GetLabel()).InMemory()) return true;
     
     // Otherwise keep rotating...
-    m_organism->Rotate(1);
+    m_organism->Rotate(-1);
   }
   return true;
 }
 
 bool cHardwareCPU::Inst_RotateLeftOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(-1);
+  m_organism->Rotate(1);
   return true;
 }
 
 bool cHardwareCPU::Inst_RotateRightOne(cAvidaContext& ctx)
 {
-  m_organism->Rotate(1);
+  m_organism->Rotate(-1);
   return true;
 }
 
@@ -5581,6 +5641,37 @@ bool cHardwareCPU::Inst_RotateEventCell(cAvidaContext& ctx) {
   return true;
 }
 
+bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
+{
+  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();
+  
+  int opinion = 0;
+  
+  if(m_organism->HasOpinion()) opinion = m_organism->GetOpinion().first; 
+  
+  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(&ctx); 
+  
+  double max_res = 0;
+  for(int i = 0; i < actualNeighborhoodSize; i++) {
+    m_organism->Rotate(1);
+    tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); 
+    if (faced_res[opinion] > max_res) {
+      max_res = faced_res[opinion];
+    }
+  } 
+  
+  if (max_res > current_res[opinion]) {
+    for(int i = 0; i < actualNeighborhoodSize; i++) {
+      tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); 
+      if (faced_res[opinion] != max_res) m_organism->Rotate(1);
+    }
+  }
+    double res_diff = max_res - current_res[opinion];
+    int reg_to_set = FindModifiedRegister(REG_BX);
+    GetRegister(reg_to_set) = res_diff;
+    return true;
+}
+
 bool cHardwareCPU::Inst_SetCopyMut(cAvidaContext& ctx)
 {
   const int reg_used = FindModifiedRegister(REG_BX);
@@ -5634,7 +5725,8 @@ bool cHardwareCPU::Inst_SGMove(cAvidaContext& ctx)
   int& y = m_ext_mem[1];
   
   const int facing = m_ext_mem[2];
-  
+
+  // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
   // State grid is treated as a 2-dimensional toroidal grid with size [0, width) and [0, height)
   switch (facing) {
     case 0: // N
@@ -5716,8 +5808,11 @@ bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
 	// In TestCPU, movement fails...
   if (m_organism->GetCellID() == -1) return false;
 	
-  m_organism->Move(ctx);
+  bool move_success = m_organism->Move(ctx);
   
+  const int out_reg = FindModifiedRegister(REG_BX);   
+  GetRegister(out_reg) = move_success;   
+
   return true;
 }
 
@@ -6764,6 +6859,44 @@ bool cHardwareCPU::Inst_GetDistanceFromDiagonal(cAvidaContext& ctx) {
   return true;
 }
 
+bool cHardwareCPU::Inst_GetDirectionOffNorth(cAvidaContext& ctx) {
+  int facing = m_organism->GetFacing();
+  int north_offset = 0;
+  if (facing == 0) north_offset = 0;          //N 
+  else if (facing == 1) north_offset = 7;    //NW
+  else if (facing == 3) north_offset = 6;    //W
+  else if (facing == 2) north_offset = 5;    //SW
+  else if (facing == 6) north_offset = 4;     //S
+  else if (facing == 7) north_offset = 3;     //SE
+  else if (facing == 5) north_offset = 2;     //E
+  else if (facing == 4) north_offset = 1;     //NE
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = north_offset;
+  return true;
+}
+
+bool cHardwareCPU::Inst_GetNortherly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetNortherly();
+  return true;  
+}
+
+bool cHardwareCPU::Inst_GetEasterly(cAvidaContext& ctx) {
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetEasterly();
+  return true;  
+}
+
+bool cHardwareCPU::Inst_ZeroEasterly(cAvidaContext& ctx) {
+  m_organism->ClearEasterly();
+  return true;
+}
+
+bool cHardwareCPU::Inst_ZeroNortherly(cAvidaContext& ctx) {
+  m_organism->ClearNortherly();
+  return true;
+}
+
 //// Promoter Model ////
 
 bool cHardwareCPU::Inst_Promoter(cAvidaContext& ctx)
@@ -6838,7 +6971,7 @@ bool cHardwareCPU::Inst_Terminate(cAvidaContext& ctx)
     // Death to organisms that refuse to use promoters!
     else if (m_world->GetConfig().NO_ACTIVE_PROMOTER_EFFECT.Get() == 1)
     {
-      m_organism->Die();
+      m_organism->Die(&ctx); 
     }
     else
     {
@@ -6906,7 +7039,7 @@ bool cHardwareCPU::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SenseRegulate(cAvidaContext& ctx)
 {
   unsigned int bits = 0;
-  const tArray<double> & res_count = m_organism->GetOrgInterface().GetResources();
+  const tArray<double> & res_count = m_organism->GetOrgInterface().GetResources(&ctx);
   assert (res_count.GetSize() != 0);
   for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
   {
@@ -7365,7 +7498,7 @@ bool cHardwareCPU::DoSenseFacing(cAvidaContext& ctx, int conversion_method, doub
   
   // Returns the amount of a resource or resources 
   // specified by modifying NOPs into register BX
-  const tArray<double> & res_count = m_world->GetPopulation().GetCellResources(faced_id); 
+  const tArray<double> & res_count = m_world->GetPopulation().GetCellResources(faced_id, &ctx); 
   
   // Arbitrarily set to BX since the conditional instructions use this directly.
   int reg_to_set = REG_BX;
@@ -7549,7 +7682,7 @@ bool cHardwareCPU::DoSensePheromone(cAvidaContext& ctx, int cellid)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   const cResourceCount& deme_resource_count = deme.GetDemeResourceCount();
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); 
   double pher_amount = 0;
   
   if(deme_resource_count.GetSize() == 0) return false;
@@ -7594,7 +7727,7 @@ bool cHardwareCPU::DoSensePheromoneGlobal(cAvidaContext& ctx, tRegisters REG_DEF
 	
 	const cResourceLib& resLib = m_world->GetEnvironment().GetResourceLib();
 	
-	const tArray<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(); 
+	const tArray<double>& resource_count_array = m_organism->GetOrgInterface().GetResources(&ctx); 
 	const cResourceCount& resource_count = m_world->GetPopulation().GetResourceCount();
 	
 	if(resource_count.GetSize() == 0) assert(false); // change to: return false;
@@ -7673,7 +7806,7 @@ bool cHardwareCPU::Inst_Exploit(cAvidaContext& ctx)
     for (int i = 0; i < mycell.ConnectionList().GetSize(); i++) {
       
       phero_amount = 0;
-      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); 
       
       for (int j = 0; j < deme_resource_count.GetSize(); j++) {
         if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -7737,7 +7870,7 @@ bool cHardwareCPU::Inst_ExploitForward5(cAvidaContext& ctx)
       }
       
       phero_amount = 0;
-      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); 
       
       for (int j = 0; j < deme_resource_count.GetSize(); j++) {
         if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -7802,7 +7935,7 @@ bool cHardwareCPU::Inst_ExploitForward3(cAvidaContext& ctx)
       }
       
       phero_amount = 0;
-      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+      cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); 
       
       for (int j = 0; j < deme_resource_count.GetSize(); j++) {
         if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -8024,7 +8157,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   cDeme &deme = pop.GetDeme(pop.GetCell(cellid).GetDemeID());
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
   int relative_cell_id = deme.GetRelativeCellID(cellid);
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); 
   
   int cell_data;
   
@@ -8037,7 +8170,7 @@ bool cHardwareCPU::Inst_SuperMove(cAvidaContext& ctx)
   for(int i = 0; i < mycell.ConnectionList().GetSize(); i++) {
     
     phero_amount = 0;
-    cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()));
+    cell_resources = deme_resource_count.GetCellResources(deme.GetRelativeCellID(mycell.GetCellFaced().GetID()), &ctx); 
     
     for (int j = 0; j < deme_resource_count.GetSize(); j++) {
       if(strncmp(deme_resource_count.GetResName(j), "pheromone", 9) == 0) {
@@ -8124,7 +8257,7 @@ bool cHardwareCPU::Inst_IfPheromone(cAvidaContext& ctx)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); 
   
   if(deme_resource_count.GetSize() == 0) return false;
   
@@ -8158,7 +8291,7 @@ bool cHardwareCPU::Inst_IfNotPheromone(cAvidaContext& ctx)
   int relative_cell_id = deme.GetRelativeCellID(cellid);
   
   cResourceCount deme_resource_count = deme.GetDemeResourceCount();
-  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id);
+  tArray<double> cell_resources = deme_resource_count.GetCellResources(relative_cell_id, &ctx); 
   
   if(deme_resource_count.GetSize() == 0) return false;
   
@@ -8210,7 +8343,7 @@ bool cHardwareCPU::Inst_DropPheromone(cAvidaContext& ctx)
      deme.AddPheromone(destcellID, pher_amount);
      }
      */
-    deme.AddPheromone(cellid, pher_amount);
+    deme.AddPheromone(cellid, pher_amount, &ctx); 
     
     // Write some logging information if LOG_PHEROMONE is set.  This is done
     // out here so that non-pheromone moves are recorded.
@@ -8393,7 +8526,7 @@ bool cHardwareCPU::Inst_ReadFacedCellData(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = m_organism->GetFacedCellData();
+  GetRegister(out_reg) = m_organism->GetFacedCellData() - m_organism->GetVitality();
   return true;
 }
 
@@ -8420,6 +8553,16 @@ bool cHardwareCPU::Inst_MarkCellWithID(cAvidaContext& ctx)
   return true;
 }
 
+bool cHardwareCPU::Inst_GetResStored(cAvidaContext& ctx)
+//Get amount of stored collect specific resource (how much do I have available for res_cost instructions).
+{
+  assert(m_organism != 0);
+  const int out_reg = FindModifiedRegister(REG_BX);
+  const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+  GetRegister(out_reg) = m_organism->GetRBin(resource);
+  return true;
+}
+
 bool cHardwareCPU::Inst_MarkCellWithVitality(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
@@ -8430,14 +8573,125 @@ bool cHardwareCPU::Inst_MarkCellWithVitality(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_GetID(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  const int out_reg = FindModifiedRegister(REG_CX);
+  const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = m_organism->GetID();
   return true;
 }
 
+bool cHardwareCPU::Inst_GetFacedVitalityDiff(cAvidaContext& ctx)
+//Get difference in vitality of this organism and faced neighbor.
+{
+  assert(m_organism != 0);
+  
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead())  return false; 
+  
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = m_organism->GetVitality() - neighbor->GetVitality();
+  return true;
+}
 
+bool cHardwareCPU::Inst_GetFacedOrgID(cAvidaContext& ctx)
+//Get ID of organism faced by this one, if there is an organism in front.
+{
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism * neighbor = m_organism->GetNeighbor();
+  if (neighbor->IsDead())  return false;  
 
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = neighbor->GetID();
+  return true;
+}
 
+//Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
+bool cHardwareCPU::Inst_AttackFacedOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  int target_cell = target->GetCellID();
+    
+  //Use vitality settings to decide who wins this battle.
+  bool kill_attacker = true;
+  if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 0) 
+    // 50% chance, no modifiers
+    kill_attacker = ctx.GetRandom().P(0.5);
+  else if (m_world->GetConfig().MOVEMENT_COLLISIONS_SELECTION_TYPE.Get() == 1) {
+    //vitality based
+    double attacker_vitality = m_organism->GetVitality();
+    double target_vitality = target->GetVitality();
+    double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+    double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+    
+    double odds_someone_dies = max(attacker_odds, target_odds);
+    double odds_target_dies = target_odds * odds_someone_dies;
+    double decider = ctx.GetRandom().GetDouble(1);
+    
+    if (decider < 1 - odds_someone_dies) return true;
+    else if (decider < ((1 - odds_someone_dies) + odds_target_dies)) kill_attacker = false;    
+  }
+  if (kill_attacker) {
+    m_organism->Die(&ctx);
+    return true;
+  }
+  m_world->GetPopulation().AttackFacedOrg(ctx, target_cell); 
+  return true;
+} 		
+
+//Attack random org in population. This requires all (candidate) orgs to be in a valid group.
+bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  //How many valid groups are we dealing with?
+  int num_poss_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
+  //Make sure we are using groups and there are resources out there.
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
+  m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
+  return true;
+}
+
+//Attack random org in population when facing another org. This requires all (candidate) orgs to be in a valid group.
+bool cHardwareCPU::Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  //How many valid groups are we dealing with?
+  int num_poss_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
+  //Make sure we are using groups and there are resources out there.
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
+  m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
+  return true;
+}
+
+//Get odds of winning or tieing in a fight. This will use vitality bins if those are set.
+bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
+{
+  assert(m_organism != 0);
+  if (!m_organism->IsNeighborCellOccupied()) return false;
+  
+  cOrganism* target = m_organism->GetNeighbor();
+  if (target->IsDead()) return false;  
+  
+  double attacker_vitality = m_organism->GetVitality();
+  double target_vitality = target->GetVitality();
+  
+  double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
+  double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
+  
+  double odds_I_dont_die;
+  if (attacker_odds > target_odds) odds_I_dont_die = 1 - target_odds;
+  else odds_I_dont_die = 1 - attacker_odds;
+  
+  const int out_reg = FindModifiedRegister(REG_BX);
+  GetRegister(out_reg) = odds_I_dont_die;
+  return true;
+} 	
 
 /*! Called when the organism that owns this CPU has received a flash from a neighbor. */
 void cHardwareCPU::ReceiveFlash() {
@@ -9058,10 +9312,14 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
   
 	// check if this is a valid group
 	if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
-	
+  
   if(m_organism->HasOpinion()) {
 		opinion = m_organism->GetOpinion().first;
-		// subtract org from group
+    
+    //return false if org setting opinion to current one (avoid paying costs for not switching)
+    if (opinion == prop_group_id) return false;
+    
+		// otherwise, subtract org from current group
 		m_organism->LeaveGroup(opinion);
   }
 	
@@ -9071,6 +9329,21 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 	// Add org to group count
 	opinion = m_organism->GetOpinion().first;	
 	m_organism->JoinGroup(opinion);
+	return true;
+}
+
+//Kill some other random organism in group 
+bool cHardwareCPU::Inst_KillGroupMember(cAvidaContext& ctx)
+{
+	int opinion;
+	// Check if the org is currently part of a group
+	assert(m_organism != 0);
+	
+  if(m_organism->HasOpinion()) {
+		opinion = m_organism->GetOpinion().first;
+		// Kill organism in group
+		m_world->GetPopulation().KillGroupMember(ctx, opinion, m_organism);
+  }
 	return true;
 }
 
@@ -9103,6 +9376,112 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
 	num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
   
 	GetRegister(num_org_reg) = num_orgs;
+	return true;
+}
+
+/* Increases tolerance towards the addition of members to the group:
+nop-A: increases tolerance towards immigrants
+nop-B: increases tolerance towards own offspring
+nop-C: increases tolerance towards other offspring of the group.
+Removes the record of a previous update when dec-tolerance was executed,
+and places the modified tolerance total in the BX register. @JJB
+*/
+bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
+{
+	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+	const int tolerance_max = update_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+  
+	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+	int tolerance_count = 0;
+  
+	// If ?AX? move update records of immigrant tolerance up one position removing the top most recent instance of dec-tolerance from records.
+	if (tolerance_to_modify == REG_AX) {
+		for (int n = 0; n < tolerance_max - 1; n++) {
+			m_organism->GetPhenotype().ModifyToleranceImmigrants(n, m_organism->GetPhenotype().GetToleranceImmigrants() [n + 1]);
+		}
+		m_organism->GetPhenotype().ModifyToleranceImmigrants(tolerance_max - 1, 0);
+		// Retrieve modified tolerance total for immigrants.
+		tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+	}
+  
+	// If ?BX? move updates of own offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
+	if (tolerance_to_modify == REG_BX) {
+		for (int n = 0; n < tolerance_max - 1; n++) {
+			m_organism->GetPhenotype().ModifyToleranceOffspringOwn(n, m_organism->GetPhenotype().GetToleranceOffspringOwn() [n + 1]);
+		}
+		m_organism->GetPhenotype().ModifyToleranceOffspringOwn(tolerance_max - 1, 0);
+    
+		// Retrieve modified tolerance total for own offspring.
+		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+	}
+  
+	// If ?CX? move updates of others offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
+	if (tolerance_to_modify == REG_CX) {
+		for (int n = 0; n < tolerance_max - 1; n++) {
+			m_organism->GetPhenotype().ModifyToleranceOffspringOthers(n, m_organism->GetPhenotype().GetToleranceOffspringOthers() [n + 1]);
+		}
+		m_organism->GetPhenotype().ModifyToleranceOffspringOthers(tolerance_max - 1, 0);
+    
+		// Retrieve modified tolerance total for other offspring in group.
+		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+	}
+  
+	// Output tolerance total to BX register.
+	GetRegister(REG_BX) = tolerance_count;
+  
+	return true;
+}
+
+/* Decreases tolerance towards the addition of members to the group,
+ nop-A: decreases tolerance towards immigrants
+ nop-B: decreases tolerance towards own offspring
+ nop-C: decreases tolerance towards other offspring of the group.
+ Adds to records the update during which dec-tolerance was executed,
+ and places the modified tolerance total in the BX register. @JJB
+ */
+bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
+{
+	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+	const int cur_update = m_world->GetStats().GetUpdate();
+	const int tolerance_max = update_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+  
+	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
+	int tolerance_count = 0;
+  
+	// If ?AX? move update records of immigrant tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+	if (tolerance_to_modify == REG_AX) {
+		for (int n = tolerance_max - 1; n > 0; n--) {
+			m_organism->GetPhenotype().ModifyToleranceImmigrants(n, m_organism->GetPhenotype().GetToleranceImmigrants() [n - 1]);
+		}
+		m_organism->GetPhenotype().ModifyToleranceImmigrants(0, cur_update);
+		// Retrieve modified tolerance total for immigrants.
+		tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
+	}
+  
+	// If ?BX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+	if (tolerance_to_modify == REG_BX) {
+		for (int n = tolerance_max - 1; n > 0; n--) {
+			m_organism->GetPhenotype().ModifyToleranceOffspringOwn(n, m_organism->GetPhenotype().GetToleranceOffspringOwn() [n - 1]);
+		}
+		m_organism->GetPhenotype().ModifyToleranceOffspringOwn(0, cur_update);
+    
+		// Retrieve modified tolerance total for own offspring.
+		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+	}
+  
+	// If ?CX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
+	if (tolerance_to_modify == REG_CX) {
+		for (int n = tolerance_max - 1; n > 0; n--) {
+			m_organism->GetPhenotype().ModifyToleranceOffspringOthers(n, m_organism->GetPhenotype().GetToleranceOffspringOthers() [n - 1]);
+		}
+		m_organism->GetPhenotype().ModifyToleranceOffspringOthers(0, cur_update);
+    
+		// Retrieve modified tolerance total for other offspring in the group.
+		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+	}
+  
+	// Output tolerance total to BX register.
+	GetRegister(REG_BX) = tolerance_count;
 	return true;
 }
 

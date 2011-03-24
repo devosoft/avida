@@ -25,8 +25,6 @@
 
 using namespace std;
 
-
-
 cOrderedWeightedIndex::cOrderedWeightedIndex()
   : item_weight(0)
   , cum_weight(0)

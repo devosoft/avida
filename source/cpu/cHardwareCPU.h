@@ -490,16 +490,19 @@ private:
   bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
-  bool DoSenseResourceX(int reg_to_set, int cell_id, int resid);
+  bool DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvidaContext* ctx); 
   bool Inst_SenseResource0(cAvidaContext& ctx);
   bool Inst_SenseResource1(cAvidaContext& ctx);
   bool Inst_SenseResource2(cAvidaContext& ctx);
   bool Inst_SenseFacedResource0(cAvidaContext& ctx);
   bool Inst_SenseFacedResource1(cAvidaContext& ctx);
   bool Inst_SenseFacedResource2(cAvidaContext& ctx);
+  bool Inst_SenseResourceID(cAvidaContext& ctx); 
+  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
+  bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
   
   // Resources
-  bool FindModifiedResource(int& start_index, int& end_index, int& spec_id);
+  bool FindModifiedResource(cAvidaContext* ctx, int& start_index, int& end_index, int& spec_id); 
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit);
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, int start_bin, int end_bin);
   bool Inst_Collect(cAvidaContext& ctx);
@@ -544,8 +547,8 @@ private:
   bool Inst_IncreaseEnergyDonation(cAvidaContext& ctx);
   bool Inst_DecreaseEnergyDonation(cAvidaContext& ctx);
   
-  void DoResourceDonatePercent(const int to_cell, const int resource_id, const double frac_resource_given);
-  void DoResourceDonateAmount(const int to_cell, const int resource_id, const double amount);
+  void DoResourceDonatePercent(cAvidaContext* ctx, const int to_cell, const int resource_id, const double frac_resource_given); 
+  void DoResourceDonateAmount(cAvidaContext* ctx, const int to_cell, const int resource_id, const double amount); 
   bool DonateResourceX(cAvidaContext& ctx, const int res_id);
   bool Inst_DonateResource0(cAvidaContext& ctx);
   bool Inst_DonateResource1(cAvidaContext& ctx);
@@ -570,11 +573,17 @@ private:
   bool Inst_RotateUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateNextUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateEventCell(cAvidaContext& ctx);
+  bool Inst_RotateUphill(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);
   bool Inst_GetCellPositionX(cAvidaContext& ctx);
   bool Inst_GetCellPositionY(cAvidaContext& ctx);
+  bool Inst_GetDirectionOffNorth(cAvidaContext& ctx);  
+  bool Inst_GetNortherly(cAvidaContext& ctx); 
+  bool Inst_GetEasterly(cAvidaContext& ctx);
+  bool Inst_ZeroEasterly(cAvidaContext& ctx);
+  bool Inst_ZeroNortherly(cAvidaContext& ctx);
   
   // State Grid Sensory/Movement
   bool Inst_SGMove(cAvidaContext& ctx);
@@ -876,8 +885,14 @@ public:
   bool Inst_ReadFacedCellDataFreshness(cAvidaContext& ctx);
   bool Inst_MarkCellWithID(cAvidaContext& ctx);
   bool Inst_MarkCellWithVitality(cAvidaContext& ctx);
+  bool Inst_GetResStored(cAvidaContext& ctx);
   bool Inst_GetID(cAvidaContext& ctx);
-  
+  bool Inst_GetFacedVitalityDiff(cAvidaContext& ctx); 
+  bool Inst_GetFacedOrgID(cAvidaContext& ctx);  
+  bool Inst_AttackFacedOrg(cAvidaContext& ctx); 
+  bool Inst_AttackRandomOrg(cAvidaContext& ctx); 
+  bool Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx);
+  bool Inst_GetAttackOdds(cAvidaContext& ctx);
 	
 private:
 	std::pair<bool, int> m_last_cell_data; //<! If cell data has been previously collected, and it's value.
@@ -920,10 +935,16 @@ public:
 public:
 	//! An organism joins a group by setting it opinion to the group id. 
 	bool Inst_JoinGroup(cAvidaContext& ctx);
+	//Kill Random Member in Group 
+	bool Inst_KillGroupMember(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
 	bool Inst_NumberOrgsInMyGroup(cAvidaContext& ctx);
 	//! Returns the number of organisms in the current organism's group
-	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);		
+	bool Inst_NumberOrgsInGroup(cAvidaContext& ctx);
+	// Increases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
+	bool Inst_IncTolerance(cAvidaContext& ctx);
+	// Decreases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
+	bool Inst_DecTolerance(cAvidaContext& ctx);
 
 	// -------- Network creation support --------
 public:

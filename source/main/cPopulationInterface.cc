@@ -46,7 +46,7 @@
 #if AVIDA_PLATFORM(WINDOWS)
 namespace std
 {
-  inline __int64  abs(__int64 i) { return _abs64(i); }
+  /*inline __int64  abs(__int64 i) { return _abs64(i); }*/
 }
 #endif
 
@@ -196,14 +196,19 @@ const tArray<int>& cPopulationInterface::GetInputs() const
   return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
 }
 
-const tArray<double> & cPopulationInterface::GetResources()
+const tArray<double>& cPopulationInterface::GetResources(cAvidaContext* ctx) 
 {
-  return m_world->GetPopulation().GetCellResources(m_cell_id);
+  return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); 
 }
 
-const tArray<double> & cPopulationInterface::GetDemeResources(int deme_id)
+const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext* ctx) 
 {
-  return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id);
+  return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
+}
+
+const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext* ctx) 
+{
+  return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); 
 }
 
 const tArray< tArray<int> >& cPopulationInterface::GetCellIdLists()
@@ -221,26 +226,32 @@ void cPopulationInterface::UpdateDemeResources(const tArray<double> & res_change
   return m_world->GetPopulation().UpdateDemeCellResources(res_change, m_cell_id);
 }
 
-void cPopulationInterface::Die()
+void cPopulationInterface::Die(cAvidaContext* ctx) 
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  m_world->GetPopulation().KillOrganism(cell);
+  m_world->GetPopulation().KillOrganism(cell, ctx);
 }
 
-void cPopulationInterface::Kaboom(int distance)
+void cPopulationInterface::KillCellID(int target, cAvidaContext* ctx) 
+{
+  cPopulationCell & cell = m_world->GetPopulation().GetCell(target);
+  m_world->GetPopulation().KillOrganism(cell, ctx); 
+}
+
+void cPopulationInterface::Kaboom(int distance, cAvidaContext* ctx) 
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
-  m_world->GetPopulation().Kaboom(cell, distance);
+  m_world->GetPopulation().Kaboom(cell, ctx, distance); 
 }
 
-void cPopulationInterface::SpawnDeme()
+void cPopulationInterface::SpawnDeme(cAvidaContext* ctx) 
 {
   // const int num_demes = m_world->GetPopulation().GetNumDemes();
 	
   // Spawn the current deme; no target ID will put it into a random deme.
   const int deme_id = m_world->GetPopulation().GetCell(m_cell_id).GetDemeID();
 	
-  m_world->GetPopulation().SpawnDeme(deme_id);
+  m_world->GetPopulation().SpawnDeme(deme_id, ctx); 
 }
 
 cOrgSinkMessage* cPopulationInterface::NetReceive()
@@ -1017,20 +1028,20 @@ void cPopulationInterface::ReceiveHGTDonation(const cSequence& fragment) {
 }
 
 
-void cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
+bool cPopulationInterface::Move(cAvidaContext& ctx, int src_id, int dest_id)
 {
-  m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
+  return m_world->GetPopulation().MoveOrganisms(ctx, src_id, dest_id);
 }
 
 
 void cPopulationInterface::JoinGroup(int group_id)
 {
-  m_world->GetPopulation().JoinGroup(group_id);
+  m_world->GetPopulation().JoinGroup(GetOrganism(), group_id);
 }
 
 void cPopulationInterface::LeaveGroup(int group_id)
 {
-  m_world->GetPopulation().LeaveGroup(group_id);
+  m_world->GetPopulation().LeaveGroup(GetOrganism(), group_id);
 }
 
 

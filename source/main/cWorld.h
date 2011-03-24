@@ -91,7 +91,7 @@ private:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL);
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL); 
   virtual ~cWorld();
   
   void SetDriver(cWorldDriver* driver, bool take_ownership = false);
@@ -149,7 +149,8 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(cUserFeedback* errors);
+  bool setup(cUserFeedback* errors); 
+
 };
 
 #endif

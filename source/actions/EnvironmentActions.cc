@@ -238,7 +238,7 @@ public:
     for(int i=0; i<m_cell_list.GetSize(); i++)
     {
       int m_cell_id = m_cell_list[i];
-      tArray<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id);
+      tArray<double> counts = m_world->GetPopulation().GetResourceCount().GetCellResources(m_cell_id, &ctx); 
       if ((res != NULL) && (res->GetID() < counts.GetSize()))
       {
         counts[res->GetID()] = m_res_count;
@@ -250,7 +250,6 @@ public:
 
 
 /* Change Environment settings */
-
 class cActionChangeEnvironment : public cAction
 {
 private:
@@ -279,7 +278,7 @@ public:
       cerr << feedback.GetMessage(i) << endl;
     }
 
-    m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity());
+    m_world->GetPopulation().UpdateResourceCount(m_world->GetVerbosity(), m_world);          
   }
 };
 

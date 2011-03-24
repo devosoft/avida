@@ -25,6 +25,10 @@
 #ifndef cSpatialResCount_h
 #define cSpatialResCount_h
 
+#ifndef cAvidaContext_h
+#include "cAvidaContext.h"
+#endif
+
 #ifndef cSpatialCountElem_h
 #include "cSpatialCountElem.h"
 #endif
@@ -49,6 +53,7 @@ private:
   int    world_x, world_y, num_cells;
   /* instead of creating a new array use the existing one from cResource */
   tArray<cCellResource> *cell_list_ptr;
+  bool m_modified;
   
 public:
   cSpatialResCount();
@@ -72,9 +77,9 @@ public:
   void State(int x, int y);
   double GetAmount(int x) const;
   double GetAmount(int x, int y) const;
-  void RateAll(double ratein);
+  void RateAll(double ratein); 
   void StateAll();
-  void FlowAll();
+  void FlowAll(); 
   double SumAll() const;
   void Source(double amount) const;
   void CellInflow() const;
@@ -96,8 +101,10 @@ public:
   void SetOutflowX2(int in_outflowX2) { outflowX2 = in_outflowX2; }
   void SetOutflowY1(int in_outflowY1) { outflowY1 = in_outflowY1; }
   void SetOutflowY2(int in_outflowY2) { outflowY2 = in_outflowY2; }
-  
+  virtual void UpdateCount(cAvidaContext* ctx) {}
   void ResetResourceCounts();
+  void SetModified(bool in_modified) { m_modified = in_modified; }
+  bool GetModified() { return m_modified; }
 };
 
 #endif

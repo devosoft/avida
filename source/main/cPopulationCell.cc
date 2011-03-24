@@ -196,20 +196,20 @@ int cPopulationCell::GetFacing()
 		lr = 1; //right
 	
 	if((y==m_y-1) || (y>m_y+1))
-		du = -1; //down
+		du = -1; //up
 	else if((y==m_y+1) || (y<m_y-1))
-		du = 1; //up
+		du = 1; //down
   
 	// This is hackish.
 	// If you change these return values then the directional send tasks, like sent-north, need to be updated.
-	if(lr==0 && du==-1) return 0; //S
-	if(lr==-1 && du==-1) return 1; //SW
-	if(lr==-1 && du==0) return 3; //W
-	if(lr==-1 && du==1) return 2; //NW
-	if(lr==0 && du==1) return 6; //N
-	if(lr==1 && du==1) return 7; //NE
-	if(lr==1 && du==0) return 5; //E
-	if(lr==1 && du==-1) return 4; //SE
+	if(lr==0 && du==-1) return 0; //N
+	else if(lr==-1 && du==-1) return 1; //NW
+	else if(lr==-1 && du==0) return 3; //W
+	else if(lr==-1 && du==1) return 2; //SW
+	else if(lr==0 && du==1) return 6; //S
+	else if(lr==1 && du==1) return 7; //SE
+	else if(lr==1 && du==0) return 5; //E
+	else if(lr==1 && du==-1) return 4; //NE
   
 	assert(false);
   
@@ -222,7 +222,7 @@ void cPopulationCell::ResetInputs(cAvidaContext& ctx)
 }
 
 
-void cPopulationCell::InsertOrganism(cOrganism* new_org)
+void cPopulationCell::InsertOrganism(cOrganism* new_org, cAvidaContext* ctx) 
 {
   assert(new_org != NULL);
   assert(m_organism == NULL);
@@ -244,7 +244,7 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
   
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0) {
     // uptake all the cells energy
-    double uptake_energy = UptakeCellEnergy(1.0);
+    double uptake_energy = UptakeCellEnergy(1.0, ctx); 
     if(uptake_energy != 0.0) {
       // update energy and merit
       cPhenotype& phenotype = m_organism->GetPhenotype();
@@ -254,7 +254,7 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org)
   }
 }
 
-cOrganism * cPopulationCell::RemoveOrganism()
+cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext* ctx) 
 {
   if (m_organism == NULL) return NULL;   // Nothing to do!
 	
@@ -262,21 +262,21 @@ cOrganism * cPopulationCell::RemoveOrganism()
   cOrganism * out_organism = m_organism;
   if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1 && m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get() > 0.0
 		 && m_world->GetConfig().FRAC_ENERGY_DECAY_AT_DEME_BIRTH.Get() != 1.0) { // hack
-    m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get());
+    m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, m_organism->GetPhenotype().GetStoredEnergy() * m_world->GetConfig().FRAC_ENERGY_TRANSFER.Get(), ctx);
   }
   m_organism = NULL;
   m_hardware = NULL;
   return out_organism;
 }
 
-double cPopulationCell::UptakeCellEnergy(double frac_to_uptake) {
+double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext* ctx) {
   assert(0.0 <= frac_to_uptake);
   assert(frac_to_uptake <= 1.0);
 	
-  double cell_energy = m_world->GetPopulation().GetDeme(m_deme_id).GetAndClearCellEnergy(m_cell_id);  
+  double cell_energy = m_world->GetPopulation().GetDeme(m_deme_id).GetAndClearCellEnergy(m_cell_id, ctx); 
   double uptakeAmount = cell_energy * frac_to_uptake;
   cell_energy -= uptakeAmount;
-  m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, cell_energy);
+  m_world->GetPopulation().GetDeme(m_deme_id).GiveBackCellEnergy(m_cell_id, cell_energy, ctx);
   return uptakeAmount;
 }
 

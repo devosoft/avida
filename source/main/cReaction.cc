@@ -35,6 +35,7 @@ cReaction::cReaction(const cString & _name, int _id)
   , task(NULL)
   , active(true)
   , internal(false)
+  , or_requisites(false) //JW
 {
 }
 

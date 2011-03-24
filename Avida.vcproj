@@ -469,6 +469,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\main\cDynamicCount.h"
+				>
+			</File>
+			<File
 				RelativePath=".\source\drivers\cDMObject.h"
 				>
 			</File>
@@ -1358,6 +1362,10 @@
 			</File>
 			<File
 				RelativePath=".\source\drivers\cDriverStatusConduit.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\source\main\cDynamicCount.cc"
 				>
 			</File>
 			<File

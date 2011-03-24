@@ -116,7 +116,7 @@ private:
   double total_energy_applied;                // Total amount of received energy applied to energy store
   int num_energy_requests;                    // Number of times organism has requested energy
   int num_energy_donations;                   // Number of times energy has been donated
-  int num_energy_receptions;                    // Number of times organism has received energy donations
+  int num_energy_receptions;                  // Number of times organism has received energy donations
   int num_energy_applications;                // Number of times organism has applied donated energy to its energy store
   int cur_num_errors;                         // Total instructions executed illeagally.
   int cur_num_donates;                        // Number of donations so far
@@ -130,19 +130,22 @@ private:
   tArray<double> cur_internal_task_quality;   // Average (total?) quaility with which each task using internal resources was performed
   tArray<double> cur_rbins_total;             // Total amount of resources collected over the organism's life
   tArray<double> cur_rbins_avail;             // Amount of internal resources available
-  tArray<int> cur_collect_spec_counts; // How many times each nop-specification was used in a collect-type instruction
+  tArray<int> cur_collect_spec_counts;        // How many times each nop-specification was used in a collect-type instruction
   tArray<int> cur_reaction_count;             // Total times each reaction was triggered.  
   tArray<double> cur_reaction_add_reward;     // Bonus change from triggering each reaction.
   tArray<int> cur_inst_count;                 // Instruction exection counter
   tArray<int> cur_sense_count;                // Total times resource combinations have been sensed; @JEB 
   tArray<double> sensed_resources;            // Resources which the organism has sensed; @JEB 
-  tArray<double> cur_task_time;    // Time at which each task was last performed; WRE 03-18-07
+  tArray<double> cur_task_time;               // Time at which each task was last performed; WRE 03-18-07
   tHashMap<void*, cTaskState*> m_task_states;
   tArray<double> cur_trial_fitnesses;         // Fitnesses of various trials.; @JEB
   tArray<double> cur_trial_bonuses;           // Bonuses of various trials.; @JEB
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
+  tArray<int> tolerance_immigrants;           // previous updates tolerance has been decreased towards immigrants @JJB
+  tArray<int> tolerance_offspring_own;        // previous updates tolerance has been decreased towards org's own offspring @JJB
+  tArray<int> tolerance_offspring_others;     // previous updates tolerance has been decreased towards other offspring in group @JJB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   cReactionResult* m_reaction_result;
@@ -395,6 +398,12 @@ public:
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB
+  const tArray<int>& GetToleranceImmigrants() { assert(initialized == true); return tolerance_immigrants; }            // @JJB
+  const tArray<int>& GetToleranceOffspringOwn() { assert(initialized == true); return tolerance_offspring_own; }       // @JJB
+  const tArray<int>& GetToleranceOffspringOthers() { assert(initialized == true); return tolerance_offspring_others; } // @JJB
+  int CalcToleranceImmigrants() const;       // @JJB
+  int CalcToleranceOffspringOwn() const;     // @JJB
+  int CalcToleranceOffspringOthers() const;  // @JJB
 
   double GetLastMeritBase() const { assert(initialized == true); return last_merit_base; }
   double GetLastBonus() const { assert(initialized == true); return last_bonus; }
@@ -581,7 +590,11 @@ public:
   void SetCurBonusInstCount(int _num_bonus_inst) {bonus_instruction_count = _num_bonus_inst;}
 
   void IncCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]++; } 
-  void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; } 
+  void DecCurInstCount(int _inst_num)  { assert(initialized == true); cur_inst_count[_inst_num]--; }
+
+  void ModifyToleranceImmigrants(int position, int update) { assert(initialized == true); tolerance_immigrants[position] = update; }            // @JJB
+  void ModifyToleranceOffspringOwn(int position, int update) { assert(initialized == true); tolerance_offspring_own[position] = update; }       // @JJB
+  void ModifyToleranceOffspringOthers(int position, int update) {assert(initialized == true); tolerance_offspring_others[position] = update; }  // @JJB
   
   void IncNumThreshGbDonations() { assert(initialized == true); num_thresh_gb_donations++; }
   void IncNumQuantaThreshGbDonations() { assert(initialized == true); num_quanta_thresh_gb_donations++; }

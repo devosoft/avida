@@ -37,6 +37,10 @@
 #ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
 #endif
+#ifndef cWorld_h
+#include "cWorld.h"
+#endif
+
 
 class cAvidaContext;
 class cBioGroup;
@@ -45,7 +49,6 @@ class cInstSet;
 class cGenome;
 class cResourceCount;
 class cResourceHistory;
-class cWorld;
 
 
 class cTestCPU
@@ -69,6 +72,7 @@ private:
 
   // Actual CPU resources.
   cResourceCount m_resource_count;
+  cResourceCount m_faced_cell_resource_count;
   cResourceCount m_deme_resource_count;
   
   
@@ -103,8 +107,9 @@ public:
   void ResetInputs(cAvidaContext& ctx);
 
   inline int GetReceiveValue();
-  inline const tArray<double>& GetResources();
-  inline const tArray<double>& GetDemeResources(int deme_id);
+  inline const tArray<double>& GetResources(cAvidaContext* ctx); 
+  inline const tArray<double>& GetFacedCellResources(cAvidaContext* ctx); 
+  inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext* ctx); 
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -133,14 +138,19 @@ inline int cTestCPU::GetReceiveValue()
   return receive_array[cur_receive++];
 }
 
-inline const tArray<double>& cTestCPU::GetResources()
+inline const tArray<double>& cTestCPU::GetResources(cAvidaContext* ctx)    
 {
-    return m_resource_count.GetResources();
+  return m_resource_count.GetResources(ctx); 
 }
 
-inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id)
+inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext* ctx)   
 {
-    return m_deme_resource_count.GetResources();
+  return m_faced_cell_resource_count.GetResources(ctx); 
+}
+ 
+inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext* ctx)    
+{
+    return m_deme_resource_count.GetResources(ctx); 
 }
 
 inline const tArray< tArray<int> >& cTestCPU::GetCellIdLists()

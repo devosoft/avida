@@ -284,6 +284,7 @@ public:
   CONFIG_ADD_VAR(RANDOM_SEED, int, 0, "Random number seed (0 for based on time)");
   CONFIG_ADD_VAR(SPECULATIVE, bool, 1, "Enable speculative execution\n(pre-execute instructions that don't affect other organisms)");
   CONFIG_ADD_VAR(POPULATION_CAP, int, 0, "Carrying capacity in number of organisms (use 0 for no cap)");
+  CONFIG_ADD_VAR(POP_CAP_ELDEST, int, 0, "Carrying capacity in number of organisms (use 0 for no cap). Will kill oldest organism in population, but still use birth method to place new offspring."); 
   
   
   // -------- Topology config options --------
@@ -576,10 +577,12 @@ public:
   CONFIG_ADD_VAR(ENV_FRACTION_THRESHOLD, double, 1.0, "The fraction of available environmental resource to compare available stored resource to when deciding whether to use stored resource.");
   CONFIG_ADD_VAR(RETURN_STORED_ON_DEATH, bool, 1, "Return an organism's stored resources to the world when it dies?");
   CONFIG_ADD_VAR(SPLIT_ON_DIVIDE, bool, 1, "Split mother cell's resources between two daughter cells on division?");
-  CONFIG_ADD_VAR(COLLECT_SPECIFIC_RESOURCE, int, 0, "Resource to be collected by the \"collect-specific\" instruction");
+  CONFIG_ADD_VAR(COLLECT_SPECIFIC_RESOURCE, int, 0, "Resource to be collected by the \"collect-specific\" instruction.");
+  CONFIG_ADD_VAR(RESOURCE_GIVEN_ON_INJECT, double, 0.0, "Units of collect-specific resources given on inject.");  
+  CONFIG_ADD_VAR(RESOURCE_GIVEN_AT_BIRTH, double, 0.0, "Units of collect-specific resources given to offspring upon birth (will be added to SPLIT_ON_DIVIDE amount for collect-specific resource if both enabled.");  
   CONFIG_ADD_VAR(COLLECT_PROB_DIVISOR, int, 1, "Divisor for probabilistic collect instructions.");
   
-
+  
   // -------- Analyze config options --------
   CONFIG_ADD_GROUP(ANALYZE_GROUP, "Analysis Settings");
   CONFIG_ADD_VAR(MAX_CONCURRENCY, int, -1, "Maximum number of analyze threads, -1 == use all available.");
@@ -672,11 +675,11 @@ public:
   
   // -------- Synchronization config options --------
   CONFIG_ADD_GROUP(MOVEMENT_GROUP, "Movement Features Settings");
-  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal?");
+  CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_LETHAL, int, 0, "Are collisions during movement lethal? (0=no, use swap; 1=yes, use collision selection type; 2=no, but movement fails)"); 
   CONFIG_ADD_VAR(MOVEMENT_COLLISIONS_SELECTION_TYPE, int, 0, "0 = 50% chance\n1 = binned vitality based");
   CONFIG_ADD_VAR(VITALITY_BIN_EXTREMES, double, 1.0, "vitality multiplier for extremes (> 1 stddev from the mean population age)");
-  CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 5.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");
-  
+  CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");
+  CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
   
   // -------- Pheromone config options --------
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");
@@ -733,6 +736,7 @@ public:
   CONFIG_ADD_GROUP(GROUP_FORMATION_GROUP, "Group Formation Settings");
   CONFIG_ADD_VAR(USE_FORM_GROUPS, int, 0, "Enable organisms to form groups. 0=off,\n 1=on no restrict,\n 2=on restrict to defined");
   CONFIG_ADD_VAR(DEFAULT_GROUP, int, -1, "Default group to assign to organisms not asserting a group membership (-1 indicates disabled)");
+  CONFIG_ADD_VAR(TOLERANCE_WINDOW, int, 0, "Window of how many updates previous to current to evaluate org's tolerance levels (0 indicates disabled)"); // @JJB
 	
 
   // -------- Deme network config options --------
@@ -803,7 +807,6 @@ public:
   // -------- UNDER CONSTRUCTION ----------
   CONFIG_ADD_GROUP(DEVEL_GROUP, "IN DEVELOPMENT (May not function correctly)");
   CONFIG_ADD_VAR(WORLD_Z, int, 1, "Depth of the Avida world");
-
 	
 #endif
   

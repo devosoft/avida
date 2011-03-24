@@ -169,7 +169,7 @@ public:
   void DivideReset(cDeme& parent_deme, bool resetResources = true, double deme_energy = 0.0);
 
   //! Kills all organisms currently in this deme.
-  void KillAll();
+  void KillAll(cAvidaContext* ctx); 
 
   void UpdateStats();
   
@@ -253,7 +253,7 @@ public:
 
   // -= Update support =-
   //! Called once, at the end of every update.
-  void ProcessUpdate();
+  void ProcessUpdate(cAvidaContext* ctx); 
   //! Returns the age of this deme in updates, where age is defined as the number of updates since the last time Reset() was called.
   int GetAge() const { return _age; }
 	//! Called when an organism living in a cell in this deme is about to be killed.
@@ -262,17 +262,17 @@ public:
   const cResourceCount& GetDemeResourceCount() const { return deme_resource_count; }
   cResourceCount& GetDemeResources() { return deme_resource_count; }
 	void SetResource(int id, double new_level) { deme_resource_count.Set(id, new_level); }
-  double GetSpatialResource(int rel_cellid, int resource_id) const;
+  double GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext* ctx) const;
   void AdjustSpatialResource(int rel_cellid, int resource_id, double amount);
   void AdjustResource(int resource_id, double amount);
   void SetDemeResourceCount(const cResourceCount in_res) { deme_resource_count = in_res; }
   void ResizeSpatialGrids(const int in_x, const int in_y) { deme_resource_count.ResizeSpatialGrids(in_x, in_y); }
   void ModifyDemeResCount(const tArray<double> & res_change, const int absolute_cell_id);
-  double GetCellEnergy(int absolute_cell_id) const;
-  double GetAndClearCellEnergy(int absolute_cell_id);
-  void GiveBackCellEnergy(int absolute_cell_id, double value);
-  void SetupDemeRes(int id, cResource * res, int verbosity);
-  void UpdateDemeRes() { deme_resource_count.GetResources(); }
+  double GetCellEnergy(int absolute_cell_id, cAvidaContext* ctx) const; 
+  double GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext* ctx); 
+  void GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext* ctx); 
+  void SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world);                 
+  void UpdateDemeRes(cAvidaContext* ctx) { deme_resource_count.GetResources(ctx); } 
   void Update(double time_step) { deme_resource_count.Update(time_step); }
   int GetRelativeCellID(int absolute_cell_id) const { return absolute_cell_id % GetSize(); } //!< assumes all demes are the same size
   int GetAbsoluteCellID(int relative_cell_id) const { return relative_cell_id + (_id * GetSize()); } //!< assumes all demes are the same size
@@ -287,7 +287,7 @@ public:
   bool KillCellEvent(const int eventID);
   cDemeCellEvent* GetCellEvent(const int i) { return &cell_events[i]; };
   
-  double CalculateTotalEnergy() const;
+  double CalculateTotalEnergy(cAvidaContext* ctx) const; 
   double CalculateTotalInitialEnergyResources() const;
 	double GetEnergyInjectedIntoOrganisms() const { return energyInjectedIntoOrganisms; }
 	void SetEnergyInjectedIntoOrganisms(double energy) { energyInjectedIntoOrganisms = energy; }
@@ -346,7 +346,7 @@ public:
 	unsigned int GetMessageSendFailed() { return MSG_sendFailed; }
   
   // --- Pheromones --- //
-  void AddPheromone(int absolute_cell_id, double value);
+  void AddPheromone(int absolute_cell_id, double value, cAvidaContext* ctx); 
 	
 	// --- Points --- //
 	double GetNumberOfPoints() { return points; }

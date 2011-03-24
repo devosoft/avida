@@ -103,14 +103,16 @@ public:
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;
-  const tArray<double>& GetResources();
-  const tArray<double>& GetDemeResources(int deme_id);
+  const tArray<double>& GetResources(cAvidaContext* ctx); 
+  const tArray<double>& GetFacedCellResources(cAvidaContext* ctx); 
+  const tArray<double>& GetDemeResources(int deme_id, cAvidaContext* ctx); 
   const tArray< tArray<int> >& GetCellIdLists();
   void UpdateResources(const tArray<double>& res_change);
   void UpdateDemeResources(const tArray<double>& res_change);
-  void Die();
-  void Kaboom(int distance);
-  void SpawnDeme();
+  void Die(cAvidaContext* ctx); 
+  void KillCellID(int target, cAvidaContext* ctx); 
+  void Kaboom(int distance, cAvidaContext* ctx); 
+  void SpawnDeme(cAvidaContext* ctx); 
   cOrgSinkMessage* NetReceive();
   bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg);
   int ReceiveValue();
@@ -134,7 +136,7 @@ public:
 
   int GetStateGridID(cAvidaContext& ctx);
 	
-  void Move(cAvidaContext& ctx, int src_id, int dest_id);
+  bool Move(cAvidaContext& ctx, int src_id, int dest_id);
 
 	// Reputation
 	void RotateToGreatestReputation();

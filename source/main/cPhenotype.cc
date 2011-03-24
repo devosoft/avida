@@ -54,6 +54,9 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_sense_count(m_world->GetStats().GetSenseSize())
 , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
+, tolerance_immigrants(m_world->GetConfig().TOLERANCE_WINDOW.Get() * m_world->GetConfig().AVE_TIME_SLICE.Get())        // @JJB
+, tolerance_offspring_own(m_world->GetConfig().TOLERANCE_WINDOW.Get() * m_world->GetConfig().AVE_TIME_SLICE.Get())     // @JJB
+, tolerance_offspring_others(m_world->GetConfig().TOLERANCE_WINDOW.Get() * m_world->GetConfig().AVE_TIME_SLICE.Get())  // @JJB
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_para_tasks(m_world->GetEnvironment().GetNumTasks())
@@ -146,7 +149,10 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   cur_inst_count           = in_phen.cur_inst_count;                 
   cur_sense_count          = in_phen.cur_sense_count;                 
   sensed_resources         = in_phen.sensed_resources;            
-  cur_task_time            = in_phen.cur_task_time;   
+  cur_task_time            = in_phen.cur_task_time;
+  tolerance_immigrants          = in_phen.tolerance_immigrants;        // @JJB
+  tolerance_offspring_own       = in_phen.tolerance_offspring_own;     // @JJB
+  tolerance_offspring_others    = in_phen.tolerance_offspring_others;  // @JJB
   cur_child_germline_propensity = in_phen.cur_child_germline_propensity;
   
   // Dynamically allocated m_task_states requires special handling
@@ -370,8 +376,17 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   // parent's resources have already been halved or reset in DivideReset;
   // offspring gets that value (half or 0) too.
-  for (int i = 0; i < cur_rbins_avail.GetSize(); i++)
-    cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
+  cur_rbins_avail.SetAll(0);
+  for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    if (m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get() > 0.0) {   
+      cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
+    }
+    if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {   
+      cur_rbins_avail[i] = parent_phenotype.cur_rbins_avail[i];
+      cur_rbins_avail[resource] = cur_rbins_avail[resource] + m_world->GetConfig().RESOURCE_GIVEN_AT_BIRTH.Get();
+    } 
+  }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -386,6 +401,9 @@ void cPhenotype::SetupOffspring(const cPhenotype& parent_phenotype, const cSeque
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
+  tolerance_immigrants.SetAll(0);        // @JJB
+  tolerance_offspring_own.SetAll(0);     // @JJB
+  tolerance_offspring_others.SetAll(0);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // Copy last values from parent
@@ -563,7 +581,11 @@ void cPhenotype::SetupInject(const cSequence & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);
-  cur_rbins_avail.SetAll(0);
+  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
+  }
+  else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -576,6 +598,9 @@ void cPhenotype::SetupInject(const cSequence & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
+  tolerance_immigrants.SetAll(0);        // @JJB
+  tolerance_offspring_own.SetAll(0);     // @JJB
+  tolerance_offspring_others.SetAll(0);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // New organism has no parent and so cannot use its last values; initialize as needed
@@ -795,13 +820,13 @@ void cPhenotype::DivideReset(const cSequence & _genome)
   cur_task_quality.SetAll(0);
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
-  cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
     // resources available are split in half -- the offspring gets the other half
     for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
   }
-  else {
+  else if (m_world->GetConfig().DIVIDE_METHOD.Get() != 0) {
     cur_rbins_avail.SetAll(0);
+    cur_rbins_total.SetAll(0);  // total resources collected in lifetime
   }
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
@@ -906,6 +931,12 @@ void cPhenotype::DivideReset(const cSequence & _genome)
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
   
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+	  tolerance_immigrants.SetAll(0);        // @JJB
+	  tolerance_offspring_own.SetAll(0);     // @JJB
+	  tolerance_offspring_others.SetAll(0);  // @JJB
+  }
+
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
   
   // Reset Task States
@@ -987,13 +1018,11 @@ void cPhenotype::TestDivideReset(const cSequence & _genome)
   cur_task_value.SetAll(0);
   cur_internal_task_quality.SetAll(0);
   cur_rbins_total.SetAll(0);  // total resources collected in lifetime
-  if (m_world->GetConfig().SPLIT_ON_DIVIDE.Get()) {
-    // resources available are split in half -- the offspring gets the other half
-    for (int i = 0; i < cur_rbins_avail.GetSize(); i++) {cur_rbins_avail[i] /= 2.0;}
+  if (m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get() > 0.0) {   
+    const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
+    cur_rbins_avail[resource] = m_world->GetConfig().RESOURCE_GIVEN_ON_INJECT.Get();
   }
-  else {
-    cur_rbins_avail.SetAll(0);
-  }
+  else cur_rbins_avail.SetAll(0);
   cur_collect_spec_counts.SetAll(0);
   cur_reaction_count.SetAll(0);
   cur_reaction_add_reward.SetAll(0);
@@ -1006,6 +1035,9 @@ void cPhenotype::TestDivideReset(const cSequence & _genome)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
+  tolerance_immigrants.SetAll(0);        // @JJB
+  tolerance_offspring_own.SetAll(0);     // @JJB
+  tolerance_offspring_others.SetAll(0);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // Setup other miscellaneous values...
@@ -1157,6 +1189,9 @@ void cPhenotype::SetupClone(const cPhenotype & clone_phenotype)
   cur_trial_times_used.Resize(0); 
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
+  tolerance_immigrants.SetAll(0);        // @JJB
+  tolerance_offspring_own.SetAll(0);     // @JJB
+  tolerance_offspring_others.SetAll(0);  // @JJB
   cur_child_germline_propensity = m_world->GetConfig().DEMES_DEFAULT_GERMLINE_PROPENSITY.Get();
   
   // Copy last values from parent
@@ -1640,6 +1675,66 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
   return out_fitness;
 }
 
+/* Returns the total tolerance for immigrants by counting
+the total number of updates within the update window that dec-tolerance has been executed. @JJB
+*/
+int cPhenotype::CalcToleranceImmigrants() const
+{
+	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+	const int cur_update = m_world->GetStats().GetUpdate();
+	const int tolerance_max = update_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+
+	int intolerance_count = 0;
+
+	for (int n = 0; n < tolerance_max; n++) {
+		if (tolerance_immigrants[n] <= cur_update - update_window) break;
+		intolerance_count++;
+	}
+
+	const int tolerance = tolerance_max - intolerance_count;
+	return tolerance;
+}
+
+/* Returns the total tolerance for own offspring by counting
+the total number of updates within the update window that dec-tolerance has been executed. @JJB
+*/
+int cPhenotype::CalcToleranceOffspringOwn() const
+{
+	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+	const int cur_update = m_world->GetStats().GetUpdate();
+	const int tolerance_max = update_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+
+	int intolerance_count = 0;
+
+	for (int n = 0; n < tolerance_max; n++) {
+		if (tolerance_offspring_own[n] <= cur_update - update_window) break;
+		intolerance_count++;
+	}
+
+	const int tolerance = tolerance_max - intolerance_count;
+	return tolerance;
+}
+
+/* Returns the total tolerance for the offspring of others in the group by counting
+the total number of updates within the update window that dec-tolerance has been executed. @JJB
+*/
+int cPhenotype::CalcToleranceOffspringOthers() const
+{
+	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+	const int cur_update = m_world->GetStats().GetUpdate();
+	const int tolerance_max = update_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+
+	int intolerance_count = 0;
+
+	for (int n = 0; n < tolerance_max; n++) {
+		if (tolerance_offspring_others[n] <= cur_update - update_window) break;
+		intolerance_count++;
+	}
+
+	const int tolerance = tolerance_max - intolerance_count;
+	return tolerance;
+}
+
 void cPhenotype::ReduceEnergy(const double cost) {
   SetEnergy(energy_store - cost);
 }
@@ -1851,6 +1946,9 @@ void cPhenotype::NewTrial()
   //cur_trial_fitnesses.Resize(0); Don't throw out the trial fitnesses! @JEB
   trial_time_used = 0;
   trial_cpu_cycles_used = 0;
+  tolerance_immigrants.SetAll(0);        // @JJB
+  tolerance_offspring_own.SetAll(0);     // @JJB
+  tolerance_offspring_others.SetAll(0);  // @JJB
   
   // Setup other miscellaneous values...
   num_divides++;
@@ -1973,6 +2071,12 @@ void cPhenotype::TrialDivideReset(const cSequence & _genome)
     neutral_metric += m_world->GetRandom().GetRandNormal();
   }
   
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
+	  tolerance_immigrants.SetAll(0);        // @JJB
+	  tolerance_offspring_own.SetAll(0);     // @JJB
+	  tolerance_offspring_others.SetAll(0);  // @JJB
+  }
+
   if (m_world->GetConfig().GENERATION_INC_METHOD.Get() == GENERATION_INC_BOTH) generation++;
 }
 

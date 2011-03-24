@@ -2931,6 +2931,107 @@ public:
   }
 };
 
+class cActionDumpIDGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpIDGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("id_grid.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    
+  //  fp << "id_grid" <<  m_world->GetStats().GetUpdate() << "= [ ..." << endl;
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetID() : -1;
+        fp << id << " ";
+      }
+      fp << endl;
+    }
+    //  fp << "];" << endl;
+    m_world->GetDataFileManager().Remove(filename);    
+  }
+};
+
+class cActionDumpVitalityGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpVitalityGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("vitality_grid.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+  
+  //  fp << "id_grid" <<  m_world->GetStats().GetUpdate() << "= [ ..." << endl;
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
+        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetVitality() : -1;
+        fp << id << " ";
+      }
+      fp << endl;
+    }
+       //   fp << "];" << endl;
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+//DumpMaxResGrid intended for creating single output file of spatial resources, recording the max value (of any resource) when resources overlap
+class cActionDumpMaxResGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpMaxResGrid(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();  
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("max_res_grid.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
+      for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
+        const tArray<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, &ctx); 
+        double max_resource = 0.0;    
+        // if more than one resource is available, return the resource with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+        for (int h = 0; h < res_count.GetSize(); h++) {
+          if (res_count[h] > max_resource) max_resource = res_count[h];
+        }
+        fp << max_resource << " ";
+      }
+      fp << endl;
+    }
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
 
 class cActionDumpSleepGrid : public cAction
 {
@@ -3323,7 +3424,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeAllStats();
+    m_world->GetPopulation().PrintDemeAllStats(&ctx);
   }
 };
 
@@ -3334,7 +3435,7 @@ public:
 	static const cString GetDescription() { return "No Arguments"; }
 
 	void Process(cAvidaContext& ctx) {
-		m_world->GetPopulation().PrintDemeTotalAvgEnergy();
+		m_world->GetPopulation().PrintDemeTotalAvgEnergy(&ctx); 
 	}
 };
 
@@ -3360,7 +3461,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeEnergyDistributionStats();
+    m_world->GetPopulation().PrintDemeEnergyDistributionStats(&ctx); 
   }
 };
 
@@ -3413,7 +3514,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeResource();
+    m_world->GetPopulation().PrintDemeResource(&ctx); 
   }
 };
 
@@ -3426,7 +3527,7 @@ public:
 
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().PrintDemeGlobalResources();
+    m_world->GetPopulation().PrintDemeGlobalResources(&ctx); 
   }
 };
 
@@ -3697,6 +3798,9 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpFitnessGrid>("DumpFitnessGrid");
   action_lib->Register<cActionDumpGenotypeColorGrid>("DumpGenotypeColorGrid");
   action_lib->Register<cActionDumpPhenotypeIDGrid>("DumpPhenotypeIDGrid");
+  action_lib->Register<cActionDumpIDGrid>("DumpIDGrid");
+  action_lib->Register<cActionDumpVitalityGrid>("DumpVitalityGrid");
+  action_lib->Register<cActionDumpMaxResGrid>("DumpMaxResGrid");
   action_lib->Register<cActionDumpTaskGrid>("DumpTaskGrid");
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
 	action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");

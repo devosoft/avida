@@ -85,6 +85,8 @@ cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, i
   , m_num_reciprocate(0)
   , m_failed_reputation_increases(0)
   , m_tag(make_pair(-1, 0))
+  , m_northerly(0)
+  , m_easterly(0)
 
 {
 	// initializing this here because it may be needed during hardware creation:
@@ -159,8 +161,9 @@ double cOrganism::GetVitality() const {
   double age_stddev = m_world->GetStats().SumCreatureAge().StdDeviation();
   int org_age = m_phenotype.GetAge();
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-  double res_level = m_phenotype.GetCurRBinAvail(resource);
-  
+  double res_level = 0.0;
+  if (resource >= 0) 
+    res_level = m_phenotype.GetCurRBinAvail(resource);
   double vitality = 0.0;
   
   if (org_age < (mean_age - age_stddev) || org_age > (mean_age + age_stddev)) {
@@ -293,8 +296,8 @@ void cOrganism::doOutput(cAvidaContext& ctx,
                          cContextPhenotype* context_phenotype)
 {  
   const int deme_id = m_interface->GetDemeID();
-  const tArray<double> & global_resource_count = m_interface->GetResources();
-  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id);
+  const tArray<double> & global_resource_count = m_interface->GetResources(&ctx); 
+  const tArray<double> & deme_resource_count = m_interface->GetDemeResources(deme_id, &ctx); 
   const tArray< tArray<int> > & cell_id_lists = m_interface->GetCellIdLists();
   
   tList<tBuffer<int> > other_input_list;
@@ -517,7 +520,7 @@ bool cOrganism::NetRemoteValidate(cAvidaContext& ctx, int value)
   
   if (completed) {
     assert(m_interface);
-    const tArray<double>& resource_count = m_interface->GetResources();
+    const tArray<double>& resource_count = m_interface->GetResources(&ctx); 
     
     tList<tBuffer<int> > other_input_list;
     tList<tBuffer<int> > other_output_list;
@@ -572,9 +575,10 @@ void cOrganism::HardwareReset(cAvidaContext& ctx)
     const cStateGrid& sg = GetStateGrid();
     
     tArray<int> sg_state(3 + sg.GetNumStates(), 0);
-    sg_state[0] = sg.GetInitialX();
-    sg_state[1] = sg.GetInitialY();
-    sg_state[2] = sg.GetInitialFacing();
+	
+      sg_state[0] = sg.GetInitialX();
+      sg_state[1] = sg.GetInitialY();
+      sg_state[2] = sg.GetInitialFacing(); 
     
     m_hardware->SetupExtendedMemory(sg_state);
   }
@@ -931,7 +935,7 @@ std::pair<bool, cOrgMessage> cOrganism::RetrieveMessage() {
 	return ret;
 }
 
-void cOrganism::Move(cAvidaContext& ctx)
+bool cOrganism::Move(cAvidaContext& ctx)
 {
   assert(m_interface);
   
@@ -949,8 +953,36 @@ void cOrganism::Move(cAvidaContext& ctx)
   int fromcellID = GetCellID();
   int destcellID = GetFacedCellID();
   
+  int facing = GetFacing();
+  
   // Actually perform the move
-  m_interface->Move(ctx, fromcellID, destcellID);
+  if (m_interface->Move(ctx, fromcellID, destcellID)) {
+    //Keep track of successful movement E/W and N/S in support of get-easterly and get-northerly for navigation
+    if (facing == 0) m_northerly = m_northerly - 1;       // N
+    else if (facing == 1) {                           // NW
+      m_northerly = m_northerly - 1; 
+      m_easterly = m_easterly - 1;
+    }  
+    else if (facing == 3) m_easterly = m_easterly - 1;    // W
+    else if (facing == 2) {                           // SW
+      m_northerly = m_northerly + 1; 
+      m_easterly = m_easterly - 1;
+    }
+    else if (facing == 6) m_northerly = m_northerly + 1;  // S
+    else if (facing == 7) {                           // SE
+      m_northerly = m_northerly + 1; 
+      m_easterly = m_easterly + 1;
+    }
+    else if (facing == 5) m_easterly = m_easterly + 1;    // E    
+    else if (facing == 4) {                           // NE
+      m_northerly = m_northerly - 1; 
+      m_easterly = m_easterly + 1;
+    }
+  }
+  else return false;              
+  
+  // Check to make sure the organism is still alive
+  if (m_phenotype.GetToDelete()) return false;
   
   // updates movement predicates
   m_world->GetStats().Move(*this);
@@ -967,12 +999,12 @@ void cOrganism::Move(cAvidaContext& ctx)
     cDeme* deme = GetDeme();
     
     if (drop_mode == 0) {
-      deme->AddPheromone(fromcellID, pher_amount / 2);
-      deme->AddPheromone(destcellID, pher_amount / 2);
+      deme->AddPheromone(fromcellID, pher_amount / 2, &ctx); 
+      deme->AddPheromone(destcellID, pher_amount / 2, &ctx); 
     } else if(drop_mode == 1) {
-      deme->AddPheromone(fromcellID, pher_amount);
+      deme->AddPheromone(fromcellID, pher_amount, &ctx); 
     } else if(drop_mode == 2) {
-      deme->AddPheromone(destcellID, pher_amount);
+      deme->AddPheromone(destcellID, pher_amount, &ctx); 
     }
   } // End laying pheromone
   
@@ -995,6 +1027,7 @@ void cOrganism::Move(cAvidaContext& ctx)
     // then create new thread and load its registers
     m_hardware->InterruptThread(cHardwareBase::MOVE_INTERRUPT);
   }
+  return true;    
 } //End cOrganism::Move()
 
 bool cOrganism::BcastAlarmMSG(cAvidaContext& ctx, int jump_label, int bcast_range) {

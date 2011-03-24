@@ -229,10 +229,12 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDemeNetwork.cc
   ${MAIN_DIR}/cDemeTopologyNetwork.cc
   ${MAIN_DIR}/cDemeCellEvent.cc
+  ${MAIN_DIR}/cDynamicCount.cc #JW
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
   ${MAIN_DIR}/cGenome.cc
   ${MAIN_DIR}/cGenomeUtil.cc
+  ${MAIN_DIR}/cGradientCount.cc #JW
   ${MAIN_DIR}/cInstruction.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cMutationRates.cc

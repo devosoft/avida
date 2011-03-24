@@ -94,7 +94,7 @@ public:
   {
     cGenome genome;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
-    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
+    m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
 
@@ -141,7 +141,7 @@ public:
     cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
     cSequence& seq = mg.GetSequence();
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
-    m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, m_cell_id, m_merit, m_lineage_label, m_neutral_metric);
+    m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, &ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
 
@@ -197,7 +197,7 @@ public:
       if (m_sex) seq[m_length] = is.GetInst("repro-sex");
       else seq[m_length] = is.GetInst("repro");
       
-      m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, i, m_merit, m_lineage_label, m_neutral_metric);
+      m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, &ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
     }
   }
 };
@@ -246,7 +246,7 @@ public:
     cGenome genome;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
-      m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
+      m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
 
@@ -307,7 +307,7 @@ public:
       cGenome genome;
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -366,7 +366,7 @@ public:
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
       m_world->GetPopulation().SetSyncEvents(true);
     }
@@ -428,7 +428,7 @@ public:
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
       }
       m_world->GetPopulation().SetSyncEvents(true);
@@ -546,7 +546,7 @@ public:
       genome.LoadFromDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager());
       for (int i = m_cell_start; i < m_cell_end; i++) {
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, i, m_merit, m_lineage_label, m_neutral_metric);
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().InjectParasite(m_label, parasite.GetSequence(), i);
       }
       m_world->GetPopulation().SetSyncEvents(true);
@@ -601,18 +601,18 @@ public:
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
-                                        m_merit, m_lineage_label, m_neutral_metric);
+                                        m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
       }
     } else {
       for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
-        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
+        m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(0),
-                                        m_merit, m_lineage_label, m_neutral_metric);
+                                        m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
         
       }
@@ -669,9 +669,9 @@ public:
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         if (i % m_mod_num == 0) {
-          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
+          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx,
                                           m_world->GetPopulation().GetDeme(i).GetCellID(0),
-                                          m_merit, m_lineage_label, m_neutral_metric);
+                                          m_merit, m_lineage_label, m_neutral_metric); 
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();
         }
       }
@@ -680,9 +680,9 @@ public:
         // WARNING: initial ancestor has already be injected into the population
         //           calling this will overwrite it.
         if (i==0 || (i % m_mod_num) ==0){
-          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD,
+          m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, &ctx,
 																					m_world->GetPopulation().GetDeme(i).GetCellID(0),
-																					m_merit, m_lineage_label, m_neutral_metric);
+																					m_merit, m_lineage_label, m_neutral_metric);  
           m_world->GetPopulation().GetDeme(i).IncInjectedCount();
         }
         
@@ -753,9 +753,9 @@ public:
       }
       
       if(m_world->GetPopulation().GetDeme(i).GetInjectedCount() < m_num_orgs) {
-        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), SRC_DEME_GERMLINE,
+        m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), SRC_DEME_GERMLINE, &ctx,
                                         m_world->GetPopulation().GetDeme(i).GetCellID(m_nest_cellid),
-                                        m_merit, m_lineage_label, m_neutral_metric);
+                                        m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
       }
       
@@ -838,8 +838,8 @@ public:
         assert(target_cell < m_world->GetPopulation().GetSize());
         
         m_world->GetPopulation().Inject(m_world->GetPopulation().GetDeme(i).GetGermline().GetLatest(), SRC_DEME_GERMLINE,
-                                        target_cell, m_merit,
-                                        m_lineage_label, m_neutral_metric);
+                                        &ctx, target_cell, m_merit,
+                                        m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetDeme(i).IncInjectedCount();
       } //End if there are still orgs to be inserted
       
@@ -876,7 +876,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       if (cell.IsOccupied() == false) continue;
-      if (ctx.GetRandom().P(m_killprob))  m_world->GetPopulation().KillOrganism(cell);
+      if (ctx.GetRandom().P(m_killprob))  m_world->GetPopulation().KillOrganism(cell, &ctx); 
     }
   }
 };
@@ -934,7 +934,7 @@ public:
     while(organismsToKill > 0) {
       cPopulationCell& cell = pop.GetCell(killIndex);
       if (cell.IsOccupied()) {
-        pop.KillOrganism(cell);
+        pop.KillOrganism(cell, &ctx); 
         --organismsToKill;
       }
       killIndex = (killIndex + 1) % pop.GetSize();
@@ -989,7 +989,7 @@ public:
     while(organismsToKill > 0) {
       cPopulationCell& cell = pop.GetCell(killIndex);
       if (cell.IsOccupied()) {
-        pop.KillOrganism(cell);
+        pop.KillOrganism(cell, &ctx); 
         --organismsToKill;
       }
       killIndex = (killIndex + 1) % pop.GetSize();
@@ -1045,7 +1045,7 @@ public:
       // decide if it should be killed or not, based on the count and a the kill probability
       if (count >= m_limit) {
         if (ctx.GetRandom().P(m_killprob))  {
-          m_world->GetPopulation().KillOrganism(cell);
+          m_world->GetPopulation().KillOrganism(cell, &ctx); 
           totalkilled++;
         }
       }
@@ -1106,7 +1106,7 @@ public:
 			// decide if it should be killed or not, based on the two counts and a the kill probability
 			if ((count1 >= m_limit) && (count2 >= m_limit)) {
 				if (ctx.GetRandom().P(m_killprob))  {
-					m_world->GetPopulation().KillOrganism(cell);
+					m_world->GetPopulation().KillOrganism(cell, &ctx); 
 					totalkilled++;
 				}
 			}
@@ -1191,7 +1191,7 @@ public:
 				currentKillProb.Add(killprob);
 				// decide if it should be killed or not, based on the kill probability
 				if (ctx.GetRandom().P(killprob)) {
-					m_world->GetPopulation().KillOrganism(cell);
+					m_world->GetPopulation().KillOrganism(cell, &ctx); 
 					++totalkilled;
 				}
 			}
@@ -1289,7 +1289,7 @@ public:
 				currentKillProb.Add(killprob);
 				// decide if it should be killed or not, based on the kill probability
 				if (ctx.GetRandom().P(killprob)) {
-					m_world->GetPopulation().KillOrganism(cell);
+					m_world->GetPopulation().KillOrganism(cell, &ctx);
 					++totalkilled;
 				}
 			}
@@ -1416,7 +1416,7 @@ public:
         
         if(res.IsSpatial(resid)) {
           for (int c = 0; c < deme.GetWidth() * deme.GetHeight(); c++) {
-            deme.AdjustSpatialResource(c, resid, -1 * deme.GetSpatialResource(c, resid) * adjusted_amount); 
+            deme.AdjustSpatialResource(c, resid, -1 * deme.GetSpatialResource(c, resid, &ctx) * adjusted_amount); 
           } //End iterating through all cells
         }
         else
@@ -1514,7 +1514,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++) {
       cPopulationCell& cell = m_world->GetPopulation().GetCell(i);
       if (cell.IsOccupied() == false) continue;
-      if (ctx.GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell);
+      if (ctx.GetRandom().P(kill_prob))  m_world->GetPopulation().KillOrganism(cell, &ctx); 
     }
   }
 };
@@ -1583,7 +1583,7 @@ public:
       for (int j = m_x1; j <= m_x2; j++) {
         int loc = (i % pop.GetWorldY()) * pop.GetWorldX() + (j % pop.GetWorldX());
         cPopulationCell& cell = pop.GetCell(loc);
-        if (cell.IsOccupied()) pop.KillOrganism(cell);
+        if (cell.IsOccupied()) pop.KillOrganism(cell, &ctx); 
       }
     }
     m_world->GetPopulation().SetSyncEvents(true);
@@ -1625,7 +1625,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().SerialTransfer(m_size, m_ignore_deads);
+    m_world->GetPopulation().SerialTransfer(m_size, m_ignore_deads, &ctx); 
   }
 };
 
@@ -2024,7 +2024,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().CompeteDemes(m_type);
+    m_world->GetPopulation().CompeteDemes(m_type); 
   }
 };
 
@@ -2176,15 +2176,15 @@ public:
   virtual void Process(cAvidaContext& ctx) {
     std::vector<double> fitness;
     for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-      fitness.push_back(Fitness(m_world->GetPopulation().GetDeme(i)));
+      fitness.push_back(Fitness(m_world->GetPopulation().GetDeme(i), &ctx));
       assert(fitness.back() >= 0.0);
     }
-    m_world->GetPopulation().CompeteDemes(fitness);
+    m_world->GetPopulation().CompeteDemes(fitness, &ctx); 
   }
 	
   /*! Deme fitness function, to be overriden by specific types of deme competition.
    */
-  virtual double Fitness(cDeme& deme) = 0;
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) = 0;
 };
 
 
@@ -2227,23 +2227,23 @@ public:
 	virtual void Process(cAvidaContext& ctx) {
 		_update_fitness.resize(m_world->GetPopulation().GetNumDemes());													 
     for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-			_update_fitness[i] += Update(m_world->GetPopulation().GetDeme(i));
+			_update_fitness[i] += Update(m_world->GetPopulation().GetDeme(i), &ctx); 
 		}
 		
 		if((m_world->GetStats().GetUpdate() % _compete_period) == 0) {
 			std::vector<double> fitness;
 			for(int i=0; i<m_world->GetPopulation().GetNumDemes(); ++i) {
-				fitness.push_back(pow(_update_fitness[i] + Fitness(m_world->GetPopulation().GetDeme(i)), 2.0));
+				fitness.push_back(pow(_update_fitness[i] + Fitness(m_world->GetPopulation().GetDeme(i), &ctx), 2.0));
 				assert(fitness.back() >= 0.0);
 			}			
-			m_world->GetPopulation().CompeteDemes(fitness);
+			m_world->GetPopulation().CompeteDemes(fitness, &ctx); 
 			_update_fitness.clear();
 			Clear();
 		}
 	}
 	
 	//! Called on each action invocation, *including* immediately prior to fitness calculation.
-	virtual double Update(cDeme& deme) = 0;
+	virtual double Update(cDeme& deme, cAvidaContext* ctx) = 0; 
 	//! Called after demes compete, so that subclasses can clean up any state.
 	virtual void Clear() { }
 	
@@ -2268,7 +2268,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	//! Calculate the current fitness of this deme.
-  virtual double Fitness(cDeme& deme) {
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) {
 		return deme.GetNetwork().Fitness();
 	}
 };
@@ -2324,7 +2324,7 @@ public:
 	}
 
 	//! Calculate the current fitness of this deme.
-	virtual double Fitness(cDeme& deme) {
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) {
 		return pow((double)received_data(deme) + 1.0, 2.0);
 	}
 	
@@ -2360,7 +2360,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	//! Calculate the current fitness of this deme.
-	virtual double Fitness(cDeme& deme) {
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) {
 		// First, get the number that have received the data (and set their opinion):
 		unsigned int received = received_data(deme);
 		
@@ -2391,7 +2391,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	//! Calculate the current fitness of this deme.
-	virtual double Fitness(cDeme& deme) {
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) {
 		// First, get the number that have received the data (and set their opinion):
 		unsigned int received = received_data(deme);
 		
@@ -2551,7 +2551,7 @@ public:
 	static const cString GetDescription() { return "Arguments: [int compete_period=100 [int replace_number=1 [int kill=1 [int restrict_range=1]]]]"; }
 	
 	//! Calculate the current fitness of this deme.
-  virtual double Fitness(cDeme& deme) {
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) {
 		return max_support(deme).first + 1;
 	}
 	
@@ -2575,7 +2575,7 @@ public:
 	 The intent behind this version of Update() is that for each consensus round, we
 	 only reward *once* for each level of hold time that is reached.
 	 */
-	virtual double Update(cDeme& deme) {
+	virtual double Update(cDeme& deme, cAvidaContext* ctx) { 
 		// find the current maximally-supported opinion, and get this deme's
 		// state information
 		std::pair<unsigned int, cOrganism::Opinion> support = max_support(deme);
@@ -2606,7 +2606,7 @@ public:
 		// has this opinion been held long enough?
 		if(st->second.current >= _hold) {
 			// yes; this is now a "true" consensus.
-			ConsensusReached(deme, support);
+			ConsensusReached(deme, support, ctx); 
 			// erase our state!
 			_state.erase(st);
 			// and reward by the size of the deme.
@@ -2631,7 +2631,7 @@ public:
 protected:
 	
 	//! This method handles the clean-up of a deme once consensus has been reached.
-	void ConsensusReached(cDeme& deme, std::pair<unsigned int, cOrganism::Opinion>& support) {
+	void ConsensusReached(cDeme& deme, std::pair<unsigned int, cOrganism::Opinion>& support, cAvidaContext* ctx) { 
 		// Record that consensus occurred:
 		m_world->GetStats().ConsensusReached(deme, support.second, cAssignRandomCellData::CellIDFromData(support.second, deme));
 		
@@ -2666,12 +2666,12 @@ protected:
 				cPopulationCell& cell = deme.GetCell(*i);				
 				if(cell.IsOccupied()) {
 					if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()) {
-						m_world->GetPopulation().KillOrganism(cell);
-						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
+						m_world->GetPopulation().KillOrganism(cell, ctx); 
+						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest(), ctx); 
 					} else {
 						cGenome genome(cell.GetOrganism()->GetGenome());
-						m_world->GetPopulation().KillOrganism(cell);
-						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_RANDOM, genome);
+						m_world->GetPopulation().KillOrganism(cell, ctx); 
+						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_RANDOM, genome, ctx); 
 					}
 					
 					m_world->GetPopulation().DemePostInjection(deme, cell);
@@ -2723,8 +2723,8 @@ public:
 					
 					// Kill any organism in that cell, re-seed the from the germline, and do the post-injection magic:
 					assert(deme.GetGermline().Size()>0);
-					m_world->GetPopulation().KillOrganism(cell);
-					m_world->GetPopulation().InjectGenome(cell.GetID(), SRC_DEME_GERMLINE, deme.GetGermline().GetLatest());
+					m_world->GetPopulation().KillOrganism(cell, &ctx); 
+					m_world->GetPopulation().InjectGenome(cell.GetID(), SRC_DEME_GERMLINE, deme.GetGermline().GetLatest(), &ctx); 
 					m_world->GetPopulation().DemePostInjection(deme, cell);
 				}
 			}
@@ -2777,7 +2777,7 @@ public:
 	 that have set their opinion to the desired value.  We're going to set fitness == number
 	 of organisms that have an opinion to get things jumpstarted.
    */
-  virtual double Fitness(cDeme& deme) {
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		// the number of individuals that have set their opinion to _desired:
 		// s.first == support, s.second == have_opinion
 		std::pair<int, int> s = support(deme, _desired);
@@ -2876,7 +2876,7 @@ public:
 	 We're going to set fitness == number of organisms that have an opinion to get 
 	 things jumpstarted.
    */
-  virtual double Fitness(cDeme& deme) {
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		
 		// How many opinions are set?
 		int ocount = count_opinions(deme);
@@ -2928,7 +2928,7 @@ public:
   /*! Fitness function.
 	 Functions as described in the comments above.
 	 */
-  virtual double Fitness(cDeme& deme) {
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		
 		float val = 0.0;
 		double performed_t1=0.0;
@@ -2982,7 +2982,7 @@ public:
 	 Here we reward the deme based on the number of unique reactions that have been
 	 performed by the current individuals.
 	 */
-  virtual double Fitness(cDeme& deme) {
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		std::set<int> uniq_reactions;
 		int performed=0;
 		for(int i=0; i<deme.GetSize(); ++i) {
@@ -3033,7 +3033,7 @@ public:
 	
 	static const cString GetDescription() { return "No arguments."; }
 	
-	virtual double Fitness(cDeme& deme) {
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		return 1.0;
 	}
 };
@@ -3068,7 +3068,7 @@ public:
 		return "Competes demes according to the number of times a given task has been completed within that deme"; 
 	}
 	
-	virtual double Fitness(cDeme& deme) {
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		double fitness = pow(deme.GetCurTaskExeCount()[_task_num], 2.0);///deme.GetInjectedCount());
     if (fitness == 0.0) fitness = 0.1;
     return fitness;
@@ -3107,8 +3107,8 @@ public:
 		return "Competes demes according to the number of times a given task has been completed within that deme and the efficiency with which it was done"; 
 	}
 	
-	virtual double Fitness(cDeme& deme) {
-    double energy_used = _initial_deme_energy - deme.CalculateTotalEnergy();
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
+    double energy_used = _initial_deme_energy - deme.CalculateTotalEnergy(ctx); 
 		double fitness = 
 		pow(deme.GetCurTaskExeCount()[_task_num] * (_initial_deme_energy/energy_used),2);
     if (fitness == 0.0) fitness = 0.1;
@@ -3130,7 +3130,7 @@ public:
 		return "Competes demes according to the distribution of energy among the organisms"; 
 	}
 	
-	virtual double Fitness(cDeme& deme) {
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		const int numcells = deme.GetSize();
 		
 		double min_energy = -1;
@@ -3221,7 +3221,7 @@ public:
   /*! Calculate the fitness based on how well the organisms in this deme have
 	 synchronized their flashes.
    */
-  virtual double Fitness(cDeme& deme) {
+  virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -3292,7 +3292,7 @@ public:
   static const cString GetDescription() { return "No Arguments"; }
   
 	//! Calculate fitness based on how well organisms have spread throughout phase-space.
-	virtual double Fitness(cDeme& deme) {
+	virtual double Fitness(cDeme& deme, cAvidaContext* ctx) { 
 		cStats::PopulationFlashes::const_iterator deme_flashes = m_world->GetStats().GetFlashTimes().find(deme.GetID());
 		if(deme_flashes == m_world->GetStats().GetFlashTimes().end()) {
 			// Hm, nothing to see here.  We're done.
@@ -3327,10 +3327,10 @@ public:
 	
 	static const cString GetDescription() { return "No Arguments"; }
   
-	double Fitness(cDeme& deme) {    
+	double Fitness(cDeme& deme, cAvidaContext* ctx) {  
 		double eventsKilled = static_cast<double>(deme.GetEventsKilled());
 		double totalEvents  = static_cast<double>(deme.GetEventsTotal());
-		double energyRemaining = deme.CalculateTotalEnergy();
+		double energyRemaining = deme.CalculateTotalEnergy(ctx); 
 		double initialEnergy = deme.CalculateTotalInitialEnergyResources();
 		double fitnessOfDeme = ((eventsKilled / totalEvents) + (energyRemaining / initialEnergy)) / 2.0;
 		return fitnessOfDeme;
@@ -3391,7 +3391,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().ReplicateDemes(m_rep_trigger);
+    m_world->GetPopulation().ReplicateDemes(m_rep_trigger, &ctx); 
   }
 };
 
@@ -3430,7 +3430,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().DivideDemes();
+    m_world->GetPopulation().DivideDemes(&ctx); 
   }
 };
 
@@ -3449,7 +3449,7 @@ public:
 	static const cString GetDescription() { return "No arguments."; }
 	
 	void Process(cAvidaContext& ctx) {
-		m_world->GetPopulation().MixPopulation();
+		m_world->GetPopulation().MixPopulation(&ctx);
 	}
 };
 
@@ -3489,7 +3489,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetPopulation().CopyDeme(m_id1, m_id2);
+    m_world->GetPopulation().CopyDeme(m_id1, m_id2, &ctx); 
   }
 };
 
@@ -3978,7 +3978,7 @@ public:
       m_world->GetDriver().NotifyWarning("SwapCells cell IDs identical");
     }
     
-    m_world->GetPopulation().SwapCells(id1, id2);
+    m_world->GetPopulation().SwapCells(id1, id2, &ctx); 
   }
 };
 
@@ -4123,13 +4123,13 @@ public:
     
     for(int i=0; i < m_numkills; i++) {
       target_cell = m_world->GetRandom().GetInt(0, m_world->GetPopulation().GetSize()-1);
-      level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+      level = m_world->GetPopulation().GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell); 
       cells_scanned++;
       
       if(level < m_threshold) {
         cPopulationCell& cell = pop.GetCell(target_cell);
         if (cell.IsOccupied()) {
-          pop.KillOrganism(cell);
+          pop.KillOrganism(cell, &ctx); 
           orgs_killed++;
         } else {
           cells_empty++;
@@ -4207,7 +4207,7 @@ public:
     for (int i = 0; i < m_numradii; i++) {
       
       int target_cell = m_world->GetRandom().GetInt(0, pop.GetSize()-1);
-      double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell);
+      double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(target_cell); 
       
       if(level < m_threshold) {
         const int current_row = target_cell / world_x;
@@ -4236,7 +4236,7 @@ public:
             cPopulationCell& cell = pop.GetCell(current_cell);
             
             if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
-              pop.KillOrganism(cell);
+              pop.KillOrganism(cell, &ctx); 
               orgs_killed++;
             } else {
               cells_empty++;
@@ -4344,7 +4344,7 @@ public:
           }
           
           int current_cell = (world_x * row_adj) + col_adj;
-          resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));            
+          resourcesum.Add(pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell));           
           cells_scanned++;
         }
       }
@@ -4372,7 +4372,7 @@ public:
             cPopulationCell& cell = pop.GetCell(current_cell);
             
             if( (cell.IsOccupied())  && (ctx.GetRandom().P(m_kill_density)) ) {
-              pop.KillOrganism(cell);
+              pop.KillOrganism(cell, &ctx); 
               orgs_killed++;
             } else {
               cells_empty++;
@@ -4521,7 +4521,7 @@ public:
             cPopulationCell& cell = pop.GetCell(current_cell);
             
             if( (cell.IsOccupied())  && (ctx.GetRandom().P(kill_prob)) ) {
-              pop.KillOrganism(cell);
+              pop.KillOrganism(cell, &ctx);
               orgs_killed++;
             } else {
               cells_empty++;
@@ -4627,11 +4627,11 @@ public:
 					cPopulationCell& cell = pop.GetCell(current_cell);
 					cells_scanned++;
 					
-					double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell);
+					double level = pop.GetResourceCount().GetSpatialResource(res_id).GetAmount(current_cell); 
 					
 					if(level < m_threshold) {
 						if( (cell.IsOccupied()) && (ctx.GetRandom().P(m_kill_density)) ) {
-							pop.KillOrganism(cell);
+							pop.KillOrganism(cell, &ctx); 
 							orgs_killed++;
 						} else {
 							cells_empty++;
@@ -4692,7 +4692,7 @@ public:
           
           if(ctx.GetRandom().P(m_pctkills)) {
             if(cell.IsOccupied()) {
-              pop.KillOrganism(pop.GetCell(target_cell));
+              pop.KillOrganism(pop.GetCell(target_cell), &ctx); 
               orgs_killed++;
             } else {
               cells_empty++; 

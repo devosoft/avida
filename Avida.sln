@@ -1,9 +1,7 @@
-
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Avida", "Avida.vcproj", "{E1C1D683-833F-40D9-A952-CEC54FE40EFC}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "source\targets\avida-viewer-windows\Installer\Installer.vdproj", "{9E776A2E-5D27-4900-9856-F5AF0C8FC84A}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Avida", "Avida.vcxproj", "{E1C1D683-833F-40D9-A952-CEC54FE40EFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +13,6 @@ Global
 		{E1C1D683-833F-40D9-A952-CEC54FE40EFC}.Debug|Win32.Build.0 = Debug|Win32
 		{E1C1D683-833F-40D9-A952-CEC54FE40EFC}.Release|Win32.ActiveCfg = Release|Win32
 		{E1C1D683-833F-40D9-A952-CEC54FE40EFC}.Release|Win32.Build.0 = Release|Win32
-		{9E776A2E-5D27-4900-9856-F5AF0C8FC84A}.Debug|Win32.ActiveCfg = Debug
-		{9E776A2E-5D27-4900-9856-F5AF0C8FC84A}.Release|Win32.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

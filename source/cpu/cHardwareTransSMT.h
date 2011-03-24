@@ -249,7 +249,7 @@ public:
 	
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add); 
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin); 
-  bool FindModifiedResource(int& start_index, int& end_index, int& spec_id); 
+  bool FindModifiedResource(cAvidaContext& ctx, int& start_index, int& end_index, int& spec_id); 
 
 private:
   // ---------- Instruction Library -----------

@@ -148,7 +148,7 @@ public:
   void PrintStatus(std::ostream& fp, const cString& next_name);
   void PrintFinalStatus(std::ostream& fp, int time_used, int time_allocated) const;
   void Fault(int fault_loc, int fault_type, cString fault_desc="");
-  
+
   void NewTrial();
   
   
@@ -238,9 +238,10 @@ public:
   int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); }
   tBuffer<int>& GetInputBuf() { return m_input_buf; }
   tBuffer<int>& GetOutputBuf() { return m_output_buf; }
-  void Die() { m_interface->Die(); m_is_dead = true; }
-  void Kaboom(int dist) { m_interface->Kaboom(dist);}
-  void SpawnDeme() { m_interface->SpawnDeme(); }
+  void Die(cAvidaContext* ctx) { m_interface->Die(ctx); m_is_dead = true; } 
+  void KillCellID(int target, cAvidaContext* ctx) { m_interface->KillCellID(target, ctx); } 
+  void Kaboom(int dist, cAvidaContext* ctx) { m_interface->Kaboom(dist,ctx);} 
+  void SpawnDeme(cAvidaContext* ctx) { m_interface->SpawnDeme(ctx); } 
   bool GetSentActive() { return m_sent_active; }
   void SendValue(int value) { m_sent_active = true; m_sent_value = value; }
   int RetrieveSentValue() { m_sent_active = false; return m_sent_value; }
@@ -427,7 +428,7 @@ public:
   
   // -------- BDC Movement ---------
 public:
-  void Move(cAvidaContext& ctx);
+  bool Move(cAvidaContext& ctx);
 
   
   /***** context switch********/
@@ -583,6 +584,12 @@ public:
 	bool ReceiveString(int string_tag, int amount, int donor_id); 
 	bool CanReceiveString(int string_tag, int amount); 
 	
+  // get the organism's relative position (from birth place)
+  int GetNortherly() { return m_northerly; }
+	int GetEasterly() { return m_easterly; } 
+	void ClearEasterly() {m_easterly = 0; }
+	void ClearNortherly() {m_northerly = 0; }
+  
 protected:
 	// The organism's own raw materials
 	int m_self_raw_materials; 
@@ -606,9 +613,13 @@ protected:
 	// int number of reputation increase failures
 	int m_failed_reputation_increases;
 	std::pair < int, int > m_tag;
+  //total number of steps taken to north (minus S steps) since birth
+  int m_northerly;
+  //total number of steps taken to east (minus W steps) since birth  
+  int m_easterly;
 	
-  /*! Contains all the different data structures needed to 
-	 track strings, production of strings, and donation/trade 
+  /*! Contains all the different data structures needed to
+	 track strings, production of strings, and donation/trade
 	 of strings. It is inspired by the cMessagingSupport*/
   struct cStringSupport
   {

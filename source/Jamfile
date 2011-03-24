@@ -79,10 +79,12 @@ lib avida-core :
     main/cDemeNetwork.cc
     main/cDemeTopologyNetwork.cc
     main/cDemeCellEvent.cc
+    main/cDynamicCount.cc
     main/cEnvironment.cc
     main/cEventList.cc
     main/cGenome.cc
     main/cGenomeUtil.cc
+    main/cGradientCount.cc
     main/cInstruction.cc
     main/cLandscape.cc
     main/cMutationRates.cc

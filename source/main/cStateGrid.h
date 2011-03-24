@@ -56,6 +56,7 @@ public:
   inline int GetInitialFacing() const { return m_init_facing; }
   inline int GetNumStates() const { return m_states.GetSize(); }
   inline int GetStateID(const cString& state_name) const;
+
   
   inline int GetIDFor(int x, int y) const { return (y * m_w + x); }
   inline int GetStateAt(int grid_id) const { return m_grid[grid_id]; }

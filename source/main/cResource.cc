@@ -62,6 +62,44 @@ cResource::cResource(const cString & _name, int _id)
   , ygravity(0.0)
   , deme_resource(false)
   , energy_resource(false)
+  , dynamic_resource(false) //JW
+  , peaks(0) //JW
+  , min_height(0.0) //JW
+  , height_range(0.0) //JW
+  , min_radius(0.0) //JW
+  , radius_range(0.0) //JW
+  , ah(0.0) //JW
+  , ar(0.0) //JW
+  , acx(0.0) //JW
+  , acy(0.0) //JW
+  , hstepscale(0.0) //JW
+  , rstepscale(0.0) //JW
+  , cstepscalex(0.0) //JW
+  , cstepscaley(0.0) //JW
+  , hstep(0.0) //JW
+  , rstep(0.0) //JW
+  , cstepx(0.0) //JW
+  , cstepy(0.0) //JW
+  , update_dynamic(0) //JW
+  , m_peakx(0)
+  , m_peaky(0)
+  , m_height(0)
+  , m_spread(0.0)
+  , m_plateau(0.0)
+  , m_decay(0)
+  , m_max_x(0)
+  , m_max_y(0)
+  , m_min_x(0)
+  , m_min_y(0)
+  , m_move_a_scaler(0.0)
+  , m_updatestep(0)
+  , m_halo(0)
+  , m_halo_inner_radius(0)
+  , m_halo_width(0)
+  , m_halo_anchor_x(0)
+  , m_halo_anchor_y(0)
+  , m_move_speed(0)
+  , isgradient(false)
   , hgt_metabolize(false)
   , collectable(true)
 {

@@ -90,14 +90,16 @@ public:
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const tArray<int>& GetInputs() const = 0;
-  virtual const tArray<double>& GetResources() = 0;
-  virtual const tArray<double>& GetDemeResources(int deme_id) = 0;  
+  virtual const tArray<double>& GetResources(cAvidaContext* ctx) = 0; 
+  virtual const tArray<double>& GetFacedCellResources(cAvidaContext* ctx) = 0; 
+  virtual const tArray<double>& GetDemeResources(int deme_id, cAvidaContext* ctx) = 0; 
   virtual const tArray< tArray<int> >& GetCellIdLists() = 0; 
   virtual void UpdateResources(const tArray<double>& res_change) = 0;
   virtual void UpdateDemeResources(const tArray<double>& res_change) = 0;
-  virtual void Die() = 0;
-  virtual void Kaboom(int distance) = 0;
-  virtual void SpawnDeme() = 0;
+  virtual void Die(cAvidaContext* ctx) = 0; 
+  virtual void KillCellID(int target, cAvidaContext* ctx) = 0; 
+  virtual void Kaboom(int distance, cAvidaContext* ctx) = 0; 
+  virtual void SpawnDeme(cAvidaContext* ctx) = 0; 
   virtual cOrgSinkMessage* NetReceive() = 0;
   virtual bool NetRemoteValidate(cAvidaContext& ctx, cOrgSinkMessage* msg) = 0;
   virtual int ReceiveValue() = 0;
@@ -130,7 +132,7 @@ public:
 	virtual void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) = 0;
 	virtual void ReceiveHGTDonation(const cSequence& fragment) = 0;
   
-  virtual void Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
+  virtual bool Move(cAvidaContext& ctx, int src_id, int dest_id) = 0;
 
   virtual void JoinGroup(int group_id) = 0;
   virtual void LeaveGroup(int group_id) = 0;

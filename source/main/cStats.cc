@@ -2988,7 +2988,7 @@ void cStats::PrintGroupIds(const cString& filename)
 
 	for(itr = groups.begin();itr!=groups.end();itr++) {
 		double cur_size = itr->second;
-		if (cur_size > 0) {
+/*		if (cur_size > 0)*/ {
 			df.Write(m_update,   "Update [update]");
 			df.Write(itr->first, "group id [groupid]");
 			df.Write(cur_size, "size of groups [grsize]");
@@ -3000,6 +3000,20 @@ void cStats::PrintGroupIds(const cString& filename)
 	df.Endl();
 
 }
+
+/*	df.WriteComment("Current member information for all possible groups (first group is the default)");
+	
+	const tArraySet<int>& possible_groups = m_world->GetEnvironment().GetGroupIDs();
+  
+	df.WriteTimeStamp();
+  
+  df.Write(m_update, "Update");
+  
+  for (int i = 0; i < possible_groups.GetSize(); i++) {
+    df.Write(possible_groups[i], "Group ID");
+    df.Write(groups[possible_groups[i]],"Number of current group members");
+*/
+
 
 /*! Track named network stats.
  */
