@@ -752,7 +752,6 @@ bool cOrganism::Divide_CheckViable()
     }
   }
   
-  
   // Test for required resource availability (must be stored in an internal resource bin)
   const int required_resource = m_world->GetConfig().REQUIRED_RESOURCE.Get();
   const double required_resource_level = m_world->GetConfig().REQUIRED_RESOURCE_LEVEL.Get();

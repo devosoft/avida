@@ -754,16 +754,16 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
 {
   assert(in_organism != NULL);
   assert(in_organism->GetGenome().GetSize() >= 1);
-
+  
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
-
+  
   // Update the contents of the target cell.
   KillOrganism(target_cell, &ctx); 
 	target_cell.InsertOrganism(in_organism, &ctx); 
-
+  
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.m_inputs);
-
+  
   // Precalculate the phenotype if requested
   int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
   if (pc_phenotype){
@@ -773,7 +773,7 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     cGenome mg(in_organism->GetGenome());
     mg.SetSequence(in_organism->GetHardware().GetMemory());
     test_cpu->TestGenome(ctx, test_info, mg);  // Use the true genome
-
+    
     if (pc_phenotype & 1)
       in_organism->GetPhenotype().SetMerit(test_info.GetTestPhenotype().GetMerit());
     if (pc_phenotype & 2)
@@ -782,35 +782,35 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
     delete test_cpu;
   }
   // Update the archive...
-
-
+  
+  
   // Initialize the time-slice for this new organism.
   AdjustSchedule(target_cell, in_organism->GetPhenotype().GetMerit());
-
+  
   // Special handling for certain birth methods.
   if (m_world->GetConfig().BIRTH_METHOD.Get() == POSITION_OFFSPRING_FULL_SOUP_ELDEST) {
     reaper_queue.Push(&target_cell);
   }
-
+  
   // Keep track of statistics for organism counts...
   num_organisms++;
-
+  
   if (deme_array.GetSize() > 0) {
     deme_array[target_cell.GetDemeID()].IncOrgCount();
   }
-
+  
   // Statistics...
   m_world->GetStats().RecordBirth(in_organism->GetPhenotype().ParentTrue());
-
+  
   // @MRR Do coalescence clade setup for new organisms.
   CCladeSetupOrganism(in_organism );
-
+  
   //count how many times MERIT_BONUS_INST (rewarded instruction) is in the genome
   //only relevant if merit is proportional to # times MERIT_BONUS_INST is in the genome
   int rewarded_instruction = m_world->GetConfig().MERIT_BONUS_INST.Get();
   int num_rewarded_instructions = 0;
   int genome_length = in_organism->GetGenome().GetSize();
-
+  
   if (rewarded_instruction == -1){
     //no key instruction, so no bonus
     in_organism->GetPhenotype().SetCurBonusInstCount(0);
@@ -829,10 +829,11 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   if(m_world->IsWorldBoundary(target_cell)) {
     m_world->MigrateOrganism(in_organism, target_cell, in_organism->GetPhenotype().GetMerit(), in_organism->GetLineageLabel());
     KillOrganism(target_cell, &ctx); 
-  // For tolerance_window, we cheat by dumping doomed offspring into cell 0...now that we updated the stats, we need to 
-  // kill that org.
-  if(m_world->GetConfig().TOLERANCE_WINDOW.Get() && in_organism->GetCellID() == 0 && m_world->GetStats().GetUpdate() != 0) KillOrganism(target_cell, &ctx);
+    // For tolerance_window, we cheat by dumping doomed offspring into cell 0...now that we updated the stats, we need to 
+    // kill that org.
   }
+  if(m_world->GetConfig().TOLERANCE_WINDOW.Get() && in_organism->GetCellID() == 0 && m_world->GetStats().GetUpdate() != 0) KillOrganism(target_cell, &ctx);
+  
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian

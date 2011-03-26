@@ -5643,21 +5643,17 @@ bool cHardwareCPU::Inst_RotateEventCell(cAvidaContext& ctx) {
 
 bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
 {
-  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();
-  
+  int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
   int opinion = 0;
   
   if(m_organism->HasOpinion()) opinion = m_organism->GetOpinion().first; 
   
-  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(&ctx); 
-  
+  const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(&ctx);   
   double max_res = 0;
   for(int i = 0; i < actualNeighborhoodSize; i++) {
     m_organism->Rotate(1);
     tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(&ctx); 
-    if (faced_res[opinion] > max_res) {
-      max_res = faced_res[opinion];
-    }
+    if (faced_res[opinion] > max_res) max_res = faced_res[opinion];
   } 
   
   if (max_res > current_res[opinion]) {
@@ -5666,10 +5662,10 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
       if (faced_res[opinion] != max_res) m_organism->Rotate(1);
     }
   }
-    double res_diff = max_res - current_res[opinion];
-    int reg_to_set = FindModifiedRegister(REG_BX);
-    GetRegister(reg_to_set) = res_diff;
-    return true;
+  double res_diff = max_res - current_res[opinion];
+  int reg_to_set = FindModifiedRegister(REG_BX);
+  GetRegister(reg_to_set) = res_diff;
+  return true;
 }
 
 bool cHardwareCPU::Inst_SetCopyMut(cAvidaContext& ctx)

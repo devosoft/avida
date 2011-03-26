@@ -3577,13 +3577,12 @@ void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, c
   cArgSchema schema;
   
   schema.AddEntry("patch_id", 0, 1);
-
+  
   cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);
   if (args) NewTask(name, "LiveOnPatchRes", &cTaskLib::Task_LiveOnPatchRes, 0, args);
 	
   // Add this patch id to the list in the instructions file. 
   m_world->GetEnvironment().AddGroupID(args->GetInt(0));
-	
 }
 
 double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
@@ -3603,9 +3602,6 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
   
   return reward;
 }
-
-
-
 
 void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
 {

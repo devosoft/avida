@@ -327,8 +327,6 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   
   
   //to speed things up, we only check cells within the possible spread of the peak
-  //note that, at the moment, you must also create a global dummy resource (id = 0) with a negative or 0 initial value 'under' gradient resources 
-  //    otherwise you end up with an unwanted additional gradient resource forming at 0,0 because Avida doesn't like having cells with res value = Null
   double thisdist;
   double thisheight = 0.0;
   int max_pos_x = min(int(m_peakx + m_spread + 1), GetX() - 1);
