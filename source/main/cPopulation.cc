@@ -483,26 +483,26 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
         assert(parent_organism->HasOpinion());
         
         const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-        const int tolerance_max = tolerance_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+        const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
         const int parent_group = parent_organism->GetOpinion().first;
         double rand;
         
         // Calculate the weighted parent's intolerance for its offspring
         int parent_intolerance = 0;
-		// The parent tolerance can only count for a half vote, if there others in the group.
-		if (group_list[parent_group].GetSize() > 1) parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOwn() / 2;
-		// The parent tolerance counts for the whole vote, if it is the only group member.
-		if (group_list[parent_group].GetSize() == 0) parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOwn();
+        // The parent tolerance can only count for a half vote, if there others in the group.
+        if (group_list[parent_group].GetSize() > 1) parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOwn() / 2;
+        // The parent tolerance counts for the whole vote, if it is the only group member.
+        if (group_list[parent_group].GetSize() == 0) parent_intolerance = tolerance_max - parent_organism->GetPhenotype().CalcToleranceOffspringOwn();
         
         // Calculate the parent group's intolerance for offspring.
         int parent_group_intolerance = 0;
-		int single_member_intolerance = 0;
+        int single_member_intolerance = 0;
         for (int index = 0; index < group_list[parent_group].GetSize(); index++) {
-		  single_member_intolerance = tolerance_max - group_list[parent_group][index]->GetPhenotype().CalcToleranceOffspringOthers();
-		  // Skip the parent to avoid double counting.
-		  if (group_list[parent_group][index] != parent_organism) {
+          single_member_intolerance = tolerance_max - group_list[parent_group][index]->GetPhenotype().CalcToleranceOffspringOthers();
+          // Skip the parent to avoid double counting.
+          if (group_list[parent_group][index] != parent_organism) {
             parent_group_intolerance += single_member_intolerance;
-		  }
+          }
           if (parent_group_intolerance >= tolerance_max) break;
         }
         
@@ -523,7 +523,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
           // The offspring is placed in cell 0 to be killed.
           if (num_groups == 1) {
             target_cells[i] = 0;
-			is_doomed = true;
+            is_doomed = true;
           } 
           else {
             // There are other groups, beside the parent group, pick one at random.
@@ -541,9 +541,9 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
             else {
               // Calculate the target group's intolerance to immigrants.
               int target_group_intolerance = 0;
-			  single_member_intolerance = 0;
+              single_member_intolerance = 0;
               for (int index = 0; index < group_list[target_group].GetSize(); index++) {
-				single_member_intolerance = tolerance_max - group_list[target_group][index]->GetPhenotype().CalcToleranceImmigrants();
+                single_member_intolerance = tolerance_max - group_list[target_group][index]->GetPhenotype().CalcToleranceImmigrants();
                 target_group_intolerance += single_member_intolerance;
                 if (target_group_intolerance >= tolerance_max) break;
               }

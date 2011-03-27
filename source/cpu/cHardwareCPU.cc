@@ -663,6 +663,8 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
 		tInstLibEntry<tMethod>("orgs-in-group", &cHardwareCPU::Inst_NumberOrgsInGroup, nInstFlag::STALL),
 		tInstLibEntry<tMethod>("inc-tolerance", &cHardwareCPU::Inst_IncTolerance, nInstFlag::STALL),  // @JJB
 		tInstLibEntry<tMethod>("dec-tolerance", &cHardwareCPU::Inst_DecTolerance, nInstFlag::STALL),  // @JJB
+		tInstLibEntry<tMethod>("get-tolerance", &cHardwareCPU::Inst_GetTolerance, nInstFlag::STALL),  // @JJB    
+		tInstLibEntry<tMethod>("get-group-tolerance", &cHardwareCPU::Inst_GetGroupTolerance, nInstFlag::STALL),  // @JJB  
 		
 		// Network creation instructions
 		tInstLibEntry<tMethod>("create-link-facing", &cHardwareCPU::Inst_CreateLinkByFacing, nInstFlag::STALL),
@@ -9385,7 +9387,7 @@ and places the modified tolerance total in the BX register. @JJB
 bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int tolerance_max = update_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
   
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
@@ -9439,7 +9441,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = update_window * m_world->GetConfig().AVE_TIME_SLICE.Get();
+	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
   
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
@@ -9481,6 +9483,91 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 	return true;
 }
 
+bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
+{
+  int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
+  int	tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+  int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+	GetRegister(REG_AX) = tolerance_immigrants;
+	GetRegister(REG_BX) = tolerance_own;
+	GetRegister(REG_CX) = tolerance_others;  
+	return true;
+}  
+
+bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
+{
+  if (m_world->GetConfig().USE_FORM_GROUPS.Get()){
+    // If tolerances are on ... @JJB
+    if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+      assert(m_organism->HasOpinion());
+      
+      const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+      const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+      const int parent_group = m_organism->GetOpinion().first;
+      const int parent_group_size = m_world->GetPopulation().NumberOfOrganismsInGroup(parent_group);
+      
+      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
+      int	tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+      
+      // Calculate the weighted parent's intolerance for its offspring
+      int parent_intolerance = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+      double own_offspring_odds = 0;
+      double overall_offspring_odds = 0;
+      int group_intolerance_to_yours  = 0;
+      // If more than just the parent in the group, calculate the parent group's intolerance for offspring.
+      if (parent_group_size == 1) {
+        own_offspring_odds = tolerance_own / tolerance_max;
+        overall_offspring_odds = own_offspring_odds;
+      }
+      else {
+        int parent_group_intolerance = 0;
+        int individual_intolerance = 0;
+        for (int index = 0; index < parent_group_size; index++) {
+//          individual_intolerance = tolerance_max - m_world->GetPopulation().group_list[parent_group][index]->GetPhenotype().CalcToleranceOffspringOthers();
+          parent_group_intolerance += individual_intolerance;
+          
+          // For own_offspring calc, skip the parent to avoid double counting.
+   //       if (group_list[parent_group][index] != m_organism->GetID()) {
+            group_intolerance_to_yours += individual_intolerance;
+   //       }
+          if (group_intolerance_to_yours >= tolerance_max) {
+            group_intolerance_to_yours = 0;
+            break;
+          }
+          if (parent_group_intolerance >= tolerance_max) {
+            parent_group_intolerance = 0;
+            break;
+          }
+        }
+        // Parent gets half the total vote when deciding on own offspring.
+        // Ppn of max intolerance for the group (minus parent)
+        const double relative_group_intolerance = (group_intolerance_to_yours / tolerance_max) * 0.5;
+        // Ppn of max intolerance for parent.
+        const double relative_parent_intolerance = (tolerance_own / tolerance_max) * 0.5;
+        own_offspring_odds = relative_group_intolerance + relative_parent_intolerance;
+        // Overall odds of offspring being born into group, without knowing about parent.
+        overall_offspring_odds = parent_group_intolerance / tolerance_max;
+      }
+      
+      // Calculate the current group's intolerance to immigrants.
+      int parent_group_immigrant_intolerance = 0;
+      int single_member_intolerance = 0;
+      for (int index = 0; index < parent_group_size; index++) {
+   //     single_member_intolerance = tolerance_max - group_list[parent_group][index]->GetPhenotype().CalcToleranceImmigrants();
+        parent_group_immigrant_intolerance += single_member_intolerance;
+        if (parent_group_immigrant_intolerance >= tolerance_max) parent_group_immigrant_intolerance = 0;
+      }
+      // Calculate the chance for successful immigration and test if the offspring successfully immigrates.
+      const double immigrants_odds = (tolerance_max - parent_group_immigrant_intolerance) / tolerance_max;
+      
+      GetRegister(REG_AX) = immigrants_odds;
+      GetRegister(REG_BX) = own_offspring_odds;
+      GetRegister(REG_CX) = overall_offspring_odds; 
+    }  
+  } 
+  return true;  
+}
 /*! Create a link to the currently-faced cell.
  */
 bool cHardwareCPU::Inst_CreateLinkByFacing(cAvidaContext& ctx) {
