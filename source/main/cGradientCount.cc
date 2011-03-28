@@ -46,9 +46,10 @@ need to be between 1 and 4. Values of 1 to ~3 give smooth movements. Larger valu
   Peak values will only be refreshed when either all edible portions (>=1) are consumed or when the decay timestep (in 
 updates) is reached, whichever comes first.
   Once bitten, peaks will not move again until refreshed.
-  Peak values are refreshed to match initial height, spread, and plateau, but the placement of the refreshed peak is random
-within the min/max x and y area. */
-/*cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially*/
+  Peak values are refreshed to match initial height, spread, and plateau, but for non-halo peaks, the placement of the 
+refreshed peak is random within the min/max x and y area. For halo peaks, the peak is currently refreshed at the SE 
+corner of the orbit.
+cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially*/
 
 cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay, 
                                int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatestep,  

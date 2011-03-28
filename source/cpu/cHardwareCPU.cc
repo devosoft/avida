@@ -3910,8 +3910,8 @@ bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
   // check if this is a valid group
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
-    int reg_to_set = FindModifiedRegister(REG_BX);
     double res_opinion = res_count[opinion];
+    int reg_to_set = FindModifiedRegister(REG_BX);
     GetRegister(reg_to_set) = res_opinion;
   }
   return true;
