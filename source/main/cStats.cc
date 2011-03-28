@@ -1730,8 +1730,7 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_deme_merit.Average(), "Mean heritable merit of replicated demes [merit]");
   df.Write(m_deme_generation.Average(), "Mean generation of replicated demes [generation]");
   df.Write(m_deme_density.Average(), "Mean density of replicated demes [density]");
-  df.Write(m_deme_fit_sd.Average(), "Mean standard deviation of fitness of organisms within a deme [sddemefit]");
-
+  df.Write(m_deme_fit_sd.Average(), "Mean standard deviation of fitness of organisms within a deme [sddemefit]");  
   df.Endl();
 
   m_deme_num_repls = 0;

@@ -35,6 +35,8 @@
 #include "cOrgMovementPredicate.h"
 #include "cDemePredicate.h"
 
+#include <cmath>
+
 
 /*! Constructor
  */
@@ -1221,22 +1223,32 @@ void cDeme::UpdateShannonAll()
 double cDeme::GetMeanSDofFitness() 
 {
   cDoubleSum fit; 
+  bool same_fit = true; 
+  double cur_fit = -1;
   for (int i=0; i<GetSize(); ++i) {
     cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
     if (cell.IsOccupied()) {
       cOrganism* organism = cell.GetOrganism();
       fit.Add(organism->GetPhenotype().GetFitness());
+      if (cur_fit == -1) { 
+        cur_fit = organism->GetPhenotype().GetFitness();
+      }
+      if (cur_fit != organism->GetPhenotype().GetFitness()) {
+        same_fit = false;
+      }
     }
   }
-  return fit.StdDeviation();
+  double sd = fit.StdDeviation();
+  // if the standard deviation is nan, it resulted from *no* variation in fitness among the organisms.
+  if (same_fit) {
+    sd = 0;
+  }
+  return sd;
 }
 
 double cDeme::GetPercentReproductives()
 {
   double per = (m_num_reproductives/((double)injected_count + (double)cur_birth_count));
-  if (per > 1) { 
-    int z = 0;
-  }
   return per; 
 }
 
