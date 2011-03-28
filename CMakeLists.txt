@@ -390,7 +390,7 @@ ENDIF(AVD_CMDLINE)
 # By default, do not build the console interface to Avida.
 OPTION(AVD_GUI_NCURSES
   "Enable building Avida console interface."
-  OFF
+  ON
 )
 # Make sure requisites are present for build of console interface.  Give
 # user feedback if they're missing.
