@@ -26,6 +26,7 @@
 		703549EB1337D25300D3865C /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EA1337D25300D3865C /* libapto.a */; };
 		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
+		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +61,7 @@
 		703549EA1337D25300D3865C /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 				7035497413379FBD00D3865C /* Frameworks */,
 				703549C91337AF1300D3865C /* Libraries */,
 				7035497213379FBD00D3865C /* Products */,
+				708D312F1342312100AE5CEF /* README */,
 			);
 			sourceTree = "<group>";
 		};
@@ -283,6 +286,7 @@
 				703549D51337CAA100D3865C /* pause.png in Resources */,
 				703549D61337CAA100D3865C /* play_blue.png in Resources */,
 				703549D71337CAA100D3865C /* play.png in Resources */,
+				708D31301342312100AE5CEF /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
