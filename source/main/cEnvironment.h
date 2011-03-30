@@ -107,9 +107,9 @@ public:
   const cTaskEntry& GetTask(int id) const { return m_tasklib.GetTask(id); }
   bool UseNeighborInput() const { return m_tasklib.UseNeighborInput(); }
   bool UseNeighborOutput() const { return m_tasklib.UseNeighborOutput(); }
-	vector<cString> GetMatchStringsFromTask() { return m_tasklib.GetMatchStrings(); }
-	cString GetMatchString(int x) { return m_tasklib.GetMatchString(x); }
-	int GetNumberOfMatchStrings() { return m_tasklib.GetNumberOfMatchStrings(); }	
+  vector<cString> GetMatchStringsFromTask() { return m_tasklib.GetMatchStrings(); }
+  cString GetMatchString(int x) { return m_tasklib.GetMatchString(x); }
+  int GetNumberOfMatchStrings() { return m_tasklib.GetNumberOfMatchStrings(); }	
 
   
   int GetNumReactions() const { return reaction_lib.GetSize(); }
@@ -138,10 +138,9 @@ public:
   bool SetResourceInflow(const cString& name, double _inflow );
   bool SetResourceOutflow(const cString& name, double _outflow );
 	
-
-	void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
-	bool IsGroupID(int test_id);
-	std::set<int> GetGroupIDs() { return possible_group_ids; }
+  void AddGroupID(int new_id) { possible_group_ids.insert(new_id); }
+  bool IsGroupID(int test_id);
+  std::set<int> GetGroupIDs() { return possible_group_ids; }
 	
 
 private:

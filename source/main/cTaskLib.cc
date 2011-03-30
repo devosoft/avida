@@ -1,4 +1,3 @@
-
 /*
  *  cTaskLib.cc
  *  Avida
@@ -119,358 +118,199 @@ cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs
   else if (name == "nor-resourceDependent") NewTask(name, "Nor-resourceDependent", &cTaskLib::Task_Nor_ResourceDependent);
 	
   // All 3-Input Logic Functions
-  if (name == "logic_3AA")
-    NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
-  else if (name == "logic_3AB")
-    NewTask(name, "Logic 3AB (A+B+C == 1)", &cTaskLib::Task_Logic3in_AB);
-  else if (name == "logic_3AC")
-    NewTask(name, "Logic 3AC (A+B+C <= 1)", &cTaskLib::Task_Logic3in_AC);
-  else if (name == "logic_3AD")
-    NewTask(name, "Logic 3AD (A+B+C == 2)", &cTaskLib::Task_Logic3in_AD);
-  else if (name == "logic_3AE")
-    NewTask(name, "Logic 3AE (A+B+C == 0,2)", &cTaskLib::Task_Logic3in_AE);
-  else if (name == "logic_3AF")
-    NewTask(name, "Logic 3AF (A+B+C == 1,2)", &cTaskLib::Task_Logic3in_AF);
-  else if (name == "logic_3AG")
-    NewTask(name, "Logic 3AG (A+B+C <= 2)", &cTaskLib::Task_Logic3in_AG);
-  else if (name == "logic_3AH")
-    NewTask(name, "Logic 3AH (A+B+C == 3)", &cTaskLib::Task_Logic3in_AH);
-  else if (name == "logic_3AI")
-    NewTask(name, "Logic 3AI (A+B+C == 0,3)", &cTaskLib::Task_Logic3in_AI);
-  else if (name == "logic_3AJ")
-    NewTask(name, "Logic 3AJ (A+B+C == 1,3) XOR", &cTaskLib::Task_Logic3in_AJ);
-  else if (name == "logic_3AK")
-    NewTask(name, "Logic 3AK (A+B+C != 2)", &cTaskLib::Task_Logic3in_AK);
-  else if (name == "logic_3AL")
-    NewTask(name, "Logic 3AL (A+B+C >= 2)", &cTaskLib::Task_Logic3in_AL);
-  else if (name == "logic_3AM")
-    NewTask(name, "Logic 3AM (A+B+C != 1)", &cTaskLib::Task_Logic3in_AM);
-  else if (name == "logic_3AN")
-    NewTask(name, "Logic 3AN (A+B+C != 0)", &cTaskLib::Task_Logic3in_AN);
-  else if (name == "logic_3AO")
-    NewTask(name, "Logic 3AO (A & ~B & ~C) [3]", &cTaskLib::Task_Logic3in_AO);
-  else if (name == "logic_3AP")
-    NewTask(name, "Logic 3AP (A^B & ~C)  [3]", &cTaskLib::Task_Logic3in_AP);
-  else if (name == "logic_3AQ")
-    NewTask(name, "Logic 3AQ (A==B & ~C) [3]", &cTaskLib::Task_Logic3in_AQ);
-  else if (name == "logic_3AR")
-    NewTask(name, "Logic 3AR (A & B & ~C) [3]", &cTaskLib::Task_Logic3in_AR);
-  else if (name == "logic_3AS")
-    NewTask(name, "Logic 3AS", &cTaskLib::Task_Logic3in_AS);
-  else if (name == "logic_3AT")
-    NewTask(name, "Logic 3AT", &cTaskLib::Task_Logic3in_AT);
-  else if (name == "logic_3AU")
-    NewTask(name, "Logic 3AU", &cTaskLib::Task_Logic3in_AU);
-  else if (name == "logic_3AV")
-    NewTask(name, "Logic 3AV", &cTaskLib::Task_Logic3in_AV);
-  else if (name == "logic_3AW")
-    NewTask(name, "Logic 3AW", &cTaskLib::Task_Logic3in_AW);
-  else if (name == "logic_3AX")
-    NewTask(name, "Logic 3AX", &cTaskLib::Task_Logic3in_AX);
-  else if (name == "logic_3AY")
-    NewTask(name, "Logic 3AY", &cTaskLib::Task_Logic3in_AY);
-  else if (name == "logic_3AZ")
-    NewTask(name, "Logic 3AZ", &cTaskLib::Task_Logic3in_AZ);
-  else if (name == "logic_3BA")
-    NewTask(name, "Logic 3BA", &cTaskLib::Task_Logic3in_BA);
-  else if (name == "logic_3BB")
-    NewTask(name, "Logic 3BB", &cTaskLib::Task_Logic3in_BB);
-  else if (name == "logic_3BC")
-    NewTask(name, "Logic 3BC", &cTaskLib::Task_Logic3in_BC);
-  else if (name == "logic_3BD")
-    NewTask(name, "Logic 3BD", &cTaskLib::Task_Logic3in_BD);
-  else if (name == "logic_3BE")
-    NewTask(name, "Logic 3BE", &cTaskLib::Task_Logic3in_BE);
-  else if (name == "logic_3BF")
-    NewTask(name, "Logic 3BF", &cTaskLib::Task_Logic3in_BF);
-  else if (name == "logic_3BG")
-    NewTask(name, "Logic 3BG", &cTaskLib::Task_Logic3in_BG);
-  else if (name == "logic_3BH")
-    NewTask(name, "Logic 3BH", &cTaskLib::Task_Logic3in_BH);
-  else if (name == "logic_3BI")
-    NewTask(name, "Logic 3BI", &cTaskLib::Task_Logic3in_BI);
-  else if (name == "logic_3BJ")
-    NewTask(name, "Logic 3BJ", &cTaskLib::Task_Logic3in_BJ);
-  else if (name == "logic_3BK")
-    NewTask(name, "Logic 3BK", &cTaskLib::Task_Logic3in_BK);
-  else if (name == "logic_3BL")
-    NewTask(name, "Logic 3BL", &cTaskLib::Task_Logic3in_BL);
-  else if (name == "logic_3BM")
-    NewTask(name, "Logic 3BM", &cTaskLib::Task_Logic3in_BM);
-  else if (name == "logic_3BN")
-    NewTask(name, "Logic 3BN", &cTaskLib::Task_Logic3in_BN);
-  else if (name == "logic_3BO")
-    NewTask(name, "Logic 3BO", &cTaskLib::Task_Logic3in_BO);
-  else if (name == "logic_3BP")
-    NewTask(name, "Logic 3BP", &cTaskLib::Task_Logic3in_BP);
-  else if (name == "logic_3BQ")
-    NewTask(name, "Logic 3BQ", &cTaskLib::Task_Logic3in_BQ);
-  else if (name == "logic_3BR")
-    NewTask(name, "Logic 3BR", &cTaskLib::Task_Logic3in_BR);
-  else if (name == "logic_3BS")
-    NewTask(name, "Logic 3BS", &cTaskLib::Task_Logic3in_BS);
-  else if (name == "logic_3BT")
-    NewTask(name, "Logic 3BT", &cTaskLib::Task_Logic3in_BT);
-  else if (name == "logic_3BU")
-    NewTask(name, "Logic 3BU", &cTaskLib::Task_Logic3in_BU);
-  else if (name == "logic_3BV")
-    NewTask(name, "Logic 3BV", &cTaskLib::Task_Logic3in_BV);
-  else if (name == "logic_3BW")
-    NewTask(name, "Logic 3BW", &cTaskLib::Task_Logic3in_BW);
-  else if (name == "logic_3BX")
-    NewTask(name, "Logic 3BX", &cTaskLib::Task_Logic3in_BX);
-  else if (name == "logic_3BY")
-    NewTask(name, "Logic 3BY", &cTaskLib::Task_Logic3in_BY);
-  else if (name == "logic_3BZ")
-    NewTask(name, "Logic 3BZ", &cTaskLib::Task_Logic3in_BZ);
-  else if (name == "logic_3CA")
-    NewTask(name, "Logic 3CA", &cTaskLib::Task_Logic3in_CA);
-  else if (name == "logic_3CB")
-    NewTask(name, "Logic 3CB", &cTaskLib::Task_Logic3in_CB);
-  else if (name == "logic_3CC")
-    NewTask(name, "Logic 3CC", &cTaskLib::Task_Logic3in_CC);
-  else if (name == "logic_3CD")
-    NewTask(name, "Logic 3CD", &cTaskLib::Task_Logic3in_CD);
-  else if (name == "logic_3CE")
-    NewTask(name, "Logic 3CE", &cTaskLib::Task_Logic3in_CE);
-  else if (name == "logic_3CF")
-    NewTask(name, "Logic 3CF", &cTaskLib::Task_Logic3in_CF);
-  else if (name == "logic_3CG")
-    NewTask(name, "Logic 3CG", &cTaskLib::Task_Logic3in_CG);
-  else if (name == "logic_3CH")
-    NewTask(name, "Logic 3CH", &cTaskLib::Task_Logic3in_CH);
-  else if (name == "logic_3CI")
-    NewTask(name, "Logic 3CI", &cTaskLib::Task_Logic3in_CI);
-  else if (name == "logic_3CJ")
-    NewTask(name, "Logic 3CJ", &cTaskLib::Task_Logic3in_CJ);
-  else if (name == "logic_3CK")
-    NewTask(name, "Logic 3CK", &cTaskLib::Task_Logic3in_CK);
-  else if (name == "logic_3CL")
-    NewTask(name, "Logic 3CL", &cTaskLib::Task_Logic3in_CL);
-  else if (name == "logic_3CM")
-    NewTask(name, "Logic 3CM", &cTaskLib::Task_Logic3in_CM);
-  else if (name == "logic_3CN")
-    NewTask(name, "Logic 3CN", &cTaskLib::Task_Logic3in_CN);
-  else if (name == "logic_3CO")
-    NewTask(name, "Logic 3CO", &cTaskLib::Task_Logic3in_CO);
-  else if (name == "logic_3CP")
-    NewTask(name, "Logic 3CP", &cTaskLib::Task_Logic3in_CP);
+  if (name == "logic_3AA")      NewTask(name, "Logic 3AA (A+B+C == 0)", &cTaskLib::Task_Logic3in_AA);
+  else if (name == "logic_3AB") NewTask(name, "Logic 3AB (A+B+C == 1)", &cTaskLib::Task_Logic3in_AB);
+  else if (name == "logic_3AC") NewTask(name, "Logic 3AC (A+B+C <= 1)", &cTaskLib::Task_Logic3in_AC);
+  else if (name == "logic_3AD") NewTask(name, "Logic 3AD (A+B+C == 2)", &cTaskLib::Task_Logic3in_AD);
+  else if (name == "logic_3AE") NewTask(name, "Logic 3AE (A+B+C == 0,2)", &cTaskLib::Task_Logic3in_AE);
+  else if (name == "logic_3AF") NewTask(name, "Logic 3AF (A+B+C == 1,2)", &cTaskLib::Task_Logic3in_AF);
+  else if (name == "logic_3AG") NewTask(name, "Logic 3AG (A+B+C <= 2)", &cTaskLib::Task_Logic3in_AG);
+  else if (name == "logic_3AH") NewTask(name, "Logic 3AH (A+B+C == 3)", &cTaskLib::Task_Logic3in_AH);
+  else if (name == "logic_3AI") NewTask(name, "Logic 3AI (A+B+C == 0,3)", &cTaskLib::Task_Logic3in_AI);
+  else if (name == "logic_3AJ") NewTask(name, "Logic 3AJ (A+B+C == 1,3) XOR", &cTaskLib::Task_Logic3in_AJ);
+  else if (name == "logic_3AK") NewTask(name, "Logic 3AK (A+B+C != 2)", &cTaskLib::Task_Logic3in_AK);
+  else if (name == "logic_3AL") NewTask(name, "Logic 3AL (A+B+C >= 2)", &cTaskLib::Task_Logic3in_AL);
+  else if (name == "logic_3AM") NewTask(name, "Logic 3AM (A+B+C != 1)", &cTaskLib::Task_Logic3in_AM);
+  else if (name == "logic_3AN") NewTask(name, "Logic 3AN (A+B+C != 0)", &cTaskLib::Task_Logic3in_AN);
+  else if (name == "logic_3AO") NewTask(name, "Logic 3AO (A & ~B & ~C) [3]", &cTaskLib::Task_Logic3in_AO);
+  else if (name == "logic_3AP") NewTask(name, "Logic 3AP (A^B & ~C)  [3]", &cTaskLib::Task_Logic3in_AP);
+  else if (name == "logic_3AQ") NewTask(name, "Logic 3AQ (A==B & ~C) [3]", &cTaskLib::Task_Logic3in_AQ);
+  else if (name == "logic_3AR") NewTask(name, "Logic 3AR (A & B & ~C) [3]", &cTaskLib::Task_Logic3in_AR);
+  else if (name == "logic_3AS") NewTask(name, "Logic 3AS", &cTaskLib::Task_Logic3in_AS);
+  else if (name == "logic_3AT") NewTask(name, "Logic 3AT", &cTaskLib::Task_Logic3in_AT);
+  else if (name == "logic_3AU") NewTask(name, "Logic 3AU", &cTaskLib::Task_Logic3in_AU);
+  else if (name == "logic_3AV") NewTask(name, "Logic 3AV", &cTaskLib::Task_Logic3in_AV);
+  else if (name == "logic_3AW") NewTask(name, "Logic 3AW", &cTaskLib::Task_Logic3in_AW);
+  else if (name == "logic_3AX") NewTask(name, "Logic 3AX", &cTaskLib::Task_Logic3in_AX);
+  else if (name == "logic_3AY") NewTask(name, "Logic 3AY", &cTaskLib::Task_Logic3in_AY);
+  else if (name == "logic_3AZ") NewTask(name, "Logic 3AZ", &cTaskLib::Task_Logic3in_AZ);
+  else if (name == "logic_3BA") NewTask(name, "Logic 3BA", &cTaskLib::Task_Logic3in_BA);
+  else if (name == "logic_3BB") NewTask(name, "Logic 3BB", &cTaskLib::Task_Logic3in_BB);
+  else if (name == "logic_3BC") NewTask(name, "Logic 3BC", &cTaskLib::Task_Logic3in_BC);
+  else if (name == "logic_3BD") NewTask(name, "Logic 3BD", &cTaskLib::Task_Logic3in_BD);
+  else if (name == "logic_3BE") NewTask(name, "Logic 3BE", &cTaskLib::Task_Logic3in_BE);
+  else if (name == "logic_3BF") NewTask(name, "Logic 3BF", &cTaskLib::Task_Logic3in_BF);
+  else if (name == "logic_3BG") NewTask(name, "Logic 3BG", &cTaskLib::Task_Logic3in_BG);
+  else if (name == "logic_3BH") NewTask(name, "Logic 3BH", &cTaskLib::Task_Logic3in_BH);
+  else if (name == "logic_3BI") NewTask(name, "Logic 3BI", &cTaskLib::Task_Logic3in_BI);
+  else if (name == "logic_3BJ") NewTask(name, "Logic 3BJ", &cTaskLib::Task_Logic3in_BJ);
+  else if (name == "logic_3BK") NewTask(name, "Logic 3BK", &cTaskLib::Task_Logic3in_BK);
+  else if (name == "logic_3BL") NewTask(name, "Logic 3BL", &cTaskLib::Task_Logic3in_BL);
+  else if (name == "logic_3BM") NewTask(name, "Logic 3BM", &cTaskLib::Task_Logic3in_BM);
+  else if (name == "logic_3BN") NewTask(name, "Logic 3BN", &cTaskLib::Task_Logic3in_BN);
+  else if (name == "logic_3BO") NewTask(name, "Logic 3BO", &cTaskLib::Task_Logic3in_BO);
+  else if (name == "logic_3BP") NewTask(name, "Logic 3BP", &cTaskLib::Task_Logic3in_BP);
+  else if (name == "logic_3BQ") NewTask(name, "Logic 3BQ", &cTaskLib::Task_Logic3in_BQ);
+  else if (name == "logic_3BR") NewTask(name, "Logic 3BR", &cTaskLib::Task_Logic3in_BR);
+  else if (name == "logic_3BS") NewTask(name, "Logic 3BS", &cTaskLib::Task_Logic3in_BS);
+  else if (name == "logic_3BT") NewTask(name, "Logic 3BT", &cTaskLib::Task_Logic3in_BT);
+  else if (name == "logic_3BU") NewTask(name, "Logic 3BU", &cTaskLib::Task_Logic3in_BU);
+  else if (name == "logic_3BV") NewTask(name, "Logic 3BV", &cTaskLib::Task_Logic3in_BV);
+  else if (name == "logic_3BW") NewTask(name, "Logic 3BW", &cTaskLib::Task_Logic3in_BW);
+  else if (name == "logic_3BX") NewTask(name, "Logic 3BX", &cTaskLib::Task_Logic3in_BX);
+  else if (name == "logic_3BY") NewTask(name, "Logic 3BY", &cTaskLib::Task_Logic3in_BY);
+  else if (name == "logic_3BZ") NewTask(name, "Logic 3BZ", &cTaskLib::Task_Logic3in_BZ);
+  else if (name == "logic_3CA") NewTask(name, "Logic 3CA", &cTaskLib::Task_Logic3in_CA);
+  else if (name == "logic_3CB") NewTask(name, "Logic 3CB", &cTaskLib::Task_Logic3in_CB);
+  else if (name == "logic_3CC") NewTask(name, "Logic 3CC", &cTaskLib::Task_Logic3in_CC);
+  else if (name == "logic_3CD") NewTask(name, "Logic 3CD", &cTaskLib::Task_Logic3in_CD);
+  else if (name == "logic_3CE") NewTask(name, "Logic 3CE", &cTaskLib::Task_Logic3in_CE);
+  else if (name == "logic_3CF") NewTask(name, "Logic 3CF", &cTaskLib::Task_Logic3in_CF);
+  else if (name == "logic_3CG") NewTask(name, "Logic 3CG", &cTaskLib::Task_Logic3in_CG);
+  else if (name == "logic_3CH") NewTask(name, "Logic 3CH", &cTaskLib::Task_Logic3in_CH);
+  else if (name == "logic_3CI") NewTask(name, "Logic 3CI", &cTaskLib::Task_Logic3in_CI);
+  else if (name == "logic_3CJ") NewTask(name, "Logic 3CJ", &cTaskLib::Task_Logic3in_CJ);
+  else if (name == "logic_3CK") NewTask(name, "Logic 3CK", &cTaskLib::Task_Logic3in_CK);
+  else if (name == "logic_3CL") NewTask(name, "Logic 3CL", &cTaskLib::Task_Logic3in_CL);
+  else if (name == "logic_3CM") NewTask(name, "Logic 3CM", &cTaskLib::Task_Logic3in_CM);
+  else if (name == "logic_3CN") NewTask(name, "Logic 3CN", &cTaskLib::Task_Logic3in_CN);
+  else if (name == "logic_3CO") NewTask(name, "Logic 3CO", &cTaskLib::Task_Logic3in_CO);
+  else if (name == "logic_3CP") NewTask(name, "Logic 3CP", &cTaskLib::Task_Logic3in_CP);
   
   // Arbitrary 1-Input Math Tasks
-  else if (name == "math_1AA")
-    NewTask(name, "Math 1AA (2X)", &cTaskLib::Task_Math1in_AA);
-  else if (name == "math_1AB")
-    NewTask(name, "Math 1AB (2X/3)", &cTaskLib::Task_Math1in_AB);  
-  else if (name == "math_1AC")
-    NewTask(name, "Math 1AC (5X/4)", &cTaskLib::Task_Math1in_AC);  
-  else if (name == "math_1AD")
-    NewTask(name, "Math 1AD (X^2)", &cTaskLib::Task_Math1in_AD);  
-  else if (name == "math_1AE")
-    NewTask(name, "Math 1AE (X^3)", &cTaskLib::Task_Math1in_AE);  
-  else if (name == "math_1AF")
-    NewTask(name, "Math 1AF (sqrt(X))", &cTaskLib::Task_Math1in_AF);  
-  else if (name == "math_1AG")
-    NewTask(name, "Math 1AG (log(X))", &cTaskLib::Task_Math1in_AG);  
-  else if (name == "math_1AH")
-    NewTask(name, "Math 1AH (X^2+X^3)", &cTaskLib::Task_Math1in_AH);  
-  else if (name == "math_1AI")
-    NewTask(name, "Math 1AI (X^2+sqrt(X))", &cTaskLib::Task_Math1in_AI);  
-  else if (name == "math_1AJ")
-    NewTask(name, "Math 1AJ (abs(X))", &cTaskLib::Task_Math1in_AJ);  
-  else if (name == "math_1AK")
-    NewTask(name, "Math 1AK (X-5)", &cTaskLib::Task_Math1in_AK);  
-  else if (name == "math_1AL")
-    NewTask(name, "Math 1AL (-X)", &cTaskLib::Task_Math1in_AL);  
-  else if (name == "math_1AM")
-    NewTask(name, "Math 1AM (5X)", &cTaskLib::Task_Math1in_AM);  
-  else if (name == "math_1AN")
-    NewTask(name, "Math 1AN (X/4)", &cTaskLib::Task_Math1in_AN);  
-  else if (name == "math_1AO")
-    NewTask(name, "Math 1AO (X-6)", &cTaskLib::Task_Math1in_AO);  
-  else if (name == "math_1AP")
-    NewTask(name, "Math 1AP (X-7)", &cTaskLib::Task_Math1in_AP);
+  else if (name == "math_1AA") NewTask(name, "Math 1AA (2X)", &cTaskLib::Task_Math1in_AA);
+  else if (name == "math_1AB") NewTask(name, "Math 1AB (2X/3)", &cTaskLib::Task_Math1in_AB);  
+  else if (name == "math_1AC") NewTask(name, "Math 1AC (5X/4)", &cTaskLib::Task_Math1in_AC);  
+  else if (name == "math_1AD") NewTask(name, "Math 1AD (X^2)", &cTaskLib::Task_Math1in_AD);  
+  else if (name == "math_1AE") NewTask(name, "Math 1AE (X^3)", &cTaskLib::Task_Math1in_AE);  
+  else if (name == "math_1AF") NewTask(name, "Math 1AF (sqrt(X))", &cTaskLib::Task_Math1in_AF);  
+  else if (name == "math_1AG") NewTask(name, "Math 1AG (log(X))", &cTaskLib::Task_Math1in_AG);  
+  else if (name == "math_1AH") NewTask(name, "Math 1AH (X^2+X^3)", &cTaskLib::Task_Math1in_AH);  
+  else if (name == "math_1AI") NewTask(name, "Math 1AI (X^2+sqrt(X))", &cTaskLib::Task_Math1in_AI);  
+  else if (name == "math_1AJ") NewTask(name, "Math 1AJ (abs(X))", &cTaskLib::Task_Math1in_AJ);  
+  else if (name == "math_1AK") NewTask(name, "Math 1AK (X-5)", &cTaskLib::Task_Math1in_AK);  
+  else if (name == "math_1AL") NewTask(name, "Math 1AL (-X)", &cTaskLib::Task_Math1in_AL);  
+  else if (name == "math_1AM") NewTask(name, "Math 1AM (5X)", &cTaskLib::Task_Math1in_AM);  
+  else if (name == "math_1AN") NewTask(name, "Math 1AN (X/4)", &cTaskLib::Task_Math1in_AN);  
+  else if (name == "math_1AO") NewTask(name, "Math 1AO (X-6)", &cTaskLib::Task_Math1in_AO);  
+  else if (name == "math_1AP") NewTask(name, "Math 1AP (X-7)", &cTaskLib::Task_Math1in_AP);
   
   // Arbitrary 2-Input Math Tasks
-  if (name == "math_2AA")
-    NewTask(name, "Math 2AA (sqrt(X+Y))", &cTaskLib::Task_Math2in_AA);  
-  else if (name == "math_2AB")
-    NewTask(name, "Math 2AB ((X+Y)^2)", &cTaskLib::Task_Math2in_AB);  
-  else if (name == "math_2AC")
-    NewTask(name, "Math 2AC (X%Y)", &cTaskLib::Task_Math2in_AC);  
-  else if (name == "math_2AD")
-    NewTask(name, "Math 2AD (3X/2+5Y/4)", &cTaskLib::Task_Math2in_AD);  
-  else if (name == "math_2AE")
-    NewTask(name, "Math 2AE (abs(X-5)+abs(Y-6))", &cTaskLib::Task_Math2in_AE);  
-  else if (name == "math_2AF")
-    NewTask(name, "Math 2AF (XY-X/Y)", &cTaskLib::Task_Math2in_AF);  
-  else if (name == "math_2AG")
-    NewTask(name, "Math 2AG ((X-Y)^2)", &cTaskLib::Task_Math2in_AG);  
-  else if (name == "math_2AH")
-    NewTask(name, "Math 2AH (X^2+Y^2)", &cTaskLib::Task_Math2in_AH);  
-  else if (name == "math_2AI")
-    NewTask(name, "Math 2AI (X^2+Y^3)", &cTaskLib::Task_Math2in_AI);
-  else if (name == "math_2AJ")
-    NewTask(name, "Math 2AJ ((sqrt(X)+Y)/(X-7))", &cTaskLib::Task_Math2in_AJ);
-  else if (name == "math_2AK")
-    NewTask(name, "Math 2AK (log(|X/Y|))", &cTaskLib::Task_Math2in_AK);
-  else if (name == "math_2AL")
-    NewTask(name, "Math 2AL (log(|X|)/Y)", &cTaskLib::Task_Math2in_AL);
-  else if (name == "math_2AM")
-    NewTask(name, "Math 2AM (X/log(|Y|))", &cTaskLib::Task_Math2in_AM);
-  else if (name == "math_2AN")
-    NewTask(name, "Math 2AN (X+Y)", &cTaskLib::Task_Math2in_AN);
-  else if (name == "math_2AO")
-    NewTask(name, "Math 2AO (X-Y)", &cTaskLib::Task_Math2in_AO);
-  else if (name == "math_2AP")
-    NewTask(name, "Math 2AP (X/Y)", &cTaskLib::Task_Math2in_AP);
-  else if (name == "math_2AQ")
-    NewTask(name, "Math 2AQ (XY)", &cTaskLib::Task_Math2in_AQ);
-  else if (name == "math_2AR")
-    NewTask(name, "Math 2AR (sqrt(X)+sqrt(Y))", &cTaskLib::Task_Math2in_AR);
-  else if (name == "math_2AS")
-    NewTask(name, "Math 2AS (X+2Y)", &cTaskLib::Task_Math2in_AS);
-  else if (name == "math_2AT")
-    NewTask(name, "Math 2AT (X+3Y)", &cTaskLib::Task_Math2in_AT);
-  else if (name == "math_2AU")
-    NewTask(name, "Math 2AU (2X+3Y)", &cTaskLib::Task_Math2in_AU);
-  else if (name == "math_2AV")
-    NewTask(name, "Math 2AV (XY^2)", &cTaskLib::Task_Math2in_AV);
+  if (name == "math_2AA") NewTask(name, "Math 2AA (sqrt(X+Y))", &cTaskLib::Task_Math2in_AA);  
+  else if (name == "math_2AB") NewTask(name, "Math 2AB ((X+Y)^2)", &cTaskLib::Task_Math2in_AB);  
+  else if (name == "math_2AC") NewTask(name, "Math 2AC (X%Y)", &cTaskLib::Task_Math2in_AC);  
+  else if (name == "math_2AD") NewTask(name, "Math 2AD (3X/2+5Y/4)", &cTaskLib::Task_Math2in_AD);  
+  else if (name == "math_2AE") NewTask(name, "Math 2AE (abs(X-5)+abs(Y-6))", &cTaskLib::Task_Math2in_AE);  
+  else if (name == "math_2AF") NewTask(name, "Math 2AF (XY-X/Y)", &cTaskLib::Task_Math2in_AF);  
+  else if (name == "math_2AG") NewTask(name, "Math 2AG ((X-Y)^2)", &cTaskLib::Task_Math2in_AG);  
+  else if (name == "math_2AH") NewTask(name, "Math 2AH (X^2+Y^2)", &cTaskLib::Task_Math2in_AH);  
+  else if (name == "math_2AI") NewTask(name, "Math 2AI (X^2+Y^3)", &cTaskLib::Task_Math2in_AI);
+  else if (name == "math_2AJ") NewTask(name, "Math 2AJ ((sqrt(X)+Y)/(X-7))", &cTaskLib::Task_Math2in_AJ);
+  else if (name == "math_2AK") NewTask(name, "Math 2AK (log(|X/Y|))", &cTaskLib::Task_Math2in_AK);
+  else if (name == "math_2AL") NewTask(name, "Math 2AL (log(|X|)/Y)", &cTaskLib::Task_Math2in_AL);
+  else if (name == "math_2AM") NewTask(name, "Math 2AM (X/log(|Y|))", &cTaskLib::Task_Math2in_AM);
+  else if (name == "math_2AN") NewTask(name, "Math 2AN (X+Y)", &cTaskLib::Task_Math2in_AN);
+  else if (name == "math_2AO") NewTask(name, "Math 2AO (X-Y)", &cTaskLib::Task_Math2in_AO);
+  else if (name == "math_2AP") NewTask(name, "Math 2AP (X/Y)", &cTaskLib::Task_Math2in_AP);
+  else if (name == "math_2AQ") NewTask(name, "Math 2AQ (XY)", &cTaskLib::Task_Math2in_AQ);
+  else if (name == "math_2AR") NewTask(name, "Math 2AR (sqrt(X)+sqrt(Y))", &cTaskLib::Task_Math2in_AR);
+  else if (name == "math_2AS") NewTask(name, "Math 2AS (X+2Y)", &cTaskLib::Task_Math2in_AS);
+  else if (name == "math_2AT") NewTask(name, "Math 2AT (X+3Y)", &cTaskLib::Task_Math2in_AT);
+  else if (name == "math_2AU") NewTask(name, "Math 2AU (2X+3Y)", &cTaskLib::Task_Math2in_AU);
+  else if (name == "math_2AV") NewTask(name, "Math 2AV (XY^2)", &cTaskLib::Task_Math2in_AV);
   
   // Arbitrary 3-Input Math Tasks
-  if (name == "math_3AA")
-    NewTask(name, "Math 3AA (X^2+Y^2+Z^2)", &cTaskLib::Task_Math3in_AA);  
-  else if (name == "math_3AB")
-    NewTask(name, "Math 3AB (sqrt(X)+sqrt(Y)+sqrt(Z))", &cTaskLib::Task_Math3in_AB);  
-  else if (name == "math_3AC")
-    NewTask(name, "Math 3AC (X+2Y+3Z)", &cTaskLib::Task_Math3in_AC);  
-  else if (name == "math_3AD")
-    NewTask(name, "Math 3AD (XY^2+Z^3)", &cTaskLib::Task_Math3in_AD);  
-  else if (name == "math_3AE")
-    NewTask(name, "Math 3AE ((X%Y)*Z)", &cTaskLib::Task_Math3in_AE);  
-  else if (name == "math_3AF")
-    NewTask(name, "Math 3AF ((X+Y)^2+sqrt(Y+Z))", &cTaskLib::Task_Math3in_AF);
-  else if (name == "math_3AG")
-    NewTask(name, "Math 3AG ((XY)%(YZ))", &cTaskLib::Task_Math3in_AG);  
-  else if (name == "math_3AH")
-    NewTask(name, "Math 3AH (X+Y+Z)", &cTaskLib::Task_Math3in_AH);  
-  else if (name == "math_3AI")
-    NewTask(name, "Math 3AI (-X-Y-Z)", &cTaskLib::Task_Math3in_AI);  
-  else if (name == "math_3AJ")
-    NewTask(name, "Math 3AJ ((X-Y)^2+(Y-Z)^2+(Z-X)^2)", &cTaskLib::Task_Math3in_AJ);  
-  else if (name == "math_3AK")
-    NewTask(name, "Math 3AK ((X+Y)^2+(Y+Z)^2+(Z+X)^2)", &cTaskLib::Task_Math3in_AK);  
-  else if (name == "math_3AL")
-    NewTask(name, "Math 3AL ((X-Y)^2+(X-Z)^2)", &cTaskLib::Task_Math3in_AL);  
-  else if (name == "math_3AM")
-    NewTask(name, "Math 3AM ((X+Y)^2+(Y+Z)^2)", &cTaskLib::Task_Math3in_AM);  
+  if (name == "math_3AA")      NewTask(name, "Math 3AA (X^2+Y^2+Z^2)", &cTaskLib::Task_Math3in_AA);  
+  else if (name == "math_3AB") NewTask(name, "Math 3AB (sqrt(X)+sqrt(Y)+sqrt(Z))", &cTaskLib::Task_Math3in_AB);  
+  else if (name == "math_3AC") NewTask(name, "Math 3AC (X+2Y+3Z)", &cTaskLib::Task_Math3in_AC);  
+  else if (name == "math_3AD") NewTask(name, "Math 3AD (XY^2+Z^3)", &cTaskLib::Task_Math3in_AD);  
+  else if (name == "math_3AE") NewTask(name, "Math 3AE ((X%Y)*Z)", &cTaskLib::Task_Math3in_AE);  
+  else if (name == "math_3AF") NewTask(name, "Math 3AF ((X+Y)^2+sqrt(Y+Z))", &cTaskLib::Task_Math3in_AF);
+  else if (name == "math_3AG") NewTask(name, "Math 3AG ((XY)%(YZ))", &cTaskLib::Task_Math3in_AG);  
+  else if (name == "math_3AH") NewTask(name, "Math 3AH (X+Y+Z)", &cTaskLib::Task_Math3in_AH);  
+  else if (name == "math_3AI") NewTask(name, "Math 3AI (-X-Y-Z)", &cTaskLib::Task_Math3in_AI);  
+  else if (name == "math_3AJ") NewTask(name, "Math 3AJ ((X-Y)^2+(Y-Z)^2+(Z-X)^2)", &cTaskLib::Task_Math3in_AJ);  
+  else if (name == "math_3AK") NewTask(name, "Math 3AK ((X+Y)^2+(Y+Z)^2+(Z+X)^2)", &cTaskLib::Task_Math3in_AK);  
+  else if (name == "math_3AL") NewTask(name, "Math 3AL ((X-Y)^2+(X-Z)^2)", &cTaskLib::Task_Math3in_AL);  
+  else if (name == "math_3AM") NewTask(name, "Math 3AM ((X+Y)^2+(Y+Z)^2)", &cTaskLib::Task_Math3in_AM);  
   
   // Matching Tasks
-  if (name == "matchstr") 
-    Load_MatchStr(name, info, envreqs, feedback);
-  else if (name == "match_number")
-    Load_MatchNumber(name, info, envreqs, feedback);
-	else if (name == "matchprodstr") 
-    Load_MatchProdStr(name, info, envreqs, feedback);
+  if (name == "matchstr") Load_MatchStr(name, info, envreqs, feedback);
+  else if (name == "match_number") Load_MatchNumber(name, info, envreqs, feedback);
+  else if (name == "matchprodstr") Load_MatchProdStr(name, info, envreqs, feedback);
   
   // Sequence Tasks
-  if (name == "sort_inputs")
-    Load_SortInputs(name, info, envreqs, feedback);
-  else if (name == "fibonacci_seq")
-    Load_FibonacciSequence(name, info, envreqs, feedback);
+  if (name == "sort_inputs") Load_SortInputs(name, info, envreqs, feedback);
+  else if (name == "fibonacci_seq") Load_FibonacciSequence(name, info, envreqs, feedback);
   
   // Math Tasks
-  if (name == "mult")
-    Load_Mult(name, info, envreqs, feedback);
-  else if (name == "div")
-    Load_Div(name, info, envreqs, feedback);
-  else if (name == "log")
-    Load_Log(name, info, envreqs, feedback);
-  else if (name == "log2")
-    Load_Log2(name, info, envreqs, feedback);
-  else if (name == "log10")
-    Load_Log10(name, info, envreqs, feedback);
-  else if (name == "sqrt")
-    Load_Sqrt(name, info, envreqs, feedback);
-  else if (name == "sine")
-    Load_Sine(name, info, envreqs, feedback);
-  else if (name == "cosine")
-    Load_Cosine(name, info, envreqs, feedback);
+  if (name == "mult")       Load_Mult(name, info, envreqs, feedback);
+  else if (name == "div")   Load_Div(name, info, envreqs, feedback);
+  else if (name == "log")   Load_Log(name, info, envreqs, feedback);
+  else if (name == "log2")  Load_Log2(name, info, envreqs, feedback);
+  else if (name == "log10") Load_Log10(name, info, envreqs, feedback);
+  else if (name == "sqrt")  Load_Sqrt(name, info, envreqs, feedback);
+  else if (name == "sine")  Load_Sine(name, info, envreqs, feedback);
+  else if (name == "cosine") Load_Cosine(name, info, envreqs, feedback);
   
   
   // Optimization Tasks
-  if (name == "optimize")
-    Load_Optimize(name, info, envreqs, feedback);
+  if (name == "optimize") Load_Optimize(name, info, envreqs, feedback);
   
   // Communication Tasks
-  if (name == "comm_echo")
+  if (name == "comm_echo") {
     NewTask(name, "Echo of Neighbor's Input", &cTaskLib::Task_CommEcho, REQ_NEIGHBOR_INPUT);
-  else if (name == "comm_not")
+  } else if (name == "comm_not") {
     NewTask(name, "Not of Neighbor's Input", &cTaskLib::Task_CommNot, REQ_NEIGHBOR_INPUT);
+  }
   
   // Network Tasks
-  if (name == "net_send")
-    NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
-  else if (name == "net_receive")
-    NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
+  if (name == "net_send") NewTask(name, "Successfully Sent Network Message", &cTaskLib::Task_NetSend);
+  else if (name == "net_receive") NewTask(name, "Successfully Received Network Message", &cTaskLib::Task_NetReceive);
   
   // Movement Tasks
-  if (name == "move_up_gradient")
-    NewTask(name, "Move up gradient", &cTaskLib::Task_MoveUpGradient);
-  else if (name == "move_neutral_gradient")
-    NewTask(name, "Move neutral gradient", &cTaskLib::Task_MoveNeutralGradient);
-  else if (name == "move_down_gradient")
-    NewTask(name, "Move down gradient", &cTaskLib::Task_MoveDownGradient);
-  else if (name == "move_not_up_gradient")
-    NewTask(name, "Move not up gradient", &cTaskLib::Task_MoveNotUpGradient);
-  else if (name == "move_to_right_side")
-    NewTask(name, "Move to right side", &cTaskLib::Task_MoveToRightSide);
-  else if (name == "move_to_left_side")
-    NewTask(name, "Move to left side", &cTaskLib::Task_MoveToLeftSide);
+  if (name == "move_up_gradient") NewTask(name, "Move up gradient", &cTaskLib::Task_MoveUpGradient);
+  else if (name == "move_neutral_gradient") NewTask(name, "Move neutral gradient", &cTaskLib::Task_MoveNeutralGradient);
+  else if (name == "move_down_gradient") NewTask(name, "Move down gradient", &cTaskLib::Task_MoveDownGradient);
+  else if (name == "move_not_up_gradient") NewTask(name, "Move not up gradient", &cTaskLib::Task_MoveNotUpGradient);
+  else if (name == "move_to_right_side") NewTask(name, "Move to right side", &cTaskLib::Task_MoveToRightSide);
+  else if (name == "move_to_left_side") NewTask(name, "Move to left side", &cTaskLib::Task_MoveToLeftSide);
   // BDC Movement Tasks
-  else if (name == "move")
-    NewTask(name, "Successfully Moved", &cTaskLib::Task_Move);
-  else if (name == "movetotarget")
-    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveToTarget);
-  else if (name == "movetoevent")
-    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveToMovementEvent);
-  else if (name == "movebetweenevent")
-    NewTask(name, "Move to a target area", &cTaskLib::Task_MoveBetweenMovementEvent); 
+  else if (name == "move") NewTask(name, "Successfully Moved", &cTaskLib::Task_Move);
+  else if (name == "movetotarget") NewTask(name, "Move to a target area", &cTaskLib::Task_MoveToTarget);
+  else if (name == "movetoevent") NewTask(name, "Move to a target area", &cTaskLib::Task_MoveToMovementEvent);
+  else if (name == "movebetweenevent") NewTask(name, "Move to a target area", &cTaskLib::Task_MoveBetweenMovementEvent); 
 	
   // reputation based tasks
-  else if(name == "perfect_strings") 
-    NewTask(name, "Produce and store perfect strings", &cTaskLib::Task_CreatePerfectStrings);		
+  else if (name == "perfect_strings") NewTask(name, "Produce and store perfect strings", &cTaskLib::Task_CreatePerfectStrings);		
 
   // event tasks
-  if(name == "move_to_event")
-    NewTask(name, "Moved into cell containing event", &cTaskLib::Task_MoveToEvent);
-  else if(name == "event_killed")
-    NewTask(name, "Killed event", &cTaskLib::Task_EventKilled);
+  if (name == "move_to_event") NewTask(name, "Moved into cell containing event", &cTaskLib::Task_MoveToEvent);
+  else if (name == "event_killed") NewTask(name, "Killed event", &cTaskLib::Task_EventKilled);
   
   // Optimization Tasks
-  if (name == "sg_path_traversal")
-    Load_SGPathTraversal(name, info, envreqs, feedback);  
-  
-  if (name == "form-group")
-    Load_FormSpatialGroup(name, info, envreqs, feedback);
-	
-  if (name == "form-group-id")
-    Load_FormSpatialGroupWithID(name, info, envreqs, feedback);
-	
-  if (name == "live-on-patch-id")
-    Load_LiveOnPatchRes(name, info, envreqs, feedback);
+  if (name == "sg_path_traversal") Load_SGPathTraversal(name, info, envreqs, feedback);  
+  if (name == "form-group") Load_FormSpatialGroup(name, info, envreqs, feedback);
+  if (name == "form-group-id") Load_FormSpatialGroupWithID(name, info, envreqs, feedback);
+  if (name == "live-on-patch-id") Load_LiveOnPatchRes(name, info, envreqs, feedback);
 	
   // String matching
-  if(name == "all-ones")
-    Load_AllOnes(name, info, envreqs, feedback);
-  else if (name == "royal-road")
-    Load_RoyalRoad(name, info, envreqs, feedback);
-  else if (name == "royal-road-wd")
-    Load_RoyalRoadWithDitches(name, info, envreqs, feedback);
+  if (name == "all-ones") Load_AllOnes(name, info, envreqs, feedback);
+  else if (name == "royal-road") Load_RoyalRoad(name, info, envreqs, feedback);
+  else if (name == "royal-road-wd") Load_RoyalRoadWithDitches(name, info, envreqs, feedback);
   
   // Division of labor
-  if(name == "opinion_is") {
-    Load_OpinionIs(name, info, envreqs, feedback);
-  }
+  if (name == "opinion_is")  Load_OpinionIs(name, info, envreqs, feedback);
   
   // Make sure we have actually found a task  
   if (task_array.GetSize() == start_size) {
@@ -606,8 +446,8 @@ double cTaskLib::Task_Add3(cTaskContext& ctx) const
 {
   const tBuffer<int>& input = ctx.GetInputBuffer();
   const int output = ctx.GetOutputBuffer()[0];
-  for(int i=0; i<(input.GetNumStored()-2); ++i) {
-    if(output == (input[i] + input[i+1] + input[i+2])) {
+  for (int i=0; i<(input.GetNumStored()-2); ++i) {
+    if (output == (input[i] + input[i+1] + input[i+2])) {
       return 1.0;
     }
   }
@@ -719,7 +559,7 @@ double cTaskLib::Task_Nand_ResourceDependent(cTaskContext& ctx) const
   double pher_amount = 0;
   cResource* res = resLib.GetResource("pheromone");
 	
-  if(strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
+  if (strncmp(resource_count.GetResName(res->GetID()), "pheromone", 9) == 0) {
     pher_amount += resource_count_array[res->GetID()];
   }
   
@@ -2138,7 +1978,7 @@ vector<cString> cTaskLib::GetMatchStrings()
 cString cTaskLib::GetMatchString(int x)
 { 
   cString s; 
-  if(x >= 0 && x < (int)m_strings.size()){
+  if (x >= 0 && x < (int)m_strings.size()){
     s = m_strings[x]; 
   } else { 
     s = cString("");
@@ -3192,32 +3032,28 @@ double cTaskLib::Task_NetReceive(cTaskContext& ctx) const
 
 double cTaskLib::Task_MoveUpGradient(cTaskContext& ctx) const
 {
-  if(ctx.GetOrganism()->GetGradientMovement() == 1.0)
-    return 1.0;
+  if (ctx.GetOrganism()->GetGradientMovement() == 1.0) return 1.0;
   return 0.0;
 }
 
 
 double cTaskLib::Task_MoveNeutralGradient(cTaskContext& ctx) const
 {
-  if(ctx.GetOrganism()->GetGradientMovement() == 0.0)
-    return 1.0;
+  if (ctx.GetOrganism()->GetGradientMovement() == 0.0) return 1.0;
   return 0.0;
 }
 
 
 double cTaskLib::Task_MoveDownGradient(cTaskContext& ctx) const
 {
-  if(ctx.GetOrganism()->GetGradientMovement() == -1.0)
-    return 1.0;
+  if (ctx.GetOrganism()->GetGradientMovement() == -1.0) return 1.0;
   return 0.0;
 }
 
 
 double cTaskLib::Task_MoveNotUpGradient(cTaskContext& ctx) const
 {
-  if(Task_MoveUpGradient(ctx))
-    return 0.0;
+  if (Task_MoveUpGradient(ctx)) return 0.0;
   return 1.0;
 }
 
@@ -3244,7 +3080,7 @@ double cTaskLib::Task_MoveToLeftSide(cTaskContext& ctx) const
 
 double cTaskLib::Task_Move(cTaskContext& ctx) const
 {
-  if(ctx.GetOrganism()->GetCellID() != ctx.GetOrganism()->GetPrevSeenCellID()) {
+  if (ctx.GetOrganism()->GetCellID() != ctx.GetOrganism()->GetPrevSeenCellID()) {
     ctx.GetOrganism()->SetPrevSeenCellID(ctx.GetOrganism()->GetCellID());
     return 1.0;
   }
@@ -3347,7 +3183,7 @@ double cTaskLib::Task_MoveBetweenMovementEvent(cTaskContext& ctx) const
     } else {
       for (int j = 0; j < num_events; j++) {
         cDemeCellEvent* event = deme->GetMovPredicate(i)->GetEvent(j);
-        if( (event != NULL) && (event->IsActive()) && (event->GetEventID() == cell_data) ) {
+        if ( (event != NULL) && (event->IsActive()) && (event->GetEventID() == cell_data) ) {
           org->AddReachedTaskCell();
           org->SetPrevTaskCellID(cell_data);
           return 1.0;
@@ -3619,7 +3455,7 @@ double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
   double num_ones = 0.0;
   int length = ctx.GetTaskEntry()->GetArguments().GetInt(0);
   
-  for(int i=0; i<length; ++i) {
+  for (int i=0; i<length; ++i) {
     num_ones += buf[i];
   }
 	
@@ -3729,17 +3565,17 @@ double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
     }
 
     // Else consider it an X
-    if(block_type == -1) block_type = 0;
+    if (block_type == -1) block_type = 0;
     
     // Based on the type of block... change states....
     switch(next_case){
     case 1:
-      if(block_type == 0) next_case = 2;
-      if(block_type == 1) {
+      if (block_type == 0) next_case = 2;
+      if (block_type == 1) {
 	total_reward = num_b_blocks + 2; 
 	next_case = 3; 
       } 
-      if(block_type == 2) num_b_blocks++;
+      if (block_type == 2) num_b_blocks++;
       break;
     case 2:
       if(block_type == 1) total_reward = num_b_blocks + 2 - height;
