@@ -1696,9 +1696,11 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   Divide_TestFitnessMeasures1(ctx); 
   
 #if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
+    // reset first time instruction costs
+    for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    }
   }
 #endif
   
@@ -1795,9 +1797,12 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
   }
   
 #if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
+
+    // reset first time instruction costs
+    for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    }
   }
 #endif
   
@@ -1888,9 +1893,11 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
   }
   
 #if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
+    // reset first time instruction costs
+    for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    }
   }
 #endif
   
@@ -1981,9 +1988,11 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
   }
   
 #if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
+    // reset first time instruction costs
+    for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    }
   }
 #endif
   
@@ -3249,9 +3258,11 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   Divide_TestFitnessMeasures(ctx);
   
 #if INSTRUCTION_COSTS
-  // reset first time instruction costs
-  for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
-    m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+  if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
+    // reset first time instruction costs
+    for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
+      m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
+    }
   }
 #endif
   
