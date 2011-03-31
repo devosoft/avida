@@ -57,7 +57,7 @@ private:
   // Setup the update process to use lazy evaluation...
   mutable double update_time;     // Portion of an update compleated...
   mutable double spatial_update_time;
-  void DoUpdates(cAvidaContext* ctx) const;         // Update resource count based on update time
+  void DoUpdates(cAvidaContext& ctx) const;         // Update resource count based on update time
 
   // A few constants to describe update process...
   static const double UPDATE_STEP;   // Fraction of an update per step
@@ -105,11 +105,11 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
 
   int GetSize(void) const { return resource_count.GetSize(); }
   const tArray<double>& ReadResources(void) const { return resource_count; }
-  const tArray<double>& GetResources(cAvidaContext* ctx) const; 
-  const tArray<double>& GetCellResources(int cell_id, cAvidaContext* ctx) const;
+  const tArray<double>& GetResources(cAvidaContext& ctx) const; 
+  const tArray<double>& GetCellResources(int cell_id, cAvidaContext& ctx) const;
   const tArray<int>& GetResourcesGeometry() const;
   int GetResourceGeometry(int res_id) const { return geometry[res_id]; }
-  const tArray<tArray<double> >& GetSpatialRes(cAvidaContext* ctx); 
+  const tArray<tArray<double> >& GetSpatialRes(cAvidaContext& ctx); 
   const tArray<tArray<int> >& GetCellIdLists() const { return cell_lists; }
   void Modify(const tArray<double>& res_change);
   void Modify(int id, double change);

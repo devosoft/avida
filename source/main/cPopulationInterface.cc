@@ -196,17 +196,17 @@ const tArray<int>& cPopulationInterface::GetInputs() const
   return m_world->GetPopulation().GetCell(m_cell_id).GetInputs();
 }
 
-const tArray<double>& cPopulationInterface::GetResources(cAvidaContext* ctx) 
+const tArray<double>& cPopulationInterface::GetResources(cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetCellResources(m_cell_id, ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext* ctx) 
+const tArray<double>& cPopulationInterface::GetFacedCellResources(cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetCellResources(GetCell()->GetCellFaced().GetID(), ctx); 
 }
 
-const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext* ctx) 
+const tArray<double>& cPopulationInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 {
   return m_world->GetPopulation().GetDemeCellResources(deme_id, m_cell_id, ctx); 
 }
@@ -226,25 +226,25 @@ void cPopulationInterface::UpdateDemeResources(const tArray<double> & res_change
   return m_world->GetPopulation().UpdateDemeCellResources(res_change, m_cell_id);
 }
 
-void cPopulationInterface::Die(cAvidaContext* ctx) 
+void cPopulationInterface::Die(cAvidaContext& ctx) 
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   m_world->GetPopulation().KillOrganism(cell, ctx);
 }
 
-void cPopulationInterface::KillCellID(int target, cAvidaContext* ctx) 
+void cPopulationInterface::KillCellID(int target, cAvidaContext& ctx) 
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(target);
   m_world->GetPopulation().KillOrganism(cell, ctx); 
 }
 
-void cPopulationInterface::Kaboom(int distance, cAvidaContext* ctx) 
+void cPopulationInterface::Kaboom(int distance, cAvidaContext& ctx) 
 {
   cPopulationCell & cell = m_world->GetPopulation().GetCell(m_cell_id);
   m_world->GetPopulation().Kaboom(cell, ctx, distance); 
 }
 
-void cPopulationInterface::SpawnDeme(cAvidaContext* ctx) 
+void cPopulationInterface::SpawnDeme(cAvidaContext& ctx) 
 {
   // const int num_demes = m_world->GetPopulation().GetNumDemes();
 	

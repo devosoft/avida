@@ -107,9 +107,9 @@ public:
   void ResetInputs(cAvidaContext& ctx);
 
   inline int GetReceiveValue();
-  inline const tArray<double>& GetResources(cAvidaContext* ctx); 
-  inline const tArray<double>& GetFacedCellResources(cAvidaContext* ctx); 
-  inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext* ctx); 
+  inline const tArray<double>& GetResources(cAvidaContext& ctx); 
+  inline const tArray<double>& GetFacedCellResources(cAvidaContext& ctx); 
+  inline const tArray<double>& GetDemeResources(int deme_id, cAvidaContext& ctx); 
   inline const tArray< tArray<int> >& GetCellIdLists();
   
   // Used by cTestCPUInterface to get/update resources
@@ -138,17 +138,17 @@ inline int cTestCPU::GetReceiveValue()
   return receive_array[cur_receive++];
 }
 
-inline const tArray<double>& cTestCPU::GetResources(cAvidaContext* ctx)    
+inline const tArray<double>& cTestCPU::GetResources(cAvidaContext& ctx)    
 {
   return m_resource_count.GetResources(ctx); 
 }
 
-inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext* ctx)   
+inline const tArray<double>& cTestCPU::GetFacedCellResources(cAvidaContext& ctx)   
 {
   return m_faced_cell_resource_count.GetResources(ctx); 
 }
  
-inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext* ctx)    
+inline const tArray<double>& cTestCPU::GetDemeResources(int deme_id, cAvidaContext& ctx)    
 {
     return m_deme_resource_count.GetResources(ctx); 
 }

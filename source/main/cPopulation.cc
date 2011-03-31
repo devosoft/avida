@@ -331,7 +331,7 @@ bool cPopulation::InitiatePop(cUserFeedback* feedback)
   if (filename != "-" && filename != "") {
     if (!start_org.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback)) return false;
     if (start_org.GetSize() != 0) {
-      Inject(start_org, SRC_ORGANISM_FILE_LOAD, NULL); //JW Might need to be changed
+      Inject(start_org, SRC_ORGANISM_FILE_LOAD, m_world->GetDefaultContext());
     } else {
       if (feedback) feedback->Warning("zero length start organism, not injecting into initial population");
     }
@@ -345,7 +345,7 @@ bool cPopulation::InitiatePop(cUserFeedback* feedback)
 
 cPopulation::~cPopulation()
 {
-  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i], &m_world->GetDefaultContext()); 
+  for (int i = 0; i < cell_array.GetSize(); i++) KillOrganism(cell_array[i], m_world->GetDefaultContext()); 
   delete schedule;
 }
 
@@ -433,7 +433,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
      continue;
      }
      */
-    target_cells[i] = PositionOffspring(parent_cell, &ctx, m_world->GetConfig().ALLOW_PARENT.Get()).GetID(); 
+    target_cells[i] = PositionOffspring(parent_cell, ctx, m_world->GetConfig().ALLOW_PARENT.Get()).GetID(); 
     // If we replaced the parent, make a note of this.
     if (target_cells[i] == parent_cell.GetID()) parent_alive = false;
     
@@ -517,7 +517,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
         else {
           // Offspring failed tolerance of parent's group,
           // offspring tries to immigrate to another group.
-          const int num_groups = m_world->GetPopulation().GetResources(&ctx).GetSize();
+          const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
           
           // If the parent group is the only group, there is no chance to immigrate elsewhere.
           // The offspring is placed in cell 0 to be killed.
@@ -758,8 +758,8 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   in_organism->SetOrgInterface(ctx, new cPopulationInterface(m_world));
   
   // Update the contents of the target cell.
-  KillOrganism(target_cell, &ctx); 
-	target_cell.InsertOrganism(in_organism, &ctx); 
+  KillOrganism(target_cell, ctx); 
+	target_cell.InsertOrganism(in_organism, ctx); 
   
   // Setup the inputs in the target cell.
   environment.SetupInputs(ctx, target_cell.m_inputs);
@@ -828,11 +828,11 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   // world.  if so, we then migrate this organism out of this world and empty the cell.
   if(m_world->IsWorldBoundary(target_cell)) {
     m_world->MigrateOrganism(in_organism, target_cell, in_organism->GetPhenotype().GetMerit(), in_organism->GetLineageLabel());
-    KillOrganism(target_cell, &ctx); 
+    KillOrganism(target_cell, ctx); 
     // For tolerance_window, we cheat by dumping doomed offspring into cell 0...now that we updated the stats, we need to 
     // kill that org.
   }
-  if(m_world->GetConfig().TOLERANCE_WINDOW.Get() && in_organism->GetCellID() == 0 && m_world->GetStats().GetUpdate() != 0) KillOrganism(target_cell, &ctx);
+  if(m_world->GetConfig().TOLERANCE_WINDOW.Get() && in_organism->GetCellID() == 0 && m_world->GetStats().GetUpdate() != 0) KillOrganism(target_cell, ctx);
   
 }
 
@@ -851,7 +851,7 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     
     std::pair<int, int> pos = m_world->GetPopulation().GetDeme(deme_id).GetCellPosition(absolute_cell_ID);  
     if (pos.first == 0 || pos.second == 0 || pos.first == m_world->GetConfig().WORLD_X.Get() - 1 || pos.second == m_world->GetConfig().WORLD_Y.Get() - 1) {
-      KillOrganism(src_cell, &ctx);
+      KillOrganism(src_cell, ctx);
     return false; 
     }
   }    
@@ -872,16 +872,16 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
     }
 
     if (kill_source) {
-      KillOrganism(src_cell, &ctx); 
+      KillOrganism(src_cell, ctx); 
 
       // Killing the moving organism means that we shouldn't actually do the swap, so return
       return false;
     }
 
-    KillOrganism(dest_cell, &ctx); 
+    KillOrganism(dest_cell, ctx); 
   }
 
-  SwapCells(src_cell_id, dest_cell_id, &ctx); 
+  SwapCells(src_cell_id, dest_cell_id, ctx); 
 
 
   // Declarations
@@ -956,14 +956,14 @@ void cPopulation::KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism *o
   }
   
   int cell_id = group_list[group_id][index]->GetCellID();
-  KillOrganism(cell_array[cell_id], &ctx); 
+  KillOrganism(cell_array[cell_id], ctx); 
 }
 
 // Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
 void cPopulation::AttackFacedOrg(cAvidaContext& ctx, int loser)
 {
   cPopulationCell& loser_cell = GetCell(loser);
-  KillOrganism(loser_cell, &ctx); 
+  KillOrganism(loser_cell, ctx); 
 }
 
 //Kill random org in population. This requires all (candidate) orgs to be in a valid group.
@@ -1043,11 +1043,11 @@ void cPopulation::AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_gr
   if (kill_attacker) loser_cell = attacker_cell;
   else loser_cell = target_cell_id;
   
-  KillOrganism(cell_array[loser_cell], &ctx);
+  KillOrganism(cell_array[loser_cell], ctx);
   return;
 } 
 
-void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext* ctx) 
+void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx) 
 {
   // do we actually have something to kill?
   if (in_cell.IsOccupied() == false) return;
@@ -1113,7 +1113,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext* ctx)
   AdjustSchedule(in_cell, cMerit(0));
 }
 
-void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext* ctx, int distance) 
+void cPopulation::Kaboom(cPopulationCell& in_cell, cAvidaContext& ctx, int distance) 
 {
   cOrganism* organism = in_cell.GetOrganism();
   cString ref_genome = organism->GetGenome().GetSequence().AsString();
@@ -1221,7 +1221,7 @@ int cPopulation::BuyValue(const int label, const int buy_price, const int cell_i
   return receive_value;
 }
 
-void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext* ctx)
+void cPopulation::SwapCells(int cell_id1, int cell_id2, cAvidaContext& ctx)
 {
   // Sanity checks: Don't process if the cells are the same
   if (cell_id1 == cell_id2) return;
@@ -1496,7 +1496,7 @@ void cPopulation::CompeteDemes(int competition_type)
  for backwards compatibility), change the config option DEMES_REPLICATE_SIZE to be the size of
  each deme.
  */
-void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cAvidaContext* ctx) {
+void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cAvidaContext& ctx) {
   // it's possible that we'll be changing the fitness values of some demes, so make a copy:
   std::vector<double> fitness(calculated_fitness);
 
@@ -1671,7 +1671,7 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
 
  */
 
-void cPopulation::ReplicateDemes(int rep_trigger, cAvidaContext* ctx) 
+void cPopulation::ReplicateDemes(int rep_trigger, cAvidaContext& ctx) 
 {
   assert(GetNumDemes()>1); // Sanity check.
 
@@ -1775,7 +1775,7 @@ void cPopulation::ReplicateDemes(int rep_trigger, cAvidaContext* ctx)
 
 /*! ReplicateDeme is a helper method for replicating a source deme.
  */
-void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext* ctx) 
+void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext& ctx) 
 {
   // Doesn't make sense to try and replicate a deme that *has no organisms*.
   if (source_deme.IsEmpty()) return;
@@ -1885,7 +1885,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext* ctx)
 
  @refactor Replace manual mutation with strategy pattern.
  */
-void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext* ctx2) 
+void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx2) 
 {
   // Stats tracking; pre-replication hook.
   m_world->GetStats().DemePreReplication(source_deme, target_deme);
@@ -2095,7 +2095,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
  @todo Fix lineage label on injected genomes.
  @todo Different strategies for non-random placement.
  */
-void cPopulation::SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src, cAvidaContext* ctx) { 
+void cPopulation::SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src, cAvidaContext& ctx) { 
   // Kill all the organisms in the deme.
   deme.KillAll(ctx); 
 
@@ -2107,7 +2107,7 @@ void cPopulation::SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src, cAv
   }
 }
 
-void cPopulation::SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvidaContext* ctx) { 
+void cPopulation::SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvidaContext& ctx) { 
   // Kill all the organisms in the deme.
   _deme.KillAll(ctx); 
   _deme.ClearFounders();
@@ -2126,7 +2126,7 @@ void cPopulation::SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvi
  All organisms in the target deme are terminated, and a subset of the organisms in
  the source will be cloned to the target. Returns whether target deme was successfully seeded.
  */
-bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext* ctx) { 
+bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx) { 
   cRandom& random = m_world->GetRandom();
 
   bool successfully_seeded = true;
@@ -2569,7 +2569,7 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
 	return successfully_seeded;
 }
 
-void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext* ctx, cPhenotype* _phenotype) 
+void cPopulation::SeedDeme_InjectDemeFounder(int _cell_id, cBioGroup* bg, cAvidaContext& ctx, cPhenotype* _phenotype) 
 {
   // phenotype can be NULL
 
@@ -2690,7 +2690,7 @@ void cPopulation::DemePostInjection(cDeme& deme, cPopulationCell& cell) {
 // Loop through all demes to determine if any are ready to be divided.  All
 // full demes have 1/2 of their organisms (the odd ones) moved into a new deme.
 
-void cPopulation::DivideDemes(cAvidaContext* ctx) 
+void cPopulation::DivideDemes(cAvidaContext& ctx) 
 {
   // Determine which demes should be replicated.
   const int num_demes = GetNumDemes();
@@ -2773,7 +2773,7 @@ void cPopulation::ResetDemes()
 
 // Copy the full contents of one deme into another.
 
-void cPopulation::CopyDeme(int deme1_id, int deme2_id, cAvidaContext* ctx) 
+void cPopulation::CopyDeme(int deme1_id, int deme2_id, cAvidaContext& ctx) 
 {
   cDeme & deme1 = deme_array[deme1_id];
   cDeme & deme2 = deme_array[deme2_id];
@@ -2896,7 +2896,7 @@ void cPopulation::PrintDonationStats()
 // Copy a single indvidual out of a deme into a new one (which is first purged
 // of existing organisms.)
 
-void cPopulation::SpawnDeme(int deme1_id, cAvidaContext* ctx, int deme2_id) 
+void cPopulation::SpawnDeme(int deme1_id, cAvidaContext& ctx, int deme2_id) 
 {
   // Must spawn into a different deme.
   assert(deme1_id != deme2_id);
@@ -2963,7 +2963,7 @@ void cPopulation::AddDemePred(cString type, int times) {
   }
 }
 
-void cPopulation::CheckImplicitDemeRepro(cDeme& deme, cAvidaContext* ctx) {
+void cPopulation::CheckImplicitDemeRepro(cDeme& deme, cAvidaContext& ctx) {
 
   if (GetNumDemes() <= 1) return;
 
@@ -2978,7 +2978,7 @@ void cPopulation::CheckImplicitDemeRepro(cDeme& deme, cAvidaContext* ctx) {
 }
 
 // Print out all statistics about individual demes
-void cPopulation::PrintDemeAllStats(cAvidaContext* ctx) { 
+void cPopulation::PrintDemeAllStats(cAvidaContext& ctx) { 
   PrintDemeFitness();
   PrintDemeLifeFitness();
   PrintDemeMerit();
@@ -3086,7 +3086,7 @@ void cPopulation::PrintDemeEnergySharingStats() {
 // Print some stats about the distribution of energy among the cells in a deme
 // If a cell is occupied, the amount returned is that of the organism in that cell
 // If a cell is not occupied, the amount returned is the amount of energy resource in the cell
-void cPopulation::PrintDemeEnergyDistributionStats(cAvidaContext* ctx) {
+void cPopulation::PrintDemeEnergyDistributionStats(cAvidaContext& ctx) {
   const int num_demes = deme_array.GetSize();
   cStats& stats = m_world->GetStats();
   cString comment;
@@ -3233,7 +3233,7 @@ void cPopulation::PrintDemeFitness() {
   df_fit.Endl();
 }
 
-void cPopulation::PrintDemeTotalAvgEnergy(cAvidaContext* ctx) { 
+void cPopulation::PrintDemeTotalAvgEnergy(cAvidaContext& ctx) { 
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
   cDataFile & df_fit = m_world->GetDataFile("deme_totalAvgEnergy.dat");
@@ -3412,7 +3412,7 @@ void cPopulation::PrintDemeReceiver() {
   df_receiver.Endl();
 }
 
-void cPopulation::PrintDemeResource(cAvidaContext* ctx) { 
+void cPopulation::PrintDemeResource(cAvidaContext& ctx) { 
   cStats& stats = m_world->GetStats();
   const int num_demes = deme_array.GetSize();
   cDataFile & df_resources = m_world->GetDataFile("deme_resources.dat");
@@ -3438,7 +3438,7 @@ void cPopulation::PrintDemeResource(cAvidaContext* ctx) {
 
 //Write deme global resource levels to a file that can be easily read into Matlab.
 //Each time this runs, a Matlab array is created that contains an array.  Each row in the array contains <deme id> <res level 0> ... <res level n>
-void cPopulation::PrintDemeGlobalResources(cAvidaContext* ctx) { 
+void cPopulation::PrintDemeGlobalResources(cAvidaContext& ctx) { 
   const int num_demes = deme_array.GetSize();
   cDataFile & df = m_world->GetDataFile("deme_global_resources.dat");
   df.WriteComment("Avida deme resource data");
@@ -3500,7 +3500,7 @@ void cPopulation::PrintDemeSpatialEnergyData() const {
 }
 
 // Write spatial data to a file that can easily be read into Matlab
-void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext* ctx) const { 
+void cPopulation::PrintDemeSpatialResData(const cResourceCount& res, const int i, const int deme_id, cAvidaContext& ctx) const { 
   const char* tmpResName = res.GetResName(i);
   cString tmpfilename = cStringUtil::Stringf( "deme_spatial_resource_%s.m", tmpResName );
   cDataFile& df = m_world->GetDataFile(tmpfilename);
@@ -3637,7 +3637,7 @@ void cPopulation::CCladeSetupOrganism(cOrganism* organism)
  * if it is okay to replace the parent.
  **/
 //@AWC -- This could REALLY stand some functional abstraction...
-cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cAvidaContext* ctx, bool parent_ok) 
+cPopulationCell& cPopulation::PositionOffspring(cPopulationCell& parent_cell, cAvidaContext& ctx, bool parent_ok) 
 {
   assert(parent_cell.IsOccupied());
 
@@ -4148,7 +4148,7 @@ void cPopulation::ProcessStep(cAvidaContext& ctx, double step_size, int cell_id)
   deme.IncTimeUsed(merit);
 
   if (GetNumDemes() >= 1) {
-    CheckImplicitDemeRepro(deme, &ctx); 
+    CheckImplicitDemeRepro(deme, ctx); 
   }
 }
 
@@ -4190,7 +4190,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
 
     cDeme& deme = GetDeme(GetCell(cell_id).GetDemeID());
     deme.IncTimeUsed(cur_org->GetPhenotype().GetMerit().GetDouble());
-    CheckImplicitDemeRepro(deme, &ctx); 
+    CheckImplicitDemeRepro(deme, ctx); 
   }
 
   if (cur_org->GetPhenotype().GetToDelete() == true) {
@@ -4204,7 +4204,7 @@ void cPopulation::ProcessStepSpeculative(cAvidaContext& ctx, double step_size, i
 
 // Loop through all the demes getting stats and doing calculations
 // which must be done on a deme by deme basis.
-void cPopulation::UpdateDemeStats(cAvidaContext* ctx) { 
+void cPopulation::UpdateDemeStats(cAvidaContext& ctx) { 
 
   // These must be updated, even if there is only one deme
   for(int i = 0; i < GetNumDemes(); i++) {
@@ -4259,7 +4259,7 @@ void cPopulation::UpdateDemeStats(cAvidaContext* ctx) {
 }
 
 
-void cPopulation::UpdateOrganismStats(cAvidaContext* ctx) 
+void cPopulation::UpdateOrganismStats(cAvidaContext& ctx) 
 {
   // Loop through all the cells getting stats and doing calculations
   // which must be done on a creature by creature basis.
@@ -4465,8 +4465,8 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 
   stats.SetNumCreatures(GetNumOrganisms());
 
-  UpdateDemeStats(&ctx); 
-  UpdateOrganismStats(&ctx); 
+  UpdateDemeStats(ctx); 
+  UpdateOrganismStats(ctx); 
 
   m_world->GetClassificationManager().UpdateStats(stats);
 
@@ -4474,7 +4474,7 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   stats.CalcEnergy();
   stats.CalcFidelity();
 
-  for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(&ctx); 
+  for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx); 
   
   for (tArrayMap<int, tSmartArray<cOrganism*> >::iterator it = group_list.begin(); it != group_list.end(); it++) {
     for (int i = 0; i < (*it).Value().GetSize(); i++) int cell_id = (*it).Value()[i]->GetCellID();
@@ -4484,7 +4484,7 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
 void cPopulation::ProcessUpdateCellActions(cAvidaContext& ctx)
 {
   for (int i = 0; i < cell_array.GetSize(); i++) {
-    if (cell_array[i].MutationRates().TestDeath(ctx)) KillOrganism(cell_array[i], &ctx); 
+    if (cell_array[i].MutationRates().TestDeath(ctx)) KillOrganism(cell_array[i], ctx); 
   }
 }
 
@@ -4613,7 +4613,7 @@ public:
 };
 
 
-bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext* ctx, int cellid_offset, int lineage_offset) 
+bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset, int lineage_offset) 
 {
   // @TODO - build in support for verifying population dimensions
 
@@ -4840,7 +4840,7 @@ bool cPopulation::OK()
  * this organism.
  **/
 
-void cPopulation::Inject(const cGenome& genome, eBioUnitSource src, cAvidaContext* ctx, int cell_id, double merit, int lineage_label, double neutral) 
+void cPopulation::Inject(const cGenome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id, double merit, int lineage_label, double neutral) 
 {
   // If an invalid cell was given, choose a new ID for it.
   if (cell_id < 0) {
@@ -5097,7 +5097,7 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, cAvidaContext* ctx2, int lineage_label) 
+void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, cAvidaContext& ctx2, int lineage_label) 
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
@@ -5164,7 +5164,7 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const cGenome& g
 }
 
 // Note: cPopulation::SerialTransfer does not respect deme boundaries and only acts on a single population.
-void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext* ctx) 
+void cPopulation::SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx) 
 {
   assert(transfer_size > 0);
 
@@ -5991,7 +5991,7 @@ void cPopulation::AdjustHGTResource(double delta)
 
  \warning THIS METHOD CHANGES THE ORGANISM POINTERS OF CELLS.
  */
-void cPopulation::MixPopulation(cAvidaContext* ctx)
+void cPopulation::MixPopulation(cAvidaContext& ctx)
 {
   // Get the list of all organism pointers, including nulls:
   std::vector<cOrganism*> population(cell_array.GetSize());

@@ -989,7 +989,7 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
   
     double res_req = m_inst_set->GetResCost(cur_inst); 
     
-    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
     tArray<double> res_change(res_count.GetSize());
     res_change.SetAll(0.0);
     

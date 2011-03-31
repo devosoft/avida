@@ -40,8 +40,8 @@ public:
 
   void DrawResource();
   void DrawReaction();
-  void UpdateResource(cAvidaContext* ctx);
-  void UpdateReaction(cAvidaContext* ctx);
+  void UpdateResource(cAvidaContext& ctx);
+  void UpdateReaction(cAvidaContext& ctx);
 };
 
 #endif

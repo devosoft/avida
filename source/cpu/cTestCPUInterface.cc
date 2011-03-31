@@ -70,17 +70,17 @@ const tArray<int>& cTestCPUInterface::GetInputs() const
   return m_testcpu->GetInputs();
 }
 
-const tArray<double>& cTestCPUInterface::GetResources(cAvidaContext* ctx) 
+const tArray<double>& cTestCPUInterface::GetResources(cAvidaContext& ctx) 
 {
   return m_testcpu->GetResources(ctx); 
 }
 
-const tArray<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext* ctx) 
+const tArray<double>& cTestCPUInterface::GetFacedCellResources(cAvidaContext& ctx) 
 {
   return m_testcpu->GetFacedCellResources(ctx); 
 }
 
-const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext* ctx) 
+const tArray<double>& cTestCPUInterface::GetDemeResources(int deme_id, cAvidaContext& ctx) 
 { 
   return m_testcpu->GetDemeResources(deme_id, ctx); 
 }
@@ -95,22 +95,22 @@ void cTestCPUInterface::UpdateResources(const tArray<double>& res_change)
    m_testcpu->ModifyResources(res_change);
 }
 
-void cTestCPUInterface::Die(cAvidaContext* ctx) 
+void cTestCPUInterface::Die(cAvidaContext& ctx) 
 {
 }
 
-void cTestCPUInterface::KillCellID(int target, cAvidaContext* ctx) 
+void cTestCPUInterface::KillCellID(int target, cAvidaContext& ctx) 
 {
 }
 
-void cTestCPUInterface::Kaboom(int distance, cAvidaContext* ctx)
+void cTestCPUInterface::Kaboom(int distance, cAvidaContext& ctx)
 {
   (void) distance;
   // @CAO We should keep a note that the organism tried to explode, and
   // record the probability it used.
 }
 
-void cTestCPUInterface::SpawnDeme(cAvidaContext* ctx)
+void cTestCPUInterface::SpawnDeme(cAvidaContext& ctx)
 {
 }
 

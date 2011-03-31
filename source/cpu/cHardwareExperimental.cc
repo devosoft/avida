@@ -352,7 +352,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   m_organism->SetRunning(true);
   
   if (!speculative && m_spec_die) {
-    m_organism->Die(&ctx);
+    m_organism->Die(ctx);
     m_organism->SetRunning(false);
     return false;
   }
@@ -457,7 +457,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
   const int max_executed = m_organism->GetMaxExecuted();
   if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed) || phenotype.GetToDie() == true) {
     if (speculative) m_spec_die = true;
-    else m_organism->Die(&ctx);
+    else m_organism->Die(ctx);
   }
   if (!speculative && phenotype.GetToDelete()) m_spec_die = true;
   
@@ -2075,7 +2075,7 @@ bool cHardwareExperimental::Inst_RegulateSpecificPromoters(cAvidaContext& ctx)
 bool cHardwareExperimental::Inst_SenseRegulate(cAvidaContext& ctx)
 {
   unsigned int bits = 0;
-  const tArray<double> & res_count = m_organism->GetOrgInterface().GetResources(&ctx); 
+  const tArray<double> & res_count = m_organism->GetOrgInterface().GetResources(ctx); 
   assert (res_count.GetSize() != 0);
   for (int i=0; i<m_world->GetConfig().PROMOTER_CODE_SIZE.Get(); i++)
   {
@@ -2191,7 +2191,7 @@ void cHardwareExperimental::PromoterTerminate(cAvidaContext& ctx)
         break;
         
       case 1: // Death to organisms that refuse to use promoters!
-        m_organism->Die(&ctx);
+        m_organism->Die(ctx);
         break;
         
       default:
@@ -2359,7 +2359,7 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
 
 bool cHardwareExperimental::Inst_Die(cAvidaContext& ctx)
 {
-  m_organism->Die(&ctx);
+  m_organism->Die(ctx);
   
   return true;
 }

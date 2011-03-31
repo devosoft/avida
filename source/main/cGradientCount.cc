@@ -92,7 +92,7 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
     m_peakx = in_peakx;
     m_peaky = in_peaky;
   }
-  UpdateCount(&m_world->GetDefaultContext());
+  UpdateCount(m_world->GetDefaultContext());
 }
 
 double cGradientCount::Distance(double x1, double y1, double x2, double y2) //calculate linear distance from cone peak
@@ -100,9 +100,9 @@ double cGradientCount::Distance(double x1, double y1, double x2, double y2) //ca
   return(sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)));
 }
 
-void cGradientCount::UpdateCount(cAvidaContext* ctx)
+void cGradientCount::UpdateCount(cAvidaContext& ctx)
 {  
-  if(ctx == NULL) ctx = &(m_world->GetDefaultContext());
+//  if(ctx == NULL) ctx = m_world->GetDefaultContext();
   bool has_edible = false;
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left)
   for (int ii = 0; ii < GetX() && !has_edible; ii++) {
@@ -123,26 +123,26 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   
   if (m_counter == m_decay) {
     if (m_halo != 1) {
-      m_peakx = ctx->GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
-      m_peaky = ctx->GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
-      movesignx = ctx->GetRandom().GetInt(-1,2);  
+      m_peakx = ctx.GetRandom().GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
+      m_peaky = ctx.GetRandom().GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
+      movesignx = ctx.GetRandom().GetInt(-1,2);  
       if (movesignx == 0) {
-        if (ctx->GetRandom().GetUInt(0,2)) {
+        if (ctx.GetRandom().GetUInt(0,2)) {
           movesigny = 1;
         }
         else movesigny = -1;
       }
-      else movesigny = ctx->GetRandom().GetInt(-1,2);
+      else movesigny = ctx.GetRandom().GetInt(-1,2);
     }
     else if (m_halo == 1) {
-      int chooseEW = ctx->GetRandom().GetUInt(0,2);
+      int chooseEW = ctx.GetRandom().GetUInt(0,2);
         if (chooseEW == 0)
-          m_peakx = ctx->GetRandom().GetUInt(m_halo_anchor_x - m_halo_inner_radius, m_halo_anchor_x - m_halo_inner_radius - m_halo_width + 1);
-        else m_peakx = ctx->GetRandom().GetUInt(m_halo_anchor_x + m_halo_inner_radius, m_halo_anchor_x + m_halo_inner_radius + m_halo_width - 1); 
-      int chooseNS = ctx->GetRandom().GetUInt(0,2);
+          m_peakx = ctx.GetRandom().GetUInt(m_halo_anchor_x - m_halo_inner_radius, m_halo_anchor_x - m_halo_inner_radius - m_halo_width + 1);
+        else m_peakx = ctx.GetRandom().GetUInt(m_halo_anchor_x + m_halo_inner_radius, m_halo_anchor_x + m_halo_inner_radius + m_halo_width - 1); 
+      int chooseNS = ctx.GetRandom().GetUInt(0,2);
         if (chooseNS == 0) 
-          m_peaky = ctx->GetRandom().GetUInt(m_halo_anchor_y - m_halo_inner_radius, m_halo_anchor_y - m_halo_inner_radius - m_halo_width + 1);
-        else m_peaky = ctx->GetRandom().GetUInt(m_halo_anchor_y + m_halo_inner_radius, m_halo_anchor_y + m_halo_inner_radius + m_halo_width - 1);
+          m_peaky = ctx.GetRandom().GetUInt(m_halo_anchor_y - m_halo_inner_radius, m_halo_anchor_y - m_halo_inner_radius - m_halo_width + 1);
+        else m_peaky = ctx.GetRandom().GetUInt(m_halo_anchor_y + m_halo_inner_radius, m_halo_anchor_y + m_halo_inner_radius + m_halo_width - 1);
     }
     SetModified(false);
   }
@@ -156,7 +156,7 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
   //second, we then decide the change of direction based on the current direction so that peak can't 'jump' from -1 to 1, 
   //without first changing to 0
   //finally, we only do this only when # updates since last change = updatestep to slow the frequency of path changes
-  int choosesign = ctx->GetRandom().GetInt(0,3);
+  int choosesign = ctx.GetRandom().GetInt(0,3);
 
   //we add 1 to distance to account for the anchor grid cell
   int current_orbit = max(abs(m_halo_anchor_x - m_peakx), abs(m_halo_anchor_y - m_peaky)) + 1;
@@ -170,13 +170,13 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     if (m_halo == 1) {    //choose to change orbit (0) or direction (1)    
       int old_peakx = m_peakx;
       int old_peaky = m_peaky;
-      int random_shift = ctx->GetRandom().GetUInt(0,2);
+      int random_shift = ctx.GetRandom().GetUInt(0,2);
       //if changing orbit, choose to go in or out one orbit
       //then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
       if (random_shift == 0) {
         //do nothing unless there's room to change orbit
         if (m_halo_width > (m_height * 2)) {
-          orbit_shift = ctx->GetRandom().GetUInt(0,2); 
+          orbit_shift = ctx.GetRandom().GetUInt(0,2); 
           if (orbit_shift == 0) {
             current_orbit = current_orbit - 1; 
             if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
@@ -219,15 +219,15 @@ void cGradientCount::UpdateCount(cAvidaContext* ctx)
     //for non-halo peaks
     else {
       if (choosesign == 1) {
-        if (movesignx == -1) movesignx = ctx->GetRandom().GetInt(-1,1); 
-        else if (movesignx == 1) movesignx = ctx->GetRandom().GetInt(0,2);
-        else movesignx = ctx->GetRandom().GetInt(-1,2);
+        if (movesignx == -1) movesignx = ctx.GetRandom().GetInt(-1,1); 
+        else if (movesignx == 1) movesignx = ctx.GetRandom().GetInt(0,2);
+        else movesignx = ctx.GetRandom().GetInt(-1,2);
       }
       
       if (choosesign == 2){ 
-        if (movesigny == -1) movesigny = ctx->GetRandom().GetInt(-1,1); 
-        else if (movesigny == 1) movesigny = ctx->GetRandom().GetInt(0,2);
-        else movesigny = ctx->GetRandom().GetInt(-1,2);
+        if (movesigny == -1) movesigny = ctx.GetRandom().GetInt(-1,1); 
+        else if (movesigny == 1) movesigny = ctx.GetRandom().GetInt(0,2);
+        else movesigny = ctx.GetRandom().GetInt(-1,2);
       }
     }
   }

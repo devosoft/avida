@@ -215,7 +215,7 @@ int cDeme::GetNumOrgsWithOpinion() const
   return count;
 }
 
-void cDeme::ProcessUpdate(cAvidaContext* ctx)
+void cDeme::ProcessUpdate(cAvidaContext& ctx)
 {
   // test deme predicate
   for (int i = 0; i < deme_pred_list.Size(); i++) {
@@ -479,7 +479,7 @@ void cDeme::UpdateGenerationsPerLifetime(double old_avg_founder_generation, tArr
 }
 
 /*! Check every cell in this deme for a living organism.  If found, kill it. */
-void cDeme::KillAll(cAvidaContext* ctx) 
+void cDeme::KillAll(cAvidaContext& ctx) 
 {
   last_org_count = GetOrgCount();
   for (int i=0; i<GetSize(); ++i) {
@@ -606,7 +606,7 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
   }
 }
 
-double cDeme::GetCellEnergy(int absolute_cell_id, cAvidaContext* ctx) const
+double cDeme::GetCellEnergy(int absolute_cell_id, cAvidaContext& ctx) const
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
@@ -626,7 +626,7 @@ double cDeme::GetCellEnergy(int absolute_cell_id, cAvidaContext* ctx) const
   return total_energy;
 }
 
-double cDeme::GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext* ctx) 
+double cDeme::GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext& ctx) 
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
@@ -649,7 +649,7 @@ double cDeme::GetAndClearCellEnergy(int absolute_cell_id, cAvidaContext* ctx)
   return total_energy;
 }
 
-void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext* ctx) 
+void cDeme::GiveBackCellEnergy(int absolute_cell_id, double value, cAvidaContext& ctx) 
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
@@ -752,7 +752,7 @@ bool cDeme::KillCellEvent(const int eventID)
   return false;
 }
 
-double cDeme::CalculateTotalEnergy(cAvidaContext* ctx) const
+double cDeme::CalculateTotalEnergy(cAvidaContext& ctx) const
 {
   assert(m_world->GetConfig().ENERGY_ENABLED.Get());
   
@@ -993,7 +993,7 @@ void cDeme::AddEventEventNUniqueIndividualsMovedIntoTargetPred(int times)
   }
 }
 
-void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext* ctx) 
+void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext& ctx) 
 {
   assert(cell_ids[0] <= absolute_cell_id);
   assert(absolute_cell_id <= cell_ids[cell_ids.GetSize()-1]);
@@ -1025,7 +1025,7 @@ void cDeme::AddPheromone(int absolute_cell_id, double value, cAvidaContext* ctx)
   
 } //End AddPheromone()
 
-double cDeme::GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext* ctx) const 
+double cDeme::GetSpatialResource(int rel_cellid, int resource_id, cAvidaContext& ctx) const 
 {
   assert(rel_cellid >= 0);
   assert(rel_cellid < GetSize());

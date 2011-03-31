@@ -222,7 +222,7 @@ void cPopulationCell::ResetInputs(cAvidaContext& ctx)
 }
 
 
-void cPopulationCell::InsertOrganism(cOrganism* new_org, cAvidaContext* ctx) 
+void cPopulationCell::InsertOrganism(cOrganism* new_org, cAvidaContext& ctx) 
 {
   assert(new_org != NULL);
   assert(m_organism == NULL);
@@ -254,7 +254,7 @@ void cPopulationCell::InsertOrganism(cOrganism* new_org, cAvidaContext* ctx)
   }
 }
 
-cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext* ctx) 
+cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext& ctx) 
 {
   if (m_organism == NULL) return NULL;   // Nothing to do!
 	
@@ -269,7 +269,7 @@ cOrganism * cPopulationCell::RemoveOrganism(cAvidaContext* ctx)
   return out_organism;
 }
 
-double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext* ctx) {
+double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx) {
   assert(0.0 <= frac_to_uptake);
   assert(frac_to_uptake <= 1.0);
 	

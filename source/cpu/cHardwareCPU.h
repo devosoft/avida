@@ -490,7 +490,7 @@ private:
   bool Inst_SenseUnit(cAvidaContext& ctx);
   bool Inst_SenseMult100(cAvidaContext& ctx);
   bool DoSense(cAvidaContext& ctx, int conversion_method, double base);
-  bool DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvidaContext* ctx); 
+  bool DoSenseResourceX(int reg_to_set, int cell_id, int resid, cAvidaContext& ctx); 
   bool Inst_SenseResource0(cAvidaContext& ctx);
   bool Inst_SenseResource1(cAvidaContext& ctx);
   bool Inst_SenseResource2(cAvidaContext& ctx);
@@ -502,7 +502,7 @@ private:
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
   
   // Resources
-  bool FindModifiedResource(cAvidaContext* ctx, int& start_index, int& end_index, int& spec_id); 
+  bool FindModifiedResource(cAvidaContext& ctx, int& start_index, int& end_index, int& spec_id); 
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit);
   bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, int start_bin, int end_bin);
   bool Inst_Collect(cAvidaContext& ctx);
@@ -547,8 +547,8 @@ private:
   bool Inst_IncreaseEnergyDonation(cAvidaContext& ctx);
   bool Inst_DecreaseEnergyDonation(cAvidaContext& ctx);
   
-  void DoResourceDonatePercent(cAvidaContext* ctx, const int to_cell, const int resource_id, const double frac_resource_given); 
-  void DoResourceDonateAmount(cAvidaContext* ctx, const int to_cell, const int resource_id, const double amount); 
+  void DoResourceDonatePercent(cAvidaContext& ctx, const int to_cell, const int resource_id, const double frac_resource_given); 
+  void DoResourceDonateAmount(cAvidaContext& ctx, const int to_cell, const int resource_id, const double amount); 
   bool DonateResourceX(cAvidaContext& ctx, const int res_id);
   bool Inst_DonateResource0(cAvidaContext& ctx);
   bool Inst_DonateResource1(cAvidaContext& ctx);

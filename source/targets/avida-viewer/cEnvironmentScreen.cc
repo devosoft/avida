@@ -122,13 +122,13 @@ void cEnvironmentScreen::DrawReaction()
 void cEnvironmentScreen::Update(cAvidaContext& ctx)
 {
   if(mode==ENVIRONMENT_MODE_RESOURCE)
-    UpdateResource(&ctx);
+    UpdateResource(ctx);
   else
-    UpdateReaction(&ctx);
+    UpdateReaction(ctx);
   Refresh();
 }
 
-void cEnvironmentScreen::UpdateResource(cAvidaContext* ctx)
+void cEnvironmentScreen::UpdateResource(cAvidaContext& ctx)
 {
   const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
@@ -190,7 +190,7 @@ void cEnvironmentScreen::UpdateResource(cAvidaContext* ctx)
   
 }
 
-void cEnvironmentScreen::UpdateReaction(cAvidaContext* ctx)
+void cEnvironmentScreen::UpdateReaction(cAvidaContext& ctx)
 {
   const cReactionLib & rxn_lib = m_world->GetEnvironment().GetReactionLib();
   const cResourceLib & res_lib = m_world->GetEnvironment().GetResourceLib();
@@ -270,7 +270,7 @@ void cEnvironmentScreen::DoInput(cAvidaContext& ctx, int in_char)
   switch (in_char) {
     case KEY_DOWN:
       if(mode==ENVIRONMENT_MODE_RESOURCE ) {
-        const int num_resources = m_world->GetPopulation().GetResources(&ctx).GetSize();
+        const int num_resources = m_world->GetPopulation().GetResources(ctx).GetSize();
         if (num_resources > 0) {
           last_selection=res_selection;
           res_selection++;
@@ -298,7 +298,7 @@ void cEnvironmentScreen::DoInput(cAvidaContext& ctx, int in_char)
       break;
     case KEY_UP:
       if(mode == ENVIRONMENT_MODE_RESOURCE) {
-        const int num_resources = m_world->GetPopulation().GetResources(&ctx).GetSize();
+        const int num_resources = m_world->GetPopulation().GetResources(ctx).GetSize();
         if (num_resources > 0) {
           last_selection = res_selection;
           res_selection--;

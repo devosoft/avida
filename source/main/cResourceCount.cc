@@ -395,13 +395,13 @@ void cResourceCount::Update(double in_time)
  }
 
  
-const tArray<double> & cResourceCount::GetResources(cAvidaContext* ctx) const 
+const tArray<double> & cResourceCount::GetResources(cAvidaContext& ctx) const 
 {
   DoUpdates(ctx); 
   return resource_count;
 }
  
-const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaContext* ctx) const 
+const tArray<double> & cResourceCount::GetCellResources(int cell_id, cAvidaContext& ctx) const 
 
   // Get amount of the resource for a given cell in the grid.  If it is a
   // global resource pass out the entire content of that resource.
@@ -426,7 +426,7 @@ const tArray<int> & cResourceCount::GetResourcesGeometry() const
   return geometry;
 }
 
-const tArray< tArray<double> > &  cResourceCount::GetSpatialRes(cAvidaContext* ctx)
+const tArray< tArray<double> > &  cResourceCount::GetSpatialRes(cAvidaContext& ctx)
 {
   const int num_spatial_resources = spatial_resource_count.GetSize();
   if (num_spatial_resources > 0) {
@@ -518,7 +518,7 @@ void cResourceCount::ResizeSpatialGrids(int in_x, int in_y)
   }
 }
 ///// Private Methods /////////
-void cResourceCount::DoUpdates(cAvidaContext* ctx) const
+void cResourceCount::DoUpdates(cAvidaContext& ctx) const
 { 
   assert(update_time >= -EPSILON);
 
