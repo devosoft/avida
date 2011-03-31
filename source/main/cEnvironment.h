@@ -167,7 +167,7 @@ private:
                             const tList<cReactionProcess>& req_proc, bool& force_mark_task) const;
   
   bool TestRequisites(const tList<cReactionRequisite>& req_list, int task_count, 
-                      const tArray<int>& reaction_count, const bool on_divide = false, const bool req_or = false) const; //JW
+                      const tArray<int>& reaction_count, const bool on_divide = false) const; 
   bool TestContextRequisites(const tList<cContextReactionRequisite>& req_list, int task_count, 
                       const tArray<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 

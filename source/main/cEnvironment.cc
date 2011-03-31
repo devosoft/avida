@@ -740,9 +740,6 @@ bool cEnvironment::LoadReaction(cString desc, cFeedback& feedback)
         return false;
       }
     }
-    else if (entry_type == "or_requisite") { //JW
-      new_reaction->SetOrRequisites(true);
-    }
     else {
       feedback.Error("unknown entry type '%s' in reaction '%s'", (const char*)entry_type, (const char*)name);
       return false;
@@ -1323,7 +1320,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     const bool on_divide = taskctx.GetOnDivide();
         
     // Examine requisites on this reaction
-    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide, cur_reaction->GetOrRequisites()) == false) { //JW
+    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) { //JW
       if (!skipProcessing){
         continue;
       }
@@ -1387,7 +1384,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 
 
 bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
-                                  int task_count, const tArray<int>& reaction_count, const bool on_divide, const bool req_or) const
+                                  int task_count, const tArray<int>& reaction_count, const bool on_divide) const
 {
   const int num_reqs = req_list.GetSize();
 
@@ -1403,28 +1400,14 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     // See if this requisite batch can be satisfied.
     const cReactionRequisite* cur_req = req_it.Next();
     bool satisfied = true;
-   
-    // Have any reactions been met? //JW
-    if(req_or) {
-      satisfied = false;
-      tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
-      while (reaction_it.Next() != NULL) {
-        int react_id = reaction_it.Get()->GetID();
-        if (reaction_count[react_id] != 0) {
-          satisfied = true;
-          break;
-        }
-      }
-    }
     
-    else {// Have all reactions been met? //JW
-      tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
-      while (reaction_it.Next() != NULL) {
-        int react_id = reaction_it.Get()->GetID();
-        if (reaction_count[react_id] == 0) {
-          satisfied = false;
-          break;
-        }
+    // Have all reactions been met?     
+    tLWConstListIterator<cReaction> reaction_it(cur_req->GetReactions());
+    while (reaction_it.Next() != NULL) {
+      int react_id = reaction_it.Get()->GetID();
+      if (reaction_count[react_id] == 0) {
+        satisfied = false;
+        break;
       }
     }
     
