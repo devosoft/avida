@@ -1,80 +1,51 @@
-Avida 2.12 Release Notes
+Avida 2.13 Release Notes
 
-The following items are major features and changes present in this release of
-Avida.  See the repository commit logs at http://avida.devosoft.org for details
-of other changes.
-
+The following items are  features and changes present in this release of
+Avida.
 
 New Features:
 
-- Multiple Simulataneous Instruction Sets/Hardware Types
+- Environment Reaction Requisite : Reaction Max/Min Count Support
 
-    Avida now supports experiments in which organisms running different
-    instruction sets and/or hardware types may coexist in the population
-    simultaneously.  
+    Reaction requisites now support max_reaction_count and min_reaction_count.
+    These requisites refer to the number of times a the specific reaction has
+    been triggered, regardless of how many times the referenced task has been
+    performed.
+
 
 
 Enhancements:
 
-- Completely New Classification Framework
-
-   The classification system has been redesigned to be much more flexible and
-   extensible.  Conceptually, the classification system takes living entities
-   (bio-units) and places them into groups (bio-groups) as appropriate.
-   Bio-units/groups include enhanced source tracking and full support for
-   extended genome information (necessary for multiple instruction set support
-   and future enhancements).
-
-- New, High-Performance Genotype Tracking
-
-   Rewritten for the new classification system, the genotype tracking system
-   performance was also improved significantly.  The new data structures
-   used by the genotype manager no longer degrade under heavy load (high-
-   genotype count).
-
-- Significantly Improved Large Population Support
-
-   The new genotype tracking system allows Avida to scale to larger populations
-   with nearly linear performance (i.e. a 20000 organism population will take
-   a little more than twice as long as a 10000 organism population).
+-
 
 
 Changes:
 
-- New Instruction Set Configuration Format
+- cHardwareCPU first time Costs now honor DIVIDE_METHOD = OFFSPRING (0)
 
-   A new, avida.cfg based instruction set configuration format has been
-   introduced.  The new format allows for the specification of multiple, named
-   instruction sets.  Additionally, options must now be specified by name and
-   may be listed in any order following the instruction name.  See the
-   documentation regarding instruction sets for further details.
+    cHardwareCPU no longer resets first time cost counts when DIVIDE_METHOD
+    is set to DIVIDE_METHOD_OFFSPRING (0).  Other hardware types are not
+    current affected.
 
-- Organism File Hardware Type and Instruction Set Directives
 
-   Organism files now support the use of #inst_set ${name} and #hw_type ${num}
-   directives.  These directives inform avida what instruction set and
-   hardware type a particular organism file should use when loaded (Inject, etc)
-   If the directives are not included, the default (first) instruction set will
-   be used.
+
+Deprecated features will be removed in the next version of Avida.
+
+
+
+Deprecated Features that will be removed in 2.14:
 
 - START_CREATURE/START_ORGANISM Now Deprecated
 
-   Use Inject actions at the beginning of your experiment to specify exactly
-   how you would like the experiment to be seeded.
+    Use Inject actions at the beginning of your experiment to specify exactly
+    how you would like the experiment to be seeded.
 
 - HARDWARE_TYPE Setting and INST_SET File Deprecated
 
-   Use the new instruction set format instead.  Backward compatibility may be
-   activated by setting the avida.cfg option INST_SET_LOAD_LEGACY to 1.  The
-   name of the instruction set will be the filename/path specified in INST_SET.
+    Use the new instruction set format instead.  Backward compatibility may be
+    activated by setting the avida.cfg option INST_SET_LOAD_LEGACY to 1.  The
+    name of the instruction set will be the filename/path specified in INST_SET.
 
-- Old Style Species and "Lineage" (Clade) Tracking Removed
-
-   These features relied on the old classification system that has been replaced
-   Species and clade tracking will return in a future version, implemented
-   under the new classification system.
-
-Deprecated features will be removed in the next version of Avida.
 
 
 Known Issues:
