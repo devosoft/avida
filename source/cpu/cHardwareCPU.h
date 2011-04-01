@@ -574,6 +574,7 @@ private:
   bool Inst_RotateNextUnoccupiedCell(cAvidaContext& ctx);
   bool Inst_RotateEventCell(cAvidaContext& ctx);
   bool Inst_RotateUphill(cAvidaContext& ctx);
+  bool Inst_RotateHome(cAvidaContext& ctx);
   bool Inst_SetCopyMut(cAvidaContext& ctx);
   bool Inst_ModCopyMut(cAvidaContext& ctx);
   bool Inst_GetCellPosition(cAvidaContext& ctx);

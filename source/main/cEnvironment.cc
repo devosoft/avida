@@ -325,6 +325,14 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cFee
       if (!AssertInputInt(var_value, "max_count", var_type, feedback)) return false;
       new_requisite->SetMaxTaskCount(var_value.AsInt());
     }
+    else if (var_name == "reaction_min_count") {
+      if (!AssertInputInt(var_value, "reaction_min_count", var_type, feedback)) return false;
+      new_requisite->SetMinReactionCount(var_value.AsInt());
+    }
+    else if (var_name == "reaction_max_count") {
+      if (!AssertInputInt(var_value, "reaction_max_count", var_type, feedback)) return false;
+      new_requisite->SetMaxReactionCount(var_value.AsInt());
+    }
     else if (var_name == "divide_only") {
       if (!AssertInputInt(var_value, "divide_only", var_type, feedback)) return false;
       new_requisite->SetDivideOnly(var_value.AsInt());
@@ -385,6 +393,14 @@ bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString des
     else if (var_name == "max_count") {
       if (!AssertInputInt(var_value, "max_count", var_type, feedback)) return false;
       new_requisite->SetMaxTaskCount(var_value.AsInt());
+    }
+    else if (var_name == "reaction_min_count") {
+      if (!AssertInputInt(var_value, "reaction_min_count", var_type, feedback)) return false;
+      new_requisite->SetMinReactionCount(var_value.AsInt());
+    }
+    else if (var_name == "reaction_max_count") {
+      if (!AssertInputInt(var_value, "reaction_max_count", var_type, feedback)) return false;
+      new_requisite->SetMaxReactionCount(var_value.AsInt());
     }
     else if (var_name == "divide_only") {
       if (!AssertInputInt(var_value, "divide_only", var_type, feedback)) return false;
@@ -1287,7 +1303,7 @@ bool cEnvironment::TestInput(cReactionResult& result, const tBuffer<int>& inputs
 
 bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
                               cTaskContext& taskctx, const tArray<int>& task_count,
-			      tArray<int>& reaction_count,
+                              tArray<int>& reaction_count,
                               const tArray<double>& resource_count,
                               const tArray<double>& rbins_count,
                               bool is_parasite, cContextPhenotype* context_phenotype) const
@@ -1320,7 +1336,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
     const bool on_divide = taskctx.GetOnDivide();
         
     // Examine requisites on this reaction
-    if (TestRequisites(cur_reaction->GetRequisites(), task_cnt, reaction_count, on_divide) == false) { //JW
+    if (TestRequisites(cur_reaction, task_cnt, reaction_count, on_divide) == false) { 
       if (!skipProcessing){
         continue;
       }
@@ -1341,7 +1357,7 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
       context_phenotype->AddTaskCounts(blank_tasks.GetSize(), blank_tasks);
       context_phenotype->AddReactionCounts(blank_reactions.GetSize(), blank_reactions);
       int context_task_count = context_phenotype->GetTaskCounts()[task_id];
-      if (TestContextRequisites(cur_reaction->GetContextRequisites(), context_task_count, context_phenotype->GetReactionCounts(), on_divide) == false) {
+      if (TestContextRequisites(cur_reaction, context_task_count, context_phenotype->GetReactionCounts(), on_divide) == false) {
         if (!skipProcessing) {  // for those parasites again
           continue;
         }
@@ -1383,9 +1399,10 @@ bool cEnvironment::TestOutput(cAvidaContext& ctx, cReactionResult& result,
 
 
 
-bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
+bool cEnvironment::TestRequisites(const cReaction* cur_reaction,
                                   int task_count, const tArray<int>& reaction_count, const bool on_divide) const
 {
+  const tList<cReactionRequisite>& req_list = cur_reaction->GetRequisites();
   const int num_reqs = req_list.GetSize();
 
   // If there are no requisites, there is nothing to meet!
@@ -1427,7 +1444,11 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
     // Have all task counts been met?
     if (task_count < cur_req->GetMinTaskCount()) continue;
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
-
+    
+    // Have all reaction counts been met?
+    if (reaction_count[cur_reaction->GetID()] < cur_req->GetMinReactionCount()) continue;
+    if (reaction_count[cur_reaction->GetID()] >= cur_req->GetMaxReactionCount()) continue;
+    
     // Have all total reaction counts been met?
     int tot_reactions = 0;
     for (int i=0; i<reaction_count.GetSize(); i++) {
@@ -1451,10 +1472,11 @@ bool cEnvironment::TestRequisites(const tList<cReactionRequisite>& req_list,
 }
 
 
-bool cEnvironment::TestContextRequisites(const tList<cContextReactionRequisite>& req_list,
+bool cEnvironment::TestContextRequisites(const cReaction* cur_reaction,
 					 int task_count, const tArray<int>& reaction_count,
 					 const bool on_divide) const
 {
+  const tList<cContextReactionRequisite>& req_list = cur_reaction->GetContextRequisites();
   const int num_reqs = req_list.GetSize();
 
   // If there are no requisites, there is nothing to meet!
@@ -1495,6 +1517,10 @@ bool cEnvironment::TestContextRequisites(const tList<cContextReactionRequisite>&
     // Have all task counts been met?
     if (task_count < cur_req->GetMinTaskCount()) continue;
     if (task_count >= cur_req->GetMaxTaskCount()) continue;
+    
+    // Have all reaction counts been met?
+    if (reaction_count[cur_reaction->GetID()] < cur_req->GetMinReactionCount()) continue;
+    if (reaction_count[cur_reaction->GetID()] >= cur_req->GetMaxReactionCount()) continue;
     
     // Have all total reaction counts been met?
     int tot_reactions = 0;
@@ -1877,6 +1903,20 @@ bool cEnvironment::SetReactionMaxTaskCount(const cString& name, int max_count)
   cReaction* found_reaction = reaction_lib.GetReaction(name);
   if (found_reaction == NULL) return false;
   return found_reaction->SetMaxTaskCount( max_count );
+}
+
+bool cEnvironment::SetReactionMinCount(const cString& name, int reaction_min_count)
+{
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+  return found_reaction->SetMinReactionCount( reaction_min_count );
+}
+
+bool cEnvironment::SetReactionMaxCount(const cString& name, int reaction_max_count)
+{
+  cReaction* found_reaction = reaction_lib.GetReaction(name);
+  if (found_reaction == NULL) return false;
+  return found_reaction->SetMaxReactionCount( reaction_max_count );
 }
 
 bool cEnvironment::SetReactionTask(const cString& name, const cString& task)

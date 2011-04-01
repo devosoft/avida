@@ -101,6 +101,20 @@ bool cReaction::SetMaxTaskCount(int max_count, int requisite_num)
   return true;
 }
 
+bool cReaction::SetMinReactionCount(int reaction_min_count, int requisite_num)
+{
+  if (requisite_num >= requisite_list.GetSize() || requisite_num < 0) return false;
+  requisite_list.GetPos(requisite_num)->SetMinReactionCount(reaction_min_count);
+  return true;
+}
+
+bool cReaction::SetMaxReactionCount(int reaction_max_count, int requisite_num)
+{
+  if (requisite_num >= requisite_list.GetSize() || requisite_num < 0) return false;
+  requisite_list.GetPos(requisite_num)->SetMaxReactionCount(reaction_max_count);
+  return true;
+}
+
 double cReaction::GetValue(int process_num)
 {
   if (process_num >= process_list.GetSize() || process_num < 0) return false;

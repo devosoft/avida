@@ -299,6 +299,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("rotate-to-next-occupied-cell", &cHardwareCPU::Inst_RotateNextOccupiedCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-to-event-cell", &cHardwareCPU::Inst_RotateEventCell, nInstFlag::STALL),
     tInstLibEntry<tMethod>("rotate-uphill", &cHardwareCPU::Inst_RotateUphill, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-home", &cHardwareCPU::Inst_RotateHome, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("set-cmut", &cHardwareCPU::Inst_SetCopyMut),
     tInstLibEntry<tMethod>("mod-cmut", &cHardwareCPU::Inst_ModCopyMut),
@@ -5651,6 +5652,28 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
   double res_diff = max_res - current_res[opinion];
   int reg_to_set = FindModifiedRegister(REG_BX);
   GetRegister(reg_to_set) = res_diff;
+  return true;
+}
+
+bool cHardwareCPU::Inst_RotateHome(cAvidaContext& ctx)
+{
+  // Will rotate organism to face birth cell if org never used zero-easting or zero-northing. Otherwise will rotate org
+  // to face the 'marked' spot where those instructions were executed.
+  int easterly = m_organism->GetEasterly();
+  int northerly = m_organism->GetNortherly();
+  int correct_facing = 0;
+  if (northerly < 0 && easterly == 0) correct_facing = 6; // rotate S
+  else if (northerly < 0 && easterly > 0) correct_facing = 2; // rotate SW
+  else if (northerly == 0 && easterly > 0) correct_facing = 3; // rotate W
+  else if (northerly > 0 && easterly > 0) correct_facing = 1; // rotate NW
+  else if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N  
+  else if (northerly > 0 && easterly < 0) correct_facing = 4; // rotate NE
+  else if (northerly == 0 && easterly < 0) correct_facing = 5; // rotate E
+  else if (northerly < 0 && easterly < 0) correct_facing = 7; // rotate SE
+  for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+    m_organism->Rotate(1);
+    if (m_organism->GetFacing() == correct_facing) break;
+  }
   return true;
 }
 

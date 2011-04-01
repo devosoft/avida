@@ -60,7 +60,9 @@ public:
   cTaskEntry* GetTask() { return task; }
   const tList<cReactionProcess>& GetProcesses() { return process_list; }
   const tList<cReactionRequisite>& GetRequisites() { return requisite_list; }
+  const tList<cReactionRequisite>& GetRequisites() const { return requisite_list; }
   const tList<cContextReactionRequisite>& GetContextRequisites() { return context_requisite_list; }
+  const tList<cContextReactionRequisite>& GetContextRequisites() const { return context_requisite_list; }
   bool GetActive() const { return active; }
 
   void SetTask(cTaskEntry* _task) { task = _task; }
@@ -79,7 +81,9 @@ public:
   // These methods will modify the min/max count of the requisite for this process
   bool SetMinTaskCount(int min_count, int requisite_num = 0);
   bool SetMaxTaskCount(int max_count, int requisite_num = 0);
-
+  bool SetMinReactionCount(int reaction_min_count, int requisite_num = 0);
+  bool SetMaxReactionCount(int reaction_max_count, int requisite_num = 0);
+  
   double GetValue(int process_num = 0);
 };
 

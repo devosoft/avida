@@ -134,6 +134,8 @@ public:
   bool SetReactionInst(const cString& name, cString inst_name);
   bool SetReactionMinTaskCount(const cString& name, int min_count);
   bool SetReactionMaxTaskCount(const cString& name, int max_count);
+  bool SetReactionMinCount(const cString& name, int reaction_min_count);
+  bool SetReactionMaxCount(const cString& name, int reaction_max_count);
   bool SetReactionTask(const cString& name, const cString& task);
   bool SetResourceInflow(const cString& name, double _inflow );
   bool SetResourceOutflow(const cString& name, double _outflow );
@@ -166,9 +168,9 @@ private:
 
                             const tList<cReactionProcess>& req_proc, bool& force_mark_task) const;
   
-  bool TestRequisites(const tList<cReactionRequisite>& req_list, int task_count, 
+  bool TestRequisites(const cReaction* cur_reaction, int task_count, 
                       const tArray<int>& reaction_count, const bool on_divide = false) const; 
-  bool TestContextRequisites(const tList<cContextReactionRequisite>& req_list, int task_count, 
+  bool TestContextRequisites(const cReaction* cur_reaction, int task_count, 
                       const tArray<int>& reaction_count, const bool on_divide = false) const;
   void DoProcesses(cAvidaContext& ctx, const tList<cReactionProcess>& process_list, 
                    const tArray<double>& resource_count, const tArray<double>& rbin_count,

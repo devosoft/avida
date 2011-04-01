@@ -38,6 +38,8 @@ private:
   tList<cReaction> prior_noreaction_list;
   int min_task_count;
   int max_task_count;
+  int min_reaction_count;
+  int max_reaction_count;
   int min_tot_reaction_count;
   int max_tot_reaction_count;
   int divide_only;
@@ -47,7 +49,8 @@ private:
   cReactionRequisite& operator=(const cReactionRequisite&);
 
 public:
-  cReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX), 
+  cReactionRequisite() : min_task_count(0) , max_task_count(INT_MAX),
+    min_reaction_count(0) , max_reaction_count(INT_MAX),
 	  min_tot_reaction_count(0), max_tot_reaction_count(INT_MAX), divide_only(0) { ; }
   ~cReactionRequisite() { ; }
 
@@ -55,6 +58,8 @@ public:
   const tList<cReaction>& GetNoReactions() const { return prior_noreaction_list; }
   int GetMinTaskCount() const { return min_task_count; }
   int GetMaxTaskCount() const { return max_task_count; }
+  int GetMinReactionCount() const { return min_reaction_count; }
+  int GetMaxReactionCount() const { return max_reaction_count; }
   int GetDivideOnly() const { return divide_only; }
   int GetMinTotReactionCount() const { return min_tot_reaction_count; }
   int GetMaxTotReactionCount() const { return max_tot_reaction_count; }
@@ -67,6 +72,8 @@ public:
   }
   void SetMinTaskCount(int min) { min_task_count = min; }
   void SetMaxTaskCount(int max) { max_task_count = max; }
+  void SetMinReactionCount(int min) { min_reaction_count = min; }
+  void SetMaxReactionCount(int max) { max_reaction_count = max; }
   void SetDivideOnly(int div) { divide_only = div; }
   void SetMinTotReactionCount(int min) { min_tot_reaction_count = min; }
   void SetMaxTotReactionCount(int max) { max_tot_reaction_count = max; }

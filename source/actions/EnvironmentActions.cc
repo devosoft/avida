@@ -399,6 +399,50 @@ public:
   }
 };
 
+class cActionSetReactionMinCount : public cAction
+{
+private:
+  cString m_name;
+  int m_reaction_min_count;
+  
+public:
+  cActionSetReactionMinCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_reaction_min_count(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_reaction_min_count = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <int reaction_min_count>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetReactionMinCount(m_name, m_reaction_min_count);
+  }
+};
+
+class cActionSetReactionMaxCount : public cAction
+{
+private:
+  cString m_name;
+  int m_reaction_max_count;
+  
+public:
+  cActionSetReactionMaxCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_reaction_max_count(0)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_name = largs.PopWord();
+    if (largs.GetSize()) m_reaction_max_count = largs.PopWord().AsInt();
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string reaction_name> <int reaction_max_count>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    m_world->GetEnvironment().SetReactionMaxCount(m_name, m_reaction_max_count);
+  }
+};
+
 class cActionSetReactionTask : public cAction
 {
 private:
