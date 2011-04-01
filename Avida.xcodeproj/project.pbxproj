@@ -2036,10 +2036,6 @@
 		DCC310040762539D008F7A48 /* main */ = {
 			isa = PBXGroup;
 			children = (
-				4A587EE81332B6590037A393 /* cDynamicCount.cc */,
-				4A587EE91332B6590037A393 /* cDynamicCount.h */,
-				4A587EEA1332B6590037A393 /* cGradientCount.cc */,
-				4A587EEB1332B6590037A393 /* cGradientCount.h */,
 				70B086BE08F5D86100FC65FE /* Avida.h */,
 				DCC3109C0762539E008F7A48 /* Avida.cc */,
 				7013845F09028B3E0087ED2E /* cAvidaConfig.h */,
@@ -2076,6 +2072,8 @@
 				BBDE4FF80FC1B06600CC6170 /* cDemePredicate.h */,
 				42C27C830FDC22AC00C45B78 /* cDemeTopologyNetwork.h */,
 				42C27C820FDC22AC00C45B78 /* cDemeTopologyNetwork.cc */,
+				4A587EE91332B6590037A393 /* cDynamicCount.h */,
+				4A587EE81332B6590037A393 /* cDynamicCount.cc */,
 				702D4EF508DA5328007BA469 /* cEnvironment.h */,
 				702D4EFC08DA5341007BA469 /* cEnvironment.cc */,
 				7099EEBF0B2F9D2A001269F6 /* cEnvReqs.h */,
@@ -2086,6 +2084,8 @@
 				70CA6EE608DB7F9E00068AC2 /* cGenomeUtil.h */,
 				70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */,
 				42490EFE0BE2472800318058 /* cGermline.h */,
+				4A587EEB1332B6590037A393 /* cGradientCount.h */,
+				4A587EEA1332B6590037A393 /* cGradientCount.cc */,
 				70CA6EF208DB7F9E00068AC2 /* cInstruction.h */,
 				70CA6EBF08DB7F8200068AC2 /* cInstruction.cc */,
 				70B0864808F4972600FC65FE /* cLandscape.h */,
@@ -2489,6 +2489,7 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,
