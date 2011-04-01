@@ -1004,6 +1004,9 @@
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
 		708BF2FD0AB65DC700A923BF /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
 		708BF3010AB65DD300A923BF /* cEventList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventList.h; sourceTree = "<group>"; };
+		708D31321342315000AE5CEF /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		708D31331342315000AE5CEF /* RELEASE_NOTES */ = {isa = PBXFileReference; lastKnownFileType = text; path = RELEASE_NOTES; sourceTree = "<group>"; };
+		708D3135134231E500AE5CEF /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
 		7090F57310D956A400ECFBA1 /* cParasite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cParasite.h; sourceTree = "<group>"; };
 		7090F57410D956A400ECFBA1 /* cParasite.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cParasite.cc; sourceTree = "<group>"; };
 		70920C1C0A9CCE2C00757CDB /* analyze_samples.html */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.documentation; path = analyze_samples.html; sourceTree = "<group>"; };
@@ -1960,6 +1963,9 @@
 				707AF2D209EE8501001AEA89 /* Support */,
 				DCC3164E07626CF3008F7A48 /* Products */,
 				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
+				708D3135134231E500AE5CEF /* COPYING */,
+				708D31321342315000AE5CEF /* README */,
+				708D31331342315000AE5CEF /* RELEASE_NOTES */,
 			);
 			sourceTree = "<group>";
 		};
