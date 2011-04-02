@@ -747,6 +747,28 @@ following requisites (in any combination) are possible:
   <td>INT_MAX</td>
 </tr>
 <tr>
+  <td class="resall">reaction_min_count</td>
+  <td>
+    This restriction requires that the reaction must be performed a certain number 
+    of times before any rewards are given. The restriction refers to the number of 
+    times the specific reaction has been triggered, regardless of how many times 
+    the referenced task has been performed. The reaction process specs max and min 
+    will restrict reactions and their counts, not tasks. 
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">reaction_max_count</td>
+  <td>
+    This restriction caps the number of times an organism can perform the reaction, 
+    effectively limiting the number of times a reaction will be rewarded. The 
+    restriction refers to the number of times the specific reaction has been triggered, 
+    regardless of how many times the referenced task has been performed. The reaction 
+    process specs max and min will restrict reactions and their counts, not tasks.
+  </td>
+  <td>INT_MAX</td>
+</tr>
+<tr>
   <td class="resall">divide_only</td>
   <td>
     This command decides when a task will be checked, if the value is 0 the task

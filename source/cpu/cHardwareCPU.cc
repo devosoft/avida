@@ -5811,12 +5811,10 @@ bool cHardwareCPU::Inst_Move(cAvidaContext& ctx)
 {
   // In TestCPU, movement fails...
   if (m_organism->GetCellID() == -1) return false;
-	
-  bool move_success = m_organism->Move(ctx);
   
+  bool move_success = m_organism->Move(ctx);  
   const int out_reg = FindModifiedRegister(REG_BX);   
   GetRegister(out_reg) = move_success;   
-
   return true;
 }
 
@@ -9498,6 +9496,32 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
   
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
+
+  //PrintToleranceData  
+  if (m_world->GetStats().GetUpdate() >= 99000) { 
+    string tolerance_type;
+    if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
+    else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
+    else if (tolerance_to_modify == REG_CX) tolerance_type = "other_offspring"; 
+    int opinion = m_organism->GetOpinion().first;
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+    double res_opinion = res_count[opinion];
+    
+    double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
+    double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
+    double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
+    double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+    double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+    
+    //update instruction_executed tolerance_type opinion group_size group_res_level \
+    tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
+    static ofstream fp("./data/inc_tolerance.dat");
+    fp << m_world->GetStats().GetUpdate() << " inc-tolerance " << tolerance_type << " " << opinion << " " \
+    << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
+    << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
+    << update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
+    << res_inflow << " " << res_outflow << " " << '\n'; 
+  }
   
 	return true;
 }
@@ -9552,6 +9576,33 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
   
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
+  
+  //PrintToleranceData
+  if (m_world->GetStats().GetUpdate() >= 99000) { 
+    string tolerance_type;
+    if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
+    else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
+    else if (tolerance_to_modify == REG_CX) tolerance_type = "other_offspring"; 
+    int opinion = m_organism->GetOpinion().first;
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
+    double res_opinion = res_count[opinion];
+    
+    double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
+    double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
+    double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
+    double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+    double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+    
+    //update instruction_executed tolerance_type opinion group_size group_res_level \
+    tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
+    static ofstream fp("./data/dec_tolerance.dat");
+    fp << m_world->GetStats().GetUpdate() << " dec-tolerance " << tolerance_type << " " << opinion << " " \
+    << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
+    << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
+    << update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
+    << res_inflow << " " << res_outflow << " " << '\n'; 
+  }
+  
 	return true;
 }
 

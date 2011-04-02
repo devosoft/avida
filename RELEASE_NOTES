@@ -7,8 +7,8 @@ New Features:
 
 - Environment Reaction Requisite : Reaction Max/Min Count Support
 
-    Reaction requisites now support max_reaction_count and min_reaction_count.
-    These requisites refer to the number of times a the specific reaction has
+    Reaction requisites now support reaction_max_count and reaction_min_count.
+    These requisites refer to the number of times the specific reaction has
     been triggered, regardless of how many times the referenced task has been
     performed.
 
