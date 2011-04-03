@@ -2197,9 +2197,11 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
         InjectGenome(cellid, SRC_DEME_REPLICATE, i->first, ctx, i->second); 
         DemePostInjection(source_deme, cell_array[cellid]);
 
-        cellid = DemeSelectInjectionCell(target_deme, j);
-        InjectGenome(cellid, SRC_DEME_REPLICATE, i->first, ctx, i->second); 
-        DemePostInjection(target_deme, cell_array[cellid]);
+        if (source_deme.GetDemeID() != target_deme.GetDemeID()) {
+          cellid = DemeSelectInjectionCell(target_deme, j);
+          InjectGenome(cellid, SRC_DEME_REPLICATE, i->first, ctx, i->second); 
+          DemePostInjection(target_deme, cell_array[cellid]);
+        }
 
       }
     } else /* if (m_world->GetConfig().DEMES_SEED_METHOD.Get() != 0) */{
@@ -2633,9 +2635,9 @@ int cPopulation::DemeSelectInjectionCell(cDeme& deme, int sequence) {
       break;
     }
     case 2: { // Random placement.
-      cellid = deme.GetCellID(m_world->GetRandom().GetInt(0, deme.GetSize()-1));
+      cellid = deme.GetCellID(m_world->GetRandom().GetInt(0, deme.GetSize()));
       while(cell_array[cellid].IsOccupied()) {
-        cellid = deme.GetCellID(m_world->GetRandom().GetInt(0, deme.GetSize()-1));
+        cellid = deme.GetCellID(m_world->GetRandom().GetInt(0, deme.GetSize()));
       }
       break;
     }
