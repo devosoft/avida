@@ -4476,11 +4476,7 @@ void cPopulation::ProcessPostUpdate(cAvidaContext& ctx)
   stats.CalcEnergy();
   stats.CalcFidelity();
 
-  for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx); 
-  
-  for (tArrayMap<int, tSmartArray<cOrganism*> >::iterator it = group_list.begin(); it != group_list.end(); it++) {
-    for (int i = 0; i < (*it).Value().GetSize(); i++) int cell_id = (*it).Value()[i]->GetCellID();
-  }
+  for (int i = 0; i < deme_array.GetSize(); i++) deme_array[i].ProcessUpdate(ctx);   
 }
 
 void cPopulation::ProcessUpdateCellActions(cAvidaContext& ctx)
