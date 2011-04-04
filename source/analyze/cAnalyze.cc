@@ -8914,9 +8914,20 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
     
     cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
     
-    if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
-    else if (!FunctionRun(command, args)) {
-      cerr << "Error: Unknown analysis keyword '" << command << "'." << endl;
+    cUserFeedback feedback;
+    if (command_fun != NULL) {
+      command_fun->Run(this, args, *cur_command, feedback);
+      for (int i = 0; i < feedback.GetNumMessages(); i++) {
+        switch (feedback.GetMessageType(i)) {
+          case cUserFeedback::ERROR:    cerr << "error: "; break;
+          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          default: break;
+        };
+        cerr << feedback.GetMessage(i) << endl;
+        if (exit_on_error && feedback.GetNumErrors()) exit(1);
+      }
+    } else if (!FunctionRun(command, args)) {
+      cerr << "error: Unknown analysis keyword '" << command << "'." << endl;
       if (exit_on_error) exit(1);
     }    
   }
@@ -9231,67 +9242,24 @@ void cAnalyze::RunInteractive()
     
     cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
     
-    // First check for built-in functions...
-    if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
-    
-    // Then for user defined functions
-    else if (FunctionRun(command, args) == true) { }
-    
-    // Otherwise, give an error.
-    else cerr << "Error: Unknown command '" << command << "'." << endl;
+    if (command_fun != NULL) {                                // First check for built-in functions...
+      cUserFeedback feedback;
+      command_fun->Run(this, args, *cur_command, feedback);
+      for (int i = 0; i < feedback.GetNumMessages(); i++) {
+        switch (feedback.GetMessageType(i)) {
+          case cUserFeedback::ERROR:    cerr << "error: "; break;
+          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          default: break;
+        };
+        cerr << feedback.GetMessage(i) << endl;
+      }
+    } else if (FunctionRun(command, args) == true) {          // Then user functions
+      /* no additional action */
+    } else {                                                  // Error
+      cerr << "Error: Unknown command '" << command << "'." << endl;
+    }
   }
   
   if (!saved_analyze) m_ctx.ClearAnalyzeMode();
 }
 
-bool cAnalyze::Send(const cString &text_input)
-{
-  cString cur_input(text_input);
-  cString command = cur_input.PopWord();
-  
-  cAnalyzeCommand* cur_command = NULL;
-  cAnalyzeCommandDefBase* command_def = FindAnalyzeCommandDef(command);
-  if (command == "") {
-    // Don't worry about blank lines...
-    ;
-  } else if (command_def != NULL && command_def->IsFlowCommand() == true) {
-    // This code has a body to it... fill it out!
-    cur_command = new cAnalyzeFlowCommand(command, cur_input);
-    InteractiveLoadCommandList(*(cur_command->GetCommandList()));
-  } else {
-    // This is a normal command...
-    cur_command = new cAnalyzeCommand(command, cur_input);
-  }
-  
-  cString args = cur_command->GetArgs();
-  PreProcessArgs(args);
-  
-  cAnalyzeCommandDefBase* command_fun = FindAnalyzeCommandDef(command);
-  
-  // First check for built-in functions...
-  if (command_fun != NULL) command_fun->Run(this, args, *cur_command);
-  
-  // Then for user defined functions
-  else if (FunctionRun(command, args) == true) { }
-  
-  // Otherwise, give an error.
-  else {
-    cerr << "Error: Unknown command '" << command << "'." << endl;
-    return false;
-  }
-  
-  return true;
-}
-
-bool cAnalyze::Send(const cStringList &list_input)
-{
-  bool did_succeed = true;
-  cStringIterator list_it(list_input);
-  while ( list_it.AtEnd() == false ) {
-    list_it.Next();
-    if( !Send(list_it.Get()) ) {
-      did_succeed = false;
-    }
-  }
-  return did_succeed;
-}

@@ -38,18 +38,20 @@
 
 class cAnalyze;
 
-class cAnalyzeFlowCommandDef : public cAnalyzeCommandDefBase {
+
+class cAnalyzeFlowCommandDef : public cAnalyzeCommandDefBase
+{
 private:
-  void (cAnalyze::*CommandFunction)(cString, tList<cAnalyzeCommand> &);
+  void (cAnalyze::*CommandFunction)(cString, tList<cAnalyzeCommand>&);
+  
 public:
-  cAnalyzeFlowCommandDef(const cString &_name,
-	 void (cAnalyze::*_cf)(cString, tList<cAnalyzeCommand> &))
-    : cAnalyzeCommandDefBase(_name), CommandFunction(_cf) { ; }
+  cAnalyzeFlowCommandDef(const cString& name, void (cAnalyze::*cf)(cString, tList<cAnalyzeCommand>&))
+    : cAnalyzeCommandDefBase(name), CommandFunction(cf) { ; }
   virtual ~cAnalyzeFlowCommandDef() { ; }
 			 
-  virtual void Run(cAnalyze * analyze, const cString & args,
-		   cAnalyzeCommand & command) const {
-    (analyze->*CommandFunction)(args, *(command.GetCommandList()) );
+  virtual void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command, cFeedback& feedback) const
+  {
+    (analyze->*CommandFunction)(args, *(command.GetCommandList()));
   }
 
   virtual bool IsFlowCommand() { return true; }

@@ -48,9 +48,9 @@ public:
     : cAnalyzeCommandDefBase(in_name), m_world(world) { ; }
   ~cAnalyzeCommandAction() { ; }
   
-  void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command) const
+  void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command, cFeedback& feedback) const
   {
-    cAction* action = cActionLibrary::GetInstance().Create(name, m_world, args);
+    cAction* action = cActionLibrary::GetInstance().Create(m_name, m_world, args, feedback);
     cAvidaContext& ctx = m_world->GetDefaultContext();
     action->Process(ctx);
   }

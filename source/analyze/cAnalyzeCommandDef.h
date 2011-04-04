@@ -37,11 +37,11 @@ class cAnalyzeCommandDef : public cAnalyzeCommandDefBase {
 private:
   void (cAnalyze::*CommandFunction)(cString);
 public:
-  cAnalyzeCommandDef(const cString & _name, void (cAnalyze::*_cf)(cString))
-    : cAnalyzeCommandDefBase(_name), CommandFunction(_cf) { ; }
+  cAnalyzeCommandDef(const cString& name, void (cAnalyze::*cf)(cString))
+    : cAnalyzeCommandDefBase(name), CommandFunction(cf) { ; }
   ~cAnalyzeCommandDef() { ; }
 
-  void Run(cAnalyze * analyze, const cString & args, cAnalyzeCommand & command) const
+  void Run(cAnalyze* analyze, const cString& args, cAnalyzeCommand& command, cFeedback& feedback) const
   {
     (void) command; // used in other types of command defininitions.
     (analyze->*CommandFunction)(args);

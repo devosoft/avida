@@ -461,4 +461,55 @@ public:
   }
 };
 
+template<typename BaseType, typename Arg1Type, typename Arg2Type, typename Arg3Type>
+class tObjectFactoryNoCase<BaseType (Arg1Type, Arg2Type, Arg3Type)>
+{
+protected:
+  typedef BaseType (*CreateObjectFunction)(Arg1Type, Arg2Type, Arg3Type);
+  
+  tDictionaryNoCase<CreateObjectFunction> m_create_funcs;
+  mutable cMutex m_mutex;
+  
+public:
+  tObjectFactoryNoCase() { ; }
+  ~tObjectFactoryNoCase() { ; }
+  
+  template<typename ClassType> bool Register(const cString& key)
+  {
+    CreateObjectFunction func = NULL;
+    cMutexAutoLock lock(m_mutex);
+    if (m_create_funcs.Find(key, func)) {
+      return false;
+    }
+    
+    m_create_funcs.Set(key, &nObjectFactory::createObject<BaseType, ClassType, Arg1Type, Arg2Type, Arg3Type>);
+    return true;
+  }
+  
+  bool Unregister(const cString& key)
+  {
+    cMutexAutoLock lock(m_mutex);
+    CreateObjectFunction func = NULL;
+    m_create_funcs.Remove(key, func);
+    return (func != NULL);
+  }
+  
+  BaseType Create(const cString& key, Arg1Type arg1, Arg2Type arg2, Arg3Type arg3)
+  {
+    CreateObjectFunction func = NULL;
+    cMutexAutoLock lock(m_mutex);
+    if (m_create_funcs.Find(key, func)) {
+      return func(arg1, arg2, arg3);
+    }
+    return NULL;
+  }
+  
+  bool Supports(const cString& key) const
+  {
+    cMutexAutoLock lock(m_mutex);
+    bool supports = m_create_funcs.HasEntry(key);
+    return supports;
+  }
+};
+
 #endif

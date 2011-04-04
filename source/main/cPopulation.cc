@@ -4504,7 +4504,7 @@ struct sGroupInfo {
   sGroupInfo(cBioGroup* in_bg, bool is_para = false) : bg(in_bg), parasite(is_para) { ; }
 };
 
-bool cPopulation::SavePopulation(const cString& filename)
+bool cPopulation::SavePopulation(const cString& filename, bool save_historic)
 {
   cDataFile& df = m_world->GetDataFile(filename);
   df.SetFileType("genotype_data");
@@ -4582,7 +4582,7 @@ bool cPopulation::SavePopulation(const cString& filename)
   }
 
   // Output historic genotypes
-  m_world->GetClassificationManager().SaveBioGroups("genotype", df);
+  if (save_historic) m_world->GetClassificationManager().SaveBioGroups("genotype", df);
 
   m_world->GetDataFileManager().Remove(filename);
   return true;

@@ -58,7 +58,7 @@ private:
   int m_max_dist;
   
 public:
-  cActionAnalyzeLandscape(cWorld* world, const cString& args)
+  cActionAnalyzeLandscape(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_filename("land-analyze.dat"), m_trials(1000), m_min_found(0), m_max_trials(0), m_max_dist(10)
   {
     cString largs(args);
@@ -171,7 +171,7 @@ private:
   cCPUTestInfo m_cpu_test_info;
 
 public:
-  cActionPrecalcLandscape(cWorld* world, const cString& in_args) : cAction(world, in_args), m_cpu_test_info() 
+  cActionPrecalcLandscape(cWorld* world, const cString& in_args, cFeedback&) : cAction(world, in_args), m_cpu_test_info() 
   { 
     cString args(in_args); 
     cAnalyze::PopCommonCPUTestParameters(world, args, m_cpu_test_info);
@@ -215,7 +215,7 @@ private:
   tList<cLandscape> m_batch;
   
 public:
-  cActionFullLandscape(cWorld* world, const cString& args)
+  cActionFullLandscape(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_sfilename("land-full.dat"), m_efilename(""), m_cfilename(""), m_dist(1)
   {
       cString largs(args);
@@ -294,7 +294,7 @@ private:
   cString m_filename;
   
 public:
-  cActionDumpLandscape(cWorld* world, const cString& args)
+  cActionDumpLandscape(cWorld* world, const cString& args, cFeedback&)
   : cAction(world, args), m_filename("land-dump.dat")
   {
     cString largs(args);
@@ -374,7 +374,7 @@ private:
   tList<cLandscape> m_batch;
   
 public:
-  cActionDeletionLandscape(cWorld* world, const cString& args)
+  cActionDeletionLandscape(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_sfilename("land-del.dat"), m_cfilename(""), m_dist(1)
   {
       cString largs(args);
@@ -448,7 +448,7 @@ private:
   tList<cLandscape> m_batch;
   
 public:
-  cActionInsertionLandscape(cWorld* world, const cString& args)
+  cActionInsertionLandscape(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_sfilename("land-ins.dat"), m_cfilename(""), m_dist(1)
   {
       cString largs(args);
@@ -519,7 +519,7 @@ private:
   cString m_filename;
   
 public:
-  cActionPredictWLandscape(cWorld* world, const cString& args)
+  cActionPredictWLandscape(cWorld* world, const cString& args, cFeedback&)
   : cAction(world, args), m_filename("land-predict.dat")
   {
     cString largs(args);
@@ -569,7 +569,7 @@ private:
   cString m_filename;
   
 public:
-  cActionPredictNuLandscape(cWorld* world, const cString& args)
+  cActionPredictNuLandscape(cWorld* world, const cString& args, cFeedback&)
   : cAction(world, args), m_filename("land-predict.dat")
   {
     cString largs(args);
@@ -622,7 +622,7 @@ private:
   tList<cLandscape> m_batch;
 
 public:
-  cActionRandomLandscape(cWorld* world, const cString& args)
+  cActionRandomLandscape(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_filename("land-random.dat"), m_dist(1), m_trials(0)
   {
     cString largs(args);
@@ -693,7 +693,7 @@ private:
   tList<cLandscape> m_batch;
   
 public:
-  cActionSampleLandscape(cWorld* world, const cString& args)
+  cActionSampleLandscape(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_filename("land-sample.dat"), m_trials(0)
   {
     cString largs(args);
@@ -759,7 +759,7 @@ private:
   cString m_filename;
   
 public:
-  cActionHillClimb(cWorld* world, const cString& args)
+  cActionHillClimb(cWorld* world, const cString& args, cFeedback&)
   : cAction(world, args), m_filename("hillclimb.dat")
   {
     cString largs(args);
@@ -819,7 +819,7 @@ private:
   tList<sBatchEntry> m_batch;
   
 public:
-  cActionMutationalNeighborhood(cWorld* world, const cString& args)
+  cActionMutationalNeighborhood(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_filename("mut-neighborhood.dat"), m_target(-1)
   {
       cString largs(args);
@@ -891,7 +891,7 @@ private:
   tList<cLandscape> m_batch;
   
 public:
-  cActionPairTestLandscape(cWorld* world, const cString& args)
+  cActionPairTestLandscape(cWorld* world, const cString& args, cFeedback&)
   : cAction(world, args), m_filename("land-pairs.dat"), m_sample_size(0)
   {
     cString largs(args);
@@ -996,7 +996,7 @@ private:
   
   
 public:
-  cActionAnalyzePopulation(cWorld* world, const cString& args)
+  cActionAnalyzePopulation(cWorld* world, const cString& args, cFeedback&)
     : cAction(world, args), m_sprob(1.0), m_cland(0), m_save_genotypes(0), m_filename("")
   {
     cString largs(args);

@@ -206,7 +206,7 @@ public:
   void SerialTransfer(int transfer_size, bool ignore_deads, cAvidaContext& ctx); 
 
   // Saving and loading...
-  bool SavePopulation(const cString& filename);
+  bool SavePopulation(const cString& filename, bool save_historic);
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0); 
   bool DumpMemorySummary(std::ofstream& fp);
 

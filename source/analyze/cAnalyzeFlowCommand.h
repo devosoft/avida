@@ -38,13 +38,12 @@ class cAnalyzeFlowCommand : public cAnalyzeCommand {
 protected:
   tList<cAnalyzeCommand> command_list;
 public:
-  cAnalyzeFlowCommand(const cString & _command, const cString & _args)
-    : cAnalyzeCommand(_command, _args) { ; }
+  cAnalyzeFlowCommand(const cString& _command, const cString& _args) : cAnalyzeCommand(_command, _args) { ; }
   virtual ~cAnalyzeFlowCommand() {
-    while ( command_list.GetSize() > 0 ) delete command_list.Pop();
+    while (command_list.GetSize() > 0) delete command_list.Pop();
   }
 
-  tList<cAnalyzeCommand> * GetCommandList() { return &command_list; }
+  tList<cAnalyzeCommand>* GetCommandList() { return &command_list; }
 };
 
 #endif

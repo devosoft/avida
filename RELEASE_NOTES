@@ -12,11 +12,14 @@ New Features:
     been triggered, regardless of how many times the referenced task has been
     performed.
 
+- SavePopulation now supports saving only the current population, see Changes
+
 
 
 Enhancements:
 
 -
+
 
 
 Changes:
@@ -26,6 +29,18 @@ Changes:
     cHardwareCPU no longer resets first time cost counts when DIVIDE_METHOD
     is set to DIVIDE_METHOD_OFFSPRING (0).  Other hardware types are not
     current affected.
+
+- SavePopulation action argument format change
+
+    The action arguments now follow standard argument syntax:
+      argument_name=argumentvalue:argument2_name:argument2_value
+    Save population accepts two arguments:
+      filename - default=detail
+        a string that is used to prefix the update number and file extension,
+        i.e.  detail-100.spop
+      save_historic - default=1
+        a boolean (0 or 1) value that determines whether the action saves the
+        full history for the current population
 
 
 

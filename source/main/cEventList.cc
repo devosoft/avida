@@ -54,9 +54,9 @@ cEventList::~cEventList()
 
 
 bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
-                          double stop, const cString& name, const cString& args)
+                          double stop, const cString& name, const cString& args, cFeedback& feedback)
 {
-  cAction* action = cActionLibrary::GetInstance().Create(name, m_world, args);
+  cAction* action = cActionLibrary::GetInstance().Create(name, m_world, args, feedback);
   
   if (action != NULL) {
     cEventListEntry* entry = new cEventListEntry(action, name, trigger, start, interval, stop);
@@ -82,12 +82,12 @@ bool cEventList::AddEvent(eTriggerType trigger, double start, double interval,
     return true;
   }
   
-  cerr << "error: unrecognized event '" << name << "'" << endl; 
+  cerr << "error: unable to load event '" << name << "'" << endl; 
   
   return false;
 }
 
-bool cEventList::LoadEventFile(const cString& filename, const cString& working_dir)
+bool cEventList::LoadEventFile(const cString& filename, const cString& working_dir, cFeedback& feedback)
 {
   cInitFile event_file(filename, working_dir);
   
@@ -95,7 +95,7 @@ bool cEventList::LoadEventFile(const cString& filename, const cString& working_d
 
   // Loop through the line_list and change the lines to events.
   for (int line_id = 0; line_id < event_file.GetNumLines(); line_id++) {
-    if (!AddEventFileFormat(event_file.GetLine(line_id))) return false;
+    if (!AddEventFileFormat(event_file.GetLine(line_id), feedback)) return false;
   }
   
   return true;
@@ -383,7 +383,7 @@ bool cEventList::CheckBirthInterruptQueue(double t_val)
 
 
 //// Parsing Event List File Format ////
-bool cEventList::AddEventFileFormat(const cString& in_line)
+bool cEventList::AddEventFileFormat(const cString& in_line, cFeedback& feedback)
 {
   cString cur_line = in_line;
   
@@ -404,7 +404,7 @@ bool cEventList::AddEventFileFormat(const cString& in_line)
   if (cur_word == "i" || cur_word == "immediate") {
     trigger = IMMEDIATE;
     name = cur_line.PopWord();
-    return AddEvent(name, cur_line); // If event is IMMEDIATE shortcut
+    return AddEvent(IMMEDIATE, TRIGGER_BEGIN, TRIGGER_ONCE, TRIGGER_END, name, cur_line, feedback);
   } else if (cur_word == "u" || cur_word == "update") {
     trigger = UPDATE;
     cur_word = cur_line.PopWord();
@@ -467,7 +467,7 @@ bool cEventList::AddEventFileFormat(const cString& in_line)
   name = cur_word;
   arg_list = cur_line;
   
-  return AddEvent(trigger, start, interval, stop, name, arg_list);
+  return AddEvent(trigger, start, interval, stop, name, arg_list, feedback);
 }
 
 

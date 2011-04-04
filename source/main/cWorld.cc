@@ -151,7 +151,7 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   // Setup Event List
   m_event_list = new cEventList(this);
-  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir)) {
+  if (!m_event_list->LoadEventFile(m_conf->EVENT_FILE.Get(), m_working_dir, *feedback)) {
     if (feedback) feedback->Error("unable to load event file");
     success = false;
   }

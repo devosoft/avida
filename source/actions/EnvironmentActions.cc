@@ -41,7 +41,7 @@ private:
   double m_res_count;
   
 public:
-  cActionInjectResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
+  cActionInjectResource(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_res_name(""), m_res_count(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -69,7 +69,7 @@ private:
   double m_res_count;
   
 public:
-  cActionInjectScaledResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
+  cActionInjectScaledResource(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_res_name(""), m_res_count(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -101,7 +101,7 @@ private:
   double m_res_percent;
   
 public:
-  cActionOutflowScaledResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_percent(0.0)
+  cActionOutflowScaledResource(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_res_name(""), m_res_percent(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -135,7 +135,7 @@ private:
   double m_res_count;
   
 public:
-  cActionSetResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
+  cActionSetResource(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_res_name(""), m_res_count(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -158,7 +158,7 @@ class cActionSetDemeResource : public cAction
 		double m_res_count;
 		
 	public:
-		cActionSetDemeResource(cWorld* world, const cString& args) : cAction(world, args), m_res_name(""), m_res_count(0.0)
+		cActionSetDemeResource(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_res_name(""), m_res_count(0.0)
 		{
 			cString largs(args);
 			if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -186,7 +186,7 @@ class cZeroResources : public cAction
 private:
   
 public:
-  cZeroResources(cWorld* world, const cString& args) : cAction(world, args)
+  cZeroResources(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
   {
     cString largs(args);
   }
@@ -214,7 +214,7 @@ private:
   int m_res_id;
   
 public:
-  cActionSetCellResource(cWorld* world, const cString& args) : cAction(world, args), m_cell_list(0), m_res_name(""), m_res_count(0.0)
+  cActionSetCellResource(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_cell_list(0), m_res_name(""), m_res_count(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) 
@@ -256,7 +256,7 @@ private:
   cString env_string;
   
 public:
-  cActionChangeEnvironment(cWorld* world, const cString& args) : cAction(world, args), env_string("")
+  cActionChangeEnvironment(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), env_string("")
   {
     cString largs(args);
     if (largs.GetSize()) env_string = largs;
@@ -294,7 +294,7 @@ private:
   double m_value;
   
 public:
-  cActionSetReactionValue(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_value(0.0)
+  cActionSetReactionValue(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_value(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -317,7 +317,7 @@ private:
   double m_value;
   
 public:
-  cActionSetReactionValueMult(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_value(0.0)
+  cActionSetReactionValueMult(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_value(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -340,7 +340,7 @@ private:
   cString m_inst;
   
 public:
-  cActionSetReactionInst(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_inst("")
+  cActionSetReactionInst(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_inst("")
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -362,7 +362,7 @@ private:
   int m_min_count;
   
 public:
-  cActionSetReactionMinTaskCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_min_count(0)
+  cActionSetReactionMinTaskCount(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_min_count(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -384,7 +384,7 @@ private:
   int m_max_count;
   
 public:
-  cActionSetReactionMaxTaskCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_max_count(0)
+  cActionSetReactionMaxTaskCount(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_max_count(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -406,7 +406,7 @@ private:
   int m_reaction_min_count;
   
 public:
-  cActionSetReactionMinCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_reaction_min_count(0)
+  cActionSetReactionMinCount(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_reaction_min_count(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -428,7 +428,7 @@ private:
   int m_reaction_max_count;
   
 public:
-  cActionSetReactionMaxCount(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_reaction_max_count(0)
+  cActionSetReactionMaxCount(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_reaction_max_count(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -450,7 +450,7 @@ private:
   cString m_task;
   
 public:
-  cActionSetReactionTask(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_task("")
+  cActionSetReactionTask(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_task("")
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -473,7 +473,7 @@ private:
   double m_inflow;
   
 public:
-  cActionSetResourceInflow(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_inflow(0.0)
+  cActionSetResourceInflow(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_inflow(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -507,7 +507,7 @@ class cActionSetDemeResourceInflow : public cAction
     double m_inflow;
     
   public:
-    cActionSetDemeResourceInflow(cWorld* world, const cString& args) : cAction(world, args), m_demeid(-1), m_name(""), m_inflow(0.0)
+    cActionSetDemeResourceInflow(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_demeid(-1), m_name(""), m_inflow(0.0)
     {
       cString largs(args);
       if (largs.GetSize()) m_demeid = largs.PopWord().AsInt();
@@ -538,7 +538,7 @@ private:
   double m_outflow;
   
 public:
-  cActionSetResourceOutflow(cWorld* world, const cString& args) : cAction(world, args), m_name(""), m_outflow(0.0)
+  cActionSetResourceOutflow(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_name(""), m_outflow(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_name = largs.PopWord();
@@ -574,7 +574,7 @@ class cActionSetDemeResourceOutflow : public cAction
     double m_outflow;
     
   public:
-    cActionSetDemeResourceOutflow(cWorld* world, const cString& args) : cAction(world, args), m_demeid(-1), m_name(""), m_outflow(0.0)
+    cActionSetDemeResourceOutflow(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_demeid(-1), m_name(""), m_outflow(0.0)
     {
       cString largs(args);
       if (largs.GetSize()) m_demeid = largs.PopWord().AsInt();
@@ -604,7 +604,7 @@ private:
   tArray<int> m_inputs;
   
 public:
-  cActionSetEnvironmentInputs(cWorld* world, const cString& args) : cAction(world, args), m_inputs()
+  cActionSetEnvironmentInputs(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_inputs()
   {
     cString largs(args);
     if (largs.GetSize()) m_inputs.Push(largs.PopWord().AsInt());
@@ -650,7 +650,7 @@ private:
   unsigned int m_mask;
   
 public:
-  cActionSetEnvironmentRandomMask(cWorld* world, const cString& args) : cAction(world, args), m_mask(0)
+  cActionSetEnvironmentRandomMask(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_mask(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_mask = largs.PopWord().AsInt();
@@ -679,7 +679,7 @@ private:
   int m_value;
   
 public:
-  cActionSetTaskArgInt(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value(0)
+  cActionSetTaskArgInt(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_task(0), m_arg(0), m_value(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_task = largs.PopWord().AsInt();
@@ -708,7 +708,7 @@ private:
 	cString m_res_name;
 
 public:
-	cActionSetSeasonalResource(cWorld* world, const cString& args): cAction(world, args), m_res_name("")
+	cActionSetSeasonalResource(cWorld* world, const cString& args, cFeedback&): cAction(world, args), m_res_name("")
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -735,7 +735,7 @@ private:
 	double m_scale;
 		
 public:
-	cActionSetSeasonalResource1Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), m_scale(1.0)
+	cActionSetSeasonalResource1Kyears_1To_1(cWorld* world, const cString& args, cFeedback&): cAction(world, args), m_res_name(""), m_scale(1.0)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -766,7 +766,7 @@ private:
 	double m_scale;
 	
 public:
-	cActionSetSeasonalResource10Kyears_1To_1(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), m_scale(1.0)
+	cActionSetSeasonalResource10Kyears_1To_1(cWorld* world, const cString& args, cFeedback&): cAction(world, args), m_res_name(""), m_scale(1.0)
 	{
 		cString largs(args);
 		if (largs.GetSize()) m_res_name = largs.PopWord();
@@ -803,7 +803,7 @@ private:
   double initY;
 
 public:
-  cActionSetPeriodicResource(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), amplitude(1.0),
+  cActionSetPeriodicResource(cWorld* world, const cString& args, cFeedback&): cAction(world, args), m_res_name(""), amplitude(1.0),
                                                                   frequency(1.0), phaseShift(0.0), initY(0.0)
   {
     cString largs(args);
@@ -837,7 +837,7 @@ private:
   int newValue;
 
 public:
-  cActionSetNumInstBefore0Energy(cWorld* world, const cString& args) : cAction(world, args), newValue(0)
+  cActionSetNumInstBefore0Energy(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), newValue(0)
   {
     cString largs(args);
     if (largs.GetSize()) newValue = largs.PopWord().AsInt();
@@ -863,7 +863,7 @@ private:
   double initY;
 
 public:
-  cActionSetDoublePeriodicResource(cWorld* world, const cString& args): cAction(world, args), m_res_name(""), amplitude(1.0),
+  cActionSetDoublePeriodicResource(cWorld* world, const cString& args, cFeedback&): cAction(world, args), m_res_name(""), amplitude(1.0),
                                                                   frequency(1.0), phaseShift(0.0), initY(0.0)
   {
     cString largs(args);
@@ -898,7 +898,7 @@ private:
   double m_value;
   
 public:
-  cActionSetTaskArgDouble(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value(0.0)
+  cActionSetTaskArgDouble(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_task(0), m_arg(0), m_value(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_task = largs.PopWord().AsInt();
@@ -928,7 +928,7 @@ private:
   cString m_value;
   
 public:
-  cActionSetTaskArgString(cWorld* world, const cString& args) : cAction(world, args), m_task(0), m_arg(0), m_value("")
+  cActionSetTaskArgString(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_task(0), m_arg(0), m_value("")
   {
     cString largs(args);
     if (largs.GetSize()) m_task = largs.PopWord().AsInt();
@@ -953,7 +953,7 @@ class cActionSetOptimizeMinMax : public cAction
   {
     
   public:
-    cActionSetOptimizeMinMax(cWorld* world, const cString& args) : cAction(world, args) { ; }
+    cActionSetOptimizeMinMax(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
     
     static const cString GetDescription() { return "No Arguments"; }
     
@@ -998,7 +998,7 @@ private:
   bool m_static_position;
   
 public:
-  cActionDelayedDemeEvent(cWorld* world, const cString& args) : 
+  cActionDelayedDemeEvent(cWorld* world, const cString& args, cFeedback&) : 
     cAction(world, args)
   , m_x1(-1)
   , m_y1(-1)
@@ -1045,7 +1045,7 @@ private:
   bool m_static_position;
   
 public:
-  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args) : 
+  cActionDelayedDemeEventsPerSlots(cWorld* world, const cString& args, cFeedback&) : 
     cAction(world, args)
   , m_x1(-1)
   , m_y1(-1)
@@ -1090,7 +1090,7 @@ private:
 	double factionTreatable; // total number of unique event to create; they may overlab
 	
 public:
-	cActionSetFracDemeTreatable(cWorld* world, const cString& args) : cAction(world, args), factionTreatable(0.0) {
+	cActionSetFracDemeTreatable(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), factionTreatable(0.0) {
 		cString largs(args);
 		if (largs.GetSize()) factionTreatable = largs.PopWord().AsDouble();
 	}
@@ -1116,7 +1116,7 @@ private:
   cString m_value;
   
 public:
-  cActionSetConfig(cWorld* world, const cString& args) : cAction(world, args)
+  cActionSetConfig(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs.GetSize()) m_cvar = largs.PopWord();

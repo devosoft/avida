@@ -333,7 +333,7 @@ void cView::CloneSoup()
 {
   cString filename;
   filename.Set("detail-%d.spop", info.GetWorld().GetStats().GetUpdate());
-  info.GetPopulation().SavePopulation(filename);
+  info.GetPopulation().SavePopulation(filename, true);
   cString message;
   message.Set("Saved population to file: %s", static_cast<const char*>(filename));
   Notify(message);

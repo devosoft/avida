@@ -22,6 +22,8 @@
 #ifndef cActionLibrary_h
 #define cActionLibrary_h
 
+#include "avida/core/cFeedback.h"
+
 #include "cAction.h"
 #include "tObjectFactory.h"
 
@@ -34,7 +36,7 @@ class cActionLibrary
 private:
   typedef const cString (*ClassDescFunction)();
   
-  tObjectFactoryNoCase<cAction* (cWorld*, const cString&)> m_factory;
+  tObjectFactoryNoCase<cAction* (cWorld*, const cString&, cFeedback&)> m_factory;
   tDictionary<ClassDescFunction> m_desc_funcs;
   
   cActionLibrary() { ; }
@@ -59,7 +61,11 @@ public:
     return m_factory.Unregister(key);
   }
   
-  cAction* Create(const cString& key, cWorld* world, const cString& args) { return m_factory.Create(key, world, args); }
+  cAction* Create(const cString& key, cWorld* world, const cString& args, cFeedback& feedback)
+  {
+    return m_factory.Create(key, world, args, feedback);
+  }
+  
   bool Supports(const cString& key) const { return m_factory.Supports(key); }  
   
   const cString Describe(const cString& key) const

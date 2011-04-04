@@ -31,6 +31,7 @@
 
 
 class cAvidaContext;
+class cFeedback;
 class cString;
 class cWorld;
 
@@ -42,7 +43,7 @@ class cWorld;
 class cEventList
 {
 public:
-
+  
   // Event Trigger Type ====================================================================
   //  UPDATE occurs at the end of an update
   //  GENERATION occurs at the end of an update for particular values of average generation, 
@@ -60,10 +61,74 @@ public:
   static const double TRIGGER_END;
   static const double TRIGGER_ALL;
   static const double TRIGGER_ONCE;
-
-
-private:
   
+private:
+  class cEventListEntry;  
+  
+private:
+  cWorld* m_world;
+  cEventListEntry* m_head;
+  cEventListEntry* m_tail;
+  int m_num_events;
+  
+  tList<double> m_birth_interrupt_queue;
+  
+  void QueueBirthInterruptEvent(double t_val);
+  void DequeueBirthInterruptEvent(double t_val);
+  
+  void SyncEvent(cEventListEntry* event);
+  double GetTriggerValue(eTriggerType trigger) const;
+  void Delete(cEventListEntry* entry);
+  
+  cEventList(); // @not_implemented
+  cEventList(const cEventList&); // @not_implemented
+  cEventList& operator=(const cEventList&); // @not_implemented
+  
+  
+public:
+  cEventList(cWorld* world) : m_world(world), m_head(NULL), m_tail(NULL), m_num_events(0) { ; }
+  ~cEventList();
+  
+  
+  bool AddEvent(eTriggerType trigger, double start, double interval, double stop, const cString &name, const cString& args,
+                cFeedback& feedback);
+  
+  /**
+   * This function adds an event that is given in the event list file format.
+   * In other words, it can be used to parse one line from an event list file,
+   * and construct the appropriate event.
+   **/
+  bool AddEventFileFormat(const cString& line, cFeedback& feedback);
+  
+  
+  bool LoadEventFile(const cString& filename, const cString& working_dir, cFeedback&  feedback);
+  
+  void Process(cAvidaContext& ctx);
+  void Sync(); // Get all events caught up.
+  
+  void PrintEventList(std::ostream& os = std::cout);
+  
+  /**
+   * Returns true if a particular org_id (or Stats::tot_creature) value is present
+   * in the interrupt queue.
+   *
+   * @param t_value The value being checked.
+   **/
+  bool CheckBirthInterruptQueue(double t_val);
+  
+  
+  /**
+   * This function is called to process an event outside of an update boundary.
+   * Some data may be missing, inaccurate, or incomplete if processing is required
+   * at the end of an update.
+   **/
+  void ProcessInterrupt(cAvidaContext& ctx);
+	
+	//! Check to see if an event with the given name is upcoming at some point in the future.
+	bool IsEventUpcoming(const cString& event_name);
+  
+  
+private:
   class cEventListEntry
   {
   private:
@@ -82,9 +147,9 @@ private:
   public:
     cEventListEntry(cAction* action, const cString& name, eTriggerType trigger = UPDATE, double start = TRIGGER_BEGIN,
                     double interval = TRIGGER_ONCE, double stop = TRIGGER_END, cEventListEntry* prev = NULL,
-                    cEventListEntry* next = NULL) :
-      m_action(action), m_name(name), m_trigger(trigger), m_start(start), m_interval(interval), m_stop(stop),
-      m_original_start(start), m_prev(prev), m_next(next)
+                    cEventListEntry* next = NULL)
+    : m_action(action), m_name(name), m_trigger(trigger), m_start(start), m_interval(interval), m_stop(stop)
+    , m_original_start(start), m_prev(prev), m_next(next)
     {
     }
     
@@ -111,99 +176,6 @@ private:
     cEventListEntry* GetNext() const { return m_next; }
   };
   
-  
-  cWorld* m_world;
-  cEventListEntry* m_head;
-  cEventListEntry* m_tail;
-  int m_num_events;
-  
-  tList<double> m_birth_interrupt_queue;
-  
-  void QueueBirthInterruptEvent(double t_val);
-  void DequeueBirthInterruptEvent(double t_val);
-
-  void SyncEvent(cEventListEntry* event);
-  double GetTriggerValue(eTriggerType trigger) const;
-  void Delete(cEventListEntry* entry);
-
-  cEventList(); // @not_implemented
-  cEventList(const cEventList&); // @not_implemented
-  cEventList& operator=(const cEventList&); // @not_implemented
-
-  
-public:
-  /**
-   * The cEventList assumes ownership of triggers and destroys it when done.
-   *
-   * @param triggers A trigger object. The event list needs a trigger object
-   * to determine what events to call when.
-   **/
-  cEventList(cWorld* world) : m_world(world), m_head(NULL), m_tail(NULL), m_num_events(0) { ; }
-  ~cEventList();
-    
-
-  /**
-   * Adds an event with given name and argument list. The event will be of
-   * type immediate, i.e. it is processed only once, and then deleted.
-   *
-   * @param name The name of the event.
-   * @param args The argument list.
-   **/
-  bool AddEvent(const cString& name, const cString& args)
-  {
-    return AddEvent(IMMEDIATE, TRIGGER_BEGIN, TRIGGER_ONCE, TRIGGER_END, name, args);
-  }
-
-
-  /**
-   * Adds an event with specified trigger type.
-   *
-   * @param trigger The type of the trigger.
-   * @param start The start value of the trigger variable.
-   * @param interval The length of the interval between one processing
-   * and the next.
-   * @param stop The value of the trigger variable at which the event should
-   * be deleted.
-   * @param name The name of the even.
-   * @param args The argument list.
-   **/
-  bool AddEvent(eTriggerType trigger, double start, double interval, double stop, const cString &name, const cString& args);
-
-  /**
-   * This function adds an event that is given in the event list file format.
-   * In other words, it can be used to parse one line from an event list file,
-   * and construct the appropriate event.
-   **/
-  bool AddEventFileFormat(const cString& line);
-
-
-  bool LoadEventFile(const cString& filename, const cString& working_dir);
-
-  void Process(cAvidaContext& ctx);   // Go through list executing appropriate events.
-  void Sync(); // Get all events caught up.
-
-  void PrintEventList(std::ostream& os = std::cout);
-  
-  /**
-   * Returns true if a particular org_id (or Stats::tot_creature) value is present
-   * in the interrupt queue.
-   *
-   * @param t_value The value being checked.
-   **/
-  bool CheckBirthInterruptQueue(double t_val);
-  
-  
-  /**
-    * This function is called to process an event outside of an update boundary.
-	* Some data may be missing, inaccurate, or incomplete if processing is required
-	* at the end of an update.
-	* 
-	* @param ctx  Avida context
-	**/
-  void ProcessInterrupt(cAvidaContext& ctx);
-	
-	//! Check to see if an event with the given name is upcoming at some point in the future.
-	bool IsEventUpcoming(const cString& event_name);
 };
 
 #endif

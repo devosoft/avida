@@ -29,10 +29,11 @@
 
 #include <ctime>
 
+
 class cActionExit : public cAction
 {
 public:
-  cActionExit(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  cActionExit(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
   void Process(cAvidaContext& ctx) { m_world->GetDriver().SetDone(); }
 };
@@ -40,7 +41,7 @@ public:
 class cActionPause : public cAction
 {
 public:
-  cActionPause(cWorld* world, const cString& args) : cAction(world, args) { ; }
+  cActionPause(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
   void Process(cAvidaContext& ctx) { m_world->GetDriver().SetPause(); }
 };
@@ -50,7 +51,7 @@ class cActionExitAveLineageLabelGreater : public cAction
 private:
   double m_threshold;
 public:
-  cActionExitAveLineageLabelGreater(cWorld* world, const cString& args) : cAction(world, args), m_threshold(0.0)
+  cActionExitAveLineageLabelGreater(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_threshold(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
@@ -71,7 +72,7 @@ class cActionExitAveLineageLabelLess : public cAction
 private:
   double m_threshold;
 public:
-  cActionExitAveLineageLabelLess(cWorld* world, const cString& args) : cAction(world, args), m_threshold(0.0)
+  cActionExitAveLineageLabelLess(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_threshold(0.0)
   {
     cString largs(args);
     if (largs.GetSize()) m_threshold = largs.PopWord().AsDouble();
@@ -91,7 +92,7 @@ class cActionStopFastForward : public cAction
 {
 private:
 public:
-  cActionStopFastForward(cWorld* world, const cString& args) : cAction(world, args)
+  cActionStopFastForward(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
   {
     cString largs(args);
   }
@@ -116,7 +117,7 @@ class cActionExitAveGeneration : public cAction {
 public:
   /*! Constructor; parse out the targeted generation.
   */
-  cActionExitAveGeneration(cWorld* world, const cString& args) : cAction(world, args) {
+  cActionExitAveGeneration(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) {
     cString largs(args);
     if(largs.GetSize()) {
       m_tgt_gen = largs.PopWord().AsDouble();
@@ -164,7 +165,7 @@ class cActionExitElapsedTime : public cAction {
 public:
   /*! Constructor; parse out the threshold time.
   */
-  cActionExitElapsedTime(cWorld* world, const cString& args) : cAction(world, args) {
+  cActionExitElapsedTime(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) {
     cString largs(args);
     if(largs.GetSize()) {
       m_time = largs.PopWord().AsInt();
@@ -199,7 +200,7 @@ class cActionExitDemeReplications : public cAction {
 public:
   /*! Constructor; parse out the number of replications.
 	 */
-  cActionExitDemeReplications(cWorld* world, const cString& args) : cAction(world, args) {
+  cActionExitDemeReplications(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) {
     cString largs(args);
     if(largs.GetSize()) {
       m_deme_rep = largs.PopWord().AsInt();

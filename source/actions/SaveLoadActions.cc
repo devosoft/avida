@@ -23,9 +23,12 @@
 
 #include "cAction.h"
 #include "cActionLibrary.h"
+#include "cArgContainer.h"
+#include "cArgSchema.h"
 #include "cClassificationManager.h"
 #include "cPopulation.h"
 #include "cStats.h"
+#include "cStringUtil.h"
 #include "cWorld.h"
 
 #include <iostream>
@@ -51,7 +54,7 @@ private:
   int m_lineage_offset;
   
 public:
-  cActionLoadPopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0)
+  cActionLoadPopulation(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -79,21 +82,36 @@ class cActionSavePopulation : public cAction
 {
 private:
   cString m_filename;
+  bool m_save_historic;
   
 public:
-  cActionSavePopulation(cWorld* world, const cString& args) : cAction(world, args), m_filename("")
+  cActionSavePopulation(cWorld* world, const cString& args, cFeedback& feedback)
+    : cAction(world, args), m_filename(""), m_save_historic(true)
   {
-    cString largs(args);
-    if (largs.GetSize()) m_filename = largs.PopWord();
+    cArgSchema schema(':','=');
+    
+    // String Entries
+    schema.AddEntry("filename", 0, "detail");
+    
+    // Integer Entries
+    schema.AddEntry("save_historic", 0, 0, 1, 1);
+    
+
+    cArgContainer* argc = cArgContainer::Load(args, schema, feedback);
+    
+    if (args) {
+      m_filename = argc->GetString(0);
+      m_save_historic = argc->GetInt(0);
+    }
   }
   
   static const cString GetDescription() { return "Arguments: [string fname='']"; }
   
   void Process(cAvidaContext& ctx)
   {
-    cString filename(m_filename);
-    if (filename == "") filename.Set("detail-%d.spop", m_world->GetStats().GetUpdate());
-    m_world->GetPopulation().SavePopulation(filename);
+    int update = m_world->GetStats().GetUpdate();
+    cString filename = cStringUtil::Stringf("%s-%d.spop", (const char*)m_filename, update);
+    m_world->GetPopulation().SavePopulation(filename, m_save_historic);
   }
 };
 
