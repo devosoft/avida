@@ -64,6 +64,7 @@ private:
   int angle_shift;
   int halo_dir;
   int changling;
+  bool just_reset;
 
 
 public:

@@ -61,7 +61,7 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
                                m_halo(in_halo), m_halo_inner_radius(in_halo_inner_radius), m_halo_width(in_halo_width),
                                m_halo_anchor_x(in_halo_anchor_x), m_halo_anchor_y(in_halo_anchor_y), m_move_speed(in_move_speed)
 {
-  if(m_move_speed >= 2 * (m_halo_inner_radius + m_halo_width) && m_halo_inner_radius + m_halo_width != 0
+  if((m_move_speed >= 2 * (m_halo_inner_radius + m_halo_width)) && ((m_halo_inner_radius + m_halo_width) != 0)
     && m_move_speed != 0) {
     m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");
     assert(false);
@@ -70,6 +70,7 @@ cGradientCount::cGradientCount(cWorld* world, int in_peakx, int in_peaky, double
   ResizeClear(in_worldx, in_worldy, in_geometry);
   m_counter = 0;
   move_counter = 1;
+  just_reset = 1;
   moveYscaler = 0.5;
   movesignx = m_world->GetDefaultContext().GetRandom().GetInt(-1,2);
   if (movesignx == 0) {
@@ -104,16 +105,23 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 {  
 //  if(ctx == NULL) ctx = m_world->GetDefaultContext();
   bool has_edible = false;
-  // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left)
-  for (int ii = 0; ii < GetX() && !has_edible; ii++) {
-    for (int jj = 0; jj < GetY(); jj++) {
-      if (Element(jj * GetX() + ii).GetAmount() >= 1) {
-        has_edible = true;
-        break;
+  // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
+  // to speed things up, we only check cells within the possible spread of the peak
+  // and we only need to do this if decay > 1 (if decay == 1, we're going to reset everything regardless of the amount left)
+  if (m_decay > 1) {
+    int max_pos_x = min(int(m_peakx + m_spread + 1), GetX() - 1);
+    int min_pos_x = max(int(m_peakx - m_spread - 1), 0);
+    int max_pos_y = min(int(m_peaky + m_spread + 1), GetY() - 1);
+    int min_pos_y = max(int(m_peaky - m_spread - 1), 0);        
+    for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
+      for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
+        if (Element(jj * GetX() + ii).GetAmount() >= 1) {
+          has_edible = true;
+          break;
+        }
       }
     }
   }
-
   // once a resource cone has been 'bitten', start the clock that counts down to when the entire peak will be
   // refreshed (carcass rots for only so long before disappearing)
   if (has_edible && GetModified()) m_counter++;
@@ -327,31 +335,35 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
    */
   
   
-  //to speed things up, we only check cells within the possible spread of the peak
-  double thisdist;
-  double thisheight = 0.0;
-  int max_pos_x = min(int(m_peakx + m_spread + 1), GetX() - 1);
-  int min_pos_x = max(int(m_peakx - m_spread - 1), 0);
-  int max_pos_y = min(int(m_peaky + m_spread + 1), GetY() - 1);
-  int min_pos_y = max(int(m_peaky - m_spread - 1), 0);
-  
-  for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
-    for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
-      thisdist = Distance(ii, jj, m_peakx, m_peaky);
-      if (m_spread >= thisdist) {
-  // determine individual cells values and add one to distance from center (e.g. so that center point = radius 1, not 0)
+  // to speed things up, we only check cells within the possible spread of the peak
+  // and we only do this if the resource is set to actually move (or we just reset a non-moving resource)
+  if (m_move_a_scaler > 1 || (m_move_a_scaler == 1 && just_reset == 1)) {
+    just_reset = 0;
+    double thisdist;
+    double thisheight = 0.0;
+    int max_pos_x = min(int(m_peakx + m_spread + 1), GetX() - 1);
+    int min_pos_x = max(int(m_peakx - m_spread - 1), 0);
+    int max_pos_y = min(int(m_peaky + m_spread + 1), GetY() - 1);
+    int min_pos_y = max(int(m_peaky - m_spread - 1), 0);
+    
+    for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
+      for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
+        thisdist = Distance(ii, jj, m_peakx, m_peaky);
+        if (m_spread >= thisdist) {
+          // determine individual cells values and add one to distance from center (e.g. so that center point = radius 1, not 0)
           thisheight = m_height / (thisdist + 1);       
-  // create cylindrical profiles of resources whereever thisheight would be >1 (area where thisdist + 1 <= m_height) and slopes outside of that range
-  // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
-        if (thisheight >= 1 && m_plateau >= 0.0) thisheight = m_plateau; 
+          // create cylindrical profiles of resources whereever thisheight would be >1 (area where thisdist + 1 <= m_height) and slopes outside of that range
+          // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
+          if (thisheight >= 1 && m_plateau >= 0.0) thisheight = m_plateau; 
+        }
+        else
+          thisheight = 0;
+        
+        Element(jj*GetX()+ii).SetInitial(thisheight);
+        Element(jj*GetX()+ii).SetAmount(thisheight);
       }
-      else
-        thisheight = 0;
-
-      Element(jj*GetX()+ii).SetInitial(thisheight);
-      Element(jj*GetX()+ii).SetAmount(thisheight);
     }
-  }   
+  }
   ResetResourceCounts();
   m_counter = 0;                            //reset decay counter after cone resources updated
 }

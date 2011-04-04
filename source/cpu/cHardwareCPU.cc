@@ -5663,10 +5663,11 @@ bool cHardwareCPU::Inst_RotateHome(cAvidaContext& ctx)
   int northerly = m_organism->GetNortherly();
   int correct_facing = 0;
   if (northerly < 0 && easterly == 0) correct_facing = 6; // rotate S
+  
   else if (northerly < 0 && easterly > 0) correct_facing = 2; // rotate SW
   else if (northerly == 0 && easterly > 0) correct_facing = 3; // rotate W
-  else if (northerly > 0 && easterly > 0) correct_facing = 1; // rotate NW
-  else if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N  
+  else if (northerly > 0 && easterly > 0) correct_facing = 1; // rotate NW  
+  else if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
   else if (northerly > 0 && easterly < 0) correct_facing = 4; // rotate NE
   else if (northerly == 0 && easterly < 0) correct_facing = 5; // rotate E
   else if (northerly < 0 && easterly < 0) correct_facing = 7; // rotate SE
