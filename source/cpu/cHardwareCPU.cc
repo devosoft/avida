@@ -9513,8 +9513,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
     double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
     double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
     
-    //update instruction_executed tolerance_type opinion group_size group_res_level \
-    tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
+    // update instruction_executed tolerance_type opinion group_size group_res_level
+    // tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
     static ofstream fp("./data/inc_tolerance.dat");
     fp << m_world->GetStats().GetUpdate() << " inc-tolerance " << tolerance_type << " " << opinion << " " \
     << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
@@ -9593,8 +9593,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
     double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
     double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
     
-    //update instruction_executed tolerance_type opinion group_size group_res_level \
-    tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
+    // update instruction_executed tolerance_type opinion group_size group_res_level 
+    // tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
     static ofstream fp("./data/dec_tolerance.dat");
     fp << m_world->GetStats().GetUpdate() << " dec-tolerance " << tolerance_type << " " << opinion << " " \
     << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
@@ -9629,12 +9629,12 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
       const int parent_group = m_organism->GetOpinion().first;
       const int parent_group_size = m_world->GetPopulation().NumberOfOrganismsInGroup(parent_group);
       
-      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
+//      int tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
       int	tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+//      int tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
       
       // Calculate the weighted parent's intolerance for its offspring
-      int parent_intolerance = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+//      int parent_intolerance = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
       double own_offspring_odds = 0;
       double overall_offspring_odds = 0;
       int group_intolerance_to_yours  = 0;
