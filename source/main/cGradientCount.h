@@ -24,7 +24,6 @@
 #ifndef cGradientCount_h
 #define cGradientCount_h
 
-#include "cAvidaContext.h"
 #include "cSpatialResCount.h"
 
 class cWorld;
@@ -34,6 +33,8 @@ class cGradientCount : public cSpatialResCount
 {
 private:
   cWorld* m_world;
+  
+  // Configuration Arguments
   int m_peakx;
   int m_peaky;
   double m_height;
@@ -52,28 +53,34 @@ private:
   int m_halo_anchor_x;
   int m_halo_anchor_y;
   int m_move_speed;
-  double moveYscaler;
+  
+  // Internal Values
+  double m_move_y_scaler;
   
   int m_counter;
-  int move_counter;
-  double movesignx;
-  double movesigny;
-  double Distance(double x1, double x2, double y1, double y2);
-  void UpdateCount(cAvidaContext& ctx);
-  int orbit_shift;
-  int angle_shift;
-  int halo_dir;
-  int changling;
-  bool just_reset;
-
-
+  int m_move_counter;
+  double m_movesignx;
+  double m_movesigny;
+  
+  int m_orbit_shift;
+  int m_angle_shift;
+  int m_halo_dir;
+  int m_changling;
+  bool m_just_reset;
+  
+  
 public:
+  cGradientCount(cWorld* world, int peakx, int peaky, double height, double spread, double plateau, int decay,              
+                 int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
+                 int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
+                 int halo_anchor_x, int halo_anchor_y, int move_speed);
 
-  cGradientCount(cWorld* world, int in_peakx, int in_peaky, double in_height, double in_spread, double in_plateau, int in_decay,              
-                 int in_max_x, int in_max_y, int in_min_x, int in_min_y, double in_move_a_scaler, int in_updatestep, 
-                 int in_worldx, int in_worldy, int in_geometry,int in_halo, int in_halo_inner_radius, int in_halo_width,
-                 int in_halo_anchor_x, int in_halo_anchor_y, int in_move_speed);
 
+  void UpdateCount(cAvidaContext& ctx);
+
+  
+private:
+  void refreshResourceValues();
 };
 
 #endif
