@@ -885,6 +885,14 @@ bool cEnvironment::LoadGradientResource(cString desc, cFeedback& feedback)
         if (!AssertInputInt(var_value, "halo_width", var_type, feedback)) return false;
         new_resource->SetHaloWidth( var_value.AsInt() );
       }
+      else if (var_name == "plateau_inflow") {
+        if (!AssertInputDouble(var_value, "plateau_inflow", var_type, feedback)) return false;
+        new_resource->SetPlateauInflow( var_value.AsDouble() );
+      }      
+      else if (var_name == "plateau_outflow") {
+        if (!AssertInputDouble(var_value, "plateau_outflow", var_type, feedback)) return false;
+        new_resource->SetPlateauOutflow( var_value.AsDouble() );
+      } 
       else {
         feedback.Error("unknown variable '%s' in gradient resource '%s'",
                                       (const char*)var_name, (const char*)name);
