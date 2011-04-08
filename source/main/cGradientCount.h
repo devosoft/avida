@@ -69,7 +69,9 @@ private:
   int m_halo_dir;
   int m_changling;
   bool m_just_reset;
-  tArray<int> plateau_array;
+  double m_past_height;
+  tArray<double> m_plateau_array;
+  tArray<int> m_plateau_cell_IDs;
   
 public:
   cGradientCount(cWorld* world, int peakx, int peaky, double height, double spread, double plateau, int decay,              

@@ -71,13 +71,16 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
   , m_counter(0)
   , m_move_counter(1)
   , m_just_reset(true)
+  , m_past_height(0.0)
 {
   if ((m_move_speed >= 2 * (m_halo_inner_radius + m_halo_width)) && ((m_halo_inner_radius + m_halo_width) != 0)
       && m_move_speed != 0) {
     m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");
   }				
-  
-  plateau_array.ResizeClear(4 * m_height * m_height);
+  m_plateau_array.Resize(4 * m_height * m_height);
+  m_plateau_array.SetAll(0);
+  m_plateau_cell_IDs.Resize(4 * m_height * m_height);
+  m_plateau_cell_IDs.SetAll(0);
   ResizeClear(worldx, worldy, geometry);
   generatePeak(m_world->GetDefaultContext());
   UpdateCount(m_world->GetDefaultContext());
@@ -86,6 +89,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 {
   bool has_edible = false;
+  bool has_been_bitten = false;
   
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
   // to speed things up, we only check cells within the possible spread of the peak
@@ -113,6 +117,29 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_decay && GetModified()) return; 
     
+  // before we move anything, if we have moving depletable resource, we need to get the current plateau cell values  
+  if (m_move_a_scaler > 1 && m_decay == 1) {
+    int plateau_box_min_x = m_peakx - m_height - 1;
+    int plateau_box_max_x = m_peakx + m_height + 1;
+    int plateau_box_min_y = m_peaky - m_height - 1;
+    int plateau_box_max_y = m_peaky + m_height + 1;
+    int plateau_cell = 0;
+    for (int ii = plateau_box_min_x; ii < plateau_box_max_x + 1; ii++) {
+      for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) {        
+        double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
+        double thisheight = m_height / (thisdist + 1);
+        if (thisheight >= 1 && m_plateau >= 0.0) {
+          m_past_height = m_plateau_array[plateau_cell];
+          double pre_move_height = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();              
+           if (pre_move_height < m_past_height) {
+            m_plateau_array[plateau_cell] = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();    
+          }
+          plateau_cell ++;
+        }
+      }        
+    }
+  } 
+  
   // When the counter matches decay, regenerate resource peak
   if (m_counter == m_decay) generatePeak(ctx);
   
@@ -129,8 +156,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 
   //we add 1 to distance to account for the anchor grid cell
   int current_orbit = max(abs(m_halo_anchor_x - m_peakx), abs(m_halo_anchor_y - m_peaky)) + 1;
-  
-  if (m_move_counter == m_updatestep) {
+
+  if (m_move_counter == m_updatestep) { 
     m_move_counter = 1;
     //halo resources orbit at a fixed org walking distance from an anchor point
     //if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
@@ -355,7 +382,6 @@ void cGradientCount::refreshResourceValues()
     min_pos_x = 0;
     max_pos_y = GetY() - 1;
     min_pos_y = 0;
-
   } else {
     // otherwise we only need to update values within the possible range of the peak 
     // we check all the way back to move_speed to make sure we're not leaving any old residue behind
@@ -381,18 +407,17 @@ void cGradientCount::refreshResourceValues()
         // this is where we apply inflow and outflow...we are only applying it to plateau cells (so we don't have to worry 
         // about changing slope values).
         if (thisheight >= 1 && m_plateau >= 0.0) {
-          if (m_just_reset) {
-            plateau_array.ResizeClear(4 * m_height * m_height);
+          if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
             thisheight = m_plateau;
-            plateau_array[plateau_cell] = thisheight;
           } else {
-            double past_height = plateau_array[plateau_cell];
-            
-            if (past_height > m_plateau) past_height = m_plateau;
-            
-            thisheight = past_height + m_plateau_inflow - (past_height * m_plateau_outflow);
+            m_past_height = m_plateau_array[plateau_cell]; 
+            thisheight = m_past_height + m_plateau_inflow - (m_past_height * m_plateau_outflow); 
+          }
+          if (thisheight > m_plateau) {
             thisheight = m_plateau;
           }
+          m_plateau_array[plateau_cell] = thisheight;
+          m_plateau_cell_IDs[plateau_cell] = jj * GetX() + ii;
           plateau_cell ++;
         }
       }
