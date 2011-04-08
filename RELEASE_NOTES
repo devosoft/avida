@@ -42,6 +42,9 @@ Changes:
         a boolean (0 or 1) value that determines whether the action saves the
         full history for the current population
 
+- "collect" instruction family nop-specification change
+
+		Previously, the collect family of instructions required the number of resources to be a power of the number of nops; Avida would crash otherwise.  The new nop-specification method fixes this issue, reading the specification as a range in which to choose a resource to manipulate.  The resource is chosen randomly within this range, weighted by how much of the range the resource occupies.  In the standard 9-resource 3-nop system this behaves in the same way as the previous specification method.
 
 
 Deprecated features will be removed in the next version of Avida.

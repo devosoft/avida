@@ -1,0 +1,11 @@
+# Avida resource data
+# Wed Apr  6 15:05:40 2011
+# First column gives the current update, all further columns give the quantity
+# of the particular resource at that update.
+#  1: Update
+#  2: resNOT
+#  3: resNAND
+
+0 114.406 106.662 
+1 114.406 106.662 
+2 114.406 106.662 

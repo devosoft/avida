@@ -502,9 +502,9 @@ private:
   bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
   
   // Resources
-  bool FindModifiedResource(cAvidaContext& ctx, int& start_index, int& end_index, int& spec_id); 
+  int FindModifiedResource(cAvidaContext& ctx, int& spec_id);
   bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit);
-  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit, int start_bin, int end_bin);
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
   bool Inst_Collect(cAvidaContext& ctx);
   bool Inst_CollectNoEnvRemove(cAvidaContext& ctx);
   bool Inst_Destroy(cAvidaContext& ctx);

@@ -99,6 +99,16 @@ int cCodeLabel::FindSublabel(cCodeLabel & sub_label)
   return -1;
 }
 
+/* Translates a code label into an n-ary integer, reading the first nop as 0.
+ * Example: nops A, B, C with base 3
+ *   no nops = 0
+ *   A       = 0
+ *   B       = 1
+ *   AA      = 0
+ *   AC      = 2
+ *   BB      = 4
+ *   CA      = 6
+ */
 int cCodeLabel::AsInt(const int base) const
 {
   int value = 0;
