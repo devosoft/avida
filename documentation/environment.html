@@ -21,12 +21,13 @@ Revised 2006-09-05 DMB<br>
 This is the setup file for the task/resource system in Avida.
 </p>
 <p>
-Five main keywords are used in this file, RESOURCE, REACTION, CELL, MUTATION, 
+Six main keywords are used in this file, RESOURCE, GRADIENT_RESOURCE, REACTION, CELL, MUTATION, 
 and SET_ACTIVE.  Their
 formats are:
 </p>
 <pre>
   <a href="#RESOURCE">RESOURCE</a>  resource_name[:options]  {resource_name ...}
+  <a href="#GRADIENT_RESOURCE">GRADIENT_RESOURCE</a>  gradient_resource_name[:options]  {radient_resource_name ...}
   <a href="#REACTION">REACTION</a>  reaction_name  task  [process:...]  [requisite:...]
   <a href="#CELL">CELL</a> resource_name:cell_list[:flow]
   <a href="#MUTATION">MUTATION</a> name trigger scope type rate
@@ -39,7 +40,9 @@ All entries on a resource line are names of individual resources. Resources can
 have a global quantity depletable by all organisms or can have quantities that
 vary from cell to cell.  The resource name
 <code>infinite</code> is used to refer to an undepletable resource.  There are
-two basic commands to set up a resource: RESOURCE and CELL.
+two basic commands to set up a general resource: RESOURCE and CELL. In addition, GRADIENT_RESOURCE is
+a specific instance of RESOURCE which allows the user to specify a cellular distribution of
+quantities that change over time in an Avida run. 
 </p>
 
 <h3><A name = "RESOURCE">RESOURCE Command</A></h3>
@@ -277,6 +280,237 @@ want that resource to only be present as a byproduct of a reaction.
 Remember, though, that you should still have an outflow rate if it's in
 a chemostat.
 </p>
+
+<h3><A name = "GRADIENT_RESOURCE">GRADIENT_RESOURCE Command</A></h3>
+
+<p>The syntax for the Gradient Resource command is:</p>
+
+  <pre>GRADIENT_RESOURCE gradient_resource_name[:options]  {gradient_resource_name ...}</pre>
+
+<p>
+The Gradient Resource command allows the user to specify a resource distribution which changes over
+time. This conical distribution moves randomly around the Avida grid. This movement may also be confined
+to an orbit around a specified anchor cell on the Avida grid. These are called halo gradients. Cones are capped with a plateau cylinder 
+of a determined height wherever cone height meets or exceeds the value of 1. In terms of actual resource height, this is
+analogous to slicing the cone at height 1 and then setting the actual resource height (plateau) in the sliced area at some flat value.
+Organisms can use sense instructions to detect resources on all parts of the cone, but they can only consume the resources on the plateau. When an organism consumes any part of 
+the plateau, the cone stops moving until the cone is refreshed at some random location within the specified boundaries. The cone refreshes 
+when either the resource level in all plateau
+cells is less than or equal to 1 or the decay time length has been exceeded. 
+</p>
+  
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 2: <span>Gradient Resource Options</span></h3>
+<p>
+(<span class="resall">blue</span> variables used for all gradient resources
+while <span class="reshalo"><font color="#029C1C">green</font></span> variables are only used for 
+halo resources)
+</p>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td class="resall">peakx</td>
+  <td>
+    Initial x-coordinate of cone. 
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">peaky</td>
+  <td>
+    Initial y-coordinate of cone. 
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">height</td>
+  <td>
+    Height in terms of resource value of the cone.
+    This affects the slope of the cone, where slope = Height/Spread.
+    Note that the height of the plateau may supersede the height of the cone,
+    lowering (or raising) all cell resource values within the plateau to the value
+    mentioned below.
+  </td>
+  <td>0</td>
+</tr>
+</tr>
+<tr>
+  <td class="resall">plateau</td>
+  <td>
+    Actual initial height in terms of resource levels wherever cone height is greater or equal
+    to 1. This will supersede the cone height in eligible cells. A value of -1 turns this
+    option off. 
+  </td>
+  <td>
+    0
+  </td>
+</tr>
+<tr>
+  <td class="resall">spread</td>
+  <td>
+  	 Radius of the cone in terms of cells. Note that this affects
+  	 the slope of the cone, where slope = Height/Spread.
+  </td>
+  <td>0</td>
+<tr>
+  <td class="resall">decay</td>
+  <td>
+    Amount of time in terms of updates until
+    gradient is refreshed after an organism initially 
+    consumes resources in the plateau. The refresh will
+    occur even if the plateau has not been completely consumed. 
+    A value of 0 means the gradient will refresh only when
+    all resources within the gradient are less than 1.
+  </td>
+  <td>
+    0
+  </td>
+</tr>
+<tr>
+  <td class="resall">min_x</td>
+  <td>
+    Leftmost coordinate of the rectangle where resource will move
+    randomly. The resource will stop moving left when the edge of the 
+    plateau has reached this value. The case is the same for max_x, 
+    min_y, and max_y.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">max_x</td>
+  <td>
+    Rightmost coordinate of the rectangle where resource will move 
+    randomly.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">min_y</td>
+  <td>
+    Topmost coordinate of the rectangle where resource will move randomly.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">max_y</td>
+  <td>
+    Bottommost coordinate of the rectangle where resource will move
+    randomly
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">move_a_scaler</td>
+  <td>
+    Measure of resource movement smoothness taken from the variable "A" in equation 1 from
+    <a href="http://cs.gmu.edu/~eclab/tools.html#DF-1">Morrison and DeJong's</a> DF-1 Algorithm.
+    Values range from 1 to 4. Values from 1 to around 3 yield smooth movements, while larger 
+    values yield chaotic movement.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">updatestep</td>
+  <td>
+    How many updates to wait until gradient updates position. For example,
+    setting updatestep to 100 will cause the gradient to move in some direction
+    every 100 updates.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo</font></td>
+  <td>
+    Determines if this is a halo gradient. Instead of 
+    moving in a predetermined box, halo resources move 
+    randomly in an orbit around some fixed anchor cell. 1 if true,
+    0 if false. This will supersede the bounded box (min_x, max_x, 
+    min_y, max_y) variables. Note that orbit distances are in
+    terms of cells, so that an orbit is really a rectangle. A diagonal
+    line of cells count as the same distance as a straight line of cells.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_inner_radius</font></td>
+  <td>
+    Closest cell distance halo resource can be to the anchor cell. Note that
+    this depends on the edge of the plateau and not the actual cone itself.
+    Thus the cone will only stop moving closer to the anchor when the 
+    distance from the edge of the plateau is halo_inner_radius.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_width</font></td>
+  <td>
+   How wide in cells the orbit is from the anchor cell. In other words, the largest
+   distance the edge of the plateau can be from the anchor cell is halo_inner_radius+halo_width.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_anchor_x</font></td>
+  <td>
+    x-coordinate of the anchor cell.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_anchor_y</font></td>
+  <td>
+   y-coordinate of the anchor cell.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">move_speed</td>
+  <td>
+    How fast the gradient moves in the grid. 
+  </td>
+  <td>1</td>
+</tr>
+<tr>
+  <td class="resall">plateau_inflow</td>
+  <td>
+	Inflow rate of resources within the plateau
+  </td>
+  <td>0</td>
+  <tr>
+  <td class="resall">plateau_outflow</td>
+  <td>
+	Outflow rate of resource within the plateau.
+  </td>
+  <td>0</td>
+</tr>
+</tr>
+</table>
+<p>&nbsp;</p>
+</div>
+  
+ <p>
+An example of setting a halo gradient of cone height 10 and radius 180.
+The plateau height is 1, meaning that the actual resource height is
+1 at cells where the cone height is at least 1. Movement is smooth
+and is updated every 200 updates. The anchor cell is at 189, 249, and
+it moves no closer than 10 cells away from the anchor and no farther than
+30. The resource is immediately refreshed after it has been consumed by 
+at least one organism.
+</P>
+  <pre>GRADIENT_RESOURCE food1:height=10:spread=180:plateau=1:decay=1:move_a_scaler=3.8:updatestep=200:halo=1:halo_inner_radius=10:halo_anchor_x=189:halo_anchor_y=249:halo_width=20:move_speed=1</pre>
+  
+<P>
+An example of a gradient which will initialize at 189, 249 and is bounded by a 
+200x200 cell box. The cone height is 20, but the radius is only 10 cells. The plateau
+is of height 2, and the resource moves only every 10000 updates.
+</P>
+  <pre>GRADIENT_RESOURCE nest1:peakx=189:peaky=249:height=20:spread=19:plateau=2:decay=1:min_x=125:max_x=375:min_y=125:max_y=375:move_a_scaler=1:updatestep=10000</pre>
+  
 <h3><a name="CELL">CELL Command</a></h3>
 <p>
 Using Cell can help increase the detail of a spatial resource.  Any cell in a
@@ -307,7 +541,7 @@ resource. The following chart specifies these options.
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 2: <span>Cell Options</span></h3>
+<h3>Table 3: <span>Cell Options</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -392,7 +626,7 @@ order of complexity):
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 3: <span>Available Tasks</span></h3>
+<h3>Table 4: <span>Available Tasks</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Task</th>
@@ -525,7 +759,7 @@ Default values are in brackets:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 4: <span>Reaction Process Specifications</span></h3>
+<h3>Table 5: <span>Reaction Process Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -678,7 +912,7 @@ following requisites (in any combination) are possible:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 5: <span>Reaction Requisite Specifications</span></h3>
+<h3>Table 6: <span>Reaction Requisite Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
