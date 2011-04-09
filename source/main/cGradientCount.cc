@@ -58,7 +58,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
                                int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep,  
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
-                               double plateau_inflow, double plateau_outflow)
+                               double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -67,6 +67,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
   , m_halo(halo), m_halo_inner_radius(halo_inner_radius), m_halo_width(halo_width)
   , m_halo_anchor_x(halo_anchor_x), m_halo_anchor_y(halo_anchor_y)
   , m_move_speed(move_speed), m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow)
+  , m_is_plateau_common(is_plateau_common), m_floor(floor)
   , m_move_y_scaler(0.5)
   , m_counter(0)
   , m_move_counter(1)
@@ -117,28 +118,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // only update resource values at declared update timesteps if there is resource left in the cone
   if (has_edible && m_counter < m_decay && GetModified()) return; 
     
-  // before we move anything, if we have moving depletable resource, we need to get the current plateau cell values  
-  if (m_move_a_scaler > 1 && m_decay == 1) {
-    int plateau_box_min_x = m_peakx - m_height - 1;
-    int plateau_box_max_x = m_peakx + m_height + 1;
-    int plateau_box_min_y = m_peaky - m_height - 1;
-    int plateau_box_max_y = m_peaky + m_height + 1;
-    int plateau_cell = 0;
-    for (int ii = plateau_box_min_x; ii < plateau_box_max_x + 1; ii++) {
-      for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) {        
-        double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
-        double thisheight = m_height / (thisdist + 1);
-        if (thisheight >= 1 && m_plateau >= 0.0) {
-          m_past_height = m_plateau_array[plateau_cell];
-          double pre_move_height = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();              
-           if (pre_move_height < m_past_height) {
-            m_plateau_array[plateau_cell] = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();    
-          }
-          plateau_cell ++;
-        }
-      }        
-    }
-  } 
+  // before we move anything, if we have moving depletable resource, we need to get the current plateau cell values 
+  if (m_move_a_scaler > 1 && m_decay == 1) getCurrentPlatValues();
   
   // When the counter matches decay, regenerate resource peak
   if (m_counter == m_decay) generatePeak(ctx);
@@ -154,21 +135,21 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // finally, we only do this only when # updates since last change = updatestep to slow the frequency of path changes
 
 
-  //we add 1 to distance to account for the anchor grid cell
+  // we add 1 to distance to account for the anchor grid cell
   int current_orbit = max(abs(m_halo_anchor_x - m_peakx), abs(m_halo_anchor_y - m_peaky)) + 1;
 
   if (m_move_counter == m_updatestep) { 
     m_move_counter = 1;
-    //halo resources orbit at a fixed org walking distance from an anchor point
-    //if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
-    //halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
+    // halo resources orbit at a fixed org walking distance from an anchor point
+    // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
+    // halo's are actually square in avida because, at a given orbit, this keeps a constant distance (in number of steps and org would have to take)
     //    between the anchor point and any orbit
     if (m_halo == 1) {    //choose to change orbit (0) or direction (1)    
       int old_peakx = m_peakx;
       int old_peaky = m_peaky;
       int random_shift = ctx.GetRandom().GetUInt(0,2);
-      //if changing orbit, choose to go in or out one orbit
-      //then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
+      // if changing orbit, choose to go in or out one orbit
+      // then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
       if (random_shift == 0) {
         //do nothing unless there's room to change orbit
         if (m_halo_width > (m_height * 2)) {
@@ -187,9 +168,9 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
             else 
               m_peakx = old_peakx + 1;
           }
-          //we have to check that we are still going to be within the halo after an orbit change       
+          // we have to check that we are still going to be within the halo after an orbit change       
           if (current_orbit > (m_halo_inner_radius + m_halo_width - m_height + 2)) {
-            //if we go out of bounds, we need to go the other way instead (taking two steps back on orbit since we already took one in the wrong direction)
+            // if we go out of bounds, we need to go the other way instead (taking two steps back on orbit since we already took one in the wrong direction)
             current_orbit = current_orbit - 2;
             if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
               m_peaky = old_peaky + 1;
@@ -204,15 +185,15 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
               m_peakx = old_peakx - 1;          
           }
         }
-        //if there was no room to change orbit, change the direction instead of the orbit
+        // if there was no room to change orbit, change the direction instead of the orbit
         else random_shift = 1;
       }
-      //if changing direction of rotation, we just switch sign of rotation
+      // if changing direction of rotation, we just switch sign of rotation
       else if (random_shift == 1) {
         m_halo_dir = m_halo_dir * -1; 
       }
     }
-    //for non-halo peaks
+    // for non-halo peaks
     else {
       int choosesign = ctx.GetRandom().GetInt(0,3);
       if (choosesign == 1) {
@@ -232,16 +213,16 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   }
   
   if (m_halo == 1) { 
-    //what quadrant we are in determines whether we are changing x's or y's (= changling)
-    //if we are on a corner, we just stick with the current changling
+    // what quadrant we are in determines whether we are changing x's or y's (= changling)
+    // if we are on a corner, we just stick with the current changling
     if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
       m_changling = 1;
     else if (abs(m_halo_anchor_y - m_peaky) < abs(m_halo_anchor_x - m_peakx))
       m_changling = -1;
     
     if (m_changling == 1) {
-      //check to make sure the move will not put peak beyond the bounds (at corner) of the orbit
-      //if it will go beyond the bounds of the orbit, turn the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
+      // check to make sure the move will not put peak beyond the bounds (at corner) of the orbit
+      // if it will go beyond the bounds of the orbit, turn the corner (e.g. if move = 5 & space to move on x =2, move 2 on x and 3 on y)
       int next_posx = m_peakx + (m_halo_dir * m_move_speed);
       int max_orbit_x = m_halo_anchor_x + current_orbit - 1;
       int min_orbit_x = m_halo_anchor_x - current_orbit + 1;
@@ -249,7 +230,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
       if (next_posx > max_orbit_x) {
         m_peakx = max_orbit_x;
         if (m_peaky > m_halo_anchor_y) {      
-          //turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
+          // turning this corner means changing the sign of the movement once we switch from moving along x to moving along y
           m_halo_dir *= -1;
           m_peaky = m_peaky + m_halo_dir * (m_move_speed - abs(m_peakx - current_x)); 
         } else {
@@ -375,7 +356,7 @@ void cGradientCount::refreshResourceValues()
   int min_pos_x;
   int max_pos_y;
   int min_pos_y;
-
+  
   // if we are resetting a resource, we need to calculate new values for the whole world so we can wipe away any residue
   if (m_just_reset) {
     max_pos_x = GetX() - 1;
@@ -398,19 +379,32 @@ void cGradientCount::refreshResourceValues()
       double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
       
       if (m_spread >= thisdist) {
-        // determine individual cells values and add one to distance from center (e.g. so that center point = radius 1, not 0)
+        // determine theoretical individual cells values and add one to distance from center 
+        // (so that center point = radius 1, not 0)
+        // also used to distinguish plateau cells
         thisheight = m_height / (thisdist + 1);
+        
+        // we only impose the floor off the plateaus so that plateaus can hit 0 when being eaten
+        bool is_floor = false;
+        if (thisheight < m_floor) {
+          thisheight = m_floor;
+          is_floor = true;
+        }
         
         // create cylindrical profiles of resources whereever thisheight would be >1 (area where thisdist + 1 <= m_height)
         // and slopes outside of that range
         // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
         // this is where we apply inflow and outflow...we are only applying it to plateau cells (so we don't have to worry 
         // about changing slope values).
-        if (thisheight >= 1 && m_plateau >= 0.0) {
+        if (thisheight >= 1 && m_plateau >= 0.0 && !is_floor) {         
           if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
             thisheight = m_plateau;
-          } else {
-            m_past_height = m_plateau_array[plateau_cell]; 
+            m_past_height = m_plateau;
+          }
+          else { 
+            if (m_is_plateau_common == 0) {
+              m_past_height = m_plateau_array[plateau_cell]; 
+            }
             thisheight = m_past_height + m_plateau_inflow - (m_past_height * m_plateau_outflow); 
           }
           if (thisheight > m_plateau) {
@@ -426,3 +420,31 @@ void cGradientCount::refreshResourceValues()
   }
   m_just_reset = false;
 }
+
+void cGradientCount::getCurrentPlatValues()
+{
+  int plateau_box_min_x = m_peakx - m_height - 1;
+  int plateau_box_max_x = m_peakx + m_height + 1;
+  int plateau_box_min_y = m_peaky - m_height - 1;
+  int plateau_box_max_y = m_peaky + m_height + 1;
+  int plateau_cell = 0;
+  double amount_devoured = 0.0;
+  for (int ii = plateau_box_min_x; ii < plateau_box_max_x + 1; ii++) {
+    for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) {        
+      double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
+      double thisheight = m_height / (thisdist + 1);
+      if (thisheight >= 1 && m_plateau >= 0.0) {
+        m_past_height = m_plateau_array[plateau_cell];
+        double pre_move_height = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();  
+        if (pre_move_height < m_past_height) {
+          m_plateau_array[plateau_cell] = pre_move_height; 
+          amount_devoured = amount_devoured + m_past_height - pre_move_height;
+        }
+        plateau_cell ++;
+      }
+    }        
+  }
+  double ave_plat_cell_loss = amount_devoured / plateau_cell;
+  m_past_height = m_past_height - ave_plat_cell_loss;
+} 
+

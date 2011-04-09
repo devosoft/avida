@@ -55,6 +55,8 @@ private:
   int m_move_speed;
   double m_plateau_inflow;
   double m_plateau_outflow;
+  int m_is_plateau_common;
+  double m_floor;
   
   // Internal Values
   double m_move_y_scaler;
@@ -69,7 +71,7 @@ private:
   int m_halo_dir;
   int m_changling;
   bool m_just_reset;
-  double m_past_height;
+  double m_past_height;;
   tArray<double> m_plateau_array;
   tArray<int> m_plateau_cell_IDs;
   
@@ -77,7 +79,8 @@ public:
   cGradientCount(cWorld* world, int peakx, int peaky, double height, double spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
-                 int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow);
+                 int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
+                 int is_plateau_common, double floor);
 
 
   void UpdateCount(cAvidaContext& ctx);
@@ -86,6 +89,7 @@ public:
 private:
   void refreshResourceValues();
   void generatePeak(cAvidaContext& ctx);
+  void getCurrentPlatValues();
 };
 
 #endif

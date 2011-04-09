@@ -120,6 +120,8 @@ private:
   int m_move_speed;
   double m_plateau_inflow;
   double m_plateau_outflow;
+  int m_is_plateau_common;
+  double m_floor;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;
@@ -190,7 +192,9 @@ public:
   int GetHaloAnchorY() { return m_halo_anchor_y; }
   int GetMoveSpeed() { return m_move_speed; }
   double GetPlateauInflow() { return m_plateau_inflow; }
-  double GetPlateauOutflow() {return m_plateau_outflow; }
+  double GetPlateauOutflow() { return m_plateau_outflow; }
+  int GetIsPlateauCommon() { return m_is_plateau_common; }
+  double GetFloor() { return m_floor; }
   bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
@@ -255,7 +259,9 @@ public:
   void SetHaloAnchorY(int _halo_anchor_y) { m_halo_anchor_y = _halo_anchor_y; }
   void SetMoveSpeed(int _move_speed) { m_move_speed = _move_speed; }
   void SetPlateauInflow(double _plateau_inflow) { m_plateau_inflow = _plateau_inflow; }  
-  void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; }  
+  void SetPlateauOutflow(double _plateau_outflow) { m_plateau_outflow = _plateau_outflow; } 
+  void SetIsPlateauCommon(int _is_plateau_common) { m_is_plateau_common = _is_plateau_common; }
+  void SetFloor(double _floor) { m_floor = _floor; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);

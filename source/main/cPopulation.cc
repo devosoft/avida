@@ -301,7 +301,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(),res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetGradient()
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -5907,7 +5908,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
-                           res->GetPlateauInflow(), res->GetPlateauOutflow(), res->GetGradient()
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
                            ); 
 
     } else if (res->GetDemeResource()) {

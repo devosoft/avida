@@ -893,6 +893,14 @@ bool cEnvironment::LoadGradientResource(cString desc, cFeedback& feedback)
         if (!AssertInputDouble(var_value, "plateau_outflow", var_type, feedback)) return false;
         new_resource->SetPlateauOutflow( var_value.AsDouble() );
       } 
+      else if (var_name == "common") {
+        if (!AssertInputInt(var_value, "common", var_type, feedback)) return false;
+        new_resource->SetIsPlateauCommon( var_value.AsInt() );
+      } 
+      else if (var_name == "floor") {
+        if (!AssertInputDouble(var_value, "floor", var_type, feedback)) return false;
+        new_resource->SetFloor( var_value.AsDouble() );
+      } 
       else {
         feedback.Error("unknown variable '%s' in gradient resource '%s'",
                                       (const char*)var_name, (const char*)name);

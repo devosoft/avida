@@ -221,8 +221,8 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
         const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
         const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
         const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
-        const double& in_plateau_inflow, const double& in_plateau_outflow,
-        const bool& isgradient
+        const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
+        const double& in_floor, const bool& isgradient
 				)
 {
   assert(id >= 0 && id < resource_count.GetSize());
@@ -313,7 +313,7 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
                                                       tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
                                                       in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed,
-                                                      in_plateau_inflow, in_plateau_outflow);
+                                                      in_plateau_inflow, in_plateau_outflow, in_is_plateau_common, in_floor);
       spatial_resource_count[id]->RateAll(0);
     }
     
