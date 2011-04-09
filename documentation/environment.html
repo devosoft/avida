@@ -27,7 +27,8 @@ formats are:
 </p>
 <pre>
   <a href="#RESOURCE">RESOURCE</a>  resource_name[:options]  {resource_name ...}
-  <a href="#GRADIENT_RESOURCE">GRADIENT_RESOURCE</a>  gradient_resource_name[:options]  {radient_resource_name ...}
+  <a href="#GRADIENT_RESOURCE">GRADIENT_RESOURCE</a>  gradient_resource_name[:options]  {gradient_resource_name ...}
+  <a href="#DYNAMIC_RESOURCE">DYNAMIC_RESOURCE</a>  dynamic_resource_name[:options]  {dynamic_resource_name ...}
   <a href="#REACTION">REACTION</a>  reaction_name  task  [process:...]  [requisite:...]
   <a href="#CELL">CELL</a> resource_name:cell_list[:flow]
   <a href="#MUTATION">MUTATION</a> name trigger scope type rate
@@ -511,6 +512,178 @@ is of height 2, and the resource moves only every 10000 updates.
 </P>
   <pre>GRADIENT_RESOURCE nest1:peakx=189:peaky=249:height=20:spread=19:plateau=2:decay=1:min_x=125:max_x=375:min_y=125:max_y=375:move_a_scaler=1:updatestep=10000</pre>
   
+  
+<h3><A name = "DYNAMIC_RESOURCE">DYNAMIC_RESOURCE Command</A></h3>
+
+<p>The syntax for the Dynamic Resource command is:</p>
+
+  <pre>DYNAMIC_RESOURCE dynamic_resource_name[:options]  {dynamic_resource_name ...}</pre>
+
+<p>
+
+<p>
+The Dynamic Resource command is an implementation of <a href="http://cs.gmu.edu/~eclab/tools.html#DF-1">Morrison and DeJong's</a> DF-1 algorithm applied
+to spatial resources across the entire Avida grid. Please note that this option is still under
+development and may not function as expected. A Dynamic Resource is a collection of cones which move
+across the grid over time. These cones may also shift in total size, height, and number. A substantial
+number of cones overlapping can create a complex resource landscape. For more information about the algorithm
+please consult "A Test Problem Generator for Non-Stationary Environments", Ronald Morrison and Kenneth DeJong, 
+Proceedings of the Congress on Evolutionary Computing 1999.
+</p>
+
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 3: <span>Dynamic Resource Options</span></h3>
+<p>
+(<span class="resall">blue</span> variables are specific to Avida, 
+while <span class="resdyn"><font color="#EE9820">orange</font></span> variables
+are part of the DF-1 algorithm. Please consult the paper by Morrison and 
+DeJong for more information on these variables.
+</p>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td class="resall">peaks</td>
+  <td>
+     Maximum number of possible cones in the environment.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">update_dynamic</td>
+  <td>
+     How many updates to wait until the DF-1 function changes the
+     resource landscape
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">ah</td>
+  <td>
+		Affects rate of height change.
+  </td>
+  <td>0</td>
+</tr>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">ar</td>
+  <td>
+    Affects rate of radius change.
+  </td>
+  <td>
+    0
+  </td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">acx</td>
+  <td>
+	 Affects rate of x-coordinate change.
+  </td>
+  <td>0</td>
+<tr>
+  <td class="reldyn"><font color="#EE9820">acy</td>
+  <td>
+  	 Affects rate of y-coordinate change.
+  </td>
+  <td>
+    0
+  </td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">hstepscale</td>
+  <td>
+	Affects rate of height change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">rstepscale</td>
+  <td>
+    Affects rate of radius change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepscalex</td>
+  <td>
+	Affects scale of x-coordinate change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepscaley</td>
+  <td>
+    Affects scale of y-coordinate change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">hstep</td>
+  <td>
+    Height change step size.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">rstep</td>
+  <td>
+    Radius change step size
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepx</font></td>
+  <td>
+		x-coordinate change step size.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepy</font></td>
+  <td>
+    y-coordinate change step size.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">min_height</font></td>
+  <td>
+    Minimum height of a cone.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">height_range</font></td>
+  <td>
+    Range of the cone height in terms of the min height, so the 
+    maximum height is min_height+height_range.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">min_radius</font></td>
+  <td>
+    Minimum radius of a cone.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">radius_range</font></td>
+  <td>
+    Range of the cone radius in terms of the min radius, so the
+    maximum radius is min_radius+radius_range.
+  </td>
+  <td>0</td>
+</tr>
+</tr>
+</table>
+<p>&nbsp;</p>
+</div>
+
 <h3><a name="CELL">CELL Command</a></h3>
 <p>
 Using Cell can help increase the detail of a spatial resource.  Any cell in a
@@ -541,7 +714,7 @@ resource. The following chart specifies these options.
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 3: <span>Cell Options</span></h3>
+<h3>Table 4: <span>Cell Options</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -626,7 +799,7 @@ order of complexity):
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 4: <span>Available Tasks</span></h3>
+<h3>Table 5: <span>Available Tasks</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Task</th>
@@ -759,7 +932,7 @@ Default values are in brackets:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 5: <span>Reaction Process Specifications</span></h3>
+<h3>Table 6: <span>Reaction Process Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
@@ -912,7 +1085,7 @@ following requisites (in any combination) are possible:
 
 <div align="center">
 <p>&nbsp;</p>
-<h3>Table 6: <span>Reaction Requisite Specifications</span></h3>
+<h3>Table 7: <span>Reaction Requisite Specifications</span></h3>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
