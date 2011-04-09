@@ -699,6 +699,7 @@
 		4A587EE91332B6590037A393 /* cDynamicCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDynamicCount.h; sourceTree = "<group>"; };
 		4A587EEA1332B6590037A393 /* cGradientCount.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGradientCount.cc; sourceTree = "<group>"; };
 		4A587EEB1332B6590037A393 /* cGradientCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cGradientCount.h; sourceTree = "<group>"; };
+		4ABC70211350AF3000EB56AA /* gradient.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = gradient.html; sourceTree = "<group>"; };
 		5629D80D0C3EE13500C5F152 /* cTextWindow.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTextWindow.cc; sourceTree = "<group>"; };
 		5629D80E0C3EE13500C5F152 /* cTextWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cTextWindow.h; sourceTree = "<group>"; };
 		5629D80F0C3EE13500C5F152 /* ncurses-defs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "ncurses-defs.h"; sourceTree = "<group>"; };
@@ -1721,6 +1722,7 @@
 				707CE7490AA333060022D19C /* actions.html */,
 				707CE51D0A9E49A50022D19C /* config.html */,
 				70920C1C0A9CCE2C00757CDB /* analyze_samples.html */,
+				4ABC70211350AF3000EB56AA /* gradient.html */,
 				70920C1D0A9CCE2C00757CDB /* code_c++_intro.html */,
 				70920C1E0A9CCE2C00757CDB /* code_death_birth.html */,
 				70920C1F0A9CCE2C00757CDB /* code_environment.html */,
@@ -2489,7 +2491,6 @@
 			isa = PBXProject;
 			buildConfigurationList = 702442D70859E0B00059BD9B /* Build configuration list for PBXProject "Avida" */;
 			compatibilityVersion = "Xcode 3.1";
-			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				English,

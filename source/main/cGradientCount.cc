@@ -73,6 +73,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
   , m_move_counter(1)
   , m_just_reset(true)
   , m_past_height(0.0)
+  , m_current_height(0.0)
+  , m_ave_plat_cell_loss(0.0)
 {
   if ((m_move_speed >= 2 * (m_halo_inner_radius + m_halo_width)) && ((m_halo_inner_radius + m_halo_width) != 0)
       && m_move_speed != 0) {
@@ -82,6 +84,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
   m_plateau_array.SetAll(0);
   m_plateau_cell_IDs.Resize(4 * m_height * m_height);
   m_plateau_cell_IDs.SetAll(0);
+  m_current_height = m_height;
   ResizeClear(worldx, worldy, geometry);
   generatePeak(m_world->GetDefaultContext());
   UpdateCount(m_world->GetDefaultContext());
@@ -90,12 +93,11 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 {
   bool has_edible = false;
-  bool has_been_bitten = false;
   
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
   // to speed things up, we only check cells within the possible spread of the peak
   // and we only need to do this if decay > 1 (if decay == 1, we're going to reset everything regardless of the amount left)
-  // if decay = 1 and the resource IS depletable, that means we have a moving depleating resource! Odd, but useful.
+  // if decay = 1 and the resource IS depletable, that means we have a moving depleting resource! Odd, but useful.
   if (m_decay > 1) {
     int max_pos_x = min(int(m_peakx + m_spread + 1), GetX() - 1);
     int min_pos_x = max(int(m_peakx - m_spread - 1), 0);
@@ -372,6 +374,14 @@ void cGradientCount::refreshResourceValues()
     min_pos_y = max(int(m_peaky - m_spread - m_move_speed - 1), 0);
   }
   
+  if (m_is_plateau_common == 1 && !m_just_reset && m_world->GetStats().GetUpdate() > 0) {
+    // with common depletion, new peak height is not the plateau heights, but the delta in plateau heights applied to 
+    // peak height from the last time
+    m_current_height = m_current_height - m_ave_plat_cell_loss + m_plateau_inflow - (m_current_height * m_plateau_outflow);
+  } else {
+    m_current_height = m_height;
+  }
+  
   int plateau_cell = 0;
   for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
     for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
@@ -382,34 +392,39 @@ void cGradientCount::refreshResourceValues()
         // determine theoretical individual cells values and add one to distance from center 
         // (so that center point = radius 1, not 0)
         // also used to distinguish plateau cells
-        thisheight = m_height / (thisdist + 1);
+
+        thisheight = m_current_height / (thisdist + 1);
         
-        // we only impose the floor off the plateaus so that plateaus can hit 0 when being eaten
-        bool is_floor = false;
-        if (thisheight < m_floor) {
-          thisheight = m_floor;
-          is_floor = true;
-        }
+        // set the floor values
+        // plateaus will override this so that plateaus can hit 0 when being eaten
+        if (thisheight < m_floor) thisheight = m_floor;
         
         // create cylindrical profiles of resources whereever thisheight would be >1 (area where thisdist + 1 <= m_height)
         // and slopes outside of that range
         // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
         // this is where we apply inflow and outflow...we are only applying it to plateau cells (so we don't have to worry 
         // about changing slope values).
-        if (thisheight >= 1 && m_plateau >= 0.0 && !is_floor) {         
+        double find_plat_dist = m_height / (thisdist + 1);
+        if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) {         
           if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
-            thisheight = m_plateau;
-            m_past_height = m_plateau;
-          }
+            if (m_plateau >= 0.0) {
+              thisheight = m_plateau;
+              m_past_height = m_plateau;
+            } 
+            else {
+              thisheight = m_height;
+              m_past_height = m_height;
+            }
+          } 
           else { 
             if (m_is_plateau_common == 0) {
               m_past_height = m_plateau_array[plateau_cell]; 
             }
             thisheight = m_past_height + m_plateau_inflow - (m_past_height * m_plateau_outflow); 
-          }
-          if (thisheight > m_plateau) {
+          } 
+          if (thisheight > m_plateau && m_plateau >= 0) {
             thisheight = m_plateau;
-          }
+          } 
           m_plateau_array[plateau_cell] = thisheight;
           m_plateau_cell_IDs[plateau_cell] = jj * GetX() + ii;
           plateau_cell ++;
@@ -417,12 +432,13 @@ void cGradientCount::refreshResourceValues()
       }
       Element(jj * GetX() + ii).SetAmount(thisheight);
     }
-  }
+  }         
   m_just_reset = false;
+  return;
 }
 
 void cGradientCount::getCurrentPlatValues()
-{
+{ 
   int plateau_box_min_x = m_peakx - m_height - 1;
   int plateau_box_max_x = m_peakx + m_height + 1;
   int plateau_box_min_y = m_peaky - m_height - 1;
@@ -432,8 +448,8 @@ void cGradientCount::getCurrentPlatValues()
   for (int ii = plateau_box_min_x; ii < plateau_box_max_x + 1; ii++) {
     for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) {        
       double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
-      double thisheight = m_height / (thisdist + 1);
-      if (thisheight >= 1 && m_plateau >= 0.0) {
+      double find_plat_dist = m_height / (thisdist + 1);
+      if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) {
         m_past_height = m_plateau_array[plateau_cell];
         double pre_move_height = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();  
         if (pre_move_height < m_past_height) {
@@ -444,7 +460,7 @@ void cGradientCount::getCurrentPlatValues()
       }
     }        
   }
-  double ave_plat_cell_loss = amount_devoured / plateau_cell;
-  m_past_height = m_past_height - ave_plat_cell_loss;
+  m_ave_plat_cell_loss = amount_devoured / plateau_cell;
+  m_past_height = m_past_height - m_ave_plat_cell_loss;
+  return;
 } 
-

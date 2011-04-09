@@ -71,7 +71,9 @@ private:
   int m_halo_dir;
   int m_changling;
   bool m_just_reset;
-  double m_past_height;;
+  double m_past_height;
+  double m_current_height;
+  double m_ave_plat_cell_loss;
   tArray<double> m_plateau_array;
   tArray<int> m_plateau_cell_IDs;
   
