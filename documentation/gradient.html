@@ -1,0 +1,504 @@
+<html>
+<head>
+  <title>Avida : Gradient Resources</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+</head>
+<body>
+
+<div class="revision" align="right">
+Revised 2011-04-09 APW<br>
+</div>
+
+<p><a href="index.html">Return to the Index</a></p>
+<p><a href="environment.html">Return to the Environment File</a></p>
+<hr />
+
+<div align="center">
+<h1>The Environment File: Gradient Resources</h1>
+</div>
+
+<p>
+Gradient resource format is:
+</p>
+
+<pre>
+  GRADIENT_RESOURCE gradient_resource_name[:options]  {gradient_resource_name ...}
+</pre>
+
+<h2>Gradient Resources</h2>
+<p>
+Like other resources, all entries on a gradient resource line are names of individual 
+resources. Gradient resources are a type of spatial resource, the main difference being
+that gradient resources can move. 
+</p>
+
+
+<h3><A name = "GRADIENT_RESOURCE">GRADIENT_RESOURCE Command</A></h3>
+
+<p>The syntax for the Gradient Resource command is:</p>
+
+  <pre>GRADIENT_RESOURCE gradient_resource_name[:options]  {gradient_resource_name ...}</pre>
+
+<p>
+The Gradient Resource command allows the user to specify a resource distribution which changes over
+time. If movement is enabled, this conical distribution moves randomly around the Avida grid. This movement 
+may also be confined to an orbit around a specified anchor cell on the Avida grid. These are called halo gradients. 
+Cones can be capped with a plateau cylinder of a determined height wherever cone height meets or exceeds the 
+value of 1. In terms of actual resource value, this is analogous to slicing the cone at height 1 and then setting 
+the actual resource value (plateau) in the sliced area to some flat value. Organisms can use sense instructions to 
+detect resources on all parts of the cone, but they can only consume the resources where the value is >= min value 
+in the associated reaction or collect instruction. Typically, the min value is set so that only the plateau area of
+the cone can be consumed. When an organism consumes any part of the cone, the cone can be set to stop moving until 
+a predifined number of updates (=decay) has passed or all consumable resource (all cells with value >= 1) has been 
+consumed. The cone is then refreshed at some random location within the specified boundaries. An odd but useful quirk 
+is that if decay is set to 1, you can have walking wounded resources. 
+</p>
+  
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 1: <span>Gradient Resource Options</span></h3>
+<p>
+(<span class="resall">blue</span> variables used for all gradient resources
+while <span class="reshalo"><font color="#029C1C">green</font></span> variables are only used for 
+halo resources)
+</p>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td class="resall">peakx</td>
+  <td>
+    Initial x-coordinate of cone peak cell. Only affects non-moving peaks. For moving peaks,
+    random coordinates within appropriate bounds will be used. 
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">peaky</td>
+  <td>
+    Initial y-coordinate of cone peak cell. 
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">height</td>
+  <td>
+    Height in terms of resource value of the cone at the peak center.
+    This affects values along the slope of the cone where the value of any cell on the slope
+    = height/distance to center. Note that the height of the plateau may supersede the height 
+    of the cone, lowering or raising all cell resource values within the plateau to the plateau 
+    value. Since slope is height/distance, for a cone having a plateau and a height set to 10, 
+    the plateau will be the region of cells 10 or fewer cells from the center.
+  </td>
+  <td>0</td>
+</tr>
+</tr>
+<tr>
+  <td class="resall">plateau</td>
+  <td>
+    Actual initial height in terms of resource levels wherever cone height is greater or equal
+    to 1. This will supersede the cone height in eligible cells. A value of -1 turns this
+    option off. 
+  </td>
+  <td>
+    -1.0
+  </td>
+</tr>
+<tr>
+  <td class="resall">spread</td>
+  <td>
+  	 Radius of the cone in terms of cells (i.e. extent of cone base).
+  </td>
+  <td>0.0</td>
+<tr>
+  <td class="resall">decay</td>
+  <td>
+    Number of updates until gradient resource is refreshed after an organism initially 
+    consumes resources in the cone. The refresh will occur even if the plateau has not 
+    been completely consumed. If decay = 0, the peak will be regenerated at a new random
+    location every update, regardless of whether any has been consumed. If decay = 1, the 
+    cone will never actually be regenerated, but will move continuously. If decay > 1, 
+    resources move until some has been consumed. Movement will then halt until decay # 
+    updates (including current) have passed and the cone will then be regenerated in a new 
+    random location. 
+  </td>
+  <td>
+    1
+  </td>
+</tr>
+<tr>
+  <td class="resall">min_x</td>
+  <td>
+    Leftmost coordinate of the rectangle in which resource will move
+    randomly. The resource will stop moving left and bounce in a new 
+    random direction (inside the rectangle) when the edge of the plateau 
+    hits min_x. The case is the same for max_x, min_y, and max_y.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">max_x</td>
+  <td>
+    Rightmost coordinate of the rectangle in which resource will move 
+    randomly.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">min_y</td>
+  <td>
+    Topmost coordinate of the rectangle in which resource will move randomly.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">max_y</td>
+  <td>
+    Bottommost coordinate of the rectangle in which resource will move
+    randomly
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">move_a_scaler</td>
+  <td>
+    Measure of resource movement smoothness taken from the variable "A" in equation 1 from
+    <a href="http://cs.gmu.edu/~eclab/tools.html#DF-1">Morrison and DeJong's</a> DF-1 Algorithm.
+    Values range from 1 to 4. Values from 1 to around 3 yield smooth movements, while larger 
+    values yield chaotic movement. In the current implementation of gradient resources, this
+    value is largely irrelevant, but move_a_scaler = 1 means no movement and the common setting 
+    for moving peaks is 3.8.
+  </td>
+  <td>1.0</td>
+</tr>
+<tr>
+  <td class="resall">updatestep</td>
+  <td>
+    How many updates to wait until changing gradient resouce movement direction. 
+    Resources move in random directions, only changing course if they bounce or
+    when updatestep is reached. Low updatestep numbers result in chaotic peak
+    movements (and peaks tend not to travel very far overall).
+  </td>
+  <td>1</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo</font></td>
+  <td>
+    Determines if this is a halo gradient. Instead of 
+    moving in a predetermined box, halo resources move 
+    randomly in an orbit around some fixed anchor cell. 1 if true,
+    0 if false. Halos do not use the bounded box (min_x, max_x, 
+    min_y, max_y) variables. Instead, they rely on the radius and
+    width definitions to determine movement bounds. Note that orbit 
+    distances are in terms of cells, so orbits are rectangle
+    in Avida. A diagonal line of cells count as the same distance as a 
+    straight line of cells.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_inner_radius</font></td>
+  <td>
+    Closest (in number of cells) the inner edge of a plateau of a halo resource 
+    can be to the anchor cell. If no plateau is set, then this will just be the 
+    closest the center peak cell can be to the anchor, i.e. the minimum orbit. 
+    If plateau is set, minimum orbit will be halo_inner_radius + height (since 
+    radius of plateau = height). If you want a plateau of size 10 to be centered
+    on the anchor point, you would need to set halo_inner_radius = -10. If you want
+    the same peak to orbit the anchor point with no space between the plateau 
+    and the anchor, halo_inner_radius would be set to 10.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_width</font></td>
+  <td>
+   How wide in cells the orbit is. The farthest the outer edge of the plateau 
+   can be from the anchor cell is halo_inner_radius + halo_width.
+   If halo_width = 2 * height, halo resouces will travel in a fixed orbit, 
+   randomly changing orbit direction every updatestep. 
+   If halo_width > 2 * height, halo resources will travel along a random 
+   orbit between halo_inner_radius and halo_inner_radius + halo_width, changing
+   EITHER orbit or orbit direction every updatestep.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_anchor_x</font></td>
+  <td>
+    x-coordinate of the anchor cell.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="relhalo"><font color="#029C1C">halo_anchor_y</font></td>
+  <td>
+   y-coordinate of the anchor cell.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">move_speed</td>
+  <td>
+    How 'fast' the gradient moves in the grid. Since gradient resources are
+    built on spatial resources and spatial resources are only checked once 
+    per update, move_speed actually determines how far, in number of cells,
+    the cone is moved between updates, not in an update. Thus move_speed > 1 
+    will cause peaks to 'jump' ahead.
+  </td>
+  <td>1</td>
+</tr>
+<tr>
+  <td class="resall">common</td>
+  <td>
+	In determining the cell values within the plateau, do we treat them as a
+  common (= 1) resource, or as individual cells (= 0)? If common = 1, and any
+  plateau cells are depletabled by organisms, at each update we look to see 
+  how much of the plateau was consumed, divide that by the number of cells in 
+  the plateau, subtract that amount from the plateau value at the beginning of 
+  the previous update (before depletion), and set all plateau cells to this new 
+  value. Thus, at the updates, the effects of depletion is spread out across all 
+  plateau cells. Peak height is then recalculated to reflect the <i>change in</i> 
+  this value and the entire cone is redrawn, while preserving the original extent 
+  of the plateau. If common = 0 resource depletions affect only individual plateau 
+  cells and the peak slopes are not changed.
+  </td>
+  <td>0</td>
+  <tr>
+  <td class="resall">plateau_inflow</td>
+  <td>
+	Inflow rate of resources within the plateau. This amount will be added to each
+  cell in the plateau at each update, regardless of common setting. If common = 1,
+  the peak height is reset to the new value and all values in the peak are 
+  recalculated, but keeping the original extent of the plateau. Maximum value for 
+  height remains capped at original plateau value, if set.  
+  </td>
+  <td>0.0</td>
+  <tr>
+  <td class="resall">plateau_outflow</td>
+  <td>
+	Outflow rate of resource within the plateau. This fraction of resouces will be 
+  removed from each cell in the plateau at each update, regardless of common setting.
+  If common = 1, the peak height is reset to the new value and all values in the peak 
+  are recalculated, but keeping the original extent of the plateau.
+  </td>
+  <td>0.0</td>
+  <tr>
+  <td class="resall">floor</td>
+  <td>
+	Minimum value for cells within the cone. Cells that would otherwise have lower values
+  (based on distance from center) will be set to this value. Floor does not affect plateau
+  cells. Rather, it is intended to keep values along the spread from dropping below 1
+  for experiments where cell values along the slopes would affect merit rewards.
+  </td>
+  <td>0.0</td>
+  </tr>
+</tr>
+</table>
+<p>&nbsp;</p>
+</div>
+  
+ <p>
+An example of setting a halo gradient of cone height 10 and radius 180.
+The plateau height is 1, meaning that the actual resource height is
+1 at cells where the cone height is at least 1. Movement is smooth
+and is updated every 200 updates. The anchor cell is at 189, 249, and
+it moves no closer than 10 cells away from the anchor and no farther than
+30. The resource is immediately refreshed after it has been consumed by 
+at least one organism.
+</P>
+  <pre>GRADIENT_RESOURCE food1:height=10:spread=180:plateau=1:decay=1:move_a_scaler=3.8:updatestep=200:halo=1:halo_inner_radius=10:halo_anchor_x=189:halo_anchor_y=249:halo_width=20:move_speed=1</pre>
+  
+<P>
+An example of a gradient which will initialize at 189, 249 and is bounded by a 
+200x200 cell box. The cone height is 20, but the radius is only 10 cells. The plateau
+is of height 2, and the resource moves only every 10000 updates.
+</P>
+  <pre>GRADIENT_RESOURCE nest1:peakx=189:peaky=249:height=20:spread=19:plateau=2:decay=1:min_x=125:max_x=375:min_y=125:max_y=375:move_a_scaler=1:updatestep=10000</pre>
+
+
+<hr />
+
+
+<h3><A name = "DYNAMIC_RESOURCE">DYNAMIC_RESOURCE Command</A></h3>
+
+<p>The syntax for the Dynamic Resource command is:</p>
+
+  <pre>DYNAMIC_RESOURCE dynamic_resource_name[:options]  {dynamic_resource_name ...}</pre>
+
+<p>
+
+<p>
+The Dynamic Resource command is an implementation of <a href="http://cs.gmu.edu/~eclab/tools.html#DF-1">Morrison and DeJong's</a> DF-1 algorithm applied
+to spatial resources across the entire Avida grid. Please note that this option is still under
+development and may not function as expected. A Dynamic Resource is a collection of cones which move
+across the grid over time. These cones may also shift in total size, height, and number. A substantial
+number of cones overlapping can create a complex resource landscape. For more information about the algorithm
+please consult "A Test Problem Generator for Non-Stationary Environments", Ronald Morrison and Kenneth DeJong, 
+Proceedings of the Congress on Evolutionary Computing 1999.
+</p>
+
+<div align="center">
+<p>&nbsp;</p>
+<h3>Table 2: <span>Dynamic Resource Options</span></h3>
+<p>
+(<span class="resall">blue</span> variables are specific to Avida, 
+while <span class="resdyn"><font color="#EE9820">orange</font></span> variables
+are part of the DF-1 algorithm. Please consult the paper by Morrison and 
+DeJong for more information on these variables.
+</p>
+<table border="1" cellpadding="2">
+<tr>
+  <th>Argument</th>
+  <th>Description</th>
+  <th>Default</th>
+</tr>
+<tr>
+  <td class="resall">peaks</td>
+  <td>
+     Maximum number of possible cones in the environment.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="resall">update_dynamic</td>
+  <td>
+     How many updates to wait until the DF-1 function changes the
+     resource landscape
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">ah</td>
+  <td>
+		Affects rate of height change.
+  </td>
+  <td>0</td>
+</tr>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">ar</td>
+  <td>
+    Affects rate of radius change.
+  </td>
+  <td>
+    0
+  </td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">acx</td>
+  <td>
+	 Affects rate of x-coordinate change.
+  </td>
+  <td>0</td>
+<tr>
+  <td class="reldyn"><font color="#EE9820">acy</td>
+  <td>
+  	 Affects rate of y-coordinate change.
+  </td>
+  <td>
+    0
+  </td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">hstepscale</td>
+  <td>
+	Affects rate of height change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">rstepscale</td>
+  <td>
+    Affects rate of radius change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepscalex</td>
+  <td>
+	Affects scale of x-coordinate change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepscaley</td>
+  <td>
+    Affects scale of y-coordinate change.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">hstep</td>
+  <td>
+    Height change step size.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">rstep</td>
+  <td>
+    Radius change step size
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepx</font></td>
+  <td>
+		x-coordinate change step size.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">cstepy</font></td>
+  <td>
+    y-coordinate change step size.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">min_height</font></td>
+  <td>
+    Minimum height of a cone.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">height_range</font></td>
+  <td>
+    Range of the cone height in terms of the min height, so the 
+    maximum height is min_height+height_range.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">min_radius</font></td>
+  <td>
+    Minimum radius of a cone.
+  </td>
+  <td>0</td>
+</tr>
+<tr>
+  <td class="reldyn"><font color="#EE9820">radius_range</font></td>
+  <td>
+    Range of the cone radius in terms of the min radius, so the
+    maximum radius is min_radius+radius_range.
+  </td>
+  <td>0</td>
+</tr>
+</tr>
+</table>
+<p>&nbsp;</p>
+</div>
+
+  
+<hr />
+<p><a href="index.html">Return to the Index</a></p>
+<p><a href="environment.html">Return to the Environment File</a></p>
+<hr />
+
+</body>
+</html>
