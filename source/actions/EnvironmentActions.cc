@@ -248,6 +248,45 @@ public:
   }
 };
 
+/*Change the settings of a Gradient Resource*/
+class cActionSetGradientResource : public cAction
+{
+private:
+  cString env_string;
+  cString m_res_name;
+  
+public:
+  cActionSetGradientResource(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), env_string("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) env_string = largs;
+    if (largs.GetSize()) largs.PopWord();
+    if (largs.GetSize()) m_res_name = largs.PopWord().Pop(':');
+    
+    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
+    assert(res);
+  }
+  
+  static const cString GetDescription() { return "Arguments: <string env_string>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cUserFeedback feedback;
+    m_world->GetEnvironment().LoadLine(env_string, feedback);
+    
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
+        
+    m_world->GetPopulation().UpdateGradientCount(m_world->GetVerbosity(), m_world, m_res_name);        
+  } 
+};
+
 
 /* Change Environment settings */
 class cActionChangeEnvironment : public cAction
@@ -1149,7 +1188,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
-
+  action_lib->Register<cActionSetGradientResource>("SetGradientResource");
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");
   action_lib->Register<cActionSetReactionValueMult>("SetReactionValueMult");
   action_lib->Register<cActionSetReactionInst>("SetReactionInst");

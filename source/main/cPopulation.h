@@ -231,7 +231,7 @@ public:
   void UpdateResource(int id, double change);
   void UpdateCellResources(const tArray<double>& res_change, const int cell_id);
   void UpdateDemeCellResources(const tArray<double>& res_change, const int cell_id);
-
+  
   void SetResource(int id, double new_level);
   double GetResource(int id) const { return resource_count.Get(id); }
   cResourceCount& GetResourceCount() { return resource_count; }
@@ -263,7 +263,11 @@ public:
   void CompeteOrganisms(cAvidaContext& ctx, int competition_type, int parents_survive);
   
   // Let users change environmental variables durning the run @BDB 22-Feb-2008
-  void UpdateResourceCount(const int Verbosity, cWorld* world);                            
+  void UpdateResourceCount(const int Verbosity, cWorld* world);        
+  
+  // Let users change Gradient Resource variables during the run JW
+  void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
+ 
 	
 	// Adds an organism to a group
 	void JoinGroup(cOrganism* org, int group_id);

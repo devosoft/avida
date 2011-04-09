@@ -5858,9 +5858,53 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
   NewTrial(ctx);
 }
 
+
 /* This routine is designed to change values in the resource count in the
- middle of a run.  This is designed to work with cActionChangeEnvironment
- routine BDB 22-Feb-2008 */
+ middle of a run.  This is designed to work with cActionSetGradient Count */
+//JW
+
+void cPopulation::UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name)
+{
+    const cResourceLib & resource_lib = environment.GetResourceLib();
+    int global_res_index = -1;
+    
+    for (int i = 0; i < resource_lib.GetSize(); i++) {
+      cResource * res = resource_lib.GetResource(i);
+      
+      if (!res->GetDemeResource()) global_res_index++;
+      
+      if (res->GetName() == res_name) {
+      const double decay = 1.0 - res->GetOutflow();
+      resource_count.Setup(world, global_res_index, res->GetName(), res->GetInitial(),
+                           res->GetInflow(), decay,
+                           res->GetGeometry(), res->GetXDiffuse(),
+                           res->GetXGravity(), res->GetYDiffuse(),
+                           res->GetYGravity(), res->GetInflowX1(),
+                           res->GetInflowX2(), res->GetInflowY1(),
+                           res->GetInflowY2(), res->GetOutflowX1(),
+                           res->GetOutflowX2(), res->GetOutflowY1(),
+                           res->GetOutflowY2(), res->GetCellListPtr(),
+                           res->GetCellIdListPtr(), Verbosity,
+                           res->GetDynamicResource(), res->GetPeaks(), 
+                           res->GetMinHeight(), res->GetMinRadius(), res->GetRadiusRange(),
+                           res->GetAh(), res->GetAr(),
+                           res->GetAcx(), res->GetAcy(),
+                           res->GetHStepscale(), res->GetRStepscale(),
+                           res->GetCStepscaleX(), res->GetCStepscaleY(),
+                           res->GetHStep(), res->GetRStep(),
+                           res->GetCStepX(), res->GetCStepY(),
+                           res->GetUpdateDynamic(), res->GetPeakX(), res->GetPeakY(),
+                           res->GetHeight(), res->GetSpread(), res->GetPlateau(), res->GetDecay(), 
+                           res->GetMaxX(), res->GetMinX(), res->GetMaxY(), res->GetMinY(), res->GetAscaler(), res->GetUpdateStep(),
+                           res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
+                           res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
+                           res->GetPlateauInflow(), res->GetPlateauOutflow(), 
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                           ); 
+      } 
+   }
+}
+
 
 void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {                     
   const cResourceLib & resource_lib = environment.GetResourceLib();
