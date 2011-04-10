@@ -74,6 +74,7 @@ private:
   double m_past_height;
   double m_current_height;
   double m_ave_plat_cell_loss;
+  double m_common_plat_height;
   tArray<double> m_plateau_array;
   tArray<int> m_plateau_cell_IDs;
   
