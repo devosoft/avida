@@ -152,9 +152,12 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
       int random_shift = ctx.GetRandom().GetUInt(0,2);
       // if changing orbit, choose to go in or out one orbit
       // then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
+      double temp_height = 0;
+      if (m_plateau < 0) temp_height = 1;
+      else temp_height = m_height;
       if (random_shift == 0) {
         //do nothing unless there's room to change orbit
-        if (m_halo_width > (m_height * 2)) {
+        if (m_halo_width > (temp_height * 2)) {
           m_orbit_shift = ctx.GetRandom().GetUInt(0,2); 
           if (m_orbit_shift == 0) {
             current_orbit = current_orbit - 1; 
@@ -171,7 +174,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
               m_peakx = old_peakx + 1;
           }
           // we have to check that we are still going to be within the halo after an orbit change       
-          if (current_orbit > (m_halo_inner_radius + m_halo_width - m_height + 2)) {
+          if (current_orbit > (m_halo_inner_radius + m_halo_width - temp_height + 2)) {
             // if we go out of bounds, we need to go the other way instead (taking two steps back on orbit since we already took one in the wrong direction)
             current_orbit = current_orbit - 2;
             if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
@@ -179,7 +182,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
             else 
               m_peakx = old_peakx + 1;
           }
-          else if (current_orbit < (m_halo_inner_radius + m_height + 2)) {
+          else if (current_orbit < (m_halo_inner_radius + temp_height + 2)) {
             current_orbit = current_orbit + 2;
             if (abs(m_halo_anchor_y - old_peaky) > abs(m_halo_anchor_x - old_peakx))
               m_peaky = old_peaky - 1;
@@ -281,14 +284,17 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     }
   } else {
     // for non-halo peaks
+    double temp_height = 0;
+    if (m_plateau < 0) temp_height = 1;
+    else temp_height = m_height;
     double temp_peakx = m_peakx + (m_move_y_scaler * m_movesignx);
     double temp_peaky = m_peaky + (m_move_y_scaler * m_movesigny);
     
-    if (temp_peakx > (m_max_x - m_height)) m_movesignx = -1.0;
-    if (temp_peakx < (m_min_x + m_height)) m_movesignx = 1.0; 
+    if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1.0;
+    if (temp_peakx < (m_min_x + temp_height)) m_movesignx = 1.0; 
     
-    if (temp_peaky > (m_max_y - m_height)) m_movesigny = -1.0;
-    if (temp_peaky < (m_min_y + m_height)) m_movesigny = 1.0;
+    if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1.0;
+    if (temp_peaky < (m_min_y + temp_height)) m_movesigny = 1.0;
     
     m_peakx = m_peakx + (m_movesignx * m_move_y_scaler) + .5;
     m_peaky = m_peaky + (m_movesigny * m_move_y_scaler) + .5; 
@@ -305,12 +311,14 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
 {
   // Get initial peak cell x, y coordinates and movement directions.
   cRandom& rng = ctx.GetRandom();
-  
+  double temp_height = 0;
+  if (m_plateau < 0) temp_height = 1;
+  else temp_height = m_height;
   // If we are not moving the resource we can skip creating a peak location and use the config input m_peakx and m_peaky.
   if (!m_halo) {
     if (m_move_a_scaler > 1) {
-      m_peakx = rng.GetUInt(m_min_x + m_height, m_max_x - m_height + 1);                 
-      m_peaky = rng.GetUInt(m_min_y + m_height, m_max_y - m_height + 1);
+      m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
+      m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
     }
     m_movesignx = rng.GetInt(-1,2);  
     if (m_movesignx == 0) {
@@ -330,19 +338,19 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     }
     int chooseEW = rng.GetUInt(0,2);
     if (chooseEW == 0) {
-      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + m_height, 
+      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
                             m_halo_anchor_x - m_halo_inner_radius);
     } else {
       m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius, 
-                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - m_height + 1);
+                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
     int chooseNS = rng.GetUInt(0,2);
     if (chooseNS == 0) { 
-      m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + m_height, 
+      m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
                             m_halo_anchor_y - m_halo_inner_radius);
     } else {
       m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius, 
-                            m_halo_anchor_y + m_halo_inner_radius + m_halo_width - m_height + 1);
+                            m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
   }
   SetModified(false);
@@ -353,7 +361,7 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
 }
 
 void cGradientCount::refreshResourceValues()
-{
+{ 
   int max_pos_x;
   int min_pos_x;
   int max_pos_y;
@@ -424,6 +432,7 @@ void cGradientCount::refreshResourceValues()
           } 
           if (thisheight > m_plateau && m_plateau >= 0) {
             thisheight = m_plateau;
+            m_current_height = m_plateau;
           } 
           m_plateau_array[plateau_cell] = thisheight;
           m_plateau_cell_IDs[plateau_cell] = jj * GetX() + ii;
@@ -439,16 +448,19 @@ void cGradientCount::refreshResourceValues()
 
 void cGradientCount::getCurrentPlatValues()
 { 
-  int plateau_box_min_x = m_peakx - m_height - 1;
-  int plateau_box_max_x = m_peakx + m_height + 1;
-  int plateau_box_min_y = m_peaky - m_height - 1;
-  int plateau_box_max_y = m_peaky + m_height + 1;
+  double temp_height = 0;
+  if (m_plateau < 0) temp_height = 1;
+  else temp_height = m_height;
+  int plateau_box_min_x = m_peakx - temp_height - 1;
+  int plateau_box_max_x = m_peakx + temp_height + 1;
+  int plateau_box_min_y = m_peaky - temp_height - 1;
+  int plateau_box_max_y = m_peaky + temp_height + 1;
   int plateau_cell = 0;
   double amount_devoured = 0.0;
   for (int ii = plateau_box_min_x; ii < plateau_box_max_x + 1; ii++) {
     for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) {        
       double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
-      double find_plat_dist = m_height / (thisdist + 1);
+      double find_plat_dist = temp_height / (thisdist + 1);
       if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) {
         m_past_height = m_plateau_array[plateau_cell];
         double pre_move_height = Element(m_plateau_cell_IDs[plateau_cell]).GetAmount();  
