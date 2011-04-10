@@ -271,19 +271,24 @@ halo resources)
   <td class="resall">plateau_inflow</td>
   <td>
 	Inflow rate of resources within the plateau. This amount will be added to each
-  cell in the plateau at each update, regardless of common setting. If common = 1,
-  the peak height is reset to the new value and all values in the peak are 
-  recalculated, but keeping the original extent of the plateau. Maximum value for 
-  height remains capped at original plateau value, if set.  
+  cell in the plateau at each update, regardless of common setting. Maximum value for 
+  plateau cells (if set at >= 0) remains original plateau value.
+  </br> 
+  If common = 1, the inflow is added to the current peak height and height is reset to the new 
+  value. All values in the peak are then recalculated, but keeping the original extent of the 
+  plateau. Maximum value for height (for cone shape) remains capped at original height value.   
   </td>
   <td>0.0</td>
   <tr>
   <td class="resall">plateau_outflow</td>
   <td>
-	Outflow rate of resource within the plateau. This fraction of resouces will be 
-  removed from each cell in the plateau at each update, regardless of common setting.
-  If common = 1, the peak height is reset to the new value and all values in the peak 
-  are recalculated, but keeping the original extent of the plateau.
+	Outflow rate of resource within the plateau. The quantity of resources = outflow * height 
+  will be removed from each cell in the plateau at each update, regardless of common setting. 
+  Minimum resulting value for plateau cells is 0. 
+  </br>   
+  If common = 1, the outflow quantity is subtracted from the current peak height and height is 
+  reset to the new value. All values in the peak are then recalculated, but keeping the original 
+  extent of the plateau. Minimum resulting value for height (cone shape) is 0.
   </td>
   <td>0.0</td>
   <tr>
