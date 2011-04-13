@@ -93,9 +93,9 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
 }
 
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
-{
+{ 
   bool has_edible = false;
-  
+
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
   // to speed things up, we only check cells within the possible spread of the peak
   // and we only need to do this if decay > 1 (if decay == 1, we're going to reset everything regardless of the amount left)
@@ -124,7 +124,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
                     
   // before we move anything, if we have moving depletable resource, we need to get the current plateau cell values 
   if (m_move_a_scaler > 1 && m_decay == 1) getCurrentPlatValues();
-  
+
   // When the counter matches decay, regenerate resource peak
   if (m_counter == m_decay) generatePeak(ctx);
   
@@ -293,10 +293,10 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     double temp_peaky = m_peaky + (m_move_y_scaler * m_movesigny);
     
     if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1.0;
-    if (temp_peakx < (m_min_x + temp_height)) m_movesignx = 1.0; 
+    if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1.0; 
     
     if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1.0;
-    if (temp_peaky < (m_min_y + temp_height)) m_movesigny = 1.0;
+    if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1.0;
     
     m_peakx = m_peakx + (m_movesignx * m_move_y_scaler) + .5;
     m_peaky = m_peaky + (m_movesigny * m_move_y_scaler) + .5; 
@@ -316,8 +316,8 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
   double temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
-  // If we are not moving the resource we can skip creating a peak location and use the config input m_peakx and m_peaky.
   if (!m_halo) {
+  // If we are not moving the resource we use the config input m_peakx and m_peaky.    
     if (m_move_a_scaler > 1) {
       m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
       m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
@@ -363,7 +363,7 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
 }
 
 void cGradientCount::refreshResourceValues()
-{ 
+{         
   int max_pos_x;
   int min_pos_x;
   int max_pos_y;
@@ -418,7 +418,7 @@ void cGradientCount::refreshResourceValues()
         // plateau = -1 turns off this option; if activated, causes 'peaks' to be flat plateaus = plateau value 
         // this is where we apply inflow and outflow...we are only applying it to plateau cells 
         double find_plat_dist = m_height / (thisdist + 1);
-        if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) {         
+        if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) { 
           if (m_just_reset || m_world->GetStats().GetUpdate() <= 0) {
             m_past_height = m_height;
             if (m_plateau >= 0.0) {

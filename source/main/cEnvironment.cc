@@ -811,15 +811,12 @@ bool cEnvironment::LoadGradientResource(cString desc, cFeedback& feedback)
       }
       
       if (var_name == "peakx") {
-        /*if(peaks > MAX_PEAKS){
-         cerr << "Error: peaks of " << name << " exceeds limits of " << MAX_PEAKS << endl;
-         return false;
-         }*/
+        if (!AssertInputInt(var_value, "peakx", var_type, feedback)) return false;
         new_resource->SetPeakX( var_value.AsInt() );
       }
       else if (var_name == "peaky") {
-        if (!AssertInputDouble(var_value, "peaky", var_type, feedback)) return false;
-        new_resource->SetPeakY( var_value.AsDouble() );
+        if (!AssertInputInt(var_value, "peaky", var_type, feedback)) return false;
+        new_resource->SetPeakY( var_value.AsInt() );
       }
       else if (var_name == "height") {
         if (!AssertInputDouble(var_value, "height", var_type, feedback)) return false;
