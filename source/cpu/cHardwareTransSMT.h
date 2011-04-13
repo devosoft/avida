@@ -246,10 +246,11 @@ public:
 
   // --------  Parasite Stuff  --------
   bool ParasiteInfectHost(cBioUnit* bu);
-	
-  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add); 
-  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, int start_bin, int end_bin); 
-  bool FindModifiedResource(cAvidaContext& ctx, int& start_index, int& end_index, int& spec_id); 
+  
+  // --------  Resource Collection Helper Methods  --------
+  int FindModifiedResource(cAvidaContext& ctx, int& spec_id);
+  bool DoCollect(cAvidaContext& ctx, bool env_remove, bool internal_add, bool probabilistic, bool unit);
+  bool DoActualCollect(cAvidaContext& ctx, int bin_used, bool env_remove, bool internal_add, bool probabilistic, bool unit);
 
 private:
   // ---------- Instruction Library -----------
@@ -302,7 +303,7 @@ private:
   bool Inst_IfGreaterEqual(cAvidaContext& ctx); //48
   bool Inst_Divide_Erase(cAvidaContext& ctx); //49
   bool Inst_Divide_Sex_Erase(cAvidaContext& ctx); //50
-  bool Inst_Collect(cAvidaContext& ctx);        //51
+  bool Inst_Collect_Unit(cAvidaContext& ctx);        //51
   
 };
 

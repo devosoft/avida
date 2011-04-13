@@ -3816,8 +3816,8 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
  * AC -> 75% chance resource 0, 25% chance resource 1
  *
  * Originally inspired by Jeff B.'s DoSense(); meant to be a helper function for
- * DoSense, Inst_Collect, and anything else that wants to use this type of
- * resource NOP-specification.
+ * the various collect instructions, and anything else that wants to use this type 
+ * of resource NOP-specification.
  */
 int cHardwareCPU::FindModifiedResource(cAvidaContext& ctx, int& spec_id)
 {
@@ -3863,9 +3863,9 @@ int cHardwareCPU::FindModifiedResource(cAvidaContext& ctx, int& spec_id)
 
 /* Helper function to reduce code redundancy in the Inst_Collect variations,
  * including Inst_Destroy.
- * Does all the heavy lifting deciding which resource(s) to collect, then calls
- * DoActualCollect() to do the environmental resource removal and/or internal
- * resource addition.
+ * Calls FindModifiedResource() to decide which resource to collect, logs which 
+ * specification was used, then calls DoActualCollect() to do the environmental 
+ * resource removal and/or internal resource addition.
  *
  * env_remove    - specifies whether the collected resources should be removed from
  *                 the environment
