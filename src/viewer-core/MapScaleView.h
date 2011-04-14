@@ -1,9 +1,9 @@
 //
-//  MapGridView.h
+//  MapScaleView.h
 //  avida/apps/viewer-macos
 //
-//  Created by David on 11/23/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Created by David Bryson on 4/14/11.
+//  Copyright 2011 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -30,6 +30,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "apto/core.h"
+#include "avida/viewer-core/cMap.h"
 
 namespace Avida {
   namespace CoreView {
@@ -38,23 +39,18 @@ namespace Avida {
 };
 
 
-@interface MapGridView : NSView {
-  int map_width;
-  int map_height;
+@interface MapScaleView : NSView {
   int num_colors;
-  double zoom;
   
   Apto::Array<int> map_colors;
+  Apto::Array<Avida::CoreView::DiscreteScale::Entry> scale_entries;
   NSMutableArray* color_cache;
 }
 
 - (id)initWithFrame:(NSRect)frame;
 
 - (void)drawRect:(NSRect)rect;
-- (BOOL)isOpaque;
 
 - (void)updateState:(Avida::CoreView::cMap*)state;
-
-@property (readwrite, nonatomic) double zoom;
 
 @end

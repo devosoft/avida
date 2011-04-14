@@ -36,9 +36,9 @@
 #include "avida/viewer-core/cMap.h"
 
 static const float MAIN_SPLIT_LEFT_MIN = 150.0;
-static const float MAIN_SPLIT_RIGHT_MIN = 550.0;
+static const float MAIN_SPLIT_RIGHT_MIN = 650.0;
 static const float MAIN_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.5;
-static const float POP_SPLIT_LEFT_MIN = 230.0;
+static const float POP_SPLIT_LEFT_MIN = 350.0;
 static const float POP_SPLIT_RIGHT_MIN = 300.0;
 static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
@@ -104,7 +104,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
       if (!listener) listener = new cMainThreadListener(self);
       [currentRun attachListener:self];
       
-      [txtUpdate setStringValue:@"Time (updates): 0"];
+      [txtUpdate setStringValue:@"0 updates"];
     }
   } else {
     if ([sender state] == NSOnState) {
@@ -240,12 +240,13 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     map = [pkg map];
   }
   [mapView updateState:map];
+  [mapScaleView updateState:map];
   [mapZoom setDoubleValue:[mapView zoom]];
 }
 
 
 - (void) handleUpdate: (CoreViewUpdate*)pkg {
-  NSString* str = [NSString stringWithFormat:@"Update: %d", [pkg update]];
+  NSString* str = [NSString stringWithFormat:@"%d updates", [pkg update]];
   [txtUpdate setStringValue:str]; 
 }
 

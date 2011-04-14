@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		701E3A1513576BD2000BFFBC /* petri128.png in Resources */ = {isa = PBXBuildFile; fileRef = 701E3A1413576BD2000BFFBC /* petri128.png */; };
 		7035497613379FBD00D3865C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7035497513379FBD00D3865C /* Cocoa.framework */; };
 		703549A91337A4B100D3865C /* Avida-ED-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A61337A4B100D3865C /* Avida-ED-MainWindow.xib */; };
 		703549AA1337A4B100D3865C /* Avida-MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 703549A71337A4B100D3865C /* Avida-MainWindow.xib */; };
@@ -27,9 +28,11 @@
 		703549EE1337D28300D3865C /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549ED1337D28200D3865C /* libviewer-core.a */; };
 		703549F01337D28800D3865C /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 703549EF1337D28800D3865C /* libavida-core.a */; };
 		708D31301342312100AE5CEF /* README in Resources */ = {isa = PBXBuildFile; fileRef = 708D312F1342312100AE5CEF /* README */; };
+		70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 70D3C087135739E1008374E3 /* MapScaleView.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		701E3A1413576BD2000BFFBC /* petri128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = petri128.png; sourceTree = "<group>"; };
 		7035497113379FBD00D3865C /* Avida.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avida.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7035497513379FBD00D3865C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		7035497813379FBD00D3865C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -62,6 +65,8 @@
 		703549ED1337D28200D3865C /* libviewer-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libviewer-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		703549EF1337D28800D3865C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		708D312F1342312100AE5CEF /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		70D3C086135739E1008374E3 /* MapScaleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapScaleView.h; sourceTree = "<group>"; };
+		70D3C087135739E1008374E3 /* MapScaleView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MapScaleView.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +149,7 @@
 			children = (
 				703549D01337CAA100D3865C /* pause_blue.png */,
 				703549D11337CAA100D3865C /* pause.png */,
+				701E3A1413576BD2000BFFBC /* petri128.png */,
 				703549D21337CAA100D3865C /* play_blue.png */,
 				703549D31337CAA100D3865C /* play.png */,
 			);
@@ -205,6 +211,8 @@
 				703549BF1337AD4300D3865C /* CoreViewListener.mm */,
 				703549C01337AD4300D3865C /* MapGridView.h */,
 				703549C11337AD4300D3865C /* MapGridView.mm */,
+				70D3C086135739E1008374E3 /* MapScaleView.h */,
+				70D3C087135739E1008374E3 /* MapScaleView.mm */,
 			);
 			name = "Viewer-Core";
 			path = "viewer-core";
@@ -287,6 +295,7 @@
 				703549D61337CAA100D3865C /* play_blue.png in Resources */,
 				703549D71337CAA100D3865C /* play.png in Resources */,
 				708D31301342312100AE5CEF /* README in Resources */,
+				701E3A1513576BD2000BFFBC /* petri128.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +314,7 @@
 				703549C21337AD4300D3865C /* AvidaRun.mm in Sources */,
 				703549C31337AD4300D3865C /* CoreViewListener.mm in Sources */,
 				703549C41337AD4300D3865C /* MapGridView.mm in Sources */,
+				70D3C088135739E1008374E3 /* MapScaleView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -37,6 +37,7 @@
 @class AvidaAppDelegate;
 @class AvidaRun;
 @class MapGridView;
+@class MapScaleView;
 
 
 @interface AvidaEDController : NSWindowController <CoreViewListener, NSSplitViewDelegate, NSWindowDelegate> {
@@ -47,6 +48,7 @@
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
   IBOutlet MapGridView* mapView;
+  IBOutlet MapScaleView* mapScaleView;
   IBOutlet NSPopUpButton* mapViewMode;
   IBOutlet NSSlider* mapZoom;
   IBOutlet NSSplitView* mainSplitView;
