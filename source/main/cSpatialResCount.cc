@@ -390,7 +390,8 @@ void cSpatialResCount::Sink(double decay) const {
   int     i, j, elem;
   double  deltaamount;
 
-
+  if (outflowX1 == -99 || outflowY1 == -99 || outflowX2 == -99 || outflowY2 == -99) return;
+  
   for (i = outflowY1; i <= outflowY2; i++) {
     for (j = outflowX1; j <= outflowX2; j++) {
       elem = (Mod(i,world_y) * world_x) + Mod(j,world_x);

@@ -94,6 +94,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
 
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
+  cout << Element(20301).GetAmount()<<endl;
   bool has_edible = false;
 
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
