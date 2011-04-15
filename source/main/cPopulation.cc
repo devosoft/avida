@@ -22,6 +22,8 @@
 
 #include "cPopulation.h"
 
+#include "avida/core/cSequence.h"
+
 #include "AvidaTools.h"
 
 #include "cAvidaContext.h"
@@ -37,7 +39,6 @@
 #include "cDemePlaceholderUnit.h"
 #include "cDemeProbSchedule.h"
 #include "cEnvironment.h"
-#include "cSequence.h"
 #include "cGenomeTestMetrics.h"
 #include "cBGGenotype.h"
 #include "cHardwareBase.h"

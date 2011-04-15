@@ -22,11 +22,16 @@
 #ifndef cBirthSelectionHandler_h
 #define cBirthSelectionHandler_h
 
+namespace Avida {
+  class cGenome;
+};
+
 class cAvidaContext;
 class cBirthChamber;
 class cBirthEntry;
-class cGenome;
 class cOrganism;
+
+using namespace Avida;
 
 
 class cBirthSelectionHandler

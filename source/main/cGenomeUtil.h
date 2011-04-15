@@ -23,15 +23,17 @@
 #ifndef cGenomeUtil_h
 #define cGenomeUtil_h
 
-#ifndef cSequence_h
-#include "cSequence.h"
-#endif
+#include "avida/core/cSequence.h"
+
 #include <vector>
 #include <deque>
 
 class cAvidaContext;
 class cInstruction;
 class cInstSet;
+
+using namespace Avida;
+
 
 class cGenomeUtil
 {

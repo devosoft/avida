@@ -21,8 +21,11 @@
 
 #include "cBirthGenomeSizeHandler.h"
 
+#include "avida/core/cGenome.h"
+
 #include "cBirthChamber.h"
-#include "cGenome.h"
+
+using namespace Avida;
 
 
 cBirthGenomeSizeHandler::~cBirthGenomeSizeHandler()

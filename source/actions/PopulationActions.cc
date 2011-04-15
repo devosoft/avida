@@ -23,6 +23,8 @@
 
 #include "AvidaTools.h"
 
+#include "avida/core/cSequence.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cCodeLabel.h"
@@ -33,7 +35,6 @@
 #include "cOrgMessagePredicate.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cSequence.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "cOrganism.h"
@@ -44,6 +45,7 @@
 #include <numeric>
 #include <algorithm>
 
+using namespace Avida;
 using namespace AvidaTools;
 
 

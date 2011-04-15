@@ -22,13 +22,18 @@
 #ifndef cPhenPlastUtil_h
 #define cPhenPlastUtil_h
 
+namespace Avida {
+  class cGenome;
+};
+
 class cAvidaContext;
 class cBioGroup;
-class cGenome;
 class cPhenPlastSummary;
 class cWorld;
 
 template<class T> class tArray;
+
+using namespace Avida;
 
 
 class cPhenPlastUtil

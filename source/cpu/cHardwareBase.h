@@ -23,6 +23,8 @@
 #ifndef cHardwareBase_h
 #define cHardwareBase_h
 
+#include "avida/core/cSequence.h"
+
 #include <cassert>
 #include <climits>
 #include <iostream>
@@ -36,9 +38,6 @@
 #ifndef tSmartArray_h
 #include "tSmartArray.h"
 #endif
-#include "cSequence.h"
-
-using namespace std;
 
 class cAvidaContext;
 class cBioUnit;
@@ -51,6 +50,10 @@ class cMutation;
 class cOrganism;
 class cString;
 class cWorld;
+
+using namespace std;
+using namespace Avida;
+
 
 class cHardwareBase
 {

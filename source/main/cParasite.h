@@ -22,11 +22,10 @@
 #ifndef cParasite_h
 #define cParasite_h
 
+#include "avida/core/cGenome.h"
+
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
-#endif
-#ifndef cGenome_h
-#include "cGenome.h"
 #endif
 #ifndef cPhenotype_h
 #include "cPhenotype.h"
@@ -36,6 +35,8 @@
 #endif
 
 class cWorld;
+
+using namespace Avida;
 
 
 class cParasite : public cBioUnit

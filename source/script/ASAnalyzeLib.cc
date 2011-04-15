@@ -28,10 +28,11 @@
 #include "cASLibrary.h"
 #include "cASNativeObject.h"
 
+#include "avida/core/cSequence.h"
+
 #include "cAnalyzeGenotype.h"
 #include "cDriverManager.h"
 #include "cDriverStatusConduit.h"
-#include "cSequence.h"
 #include "cGenomeUtil.h"
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
@@ -43,6 +44,8 @@
 
 
 class cWorld;
+
+using namespace Avida;
 
 
 namespace ASAnalyzeLib {

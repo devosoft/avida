@@ -21,14 +21,17 @@
 
 #include "cGenomeTestMetrics.h"
 
+#include "avida/core/cGenome.h"
+
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cHardwareManager.h"
-#include "cGenome.h"
 #include "cPhenotype.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
 #include "tAutoRelease.h"
+
+using namespace Avida;
 
 
 cGenomeTestMetrics::cGenomeTestMetrics(cAvidaContext& ctx, cBioGroup* bg)

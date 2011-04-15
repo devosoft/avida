@@ -26,9 +26,11 @@
 #include "Avida.h"
 
 #include "AvidaTools.h"
+
+#include "avida/core/cSequence.h"
+
 #include "cBioGroupListener.h"
 #include "cDoubleSum.h"
-#include "cSequence.h"
 #include "cGenomeUtil.h"
 #include "cIntSum.h"
 #include "cOrganism.h"
@@ -54,6 +56,8 @@ class cOrgMessagePredicate;
 class cOrgMovementPredicate;
 class cDeme;
 class cGermline;
+
+using namespace Avida;
 
 
 struct flow_rate_tuple {

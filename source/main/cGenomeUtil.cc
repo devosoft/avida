@@ -22,8 +22,9 @@
 
 #include "cGenomeUtil.h"
 
+#include "avida/core/cSequence.h"
+
 #include "cAvidaContext.h"
-#include "cSequence.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
 #include "cRandom.h"
@@ -36,6 +37,7 @@
 
 
 using namespace std;
+using namespace Avida;
 using namespace AvidaTools;
 
 

@@ -40,7 +40,6 @@
 
 class cAnalyze;
 class cAnalyzeGenotype;
-class cAvidaDriver;
 class cClassificationManager;
 class cEnvironment;
 class cEventList;

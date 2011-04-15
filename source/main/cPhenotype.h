@@ -23,11 +23,10 @@
 #ifndef cPhenotype_h
 #define cPhenotype_h
 
+#include "avida/core/cSequence.h"
+
 #include <fstream>
 
-#ifndef cSequence_h
-#include "cSequence.h"
-#endif
 #ifndef cMerit_h
 #include "cMerit.h"
 #endif
@@ -83,6 +82,9 @@ class cTaskContext;
 class cTaskState;
 class cPhenPlastSummary;
 class cReactionResult;
+
+using namespace Avida;
+
 
 class cPhenotype
 {

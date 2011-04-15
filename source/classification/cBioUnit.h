@@ -26,10 +26,15 @@
 
 #include "tArray.h"
 
+namespace Avida {
+  class cGenome;
+};
+
 class cBioGroup;
-class cGenome;
 class cPhenotype;
 class cString;
+
+using namespace Avida;
 
 
 class cBioUnit

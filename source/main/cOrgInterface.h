@@ -31,16 +31,21 @@
 #ifndef cOrgInterface_h
 #define cOrgInterface_h
 
+namespace Avida {
+  class cGenome;
+  class cSequence;
+};
+
 class cAvidaContext;
 class cBioUnit;
 class cDeme;
-class cSequence;
-class cGenome;
 class cOrganism;
 class cOrgMessage;
 class cOrgSinkMessage;
 class cString;
 template <class T> class tArray;
+
+using namespace Avida;
 
 
 class cOrgInterface

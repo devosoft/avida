@@ -22,14 +22,15 @@
 #ifndef cBirthEntry_h
 #define cBirthEntry_h
 
+#include "avida/core/cGenome.h"
+
 #ifndef cMerit_h
 #include "cMerit.h"
 #endif
-#ifndef cGenome_h
-#include "cGenome.h"
-#endif
 
 class cBioGroup;
+
+using namespace Avida;
 
 
 class cBirthEntry

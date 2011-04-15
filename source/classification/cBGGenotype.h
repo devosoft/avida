@@ -22,10 +22,11 @@
 #ifndef cBGGenotype_h
 #define cBGGenotype_h
 
+#include "avida/core/cGenome.h"
+
 #include "cBioGroup.h"
 #include "cCountTracker.h"
 #include "cDoubleSum.h"
-#include "cGenome.h"
 #include "cString.h"
 
 
@@ -33,6 +34,8 @@ class cAvidaContext;
 class cBGGenotypeManager;
 class cEntryHandle;
 class cWorld;
+
+using namespace Avida;
 
 
 class cBGGenotype : public cBioGroup

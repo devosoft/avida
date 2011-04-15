@@ -21,7 +21,8 @@
 #include "Avida.h"
 
 #if BOOST_IS_AVAILABLE
-#include "cSequence.h"
+#include "avida/core/cSequence.h"
+
 #include "cOrganism.h"
 #include "cPhenotype.h"
 #include "cMerit.h"
@@ -36,6 +37,9 @@
 #include <sstream>
 #include <cmath>
 #include <boost/optional.hpp>
+
+using namespace Avida;
+
 
 // these strings are used for recording stats; they're the headers for output files.
 static const char* UPDATE="mean update time [ut]";

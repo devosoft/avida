@@ -1,6 +1,6 @@
 /*
  *  core/cDriverManagerObject.h
- *  Avida
+ *  avida-core
  *
  *  Created by David on 10/31/08.
  *  Copyright 2008-2011 Michigan State University. All rights reserved.

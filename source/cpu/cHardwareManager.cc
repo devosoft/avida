@@ -21,6 +21,8 @@
 
 #include "cHardwareManager.h"
 
+#include "avida/core/cGenome.h"
+
 #include "cArgContainer.h"
 #include "cArgSchema.h"
 #include "cDriverManager.h"
@@ -33,10 +35,11 @@
 #include "cHardwareStatusPrinter.h"
 #include "cInitFile.h"
 #include "cInstSet.h"
-#include "cGenome.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
+
+using namespace Avida;
 
 
 cHardwareManager::cHardwareManager(cWorld* world)

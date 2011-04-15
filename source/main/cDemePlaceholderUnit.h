@@ -22,11 +22,10 @@
 #ifndef cDemePlaceholderUnit_h
 #define cDemePlaceholderUnit_h
 
+#include "avida/core/cGenome.h"
+
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
-#endif
-#ifndef cGenome_h
-#include "cGenome.h"
 #endif
 #ifndef cPhenotype_h
 #include "cPhenotype.h"
@@ -34,6 +33,8 @@
 #ifndef cString_h
 #include "cString.h"
 #endif
+
+using namespace Avida;
 
 
 class cDemePlaceholderUnit : public cBioUnit

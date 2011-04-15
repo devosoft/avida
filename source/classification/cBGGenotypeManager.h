@@ -30,10 +30,15 @@
 #include "tManagedPointerArray.h"
 #include "tSparseVectorList.h"
 
+namespace Avida {
+  class cSequence;
+}
 class cBGGenotype;
-class cSequence;
 class cWorld;
 template <class T> class tDataCommandManager;
+
+using namespace Avida;
+
 
 namespace nBGGenotypeManager {
   const int HASH_SIZE = 3203;

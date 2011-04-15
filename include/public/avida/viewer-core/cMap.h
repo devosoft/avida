@@ -1,6 +1,6 @@
 /*
  *  viewer-core/cMap.h
- *  Avida
+ *  avida-core
  *
  *  Created by Charles on 7-9-07
  *  Copyright 2007-2011 Michigan State University. All rights reserved.

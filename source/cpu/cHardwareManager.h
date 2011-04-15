@@ -25,15 +25,20 @@
 #include "cTestCPU.h"
 #include "tDictionary.h"
 
+namespace Avida {
+  class cGenome;
+};
+
 class cAvidaContext;
 class cHardwareBase;
 class cInstSet;
-class cGenome;
 class cOrganism;
 class cStringList;
 class cUserFeedback;
 class cWorld;
 template<typename T> class tList;
+
+using namespace Avida;
 
 
 class cHardwareManager

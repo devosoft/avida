@@ -23,11 +23,10 @@
 #ifndef cLandscape_h
 #define cLandscape_h
 
+#include "avida/core/cGenome.h"
+
 #ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
-#endif
-#ifndef cGenome_h
-#include "cGenome.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -42,6 +41,9 @@ class cInstSet;
 class cInstruction;
 class cTestCPU;
 class cWorld;
+
+using namespace Avida;
+
 
 class cLandscape
 {

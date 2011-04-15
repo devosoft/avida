@@ -38,11 +38,17 @@
  * over before they are born.
  **/
 
+namespace Avida {
+  class cSequence;
+};
+
 class cAvidaContext;
 class cBirthSelectionHandler;
-class cSequence;
 class cOrganism;
 class cWorld;
+
+using namespace Avida;
+
 
 class cBirthChamber
 {

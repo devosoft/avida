@@ -23,6 +23,8 @@
 #ifndef cPopulationCell_h
 #define cPopulationCell_h
 
+#include "avida/core/cSequence.h"
+
 #include <fstream>
 #include <set>
 #include <deque>
@@ -36,7 +38,6 @@
 #ifndef tList_h
 #include "tList.h"
 #endif
-#include "cSequence.h"
 #include "cGenomeUtil.h"
 
 class cHardwareBase;
@@ -44,6 +45,9 @@ class cPopulation;
 class cOrganism;
 class cPopulationCell;
 class cWorld;
+
+using namespace Avida;
+
 
 class cPopulationCell
 {

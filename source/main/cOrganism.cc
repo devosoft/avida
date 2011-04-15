@@ -27,7 +27,6 @@
 #include "cContextPhenotype.h"
 #include "cDeme.h"
 #include "cEnvironment.h"
-#include "cSequence.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"

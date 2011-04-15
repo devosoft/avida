@@ -1,6 +1,6 @@
 /*
  *  core/cFeedback.h
- *  Avida
+ *  avida-core
  *
  *  Created by David on 3/23/11.
  *  Copyright 2011 Michigan State University. All rights reserved.

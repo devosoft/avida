@@ -35,12 +35,18 @@
 #include "cGenomeUtil.h"
 #include "cPopulationCell.h"
 
+namespace Avida {
+  class cSequence;
+};
+
 class cAvidaContext;
 class cDeme;
-class cSequence;
 class cPopulation;
 class cOrgMessage;
 class cOrganism;
+
+using namespace Avida;
+
 
 class cPopulationInterface : public cOrgInterface
 {

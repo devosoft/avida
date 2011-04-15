@@ -22,9 +22,8 @@
 #ifndef cMutationalNeighborhood_h
 #define cMutationalNeighborhood_h
 
-#ifndef cSequence_h
-#include "cGenome.h"
-#endif
+#include "avida/core/cGenome.h"
+
 #ifndef cMutex_h
 #include "cMutex.h"
 #endif
@@ -52,6 +51,8 @@ class cInstSet;
 class cInstruction;
 class cTestCPU;
 class cWorld;
+
+using namespace Avida;
 
 
 class cMutationalNeighborhood

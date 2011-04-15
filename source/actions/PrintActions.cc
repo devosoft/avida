@@ -21,6 +21,8 @@
 
 #include "PrintActions.h"
 
+#include "avida/core/cSequence.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
@@ -42,7 +44,6 @@
 #include "cPlasticPhenotype.h"
 #include "cPopulation.h"
 #include "cPopulationCell.h"
-#include "cSequence.h"
 #include "cStats.h"
 #include "cWorld.h"
 #include "avida/core/cWorldDriver.h"
@@ -54,6 +55,8 @@
 #include <algorithm>
 
 class cBioGroup;
+
+using namespace Avida;
 
 
 #define STATS_OUT_FILE(METHOD, DEFAULT)                                                   /*  1 */ \

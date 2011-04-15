@@ -23,14 +23,14 @@
 #ifndef cPhenPlastGenotype_h
 #define cPhenPlastGenotype_h
 
+#include "avida/core/cGenome.h"
+#include "avida/core/cWorldDriver.h"
+
 #include <set>
 #include <utility>
 
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
-#endif
-#ifndef cGenome_h
-#include "cGenome.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -59,19 +59,14 @@
 #ifndef cEnvironment_h
 #include "cEnvironment.h"
 #endif
-#ifndef cWorldDriver_h
-#include "avida/core/cWorldDriver.h"
-#endif
 
 class cAvidaContext;
 class cTestCPU;
 class cWorld;
 class cEnvironment;
 
-/**
- * This class examines a genotype for evidence of phenotypic plasticity. 
-**/
- 
+using namespace Avida;
+
 
 class cPhenPlastGenotype
 {

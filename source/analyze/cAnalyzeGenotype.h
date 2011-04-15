@@ -23,13 +23,12 @@
 #ifndef cAnalyzeGenotype_h
 #define cAnalyzeGenotype_h
 
+#include "avida/core/cGenome.h"
+
 #include <fstream>
 
 #ifndef cCPUMemory_h
 #include "cCPUMemory.h"
-#endif
-#ifndef cGenome_h
-#include "cGenome.h"
 #endif
 #ifndef cGenotypeData_h
 #include "cGenotypeData.h"
@@ -77,6 +76,8 @@ class cWorld;
 template<class T> class tDataCommandManager;
 
 class cAnalyzeGenotype;
+
+using namespace Avida;
 
 
 class cAnalyzeGenotypeLink

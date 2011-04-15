@@ -1,6 +1,6 @@
 /*
  *  core/cWorldDriver.h
- *  Avida
+ *  avida-core
  *
  *  Created by David on 12/10/05.
  *  Copyright 2005-2011 Michigan State University. All rights reserved.

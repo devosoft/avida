@@ -23,10 +23,11 @@
 #ifndef cOrganism_h
 #define cOrganism_h
 
+#include "avida/core/cGenome.h"
+
 #include "cBioUnit.h"
 #include "cCPUMemory.h"
 #include "cGenomeTestMetrics.h"
-#include "cGenome.h"
 #include "cMutationRates.h"
 #include "cPhenotype.h"
 #include "cOrgInterface.h"
@@ -57,6 +58,7 @@ class cOrgSinkMessage;
 class cSaleItem;
 class cStateGrid;
 
+using namespace Avida;
 
 
 class cOrganism : public cBioUnit

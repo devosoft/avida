@@ -23,12 +23,13 @@
 #ifndef cCPUMemory_h
 #define cCPUMemory_h
 
-#ifndef cSequence_h
-#include "cSequence.h"
-#endif
+#include "avida/core/cSequence.h"
+
 #ifndef tArray_h
 #include "tArray.h"
 #endif
+
+using namespace Avida;
 
 
 class cCPUMemory : public cSequence

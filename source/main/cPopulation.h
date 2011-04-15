@@ -38,18 +38,22 @@
 #include <map>
 
 
+namespace Avida {
+  class cSequence;
+};
+
 class cAvidaContext;
 class cBioUnit;
 class cCodeLabel;
 class cChangeList;
 class cEnvironment;
-class cSequence;
 class cLineage;
 class cOrganism;
 class cPopulationCell;
 class cSchedule;
 class cSaleItem;
 
+using namespace Avida;
 
 
 class cPopulation

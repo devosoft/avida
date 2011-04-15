@@ -23,7 +23,9 @@
 
 #include <vector>
 
-#include "cGenome.h"
+#include "avida/core/cGenome.h"
+
+using namespace Avida;
 
 
 class cGermline

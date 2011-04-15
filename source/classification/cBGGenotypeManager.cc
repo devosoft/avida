@@ -21,9 +21,10 @@
 
 #include "cBGGenotypeManager.h"
 
+#include "avida/core/cSequence.h"
+
 #include "cBGGenotype.h"
 #include "cDataFile.h"
-#include "cSequence.h"
 #include "cStats.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
@@ -31,6 +32,7 @@
 #include "tAutoRelease.h"
 #include "tDataCommandManager.h"
 
+using namespace Avida;
 using namespace AvidaTools;
 
 

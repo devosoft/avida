@@ -1,6 +1,6 @@
 /*
  *  viewer-core/cListener.h
- *  Avida
+ *  avida-core
  *
  *  Created by David on 11/11/10.
  *  Copyright 2010-2011 Michigan State University. All rights reserved.

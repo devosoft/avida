@@ -42,13 +42,17 @@
 #endif
 
 
+namespace Avida {
+  class cGenome;
+};
+
 class cAvidaContext;
 class cBioGroup;
-class cGenome;
 class cInstSet;
-class cGenome;
 class cResourceCount;
 class cResourceHistory;
+
+using namespace Avida;
 
 
 class cTestCPU
