@@ -75,8 +75,10 @@ public:
   const Apto::Array<int>& GetValueCounts() const { return m_color_count; }
   
   const DiscreteScale& GetScale() const { return *this; }
+  const Apto::String& GetScaleLabel() const;
   
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
+
 
   void Update(cPopulation& pop);
   
@@ -182,6 +184,17 @@ void cFitnessMapMode::Update(cPopulation& pop)
   }
 }
 
+const Apto::String& cFitnessMapMode::GetScaleLabel() const
+{
+  static const Apto::String normal("Fitness");
+  static const Apto::String rescale("Fitness (rescaling)");
+  
+  if (m_rescale_rate_max != 0) return rescale;
+  
+  return normal;
+}
+
+
 
 class cGenotypeMapMode : public Avida::CoreView::MapMode, public Avida::CoreView::DiscreteScale
 {
@@ -206,6 +219,7 @@ public:
   const Apto::Array<int>& GetValueCounts() const { return m_color_count; }
   
   const DiscreteScale& GetScale() const { return *this; }
+  const Apto::String& GetScaleLabel() const { static const Apto::String name("Genotypes"); return name; }
   
   int GetSupportedTypes() const { return Avida::CoreView::MAP_GRID_VIEW_COLOR; }
   

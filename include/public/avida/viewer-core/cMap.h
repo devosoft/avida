@@ -79,6 +79,7 @@ namespace Avida {
       virtual const Apto::Array<int>& GetValueCounts() const = 0;
       
       virtual const DiscreteScale& GetScale() const = 0;
+      virtual const Apto::String& GetScaleLabel() const = 0;
       
       virtual int GetSupportedTypes() const = 0;
       
@@ -130,6 +131,9 @@ namespace Avida {
       inline const DiscreteScale& GetSymbolScale() const { return m_view_modes[m_symbol_mode]->GetScale(); }
       inline const DiscreteScale& GetTagScale() const { return m_view_modes[m_tag_mode]->GetScale(); }
       
+      inline const Apto::String& GetColorScaleLabel() const { return m_view_modes[m_color_mode]->GetScaleLabel(); }
+      inline const Apto::String& GetSymbolScaleLabel() const { return m_view_modes[m_symbol_mode]->GetScaleLabel(); }
+      inline const Apto::String& GetTagScaleLabel() const { return m_view_modes[m_tag_mode]->GetScaleLabel(); }
       
       inline int GetNumModes() const { return m_view_modes.GetSize(); }
       inline const Apto::String& GetModeName(int idx) const { return m_view_modes[idx]->GetName(); }
