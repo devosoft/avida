@@ -1,9 +1,10 @@
 /*
- *  core/cGlobalObject.h
+ *  core/cGlobalObject.cc
  *  avida-core
  *
- *  Created by David on 10/31/08.
- *  Copyright 2008-2011 Michigan State University. All rights reserved.
+ *  Created by David on 4/15/11.
+ *  Copyright 2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -18,18 +19,9 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#ifndef AvidaCoreGlobalObject_h
-#define AvidaCoreGlobalObject_h
+#include "avida/core/cGlobalObject.h"
 
-namespace Avida {
-  
-  class cGlobalObject
-  {
-  public:
-    virtual ~cGlobalObject() = 0;
-  };
-}
-
-#endif
+Avida::cGlobalObject::~cGlobalObject() { ; }

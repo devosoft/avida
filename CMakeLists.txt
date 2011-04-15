@@ -162,6 +162,18 @@ LIST(APPEND AVIDA_CORE_SOURCES ${CLASSIFICATION_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${CLASSIFICATION_DIR})
 
 
+# The core directory
+SET(CORE_DIR ${PROJECT_SOURCE_DIR}/source/core)
+SET(CORE_SOURCES
+  ${CORE_DIR}/cGenome.cc
+  ${CORE_DIR}/cGlobalObject.cc
+  ${CORE_DIR}/cSequence.cc
+)
+SOURCE_GROUP(core FILES ${CORE_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${CORE_SOURCES})
+LIST(APPEND ALL_INC_DIRS ${CORE_DIR})
+
+
 # The core viewer directory
 SET(COREVIEW_DIR ${PROJECT_SOURCE_DIR}/source/viewer-core)
 SET(COREVIEW_SOURCES
@@ -229,12 +241,11 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cDemeNetwork.cc
   ${MAIN_DIR}/cDemeTopologyNetwork.cc
   ${MAIN_DIR}/cDemeCellEvent.cc
-  ${MAIN_DIR}/cDynamicCount.cc #JW
+  ${MAIN_DIR}/cDynamicCount.cc
   ${MAIN_DIR}/cEnvironment.cc
   ${MAIN_DIR}/cEventList.cc
-  ${MAIN_DIR}/cGenome.cc
   ${MAIN_DIR}/cGenomeUtil.cc
-  ${MAIN_DIR}/cGradientCount.cc #JW
+  ${MAIN_DIR}/cGradientCount.cc
   ${MAIN_DIR}/cInstruction.cc
   ${MAIN_DIR}/cLandscape.cc
   ${MAIN_DIR}/cMutationRates.cc
@@ -255,7 +266,6 @@ SET(MAIN_SOURCES
   ${MAIN_DIR}/cResourceCount.cc
   ${MAIN_DIR}/cResourceHistory.cc
   ${MAIN_DIR}/cResourceLib.cc
-  ${MAIN_DIR}/cSequence.cc
   ${MAIN_DIR}/cSpatialCountElem.cc
   ${MAIN_DIR}/cSpatialResCount.cc
   ${MAIN_DIR}/cStats.cc

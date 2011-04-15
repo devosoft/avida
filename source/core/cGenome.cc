@@ -1,6 +1,6 @@
 /*
  *  core/cGenome.cc
- *  avida
+ *  avida-core
  *
  *  Created by David on 12/21/09.
  *  Copyright 2009-2011 Michigan State University. All rights reserved.
