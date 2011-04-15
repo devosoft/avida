@@ -94,7 +94,6 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
 
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
-  cout << Element(20301).GetAmount()<<endl;
   bool has_edible = false;
 
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
@@ -342,17 +341,17 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     int chooseEW = rng.GetUInt(0,2);
     if (chooseEW == 0) {
       m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_x - m_halo_inner_radius);
+                            m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
     } else {
-      m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius, 
+      m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
                             m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
     int chooseNS = rng.GetUInt(0,2);
     if (chooseNS == 0) { 
       m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_y - m_halo_inner_radius);
+                            m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
     } else {
-      m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius, 
+      m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
                             m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
     }
   }
