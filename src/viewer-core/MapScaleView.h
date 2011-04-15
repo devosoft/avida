@@ -45,6 +45,7 @@ namespace Avida {
   Apto::Array<int> map_colors;
   Apto::Array<Avida::CoreView::DiscreteScale::Entry> scale_entries;
   NSMutableArray* color_cache;
+  NSString* scale_label;
 }
 
 - (id)initWithFrame:(NSRect)frame;

@@ -45,15 +45,24 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   if (self) {
     num_colors = 0;
     color_cache = [NSMutableArray arrayWithCapacity:255];
+    scale_label = nil;
   }
   
   return self;
 }
 
+- (void)awakeFromNib {
+  num_colors = 0;
+  color_cache = [NSMutableArray arrayWithCapacity:255];  
+  scale_label = nil;
+}
+
+
 - (void)dealloc
 {
   [super dealloc];
 }
+
 
 - (void)drawRect:(NSRect)dirtyRect
 {
@@ -105,6 +114,11 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     [lbl drawAtPoint:lbl_location withAttributes:str_attributes];
   }
   
+  if (scale_label != nil) {
+    CGFloat offset = -[scale_label sizeWithAttributes:str_attributes].width / 2.0;
+    NSPoint lbl_location = NSMakePoint(scaleRect.size.width / 2.0 + scaleRect.origin.x + offset, 6.0);
+    [scale_label drawAtPoint:lbl_location withAttributes:str_attributes];
+  }
 }
 
 
@@ -119,6 +133,8 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   for (int i = 0; i < num_entries; i++) {
     scale_entries[i] = state->GetColorScale().GetEntry(i);
   }
+  
+  scale_label = [NSString stringWithUTF8String:(const char*)state->GetColorScaleLabel()];
   
   state->Release();
   
