@@ -22,13 +22,15 @@
 #ifndef tDMSingleton_h
 #define tDMSingleton_h
 
-#include "avida/core/cDriverManagerObject.h"
+#include "avida/core/cGlobalObject.h"
 
 #include "cDriverManager.h"
 #include "cMutex.h"
 
+using namespace Avida;
 
-template<typename T> class tDMSingleton : public cDriverManagerObject
+
+template<typename T> class tDMSingleton : public virtual cGlobalObject
 {
 private:
   static tDMSingleton* s_dms;
@@ -60,7 +62,7 @@ public:
 template<typename T> tDMSingleton<T>* tDMSingleton<T>::s_dms = NULL;
 
 
-template<typename T> class tLazyDMSingleton : public cDriverManagerObject
+template<typename T> class tLazyDMSingleton : public virtual cGlobalObject
 {
 private:
   static tLazyDMSingleton* s_dms;

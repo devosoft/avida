@@ -25,11 +25,13 @@
 #ifndef AvidaCoreWorldDriver_h
 #define AvidaCoreWorldDriver_h
 
-#include "avida/core/cDriverManagerObject.h"
+#include "avida/core/cGlobalObject.h"
 
 #include <iostream>
 
 class cString;
+
+using namespace Avida;
 
 
 // This class is an abstract base class that is used by actions within
@@ -40,7 +42,7 @@ enum eDriverPauseState {
   DRIVER_UNPAUSED
 };
 
-class cWorldDriver : public virtual cDriverManagerObject
+class cWorldDriver : public virtual cGlobalObject
 {
 private:
   cWorldDriver(const cWorldDriver&); // @not_implemented

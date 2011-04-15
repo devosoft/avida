@@ -868,7 +868,7 @@
 		703549291333E36800D3865C /* cMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cMap.h; sourceTree = "<group>"; };
 		7035492B1333E39300D3865C /* cClassificationInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cClassificationInfo.h; sourceTree = "<group>"; };
 		703549CE1337BB6D00D3865C /* cWorldDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
-		703549CF1337BD3F00D3865C /* cDriverManagerObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cDriverManagerObject.h; sourceTree = "<group>"; };
+		703549CF1337BD3F00D3865C /* cGlobalObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cGlobalObject.h; sourceTree = "<group>"; };
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
 		70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAnalyzeLib.cc; sourceTree = "<group>"; };
 		70381FDB0EAE2A2A00A97DFD /* ASAvidaNativeObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaNativeObjects.h; sourceTree = "<group>"; };
@@ -1602,9 +1602,9 @@
 		703549CD1337BB6C00D3865C /* core */ = {
 			isa = PBXGroup;
 			children = (
-				703549CF1337BD3F00D3865C /* cDriverManagerObject.h */,
 				70ADB20A133A7995000B9C40 /* cFeedback.h */,
 				7061AB7C1358BD420000B036 /* cGenome.h */,
+				703549CF1337BD3F00D3865C /* cGlobalObject.h */,
 				7061AB7D1358BD420000B036 /* cSequence.h */,
 				703549CE1337BB6D00D3865C /* cWorldDriver.h */,
 			);

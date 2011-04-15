@@ -27,7 +27,11 @@
 #include "cDriverStatusConduit.h"
 #include "tThreadSpecific.h"
 
-class cDriverManagerObject;
+namespace Avida {
+  class cGlobalObject;
+};
+
+using namespace Avida;
 
 
 class cDriverManager
@@ -35,7 +39,7 @@ class cDriverManager
 private:
   static cDriverManager* s_dm;
   
-  tList<cDriverManagerObject> m_objs;
+  tList<cGlobalObject> m_objs;
   
   cMutex m_mutex;
   tThreadSpecific<cDriverStatusConduit> m_conduit;
@@ -51,8 +55,8 @@ private:
 public:
   static void Initialize(); // initialize static driver manager.  This method is NOT thread-safe.
 
-  static void Register(cDriverManagerObject* obj);
-  static void Unregister(cDriverManagerObject* obj);
+  static void Register(cGlobalObject* obj);
+  static void Unregister(cGlobalObject* obj);
   
   static cDriverStatusConduit& Status();
   static void SetConduit(cDriverStatusConduit* conduit);
