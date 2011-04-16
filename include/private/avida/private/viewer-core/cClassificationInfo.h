@@ -22,7 +22,7 @@
  *
  */
 
-#ifndef AviaCoreViewClassificationInfo_h
+#ifndef AvidaCoreViewClassificationInfo_h
 #define AvidaCoreViewClassificationInfo_h
 
 // The cClassificationInfo object is responsible for holding on to all of the general information about the state of
