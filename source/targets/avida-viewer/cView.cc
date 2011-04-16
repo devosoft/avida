@@ -43,7 +43,7 @@
 using namespace std;
 
 
-cView::cView(cWorld* world) : info(world, this)
+cView::cView(cWorld* world, cTextViewerDriver_Base* driver) : info(world, this)
 {
   Setup(world->GetDefaultContext(), "Avida");
 
@@ -53,7 +53,7 @@ cView::cView(cWorld* world) : info(world, this)
   options_screen = new cOptionsScreen (0,0,3,0,info);
   zoom_screen    = new cZoomScreen    (0,0,3,0,info, world->GetPopulation());
   environment_screen = new cEnvironmentScreen (world, 0, 0, 3, 0, info);
-  analyze_screen = new cAnalyzeScreen(world, 0, 0, 3, 0, info);
+  analyze_screen = new cAnalyzeScreen(world, 0, 0, 3, 0, info, driver);
 
   info.SetActiveCell( &( world->GetPopulation().GetCell(0) ) );
 }

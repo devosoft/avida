@@ -28,11 +28,11 @@ cTextWindow* cAnalyzeView::base_window = NULL;
 cBarScreen* cAnalyzeView::bar_screen = NULL;
 
 
-cAnalyzeView::cAnalyzeView(cWorld* world) : info(world, this)
+cAnalyzeView::cAnalyzeView(cWorld* world, cTextViewerDriver_Base* driver) : info(world, this)
 {
   Setup(world->GetDefaultContext(), "Avida");
 
-  analyze_screen = new cAnalyzeScreen(world, 0, 0, 3, 0, info);
+  analyze_screen = new cAnalyzeScreen(world, 0, 0, 3, 0, info, driver);
 }
 
 cAnalyzeView::~cAnalyzeView()

@@ -58,8 +58,6 @@ namespace Avida {
     
     // Input/Output
     virtual bool IsInteractive() { return false; }
-    virtual void Flush() { std::cout.flush(); std::cerr.flush(); }
-    virtual bool ProcessKeypress(int keypress) { return false; }
     
     
     // Fast-forward through epochs when no replication is happening -- @JEB

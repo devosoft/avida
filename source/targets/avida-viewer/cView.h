@@ -35,6 +35,7 @@ class cOptionsScreen;
 class cZoomScreen;
 class cEnvironmentScreen;
 class cAnalyzeScreen;
+class cTextViewerDriver_Base;
 class cWorld;
 
 class cView : public cView_Base {
@@ -70,7 +71,7 @@ private:
   // Map navigation
   void NavigateMapWindow(cAvidaContext& ctx);
 public:
-  cView(cWorld* world);
+  cView(cWorld* world, cTextViewerDriver_Base* driver);
   virtual ~cView();
 
   void Setup(cAvidaContext& ctx, const cString & in_name);

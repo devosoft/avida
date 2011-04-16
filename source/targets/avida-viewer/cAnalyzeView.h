@@ -20,6 +20,7 @@ class cScreen;
 class cTextWindow;
 class cBarScreen;
 class cAnalyzeScreen;
+class cTextViewerDriver_Base;
 class cWorld;
 
 class cAnalyzeView : public cView_Base {
@@ -35,7 +36,7 @@ private:
   void DoInputs(cAvidaContext& ctx);
 
 public:
-  cAnalyzeView(cWorld* world);
+  cAnalyzeView(cWorld* world, cTextViewerDriver_Base* driver);
   ~cAnalyzeView();
 
   void Setup(cAvidaContext& ctx, const cString& in_name);

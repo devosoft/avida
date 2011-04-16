@@ -41,7 +41,7 @@ using namespace std;
 cTextViewerDriver::cTextViewerDriver(cWorld* world)
   : cTextViewerDriver_Base(world), m_pause(false), m_firstupdate(true)
 {
-  m_view = new cView(world);
+  m_view = new cView(world, this);
   m_view->SetViewMode(-1);    // Set the view mode to its default value.
 
   cDriverManager::Register(this);

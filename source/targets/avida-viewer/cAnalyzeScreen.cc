@@ -20,6 +20,7 @@
 #include "cPopulationCell.h"
 #include "cOrganism.h"
 #include "cUserFeedback.h"
+#include "cTextViewerDriver_Base.h"
 
 #include "Platform.h"
 
@@ -90,7 +91,7 @@ void cAnalyzeScreen::UpdateCommandLine_Body()
   }
   
   // Flush everything we have in the buffers.
-  m_world->GetDriver().Flush();
+  m_driver->Flush();
   
   // Print history for the moment...
   int hist_height = Height() - 6;
@@ -428,7 +429,7 @@ void cAnalyzeScreen::DoInput_Menu(cAvidaContext& ctx)
       {
         int tab_result = tab_box.DoKeypress(cur_char);
         if (tab_result == -1) {
-          if (m_world->GetDriver().ProcessKeypress(cur_char) == true) {
+          if (m_driver->ProcessKeypress(ctx, cur_char) == true) {
             finished = true;
           } else {
             Print(10, 70, "** %d **", (int) cur_char);
@@ -563,7 +564,7 @@ void cAnalyzeScreen::ProcessCommandLine()
   }
   
   // Deal with collected feedback from analyze mode.
-  m_world->GetDriver().Flush();
+  m_driver->Flush();
 }
 
 void cAnalyzeScreen::DoInput(cAvidaContext& ctx, int in_char)

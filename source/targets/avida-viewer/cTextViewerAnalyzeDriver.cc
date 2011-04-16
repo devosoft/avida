@@ -42,7 +42,7 @@ using namespace std;
 cTextViewerAnalyzeDriver::cTextViewerAnalyzeDriver(cWorld* world, bool inter)
   : cTextViewerDriver_Base(world), m_interactive(inter)
 {
-  m_view = new cAnalyzeView(world);
+  m_view = new cAnalyzeView(world, this);
 
   cDriverManager::Register(this);
   world->SetDriver(this);

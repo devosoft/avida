@@ -57,7 +57,7 @@ int main(int argc, char * argv[])
   
   if (!world) return -1;
   
-  cAvidaDriver* driver = NULL;
+  cTextViewerDriver_Base* driver = NULL;
   if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
     driver = new cTextViewerAnalyzeDriver(world, (world->GetConfig().ANALYZE_MODE.Get() == 2));
   } else {

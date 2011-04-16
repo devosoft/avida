@@ -23,8 +23,6 @@
 
 #include "avida/core/cWorldDriver.h"
 
-#include "cAvidaDriver.h"
-
 #include <sstream>
 #include <iostream>
 
@@ -35,7 +33,7 @@ class cWorld;
 using namespace Avida;
 
 
-class cTextViewerDriver_Base : public cAvidaDriver, public cWorldDriver {
+class cTextViewerDriver_Base : public cWorldDriver {
 protected:
   cWorld* m_world;
   cView_Base* m_view;
@@ -55,6 +53,8 @@ public:
   void Flush();
 
   bool ProcessKeypress(cAvidaContext& ctx, int keypress);
+
+  virtual void Run() = 0;
 };
 
 #endif

@@ -20,11 +20,13 @@
 
 
 class cAnalyzeCommand;
+class cTextViewerDriver_Base;
 class cWorld;
 
 class cAnalyzeScreen : public cScreen {
 protected:
   cWorld* m_world;
+  cTextViewerDriver_Base* m_driver;
   int mode;
 
   // Manage the menu mode.
@@ -60,10 +62,12 @@ protected:
 
   void ProcessCommandLine();
 public:
-  cAnalyzeScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info)
+  cAnalyzeScreen(cWorld* world, int y_size, int x_size, int y_start, int x_start, cViewInfo& in_info,
+                 cTextViewerDriver_Base* driver)
     : cScreen(y_size, x_size, y_start, x_start, in_info)
     , m_world(world)
-	, tab_box(this, 0, 0, Height() - 1, Width())
+    , m_driver(driver)
+    , tab_box(this, 0, 0, Height() - 1, Width())
     , rollback_line(0)
     , cursor_pos(0)
     , nest_depth(0)
