@@ -70,7 +70,7 @@
 
 
 - (bool) isPaused {
-  return (self->driver->GetPauseState() == DRIVER_PAUSED);
+  return (self->driver->GetPauseState() == Avida::CoreView::DRIVER_PAUSED);
 }
 
 
