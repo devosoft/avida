@@ -19,8 +19,10 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include <iostream>
+
 #include "cInstSet.h"
+
+#include "avida/core/cWorldDriver.h"
 
 #include "cArgContainer.h"
 #include "cArgSchema.h"
@@ -28,9 +30,11 @@
 #include "cStringUtil.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
+
+#include <iostream>
 
 using namespace std;
+using namespace Avida;
 
 
 cInstSet::cInstSet(const cInstSet& _in)

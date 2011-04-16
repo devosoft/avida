@@ -23,6 +23,8 @@
 
 #include "cHardwareExperimental.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cHardwareManager.h"
@@ -33,7 +35,6 @@
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
-#include "avida/core/cWorldDriver.h"
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
@@ -41,6 +42,7 @@
 #include <fstream>
 
 using namespace std;
+using namespace Avida;
 using namespace AvidaTools;
 
 

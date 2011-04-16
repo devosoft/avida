@@ -22,6 +22,8 @@
 
 #include "cHardwareBase.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAvidaContext.h"
 #include "cCodeLabel.h"
 #include "cCPUTestInfo.h"
@@ -37,10 +39,10 @@
 #include "cStats.h"
 #include "cTestCPU.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "nHardware.h"
 #include "tArrayUtils.h"
 
+using namespace Avida;
 using namespace AvidaTools;
 
 

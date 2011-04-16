@@ -21,13 +21,9 @@
 #ifndef cTextViewerDriver_Base_h
 #define cTextViewerDriver_Base_h
 
-#ifndef cAvidaDriver_h
-#include "cAvidaDriver.h"
-#endif
-
-#ifndef cWorldDriver_h
 #include "avida/core/cWorldDriver.h"
-#endif
+
+#include "cAvidaDriver.h"
 
 #include <sstream>
 #include <iostream>
@@ -35,6 +31,9 @@
 class cAvidaContext;
 class cView_Base;
 class cWorld;
+
+using namespace Avida;
+
 
 class cTextViewerDriver_Base : public cAvidaDriver, public cWorldDriver {
 protected:

@@ -22,29 +22,13 @@
 #ifndef cDriver_TextViewer_h
 #define cDriver_TextViewer_h
 
-#ifndef cAvidaDriver_h
-#include "cAvidaDriver.h"
-#endif
-
-#ifndef cCoreView_Info_h
-#include "cCoreView_Info.h"
-#endif
-
-#ifndef cScreen_Map_h
-#include "cScreen_Map.h"
-#endif
- 
-#ifndef cTextWindow_h
-#include "cTextWindow.h"
-#endif
-
-#ifndef cWorldDriver_h
 #include "avida/core/cWorldDriver.h"
-#endif
 
-#ifndef ncurses_defs_h
+#include "cAvidaDriver.h"
+#include "cCoreView_Info.h"
+#include "cScreen_Map.h"
+#include "cTextWindow.h"
 #include "ncurses-defs.h"
-#endif
 
 #include <sstream>
 #include <iostream>
@@ -53,6 +37,8 @@
 class cWorld;
 
 using namespace std;
+using namespace Avida;
+
 
 class cDriver_TextViewer : public cAvidaDriver, public cWorldDriver {
 private:

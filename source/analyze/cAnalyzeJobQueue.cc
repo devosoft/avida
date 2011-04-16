@@ -23,10 +23,13 @@
 
 #include "Avida.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "Platform.h"
+
+using namespace Avida;
 
 
 cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world)

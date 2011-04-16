@@ -22,6 +22,8 @@
 
 #include "cOrganism.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cContextPhenotype.h"
@@ -36,7 +38,6 @@
 #include "cStringUtil.h"
 #include "cTaskContext.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "cStats.h"
 #include "nHardware.h"
 
@@ -45,6 +46,7 @@
 #include <utility>
 
 using namespace std;
+using namespace Avida;
 
 
 cOrganism::cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, int parent_generation, eBioUnitSource src,

@@ -20,6 +20,8 @@
 
 #include "Avida.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #if BOOST_IS_AVAILABLE
 #include <iterator>
 #include "cDemeTopologyNetwork.h"
@@ -29,8 +31,10 @@
 #include "cPopulationInterface.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "cDataFile.h"
+
+using namespace Avida;
+
 
 static const char* E="edges [e]";
 static const char* V="vertices [v]";

@@ -22,6 +22,8 @@
 
 #include "cAnalyzeGenotype.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cDriverManager.h"
@@ -37,7 +39,6 @@
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 
 #include "tArray.h"
 #include "tAutoRelease.h"
@@ -47,6 +48,8 @@
 
 #include <cmath>
 using namespace std;
+using namespace Avida;
+
 
 cAnalyzeGenotype::cAnalyzeGenotype(cWorld* world, const cGenome& genome)
 : m_world(world)

@@ -23,6 +23,8 @@
 
 #include "cHardwareCPU.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cCPUTestInfo.h"
@@ -43,7 +45,6 @@
 #include "cStateGrid.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
-#include "avida/core/cWorldDriver.h"
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
@@ -54,6 +55,7 @@
 #include <cmath>
 
 using namespace std;
+using namespace Avida;
 using namespace AvidaTools;
 
 

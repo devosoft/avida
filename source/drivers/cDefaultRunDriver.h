@@ -28,6 +28,8 @@
 class cString;
 class cWorld;
 
+using namespace Avida;
+
 
 class cDefaultRunDriver : public cAvidaDriver, public cWorldDriver
 {

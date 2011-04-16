@@ -23,6 +23,8 @@
 
 #include "Avida.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cAnalyze.h"
@@ -42,10 +44,11 @@
 #include "cStats.h"
 #include "cString.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "tAnalyzeJob.h"
 #include "tAnalyzeJobBatch.h"
 #include "tSmartArray.h"
+
+using namespace Avida;
 
 
 class cActionAnalyzeLandscape : public cAction  // @parallelized

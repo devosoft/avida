@@ -26,39 +26,19 @@
 #include "avida/core/cGenome.h"
 #include "avida/core/cWorldDriver.h"
 
+#include "cCPUMemory.h"
+#include "cString.h"
+#include "cStringList.h"
+#include "cStringUtil.h"
+#include "tArray.h"
+#include "cPlasticPhenotype.h"
+#include "cPhenotype.h"
+#include "cHardwareManager.h"
+#include "cWorld.h"
+#include "cEnvironment.h"
+
 #include <set>
 #include <utility>
-
-#ifndef cCPUMemory_h
-#include "cCPUMemory.h"
-#endif
-#ifndef cString_h
-#include "cString.h"
-#endif
-#ifndef cStringList_h
-#include "cStringList.h"
-#endif
-#ifndef cStringUtil_h
-#include "cStringUtil.h"
-#endif
-#ifndef tArray_h
-#include "tArray.h"
-#endif
-#ifndef cPlasticPhenotype_h
-#include "cPlasticPhenotype.h"
-#endif
-#ifndef cPhenotype_h
-#include "cPhenotype.h"
-#endif
-#ifndef cHardwareManager_h
-#include "cHardwareManager.h"
-#endif
-#ifndef cWorld_h
-#include "cWorld.h"
-#endif
-#ifndef cEnvironment_h
-#include "cEnvironment.h"
-#endif
 
 class cAvidaContext;
 class cTestCPU;

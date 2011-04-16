@@ -32,6 +32,8 @@
 #include <cmath>
 #include <iostream>
 
+using namespace Avida;
+
 
 /* cGradientCount is designed to give moving peaks of resources. Peaks are capped with plateaus. The slope of the peaks
 is height / distance. Consequently, when height = distance from center of peak, the value at that cell = 1. This was 

@@ -22,6 +22,8 @@
 
 #include "cStats.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cBioGroup.h"
 #include "cDataFile.h"
 #include "cEnvironment.h"
@@ -33,7 +35,6 @@
 #include "cDeme.h"
 #include "cStringUtil.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "tDataEntry.h"
 #include "cOrgMessage.h"
 #include "cOrgMessagePredicate.h"
@@ -47,6 +48,7 @@
 #include <cmath>
 #include <sstream>
 
+using namespace Avida;
 using namespace AvidaTools;
 
 

@@ -31,49 +31,42 @@
 
 class cString;
 
-using namespace Avida;
 
-
-// This class is an abstract base class that is used by actions within
-// a cWorld to notify its driver of various states and conditions.
-
-enum eDriverPauseState {
-  DRIVER_PAUSED,
-  DRIVER_UNPAUSED
-};
-
-class cWorldDriver : public virtual cGlobalObject
-{
-private:
-  cWorldDriver(const cWorldDriver&); // @not_implemented
-  cWorldDriver& operator=(const cWorldDriver&); // @not_implemented
+namespace Avida {  
   
-public:
-  cWorldDriver() { ; }
-  virtual ~cWorldDriver() { ; }
+  // cWorldDriver - protocol defining the interface for objects that drive world execution
+  // --------------------------------------------------------------------------------------------------------------
   
-  // Driver Actions
-  virtual void SignalBreakpoint() = 0;
-  virtual void SetDone() = 0;
-  virtual void SetPause() = 0;
+  class cWorldDriver : public virtual cGlobalObject
+  {
+  public:
+    virtual ~cWorldDriver() { ; }
+    
+    // Driver Actions
+    virtual void SignalBreakpoint() = 0;
+    virtual void SetDone() = 0;
+    virtual void SetPause() = 0;
 
-  virtual void RaiseException(const cString& in_string) = 0;
-  virtual void RaiseFatalException(int exit_code, const cString& in_string) = 0;
-  
-  // Notifications
-  virtual void NotifyComment(const cString& in_string) = 0;
-  virtual void NotifyWarning(const cString& in_string) = 0;
+    virtual void RaiseException(const cString& in_string) = 0;
+    virtual void RaiseFatalException(int exit_code, const cString& in_string) = 0;
+    
+    
+    // Notifications
+    virtual void NotifyComment(const cString& in_string) = 0;
+    virtual void NotifyWarning(const cString& in_string) = 0;
 
-  // Input/Output
-  virtual bool IsInteractive() { return false; }
-  virtual void Flush() { std::cout.flush(); std::cerr.flush(); }
-  virtual bool ProcessKeypress(int keypress) { return false; }
-  
-  // Fast-forward through epochs when no replication is happening -- @JEB
-  // These are only implemented in the DefaultWorldDriver
-  virtual void ClearFastForward() { }
-  virtual bool GetFastForward() { return false; }
-
+    
+    // Input/Output
+    virtual bool IsInteractive() { return false; }
+    virtual void Flush() { std::cout.flush(); std::cerr.flush(); }
+    virtual bool ProcessKeypress(int keypress) { return false; }
+    
+    
+    // Fast-forward through epochs when no replication is happening -- @JEB
+    // These are only implemented in the DefaultWorldDriver
+    virtual void ClearFastForward() { }
+    virtual bool GetFastForward() { return false; }
+  };
 };
 
 #endif

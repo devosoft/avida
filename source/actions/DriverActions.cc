@@ -21,13 +21,16 @@
 
 #include "DriverActions.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAction.h"
 #include "cActionLibrary.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 
 #include <ctime>
+
+using namespace Avida;
 
 
 class cActionExit : public cAction

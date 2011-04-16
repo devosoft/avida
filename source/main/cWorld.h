@@ -22,21 +22,16 @@
 #ifndef cWorld_h
 #define cWorld_h
 
-#ifndef cAvidaConfig_h
 #include "cAvidaConfig.h"
-#endif
-#ifndef cAvidaContext_h
 #include "cAvidaContext.h"
-#endif
-#ifndef cDataFileManager_h
 #include "cDataFileManager.h"
-#endif
-#ifndef cRandom_h
 #include "cRandom.h"
-#endif
-
 
 #include <cassert>
+
+namespace Avida {
+  class cWorldDriver;
+};
 
 class cAnalyze;
 class cAnalyzeGenotype;
@@ -51,9 +46,11 @@ class cPopulationCell;
 class cStats;
 class cTestCPU;
 class cUserFeedback;
-class cWorldDriver;
 template<class T> class tDataEntry;
 template<class T> class tDictionary;
+
+using namespace Avida;
+
 
 class cWorld
 {

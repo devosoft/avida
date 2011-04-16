@@ -41,11 +41,20 @@ namespace Avida {
     class cMap;
     class cListener;
 
+
+    // Enumerations
+    // --------------------------------------------------------------------------------------------------------------  
+    
+    enum eDriverPauseState {
+      DRIVER_PAUSED,
+      DRIVER_UNPAUSED
+    };
+
     
     // Driver Definition
     // --------------------------------------------------------------------------------------------------------------  
     
-    class cDriver : public Apto::Thread, public cWorldDriver
+    class cDriver : public Apto::Thread, public Avida::cWorldDriver
     {
     private:
       cWorld* m_world;

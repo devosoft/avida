@@ -24,6 +24,8 @@
 
 #include "Avida.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cActionLibrary.h"
 #include "cAnalyzeCommand.h"
 #include "cAnalyzeCommandAction.h"
@@ -60,7 +62,6 @@
 #include "cTestCPU.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "tAnalyzeJob.h"
 #include "tAnalyzeJobBatch.h"
 #include "tDataCommandManager.h"
@@ -82,6 +83,7 @@ extern "C" {
 }
 
 using namespace std;
+using namespace Avida;
 using namespace AvidaTools;
 
 cAnalyze::cAnalyze(cWorld* world)

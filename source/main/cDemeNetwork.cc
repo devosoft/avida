@@ -20,14 +20,19 @@
 
 #include "Avida.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cDeme.h"
 #include "cDemeNetwork.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
+
 // Conditional includes (these use the BGL).
 #if BOOST_IS_AVAILABLE
 #include "cDemeTopologyNetwork.h"
 #endif
+
+using namespace Avida;
+
 
 /*! Creates a cDemeNetwork object.
  

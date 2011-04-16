@@ -23,15 +23,10 @@
 #ifndef cPopulationInterface_h
 #define cPopulationInterface_h
 
-#ifndef cOrgInterface_h
-#include "cOrgInterface.h"
-#endif
-#ifndef cWorld_h
-#include "cWorld.h"
-#endif
-#ifndef cWorldDriver_h
 #include "avida/core/cWorldDriver.h"
-#endif
+
+#include "cOrgInterface.h"
+#include "cWorld.h"
 #include "cGenomeUtil.h"
 #include "cPopulationCell.h"
 

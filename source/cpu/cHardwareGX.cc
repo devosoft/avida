@@ -19,6 +19,8 @@
 
 #include "cHardwareGX.h"
 
+#include "avida/core/cWorldDriver.h"
+
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
 #include "cEnvironment.h"
@@ -29,7 +31,6 @@
 #include "cPhenotype.h"
 #include "cStringUtil.h"
 #include "cTestCPU.h"
-#include "avida/core/cWorldDriver.h"
 #include "cWorld.h"
 #include "tInstLibEntry.h"
 
@@ -38,6 +39,7 @@
 #include <algorithm>
 
 using namespace std;
+using namespace Avida;
 using namespace AvidaTools;
 
 //! A small helper struct to make deleting a little easier.

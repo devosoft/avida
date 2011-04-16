@@ -25,6 +25,8 @@
 #include "cDriverManager.h"
 #include "avida/core/cWorldDriver.h"
 
+using namespace Avida;
+
 
 class cFallbackWorldDriver : public cWorldDriver
 {

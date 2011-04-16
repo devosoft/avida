@@ -22,6 +22,7 @@
 #include "PrintActions.h"
 
 #include "avida/core/cSequence.h"
+#include "avida/core/cWorldDriver.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
@@ -46,9 +47,9 @@
 #include "cPopulationCell.h"
 #include "cStats.h"
 #include "cWorld.h"
-#include "avida/core/cWorldDriver.h"
 #include "tAutoRelease.h"
 #include "tIterator.h"
+
 #include <cmath>
 #include <cerrno>
 #include <map>
