@@ -29,13 +29,19 @@
 
 #include "cString.h"
 
-class cDataFile;
 class cHardwareManager;
-class cUserFeedback;
-template <typename T> class tDictionary;
-template <typename T> class tList;
 
-namespace Avida {
+class cDataFile;
+template <typename T> class tDictionary;
+
+
+namespace Avida {  
+  
+  // Class Declarations
+  // --------------------------------------------------------------------------------------------------------------
+  
+  class cFeedback;
+  
   
   // cGenome - genetic and epi-genetic heritable information
   // --------------------------------------------------------------------------------------------------------------
@@ -80,7 +86,7 @@ namespace Avida {
     void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
     void Save(cDataFile& df);
     
-    bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cUserFeedback* errors = NULL);
+    bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cFeedback& feedback);
     void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
   };  
 };

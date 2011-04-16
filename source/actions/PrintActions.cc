@@ -49,6 +49,7 @@
 #include "cWorld.h"
 #include "tAutoRelease.h"
 #include "tIterator.h"
+#include "cUserFeedback.h"
 
 #include <cmath>
 #include <cerrno>
@@ -2025,7 +2026,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintGeneticDistanceData(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintGeneticDistanceData(cWorld* world, const cString& args, cFeedback& feedback)
   : cAction(world, args), m_filename("genetic_distance.dat")
   {
     cString creature_file;
@@ -2034,7 +2035,7 @@ public:
     // Load the genome of the reference creature
     creature_file.PopWord();
     if (creature_file == "" || creature_file == "START_ORGANISM") creature_file = m_world->GetConfig().START_ORGANISM.Get();
-    m_reference.LoadFromDetailFile(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager());
+    m_reference.LoadFromDetailFile(creature_file, m_world->GetWorkingDir(), world->GetHardwareManager(), feedback);
 
     if (largs.GetSize()) m_filename = largs.PopWord();
   }
@@ -2142,7 +2143,16 @@ public:
 
     // load the reference genome
     cGenome reference_genome;
-    reference_genome.LoadFromDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+    cUserFeedback feedback;
+    reference_genome.LoadFromDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
 
     // cycle over all genotypes
     tAutoRelease<tIterator<cBioGroup> > it;

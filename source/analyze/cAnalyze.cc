@@ -174,7 +174,16 @@ void cAnalyze::LoadOrganism(cString cur_string)
   
   // Setup the genome...
   cGenome genome;
-  genome.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+  cUserFeedback feedback;
+  genome.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+  for (int i = 0; i < feedback.GetNumMessages(); i++) {
+    switch (feedback.GetMessageType(i)) {
+      case cUserFeedback::ERROR:    cerr << "error: "; break;
+      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      default: break;
+    };
+    cerr << feedback.GetMessage(i) << endl;
+  }
   
   // Construct the new genotype..
   cAnalyzeGenotype* genotype = new cAnalyzeGenotype(m_world, genome);
@@ -1142,8 +1151,7 @@ void cAnalyze::FindSexLineage(cString cur_string)
         batch_it.Remove();
         found_list.Push(found_mom);
         // if finding lineages by parental length, may have to swap 
-        if (parent_method == "genome_size" & 
-            found_mom->GetLength() < found_dad->GetLength()) { 
+        if (parent_method == "genome_size" && found_mom->GetLength() < found_dad->GetLength()) { 
           //cout << "Swapping parents!" << endl;
           found_temp = found_mom; 
           found_mom = found_dad; 
@@ -1166,8 +1174,7 @@ void cAnalyze::FindSexLineage(cString cur_string)
           // Don't move to found list, since its already there, but update
           // to the next ids.
           // if finding lineages by parental length, may have to swap 
-          if (parent_method == "genome_size" & 
-              found_mom->GetLength() < found_dad->GetLength()) {
+          if (parent_method == "genome_size" && found_mom->GetLength() < found_dad->GetLength()) {
             //cout << "Swapping parents!" << endl;
             found_temp = found_mom; 
             found_mom = found_dad;  

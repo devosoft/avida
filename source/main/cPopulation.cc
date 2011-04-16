@@ -331,7 +331,7 @@ bool cPopulation::InitiatePop(cUserFeedback* feedback)
   const cString& filename = m_world->GetConfig().START_ORGANISM.Get();
 
   if (filename != "-" && filename != "") {
-    if (!start_org.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback)) return false;
+    if (!start_org.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), *feedback)) return false;
     if (start_org.GetSize() != 0) {
       Inject(start_org, SRC_ORGANISM_FILE_LOAD, m_world->GetDefaultContext());
     } else {

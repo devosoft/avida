@@ -39,6 +39,7 @@
 #include "cWorld.h"
 #include "cOrganism.h"
 #include "cEnvironment.h"
+#include "cUserFeedback.h"
 
 #include <map>
 #include <set>
@@ -95,7 +96,16 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cGenome genome;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+    cUserFeedback feedback;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
     m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
   }
 };
@@ -246,7 +256,16 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cGenome genome;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+    cUserFeedback feedback;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
       m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
   }
@@ -307,7 +326,16 @@ public:
       m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
     } else {
       cGenome genome;
-      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+      cUserFeedback feedback;
+      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      for (int i = 0; i < feedback.GetNumMessages(); i++) {
+        switch (feedback.GetMessageType(i)) {
+          case cUserFeedback::ERROR:    cerr << "error: "; break;
+          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          default: break;
+        };
+        cerr << feedback.GetMessage(i) << endl;
+      }
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
@@ -478,7 +506,16 @@ public:
       m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
     } else {
       cGenome genome;
-      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+      cUserFeedback feedback;
+      genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      for (int i = 0; i < feedback.GetNumMessages(); i++) {
+        switch (feedback.GetMessageType(i)) {
+          case cUserFeedback::ERROR:    cerr << "error: "; break;
+          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          default: break;
+        };
+        cerr << feedback.GetMessage(i) << endl;
+      }
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().InjectParasite(m_label, genome.GetSequence(), i);
       }
@@ -545,8 +582,17 @@ public:
       m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
     } else {
       cGenome genome, parasite;
-      genome.LoadFromDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager());
-      parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+      cUserFeedback feedback;
+      genome.LoadFromDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+      for (int i = 0; i < feedback.GetNumMessages(); i++) {
+        switch (feedback.GetMessageType(i)) {
+          case cUserFeedback::ERROR:    cerr << "error: "; break;
+          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          default: break;
+        };
+        cerr << feedback.GetMessage(i) << endl;
+      }
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().InjectParasite(m_label, parasite.GetSequence(), i);
@@ -600,7 +646,16 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cGenome genome;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+    cUserFeedback feedback;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx,
@@ -667,7 +722,16 @@ public:
   void Process(cAvidaContext& ctx)
   {
     cGenome genome;
-    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager());
+    cUserFeedback feedback;
+    genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
+    for (int i = 0; i < feedback.GetNumMessages(); i++) {
+      switch (feedback.GetMessageType(i)) {
+        case cUserFeedback::ERROR:    cerr << "error: "; break;
+        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        default: break;
+      };
+      cerr << feedback.GetMessage(i) << endl;
+    }
     if(m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
       for(int i=1; i<m_world->GetPopulation().GetNumDemes(); ++i) {  // first org has already been injected
         if (i % m_mod_num == 0) {
