@@ -22,8 +22,6 @@
 #include "cGenotypeBatch.h"
 
 #include "cAnalyzeGenotype.h"
-#include "cDriverManager.h"
-#include "cDriverStatusConduit.h"
 #include "cRandom.h"
 #include "tSmartArray.h"
 

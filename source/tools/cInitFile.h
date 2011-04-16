@@ -147,9 +147,9 @@ public:
 private:
   void initMappings(const tDictionary<cString>& mappings);
   bool loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
-                const tArraySet<cString>* custom_directives = NULL);
+                const tArraySet<cString>* custom_directives, cFeedback& feedback);
   bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
-                      const cString& working_dir, const tArraySet<cString>* custom_directives = NULL);
+                      const cString& working_dir, const tArraySet<cString>* custom_directives, cFeedback& feedback);
   void postProcess(tSmartArray<sLine*>& lines);
 };
 

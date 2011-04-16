@@ -22,9 +22,7 @@
 #ifndef tDMSingleton_h
 #define tDMSingleton_h
 
-#include "avida/core/cGlobalObject.h"
-
-#include "cDriverManager.h"
+#include "avida/core/GlobalObject.h"
 #include "cMutex.h"
 
 using namespace Avida;
@@ -52,7 +50,7 @@ public:
   {
     if (!s_dms) {
       s_dms = new tDMSingleton((*construct)());
-      cDriverManager::Register(s_dms);
+      GlobalObjectManager::Register(s_dms);
     }
   }
 
@@ -86,7 +84,7 @@ public:
   {
     if (!s_dms) {
       s_dms = new tLazyDMSingleton(construct);
-      cDriverManager::Register(s_dms);
+      GlobalObjectManager::Register(s_dms);
     }
   }
 

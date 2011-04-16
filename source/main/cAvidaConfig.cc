@@ -25,8 +25,9 @@
 #include "Avida.h"
 #include "AvidaTools.h"
 
+#include "avida/core/GlobalObject.h"
+
 #include "cActionLibrary.h"
-#include "cDriverManager.h"
 #include "cDriverStatusConduit.h"
 #include "cInitFile.h"
 #include "cStringIterator.h"
@@ -382,7 +383,7 @@ cString cAvidaConfig::GetAsString(const cString& entry) const
   // Default to empty string on lookup failure
   cString rtn("");
   if (!Get(entry, rtn))
-    cDriverManager::Status().SignalError(cString("config entry '") + entry + "' not found");
+    GlobalObjectManager::Status().SignalError(cString("config entry '") + entry + "' not found");
   return rtn;
 }
 

@@ -22,7 +22,6 @@
 #include "cDefaultAnalyzeDriver.h"
 
 #include "cAnalyze.h"
-#include "cDriverManager.h"
 #include "cWorld.h"
 
 #include <cstdlib>
@@ -34,13 +33,13 @@ using namespace std;
 cDefaultAnalyzeDriver::cDefaultAnalyzeDriver(cWorld* world, bool inter)
   : m_world(world), m_interactive(inter)
 {
-  cDriverManager::Register(this);
+  GlobalObjectManager::Register(this);
   world->SetDriver(this);
 }
 
 cDefaultAnalyzeDriver::~cDefaultAnalyzeDriver()
 {
-  cDriverManager::Unregister(this);
+  GlobalObjectManager::Unregister(this);
   delete m_world;
 }
 

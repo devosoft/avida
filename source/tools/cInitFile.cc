@@ -31,11 +31,20 @@
 using namespace std;
 
 
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, cFeedback& feedback,
+                     const tArraySet<cString>* custom_directives)
+: m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
+{
+  tSmartArray<sLine*> lines;
+  m_opened = loadFile(filename, lines, working_dir, custom_directives, feedback);
+  postProcess(lines);
+}
+
 cInitFile::cInitFile(const cString& filename, const cString& working_dir, const tArraySet<cString>* custom_directives)
   : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
   tSmartArray<sLine*> lines;
-  m_opened = loadFile(filename, lines, working_dir, custom_directives);
+  m_opened = loadFile(filename, lines, working_dir, custom_directives, m_feedback);
   postProcess(lines);
 }
 
@@ -44,7 +53,7 @@ cInitFile::cInitFile(const cString& filename, const tDictionary<cString>& mappin
 {
   initMappings(mappings);
   tSmartArray<sLine*> lines;
-  m_opened = loadFile(filename, lines, working_dir);
+  m_opened = loadFile(filename, lines, working_dir, NULL, m_feedback);
   postProcess(lines);
 }
 
@@ -64,7 +73,7 @@ cInitFile::cInitFile(istream& in_stream, const cString& working_dir)
   std::string linebuf;
   while (std::getline(in_stream, linebuf)) {
     cString cur_line(linebuf.c_str());
-    if (cur_line[0] == '#') processCommand(cur_line, lines, m_filename, linenum, working_dir);
+    if (cur_line[0] == '#') processCommand(cur_line, lines, m_filename, linenum, working_dir, NULL, m_feedback);
     else lines.Push(new sLine(cur_line, m_filename, linenum));    
     linenum++;
   }
@@ -94,11 +103,11 @@ void cInitFile::initMappings(const tDictionary<cString>& mappings)
 
 
 bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
-                         const tArraySet<cString>* custom_directives)
+                         const tArraySet<cString>* custom_directives, cFeedback& feedback)
 {
   cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
   if (!file.IsOpen()) {
-    m_feedback.Error("unable to open file '%s'.", (const char*)filename);
+    feedback.Error("unable to open file '%s'.", (const char*)filename);
     return false;   // The file must be opened!
   }
   
@@ -112,7 +121,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
     linenum++;
 
     if (buf.GetSize() && buf[0] == '#') {
-      if (!processCommand(buf, lines, filename, linenum, working_dir, custom_directives)) return false;
+      if (!processCommand(buf, lines, filename, linenum, working_dir, custom_directives, feedback)) return false;
     } else {
       lines.Push(new sLine(buf, filename, linenum));
     }
@@ -124,7 +133,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
 
 
 bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
-                               const cString& working_dir, const tArraySet<cString>* custom_directives)
+                               const cString& working_dir, const tArraySet<cString>* custom_directives, cFeedback& feedback)
 {
   cString cmd = cmdstr.PopWord();
   
@@ -141,7 +150,7 @@ bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const
     if (path[0] == '<' || path[0] == '"') {
       int lidx = path.GetSize() - 1;
       if ((path[0] == '"' && path[lidx] != '"') || (path[0] == '<' && path[lidx] != '>')) {
-        m_feedback.Error("%s:%d: syntax error processing include directive", (const char*)filename, linenum);
+        feedback.Error("%s:%d: syntax error processing include directive", (const char*)filename, linenum);
         return false;
       }
       path = path.Substring(1, path.GetSize() - 2);
@@ -152,21 +161,21 @@ bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const
     
     if (cmd != "#import" || !m_imported_files.HasString(path)) {
       // Attempt to include the specified file
-      if (!loadFile(path, lines, working_dir)) {
-        m_feedback.Error("%s:%d: unable to process include directive", (const char*)filename, linenum);
+      if (!loadFile(path, lines, working_dir, custom_directives, feedback)) {
+        feedback.Error("%s:%d: unable to process include directive", (const char*)filename, linenum);
         return false;
       }
     }
   } else if (cmd == "#filetype") {
     cString ft = cmdstr.PopWord();
     if (m_ftype != "unknown" && m_ftype != ft) {
-      m_feedback.Error("%s:%d: duplicate filetype directive", (const char*)filename, linenum);
+      feedback.Error("%s:%d: duplicate filetype directive", (const char*)filename, linenum);
       return false;
     }
     m_ftype = ft;
   } else if (cmd == "#format") {
     if (m_format.GetSize() != 0) {
-      m_feedback.Error("%s:%d: duplicate format directive", (const char*)filename, linenum);
+      feedback.Error("%s:%d: duplicate format directive", (const char*)filename, linenum);
       return false;
     }
     m_format.Load(cmdstr);
@@ -182,7 +191,7 @@ bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const
         m_mappings.Remove(mapping);
       }
     } else {
-      m_feedback.Error("%s:%d: invalid define directive", (const char*)filename, linenum);      
+      feedback.Error("%s:%d: invalid define directive", (const char*)filename, linenum);      
       return false;
     }
   } else if (custom_directives) {

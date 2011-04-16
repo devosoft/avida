@@ -22,7 +22,6 @@
 #ifndef cFallbackWorldDriver_h
 #define cFallbackWorldDriver_h
 
-#include "cDriverManager.h"
 #include "avida/core/cWorldDriver.h"
 
 using namespace Avida;
@@ -35,8 +34,8 @@ private:
   cFallbackWorldDriver& operator=(const cFallbackWorldDriver&); // @not_implemented
   
 public:
-  cFallbackWorldDriver() { cDriverManager::Register(this); }
-  ~cFallbackWorldDriver() { cDriverManager::Unregister(this); }
+  cFallbackWorldDriver() { GlobalObjectManager::Register(this); }
+  ~cFallbackWorldDriver() { GlobalObjectManager::Unregister(this); }
   
   // Driver Actions
   void SignalBreakpoint() { return; }

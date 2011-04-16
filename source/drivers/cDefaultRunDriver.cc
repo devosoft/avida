@@ -25,7 +25,6 @@
 #include "cBGGenotype.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
-#include "cDriverManager.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
@@ -46,7 +45,7 @@ using namespace std;
 cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(false), 
 m_fastforward(false),m_last_generation(0),  m_generation_same_update_count(0) 
 {
-  cDriverManager::Register(this);
+  GlobalObjectManager::Register(this);
   world->SetDriver(this);
   
   // Save this config variable
@@ -56,7 +55,7 @@ m_fastforward(false),m_last_generation(0),  m_generation_same_update_count(0)
 
 cDefaultRunDriver::~cDefaultRunDriver()
 {
-  cDriverManager::Unregister(this);
+  GlobalObjectManager::Unregister(this);
   delete m_world;
 }
 

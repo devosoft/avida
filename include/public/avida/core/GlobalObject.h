@@ -1,9 +1,10 @@
 /*
- *  core/cGlobalObject.h
+ *  core/GlobalObject.h
  *  avida-core
  *
- *  Created by David on 10/31/08.
- *  Copyright 2008-2011 Michigan State University. All rights reserved.
+ *  Created by David on 12/11/05.
+ *  Copyright 2005-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -18,18 +19,41 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
 #ifndef AvidaCoreGlobalObject_h
 #define AvidaCoreGlobalObject_h
 
+#include "cDriverStatusConduit.h"
+
+
 namespace Avida {
+  
+  // cGlobalObject - protocol for globally registered objects
+  // --------------------------------------------------------------------------------------------------------------
   
   class cGlobalObject
   {
   public:
     virtual ~cGlobalObject() = 0;
   };
-}
+  
+
+  // Global Object Manager
+  // --------------------------------------------------------------------------------------------------------------
+  
+  namespace GlobalObjectManager {
+    
+    void Initialize();
+    
+    void Register(cGlobalObject* obj);
+    void Unregister(cGlobalObject* obj);
+    
+    cDriverStatusConduit& Status();
+    void SetConduit(cDriverStatusConduit* conduit);    
+  };
+};
+
 
 #endif

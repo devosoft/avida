@@ -25,7 +25,7 @@
 #ifndef AvidaCoreWorldDriver_h
 #define AvidaCoreWorldDriver_h
 
-#include "avida/core/cGlobalObject.h"
+#include "avida/core/GlobalObject.h"
 
 #include <iostream>
 

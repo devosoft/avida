@@ -25,7 +25,6 @@
 
 #include "cAvidaConfig.h"
 #include "cTextViewerAnalyzeDriver.h"
-#include "cDriverManager.h"
 #include "cTextViewerDriver.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"

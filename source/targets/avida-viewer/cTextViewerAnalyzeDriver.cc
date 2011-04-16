@@ -25,7 +25,6 @@
 #include "cAnalyzeView.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
-#include "cDriverManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -44,13 +43,13 @@ cTextViewerAnalyzeDriver::cTextViewerAnalyzeDriver(cWorld* world, bool inter)
 {
   m_view = new cAnalyzeView(world, this);
 
-  cDriverManager::Register(this);
+  GlobalObjectManager::Register(this);
   world->SetDriver(this);
 }
 
 cTextViewerAnalyzeDriver::~cTextViewerAnalyzeDriver()
 {
-  cDriverManager::Unregister(this);
+  GlobalObjectManager::Unregister(this);
 
   if (m_view != NULL) EndProg(0);
 }

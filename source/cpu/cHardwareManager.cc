@@ -22,10 +22,10 @@
 #include "cHardwareManager.h"
 
 #include "avida/core/cGenome.h"
+#include "avida/core/GlobalObject.h"
 
 #include "cArgContainer.h"
 #include "cArgSchema.h"
-#include "cDriverManager.h"
 #include "cDriverStatusConduit.h"
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
@@ -246,7 +246,7 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       hw = new cHardwareGX(ctx, m_world, org, inst_set);
       break;
     default:
-      cDriverManager::Status().SignalError("unknown/unsupported HARDWARE_TYPE specified", -1);
+      GlobalObjectManager::Status().SignalError("unknown/unsupported HARDWARE_TYPE specified", -1);
       break;
   }
   

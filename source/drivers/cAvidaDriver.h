@@ -22,14 +22,12 @@
 #ifndef cAvidaDriver_h
 #define cAvidaDriver_h
 
-#include "avida/core/cGlobalObject.h"
-
 
 // This class is an abstract base class from which all driver classes
 // in Avida descend.  cAvidaDriver objects are friends with cWorld,
 // allowing them to register cWorldDriver's with an instance of cWorld.
 
-class cAvidaDriver : public virtual Avida::cGlobalObject
+class cAvidaDriver
 {
 private:
   cAvidaDriver(const cAvidaDriver&); // @not_implemented

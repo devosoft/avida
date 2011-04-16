@@ -23,7 +23,6 @@
 
 #include "cChangeList.h"
 #include "cClassificationManager.h"
-#include "cDriverManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -44,13 +43,13 @@ cTextViewerDriver::cTextViewerDriver(cWorld* world)
   m_view = new cView(world, this);
   m_view->SetViewMode(-1);    // Set the view mode to its default value.
 
-  cDriverManager::Register(this);
+  GlobalObjectManager::Register(this);
   world->SetDriver(this);
 }
 
 cTextViewerDriver::~cTextViewerDriver()
 {
-  cDriverManager::Unregister(this);
+  GlobalObjectManager::Unregister(this);
   
   if (m_view != NULL) EndProg(0);
 }

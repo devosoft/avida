@@ -26,8 +26,6 @@
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"
-#include "cDriverManager.h"
-#include "cDriverStatusConduit.h"
 #include "cHardwareBase.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
