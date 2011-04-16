@@ -214,7 +214,6 @@ SET(DRIVERS_DIR ${PROJECT_SOURCE_DIR}/source/drivers)
 SET(DRIVERS_SOURCES
   ${DRIVERS_DIR}/cDefaultAnalyzeDriver.cc
   ${DRIVERS_DIR}/cDefaultRunDriver.cc
-  ${DRIVERS_DIR}/cDriverManager.cc
   ${DRIVERS_DIR}/cDriverStatusConduit.cc
   ${DRIVERS_DIR}/cFallbackWorldDriver.cc
 )
