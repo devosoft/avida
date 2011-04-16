@@ -22,24 +22,23 @@
  *
  */
 
-#ifndef AvidaCoreUserFeedback_h
-#define AvidaCoreUserFeedback_h
+#ifndef AvidaCoreFeedback_h
+#define AvidaCoreFeedback_h
 
-class cFeedback
-{
-public:
-  enum eFeedbackType {
-    ERROR,
-    WARNING,
-    NOTIFICATION
+namespace Avida {
+
+  // cFeedback - protocol used to provide configuration and execution feedback to the user
+  // --------------------------------------------------------------------------------------------------------------
+  
+  class cFeedback
+  {
+  public:
+    virtual ~cFeedback() { ; }
+    
+    virtual void Error(const char* fmt, ...) = 0;
+    virtual void Warning(const char* fmt, ...) = 0;
+    virtual void Notify(const char* fmt, ...) = 0;
   };
-  
-public:
-  virtual ~cFeedback() { ; }
-  
-  virtual void Error(const char* fmt, ...) = 0;
-  virtual void Warning(const char* fmt, ...) = 0;
-  virtual void Notify(const char* fmt, ...) = 0;
 };
 
 #endif

@@ -27,9 +27,15 @@
 #include "cString.h"
 #endif
 
+namespace Avida {
+  class cFeedback;
+};
+
 class cAnalyze;
 class cAnalyzeCommand;
-class cFeedback;
+
+using namespace Avida;
+
 
 class cAnalyzeCommandDefBase {
 protected:

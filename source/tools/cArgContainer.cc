@@ -25,6 +25,8 @@
 
 #include "cArgSchema.h"
 
+using namespace Avida;
+
 
 cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, cFeedback& feedback)
 {

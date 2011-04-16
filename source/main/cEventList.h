@@ -30,10 +30,15 @@
 #include "tList.h"
 
 
+namespace Avida {
+  class cFeedback;
+};
+
 class cAvidaContext;
-class cFeedback;
 class cString;
 class cWorld;
+
+using namespace Avida;
 
 
 // This is the fundamental class for event management. It holds a list of all

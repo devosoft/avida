@@ -49,6 +49,8 @@
 #include "tArray.h"
 #include "tAutoRelease.h"
 
+using namespace Avida;
+
 
 cEnvironment::cEnvironment(cWorld* world) : m_world(world) , m_tasklib(world),
 m_input_size(INPUT_SIZE_DEFAULT), m_output_size(OUTPUT_SIZE_DEFAULT), m_true_rand(false),

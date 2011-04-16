@@ -30,6 +30,8 @@
 class cWorld;
 class cString;
 
+using namespace Avida;
+
 
 class cActionLibrary
 {

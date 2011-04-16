@@ -25,9 +25,15 @@
 #include "cString.h"
 #include "tArray.h"
 
+namespace Avida {
+  class cFeedback;
+};
+
 class cArgSchema;
-class cFeedback;
 template <class T> class tList;
+
+using namespace Avida;
+
 
 // A generic argument container that will load in named arguments from a string
 // into a specific index in an array for the type specified in the argument schema.

@@ -29,6 +29,9 @@
 
 #include <cstdarg>
 
+using namespace Avida;
+
+
 class cUserFeedback : public cFeedback
 {
 public:

@@ -37,6 +37,9 @@
 #include <set>
 
 
+namespace Avida {
+  class cFeedback;
+};
 class cContextPhenotype;
 class cContextReactionRequisite;
 class cAvidaContext;
@@ -46,10 +49,11 @@ class cReactionProcess;
 class cReactionResult;
 class cStateGrid;
 class cTaskContext;
-class cFeedback;
 class cWorld;
 template <class T> class tArray;
 template <class T> class tBuffer;
+
+using namespace Avida;
 
 
 class cEnvironment
