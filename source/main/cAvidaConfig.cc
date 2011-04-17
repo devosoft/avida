@@ -28,7 +28,6 @@
 #include "avida/core/GlobalObject.h"
 
 #include "cActionLibrary.h"
-#include "cDriverStatusConduit.h"
 #include "cInitFile.h"
 #include "cStringIterator.h"
 #include "cUserFeedback.h"
@@ -44,7 +43,7 @@ tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
 tList<cAvidaConfig::cBaseConfigCustomFormat> cAvidaConfig::global_format_list;
 
 cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
-  const cString& _type, const cString& _def, const cString& _desc)
+                                                 const cString& _type, const cString& _def, const cString& _desc)
 : config_name(1)
 , type(_type)
 , default_value(_def)
@@ -52,7 +51,7 @@ cAvidaConfig::cBaseConfigEntry::cBaseConfigEntry(const cString& _name,
 , use_overide(true)
 {
   config_name[0] = _name;
-
+  
   // If the default value was originally a string, it will begin and end with
   // quotes.  We should make sure to remove those.
   if (default_value[0] == '"') {
@@ -89,7 +88,7 @@ bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUs
       feedback->Warning("config file version number mismatch -- Avida: '%s'  File: '%s'", VERSION, (const char*)version_id);
   }
   
-
+  
   // Loop through all groups, then all entrys, and try to load each one.
   tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup* cur_group;
@@ -144,12 +143,12 @@ void cAvidaConfig::Print(const cString& filename)
   
   // Print out the generic header, including the version ID.
   fp << "#############################################################################" << endl
-    << "# This file includes all the basic run-time defines for Avida." << endl
-    << "# For more information, see doc/config.html" << endl
-    << "#############################################################################" << endl
-    << endl
-    << "VERSION_ID " << VERSION << "   # Do not change this value."
-    << endl;
+  << "# This file includes all the basic run-time defines for Avida." << endl
+  << "# For more information, see doc/config.html" << endl
+  << "#############################################################################" << endl
+  << endl
+  << "VERSION_ID " << VERSION << "   # Do not change this value."
+  << endl;
   
   // Loop through the groups, and print out all of the variables.
   
@@ -222,7 +221,7 @@ void cAvidaConfig::Status()
 void cAvidaConfig::PrintReview()
 {
   cout << endl << "Non-Default Settings: " << endl << endl;
-
+  
   // Loop through all possible groups.
   tListIterator<cBaseConfigGroup> group_it(m_group_list);
   cBaseConfigGroup * cur_group;
@@ -232,16 +231,16 @@ void cAvidaConfig::PrintReview()
     const cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
       if (cur_entry->EqualsString( cur_entry->GetDefault() ) == false) {
-	cout << " " << cur_entry->GetName() << " ";
-	if (cur_entry->GetType() == "double") {
-	  cout << cur_entry->AsString().AsDouble() << " ";
-	} else if (cur_entry->GetType() == "int") {
-	  cout << cur_entry->AsString().AsInt() << " ";
-	} else {
-	  cout << cur_entry->AsString() << " ";
-	}
-	cout << "(default=" << cur_entry->GetDefault() << ")"
-	     << endl;
+        cout << " " << cur_entry->GetName() << " ";
+        if (cur_entry->GetType() == "double") {
+          cout << cur_entry->AsString().AsDouble() << " ";
+        } else if (cur_entry->GetType() == "int") {
+          cout << cur_entry->AsString().AsInt() << " ";
+        } else {
+          cout << cur_entry->AsString() << " ";
+        }
+        cout << "(default=" << cur_entry->GetDefault() << ")"
+        << endl;
       }
     }
   }
@@ -264,7 +263,7 @@ void cAvidaConfig::GenerateOverides()
   fp << " * To use this file, include the compiler option -DOVERRIDE_CONFIGS         *" << endl;
   fp << " ***************************************************************************/" << endl;
   fp << endl;
-
+  
   // Loop through all of the groups, printing the classes representing that
   // group followed by the classes representing the individual settings.
   tListIterator<cBaseConfigGroup> group_it(m_group_list);
@@ -277,13 +276,13 @@ void cAvidaConfig::GenerateOverides()
     fp << endl;
     
     fp << "class cGroup_" << cur_group->GetName()
-      << " : public cBaseConfigGroup {" << endl;
+    << " : public cBaseConfigGroup {" << endl;
     fp << "public:" << endl;
     fp << "  cGroup_" << cur_group->GetName() << "()" << endl;
     
     // Pay special attention to multi-line group descriptions.
     fp << "    : cBaseConfigGroup(\""
-      << cur_group->GetName() << "\", \"";
+    << cur_group->GetName() << "\", \"";
     cStringList group_desc(cur_group->GetDesc(), '\n');
     fp << group_desc.Pop();
     while (group_desc.GetSize() > 0) {
@@ -310,7 +309,7 @@ void cAvidaConfig::GenerateOverides()
         fp << "//              " << cur_desc.GetLine(i) << endl;
       }
       fp << "class cEntry_" << cur_name
-        << " : public cBaseConfigEntry {" << endl;
+      << " : public cBaseConfigEntry {" << endl;
       fp << "private:" << endl;
       fp << "  " << cur_type << " value;" << endl;
       fp << "public:" << endl;
@@ -318,8 +317,8 @@ void cAvidaConfig::GenerateOverides()
       fp << "    value = cStringUtil::Convert(str_value, value);" << endl;
       fp << "  }" << endl;
       fp << "  cEntry_" << cur_name << "() : cBaseConfigEntry(\""
-        << cur_name << "\", \"" << cur_type << "\", \""
-        << cur_default << "\", \""; 
+      << cur_name << "\", \"" << cur_type << "\", \""
+      << cur_default << "\", \""; 
       if (cur_desc.GetSize() > 0) { fp << cur_desc.Pop(); }
       while (cur_desc.GetSize() > 0) {
         fp << "\\n" << cur_desc.Pop();
@@ -345,7 +344,7 @@ void cAvidaConfig::GenerateOverides()
       } else {
         fp << "  " << cur_type << " Get() const { return value; }" << endl;
         fp << "  void Set(" << cur_type
-          << " in_value) { value = in_value; }" << endl;
+        << " in_value) { value = in_value; }" << endl;
       }
       
       fp << "  cString AsString() { return cStringUtil::Convert(value); }" << endl;
@@ -378,14 +377,6 @@ bool cAvidaConfig::Get(const cString& entry, cString& ret) const
   return false;
 }
 
-cString cAvidaConfig::GetAsString(const cString& entry) const
-{
-  // Default to empty string on lookup failure
-  cString rtn("");
-  if (!Get(entry, rtn))
-    GlobalObjectManager::Status().SignalError(cString("config entry '") + entry + "' not found");
-  return rtn;
-}
 
 bool cAvidaConfig::Set(const cString& entry, const cString& val)
 {
@@ -432,13 +423,13 @@ void cAvidaConfig::Set(tDictionary<cString>& sets)
     cBaseConfigEntry* cur_entry;
     while ((cur_entry = entry_it.Next()) != NULL) {
       for (int i = 0; i < cur_entry->GetNumNames(); i++) {
-	if (sets.Find(cur_entry->GetName(i), val)) {
-	  cur_entry->LoadString(val);
-	  sets.Remove(cur_entry->GetName(i));
-	  if (VERBOSITY.Get() > VERBOSE_NORMAL)
-	    cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
-	  break;
-	}
+        if (sets.Find(cur_entry->GetName(i), val)) {
+          cur_entry->LoadString(val);
+          sets.Remove(cur_entry->GetName(i));
+          if (VERBOSITY.Get() > VERBOSE_NORMAL)
+            cout << "CmdLine Set: " << cur_entry->GetName() << " " << val << endl;
+          break;
+        }
       }
     }
   }

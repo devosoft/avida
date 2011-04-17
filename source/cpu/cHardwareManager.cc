@@ -26,7 +26,6 @@
 
 #include "cArgContainer.h"
 #include "cArgSchema.h"
-#include "cDriverStatusConduit.h"
 #include "cHardwareCPU.h"
 #include "cHardwareExperimental.h"
 #include "cHardwareSMT.h"
@@ -246,7 +245,8 @@ cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, cons
       hw = new cHardwareGX(ctx, m_world, org, inst_set);
       break;
     default:
-      GlobalObjectManager::Status().SignalError("unknown/unsupported HARDWARE_TYPE specified", -1);
+      assert(false);
+      return NULL;
       break;
   }
   

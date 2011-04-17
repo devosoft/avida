@@ -25,9 +25,6 @@
 #ifndef AvidaCoreGlobalObject_h
 #define AvidaCoreGlobalObject_h
 
-#include "cDriverStatusConduit.h"
-
-
 namespace Avida {
   
   // cGlobalObject - protocol for globally registered objects
@@ -49,9 +46,6 @@ namespace Avida {
     
     void Register(cGlobalObject* obj);
     void Unregister(cGlobalObject* obj);
-    
-    cDriverStatusConduit& Status();
-    void SetConduit(cDriverStatusConduit* conduit);    
   };
 };
 

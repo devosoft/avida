@@ -819,7 +819,6 @@ public:
   
   
   bool Get(const cString& entry, cString& ret) const;
-  cString GetAsString(const cString& entry) const;
   bool HasEntry(const cString& entry) const { cString rtn; return Get(entry, rtn); }
   
   bool Set(const cString& entry, const cString& val);

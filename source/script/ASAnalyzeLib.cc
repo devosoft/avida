@@ -31,8 +31,6 @@
 #include "avida/core/cSequence.h"
 
 #include "cAnalyzeGenotype.h"
-#include "cDriverManager.h"
-#include "cDriverStatusConduit.h"
 #include "cGenomeUtil.h"
 #include "cGenotypeBatch.h"
 #include "cHardwareManager.h"
@@ -52,7 +50,7 @@ namespace ASAnalyzeLib {
   
   cAnalyzeGenotype* LoadOrganismWithInstSet(cWorld* world, const cString& filename, cInstSet* inst_set)
   {
-    cDriverManager::Status().NotifyComment(cString("Loading: ") + filename);
+//    cDriverManager::Status().NotifyComment(cString("Loading: ") + filename);
     
     cGenome genome(cGenomeUtil::LoadGenome(filename, *inst_set));
     
@@ -79,21 +77,20 @@ namespace ASAnalyzeLib {
 
   cAnalyzeGenotype* LoadSequenceWithInstSet(cWorld* world, const cString& seq, cInstSet* inst_set)
   {
-    cDriverManager::Status().NotifyComment(cString("Loading: ") + seq);
+//    cDriverManager::Status().NotifyComment(cString("Loading: ") + seq);
     return new cAnalyzeGenotype(world, seq, *inst_set);
   }
   
   
   cAnalyzeGenotype* LoadSequence(cWorld* world, const cString& seq)
   {
-    cDriverManager::Status().NotifyComment(cString("Loading: ") + seq);
+//    cDriverManager::Status().NotifyComment(cString("Loading: ") + seq);
     return new cAnalyzeGenotype(world, seq, world->GetHardwareManager().GetInstSet());
   }
   
   cGenotypeBatch* LoadBatchWithInstSet(cWorld* world, const cString& filename, cInstSet* inst_set)
   {
-    cDriverStatusConduit& conduit = cDriverManager::Status();
-    conduit.NotifyComment(cString("Loading: ") + filename);
+//    conduit.NotifyComment(cString("Loading: ") + filename);
     
     cInitFile input_file(filename);
     if (!input_file.WasOpened()) {
@@ -101,16 +98,16 @@ namespace ASAnalyzeLib {
       const cString* errstr = NULL;
       while ((errstr = err_it.Next()))  conduit.SignalError(*errstr);
       cString failstr(cStringUtil::Stringf("unable to load file: %s", *filename));
-      conduit.SignalError(failstr, 1);
+//      conduit.SignalError(failstr, 1);
     }
     
     const cString filetype = input_file.GetFiletype();
     if (filetype != "genotype_data") {
-      conduit.SignalError(cStringUtil::Stringf("unable to load files of type '%s'", *filetype), 1);;
+//      conduit.SignalError(cStringUtil::Stringf("unable to load files of type '%s'", *filetype), 1);;
     }
     
     if (world->GetVerbosity() >= VERBOSE_ON) {
-      conduit.NotifyComment(cStringUtil::Stringf("Loading file of type: %s", *filetype));
+//      conduit.NotifyComment(cStringUtil::Stringf("Loading file of type: %s", *filetype));
     }
     
     
@@ -157,11 +154,10 @@ namespace ASAnalyzeLib {
   
   cResourceHistory* LoadResourceHistory(const cString& filename)
   {
-    cDriverStatusConduit& conduit = cDriverManager::Status();
-    conduit.NotifyComment(cString("Loading: ") + filename);
+//    conduit.NotifyComment(cString("Loading: ") + filename);
 
     cResourceHistory* resources = new cResourceHistory;
-    if (!resources->LoadFile(filename)) conduit.SignalError("failed to load resource file", 1);
+//    if (!resources->LoadFile(filename)) conduit.SignalError("failed to load resource file", 1);
     
     return resources;
   }

@@ -25,7 +25,6 @@
 
 #include "tList.h"
 #include "cMutex.h"
-#include "tThreadSpecific.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -39,8 +38,6 @@ struct GlobalObjectData
   tList<Avida::cGlobalObject> objs;
   
   cMutex mutex;
-  tThreadSpecific<cDriverStatusConduit> conduit;
-  
   bool initialized;
   
   GlobalObjectData() : initialized(false) { ; } 
@@ -77,19 +74,4 @@ void Avida::GlobalObjectManager::Unregister(cGlobalObject* obj)
   global_obj_data.mutex.Lock();
   global_obj_data.objs.Remove(obj);
   global_obj_data.mutex.Unlock();
-}
-
-cDriverStatusConduit& Avida::GlobalObjectManager::Status()
-{
-  cDriverStatusConduit* conduit = global_obj_data.conduit.Get();
-  if (!conduit) {
-    conduit = new cDriverStatusConduit;
-    global_obj_data.conduit.Set(conduit);
-  }
-  return *conduit;
-}
-
-void Avida::GlobalObjectManager::SetConduit(cDriverStatusConduit* conduit)
-{
-  global_obj_data.conduit.Set(conduit);
 }

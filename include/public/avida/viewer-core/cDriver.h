@@ -82,7 +82,17 @@ namespace Avida {
       static cDriver* InitWithDirectory(const Apto::String& dir);
       
       
-      // Driver Actions
+      eDriverPauseState GetPauseState() const { return m_pause_state; }
+      bool IsPaused() const { return m_paused; }
+      
+      void AttachListener(cListener* listener);
+      void DetachListener(cListener* listener) { m_listeners.Remove(listener); }
+
+      
+      // cWorldDriver Protocol
+      // ------------------------------------------------------------------------------------------------------------  
+      
+    public:
       void SignalBreakpoint() { ; }
       void SetDone() { m_mutex.Lock(); m_done = true; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
       void SetPause() { m_mutex.Lock(); m_pause_state = DRIVER_PAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
@@ -96,11 +106,8 @@ namespace Avida {
       void NotifyWarning(const cString& in_string);
       
       
-      eDriverPauseState GetPauseState() const { return m_pause_state; }
-      bool IsPaused() const { return m_paused; }
-      
-      void AttachListener(cListener* listener);
-      void DetachListener(cListener* listener) { m_listeners.Remove(listener); }
+      // Apto::Thread Interface
+      // ------------------------------------------------------------------------------------------------------------  
       
     protected:
       void Run();
