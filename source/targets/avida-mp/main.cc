@@ -58,17 +58,15 @@ int main(int argc, char * argv[])
 	cout << "Data directory overwritten for Avida-MP: " << cfg->DATA_DIR.Get() << endl;
   
   cWorld* world = cMultiProcessWorld::Initialize(cfg, AvidaTools::FileSystem::GetCWD(), mpi_env, mpi_world);
-  cAvidaDriver* driver = NULL;
-
-  if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
-    driver = new cDefaultAnalyzeDriver(world, (world->GetConfig().ANALYZE_MODE.Get() == 2));
-  } else {
-    driver = new cDefaultRunDriver(world);
-  }
 
   cout << endl;
   
-  driver->Run();
+
+  if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
+    (new cDefaultAnalyzeDriver(world, (world->GetConfig().ANALYZE_MODE.Get() == 2)))->Run();
+  } else {
+    (new cDefaultRunDriver(world))->Run();
+  }
 
   return 0;
 }

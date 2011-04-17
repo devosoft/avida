@@ -120,7 +120,6 @@ public:
   inline int GetVerbosity() { return m_conf->VERBOSITY.Get(); }
   inline void SetVerbosity(int v) { m_conf->VERBOSITY.Set(v); }
 
-  // @DMB - Inherited from cAvidaDriver heritage
   void GetEvents(cAvidaContext& ctx);
 	
 	cEventList* GetEventsList() { return m_event_list; }

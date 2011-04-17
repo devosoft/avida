@@ -22,7 +22,6 @@
 #ifndef cDefaultAnalyzeDriver_h
 #define cDefaultAnalyzeDriver_h
 
-#include "cAvidaDriver.h"
 #include "avida/core/cWorldDriver.h"
 
 class cString;
@@ -31,7 +30,7 @@ class cWorld;
 using namespace Avida;
 
 
-class cDefaultAnalyzeDriver : public cAvidaDriver, public cWorldDriver
+class cDefaultAnalyzeDriver : public cWorldDriver
 {
 private:
   cDefaultAnalyzeDriver(); // @not_implemented

@@ -22,7 +22,6 @@
 #ifndef cDefaultRunDriver_h
 #define cDefaultRunDriver_h
 
-#include "cAvidaDriver.h"
 #include "avida/core/cWorldDriver.h"
 
 class cString;
@@ -31,7 +30,7 @@ class cWorld;
 using namespace Avida;
 
 
-class cDefaultRunDriver : public cAvidaDriver, public cWorldDriver
+class cDefaultRunDriver : public cWorldDriver
 {
 private:
   cDefaultRunDriver(); // @not_implemented

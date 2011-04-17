@@ -59,13 +59,8 @@ int main(int argc, char * argv[])
   
   if (!world) return -1;
   
-  cAvidaDriver* driver = NULL;
-  
-  // Test to see if we should be in analyze mode only...
-//  if (world->GetConfig().ANALYZE_MODE.Get() > 0); // @CAO Do something here...
-
   // And run the driver!
-  driver = new cDriver_TextViewer(world);
+  cDriver_TextViewer* driver = new cDriver_TextViewer(world);
   driver->Run();
   
   return 0;

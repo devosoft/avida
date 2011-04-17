@@ -24,7 +24,6 @@
 
 #include "avida/core/cWorldDriver.h"
 
-#include "cAvidaDriver.h"
 #include "cCoreView_Info.h"
 #include "cScreen_Map.h"
 #include "cTextWindow.h"
@@ -40,7 +39,7 @@ using namespace std;
 using namespace Avida;
 
 
-class cDriver_TextViewer : public cAvidaDriver, public cWorldDriver {
+class cDriver_TextViewer : public cWorldDriver {
 private:
   cWorld* m_world;
   cCoreView_Info m_info;
