@@ -79,10 +79,13 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
   , m_ave_plat_cell_loss(0.0)
   , m_common_plat_height(0.0)
 {
-  if ((m_move_speed >= 2 * (m_halo_inner_radius + m_halo_width)) && ((m_halo_inner_radius + m_halo_width) != 0)
+  if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
       && m_move_speed != 0) {
-    m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");
-  }				
+    m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");    
+  }
+  if (m_halo == 1 && (m_halo_width < (2 * m_height) && plateau >= 0)) {
+    m_world->GetDriver().RaiseFatalException(-1, "Halo width < 2 * height (aka plateau radius)");
+  }
   m_plateau_array.Resize(4 * m_height * m_height);
   m_plateau_array.SetAll(0);
   m_plateau_cell_IDs.Resize(4 * m_height * m_height);
@@ -305,8 +308,9 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   } 
 
   // to speed things up, we only check cells within the possible spread of the peak
-  // and we only do this if the resource is set to actually move (or we just reset a non-moving resource)
-  if (m_move_a_scaler > 1 || (m_move_a_scaler == 1 && m_just_reset)) refreshResourceValues();
+  // and we only do this if the resource is set to actually move, has inflow/outflow to update, or
+  // we just reset a non-moving resource
+  if (m_move_a_scaler > 1 || m_plateau_inflow != 0 || m_plateau_outflow != 0 || (m_move_a_scaler == 1 && m_just_reset)) refreshResourceValues();
 
   m_counter = 0;  // reset decay counter after cone resources updated
 }
