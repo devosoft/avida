@@ -22,7 +22,7 @@
 #ifndef cHardwareSMT_h
 #define cHardwareSMT_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cCodeLabel.h"
 #include "cCPUMemory.h"

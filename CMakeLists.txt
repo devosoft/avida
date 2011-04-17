@@ -165,23 +165,15 @@ LIST(APPEND ALL_INC_DIRS ${CLASSIFICATION_DIR})
 # The core directory
 SET(CORE_DIR ${PROJECT_SOURCE_DIR}/source/core)
 SET(CORE_SOURCES
+  ${CORE_DIR}/Avida.cc
   ${CORE_DIR}/cGenome.cc
   ${CORE_DIR}/cSequence.cc
+  ${CORE_DIR}/Definitions.cc
   ${CORE_DIR}/GlobalObject.cc
+  ${CORE_DIR}/Version.cc
 )
 SOURCE_GROUP(core FILES ${CORE_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${CORE_SOURCES})
-LIST(APPEND ALL_INC_DIRS ${CORE_DIR})
-
-
-# The core viewer directory
-SET(COREVIEW_DIR ${PROJECT_SOURCE_DIR}/source/viewer-core)
-SET(COREVIEW_SOURCES
-  ${COREVIEW_DIR}/cCoreView_Info.cc
-  ${COREVIEW_DIR}/cCoreView_Map.cc
-)
-SOURCE_GROUP(coreview FILES ${COREVIEW_SOURCES})
-LIST(APPEND ALL_INC_DIRS ${COREVIEW_DIR})
 
 
 # The cpu directory
@@ -224,7 +216,6 @@ LIST(APPEND ALL_INC_DIRS ${DRIVERS_DIR})
 # The main directory
 SET(MAIN_DIR ${PROJECT_SOURCE_DIR}/source/main)
 SET(MAIN_SOURCES
-  ${MAIN_DIR}/Avida.cc
   ${MAIN_DIR}/cAvidaConfig.cc
   ${MAIN_DIR}/cBirthChamber.cc
   ${MAIN_DIR}/cBirthDemeHandler.cc
@@ -314,6 +305,26 @@ SET(TOOLS_SOURCES
 SOURCE_GROUP(tools FILES ${TOOLS_SOURCES})
 LIST(APPEND AVIDA_CORE_SOURCES ${TOOLS_SOURCES})
 LIST(APPEND ALL_INC_DIRS ${TOOLS_DIR})
+
+
+# The core viewer directory
+SET(UTIL_DIR ${PROJECT_SOURCE_DIR}/source/util)
+SET(UTIL_SOURCES
+  ${UTIL_DIR}/CmdLine.cc
+)
+SOURCE_GROUP(util FILES ${UTIL_SOURCES})
+LIST(APPEND AVIDA_CORE_SOURCES ${UTIL_SOURCES})
+
+
+# The core viewer directory
+SET(VIEWERCORE_DIR ${PROJECT_SOURCE_DIR}/source/viewer-core)
+SET(VIEWERCORE_SOURCES
+  ${VIEWERCORE_DIR}/cCoreView_Info.cc
+  ${VIEWERCORE_DIR}/cCoreView_Map.cc
+)
+SOURCE_GROUP(viewer-core FILES ${VIEWERCORE_SOURCES})
+
+
 
 # The platform directory
 SET(PLATFORM_DIR ${PROJECT_SOURCE_DIR}/source/tools/platform)

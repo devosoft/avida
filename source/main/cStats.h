@@ -23,7 +23,7 @@
 #ifndef cStats_h
 #define cStats_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "AvidaTools.h"
 
@@ -451,9 +451,7 @@ public:
 
   std::map<int, flow_rate_tuple >&  FlowRateTuples() { return flow_rate_tuples; }
 
-#if INSTRUCTION_COUNT
   void ZeroInst();
-#endif
   tArray<cIntSum>& InstExeCountsForInstSet(const cString& inst_set) { return m_is_exe_inst_map[inst_set]; }
 
   // And constant versions of the above...

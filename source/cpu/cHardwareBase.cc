@@ -922,7 +922,6 @@ bool cHardwareBase::Inst_DefaultEnergyUsage(cAvidaContext& ctx)
 // should proceed.
 bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 { 
-#if INSTRUCTION_COSTS
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     // TODO:  Get rid of magic number. check avaliable energy first
     double energy_req = m_inst_energy_cost[cur_inst.GetOp()] * (m_organism->GetPhenotype().GetMerit().GetDouble() / 100.0); //compensate by factor of 100
@@ -979,14 +978,13 @@ bool cHardwareBase::SingleProcess_PayPreCosts(cAvidaContext& ctx, const cInstruc
   if (m_world->GetConfig().ENERGY_ENABLED.Get() > 0) {
     m_inst_energy_cost[cur_inst.GetOp()] = m_inst_set->GetEnergyCost(cur_inst); // reset instruction energy cost
   }
-#endif
+
   return true;
 }
 
 
 void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstruction& cur_inst)
 {
-#if INSTRUCTION_COSTS
   if (m_has_res_costs) {
   
     double res_req = m_inst_set->GetResCost(cur_inst); 
@@ -1011,7 +1009,6 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
       return;
     }
   }
-#endif
 }
 
 

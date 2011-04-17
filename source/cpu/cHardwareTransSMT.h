@@ -22,7 +22,7 @@
 #ifndef cHardwareTransSMT_h
 #define cHardwareTransSMT_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cCodeLabel.h"
 #include "cContextPhenotype.h"

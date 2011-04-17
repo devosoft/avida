@@ -21,7 +21,7 @@
 
 #include "LandscapeActions.h"
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "avida/core/cWorldDriver.h"
 

@@ -22,7 +22,7 @@
 #ifndef cBioGroup_h
 #define cBioGroup_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cBioGroupData.h"
 #include "cBioUnit.h"

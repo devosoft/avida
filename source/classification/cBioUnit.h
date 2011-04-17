@@ -22,7 +22,7 @@
 #ifndef cBioUnit_h
 #define cBioUnit_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "tArray.h"
 

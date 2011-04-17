@@ -23,7 +23,7 @@
 #ifndef cResourceCount_h
 #define cResourceCount_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cSpatialResCount.h"
 #include "cString.h"

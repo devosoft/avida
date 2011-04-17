@@ -22,7 +22,8 @@
 
 #include "cAvidaConfig.h"
 
-#include "Avida.h"
+#include "avida/Avida.h"
+
 #include "AvidaTools.h"
 
 #include "avida/core/GlobalObject.h"
@@ -83,9 +84,9 @@ bool cAvidaConfig::Load(const cString& filename, const cString& working_dir, cUs
   }
   
   cString version_id = init_file.ReadString("VERSION_ID", "Unknown");
-  if (version_id != VERSION) {
+  if (Version::CheckCompatibility(version_id)) {
     if (feedback)
-      feedback->Warning("config file version number mismatch -- Avida: '%s'  File: '%s'", VERSION, (const char*)version_id);
+      feedback->Warning("config file version number mismatch -- Avida: '%s'  File: '%s'", Version::String(), (const char*)version_id);
   }
   
   
@@ -143,11 +144,11 @@ void cAvidaConfig::Print(const cString& filename)
   
   // Print out the generic header, including the version ID.
   fp << "#############################################################################" << endl
-  << "# This file includes all the basic run-time defines for Avida." << endl
-  << "# For more information, see doc/config.html" << endl
+  << "# This file includes all the basic run-time definitions for Avida." << endl
+  << "# For more information, see documentation/config.html" << endl
   << "#############################################################################" << endl
   << endl
-  << "VERSION_ID " << VERSION << "   # Do not change this value."
+  << "VERSION_ID " << Avida::Version::String() << "   # Do not change this value."
   << endl;
   
   // Loop through the groups, and print out all of the variables.

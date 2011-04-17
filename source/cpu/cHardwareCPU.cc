@@ -857,7 +857,8 @@ bool cHardwareCPU::SingleProcess(cAvidaContext& ctx, bool speculative)
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
     ip.Adjust();
     
-#if BREAKPOINTS
+    // BREAKPOINTS
+#if 0
     if (ip.FlagBreakpoint()) {
       m_organism->DoBreakpoint();
     }
@@ -977,10 +978,8 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
   // Get a pointer to the corresponding method...
   int inst_idx = m_inst_set->GetLibFunctionIndex(actual_inst);
   
-#if INSTRUCTION_COUNT
   // instruction execution count incremented
   m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
-#endif
 	
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
@@ -997,12 +996,10 @@ bool cHardwareCPU::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruct
     }
   }
 	
-#if INSTRUCTION_COUNT
   // Decrement if the instruction was not executed successfully.
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
-#endif	
   
   return exec_success;
 }
@@ -1690,14 +1687,12 @@ bool cHardwareCPU::Divide_Main(cAvidaContext& ctx, const int div_point,
   // lineages need to be updated.
   Divide_TestFitnessMeasures1(ctx); 
   
-#if INSTRUCTION_COSTS
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
       m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     }
   }
-#endif
   
   m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
@@ -1791,7 +1786,6 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
     m_world->GetStats().IncFailedResamplings();
   }
   
-#if INSTRUCTION_COSTS
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
 
     // reset first time instruction costs
@@ -1799,7 +1793,6 @@ bool cHardwareCPU::Divide_MainRS(cAvidaContext& ctx, const int div_point,
       m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     }
   }
-#endif
   
   m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
@@ -1883,14 +1876,12 @@ bool cHardwareCPU::Divide_Main1RS(cAvidaContext& ctx, const int div_point,
     m_world->GetStats().IncFailedResamplings();
   }
   
-#if INSTRUCTION_COSTS
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
       m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     }
   }
-#endif
   
   m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
@@ -1976,14 +1967,12 @@ bool cHardwareCPU::Divide_Main2RS(cAvidaContext& ctx, const int div_point,
     m_world->GetStats().IncFailedResamplings();
   }
   
-#if INSTRUCTION_COSTS
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
       m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     }
   }
-#endif
   
   m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
@@ -3246,14 +3235,12 @@ bool cHardwareCPU::Inst_Repro(cAvidaContext& ctx)
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#if INSTRUCTION_COSTS
   if (m_world->GetConfig().DIVIDE_METHOD.Get() != DIVIDE_METHOD_OFFSPRING) {
     // reset first time instruction costs
     for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
       m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
     }
   }
-#endif
   
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) m_advance_ip = false;
   

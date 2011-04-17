@@ -22,7 +22,7 @@
 #ifndef ASTree_h
 #define ASTree_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 #include "AvidaScript.h"
 
 #include "cString.h"

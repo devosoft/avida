@@ -18,7 +18,14 @@
  *
  */
 
-#include "Avida.h"
+#include "avida/Avida.h"
+
+/* By default, Boost is not available.  To enable Boost, either modify your environment,
+ alter your build settings, or change this value -- BUT BE CAREFUL NOT TO CHECK IT IN LIKE THAT!
+ */
+#ifndef BOOST_IS_AVAILABLE
+#define BOOST_IS_AVAILABLE 0
+#endif
 
 #if BOOST_IS_AVAILABLE
 #include "avida/core/cSequence.h"

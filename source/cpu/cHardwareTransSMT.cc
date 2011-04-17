@@ -243,7 +243,8 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     AdvanceIP() = true;
     IP().Adjust();
 		
-#if BREAKPOINTS
+    // BREAKPOINTS
+#if 0
     if (IP().FlagBreakpoint()) m_organism->DoBreakpoint();
 #endif
     
@@ -303,20 +304,16 @@ bool cHardwareTransSMT::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cIns
   IP().SetFlagExecuted();
 	
 	
-#if INSTRUCTION_COUNT
   // instruction execution count incremeneted
   m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
-#endif
 	
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
 	
-#if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
-#endif	
 	
   return exec_success;
 }
@@ -1125,12 +1122,10 @@ bool cHardwareTransSMT::Divide_Main(cAvidaContext& ctx, double mut_multiplier)
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
 	
-#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
-#endif
 	
   //bool parent_alive = m_organism->ActivateDivide(ctx);
   bool parent_alive = m_organism->ActivateDivide(ctx, &m_threads[m_cur_thread].context_phenotype);

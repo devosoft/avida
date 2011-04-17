@@ -19,6 +19,7 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  *
  *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
 #include "avida/core/GlobalObject.h"

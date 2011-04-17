@@ -1,9 +1,10 @@
 /*
- *  avida.h
- *  Avida
+ *  core/Defintions.h
+ *  avida-core
  *
- *  Copyright 1999-2011 Michigan State University. All rights reserved.
- *  Copyright 1993-2001 California Institute of Technology.
+ *  Created by David on 4/17/11.
+ *  Copyright 2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,62 +18,24 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#ifndef avida_h
-#define avida_h
-
-
-#define VERSION "2.13.0"
-#define VERSION_TAG "(TBA)"
-
-
-// -= Configurable Features
-#ifndef BREAKPOINTS
-#define BREAKPOINTS 0
-#endif
-#ifndef INSTRUCTION_COSTS
-#define INSTRUCTION_COSTS 1
-#endif
-#ifndef INSTRUCTION_COUNT
-#define INSTRUCTION_COUNT 1
-#endif
-#ifndef FATAL_ERRORS
-#define FATAL_ERRORS 0
-#endif
-#ifndef FATAL_WARNINGS
-#define FATAL_WARNINGS 0
-#endif
-
-
-/* By default, Boost is not available.  To enable Boost, either modify your environment,
- alter your build settings, or change this value -- BUT BE CAREFUL NOT TO CHECK IT IN LIKE THAT!
- */
-#ifndef BOOST_IS_AVAILABLE
-#define BOOST_IS_AVAILABLE 0
-#endif
-
-
-// Finally, if we have turned off Assertions, define NDEBUG
-#ifndef DEBUG
-# ifndef NDEBUG
-#  define NDEBUG
-# endif
-#endif
-
-#ifndef NULL
-# define NULL 0
-#endif
+#ifndef AvidaCoreDefinitions_h
+#define AvidaCoreDefinitions_h
 
 const int MIN_GENOME_LENGTH = 8;
 const int MAX_GENOME_LENGTH = 2048;
 
 const int MIN_INJECT_SIZE = 8;
 
+
 // Number of distinct input and outputs stored in the IOBufs (to test tasks)
 const int INPUT_SIZE_DEFAULT = 3;
 const int OUTPUT_SIZE_DEFAULT = 1;
-#define RECEIVED_MESSAGES_SIZE 10
+
+const int RECEIVED_MESSAGES_SIZE = 10;
 const int MARKET_SIZE = 10000;
 
 
@@ -237,20 +200,10 @@ enum eBioUnitSource {
 };
 
 
-class cAvidaConfig;
-class cString;
-
 namespace Avida
 {
-  void Initialize();
-  
-  cString GetVersion();
-  void PrintVersionBanner();
-  
-  void ProcessCmdLineArgs(int argc, char* argv[], cAvidaConfig* cfg);
-
-
   extern const char* const BioUnitSourceMap[];
 };
+
 
 #endif

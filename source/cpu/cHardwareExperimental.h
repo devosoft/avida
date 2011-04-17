@@ -23,7 +23,7 @@
 #ifndef cHardwareExperimental_h
 #define cHardwareExperimental_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cCodeLabel.h"
 #include "nHardware.h"

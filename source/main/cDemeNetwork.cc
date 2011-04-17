@@ -18,13 +18,20 @@
  *
  */
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "avida/core/cWorldDriver.h"
 
 #include "cDeme.h"
 #include "cDemeNetwork.h"
 #include "cWorld.h"
+
+/* By default, Boost is not available.  To enable Boost, either modify your environment,
+ alter your build settings, or change this value -- BUT BE CAREFUL NOT TO CHECK IT IN LIKE THAT!
+ */
+#ifndef BOOST_IS_AVAILABLE
+#define BOOST_IS_AVAILABLE 0
+#endif
 
 // Conditional includes (these use the BGL).
 #if BOOST_IS_AVAILABLE

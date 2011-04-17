@@ -515,69 +515,6 @@ bool cHardwareGX::SingleProcess(cAvidaContext& ctx, bool speculative)
   return true;
 }
 
-//  const int num_threads = GetNumThreads();
-//  
-//  // If we have threads turned on and we executed each thread in a single
-//  // timestep, adjust the number of instructions executed accordingly.
-//  const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ?
-//num_threads : 1;
-//  
-//  for (int i = 0; i < num_inst_exec; i++) {
-//    // Setup the hardware for the next instruction to be executed.
-//    ThreadNext();
-//    m_advance_ip = true;
-//    IP().Adjust();
-//    
-//#if BREAKPOINTS
-//    if (IP().FlagBreakpoint()) {
-//      m_organism->DoBreakpoint();
-//    }
-//#endif
-//    
-//    // Print the status of this CPU at each step...
-//    if (m_tracer != NULL) m_tracer->TraceHardware(*this);
-//    
-//    // Find the instruction to be executed
-//    const cInstruction& cur_inst = IP().GetInst();
-//    
-//    // Test if costs have been paid and it is okay to execute this now...
-//    bool exec = SingleProcess_PayCosts(ctx, cur_inst);
-//
-//    // Now execute the instruction...
-//    if (exec == true) {
-//      // NOTE: This call based on the cur_inst must occur prior to instruction
-//      //       execution, because this instruction reference may be invalid after
-//      //       certain classes of instructions (namely divide instructions) @DMB
-//      const int addl_time_cost = m_inst_set->GetAddlTimeCost(cur_inst);
-//
-//      // Prob of exec (moved from SingleProcess_PayCosts so that we advance IP after a fail)
-//      if ( m_inst_set->GetProbFail(cur_inst) > 0.0 ) 
-//      {
-//        exec = !( ctx.GetRandom().P(m_inst_set->GetProbFail(cur_inst)) );
-//      }
-//      
-//      if (exec == true) SingleProcess_ExecuteInst(ctx, cur_inst);
-//      
-//      // Some instruction (such as jump) may turn m_advance_ip off.  Usually
-//      // we now want to move to the next instruction in the memory.
-//      if (m_advance_ip == true) IP().Advance();
-//      
-//      // Pay the additional death_cost of the instruction now
-//      phenotype.IncTimeUsed(addl_time_cost);
-//    } // if exec
-//    
-//  } // Previous was executed once for each thread...
-//  
-//  // Kill creatures who have reached their max num of instructions executed
-//  const int max_executed = m_organism->GetMaxExecuted();
-//  if ((max_executed > 0 && phenotype.GetTimeUsed() >= max_executed)
-//      || phenotype.GetToDie() == true) {
-//    m_organism->Die();
-//  }
-//  
-//  m_organism->SetRunning(false);
-//}
-
 /*! This method executes one instruction for one programid. */
 bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstruction& cur_inst) 
 {
@@ -595,20 +532,16 @@ bool cHardwareGX::SingleProcess_ExecuteInst(cAvidaContext& ctx, const cInstructi
   // Mark the instruction as executed
   IP().SetFlagExecuted();
   
-#if INSTRUCTION_COUNT
   // instruction execution count incremeneted
   m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
-#endif
 	
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
 	
-#if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
-#endif	
   
   return exec_success;
 }
@@ -2027,12 +1960,10 @@ bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
-#endif
   
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
     m_advance_ip = false;
@@ -3709,12 +3640,10 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
-#endif
   
   m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {

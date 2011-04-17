@@ -20,7 +20,9 @@
 
 #include <csignal>
 
-#include "Avida.h"
+#include "avida/Avida.h"
+#include "avida/util/CmdLine.h"
+
 #include "AvidaTools.h"
 
 #include "cAvidaConfig.h"
@@ -36,11 +38,11 @@ int main(int argc, char * argv[])
 {
   Avida::Initialize();
   
-  Avida::PrintVersionBanner();
+  cout << Avida::Version::Banner() << endl;
   
   // Initialize the configuration data...
   cAvidaConfig* cfg = new cAvidaConfig();
-  Avida::ProcessCmdLineArgs(argc, argv, cfg);
+  Avida::Util::ProcessCmdLineArgs(argc, argv, cfg);
   
   cUserFeedback feedback;
   cWorld* world = cWorld::Initialize(cfg, AvidaTools::FileSystem::GetCWD(), &feedback);

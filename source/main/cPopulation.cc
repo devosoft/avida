@@ -4287,9 +4287,7 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
   stats.ZeroTasks();
   stats.ZeroReactions();
 
-#if INSTRUCTION_COUNT
   stats.ZeroInst();
-#endif
 
   // Counts...
   int num_breed_true = 0;
@@ -4337,12 +4335,10 @@ void cPopulation::UpdateOrganismStats(cAvidaContext& ctx)
     stats.SumCopySize().Add(phenotype.GetCopiedSize());
     stats.SumExeSize().Add(phenotype.GetExecutedSize());
 
-#if INSTRUCTION_COUNT
     tArray<cIntSum>& inst_exe_counts = stats.InstExeCountsForInstSet(organism->GetGenome().GetInstSet());
     for (int j = 0; j < phenotype.GetLastInstCount().GetSize(); j++) {
       inst_exe_counts[j].Add(organism->GetPhenotype().GetLastInstCount()[j]);
     }
-#endif
 
     if (cur_merit > max_merit) max_merit = cur_merit;
     if (cur_fitness > max_fitness) max_fitness = cur_fitness;

@@ -22,7 +22,7 @@
 #ifndef cASCPPParameter_h
 #define cASCPPParameter_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 #include "AvidaScript.h"
 
 #include "cString.h"

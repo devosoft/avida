@@ -8,7 +8,7 @@
 #ifndef cViewInfo_h
 #define cViewInfo_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cBioGroup.h"
 #include "cInstSet.h"

@@ -23,7 +23,7 @@
 #ifndef cInstruction_h
 #define cInstruction_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include <cassert>
 

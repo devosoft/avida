@@ -22,7 +22,7 @@
 #ifndef cBGGenotypeManager_h
 #define cBGGenotypeManager_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cBioGroupManager.h"
 #include "cFlexVar.h"

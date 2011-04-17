@@ -798,19 +798,22 @@ void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
   (void) fault_type;
   (void) fault_desc;
 
-#if FATAL_ERRORS
+  // FATAL_ERRORS
+#if 0
   if (fault_type == FAULT_TYPE_ERROR) {
     m_phenotype.IsFertile() = false;
   }
 #endif
 
-#if FATAL_WARNINGS
+ // FATAL_WARNINGS
+#if 0
   if (fault_type == FAULT_TYPE_WARNING) {
     m_phenotype.IsFertile() = false;
   }
 #endif
 
-#if BREAKPOINTS
+  // BREAKPOINTS
+#if 0
   m_phenotype.SetFault(fault_desc);
 #endif
 

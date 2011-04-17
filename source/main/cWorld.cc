@@ -21,7 +21,7 @@
 
 #include "cWorld.h"
 
-#include "Avida.h"
+#include "avida/Avida.h"
 #include "AvidaTools.h"
 
 #include "cAnalyze.h"

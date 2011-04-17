@@ -187,9 +187,7 @@ cStats::cStats(cWorld* world)
   task_internal_last_max_quality.SetAll(0.0);
 
 
-#if INSTRUCTION_COUNT
   ZeroInst();
-#endif
 
   const int num_reactions = env.GetNumReactions();
   m_reaction_cur_count.Resize(num_reactions);
@@ -424,14 +422,12 @@ void cStats::ZeroReactions()
 }
 
 
-#if INSTRUCTION_COUNT
 void cStats::ZeroInst()
 {
   for (tArrayMap<cString, tArray<cIntSum> >::iterator it = m_is_exe_inst_map.begin(); it != m_is_exe_inst_map.end(); it++) {
     for (int i = 0; i < (*it).Value().GetSize(); i++) (*it).Value()[i].Clear();
   }
 }
-#endif
 
 void cStats::CalcEnergy()
 {
@@ -1379,13 +1375,9 @@ void cStats::PrintInstructionData(const cString& filename, const cString& inst_s
 
   df.Write(m_update, "Update");
 
-#if INSTRUCTION_COUNT
   for (int i = 0; i < m_is_exe_inst_map[inst_set].GetSize(); i++) {
     df.Write(m_is_exe_inst_map[inst_set][i].Sum(), m_is_inst_names_map[inst_set][i]);
   }
-#else // INSTRUCTION_COUNT undefined
-  m_world->GetDriver().RaiseException("Warning: Instruction Counts not compiled in");
-#endif // ifdef INSTRUCTION_COUNT
 
   df.Endl();
 }

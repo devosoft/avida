@@ -21,7 +21,7 @@
 
 #include "cEnvironment.h"
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "avida/core/cFeedback.h"
 

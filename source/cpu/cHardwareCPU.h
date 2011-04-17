@@ -23,7 +23,7 @@
 #ifndef cHardwareCPU_h
 #define cHardwareCPU_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cCodeLabel.h"
 #include "cHeadCPU.h"

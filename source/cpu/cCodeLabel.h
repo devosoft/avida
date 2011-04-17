@@ -23,7 +23,7 @@
 #ifndef cCodeLabel_h
 #define cCodeLabel_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cString.h"
 #include "nHardware.h"

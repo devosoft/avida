@@ -23,7 +23,7 @@
 #ifndef cHeadCPU_h
 #define cHeadCPU_h
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cCPUMemory.h"
 #include "cHardwareBase.h"

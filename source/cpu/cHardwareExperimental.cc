@@ -384,7 +384,8 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
     ip.Adjust();
     
-#if BREAKPOINTS
+    // BREAKPOINTS
+#if 0
     if (ip.FlagBreakpoint()) {
       m_organism->DoBreakpoint();
     }
@@ -488,10 +489,8 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
   getIP().SetFlagExecuted();
 	
   
-#if INSTRUCTION_COUNT
   // instruction execution count incremeneted
   m_organism->GetPhenotype().IncCurInstCount(actual_inst.GetOp());
-#endif
   
   // And execute it.
   const bool exec_success = (this->*(m_functions[inst_idx]))(ctx);
@@ -501,12 +500,10 @@ bool cHardwareExperimental::SingleProcess_ExecuteInst(cAvidaContext& ctx, const 
     m_threads[m_cur_thread].UpdateExecurate(code_len, m_inst_set->GetInstructionCode(actual_inst));
   }
 
-#if INSTRUCTION_COUNT
   // decremenet if the instruction was not executed successfully
   if (exec_success == false) {
     m_organism->GetPhenotype().DecCurInstCount(actual_inst.GetOp());
   }
-#endif	
   
   return exec_success;
 }
@@ -1181,12 +1178,10 @@ bool cHardwareExperimental::Divide_Main(cAvidaContext& ctx, const int div_point,
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
-#endif
   
   m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {
@@ -2335,12 +2330,10 @@ bool cHardwareExperimental::Inst_Repro(cAvidaContext& ctx)
   // lineages need to be updated.
   Divide_TestFitnessMeasures(ctx);
   
-#if INSTRUCTION_COSTS
   // reset first time instruction costs
   for (int i = 0; i < m_inst_ft_cost.GetSize(); i++) {
     m_inst_ft_cost[i] = m_inst_set->GetFTCost(cInstruction(i));
   }
-#endif
   
   m_mal_active = false;
   if (m_world->GetConfig().DIVIDE_METHOD.Get() == DIVIDE_METHOD_SPLIT) {

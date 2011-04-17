@@ -22,7 +22,7 @@
 
 #include "cEventList.h"
 
-#include "Avida.h"
+#include "avida/Avida.h"
 
 #include "cActionLibrary.h"
 #include "cInitFile.h"
