@@ -1,9 +1,9 @@
 /*
- *  core/GlobalObject.h
+ *  private/core/GlobalObject.h
  *  avida-core
  *
- *  Created by David on 12/11/05.
- *  Copyright 2005-2011 Michigan State University. All rights reserved.
+ *  Created by David on 3/16/11.
+ *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
  *
@@ -22,27 +22,16 @@
  *
  */
 
-#ifndef AvidaCoreGlobalObject_h
-#define AvidaCoreGlobalObject_h
+#ifndef AvidaPrivateCoreGlobalObject_h
+#define AvidaPrivateCoreGlobalObject_h
 
 namespace Avida {
   
-  // cGlobalObject - protocol for globally registered objects
-  // --------------------------------------------------------------------------------------------------------------
-  
-  class cGlobalObject
-  {
-  public:
-    virtual ~cGlobalObject() = 0;
-  };
-  
-
   // Global Object Manager
   // --------------------------------------------------------------------------------------------------------------
   
-  namespace GlobalObjectManager {
-    void Register(cGlobalObject* obj);
-    void Unregister(cGlobalObject* obj);
+  namespace GlobalObjectManager {    
+    void Initialize();
   };
 };
 
