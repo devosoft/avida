@@ -1281,6 +1281,9 @@
 		70F7DAF009290468009E311D /* cClassificationManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationManager.cc; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
 		70F962BC135A9CFA008EDD1C /* GlobalObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalObject.h; sourceTree = "<group>"; };
+		70F962BF135AA2E7008EDD1C /* cGenome.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cGenome.cc; sourceTree = "<group>"; };
+		70F962C0135AA2E7008EDD1C /* cSequence.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cSequence.cc; sourceTree = "<group>"; };
+		70F962C1135AA2E7008EDD1C /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		70F9FD990C4E89C40083B788 /* tAutoRelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAutoRelease.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastSummary.h; sourceTree = "<group>"; };
@@ -1967,11 +1970,30 @@
 			path = core;
 			sourceTree = "<group>";
 		};
+		70F962BD135AA2E7008EDD1C /* unittests */ = {
+			isa = PBXGroup;
+			children = (
+				70F962BE135AA2E7008EDD1C /* core */,
+				70F962C1135AA2E7008EDD1C /* main.cc */,
+			);
+			path = unittests;
+			sourceTree = "<group>";
+		};
+		70F962BE135AA2E7008EDD1C /* core */ = {
+			isa = PBXGroup;
+			children = (
+				70F962BF135AA2E7008EDD1C /* cGenome.cc */,
+				70F962C0135AA2E7008EDD1C /* cSequence.cc */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
 		DCC30C490762532C008F7A48 = {
 			isa = PBXGroup;
 			children = (
 				703549221333E30800D3865C /* include */,
 				DCC30C670762539A008F7A48 /* source */,
+				70F962BD135AA2E7008EDD1C /* unittests */,
 				70920C1A0A9CCE2C00757CDB /* Documentation */,
 				70A1E4B01266249900D56AC4 /* Libraries */,
 				707AF2D209EE8501001AEA89 /* Support */,
