@@ -3000,7 +3000,7 @@ public:
     for (int j = 0; j < m_world->GetPopulation().GetWorldY(); j++) {
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         cPopulationCell& cell = m_world->GetPopulation().GetCell(j * m_world->GetPopulation().GetWorldX() + i);
-        int id = (cell.IsOccupied()) ? cell.GetOrganism()->GetVitality() : -1;
+        double id = (cell.IsOccupied()) ? cell.GetOrganism()->GetVitality() : -1;
         fp << id << " ";
       }
       fp << endl;

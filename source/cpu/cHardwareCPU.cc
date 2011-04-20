@@ -3771,7 +3771,7 @@ bool cHardwareCPU::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
   // check if this is a valid group
   if(m_organism->HasOpinion()) {
     int opinion = m_organism->GetOpinion().first;
-    double res_opinion = res_count[opinion];
+    int res_opinion = res_count[opinion] * 100 + 0.5;
     int reg_to_set = FindModifiedRegister(REG_BX);
     GetRegister(reg_to_set) = res_opinion;
   }
@@ -3785,7 +3785,8 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int opinion = m_organism->GetOpinion().first;
     int reg_to_set = FindModifiedRegister(REG_BX);
     double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
-    double res_diff = faced_res - res_count[opinion];
+    // return % change
+    int res_diff = (faced_res - res_count[opinion])/res_count[opinion] * 100 + 0.5;
     GetRegister(reg_to_set) = res_diff;
   }
   return true;
@@ -5559,7 +5560,8 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
       if (faced_res[opinion] != max_res) m_organism->Rotate(1);
     }
   }
-  double res_diff = max_res - current_res[opinion];
+  // return % change
+  int res_diff = (max_res - current_res[opinion])/current_res[opinion] * 100 + 0.5;
   int reg_to_set = FindModifiedRegister(REG_BX);
   GetRegister(reg_to_set) = res_diff;
   return true;
@@ -8480,7 +8482,10 @@ bool cHardwareCPU::Inst_ReadFacedCellData(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = m_organism->GetFacedCellData() - m_organism->GetVitality();
+  // return % diff (FacedCellData is already int)
+  int my_vit = m_organism->GetVitality() + 0.5;
+  int vit_diff = (m_organism->GetFacedCellData() - my_vit)/my_vit * 100;
+  GetRegister(out_reg) = vit_diff;
 
   return true;
 }
@@ -8517,14 +8522,18 @@ bool cHardwareCPU::Inst_GetResStored(cAvidaContext& ctx)
   assert(m_organism != 0);
   const int out_reg = FindModifiedRegister(REG_BX);
   const int resource = m_world->GetConfig().COLLECT_SPECIFIC_RESOURCE.Get();
-  GetRegister(out_reg) = m_organism->GetRBin(resource);
+  // needs to return int...we round down so that they don't think there is more available than they need
+  int res_stored = m_organism->GetRBin(resource) * 100 - 0.5;
+  GetRegister(out_reg) = res_stored;
   return true;
 }
 
 bool cHardwareCPU::Inst_MarkCellWithVitality(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
-  m_organism->SetCellData(m_organism->GetVitality());
+  // SetCellData() needs to be int
+  int my_vit = m_organism->GetVitality() + 0.5;
+  m_organism->SetCellData(my_vit);
 
   return true;
 }
@@ -8549,7 +8558,9 @@ bool cHardwareCPU::Inst_GetFacedVitalityDiff(cAvidaContext& ctx)
   if (neighbor->IsDead())  return false; 
   
   const int out_reg = FindModifiedRegister(REG_BX);
-  GetRegister(out_reg) = m_organism->GetVitality() - neighbor->GetVitality();
+  // return % diff
+  int vit_diff = (neighbor->GetVitality() -  m_organism->GetVitality())/m_organism->GetVitality() * 100 + 0.5;
+  GetRegister(out_reg) = vit_diff;
   return true;
 }
 
@@ -8648,9 +8659,10 @@ bool cHardwareCPU::Inst_GetAttackOdds(cAvidaContext& ctx)
   double attacker_odds = ((attacker_vitality) / (attacker_vitality + target_vitality));
   double target_odds = ((target_vitality) / (attacker_vitality + target_vitality)); 
   
-  double odds_I_dont_die;
-  if (attacker_odds > target_odds) odds_I_dont_die = 1 - target_odds;
-  else odds_I_dont_die = 1 - attacker_odds;
+  int odds_I_dont_die;
+  // return odds as %
+  if (attacker_odds > target_odds) odds_I_dont_die = (1 - target_odds) * 100 + 0.5;
+  else odds_I_dont_die = (1 - attacker_odds) * 100 + 0.5;
   
   const int out_reg = FindModifiedRegister(REG_BX);
   GetRegister(out_reg) = odds_I_dont_die;
