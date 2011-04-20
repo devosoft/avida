@@ -217,7 +217,7 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
 				const double& in_hstep, const double& in_rstep,
 				const double& in_cstepx, const double& in_cstepy,
 				const int& in_update_dynamic, const int& in_peakx, const int& in_peaky,
-				const double& in_height, const double& in_spread, const double& in_plateau, const int& in_decay, 
+				const int& in_height, const int& in_spread, const double& in_plateau, const int& in_decay, 
         const int& in_max_x, const int& in_min_x, const int& in_max_y, const int& in_min_y, const double& in_move_a_scaler,
         const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
         const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed,
