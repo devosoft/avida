@@ -56,7 +56,7 @@ refreshed peak is random within the min/max x and y area. For halo peaks, the pe
 corner of the orbit.
 cGradientCount cannot access the random number generator at the very first update. Thus, it uses the DefaultContext initially*/
 
-cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double height, double spread, double plateau, int decay, 
+cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay, 
                                int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep,  
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
@@ -86,9 +86,9 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, double heigh
   if (m_halo == 1 && (m_halo_width < (2 * m_height) && plateau >= 0)) {
     m_world->GetDriver().RaiseFatalException(-1, "Halo width < 2 * height (aka plateau radius)");
   }
-  m_plateau_array.Resize(4 * m_height * m_height);
+  m_plateau_array.Resize(int(4 * m_height * m_height + 0.5));
   m_plateau_array.SetAll(0);
-  m_plateau_cell_IDs.Resize(4 * m_height * m_height);
+  m_plateau_cell_IDs.Resize(int(4 * m_height * m_height + 0.5));
   m_plateau_cell_IDs.SetAll(0);
   m_current_height = m_height;
   m_common_plat_height = m_plateau;
@@ -106,10 +106,10 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   // and we only need to do this if decay > 1 (if decay == 1, we're going to reset everything regardless of the amount left)
   // if decay = 1 and the resource IS depletable, that means we have a moving depleting resource! Odd, but useful.
   if (m_decay > 1) {
-    int max_pos_x = min(int(m_peakx + m_spread + 1), GetX() - 1);
-    int min_pos_x = max(int(m_peakx - m_spread - 1), 0);
-    int max_pos_y = min(int(m_peaky + m_spread + 1), GetY() - 1);
-    int min_pos_y = max(int(m_peaky - m_spread - 1), 0);
+    int max_pos_x = min(m_peakx + m_spread + 1, GetX() - 1);
+    int min_pos_x = max(m_peakx - m_spread - 1, 0);
+    int max_pos_y = min(m_peaky + m_spread + 1, GetY() - 1);
+    int min_pos_y = max(m_peaky - m_spread - 1, 0);
     for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
       for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
         if (Element(jj * GetX() + ii).GetAmount() >= 1) {
@@ -159,7 +159,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
       int random_shift = ctx.GetRandom().GetUInt(0,2);
       // if changing orbit, choose to go in or out one orbit
       // then figure out if we need change the x or the y to shift orbit (based on what quadrant we're in)
-      double temp_height = 0;
+      int temp_height = 0;
       if (m_plateau < 0) temp_height = 1;
       else temp_height = m_height;
       if (random_shift == 0) {
@@ -291,7 +291,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     }
   } else {
     // for non-halo peaks
-    double temp_height = 0;
+    int temp_height = 0;
     if (m_plateau < 0) temp_height = 1;
     else temp_height = m_height;
     double temp_peakx = m_peakx + (m_move_y_scaler * m_movesignx);
@@ -303,8 +303,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1.0;
     if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1.0;
     
-    m_peakx = m_peakx + (m_movesignx * m_move_y_scaler) + .5;
-    m_peaky = m_peaky + (m_movesigny * m_move_y_scaler) + .5; 
+    m_peakx = int(m_peakx + (m_movesignx * m_move_y_scaler) + .5);
+    m_peaky = int(m_peaky + (m_movesigny * m_move_y_scaler) + .5); 
   } 
 
   // to speed things up, we only check cells within the possible spread of the peak
@@ -319,7 +319,7 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
 {
   // Get initial peak cell x, y coordinates and movement directions.
   cRandom& rng = ctx.GetRandom();
-  double temp_height = 0;
+  int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
   if (!m_halo) {
@@ -384,10 +384,10 @@ void cGradientCount::refreshResourceValues()
   } else {
     // otherwise we only need to update values within the possible range of the peak 
     // we check all the way back to move_speed to make sure we're not leaving any old residue behind
-    max_pos_x = min(int(m_peakx + m_spread + m_move_speed + 1), GetX() - 1);
-    min_pos_x = max(int(m_peakx - m_spread - m_move_speed - 1), 0);
-    max_pos_y = min(int(m_peaky + m_spread + m_move_speed + 1), GetY() - 1);
-    min_pos_y = max(int(m_peaky - m_spread - m_move_speed - 1), 0);
+    max_pos_x = min(m_peakx + m_spread + m_move_speed + 1, GetX() - 1);
+    min_pos_x = max(m_peakx - m_spread - m_move_speed - 1, 0);
+    max_pos_y = min(m_peaky + m_spread + m_move_speed + 1, GetY() - 1);
+    min_pos_y = max(m_peaky - m_spread - m_move_speed - 1, 0);
   }
 
   if (m_is_plateau_common == 1 && !m_just_reset && m_world->GetStats().GetUpdate() > 0) {
@@ -461,7 +461,7 @@ void cGradientCount::refreshResourceValues()
 
 void cGradientCount::getCurrentPlatValues()
 { 
-  double temp_height = 0;
+  int temp_height = 0;
   if (m_plateau < 0) temp_height = 1;
   else temp_height = m_height;
   int plateau_box_min_x = m_peakx - temp_height - 1;

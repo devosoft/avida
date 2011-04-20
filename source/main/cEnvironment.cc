@@ -821,12 +821,12 @@ bool cEnvironment::LoadGradientResource(cString desc, cFeedback& feedback)
         new_resource->SetPeakY( var_value.AsInt() );
       }
       else if (var_name == "height") {
-        if (!AssertInputDouble(var_value, "height", var_type, feedback)) return false;
-        new_resource->SetHeight( var_value.AsDouble() );
+        if (!AssertInputInt(var_value, "height", var_type, feedback)) return false;
+        new_resource->SetHeight( var_value.AsInt() );
       }
       else if (var_name == "spread") {
-        if (!AssertInputDouble(var_value, "spread", var_type, feedback)) return false;
-        new_resource->SetSpread( var_value.AsDouble() );
+        if (!AssertInputInt(var_value, "spread", var_type, feedback)) return false;
+        new_resource->SetSpread( var_value.AsInt() );
       }
       else if (var_name == "plateau") {
         if (!AssertInputDouble(var_value, "plateau", var_type, feedback)) return false;

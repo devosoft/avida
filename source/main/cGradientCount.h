@@ -37,8 +37,8 @@ private:
   // Configuration Arguments
   int m_peakx;
   int m_peaky;
-  double m_height;
-  double m_spread;
+  int m_height;
+  int m_spread;
   double m_plateau;
   int m_decay;
   int m_max_x;
@@ -79,7 +79,7 @@ private:
   tArray<int> m_plateau_cell_IDs;
   
 public:
-  cGradientCount(cWorld* world, int peakx, int peaky, double height, double spread, double plateau, int decay,              
+  cGradientCount(cWorld* world, int peakx, int peaky, int height, int spread, double plateau, int decay,              
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,

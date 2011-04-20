@@ -102,8 +102,8 @@ private:
   int update_dynamic; //JW
   int m_peakx;
   int m_peaky;
-  double m_height;
-  double m_spread;    
+  int m_height;
+  int m_spread;    
   double m_plateau;
   int m_decay;
   int m_max_x;
@@ -175,8 +175,8 @@ public:
   int GetUpdateDynamic() const { return update_dynamic; } //JW
   int GetPeakX() { return m_peakx; }
   int GetPeakY() { return m_peaky; }
-  double GetHeight() { return m_height; }
-  double GetSpread() { return m_spread; }
+  int GetHeight() { return m_height; }
+  int GetSpread() { return m_spread; }
   double GetPlateau() { return m_plateau; }
   int GetDecay() { return m_decay; }
   int GetMaxX() { return m_max_x; }
@@ -242,8 +242,8 @@ public:
   void SetUpdateDynamic(int _update_dynamic) { update_dynamic = _update_dynamic; } //JW
   void SetPeakX(int _peakx) { m_peakx = _peakx; }
   void SetPeakY(int _peaky) { m_peaky = _peaky; }
-  void SetHeight(double _height) { m_height = _height; }
-  void SetSpread(double _spread) { m_spread = _spread; }
+  void SetHeight(int _height) { m_height = _height; }
+  void SetSpread(int _spread) { m_spread = _spread; }
   void SetPlateau(double _plateau) { m_plateau = _plateau; }
   void SetDecay(int _decay) { m_decay = _decay; }
   void SetMaxX(int _max_x) { m_max_x = _max_x; }

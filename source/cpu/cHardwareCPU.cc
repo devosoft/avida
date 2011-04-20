@@ -9607,9 +9607,9 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
       // Calculate the chance for successful immigration and test if the offspring successfully immigrates.
       const double immigrants_odds = (tolerance_max - parent_group_immigrant_intolerance) / tolerance_max;
       
-      GetRegister(REG_AX) = immigrants_odds;
-      GetRegister(REG_BX) = own_offspring_odds;
-      GetRegister(REG_CX) = overall_offspring_odds; 
+      GetRegister(REG_AX) = int(immigrants_odds * 100 + 0.5);
+      GetRegister(REG_BX) = int(own_offspring_odds * 100 + 0.5);
+      GetRegister(REG_CX) = int(overall_offspring_odds + 0.5); 
     }  
   } 
   return true;  
