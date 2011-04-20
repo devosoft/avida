@@ -886,6 +886,8 @@ protected:
   cDoubleSum m_deme_generation; //!< Mean generation of replicated demes.
 	cDoubleSum m_deme_density; //!< Mean density of replicated demes.
   cDoubleSum m_deme_fit_sd; //!< Mean standard deviation of fitness of organisms within a deme
+  cDoubleSum m_deme_gest_sd; //!< Mean standard deviation of gestation of organisms within a deme
+  cDoubleSum m_deme_merit_sd; //!< Mean standard deviation of merit of organisms within a deme
   cDoubleSum m_germline_generation; //!< Mean germline generation of replicated germlines
   
 

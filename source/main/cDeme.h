@@ -395,6 +395,9 @@ public:
 	void UpdateShannon(cPopulationCell& cell);
 	void UpdateShannonAll();
   double GetMeanSDofFitness(); 
+  double GetMeanSDofMerit(); 
+  double GetMeanSDofGestation(); 
+
   double GetPercentReproductives();
 	void ClearShannonInformationStats();
 	

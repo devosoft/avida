@@ -1665,6 +1665,8 @@ void cStats::DemePreReplication(cDeme& source_deme, cDeme& target_deme)
   m_deme_generation.Add(source_deme.GetGeneration());
 	m_deme_density.Add(source_deme.GetDensity());
   m_deme_fit_sd.Add(source_deme.GetMeanSDofFitness());
+  m_deme_gest_sd.Add(source_deme.GetMeanSDofGestation());
+  m_deme_merit_sd.Add(source_deme.GetMeanSDofMerit());
 
 	if(source_deme.isTreatable()) {
 		++m_deme_num_repls_treatable;
@@ -1725,6 +1727,8 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   df.Write(m_deme_generation.Average(), "Mean generation of replicated demes [generation]");
   df.Write(m_deme_density.Average(), "Mean density of replicated demes [density]");
   df.Write(m_deme_fit_sd.Average(), "Mean standard deviation of fitness of organisms within a deme [sddemefit]");  
+  df.Write(m_deme_gest_sd.Average(), "Mean standard deviation of gestation of organisms within a deme [sddemegest]");  
+  df.Write(m_deme_merit_sd.Average(), "Mean standard deviation of merit of organisms within a deme [sddememerit]");  
   df.Endl();
 
   m_deme_num_repls = 0;
@@ -1734,6 +1738,9 @@ void cStats::PrintDemeReplicationData(const cString& filename)
   m_deme_generation.Clear();
 	m_deme_density.Clear();
   m_deme_fit_sd.Clear();
+  m_deme_fit_sd.Clear();
+  m_deme_fit_sd.Clear();
+
 }
 
 /*! Print statistics related to deme replication.  Currently only prints the

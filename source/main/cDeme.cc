@@ -1247,6 +1247,61 @@ double cDeme::GetMeanSDofFitness()
   return sd;
 }
 
+
+double cDeme::GetMeanSDofMerit()
+{
+  cDoubleSum mer; 
+  bool same_merit = true; 
+  double cur_merit = -1;
+  for (int i=0; i<GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
+    if (cell.IsOccupied()) {
+      cOrganism* organism = cell.GetOrganism();
+      mer.Add(organism->GetPhenotype().GetMerit().GetDouble());
+      if (cur_merit == -1) { 
+        cur_merit = organism->GetPhenotype().GetMerit().GetDouble();
+      }
+      if (cur_merit != organism->GetPhenotype().GetMerit().GetDouble()) {
+        same_merit = false;
+      }
+    }
+  }
+  double sd = mer.StdDeviation();
+  // if the standard deviation is nan, it resulted from *no* variation in merit among the organisms.
+  if (same_merit) {
+    sd = 0;
+  }
+  return sd;
+}
+
+
+double cDeme::GetMeanSDofGestation()
+{
+  cDoubleSum gest; 
+  bool same_gest = true; 
+  double cur_gest = -1;
+  for (int i=0; i<GetSize(); ++i) {
+    cPopulationCell& cell = m_world->GetPopulation().GetCell(GetCellID(i));
+    if (cell.IsOccupied()) {
+      cOrganism* organism = cell.GetOrganism();
+      gest.Add(organism->GetPhenotype().GetGestationTime());
+      if (cur_gest == -1) { 
+        cur_gest = organism->GetPhenotype().GetGestationTime();
+      }
+      if (cur_gest != organism->GetPhenotype().GetGestationTime()) {
+        same_gest = false;
+      }
+    }
+  }
+  double sd = gest.StdDeviation();
+  // if the standard deviation is nan, it resulted from *no* variation in gestation time among the organisms.
+  if (same_gest) {
+    sd = 0;
+  }
+  return sd;
+}
+
+
 double cDeme::GetPercentReproductives()
 {
   double per = (m_num_reproductives/((double)injected_count + (double)cur_birth_count));
