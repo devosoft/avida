@@ -85,9 +85,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     }
   }
   
-  NSRect bounds = [self bounds];
-
-  CGFloat block_size = round(zoom);
+  CGFloat block_size = zoom;
   CGFloat grid_width = (block_size > 5.0) ? 1.0 : 0.0;
   
   // Determine Map Dimensions
@@ -95,7 +93,13 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   mapRect.size.width = map_width * block_size - grid_width;
   mapRect.size.height = map_height * block_size - grid_width;
   
-  mapRect.origin = NSMakePoint(round((bounds.size.width - mapRect.size.width) / 2), round((bounds.size.height - mapRect.size.height) / 2));
+  NSSize bounds = [enclosingScrollView bounds].size;
+  if (mapRect.size.width <= bounds.width && mapRect.size.height <= bounds.height) {
+    mapRect.origin =
+      NSMakePoint(round((bounds.width - mapRect.size.width) / 2), round((bounds.height - mapRect.size.height) / 2));
+  } else {
+    mapRect.origin = NSMakePoint(0, 0);
+  }
   [[NSColor blackColor] set];
   [NSBezierPath fillRect:mapRect];
   
@@ -134,23 +138,42 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   map_colors = state->GetColors();
   num_colors = state->GetColorScale().GetScaleRange();
 
-  if (zoom < 0) {
-    NSRect bounds = [self bounds];
-    double z1 = bounds.size.width / map_width;
-    double z2 = bounds.size.height / map_height;
-    zoom = (z1 > z2) ? z2 : z1;
-    if (zoom > 15.0) zoom = 15.0;
-    zoom = floor(zoom);
-  }
-  
   state->Release();
   
-  [self setNeedsDisplay:YES];
+  
+  if (zoom < 0) {
+    NSSize bounds = [enclosingScrollView bounds].size;
+    std::cout << "bounds = " << bounds.width << " x " << bounds.height << std::endl;
+    double z1 = bounds.width / map_width;
+    double z2 = bounds.height / map_height;
+    double zval = (z1 > z2) ? z2 : z1;
+    if (zval > 15.0) zval = 15.0;
+    zval = floor(zval);
+    std::cout << "zval = " << zval << std::endl;
+    [self setZoom:zval];
+  } else {
+    [self setNeedsDisplay:YES];
+  }
 }
 
 @synthesize zoom;
 - (void) setZoom: (double)zval {
-  zoom = zval;
+  zoom = round(zval);
+  
+  CGFloat block_size = zoom;
+  CGFloat grid_width = (block_size > 5.0) ? 1.0 : 0.0;
+
+  NSSize mapSize;
+  mapSize.width = map_width * block_size - grid_width;
+  mapSize.height = map_height * block_size - grid_width;
+  
+  NSSize bounds = [enclosingScrollView bounds].size;
+  if (bounds.width >= mapSize.width && bounds.height >= mapSize.height) {
+    [self setFrameSize:bounds];
+  } else {
+    [self setFrameSize:mapSize];
+  }
+  
   [self setNeedsDisplay:YES];
 }
 
