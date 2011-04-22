@@ -289,6 +289,11 @@ public:
 	// Get the group information
 	map<int, int> GetFormedGroups() { return m_groups; }
 	
+	// Calculate tolerance of group towards immigrants @JJB
+	int CalcGroupToleranceImmigrants(int group_id);
+	// Calculate tolerance of group towards offspring (not including parent) @JJB
+	int CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id);
+
 	// -------- HGT support --------
 	//! Modify current level of the HGT resource.
 	void AdjustHGTResource(double delta);

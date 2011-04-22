@@ -946,10 +946,10 @@ public:
 	bool Inst_IncTolerance(cAvidaContext& ctx);
 	// Decreases tolerance of org for either immigrants, own offspring, or offspring of others in group and places tolerance in BX reg. @JJB
 	bool Inst_DecTolerance(cAvidaContext& ctx);
-  // Get your own tolerance levels
+	// Get your own tolerance levels @JJB
 	bool Inst_GetTolerance(cAvidaContext& ctx);
-  // Get group tolerance levels
-  bool Inst_GetGroupTolerance(cAvidaContext& ctx);
+	// Get group tolerance levels @JJB
+	bool Inst_GetGroupTolerance(cAvidaContext& ctx);
   
 	// -------- Network creation support --------
 public:

@@ -407,7 +407,7 @@ void cGradientCount::refreshResourceValues()
   for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
     for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
       double thisheight = 0.0;
-      double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
+      double thisdist = sqrt((double) (m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
       if (m_spread >= thisdist) {
         // determine theoretical individual cells values and add one to distance from center 
         // (so that center point = radius 1, not 0)
@@ -472,7 +472,7 @@ void cGradientCount::getCurrentPlatValues()
   double amount_devoured = 0.0;
   for (int ii = plateau_box_min_x; ii < plateau_box_max_x + 1; ii++) {
     for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) { 
-      double thisdist = sqrt((m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
+      double thisdist = sqrt((double) (m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
       double find_plat_dist = temp_height / (thisdist + 1);
       if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) {
         double past_cell_height = m_plateau_array[plateau_cell];

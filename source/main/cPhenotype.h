@@ -145,9 +145,9 @@ private:
   tArray<int> cur_trial_times_used;           // Time used in of various trials.; @JEB
   int trial_time_used;                        // like time_used, but reset every trial; @JEB
   int trial_cpu_cycles_used;                  // like cpu_cycles_used, but reset every trial; @JEB
-  tArray<int> tolerance_immigrants;           // previous updates tolerance has been decreased towards immigrants @JJB
-  tArray<int> tolerance_offspring_own;        // previous updates tolerance has been decreased towards org's own offspring @JJB
-  tArray<int> tolerance_offspring_others;     // previous updates tolerance has been decreased towards other offspring in group @JJB
+  tArray<int> tolerance_immigrants;           // record of previous updates tolerance has been decreased towards immigrants @JJB
+  tArray<int> tolerance_offspring_own;        // record of previous updates tolerance has been decreased towards org's own offspring @JJB
+  tArray<int> tolerance_offspring_others;     // record of previous updates tolerance has been decreased towards other offspring in group @JJB
   double last_child_germline_propensity;   // chance of child being a germline cell; @JEB
 
   cReactionResult* m_reaction_result;
@@ -264,7 +264,8 @@ private:
   bool is_multi_thread;  // Does this organism have 2 or more threads?
   bool parent_true;      // Is this genome an exact copy of its parent's?
   bool parent_sex;       // Did the parent divide with sex?
-  int  parent_cross_num; // How many corssovers did the parent do? 
+  int  parent_cross_num; // How many corssovers did the parent do?
+  bool born_parent_group;// Was offspring born into the parent's group? @JJB
 
   // 6. Child information...
   bool copy_true;        // Can this genome produce an exact copy of itself?
@@ -505,6 +506,7 @@ public:
   bool ParentTrue() const { assert(initialized == true); return parent_true; }
   bool ParentSex() const  { assert(initialized == true); return parent_sex; }
   int  ParentCrossNum() const  { assert(initialized == true); return parent_cross_num; }
+  bool BornParentGroup() const { assert(initialized == true); return born_parent_group; } // @JJB
 
   bool CopyTrue() const   { assert(initialized == true); return copy_true; }
   bool DivideSex() const  { assert(initialized == true); return divide_sex; }
@@ -583,6 +585,8 @@ public:
   void SetIsEnergyRequestor() { is_energy_requestor = true; }
   void SetIsEnergyDonor() { is_energy_donor = true; }
   void SetIsEnergyReceiver() { is_energy_receiver = true; }
+  void SetBornParentGroup() { born_parent_group = true; } // @JJB
+  void ClearBornParentGroup() { born_parent_group = false; } // @JJB
   void SetHasUsedDonatedEnergy() {has_used_donated_energy = true; }
   void SetHasOpenEnergyRequest() { has_open_energy_request = true; }
   void ClearHasOpenEnergyRequest() { has_open_energy_request = false; }
