@@ -1,0 +1,1206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\tools\AvidaTools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\cAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\cActionLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyze.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeCommandAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeCommandDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeCommandDefBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeFlowCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeFlowCommandDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeFunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeGenotype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeJob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeJobQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeJobWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cAnalyzeScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeTreeStats_CumulativeStemminess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cAnalyzeTreeStats_Gamma.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cAnalyzeView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cArgContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cArgSchema.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cAvidaConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cAvidaContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\drivers\cAvidaDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cBarScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cBaseTextWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cBGGenotype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cBGGenotypeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cBioGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cBioGroupData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cBioGroupListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cBioGroupManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cBioUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthChamber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthDemeHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthGenomeSizeHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthGlobalHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthGridLocalHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthMateSelectHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthNeighborhoodHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cBirthSelectionHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cBitArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cChangeList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cClassificationManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cCodeLabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\cConditionVariable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cConstBurstSchedule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cConstSchedule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cContextPhenotype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cContextReactionRequisite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cCoords.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cCountTracker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cCPUMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cCPUStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cCPUTestInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cDataFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cDataFileManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cDataManager_Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\drivers\cDefaultAnalyzeDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\drivers\cDefaultRunDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDeme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDemeCellEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDemeNetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDemeNetworkUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDemePlaceholderUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDemePredicate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cDemeProbSchedule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDemeTopologyNetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cDynamicCount.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\drivers\cDMObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cDoubleSum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cEntryHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cEnvironment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cEnvironmentScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cEnvReqs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cEventList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\drivers\cFallbackWorldDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cFlexVar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cGenomeTestMetrics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cGenomeUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cGenotypeBatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cGenotypeData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cGermline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareCPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareExperimental.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareGX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareSMT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareStatusPrinter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareTracer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHardwareTransSMT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cHeadCPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cHelpAlias.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cHelpEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cHelpFullEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cHelpManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cHelpType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cHistogram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cHistScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cInitFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cInstLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cInstLibEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cInstSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cIntegratedSchedule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cIntegratedScheduleNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cIntSum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cLandscape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cMapScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cMenuWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cMerit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cModularityAnalysis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cMutationalNeighborhood.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cMutationalNeighborhoodResults.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cMutationRates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cMutationSteps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\cMutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cOptionsScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cOrderedWeightedIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrganism.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrgInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrgMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrgMessagePredicate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrgMovementPredicate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrgSeqMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrgSinkMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cOrgSourceMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cParasite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cPhenotype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cPhenPlastGenotype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\cPhenPlastSummary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cPhenPlastUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cPlasticPhenotype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cPopulation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cPopulationCell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cPopulationInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cProbDemeProbSchedule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cProbSchedule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cRandom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cRCObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cReaction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cReactionLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cReactionProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cReactionRequisite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cReactionResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cResourceCount.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cResourceHistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cResourceLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cRunningAverage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cRunningStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\cRWLock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cSaleItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cSchedule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\classification\cSexualAncestry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cSpatialCountElem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cSpatialResCount.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cStateGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cStatsScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cStringIterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cStringList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cStringUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cSymbolUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cTabBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cTaskContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cTaskEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cTaskLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cTaskState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cTestCPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\cTestCPUInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cTextViewerAnalyzeDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cTextViewerDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cTextViewerDriver_Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cTextWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\cThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cTopology.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\platform\msvc2005\pdcurses\curses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cUserFeedback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cView_Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cViewInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\cWeightedIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\targets\avida-viewer\cZoomScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\DriverActions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\EnvironmentActions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\FloatingPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\LandscapeActions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\nGeometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\nHardware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\nHashTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\nReaction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\Platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\PopulationActions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\PrintActions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\actions\SaveLoadActions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\sCPUStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\tAnalyzeJob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\analyze\tAnalyzeJobBatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tArrayMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tArraySet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tArrayUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tAutoRelease.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tBufferedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tDataCommandManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tDataEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tDataEntryCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tDataManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tDictionary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\drivers\tDMSingleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tHashMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\tInstLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cpu\tInstLibEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tIterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tKVPair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tManagedPointerArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tMemTrack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tObjectFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tRCPtr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\tRLockPtr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tSmartArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tSparseVectorList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\platform\tThreadSpecific.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\tools\tVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\main\cGradientCount.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\private\avida\private\core\GlobalObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\Avida.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\util\CmdLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\core\cFeedback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\core\cGenome.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\core\cSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\core\cWorldDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\core\Definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\core\GlobalObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\public\avida\core\Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\tools\AvidaTools.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actions\cActionLibrary.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cAnalyze.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cAnalyzeGenotype.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cAnalyzeJobQueue.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cAnalyzeJobWorker.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cAnalyzeScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cAnalyzeTreeStats_CumulativeStemminess.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cAnalyzeTreeStats_Gamma.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cAnalyzeView.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cArgContainer.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cArgSchema.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cAvidaConfig.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cBarScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cBGGenotype.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cBGGenotypeManager.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cBioGroup.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cBioGroupListener.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cBioGroupManager.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cBioUnit.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthChamber.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthDemeHandler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthGenomeSizeHandler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthGlobalHandler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthGridLocalHandler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthMateSelectHandler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthNeighborhoodHandler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cBirthSelectionHandler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cBitArray.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cChangeList.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cClassificationManager.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cCodeLabel.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cConstBurstSchedule.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cConstSchedule.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cContextPhenotype.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cCPUMemory.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cCPUStack.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cCPUTestInfo.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cDataFile.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cDataFileManager.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cDataManager_Base.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\drivers\cDefaultAnalyzeDriver.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\drivers\cDefaultRunDriver.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cDeme.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cDemeCellEvent.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cDemeNetwork.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cDemeProbSchedule.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cDemeTopologyNetwork.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cDynamicCount.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cEnvironment.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cEnvironmentScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cEventList.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\drivers\cFallbackWorldDriver.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cFile.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cGenomeTestMetrics.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cGenomeUtil.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cGenotypeBatch.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cGenotypeData.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareBase.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareCPU.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareExperimental.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareGX.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareManager.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareSMT.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareStatusPrinter.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHardwareTransSMT.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cHeadCPU.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cHelpAlias.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cHelpManager.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cHelpType.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cHistogram.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cHistScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cInitFile.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cInstruction.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cInstSet.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cIntegratedSchedule.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cIntegratedScheduleNode.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cIntSum.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cLandscape.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cMapScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cMenuWindow.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cMerit.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cModularityAnalysis.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\analyze\cMutationalNeighborhood.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cMutationRates.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cMutationSteps.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cOptionsScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cOrderedWeightedIndex.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cOrganism.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cOrgMessage.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cParasite.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cPhenotype.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cPhenPlastGenotype.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cPhenPlastUtil.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cPlasticPhenotype.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cPopulation.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cPopulationCell.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cPopulationInterface.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cProbDemeProbSchedule.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cProbSchedule.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cRandom.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cReaction.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cReactionLib.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cReactionResult.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cResource.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cResourceCount.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cResourceHistory.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cResourceLib.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cRunningAverage.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cSchedule.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\classification\cSexualAncestry.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cSpatialCountElem.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cSpatialResCount.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cStats.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cStatsScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cString.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cStringIterator.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cStringList.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cStringUtil.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cSymbolUtil.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cTaskLib.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cTestCPU.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cpu\cTestCPUInterface.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cTextViewerAnalyzeDriver.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cTextViewerDriver.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cTextViewerDriver_Base.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cTextWindow.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\platform\cThread.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cView.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cViewInfo.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\cWeightedIndex.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cWorld.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\cZoomScreen.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actions\DriverActions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actions\EnvironmentActions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actions\LandscapeActions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\tools\platform\Platform.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actions\PopulationActions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actions\PrintActions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\actions\SaveLoadActions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\targets\avida-viewer\viewer.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\Avida.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\cGenome.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\cSequence.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\Definitions.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\GlobalObject.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\core\Version.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main\cGradientCount.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\util\CmdLine.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="source\platform\msvc2005\pdcurses\pdcurses.lib" />
+  </ItemGroup>
+</Project>
