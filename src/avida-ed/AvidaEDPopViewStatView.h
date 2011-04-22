@@ -36,13 +36,13 @@
   
 }
 
-- (id)initWithFrame:(NSRect)frame;
-- (void)awakeFromNib;
+- (id) initWithFrame:(NSRect)frame;
+- (void) awakeFromNib;
 
-- (void)dealloc;
+- (void) dealloc;
 
-- (BOOL)isFlipped;
+- (BOOL) isFlipped;
 
-- (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize;
+- (void) resizeSubviewsWithOldSize:(NSSize)oldBoundsSize;
 
 @end

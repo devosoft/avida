@@ -44,7 +44,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 @implementation MapGridView
 
-- (id) initWithFrame: (NSRect)frame {
+- (id) initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code here.
@@ -57,7 +57,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
     return self;
 }
 
-- (void) drawRect: (NSRect)dirtyRect {
+- (void) drawRect:(NSRect)dirtyRect {
   [[NSColor darkGrayColor] set];
   [NSBezierPath fillRect:dirtyRect];
   
@@ -91,15 +91,9 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   // Determine Map Dimensions
   NSRect mapRect;
   mapRect.size.width = map_width * block_size - grid_width;
-  mapRect.size.height = map_height * block_size - grid_width;
+  mapRect.size.height = map_height * block_size - grid_width;  
+  mapRect.origin = NSMakePoint(0, 0);
   
-  NSSize bounds = [enclosingScrollView bounds].size;
-  if (mapRect.size.width <= bounds.width && mapRect.size.height <= bounds.height) {
-    mapRect.origin =
-      NSMakePoint(round((bounds.width - mapRect.size.width) / 2), round((bounds.height - mapRect.size.height) / 2));
-  } else {
-    mapRect.origin = NSMakePoint(0, 0);
-  }
   [[NSColor blackColor] set];
   [NSBezierPath fillRect:mapRect];
   
@@ -129,7 +123,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   return YES;
 }
 
-- (void) updateState: (Avida::CoreView::cMap*)state {
+- (void) updateState:(Avida::CoreView::cMap*)state {
   state->Retain();
   
   map_width = state->GetWidth();
@@ -143,13 +137,11 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   if (zoom < 0) {
     NSSize bounds = [enclosingScrollView bounds].size;
-    std::cout << "bounds = " << bounds.width << " x " << bounds.height << std::endl;
     double z1 = bounds.width / map_width;
     double z2 = bounds.height / map_height;
     double zval = (z1 > z2) ? z2 : z1;
     if (zval > 15.0) zval = 15.0;
     zval = floor(zval);
-    std::cout << "zval = " << zval << std::endl;
     [self setZoom:zval];
   } else {
     [self setNeedsDisplay:YES];
@@ -157,7 +149,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 @synthesize zoom;
-- (void) setZoom: (double)zval {
+- (void) setZoom:(double)zval {
   zoom = round(zval);
   
   CGFloat block_size = zoom;
@@ -167,12 +159,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   mapSize.width = map_width * block_size - grid_width;
   mapSize.height = map_height * block_size - grid_width;
   
-  NSSize bounds = [enclosingScrollView bounds].size;
-  if (bounds.width >= mapSize.width && bounds.height >= mapSize.height) {
-    [self setFrameSize:bounds];
-  } else {
-    [self setFrameSize:mapSize];
-  }
+  [self setFrameSize:mapSize];
   
   [self setNeedsDisplay:YES];
 }

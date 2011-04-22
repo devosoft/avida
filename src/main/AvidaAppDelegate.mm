@@ -35,12 +35,12 @@
 
 @implementation AvidaAppDelegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+- (void) applicationDidFinishLaunching:(NSNotification*)aNotification {
 	// Insert code here to initialize your application 
 }
 
 
-- (IBAction)newAvida: (id)sender {
+- (IBAction) newAvida:(id)sender {
   AvidaMainWindowController* ctrl = [[AvidaMainWindowController alloc] initWithAppDelegate:self];
   if (ctrl == nil) {
     NSLog(@"Error loading Avida-MainWindow NIB");
@@ -50,7 +50,7 @@
 }
 
 
-- (IBAction)newAvidaED: (id)sender {
+- (IBAction) newAvidaED:(id)sender {
   AvidaEDController* ctrl = [[AvidaEDController alloc] initWithAppDelegate:self];
   if (ctrl == nil) {
     NSLog(@"Error loading Avida-ED-MainWindow NIB");
@@ -60,7 +60,7 @@
 }
 
 
-- (void)removeWindow: (id)sender {
+- (void) removeWindow:(id)sender {
   [windows removeObject:sender];
 }
 

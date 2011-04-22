@@ -548,7 +548,7 @@
 														<string key="NSFrameSize">{455, 455}</string>
 														<reference key="NSSuperview" ref="815669692"/>
 														<reference key="NSWindow"/>
-														<reference key="NSNextKeyView"/>
+														<reference key="NSNextKeyView" ref="487268846"/>
 														<bool key="NSViewCanDrawConcurrently">YES</bool>
 														<string key="NSClassName">MapGridView</string>
 													</object>
@@ -570,6 +570,7 @@
 												<string key="NSFrame">{{457, 0}, {15, 457}}</string>
 												<reference key="NSSuperview" ref="176033791"/>
 												<reference key="NSWindow"/>
+												<reference key="NSNextKeyView" ref="988693569"/>
 												<reference key="NSTarget" ref="176033791"/>
 												<string key="NSAction">_doScroller:</string>
 												<double key="NSCurValue">1</double>
@@ -581,6 +582,7 @@
 												<string key="NSFrame">{{0, 457}, {457, 15}}</string>
 												<reference key="NSSuperview" ref="176033791"/>
 												<reference key="NSWindow"/>
+												<reference key="NSNextKeyView" ref="160464760"/>
 												<int key="NSsFlags">1</int>
 												<reference key="NSTarget" ref="176033791"/>
 												<string key="NSAction">_doScroller:</string>
@@ -693,7 +695,7 @@
 										<string key="NSFrame">{{8, 664}, {32, 33}}</string>
 										<reference key="NSSuperview" ref="858432473"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="160464760"/>
+										<reference key="NSNextKeyView" ref="549423778"/>
 										<bool key="NSEnabled">YES</bool>
 										<object class="NSImageCell" key="NSCell" id="189264323">
 											<int key="NSCellFlags">130560</int>
@@ -854,7 +856,7 @@
 										<string key="NSFrame">{{215, 668}, {24, 24}}</string>
 										<reference key="NSSuperview" ref="858432473"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="108679963"/>
+										<reference key="NSNextKeyView" ref="176033791"/>
 										<bool key="NSEnabled">YES</bool>
 										<object class="NSButtonCell" key="NSCell" id="934395022">
 											<int key="NSCellFlags">67239424</int>
@@ -892,7 +894,7 @@
 								<string key="NSFrameSize">{455, 700}</string>
 								<reference key="NSSuperview" ref="227454050"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="549423778"/>
+								<reference key="NSNextKeyView" ref="887567167"/>
 								<string key="NSClassName">NSView</string>
 							</object>
 							<object class="NSCustomView" id="307699097">
@@ -1047,14 +1049,6 @@
 			<array class="NSMutableArray" key="connectionRecords">
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">window</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="1005"/>
-					</object>
-					<int key="connectionID">75</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="1005"/>
 						<reference key="destination" ref="1001"/>
@@ -1207,11 +1201,35 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">initialFirstResponder</string>
+						<reference key="source" ref="1005"/>
+						<reference key="destination" ref="170058291"/>
+					</object>
+					<int key="connectionID">181</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">window</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="1005"/>
+					</object>
+					<int key="connectionID">182</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">mapScrollView</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="176033791"/>
+					</object>
+					<int key="connectionID">183</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">enclosingScrollView</string>
 						<reference key="source" ref="108679963"/>
 						<reference key="destination" ref="176033791"/>
 					</object>
-					<int key="connectionID">180</int>
+					<int key="connectionID">184</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1673,7 +1691,7 @@
 				<boolean value="YES" key="1.IBNSWindowAutoPositionCentersVertical"/>
 				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="1.IBWindowTemplateEditedContentRect">{{1169, 151}, {985, 700}}</string>
-				<integer value="1" key="1.NSWindowTemplate.visibleAtLaunch"/>
+				<boolean value="YES" key="1.NSWindowTemplate.visibleAtLaunch"/>
 				<string key="1.WindowOrigin">{196, 240}</string>
 				<string key="1.editorWindowContentRectSynchronizationRect">{{202, 428}, {480, 270}}</string>
 				<string key="10.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -1781,7 +1799,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">180</int>
+			<int key="maxID">184</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1812,6 +1830,7 @@
 						<string key="btnRunState">NSButton</string>
 						<string key="mainSplitView">NSSplitView</string>
 						<string key="mapScaleView">MapScaleView</string>
+						<string key="mapScrollView">NSScrollView</string>
 						<string key="mapView">MapGridView</string>
 						<string key="mapViewMode">NSPopUpButton</string>
 						<string key="mapZoom">NSSlider</string>
@@ -1836,6 +1855,10 @@
 						<object class="IBToOneOutletInfo" key="mapScaleView">
 							<string key="name">mapScaleView</string>
 							<string key="candidateClassName">MapScaleView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="mapScrollView">
+							<string key="name">mapScrollView</string>
+							<string key="candidateClassName">NSScrollView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="mapView">
 							<string key="name">mapView</string>

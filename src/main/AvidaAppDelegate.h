@@ -33,9 +33,9 @@
   NSMutableSet* windows;
 }
 
--(IBAction)newAvida:(id)sender;
--(IBAction)newAvidaED:(id)sender;
+- (IBAction) newAvida:(id)sender;
+- (IBAction) newAvidaED:(id)sender;
 
--(void)removeWindow:(id)sender;
+- (void) removeWindow:(id)sender;
 
 @end

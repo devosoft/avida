@@ -39,7 +39,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 
 @implementation MapScaleView
 
-- (id)initWithFrame:(NSRect)frame
+- (id) initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame:frame];
   if (self) {
@@ -51,20 +51,20 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   return self;
 }
 
-- (void)awakeFromNib {
+- (void) awakeFromNib {
   num_colors = 0;
   color_cache = [NSMutableArray arrayWithCapacity:255];  
   scale_label = nil;
 }
 
 
-- (void)dealloc
+- (void) dealloc
 {
   [super dealloc];
 }
 
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void) drawRect:(NSRect)dirtyRect
 {
   [[NSColor darkGrayColor] set];
   [NSBezierPath fillRect:dirtyRect];
@@ -122,7 +122,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 
-- (void) updateState: (Avida::CoreView::cMap*)state {
+- (void) updateState:(Avida::CoreView::cMap*)state {
   state->Retain();
   
   map_colors = state->GetColors();

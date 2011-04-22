@@ -1,9 +1,9 @@
 //
-//  AvidaRun.h
+//  CenteringClipView.h
 //  avida/apps/viewer-macos
 //
-//  Created by David on 10/27/10.
-//  Copyright 2010-2011 Michigan State University. All rights reserved.
+//  Created by David on 4/22/11.
+//  Copyright 2011 Michigan State University. All rights reserved.
 //  http://avida.devosoft.org/viewer-macos
 //
 //  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
@@ -29,34 +29,20 @@
 
 #import <Cocoa/Cocoa.h>
 
-@protocol CoreViewListener;
 
-namespace Avida {
-  namespace CoreView {
-    class cDriver;    
-  };
-};
-
-
-@interface AvidaRun : NSObject {
-@protected
-  Avida::CoreView::cDriver* driver;
+@interface CenteringClipView : NSClipView {
+  NSPoint viewPoint;
 }
 
-- (id) init;
-- (AvidaRun*) initWithDirectory:(NSURL*)dir;
+- (void) centerView;
 
-- (void) dealloc;
-- (void) finalize;
-
-
-- (bool) isPaused;
-- (void) pause;
-- (void) resume;
-- (void) end;
-
-
-- (void) attachListener:(id<CoreViewListener>)listener;
-- (void) detachListener:(id<CoreViewListener>)listener;
+// NSClipView Method Overrides
+- (NSPoint) constrainScrollPoint:(NSPoint)proposedNewOrigin;
+- (void) viewBoundsChanged:(NSNotification*)notification;
+- (void) viewFrameChanged:(NSNotification*)notification;
+- (void) setFrame:(NSRect)frameRect;
+- (void) setFrameOrigin:(NSPoint)newOrigin;
+- (void) setFrameSize:(NSSize)newSize;
+- (void) setFrameRotation:(CGFloat)angle;
 
 @end

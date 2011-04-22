@@ -33,7 +33,7 @@
 
 
 @implementation CoreViewMap
-- (id) initWithMap: (Avida::CoreView::cMap*)map {
+- (id) initWithMap:(Avida::CoreView::cMap*)map {
   m_map = map;
   return self;
 }
@@ -42,7 +42,7 @@
 
 
 @implementation CoreViewUpdate
-- (id) initWithUpdate: (int)update {
+- (id) initWithUpdate:(int)update {
   m_update = update;
   return self;
 }

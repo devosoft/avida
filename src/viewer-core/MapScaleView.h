@@ -48,10 +48,10 @@ namespace Avida {
   NSString* scale_label;
 }
 
-- (id)initWithFrame:(NSRect)frame;
+- (id) initWithFrame:(NSRect)frame;
 
-- (void)drawRect:(NSRect)rect;
+- (void) drawRect:(NSRect)rect;
 
-- (void)updateState:(Avida::CoreView::cMap*)state;
+- (void) updateState:(Avida::CoreView::cMap*)state;
 
 @end

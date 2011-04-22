@@ -41,7 +41,7 @@
 }
 
 
-- (AvidaRun*) initWithDirectory: (NSURL*) dir {
+- (AvidaRun*) initWithDirectory:(NSURL*)dir {
   self = [super init];
   
   if (self) { 
@@ -89,12 +89,12 @@
 }
 
 
-- (void) attachListener: (id<CoreViewListener>)listener {
+- (void) attachListener:(id<CoreViewListener>)listener {
   if (driver) driver->AttachListener([listener listener]);
 }
 
 
-- (void) detachListener: (id<CoreViewListener>)listener {
+- (void) detachListener:(id<CoreViewListener>)listener {
   if (driver) driver->DetachListener([listener listener]);
 }
 

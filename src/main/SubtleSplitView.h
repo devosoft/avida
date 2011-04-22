@@ -34,4 +34,6 @@
 
 }
 
+- (NSColor*) dividerColor;
+
 @end

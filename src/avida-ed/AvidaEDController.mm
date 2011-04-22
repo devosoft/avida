@@ -31,6 +31,7 @@
 
 #import "AvidaAppDelegate.h"
 #import "AvidaRun.h"
+#import "CenteringClipView.h"
 #import "MapGridView.h"
 
 #include "avida/viewer-core/cMap.h"
@@ -44,7 +45,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 
 @implementation AvidaEDController
 
-- (id)initWithAppDelegate: (AvidaAppDelegate*)delegate {
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate {
   self = [super initWithWindowNibName:@"Avida-ED-MainWindow"];
   
   if (self != nil) {
@@ -78,6 +79,12 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 - (void) windowDidLoad {
   [mainSplitView replaceSubview:[[mainSplitView subviews] objectAtIndex:1] with:popView];
   [btnRunState setState:NSOffState];
+  
+  // Replace NSClipView of mapView's scrollView with a CenteringClipView
+  NSClipView* clipView = [[CenteringClipView alloc] initWithFrame:[mapView frame]];
+  [clipView setBackgroundColor:[NSColor darkGrayColor]];
+  [mapScrollView setContentView:clipView];
+  [mapScrollView setDocumentView:mapView];
 }
 
 
@@ -196,21 +203,21 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 
--(CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index {
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index {
   if (splitView == mainSplitView) return proposedMax - MAIN_SPLIT_RIGHT_MIN;
   else if (splitView == popSplitView) return proposedMax - POP_SPLIT_RIGHT_MIN;
   return proposedMax;
 }
 
 
--(CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index {
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index {
   if (splitView == mainSplitView) return proposedMin + MAIN_SPLIT_LEFT_MIN;
   else if (splitView == popSplitView) return proposedMin + POP_SPLIT_LEFT_MIN;
   
   return proposedMin;
 }
 
-- (void) windowWillClose: (NSNotification*)notification {
+- (void) windowWillClose:(NSNotification*)notification {
   if (currentRun != nil) {
     [currentRun end];
     currentRun = nil;
@@ -222,7 +229,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 @synthesize listener;
 
 
-- (void) handleMap: (CoreViewMap*)pkg {
+- (void) handleMap:(CoreViewMap*)pkg {
   if (!map) {
     map = [pkg map];
     [mapViewMode removeAllItems];
@@ -245,7 +252,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
 }
 
 
-- (void) handleUpdate: (CoreViewUpdate*)pkg {
+- (void) handleUpdate:(CoreViewUpdate*)pkg {
   NSString* str = [NSString stringWithFormat:@"%d updates", [pkg update]];
   [txtUpdate setStringValue:str]; 
 }

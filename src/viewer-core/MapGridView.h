@@ -50,12 +50,12 @@ namespace Avida {
   NSMutableArray* color_cache;
 }
 
-- (id)initWithFrame:(NSRect)frame;
+- (id) initWithFrame:(NSRect)frame;
 
-- (void)drawRect:(NSRect)rect;
-- (BOOL)isOpaque;
+- (void) drawRect:(NSRect)rect;
+- (BOOL) isOpaque;
 
-- (void)updateState:(Avida::CoreView::cMap*)state;
+- (void) updateState:(Avida::CoreView::cMap*)state;
 
 @property (readwrite, nonatomic) double zoom;
 

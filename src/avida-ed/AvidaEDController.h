@@ -47,10 +47,13 @@
   
   IBOutlet NSButton* btnRunState;
   IBOutlet NSTextField* txtUpdate;
+  
+  IBOutlet NSScrollView* mapScrollView;
   IBOutlet MapGridView* mapView;
   IBOutlet MapScaleView* mapScaleView;
   IBOutlet NSPopUpButton* mapViewMode;
   IBOutlet NSSlider* mapZoom;
+  
   IBOutlet NSSplitView* mainSplitView;
   IBOutlet NSSplitView* popSplitView;
   
@@ -63,38 +66,38 @@
 }
 
 // Init and Dealloc Methods
--(id)initWithAppDelegate:(AvidaAppDelegate*)delegate;
+- (id) initWithAppDelegate:(AvidaAppDelegate*)delegate;
 
--(void)dealloc;
--(void)finalize;
+- (void) dealloc;
+- (void) finalize;
 
 
 // NSWindowController Methods
--(void)windowDidLoad;
+- (void) windowDidLoad;
 
 
 // Actions
--(IBAction)toggleRunState:(id)sender;
--(IBAction)changeMapViewMode:(id)sender;
--(IBAction)changeMapZoom:(id)sender;
+- (IBAction) toggleRunState:(id)sender;
+- (IBAction) changeMapViewMode:(id)sender;
+- (IBAction) changeMapZoom:(id)sender;
 
 
 // NSSplitViewDelegate Protocol
--(void)splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize;
--(BOOL)splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview;
--(CGFloat)splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index;
--(CGFloat)splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index;
+- (void) splitView:(NSSplitView*)splitView resizeSubviewsWithOldSize:(NSSize)oldSize;
+- (BOOL) splitView:(NSSplitView*)splitView canCollapseSubview:(NSView*)subview;
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)index;
+- (CGFloat) splitView:(NSSplitView*)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)index;
 
 
 // NSWindowDelegate Protocol
--(void)windowWillClose:(NSNotification*)notification;
+- (void) windowWillClose:(NSNotification*)notification;
 
 
 // Listener Methods
 @property (readonly) Avida::CoreView::cListener* listener;
 
--(void)handleMap:(CoreViewMap*)object;
--(void)handleUpdate:(CoreViewUpdate*)object;
+- (void) handleMap:(CoreViewMap*)object;
+- (void) handleUpdate:(CoreViewUpdate*)object;
 
 
 @end

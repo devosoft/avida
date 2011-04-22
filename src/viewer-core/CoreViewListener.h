@@ -44,15 +44,15 @@ namespace Avida {
 @protocol CoreViewListener
 @property (readonly) Avida::CoreView::cListener* listener;
 @optional
--(void)handleMap:(CoreViewMap*)pkg;
--(void)handleUpdate:(CoreViewUpdate*)pkg;
+- (void) handleMap:(CoreViewMap*)pkg;
+- (void) handleUpdate:(CoreViewUpdate*)pkg;
 @end
 
 
 @interface CoreViewMap : NSObject {
   Avida::CoreView::cMap* m_map;
 }
--(id)initWithMap:(Avida::CoreView::cMap*)map;
+- (id) initWithMap:(Avida::CoreView::cMap*)map;
 @property (readonly) Avida::CoreView::cMap* map;
 @end;
 
@@ -60,7 +60,7 @@ namespace Avida {
 @interface CoreViewUpdate : NSObject {
   int m_update;
 }
--(id)initWithUpdate:(int)update;
+- (id) initWithUpdate:(int)update;
 @property (readonly) int update;
 @end
 
