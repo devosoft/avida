@@ -202,11 +202,11 @@
 			children = (
 				703549B41337AD2600D3865C /* AvidaAppDelegate.h */,
 				703549B51337AD2600D3865C /* AvidaAppDelegate.mm */,
+				7029A49B1361CDBD0031433A /* CenteringClipView.h */,
+				7029A49C1361CDBD0031433A /* CenteringClipView.m */,
 				703549B71337AD2600D3865C /* SubtleSplitView.h */,
 				703549B81337AD2600D3865C /* SubtleSplitView.m */,
 				703549B61337AD2600D3865C /* main.mm */,
-				7029A49B1361CDBD0031433A /* CenteringClipView.h */,
-				7029A49C1361CDBD0031433A /* CenteringClipView.m */,
 			);
 			name = Main;
 			path = main;

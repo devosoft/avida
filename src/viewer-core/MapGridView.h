@@ -44,8 +44,6 @@ namespace Avida {
   int num_colors;
   double zoom;
   
-  IBOutlet NSScrollView* enclosingScrollView;
-  
   Apto::Array<int> map_colors;
   NSMutableArray* color_cache;
 }

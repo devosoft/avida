@@ -31,6 +31,7 @@
 
 #include "avida/viewer-core/cMap.h"
 
+#include <cassert>
 #include <iostream>
 
 
@@ -45,16 +46,16 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 @implementation MapGridView
 
 - (id) initWithFrame:(NSRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code here.
-      map_width = 0;
-      map_height = 0;
-      num_colors = 0;
-      color_cache = [NSMutableArray arrayWithCapacity:255];
-      zoom = -1;
-    }
-    return self;
+  self = [super initWithFrame:frame];
+  if (self) {
+      // Initialization code here.
+    map_width = 0;
+    map_height = 0;
+    num_colors = 0;
+    color_cache = [NSMutableArray arrayWithCapacity:255];
+    zoom = -1;
+  }
+  return self;
 }
 
 - (void) drawRect:(NSRect)dirtyRect {
@@ -136,7 +137,10 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   
   if (zoom < 0) {
-    NSSize bounds = [enclosingScrollView bounds].size;
+    NSScrollView* scrollView = [self enclosingScrollView];
+    assert(scrollView != nil);
+    
+    NSSize bounds = [scrollView bounds].size;
     double z1 = bounds.width / map_width;
     double z2 = bounds.height / map_height;
     double zval = (z1 > z2) ? z2 : z1;
@@ -163,5 +167,22 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   
   [self setNeedsDisplay:YES];
 }
+
+- (void) setFrame:(NSRect)frameRect {
+  [super setFrame:frameRect];
+}
+
+- (void) setFrameOrigin:(NSPoint)newOrigin {
+  [super setFrameOrigin:newOrigin];
+}
+
+- (void) setFrameSize:(NSSize)newSize {
+  [super setFrameSize:newSize];
+}
+
+- (void) setFrameRotation:(CGFloat)angle {
+  [super setFrameRotation:angle];
+}
+
 
 @end

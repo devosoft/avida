@@ -32,28 +32,91 @@
 
 @implementation CenteringClipView
 
+- (id) initWithFrame:(NSRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    hasHScroll = NO;
+    hasVScroll = NO;
+    adjustingScrollers = NO;
+    [self setAutoresizesSubviews:NO];
+    [(NSScrollView*)[self superview] setAutohidesScrollers:NO];
+  }
+  return self;
+}
+
+
 - (void) centerView {
   NSRect docRect = [[self documentView] frame];
   NSRect clipRect = [self bounds];
   
+  // Center the clipping rect origin x
   if (docRect.size.width < clipRect.size.width) {
-    clipRect.origin.x = (docRect.size.width - clipRect.size.width) / 2.0;
+    clipRect.origin.x = roundf((docRect.size.width - clipRect.size.width) / 2.0);
   } else {
-    clipRect.origin.x = viewPoint.x * docRect.size.width - (clipRect.size.width / 2.0);
+    clipRect.origin.x = roundf(viewPoint.x * docRect.size.width - (clipRect.size.width / 2.0));
   }
   
+  // Center the clipping rect origin y
   if (docRect.size.height < clipRect.size.height) {
-    clipRect.origin.y = (docRect.size.height - clipRect.size.height) / 2.0;
+    clipRect.origin.y = roundf((docRect.size.height - clipRect.size.height) / 2.0);
   } else {
-    clipRect.origin.y = viewPoint.y * docRect.size.width - (clipRect.size.height / 2.0);
+    clipRect.origin.y = roundf(viewPoint.y * docRect.size.width - (clipRect.size.height / 2.0));
   }
   
+  // Scroll the document to the selected center point
+  NSScrollView* scrollView = (NSScrollView*)[self superview];
   [self scrollToPoint:[self constrainScrollPoint:clipRect.origin]];
-  [[self superview] reflectScrolledClipView:self];  
+  [scrollView reflectScrolledClipView:self];
+
+
+	if (!adjustingScrollers) {
+    BOOL hScroller = NO;
+    BOOL vScroller = NO;
+    
+    // Determine scroll view frame dimensions (without scrollers)
+    const CGFloat scrollerWidth = [NSScroller scrollerWidth];
+    NSRect frameRect = [super frame];
+    CGFloat frameWidth = frameRect.size.width;
+    CGFloat frameHeight = frameRect.size.height;
+    if (hasVScroll) frameWidth += scrollerWidth;
+    if (hasHScroll) frameHeight += scrollerWidth;
+    
+		// Determine needed scrollers
+		if (docRect.size.width <= frameWidth && docRect.size.height <= frameHeight) {
+			hScroller = NO;
+			vScroller = NO;
+		} else if (docRect.size.width > frameWidth && docRect.size.height <= (frameHeight - scrollerWidth)) {
+			hScroller = YES;
+			vScroller = NO;
+		} else if (docRect.size.height > frameHeight && docRect.size.width <= (frameWidth - scrollerWidth)) {
+			hScroller = NO;
+			vScroller = YES;
+		} else {
+			hScroller = YES;
+			vScroller = YES;
+		}
+    
+    // Adjust horizontal scroller visibility
+		if (hScroller != hasHScroll) {
+			hasHScroll = !hasHScroll;
+			adjustingScrollers = YES;
+			[scrollView setHasHorizontalScroller:hasHScroll];
+			adjustingScrollers = NO;
+		}
+		
+    // Adjust vertical scroller visibility
+		if (vScroller != hasVScroll) {
+			hasVScroll = !hasVScroll;
+			adjustingScrollers = YES;
+			[scrollView setHasVerticalScroller:hasVScroll];
+			adjustingScrollers = NO;
+		}		
+  }
 }
 
 
 // NSClipView Method Overrides
+
 - (NSPoint) constrainScrollPoint:(NSPoint)proposedNewOrigin {
   NSRect docRect = [[self documentView] frame];
   NSRect clipRect = [self bounds];
@@ -63,15 +126,15 @@
   clipRect.origin = proposedNewOrigin;
   
   if (docRect.size.width < clipRect.size.width) {
-    clipRect.origin.x = round(maxX / 2.0);
+    clipRect.origin.x = roundf(maxX / 2.0);
   } else {
-    clipRect.origin.x = round(MAX(0, MIN(clipRect.origin.x, maxX)));
+    clipRect.origin.x = roundf(MAX(0, MIN(clipRect.origin.x, maxX)));
   }
 
   if (docRect.size.height < clipRect.size.height) {
-    clipRect.origin.y = round(maxY / 2.0);
+    clipRect.origin.y = roundf(maxY / 2.0);
   } else {
-    clipRect.origin.y = round(MAX(0, MIN(clipRect.origin.y, maxY)));
+    clipRect.origin.y = roundf(MAX(0, MIN(clipRect.origin.y, maxY)));
   }
   
   viewPoint.x = NSMidX(clipRect) / docRect.size.width;
@@ -81,20 +144,24 @@
 }
 
 
+- (BOOL) copiesOnScroll
+{
+	NSRect docRect = [[self documentView] frame];
+	NSRect clipRect = [self bounds];
+  
+	return (roundf(docRect.size.width - clipRect.size.width) >= 0) && (roundf(docRect.size.height - clipRect.size.height) >= 0);
+}
+
+
 - (void) viewBoundsChanged:(NSNotification*)notification {
-  NSPoint savedPoint = viewPoint;
   [super viewBoundsChanged:notification];
-  viewPoint = savedPoint;
   [self centerView];
 }
 
 - (void) viewFrameChanged:(NSNotification*)notification {
-  NSPoint savedPoint = viewPoint;
   [super viewBoundsChanged:notification];
-  viewPoint = savedPoint;
   [self centerView];  
 }
-
 
 - (void) setFrame:(NSRect)frameRect {
   [super setFrame:frameRect];

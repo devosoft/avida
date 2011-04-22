@@ -32,12 +32,22 @@
 
 @interface CenteringClipView : NSClipView {
   NSPoint viewPoint;
+
+	BOOL hasHScroll;
+	BOOL hasVScroll;
+  BOOL adjustingScrollers;
 }
+
+- (id) initWithFrame:(NSRect)frame;
 
 - (void) centerView;
 
+
 // NSClipView Method Overrides
 - (NSPoint) constrainScrollPoint:(NSPoint)proposedNewOrigin;
+
+- (BOOL) copiesOnScroll;
+
 - (void) viewBoundsChanged:(NSNotification*)notification;
 - (void) viewFrameChanged:(NSNotification*)notification;
 - (void) setFrame:(NSRect)frameRect;
