@@ -9590,68 +9590,69 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 {
 	// If groups are used and tolerances are on...
 	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-		assert(m_organism->HasOpinion());
-
-		const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-		const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-		const int group_id = m_organism->GetOpinion().first;
-
-		double offspring_own_odds;
-		double offspring_others_odds;
-		double immigrant_odds;
-
-		// Retrieve the parent's tolerance for its offspring
-		int parent_tolerance_own_offspring = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
-		// Retrieve the parent group's tolerance for offspring (this does not include the parent's contribution)
-		int parent_group_tolerance = m_world->GetPopulation().CalcGroupToleranceOffspring(m_organism, group_id);
-		// Retrieve the parent's tolerance towards other offspring
-		int parent_tolerance_other_offspring = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-
-		// Calculate the total group's tolerance towards the parent's offspring
-		// If the parent is the only group member their vote counts for everything
-		int total_own_offspring_tolerance = 0;
-		if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 1) {
-			total_own_offspring_tolerance = parent_tolerance_own_offspring;
-		}
-		// If the parent is not the only group member
-        // using 50-50 vote split
-		// their vote counts for half the total and the rest of the group the other half
-		//if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
-		//	total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
-        
-        //  using parent vote before group vote
-        if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
-            total_own_offspring_tolerance = parent_tolerance_own_offspring * parent_group_tolerance;
+		if(m_organism->HasOpinion()) {
+            
+            const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+            const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+            const int group_id = m_organism->GetOpinion().first;
+            
+            double offspring_own_odds;
+            double offspring_others_odds;
+            double immigrant_odds;
+            
+            // Retrieve the parent's tolerance for its offspring
+            int parent_tolerance_own_offspring = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+            // Retrieve the parent group's tolerance for offspring (this does not include the parent's contribution)
+            int parent_group_tolerance = m_world->GetPopulation().CalcGroupToleranceOffspring(m_organism, group_id);
+            // Retrieve the parent's tolerance towards other offspring
+            int parent_tolerance_other_offspring = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+            
+            // Calculate the total group's tolerance towards the parent's offspring
+            // If the parent is the only group member their vote counts for everything
+            int total_own_offspring_tolerance = 0;
+            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 1) {
+                total_own_offspring_tolerance = parent_tolerance_own_offspring;
+            }
+            // If the parent is not the only group member
+            // using 50-50 vote split
+            // their vote counts for half the total and the rest of the group the other half
+            //if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
+            //	total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
+            
+            //  using parent vote before group vote
+            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
+                total_own_offspring_tolerance = parent_tolerance_own_offspring * parent_group_tolerance;
+            }
+            
+            // Calculate the probability the parent's offspring can be born into the same group
+            offspring_own_odds = total_own_offspring_tolerance / tolerance_max;
+            
+            // Calculate the group's total tolerance for offspring (which are not specifically the parent's)
+            int total_group_tolerance_offspring = 0;
+            // Add back in organisms's ommited tolerance (CalcGroupToleranceOffspring ommits the original organism's tolerance)
+            int parent_group_intolerance_offspring = tolerance_max - parent_group_tolerance;
+            int parent_intolerance_other_offspring = tolerance_max - parent_tolerance_other_offspring;
+            total_group_tolerance_offspring = tolerance_max - (parent_group_intolerance_offspring + parent_intolerance_other_offspring);
+            
+            // Calculate probability for other offspring in the group
+            offspring_others_odds =  total_group_tolerance_offspring / tolerance_max;
+            
+            // Retrieve the group's tolerance towards immigrants
+            int total_group_tolerance_immigrants = m_world->GetPopulation().CalcGroupToleranceImmigrants(group_id);
+            
+            // Calculate probability for immigrants
+            immigrant_odds = total_group_tolerance_immigrants / tolerance_max;
+            
+            // Convert all odds to percent
+            double percent_immigrants = immigrant_odds * 100;
+            double percent_offspring_own = offspring_own_odds * 100;
+            double percent_offspring_others = offspring_others_odds * 100;
+            
+            // Truncate percent to integer and place in registers
+            GetRegister(REG_AX) = (int) percent_immigrants;
+            GetRegister(REG_BX) = (int) percent_offspring_own;
+            GetRegister(REG_CX) = (int) percent_offspring_others;
         }
-        
-		// Calculate the probability the parent's offspring can be born into the same group
-		offspring_own_odds = total_own_offspring_tolerance / tolerance_max;
-
-		// Calculate the group's total tolerance for offspring (which are not specifically the parent's)
-		int total_group_tolerance_offspring = 0;
-		// Add back in organisms's ommited tolerance (CalcGroupToleranceOffspring ommits the original organism's tolerance)
-		int parent_group_intolerance_offspring = tolerance_max - parent_group_tolerance;
-		int parent_intolerance_other_offspring = tolerance_max - parent_tolerance_other_offspring;
-		total_group_tolerance_offspring = tolerance_max - (parent_group_intolerance_offspring + parent_intolerance_other_offspring);
-
-		// Calculate probability for other offspring in the group
-		offspring_others_odds =  total_group_tolerance_offspring / tolerance_max;
-
-		// Retrieve the group's tolerance towards immigrants
-		int total_group_tolerance_immigrants = m_world->GetPopulation().CalcGroupToleranceImmigrants(group_id);
-
-		// Calculate probability for immigrants
-		immigrant_odds = total_group_tolerance_immigrants / tolerance_max;
-
-		// Convert all odds to percent
-		double percent_immigrants = immigrant_odds * 100;
-		double percent_offspring_own = offspring_own_odds * 100;
-		double percent_offspring_others = offspring_others_odds * 100;
-
-		// Truncate percent to integer and place in registers
-		GetRegister(REG_AX) = (int) percent_immigrants;
-		GetRegister(REG_BX) = (int) percent_offspring_own;
-		GetRegister(REG_CX) = (int) percent_offspring_others;
 	}
 	return true;
 }
