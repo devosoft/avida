@@ -9454,7 +9454,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 	GetRegister(REG_BX) = tolerance_count;
 
 	//PrintToleranceData @JJB
-/*	if (m_world->GetStats().GetUpdate() >= 99000) { 
+	if (m_world->GetStats().GetUpdate() >= 99000) { 
 		string tolerance_type;
 		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
 		else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
@@ -9476,8 +9476,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 			<< m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
 			<< tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
 			<< update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
-			<< res_inflow << " " << res_outflow << " " << '\n'; 
-	}*/
+			<< res_inflow << " " << res_outflow << " " << m_organism->GetID() <<'\n'; 
+	}
 
 	return true;
 }
@@ -9537,7 +9537,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 	GetRegister(REG_BX) = tolerance_count;
 
 	//PrintToleranceData @JJB
-/*	if (m_world->GetStats().GetUpdate() >= 99000) { 
+	if (m_world->GetStats().GetUpdate() >= 99000) { 
 		string tolerance_type;
 		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
 		else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
@@ -9559,8 +9559,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 			<< m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
 			<< tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
 			<< update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
-			<< res_inflow << " " << res_outflow << " " << '\n'; 
-	}*/
+			<< res_inflow << " " << res_outflow << " " << m_organism->GetID() << '\n'; 
+	}
 
 	return true;
 }
@@ -9614,11 +9614,16 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 			total_own_offspring_tolerance = parent_tolerance_own_offspring;
 		}
 		// If the parent is not the only group member
+        // using 50-50 vote split
 		// their vote counts for half the total and the rest of the group the other half
-		if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
-			total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
-		}
-
+		//if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
+		//	total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
+        
+        //  using parent vote before group vote
+        if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
+            total_own_offspring_tolerance = parent_tolerance_own_offspring * parent_group_tolerance;
+        }
+        
 		// Calculate the probability the parent's offspring can be born into the same group
 		offspring_own_odds = total_own_offspring_tolerance / tolerance_max;
 
