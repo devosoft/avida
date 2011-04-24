@@ -537,12 +537,30 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
                       target_group = m_world->GetRandom().GetUInt(num_groups);
                   } while (target_group == parent_group);
                   
-                  // If there are no members currently of the target group, the offspring automatically immigrates
+                  double probability_born_target_group = 1;
+                  // If there are no members currently of the target group, offspring has 100% chance of immigrating
                   if (group_list[target_group].GetSize() == 0) {
+                      offspring_array[i]->SetOpinion(target_group);
+                  }
+                  else {
+                      // If there are group members, retrieve the target group's tolerance to immigrants
+                      int target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
+                      probability_born_target_group = target_group_tolerance / tolerance_max;
+                  }
+                  rand = m_world->GetRandom().GetDouble();
+                  // Calculate if the offspring successfully immigrates
+                  if (rand <= probability_born_target_group) {
+                      // Offspring joins target group
                       offspring_array[i]->SetOpinion(target_group);
                       JoinGroup(offspring_array[i], target_group);
                   }
+                  else {
+                      // Offspring fails to immigrate and is doomed
+                      target_cells[i] = 0;
+                      is_doomed = true;
+                  }
               }
+          
     // end tolerance parent-group 50-50 vote with attempt to join parent group first  */   
               
     // tolerance using parent gets vote then group votes
@@ -550,24 +568,21 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
               
               const double prob_parent_allows = parent_tolerance / tolerance_max;
               const double prob_group_allows = parent_group_tolerance / tolerance_max;
-              double rand2;
+              double rand2 = m_world->GetRandom().GetDouble();
               
               rand = m_world->GetRandom().GetDouble();
               if (rand <= prob_parent_allows) {
                   //Offspring is handed to the group for their decision
-                  rand2 = m_world->GetRandom().GetDouble();
-                  if (rand2 <= prob_group_allows ) {
+                  if (rand2 <= prob_group_allows) {
                       //Offspring successfully joins parent's group
                       offspring_array[i]->SetOpinion(parent_group);
                       JoinGroup(offspring_array[i], parent_group);  
                       // Let the parent know that its offspring was born into its group
                       parent_organism->GetPhenotype().SetBornParentGroup();                        
                   }
-                  else {
-                      // Let the parent know its offspring was not born into its group because the group kicked it out
-                      parent_organism->GetPhenotype().ClearBornParentGroup();
-                  }
-                  // Let the parent know its offspring was not born into its group because the parent kicked it out
+              }
+              else {
+                  // Let the parent know its offspring was not born into its group
                   parent_organism->GetPhenotype().ClearBornParentGroup();
               }
               
@@ -586,18 +601,18 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
                       target_group = m_world->GetRandom().GetUInt(num_groups);
                   } while (target_group == parent_group);
                   
-                  // If there are no members currently of the target group, the offspring automatically immigrates
+                  double probability_born_target_group = 1;
+                  // If there are no members currently of the target group, offspring has 100% chance of immigrating
                   if (group_list[target_group].GetSize() == 0) {
                       offspring_array[i]->SetOpinion(target_group);
-                      JoinGroup(offspring_array[i], target_group);
                   }
-                  
-                  // Retrieve the target group's tolerance to immigrants
-                  int target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
-                  
-                  // Calculate if the offspring successfully immigrates
-                  const double probability_born_target_group = target_group_tolerance / tolerance_max;
+                  else {
+                      // If there are group members, retrieve the target group's tolerance to immigrants
+                      int target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
+                      probability_born_target_group = target_group_tolerance / tolerance_max;
+                  }
                   rand = m_world->GetRandom().GetDouble();
+                  // Calculate if the offspring successfully immigrates
                   if (rand <= probability_born_target_group) {
                       // Offspring joins target group
                       offspring_array[i]->SetOpinion(target_group);
@@ -617,40 +632,38 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
               const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
               int target_group;
               int target_group_tolerance;
-              double probability_born_target_group;
+              double probability_born_target_group = 1;
+              rand = m_world->GetRandom().GetDouble();
               if (num_groups > 1) {
                   do {
                       target_group = m_world->GetRandom().GetUInt(num_groups);
                   } while (target_group == parent_group);
                   
-                  // If there are no members of the target group, offspring automatically immigrates
+                  // If there are no members of the target group, offspring has 100% chance of immigrating
                   if (group_list[target_group].GetSize() == 0) {
+                      offspring_array[i]->SetOpinion(target_group);
+                  }
+                  else {
+                      // If there are group members, find the target group's tolerance of immigrants and the probability of immigration
+                      target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
+                      probability_born_target_group = target_group_tolerance / tolerance_max;
+                  }                  
+                  if (rand <= probability_born_target_group) {
+                      // Offspring successfully immigrates
                       offspring_array[i]->SetOpinion(target_group);
                       JoinGroup(offspring_array[i], target_group);
                       parent_organism->GetPhenotype().ClearBornParentGroup();
                   }
+              }
+              
+              // If not immigrating, try for parent group
+              if (num_groups == 1 || rand > probability_born_target_group) {
+                  // If the parent is not the only group member their vote counts for only half the total
+                  if (group_list[parent_group].GetSize() > 1) total_offspring_tolerance = (parent_tolerance / 2) + (parent_group_tolerance / 2);
                   
-                  // If there are group members, find the target group's tolerance of immigrants and the probability of immigration
-                  target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
-                  probability_born_target_group = target_group_tolerance / tolerance_max;
-                  rand = m_world->GetRandom().GetDouble();
-              }
-              
-              if ((rand <= probability_born_target_group) && (num_groups > 1)) {
-                  // Offspring successfully immigrates
-                  offspring_array[i]->SetOpinion(target_group);
-                  JoinGroup(offspring_array[i], target_group);
-                  parent_organism->GetPhenotype().ClearBornParentGroup();
-              }
-              
-              // If the parent is not the only group member their vote counts for only half the total
-              if (group_list[parent_group].GetSize() > 1) total_offspring_tolerance = (parent_tolerance / 2) + (parent_group_tolerance / 2);
-              
-              // Calculate the probability the offspring is born into the parent group
-              const double probability_born_parent_group = total_offspring_tolerance / tolerance_max;
-              
-              // If there are no other groups to immigrate to or the offspring unsuccessfully immigrates it tries to be born into its parent's group
-              if ((rand > probability_born_target_group) || (num_groups == 1)) {
+                  // Calculate the probability the offspring is born into the parent group
+                  const double probability_born_parent_group = total_offspring_tolerance / tolerance_max;
+                  
                   rand = m_world->GetRandom().GetDouble();
                   if (rand <= probability_born_parent_group) {
                       // Offspring successfully joins parent group, let the parent know
@@ -664,6 +677,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
                       is_doomed = true;
                       parent_organism->GetPhenotype().ClearBornParentGroup();
                   }
+                  
               }
     // end tolerance immigrate first with 50-50 parent-group vote split */
           }

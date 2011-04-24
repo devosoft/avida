@@ -9614,6 +9614,7 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
                 total_own_offspring_tolerance = parent_tolerance_own_offspring;
             }
             // If the parent is not the only group member
+            
             // using 50-50 vote split
             // their vote counts for half the total and the rest of the group the other half
             //if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
