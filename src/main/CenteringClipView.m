@@ -35,6 +35,7 @@
 - (id) initWithFrame:(NSRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    viewPoint = NSMakePoint(0, 0);
     hasHScroll = NO;
     hasVScroll = NO;
     adjustingScrollers = NO;
