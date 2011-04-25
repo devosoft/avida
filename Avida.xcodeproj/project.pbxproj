@@ -3039,7 +3039,6 @@
 					include/public/,
 					include/private/,
 				);
-				LLVM_LTO = NO;
 				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -3069,7 +3068,6 @@
 					include/public/,
 					include/private/,
 				);
-				LLVM_LTO = YES;
 				SDKROOT = "";
 				WARNING_CFLAGS = (
 					"-Wextra",

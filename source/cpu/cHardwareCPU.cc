@@ -9306,7 +9306,8 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
   // check if this is a valid group
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
       !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
-  
+    
+  // injected orgs might not have an opinion
   if (m_organism->HasOpinion()) {
     opinion = m_organism->GetOpinion().first;
     
@@ -9470,7 +9471,8 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
 
 		// update instruction_executed tolerance_type opinion group_size group_res_level
-		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
+		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice 
+        // tolerance_max res_inflow res_outflow org_ID
 		static ofstream fp("./data/inc_tolerance.dat");
 		fp << m_world->GetStats().GetUpdate() << " inc-tolerance " << tolerance_type << " " << opinion << " " \
 			<< m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
@@ -9553,7 +9555,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
 
 		// update instruction_executed tolerance_type opinion group_size group_res_level 
-		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice tolerance_max res_inflow res_outflow 
+		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice 
+        // tolerance_max res_inflow res_outflow org_ID
 		static ofstream fp("./data/dec_tolerance.dat");
 		fp << m_world->GetStats().GetUpdate() << " dec-tolerance " << tolerance_type << " " << opinion << " " \
 			<< m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
@@ -9613,15 +9616,12 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 1) {
                 total_own_offspring_tolerance = parent_tolerance_own_offspring;
             }
-            // If the parent is not the only group member
-            
+            // If the parent is not the only group member            
+            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
             // using 50-50 vote split
             // their vote counts for half the total and the rest of the group the other half
-            //if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
-            //	total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
-            
-            //  using parent vote before group vote
-            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
+            // total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
+            // using parent vote before group vote
                 total_own_offspring_tolerance = parent_tolerance_own_offspring * parent_group_tolerance;
             }
             
