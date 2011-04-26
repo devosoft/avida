@@ -29,7 +29,6 @@
 #include "cAvidaContext.h"
 #include "cChangeList.h"
 #include "cClassificationManager.h"
-#include "cDriverManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
 #include "cPopulation.h"
@@ -46,7 +45,7 @@
 Avida::CoreView::cDriver::cDriver(cWorld* world)
 : Apto::Thread(), m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
 {
-  cDriverManager::Register(this);
+  GlobalObjectManager::Register(this);
 }
 
 Avida::CoreView::cDriver::~cDriver()
@@ -59,7 +58,7 @@ Avida::CoreView::cDriver::~cDriver()
   
   delete m_map;
   
-  cDriverManager::Unregister(this);
+  GlobalObjectManager::Unregister(this);
   delete m_world;
 }
 
