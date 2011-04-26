@@ -22,7 +22,7 @@ II. REQUIREMENTS
 
 The following software is required to build and run the avida-macos viewer project:
 
- - Avida (core and viewer-core libraries) 2.13 latest SVN repository snapshot (https://avida.devosoft.org/svn/development/)
+ - Avida (core and viewer-core libraries) 2.13 latest git repository snapshot (git://avida.devosoft.org/avida.git)
  - Apple Mac OS X 10.6.6 or greater
  - Apple Xcode 4.0 or greater
 
