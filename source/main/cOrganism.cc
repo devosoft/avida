@@ -759,7 +759,8 @@ bool cOrganism::Divide_CheckViable()
   if (required_resource != -1) {
     const double resource_level = m_phenotype.GetCurRBinAvail(required_resource);
     if ((required_resource_level > 0.0 && resource_level < required_resource_level) ||
-        (required_resource_level == 0.0 && resource_level == 0.0)) return false;
+        (required_resource_level == 0.0 && resource_level == 0.0)) 
+        return false;
   }
   
   // Make sure the parent is fertile

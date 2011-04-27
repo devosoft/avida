@@ -654,6 +654,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
                   // If there are no members of the target group, offspring has 100% chance of immigrating
                   if (group_list[target_group].GetSize() == 0) {
                       offspring_array[i]->SetOpinion(target_group);
+                      JoinGroup(offspring_array[i], target_group);
                   }
                   else {
                       // If there are group members, find the target group's tolerance of immigrants and the probability of immigration

@@ -303,8 +303,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1.0;
     if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1.0;
     
-    m_peakx = int(m_peakx + (m_movesignx * m_move_y_scaler) + .5);
-    m_peaky = int(m_peaky + (m_movesigny * m_move_y_scaler) + .5); 
+    m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
+    m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5); 
   } 
 
   // to speed things up, we only check cells within the possible spread of the peak
