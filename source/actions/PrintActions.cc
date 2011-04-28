@@ -172,6 +172,7 @@ STATS_OUT_FILE(PrintStringMatchData,         stringmatch.dat);
 // group formation
 STATS_OUT_FILE(PrintGroupsFormedData,         groupformation.dat);
 STATS_OUT_FILE(PrintGroupIds,         groupids.dat);
+STATS_OUT_FILE(PrintGroupTolerance,           grouptolerance.dat); // @JJB
 
 // hgt information
 STATS_OUT_FILE(PrintHGTData, hgt.dat);
@@ -3839,6 +3840,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
 
 	action_lib->Register<cActionPrintGroupsFormedData>("PrintGroupsFormedData");
 	action_lib->Register<cActionPrintGroupIds>("PrintGroupIds");
+    action_lib->Register<cActionPrintGroupTolerance>("PrintGroupTolerance"); //@JJB
 	action_lib->Register<cActionPrintHGTData>("PrintHGTData");
 
   action_lib->Register<cActionSetVerbose>("SetVerbose");

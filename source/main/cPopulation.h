@@ -293,6 +293,10 @@ public:
 	int CalcGroupToleranceImmigrants(int group_id);
 	// Calculate tolerance of group towards offspring (not including parent) @JJB
 	int CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id);
+    // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
+    double CalcGroupOddsImmigrants(int group_id);
+    // Calculates the odds (out of 1) for offspring to be born into the group @JJB
+    double CalcGroupOddsOffspring(int group_id);
 
 	// -------- HGT support --------
 	//! Modify current level of the HGT resource.

@@ -6158,6 +6158,57 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
     return group_tolerance;
 }
 
+// Calculates the odds (out of 1) for successful immigration based on group's tolerance @JJB
+double cPopulation::CalcGroupOddsImmigrants(int group_id)
+{
+  const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+
+  // If there are no group members perfect chance for immigration
+  if (group_list[group_id].GetSize() <= 0) {
+    return 1.0;
+  }
+
+  int group_intolerance = 0;
+  int single_member_intolerance = 0;
+  for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+    group_intolerance += single_member_intolerance;
+    if (group_intolerance >= tolerance_max) {
+      group_intolerance = tolerance_max;
+      break;
+    }
+  }
+  int group_tolerance = tolerance_max - group_intolerance;
+  double immigrant_odds = group_tolerance / tolerance_max;
+  return immigrant_odds;
+}
+
+// Calculates the odds (out of 1) for offspring to be born into the group @JJB
+double cPopulation::CalcGroupOddsOffspring(int group_id)
+{
+  const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+  const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+
+  if (group_list[group_id].GetSize() <= 0) {
+    return 1.0;
+  }
+
+  int group_intolerance = 0;
+  int single_member_intolerance = 0;
+  for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+    group_intolerance += single_member_intolerance;
+    if (group_intolerance >= tolerance_max) {
+      group_intolerance = tolerance_max;
+      break;
+    }
+  }
+  int group_tolerance = tolerance_max - group_intolerance;
+  double offspring_odds = group_tolerance / tolerance_max;
+  return offspring_odds;
+}
+
 // Calculates group tolerance towards offspring (not including parent) @JJB
 int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id)
 {
