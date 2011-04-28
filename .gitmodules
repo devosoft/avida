@@ -4,3 +4,6 @@
 [submodule "libs/apto"]
 	path = libs/apto
 	url = git://programerror.com/apto.git
+[submodule "avida-core"]
+	path = avida-core
+	url = git://avida.devosoft.org/avida-core.git
