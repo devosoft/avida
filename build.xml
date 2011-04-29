@@ -1,0 +1,36 @@
+<project name="avida-core" default="install" basedir=".">
+  <property name="root" location=""/>
+  <property name="build" location="cbuild"/>
+
+  <target name="builddir">
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="configure" depends="builddir">
+    <exec dir="${build}" executable="cmake">
+      <arg path="${root}"/>
+    </exec>
+  </target>
+
+  <target name="compile" depends="configure">
+    <exec dir="${build}" osfamily="unix" executable="make"/>
+  </target>
+
+  <target name="install" depends="compile">
+    <exec dir="${build}" osfamily="unix" executable="make">
+      <arg value="install"/>
+    </exec>
+  </target>
+
+  <target name="check-for-avida">
+    <available file="${build}/work/avida" property="avida.built"/>
+  </target>
+  <target name="test" depends="check-for-avida" if="avida.built">
+    <exec dir="${root}" osfamily="unix" executable="./run_tests"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+</project>
+
