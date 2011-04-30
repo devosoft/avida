@@ -26,6 +26,7 @@
     <available file="${build}/work/avida" property="avida.built"/>
   </target>
   <target name="test" depends="check-for-avida" if="avida.built">
+    <chmod file="${build}/work/avida" perm="ugo+rx"/>
     <exec dir="${root}" osfamily="unix" executable="python">
       <arg path="${root}/tests/_testrunner/testrunner.py"/>
     </exec>
