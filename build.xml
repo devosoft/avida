@@ -7,17 +7,17 @@
   </target>
 
   <target name="configure" depends="builddir">
-    <exec dir="${build}" executable="cmake">
+    <exec dir="${build}" executable="cmake" failonerror="true">
       <arg path="${root}"/>
     </exec>
   </target>
 
   <target name="compile" depends="configure">
-    <exec dir="${build}" osfamily="unix" executable="make"/>
+    <exec dir="${build}" osfamily="unix" executable="make" failonerror="true"/>
   </target>
 
   <target name="install" depends="compile">
-    <exec dir="${build}" osfamily="unix" executable="make">
+    <exec dir="${build}" osfamily="unix" executable="make" failonerror="true">
       <arg value="install"/>
     </exec>
   </target>
@@ -27,7 +27,7 @@
   </target>
   <target name="test" depends="check-for-avida" if="avida.built">
     <chmod file="${build}/work/avida" perm="ugo+rx"/>
-    <exec dir="${root}" osfamily="unix" executable="python">
+    <exec dir="${root}" osfamily="unix" executable="python" failonerror="true">
       <arg path="${root}/tests/_testrunner/testrunner.py"/>
     </exec>
   </target>
