@@ -26,7 +26,9 @@
     <available file="${build}/work/avida" property="avida.built"/>
   </target>
   <target name="test" depends="check-for-avida" if="avida.built">
-    <exec dir="${root}" osfamily="unix" executable="./run_tests"/>
+    <exec dir="${root}" osfamily="unix" executable="python">
+      <arg path="${root}/tests/_testrunner/testrunner.py"/>
+    </exec>
   </target>
 
   <target name="clean">
