@@ -1,4 +1,4 @@
 #!/bin/sh
 
-python tests/_testrunner/testrunner.py $@ ---testrunner-name=./run_tests
+python tests/_testrunner/testrunner.py $@ ---testrunner-name=./run_tests --disable-svn
 
