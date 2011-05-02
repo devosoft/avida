@@ -10,8 +10,8 @@
 
   <target name="configure" depends="builddir">
     <exec dir="${build}" executable="cmake" failonerror="true">
-      <arg value="-DCMAKE_INCLUDE_PATH='${apto.include}'"/>
-      <arg value="-DCMAKE_LIBRARY_PATH='${apto.library}'"/>
+      <arg value="-DCMAKE_INCLUDE_PATH:STRING='${apto.include}'"/>
+      <arg value="-DCMAKE_LIBRARY_PATH:STRING='${apto.library}'"/>
       <arg path="${root}"/>
     </exec>
   </target>
