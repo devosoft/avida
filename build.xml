@@ -1,6 +1,8 @@
 <project name="avida-core" default="install" basedir=".">
   <property name="root" location=""/>
   <property name="build" location="cbuild"/>
+  <property name="apto.include" value="${build}/include"/>
+  <property name="apto.library" value="#{build}/lib"/>
 
   <target name="builddir">
     <mkdir dir="${build}"/>
@@ -8,6 +10,8 @@
 
   <target name="configure" depends="builddir">
     <exec dir="${build}" executable="cmake" failonerror="true">
+      <arg value="-DCMAKE_INCLUDE_PATH=${apto.include}"/>
+      <arg value="-DCMAKE_LIBRARY_PATH=${apto.library}"/>
       <arg path="${root}"/>
     </exec>
   </target>
@@ -29,6 +33,8 @@
     <chmod file="${build}/work/avida" perm="ugo+rx"/>
     <exec dir="${root}" osfamily="unix" executable="python" failonerror="true">
       <arg path="${root}/tests/_testrunner/testrunner.py"/>
+      <arg value="--disable-svn"/>
+      <arg value="--mode=slave"/>
     </exec>
   </target>
 
