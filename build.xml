@@ -22,8 +22,13 @@
     </exec>
   </target>
 
-  <target name="check-for-consistencytesting-targets">
+  <target name="move-platform-consistencytesting-targets" if="platform">
+    <mkdir dir="${build}/work"/>
+    <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work/avida"/>
+  </target>
+  <target name="check-for-consistencytesting-targets" depends="move-platform-consistencytesting-targets">
     <available file="${build}/work/avida" property="avida.built"/>
+    <fail unless="avida.built">unable to locate avida</fail>
   </target>
   <target name="consistencytest" depends="check-for-consistencytesting-targets" if="avida.built">
     <chmod file="${build}/work/avida" perm="ugo+rx"/>
@@ -35,8 +40,13 @@
     </exec>
   </target>
   
-  <target name="check-for-unittesting-targets">
+  <target name="move-platform-unittesting-targets" if="platform">
+    <mkdir dir="${build}/bin"/>
+    <copy file="${build}/bin/apto-test" todir="${build}/bin"/>
+  </target>
+  <target name="check-for-unittesting-targets" depends="move-platform-unittesting-targets">
     <available file="${build}/bin/apto-test" property="apto-test.built"/>
+    <fail unless="apto-test.built">unable to locate apto-test</fail>
   </target>
   <target name="unittest" depends="check-for-unittesting-targets" if="apto-test.built">
     <chmod file="${build}/bin/apto-test" perm="ugo+rx"/>
