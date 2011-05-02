@@ -42,7 +42,7 @@
   
   <target name="move-platform-unittesting-targets" if="platform">
     <mkdir dir="${build}/bin"/>
-    <copy file="${build}/bin/apto-test" todir="${build}/bin"/>
+    <copy file="${build}/bin/platform=${platform}/apto-test" todir="${build}/bin"/>
   </target>
   <target name="check-for-unittesting-targets" depends="move-platform-unittesting-targets">
     <available file="${build}/bin/apto-test" property="apto-test.built"/>
