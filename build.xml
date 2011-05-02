@@ -32,6 +32,7 @@
   </target>
   <target name="check-for-avida" depends="move-platform-avida">
     <available file="${build}/work/avida" property="avida.built"/>
+    <fail unless="avida.built">unable to locate avida</fail>
   </target>
   <target name="consistencytest" depends="check-for-avida" if="avida.built">
     <chmod file="${build}/work/avida" perm="ugo+rx"/>
