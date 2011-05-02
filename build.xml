@@ -26,10 +26,14 @@
     </exec>
   </target>
 
-  <target name="check-for-avida">
+  <target name="move-platform-avida" if="platform">
+    <mkdir dir="${build}/work"/>
+    <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work"/>
+  </target>
+  <target name="check-for-avida" depends="move-platform-avida">
     <available file="${build}/work/avida" property="avida.built"/>
   </target>
-  <target name="test" depends="check-for-avida" if="avida.built">
+  <target name="consistencytest" depends="check-for-avida" if="avida.built">
     <chmod file="${build}/work/avida" perm="ugo+rx"/>
     <exec dir="${root}" osfamily="unix" executable="python" failonerror="true">
       <arg path="${root}/tests/_testrunner/testrunner.py"/>
