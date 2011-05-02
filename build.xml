@@ -23,8 +23,7 @@
   </target>
 
   <target name="move-platform-consistencytesting-targets" if="platform">
-    <mkdir dir="${build}/work"/>
-    <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work/avida"/>
+    <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work"/>
   </target>
   <target name="check-for-consistencytesting-targets" depends="move-platform-consistencytesting-targets">
     <available file="${build}/work/avida" property="avida.built"/>
@@ -41,7 +40,6 @@
   </target>
   
   <target name="move-platform-unittesting-targets" if="platform">
-    <mkdir dir="${build}/bin"/>
     <copy file="${build}/bin/platform=${platform}/apto-test" todir="${build}/bin"/>
   </target>
   <target name="check-for-unittesting-targets" depends="move-platform-unittesting-targets">
