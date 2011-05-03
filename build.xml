@@ -37,7 +37,6 @@
     <chmod file="${build}/work/avida" perm="ugo+rx"/>
     <exec dir="${root}" osfamily="unix" executable="python" failonerror="true">
       <arg path="${root}/tests/_testrunner/testrunner.py"/>
-      <arg value="--disable-svn"/>
       <arg value="--mode=slave"/>
     </exec>
   </target>
