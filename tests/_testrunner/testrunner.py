@@ -58,7 +58,7 @@ EXPECTDIR = "expected"
 PERFDIR = "perf~"  # subversion, by default, ignores files/dirs with ~ at the end
 TEST_LIST = "test_list"
 PERF_BASE = "baseline"
-EXPECTED_IGNORE = (".gitignore")
+EXPECTED_IGNORE = (".gitignore",)
 
 
 # Global Variables
@@ -245,7 +245,7 @@ class SCMWrapper_Git:
   def getVersionString(self, path):
     rev = "exported"
     try:
-      gverp = os.popen("%s git describe" % (self.git))
+      gverp = os.popen("%s describe" % (self.cmd))
       rev = gverp.readline().strip()
       gverp.close()
       if rev == "": rev = "exported"
@@ -391,10 +391,12 @@ class cTest:
     
     self.success = True
     self.result = "passed"
+    self.disabled = False
     self.exitcode = 0
     self.errors = []
     
     self.psuccess = True
+    self.pdisabled = False
     self.presult = "passed"
   # } // End of cTest::cTest()
     
@@ -409,16 +411,26 @@ class cTest:
       return default
   # } // End of cTest::getConfig()
   
+  
+  def getName(self): return self.name
 
 
   # bool cTest::isConsistencyTest() {
   def isConsistencyTest(self): return self.consistency_enabled
   # } // End of isConsistencyTest()
 
+  # bool cTest::wasConsistencySkipped() {
+  def wasConsistencySkipped(self): return self.disabled
+  # } // End of wasConsistencySkipped()
+
   # bool cTest::isPerformanceTest() {
   def isPerformanceTest(self): return self.performance_enabled
   # } // End of isPerformanceTest()
   
+  # bool cTest::wasPerformanceSkipped() {
+  def wasPerformanceSkipped(self): return self.pdisabled
+  # } // End of wasPerformanceSkipped()
+
   
 
   # void cTest::runConsistencyTest() {
@@ -432,11 +444,13 @@ class cTest:
 
     if not self.isConsistencyTest():
       self.result = "skipped (not a consistency test)"
+      self.disabled = True
       return
     
     # If no expected results exist and in slave mode
     if not self.has_expected and settings["mode"] == "slave":
       self.result = "skipped (no expected results)"
+      self.disabled = True
       return
       
     if settings.has_key("_reset_expected"):
@@ -448,10 +462,12 @@ class cTest:
       
     if self.has_expected and self.skip:
       self.result = "skipped"
+      self.disabled = True
       return
     
     if self.getConfig("consistency", "long", "no") in TRUE_STRINGS and not dolongtest:
       self.result = "skipped (long)"
+      self.disabled = True
       return
       
     # Create test directory and populate with config
@@ -587,10 +603,12 @@ class cTest:
     
     if self.has_perf_base and self.skip:
       self.presult = "skipped"
+      self.pdisabled = True
       return
       
     if self.getConfig("performance", "long", "no") in TRUE_STRINGS and not dolongtest:
       self.presult = "skipped (long)"
+      self.pdisabled = True
       return
     
     confdir = os.path.join(self.tdir, CONFIGDIR)
@@ -800,6 +818,24 @@ class cTest:
 
     return self.success
   # } // End of cTest::reportConsistencyResults()
+
+  # bool cTest::getConsistencyResults() {
+  def getConsistencyResults(self):
+    global settings
+    message = ""
+    if self.success:
+      message = self.result
+    else:
+      message = "failed\n"
+      if self.exitcode != 0:
+        message += "exit code: %d\n" % os.WEXITSTATUS(self.exitcode)
+        message += "term signal: %d\n" % os.WTERMSIG(self.exitcode)
+      else:
+        message += "output variance(s):\n"
+        for err in self.errors: message += err + "\n"
+
+    return (self.success, message)
+  # } // End of cTest::getConsistencyResults()
   
   
   
@@ -809,6 +845,10 @@ class cTest:
     return self.psuccess
   # } // End of cTest::reportPerformanceResults()
   
+  # bool cTest::getPerformanceResults() {
+  def getPerformanceResults(self):
+    return (self.psuccess, self.presult)
+  # } // End of cTest::getPerformanceResults()
   
   
   # void cTest::describe() {
@@ -868,12 +908,17 @@ def runConsistencyTests(alltests, dolongtests):
 
   # Report Results
   success = 0
+  disabled = 0
   fail = 0
   for test in tests:
-    if test.reportConsistencyResults(): success += 1
+    if test.reportConsistencyResults():
+      if test.wasConsistencySkipped():
+        disabled += 1
+      else:
+        success += 1
     else: fail += 1
   
-  return (success, fail)
+  return (success, disabled, fail)
 # } // End of runConsistencyTests()
 
 
@@ -898,7 +943,7 @@ def runPerformanceTests(alltests, dolongtests, force, saveresults):
   ti = 0
   for test in tests:
     ti += 1
-    sys.stdout.write("[% 4d of %d] %s\n" % (ti, len(tests), test.name[65]))
+    sys.stdout.write("[% 3d of %d] %s\n" % (ti, len(tests), test.name[:65]))
     sys.stdout.flush()
     test.runPerformanceTest(dolongtests, saveresults)
   
@@ -908,12 +953,17 @@ def runPerformanceTests(alltests, dolongtests, force, saveresults):
 
   # Report Results
   success = 0
+  disabled = 0
   fail = 0
   for test in tests:
-    if test.reportPerformanceResults(): success += 1
+    if test.reportPerformanceResults():
+      if test.wasPerformanceSkipped():
+        disabled += 1
+      else:
+        success += 1
     else: fail += 1
 
-  return (success, fail)
+  return (success, disabled, fail)
 # } // End of runPerformanceTests()
 
 
@@ -975,7 +1025,7 @@ def main(argv):
     opts, args = getopt.getopt(argv[1:], "fhj:lm:pg:s:v", \
       ["builddir=", "force-perf", "help", "help-test-cfg", "ignore-consistency", "list-tests", "long-tests", \
        "mode=", "scm=", "reset-expected", "reset-perf-base", "run-perf-tests", "show-diff", "skip-tests", "git=", "svnmetadir=", "svn=", "svnversion=", \
-       "testdir=", "verbose", "version", "-testrunner-name="])
+       "testdir=", "verbose", "version", "xml-report=", "-testrunner-name="])
   except getopt.GetoptError:
     usage()
     return -1
@@ -1038,6 +1088,8 @@ def main(argv):
       settings["_verbose"] = ""
     elif opt == "--version":
       opt_showversion = True
+    elif opt == "--xml-report":
+      settings["xml_report"] = arg
     elif opt == "---testrunner-name":
       settings["_testrunner_name"] = arg
       
@@ -1117,18 +1169,67 @@ def main(argv):
 
 
   success = 0
+  disabled = 0
   fail = 0
 
   try:
     # Run Consistency Tests
+    csuccess = 0
+    cdisabled = 0
+    cfail = 0
     if (not opt_runperf or not opt_ignoreconsistency):
-      (success, fail) = runConsistencyTests(tests, opt_long)
+      (csuccess, cdisabled, cfail) = runConsistencyTests(tests, opt_long)
+      success += csuccess
+      disabled += cdisabled
+      fail += cfail
+      
     
     # Run Performance Tests
+    psuccess = 0
+    pdisabled = 0
+    pfail = 0
     if (opt_ignoreconsistency or fail == 0) and opt_runperf:
-      (psuccess, pfail) = runPerformanceTests(tests, opt_long, opt_forceperf, not opt_ignoreconsistency)
+      (psuccess, pdisabled, pfail) = runPerformanceTests(tests, opt_long, opt_forceperf, not opt_ignoreconsistency)
       success += psuccess
+      disabled += pdisabled
       fail += pfail
+      
+    if settings.has_key("xml_report"):
+      f = open(settings["xml_report"], "w")
+      f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+      f.write("<testsuites tests=\"%d\" failures=\"%d\" disabled=\"%d\" errors=\"0\" time=\"0\" name=\"AllTests\">\n" % (success + disabled + fail, fail, disabled))
+      
+      f.write("  <testsuite name=\"ConsistencyTests\" tests=\"%d\" failures=\"%d\" disabled=\"%d\" errors=\"0\" time=\"0\">\n" % (csuccess + cdisabled + cfail, cfail, cdisabled))
+      for test in tests:
+        if test.isConsistencyTest():
+          (tsuccess, message) = test.getConsistencyResults()
+          run = "run"
+          if test.wasConsistencySkipped(): run = "disabled"
+          if not tsuccess:
+            f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\">\n" % (test.getName(), run))
+            f.write("      <failure message=\"%s\" type=\"\"/>\n" % (message))
+            f.write("    </testcase>\n")
+          else:
+            f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\"/>\n" % (test.getName(), run))
+      f.write("  </testsuite>\n");
+      
+      if (opt_ignoreconsistency or fail == 0) and opt_runperf:
+        f.write("  <testsuite name=\"PerformanceTests\" tests=\"%d\" failures=\"%d\" disabled=\"%d\" errors=\"0\" time=\"0\">\n" % (psuccess + pdisabled + pfail, pfail, pdisabled))
+        for test in tests:
+          if test.isPerformanceTest():
+            (tsuccess, message) = test.getPerformanceResults()
+            run = "run"
+            if test.wasPerformanceSkipped(): run = "disabled"
+            if not tsuccess:
+              f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\">\n" % (test.getName(), run))
+              f.write("      <failure message=\"%s\" type=\"\"/>\n" % (message))
+              f.write("    </testcase>\n")
+            else:
+              f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\"/>\n" % (test.getName(), run))
+        f.write("  </testsuite>\n");
+      
+      f.write("</testsuites>\n")
+      f.close()
   
     # Clean up test directory
     try:
@@ -1140,7 +1241,10 @@ def main(argv):
       print "\nAll tests passed."
       return 0
     else:
-      print "\n%d of %d tests failed." % (fail, fail + success)
+      if disabled != 0:
+        print "\n%d of %d tests failed (%d disabled)." % (fail, fail + disabled + success, disabled)
+      else:
+        print "\n%d of %d tests failed." % (fail, fail + success)
       return fail
   except (KeyboardInterrupt):
     print "\nInterrupted... Terminanting Tests."
