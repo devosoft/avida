@@ -273,38 +273,47 @@ public:
   void UpdateGradientCount(const int Verbosity, cWorld* world, const cString res_name);
  
 	
-	// Adds an organism to a group
-	void JoinGroup(cOrganism* org, int group_id);
-	// Removes an organism from a group
-	void LeaveGroup(cOrganism* org, int group_id);
-	
-	//Kill random member of the group (but not self!!!) 
-	void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
-  //Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
-  void AttackFacedOrg(cAvidaContext& ctx, int loser);
-  //Kill random org in population. This requires all (candidate) orgs to be in a valid group.
-  void AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_groups);
-	// Identifies the number of organisms in a group
-  int NumberOfOrganismsInGroup(int group_id);
-	// Get the group information
-	map<int, int> GetFormedGroups() { return m_groups; }
-	
-	// Calculate tolerance of group towards immigrants @JJB
-	int CalcGroupToleranceImmigrants(int group_id);
-	// Calculate tolerance of group towards offspring (not including parent) @JJB
-	int CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id);
+    // Adds an organism to a group
+    void JoinGroup(cOrganism* org, int group_id);
+    // Removes an organism from a group
+    void LeaveGroup(cOrganism* org, int group_id);
+    
+    //Kill random member of the group (but not self!!!) 
+    void KillGroupMember(cAvidaContext& ctx, int group_id, cOrganism* org);
+    //Attack organism faced by this one, if there is an organism in front. This will use vitality bins if those are set.
+    void AttackFacedOrg(cAvidaContext& ctx, int loser);
+    //Kill random org in population. This requires all (candidate) orgs to be in a valid group.
+    void AttackRandomOrg(cAvidaContext& ctx, cOrganism *org, int num_groups);
+    // Identifies the number of organisms in a group
+    int NumberOfOrganismsInGroup(int group_id);
+    // Get the group information
+    map<int, int> GetFormedGroups() { return m_groups; }
+    
+    // Calculate tolerance of group towards immigrants @JJB
+    int CalcGroupToleranceImmigrants(int group_id);
+    // Calculate tolerance of group towards offspring (not including parent) @JJB
+    int CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id);
     // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
     double CalcGroupOddsImmigrants(int group_id);
+    // Calculates the standard deviation for group tolerance to immigrants
+    double CalcGroupSDevImmigrants(int group_id);
+    double CalcGroupAveImmigrants(int group_id);
     // Calculates the odds (out of 1) for offspring to be born into the group @JJB
     double CalcGroupOddsOffspring(int group_id);
-
-	// -------- HGT support --------
-	//! Modify current level of the HGT resource.
-	void AdjustHGTResource(double delta);
-	
-	// -------- Population mixing support --------
-	//! Mix all organisms in the population.
-	void MixPopulation(cAvidaContext& ctx); 
+    // Calculates the standard deviation for group tolerance to other group offspring
+    double CalcGroupSDevOthers(int group_id);
+    double CalcGroupAveOthers(int group_id);    
+    // Calculates the standard deviation for group tolerance to their own offspring
+    double CalcGroupSDevOwn(int group_id);
+    double CalcGroupAveOwn(int group_id); 
+    
+    // -------- HGT support --------
+    //! Modify current level of the HGT resource.
+    void AdjustHGTResource(double delta);
+    
+    // -------- Population mixing support --------
+    //! Mix all organisms in the population.
+    void MixPopulation(cAvidaContext& ctx); 
 
 private:
   void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object

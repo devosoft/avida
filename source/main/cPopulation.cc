@@ -6184,6 +6184,31 @@ double cPopulation::CalcGroupOddsImmigrants(int group_id)
   return immigrant_odds;
 }
 
+// Calculates the standard deviation for group tolerance to immigrants
+double cPopulation::CalcGroupSDevImmigrants(int group_id)
+{
+    cDoubleSum immigrant_tolerance;
+    int single_member_tolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+        immigrant_tolerance.Add(single_member_tolerance);
+    }
+    double sdevimmigrants = immigrant_tolerance.StdDeviation();
+    return sdevimmigrants;
+}
+
+// Calculates the average for intra-group tolerance to immigrants
+double cPopulation::CalcGroupAveImmigrants(int group_id)
+{
+    cDoubleSum immigrant_tolerance;
+    int single_member_tolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+        immigrant_tolerance.Add(single_member_tolerance);
+    }
+    double aveimmigrants = immigrant_tolerance.Average();
+    return aveimmigrants;
+}
 // Calculates the odds (out of 1) for offspring to be born into the group @JJB
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
@@ -6230,6 +6255,58 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism, int gro
 	}
 	int group_tolerance = tolerance_max - group_intolerance;
 	return group_tolerance;
+}
+
+// Calculates the standard deviation for group tolerance to other group offspring
+double cPopulation::CalcGroupSDevOthers(int group_id)
+{
+    cDoubleSum others_tolerance;
+    int single_member_tolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+        others_tolerance.Add(single_member_tolerance);
+    }
+    double sdevothers = others_tolerance.StdDeviation();
+    return sdevothers;
+}
+
+// Calculates the average for intra-group tolerance to other offspring
+double cPopulation::CalcGroupAveOthers(int group_id)
+{
+    cDoubleSum others_tolerance;
+    int single_member_tolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+        others_tolerance.Add(single_member_tolerance);
+    }
+    double aveothers = others_tolerance.Average();
+    return aveothers;
+}
+
+// Calculates the standard deviation for group tolerance to their own offspring
+double cPopulation::CalcGroupSDevOwn(int group_id)
+{
+    cDoubleSum own_tolerance;
+    int single_member_tolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOwn();
+        own_tolerance.Add(single_member_tolerance);
+    }
+    double sdevown = own_tolerance.StdDeviation();
+    return sdevown;
+}
+
+// Calculates the average for intra-group tolerance to own offspring
+double cPopulation::CalcGroupAveOwn(int group_id)
+{
+    cDoubleSum own_tolerance;
+    int single_member_tolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+        own_tolerance.Add(single_member_tolerance);
+    }
+    double aveown = own_tolerance.Average();
+    return aveown;
 }
 
 /*!	Modify current level of the HGT resource.
