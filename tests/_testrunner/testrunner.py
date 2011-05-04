@@ -1,34 +1,28 @@
 #!/usr/bin/python
 
-# Copyright 2007 David Michael Bryson, all rights reserved.
-# http://www.programerror.com/
+#  Copyright 2007-2011 David Michael Bryson, all rights reserved.
+#  http://programerror.com/software/testrunner
 # 
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-# 
-# 1.  Redistributions of source code must retain the above copyright
-#     notice, this list of conditions and the following disclaimer.
-# 2.  Redistributions in binary form must reproduce the above
-#     copyright notice, this list of conditions and the following
-#     disclaimer in the documentation and/or other materials provided
-#     with the distribution.
-# 3.  Neither the name of David Michael Bryson, nor the names of
-#     contributors may be used to endorse or promote products derived
-#     from this software without specific prior written permission.
-# 
-# THIS SOFTWARE IS PROVIDED BY DAVID MICHAEL BRYSON AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVID
-# MICHAEL BRYSON OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-# OF THE POSSIBILITY OF SUCH DAMAGE.
+#  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+#  following conditions are met:
+#  
+#  1.  Redistributions of source code must retain the above copyright notice, this list of conditions and the
+#      following disclaimer.
+#  2.  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+#      following disclaimer in the documentation and/or other materials provided with the distribution.
+#  3.  Neither the name of David Michael Bryson, nor the names of contributors may be used to endorse or promote
+#      products derived from this software without specific prior written permission.
+#  
+#  THIS SOFTWARE IS PROVIDED BY DAVID MICHAEL BRYSON AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+#  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#  DISCLAIMED. IN NO EVENT SHALL DAVID MICHAEL BRYSON OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+#  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+#  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#  Authors: David M. Bryson <david@programerror.com>, Brian Baer <baerb@msu.edu>
+#
 
 
 import ConfigParser
@@ -52,8 +46,8 @@ import xml.dom.minidom
 
 # Global Constants
 # ---------------------------------------------------------------------------------------------------------------------------
-TESTRUNNER_VERSION = "1.5a"
-TESTRUNNER_COPYRIGHT = "2007-2008"
+TESTRUNNER_VERSION = "2.0"
+TESTRUNNER_COPYRIGHT = "2007-2011"
 
 TRUE_STRINGS = ("y","Y","yes","Yes","true","True","1")
 RESAVAIL = True
@@ -64,6 +58,7 @@ EXPECTDIR = "expected"
 PERFDIR = "perf~"  # subversion, by default, ignores files/dirs with ~ at the end
 TEST_LIST = "test_list"
 PERF_BASE = "baseline"
+EXPECTED_IGNORE = (".gitignore",)
 
 
 # Global Variables
@@ -99,9 +94,6 @@ Usage: %(_testrunner_name)s [options] [testname ...]
     --builddir=dir [%(builddir)s]
       Set the path to the build directory.
     
-    --disable-svn
-      Disable all Subversion usage.
-      
     -f | --force-perf
       Force active tests to be treated as peformance tests, regardless of
       individual test configuration.
@@ -128,12 +120,16 @@ Usage: %(_testrunner_name)s [options] [testname ...]
       Run tests that have been marked as 'long' running.
     
     --mode=option [%(mode)s]
-      Set the test runner mode.  Options are 'local', 'master', and 'slave'.
+      Set the test runner mode.  Options are 'local' and 'slave'.
       
       Local mode generates expected results and adds them to the repository,
-      if subversion metadata has been found.  Master mode does the same as
-      local, but also commits the generated expected results automatically.
-      Slave mode disables expected results generation completely.
+      if enabled has been found. Slave mode disables expected results generation.
+      
+    --scm=option [%(scm)s]
+      Set the source code management system. 
+      Options are 'git', 'svn', and 'none'.
+      
+      None disables all automatic source code management operations.
       
     -p | --run-perf-tests
       Run available performance tests.
@@ -147,6 +143,9 @@ Usage: %(_testrunner_name)s [options] [testname ...]
 
     --skip-tests
       Do not run tests. Only generate new results, where applicable.
+
+    -g path | --git=path [%(git)s]
+      Set the path to the Git command line utility.
 
     -s path | --svn=path [%(svn)s]
       Set the path to the Subversion command line utility.
@@ -221,7 +220,7 @@ Copyright %s David Michael Bryson, all rights reserved.
 This software is open source, subject to certain conditions.
 See the supplied license for details.
 
-http://www.programerror.com
+http://www.programerror.com/software/testrunner
 """ % (TESTRUNNER_VERSION, TESTRUNNER_COPYRIGHT)
   print versionstr
 # } // End of version()
@@ -236,7 +235,97 @@ def med(seq):
   if len(seq) % 2 == 1: return seq[idx]
   else: return (seq[idx] + seq[idx - 1]) / 2
 # } // End of med()
+
+
+class SCMWrapper_Git:
+  def __init__(self):
+    global settings
+    self.cmd = settings["git"]
     
+  def getVersionString(self, path):
+    rev = "exported"
+    try:
+      gverp = os.popen("%s describe" % (self.cmd))
+      rev = gverp.readline().strip()
+      gverp.close()
+      if rev == "": rev = "exported"
+    except (IOError, OSError): pass
+    return rev
+    
+  def deleteMetadata(self, path): pass
+  def removeMetadataFromDirList(self, dirs): pass
+  
+  def addDirectory(self, dir):
+    open(os.path.join(dir, ".gitignore"), "a").close()
+    ecode = os.spawnlp(os.P_WAIT, self.cmd, self.cmd, "add", dir)
+    if ecode != 0: return False
+    return True
+    
+  def removeDirectory(self, dir):
+    ecode = os.spawnlp(os.P_WAIT, self.cmd, self.cmd, "rm", "-r", dir)
+    if ecode != 0: return False
+    if os.path.exists(dir): return False
+    return True
+
+
+class SCMWrapper_SVN:
+  def __init__(self):
+    global settings
+    self.cmd = settings["svn"]
+    self.version = settings["svnversion"]
+    self.metadir = settings["svnmetadir"]
+    
+    if not os.path.exists(self.metadir):
+      print "Warning: Current directory does not appear to be a SVN working copy"
+      
+  def getVersionString(self, path):
+    rev = "exported"
+    try:
+      sverp = os.popen("cd %s; %s" % (path, self.version))
+      rev = sverp.readline().strip()
+      sverp.close()
+      if rev == "": rev = "exported"
+    except (IOError, OSError): pass
+    return rev
+    
+  def deleteMetadata(self, path):
+    # Remove copied svn metadata directories
+    for root, dirs, files in os.walk(path):
+      if svnmetadir in dirs: dirs.remove(self.metadir)
+      try:
+        shutil.rmtree(os.path.join(root, self.metadir))
+      except (IOError, OSError): pass
+      
+  def removeMetadataFromDirList(self, dirs):
+    if self.metadir in dirs: dirs.remove(self.metadir)
+  
+  def addDirectory(self, dir):
+    ecode = os.spawnlp(os.P_WAIT, self.cmd, self.cmd, "add", dir)
+    if ecode != 0: return False
+    return True
+    
+  def removeDirectory(self, dir):
+    print "Error: SVN does not currently support directory removal"
+    return False
+
+
+class SCMWrapper_None:
+  def __init__(self): pass
+  
+  def getVersionString(self, path): return "exported"
+    
+  def deleteMetadata(self, path): pass
+  def removeMetadataFromDirList(self, dirs): pass
+  def addDirectory(self, dir): return True
+  
+  def removeDirectory(self, dir):
+    try:
+      shutil.rmtree(dir, True)
+    except (IOError, OSError): return False
+    return True
+
+
+
 
 
 # Main Test Class - does the actual work for performing individual tests and reporting results
@@ -253,10 +342,8 @@ class cTest:
     global settings, TRUE_STRINGS, RESAVAIL, EXPECTDIR, PERFDIR, TEST_LIST, PERF_BASE
     self.name = name
     self.tdir = tdir
+    self.scm = settings["scm"]
     
-    if os.path.exists(os.path.join(tdir, settings["svnmetadir"])) and not settings.has_key("_disable_svn"): self.usesvn = True
-    else: self.usesvn = False
-
     if settings.has_key("skip-tests"): self.skip = True
     else: self.skip = False
     
@@ -274,13 +361,7 @@ class cTest:
     
     if self.has_perf_base and settings.has_key("_reset_perf_base"):
       try:
-        rev = "exported"
-        if self.usesvn:
-          sverp = os.popen("cd %s; %s" % (self.tdir, settings["svnversion"]))
-          rev = sverp.readline().strip()
-          sverp.close()
-          if rev == "": rev = "exported"
-        
+        rev = self.scm.getVersionString(self.tdir)
         oname = "perf-%s-reset-%s" % (time.strftime("%Y-%m-%d-%H.%M.%S"), rev)
         
         shutil.move(os.path.join(perfdir, PERF_BASE), os.path.join(perfdir, oname))
@@ -310,10 +391,12 @@ class cTest:
     
     self.success = True
     self.result = "passed"
+    self.disabled = False
     self.exitcode = 0
     self.errors = []
     
     self.psuccess = True
+    self.pdisabled = False
     self.presult = "passed"
   # } // End of cTest::cTest()
     
@@ -328,46 +411,65 @@ class cTest:
       return default
   # } // End of cTest::getConfig()
   
+  
+  def getName(self): return self.name
 
 
   # bool cTest::isConsistencyTest() {
   def isConsistencyTest(self): return self.consistency_enabled
   # } // End of isConsistencyTest()
 
+  # bool cTest::wasConsistencySkipped() {
+  def wasConsistencySkipped(self): return self.disabled
+  # } // End of wasConsistencySkipped()
+
   # bool cTest::isPerformanceTest() {
   def isPerformanceTest(self): return self.performance_enabled
   # } // End of isPerformanceTest()
   
+  # bool cTest::wasPerformanceSkipped() {
+  def wasPerformanceSkipped(self): return self.pdisabled
+  # } // End of wasPerformanceSkipped()
+
   
 
   # void cTest::runConsistencyTest() {
   def runConsistencyTest(self, dolongtest):
     global settings, tmpdir, CONFIGDIR, EXPECTDIR
     
+    confdir = os.path.join(self.tdir, CONFIGDIR)
+    rundir = os.path.join(tmpdir, self.name)
+    expectdir = os.path.join(self.tdir, EXPECTDIR)
+    
+
     if not self.isConsistencyTest():
       self.result = "skipped (not a consistency test)"
+      self.disabled = True
       return
     
-    # If no expected results exist and in slave mode, or in master mode and
-    # subversion usage has been disabled then skip execution
-    if not self.has_expected and (settings["mode"] == "slave" or \
-      (settings["mode"] == "master" and not self.usesvn)):
+    # If no expected results exist and in slave mode
+    if not self.has_expected and settings["mode"] == "slave":
       self.result = "skipped (no expected results)"
+      self.disabled = True
       return
+      
+    if settings.has_key("_reset_expected"):
+      if not self.scm.removeDirectory(expectdir):
+        print "Error: unable to remove expected directory for reset"
+        self.success = False
+        return
+      self.has_expected = False
       
     if self.has_expected and self.skip:
       self.result = "skipped"
+      self.disabled = True
       return
     
     if self.getConfig("consistency", "long", "no") in TRUE_STRINGS and not dolongtest:
       self.result = "skipped (long)"
+      self.disabled = True
       return
-
-    confdir = os.path.join(self.tdir, CONFIGDIR)
-    rundir = os.path.join(tmpdir, self.name)
-    expectdir = os.path.join(self.tdir, EXPECTDIR)
-    svnmetadir = settings["svnmetadir"]
-    
+      
     # Create test directory and populate with config
     try:
       shutil.copytree(confdir, rundir)
@@ -377,13 +479,7 @@ class cTest:
       self.success = False
       return
       
-    
-    # Remove copied svn metadata directories
-    for root, dirs, files in os.walk(rundir):
-      if svnmetadir in dirs: dirs.remove(svnmetadir)
-      try:
-        shutil.rmtree(os.path.join(root, svnmetadir))
-      except (IOError, OSError): pass
+    self.scm.deleteMetadata(rundir)
           
 
     # Run test app, capturing output and exitcode
@@ -414,7 +510,7 @@ class cTest:
     # Build dictionary of config structure
     confstruct = {}
     for root, dirs, files in os.walk(confdir):
-      if svnmetadir in dirs: dirs.remove(svnmetadir)
+      self.scm.removeMetadataFromDirList(dirs)
       for file in files:
         path = os.path.abspath(os.path.join(root, file))
         key = path[len(confdir) + 1:] # remove confdir from path
@@ -429,7 +525,10 @@ class cTest:
     # Build dicitonary of expected structure
     expectstruct = {}
     for root, dirs, files in os.walk(expectdir):
-      if svnmetadir in dirs: dirs.remove(svnmetadir)
+      self.scm.removeMetadataFromDirList(dirs)
+      for ifile in EXPECTED_IGNORE:
+        if ifile in files:
+          files.remove(ifile)
       for file in files:
         path = os.path.abspath(os.path.join(root, file))
         key = path[len(expectdir) + 1:] # remove confdir from path
@@ -504,32 +603,28 @@ class cTest:
     
     if self.has_perf_base and self.skip:
       self.presult = "skipped"
+      self.pdisabled = True
       return
       
     if self.getConfig("performance", "long", "no") in TRUE_STRINGS and not dolongtest:
       self.presult = "skipped (long)"
+      self.pdisabled = True
       return
     
     confdir = os.path.join(self.tdir, CONFIGDIR)
     rundir = os.path.join(tmpdir, self.name)
     perfdir = os.path.join(self.tdir, PERFDIR)
-    svnmetadir = settings["svnmetadir"]
     
     # Create test directory and populate with config
     try:
       shutil.copytree(confdir, rundir)
     except (IOError, OSError):
       self.psuccess = False
-      self.presult = "error occured creating run directory"
+      self.presult = "error occurred creating run directory"
       return
       
     
-    # Remove copied svn metadata directories
-    for root, dirs, files in os.walk(rundir):
-      if svnmetadir in dirs: dirs.remove(svnmetadir)
-      try:
-        shutil.rmtree(os.path.join(root, svnmetadir))
-      except (IOError, OSError): pass
+    self.scm.deleteMetadata(rundir)
     
     
     # Run test X times, take min value
@@ -640,13 +735,7 @@ class cTest:
       if saveresults:
         # new baseline, move old baseline and write out new results
         try:
-          rev = "exported"
-          if self.usesvn:
-            sverp = os.popen("cd %s; %s" % (self.tdir, settings["svnversion"]))
-            rev = sverp.readline().strip()
-            sverp.close()
-            if rev == "": rev = "exported"
-          
+          rev = self.scm.getVersionString(self.tdir)
           oname = "perf-%s-prev-%s" % (time.strftime("%Y-%m-%d-%H.%M.%S"), rev)
           
           shutil.move(basepath, os.path.join(perfdir, oname))
@@ -668,22 +757,7 @@ class cTest:
       shutil.rmtree(rundir, True)
     except (IOError, OSError): pass
   # } // End of cTest::runPerformanceTest()
-  
-  
-  
-  # string cTest::getRepositoryPath(string ) {
-  def getRepositoryPath(self):
-    global settings
     
-    ifp = os.popen("%s info --xml %s" % (settings["svn"], settings["testdir"]))
-    doc = xml.dom.minidom.parse(ifp)
-    if doc.documentElement.tagName != "info": return ""
-    
-    urltags = doc.getElementsByTagName("url")
-    if len(urltags) < 1 or urltags[0].firstChild.nodeType != urltags[0].firstChild.TEXT_NODE: return ""
-    return urltags[0].firstChild.data
-  # } // End of cTest::getRepositoryPath()
-  
 
 
   # bool cTest::handleNewExpected() {
@@ -695,16 +769,6 @@ class cTest:
     rundir = os.path.join(tmpdir, self.name)
     expectdir = os.path.join(self.tdir, EXPECTDIR)
     
-    svn = settings["svn"]
-
-    if settings["mode"] == "master":
-      if not self.usesvn: return True
-      svndir = os.path.join(tmpdir, "_svn_tests")
-      if not os.path.exists(svndir):
-        ecode = os.spawnlp(os.P_WAIT, svn, svn, "checkout", "-q", self.getRepositoryPath(), svndir)
-        if ecode != 0: return False
-      expectdir = os.path.join(svndir, self.name, EXPECTDIR)
-
     try:
       shutil.copytree(rundir, expectdir)
     except (IOError, OSError), e:
@@ -719,11 +783,8 @@ class cTest:
     try:
       shutil.rmtree(rundir, True) # Clean up test directory
     except (IOError, OSError): pass
-    if self.usesvn:
-      ecode = os.spawnlp(os.P_WAIT, svn, svn, "add", expectdir)
-      if ecode != 0: return False
-
-    return True
+    
+    return self.scm.addDirectory(expectdir)
     
   # } // End of cTest::handleNewExpected()
 
@@ -757,6 +818,24 @@ class cTest:
 
     return self.success
   # } // End of cTest::reportConsistencyResults()
+
+  # bool cTest::getConsistencyResults() {
+  def getConsistencyResults(self):
+    global settings
+    message = ""
+    if self.success:
+      message = self.result
+    else:
+      message = "failed\n"
+      if self.exitcode != 0:
+        message += "exit code: %d\n" % os.WEXITSTATUS(self.exitcode)
+        message += "term signal: %d\n" % os.WTERMSIG(self.exitcode)
+      else:
+        message += "output variance(s):\n"
+        for err in self.errors: message += err + "\n"
+
+    return (self.success, message)
+  # } // End of cTest::getConsistencyResults()
   
   
   
@@ -766,12 +845,20 @@ class cTest:
     return self.psuccess
   # } // End of cTest::reportPerformanceResults()
   
+  # bool cTest::getPerformanceResults() {
+  def getPerformanceResults(self):
+    return (self.psuccess, self.presult)
+  # } // End of cTest::getPerformanceResults()
   
   
   # void cTest::describe() {
   def describe(self):
     if self.has_expected: print "  ",
-    else: print "* ",
+    else: print " *",
+    if self.consistency_enabled: print "c",
+    else: print " ",
+    if self.performance_enabled: print "p ",
+    else: print "  ",
     print self.name
   # } // End of cTest::describe()
     
@@ -794,13 +881,11 @@ def runConsistencyTests(alltests, dolongtests):
     print "No Consistency Tests Available (or Specified)."
     return (0, 0)
 
-  print "\nRunning Consistency Tests..."
+  print "\nRunning Consistency Tests:\n"
   
   # Run Tests
   sem = threading.BoundedSemaphore(settings["cpus"])
   ti = 0
-  sys.stdout.write("Performing Test:")
-  sys.stdout.flush()
   for test in tests:
     # void runTestWrapper(cTest test, Semaphore sem) {
     def runTestWrapper(test, sem):
@@ -810,7 +895,7 @@ def runConsistencyTests(alltests, dolongtests):
 
     sem.acquire()
     ti += 1
-    sys.stdout.write("\rPerforming Test:  % 4d of %d -- %-45s " % (ti, len(tests), test.name[:45]))
+    sys.stdout.write("[% 3d of %d] %s\n" % (ti, len(tests), test.name[:65]))
     sys.stdout.flush()
     tthread = threading.Thread(target=runTestWrapper, args=(test, sem))
     tthread.start()
@@ -823,19 +908,17 @@ def runConsistencyTests(alltests, dolongtests):
 
   # Report Results
   success = 0
+  disabled = 0
   fail = 0
   for test in tests:
-    if test.reportConsistencyResults(): success += 1
+    if test.reportConsistencyResults():
+      if test.wasConsistencySkipped():
+        disabled += 1
+      else:
+        success += 1
     else: fail += 1
-
-  svndir = os.path.join(tmpdir, "_svn_tests")
-  if os.path.exists(svndir) and not settings.has_key("_disable_svn"):
-    print "\nAdding new expected results to the repository..."
-    svn = settings["svn"]
-    ecode = os.spawnlp(os.P_WAIT, svn, svn, "commit", svndir, "-m", "Adding new expected results.")
-    if ecode != 0: print "Error: Failed to add new expected results."
   
-  return (success, fail)
+  return (success, disabled, fail)
 # } // End of runConsistencyTests()
 
 
@@ -854,15 +937,13 @@ def runPerformanceTests(alltests, dolongtests, force, saveresults):
     print "No Performance Tests Available (or Specified)."
     return (0, 0)
 
-  print "\nRunning Performance Tests..."
+  print "\nRunning Performance Tests:\n"
   
   # Run Tests
   ti = 0
-  sys.stdout.write("Performing Test:")
-  sys.stdout.flush()
   for test in tests:
     ti += 1
-    sys.stdout.write("\rPerforming Test:  % 4d of %d" % (ti, len(tests)))
+    sys.stdout.write("[% 3d of %d] %s\n" % (ti, len(tests), test.name[:65]))
     sys.stdout.flush()
     test.runPerformanceTest(dolongtests, saveresults)
   
@@ -872,12 +953,17 @@ def runPerformanceTests(alltests, dolongtests, force, saveresults):
 
   # Report Results
   success = 0
+  disabled = 0
   fail = 0
   for test in tests:
-    if test.reportPerformanceResults(): success += 1
+    if test.reportPerformanceResults():
+      if test.wasPerformanceSkipped():
+        disabled += 1
+      else:
+        success += 1
     else: fail += 1
 
-  return (success, fail)
+  return (success, disabled, fail)
 # } // End of runPerformanceTests()
 
 
@@ -915,9 +1001,14 @@ def main(argv):
   settings["default_app"] = "" # App is defined later, since values like builddir can be modified by cmdline settings
   settings["builddir"] = getConfig("testrunner", "builddir", "build")
   settings["mode"] = getConfig("testrunner", "mode", "local")
-  settings["svn"] = getConfig("testrunner", "svn", "svn")
-  settings["svnversion"] = getConfig("testrunner", "svnversion", "svnversion")
-  settings["svnmetadir"] = getConfig("testrunner", "svnmetadir", ".svn")
+  settings["scm"] = getConfig("testrunner", "scm", "none")
+  
+  settings["git"] = getConfig("git", "cmd", "git")
+  
+  settings["svn"] = getConfig("svn", "cmd", "svn")
+  settings["svnversion"] = getConfig("svn", "svnversion", "svnversion")
+  settings["svnmetadir"] = getConfig("svn", "metadir", ".svn")
+  
   settings["testdir"] = getConfig("testrunner", "testdir", "tests")
 
   settings["_testrunner_name"] = "testrunner.py"
@@ -927,13 +1018,14 @@ def main(argv):
   settings["perf_repeat"] = int(getConfig("performance","repeat",5))
 
   settings["cpus"] = 1
+  
 
   # Process Command Line Arguments
   try:
-    opts, args = getopt.getopt(argv[1:], "fhj:lm:ps:v", \
-      ["builddir=", "disable-svn", "force-perf", "help", "help-test-cfg", "ignore-consistency", "list-tests", "long-tests", \
-       "mode=", "reset-perf-base", "run-perf-tests", "show-diff", "skip-tests", "svnmetadir=", "svn=", "svnversion=", \
-       "testdir=", "verbose", "version", "-testrunner-name="])
+    opts, args = getopt.getopt(argv[1:], "fhj:lm:pg:s:v", \
+      ["builddir=", "force-perf", "help", "help-test-cfg", "ignore-consistency", "list-tests", "long-tests", \
+       "mode=", "scm=", "reset-expected", "reset-perf-base", "run-perf-tests", "show-diff", "skip-tests", "git=", "svnmetadir=", "svn=", "svnversion=", \
+       "testdir=", "verbose", "version", "xml-report=", "-testrunner-name="])
   except getopt.GetoptError:
     usage()
     return -1
@@ -960,8 +1052,8 @@ def main(argv):
       cpus = int(arg)
       if cpus < 1: cpus = 1
       settings["cpus"] = cpus
-    elif opt == "--disable-svn":
-      settings["_disable_svn"] = ""
+    elif opt == "--scm":
+      settings["scm"] = arg
     elif opt in ("-f", "--force-perf"):
       opt_forceperf = True
     elif opt == "--ignore-consistency":
@@ -972,6 +1064,8 @@ def main(argv):
       opt_long = True
     elif opt in ("-m", "--mode"):
       settings["mode"] = arg
+    elif opt == "--reset-expected":
+      settings["_reset_expected"] = ""
     elif opt == "--reset-perf-base":
       settings["_reset_perf_base"] = ""
     elif opt in ("-p", "--run-perf-tests"):
@@ -980,6 +1074,8 @@ def main(argv):
       settings["show-diff"] = ""
     elif opt == "--skip-tests":
       settings["skip-tests"] = ""
+    elif opt in ("-g", "--git"):
+      settings["git"] = arg
     elif opt == "--svnmetadir":
       settings["svnmetadir"] = arg
     elif opt in ("-s", "--svn"):
@@ -992,6 +1088,8 @@ def main(argv):
       settings["_verbose"] = ""
     elif opt == "--version":
       opt_showversion = True
+    elif opt == "--xml-report":
+      settings["xml_report"] = arg
     elif opt == "---testrunner-name":
       settings["_testrunner_name"] = arg
       
@@ -1018,10 +1116,21 @@ def main(argv):
     settings["default_app"] = os.path.abspath(cfg.get("main", "app"))
   except:
     print "Warning: No default app configured"
+    
+    
+  if settings["scm"] == "git":
+    settings["scm"] = SCMWrapper_Git()
+  elif settings["scm"] == "svn":
+    settings["scm"] = SCMWrapper_SVN()
+  elif settings["scm"] == "none":
+    settings["scm"] = SCMWrapper_None()
+  else:
+    print "Error: Unsupported SCM '%s'" % (settings["scm"])
+    return -1
   
   
   # Load in all tests
-  print "Reading Test Configurations..."
+  print "Reading Test Configurations:\n"
   tests = []
   
   prefix_filter = ["."]
@@ -1046,13 +1155,13 @@ def main(argv):
     curtdir = os.path.join(testdir, name)
     contents = dircache.listdir(curtdir)
     if CONFIGDIR in contents:
-      tests.append(cTest(name, curtdir))
+      test = cTest(name, curtdir)
+      test.describe()
+      tests.append(test)
 
 
   # If selected, display available tests and exit
   if opt_listtests:
-    print "Available Tests:\n"
-    for test in tests: test.describe()
     return 0
 
   # Make temp directory to hold active tests  
@@ -1060,30 +1169,85 @@ def main(argv):
 
 
   success = 0
+  disabled = 0
   fail = 0
 
-  # Run Consistency Tests
-  if (not opt_runperf or not opt_ignoreconsistency):
-    (success, fail) = runConsistencyTests(tests, opt_long)
-  
-  # Run Performance Tests
-  if (opt_ignoreconsistency or fail == 0) and opt_runperf:
-    (psuccess, pfail) = runPerformanceTests(tests, opt_long, opt_forceperf, not opt_ignoreconsistency)
-    success += psuccess
-    fail += pfail
-
-  # Clean up test directory
   try:
-    shutil.rmtree(tmpdir, True)
-  except (IOError, OSError): pass
-
-
-  if fail == 0:
-    print "\nAll tests passed."
-    return 0
-  else:
-    print "\n%d of %d tests failed." % (fail, fail + success)
-    return fail
+    # Run Consistency Tests
+    csuccess = 0
+    cdisabled = 0
+    cfail = 0
+    if (not opt_runperf or not opt_ignoreconsistency):
+      (csuccess, cdisabled, cfail) = runConsistencyTests(tests, opt_long)
+      success += csuccess
+      disabled += cdisabled
+      fail += cfail
+      
+    
+    # Run Performance Tests
+    psuccess = 0
+    pdisabled = 0
+    pfail = 0
+    if (opt_ignoreconsistency or fail == 0) and opt_runperf:
+      (psuccess, pdisabled, pfail) = runPerformanceTests(tests, opt_long, opt_forceperf, not opt_ignoreconsistency)
+      success += psuccess
+      disabled += pdisabled
+      fail += pfail
+      
+    if settings.has_key("xml_report"):
+      f = open(settings["xml_report"], "w")
+      f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+      f.write("<testsuites tests=\"%d\" failures=\"%d\" disabled=\"%d\" errors=\"0\" time=\"0\" name=\"AllTests\">\n" % (success + disabled + fail, fail, disabled))
+      
+      f.write("  <testsuite name=\"ConsistencyTests\" tests=\"%d\" failures=\"%d\" disabled=\"%d\" errors=\"0\" time=\"0\">\n" % (csuccess + cdisabled + cfail, cfail, cdisabled))
+      for test in tests:
+        if test.isConsistencyTest():
+          (tsuccess, message) = test.getConsistencyResults()
+          run = "run"
+          if test.wasConsistencySkipped(): run = "disabled"
+          if not tsuccess:
+            f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\">\n" % (test.getName(), run))
+            f.write("      <failure message=\"%s\" type=\"\"/>\n" % (message))
+            f.write("    </testcase>\n")
+          else:
+            f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\"/>\n" % (test.getName(), run))
+      f.write("  </testsuite>\n");
+      
+      if (opt_ignoreconsistency or fail == 0) and opt_runperf:
+        f.write("  <testsuite name=\"PerformanceTests\" tests=\"%d\" failures=\"%d\" disabled=\"%d\" errors=\"0\" time=\"0\">\n" % (psuccess + pdisabled + pfail, pfail, pdisabled))
+        for test in tests:
+          if test.isPerformanceTest():
+            (tsuccess, message) = test.getPerformanceResults()
+            run = "run"
+            if test.wasPerformanceSkipped(): run = "disabled"
+            if not tsuccess:
+              f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\">\n" % (test.getName(), run))
+              f.write("      <failure message=\"%s\" type=\"\"/>\n" % (message))
+              f.write("    </testcase>\n")
+            else:
+              f.write("    <testcase name=\"%s\" status=\"%s\" time=\"0\" classname=\"ConsistencyTests\"/>\n" % (test.getName(), run))
+        f.write("  </testsuite>\n");
+      
+      f.write("</testsuites>\n")
+      f.close()
+  
+    # Clean up test directory
+    try:
+      shutil.rmtree(tmpdir, True)
+    except (IOError, OSError): pass
+  
+  
+    if fail == 0:
+      print "\nAll tests passed."
+      return 0
+    else:
+      if disabled != 0:
+        print "\n%d of %d tests failed (%d disabled)." % (fail, fail + disabled + success, disabled)
+      else:
+        print "\n%d of %d tests failed." % (fail, fail + success)
+      return fail
+  except (KeyboardInterrupt):
+    print "\nInterrupted... Terminanting Tests."
   
 # } // End of main()  
 
