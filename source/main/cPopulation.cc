@@ -481,91 +481,116 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
       // into another group.
       if (m_world->GetConfig().USE_FORM_GROUPS.Get()) {
           // If tolerances are on ... @JJB
-          if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
+          // If using % chance of random migration
+          int new_op = 0;
+          if (m_world->GetConfig().TOLERANCE_WINDOW.Get() < 0) {
+              const int parent_group = parent_organism->GetOpinion().first;
+              const double prob_immigrate = ((double) m_world->GetConfig().TOLERANCE_WINDOW.Get() * -1.0) / 100.0;
+              double rand = m_world->GetRandom().GetDouble();
+              if (rand <= prob_immigrate) {
+                  const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+                  int target_group; 
+                  do {
+                      target_group = m_world->GetRandom().GetUInt(num_groups);
+                  } while (target_group == parent_group);
+                  offspring_array[i]->SetOpinion(target_group);
+                  new_op = target_group;
+                  JoinGroup(offspring_array[i], target_group);
+              }
+              else {
+                  // Put the offspring in the parent's group.
+                  assert(parent_organism->HasOpinion());
+                  offspring_array[i]->SetOpinion(parent_group);
+                  new_op = parent_group;
+                  JoinGroup(offspring_array[i], parent_group);
+              }
+          }
+          // If using tolerance for migration    
+          else if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
               assert(parent_organism->HasOpinion());
               
-              const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-              const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+              const double tolerance_window = (double) m_world->GetConfig().TOLERANCE_WINDOW.Get();
+              const double tolerance_max = tolerance_window * (double) m_world->GetConfig().TOLERANCE_SLICE.Get();
               const int parent_group = parent_organism->GetOpinion().first;
               double rand;
               
               // Retrieve the parent's tolerance for its offspring
-              int parent_tolerance = parent_organism->GetPhenotype().CalcToleranceOffspringOwn();
+              double parent_tolerance = (double) parent_organism->GetPhenotype().CalcToleranceOffspringOwn();
               // Retrieve the parent group's tolerance for offspring
-              int parent_group_tolerance = CalcGroupToleranceOffspring(parent_organism, parent_group);
+              double parent_group_tolerance = (double) CalcGroupToleranceOffspring(parent_organism, parent_group);
               
               // Calculate the group's total tolerance towards the offspring
-              int total_offspring_tolerance = 0;
+              double total_offspring_tolerance = 0;
               
               // If the parent is the only group member their vote counts for everything
               if (group_list[parent_group].GetSize() == 1) total_offspring_tolerance = parent_tolerance;
               
-    /*//tolerance using 50-50 vote split with attempt to join parent group first
-              // If the parent is not the only group member their vote counts for only half the total
-              if (group_list[parent_group].GetSize() > 1) total_offspring_tolerance = (parent_tolerance / 2) + (parent_group_tolerance / 2);
+              /*//tolerance using 50-50 vote split with attempt to join parent group first
+               // If the parent is not the only group member their vote counts for only half the total
+               if (group_list[parent_group].GetSize() > 1) total_offspring_tolerance = (parent_tolerance / 2) + (parent_group_tolerance / 2);
+               
+               // Calculate the probability the offspring is born into the parent group
+               const double probability_born_parent_group = total_offspring_tolerance / tolerance_max;
+               
+               // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate               
+               // Check if the offspring is successfully born into the parent's group
+               rand = m_world->GetRandom().GetDouble();
+               if (rand <= probability_born_parent_group) {
+               // Offspring successfully joins parent's group
+               offspring_array[i]->SetOpinion(parent_group);
+               JoinGroup(offspring_array[i], parent_group);
+               // Let the parent know that its offspring was born into its group
+               parent_organism->GetPhenotype().SetBornParentGroup();
+               }
+               else {
+               // Let the parent know its offspring was not born into its group
+               parent_organism->GetPhenotype().ClearBornParentGroup();
+               }  
+               
+               // If the offspring is rejected by the parent group, and there are no other groups, the offspring is doomed
+               const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+               if ((rand > probability_born_parent_group) && (num_groups == 1)) {
+               target_cells[i] = 0;
+               is_doomed = true;
+               }
+               
+               // If the offspring is rejected by the parent group, and there are other groups, the offspring attempts to immigrate
+               if ((rand > probability_born_parent_group) && (num_groups > 1)) {
+               // Find another group at random, which is not the parent's
+               int target_group;
+               do {
+               target_group = m_world->GetRandom().GetUInt(num_groups);
+               } while (target_group == parent_group);
+               
+               double probability_born_target_group = 1;
+               // If there are no members currently of the target group, offspring has 100% chance of immigrating
+               if (group_list[target_group].GetSize() == 0) {
+               offspring_array[i]->SetOpinion(target_group);
+               JoinGroup(offspring_array[i], target_group);
+               }
+               else {
+               // If there are group members, retrieve the target group's tolerance to immigrants
+               double target_group_tolerance = (double) CalcGroupToleranceImmigrants(target_group);
+               probability_born_target_group = target_group_tolerance / tolerance_max;
+               rand = m_world->GetRandom().GetDouble();
+               // Calculate if the offspring successfully immigrates
+               if (rand <= probability_born_target_group) {
+               // Offspring joins target group
+               offspring_array[i]->SetOpinion(target_group);
+               JoinGroup(offspring_array[i], target_group);
+               }
+               else {
+               // Offspring fails to immigrate and is doomed
+               target_cells[i] = 0;
+               is_doomed = true;
+               }
+               }
+               }
+               
+               // end tolerance parent-group 50-50 vote with attempt to join parent group first  */   
               
-              // Calculate the probability the offspring is born into the parent group
-              const double probability_born_parent_group = total_offspring_tolerance / tolerance_max;
-              
-              // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate               
-              // Check if the offspring is successfully born into the parent's group
-              rand = m_world->GetRandom().GetDouble();
-              if (rand <= probability_born_parent_group) {
-                  // Offspring successfully joins parent's group
-                  offspring_array[i]->SetOpinion(parent_group);
-                  JoinGroup(offspring_array[i], parent_group);
-                  // Let the parent know that its offspring was born into its group
-                  parent_organism->GetPhenotype().SetBornParentGroup();
-              }
-              else {
-                  // Let the parent know its offspring was not born into its group
-                  parent_organism->GetPhenotype().ClearBornParentGroup();
-              }  
-              
-              // If the offspring is rejected by the parent group, and there are no other groups, the offspring is doomed
-              const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
-              if ((rand > probability_born_parent_group) && (num_groups == 1)) {
-                  target_cells[i] = 0;
-                  is_doomed = true;
-              }
-              
-              // If the offspring is rejected by the parent group, and there are other groups, the offspring attempts to immigrate
-              if ((rand > probability_born_parent_group) && (num_groups > 1)) {
-                  // Find another group at random, which is not the parent's
-                  int target_group;
-                  do {
-                      target_group = m_world->GetRandom().GetUInt(num_groups);
-                  } while (target_group == parent_group);
-                  
-                  double probability_born_target_group = 1;
-                  // If there are no members currently of the target group, offspring has 100% chance of immigrating
-                  if (group_list[target_group].GetSize() == 0) {
-                      offspring_array[i]->SetOpinion(target_group);
-                      JoinGroup(offspring_array[i], target_group);
-                  }
-                  else {
-                      // If there are group members, retrieve the target group's tolerance to immigrants
-                      int target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
-                      probability_born_target_group = target_group_tolerance / tolerance_max;
-                      rand = m_world->GetRandom().GetDouble();
-                      // Calculate if the offspring successfully immigrates
-                      if (rand <= probability_born_target_group) {
-                          // Offspring joins target group
-                          offspring_array[i]->SetOpinion(target_group);
-                          JoinGroup(offspring_array[i], target_group);
-                      }
-                      else {
-                          // Offspring fails to immigrate and is doomed
-                          target_cells[i] = 0;
-                          is_doomed = true;
-                      }
-                  }
-              }
-          
-    // end tolerance parent-group 50-50 vote with attempt to join parent group first  */   
-              
-    // tolerance using parent gets vote then group votes
-    // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate              
+              // tolerance using parent gets vote then group votes
+              // offspring first attempt to join the parent group and if unsuccessful attempt to immigrate              
               
               const double prob_parent_allows = parent_tolerance / tolerance_max;
               const double prob_group_allows = parent_group_tolerance / tolerance_max;
@@ -620,7 +645,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
                   }
                   else {
                       // If there are group members, retrieve the target group's tolerance to immigrants
-                      int target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
+                      double target_group_tolerance = (double) CalcGroupToleranceImmigrants(target_group);
                       probability_born_target_group = target_group_tolerance / tolerance_max;
                       rand = m_world->GetRandom().GetDouble();
                       // Calculate if the offspring successfully immigrates
@@ -636,63 +661,82 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
                       }
                   } 
               }
-    // end tolerance parent then group vote with attempt to join parent group first   */
+              // end tolerance parent then group vote with attempt to join parent group first   */
               
-    /* This section has the offspring attempt to immigrate before joining the parent's group */
-    /*// using tolerance with 50-50 vote split
-              // Check if there are other groups, find another group to immigrate to
-              const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
-              int target_group;
-              int target_group_tolerance;
-              double probability_born_target_group = 1;
-              rand = m_world->GetRandom().GetDouble();
-              if (num_groups > 1) {
-                  do {
-                      target_group = m_world->GetRandom().GetUInt(num_groups);
-                  } while (target_group == parent_group);
-                  
-                  // If there are no members of the target group, offspring has 100% chance of immigrating
-                  if (group_list[target_group].GetSize() == 0) {
-                      offspring_array[i]->SetOpinion(target_group);
-                      JoinGroup(offspring_array[i], target_group);
-                  }
-                  else {
-                      // If there are group members, find the target group's tolerance of immigrants and the probability of immigration
-                      target_group_tolerance = CalcGroupToleranceImmigrants(target_group);
-                      probability_born_target_group = target_group_tolerance / tolerance_max;
-                      if (rand <= probability_born_target_group) {
-                          // Offspring successfully immigrates
-                          offspring_array[i]->SetOpinion(target_group);
-                          JoinGroup(offspring_array[i], target_group);
-                          parent_organism->GetPhenotype().ClearBornParentGroup();
-                      }
-                  }
-              }
-              
-              // If not immigrating, try for parent group
-              if (num_groups == 1 || rand > probability_born_target_group) {
-                  // If the parent is not the only group member their vote counts for only half the total
-                  if (group_list[parent_group].GetSize() > 1) total_offspring_tolerance = (parent_tolerance / 2) + (parent_group_tolerance / 2);
-                  
-                  // Calculate the probability the offspring is born into the parent group
-                  const double probability_born_parent_group = total_offspring_tolerance / tolerance_max;
-                  
-                  rand = m_world->GetRandom().GetDouble();
-                  if (rand <= probability_born_parent_group) {
-                      // Offspring successfully joins parent group, let the parent know
-                      offspring_array[i]->SetOpinion(parent_group);
-                      JoinGroup(offspring_array[i], parent_group);
-                      parent_organism->GetPhenotype().SetBornParentGroup();
-                  }
-                  else {
-                      // Offspring fails to join parent group and is doomed
-                      target_cells[i] = 0;
-                      is_doomed = true;
-                      parent_organism->GetPhenotype().ClearBornParentGroup();
-                  }
-                  
-              }
-    // end tolerance immigrate first with 50-50 parent-group vote split */
+              /*  // offspring first attempt immigrate then attempt to join parent's group 
+               // tolerance using parent gets vote then group votes              
+               // Check if there are other groups, find another group to immigrate to
+               const int num_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+               int target_group;
+               double target_group_tolerance;
+               double probability_born_target_group = 1;
+               bool immigrated = false;
+               bool join_parent_group = false;
+               rand = m_world->GetRandom().GetDouble();
+               if (num_groups > 1) {
+               do {
+               target_group = m_world->GetRandom().GetUInt(num_groups);
+               } while (target_group == parent_group);
+               
+               // If there are no members of the target group, offspring has 100% chance of immigrating
+               if (group_list[target_group].GetSize() == 0) {
+               offspring_array[i]->SetOpinion(target_group);
+               JoinGroup(offspring_array[i], target_group);
+               immigrated = true;
+               }
+               else {
+               // If there are group members, find the target group's tolerance of immigrants and the probability of immigration
+               target_group_tolerance = (double) CalcGroupToleranceImmigrants(target_group);
+               probability_born_target_group = target_group_tolerance / tolerance_max;
+               if (rand <= probability_born_target_group) {
+               // Offspring successfully immigrates
+               offspring_array[i]->SetOpinion(target_group);
+               JoinGroup(offspring_array[i], target_group);
+               immigrated = true;
+               parent_organism->GetPhenotype().ClearBornParentGroup();
+               }
+               }
+               }
+               
+               // If no other groups or offspring was rejected as an immigrant, try for parent group
+               if (num_groups == 1 || immigrated == false) {                  
+               const double prob_parent_allows = parent_tolerance / tolerance_max;
+               const double prob_group_allows = parent_group_tolerance / tolerance_max;
+               double rand2 = m_world->GetRandom().GetDouble();
+               
+               rand = m_world->GetRandom().GetDouble();
+               if (rand <= prob_parent_allows) {
+               //Offspring is handed to the group for their decision
+               // if there is nobody else in the group, the offspring gets in
+               join_parent_group = true;
+               // if there are others in the group, it's their turn
+               if (group_list[parent_group].GetSize() > 1) {
+               if (rand2 <= prob_group_allows) {
+               //Offspring successfully joins parent's group
+               join_parent_group = true;                       
+               }
+               else join_parent_group = false;
+               }
+               }
+               if (join_parent_group) {
+               offspring_array[i]->SetOpinion(parent_group);
+               JoinGroup(offspring_array[i], parent_group);  
+               // Let the parent know that its offspring was born into its group
+               parent_organism->GetPhenotype().SetBornParentGroup();     
+               }
+               else {
+               // Let the parent know its offspring was not born into its group
+               parent_organism->GetPhenotype().ClearBornParentGroup();
+               }
+               }  
+               if (!immigrated && !join_parent_group) {    
+               // Offspring fails to join any group and is doomed
+               target_cells[i] = 0;
+               is_doomed = true;
+               parent_organism->GetPhenotype().ClearBornParentGroup();
+               }
+               
+               // end tolerance immigrate first with parent vote first */
           }
           else {
               // If not using tolerances, put the offspring in the parent's group.
@@ -703,53 +747,53 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
           }
       }
   }
-
-
-  // If we're not about to kill the parent, do some extra work on it.
-  if (parent_alive == true) {
-    if (parent_phenotype.GetMerit().GetDouble() <= 0.0) {
-      // no weakling parents either!
-      parent_organism->GetPhenotype().SetToDie();
-      parent_alive = false;
-    } 
-    else {
-      // Reset inputs and re-calculate merit if required
-      if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
-        environment.SetupInputs(ctx, parent_cell.m_inputs);
-        
-        int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
-        if (pc_phenotype) {
-          cCPUTestInfo test_info;
-          cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
-          test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
-          cGenome mg(parent_organism->GetGenome());
-          mg.SetSequence(parent_organism->GetHardware().GetMemory());
-          test_cpu->TestGenome(ctx, test_info, mg); // Use the true genome
-          if (pc_phenotype & 1) {  // If we must update the merit
-            parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
-          }
-          if (pc_phenotype & 2) {  // If we must update the gestation time
-            parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
-          }
-          if (pc_phenotype & 4) {  // If we must update the last instruction counts
-            parent_phenotype.SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
-          }
-          parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
-          delete test_cpu;
-        }
-      }
-      AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
-      
-      if (!is_doomed) {
-        // In a local run, face the offspring toward the parent.
-        const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
-        if (birth_method < NUM_LOCAL_POSITION_OFFSPRING ||
-            birth_method == POSITION_OFFSPRING_PARENT_FACING) {
-          for (int i = 0; i < offspring_array.GetSize(); i++) {
-            GetCell(target_cells[i]).Rotate(parent_cell);
-          }
-        }
-      }
+    
+    
+    // If we're not about to kill the parent, do some extra work on it.
+    if (parent_alive == true) {
+        if (parent_phenotype.GetMerit().GetDouble() <= 0.0) {
+            // no weakling parents either!
+            parent_organism->GetPhenotype().SetToDie();
+            parent_alive = false;
+        } 
+        else {
+            // Reset inputs and re-calculate merit if required
+            if (m_world->GetConfig().RESET_INPUTS_ON_DIVIDE.Get() > 0){
+                environment.SetupInputs(ctx, parent_cell.m_inputs);
+                
+                int pc_phenotype = m_world->GetConfig().PRECALC_PHENOTYPE.Get();
+                if (pc_phenotype) {
+                    cCPUTestInfo test_info;
+                    cTestCPU* test_cpu = m_world->GetHardwareManager().CreateTestCPU();
+                    test_info.UseManualInputs(parent_cell.GetInputs()); // Test using what the environment will be
+                    cGenome mg(parent_organism->GetGenome());
+                    mg.SetSequence(parent_organism->GetHardware().GetMemory());
+                    test_cpu->TestGenome(ctx, test_info, mg); // Use the true genome
+                    if (pc_phenotype & 1) {  // If we must update the merit
+                        parent_phenotype.SetMerit(test_info.GetTestPhenotype().GetMerit());
+                    }
+                    if (pc_phenotype & 2) {  // If we must update the gestation time
+                        parent_phenotype.SetGestationTime(test_info.GetTestPhenotype().GetGestationTime());
+                    }
+                    if (pc_phenotype & 4) {  // If we must update the last instruction counts
+                        parent_phenotype.SetTestCPUInstCount(test_info.GetTestPhenotype().GetLastInstCount());
+                    }
+                    parent_phenotype.SetFitness(parent_phenotype.GetMerit().CalcFitness(parent_phenotype.GetGestationTime())); // Update fitness
+                    delete test_cpu;
+                }
+            }
+            AdjustSchedule(parent_cell, parent_phenotype.GetMerit());
+            
+            if (!is_doomed) {
+                // In a local run, face the offspring toward the parent.
+                const int birth_method = m_world->GetConfig().BIRTH_METHOD.Get();
+                if (birth_method < NUM_LOCAL_POSITION_OFFSPRING ||
+                    birth_method == POSITION_OFFSPRING_PARENT_FACING) {
+                    for (int i = 0; i < offspring_array.GetSize(); i++) {
+                        GetCell(target_cells[i]).Rotate(parent_cell);
+                    }
+                }
+            }
       // Purge the mutations since last division
       parent_organism->OffspringGenome().GetSequence().GetMutationSteps().Clear();
     }
@@ -958,11 +1002,11 @@ void cPopulation::ActivateOrganism(cAvidaContext& ctx, cOrganism* in_organism, c
   if(m_world->IsWorldBoundary(target_cell)) {
     m_world->MigrateOrganism(in_organism, target_cell, in_organism->GetPhenotype().GetMerit(), in_organism->GetLineageLabel());
     KillOrganism(target_cell, ctx); 
-    // For tolerance_window, we cheat by dumping doomed offspring into cell 0...now that we updated the stats, we need to 
-    // kill that org.
+      // For tolerance_window, we cheat by dumping doomed offspring into cell 0...now that we updated the stats, we need to 
+      // kill that org.
   }
-  if(m_world->GetConfig().TOLERANCE_WINDOW.Get() && in_organism->GetCellID() == 0 && m_world->GetStats().GetUpdate() != 0) KillOrganism(target_cell, ctx);
-  
+    if(m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0 && in_organism->GetCellID() == 0 && m_world->GetStats().GetUpdate() != 0) KillOrganism(target_cell, ctx);
+    
 }
 
 // @WRE 2007/07/05 Helper function to take care of side effects of Avidian
@@ -6143,7 +6187,7 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
 {
 	const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
+    
 	int group_intolerance = 0;
 	int single_member_intolerance = 0;
 	for (int index = 0; index < group_list[group_id].GetSize(); index++) {
@@ -6161,27 +6205,27 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
 // Calculates the odds (out of 1) for successful immigration based on group's tolerance @JJB
 double cPopulation::CalcGroupOddsImmigrants(int group_id)
 {
-  const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-  const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
-  // If there are no group members perfect chance for immigration
-  if (group_list[group_id].GetSize() <= 0) {
-    return 1.0;
-  }
-
-  int group_intolerance = 0;
-  int single_member_intolerance = 0;
-  for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
-    group_intolerance += single_member_intolerance;
-    if (group_intolerance >= tolerance_max) {
-      group_intolerance = tolerance_max;
-      break;
+    const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+    const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+    
+    // If there are no group members perfect chance for immigration
+    if (group_list[group_id].GetSize() <= 0) {
+        return 1.0;
     }
-  }
-  int group_tolerance = tolerance_max - group_intolerance;
-  double immigrant_odds = group_tolerance / tolerance_max;
-  return immigrant_odds;
+    
+    int group_intolerance = 0;
+    int single_member_intolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+        group_intolerance += single_member_intolerance;
+        if (group_intolerance >= tolerance_max) {
+            group_intolerance = tolerance_max;
+            break;
+        }
+    }
+    int group_tolerance = tolerance_max - group_intolerance;
+    double immigrant_odds = (double) group_tolerance / (double) tolerance_max;
+    return immigrant_odds;
 }
 
 // Calculates the standard deviation for group tolerance to immigrants
@@ -6209,29 +6253,30 @@ double cPopulation::CalcGroupAveImmigrants(int group_id)
     double aveimmigrants = immigrant_tolerance.Average();
     return aveimmigrants;
 }
+
 // Calculates the odds (out of 1) for offspring to be born into the group @JJB
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
-  const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-  const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
-  if (group_list[group_id].GetSize() <= 0) {
-    return 1.0;
-  }
-
-  int group_intolerance = 0;
-  int single_member_intolerance = 0;
-  for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-    single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
-    group_intolerance += single_member_intolerance;
-    if (group_intolerance >= tolerance_max) {
-      group_intolerance = tolerance_max;
-      break;
+    const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
+    const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+    
+    if (group_list[group_id].GetSize() <= 0) {
+        return 1.0;
     }
-  }
-  int group_tolerance = tolerance_max - group_intolerance;
-  double offspring_odds = group_tolerance / tolerance_max;
-  return offspring_odds;
+    
+    int group_intolerance = 0;
+    int single_member_intolerance = 0;
+    for (int index = 0; index < group_list[group_id].GetSize(); index++) {
+        single_member_intolerance = tolerance_max - group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
+        group_intolerance += single_member_intolerance;
+        if (group_intolerance >= tolerance_max) {
+            group_intolerance = tolerance_max;
+            break;
+        }
+    }
+    int group_tolerance = tolerance_max - group_intolerance;
+    double offspring_odds = (double) group_tolerance / (double) tolerance_max;
+    return offspring_odds;
 }
 
 // Calculates group tolerance towards offspring (not including parent) @JJB
@@ -6239,7 +6284,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism, int gro
 {
 	const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
+    
 	int group_intolerance = 0;
 	int single_member_intolerance = 0;
 	for (int index = 0; index < group_list[group_id].GetSize(); index++) {
@@ -6256,6 +6301,7 @@ int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism, int gro
 	int group_tolerance = tolerance_max - group_intolerance;
 	return group_tolerance;
 }
+
 
 // Calculates the standard deviation for group tolerance to other group offspring
 double cPopulation::CalcGroupSDevOthers(int group_id)
@@ -6276,7 +6322,7 @@ double cPopulation::CalcGroupAveOthers(int group_id)
     cDoubleSum others_tolerance;
     int single_member_tolerance = 0;
     for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOthers();
         others_tolerance.Add(single_member_tolerance);
     }
     double aveothers = others_tolerance.Average();
@@ -6302,7 +6348,7 @@ double cPopulation::CalcGroupAveOwn(int group_id)
     cDoubleSum own_tolerance;
     int single_member_tolerance = 0;
     for (int index = 0; index < group_list[group_id].GetSize(); index++) {
-        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceImmigrants();
+        single_member_tolerance = group_list[group_id][index]->GetPhenotype().CalcToleranceOffspringOwn();
         own_tolerance.Add(single_member_tolerance);
     }
     double aveown = own_tolerance.Average();

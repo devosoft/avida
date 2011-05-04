@@ -1676,61 +1676,61 @@ double cPhenotype::CalcFitness(double _merit_base, double _bonus, int _gestation
 }
 
 /* Returns the total tolerance for immigrants by counting
-the total number of updates within the update window that dec-tolerance has been executed. @JJB
-*/
+ the total number of updates within the update window that dec-tolerance has been executed. @JJB
+ */
 int cPhenotype::CalcToleranceImmigrants() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
 	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
+    
 	int intolerance_count = 0;
-
+    
 	for (int n = 0; n < tolerance_max; n++) {
 		if (tolerance_immigrants[n] <= cur_update - update_window) break;
 		intolerance_count++;
 	}
-
+    
 	const int tolerance = tolerance_max - intolerance_count;
 	return tolerance;
 }
 
 /* Returns the total tolerance for own offspring by counting
-the total number of updates within the update window that dec-tolerance has been executed. @JJB
-*/
+ the total number of updates within the update window that dec-tolerance has been executed. @JJB
+ */
 int cPhenotype::CalcToleranceOffspringOwn() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
 	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
+    
 	int intolerance_count = 0;
-
+    
 	for (int n = 0; n < tolerance_max; n++) {
 		if (tolerance_offspring_own[n] <= cur_update - update_window) break;
 		intolerance_count++;
 	}
-
+    
 	const int tolerance = tolerance_max - intolerance_count;
 	return tolerance;
 }
 
 /* Returns the total tolerance for the offspring of others in the group by counting
-the total number of updates within the update window that dec-tolerance has been executed. @JJB
-*/
+ the total number of updates within the update window that dec-tolerance has been executed. @JJB
+ */
 int cPhenotype::CalcToleranceOffspringOthers() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
 	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
+    
 	int intolerance_count = 0;
-
+    
 	for (int n = 0; n < tolerance_max; n++) {
 		if (tolerance_offspring_others[n] <= cur_update - update_window) break;
 		intolerance_count++;
 	}
-
+    
 	const int tolerance = tolerance_max - intolerance_count;
 	return tolerance;
 }

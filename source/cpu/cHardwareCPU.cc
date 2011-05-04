@@ -9297,59 +9297,59 @@ bool cHardwareCPU::Inst_ProduceString(cAvidaContext& ctx)
 //! An organism joins a group by setting it opinion to the group id. 
 bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
 {
-  int opinion;
-  // Check if the org is currently part of a group
-  assert(m_organism != 0);
+    int opinion;
+    // Check if the org is currently part of a group
+    assert(m_organism != 0);
 	
-  int prop_group_id = GetRegister(FindModifiedRegister(REG_BX));
-  
-  // check if this is a valid group
-  if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
-      !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
+    int prop_group_id = GetRegister(FindModifiedRegister(REG_BX));
     
-  // injected orgs might not have an opinion
-  if (m_organism->HasOpinion()) {
-    opinion = m_organism->GetOpinion().first;
+    // check if this is a valid group
+    if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
+        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
     
-    //return false if org setting opinion to current one (avoid paying costs for not switching)
-    if (opinion == prop_group_id) return false;
-    
-	// If tolerances are on the org must pass immigration chance @JJB
-	if (m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
-		// If there are no members of the target group, automatically successful immigration
-		if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) == 0) {
-			m_organism->LeaveGroup(opinion);
-		}
-		// Calculate chances based on target group tolerance of another org successfully immigrating
-		else if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) > 0) {
-			const int tolerance_max = m_world->GetConfig().TOLERANCE_SLICE.Get() * m_world->GetConfig().TOLERANCE_WINDOW.Get();
-			const int target_group_tolerance = m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
-			double probability_immigration = target_group_tolerance / tolerance_max;
-			double rand = m_world->GetRandom().GetDouble();
-			if (rand <= probability_immigration) {
-				// Org successfully immigrates
-				m_organism->LeaveGroup(opinion);
-			}
-			// If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
-			else {
-				return true;
-			}
-		}
-	}
-	else {
-		// otherwise, subtract org from current group
-		m_organism->LeaveGroup(opinion);
-	}
-  }
+    // injected orgs might not have an opinion
+    if (m_organism->HasOpinion()) {
+        opinion = m_organism->GetOpinion().first;
+        
+        //return false if org setting opinion to current one (avoid paying costs for not switching)
+        if (opinion == prop_group_id) return false;
+        
+        // If tolerances are on the org must pass immigration chance @JJB
+        if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+            // If there are no members of the target group, automatically successful immigration
+            if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) == 0) {
+                m_organism->LeaveGroup(opinion);
+            }
+            // Calculate chances based on target group tolerance of another org successfully immigrating
+            else if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) > 0) {
+                const double tolerance_max = (double) m_world->GetConfig().TOLERANCE_SLICE.Get() * (double) m_world->GetConfig().TOLERANCE_WINDOW.Get();
+                const double target_group_tolerance = (double) m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
+                double probability_immigration = target_group_tolerance / tolerance_max;
+                double rand = m_world->GetRandom().GetDouble();
+                if (rand <= probability_immigration) {
+                    // Org successfully immigrates
+                    m_organism->LeaveGroup(opinion);
+                }
+                // If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
+                else {
+                    return true;
+                }
+            }
+        }
+        else {
+            // otherwise, subtract org from current group
+            m_organism->LeaveGroup(opinion);
+        }
+    }
 	
-  // Set the opinion
-  m_organism->SetOpinion(prop_group_id);
+    // Set the opinion
+    m_organism->SetOpinion(prop_group_id);
 	
-  // Add org to group count
-  opinion = m_organism->GetOpinion().first;	
-  m_organism->JoinGroup(opinion);
-
-  return true;
+    // Add org to group count
+    opinion = m_organism->GetOpinion().first;	
+    m_organism->JoinGroup(opinion);
+    
+    return true;
 }
 
 //Kill some other random organism in group 
@@ -9402,23 +9402,23 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
 }
 
 /* Increases tolerance towards the addition of members to the group:
-nop-A: increases tolerance towards immigrants
-nop-B: increases tolerance towards own offspring
-nop-C: increases tolerance towards other offspring of the group.
-Removes the record of a previous update when dec-tolerance was executed,
-and places the modified tolerance total in the BX register. @JJB
-*/
+ nop-A: increases tolerance towards immigrants
+ nop-B: increases tolerance towards own offspring
+ nop-C: increases tolerance towards other offspring of the group.
+ Removes the record of a previous update when dec-tolerance was executed,
+ and places the modified tolerance total in the BX register. @JJB
+ */
 bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 {
 	// If this instruction is not nop modified it fails to execute and does nothing @JJB
 	if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
-
+    
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
+    
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
-
+    
 	// If ?AX? move update records of immigrant tolerance up one position removing the top most recent instance of dec-tolerance from records.
 	if (tolerance_to_modify == REG_AX) {
 		for (int n = 0; n < tolerance_max - 1; n++) {
@@ -9428,33 +9428,33 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 		// Retrieve modified tolerance total for immigrants.
 		tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
 	}
-
+    
 	// If ?BX? move updates of own offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
 	if (tolerance_to_modify == REG_BX) {
 		for (int n = 0; n < tolerance_max - 1; n++) {
 			m_organism->GetPhenotype().ModifyToleranceOffspringOwn(n, m_organism->GetPhenotype().GetToleranceOffspringOwn() [n + 1]);
 		}
 		m_organism->GetPhenotype().ModifyToleranceOffspringOwn(tolerance_max - 1, 0);
-
+        
 		// Retrieve modified tolerance total for own offspring.
 		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
 	}
-
+    
 	// If ?CX? move updates of others offspring tolerance up one position removing the most recent instance of dec-tolerance from records.
 	if (tolerance_to_modify == REG_CX) {
 		for (int n = 0; n < tolerance_max - 1; n++) {
 			m_organism->GetPhenotype().ModifyToleranceOffspringOthers(n, m_organism->GetPhenotype().GetToleranceOffspringOthers() [n + 1]);
 		}
 		m_organism->GetPhenotype().ModifyToleranceOffspringOthers(tolerance_max - 1, 0);
-
+        
 		// Retrieve modified tolerance total for other offspring in group.
 		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
 	}
-
+    
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
-
-	//PrintToleranceData @JJB
+    
+	//test @JJB
 	if (m_world->GetStats().GetUpdate() >= 99000) { 
 		string tolerance_type;
 		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
@@ -9463,46 +9463,46 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 		int opinion = m_organism->GetOpinion().first;
 		const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
 		double res_opinion = res_count[opinion];
-
+        
 		double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
 		double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
 		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
 		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-
+        
 		// update instruction_executed tolerance_type opinion group_size group_res_level
 		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice 
         // tolerance_max res_inflow res_outflow org_ID
 		static ofstream fp("./data/inc_tolerance.dat");
 		fp << m_world->GetStats().GetUpdate() << " inc-tolerance " << tolerance_type << " " << opinion << " " \
-			<< m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
-			<< tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-			<< update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
-			<< res_inflow << " " << res_outflow << " " << m_organism->GetID() <<'\n'; 
+        << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
+        << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
+        << update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
+        << res_inflow << " " << res_outflow << " " << m_organism->GetID() <<'\n'; 
 	}
-
+    
 	return true;
 }
 
 /* Decreases tolerance towards the addition of members to the group,
-nop-A: decreases tolerance towards immigrants
-nop-B: decreases tolerance towards own offspring
-nop-C: decreases tolerance towards other offspring of the group.
-Adds to records the update during which dec-tolerance was executed,
-and places the modified tolerance total in the BX register. @JJB
-*/
+ nop-A: decreases tolerance towards immigrants
+ nop-B: decreases tolerance towards own offspring
+ nop-C: decreases tolerance towards other offspring of the group.
+ Adds to records the update during which dec-tolerance was executed,
+ and places the modified tolerance total in the BX register. @JJB
+ */
 bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 {         
     // If this instruction is not nop modified it fails to execute and does nothing @JJB
 	if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
-
+    
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
 	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
-
+    
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
-
+    
 	// If ?AX? move update records of immigrant tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
 	if (tolerance_to_modify == REG_AX) {
 		for (int n = tolerance_max - 1; n > 0; n--) {
@@ -9512,32 +9512,32 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 		// Retrieve modified tolerance total for immigrants.
 		tolerance_count = m_organism->GetPhenotype().CalcToleranceImmigrants();
 	}
-
+    
 	// If ?BX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
 	if (tolerance_to_modify == REG_BX) {
 		for (int n = tolerance_max - 1; n > 0; n--) {
 			m_organism->GetPhenotype().ModifyToleranceOffspringOwn(n, m_organism->GetPhenotype().GetToleranceOffspringOwn() [n - 1]);
 		}
 		m_organism->GetPhenotype().ModifyToleranceOffspringOwn(0, cur_update);
-
+        
 		// Retrieve modified tolerance total for own offspring.
 		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
 	}
-
+    
 	// If ?CX? move update records of own offspring tolerance down one position, and add to the top the current update, adding a record of dec-tolerance.
 	if (tolerance_to_modify == REG_CX) {
 		for (int n = tolerance_max - 1; n > 0; n--) {
 			m_organism->GetPhenotype().ModifyToleranceOffspringOthers(n, m_organism->GetPhenotype().GetToleranceOffspringOthers() [n - 1]);
 		}
 		m_organism->GetPhenotype().ModifyToleranceOffspringOthers(0, cur_update);
-
+        
 		// Retrieve modified tolerance total for other offspring in the group.
 		tolerance_count = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
 	}
-
+    
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
-
+    
 	//PrintToleranceData @JJB
 	if (m_world->GetStats().GetUpdate() >= 99000) { 
 		string tolerance_type;
@@ -9547,24 +9547,24 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 		int opinion = m_organism->GetOpinion().first;
 		const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
 		double res_opinion = res_count[opinion];
-
+        
 		double res_inflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetInflow();
 		double res_outflow = m_world->GetEnvironment().GetResourceLib().GetResource(opinion)->GetOutflow();
 		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
 		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-
+        
 		// update instruction_executed tolerance_type opinion group_size group_res_level 
 		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice 
         // tolerance_max res_inflow res_outflow org_ID
 		static ofstream fp("./data/dec_tolerance.dat");
 		fp << m_world->GetStats().GetUpdate() << " dec-tolerance " << tolerance_type << " " << opinion << " " \
-			<< m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
-			<< tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-			<< update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
-			<< res_inflow << " " << res_outflow << " " << m_organism->GetID() << '\n'; 
+        << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
+        << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
+        << update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
+        << res_inflow << " " << res_outflow << " " << m_organism->GetID() << '\n'; 
 	}
-
+    
 	return true;
 }
 
@@ -9585,18 +9585,18 @@ bool cHardwareCPU::Inst_GetTolerance(cAvidaContext& ctx)
 }  
 
 /* Retrieve group tolerances placing each in a different register.
-Register AX: group tolerance towards immigrants
-Register BX: group tolerance towards own offspring
-Register CX: group tolerance towards offspring @JJB
-*/
+ Register AX: group tolerance towards immigrants
+ Register BX: group tolerance towards own offspring
+ Register CX: group tolerance towards offspring @JJB
+ */
 bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 {
 	// If groups are used and tolerances are on...
 	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
 		if(m_organism->HasOpinion()) {
             
-            const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-            const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+            const double tolerance_window = (double) m_world->GetConfig().TOLERANCE_WINDOW.Get();
+            const double tolerance_max = tolerance_window * (double) m_world->GetConfig().TOLERANCE_SLICE.Get();
             const int group_id = m_organism->GetOpinion().first;
             
             double offspring_own_odds;
@@ -9604,24 +9604,24 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             double immigrant_odds;
             
             // Retrieve the parent's tolerance for its offspring
-            int parent_tolerance_own_offspring = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
+            double parent_tolerance_own_offspring = (double) m_organism->GetPhenotype().CalcToleranceOffspringOwn();
             // Retrieve the parent group's tolerance for offspring (this does not include the parent's contribution)
-            int parent_group_tolerance = m_world->GetPopulation().CalcGroupToleranceOffspring(m_organism, group_id);
+            double parent_group_tolerance = (double) m_world->GetPopulation().CalcGroupToleranceOffspring(m_organism, group_id);
             // Retrieve the parent's tolerance towards other offspring
-            int parent_tolerance_other_offspring = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+            double parent_tolerance_other_offspring = (double) m_organism->GetPhenotype().CalcToleranceOffspringOthers();
             
             // Calculate the total group's tolerance towards the parent's offspring
             // If the parent is the only group member their vote counts for everything
-            int total_own_offspring_tolerance = 0;
+            double total_own_offspring_tolerance = 0;
             if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 1) {
                 total_own_offspring_tolerance = parent_tolerance_own_offspring;
             }
             // If the parent is not the only group member            
             if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
-            // using 50-50 vote split
-            // their vote counts for half the total and the rest of the group the other half
-            // total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
-            // using parent vote before group vote
+                // using 50-50 vote split
+                // their vote counts for half the total and the rest of the group the other half
+                //total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
+                // using parent vote before group vote
                 total_own_offspring_tolerance = parent_tolerance_own_offspring * parent_group_tolerance;
             }
             
@@ -9629,25 +9629,25 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             offspring_own_odds = total_own_offspring_tolerance / tolerance_max;
             
             // Calculate the group's total tolerance for offspring (which are not specifically the parent's)
-            int total_group_tolerance_offspring = 0;
+            double total_group_tolerance_offspring = 0;
             // Add back in organisms's ommited tolerance (CalcGroupToleranceOffspring ommits the original organism's tolerance)
-            int parent_group_intolerance_offspring = tolerance_max - parent_group_tolerance;
-            int parent_intolerance_other_offspring = tolerance_max - parent_tolerance_other_offspring;
+            double parent_group_intolerance_offspring = tolerance_max - parent_group_tolerance;
+            double parent_intolerance_other_offspring = tolerance_max - parent_tolerance_other_offspring;
             total_group_tolerance_offspring = tolerance_max - (parent_group_intolerance_offspring + parent_intolerance_other_offspring);
             
             // Calculate probability for other offspring in the group
             offspring_others_odds =  total_group_tolerance_offspring / tolerance_max;
             
             // Retrieve the group's tolerance towards immigrants
-            int total_group_tolerance_immigrants = m_world->GetPopulation().CalcGroupToleranceImmigrants(group_id);
+            double total_group_tolerance_immigrants = (double) m_world->GetPopulation().CalcGroupToleranceImmigrants(group_id);
             
             // Calculate probability for immigrants
             immigrant_odds = total_group_tolerance_immigrants / tolerance_max;
             
             // Convert all odds to percent
-            double percent_immigrants = immigrant_odds * 100;
-            double percent_offspring_own = offspring_own_odds * 100;
-            double percent_offspring_others = offspring_others_odds * 100;
+            double percent_immigrants = immigrant_odds * 100 + 0.5;
+            double percent_offspring_own = offspring_own_odds * 100 + 0.5;
+            double percent_offspring_others = offspring_others_odds * 100 + 0.5;
             
             // Truncate percent to integer and place in registers
             GetRegister(REG_AX) = (int) percent_immigrants;

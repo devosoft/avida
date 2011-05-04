@@ -289,10 +289,10 @@ public:
     // Get the group information
     map<int, int> GetFormedGroups() { return m_groups; }
     
-    // Calculate tolerance of group towards immigrants @JJB
-    int CalcGroupToleranceImmigrants(int group_id);
-    // Calculate tolerance of group towards offspring (not including parent) @JJB
-    int CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id);
+	// Calculate tolerance of group towards immigrants @JJB
+	int CalcGroupToleranceImmigrants(int group_id);
+	// Calculate tolerance of group towards offspring (not including parent) @JJB
+	int CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id);
     // Calculates the odds (out of 1) for immigrants based on group's tolerance @JJB
     double CalcGroupOddsImmigrants(int group_id);
     // Calculates the standard deviation for group tolerance to immigrants
@@ -305,7 +305,7 @@ public:
     double CalcGroupAveOthers(int group_id);    
     // Calculates the standard deviation for group tolerance to their own offspring
     double CalcGroupSDevOwn(int group_id);
-    double CalcGroupAveOwn(int group_id); 
+    double CalcGroupAveOwn(int group_id);  
     
     // -------- HGT support --------
     //! Modify current level of the HGT resource.
