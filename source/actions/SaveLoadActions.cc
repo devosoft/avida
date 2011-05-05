@@ -105,7 +105,7 @@ public:
     }
   }
   
-  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  static const cString GetDescription() { return "Arguments: [string filename='detail'] [boolean save_historic=1]"; }
   
   void Process(cAvidaContext& ctx)
   {

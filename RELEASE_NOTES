@@ -33,7 +33,7 @@ Changes:
 - SavePopulation action argument format change
 
     The action arguments now follow standard argument syntax:
-      argument_name=argumentvalue:argument2_name:argument2_value
+      argument_name=argumentvalue:argument2_name=argument2_value
     Save population accepts two arguments:
       filename - default=detail
         a string that is used to prefix the update number and file extension,
