@@ -1,0 +1,11 @@
+# Avida tasks execution data
+# Sat Apr 30 22:58:57 2011
+# First column gives the current update, all further columns give the number
+# of times the particular task has been executed this update.
+#  1: Update
+#  2: LiveOnPatchRes
+
+0 0 
+10 0 
+20 0 
+30 0 
