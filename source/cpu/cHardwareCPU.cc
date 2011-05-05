@@ -9322,7 +9322,7 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
             }
             // Calculate chances based on target group tolerance of another org successfully immigrating
             else if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) > 0) {
-                const double tolerance_max = (double) m_world->GetConfig().TOLERANCE_SLICE.Get() * (double) m_world->GetConfig().TOLERANCE_WINDOW.Get();
+                const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
                 const double target_group_tolerance = (double) m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
                 double probability_immigration = target_group_tolerance / tolerance_max;
                 double rand = m_world->GetRandom().GetDouble();
@@ -9414,7 +9414,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 	if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
     
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
@@ -9471,13 +9471,13 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
         
 		// update instruction_executed tolerance_type opinion group_size group_res_level
-		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice 
+		// tolerance_immigrants tolerance_own tolerance_others update_window  
         // tolerance_max res_inflow res_outflow org_ID
 		static ofstream fp("./data/inc_tolerance.dat");
 		fp << m_world->GetStats().GetUpdate() << " inc-tolerance " << tolerance_type << " " << opinion << " " \
         << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
         << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-        << update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
+        << update_window << " " << tolerance_max << " " \
         << res_inflow << " " << res_outflow << " " << m_organism->GetID() <<'\n'; 
 	}
     
@@ -9498,7 +9498,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
     
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
@@ -9555,13 +9555,13 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
         
 		// update instruction_executed tolerance_type opinion group_size group_res_level 
-		// tolerance_immigrants tolerance_own tolerance_others update_window tolerance_slice 
+		// tolerance_immigrants tolerance_own tolerance_others update_window  
         // tolerance_max res_inflow res_outflow org_ID
 		static ofstream fp("./data/dec_tolerance.dat");
 		fp << m_world->GetStats().GetUpdate() << " dec-tolerance " << tolerance_type << " " << opinion << " " \
         << m_world->GetPopulation().NumberOfOrganismsInGroup(opinion) << " " << res_opinion << " " \
         << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
-        << update_window << " " << tolerance_max / update_window << " " << tolerance_max << " " \
+        << update_window << " " << tolerance_max << " " \
         << res_inflow << " " << res_outflow << " " << m_organism->GetID() << '\n'; 
 	}
     
@@ -9594,9 +9594,7 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
 	// If groups are used and tolerances are on...
 	if (m_world->GetConfig().USE_FORM_GROUPS.Get() && m_world->GetConfig().TOLERANCE_WINDOW.Get()) {
 		if(m_organism->HasOpinion()) {
-            
-            const double tolerance_window = (double) m_world->GetConfig().TOLERANCE_WINDOW.Get();
-            const double tolerance_max = tolerance_window * (double) m_world->GetConfig().TOLERANCE_SLICE.Get();
+            const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
             const int group_id = m_organism->GetOpinion().first;
             
             double offspring_own_odds;

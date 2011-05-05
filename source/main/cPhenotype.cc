@@ -54,9 +54,9 @@ cPhenotype::cPhenotype(cWorld* world, int parent_generation, int num_nops)
 , cur_sense_count(m_world->GetStats().GetSenseSize())
 , sensed_resources(m_world->GetEnvironment().GetResourceLib().GetSize())
 , cur_task_time(m_world->GetEnvironment().GetNumTasks())   // Added for tracking time; WRE 03-18-07
-, tolerance_immigrants(m_world->GetConfig().TOLERANCE_WINDOW.Get() * m_world->GetConfig().TOLERANCE_SLICE.Get())        // @JJB
-, tolerance_offspring_own(m_world->GetConfig().TOLERANCE_WINDOW.Get() * m_world->GetConfig().TOLERANCE_SLICE.Get())     // @JJB
-, tolerance_offspring_others(m_world->GetConfig().TOLERANCE_WINDOW.Get() * m_world->GetConfig().TOLERANCE_SLICE.Get())  // @JJB
+, tolerance_immigrants(m_world->GetConfig().MAX_TOLERANCE.Get())        // @JJB
+, tolerance_offspring_own(m_world->GetConfig().MAX_TOLERANCE.Get())     // @JJB
+, tolerance_offspring_others(m_world->GetConfig().MAX_TOLERANCE.Get())  // @JJB
 , m_reaction_result(NULL)
 , last_task_count(m_world->GetEnvironment().GetNumTasks())
 , last_para_tasks(m_world->GetEnvironment().GetNumTasks())
@@ -1682,7 +1682,7 @@ int cPhenotype::CalcToleranceImmigrants() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int intolerance_count = 0;
     
@@ -1702,7 +1702,7 @@ int cPhenotype::CalcToleranceOffspringOwn() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int intolerance_count = 0;
     
@@ -1722,7 +1722,7 @@ int cPhenotype::CalcToleranceOffspringOthers() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const int tolerance_max = update_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int intolerance_count = 0;
     
