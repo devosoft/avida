@@ -55,6 +55,8 @@
     </exec>
   </target>
 
+  <target name="test" depends="unittest,consistencytest"/>
+
   <target name="clean">
     <delete dir="${build}"/>
   </target>
