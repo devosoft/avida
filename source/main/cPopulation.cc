@@ -509,8 +509,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring
           else if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
               assert(parent_organism->HasOpinion());
               
-              const double tolerance_window = (double) m_world->GetConfig().TOLERANCE_WINDOW.Get();
-              const double tolerance_max = tolerance_window * (double) m_world->GetConfig().TOLERANCE_SLICE.Get();
+              const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
               const int parent_group = parent_organism->GetOpinion().first;
               double rand;
               
@@ -6184,8 +6183,7 @@ int  cPopulation::NumberOfOrganismsInGroup(int group_id)
 // Calculates group tolerance towards immigrants @JJB
 int cPopulation::CalcGroupToleranceImmigrants(int group_id)
 {
-	const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int group_intolerance = 0;
 	int single_member_intolerance = 0;
@@ -6204,8 +6202,7 @@ int cPopulation::CalcGroupToleranceImmigrants(int group_id)
 // Calculates the odds (out of 1) for successful immigration based on group's tolerance @JJB
 double cPopulation::CalcGroupOddsImmigrants(int group_id)
 {
-    const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-    const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+    const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
     // If there are no group members perfect chance for immigration
     if (group_list[group_id].GetSize() <= 0) {
@@ -6256,8 +6253,7 @@ double cPopulation::CalcGroupAveImmigrants(int group_id)
 // Calculates the odds (out of 1) for offspring to be born into the group @JJB
 double cPopulation::CalcGroupOddsOffspring(int group_id)
 {
-    const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-    const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+    const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
     if (group_list[group_id].GetSize() <= 0) {
         return 1.0;
@@ -6281,8 +6277,7 @@ double cPopulation::CalcGroupOddsOffspring(int group_id)
 // Calculates group tolerance towards offspring (not including parent) @JJB
 int cPopulation::CalcGroupToleranceOffspring(cOrganism* parent_organism, int group_id)
 {
-	const int tolerance_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const int tolerance_max = tolerance_window * m_world->GetConfig().TOLERANCE_SLICE.Get();
+	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int group_intolerance = 0;
 	int single_member_intolerance = 0;

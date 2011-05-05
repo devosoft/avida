@@ -3009,20 +3009,6 @@ void cStats::PrintGroupTolerance(const cString& filename)
     cDataFile& df = m_world->GetDataFile(filename);
     df.WriteComment("Group level tolerance data.");
     df.WriteTimeStamp();
-
-    df.WriteComment("Update [update]");
-    df.WriteComment("group id [groupid]");
-    df.WriteComment("size of groups [grsize]");
-    df.WriteComment("group resource available [grfood]");
-    df.WriteComment("per capita group resource available [grfoodper]");
-    df.WriteComment("odds for immigrants coming into group [oddsimmigrants]");
-    df.WriteComment("average intra-group tolerance to immigrants [aveimmigrants]");
-    df.WriteComment("standard deviation for group tolerance to immigrants [sdevimmigrants]");        
-    df.WriteComment("odds for offspring being accepted by group [oddsoffspring]");
-    df.WriteComment("average intra-group tolerance to other offspring being born into group [aveothers]");
-    df.WriteComment("standard deviation for group tolerance to other offspring being born into the group [sdevothers]");
-    df.WriteComment("average intra-group tolerance to individual's own offspring [aveown]");
-    df.WriteComment("standard deviation for tolerance to own offspring [sdevown]");
         
     map<int, int> groups = m_world->GetPopulation().GetFormedGroups();
     map<int, int>::iterator itr;
@@ -3047,8 +3033,6 @@ void cStats::PrintGroupTolerance(const cString& filename)
         }
         df.Endl();
     }
-    
-    df.Endl();
 }
 
 /*	df.WriteComment("Current member information for all possible groups (first group is the default)");
