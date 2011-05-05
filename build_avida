@@ -1,8 +1,0 @@
-#!/bin/sh
-
-mkdir -p cbuild
-cd cbuild
-cmake "$@" ../
-make -j 10
-make install
-
