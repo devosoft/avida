@@ -1,4 +1,4 @@
-Avida 2.13.x   http://avida.devosoft.org/
+Avida-Core 2.13.x   http://avida.devosoft.org/
 --------------------------------------------------------------------------------
 Digital Evolution Laboratory at Michigan State University
 (http://devolab.msu.edu)
@@ -18,8 +18,9 @@ I. REQUIREMENTS
 
 General System Requirements
 
-  avida (avida-core):
-   - CMake 2.4.x or greater (http://www.cmake.org/)
+  avida-core:
+   - Apto C++ Library (http://programerror.com/software/apto)
+   - CMake 2.6.x or greater (http://www.cmake.org/)
    - C++ Compiler and Make system supported by CMake
 
 
@@ -158,4 +159,4 @@ Helpful usage and code documentation can be found in the HTML files in the
 'documentation' directory.  See index.html.
 
 
-Revised 2011-03-28 DMB
+Revised 2011-05-05 DMB
