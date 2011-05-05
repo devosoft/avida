@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:avida-core/Avida.xcodeproj">
+      location = "group:avida-core/Avida-Core.xcodeproj">
    </FileRef>
    <Group
       location = "container:"
@@ -18,4 +18,10 @@
          location = "group:libs/apto/Apto.xcodeproj">
       </FileRef>
    </Group>
+   <FileRef
+      location = "group:CMakeLists.txt">
+   </FileRef>
+   <FileRef
+      location = "group:README">
+   </FileRef>
 </Workspace>
