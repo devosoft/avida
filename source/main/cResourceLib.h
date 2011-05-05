@@ -36,12 +36,13 @@ class cResourceLib
 private:
   tArray<cResource*> m_resource_array;
   mutable cResourceHistory* m_initial_levels;
+  int m_num_deme_resources;
   
   cResourceLib(const cResourceLib&); // @not_implemented
   cResourceLib& operator=(const cResourceLib&); // @not_implemented
   
 public:
-  cResourceLib() : m_initial_levels(NULL) { ; }
+  cResourceLib() : m_initial_levels(NULL), m_num_deme_resources(0) { ; }
   ~cResourceLib();
 
   int GetSize() const { return m_resource_array.GetSize(); }
@@ -51,6 +52,7 @@ public:
   inline cResource* GetResource(int id) const { return m_resource_array[id]; }
   const cResourceHistory& GetInitialResourceLevels() const;
   bool DoesResourceExist(const cString& res_name);
+  void SetResourceIndex(cResource* res);
 };
 
 #endif

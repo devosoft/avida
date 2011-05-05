@@ -201,7 +201,7 @@ void cResourceCount::SetCellResources(int cell_id, const tArray<double> & res)
   }
 }
 
-void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, const double& initial, const double& inflow, const double& decay,                  
+void cResourceCount::Setup(cWorld* world, const int& res_index, const cString& name, const double& initial, const double& inflow, const double& decay,                  
 				const int& in_geometry, const double& in_xdiffuse, const double& in_xgravity, 
 				const double& in_ydiffuse, const double& in_ygravity,
 				const int& in_inflowX1, const int& in_inflowX2, const int& in_inflowY1, const int& in_inflowY2,
@@ -225,13 +225,13 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
         const double& in_floor, const bool& isgradient
 				)
 {
-  assert(id >= 0 && id < resource_count.GetSize());
+  assert(res_index >= 0 && res_index < resource_count.GetSize());
   assert(initial >= 0.0);
   assert(decay >= 0.0);
   assert(inflow >= 0.0);
-  assert(spatial_resource_count[id]->GetSize() > 0);
-  int tempx = spatial_resource_count[id]->GetX();
-  int tempy = spatial_resource_count[id]->GetY();
+  assert(spatial_resource_count[res_index]->GetSize() > 0);
+  int tempx = spatial_resource_count[res_index]->GetX();
+  int tempy = spatial_resource_count[res_index]->GetY();
 
   cString geo_name;
   if (in_geometry == nGeometry::GLOBAL) {
@@ -281,78 +281,85 @@ void cResourceCount::Setup(cWorld* world, const int& id, const cString& name, co
 
   /* recource_count gets only the values for global resources */
 
-  resource_name[id] = name;
-  resource_initial[id] = initial;
+  resource_name[res_index] = name;
+  resource_initial[res_index] = initial;
   if (in_geometry == nGeometry::GLOBAL) {
-    resource_count[id] = initial;
-	spatial_resource_count[id]->RateAll(0);
+    resource_count[res_index] = initial;
+	spatial_resource_count[res_index]->RateAll(0);
   } 
   else if (in_geometry == nGeometry::PARTIAL) {
-	  resource_count[id]=initial;
+	  resource_count[res_index]=initial;
 
-	  spatial_resource_count[id]->RateAll(0);
+	  spatial_resource_count[res_index]->RateAll(0);
 	  // want to set list of cell ids here
-	   cell_lists[id].Resize(in_cell_id_list_ptr->GetSize());
+	   cell_lists[res_index].Resize(in_cell_id_list_ptr->GetSize());
 	  for (int i = 0; i < in_cell_id_list_ptr->GetSize(); i++)
-		  cell_lists[id][i] = (*in_cell_id_list_ptr)[i];
+		  cell_lists[res_index][i] = (*in_cell_id_list_ptr)[i];
 
   }
   else {
-    resource_count[id] = 0; 
+    resource_count[res_index] = 0; 
     if(isdynamic){ //JW
-      delete spatial_resource_count[id];
-      spatial_resource_count[id] = new cDynamicCount(in_peaks, in_min_height, in_radius_range, in_min_radius, in_ah, in_ar,
+      delete spatial_resource_count[res_index];
+      spatial_resource_count[res_index] = new cDynamicCount(in_peaks, in_min_height, in_radius_range, in_min_radius, in_ah, in_ar,
 			    in_acx, in_acy, in_hstepscale, in_rstepscale, in_cstepscalex, in_cstepscaley, in_hstep, in_rstep,
 			    in_cstepx, in_cstepy, tempx, tempy, in_geometry, in_updatestep); 
-      spatial_resource_count[id]->RateAll(0);
+      spatial_resource_count[res_index]->RateAll(0);
     }
     
     else if(isgradient){
-      delete spatial_resource_count[id];
-      spatial_resource_count[id] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
+      delete spatial_resource_count[res_index];
+      spatial_resource_count[res_index] = new cGradientCount(world, in_peakx, in_peaky, in_height, in_spread, in_plateau, in_decay,                                
                                                       in_max_x, in_max_y, in_min_x, in_min_y, in_move_a_scaler, in_updatestep, 
                                                       tempx, tempy, in_geometry, in_halo, in_halo_inner_radius, 
                                                       in_halo_width, in_halo_anchor_x, in_halo_anchor_y, in_move_speed,
                                                       in_plateau_inflow, in_plateau_outflow, in_is_plateau_common, in_floor);
-      spatial_resource_count[id]->RateAll(0);
+      spatial_resource_count[res_index]->RateAll(0);
     }
     
     else{
-      spatial_resource_count[id]->SetInitial(initial / spatial_resource_count[id]->GetSize());
-      spatial_resource_count[id]->RateAll(spatial_resource_count[id]->GetInitial());
+      spatial_resource_count[res_index]->SetInitial(initial / spatial_resource_count[res_index]->GetSize());
+      spatial_resource_count[res_index]->RateAll(spatial_resource_count[res_index]->GetInitial());
     }
   }
-  spatial_resource_count[id]->StateAll();  
-  decay_rate[id] = decay;
-  inflow_rate[id] = inflow;
-  geometry[id] = in_geometry;
-  spatial_resource_count[id]->SetGeometry(in_geometry);
-  spatial_resource_count[id]->SetPointers();
-  spatial_resource_count[id]->SetCellList(in_cell_list_ptr);
+  spatial_resource_count[res_index]->StateAll();  
+  decay_rate[res_index] = decay;
+  inflow_rate[res_index] = inflow;
+  geometry[res_index] = in_geometry;
+  spatial_resource_count[res_index]->SetGeometry(in_geometry);
+  spatial_resource_count[res_index]->SetPointers();
+  spatial_resource_count[res_index]->SetCellList(in_cell_list_ptr);
 
   double step_decay = pow(decay, UPDATE_STEP);
   double step_inflow = inflow * UPDATE_STEP;
   
-  decay_precalc(id, 0) = 1.0;
-  inflow_precalc(id, 0) = 0.0;
+  decay_precalc(res_index, 0) = 1.0;
+  inflow_precalc(res_index, 0) = 0.0;
   for (int i = 1; i <= PRECALC_DISTANCE; i++) {
-    decay_precalc(id, i)  = decay_precalc(id, i-1) * step_decay;
-    inflow_precalc(id, i) = inflow_precalc(id, i-1) * step_decay + step_inflow;
+    decay_precalc(res_index, i)  = decay_precalc(res_index, i-1) * step_decay;
+    inflow_precalc(res_index, i) = inflow_precalc(res_index, i-1) * step_decay + step_inflow;
   }
-  spatial_resource_count[id]->SetXdiffuse(in_xdiffuse);
-  spatial_resource_count[id]->SetXgravity(in_xgravity);
-  spatial_resource_count[id]->SetYdiffuse(in_ydiffuse);
-  spatial_resource_count[id]->SetYgravity(in_ygravity);
-  spatial_resource_count[id]->SetInflowX1(in_inflowX1);
-  spatial_resource_count[id]->SetInflowX2(in_inflowX2);
-  spatial_resource_count[id]->SetInflowY1(in_inflowY1);
-  spatial_resource_count[id]->SetInflowY2(in_inflowY2);
-  spatial_resource_count[id]->SetOutflowX1(in_outflowX1);
-  spatial_resource_count[id]->SetOutflowX2(in_outflowX2);
-  spatial_resource_count[id]->SetOutflowY1(in_outflowY1);
-  spatial_resource_count[id]->SetOutflowY2(in_outflowY2);
+  spatial_resource_count[res_index]->SetXdiffuse(in_xdiffuse);
+  spatial_resource_count[res_index]->SetXgravity(in_xgravity);
+  spatial_resource_count[res_index]->SetYdiffuse(in_ydiffuse);
+  spatial_resource_count[res_index]->SetYgravity(in_ygravity);
+  spatial_resource_count[res_index]->SetInflowX1(in_inflowX1);
+  spatial_resource_count[res_index]->SetInflowX2(in_inflowX2);
+  spatial_resource_count[res_index]->SetInflowY1(in_inflowY1);
+  spatial_resource_count[res_index]->SetInflowY2(in_inflowY2);
+  spatial_resource_count[res_index]->SetOutflowX1(in_outflowX1);
+  spatial_resource_count[res_index]->SetOutflowX2(in_outflowX2);
+  spatial_resource_count[res_index]->SetOutflowY1(in_outflowY1);
+  spatial_resource_count[res_index]->SetOutflowY2(in_outflowY2);
 }
 
+/*
+ * This is unnecessary now that a resource has an index
+ * TODO: 
+ *  - Change name to GetResourceCountIndex
+ *  - Fix anything that breaks by just using the index of the resource (not id)
+ *  - Get rid of this function
+ */
 int cResourceCount::GetResourceCountID(const cString& res_name)
 {
     for (int i = 0; i < resource_name.GetSize(); i++) {
@@ -360,6 +367,14 @@ int cResourceCount::GetResourceCountID(const cString& res_name)
     }
     cerr << "Error: Unknown resource '" << res_name << "'." << endl;
     return -1;
+}
+
+double cResourceCount::GetInflow(const cString& name)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return -1;
+  
+  return inflow_rate[id];
 }
 
 void cResourceCount::SetInflow(const cString& name, const double _inflow)
@@ -375,6 +390,14 @@ void cResourceCount::SetInflow(const cString& name, const double _inflow)
   for (int i = 1; i <= PRECALC_DISTANCE; i++) {
     inflow_precalc(id, i) = inflow_precalc(id, i-1) * step_decay + step_inflow;
   }
+}
+
+double cResourceCount::GetDecay(const cString& name)
+{
+  int id = GetResourceCountID(name);
+  if (id == -1) return -1;
+  
+  return decay_rate[id];
 }
 
 void cResourceCount::SetDecay(const cString& name, const double _decay)
@@ -455,12 +478,12 @@ void cResourceCount::Modify(const tArray<double> & res_change)
 }
 
 
-void cResourceCount::Modify(int id, double change)
+void cResourceCount::Modify(int res_index, double change)
 {
-  assert(id < resource_count.GetSize());
+  assert(res_index < resource_count.GetSize());
 
-  resource_count[id] += change;
-  assert(resource_count[id] >= 0.0);
+  resource_count[res_index] += change;
+  assert(resource_count[res_index] >= 0.0);
 }
 
 void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
@@ -491,23 +514,24 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
   }
 }
 
-double cResourceCount::Get(int id) const
+double cResourceCount::Get(int res_index) const
 {
-  assert(id < resource_count.GetSize());
-  if (geometry[id] == nGeometry::GLOBAL || geometry[id]==nGeometry::PARTIAL) {
-      return resource_count[id];
+cout << res_index << endl;
+  assert(res_index < resource_count.GetSize());
+  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) {
+      return resource_count[res_index];
   } //else return spacial resource sum
-  return spatial_resource_count[id]->SumAll();
+  return spatial_resource_count[res_index]->SumAll();
 }
 
-void cResourceCount::Set(int id, double new_level)
+void cResourceCount::Set(int res_index, double new_level)
 {
-  assert(id < resource_count.GetSize());
-  if (geometry[id] == nGeometry::GLOBAL || geometry[id]==nGeometry::PARTIAL) {
-     resource_count[id] = new_level;
+  assert(res_index < resource_count.GetSize());
+  if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) {
+     resource_count[res_index] = new_level;
   } else {
-    for(int i = 0; i < spatial_resource_count[id]->GetSize(); i++) {
-      spatial_resource_count[id]->SetCellAmount(i, new_level/spatial_resource_count[id]->GetSize());
+    for(int i = 0; i < spatial_resource_count[res_index]->GetSize(); i++) {
+      spatial_resource_count[res_index]->SetCellAmount(i, new_level/spatial_resource_count[res_index]->GetSize());
     }
   }
 }
@@ -583,6 +607,10 @@ void cResourceCount::ReinitializeResources(double additional_resource)
   } //End going through the resources
 }
 
+/* 
+ * TODO: This is a duplicate of GetResourceCountID()
+ * Follow the same steps to get rid of it.
+ */
 int cResourceCount::GetResourceByName(cString name) const
 {
   int result = -1;

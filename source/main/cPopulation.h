@@ -237,8 +237,17 @@ public:
   void UpdateDemeCellResources(const tArray<double>& res_change, const int cell_id);
   
   void SetResource(int id, double new_level);
+  void SetResource(const cString res_name, double new_level);
   double GetResource(int id) const { return resource_count.Get(id); }
   cResourceCount& GetResourceCount() { return resource_count; }
+  void SetResourceInflow(const cString res_name, double new_level);
+  void SetResourceOutflow(const cString res_name, double new_level);
+  
+  void SetDemeResource(const cString res_name, double new_level);
+  void SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level);
+  void SetDemeResourceInflow(const cString res_name, double new_level);
+  void SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level);
+  void SetDemeResourceOutflow(const cString res_name, double new_level);
 
   void ResetInputs(cAvidaContext& ctx);
 

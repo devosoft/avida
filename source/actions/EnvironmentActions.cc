@@ -146,10 +146,11 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-    if (res != NULL) m_world->GetPopulation().SetResource(res->GetID(), m_res_count);
+    m_world->GetPopulation().SetResource(m_res_name, m_res_count);
   }
 };
+
+/* Change the amount of a particular deme resource */
 
 class cActionSetDemeResource : public cAction
 	{
@@ -168,18 +169,12 @@ class cActionSetDemeResource : public cAction
 		static const cString GetDescription() { return "Arguments: <string res_name> <double res_count>"; }
 		
 		void Process(cAvidaContext& ctx)
-		{
-			cResource* res = m_world->GetEnvironment().GetResourceLib().GetResource(m_res_name);
-			if (res != NULL) {
-				cPopulation& pop = m_world->GetPopulation();
-				int numDemes =  pop.GetNumDemes();
-				for(int demeID = 0; demeID < numDemes; ++demeID) {
-					cDeme& deme = pop.GetDeme(demeID);
-					deme.SetResource(res->GetID(), m_res_count);
-				}
-			}
+		{    
+      m_world->GetPopulation().SetDemeResource(m_res_name, m_res_count);
 		}
 	};
+
+/* Zero out all resources */
 
 class cZeroResources : public cAction
 {
@@ -247,6 +242,7 @@ public:
     }
   }
 };
+
 
 /*Change the settings of a Gradient Resource*/
 class cActionSetGradientResource : public cAction
@@ -519,13 +515,11 @@ public:
     if (largs.GetSize()) m_inflow = largs.PopWord().AsDouble();
   }
   
-  static const cString GetDescription() { return "Arguments: <string resource_name> <int inflow>"; }
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double inflow>"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetEnvironment().SetResourceInflow(m_name, m_inflow);
-      //This doesn't actually update the rate in the population, so...
-    m_world->GetPopulation().GetResourceCount().SetInflow(m_name, m_inflow);
+    m_world->GetPopulation().SetResourceInflow(m_name, m_inflow);
   }
 };
 
@@ -559,13 +553,11 @@ class cActionSetDemeResourceInflow : public cAction
       
     }
     
-    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <int inflow>"; }
+    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <double inflow>"; }
     
     void Process(cAvidaContext& ctx)
     {
-      m_world->GetEnvironment().SetResourceInflow(m_name, m_inflow);
-      //This doesn't actually update the rate in the population, so...
-      m_world->GetPopulation().GetDeme(m_demeid).GetDemeResources().SetInflow(m_name, m_inflow);
+      m_world->GetPopulation().SetSingleDemeResourceInflow(m_demeid, m_name, m_inflow);
     }
   };
 
@@ -586,13 +578,11 @@ public:
     assert(m_outflow >= 0.0);
   }
   
-  static const cString GetDescription() { return "Arguments: <string resource_name> <int outflow>"; }
+  static const cString GetDescription() { return "Arguments: <string resource_name> <double outflow>"; }
   
   void Process(cAvidaContext& ctx)
   {
-    m_world->GetEnvironment().SetResourceOutflow(m_name, m_outflow);
-      //This doesn't actually update the rate in the population, so...
-    m_world->GetPopulation().GetResourceCount().SetDecay(m_name, 1-m_outflow);
+    m_world->GetPopulation().SetResourceOutflow(m_name, m_outflow);
   }
 };
 
@@ -625,14 +615,11 @@ class cActionSetDemeResourceOutflow : public cAction
       assert(m_demeid < m_world->GetConfig().NUM_DEMES.Get());
     }
     
-    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <int outflow>"; }
+    static const cString GetDescription() { return "Arguments: <int deme id> <string resource_name> <double outflow>"; }
     
     void Process(cAvidaContext& ctx)
     {
-      m_world->GetEnvironment().SetResourceOutflow(m_name, m_outflow);
-      //This doesn't actually update the rate in the population, so...
-      m_world->GetPopulation().GetDeme(m_demeid).GetDemeResources().SetDecay(m_name, 1-m_outflow);
-      
+      m_world->GetPopulation().SetSingleDemeResourceOutflow(m_demeid, m_name, m_outflow);
     }
   };
 
@@ -735,6 +722,79 @@ public:
       env.GetTask(m_task).GetArguments().SetInt(m_arg, m_value);
     } else {
       m_world->GetDriver().RaiseFatalException(-2,"Task specified in SetTaskArgInt action does not exist");
+    }
+  }
+};
+
+/* Merge a specified resource across demes into a specifed global resource.
+ * 
+ * Sums the resource across demes, zeroes out the deme resource,
+ * and starts up the global resource with the summed level.  Inflow and outflow
+ * are also appropriately merged.
+ *
+ * The global resource must already be defined in the environment file.
+ */
+ 
+class cActionMergeResourceAcrossDemes : public cAction
+{
+private:
+  cString m_deme_res_name;
+  cString m_global_res_name;
+  cFeedback& m_feedback;
+  
+public:
+  cActionMergeResourceAcrossDemes(cWorld* world, const cString& args, cFeedback& feedback) : cAction(world, args), m_deme_res_name(""), m_global_res_name(""), m_feedback(feedback)
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_deme_res_name = largs.PopWord();
+    if (largs.GetSize()) m_global_res_name = largs.PopWord();
+  }
+  
+  static const cString GetDescription() {return "Arguments: <string deme_res_name> <string global_res_name>"; }
+  
+  void Process(cAvidaContext& ctx)
+  {
+    cResource* deme_res = m_world->GetEnvironment().GetResourceLib().GetResource(m_deme_res_name);
+    cResource* global_res = m_world->GetEnvironment().GetResourceLib().GetResource(m_global_res_name);
+    
+    if (deme_res != NULL && global_res != NULL) {
+      cPopulation& pop = m_world->GetPopulation();
+      int num_demes = pop.GetNumDemes();
+    
+      // Sum the resource across demes
+      double res_total = 0.0;
+      for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+        cDeme& deme = pop.GetDeme(deme_id);
+        res_total += deme.GetDemeResourceCount().Get(deme_res->GetIndex());
+      }
+      
+      // Set global resource to deme sum level
+      pop.SetResource(m_global_res_name, res_total);
+      
+      // Set deme resource to zero
+      pop.SetDemeResource(m_deme_res_name, 0.0);
+            
+      // Find the total inflow across demes
+      double inflow_total = 0.0;
+      for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+        cDeme& deme = pop.GetDeme(deme_id);
+        inflow_total += deme.GetDemeResources().GetInflow(m_deme_res_name);
+      }
+      
+      // Set global inflow to deme sum level
+      pop.SetResourceInflow(m_global_res_name, inflow_total);
+      
+      // For each deme, set deme inflow to 0
+      pop.SetDemeResourceInflow(m_deme_res_name, 0.0);
+      
+      // Find the deme outflow level
+      double outflow = deme_res->GetOutflow();
+      
+      // Set global outflow to deme level (since outflow is percentage, no sum here)
+      pop.SetResourceOutflow(m_global_res_name, outflow);
+      
+      // For each deme, set deme outflow to 0
+      pop.SetDemeResourceOutflow(m_deme_res_name, 0.0);
     }
   }
 };
@@ -1187,6 +1247,7 @@ void RegisterEnvironmentActions(cActionLibrary* action_lib)
   action_lib->Register<cActionSetDemeResource>("SetDemeResource");
   action_lib->Register<cZeroResources>("ZeroResources");
   action_lib->Register<cActionSetCellResource>("SetCellResource");
+  action_lib->Register<cActionMergeResourceAcrossDemes>("MergeResourceAcrossDemes");
   action_lib->Register<cActionChangeEnvironment>("ChangeEnvironment");
   action_lib->Register<cActionSetGradientResource>("SetGradientResource");
   action_lib->Register<cActionSetReactionValue>("SetReactionValue");

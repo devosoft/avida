@@ -562,6 +562,10 @@ bool cEnvironment::LoadResource(cString desc, cFeedback& feedback)
       }
     }
     
+    // Now that all geometry, etc. information is known, give the resource an index
+    // within its own type
+    resource_lib.SetResourceIndex(new_resource);
+    
     // Prevent misconfiguration of HGT:
     
     if (new_resource->GetHGTMetabolize() &&

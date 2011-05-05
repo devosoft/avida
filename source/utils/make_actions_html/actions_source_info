@@ -103,6 +103,15 @@
   Note that this event will even create a detailed column legend at the top
   of your file so you don't need to seperately keep track of what the
   columns mean.
+=== Action PrintDemeGlobalResources ===
+	Prints each resource in each deme.  The format is different than normal Avida output and no information besides the date and time is given in the comments.
+	Format at each update:
+	deme_global_resouces_&lt;update in 6 digits, padded with left 0s&gt; = [ ...
+	&lt;deme_number&gt; &lt;resource0&gt; etc.
+	&lt;deme_number&gt; &lt;resource0&gt; etc.
+	];
+=== Action PrintDemeResourceStats ===
+	Prints each resource in each deme, with the format noted in the initial comments as normal.
 === Action PrintInstructionAbundanceHistogram ===
   Appends a line containing the bulk count (abundance) of each instruction
   in the population onto a file.
@@ -384,6 +393,9 @@
   a resource in environment file.
 === Action InjectScaledResource ===
 === Action OutflowScaledResource ===
+=== MergeResourceAcrossDemes ===
+	Sums the named deme resource across demes, sets the named global resource to the sum level, and zeroes out the deme resource.  Inflow and outflow are also merged -- inflow is summed and the outflow remains the same.
+	The global resource must already exist in the environment file; it should have its initial (or inflow, or outflow) value trivially set to 0 so that Avida knows the RESOURCE statement is not merely a pre-declaration.
 === Action SetEnvironmentInputs ===
   Set the inputs that all organisms get from the environment when doing IO to these specific values. There must 
   be exactly three inputs, and they must have the usual values for the top 8 "key" bits, i.e. they must be of the form

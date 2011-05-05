@@ -5103,9 +5103,9 @@ void cPopulation::UpdateResources(const tArray<double> & res_change)
   resource_count.Modify(res_change);
 }
 
-void cPopulation::UpdateResource(int id, double change)
+void cPopulation::UpdateResource(int res_index, double change)
 {
-  resource_count.Modify(id, change);
+  resource_count.Modify(res_index, change);
 }
 
 void cPopulation::UpdateCellResources(const tArray<double> & res_change,
@@ -5120,9 +5120,123 @@ void cPopulation::UpdateDemeCellResources(const tArray<double> & res_change,
   GetDeme(GetCell(cell_id).GetDemeID()).ModifyDemeResCount(res_change, cell_id);
 }
 
-void cPopulation::SetResource(int id, double new_level)
+void cPopulation::SetResource(int res_index, double new_level)
 {
-  resource_count.Set(id, new_level);
+  resource_count.Set(res_index, new_level);
+}
+
+/* This version of SetResource takes the name of the resource.
+ * If a resource by this name does not exist, it does nothing.
+ * Otherwise, it sets the resource to the new level, 
+ * calling the index version of SetResource().
+ */
+void cPopulation::SetResource(const cString res_name, double new_level)
+{
+  cResource* res = environment.GetResourceLib().GetResource(res_name);
+  if (res != NULL) SetResource(res->GetIndex(), new_level);
+}
+
+/* This method sets the inflow of the named resource.
+ * It changes this value in the environment, then updates it in the
+ * actual population's resource count.
+ */
+void cPopulation::SetResourceInflow(const cString res_name, double new_level)
+{
+  environment.SetResourceInflow(res_name, new_level);
+  resource_count.SetInflow(res_name, new_level);
+}
+
+/* This method sets the outflow of the named resource.
+ * It changes this value in the enviroment, then updates the
+ * decay rate in the resource count (to 1 - the given outflow, as 
+ * outflow is different than decay).
+ */
+void cPopulation::SetResourceOutflow(const cString res_name, double new_level)
+{
+  environment.SetResourceOutflow(res_name, new_level);
+  resource_count.SetDecay(res_name, 1 - new_level);
+}
+
+/* This method sets a deme resource to the same level across
+ * all demes.  If a resource by the given name does not exist,
+ * it does nothing.
+ */
+void cPopulation::SetDemeResource(const cString res_name, double new_level)
+{
+  cResource* res = environment.GetResourceLib().GetResource(res_name);
+  if (res != NULL) {
+    int num_demes = GetNumDemes();
+    for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+      cDeme& deme = GetDeme(deme_id);
+      deme.SetResource(res->GetIndex(), new_level);
+    }
+  }
+}
+
+/* This method sets the inflow for the named deme resource in a specific deme. 
+ * It changes the value in the environment, then updates it in the specified deme's
+ * resource count.
+ * 
+ * ATTENTION: This leads to the rather bizzare consequence that the inflow rate
+ * in the environment may not match the inflow rate in each deme's resource count.
+ * This is not my own decision, simply a reflection of how the SetDemeResourceInflow
+ * action (for which I am writing this as a helper) works.  Unless you have a specific
+ * reason NOT to change the inflow for all demes, it is probably best to use
+ * cPopulation::SetDemeResourceInflow() -- blw
+ */
+void cPopulation::SetSingleDemeResourceInflow(int deme_id, const cString res_name, double new_level)
+{
+  environment.SetResourceInflow(res_name, new_level);
+  GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
+}
+
+/* This method sets the inflow for the named deme resource across ALL demes. 
+ * It changes the value in the environment, then updates it in the deme resource
+ * counts.
+ *
+ * This maintains the connection between the enviroment value and the resource
+ * count values, unlike cPopulation::SetSingleDemeResourceInflow()
+ */
+void cPopulation::SetDemeResourceInflow(const cString res_name, double new_level)
+{
+  environment.SetResourceInflow(res_name, new_level);
+  int num_demes = GetNumDemes();
+  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+    GetDeme(deme_id).GetDemeResources().SetInflow(res_name, new_level);
+  }
+}
+
+/* This method sets the outflow for the named deme resource in a specific deme. 
+ * It changes the value in the environment, then updates the decay rate in the 
+ * specified deme's resource count.
+ * 
+ * ATTENTION: This leads to the rather bizzare consequence that the outflow rate
+ * in the environment may not match the decay (1-outflow) rate in each deme's resource count.
+ * This is not my own decision, simply a reflection of how the SetDemeResourceOutflow
+ * action (for which I am writing this as a helper) works.  Unless you have a specific
+ * reason NOT to change the outflow for all demes, it is probably best to use
+ * cPopulation::SetDemeResourceOutflow() -- blw
+ */
+void cPopulation::SetSingleDemeResourceOutflow(int deme_id, const cString res_name, double new_level)
+{
+  environment.SetResourceOutflow(res_name, new_level);
+  GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
+}
+
+/* This method sets the outflow for the named deme resource across ALL demes. 
+ * It changes the value in the environment, then updates the decay rate in the 
+ * deme resource counts.
+ *
+ * This maintains the connection between the enviroment value and the resource
+ * count values, unlike cPopulation::SetSingleDemeResourceOutflow()
+ */
+void cPopulation::SetDemeResourceOutflow(const cString res_name, double new_level)
+{
+  environment.SetResourceOutflow(res_name, new_level);
+  int num_demes = GetNumDemes();
+  for (int deme_id = 0; deme_id < num_demes; ++deme_id) {
+    GetDeme(deme_id).GetDemeResources().SetDecay(res_name, 1 - new_level);
+  }
 }
 
 void cPopulation::ResetInputs(cAvidaContext& ctx)

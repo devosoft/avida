@@ -75,3 +75,23 @@ bool cResourceLib::DoesResourceExist(const cString& res_name)
   return false;
 }
 
+/* This assigns an index to a resource within its own type (deme vs. non-deme)
+ * If the resource already has a positive id nothing will be assigned.
+ * (Enforced by cResource::SetIndex())
+ *
+ * Population resource counts include all non-deme resources, regardless of geometry.
+ * Deme resource counts include all deme resources, regardless of geometry.
+ */
+void cResourceLib::SetResourceIndex(cResource* res)
+{
+  bool is_deme = res->GetDemeResource();
+  
+  if (is_deme) {
+    res->SetIndex(m_num_deme_resources);
+    m_num_deme_resources++;
+  }
+  else {
+    res->SetIndex(m_resource_array.GetSize() - 1 - m_num_deme_resources);
+  }
+}
+

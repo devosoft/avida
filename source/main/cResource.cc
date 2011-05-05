@@ -44,6 +44,7 @@ cCellResource::cCellResource(int _cell_id, double _initial, double _inflow,
 cResource::cResource(const cString & _name, int _id)
   : name(_name)
   , id(_id)
+  , index(-1)  // index can only be assigned later, give it a flag value for now
   , initial(0.0)
   , inflow(0.0)
   , outflow(0.0)

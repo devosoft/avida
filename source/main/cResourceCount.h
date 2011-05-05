@@ -99,7 +99,9 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
 	   ); 
              
   int GetResourceCountID(const cString& res_name);
+  double GetInflow(const cString& name);
   void SetInflow(const cString& name, const double _inflow);
+  double GetDecay(const cString& name);
   void SetDecay(const cString& name, const double _decay);
   
   void Update(double in_time);
