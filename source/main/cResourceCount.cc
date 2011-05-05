@@ -516,7 +516,6 @@ void cResourceCount::ModifyCell(const tArray<double> & res_change, int cell_id)
 
 double cResourceCount::Get(int res_index) const
 {
-cout << res_index << endl;
   assert(res_index < resource_count.GetSize());
   if (geometry[res_index] == nGeometry::GLOBAL || geometry[res_index]==nGeometry::PARTIAL) {
       return resource_count[res_index];
