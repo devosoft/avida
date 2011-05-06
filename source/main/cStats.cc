@@ -2995,10 +2995,7 @@ void cStats::PrintGroupIds(const cString& filename)
 			df.Endl();
 		}
 	}
-
-
 	df.Endl();
-
 }
 
 /*

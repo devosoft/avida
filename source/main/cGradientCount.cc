@@ -73,6 +73,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_move_y_scaler(0.5)
   , m_counter(0)
   , m_move_counter(1)
+  , m_movesignx(0)
+  , m_movesigny(0)
   , m_just_reset(true)
   , m_past_height(0.0)
   , m_current_height(0.0)
@@ -135,7 +137,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
   
   // move cones by moving m_peakx & m_peaky, but only if the cone has not been bitten 
   // keep cones inside their bounding boxes; bounce them if they hit the edge
-  m_move_y_scaler = m_move_a_scaler * m_move_y_scaler * (1 - m_move_y_scaler); 
+  if (m_move_a_scaler > 1) m_move_y_scaler = m_move_a_scaler * m_move_y_scaler * (1 - m_move_y_scaler);   
   
   // we use movesign to determine direction of peak movement
   // first, to get smooth movements, we only allow either the x or y direction change to be evaluated in a single update
@@ -146,8 +148,8 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 
   // we add 1 to distance to account for the anchor grid cell
   int current_orbit = max(abs(m_halo_anchor_x - m_peakx), abs(m_halo_anchor_y - m_peaky)) + 1;
-
-  if (m_move_counter == m_updatestep) { 
+    
+  if (m_move_counter == m_updatestep && m_move_a_scaler > 1) { 
     m_move_counter = 1;
     // halo resources orbit at a fixed org walking distance from an anchor point
     // if halo width > the height of the halo resource, the resource will be bounded inside the halo but the orbit can vary within those bounds
@@ -165,15 +167,15 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
       if (random_shift == 0) {
         //do nothing unless there's room to change orbit
         if (m_halo_width > (temp_height * 2)) {
-          m_orbit_shift = ctx.GetRandom().GetUInt(0,2); 
-          if (m_orbit_shift == 0) {
+          int orbit_shift = ctx.GetRandom().GetUInt(0,2); 
+          if (orbit_shift == 0) {
             current_orbit = current_orbit - 1; 
             if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
               m_peaky = old_peaky - 1;
             else 
               m_peakx = old_peakx - 1;
           }
-          else if (m_orbit_shift == 1) {
+          else if (orbit_shift == 1) {
             current_orbit = current_orbit + 1;  
             if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
               m_peaky = old_peaky + 1;
@@ -207,13 +209,13 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     }
     // for non-halo peaks
     else {
-      int choosesign = ctx.GetRandom().GetInt(0,3);
+      int choosesign = ctx.GetRandom().GetInt(1,3);
       if (choosesign == 1) {
         if (m_movesignx == -1) m_movesignx = ctx.GetRandom().GetInt(-1,1); 
         else if (m_movesignx == 1) m_movesignx = ctx.GetRandom().GetInt(0,2);
         else m_movesignx = ctx.GetRandom().GetInt(-1,2);
       }      
-      if (choosesign == 2){ 
+      else if (choosesign == 2){ 
         if (m_movesigny == -1) m_movesigny = ctx.GetRandom().GetInt(-1,1); 
         else if (m_movesigny == 1) m_movesigny = ctx.GetRandom().GetInt(0,2);
         else m_movesigny = ctx.GetRandom().GetInt(-1,2);
@@ -224,7 +226,7 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     m_move_counter++;
   }
   
-  if (m_halo == 1) { 
+  if (m_halo == 1 && m_move_a_scaler > 1) { 
     // what quadrant we are in determines whether we are changing x's or y's (= changling)
     // if we are on a corner, we just stick with the current changling
     if (abs(m_halo_anchor_y - m_peaky) > abs(m_halo_anchor_x - m_peakx))
@@ -290,21 +292,23 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
       }
     }
   } else {
-    // for non-halo peaks
-    int temp_height = 0;
-    if (m_plateau < 0) temp_height = 1;
-    else temp_height = m_height;
-    double temp_peakx = m_peakx + (m_move_y_scaler * m_movesignx);
-    double temp_peaky = m_peaky + (m_move_y_scaler * m_movesigny);
-    
-    if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1.0;
-    if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1.0; 
-    
-    if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1.0;
-    if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1.0;
-    
-    m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
-    m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5); 
+      // for non-halo peaks
+      int temp_height = 0;
+      if (m_plateau < 0) temp_height = 1;
+      else temp_height = m_height;
+      if (m_move_a_scaler > 1) {
+          int temp_peakx = m_peakx + (int)(m_move_y_scaler + 0.5) * m_movesignx;
+          int temp_peaky = m_peaky + (int)(m_move_y_scaler + 0.5) * m_movesigny;
+          
+          if (temp_peakx > (m_max_x - temp_height)) m_movesignx = -1;
+          if (temp_peakx < (m_min_x + temp_height + 1)) m_movesignx = 1; 
+          
+          if (temp_peaky > (m_max_y - temp_height)) m_movesigny = -1;
+          if (temp_peaky < (m_min_y + temp_height + 1)) m_movesigny = 1;
+          
+          m_peakx = (int) (m_peakx + (m_movesignx * m_move_y_scaler) + .5);
+          m_peaky = (int) (m_peaky + (m_movesigny * m_move_y_scaler) + .5);
+      }  
   } 
 
   // to speed things up, we only check cells within the possible spread of the peak
@@ -317,55 +321,59 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
 
 void cGradientCount::generatePeak(cAvidaContext& ctx)
 {
-  // Get initial peak cell x, y coordinates and movement directions.
-  cRandom& rng = ctx.GetRandom();
-  int temp_height = 0;
-  if (m_plateau < 0) temp_height = 1;
-  else temp_height = m_height;
-  if (!m_halo) {
-  // If we are not moving the resource we use the config input m_peakx and m_peaky.    
+    // Get initial peak cell x, y coordinates and movement directions.
+    cRandom& rng = ctx.GetRandom();
+    int temp_height = 0;
+    if (m_plateau < 0) temp_height = 1;
+    else temp_height = m_height;
+    // If we are not moving the resource we default to the config input m_peakx and m_peaky for 'normal' gradient resources
+    // for non-moving halo's we generate a random location on the orbit
+    // , otherwise we get a random location and direction.
     if (m_move_a_scaler > 1) {
-      m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
-      m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
+        if (!m_halo) {
+            m_peakx = rng.GetUInt(m_min_x + temp_height, m_max_x - temp_height + 1);                 
+            m_peaky = rng.GetUInt(m_min_y + temp_height, m_max_y - temp_height + 1);
+            // Get a random direction for movement on the x-axis  
+            m_movesignx = rng.GetInt(-1,2);
+            // If x-axis movement is 0, we want to make sure y-axis movement is not also 0  
+            if (m_movesignx == 0) {
+                if (rng.GetUInt(0,2)) {
+                    m_movesigny = 1;
+                } else {
+                    m_movesigny = -1;
+                }
+            } else {
+                m_movesigny = rng.GetInt(-1,2);
+            }
+        } else if (m_halo) {
+            m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
+            m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
+        }
     }
-    m_movesignx = rng.GetInt(-1,2);  
-    if (m_movesignx == 0) {
-      if (rng.GetUInt(0,2)) {
-        m_movesigny = 1;
-      } else {
-        m_movesigny = -1;
-      }
-    } else {
-      m_movesigny = rng.GetInt(-1,2);
-    }
-    
-  } else if (m_halo) {
-    if (m_move_a_scaler > 1) {
-      m_halo_dir = (rng.GetUInt(0,2) == 1) ? -1 : 1;
-      m_changling = (rng.GetUInt(0,2) == 1) ? -1 : 1;
-    }
-    int chooseEW = rng.GetUInt(0,2);
-    if (chooseEW == 0) {
-      m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
-    } else {
-      m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
-                            m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
-    }
-    int chooseNS = rng.GetUInt(0,2);
-    if (chooseNS == 0) { 
-      m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
-                            m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
-    } else {
-      m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
-                            m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
-    }
-  }
-  SetModified(false);
-  m_counter = 0;
-  m_just_reset = true;
-  refreshResourceValues();
-  return;
+    if (m_halo) {
+            int chooseEW = rng.GetUInt(0,2);
+            if (chooseEW == 0) {
+                m_peakx = rng.GetUInt(m_halo_anchor_x - m_halo_inner_radius - m_halo_width + temp_height, 
+                                      m_halo_anchor_x - m_halo_inner_radius - temp_height + 1);
+            } else {
+                m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + temp_height, 
+                                      m_halo_anchor_x + m_halo_inner_radius + m_halo_width - temp_height + 1);
+            }
+            int chooseNS = rng.GetUInt(0,2);
+            if (chooseNS == 0) { 
+                m_peaky = rng.GetUInt(m_halo_anchor_y - m_halo_inner_radius - m_halo_width + temp_height, 
+                                      m_halo_anchor_y - m_halo_inner_radius - temp_height + 1);
+            } else {
+                m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + temp_height, 
+                                      m_halo_anchor_y + m_halo_inner_radius + m_halo_width - temp_height + 1);
+            }
+        }
+
+    SetModified(false);
+    m_counter = 0;
+    m_just_reset = true;
+    refreshResourceValues();
+    return;
 }
 
 void cGradientCount::refreshResourceValues()
@@ -472,7 +480,7 @@ void cGradientCount::getCurrentPlatValues()
   double amount_devoured = 0.0;
   for (int ii = plateau_box_min_x; ii < plateau_box_max_x + 1; ii++) {
     for (int jj = plateau_box_min_y; jj < plateau_box_max_y + 1; jj++) { 
-      double thisdist = sqrt((double) (m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
+      double thisdist = sqrt((double) (m_peakx - ii) * (double) (m_peakx - ii) + (double) (m_peaky - jj) * (double) (m_peaky - jj));
       double find_plat_dist = temp_height / (thisdist + 1);
       if ((find_plat_dist >= 1 && m_plateau >= 0) || (m_plateau < 0 && thisdist == 0)) {
         double past_cell_height = m_plateau_array[plateau_cell];
