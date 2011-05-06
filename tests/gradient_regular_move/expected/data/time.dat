@@ -1,11 +1,11 @@
 # Avida time data
-# Sat Apr 30 22:46:22 2011
+# Fri May  6 11:21:56 2011
 #  1: update
 #  2: avida time
 #  3: average generation
 #  4: num_executed?
 
 0 0 0 90 
-10 0.075188 0 90 
-20 0.150376 0 90 
-30 0.225564 0 90 
+10 0.1 0.909091 330 
+20 0.2 1.59259 810 
+30 0.3 2.41176 1350 
