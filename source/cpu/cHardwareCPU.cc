@@ -9413,9 +9413,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 	// If this instruction is not nop modified it fails to execute and does nothing @JJB
 	if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
     
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
-	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
-    
+	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();    
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
     
@@ -9454,12 +9452,13 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
     
-	//test @JJB
+/*	//test @JJB
 	if (m_world->GetStats().GetUpdate() >= 1000) { 
 		string tolerance_type;
 		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
 		else if (tolerance_to_modify == REG_BX) tolerance_type = "own_offspring";
 		else if (tolerance_to_modify == REG_CX) tolerance_type = "other_offspring"; 
+        double cell = m_organism->GetCellID();
 		int opinion = m_organism->GetOpinion().first;
 		const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx);
 		double res_opinion = res_count[opinion];
@@ -9469,6 +9468,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
 		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
 		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
+        const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
         
 		// update instruction_executed tolerance_type opinion group_size group_res_level
 		// tolerance_immigrants tolerance_own tolerance_others update_window  
@@ -9479,7 +9479,7 @@ bool cHardwareCPU::Inst_IncTolerance(cAvidaContext& ctx)
         << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
         << update_window << " " << tolerance_max << " " \
         << res_inflow << " " << res_outflow << " " << m_organism->GetID() <<'\n'; 
-	}
+	}//*/
     
 	return true;
 }
@@ -9496,9 +9496,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
     // If this instruction is not nop modified it fails to execute and does nothing @JJB
 	if (!(m_inst_set->IsNop(getIP().GetNextInst()))) return false;
     
-	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
+	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	const int tolerance_to_modify = FindModifiedRegister(REG_BX);
 	int tolerance_count = 0;
@@ -9538,7 +9537,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 	// Output tolerance total to BX register.
 	GetRegister(REG_BX) = tolerance_count;
     
-	//PrintToleranceData @JJB
+/*	//PrintToleranceData @JJB
 	if (m_world->GetStats().GetUpdate() >= 1000) { 
 		string tolerance_type;
 		if (tolerance_to_modify == REG_AX) tolerance_type = "immigrants";
@@ -9554,7 +9553,8 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
 		double tolerance_immigrants = m_organism->GetPhenotype().CalcToleranceImmigrants();
 		double tolerance_own = m_organism->GetPhenotype().CalcToleranceOffspringOwn();
 		double tolerance_others = m_organism->GetPhenotype().CalcToleranceOffspringOthers();
-
+        const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();     
+        
 		// update instruction_executed tolerance_type opinion group_size group_res_level 
 		// tolerance_immigrants tolerance_own tolerance_others update_window  
         // tolerance_max res_inflow res_outflow org_ID
@@ -9564,7 +9564,7 @@ bool cHardwareCPU::Inst_DecTolerance(cAvidaContext& ctx)
         << tolerance_immigrants << " " << tolerance_own << " " << tolerance_others << " " \
         << update_window << " " << tolerance_max << " " \
         << res_inflow << " " << res_outflow << " " << m_organism->GetID() << '\n'; 
-	}
+	}//*/
     
 	return true;
 }
