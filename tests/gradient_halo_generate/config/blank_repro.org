@@ -18,117 +18,11 @@ nop-C      #
 nop-C      #
 nop-C      #
 nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
 IO	
 nop-C      #
 nop-C      #
 nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-zero
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-inc
-join-group
 IO
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
-nop-C      #
 nop-C      #
 nop-C      #
 nop-C      #

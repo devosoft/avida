@@ -1,11 +1,11 @@
 # Avida tasks data
-# Sat Apr 30 23:00:20 2011
+# Fri May  6 17:41:19 2011
 # First column gives the current update, next columns give the number
 # of organisms that have the particular task as a component of their merit
 #  1: Update
 #  2: LiveOnPatchRes
 
 0 0 
-10 0 
-20 0 
-30 0 
+10 12 
+20 37 
+30 74 

@@ -63,11 +63,9 @@ private:
   
   int m_counter;
   int m_move_counter;
-  double m_movesignx;
-  double m_movesigny;
+  int m_movesignx;
+  int m_movesigny;
   
-  int m_orbit_shift;
-  int m_angle_shift;
   int m_halo_dir;
   int m_changling;
   bool m_just_reset;

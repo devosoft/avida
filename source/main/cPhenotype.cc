@@ -1682,7 +1682,7 @@ int cPhenotype::CalcToleranceImmigrants() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
+	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int intolerance_count = 0;
     
@@ -1702,7 +1702,7 @@ int cPhenotype::CalcToleranceOffspringOwn() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
+	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int intolerance_count = 0;
     
@@ -1722,7 +1722,7 @@ int cPhenotype::CalcToleranceOffspringOthers() const
 {
 	const int update_window = m_world->GetConfig().TOLERANCE_WINDOW.Get();
 	const int cur_update = m_world->GetStats().GetUpdate();
-	const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
+	const int tolerance_max = m_world->GetConfig().MAX_TOLERANCE.Get();
     
 	int intolerance_count = 0;
     
