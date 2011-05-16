@@ -358,6 +358,7 @@
 		70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
+		70FEF6241381B04500A9D082 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		B462B5C10FA0F47D00F379D1 /* cPhenPlastSummary.h in Headers */ = {isa = PBXBuildFile; fileRef = B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
@@ -1296,6 +1297,7 @@
 		70F962C1135AA2E7008EDD1C /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
 		70F9FD990C4E89C40083B788 /* tAutoRelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAutoRelease.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		70FEF6231381B04500A9D082 /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastSummary.h; sourceTree = "<group>"; };
 		B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenPlastGenotype.h; sourceTree = "<group>"; };
 		B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPlasticPhenotype.cc; sourceTree = "<group>"; };
@@ -1373,6 +1375,7 @@
 			files = (
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
 				70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */,
+				70FEF6241381B04500A9D082 /* libapto.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1804,6 +1807,7 @@
 		70A1E4B01266249900D56AC4 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				70FEF6231381B04500A9D082 /* libapto.a */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
 			);
 			name = Libraries;
@@ -3038,6 +3042,7 @@
 				HEADER_SEARCH_PATHS = (
 					include/public/,
 					include/private/,
+					../libs/apto/include/,
 				);
 				SDKROOT = "";
 				WARNING_CFLAGS = (
@@ -3067,6 +3072,7 @@
 				HEADER_SEARCH_PATHS = (
 					include/public/,
 					include/private/,
+					../libs/apto/include/,
 				);
 				SDKROOT = "";
 				WARNING_CFLAGS = (
@@ -3096,11 +3102,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				HEADER_SEARCH_PATHS = (
-					include/public/,
-					include/private/,
-					../libs/apto/include/,
-				);
 				PRODUCT_NAME = "viewer-core";
 			};
 			name = Debug;
@@ -3109,11 +3110,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = (
-					include/public/,
-					include/private/,
-					../libs/apto/include/,
-				);
 				PRODUCT_NAME = "viewer-core";
 			};
 			name = Release;

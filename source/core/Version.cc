@@ -24,12 +24,11 @@
 
 #include "avida/core/Version.h"
 
-#include "cString.h"
+#include "apto/core/StringUtils.h"
 
-
-cString Avida::Version::Banner()
+Apto::String Avida::Version::Banner()
 {
-  cString banner("Avida ");
+  Apto::String banner("Avida ");
   banner += Avida::Version::String();
   banner += "\n";
   banner += "--------------------------------------------------------------------------------\n";
@@ -54,19 +53,19 @@ cString Avida::Version::Banner()
   banner += "For more information, see: http://avida.devosoft.org/\n";
   banner += "--------------------------------------------------------------------------------\n";
   
-  return (const char*)banner;
+  return banner;
 }
 
 
 bool Avida::Version::CheckCompatibility(const char* version)
 {
-  cString lv(version);
+  Apto::String lv(version);
   
-  cString major = lv.Pop('.');
-  cString minor = lv.Pop('.');
+  Apto::String major = lv.Pop('.');
+  Apto::String minor = lv.Pop('.');
   
-  if (!major.GetSize() || major.AsInt() != Avida::Version::Major()) return false;
-  if (!minor.GetSize() || minor.AsInt() != Avida::Version::Minor()) return false;
+  if (!major.GetSize() || Avida::Version::Major() != (int)Apto::StrAs(major)) return false;
+  if (!minor.GetSize() || Avida::Version::Minor() != (int)Apto::StrAs(minor)) return false;
   
   return true;
 }

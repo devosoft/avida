@@ -25,7 +25,8 @@
 #ifndef AvidaCoreVersion_h
 #define AvidaCoreVersion_h
 
-class cString;
+#include "apto/core/String.h"
+
 
 namespace Avida {
   namespace Version {
@@ -35,7 +36,7 @@ namespace Avida {
     inline int Patch() { return 0; }
     inline const char* Tag() { return "TDB"; }
     
-    cString Banner();
+    Apto::String Banner();
     
     bool CheckCompatibility(const char* version);
   };
