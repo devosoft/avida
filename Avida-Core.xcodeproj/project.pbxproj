@@ -1298,6 +1298,8 @@
 		70F9FD990C4E89C40083B788 /* tAutoRelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tAutoRelease.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		70FEF6231381B04500A9D082 /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		70FEF6371381CAB900A9D082 /* cManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cManager.h; sourceTree = "<group>"; };
+		70FEF6381381CAB900A9D082 /* cProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cProvider.h; sourceTree = "<group>"; };
 		B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastSummary.h; sourceTree = "<group>"; };
 		B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenPlastGenotype.h; sourceTree = "<group>"; };
 		B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPlasticPhenotype.cc; sourceTree = "<group>"; };
@@ -1571,6 +1573,7 @@
 			isa = PBXGroup;
 			children = (
 				703549CD1337BB6C00D3865C /* core */,
+				70FEF6361381CAB900A9D082 /* data */,
 				70A53BC5135B732C00C3E661 /* util */,
 				703549261333E36800D3865C /* viewer-core */,
 				70A53BC0135B60D700C3E661 /* Avida.h */,
@@ -2022,6 +2025,15 @@
 				70F962C0135AA2E7008EDD1C /* cSequence.cc */,
 			);
 			path = core;
+			sourceTree = "<group>";
+		};
+		70FEF6361381CAB900A9D082 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				70FEF6371381CAB900A9D082 /* cManager.h */,
+				70FEF6381381CAB900A9D082 /* cProvider.h */,
+			);
+			path = data;
 			sourceTree = "<group>";
 		};
 		DCC30C490762532C008F7A48 = {
