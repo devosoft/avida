@@ -25,6 +25,7 @@
 #ifndef AvidaCoreGenome_h
 #define AvidaCoreGenome_h
 
+#include "apto/platform.h"
 #include "avida/core/cSequence.h"
 
 #include "cString.h"
@@ -55,39 +56,39 @@ namespace Avida {
    
     
   public:
-    cGenome() : m_hw_type(-1), m_inst_set("(default)") { ; }
-    cGenome(int hw, const cString& is, const cSequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
-    explicit cGenome(const cString& seq_str);
-    cGenome(const cGenome& gen) : m_hw_type(gen.m_hw_type), m_inst_set(gen.m_inst_set), m_seq(gen.m_seq) { ; }
+    LIB_EXPORT cGenome() : m_hw_type(-1), m_inst_set("(default)") { ; }
+    LIB_EXPORT cGenome(int hw, const cString& is, const cSequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
+    explicit LIB_EXPORT cGenome(const cString& seq_str);
+    LIB_EXPORT cGenome(const cGenome& gen) : m_hw_type(gen.m_hw_type), m_inst_set(gen.m_inst_set), m_seq(gen.m_seq) { ; }
     
     
-    inline int GetHardwareType() const { return m_hw_type; }
-    inline const cString& GetInstSet() const { return m_inst_set; }
-    inline const cSequence& GetSequence() const { return m_seq; }
-    inline cSequence& GetSequence() { return m_seq; }
+    inline LIB_EXPORT int GetHardwareType() const { return m_hw_type; }
+    inline LIB_EXPORT const cString& GetInstSet() const { return m_inst_set; }
+    inline LIB_EXPORT const cSequence& GetSequence() const { return m_seq; }
+    inline LIB_EXPORT cSequence& GetSequence() { return m_seq; }
     
-    inline int GetSize() const { return m_seq.GetSize(); }
-    
-    
-    inline void SetHardwareType(int type) { m_hw_type = type; }
-    inline void SetInstSet(const cString& is) { m_inst_set = is; }
-    inline void SetSequence(const cSequence& seq) { m_seq = seq; }
+    inline LIB_EXPORT int GetSize() const { return m_seq.GetSize(); }
     
     
-    cString AsString() const;
+    inline LIB_EXPORT void SetHardwareType(int type) { m_hw_type = type; }
+    inline LIB_EXPORT void SetInstSet(const cString& is) { m_inst_set = is; }
+    inline LIB_EXPORT void SetSequence(const cSequence& seq) { m_seq = seq; }
     
     
-    bool operator==(const cGenome& gen) const
+    cString LIB_EXPORT AsString() const;
+    
+    
+    LIB_EXPORT bool operator==(const cGenome& gen) const
       { return (m_hw_type == gen.m_hw_type && m_inst_set == gen.m_inst_set && m_seq == gen.m_seq); }
-    cGenome& operator=(const cGenome& gen)
+    LIB_EXPORT cGenome& operator=(const cGenome& gen)
       { m_hw_type = gen.m_hw_type; m_inst_set = gen.m_inst_set; m_seq = gen.m_seq; return *this; }
 
     
-    void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
-    void Save(cDataFile& df);
+    LIB_EXPORT void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
+    LIB_EXPORT void Save(cDataFile& df);
     
-    bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cFeedback& feedback);
-    void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
+    LIB_EXPORT bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cFeedback& feedback);
+    LIB_EXPORT void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
   };  
 };
 
