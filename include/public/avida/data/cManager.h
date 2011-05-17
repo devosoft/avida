@@ -25,6 +25,12 @@
 #ifndef AvidaDataManager_h
 #define AvidaDataManager_h
 
+#include "apto/core.h"
+#include "apto/platform.h"
+
+class cWorld;
+
+
 namespace Avida {
   namespace Data {
     
@@ -37,10 +43,32 @@ namespace Avida {
     // cManager - Manages available and active data providers for a given world
     // --------------------------------------------------------------------------------------------------------------
     
-    class cManaager
+    class cManager
     {
+    public:
+      typedef Apto::Functor<cProvider*, Apto::TL::Create<cWorld*> > ProviderActivateFunctor;
+      typedef Apto::SmartPtr<const Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> AvailableSetPtr;
+      
+    private:
+      cWorld* m_world;
+      Apto::Map<Apto::String, ProviderActivateFunctor> m_provider_map;
+      mutable AvailableSetPtr m_available;
+      
+      Apto::Array<cProvider*> m_active_providers;
+      Apto::Map<Apto::String, cProvider*> m_active_map;
+      
+    public:
+      LIB_EXPORT cManager(cWorld* world);
+      
+      LIB_EXPORT AvailableSetPtr GetAvailable() const;
+      LIB_EXPORT bool IsAvailable(const Apto::String& data_id) const;
+      LIB_EXPORT bool IsActive(const Apto::String& data_id) const;
       
       
+      LIB_EXPORT bool Register(const Apto::String& data_id, ProviderActivateFunctor functor);
+      
+    public:
+      LIB_LOCAL void UpdateState();
     };
     
   };
