@@ -1,8 +1,8 @@
 /*
- *  data/cProvider.h
+ *  data/DataTypes.h
  *  avida-core
  *
- *  Created by David on 5/16/11.
+ *  Created by David on 5/18/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,30 +22,38 @@
  *
  */
 
-#ifndef AvidaDataProvider_h
-#define AvidaDataProvider_h
+#ifndef AvidaDataDataTypes_h
+#define AvidaDataDataTypes_h
 
-#include "apto/platform.h"
-#include "avida/data/DataTypes.h"
+#include "apto/core.h"
 
+class cWorld;
 
 namespace Avida {
   namespace Data {
     
-    // cProvider - Data Provider Protocol Definition
+    // Class Declarations
     // --------------------------------------------------------------------------------------------------------------
     
-    class cProvider
-    {
-    public:
-      virtual LIB_EXPORT ~cProvider() { ; }
-      
-      virtual LIB_EXPORT ConstDataSetPtr Provides() const = 0;
-      virtual LIB_EXPORT void UpdateProvidedValues() = 0;
-      
-      virtual LIB_EXPORT PackagePtr GetProvidedValue(const Apto::String& data_id) const = 0;
-      virtual LIB_EXPORT Apto::String DescribeProvidedValue(const Apto::String& data_id) const = 0;
-    };
+    class cPackage;
+    class cProvider;    
+    class cRecorder;
+
+    
+    // Type Declarations
+    // --------------------------------------------------------------------------------------------------------------
+
+    typedef Apto::Functor<cProvider*, Apto::TL::Create<cWorld*> > ProviderActivateFunctor;
+    
+    typedef Apto::SmartPtr<cRecorder, Apto::ThreadSafeRefCount> RecorderPtr;
+    
+    typedef Apto::SmartPtr<Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> DataSetPtr;
+    typedef Apto::SmartPtr<const Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> ConstDataSetPtr;
+    typedef Apto::Set<Apto::String>::ConstIterator ConstDataSetIterator;
+    
+    typedef Apto::SmartPtr<cPackage, Apto::ThreadSafeRefCount> PackagePtr;
+    
+    typedef Apto::Functor<PackagePtr, Apto::TL::Create<const Apto::String&> > DataRetrievalFunctor;
     
   };
 };

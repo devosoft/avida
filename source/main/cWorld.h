@@ -31,6 +31,10 @@
 
 namespace Avida {
   class cWorldDriver;
+  
+  namespace Data {
+    class cManager;
+  };
 };
 
 class cAnalyze;
@@ -61,13 +65,15 @@ protected:
   cAvidaConfig* m_conf;
   cAvidaContext m_ctx;
   cClassificationManager* m_class_mgr;
-  cDataFileManager* m_data_mgr;
+  cDataFileManager* m_datafile_mgr;
   cEnvironment* m_env;
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
   cStats* m_stats;
   cWorldDriver* m_driver;
+  
+  Avida::Data::cManager* m_data_mgr;
 
   cRandom m_rng;
   
@@ -77,8 +83,8 @@ protected:
   bool m_own_driver;      // specifies whether this world object should manage its driver object
 
   cWorld(cAvidaConfig* cfg, const cString& wd)
-    : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng), m_class_mgr(NULL), m_data_mgr(NULL)
-    , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL) { ; }
+    : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng), m_class_mgr(NULL), m_datafile_mgr(NULL)
+    , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL) { ; }
   
 private:
   cWorld(); // @not_implemented
@@ -99,7 +105,7 @@ public:
   cAvidaConfig& GetConfig() { return *m_conf; }
   cAvidaContext& GetDefaultContext() { return m_ctx; }
   cClassificationManager& GetClassificationManager() { return *m_class_mgr; }
-  cDataFileManager& GetDataFileManager() { return *m_data_mgr; }
+  cDataFileManager& GetDataFileManager() { return *m_datafile_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }
   cHardwareManager& GetHardwareManager() { return *m_hw_mgr; }
   cPopulation& GetPopulation() { return *m_pop; }
@@ -107,9 +113,11 @@ public:
   cStats& GetStats() { return *m_stats; }
   cWorldDriver& GetDriver() { return *m_driver; }
   
+  Avida::Data::cManager& GetDataManager() { return *m_data_mgr; }
+  
   // Access to Data File Manager
-  std::ofstream& GetDataFileOFStream(const cString& fname) { return m_data_mgr->GetOFStream(fname); }
-  cDataFile& GetDataFile(const cString& fname) { return m_data_mgr->Get(fname); }  
+  std::ofstream& GetDataFileOFStream(const cString& fname) { return m_datafile_mgr->GetOFStream(fname); }
+  cDataFile& GetDataFile(const cString& fname) { return m_datafile_mgr->Get(fname); }  
 
   // Config Dependent Modes
   bool GetTestOnDivide() const { return m_test_on_div; }

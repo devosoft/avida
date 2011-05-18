@@ -28,6 +28,7 @@
 #include "AvidaTools.h"
 
 #include "avida/core/cSequence.h"
+#include "avida/data/cProvider.h"
 
 #include "cBioGroupListener.h"
 #include "cDoubleSum.h"
@@ -70,17 +71,28 @@ struct flow_rate_tuple {
 };
 
 
-class cStats : public cBioGroupListener
+class cStats : public cBioGroupListener, public Data::cProvider
 {
 private:
   cWorld* m_world;
 
   tDataManager<cStats> m_data_manager;
+  
+  struct ProvidedData
+  {
+    Apto::String description;
+    Apto::Functor<Data::PackagePtr, Apto::NullType> GetData;
+    
+    ProvidedData() { ; }
+    ProvidedData(const Apto::String& desc, Apto::Functor<Data::PackagePtr, Apto::NullType> func)
+      : description(desc), GetData(func) { ; } 
+  };
+  Apto::Map<Apto::String, ProvidedData> m_provided_data;
+  Data::DataSetPtr m_provides;
 
 
   // --------  Time scales  ---------
   int m_update;
-  int sub_update;
   double avida_time;
 
 
@@ -326,18 +338,26 @@ public:
   cStats(cWorld* world);
   ~cStats() { ; }
 
+  // cBioGroupListener
   void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu);
-
+  
+  
+  // Data::cProvider
+  Data::ConstDataSetPtr Provides() const;
+  void UpdateProvidedValues();
+  Data::PackagePtr GetProvidedValue(const Apto::String& data_id) const;
+  Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
+  
+  
+  // cStats
   void SetupPrintDatabase();
   void ProcessUpdate();
 
-  inline void SetCurrentUpdate(int new_update) { m_update = new_update; sub_update = 0; }
-  inline void IncCurrentUpdate() { m_update++; sub_update = 0; }
-  inline void IncSubUpdate() { sub_update++; }
+  inline void SetCurrentUpdate(int new_update) { m_update = new_update; }
+  inline void IncCurrentUpdate() { m_update++; }
 
   // Accessors...
   int GetUpdate() const { return m_update; }
-  int GetSubUpdate() const { return sub_update; }
   double GetGeneration() const { return SumGeneration().Average(); }
 
   double GetDomMerit() const { return dom_merit; }
@@ -1083,6 +1103,10 @@ protected:
 public:
 	//! Print organism locations.
 	void PrintOrganismLocation(const cString& filename);
+  
+  
+private:
+  template <class T> Data::PackagePtr packageData(T (cStats::*)());
 };
 
 

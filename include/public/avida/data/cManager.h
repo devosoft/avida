@@ -25,50 +25,45 @@
 #ifndef AvidaDataManager_h
 #define AvidaDataManager_h
 
-#include "apto/core.h"
 #include "apto/platform.h"
-
-class cWorld;
+#include "avida/data/DataTypes.h"
 
 
 namespace Avida {
   namespace Data {
-    
-    // Class Declarations
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class cProvider;
-    
     
     // cManager - Manages available and active data providers for a given world
     // --------------------------------------------------------------------------------------------------------------
     
     class cManager
     {
-    public:
-      typedef Apto::Functor<cProvider*, Apto::TL::Create<cWorld*> > ProviderActivateFunctor;
-      typedef Apto::SmartPtr<const Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> AvailableSetPtr;
-      
     private:
       cWorld* m_world;
       Apto::Map<Apto::String, ProviderActivateFunctor> m_provider_map;
-      mutable AvailableSetPtr m_available;
+      mutable DataSetPtr m_available;
+      
+      Apto::Set<RecorderPtr> m_recorders;
       
       Apto::Array<cProvider*> m_active_providers;
       Apto::Map<Apto::String, cProvider*> m_active_map;
       
     public:
       LIB_EXPORT cManager(cWorld* world);
+      LIB_EXPORT ~cManager();
       
-      LIB_EXPORT AvailableSetPtr GetAvailable() const;
+      LIB_EXPORT ConstDataSetPtr GetAvailable() const;
       LIB_EXPORT bool IsAvailable(const Apto::String& data_id) const;
       LIB_EXPORT bool IsActive(const Apto::String& data_id) const;
       
+      LIB_EXPORT bool AttachRecorder(RecorderPtr recorder);
+      LIB_EXPORT bool DetachRecorder(RecorderPtr recorder);
       
       LIB_EXPORT bool Register(const Apto::String& data_id, ProviderActivateFunctor functor);
       
     public:
       LIB_LOCAL void UpdateState();
+      
+      LIB_LOCAL PackagePtr GetCurrentValue(const Apto::String& data_id) const;
     };
     
   };

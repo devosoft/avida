@@ -1,8 +1,8 @@
 /*
- *  data/cProvider.h
+ *  data/cPackage.h
  *  avida-core
  *
- *  Created by David on 5/16/11.
+ *  Created by David on 5/18/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,29 +22,44 @@
  *
  */
 
-#ifndef AvidaDataProvider_h
-#define AvidaDataProvider_h
+#ifndef AvidaDataPackage_h
+#define AvidaDataPackage_h
 
+#include "apto/core/String.h"
+#include "apto/core/StringUtils.h"
 #include "apto/platform.h"
-#include "avida/data/DataTypes.h"
 
 
 namespace Avida {
   namespace Data {
     
-    // cProvider - Data Provider Protocol Definition
-    // --------------------------------------------------------------------------------------------------------------
-    
-    class cProvider
+    class cPackage
     {
     public:
-      virtual LIB_EXPORT ~cProvider() { ; }
+      LIB_EXPORT virtual ~cPackage() { ; }
       
-      virtual LIB_EXPORT ConstDataSetPtr Provides() const = 0;
-      virtual LIB_EXPORT void UpdateProvidedValues() = 0;
+//      LIB_EXPORT virtual bool IsAggregate() const = 0;
+//      LIB_EXPORT virtual Apto::String GetAggregateDescriptor() const = 0;
       
-      virtual LIB_EXPORT PackagePtr GetProvidedValue(const Apto::String& data_id) const = 0;
-      virtual LIB_EXPORT Apto::String DescribeProvidedValue(const Apto::String& data_id) const = 0;
+      LIB_EXPORT virtual bool BoolValue() const = 0;
+      LIB_EXPORT virtual int IntValue() const = 0;
+      LIB_EXPORT virtual double DoubleValue() const = 0;
+      LIB_EXPORT virtual Apto::String StringValue() const = 0;
+    };
+    
+    
+    template <class T> class tPackage : public cPackage
+    {
+    private:
+      T m_value;
+      
+    public:
+      tPackage(T value) : m_value(value) { ; }
+      
+      bool BoolValue() const { return m_value; }
+      int IntValue() const { return m_value; }
+      double DoubleValue() const { return m_value; }
+      Apto::String StringValue() const { return Apto::AsStr(m_value); }
     };
     
   };

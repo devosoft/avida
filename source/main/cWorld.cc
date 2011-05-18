@@ -24,6 +24,8 @@
 #include "avida/Avida.h"
 #include "AvidaTools.h"
 
+#include "avida/data/cManager.h"
+
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
 #include "cBioGroupManager.h"
@@ -68,8 +70,10 @@ cWorld::~cWorld()
   delete m_stats; m_stats = NULL;
 
   // Delete after all classes that may be logging items
-  if (m_data_mgr) { m_data_mgr->FlushAll(); }
-  delete m_data_mgr; m_data_mgr = NULL;
+  if (m_datafile_mgr) { m_datafile_mgr->FlushAll(); }
+  delete m_datafile_mgr; m_datafile_mgr = NULL;
+  
+  delete m_data_mgr;
   
   // Delete Last
   delete m_conf; m_conf = NULL;
@@ -89,7 +93,9 @@ bool cWorld::setup(cUserFeedback* feedback)
   // Setup Random Number Generator
   m_rng.ResetSeed(m_conf->RANDOM_SEED.Get());
   
-  m_data_mgr = new cDataFileManager(FileSystem::GetAbsolutePath(m_conf->DATA_DIR.Get(), m_working_dir), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
+  m_datafile_mgr = new cDataFileManager(FileSystem::GetAbsolutePath(m_conf->DATA_DIR.Get(), m_working_dir), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
+  
+  m_data_mgr = new Avida::Data::cManager(this);
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);

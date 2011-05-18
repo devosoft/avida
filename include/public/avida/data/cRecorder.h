@@ -1,8 +1,8 @@
 /*
- *  data/cProvider.h
+ *  data/cRecorder.h
  *  avida-core
  *
- *  Created by David on 5/16/11.
+ *  Created by David on 5/18/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef AvidaDataProvider_h
-#define AvidaDataProvider_h
+#ifndef AvidaDataRecorder_h
+#define AvidaDataRecorder_h
 
 #include "apto/platform.h"
 #include "avida/data/DataTypes.h"
@@ -32,19 +32,16 @@
 namespace Avida {
   namespace Data {
     
-    // cProvider - Data Provider Protocol Definition
-    // --------------------------------------------------------------------------------------------------------------
+    class cPackage;
     
-    class cProvider
+    class cRecorder
     {
     public:
-      virtual LIB_EXPORT ~cProvider() { ; }
+      LIB_EXPORT virtual ~cRecorder() { ; }
       
-      virtual LIB_EXPORT ConstDataSetPtr Provides() const = 0;
-      virtual LIB_EXPORT void UpdateProvidedValues() = 0;
+      LIB_EXPORT virtual ConstDataSetPtr GetRequested() = 0;
       
-      virtual LIB_EXPORT PackagePtr GetProvidedValue(const Apto::String& data_id) const = 0;
-      virtual LIB_EXPORT Apto::String DescribeProvidedValue(const Apto::String& data_id) const = 0;
+      LIB_EXPORT virtual void NotifyData(DataRetrievalFunctor retrieve_data); 
     };
     
   };

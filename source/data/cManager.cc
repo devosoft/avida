@@ -24,17 +24,28 @@
 
 #include "avida/data/cManager.h"
 
+#include "avida/data/cPackage.h"
+#include "avida/data/cProvider.h"
+#include "avida/data/cRecorder.h"
+
+#include <cassert>
+
 
 Avida::Data::cManager::cManager(cWorld* world) : m_world(world)
 {
   
-  
 }
 
-Avida::Data::cManager::AvailableSetPtr Avida::Data::cManager::GetAvailable() const
+Avida::Data::cManager::~cManager()
+{
+  for (int i = 0; i < m_active_providers.GetSize(); i++) delete m_active_providers[i];
+}
+
+
+Avida::Data::ConstDataSetPtr Avida::Data::cManager::GetAvailable() const
 {
   if (!m_available) {
-    Apto::SmartPtr<Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> available(new Apto::Set<Apto::String>);
+    DataSetPtr available(new Apto::Set<Apto::String>);
     for (Apto::Map<Apto::String, ProviderActivateFunctor>::KeyIterator it = m_provider_map.Keys(); it.Next();) {
       available->Insert(*it.Get());
     }
@@ -42,3 +53,79 @@ Avida::Data::cManager::AvailableSetPtr Avida::Data::cManager::GetAvailable() con
   }
   return m_available;
 }
+
+bool Avida::Data::cManager::IsAvailable(const Apto::String& data_id) const
+{
+  return m_provider_map.Has(data_id);
+}
+
+bool Avida::Data::cManager::IsActive(const Apto::String& data_id) const
+{
+  return m_active_map.Has(data_id);
+}
+
+
+bool Avida::Data::cManager::AttachRecorder(RecorderPtr recorder)
+{
+  ConstDataSetPtr requested = recorder->GetRequested();
+  
+  // Make sure that all requested data values are available
+  for (ConstDataSetIterator it = requested->Begin(); it.Next();) if (!m_provider_map.Has(*it.Get())) return false;
+  
+  // Make sure that all requested data values are active
+  for (ConstDataSetIterator it = requested->Begin(); it.Next();) {
+    if (!m_active_map.Has(*it.Get())) {
+      // Request data not active, instantiate provider and register the values it provides as active
+      cProvider* provider = (m_provider_map.Get(*it.Get()))(m_world);
+      assert(provider);
+      
+      m_active_providers.Push(provider);
+
+      ConstDataSetPtr provided = provider->Provides();
+      for (ConstDataSetIterator pit = provided->Begin(); pit.Next();) {
+        if (!m_active_map.Has(*pit.Get())) m_active_map[*pit.Get()] = provider;
+      }
+    }
+  }
+  
+  // Store the recorder
+  m_recorders.Insert(recorder);
+  return true;
+}
+
+bool Avida::Data::cManager::DetachRecorder(RecorderPtr recorder)
+{
+  // @TODO - this should probably deactivate data providers that are no longer needed, or at least adjust schedule
+  return m_recorders.Remove(recorder);
+}
+
+
+bool Avida::Data::cManager::Register(const Apto::String& data_id, ProviderActivateFunctor functor)
+{
+  if (m_provider_map.Has(data_id)) return false;
+  
+  m_provider_map[data_id] = functor;
+  return true;
+}
+
+
+void Avida::Data::cManager::UpdateState()
+{
+  // Update all of the active providers
+  for (int i = 0; i < m_active_providers.GetSize(); i++) m_active_providers[i]->UpdateProvidedValues();
+  
+  // Notify recorders that new data is available
+  DataRetrievalFunctor drf(this, &cManager::GetCurrentValue);
+  for (Apto::Set<RecorderPtr>::Iterator it = m_recorders.Begin(); it.Next();) {
+    (*it.Get())->NotifyData(drf);
+  }
+}
+
+Avida::Data::PackagePtr Avida::Data::cManager::GetCurrentValue(const Apto::String& data_id) const
+{
+  cProvider* provider = NULL;
+  if (m_active_map.Get(data_id, provider)) return provider->GetProvidedValue(data_id);
+  
+  return PackagePtr();
+}
+

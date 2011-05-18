@@ -23,6 +23,7 @@
 #include "cStats.h"
 
 #include "avida/core/cWorldDriver.h"
+#include "avida/data/cPackage.h"
 
 #include "cBioGroup.h"
 #include "cDataFile.h"
@@ -56,7 +57,6 @@ cStats::cStats(cWorld* world)
   : m_world(world)
   , m_data_manager(this, "population_data")
   , m_update(-1)
-  , sub_update(0)
   , avida_time(0)
   , rave_true_replication_rate( 500 )
   , entropy(0.0)
@@ -308,6 +308,27 @@ void cStats::NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu)
 }
 
 
+Data::ConstDataSetPtr cStats::Provides() const
+{
+  
+}
+
+void cStats::UpdateProvidedValues()
+{
+  // Nothing for now, all handled by ProcessUpdate()
+}
+
+Data::PackagePtr cStats::GetProvidedValue(const Apto::String& data_id) const
+{
+  
+}
+
+template <class T> Data::PackagePtr cStats::packageData(T (cStats::*func)())
+{
+  return Data::PackagePtr(new Data::tPackage<T>(this->*func()));
+}
+
+
 void cStats::SetupPrintDatabase()
 {
   // Load in all the keywords, descriptions, and associated functions for
@@ -315,7 +336,6 @@ void cStats::SetupPrintDatabase()
 
   // Time Stats
   m_data_manager.Add("update",      "Update",      &cStats::GetUpdate);
-  m_data_manager.Add("sub_update",  "Sub-Update",  &cStats::GetSubUpdate);
   m_data_manager.Add("generation",  "Generation",  &cStats::GetGeneration);
 
   // Population Level Stats
