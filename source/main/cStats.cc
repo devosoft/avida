@@ -23,6 +23,7 @@
 #include "cStats.h"
 
 #include "avida/core/cWorldDriver.h"
+#include "avida/data/cManager.h"
 #include "avida/data/cPackage.h"
 
 #include "cBioGroup.h"
@@ -279,7 +280,7 @@ cStats::cStats(cWorld* world)
   relative_pos_event_count.SetAll(0);
   relative_pos_pred_sat.SetAll(0);
 
-  SetupPrintDatabase();
+  setupProvidedData();
 }
 
 
@@ -310,7 +311,14 @@ void cStats::NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu)
 
 Data::ConstDataSetPtr cStats::Provides() const
 {
-  
+  if (!m_provides) {
+    Data::DataSetPtr provides(new Apto::Set<Apto::String>);
+    for (Apto::Map<Apto::String, ProvidedData>::KeyIterator it = m_provided_data.Keys(); it.Next();) {
+      provides->Insert(*it.Get());
+    }
+    m_provides = provides;
+  }
+  return m_provides;
 }
 
 void cStats::UpdateProvidedValues()
@@ -320,23 +328,58 @@ void cStats::UpdateProvidedValues()
 
 Data::PackagePtr cStats::GetProvidedValue(const Apto::String& data_id) const
 {
-  
+  ProvidedData data_entry;
+  Data::PackagePtr rtn;
+  if (m_provided_data.Get(data_id, data_entry)) {
+    rtn = data_entry.GetData();
+  }
+  assert(rtn);
+  return rtn;
 }
 
-template <class T> Data::PackagePtr cStats::packageData(T (cStats::*func)())
+Apto::String cStats::DescribeProvidedValue(const Apto::String& data_id) const
 {
-  return Data::PackagePtr(new Data::tPackage<T>(this->*func()));
+  ProvidedData data_entry;
+  Apto::String rtn;
+  if (m_provided_data.Get(data_id, data_entry)) {
+    rtn = data_entry.description;
+  }
+  assert(rtn != "");
+  return rtn;
+}
+
+cStats* cStats::GetDataProvider(cWorld*) { return this; }
+
+template <class T> Data::PackagePtr cStats::packageData(T (cStats::*func)() const) const
+{
+  return Data::PackagePtr(new Data::tPackage<T>((this->*func)()));
 }
 
 
-void cStats::SetupPrintDatabase()
+void cStats::setupProvidedData()
 {
   // Load in all the keywords, descriptions, and associated functions for
   // data management.
+  
+  // Setup functors and references for use in the PROVIDE macro
+  Data::ProviderActivateFunctor activate(this, &cStats::GetDataProvider);
+  Data::cManager& mgr = m_world->GetDataManager();
+  Apto::Functor<Data::PackagePtr, Apto::TL::Create<int (cStats::*)() const> > intStat(this, &cStats::packageData<int>);
+  Apto::Functor<Data::PackagePtr, Apto::TL::Create<double (cStats::*)() const> > doubleStat(this, &cStats::packageData<double>);
 
+  // Define PROVIDE macro to simplify instantiating new provided data
+#define PROVIDE(name, desc, type, func) { \
+  m_provided_data[name] = ProvidedData(desc, Apto::BindFirst(type ## Stat, &cStats::func));\
+  mgr.Register(name, activate); \
+}
+  
   // Time Stats
   m_data_manager.Add("update",      "Update",      &cStats::GetUpdate);
   m_data_manager.Add("generation",  "Generation",  &cStats::GetGeneration);
+
+  PROVIDE("core.update",             "Update",                               int,    GetUpdate);
+  PROVIDE("core.ave_generation",     "Average Generation",                   double, GetGeneration);
+  
 
   // Population Level Stats
   m_data_manager.Add("entropy",         "Genotype Entropy (Diversity)", &cStats::GetEntropy);
@@ -383,12 +426,16 @@ void cStats::SetupPrintDatabase()
   m_data_manager.Add("threads",        "Count of Threads in Population",         &cStats::GetNumThreads);
   m_data_manager.Add("num_no_birth",   "Count of Childless Organisms",           &cStats::GetNumNoBirthCreatures);
 
+  PROVIDE("core.organisms",          "Count of Organisms in the Population", int,    GetNumCreatures);
+
+  
   // Total Counts...
   m_data_manager.Add("tot_cpus",      "Total Organisms ever in Population", &cStats::GetTotCreatures);
   m_data_manager.Add("tot_genotypes", "Total Genotypes ever in Population", &cStats::GetTotGenotypes);
   m_data_manager.Add("tot_threshold", "Total Threshold Genotypes Ever",     &cStats::GetTotThreshold);
   m_data_manager.Add("tot_lineages",  "Total Lineages ever in Population",  &cStats::GetTotLineages);
 
+  
   // Some Average Data...
   m_data_manager.Add("ave_repro_rate", "Average Repro-Rate (1/Gestation)", &cStats::GetAveReproRate);
   m_data_manager.Add("ave_merit",      "Average Merit",                    &cStats::GetAveMerit);
@@ -404,11 +451,21 @@ void cStats::SetupPrintDatabase()
   m_data_manager.Add("ave_exe_length", "Average Executed Length",          &cStats::GetAveExeSize);
   m_data_manager.Add("ave_thresh_age", "Average Threshold Genotype Age",   &cStats::GetAveThresholdAge);
 
-  // And a couple of Maximums
+  PROVIDE("core.ave_metabolic_rate", "Average Metabolic Rate",               double, GetAveMerit);
+  PROVIDE("core.ave_age",            "Average Organism Age (in updates)",    double, GetAveCreatureAge);
+  PROVIDE("core.ave_gestation_time", "Average Gestation Time",               double, GetAveGestation);
+  PROVIDE("core.ave_fitness",        "Average Fitness",                      double, GetAveFitness);
+
+  
+  // Maximums
   m_data_manager.Add("max_fitness", "Maximum Fitness in Population", &cStats::GetMaxFitness);
   m_data_manager.Add("max_merit",   "Maximum Merit in Population",   &cStats::GetMaxMerit);
 
+  
+  // Minimums
   m_data_manager.Add("min_fitness", "Minimum Fitness in Population", &cStats::GetMinFitness);
+  
+#undef PROVIDE
 }
 
 void cStats::ZeroTasks()

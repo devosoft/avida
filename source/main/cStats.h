@@ -78,6 +78,8 @@ private:
 
   tDataManager<cStats> m_data_manager;
   
+  
+  // --------  Data Provider Support  ---------
   struct ProvidedData
   {
     Apto::String description;
@@ -88,7 +90,7 @@ private:
       : description(desc), GetData(func) { ; } 
   };
   Apto::Map<Apto::String, ProvidedData> m_provided_data;
-  Data::DataSetPtr m_provides;
+  mutable Data::ConstDataSetPtr m_provides;
 
 
   // --------  Time scales  ---------
@@ -348,9 +350,9 @@ public:
   Data::PackagePtr GetProvidedValue(const Apto::String& data_id) const;
   Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
   
+  cStats* GetDataProvider(cWorld*);
   
   // cStats
-  void SetupPrintDatabase();
   void ProcessUpdate();
 
   inline void SetCurrentUpdate(int new_update) { m_update = new_update; }
@@ -1106,7 +1108,11 @@ public:
   
   
 private:
-  template <class T> Data::PackagePtr packageData(T (cStats::*)());
+  // Initialization
+  void setupProvidedData();
+  
+  // Helper Methods
+  template <class T> Data::PackagePtr packageData(T (cStats::*)() const) const;
 };
 
 
