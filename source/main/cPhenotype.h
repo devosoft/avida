@@ -23,7 +23,7 @@
 #ifndef cPhenotype_h
 #define cPhenotype_h
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include <fstream>
 
@@ -296,19 +296,19 @@ public:
 	
   bool OK();
 
-  void ResetMerit(const cSequence & _cgenome);
+  void ResetMerit(const Sequence & _cgenome);
   void Sterilize();
   // Run when being setup *as* and offspring.
-  void SetupOffspring(const cPhenotype & parent_phenotype, const cSequence & _genome);
+  void SetupOffspring(const cPhenotype & parent_phenotype, const Sequence & _genome);
 
   // Run when being setup as an injected organism.
-  void SetupInject(const cSequence & _genome);
+  void SetupInject(const Sequence & _genome);
 
   // Run when this organism successfully executes a divide.
-  void DivideReset(const cSequence & _genome);
+  void DivideReset(const Sequence & _genome);
   
   // Same as DivideReset(), but only run in test CPUs.
-  void TestDivideReset(const cSequence & _genome);
+  void TestDivideReset(const Sequence & _genome);
 
   // Run when an organism is being forced to replicate, but not at the end
   // of its replication cycle.  Assume exact clone with no mutations.
@@ -397,7 +397,7 @@ public:
 
 
   void  NewTrial(); //Save the current fitness, and reset the bonus. @JEB
-  void  TrialDivideReset(const cSequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
+  void  TrialDivideReset(const Sequence & _genome); //Subset of resets specific to division not done by NewTrial. @JEB
   const tArray<double>& GetTrialFitnesses() { return cur_trial_fitnesses; }; //Return list of trial fitnesses. @JEB
   const tArray<double>& GetTrialBonuses() { return cur_trial_bonuses; }; //Return list of trial bonuses. @JEB
   const tArray<int>& GetTrialTimesUsed() { return cur_trial_times_used; }; //Return list of trial times used. @JEB

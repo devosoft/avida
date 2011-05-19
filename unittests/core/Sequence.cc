@@ -1,5 +1,5 @@
 /*
- *  unittests/core/cSequence.cc
+ *  unittests/core/Sequence.cc
  *  avida-core
  *
  *  Created by David on 3/16/11.
@@ -22,7 +22,7 @@
  *
  */
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "gtest/gtest.h"
 

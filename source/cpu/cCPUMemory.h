@@ -23,7 +23,7 @@
 #ifndef cCPUMemory_h
 #define cCPUMemory_h
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #ifndef tArray_h
 #include "tArray.h"
@@ -32,7 +32,7 @@
 using namespace Avida;
 
 
-class cCPUMemory : public cSequence
+class cCPUMemory : public Sequence
 {
 private:
 	static const unsigned char MASK_COPIED   = 0x01;
@@ -51,9 +51,9 @@ private:
 
 public:
   cCPUMemory(const cCPUMemory& in_memory);
-  cCPUMemory(const cSequence& in_genome) : cSequence(in_genome), m_flag_array(in_genome.GetSize()) { ; }
-  explicit cCPUMemory(int size = 1)  : cSequence(size), m_flag_array(size) { ClearFlags(); }
-  cCPUMemory(const cString& in_string) : cSequence(in_string), m_flag_array(in_string.GetSize()) { ; }
+  cCPUMemory(const Sequence& in_genome) : Sequence(in_genome), m_flag_array(in_genome.GetSize()) { ; }
+  explicit cCPUMemory(int size = 1)  : Sequence(size), m_flag_array(size) { ClearFlags(); }
+  cCPUMemory(const cString& in_string) : Sequence(in_string), m_flag_array(in_string.GetSize()) { ; }
   ~cCPUMemory() { ; }
 
   inline bool FlagCopied(int pos) const     { return MASK_COPIED   & m_flag_array[pos]; }
@@ -97,12 +97,12 @@ public:
   void Resize(int new_size);
   void Copy(int to, int from);
   void Insert(int pos, const cInstruction& inst);
-  void Insert(int pos, const cSequence& genome);
+  void Insert(int pos, const Sequence& genome);
   void Remove(int pos, int num_sites = 1);
-  void Replace(int pos, int num_sites, const cSequence& genome);
+  void Replace(int pos, int num_sites, const Sequence& genome);
 
   void operator=(const cCPUMemory& other_memory);
-  void operator=(const cSequence& other_genome);
+  void operator=(const Sequence& other_genome);
 };
 
 #endif

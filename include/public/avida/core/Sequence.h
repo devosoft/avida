@@ -1,5 +1,5 @@
 /*
- *  core/cSequence.h
+ *  core/Sequence.h
  *  avida-core
  *
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef cSequence_h
-#define cSequence_h
+#ifndef Sequence_h
+#define Sequence_h
 
 #include <cassert>
 
@@ -37,10 +37,10 @@ class cInstSet;
 
 namespace Avida {
   
-  // cSequence - a series of bytes containing a base level genetic sequence
+  // Sequence - a series of bytes containing a base level genetic sequence
   // --------------------------------------------------------------------------------------------------------------
 
-  class cSequence
+  class Sequence
   {
   protected:
     tArray<cInstruction> m_seq;
@@ -49,11 +49,11 @@ namespace Avida {
     
     
   public:
-    cSequence() { ; }
-    cSequence(const cSequence& seq);
-    explicit cSequence(int size) : m_seq(size), m_active_size(size) { ; }
-    cSequence(const cString& str);
-    virtual ~cSequence();
+    Sequence() { ; }
+    Sequence(const Sequence& seq);
+    explicit Sequence(int size) : m_seq(size), m_active_size(size) { ; }
+    Sequence(const cString& str);
+    virtual ~Sequence();
     
 
     // Accessor Methods
@@ -75,16 +75,16 @@ namespace Avida {
     virtual void Resize(int new_size);
     virtual void Copy(int to, int from);
     virtual void Insert(int pos, const cInstruction& inst);
-    virtual void Insert(int pos, const cSequence& genome);
+    virtual void Insert(int pos, const Sequence& genome);
     virtual void Remove(int pos, int num_sites = 1);
-    virtual void Replace(int pos, int num_sites, const cSequence& seq);
-    virtual void Replace(const cSequence& g, int begin, int end);
+    virtual void Replace(int pos, int num_sites, const Sequence& seq);
+    virtual void Replace(const Sequence& g, int begin, int end);
     virtual void Rotate(int n);
     
-    virtual void operator=(const cSequence& other_seq);
-    virtual bool operator==(const cSequence& other_seq) const;
-    virtual bool operator!=(const cSequence& other_seq) const { return !(this->operator==(other_seq)); }
-    virtual bool operator<(const cSequence& other_seq) const { return AsString() < other_seq.AsString(); }
+    virtual void operator=(const Sequence& other_seq);
+    virtual bool operator==(const Sequence& other_seq) const;
+    virtual bool operator!=(const Sequence& other_seq) const { return !(this->operator==(other_seq)); }
+    virtual bool operator<(const Sequence& other_seq) const { return AsString() < other_seq.AsString(); }
     
 
     
@@ -92,7 +92,7 @@ namespace Avida {
     // --------------------------------------------------------------------------------------------------------------
     
     inline void Append(const cInstruction& inst) { Insert(GetSize(), inst); }
-    inline void Append(const cSequence& seq) { Insert(GetSize(), seq); }
+    inline void Append(const Sequence& seq) { Insert(GetSize(), seq); }
     
     int FindInst(const cInstruction& inst, int start_index = 0) const;
     int CountInst(const cInstruction& inst) const;
@@ -105,20 +105,20 @@ namespace Avida {
     // Sequence Creation Methods
     // --------------------------------------------------------------------------------------------------------------
     
-    cSequence Crop(int start, int end) const;
-    cSequence Cut(int start, int end) const;
+    Sequence Crop(int start, int end) const;
+    Sequence Cut(int start, int end) const;
     
-    static cSequence Join(const cSequence& lhs, const cSequence& rhs);
+    static Sequence Join(const Sequence& lhs, const Sequence& rhs);
 
     
     // Genetic Distance Methods
     // --------------------------------------------------------------------------------------------------------------
     
-    static int FindOverlap(const cSequence& seq1, const cSequence& seq2, int offset = 0);
-    static int FindHammingDistance(const cSequence& seq1, const cSequence& seq2, int offset = 0);
-    static int FindBestOffset(const cSequence& seq1, const cSequence& seq2);
-    static int FindSlidingDistance(const cSequence& seq1, const cSequence& seq2);
-    static int FindEditDistance(const cSequence& seq1, const cSequence& seq2);
+    static int FindOverlap(const Sequence& seq1, const Sequence& seq2, int offset = 0);
+    static int FindHammingDistance(const Sequence& seq1, const Sequence& seq2, int offset = 0);
+    static int FindBestOffset(const Sequence& seq1, const Sequence& seq2);
+    static int FindSlidingDistance(const Sequence& seq1, const Sequence& seq2);
+    static int FindEditDistance(const Sequence& seq1, const Sequence& seq2);
     
     
   protected:
@@ -127,10 +127,10 @@ namespace Avida {
   };
 
 
-  // cSequence Helper Methods
+  // Sequence Helper Methods
   // --------------------------------------------------------------------------------------------------------------
   
-  inline cSequence operator+(const cSequence& lhs, const cSequence& rhs) { return cSequence::Join(lhs, rhs); }
+  inline Sequence operator+(const Sequence& lhs, const Sequence& rhs) { return Sequence::Join(lhs, rhs); }
 };
 
 #endif

@@ -23,7 +23,7 @@
 
 #include "AvidaTools.h"
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"
@@ -150,8 +150,8 @@ public:
   void Process(cAvidaContext& ctx)
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-    Genome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
-    cSequence& seq = mg.GetSequence();
+    Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length));
+    Sequence& seq = mg.GetSequence();
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
     m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
   }
@@ -199,8 +199,8 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
-      cSequence& seq = mg.GetSequence();
+      Genome mg(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_length + 1));
+      Sequence& seq = mg.GetSequence();
       for (int j = 0; j < m_length; j++) {
         cInstruction inst = is.GetRandomInst(ctx);
         while (is.GetRedundancy(inst) == 0) inst = is.GetRandomInst(ctx);
@@ -394,7 +394,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
+      Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
@@ -456,7 +456,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
+      Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
@@ -1344,7 +1344,7 @@ public:
 				
 				// count the number of target instructions in the genome
         const Genome& mg = cell.GetOrganism()->GetGenome();
-				const cSequence& genome = mg.GetSequence();
+				const Sequence& genome = mg.GetSequence();
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
 				currentMinDist.Add(minDist);

@@ -28,7 +28,7 @@
 #endif
 
 #if BOOST_IS_AVAILABLE
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "cOrganism.h"
 #include "cPhenotype.h"

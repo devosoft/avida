@@ -673,7 +673,7 @@ void cAnalyzeGenotype::SetInstSet(const cString& inst_set)
 
 void cAnalyzeGenotype::SetSequence(cString _sequence)
 {
-  cSequence new_genome(_sequence);
+  Sequence new_genome(_sequence);
   m_genome.SetSequence(new_genome);
 }
 

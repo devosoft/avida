@@ -265,9 +265,9 @@ double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu)
   
   // Calculate the stats for the genotype we're working with ...
   const Genome& base_genome = genotype->GetGenome();
-  const cSequence& base_seq = base_genome.GetSequence();
+  const Sequence& base_seq = base_genome.GetSequence();
   Genome mod_genome(base_genome);
-  cSequence& seq = mod_genome.GetSequence();
+  Sequence& seq = mod_genome.GetSequence();
   const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   const int num_lines = base_genome.GetSize();
   double base_fitness = genotype->GetFitness();
@@ -344,9 +344,9 @@ tMatrix< double > cAnalyze::AnalyzeEntropyPairs(cAnalyzeGenotype * genotype, dou
   
   // Calculate the stats for the genotype we're working with ...
   const Genome& base_genome = genotype->GetGenome();
-  const cSequence& base_seq = base_genome.GetSequence();
+  const Sequence& base_seq = base_genome.GetSequence();
   Genome mod_genome(base_genome);
-  cSequence& seq = mod_genome.GetSequence();
+  Sequence& seq = mod_genome.GetSequence();
   const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   const int num_lines = base_genome.GetSize();
   double base_fitness = genotype->GetFitness();
@@ -466,11 +466,11 @@ double cAnalyze::AnalyzeEntropyGivenParent(cAnalyzeGenotype * genotype,
   // Calculate the stats for the genotype we're working with ...
   genotype->Recalculate(m_ctx);
   const Genome& parent_genome = parent->GetGenome();
-  const cSequence& parent_seq = parent_genome.GetSequence();
+  const Sequence& parent_seq = parent_genome.GetSequence();
   const Genome& base_genome = genotype->GetGenome();
-  const cSequence& base_seq = base_genome.GetSequence();
+  const Sequence& base_seq = base_genome.GetSequence();
   Genome mod_genome(base_genome);
-  cSequence& seq = mod_genome.GetSequence();
+  Sequence& seq = mod_genome.GetSequence();
   const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   const int num_lines = base_genome.GetSize();
   
@@ -566,9 +566,9 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
   }
   
   const Genome& genotype1_base_genome = genotype1->GetGenome();
-  const cSequence& genotype1_base_seq = genotype1_base_genome.GetSequence();
+  const Sequence& genotype1_base_seq = genotype1_base_genome.GetSequence();
   Genome genotype1_mod_genome(genotype1_base_genome);
-  cSequence& genotype1_mod_seq = genotype1_mod_genome.GetSequence();
+  Sequence& genotype1_mod_seq = genotype1_mod_genome.GetSequence();
   const int num_insts = m_world->GetHardwareManager().GetInstSet(genotype1_base_genome.GetInstSet()).GetSize();
   const int num_lines = genotype1_base_genome.GetSize();
   double genotype1_base_fitness = genotype1->GetFitness();
@@ -642,9 +642,9 @@ double cAnalyze::IncreasedInfo(cAnalyzeGenotype * genotype1,
   }
   
   const Genome& genotype2_base_genome = genotype2->GetGenome();
-  const cSequence& genotype2_base_seq = genotype2_base_genome.GetSequence();
+  const Sequence& genotype2_base_seq = genotype2_base_genome.GetSequence();
   Genome genotype2_mod_genome(genotype2_base_genome);
-  cSequence& genotype2_mod_seq = genotype2_mod_genome.GetSequence();
+  Sequence& genotype2_mod_seq = genotype2_mod_genome.GetSequence();
   double genotype2_base_fitness = genotype2->GetFitness();
   
   // Loop through all the lines of code, calculate increased information
@@ -767,7 +767,7 @@ void cAnalyze::LoadFile(cString cur_string)
   
   // Setup the genome...
   const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-  Genome default_genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(1));
+  Genome default_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(1));
   int load_count = 0;
   
   for (int line_id = 0; line_id < input_file.GetNumLines(); line_id++) {
@@ -2624,7 +2624,7 @@ void cAnalyze::CommandPrintDiversity(cString cur_string)
     while ((genotype = batch_it.Next()) != NULL) {
       if (genotype->GetGenome().GetInstSet() != is.GetInstSetName() || genotype->GetTaskCount(task_id) == 0) continue;
       
-      const cSequence& genome = genotype->GetGenome().GetSequence();
+      const Sequence& genome = genotype->GetGenome().GetSequence();
       const int num_cpus = genotype->GetNumCPUs();
       task_count[task_id] += num_cpus;
       task_gen_count[task_id]++;
@@ -2773,7 +2773,7 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
   
   for (int i = 0; i< size_community; ++ i) {
     for (int j = i+1; j < size_community; ++ j) {
-      int dist = cSequence::FindHammingDistance(community[i]->GetGenome().GetSequence(),
+      int dist = Sequence::FindHammingDistance(community[i]->GetGenome().GetSequence(),
                                                   community[j]->GetGenome().GetSequence());
       int id1 = community[i]->GetID();
       int id2 = community[j]->GetID();
@@ -2801,13 +2801,13 @@ void cAnalyze::PhyloCommunityComplexity(cString cur_string)
           int parent_id = lineage1_genotype->GetParentID();
           cAnalyzeGenotype * parent = genotype_database.find(parent_id)->second;
           
-          total_dist += cSequence::FindHammingDistance(lineage1_genotype->GetGenome().GetSequence(),
+          total_dist += Sequence::FindHammingDistance(lineage1_genotype->GetGenome().GetSequence(),
                                                          parent->GetGenome().GetSequence());
           lineage1_genotype = parent;
         } else {
           int parent_id = lineage2_genotype->GetParentID();
           cAnalyzeGenotype * parent = genotype_database.find(parent_id)->second;
-          total_dist += cSequence::FindHammingDistance(lineage2_genotype->GetGenome().GetSequence(),
+          total_dist += Sequence::FindHammingDistance(lineage2_genotype->GetGenome().GetSequence(),
                                                          parent->GetGenome().GetSequence());
           
           lineage2_genotype = parent;
@@ -3120,7 +3120,7 @@ void cAnalyze::CommandPrintDistances(cString cur_string)
     while ((genotype2 = batch_it2.Next()) != NULL) {
       const int gen2_count = genotype2->GetNumCPUs();
       const int cur_pairs = gen1_count * gen2_count;
-      const int cur_dist = cSequence::FindEditDistance(genotype1->GetGenome().GetSequence(), genotype2->GetGenome().GetSequence());
+      const int cur_dist = Sequence::FindEditDistance(genotype1->GetGenome().GetSequence(), genotype2->GetGenome().GetSequence());
       dist_total += cur_pairs * cur_dist;
       if (cur_dist > dist_max) dist_max = cur_dist;
       pair_count += cur_pairs;
@@ -3389,9 +3389,9 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
     
     genotype->Recalculate(m_ctx, &test_info);
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
     double base_fitness = genotype->GetFitness();
 
@@ -3577,7 +3577,7 @@ void cAnalyze::AnalyzeCommunityComplexity(cString cur_string)
       << oo_conditional_entropy << " "
       << min_new_info << " " << complexity << "   ";
     
-    int hamm_dist = cSequence::FindHammingDistance(genotype->GetGenome().GetSequence(), used_genotype->GetGenome().GetSequence());
+    int hamm_dist = Sequence::FindHammingDistance(genotype->GetGenome().GetSequence(), used_genotype->GetGenome().GetSequence());
     total_dist += hamm_dist;
     cpx_fp << hamm_dist << " " << total_dist << "   ";
     
@@ -3972,7 +3972,7 @@ void cAnalyze::AnalyzeMateSelection(cString cur_string)
     
     // Do the replacement...  We're only going to test genome0, so we only
     // need to modify that one.
-    cSequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
+    Sequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
     test_genome0.GetSequence().Replace(start0, size0, cross1);
     
     // Do the test.
@@ -4109,7 +4109,7 @@ void cAnalyze::AnalyzeComplexityDelta(cString cur_string)
     
     // Create a copy of the genome.
     Genome mod_genome = genotype->GetGenome();
-    cSequence& mod_seq = mod_genome.GetSequence();
+    Sequence& mod_seq = mod_genome.GetSequence();
     const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(mod_genome.GetInstSet());
     
     if (copy_mut_prob == 0.0 &&
@@ -4343,9 +4343,9 @@ void cAnalyze::AnalyzeKnockouts(cString cur_string)
     
     const int max_line = genotype->GetLength();
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     cInstruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).ActivateNullInst();
     
     // Loop through all the lines of code, testing the removal of each.
@@ -4630,7 +4630,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
       fp << "<tr><th colspan=3>Base Creature";
       tDataEntryCommand<cAnalyzeGenotype> * data_command = NULL;
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome null_genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(1));
+      Genome null_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(1));
       cAnalyzeGenotype null_genotype(m_world, null_genome);
       while ((data_command = output_it.Next()) != NULL) {
         const cFlexVar cur_value = data_command->GetValue(genotype);
@@ -4650,9 +4650,9 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     
     const int max_line = genotype->GetLength();
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     
     // Keep track of the number of failues/successes for attributes...
     int * col_pass_count = new int[num_cols];
@@ -4897,9 +4897,9 @@ void cAnalyze::CommandAverageModularity(cString cur_string)
       
       const int max_line = genotype->GetLength();
       const Genome& base_genome = genotype->GetGenome();
-      const cSequence& base_seq = base_genome.GetSequence();
+      const Sequence& base_seq = base_genome.GetSequence();
       Genome mod_genome(base_genome);
-      cSequence& seq = mod_genome.GetSequence();
+      Sequence& seq = mod_genome.GetSequence();
       cInstruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).ActivateNullInst();
       
       // Create and initialize the modularity matrix
@@ -5136,9 +5136,9 @@ void cAnalyze::CommandAnalyzeModularity(cString cur_string)
   while ((genotype = batch_it.Next()) != NULL) {
     const int base_length = genotype->GetLength();
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     genotype->Recalculate(m_ctx);
     
     const cInstruction null_inst = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).ActivateNullInst();
@@ -5423,9 +5423,9 @@ void cAnalyze::CommandMapMutations(cString cur_string)
     const double base_fitness = genotype->GetFitness();
     const int max_line = genotype->GetLength();
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet());
     const int num_insts = inst_set.GetSize();
     
@@ -5714,7 +5714,7 @@ void cAnalyze::CommandHamming(cString cur_string)
       if (num_pairs == 0) continue;
       
       // And do the tests...
-      const int dist = cSequence::FindHammingDistance(genotype1->GetGenome().GetSequence(), genotype2->GetGenome().GetSequence());
+      const int dist = Sequence::FindHammingDistance(genotype1->GetGenome().GetSequence(), genotype2->GetGenome().GetSequence());
       total_dist += dist * num_pairs;
       total_count += num_pairs;
     }
@@ -5780,7 +5780,7 @@ void cAnalyze::CommandLevenstein(cString cur_string)
       if (num_pairs == 0) continue;
       
       // And do the tests...
-      const int dist = cSequence::FindEditDistance(genotype1->GetGenome().GetSequence(),
+      const int dist = Sequence::FindEditDistance(genotype1->GetGenome().GetSequence(),
                                                      genotype2->GetGenome().GetSequence());
       total_dist += dist * num_pairs;
       total_count += num_pairs;
@@ -5883,8 +5883,8 @@ void cAnalyze::CommandSpecies(cString cur_string)
           } 
           
           // Swap the components
-          cSequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
-          cSequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
+          Sequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
+          Sequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
           test_genome0.GetSequence().Replace(start0, size0, cross1);
           test_genome1.GetSequence().Replace(start1, size1, cross0);
           
@@ -5989,17 +5989,17 @@ void cAnalyze::CommandRecombine(cString cur_string)
         } 
         
         if (size0 > 0 && size1 > 0) {
-          cSequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
-          cSequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
+          Sequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
+          Sequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
           test_genome0.GetSequence().Replace(start0, size0, cross1);
           test_genome1.GetSequence().Replace(start1, size1, cross0);
         }
         else if (size0 > 0) {
-          cSequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
+          Sequence cross0 = test_genome0.GetSequence().Crop(start0, end0);
           test_genome1.GetSequence().Replace(start1, size1, cross0);
         }
         else if (size1 > 0) {
-          cSequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
+          Sequence cross1 = test_genome1.GetSequence().Crop(start1, end1);
           test_genome0.GetSequence().Replace(start0, size0, cross1);
         }
         
@@ -6222,7 +6222,7 @@ void cAnalyze::WriteClone(cString cur_string)
   while ((genotype = batch_it.Next()) != NULL) {
     org_count += genotype->GetNumCPUs();
     const int length = genotype->GetLength();
-    const cSequence& genome = genotype->GetGenome().GetSequence();
+    const Sequence& genome = genotype->GetGenome().GetSequence();
     
     fp << genotype->GetID() << " "
       << length << " ";
@@ -6269,7 +6269,7 @@ void cAnalyze::WriteInjectEvents(cString cur_string)
   while ((genotype = batch_it.Next()) != NULL) {
     const int cur_count = genotype->GetNumCPUs();
     org_count += cur_count;
-    const cSequence& genome = genotype->GetGenome().GetSequence();
+    const Sequence& genome = genotype->GetGenome().GetSequence();
     
     fp << "u 0 InjectSequence "
       << genome.AsString() << " "
@@ -6352,7 +6352,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
   int inject_pos = 0;
   while ((genotype = batchA_it.Next()) != NULL) {
     const int cur_count = genotype->GetNumCPUs();
-    const cSequence& genome = genotype->GetGenome().GetSequence();
+    const Sequence& genome = genotype->GetGenome().GetSequence();
     double cur_merit = start_merit;
     if (cur_merit < 0) cur_merit = genotype->GetMerit();
     fp << "u 0 InjectSequence "
@@ -6368,7 +6368,7 @@ void cAnalyze::WriteCompetition(cString cur_string)
   inject_pos = pop_size;
   while ((genotype = batchB_it.Next()) != NULL) {
     const int cur_count = genotype->GetNumCPUs();
-    const cSequence& genome = genotype->GetGenome().GetSequence();
+    const Sequence& genome = genotype->GetGenome().GetSequence();
     double cur_merit = start_merit;
     if (cur_merit < 0) cur_merit = genotype->GetMerit();
     fp << "u 0 InjectSequence "
@@ -6515,7 +6515,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
       
       // Determine the fitness of the current sequence...
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome test_genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(test_sequence));
+      Genome test_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(test_sequence));
       cCPUTestInfo test_info;
       testcpu->TestGenome(m_ctx, test_info, test_genome);
       const double fitness = test_info.GetGenotypeFitness();
@@ -6542,7 +6542,7 @@ void cAnalyze::AnalyzeMuts(cString cur_string)
     
     for (int i = 0; i <= total_diffs; i++) {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      Genome max_genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(max_sequence[i]));
+      Genome max_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(max_sequence[i]));
       cAnalyzeGenotype max_genotype(m_world, max_genome);
       max_genotype.Recalculate(m_ctx);
       fp << i                                         << " "  //  1
@@ -6979,9 +6979,9 @@ void cAnalyze::AnalyzeComplexity(cString cur_string)
     cout << genotype->GetFitness() << endl;
     const int max_line = genotype->GetLength();
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
     
     // Loop through all the lines of code, testing all mutations...
@@ -7159,9 +7159,9 @@ void cAnalyze::AnalyzeFitnessLandscapeTwoSites(cString cur_string)
     genotype->Recalculate(m_ctx, &test_info);
     const int max_line = genotype->GetLength();
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
 
     // run throught sites in genome
@@ -7354,9 +7354,9 @@ void cAnalyze::AnalyzeComplexityTwoSites(cString cur_string)
     genotype->Recalculate(m_ctx, &test_info);
     const int max_line = genotype->GetLength();
     const Genome& base_genome = genotype->GetGenome();
-    const cSequence& base_seq = base_genome.GetSequence();
+    const Sequence& base_seq = base_genome.GetSequence();
     Genome mod_genome(base_genome);
-    cSequence& seq = mod_genome.GetSequence();
+    Sequence& seq = mod_genome.GetSequence();
     const int num_insts = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
     
     /*
@@ -7932,7 +7932,7 @@ void cAnalyze::MutationRevert(cString cur_string)
 					}
 					
           const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-          Genome rev_genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(reverted));
+          Genome rev_genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(reverted));
 					cAnalyzeGenotype new_genotype(m_world, rev_genome);  //Get likely fitness
 					new_genotype.Recalculate(m_ctx, &test_info, NULL, 50);
 					
@@ -8521,7 +8521,7 @@ void cAnalyze::BatchCompete(cString cur_string)
     int del_line = -1;
     
     Genome child_genome = offspring_genome_array[array_pos];
-    cSequence& child_seq = child_genome.GetSequence();
+    Sequence& child_seq = child_genome.GetSequence();
     const cInstSet& inst_set = m_world->GetHardwareManager().GetInstSet(child_genome.GetInstSet());
     
     if (copy_mut_prob > 0.0) {

@@ -22,7 +22,7 @@
 
 #include "cPopulation.h"
 
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "AvidaTools.h"
 
@@ -454,7 +454,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
     }
     
     // Update the phenotypes of each offspring....
-    const cSequence& genome = offspring_array[i]->GetGenome().GetSequence();
+    const Sequence& genome = offspring_array[i]->GetGenome().GetSequence();
     offspring_array[i]->GetPhenotype().SetupOffspring(parent_phenotype, genome);
     offspring_array[i]->GetPhenotype().SetMerit(merit_array[i]);
     offspring_array[i]->SetLineageLabel(parent_organism->GetLineageLabel());
@@ -812,7 +812,7 @@ bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_
   return parent_alive;
 }
 
-bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code)
+bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code)
 {
   assert(parent != NULL);
 
@@ -4969,7 +4969,7 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
       fp << "EMPTY" << endl;
     }
     else {
-      cSequence & mem = cell_array[i].GetOrganism()->GetHardware().GetMemory();
+      Sequence & mem = cell_array[i].GetOrganism()->GetHardware().GetMemory();
       fp << mem.GetSize() << " "
       << mem.AsString() << endl;
     }
@@ -5080,7 +5080,7 @@ void cPopulation::Inject(const Genome& genome, eBioUnitSource src, cAvidaContext
   }
 }
 
-void cPopulation::InjectParasite(const cString& label, const cSequence& injected_code, int cell_id)
+void cPopulation::InjectParasite(const cString& label, const Sequence& injected_code, int cell_id)
 {
   cOrganism* target_organism = cell_array[cell_id].GetOrganism();
   // target_organism-> target_organism->GetHardware().GetCurThread()

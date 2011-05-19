@@ -39,7 +39,7 @@
 
 
 namespace Avida {
-  class cSequence;
+  class Sequence;
 };
 
 class cAvidaContext;
@@ -109,11 +109,11 @@ public:
 
   // Activate the offspring of an organism in the population
   bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
-  bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
+  bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const Sequence& injected_code);
   
   // Inject an organism from the outside world.
   void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
-  void InjectParasite(const cString& label, const cSequence& injected_code, int cell_id);
+  void InjectParasite(const cString& label, const Sequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
   void KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx); 

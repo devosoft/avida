@@ -334,7 +334,7 @@ void cHardwareGX::internalReset()
   {
  
     // And add any programids specified by the "genome."
-    cSequence genome = m_organism->GetGenome().GetSequence();
+    Sequence genome = m_organism->GetGenome().GetSequence();
     
     // These specify the range of instructions that will be used to create a new
     // programid.  The range of instructions used to create a programid is:
@@ -672,7 +672,7 @@ cHeadCPU cHardwareGX::FindLabel(int direction)
 // to find search label's match inside another label.
 
 int cHardwareGX::FindLabel_Forward(const cCodeLabel & search_label,
-                                    const cSequence & search_genome, int pos)
+                                    const Sequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize() && pos >= 0);
   
@@ -754,7 +754,7 @@ int cHardwareGX::FindLabel_Forward(const cCodeLabel & search_label,
 // to find search label's match inside another label.
 
 int cHardwareGX::FindLabel_Backward(const cCodeLabel & search_label,
-                                     const cSequence & search_genome, int pos)
+                                     const Sequence & search_genome, int pos)
 {
   assert (pos < search_genome.GetSize());
   
@@ -1943,7 +1943,7 @@ bool cHardwareGX::Inst_MaxAlloc(cAvidaContext& ctx)   // Allocate maximal more
 bool cHardwareGX::Inst_Repro(cAvidaContext& ctx)
 {
   // Setup child
-  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_organism->GetGenome().GetSequence();
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -2370,7 +2370,7 @@ bool cHardwareGX::Inst_DonateEditDist(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       int edit_dist = max_dist + 1;
       if (neighbor != NULL) {
-        edit_dist = cSequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
+        edit_dist = Sequence::FindEditDistance(m_organism->GetGenome().GetSequence(),
                                                   neighbor->GetGenome().GetSequence());
       }
       if (edit_dist <= max_dist) {
@@ -2429,7 +2429,7 @@ bool cHardwareGX::Inst_DonateGreenBeardGene(cAvidaContext& ctx)
 
       //if neighbor exists, do they have the green beard gene?
       if (neighbor != NULL) {
-          const cSequence & neighbor_genome = neighbor->GetGenome().GetSequence();
+          const Sequence & neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -2501,7 +2501,7 @@ bool cHardwareGX::Inst_DonateTrueGreenBeard(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       //if neighbor exists, AND if their parent attempted to donate,
       if (neighbor != NULL && neighbor->GetPhenotype().IsDonorTrueGbLast()) {
-          const cSequence& neighbor_genome = neighbor->GetGenome().GetSequence();
+          const Sequence& neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -2576,7 +2576,7 @@ bool cHardwareGX::Inst_DonateThreshGreenBeard(cAvidaContext& ctx)
       neighbor = m_organism->GetNeighbor();
       //if neighbor exists, AND if their parent attempted to donate >= threshhold,
       if (neighbor != NULL && neighbor->GetPhenotype().GetNumThreshGbDonationsLast()>= m_world->GetConfig().MIN_GB_DONATE_THRESHOLD.Get() ) {
-          const cSequence & neighbor_genome = neighbor->GetGenome().GetSequence();
+          const Sequence & neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -2670,7 +2670,7 @@ bool cHardwareGX::Inst_DonateQuantaThreshGreenBeard(cAvidaContext& ctx)
       if (neighbor != NULL &&
 	  neighbor->GetPhenotype().GetNumQuantaThreshGbDonationsLast() >= quanta_donate_thresh) {
 
-          const cSequence & neighbor_genome = neighbor->GetGenome().GetSequence();
+          const Sequence & neighbor_genome = neighbor->GetGenome().GetSequence();
 
           // for each instruction in the genome...
           for(int i=0;i<neighbor_genome.GetSize();i++){
@@ -3093,7 +3093,7 @@ bool cHardwareGX::Inst_NewProgramid(cAvidaContext& ctx, bool executable, bool bi
   }
   
   // Create the new programid and add it to the list
-  cSequence new_genome(1);
+  Sequence new_genome(1);
   programid_ptr new_programid = new cProgramid(new_genome, this);
   new_programid->m_executable = executable;
   new_programid->m_bindable = bindable;
@@ -3508,7 +3508,7 @@ bool cHardwareGX::Inst_ProgramidDivide(cAvidaContext& ctx)
   
   // Ok, we're good to go.  We have to create the offspring's genome and delete the
   // offspring's programids from m_programids.
-  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome.Resize(1);
   m_organism->OffspringGenome().SetHardwareType(GetType());
   m_organism->OffspringGenome().SetInstSet(m_inst_set->GetInstSetName());
@@ -3581,7 +3581,7 @@ bool cHardwareGX::Inst_ProgramidImplicitAllocate(cAvidaContext& ctx)
     return false;
   }
   
-  cSequence new_genome(allocated_size);
+  Sequence new_genome(allocated_size);
   programid_ptr new_programid = new cProgramid(new_genome, this);
   new_programid->SetBindable(true);
   new_programid->SetReadable(true);
@@ -3625,7 +3625,7 @@ bool cHardwareGX::Inst_ProgramidImplicitDivide(cAvidaContext& ctx)
 
   // Since the divide will now succeed, set up the information to be sent
   // to the new organism
-  cSequence& child_genome = m_organism->OffspringGenome().GetSequence();
+  Sequence& child_genome = m_organism->OffspringGenome().GetSequence();
   child_genome = m_programids[write_head.GetMemSpace()]->GetMemory();
   child_genome = child_genome.Crop(0, child_end);
   m_organism->OffspringGenome().SetHardwareType(GetType());
@@ -3894,7 +3894,7 @@ void cHardwareGX::ProcessImplicitGeneExpression(int in_limit)
     m_promoter_states[m_promoter_update_head.GetPosition()] -= 1.0;
     
     // Create new programid
-    cSequence new_genome(m_world->GetConfig().IMPLICIT_MAX_PROGRAMID_LENGTH.Get());
+    Sequence new_genome(m_world->GetConfig().IMPLICIT_MAX_PROGRAMID_LENGTH.Get());
     programid_ptr new_programid = new cProgramid(new_genome, this);
     new_programid->SetExecutable(true);
     AddProgramid(new_programid);
@@ -4008,7 +4008,7 @@ int cHardwareGX::FindRegulatoryMatch(const cCodeLabel& label)
 
 /*! Construct this cProgramid, and initialize hardware resources.
 */
-cHardwareGX::cProgramid::cProgramid(const cSequence& genome, cHardwareGX* hardware)
+cHardwareGX::cProgramid::cProgramid(const Sequence& genome, cHardwareGX* hardware)
 : m_gx_hardware(hardware)
 , m_unique_id(hardware->m_last_unique_id_assigned++)
 , m_executable(false)
@@ -4077,7 +4077,7 @@ void cHardwareGX::cProgramid::Reset()
 /*! Append this programid's genome to the passed in genome.  Include the tags
 that specify what this programid is capable of.
 */
-void cHardwareGX::cProgramid::AppendLinearGenome(cSequence& genome) {
+void cHardwareGX::cProgramid::AppendLinearGenome(Sequence& genome) {
   genome.Append(GetInst("PROGRAMID"));
   if(GetExecutable()) { genome.Append(GetInst("EXECUTABLE")); }
   if(GetBindable()) { genome.Append(GetInst("BINDABLE")); }

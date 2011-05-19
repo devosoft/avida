@@ -31,7 +31,7 @@
 #include "tSparseVectorList.h"
 
 namespace Avida {
-  class cSequence;
+  class Sequence;
 }
 class cBGGenotype;
 class cWorld;
@@ -88,7 +88,7 @@ public:
   cFlexVar GetBioGroupProperty(const cBGGenotype* genotype, const cString& prop) const;
   
 private:
-  unsigned int hashGenome(const cSequence& genome) const;
+  unsigned int hashGenome(const Sequence& genome) const;
   cString nameGenotype(int size);
   
   void removeGenotype(cBGGenotype* genotype);

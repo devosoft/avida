@@ -166,10 +166,10 @@ LIST(APPEND ALL_INC_DIRS ${CLASSIFICATION_DIR})
 SET(CORE_DIR ${PROJECT_SOURCE_DIR}/source/core)
 SET(CORE_SOURCES
   ${CORE_DIR}/Avida.cc
-  ${CORE_DIR}/Genome.cc
-  ${CORE_DIR}/cSequence.cc
   ${CORE_DIR}/Definitions.cc
+  ${CORE_DIR}/Genome.cc
   ${CORE_DIR}/GlobalObject.cc
+  ${CORE_DIR}/Sequence.cc
   ${CORE_DIR}/Version.cc
 )
 SOURCE_GROUP(core FILES ${CORE_SOURCES})

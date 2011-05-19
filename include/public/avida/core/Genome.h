@@ -26,7 +26,7 @@
 #define AvidaCoreGenome_h
 
 #include "apto/platform.h"
-#include "avida/core/cSequence.h"
+#include "avida/core/Sequence.h"
 
 #include "cString.h"
 
@@ -52,27 +52,27 @@ namespace Avida {
   private:
     int m_hw_type;
     cString m_inst_set;
-    cSequence m_seq;
+    Sequence m_seq;
    
     
   public:
     LIB_EXPORT Genome() : m_hw_type(-1), m_inst_set("(default)") { ; }
-    LIB_EXPORT Genome(int hw, const cString& is, const cSequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
+    LIB_EXPORT Genome(int hw, const cString& is, const Sequence& seq) : m_hw_type(hw), m_inst_set(is), m_seq(seq) { ; }
     LIB_EXPORT explicit Genome(const cString& seq_str);
     LIB_EXPORT Genome(const Genome& gen) : m_hw_type(gen.m_hw_type), m_inst_set(gen.m_inst_set), m_seq(gen.m_seq) { ; }
     
     
     LIB_EXPORT inline int GetHardwareType() const { return m_hw_type; }
     LIB_EXPORT inline const cString& GetInstSet() const { return m_inst_set; }
-    LIB_EXPORT inline const cSequence& GetSequence() const { return m_seq; }
-    LIB_EXPORT inline cSequence& GetSequence() { return m_seq; }
+    LIB_EXPORT inline const Sequence& GetSequence() const { return m_seq; }
+    LIB_EXPORT inline Sequence& GetSequence() { return m_seq; }
     
     LIB_EXPORT inline int GetSize() const { return m_seq.GetSize(); }
     
     
     LIB_EXPORT inline void SetHardwareType(int type) { m_hw_type = type; }
     LIB_EXPORT inline void SetInstSet(const cString& is) { m_inst_set = is; }
-    LIB_EXPORT inline void SetSequence(const cSequence& seq) { m_seq = seq; }
+    LIB_EXPORT inline void SetSequence(const Sequence& seq) { m_seq = seq; }
     
     
     LIB_EXPORT cString AsString() const;
