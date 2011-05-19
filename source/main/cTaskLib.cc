@@ -71,7 +71,7 @@ inline double cTaskLib::FractionalReward(unsigned int supplied, unsigned int cor
   return static_cast<double>(32 - bit_diff) / 32.0; 
 }
 
-cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, cFeedback& feedback)
+cTaskEntry* cTaskLib::AddTask(const cString& name, const cString& info, cEnvReqs& envreqs, Feedback& feedback)
 {
   // Determine if this task is already in the active library.
   for (int i = 0; i < task_array.GetSize(); i++) {
@@ -1876,7 +1876,7 @@ double cTaskLib::Task_Math3in_AM(cTaskContext& ctx) const //((X+Y)^2+(Y+Z)^2)
 }
 
 
-void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_MatchStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);
@@ -1988,7 +1988,7 @@ cString cTaskLib::GetMatchString(int x)
 }
 
 
-void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_MatchProdStr(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   schema.AddEntry("string", 0, cArgSchema::SCHEMA_STRING);		
@@ -2091,7 +2091,7 @@ double cTaskLib::Task_MatchProdStr(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_MatchNumber(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2123,7 +2123,7 @@ double cTaskLib::Task_MatchNumber(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_SortInputs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2262,7 +2262,7 @@ public:
 };
 
 
-void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_FibonacciSequence(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2304,7 +2304,7 @@ double cTaskLib::Task_FibonacciSequence(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Optimize(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2637,7 +2637,7 @@ double cTaskLib::Task_Optimize(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Mult(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2682,7 +2682,7 @@ double cTaskLib::Task_Mult(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Div(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2727,7 +2727,7 @@ double cTaskLib::Task_Div(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Log(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2769,7 +2769,7 @@ double cTaskLib::Task_Log(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Log2(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2810,7 +2810,7 @@ double cTaskLib::Task_Log2(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Log10(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2852,7 +2852,7 @@ double cTaskLib::Task_Log10(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Sqrt(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2894,7 +2894,7 @@ double cTaskLib::Task_Sqrt(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_Sine(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -2937,7 +2937,7 @@ double cTaskLib::Task_Sine(cTaskContext& ctx) const
 
 
 void cTaskLib::Load_Cosine(const cString& name, const cString& argstr, cEnvReqs& envreqs,
-			   cFeedback& feedback)
+			   Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3222,7 +3222,7 @@ double cTaskLib::Task_EventKilled(cTaskContext& ctx) const
 
 
 
-void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_SGPathTraversal(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
 
@@ -3318,7 +3318,7 @@ double cTaskLib::Task_CreatePerfectStrings(cTaskContext& ctx) const
 
 
 void cTaskLib::Load_FormSpatialGroup(const cString& name, const cString& argstr,
-				     cEnvReqs& envreqs, cFeedback& feedback)
+				     cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3358,7 +3358,7 @@ double cTaskLib::Task_FormSpatialGroup(cTaskContext& ctx) const
    max number of members. */
 
 void cTaskLib::Load_FormSpatialGroupWithID(const cString& name, const cString& argstr,
-					   cEnvReqs& envreqs, cFeedback& feedback)
+					   cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3408,7 +3408,7 @@ double cTaskLib::Task_FormSpatialGroupWithID(cTaskContext& ctx) const
 }
 
 /* Reward organisms for having a given group-id.*/
-void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_LiveOnPatchRes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   
@@ -3439,7 +3439,7 @@ double cTaskLib::Task_LiveOnPatchRes(cTaskContext& ctx) const
   return reward;
 }
 
-void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_AllOnes(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);		
@@ -3463,7 +3463,7 @@ double cTaskLib::Task_AllOnes(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_RoyalRoad(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);
@@ -3501,7 +3501,7 @@ double cTaskLib::Task_RoyalRoad(cTaskContext& ctx) const
 }
 
 
-void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback)
+void cTaskLib::Load_RoyalRoadWithDitches(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback)
 {
   cArgSchema schema;
   schema.AddEntry("length", 0, 0);
@@ -3594,7 +3594,7 @@ double cTaskLib::Task_RoyalRoadWithDitches(cTaskContext& ctx) const
 	
 	
 //! Load the command line for checking an opinion.
-void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, cFeedback& feedback) {
+void cTaskLib::Load_OpinionIs(const cString& name, const cString& argstr, cEnvReqs& envreqs, Feedback& feedback) {
   cArgSchema schema;
   schema.AddEntry("opinion", 0, cArgSchema::SCHEMA_INT);
   cArgContainer* args = cArgContainer::Load(argstr, schema, feedback);

@@ -21,14 +21,14 @@
 
 #include "cArgContainer.h"
 
-#include "avida/core/cFeedback.h"
+#include "avida/core/Feedback.h"
 
 #include "cArgSchema.h"
 
 using namespace Avida;
 
 
-cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, cFeedback& feedback)
+cArgContainer* cArgContainer::Load(cString args, const cArgSchema& schema, Feedback& feedback)
 {
   tArray<bool> set_ints;
   tArray<bool> set_doubles;

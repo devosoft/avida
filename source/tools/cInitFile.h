@@ -67,7 +67,7 @@ private:
   
 
 public:
-  cInitFile(const cString& filename, const cString& working_dir, cFeedback& feedback, const tArraySet<cString>* custom_directives = NULL);
+  cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback, const tArraySet<cString>* custom_directives = NULL);
   cInitFile(const cString& filename, const cString& working_dir, const tArraySet<cString>* custom_directives = NULL);
   cInitFile(const cString& filename, const tDictionary<cString>& mappings, const cString& working_dir);
   cInitFile(std::istream& in_stream, const cString& working_dir);
@@ -147,9 +147,9 @@ public:
 private:
   void initMappings(const tDictionary<cString>& mappings);
   bool loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
-                const tArraySet<cString>* custom_directives, cFeedback& feedback);
+                const tArraySet<cString>* custom_directives, Feedback& feedback);
   bool processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
-                      const cString& working_dir, const tArraySet<cString>* custom_directives, cFeedback& feedback);
+                      const cString& working_dir, const tArraySet<cString>* custom_directives, Feedback& feedback);
   void postProcess(tSmartArray<sLine*>& lines);
 };
 

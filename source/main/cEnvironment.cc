@@ -23,7 +23,7 @@
 
 #include "avida/Avida.h"
 
-#include "avida/core/cFeedback.h"
+#include "avida/core/Feedback.h"
 
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
@@ -67,7 +67,7 @@ cEnvironment::~cEnvironment()
 
 
 bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_value, const cString& var_type,
-                                cFeedback& feedback)
+                                Feedback& feedback)
 {
   // Make sure we have an actual entry to parse.
   if (entry.GetSize() == 0) {
@@ -96,7 +96,7 @@ bool cEnvironment::ParseSetting(cString entry, cString& var_name, cString& var_v
   return true;
 }
 
-bool cEnvironment::AssertInputInt(const cString& input, const cString& name, const cString& type, cFeedback& feedback)
+bool cEnvironment::AssertInputInt(const cString& input, const cString& name, const cString& type, Feedback& feedback)
 {
   if (input.IsNumeric() == false) {
     feedback.Error("in %s, %s set to non-integer", (const char*)type, (const char*)name);
@@ -105,7 +105,7 @@ bool cEnvironment::AssertInputInt(const cString& input, const cString& name, con
   return true;
 }
 
-bool cEnvironment::AssertInputDouble(const cString& input, const cString& name, const cString& type, cFeedback& feedback)
+bool cEnvironment::AssertInputDouble(const cString& input, const cString& name, const cString& type, Feedback& feedback)
 {
   if (input.IsNumber() == false) {
     feedback.Error("in %s, %s set to non-number", (const char*)type, (const char*)name);
@@ -114,7 +114,7 @@ bool cEnvironment::AssertInputDouble(const cString& input, const cString& name, 
   return true;
 }
 
-bool cEnvironment::AssertInputBool(const cString& input, const cString& name, const cString& type, cFeedback& feedback)
+bool cEnvironment::AssertInputBool(const cString& input, const cString& name, const cString& type, Feedback& feedback)
 {
   if (input.IsNumber() == false) {
     feedback.Error("in %s, %s set to non-number", (const char*)type, (const char*)name);
@@ -129,7 +129,7 @@ bool cEnvironment::AssertInputBool(const cString& input, const cString& name, co
 }
 
 bool cEnvironment::AssertInputValid(void* input, const cString& name, const cString& type, const cString& value,
-                                    cFeedback& feedback)
+                                    Feedback& feedback)
 {
   if (input == NULL) {
     feedback.Error("in %s, '%s' setting of '%s' not found",
@@ -141,7 +141,7 @@ bool cEnvironment::AssertInputValid(void* input, const cString& name, const cStr
 
 
 
-bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cFeedback& feedback)
+bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, Feedback& feedback)
 {
   cReactionProcess* new_process = reaction->AddProcess();
 
@@ -289,7 +289,7 @@ bool cEnvironment::LoadReactionProcess(cReaction* reaction, cString desc, cFeedb
   return true;
 }
 
-bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cFeedback& feedback)
+bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback)
 {
   cReactionRequisite* new_requisite = reaction->AddRequisite();
 
@@ -358,7 +358,7 @@ bool cEnvironment::LoadReactionRequisite(cReaction* reaction, cString desc, cFee
 }
 
 
-bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString desc, cFeedback& feedback)
+bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString desc, Feedback& feedback)
 {
   cContextReactionRequisite* new_requisite = reaction->AddContextRequisite();
 
@@ -428,7 +428,7 @@ bool cEnvironment::LoadContextReactionRequisite(cReaction* reaction, cString des
 
 
 
-bool cEnvironment::LoadResource(cString desc, cFeedback& feedback)
+bool cEnvironment::LoadResource(cString desc, Feedback& feedback)
 {
   if (desc.GetSize() == 0) {
     feedback.Warning("resource line with no resources listed");
@@ -611,7 +611,7 @@ bool cEnvironment::LoadResource(cString desc, cFeedback& feedback)
   return true;
 }
 
-bool cEnvironment::LoadCell(cString desc, cFeedback& feedback)
+bool cEnvironment::LoadCell(cString desc, Feedback& feedback)
 
 /*****************************************************************************
  Routine to read in spatial resources loaded in one cell at a time. Syntax:
@@ -705,7 +705,7 @@ bool cEnvironment::LoadCell(cString desc, cFeedback& feedback)
   return true;
 }
 
-bool cEnvironment::LoadReaction(cString desc, cFeedback& feedback)
+bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
 {
   // Make sure this reaction has a description...
   if (desc.GetSize() == 0) {
@@ -776,7 +776,7 @@ bool cEnvironment::LoadReaction(cString desc, cFeedback& feedback)
   return true;
 }
 
-bool cEnvironment::LoadGradientResource(cString desc, cFeedback& feedback) 
+bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback) 
 {
   if (desc.GetSize() == 0) {
     feedback.Error("gradient resource line with no resources listed");
@@ -916,7 +916,7 @@ bool cEnvironment::LoadGradientResource(cString desc, cFeedback& feedback)
 }
 
 //Dummy Function for Loading Dynamic Resources
-bool cEnvironment::LoadDynamicResource(cString desc, cFeedback& feedback) //JW
+bool cEnvironment::LoadDynamicResource(cString desc, Feedback& feedback) //JW
 {
   if (desc.GetSize() == 0) {
     feedback.Error("dynamic resource line with no resources listed");
@@ -1044,7 +1044,7 @@ bool cEnvironment::LoadDynamicResource(cString desc, cFeedback& feedback) //JW
   return true;  
 }
 
-bool cEnvironment::LoadStateGrid(cString desc, cFeedback& feedback)
+bool cEnvironment::LoadStateGrid(cString desc, Feedback& feedback)
 {
   // First component is the name
   cString name = desc.Pop(':');
@@ -1159,7 +1159,7 @@ bool cEnvironment::LoadStateGrid(cString desc, cFeedback& feedback)
 }
 
 
-bool cEnvironment::LoadSetActive(cString desc, cFeedback& feedback)
+bool cEnvironment::LoadSetActive(cString desc, Feedback& feedback)
 {
   cString item_type = desc.PopWord();
   item_type.ToUpper();
@@ -1189,7 +1189,7 @@ bool cEnvironment::LoadSetActive(cString desc, cFeedback& feedback)
   return true;
 }
 
-bool cEnvironment::LoadLine(cString line, cFeedback& feedback)
+bool cEnvironment::LoadLine(cString line, Feedback& feedback)
 
 /* Routine to read in a line from the enviroment file and hand that line
  line to the approprate routine to process it.                         */
@@ -1218,7 +1218,7 @@ bool cEnvironment::LoadLine(cString line, cFeedback& feedback)
   return true;
 }
 
-bool cEnvironment::Load(const cString& filename, const cString& working_dir, cFeedback& feedback)
+bool cEnvironment::Load(const cString& filename, const cString& working_dir, Feedback& feedback)
 {
   cInitFile infile(filename, working_dir);
   if (!infile.WasOpened()) {

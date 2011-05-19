@@ -54,7 +54,7 @@ private:
   int m_lineage_offset;
   
 public:
-  cActionLoadPopulation(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0)
+  cActionLoadPopulation(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_update(-1), m_cellid_offset(0), m_lineage_offset(0)
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -85,7 +85,7 @@ private:
   bool m_save_historic;
   
 public:
-  cActionSavePopulation(cWorld* world, const cString& args, cFeedback& feedback)
+  cActionSavePopulation(cWorld* world, const cString& args, Feedback& feedback)
     : cAction(world, args), m_filename(""), m_save_historic(true)
   {
     cArgSchema schema(':','=');

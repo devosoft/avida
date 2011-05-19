@@ -22,7 +22,7 @@
 #ifndef cUserFeedback_h
 #define cUserFeedback_h
 
-#include "avida/core/cFeedback.h"
+#include "avida/core/Feedback.h"
 
 #include "cString.h"
 #include "tSmartArray.h"
@@ -32,7 +32,7 @@
 using namespace Avida;
 
 
-class cUserFeedback : public cFeedback
+class cUserFeedback : public Feedback
 {
 public:
   enum eFeedbackType {
@@ -62,7 +62,7 @@ public:
   cUserFeedback() : m_errors(0), m_warnings(0) { ; }
   ~cUserFeedback() { ; }
   
-  // cFeedback Methods
+  // Feedback Methods
   void Error(const char* fmt, ...);
   void Warning(const char* fmt, ...);
   void Notify(const char* fmt, ...);

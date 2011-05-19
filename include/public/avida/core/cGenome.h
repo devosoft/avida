@@ -41,7 +41,7 @@ namespace Avida {
   // Class Declarations
   // --------------------------------------------------------------------------------------------------------------
   
-  class cFeedback;
+  class Feedback;
   
   
   // cGenome - genetic and epi-genetic heritable information
@@ -87,7 +87,7 @@ namespace Avida {
     LIB_EXPORT void Load(const tDictionary<cString>& props, cHardwareManager& hwm);
     LIB_EXPORT void Save(cDataFile& df);
     
-    LIB_EXPORT bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, cFeedback& feedback);
+    LIB_EXPORT bool LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm, Feedback& feedback);
     LIB_EXPORT void SaveAsDetailFile(cDataFile& df, cHardwareManager& hwm);
   };  
 };

@@ -66,7 +66,7 @@ class cAction ## METHOD : public cAction {                                      
 private:                                                                                  /*  3 */ \
 cString m_filename;                                                                     /*  4 */ \
 public:                                                                                   /*  5 */ \
-cAction ## METHOD(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)            /*  6 */ \
+cAction ## METHOD(cWorld* world, const cString& args, Feedback&) : cAction(world, args)            /*  6 */ \
 {                                                                                       /*  7 */ \
 cString largs(args);                                                                  /*  8 */ \
 if (largs == "") m_filename = #DEFAULT; else m_filename = largs.PopWord();            /*  9 */ \
@@ -183,7 +183,7 @@ class cAction ## METHOD : public cAction {                                      
 private:                                                                                  /*  3 */ \
 cString m_filename;                                                                     /*  4 */ \
 public:                                                                                   /*  5 */ \
-cAction ## METHOD(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)            /*  6 */ \
+cAction ## METHOD(cWorld* world, const cString& args, Feedback&) : cAction(world, args)            /*  6 */ \
 {                                                                                       /*  7 */ \
 cString largs(args);                                                                  /*  8 */ \
 if (largs == "") m_filename = #DEFAULT; else m_filename = largs.PopWord();            /*  9 */ \
@@ -206,7 +206,7 @@ private:
   cString m_filename;
   cString m_format;
 public:
-  cActionPrintData(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintData(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     m_filename = largs.PopWord();
@@ -229,7 +229,7 @@ private:
   cString m_inst_set;
 
 public:
-  cActionPrintInstructionData(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintInstructionData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
   {
     cString largs(args);
@@ -259,7 +259,7 @@ private:
   cString m_inst_set;
 
 public:
-  cActionPrintInstructionAbundanceHistogram(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintInstructionAbundanceHistogram(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
   {
     cString largs(args);
@@ -311,7 +311,7 @@ class cActionPrintDepthHistogram : public cAction
 private:
   cString m_filename;
 public:
-  cActionPrintDepthHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintDepthHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs == "") m_filename = "depth_histogram.dat"; else m_filename = largs.PopWord();
@@ -364,7 +364,7 @@ class cActionPrintParasiteDepthHistogram : public cAction
 private:
   cString m_filename;
 public:
-  cActionPrintParasiteDepthHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintParasiteDepthHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs == "") m_filename = "depth_parasite_histogram.dat"; else m_filename = largs.PopWord();
@@ -428,7 +428,7 @@ class cActionPrintHostDepthHistogram : public cAction
 private:
   cString m_filename;
 public:
-  cActionPrintHostDepthHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintHostDepthHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs == "") m_filename = "depth_host_histogram.dat"; else m_filename = largs.PopWord();
@@ -489,7 +489,7 @@ class cActionEcho : public cAction
 private:
   cString m_filename;
 public:
-  cActionEcho(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionEcho(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "Arguments: <cString message>"; }
 
@@ -510,7 +510,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintGenotypeAbundanceHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintGenotypeAbundanceHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     if (largs == "") m_filename = "genotype_abundance_histogram.dat"; else m_filename = largs.PopWord();
@@ -545,7 +545,7 @@ public:
 //private:
 //  cString m_filename;
 //public:
-//  cActionPrintSpeciesAbundanceHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+//  cActionPrintSpeciesAbundanceHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
 //  {
 //    cString largs(args);
 //    if (largs == "") m_filename = "species_abundance_histogram.dat"; else m_filename = largs.PopWord();
@@ -595,7 +595,7 @@ public:
 //  cString m_filename;
 //  int m_verbose;
 //public:
-//  cActionPrintLineageTotals(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_verbose(1)
+//  cActionPrintLineageTotals(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
 //  {
 //    cString largs(args);
 //    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_totals.dat";
@@ -622,7 +622,7 @@ public:
 //  cString m_filename;
 //  int m_verbose;
 //public:
-//  cActionPrintLineageCounts(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_verbose(1)
+//  cActionPrintLineageCounts(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose(1)
 //  {
 //    cString largs(args);
 //    if (largs.GetSize()) m_filename = largs.PopWord(); else m_filename = "lineage_counts.dat";
@@ -662,7 +662,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintDominantGenotype(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionPrintDominantGenotype(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -721,7 +721,7 @@ private:
   cString m_filenames[3];
 
 public:
-  cActionPrintDetailedFitnessData(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintDetailedFitnessData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_save_max(0), m_print_fitness_histo(0), m_hist_fmax(1.0), m_hist_fstep(0.1)
   {
     cString largs(args);
@@ -875,7 +875,7 @@ private:
   bool first_time;
 
 public:
-  cActionPrintCCladeCounts(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintCCladeCounts(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args)
   {
     cString largs(args);
@@ -976,7 +976,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintLogFitnessHistogram(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintLogFitnessHistogram(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args)
   {
     cString largs(args);
@@ -1158,7 +1158,7 @@ private:
   bool    first_run;
 
 public:
-  cActionPrintRelativeFitnessHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintRelativeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     m_filename   = (largs.GetSize()) ? largs.PopWord()           : "rel_fitness_hist.dat";
@@ -1333,7 +1333,7 @@ private:
   bool    first_run;
 
 public:
-  cActionPrintCCladeFitnessHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintCCladeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_fitness_hist.dat";
@@ -1454,7 +1454,7 @@ private:
   bool first_run;
 
 public:
-  cActionPrintCCladeRelativeFitnessHistogram(cWorld* world, const cString& args, cFeedback&) : cAction(world, args)
+  cActionPrintCCladeRelativeFitnessHistogram(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
   {
     cString largs(args);
     m_filename   = (largs.GetSize()) ? largs.PopWord()           : "cclade_rel_fitness_hist.dat";
@@ -1558,7 +1558,7 @@ private:
   bool    m_use_gap;
 
 public:
-  cActionPrintGenomicSiteEntropy(cWorld* world, const cString& args, cFeedback&) : cAction(world, args){
+  cActionPrintGenomicSiteEntropy(cWorld* world, const cString& args, Feedback&) : cAction(world, args){
     cString largs = args;
     m_filename = (largs.GetSize()) ? largs.PopWord() : "GenomicSiteEntropy.dat";
   }
@@ -1724,7 +1724,7 @@ private:
   }
 
 public:
-  cActionPrintPhenotypicPlasticity(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintPhenotypicPlasticity(cWorld* world, const cString& args, Feedback&)
   : cAction(world,  args)
   {
     cString largs(args);
@@ -1794,7 +1794,7 @@ private:
   }
 
 public:
-  cActionPrintTaskProbHistogram(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintTaskProbHistogram(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_filename("task_prob_hist.dat")
   {
     m_first_run = true;
@@ -1902,7 +1902,7 @@ private:
   }
 
 public:
-  cActionPrintPlasticGenotypeSummary(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintPlasticGenotypeSummary(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args)
   {
     cString largs(args);
@@ -2027,7 +2027,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintGeneticDistanceData(cWorld* world, const cString& args, cFeedback& feedback)
+  cActionPrintGeneticDistanceData(cWorld* world, const cString& args, Feedback& feedback)
   : cAction(world, args), m_filename("genetic_distance.dat")
   {
     cString creature_file;
@@ -2089,7 +2089,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpMemory(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpMemory(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2120,7 +2120,7 @@ private:
   int m_save_genotypes;
 
 public:
-  cActionPrintPopulationDistanceData(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintPopulationDistanceData(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_creature("START_ORGANISM"), m_filename(""), m_save_genotypes(0)
   {
     cString largs(args);
@@ -2197,7 +2197,7 @@ private:
   cString m_filename;
 
 public:
-  cActionTestDominant(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("dom-test.dat")
+  cActionTestDominant(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("dom-test.dat")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2236,7 +2236,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintTaskSnapshot(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionPrintTaskSnapshot(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2310,7 +2310,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintAveNumTasks(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("ave_num_tasks.dat")
+  cActionPrintAveNumTasks(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("ave_num_tasks.dat")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2359,7 +2359,7 @@ private:
   cString m_filename;
 
 public:
-  cActionPrintViableTasksData(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("viable_tasks.dat")
+  cActionPrintViableTasksData(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("viable_tasks.dat")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2404,7 +2404,7 @@ private:
   cString m_inst_set;
 
 public:
-  cActionCalcConsensus(cWorld* world, const cString& args, cFeedback&)
+  cActionCalcConsensus(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_lines_saved(0)
   , m_inst_set(world->GetHardwareManager().GetDefaultInstSet().GetInstSetName())
   {
@@ -2587,7 +2587,7 @@ public:
  */
 class cActionPrintEditDistance : public cAction {
 public:
-  cActionPrintEditDistance(cWorld* world, const cString& args, cFeedback&)
+  cActionPrintEditDistance(cWorld* world, const cString& args, Feedback&)
 	: cAction(world, args)
 	, m_sample_size(-1)
 	, m_filename("edit_distance.dat") {
@@ -2679,7 +2679,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpEnergyGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpEnergyGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2709,7 +2709,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpExecutionRatioGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpExecutionRatioGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2739,7 +2739,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpCellDataGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpCellDataGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2769,7 +2769,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpFitnessGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpFitnessGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2801,7 +2801,7 @@ private:
   cString m_role;
 
 public:
-  cActionDumpClassificationIDGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename(""), m_role("genotype")
+  cActionDumpClassificationIDGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename(""), m_role("genotype")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2836,7 +2836,7 @@ private:
   tArray<int> m_genotype_chart;
 
 public:
-  cActionDumpGenotypeColorGrid(cWorld* world, const cString& args, cFeedback&)
+  cActionDumpGenotypeColorGrid(cWorld* world, const cString& args, Feedback&)
   : cAction(world, args), m_num_colors(12), m_threshold(10), m_filename(""), m_genotype_chart(0)
   {
     cString largs(args);
@@ -2922,7 +2922,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpPhenotypeIDGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpPhenotypeIDGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -2952,7 +2952,7 @@ private:
   cString m_filename;
   
 public:
-  cActionDumpIDGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpIDGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();  
@@ -2985,7 +2985,7 @@ private:
   cString m_filename;
   
 public:
-  cActionDumpVitalityGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpVitalityGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();  
@@ -3019,7 +3019,7 @@ private:
   cString m_filename;
   
 public:
-  cActionDumpMaxResGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpMaxResGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();  
@@ -3054,7 +3054,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpSleepGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpSleepGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3085,7 +3085,7 @@ private:
   cString m_filename;
   
 public:
-  cActionDumpGenomeLengthGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpGenomeLengthGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3125,7 +3125,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpTaskGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3174,7 +3174,7 @@ class cActionDumpLastTaskGrid : public cAction
     cString m_filename;
     
   public:
-    cActionDumpLastTaskGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+    cActionDumpLastTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
     {
       cString largs(args);
       if (largs.GetSize()) m_filename = largs.PopWord();  
@@ -3219,7 +3219,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpHostTaskGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpHostTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3266,7 +3266,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpParasiteTaskGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpParasiteTaskGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3317,7 +3317,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpReactionGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpReactionGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3361,7 +3361,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpDonorGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpDonorGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3392,7 +3392,7 @@ private:
   cString m_filename;
 
 public:
-  cActionDumpReceiverGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpReceiverGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3420,7 +3420,7 @@ public:
 class cActionPrintDonationStats : public cAction
 {
 public:
-  cActionPrintDonationStats(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDonationStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3433,7 +3433,7 @@ public:
 class cActionPrintDemeAllStats : public cAction
 {
 public:
-  cActionPrintDemeAllStats(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeAllStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3445,7 +3445,7 @@ public:
 
 class cActionPrintDemesTotalAvgEnergy : public cAction {
 public:
-	cActionPrintDemesTotalAvgEnergy(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+	cActionPrintDemesTotalAvgEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
 	static const cString GetDescription() { return "No Arguments"; }
 
@@ -3457,7 +3457,7 @@ public:
 class cActionPrintDemeEnergySharingStats : public cAction
 {
 public:
-  cActionPrintDemeEnergySharingStats(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeEnergySharingStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3470,7 +3470,7 @@ public:
 class cActionPrintDemeEnergyDistributionStats : public cAction
 {
 public:
-  cActionPrintDemeEnergyDistributionStats(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeEnergyDistributionStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3483,7 +3483,7 @@ public:
 class cActionPrintDemeDonorStats : public cAction
 {
 public:
-  cActionPrintDemeDonorStats(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeDonorStats(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3497,7 +3497,7 @@ public:
 class cActionPrintDemeSpacialEnergy : public cAction
 {
 public:
-  cActionPrintDemeSpacialEnergy(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeSpacialEnergy(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3510,7 +3510,7 @@ public:
 class cActionPrintDemeSpacialSleep : public cAction
 {
 public:
-  cActionPrintDemeSpacialSleep(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeSpacialSleep(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3523,7 +3523,7 @@ public:
 class cActionPrintDemeResources : public cAction
 {
 public:
-  cActionPrintDemeResources(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3536,7 +3536,7 @@ public:
 class cActionPrintDemeGlobalResources : public cAction
 {
 public:
-  cActionPrintDemeGlobalResources(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDemeGlobalResources(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3552,7 +3552,7 @@ private:
   cString m_filename;
 
 public:
-  cActionSaveDemeFounders(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionSaveDemeFounders(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
@@ -3575,7 +3575,7 @@ private:
   cString m_verbose;
 
 public:
-  cActionSetVerbose(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_verbose("")
+  cActionSetVerbose(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_verbose("")
   {
     cString largs(args);
     if (largs.GetSize()) m_verbose = largs.PopWord();
@@ -3614,7 +3614,7 @@ public:
 class cActionPrintNumOrgsInDeme : public cAction
 {
 public:
-  cActionPrintNumOrgsInDeme(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintNumOrgsInDeme(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 
@@ -3641,7 +3641,7 @@ public:
 class cActionPrintDebug : public cAction
 {
 public:
-  cActionPrintDebug(cWorld* world, const cString& args, cFeedback&) : cAction(world, args) { ; }
+  cActionPrintDebug(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
 
   static const cString GetDescription() { return "No Arguments"; }
 

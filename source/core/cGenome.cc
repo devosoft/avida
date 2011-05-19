@@ -24,7 +24,7 @@
 
 #include "avida/core/cGenome.h"
 
-#include "avida/core/cFeedback.h"
+#include "avida/core/Feedback.h"
 
 #include "cInstSet.h"
 #include "cHardwareManager.h"
@@ -80,7 +80,7 @@ cString Avida::cGenome::AsString() const
 }
 
 bool Avida::cGenome::LoadFromDetailFile(const cString& fname, const cString& wdir, cHardwareManager& hwm,
-                                        cFeedback& feedback)
+                                        Feedback& feedback)
 {
   bool success = true;
 

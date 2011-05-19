@@ -31,7 +31,7 @@
 using namespace std;
 
 
-cInitFile::cInitFile(const cString& filename, const cString& working_dir, cFeedback& feedback,
+cInitFile::cInitFile(const cString& filename, const cString& working_dir, Feedback& feedback,
                      const tArraySet<cString>* custom_directives)
 : m_filename(filename), m_found(false), m_opened(false), m_ftype("unknown")
 {
@@ -103,7 +103,7 @@ void cInitFile::initMappings(const tDictionary<cString>& mappings)
 
 
 bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
-                         const tArraySet<cString>* custom_directives, cFeedback& feedback)
+                         const tArraySet<cString>* custom_directives, Feedback& feedback)
 {
   cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
   if (!file.IsOpen()) {
@@ -133,7 +133,7 @@ bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, co
 
 
 bool cInitFile::processCommand(cString cmdstr, tSmartArray<sLine*>& lines, const cString& filename, int linenum,
-                               const cString& working_dir, const tArraySet<cString>* custom_directives, cFeedback& feedback)
+                               const cString& working_dir, const tArraySet<cString>* custom_directives, Feedback& feedback)
 {
   cString cmd = cmdstr.PopWord();
   
