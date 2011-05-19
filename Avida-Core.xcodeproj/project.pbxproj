@@ -318,7 +318,7 @@
 		7061AB831358BD6F0000B036 /* cSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB811358BD6F0000B036 /* cSequence.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		706C7B6A125F64C400EDB4B9 /* cClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* cClassificationInfo.cc */; };
-		706C7B6B125F64C600EDB4B9 /* cMap.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E327125CDF2B00D56AC4 /* cMap.cc */; };
+		706C7B6B125F64C600EDB4B9 /* Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E327125CDF2B00D56AC4 /* Map.cc */; };
 		706C7B6F125F64F900EDB4B9 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
 		706C7B89125F653B00EDB4B9 /* cScreen_Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C7B86125F653800EDB4B9 /* cScreen_Map.cc */; };
 		706C7BA4125F658500EDB4B9 /* avida-text in CopyFiles */ = {isa = PBXBuildFile; fileRef = 56F555D00C3B364E00E2E929 /* avida-text */; };
@@ -354,7 +354,7 @@
 		70C9D5CA1086893100472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
-		70E14D4D1279FA5B0059FB9D /* cDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* cDriver.cc */; };
+		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
 		70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
@@ -866,7 +866,7 @@
 		7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastUtil.h; sourceTree = "<group>"; };
 		7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cPhenPlastUtil.cc; sourceTree = "<group>"; };
 		703549251333E36800D3865C /* AvidaViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AvidaViewer.h; sourceTree = "<group>"; };
-		703549271333E36800D3865C /* cDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cDriver.h; sourceTree = "<group>"; };
+		703549271333E36800D3865C /* Driver.h */ = {isa = PBXFileReference; path = Driver.h; sourceTree = "<group>"; };
 		703549281333E36800D3865C /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
 		703549291333E36800D3865C /* Map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		7035492B1333E39300D3865C /* cClassificationInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cClassificationInfo.h; sourceTree = "<group>"; };
@@ -1060,7 +1060,7 @@
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
 		70A1E325125CDF2B00D56AC4 /* cClassificationInfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationInfo.cc; sourceTree = "<group>"; };
-		70A1E327125CDF2B00D56AC4 /* cMap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cMap.cc; sourceTree = "<group>"; };
+		70A1E327125CDF2B00D56AC4 /* Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cc; sourceTree = "<group>"; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
 		70A1E86C12663FA100D56AC4 /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
@@ -1287,7 +1287,7 @@
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
 		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
-		70E14D4B1279FA5B0059FB9D /* cDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDriver.cc; sourceTree = "<group>"; };
+		70E14D4B1279FA5B0059FB9D /* Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Driver.cc; sourceTree = "<group>"; };
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
 		70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConstBurstSchedule.h; sourceTree = "<group>"; };
 		70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cConstBurstSchedule.cc; sourceTree = "<group>"; };
@@ -1601,7 +1601,7 @@
 		703549261333E36800D3865C /* viewer-core */ = {
 			isa = PBXGroup;
 			children = (
-				703549271333E36800D3865C /* cDriver.h */,
+				703549271333E36800D3865C /* Driver.h */,
 				703549281333E36800D3865C /* Listener.h */,
 				703549291333E36800D3865C /* Map.h */,
 			);
@@ -1806,8 +1806,8 @@
 			children = (
 				7042DF13128C90240062501F /* AvidaViewer.cc */,
 				70A1E325125CDF2B00D56AC4 /* cClassificationInfo.cc */,
-				70E14D4B1279FA5B0059FB9D /* cDriver.cc */,
-				70A1E327125CDF2B00D56AC4 /* cMap.cc */,
+				70E14D4B1279FA5B0059FB9D /* Driver.cc */,
+				70A1E327125CDF2B00D56AC4 /* Map.cc */,
 			);
 			path = "viewer-core";
 			sourceTree = "<group>";
@@ -2072,12 +2072,12 @@
 		DCC30C670762539A008F7A48 /* source */ = {
 			isa = PBXGroup;
 			children = (
-				7061AB7F1358BD6F0000B036 /* core */,
-				70FEF65C1382C48900A9D082 /* data */,
 				707AEEEE09E80699001AEA89 /* actions */,
 				70422A1B091B141000A5E67F /* analyze */,
 				70F7D8C8092546DC009E311D /* classification */,
+				7061AB7F1358BD6F0000B036 /* core */,
 				DCC30F7C0762539D008F7A48 /* cpu */,
+				70FEF65C1382C48900A9D082 /* data */,
 				701D9115094B770B008B845F /* drivers */,
 				DCC310040762539D008F7A48 /* main */,
 				70DCF4FF09CF81E400924128 /* platform */,
@@ -2831,8 +2831,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				706C7B6A125F64C400EDB4B9 /* cClassificationInfo.cc in Sources */,
-				706C7B6B125F64C600EDB4B9 /* cMap.cc in Sources */,
-				70E14D4D1279FA5B0059FB9D /* cDriver.cc in Sources */,
+				706C7B6B125F64C600EDB4B9 /* Map.cc in Sources */,
+				70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */,
 				7042DF15128C90240062501F /* AvidaViewer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
