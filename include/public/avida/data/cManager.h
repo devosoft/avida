@@ -44,8 +44,8 @@ namespace Avida {
       
       Apto::Set<RecorderPtr> m_recorders;
       
-      Apto::Array<cProvider*> m_active_providers;
-      Apto::Map<Apto::String, cProvider*> m_active_map;
+      Apto::Array<ProviderPtr> m_active_providers;
+      Apto::Map<Apto::String, ProviderPtr> m_active_map;
       
     public:
       LIB_EXPORT cManager(cWorld* world);

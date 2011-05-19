@@ -350,8 +350,6 @@ public:
   Data::PackagePtr GetProvidedValue(const Apto::String& data_id) const;
   Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
   
-  cStats* GetDataProvider(cWorld*);
-  
   // cStats
   void ProcessUpdate();
 

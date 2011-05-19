@@ -45,6 +45,12 @@
 using namespace AvidaTools;
 
 
+cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
+  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng), m_class_mgr(NULL), m_datafile_mgr(NULL)
+  , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL)
+{
+}
+
 cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback)
 {
   cWorld* world = new cWorld(cfg, working_dir);
@@ -67,7 +73,6 @@ cWorld::~cWorld()
   delete m_env; m_env = NULL;
   delete m_event_list; m_event_list = NULL;
   delete m_hw_mgr; m_hw_mgr = NULL;
-  delete m_stats; m_stats = NULL;
 
   // Delete after all classes that may be logging items
   if (m_datafile_mgr) { m_datafile_mgr->FlushAll(); }
@@ -109,8 +114,8 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   
   // Setup Stats Object
-  m_stats = new cStats(this);
-  m_class_mgr->GetBioGroupManager("genotype")->AddListener(m_stats);
+  m_stats = Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount>(new cStats(this));
+  m_class_mgr->GetBioGroupManager("genotype")->AddListener(Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount>::GetPointer(m_stats));
 
   
   // Initialize the hardware manager, loading all of the instruction sets
@@ -164,6 +169,9 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   return success;
 }
+
+Apto::SmartPtr<Data::cProvider, Apto::ThreadSafeRefCount> cWorld::GetStatsProvider(cWorld*) { return m_stats; }
+
 
 cAnalyze& cWorld::GetAnalyze()
 {

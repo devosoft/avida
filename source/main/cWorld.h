@@ -22,6 +22,8 @@
 #ifndef cWorld_h
 #define cWorld_h
 
+#include "apto/core/SmartPtr.h"
+
 #include "cAvidaConfig.h"
 #include "cAvidaContext.h"
 #include "cDataFileManager.h"
@@ -34,6 +36,7 @@ namespace Avida {
   
   namespace Data {
     class cManager;
+    class cProvider;
   };
 };
 
@@ -70,7 +73,7 @@ protected:
   cEventList* m_event_list;
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
-  cStats* m_stats;
+  Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
   cWorldDriver* m_driver;
   
   Avida::Data::cManager* m_data_mgr;
@@ -82,9 +85,7 @@ protected:
   
   bool m_own_driver;      // specifies whether this world object should manage its driver object
 
-  cWorld(cAvidaConfig* cfg, const cString& wd)
-    : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng), m_class_mgr(NULL), m_datafile_mgr(NULL)
-    , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL) { ; }
+  cWorld(cAvidaConfig* cfg, const cString& wd);
   
 private:
   cWorld(); // @not_implemented
@@ -113,7 +114,9 @@ public:
   cStats& GetStats() { return *m_stats; }
   cWorldDriver& GetDriver() { return *m_driver; }
   
-  Avida::Data::cManager& GetDataManager() { return *m_data_mgr; }
+  Data::cManager& GetDataManager() { return *m_data_mgr; }
+  
+  Apto::SmartPtr<Data::cProvider, Apto::ThreadSafeRefCount> GetStatsProvider(cWorld*);
   
   // Access to Data File Manager
   std::ofstream& GetDataFileOFStream(const cString& fname) { return m_datafile_mgr->GetOFStream(fname); }

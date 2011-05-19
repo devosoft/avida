@@ -38,7 +38,6 @@ Avida::Data::cManager::cManager(cWorld* world) : m_world(world)
 
 Avida::Data::cManager::~cManager()
 {
-  for (int i = 0; i < m_active_providers.GetSize(); i++) delete m_active_providers[i];
 }
 
 
@@ -76,7 +75,7 @@ bool Avida::Data::cManager::AttachRecorder(RecorderPtr recorder)
   for (ConstDataSetIterator it = requested->Begin(); it.Next();) {
     if (!m_active_map.Has(*it.Get())) {
       // Request data not active, instantiate provider and register the values it provides as active
-      cProvider* provider = (m_provider_map.Get(*it.Get()))(m_world);
+      ProviderPtr provider = (m_provider_map.Get(*it.Get()))(m_world);
       assert(provider);
       
       m_active_providers.Push(provider);
@@ -123,7 +122,7 @@ void Avida::Data::cManager::UpdateState()
 
 Avida::Data::PackagePtr Avida::Data::cManager::GetCurrentValue(const Apto::String& data_id) const
 {
-  cProvider* provider = NULL;
+  ProviderPtr provider;
   if (m_active_map.Get(data_id, provider)) return provider->GetProvidedValue(data_id);
   
   return PackagePtr();

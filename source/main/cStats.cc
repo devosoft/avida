@@ -348,7 +348,6 @@ Apto::String cStats::DescribeProvidedValue(const Apto::String& data_id) const
   return rtn;
 }
 
-cStats* cStats::GetDataProvider(cWorld*) { return this; }
 
 template <class T> Data::PackagePtr cStats::packageData(T (cStats::*func)() const) const
 {
@@ -362,7 +361,7 @@ void cStats::setupProvidedData()
   // data management.
   
   // Setup functors and references for use in the PROVIDE macro
-  Data::ProviderActivateFunctor activate(this, &cStats::GetDataProvider);
+  Data::ProviderActivateFunctor activate(m_world, &cWorld::GetStatsProvider);
   Data::cManager& mgr = m_world->GetDataManager();
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<int (cStats::*)() const> > intStat(this, &cStats::packageData<int>);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<double (cStats::*)() const> > doubleStat(this, &cStats::packageData<double>);

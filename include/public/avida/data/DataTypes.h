@@ -43,7 +43,8 @@ namespace Avida {
     // Type Declarations
     // --------------------------------------------------------------------------------------------------------------
 
-    typedef Apto::Functor<cProvider*, Apto::TL::Create<cWorld*> > ProviderActivateFunctor;
+    typedef Apto::SmartPtr<cProvider, Apto::ThreadSafeRefCount> ProviderPtr;
+    typedef Apto::Functor<ProviderPtr, Apto::TL::Create<cWorld*> > ProviderActivateFunctor;
     
     typedef Apto::SmartPtr<cRecorder, Apto::ThreadSafeRefCount> RecorderPtr;
     
