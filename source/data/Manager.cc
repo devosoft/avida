@@ -24,7 +24,7 @@
 
 #include "avida/data/Manager.h"
 
-#include "avida/data/cPackage.h"
+#include "avida/data/Package.h"
 #include "avida/data/cProvider.h"
 #include "avida/data/cRecorder.h"
 

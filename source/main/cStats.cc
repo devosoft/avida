@@ -24,7 +24,7 @@
 
 #include "avida/core/cWorldDriver.h"
 #include "avida/data/Manager.h"
-#include "avida/data/cPackage.h"
+#include "avida/data/Package.h"
 
 #include "cBioGroup.h"
 #include "cDataFile.h"
@@ -351,7 +351,7 @@ Apto::String cStats::DescribeProvidedValue(const Apto::String& data_id) const
 
 template <class T> Data::PackagePtr cStats::packageData(T (cStats::*func)() const) const
 {
-  return Data::PackagePtr(new Data::tPackage<T>((this->*func)()));
+  return Data::PackagePtr(new Data::Wrap<T>((this->*func)()));
 }
 
 

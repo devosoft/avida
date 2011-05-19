@@ -32,7 +32,7 @@
 namespace Avida {
   namespace Data {
     
-    class cPackage;
+    class Package;
     
     class cRecorder
     {

@@ -35,7 +35,7 @@ namespace Avida {
     // Class Declarations
     // --------------------------------------------------------------------------------------------------------------
     
-    class cPackage;
+    class Package;
     class cProvider;    
     class cRecorder;
 
@@ -52,7 +52,7 @@ namespace Avida {
     typedef Apto::SmartPtr<const Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> ConstDataSetPtr;
     typedef Apto::Set<Apto::String>::ConstIterator ConstDataSetIterator;
     
-    typedef Apto::SmartPtr<cPackage, Apto::ThreadSafeRefCount> PackagePtr;
+    typedef Apto::SmartPtr<Package, Apto::ThreadSafeRefCount> PackagePtr;
     
     typedef Apto::Functor<PackagePtr, Apto::TL::Create<const Apto::String&> > DataRetrievalFunctor;
     
