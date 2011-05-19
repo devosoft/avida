@@ -73,15 +73,4 @@
 #define NULL 0
 #endif
 
-
-namespace AvidaTools {
-  namespace Platform
-  {
-    void Initialize();
-    
-    int AvailableCPUs();
-  };
-};
-
-
 #endif

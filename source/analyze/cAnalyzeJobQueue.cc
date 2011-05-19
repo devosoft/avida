@@ -21,19 +21,18 @@
 
 #include "cAnalyzeJobQueue.h"
 
+#include "apto/platform.h"
 #include "avida/Avida.h"
-
 #include "avida/core/WorldDriver.h"
 
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
-#include "Platform.h"
 
 using namespace Avida;
 
 
 cAnalyzeJobQueue::cAnalyzeJobQueue(cWorld* world)
-: m_world(world), m_last_jobid(0), m_jobs(0), m_pending(0), m_workers(AvidaTools::Platform::AvailableCPUs())
+: m_world(world), m_last_jobid(0), m_jobs(0), m_pending(0), m_workers(Apto::Platform::AvailableCPUs())
 {
   const int max_workers = world->GetConfig().MAX_CONCURRENCY.Get();
   if (max_workers > 0 && max_workers < m_workers.GetSize()) m_workers.Resize(max_workers);
