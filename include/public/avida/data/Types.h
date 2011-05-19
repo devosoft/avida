@@ -38,7 +38,7 @@ namespace Avida {
     class Manager;
     class Package;
     class Provider;    
-    class cRecorder;
+    class Recorder;
 
     
     // Type Declarations
@@ -47,7 +47,7 @@ namespace Avida {
     typedef Apto::SmartPtr<Provider, Apto::ThreadSafeRefCount> ProviderPtr;
     typedef Apto::Functor<ProviderPtr, Apto::TL::Create<cWorld*> > ProviderActivateFunctor;
     
-    typedef Apto::SmartPtr<cRecorder, Apto::ThreadSafeRefCount> RecorderPtr;
+    typedef Apto::SmartPtr<Recorder, Apto::ThreadSafeRefCount> RecorderPtr;
     
     typedef Apto::SmartPtr<Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> DataSetPtr;
     typedef Apto::SmartPtr<const Apto::Set<Apto::String>, Apto::ThreadSafeRefCount> ConstDataSetPtr;
