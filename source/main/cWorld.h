@@ -35,7 +35,7 @@ namespace Avida {
   class cWorldDriver;
   
   namespace Data {
-    class cManager;
+    class Manager;
     class cProvider;
   };
 };
@@ -76,7 +76,7 @@ protected:
   Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
   cWorldDriver* m_driver;
   
-  Avida::Data::cManager* m_data_mgr;
+  Avida::Data::Manager* m_data_mgr;
 
   cRandom m_rng;
   
@@ -114,7 +114,7 @@ public:
   cStats& GetStats() { return *m_stats; }
   cWorldDriver& GetDriver() { return *m_driver; }
   
-  Data::cManager& GetDataManager() { return *m_data_mgr; }
+  Data::Manager& GetDataManager() { return *m_data_mgr; }
   
   Apto::SmartPtr<Data::cProvider, Apto::ThreadSafeRefCount> GetStatsProvider(cWorld*);
   

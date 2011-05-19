@@ -23,7 +23,7 @@
 #include "cStats.h"
 
 #include "avida/core/cWorldDriver.h"
-#include "avida/data/cManager.h"
+#include "avida/data/Manager.h"
 #include "avida/data/cPackage.h"
 
 #include "cBioGroup.h"
@@ -362,7 +362,7 @@ void cStats::setupProvidedData()
   
   // Setup functors and references for use in the PROVIDE macro
   Data::ProviderActivateFunctor activate(m_world, &cWorld::GetStatsProvider);
-  Data::cManager& mgr = m_world->GetDataManager();
+  Data::Manager& mgr = m_world->GetDataManager();
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<int (cStats::*)() const> > intStat(this, &cStats::packageData<int>);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<double (cStats::*)() const> > doubleStat(this, &cStats::packageData<double>);
 

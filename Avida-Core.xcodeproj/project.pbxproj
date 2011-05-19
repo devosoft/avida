@@ -359,7 +359,7 @@
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
 		70FEF6241381B04500A9D082 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
-		70FEF65E1382C48900A9D082 /* cManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FEF65D1382C48900A9D082 /* cManager.cc */; };
+		70FEF65E1382C48900A9D082 /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FEF65D1382C48900A9D082 /* Manager.cc */; };
 		B462B5C10FA0F47D00F379D1 /* cPhenPlastSummary.h in Headers */ = {isa = PBXBuildFile; fileRef = B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */; };
 		B4FA258A0C5EB65E0086D4B5 /* cPlasticPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */; };
 		B4FA25A90C5EB7880086D4B5 /* cPhenPlastGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = B4FA259E0C5EB7600086D4B5 /* cPhenPlastGenotype.cc */; };
@@ -1302,9 +1302,9 @@
 		70FB4E6D138435D500D8F6F0 /* cPackage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cPackage.h; sourceTree = "<group>"; };
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		70FEF6231381B04500A9D082 /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		70FEF6371381CAB900A9D082 /* cManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cManager.h; sourceTree = "<group>"; };
+		70FEF6371381CAB900A9D082 /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
 		70FEF6381381CAB900A9D082 /* cProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cProvider.h; sourceTree = "<group>"; };
-		70FEF65D1382C48900A9D082 /* cManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cManager.cc; sourceTree = "<group>"; };
+		70FEF65D1382C48900A9D082 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
 		B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastSummary.h; sourceTree = "<group>"; };
 		B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenPlastGenotype.h; sourceTree = "<group>"; };
 		B4FA25810C5EB6510086D4B5 /* cPlasticPhenotype.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cPlasticPhenotype.cc; sourceTree = "<group>"; };
@@ -2035,7 +2035,7 @@
 		70FEF6361381CAB900A9D082 /* data */ = {
 			isa = PBXGroup;
 			children = (
-				70FEF6371381CAB900A9D082 /* cManager.h */,
+				70FEF6371381CAB900A9D082 /* Manager.h */,
 				70FB4E6D138435D500D8F6F0 /* cPackage.h */,
 				70FEF6381381CAB900A9D082 /* cProvider.h */,
 				7010D0E613841BFB00989C16 /* cRecorder.h */,
@@ -2047,7 +2047,7 @@
 		70FEF65C1382C48900A9D082 /* data */ = {
 			isa = PBXGroup;
 			children = (
-				70FEF65D1382C48900A9D082 /* cManager.cc */,
+				70FEF65D1382C48900A9D082 /* Manager.cc */,
 			);
 			path = data;
 			sourceTree = "<group>";
@@ -2822,7 +2822,7 @@
 				70A53BCA135B765900C3E661 /* Avida.cc in Sources */,
 				70A53BCB135B765D00C3E661 /* Definitions.cc in Sources */,
 				70A53BCC135B766600C3E661 /* Version.cc in Sources */,
-				70FEF65E1382C48900A9D082 /* cManager.cc in Sources */,
+				70FEF65E1382C48900A9D082 /* Manager.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

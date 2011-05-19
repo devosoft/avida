@@ -24,7 +24,7 @@
 #include "avida/Avida.h"
 #include "AvidaTools.h"
 
-#include "avida/data/cManager.h"
+#include "avida/data/Manager.h"
 
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
@@ -100,7 +100,7 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   m_datafile_mgr = new cDataFileManager(FileSystem::GetAbsolutePath(m_conf->DATA_DIR.Get(), m_working_dir), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   
-  m_data_mgr = new Avida::Data::cManager(this);
+  m_data_mgr = new Avida::Data::Manager(this);
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
