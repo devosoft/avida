@@ -26,7 +26,7 @@
 #define AvidaDataManager_h
 
 #include "apto/platform.h"
-#include "avida/data/DataTypes.h"
+#include "avida/data/Types.h"
 
 
 namespace Avida {
