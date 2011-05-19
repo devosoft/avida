@@ -28,7 +28,7 @@
 
 namespace Avida {
   namespace CoreView {
-    class cMap;
+    class Map;
     
     class cListener
     {
@@ -38,7 +38,7 @@ namespace Avida {
       virtual bool WantsMap() = 0;
       virtual bool WantsUpdate() = 0;
       
-      virtual void NotifyMap(cMap* map) { ; }
+      virtual void NotifyMap(Map* map) { ; }
       virtual void NotifyUpdate(int update) { ; }      
     };
     

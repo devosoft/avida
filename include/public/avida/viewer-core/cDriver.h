@@ -38,7 +38,7 @@ namespace Avida {
     // Class Declarations
     // --------------------------------------------------------------------------------------------------------------  
     
-    class cMap;
+    class Map;
     class cListener;
 
 
@@ -65,7 +65,7 @@ namespace Avida {
       bool m_done;
       bool m_paused;
       
-      cMap* m_map;
+      Map* m_map;
       
       Apto::Set<cListener*> m_listeners;
       

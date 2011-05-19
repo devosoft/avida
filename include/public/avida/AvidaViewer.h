@@ -27,6 +27,6 @@
 
 #include "avida/viewer-core/cDriver.h"
 #include "avida/viewer-core/cListener.h"
-#include "avida/viewer-core/cMap.h"
+#include "avida/viewer-core/Map.h"
 
 #endif

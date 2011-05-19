@@ -23,7 +23,7 @@
 
 #include "avida/viewer-core/cDriver.h"
 
-#include "avida/viewer-core/cMap.h"
+#include "avida/viewer-core/Map.h"
 #include "avida/viewer-core/cListener.h"
 
 #include "cAvidaContext.h"
@@ -209,5 +209,5 @@ void Avida::CoreView::cDriver::AttachListener(cListener* listener)
 {
   m_listeners.Insert(listener);
   
-  if (listener->WantsMap() && !m_map) m_map = new cMap(m_world);
+  if (listener->WantsMap() && !m_map) m_map = new Map(m_world);
 }

@@ -868,7 +868,7 @@
 		703549251333E36800D3865C /* AvidaViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AvidaViewer.h; sourceTree = "<group>"; };
 		703549271333E36800D3865C /* cDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cDriver.h; sourceTree = "<group>"; };
 		703549281333E36800D3865C /* cListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cListener.h; sourceTree = "<group>"; };
-		703549291333E36800D3865C /* cMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cMap.h; sourceTree = "<group>"; };
+		703549291333E36800D3865C /* Map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		7035492B1333E39300D3865C /* cClassificationInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cClassificationInfo.h; sourceTree = "<group>"; };
 		703549CE1337BB6D00D3865C /* cWorldDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
@@ -1603,7 +1603,7 @@
 			children = (
 				703549271333E36800D3865C /* cDriver.h */,
 				703549281333E36800D3865C /* cListener.h */,
-				703549291333E36800D3865C /* cMap.h */,
+				703549291333E36800D3865C /* Map.h */,
 			);
 			path = "viewer-core";
 			sourceTree = "<group>";

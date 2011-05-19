@@ -1,5 +1,5 @@
 /*
- *  cMap.cc
+ *  Map.cc
  *  Avida
  *
  *  Created by Charles on 7-9-07
@@ -22,7 +22,7 @@
  *
  */
 
-#include "avida/viewer-core/cMap.h"
+#include "avida/viewer-core/Map.h"
 
 #include "cBioGroup.h"
 #include "cEnvironment.h"
@@ -261,7 +261,7 @@ void cGenotypeMapMode::Update(cPopulation& pop)
 
 
 
-Avida::CoreView::cMap::cMap(cWorld* world)
+Avida::CoreView::Map::Map(cWorld* world)
   : m_width(world->GetPopulation().GetWorldX())
   , m_height(world->GetPopulation().GetWorldY())
   , m_num_viewer_colors(-1)
@@ -292,14 +292,14 @@ Avida::CoreView::cMap::cMap(cWorld* world)
 //  }
 }
 
-Avida::CoreView::cMap::~cMap()
+Avida::CoreView::Map::~Map()
 {
   for (int i = 0; i < m_view_modes.GetSize(); i++) delete m_view_modes[i];
 }
 
 
 
-void Avida::CoreView::cMap::UpdateMaps(cPopulation& pop)
+void Avida::CoreView::Map::UpdateMaps(cPopulation& pop)
 {
   m_rw_lock.WriteLock();
   
@@ -309,7 +309,7 @@ void Avida::CoreView::cMap::UpdateMaps(cPopulation& pop)
 }
 
 
-void Avida::CoreView::cMap::SetMode(int mode)
+void Avida::CoreView::Map::SetMode(int mode)
 {
   int type = m_view_modes[mode]->GetSupportedTypes();
   if (type == MAP_GRID_VIEW_COLOR) m_color_mode = mode;
