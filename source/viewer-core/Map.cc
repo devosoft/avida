@@ -32,7 +32,7 @@
 #include "cStringUtil.h"
 #include "cWorld.h"
 
-#include "avida/private/viewer-core/cClassificationInfo.h"
+#include "avida/private/viewer-core/ClassificationInfo.h"
 
 #include <cmath>
 #include <iostream>
@@ -201,14 +201,14 @@ class cGenotypeMapMode : public Avida::CoreView::MapMode, public Avida::CoreView
 private:
   static const int NUM_COLORS = 10;
 private:
-  Avida::CoreView::cClassificationInfo* m_info;
+  Avida::CoreView::ClassificationInfo* m_info;
   Apto::Array<int> m_color_grid;
   Apto::Array<int> m_color_count;
   Apto::Array<DiscreteScale::Entry> m_scale_labels;
   
 public:
   cGenotypeMapMode(cWorld* world)
-    : m_info(new Avida::CoreView::cClassificationInfo(world, "genotype", NUM_COLORS))
+    : m_info(new Avida::CoreView::ClassificationInfo(world, "genotype", NUM_COLORS))
     , m_color_count(NUM_COLORS + Avida::CoreView::MAP_RESERVED_COLORS)
   { ; }
   virtual ~cGenotypeMapMode() { delete m_info; }
@@ -244,8 +244,8 @@ void cGenotypeMapMode::Update(cPopulation& pop)
       m_color_grid[i] = -4;
       m_color_count[0]++;
     } else {
-      Avida::CoreView::cClassificationInfo::MapColor* mapcolor =
-      org->GetBioGroup("genotype")->GetData<Avida::CoreView::cClassificationInfo::MapColor>();
+      Avida::CoreView::ClassificationInfo::MapColor* mapcolor =
+      org->GetBioGroup("genotype")->GetData<Avida::CoreView::ClassificationInfo::MapColor>();
       if (mapcolor) {
         m_color_grid[i] = mapcolor->color;
         m_color_count[mapcolor->color + 4];

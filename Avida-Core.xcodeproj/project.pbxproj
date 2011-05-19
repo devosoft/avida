@@ -317,7 +317,7 @@
 		7061AB821358BD6F0000B036 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB801358BD6F0000B036 /* cGenome.cc */; };
 		7061AB831358BD6F0000B036 /* cSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB811358BD6F0000B036 /* cSequence.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
-		706C7B6A125F64C400EDB4B9 /* cClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* cClassificationInfo.cc */; };
+		706C7B6A125F64C400EDB4B9 /* ClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */; };
 		706C7B6B125F64C600EDB4B9 /* Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E327125CDF2B00D56AC4 /* Map.cc */; };
 		706C7B6F125F64F900EDB4B9 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
 		706C7B89125F653B00EDB4B9 /* cScreen_Map.cc in Sources */ = {isa = PBXBuildFile; fileRef = 706C7B86125F653800EDB4B9 /* cScreen_Map.cc */; };
@@ -869,7 +869,7 @@
 		703549271333E36800D3865C /* Driver.h */ = {isa = PBXFileReference; path = Driver.h; sourceTree = "<group>"; };
 		703549281333E36800D3865C /* Listener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Listener.h; sourceTree = "<group>"; };
 		703549291333E36800D3865C /* Map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
-		7035492B1333E39300D3865C /* cClassificationInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cClassificationInfo.h; sourceTree = "<group>"; };
+		7035492B1333E39300D3865C /* ClassificationInfo.h */ = {isa = PBXFileReference; path = ClassificationInfo.h; sourceTree = "<group>"; };
 		703549CE1337BB6D00D3865C /* cWorldDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cWorldDriver.h; sourceTree = "<group>"; };
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
 		70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAnalyzeLib.cc; sourceTree = "<group>"; };
@@ -1059,7 +1059,7 @@
 		709D92490A5D94FD00D6A163 /* cMutationalNeighborhood.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhood.h; sourceTree = "<group>"; };
 		709D924A0A5D94FD00D6A163 /* cMutationalNeighborhoodResults.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cMutationalNeighborhoodResults.h; sourceTree = "<group>"; };
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
-		70A1E325125CDF2B00D56AC4 /* cClassificationInfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationInfo.cc; sourceTree = "<group>"; };
+		70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClassificationInfo.cc; sourceTree = "<group>"; };
 		70A1E327125CDF2B00D56AC4 /* Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cc; sourceTree = "<group>"; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
@@ -1611,7 +1611,7 @@
 		7035492A1333E39300D3865C /* viewer-core */ = {
 			isa = PBXGroup;
 			children = (
-				7035492B1333E39300D3865C /* cClassificationInfo.h */,
+				7035492B1333E39300D3865C /* ClassificationInfo.h */,
 			);
 			path = "viewer-core";
 			sourceTree = "<group>";
@@ -1805,7 +1805,7 @@
 			isa = PBXGroup;
 			children = (
 				7042DF13128C90240062501F /* AvidaViewer.cc */,
-				70A1E325125CDF2B00D56AC4 /* cClassificationInfo.cc */,
+				70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */,
 				70E14D4B1279FA5B0059FB9D /* Driver.cc */,
 				70A1E327125CDF2B00D56AC4 /* Map.cc */,
 			);
@@ -2830,7 +2830,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				706C7B6A125F64C400EDB4B9 /* cClassificationInfo.cc in Sources */,
+				706C7B6A125F64C400EDB4B9 /* ClassificationInfo.cc in Sources */,
 				706C7B6B125F64C600EDB4B9 /* Map.cc in Sources */,
 				70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */,
 				7042DF15128C90240062501F /* AvidaViewer.cc in Sources */,
