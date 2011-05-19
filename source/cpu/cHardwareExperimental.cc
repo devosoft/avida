@@ -23,7 +23,7 @@
 
 #include "cHardwareExperimental.h"
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
 #include "cCPUTestInfo.h"

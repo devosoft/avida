@@ -22,7 +22,7 @@
 
 #include "cStats.h"
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 #include "avida/data/Manager.h"
 #include "avida/data/Package.h"
 

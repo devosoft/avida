@@ -23,7 +23,7 @@
 #ifndef cPopulationInterface_h
 #define cPopulationInterface_h
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cOrgInterface.h"
 #include "cWorld.h"

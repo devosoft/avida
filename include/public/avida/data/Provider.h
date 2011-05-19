@@ -38,13 +38,13 @@ namespace Avida {
     class Provider
     {
     public:
-      virtual LIB_EXPORT ~Provider() { ; }
+      LIB_EXPORT virtual ~Provider() { ; }
       
-      virtual LIB_EXPORT ConstDataSetPtr Provides() const = 0;
-      virtual LIB_EXPORT void UpdateProvidedValues() = 0;
+      LIB_EXPORT virtual ConstDataSetPtr Provides() const = 0;
+      LIB_EXPORT virtual void UpdateProvidedValues() = 0;
       
-      virtual LIB_EXPORT PackagePtr GetProvidedValue(const Apto::String& data_id) const = 0;
-      virtual LIB_EXPORT Apto::String DescribeProvidedValue(const Apto::String& data_id) const = 0;
+      LIB_EXPORT virtual PackagePtr GetProvidedValue(const Apto::String& data_id) const = 0;
+      LIB_EXPORT virtual Apto::String DescribeProvidedValue(const Apto::String& data_id) const = 0;
     };
     
   };

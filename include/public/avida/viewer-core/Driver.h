@@ -25,7 +25,7 @@
 #ifndef AvidaCoreViewDriver_h
 #define AvidaCoreViewDriver_h
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "apto/core.h"
 
@@ -54,7 +54,7 @@ namespace Avida {
     // Driver Definition
     // --------------------------------------------------------------------------------------------------------------  
     
-    class Driver : public Apto::Thread, public Avida::cWorldDriver
+    class Driver : public Apto::Thread, public Avida::WorldDriver
     {
     private:
       cWorld* m_world;
@@ -89,7 +89,7 @@ namespace Avida {
       void DetachListener(Listener* listener) { m_listeners.Remove(listener); }
 
       
-      // cWorldDriver Protocol
+      // WorldDriver Protocol
       // ------------------------------------------------------------------------------------------------------------  
       
     public:

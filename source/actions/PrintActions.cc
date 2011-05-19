@@ -22,7 +22,7 @@
 #include "PrintActions.h"
 
 #include "avida/core/cSequence.h"
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 #include "cAction.h"
 #include "cActionLibrary.h"

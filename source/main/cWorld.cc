@@ -194,7 +194,7 @@ int cWorld::GetNumResources()
 }
 
 
-void cWorld::SetDriver(cWorldDriver* driver, bool take_ownership)
+void cWorld::SetDriver(WorldDriver* driver, bool take_ownership)
 {
   // cleanup current driver, if needed
   if (m_own_driver) delete m_driver;

@@ -33,7 +33,7 @@
 #include <cassert>
 
 namespace Avida {
-  class cWorldDriver;
+  class WorldDriver;
 };
 
 class cAnalyze;
@@ -70,7 +70,7 @@ protected:
   cHardwareManager* m_hw_mgr;
   cPopulation* m_pop;
   Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
-  cWorldDriver* m_driver;
+  WorldDriver* m_driver;
   
   Avida::Data::Manager* m_data_mgr;
 
@@ -93,7 +93,7 @@ public:
   static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL); 
   virtual ~cWorld();
   
-  void SetDriver(cWorldDriver* driver, bool take_ownership = false);
+  void SetDriver(WorldDriver* driver, bool take_ownership = false);
   
   const cString& GetWorkingDir() const { return m_working_dir; }
   
@@ -108,7 +108,7 @@ public:
   cPopulation& GetPopulation() { return *m_pop; }
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }
-  cWorldDriver& GetDriver() { return *m_driver; }
+  WorldDriver& GetDriver() { return *m_driver; }
   
   Data::Manager& GetDataManager() { return *m_data_mgr; }
   

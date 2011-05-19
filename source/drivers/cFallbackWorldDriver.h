@@ -22,12 +22,12 @@
 #ifndef cFallbackWorldDriver_h
 #define cFallbackWorldDriver_h
 
-#include "avida/core/cWorldDriver.h"
+#include "avida/core/WorldDriver.h"
 
 using namespace Avida;
 
 
-class cFallbackWorldDriver : public cWorldDriver
+class cFallbackWorldDriver : public WorldDriver
 {
 private:
   cFallbackWorldDriver(const cFallbackWorldDriver&); // @not_implemented
