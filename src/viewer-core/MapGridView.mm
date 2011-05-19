@@ -29,7 +29,7 @@
 
 #import "MapGridView.h"
 
-#include "avida/viewer-core/cMap.h"
+#include "avida/viewer-core/Map.h"
 
 #include <cassert>
 #include <iostream>
@@ -124,7 +124,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
   return YES;
 }
 
-- (void) updateState:(Avida::CoreView::cMap*)state {
+- (void) updateState:(Avida::CoreView::Map*)state {
   state->Retain();
   
   map_width = state->GetWidth();

@@ -122,7 +122,7 @@ static inline CGFloat sigmoid(CGFloat x, CGFloat midpoint, CGFloat steepness)
 }
 
 
-- (void) updateState:(Avida::CoreView::cMap*)state {
+- (void) updateState:(Avida::CoreView::Map*)state {
   state->Retain();
   
   map_colors = state->GetColors();

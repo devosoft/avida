@@ -61,7 +61,7 @@
   
   AvidaRun* currentRun;
   Avida::CoreView::cListener* listener;
-  Avida::CoreView::cMap* map;
+  Avida::CoreView::Map* map;
   Apto::Map<NSInteger, int> map_mode_to_color;
 }
 

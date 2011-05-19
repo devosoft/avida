@@ -33,7 +33,7 @@
 
 namespace Avida {
   namespace CoreView {
-    class cMap;
+    class Map;
   };
 };
 
@@ -53,7 +53,7 @@ namespace Avida {
 - (void) drawRect:(NSRect)rect;
 - (BOOL) isOpaque;
 
-- (void) updateState:(Avida::CoreView::cMap*)state;
+- (void) updateState:(Avida::CoreView::Map*)state;
 
 @property (readwrite, nonatomic) double zoom;
 

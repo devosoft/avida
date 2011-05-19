@@ -36,7 +36,7 @@
 
 namespace Avida {
   namespace CoreView {
-    class cMap;
+    class Map;
   };
 };
 
@@ -50,10 +50,10 @@ namespace Avida {
 
 
 @interface CoreViewMap : NSObject {
-  Avida::CoreView::cMap* m_map;
+  Avida::CoreView::Map* m_map;
 }
-- (id) initWithMap:(Avida::CoreView::cMap*)map;
-@property (readonly) Avida::CoreView::cMap* map;
+- (id) initWithMap:(Avida::CoreView::Map*)map;
+@property (readonly) Avida::CoreView::Map* map;
 @end;
 
 
@@ -76,6 +76,6 @@ public:
   bool WantsMap() { return true; }
   bool WantsUpdate() { return true; }
   
-  void NotifyMap(Avida::CoreView::cMap* map);
+  void NotifyMap(Avida::CoreView::Map* map);
   void NotifyUpdate(int update);
 };

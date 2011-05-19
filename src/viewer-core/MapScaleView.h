@@ -30,13 +30,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "apto/core.h"
-#include "avida/viewer-core/cMap.h"
-
-namespace Avida {
-  namespace CoreView {
-    class cMap;
-  };
-};
+#include "avida/viewer-core/Map.h"
 
 
 @interface MapScaleView : NSView {
@@ -52,6 +46,6 @@ namespace Avida {
 
 - (void) drawRect:(NSRect)rect;
 
-- (void) updateState:(Avida::CoreView::cMap*)state;
+- (void) updateState:(Avida::CoreView::Map*)state;
 
 @end

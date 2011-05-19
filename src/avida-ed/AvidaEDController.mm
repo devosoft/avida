@@ -34,7 +34,7 @@
 #import "CenteringClipView.h"
 #import "MapGridView.h"
 
-#include "avida/viewer-core/cMap.h"
+#include "avida/viewer-core/Map.h"
 
 static const float MAIN_SPLIT_LEFT_MIN = 150.0;
 static const float MAIN_SPLIT_RIGHT_MIN = 650.0;
