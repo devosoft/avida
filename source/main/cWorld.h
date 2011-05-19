@@ -23,6 +23,7 @@
 #define cWorld_h
 
 #include "apto/core/SmartPtr.h"
+#include "avida/data/Types.h"
 
 #include "cAvidaConfig.h"
 #include "cAvidaContext.h"
@@ -33,11 +34,6 @@
 
 namespace Avida {
   class cWorldDriver;
-  
-  namespace Data {
-    class Manager;
-    class cProvider;
-  };
 };
 
 class cAnalyze;
@@ -116,7 +112,7 @@ public:
   
   Data::Manager& GetDataManager() { return *m_data_mgr; }
   
-  Apto::SmartPtr<Data::cProvider, Apto::ThreadSafeRefCount> GetStatsProvider(cWorld*);
+  Data::ProviderPtr GetStatsProvider(cWorld*);
   
   // Access to Data File Manager
   std::ofstream& GetDataFileOFStream(const cString& fname) { return m_datafile_mgr->GetOFStream(fname); }

@@ -28,7 +28,7 @@
 #include "AvidaTools.h"
 
 #include "avida/core/cSequence.h"
-#include "avida/data/cProvider.h"
+#include "avida/data/Provider.h"
 
 #include "cBioGroupListener.h"
 #include "cDoubleSum.h"
@@ -71,7 +71,7 @@ struct flow_rate_tuple {
 };
 
 
-class cStats : public cBioGroupListener, public Data::cProvider
+class cStats : public cBioGroupListener, public Data::Provider
 {
 private:
   cWorld* m_world;
@@ -344,7 +344,7 @@ public:
   void NotifyBGEvent(cBioGroup* bg, eBGEventType type, cBioUnit* bu);
   
   
-  // Data::cProvider
+  // Data::Provider
   Data::ConstDataSetPtr Provides() const;
   void UpdateProvidedValues();
   Data::PackagePtr GetProvidedValue(const Apto::String& data_id) const;

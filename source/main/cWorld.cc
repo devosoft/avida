@@ -170,7 +170,7 @@ bool cWorld::setup(cUserFeedback* feedback)
   return success;
 }
 
-Apto::SmartPtr<Data::cProvider, Apto::ThreadSafeRefCount> cWorld::GetStatsProvider(cWorld*) { return m_stats; }
+Apto::SmartPtr<Data::Provider, Apto::ThreadSafeRefCount> cWorld::GetStatsProvider(cWorld*) { return m_stats; }
 
 
 cAnalyze& cWorld::GetAnalyze()

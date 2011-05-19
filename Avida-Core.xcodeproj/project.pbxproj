@@ -1303,7 +1303,7 @@
 		70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		70FEF6231381B04500A9D082 /* libapto.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapto.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		70FEF6371381CAB900A9D082 /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
-		70FEF6381381CAB900A9D082 /* cProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cProvider.h; sourceTree = "<group>"; };
+		70FEF6381381CAB900A9D082 /* Provider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Provider.h; sourceTree = "<group>"; };
 		70FEF65D1382C48900A9D082 /* Manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
 		B462B5C00FA0F47D00F379D1 /* cPhenPlastSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cPhenPlastSummary.h; sourceTree = "<group>"; };
 		B4FA25800C5EB6510086D4B5 /* cPhenPlastGenotype.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cPhenPlastGenotype.h; sourceTree = "<group>"; };
@@ -2037,7 +2037,7 @@
 			children = (
 				70FEF6371381CAB900A9D082 /* Manager.h */,
 				70FB4E6D138435D500D8F6F0 /* Package.h */,
-				70FEF6381381CAB900A9D082 /* cProvider.h */,
+				70FEF6381381CAB900A9D082 /* Provider.h */,
 				7010D0E613841BFB00989C16 /* cRecorder.h */,
 				7010D0E8138425A800989C16 /* Types.h */,
 			);
