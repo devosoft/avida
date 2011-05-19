@@ -29,7 +29,7 @@
 
 #import "AvidaRun.h"
 
-#include "avida/viewer-core/cDriver.h"
+#include "avida/viewer-core/Driver.h"
 
 #import "CoreViewListener.h"
 
@@ -46,7 +46,7 @@
   
   if (self) { 
     Apto::String config_path([[dir path] cStringUsingEncoding:NSASCIIStringEncoding]);
-    driver = Avida::CoreView::cDriver::InitWithDirectory(config_path);
+    driver = Avida::CoreView::Driver::InitWithDirectory(config_path);
     if (!driver) return nil;
     driver->Start();
   }

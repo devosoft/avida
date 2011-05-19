@@ -33,14 +33,14 @@
 
 namespace Avida {
   namespace CoreView {
-    class cDriver;    
+    class Driver;    
   };
 };
 
 
 @interface AvidaRun : NSObject {
 @protected
-  Avida::CoreView::cDriver* driver;
+  Avida::CoreView::Driver* driver;
 }
 
 - (id) init;
