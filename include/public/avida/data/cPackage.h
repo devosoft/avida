@@ -59,9 +59,22 @@ namespace Avida {
       bool BoolValue() const { return m_value; }
       int IntValue() const { return m_value; }
       double DoubleValue() const { return m_value; }
-      Apto::String StringValue() const { return Apto::AsStr(m_value); }
+      Apto::String StringValue() const { return Apto::String(Apto::AsStr(m_value)); }
     };
     
+    template <> class tPackage<Apto::String> : public cPackage
+    {
+    private:
+      Apto::String m_value;
+      
+    public:
+      tPackage(Apto::String value) : m_value(value) { ; }
+      
+      bool BoolValue() const { return Apto::StrAs(m_value); }
+      int IntValue() const { return Apto::StrAs(m_value); }
+      double DoubleValue() const { return Apto::StrAs(m_value); }
+      Apto::String StringValue() const { return m_value; }
+    };
   };
 };
 
