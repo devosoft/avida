@@ -59,7 +59,7 @@ coded to aide understanding.
 class <span class="class">cOrganism</span>
 {
 private:                     <span class="comment">// Data in this class cannot be directly accessed from outside.</span>
-  const <span class="class">cGenome</span> <span class="object">m_genome</span>;    <span class="comment">// The initial genome that this organism was born with.</span>
+  const <span class="class">Genome</span> <span class="object">m_genome</span>;    <span class="comment">// The initial genome that this organism was born with.</span>
   <span class="class">cPhenotype</span> <span class="object">m_phenotype</span>;    <span class="comment">// Maintains the status of this organism's phenotypic traits.</span>
 
   <span class="class">cOrgInterface</span>* <span class="object">m_interface</span>;  <span class="comment">// Interface back to the population.</span>
@@ -68,7 +68,7 @@ private:                     <span class="comment">// Data in this class cannot 
   <span class="class">cHardwareBase</span>* <span class="object">m_hardware;</span> <span class="comment">// The virtual machinery that this organism's genome is run on.</span>
 
 public:                    <span class="comment"> // The methods are accessible to other classes.</span>
-  <span class="method">cOrganism</span>(<span class="class">cWorld</span>* <span class="object">world</span>, <span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>, const <span class="class">cGenome</span>&amp; <span class="object">in_genome</span>);
+  <span class="method">cOrganism</span>(<span class="class">cWorld</span>* <span class="object">world</span>, <span class="class">cAvidaContext</span>&amp; <span class="object">ctx</span>, const <span class="class">Genome</span>&amp; <span class="object">in_genome</span>);
   <span class="method">~cOrganism</span>();
 
   <span class="comment">// This batch of methods involve interaction with the population to resolve.</span>
@@ -79,7 +79,7 @@ public:                    <span class="comment"> // The methods are accessible 
   void <span class="method">Die</span>() { <span class="object">m_interface</span>-&gt;<span class="method">Die</span>(); }
 
   <span class="comment">// Accessors -- these are used to gain access to private data.</span>
-  const <span class="class">cGenome</span>&amp; <span class="method">GetGenome()</span> const { return <span class="object">m_genome</span>; }
+  const <span class="class">Genome</span>&amp; <span class="method">GetGenome()</span> const { return <span class="object">m_genome</span>; }
   <span class="class">cHardwareBase</span>&amp; <span class="method">GetHardware()</span> { return *<span class="object">m_hardware</span>; }
   <span class="class">cPhenotype</span>&amp; <span class="method">GetPhenotype()</span> { return <span class="object">m_phenotype</span>; }
   <span class="class">cGenotype</span>* <span class="method">GetGenotype()</span> { return <span class="object">m_genotype</span>; }
@@ -304,9 +304,9 @@ For the moment, lets consider the return value of a method.  Consider
 the three methods below:
 </p>
 <pre>
-  <span class="class">cGenome</span> <span class="method">GetGenomeValue</span>();
-  <span class="class">cGenome</span>* <span class="method">GetGenomePointer</span>();
-  <span class="class">cGenome</span>&amp; <span class="method">GetGenomeReference</span>();
+  <span class="class">Genome</span> <span class="method">GetGenomeValue</span>();
+  <span class="class">Genome</span>* <span class="method">GetGenomePointer</span>();
+  <span class="class">Genome</span>&amp; <span class="method">GetGenomeReference</span>();
 </pre>
 <p>
 These three cases are all very different. In the first case
@@ -341,13 +341,13 @@ you wanted to allocate memory for a new genome containing 100 instructions,
 you could type:
 </p>
 <pre>
-  <span class="class">cGenome</span>* <span class="object">created_genome</span> = new <span class="method">cGenome</span>(100);
+  <span class="class">Genome</span>* <span class="object">created_genome</span> = new <span class="method">Genome</span>(100);
 </pre>
 <p>
 The variable created_genome is defined as a pointer to a memory location
 containing a genome.  This is assigned the location of the newly allocated
 genome in memory, which is the return value of the <code>new</code> command.
-The cGenome constructor (called with new) takes as an argument a single number
+The Genome constructor (called with new) takes as an argument a single number
 that is the sequence length of the genome.
 </p>
 <p>

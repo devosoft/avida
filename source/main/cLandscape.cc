@@ -34,7 +34,7 @@
 #include "cWorld.h"
 
 
-cLandscape::cLandscape(cWorld* world, const cGenome& in_genome)
+cLandscape::cLandscape(cWorld* world, const Genome& in_genome)
 : m_world(world), trials(1), m_min_found(0), m_max_trials(0), site_count(NULL)
 {
   Reset(in_genome);
@@ -45,7 +45,7 @@ cLandscape::~cLandscape()
   if (site_count != NULL) delete [] site_count;
 }
 
-void cLandscape::Reset(const cGenome& in_genome)
+void cLandscape::Reset(const Genome& in_genome)
 {
   base_genome       = in_genome;
   peak_genome       = in_genome;
@@ -89,7 +89,7 @@ void cLandscape::Reset(const cGenome& in_genome)
   m_num_found = 0;
 }
 
-double cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome)
+double cLandscape::ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, Genome& in_genome)
 {
   testcpu->TestGenome(ctx, m_cpu_test_info, in_genome);
   
@@ -165,13 +165,13 @@ void cLandscape::Process(cAvidaContext& ctx)
 
 // For distances greater than one, this needs to be called recursively.
 
-void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome,
+void cLandscape::Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, Genome& cur_genome,
                               int cur_distance, int start_line)
 {
   const int max_line = base_genome.GetSize() - cur_distance + 1;
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
-  cGenome mg(cur_genome);
+  Genome mg(cur_genome);
   cSequence& mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing trying all combinations.
@@ -210,7 +210,7 @@ void cLandscape::ProcessDump(cAvidaContext& ctx, cDataFile& df)
   const int max_line = base_genome.GetSize();
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
-  cGenome mg(base_genome);
+  Genome mg(base_genome);
   cSequence& mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing trying all combinations.
@@ -247,7 +247,7 @@ void cLandscape::ProcessDelete(cAvidaContext& ctx)
   ProcessBase(ctx, testcpu);
   
   const int max_line = base_genome.GetSize();
-  cGenome mg(base_genome);
+  Genome mg(base_genome);
   cCPUMemory mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing all deletions.
@@ -273,7 +273,7 @@ void cLandscape::ProcessInsert(cAvidaContext& ctx)
   const int max_line = base_genome.GetSize();
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   
-  cGenome mg(base_genome);
+  Genome mg(base_genome);
   cCPUMemory mod_genome = mg.GetSequence();
   
   // Loop through all the lines of genome, testing all insertions.
@@ -549,7 +549,7 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
 {
   distance = 1;
   
-  cGenome mod_genome(base_genome);
+  Genome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
 
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
@@ -583,7 +583,7 @@ void cLandscape::SampleProcess(cAvidaContext& ctx)
 
 void cLandscape::RandomProcess(cAvidaContext& ctx)
 {
-  cGenome mod_genome(base_genome);
+  Genome mod_genome(base_genome);
   int genome_size = base_genome.GetSize();
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
@@ -641,7 +641,7 @@ void cLandscape::BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu)
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
   fitness_chart.ResizeClear(max_line, inst_size);
   
-  cGenome mod_genome(base_genome);
+  Genome mod_genome(base_genome);
   
   // Loop through all the lines of genome, testing trying all combinations.
   for (int line_num = 0; line_num < max_line; line_num++) {
@@ -673,7 +673,7 @@ void cLandscape::TestPairs(cAvidaContext& ctx)
   
   BuildFitnessChart(ctx, testcpu);
   
-  cGenome mod_genome(base_genome);
+  Genome mod_genome(base_genome);
   const int genome_size = base_genome.GetSize();
   
   tArray<int> mut_lines(2);
@@ -713,7 +713,7 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
   
   const int max_line = base_genome.GetSize();
   const int inst_size = m_world->GetHardwareManager().GetInstSet(base_genome.GetInstSet()).GetSize();
-  cGenome mod_genome(base_genome);
+  Genome mod_genome(base_genome);
   cInstruction inst1, inst2;
   
   // Loop through all the lines of genome, testing trying all combinations.
@@ -741,8 +741,8 @@ void cLandscape::TestAllPairs(cAvidaContext& ctx)
 void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 {
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-  cGenome cur_genome(base_genome);
-  cGenome mg(base_genome);
+  Genome cur_genome(base_genome);
+  Genome mg(base_genome);
   cCPUMemory mod_genome = mg.GetSequence();
 
   int gen = 0;
@@ -811,7 +811,7 @@ void cLandscape::HillClimb(cAvidaContext& ctx, cDataFile& df)
 }
 
 
-double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
+double cLandscape::TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, Genome& mod_genome, int line1, int line2,
                                const cInstruction& mut1, const cInstruction& mut2)
 {
   mod_genome.GetSequence()[line1] = mut1;

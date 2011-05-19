@@ -48,7 +48,7 @@ public:
   cBirthGridLocalHandler(cWorld* world, cBirthChamber* bc);
   ~cBirthGridLocalHandler();
   
-  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent);
+  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent);
   
   
 private:

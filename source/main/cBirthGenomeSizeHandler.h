@@ -46,7 +46,7 @@ public:
   cBirthGenomeSizeHandler(cBirthChamber* bc) : m_bc(bc) { ; }
   ~cBirthGenomeSizeHandler();
   
-  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent);
+  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent);
 };
 
 #endif

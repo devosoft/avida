@@ -43,7 +43,7 @@ public:
   cBirthGlobalHandler(cBirthChamber* bc) : m_bc(bc) { ; }
   ~cBirthGlobalHandler();
   
-  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent);
+  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent);
 };
 
 #endif

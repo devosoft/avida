@@ -24,7 +24,7 @@
 #include <cmath>
 #include <cfloat>
 
-cPhenPlastGenotype::cPhenPlastGenotype(const cGenome& in_genome, int num_trials, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx)
+cPhenPlastGenotype::cPhenPlastGenotype(const Genome& in_genome, int num_trials, cCPUTestInfo& test_info,  cWorld* world, cAvidaContext& ctx)
 : m_genome(in_genome), m_num_trials(num_trials), m_world(world)
 {
   // Override input mode if more than one recalculation requested

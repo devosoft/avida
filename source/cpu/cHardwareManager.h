@@ -26,7 +26,7 @@
 #include "tDictionary.h"
 
 namespace Avida {
-  class cGenome;
+  class Genome;
 };
 
 class cAvidaContext;
@@ -60,7 +60,7 @@ public:
   bool LoadInstSets(cUserFeedback* feedback = NULL);
   bool ConvertLegacyInstSetFile(cString filename, cStringList& str_list, cUserFeedback* feedback = NULL);
   
-  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg);
+  cHardwareBase* Create(cAvidaContext& ctx, cOrganism* org, const Genome& mg);
   inline cTestCPU* CreateTestCPU() { return new cTestCPU(m_world); }
 
   inline bool IsInstSet(const cString& name) const { return m_is_name_map.HasEntry(name); }

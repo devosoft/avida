@@ -45,7 +45,7 @@ public:
   cBirthNeighborhoodHandler(cWorld* world, cBirthChamber* bc);
   ~cBirthNeighborhoodHandler();
   
-  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent);
+  cBirthEntry* SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent);
 };
 
 #endif

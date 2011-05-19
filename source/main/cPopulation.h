@@ -105,14 +105,14 @@ public:
 
   bool InitiatePop(cUserFeedback* errors = NULL);
 
-  void InjectGenome(int cell_id, eBioUnitSource src, const cGenome& genome, cAvidaContext& ctx, int lineage_label = 0); 
+  void InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label = 0); 
 
   // Activate the offspring of an organism in the population
-  bool ActivateOffspring(cAvidaContext& ctx, const cGenome& offspring_genome, cOrganism* parent_organism);
+  bool ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism);
   bool ActivateParasite(cOrganism* host, cBioUnit* parent, const cString& label, const cSequence& injected_code);
   
   // Inject an organism from the outside world.
-  void Inject(const cGenome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
+  void Inject(const Genome& genome, eBioUnitSource src, cAvidaContext& ctx, int cell_id = -1, double merit = -1, int lineage_label = 0, double neutral_metric = 0); 
   void InjectParasite(const cString& label, const cSequence& injected_code, int cell_id);
   
   // Deactivate an organism in the population (required for deactivations)
@@ -145,7 +145,7 @@ public:
   void ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx); 
   
   //! Helper method that seeds a deme from the given genome.
-  void SeedDeme(cDeme& deme, cGenome& genome, eBioUnitSource src, cAvidaContext& ctx); 
+  void SeedDeme(cDeme& deme, Genome& genome, eBioUnitSource src, cAvidaContext& ctx); 
 
   //! Helper method that seeds a deme from the given genotype.
   void SeedDeme(cDeme& _deme, cBioGroup* bg, eBioUnitSource src, cAvidaContext& ctx); 

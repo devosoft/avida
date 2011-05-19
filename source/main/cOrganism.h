@@ -23,7 +23,7 @@
 #ifndef cOrganism_h
 #define cOrganism_h
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #include "cBioUnit.h"
 #include "cCPUMemory.h"
@@ -69,7 +69,7 @@ private:
   cPhenotype m_phenotype;                 // Descriptive attributes of organism.
   eBioUnitSource m_src;
   cString m_src_args;
-  const cGenome m_initial_genome;         // Initial genome; can never be changed!
+  const Genome m_initial_genome;         // Initial genome; can never be changed!
   tArray<cBioUnit*> m_parasites;   // List of all parasites associated with this organism.
   cMutationRates m_mut_rates;             // Rate of all possible mutations.
   cOrgInterface* m_interface;             // Interface back to the population.
@@ -79,7 +79,7 @@ private:
 	int cclade_id;				                  // @MRR Coalescence clade information (set in cPopulation)
   
 	// Other stats
-  cGenome m_offspring_genome;              // Child genome, while under construction.
+  Genome m_offspring_genome;              // Child genome, while under construction.
 
   // Input and Output with the environment
   int m_input_pointer;
@@ -128,14 +128,14 @@ private:
   cOrganism& operator=(const cOrganism&); // @not_implemented
   
 public:
-  cOrganism(cWorld* world, cAvidaContext& ctx, const cGenome& genome, int parent_generation,
+  cOrganism(cWorld* world, cAvidaContext& ctx, const Genome& genome, int parent_generation,
             eBioUnitSource src, const cString& src_args = "");
   ~cOrganism();
   
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cGenome& GetGenome() const { return m_initial_genome; }
+  const Genome& GetGenome() const { return m_initial_genome; }
   
 
   // --------  Support Methods  --------
@@ -184,7 +184,7 @@ public:
 
   int GetMaxExecuted() const { return m_max_executed; }
   
-  cGenome& OffspringGenome() { return m_offspring_genome; }
+  Genome& OffspringGenome() { return m_offspring_genome; }
 
   void SetRunning(bool in_running) { m_is_running = in_running; }
   bool IsRunning() { return m_is_running; }

@@ -91,7 +91,7 @@ public:
   void SetPrevSeenCellID(int in_id) { m_prevseen_cell_id = in_id; }
   void SetPrevTaskCellID(int in_id) { m_prev_task_cell = in_id; }
 
-  bool Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome);
+  bool Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome);
   cOrganism* GetNeighbor();
   bool IsNeighborCellOccupied();
   int GetNumNeighbors();
@@ -172,7 +172,7 @@ public:
 	//! Called when this organism "requests" an HGT conjugation.
 	void DoHGTConjugation(cAvidaContext& ctx);
 	//! Perform an HGT mutation on this offspring.
-	void DoHGTMutation(cAvidaContext& ctx, cGenome& offspring);
+	void DoHGTMutation(cAvidaContext& ctx, Genome& offspring);
 
 protected:
 	//! Place the fragment at the location of best match.

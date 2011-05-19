@@ -27,7 +27,7 @@
 #include "tArray.h"
 
 namespace Avida {
-  class cGenome;
+  class Genome;
 };
 
 class cBioGroup;
@@ -49,7 +49,7 @@ public:
   
   virtual eBioUnitSource GetUnitSource() const = 0;
   virtual const cString& GetUnitSourceArgs() const = 0;
-  virtual const cGenome& GetGenome() const = 0;
+  virtual const Genome& GetGenome() const = 0;
   virtual const cPhenotype& GetPhenotype() const = 0;
   virtual bool	IsParasite();
   

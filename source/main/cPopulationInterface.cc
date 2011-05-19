@@ -113,7 +113,7 @@ void cPopulationInterface::SetCellData(const int newData) {
   cell.SetCellData(cell.GetOrganism()->GetID(), newData);
 }
 
-bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const cGenome& offspring_genome)
+bool cPopulationInterface::Divide(cAvidaContext& ctx, cOrganism* parent, const Genome& offspring_genome)
 {
   assert(parent != NULL);
   assert(m_world->GetPopulation().GetCell(m_cell_id).GetOrganism() == parent);
@@ -852,7 +852,7 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
  There is the possibility that more than one HGT mutation occurs when this method 
  is called.
  */
-void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, cGenome& offspring) {
+void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) {
 	InitHGTSupport();
 	
 	// first, gather up all the fragments that we're going to be inserting into this offspring:

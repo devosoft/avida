@@ -139,7 +139,7 @@ public:
   }
   
 private:
-  void LoadGenome(tArray<tList<cLandscape> >& batches, const cGenome& genome)
+  void LoadGenome(tArray<tList<cLandscape> >& batches, const Genome& genome)
   {
     cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
 

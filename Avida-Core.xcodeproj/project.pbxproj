@@ -314,7 +314,7 @@
 		705B103E1073AEF1002242E6 /* default-heads.org in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10331073AC1F002242E6 /* default-heads.org */; };
 		705B10401073AF05002242E6 /* instset-heads-sex.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10351073AC1F002242E6 /* instset-heads-sex.cfg */; };
 		705B10411073AF05002242E6 /* instset-heads.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 705B10361073AC1F002242E6 /* instset-heads.cfg */; };
-		7061AB821358BD6F0000B036 /* cGenome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB801358BD6F0000B036 /* cGenome.cc */; };
+		7061AB821358BD6F0000B036 /* Genome.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB801358BD6F0000B036 /* Genome.cc */; };
 		7061AB831358BD6F0000B036 /* cSequence.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7061AB811358BD6F0000B036 /* cSequence.cc */; };
 		70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 70658C59085DF67D00486BED /* libncurses.5.4.dylib */; };
 		706C7B6A125F64C400EDB4B9 /* ClassificationInfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */; };
@@ -964,9 +964,9 @@
 		705B10351073AC1F002242E6 /* instset-heads-sex.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads-sex.cfg"; sourceTree = "<group>"; };
 		705B10361073AC1F002242E6 /* instset-heads.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "instset-heads.cfg"; sourceTree = "<group>"; };
 		705FD5F9123A81A8002DE4B2 /* tSparseVectorList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tSparseVectorList.h; sourceTree = "<group>"; };
-		7061AB7C1358BD420000B036 /* cGenome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cGenome.h; sourceTree = "<group>"; };
+		7061AB7C1358BD420000B036 /* Genome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Genome.h; sourceTree = "<group>"; };
 		7061AB7D1358BD420000B036 /* cSequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cSequence.h; sourceTree = "<group>"; };
-		7061AB801358BD6F0000B036 /* cGenome.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenome.cc; sourceTree = "<group>"; };
+		7061AB801358BD6F0000B036 /* Genome.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Genome.cc; sourceTree = "<group>"; };
 		7061AB811358BD6F0000B036 /* cSequence.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cSequence.cc; sourceTree = "<group>"; };
 		70658C59085DF67D00486BED /* libncurses.5.4.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.5.4.dylib; path = /usr/lib/libncurses.5.4.dylib; sourceTree = "<absolute>"; };
 		7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArrayUtils.h; sourceTree = "<group>"; };
@@ -1619,10 +1619,10 @@
 		703549CD1337BB6C00D3865C /* core */ = {
 			isa = PBXGroup;
 			children = (
-				7061AB7C1358BD420000B036 /* cGenome.h */,
 				7061AB7D1358BD420000B036 /* cSequence.h */,
 				70A53BC2135B6E9D00C3E661 /* Definitions.h */,
 				70ADB20A133A7995000B9C40 /* Feedback.h */,
+				7061AB7C1358BD420000B036 /* Genome.h */,
 				70A53BA7135A299100C3E661 /* GlobalObject.h */,
 				70A53BBC135B5C7000C3E661 /* Version.h */,
 				703549CE1337BB6D00D3865C /* WorldDriver.h */,
@@ -1673,7 +1673,7 @@
 			isa = PBXGroup;
 			children = (
 				70A53BC3135B704C00C3E661 /* Avida.cc */,
-				7061AB801358BD6F0000B036 /* cGenome.cc */,
+				7061AB801358BD6F0000B036 /* Genome.cc */,
 				7061AB811358BD6F0000B036 /* cSequence.cc */,
 				70A53BC4135B704C00C3E661 /* Definitions.cc */,
 				70A53BA9135A29AA00C3E661 /* GlobalObject.cc */,
@@ -2815,7 +2815,7 @@
 				7030DB211326C44D00B6DADA /* cOrderedWeightedIndex.cc in Sources */,
 				4A587EEC1332B6590037A393 /* cDynamicCount.cc in Sources */,
 				4A587EEE1332B6590037A393 /* cGradientCount.cc in Sources */,
-				7061AB821358BD6F0000B036 /* cGenome.cc in Sources */,
+				7061AB821358BD6F0000B036 /* Genome.cc in Sources */,
 				7061AB831358BD6F0000B036 /* cSequence.cc in Sources */,
 				70A53BAA135A29AA00C3E661 /* GlobalObject.cc in Sources */,
 				70A53BC9135B740100C3E661 /* CmdLine.cc in Sources */,

@@ -45,7 +45,7 @@ cBirthGridLocalHandler::~cBirthGridLocalHandler()
 }
 
 
-cBirthEntry* cBirthGridLocalHandler::SelectOffspring(cAvidaContext& ctx, const cGenome& offspring, cOrganism* parent)
+cBirthEntry* cBirthGridLocalHandler::SelectOffspring(cAvidaContext& ctx, const Genome& offspring, cOrganism* parent)
 {
   int parent_id = parent->GetOrgInterface().GetCellID();
   

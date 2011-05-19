@@ -54,7 +54,7 @@ public:
   
   inline int GetTargetTask() const { return m_src.GetTargetTask(); }
   
-  inline const cGenome& GetBaseGenome() const { return m_src.GetBaseGenome(); }
+  inline const Genome& GetBaseGenome() const { return m_src.GetBaseGenome(); }
   inline double GetBaseFitness() const { return m_src.GetBaseFitness(); }
   inline double GetBaseMerit() const { return m_src.GetBaseMerit(); }
   inline double GetBaseGestation() const { return m_src.GetBaseGestation(); }
@@ -67,7 +67,7 @@ public:
   
   inline double Get1SAggregateAverageFitness() const { return m_src.Get1SAggregateAverageFitness(); }
   inline double Get1SAggregateAverageSqrFitness() const { return m_src.Get1SAggregateAverageSqrFitness(); }
-  inline const cGenome& Get1SAggregatePeakGenome() const { return m_src.Get1SAggregatePeakGenome(); }
+  inline const Genome& Get1SAggregatePeakGenome() const { return m_src.Get1SAggregatePeakGenome(); }
   inline double Get1SAggregatePeakFitness() const { return m_src.Get1SAggregatePeakFitness(); }
 
   inline double Get1SAggregateProbBeneficial() const { return m_src.Get1SAggregateProbBeneficial(); }
@@ -98,7 +98,7 @@ public:
   
   inline double Get1SPointAverageFitness() const { return m_src.Get1SPointAverageFitness(); }
   inline double Get1SPointAverageSqrFitness() const { return m_src.Get1SPointAverageSqrFitness(); }
-  inline const cGenome& Get1SPointPeakGenome() const { return m_src.Get1SPointPeakGenome(); }
+  inline const Genome& Get1SPointPeakGenome() const { return m_src.Get1SPointPeakGenome(); }
   inline double Get1SPointPeakFitness() const { return m_src.Get1SPointPeakFitness(); }
   
   inline double Get1SPointProbBeneficial() const { return m_src.Get1SPointProbBeneficial(); }
@@ -129,7 +129,7 @@ public:
   
   inline double Get1SInsertAverageFitness() const { return m_src.Get1SInsertAverageFitness(); }
   inline double Get1SInsertAverageSqrFitness() const { return m_src.Get1SInsertAverageSqrFitness(); }
-  inline const cGenome& Get1SInsertPeakGenome() const { return m_src.Get1SInsertPeakGenome(); }
+  inline const Genome& Get1SInsertPeakGenome() const { return m_src.Get1SInsertPeakGenome(); }
   inline double Get1SInsertPeakFitness() const { return m_src.Get1SInsertPeakFitness(); }
   
   inline double Get1SInsertProbBeneficial() const { return m_src.Get1SInsertProbBeneficial(); }
@@ -160,7 +160,7 @@ public:
   
   inline double Get1SDeleteAverageFitness() const { return m_src.Get1SDeleteAverageFitness(); }
   inline double Get1SDeleteAverageSqrFitness() const { return m_src.Get1SDeleteAverageSqrFitness(); }
-  inline const cGenome& Get1SDeletePeakGenome() const { return m_src.Get1SDeletePeakGenome(); }
+  inline const Genome& Get1SDeletePeakGenome() const { return m_src.Get1SDeletePeakGenome(); }
   inline double Get1SDeletePeakFitness() const { return m_src.Get1SDeletePeakFitness(); }
   
   inline double Get1SDeleteProbBeneficial() const { return m_src.Get1SDeleteProbBeneficial(); }
@@ -191,7 +191,7 @@ public:
   
   inline double Get2SAggregateAverageFitness() const { return m_src.Get2SAggregateAverageFitness(); }
   inline double Get2SAggregateAverageSqrFitness() const { return m_src.Get2SAggregateAverageSqrFitness(); }
-  inline const cGenome& Get2SAggregatePeakGenome() const { return m_src.Get2SAggregatePeakGenome(); }
+  inline const Genome& Get2SAggregatePeakGenome() const { return m_src.Get2SAggregatePeakGenome(); }
   inline double Get2SAggregatePeakFitness() const { return m_src.Get2SAggregatePeakFitness(); }
 
   inline double Get2SAggregateProbBeneficial() const { return m_src.Get2SAggregateProbBeneficial(); }
@@ -232,7 +232,7 @@ public:
   
   inline double Get2SPointAverageFitness() const { return m_src.Get2SPointAverageFitness(); }
   inline double Get2SPointAverageSqrFitness() const { return m_src.Get2SPointAverageSqrFitness(); }
-  inline const cGenome& Get2SPointPeakGenome() const { return m_src.Get2SPointPeakGenome(); }
+  inline const Genome& Get2SPointPeakGenome() const { return m_src.Get2SPointPeakGenome(); }
   inline double Get2SPointPeakFitness() const { return m_src.Get2SPointPeakFitness(); }
   
   inline double Get2SPointProbBeneficial() const { return m_src.Get2SPointProbBeneficial(); }
@@ -273,7 +273,7 @@ public:
   
   inline double Get2SInsertAverageFitness() const { return m_src.Get2SInsertAverageFitness(); }
   inline double Get2SInsertAverageSqrFitness() const { return m_src.Get2SInsertAverageSqrFitness(); }
-  inline const cGenome& Get2SInsertPeakGenome() const { return m_src.Get2SInsertPeakGenome(); }
+  inline const Genome& Get2SInsertPeakGenome() const { return m_src.Get2SInsertPeakGenome(); }
   inline double Get2SInsertPeakFitness() const { return m_src.Get2SInsertPeakFitness(); }
   
   inline double Get2SInsertProbBeneficial() const { return m_src.Get2SInsertProbBeneficial(); }
@@ -314,7 +314,7 @@ public:
   
   inline double Get2SDeleteAverageFitness() const { return m_src.Get2SDeleteAverageFitness(); }
   inline double Get2SDeleteAverageSqrFitness() const { return m_src.Get2SDeleteAverageSqrFitness(); }
-  inline const cGenome& Get2SDeletePeakGenome() const { return m_src.Get2SDeletePeakGenome(); }
+  inline const Genome& Get2SDeletePeakGenome() const { return m_src.Get2SDeletePeakGenome(); }
   inline double Get2SDeletePeakFitness() const { return m_src.Get2SDeletePeakFitness(); }
   
   inline double Get2SDeleteProbBeneficial() const { return m_src.Get2SDeleteProbBeneficial(); }
@@ -355,7 +355,7 @@ public:
   
   inline double GetInsPntAverageFitness() const { return m_src.GetInsPntAverageFitness(); }
   inline double GetInsPntAverageSqrFitness() const { return m_src.GetInsPntAverageSqrFitness(); }
-  inline const cGenome& GetInsPntPeakGenome() const { return m_src.GetInsPntPeakGenome(); }
+  inline const Genome& GetInsPntPeakGenome() const { return m_src.GetInsPntPeakGenome(); }
   inline double GetInsPntPeakFitness() const { return m_src.GetInsPntPeakFitness(); }
   
   inline double GetInsPntProbBeneficial() const { return m_src.GetInsPntProbBeneficial(); }
@@ -396,7 +396,7 @@ public:
   
   inline double GetInsDelAverageFitness() const { return m_src.GetInsDelAverageFitness(); }
   inline double GetInsDelAverageSqrFitness() const { return m_src.GetInsDelAverageSqrFitness(); }
-  inline const cGenome& GetInsDelPeakGenome() const { return m_src.GetInsDelPeakGenome(); }
+  inline const Genome& GetInsDelPeakGenome() const { return m_src.GetInsDelPeakGenome(); }
   inline double GetInsDelPeakFitness() const { return m_src.GetInsDelPeakFitness(); }
   
   inline double GetInsDelProbBeneficial() const { return m_src.GetInsDelProbBeneficial(); }
@@ -437,7 +437,7 @@ public:
   
   inline double GetDelPntAverageFitness() const { return m_src.GetDelPntAverageFitness(); }
   inline double GetDelPntAverageSqrFitness() const { return m_src.GetDelPntAverageSqrFitness(); }
-  inline const cGenome& GetDelPntPeakGenome() const { return m_src.GetDelPntPeakGenome(); }
+  inline const Genome& GetDelPntPeakGenome() const { return m_src.GetDelPntPeakGenome(); }
   inline double GetDelPntPeakFitness() const { return m_src.GetDelPntPeakFitness(); }
   
   inline double GetDelPntProbBeneficial() const { return m_src.GetDelPntProbBeneficial(); }

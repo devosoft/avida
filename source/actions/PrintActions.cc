@@ -678,7 +678,7 @@ public:
       cString filename(m_filename);
       if (filename == "") filename.Set("archive/%s.org", (const char*)bg->GetProperty("name").AsString());
       cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
-      testcpu->PrintGenome(ctx, cGenome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
+      testcpu->PrintGenome(ctx, Genome(bg->GetProperty("genome").AsString()), filename, m_world->GetStats().GetUpdate());
       delete testcpu;
     }
   }
@@ -770,7 +770,7 @@ public:
       cBioGroup* genotype = organism->GetBioGroup("genotype");
 
       cCPUTestInfo test_info;
-      testcpu->TestGenome(ctx, test_info, cGenome(genotype->GetProperty("genome").AsString()));
+      testcpu->TestGenome(ctx, test_info, Genome(genotype->GetProperty("genome").AsString()));
       // We calculate the fitness based on the current merit,
       // but with the true gestation time. Also, we set the fitness
       // to zero if the creature is not viable.
@@ -808,7 +808,7 @@ public:
     if (max_f_genotype->GetProperty("threshold").AsBool())
       max_f_name = max_f_genotype->GetProperty("name").AsString();
     else // we put the current update into the name, so that it becomes unique.
-      max_f_name.Set("%03d-no_name-u%i", cGenome(max_f_genotype->GetProperty("genome").AsString()).GetSequence().GetSize(), update);
+      max_f_name.Set("%03d-no_name-u%i", Genome(max_f_genotype->GetProperty("genome").AsString()).GetSequence().GetSize(), update);
 
     cDataFile& df = m_world->GetDataFile(m_filenames[0]);
     df.Write(update, "Update");
@@ -823,7 +823,7 @@ public:
     if (m_save_max) {
       cString filename;
       filename.Set("archive/%s", static_cast<const char*>(max_f_name));
-      testcpu->PrintGenome(ctx, cGenome(max_f_genotype->GetProperty("genome").AsString()), filename);
+      testcpu->PrintGenome(ctx, Genome(max_f_genotype->GetProperty("genome").AsString()), filename);
     }
 
     delete testcpu;
@@ -1036,7 +1036,7 @@ public:
       double fitness = 0.0;
       if (mode == "TEST_CPU" || mode == "ACTUAL"){
         test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
-        testcpu->TestGenome(ctx, test_info, cGenome((*git)->GetProperty("genome").AsString()));
+        testcpu->TestGenome(ctx, test_info, Genome((*git)->GetProperty("genome").AsString()));
       }
 
       if (mode == "TEST_CPU"){
@@ -1222,7 +1222,7 @@ public:
 
       if (mode == "TEST_CPU" || mode == "ACTUAL"){
         test_info.UseManualInputs( (*oit)->GetOrgInterface().GetInputs() );
-        testcpu->TestGenome(ctx, test_info, cGenome((*git)->GetProperty("genome").AsString()));
+        testcpu->TestGenome(ctx, test_info, Genome((*git)->GetProperty("genome").AsString()));
       }
 
       if (mode == "TEST_CPU"){
@@ -1758,7 +1758,7 @@ public:
       it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
       while (it->Next()) {
         cBioGroup* bg = it->Get();
-        tAutoRelease<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(cGenome(bg->GetProperty("genome").AsString()), m_num_trials, test_info, m_world, ctx));
+        tAutoRelease<cPhenPlastGenotype> ppgen(new cPhenPlastGenotype(Genome(bg->GetProperty("genome").AsString()), m_num_trials, test_info, m_world, ctx));
         PrintPPG(fot, ppgen, bg->GetID(), bg->GetProperty("parents").AsString());
       }
       m_world->GetDataFileManager().Remove(this_path);
@@ -2023,7 +2023,7 @@ public:
 class cActionPrintGeneticDistanceData : public cAction
 {
 private:
-  cGenome m_reference;
+  Genome m_reference;
   cString m_filename;
 
 public:
@@ -2055,14 +2055,14 @@ public:
     tAutoRelease<tIterator<cBioGroup> > it;
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     it->Next();
-    cSequence best_genome = cGenome(it->Get()->GetProperty("genome").AsString()).GetSequence();
+    cSequence best_genome = Genome(it->Get()->GetProperty("genome").AsString()).GetSequence();
     dom_dist = cSequence::FindHammingDistance(m_reference.GetSequence(), best_genome);
     hamming_m1 += dom_dist;
     hamming_m2 += dom_dist*dom_dist;
     count += it->Get()->GetNumUnits();
     // now cycle over the remaining genotypes
     while ((it->Next())) {
-      int dist = cSequence::FindHammingDistance(m_reference.GetSequence(), cGenome(it->Get()->GetProperty("genome").AsString()).GetSequence());
+      int dist = cSequence::FindHammingDistance(m_reference.GetSequence(), Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
       hamming_m1 += dist;
       hamming_m2 += dist*dist;
       count += it->Get()->GetNumUnits();
@@ -2143,7 +2143,7 @@ public:
     int sum_num_organisms = 0;
 
     // load the reference genome
-    cGenome reference_genome;
+    Genome reference_genome;
     cUserFeedback feedback;
     reference_genome.LoadFromDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
@@ -2160,7 +2160,7 @@ public:
     it.Set(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     while ((it->Next())) {
       cBioGroup* bg = it->Get();
-      const cGenome& genome = cGenome(bg->GetProperty("genome").AsString());
+      const Genome& genome = Genome(bg->GetProperty("genome").AsString());
       const int num_orgs = bg->GetNumUnits();
 
       // now output
@@ -2207,7 +2207,7 @@ public:
   {
     tAutoRelease<tIterator<cBioGroup> > it(m_world->GetClassificationManager().GetBioGroupManager("genotype")->Iterator());
     cBioGroup* bg = it->Next();
-    cGenome genome(bg->GetProperty("genome").AsString());
+    Genome genome(bg->GetProperty("genome").AsString());
 
     cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();
     cCPUTestInfo test_info;
@@ -2416,7 +2416,7 @@ public:
   static const cString GetDescription() { return "Arguments: [int lines_saved=0]"; }
   void Process(cAvidaContext& ctx)
   {
-    cGenome mg;
+    Genome mg;
     mg.SetInstSet(m_inst_set);
     mg.SetHardwareType(m_world->GetHardwareManager().GetInstSet(m_inst_set).GetHardwareType());
     const int num_inst = m_world->GetHardwareManager().GetInstSet(m_inst_set).GetSize();
@@ -2433,7 +2433,7 @@ public:
     while ((it->Next())) {
       cBioGroup* bg = it->Get();
       const int num_organisms = bg->GetNumUnits();
-      const cGenome& genome = cGenome(bg->GetProperty("genome").AsString());
+      const Genome& genome = Genome(bg->GetProperty("genome").AsString());
       const int length = genome.GetSize();
       if (genome.GetInstSet() != m_inst_set) continue;
 
@@ -2501,7 +2501,7 @@ public:
     cDoubleSum distance_sum;
     while ((it->Next())) {
       const int num_organisms = it->Get()->GetNumUnits();
-      const int cur_dist = cSequence::FindEditDistance(con_genome, cGenome(it->Get()->GetProperty("genome").AsString()).GetSequence());
+      const int cur_dist = cSequence::FindEditDistance(con_genome, Genome(it->Get()->GetProperty("genome").AsString()).GetSequence());
       distance_sum.Add(cur_dist, num_organisms);
     }
 
@@ -2510,7 +2510,7 @@ public:
     //    cGenotype* con_genotype = classmgr.FindGenotype(con_genome, -1);
 
     it.Set(classmgr.GetBioGroupManager("genotype")->Iterator());
-    const int best_dist = cSequence::FindEditDistance(con_genome, cGenome(it->Next()->GetProperty("genome").AsString()).GetSequence());
+    const int best_dist = cSequence::FindEditDistance(con_genome, Genome(it->Next()->GetProperty("genome").AsString()).GetSequence());
 
     const double ave_dist = distance_sum.Average();
     const double var_dist = distance_sum.Variance();

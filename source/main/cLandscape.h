@@ -23,7 +23,7 @@
 #ifndef cLandscape_h
 #define cLandscape_h
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #ifndef cCPUTestInfo_h
 #include "cCPUTestInfo.h"
@@ -50,8 +50,8 @@ class cLandscape
 private:
   cWorld* m_world;
   cCPUTestInfo m_cpu_test_info;
-  cGenome base_genome;
-  cGenome peak_genome;
+  Genome base_genome;
+  Genome peak_genome;
   double base_fitness;
   double base_merit;
   double base_gestation;
@@ -102,10 +102,10 @@ private:
   cLandscape& operator=(const cLandscape&); // @not_implemented
 
 public:
-  cLandscape(cWorld* world, const cGenome& in_genome);
+  cLandscape(cWorld* world, const Genome& in_genome);
   ~cLandscape();
 
-  void Reset(const cGenome& in_genome);
+  void Reset(const Genome& in_genome);
 
   void Process(cAvidaContext& ctx);
   void ProcessDelete(cAvidaContext& ctx);
@@ -137,7 +137,7 @@ public:
   void PrintEntropy(cDataFile& fp);
   void PrintSiteCount(cDataFile& fp);
 
-  inline const cGenome& GetPeakGenome() { return peak_genome; }
+  inline const Genome& GetPeakGenome() { return peak_genome; }
   inline double GetAveFitness() { return total_fitness / total_count; }
   inline double GetAveSqrFitness() { return total_sqr_fitness / total_count; }
   inline double GetPeakFitness() { return peak_fitness; }
@@ -175,11 +175,11 @@ public:
   
 private:
   void BuildFitnessChart(cAvidaContext& ctx, cTestCPU* testcpu);
-  double ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& in_genome);
+  double ProcessGenome(cAvidaContext& ctx, cTestCPU* testcpu, Genome& in_genome);
   void ProcessBase(cAvidaContext& ctx, cTestCPU* testcpu);
-  void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& cur_genome, int cur_distance, int start_line);
+  void Process_Body(cAvidaContext& ctx, cTestCPU* testcpu, Genome& cur_genome, int cur_distance, int start_line);
   
-  double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, cGenome& mod_genome, int line1, int line2,
+  double TestMutPair(cAvidaContext& ctx, cTestCPU* testcpu, Genome& mod_genome, int line1, int line2,
                      const cInstruction& mut1, const cInstruction& mut2);  
 };
 

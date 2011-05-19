@@ -52,7 +52,7 @@ namespace ASAnalyzeLib {
   {
 //    cDriverManager::Status().NotifyComment(cString("Loading: ") + filename);
     
-    cGenome genome(cGenomeUtil::LoadGenome(filename, *inst_set));
+    Genome genome(cGenomeUtil::LoadGenome(filename, *inst_set));
     
     // Construct the new genotype..
     cAnalyzeGenotype* genotype = new cAnalyzeGenotype(world, genome, *inst_set);

@@ -22,7 +22,7 @@
 #ifndef cParasite_h
 #define cParasite_h
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #ifndef cBioUnit_h
 #include "cBioUnit.h"
@@ -44,7 +44,7 @@ class cParasite : public cBioUnit
 private:
   eBioUnitSource m_src;
   cString m_src_args;
-  const cGenome m_initial_genome;
+  const Genome m_initial_genome;
   cPhenotype m_phenotype;
   
   
@@ -54,13 +54,13 @@ private:
   
 
 public:
-  cParasite(cWorld* world, const cGenome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
+  cParasite(cWorld* world, const Genome& genome, int parent_generation, eBioUnitSource src, const cString& src_args);
   ~cParasite() { ; }
   
   // --------  cBioUnit Methods  --------
   eBioUnitSource GetUnitSource() const { return m_src; }
   const cString& GetUnitSourceArgs() const { return m_src_args; }
-  const cGenome& GetGenome() const { return m_initial_genome; }  
+  const Genome& GetGenome() const { return m_initial_genome; }  
   const cPhenotype& GetPhenotype() const { return m_phenotype; }
 
   // --------  cParasite Methods  --------

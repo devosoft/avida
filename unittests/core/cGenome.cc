@@ -1,5 +1,5 @@
 /*
- *  unittests/core/cGenome.cc
+ *  unittests/core/Genome.cc
  *  avida-core
  *
  *  Created by David on 3/16/11.
@@ -22,7 +22,7 @@
  *
  */
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #include "gtest/gtest.h"
 

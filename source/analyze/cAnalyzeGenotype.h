@@ -23,7 +23,7 @@
 #ifndef cAnalyzeGenotype_h
 #define cAnalyzeGenotype_h
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 
 #include <fstream>
 
@@ -103,7 +103,7 @@ class cAnalyzeGenotype
   friend class ReadToken;
 private:
   cWorld* m_world;
-  cGenome m_genome;        // Full Genome
+  Genome m_genome;        // Full Genome
   cString name;              // Name, if one was provided in loading
   cCPUTestInfo m_cpu_test_info; // Use this test info
   
@@ -239,7 +239,7 @@ private:
 
 
 public:
-  cAnalyzeGenotype(cWorld* world, const cGenome& genome);
+  cAnalyzeGenotype(cWorld* world, const Genome& genome);
   cAnalyzeGenotype(const cAnalyzeGenotype& _gen);
   ~cAnalyzeGenotype();
   
@@ -313,8 +313,8 @@ public:
   // Accessors...
   cWorld* GetWorld() { return m_world; }
 
-  cGenome& GetGenome() { return m_genome; }
-  const cGenome& GetGenome() const { return m_genome; }
+  Genome& GetGenome() { return m_genome; }
+  const Genome& GetGenome() const { return m_genome; }
   const cString& GetName() const { return name; }
   const cString& GetAlignedSequence() const { return aligned_sequence; }
   cString GetExecutedFlags() const { return executed_flags; }

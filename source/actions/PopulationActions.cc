@@ -95,7 +95,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome;
+    Genome genome;
     cUserFeedback feedback;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
@@ -150,7 +150,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-    cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
+    Genome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length));
     cSequence& seq = mg.GetSequence();
     for (int i = 0; i < m_length; i++) seq[i] = is.GetRandomInst(ctx);
     m_world->GetPopulation().Inject(mg, SRC_ORGANISM_RANDOM, ctx, m_cell_id, m_merit, m_lineage_label, m_neutral_metric); 
@@ -199,7 +199,7 @@ public:
     for (int i = 0; i < m_world->GetPopulation().GetSize(); i++)
     {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cGenome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
+      Genome mg(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_length + 1));
       cSequence& seq = mg.GetSequence();
       for (int j = 0; j < m_length; j++) {
         cInstruction inst = is.GetRandomInst(ctx);
@@ -255,7 +255,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome;
+    Genome genome;
     cUserFeedback feedback;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
@@ -325,7 +325,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
     } else {
-      cGenome genome;
+      Genome genome;
       cUserFeedback feedback;
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
@@ -394,7 +394,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
+      Genome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
       }
@@ -456,7 +456,7 @@ public:
       m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
-      cGenome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
+      Genome genome(is.GetHardwareType(), is.GetInstSetName(), cSequence(m_sequence));
       for (int i = m_cell_start; i < m_cell_end; i++) {
         m_world->GetPopulation().Inject(genome, SRC_ORGANISM_FILE_LOAD, ctx, i, m_merit, m_lineage_label, m_neutral_metric); 
         m_world->GetPopulation().GetCell(i).GetOrganism()->MutationRates().SetDivMutProb(m_div_mut_rate);
@@ -505,7 +505,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
     } else {
-      cGenome genome;
+      Genome genome;
       cUserFeedback feedback;
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
@@ -581,7 +581,7 @@ public:
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
       m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
     } else {
-      cGenome genome, parasite;
+      Genome genome, parasite;
       cUserFeedback feedback;
       genome.LoadFromDetailFile(m_filename_genome, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
@@ -645,7 +645,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome;
+    Genome genome;
     cUserFeedback feedback;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
@@ -721,7 +721,7 @@ public:
   
   void Process(cAvidaContext& ctx)
   {
-    cGenome genome;
+    Genome genome;
     cUserFeedback feedback;
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
@@ -1343,7 +1343,7 @@ public:
 					continue;
 				
 				// count the number of target instructions in the genome
-        const cGenome& mg = cell.GetOrganism()->GetGenome();
+        const Genome& mg = cell.GetOrganism()->GetGenome();
 				const cSequence& genome = mg.GetSequence();
 				const double genomeSize = static_cast<double>(genome.GetSize());
 				int minDist = genome.MinDistBetween(m_world->GetHardwareManager().GetInstSet(mg.GetInstSet()).GetInst(m_inst));
@@ -2747,7 +2747,7 @@ protected:
 						m_world->GetPopulation().KillOrganism(cell, ctx); 
 						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_GERMLINE, deme.GetGermline().GetLatest(), ctx); 
 					} else {
-						cGenome genome(cell.GetOrganism()->GetGenome());
+						Genome genome(cell.GetOrganism()->GetGenome());
 						m_world->GetPopulation().KillOrganism(cell, ctx); 
 						m_world->GetPopulation().InjectGenome(*i, SRC_DEME_RANDOM, genome, ctx); 
 					}

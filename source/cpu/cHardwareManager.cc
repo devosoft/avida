@@ -21,7 +21,7 @@
 
 #include "cHardwareManager.h"
 
-#include "avida/core/cGenome.h"
+#include "avida/core/Genome.h"
 #include "avida/core/GlobalObject.h"
 
 #include "cArgContainer.h"
@@ -217,7 +217,7 @@ bool cHardwareManager::ConvertLegacyInstSetFile(cString filename, cStringList& s
 }
 
 
-cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const cGenome& mg)
+cHardwareBase* cHardwareManager::Create(cAvidaContext& ctx, cOrganism* org, const Genome& mg)
 {
   assert(org != NULL);
 	
