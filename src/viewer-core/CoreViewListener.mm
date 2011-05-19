@@ -50,14 +50,14 @@
 @end
 
 
-void cMainThreadListener::NotifyMap(Avida::CoreView::Map* map)
+void MainThreadListener::NotifyMap(Avida::CoreView::Map* map)
 {
   CoreViewMap* cvm = [[CoreViewMap alloc] initWithMap:map];
   [m_target performSelectorOnMainThread:@selector(handleMap:) withObject:cvm waitUntilDone:NO];
 }
 
 
-void cMainThreadListener::NotifyUpdate(int update)
+void MainThreadListener::NotifyUpdate(int update)
 {
   CoreViewUpdate* cvu = [[CoreViewUpdate alloc] initWithUpdate:update];
   [m_target performSelectorOnMainThread:@selector(handleUpdate:) withObject:cvu waitUntilDone:NO];

@@ -102,7 +102,7 @@
       [alert setAlertStyle:NSWarningAlertStyle];
       [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
     } else {
-      if (!listener) listener = new cMainThreadListener(self);
+      if (!listener) listener = new MainThreadListener(self);
       [currentRun attachListener:self];
       
       [btnRunState setTitle:@"Pause"];

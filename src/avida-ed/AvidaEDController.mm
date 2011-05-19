@@ -108,7 +108,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
       [alert beginSheetModalForWindow:[sender window] modalDelegate:nil didEndSelector:nil contextInfo:nil];
       [sender setState:NSOffState];
     } else {
-      if (!listener) listener = new cMainThreadListener(self);
+      if (!listener) listener = new MainThreadListener(self);
       [currentRun attachListener:self];
       
       [txtUpdate setStringValue:@"0 updates"];

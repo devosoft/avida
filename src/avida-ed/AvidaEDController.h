@@ -60,7 +60,7 @@
   AvidaAppDelegate* app;
   
   AvidaRun* currentRun;
-  Avida::CoreView::cListener* listener;
+  Avida::CoreView::Listener* listener;
   Avida::CoreView::Map* map;
   Apto::Map<NSInteger, int> map_mode_to_color;
 }
@@ -94,7 +94,7 @@
 
 
 // Listener Methods
-@property (readonly) Avida::CoreView::cListener* listener;
+@property (readonly) Avida::CoreView::Listener* listener;
 
 - (void) handleMap:(CoreViewMap*)object;
 - (void) handleUpdate:(CoreViewUpdate*)object;

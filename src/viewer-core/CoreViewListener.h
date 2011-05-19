@@ -29,7 +29,7 @@
 
 #include "Foundation/Foundation.h"
 
-#include "avida/viewer-core/cListener.h"
+#include "avida/viewer-core/Listener.h"
 
 @class CoreViewMap;
 @class CoreViewUpdate;
@@ -42,7 +42,7 @@ namespace Avida {
 
 
 @protocol CoreViewListener
-@property (readonly) Avida::CoreView::cListener* listener;
+@property (readonly) Avida::CoreView::Listener* listener;
 @optional
 - (void) handleMap:(CoreViewMap*)pkg;
 - (void) handleUpdate:(CoreViewUpdate*)pkg;
@@ -65,13 +65,13 @@ namespace Avida {
 @end
 
 
-class cMainThreadListener : public Avida::CoreView::cListener
+class MainThreadListener : public Avida::CoreView::Listener
 {
 private:
   id m_target;
   
 public:
-  cMainThreadListener(id <CoreViewListener> target) : m_target(target) { ; }
+  MainThreadListener(id <CoreViewListener> target) : m_target(target) { ; }
   
   bool WantsMap() { return true; }
   bool WantsUpdate() { return true; }

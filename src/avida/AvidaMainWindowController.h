@@ -45,7 +45,7 @@
   AvidaAppDelegate* app;
   
   AvidaRun* currentRun;
-  Avida::CoreView::cListener* listener;
+  Avida::CoreView::Listener* listener;
 }
 
 // Init and Dealloc Methods
@@ -73,7 +73,7 @@
 
 
 // Listener Methods
-@property (readonly) Avida::CoreView::cListener* listener;
+@property (readonly) Avida::CoreView::Listener* listener;
 
 -(void)handleMap:(CoreViewMap*)object;
 -(void)handleUpdate:(CoreViewUpdate*)object;
