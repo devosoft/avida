@@ -25,4 +25,4 @@
 #include "avida/AvidaViewer.h"
 
 
-Avida::CoreView::cListener::~cListener() { ; }
+Avida::CoreView::Listener::~Listener() { ; }

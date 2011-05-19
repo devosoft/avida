@@ -24,7 +24,7 @@
 #include "avida/viewer-core/cDriver.h"
 
 #include "avida/viewer-core/Map.h"
-#include "avida/viewer-core/cListener.h"
+#include "avida/viewer-core/Listener.h"
 
 #include "cAvidaContext.h"
 #include "cChangeList.h"
@@ -153,7 +153,7 @@ void Avida::CoreView::cDriver::Run()
     
     
     if (m_map) m_map->UpdateMaps(population);
-    for (Apto::Set<cListener*>::Iterator it = m_listeners.Begin(); it.Next();) {
+    for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
       if ((*it.Get())->WantsMap()) {
         (*it.Get())->NotifyMap(m_map);
       }
@@ -205,7 +205,7 @@ void Avida::CoreView::cDriver::NotifyWarning(const cString& in_string)
 }
 
 
-void Avida::CoreView::cDriver::AttachListener(cListener* listener)
+void Avida::CoreView::cDriver::AttachListener(Listener* listener)
 {
   m_listeners.Insert(listener);
   

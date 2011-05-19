@@ -39,7 +39,7 @@ namespace Avida {
     // --------------------------------------------------------------------------------------------------------------  
     
     class Map;
-    class cListener;
+    class Listener;
 
 
     // Enumerations
@@ -67,7 +67,7 @@ namespace Avida {
       
       Map* m_map;
       
-      Apto::Set<cListener*> m_listeners;
+      Apto::Set<Listener*> m_listeners;
       
       
       cDriver(); // @not_implemented
@@ -85,8 +85,8 @@ namespace Avida {
       eDriverPauseState GetPauseState() const { return m_pause_state; }
       bool IsPaused() const { return m_paused; }
       
-      void AttachListener(cListener* listener);
-      void DetachListener(cListener* listener) { m_listeners.Remove(listener); }
+      void AttachListener(Listener* listener);
+      void DetachListener(Listener* listener) { m_listeners.Remove(listener); }
 
       
       // cWorldDriver Protocol

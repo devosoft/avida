@@ -1,6 +1,6 @@
 /*
- *  AvidaViewer.h
- *  Avida
+ *  viewer-core/Listener.h
+ *  avida-core
  *
  *  Created by David on 11/11/10.
  *  Copyright 2010-2011 Michigan State University. All rights reserved.
@@ -22,11 +22,27 @@
  *
  */
 
-#ifndef AvidaAvidaViewer_h
-#define AvidaAvidaViewer_h
+#ifndef AvidaCoreViewListener_h
+#define AvidaCoreViewListener_h
 
-#include "avida/viewer-core/cDriver.h"
-#include "avida/viewer-core/Listener.h"
-#include "avida/viewer-core/Map.h"
+
+namespace Avida {
+  namespace CoreView {
+    class Map;
+    
+    class Listener
+    {
+    public:
+      virtual ~Listener() = 0;
+      
+      virtual bool WantsMap() = 0;
+      virtual bool WantsUpdate() = 0;
+      
+      virtual void NotifyMap(Map* map) { ; }
+      virtual void NotifyUpdate(int update) { ; }      
+    };
+    
+  };
+};
 
 #endif
