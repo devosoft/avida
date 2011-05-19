@@ -37,7 +37,7 @@ namespace Avida {
   // cWorldDriver - protocol defining the interface for objects that drive world execution
   // --------------------------------------------------------------------------------------------------------------
   
-  class cWorldDriver : public virtual cGlobalObject
+  class cWorldDriver : public virtual GlobalObject
   {
   public:
     virtual ~cWorldDriver() { ; }

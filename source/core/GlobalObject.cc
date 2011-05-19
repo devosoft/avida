@@ -32,12 +32,12 @@
 #include <cstdlib>
 
 
-Avida::cGlobalObject::~cGlobalObject() { ; }
+Avida::GlobalObject::~GlobalObject() { ; }
 
 
 struct GlobalObjectData
 {
-  tList<Avida::cGlobalObject> objs;
+  tList<Avida::GlobalObject> objs;
   
   cMutex mutex;
   bool initialized;
@@ -48,7 +48,7 @@ struct GlobalObjectData
 
 static void destroyGlobalObjectData()
 {
-  Avida::cGlobalObject* obj;
+  Avida::GlobalObject* obj;
   while ((obj = global_obj_data.objs.Pop())) delete obj;
 }
 
@@ -64,14 +64,14 @@ void Avida::GlobalObjectManager::Initialize()
   }
 }
 
-void Avida::GlobalObjectManager::Register(cGlobalObject* obj)
+void Avida::GlobalObjectManager::Register(GlobalObject* obj)
 {
   global_obj_data.mutex.Lock();
   global_obj_data.objs.Push(obj);
   global_obj_data.mutex.Unlock();
 }
 
-void Avida::GlobalObjectManager::Unregister(cGlobalObject* obj)
+void Avida::GlobalObjectManager::Unregister(GlobalObject* obj)
 {
   global_obj_data.mutex.Lock();
   global_obj_data.objs.Remove(obj);

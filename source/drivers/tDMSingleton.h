@@ -28,7 +28,7 @@
 using namespace Avida;
 
 
-template<typename T> class tDMSingleton : public virtual cGlobalObject
+template<typename T> class tDMSingleton : public virtual GlobalObject
 {
 private:
   static tDMSingleton* s_dms;
@@ -60,7 +60,7 @@ public:
 template<typename T> tDMSingleton<T>* tDMSingleton<T>::s_dms = NULL;
 
 
-template<typename T> class tLazyDMSingleton : public virtual cGlobalObject
+template<typename T> class tLazyDMSingleton : public virtual GlobalObject
 {
 private:
   static tLazyDMSingleton* s_dms;
