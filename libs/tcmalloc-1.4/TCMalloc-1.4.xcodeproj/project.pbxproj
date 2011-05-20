@@ -1,0 +1,376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		70FB4EC51386EBC100D8F6F0 /* atomicops-internals-linuxppc.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E991386EBC100D8F6F0 /* atomicops-internals-linuxppc.h */; };
+		70FB4EC61386EBC100D8F6F0 /* atomicops-internals-macosx.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9A1386EBC100D8F6F0 /* atomicops-internals-macosx.h */; };
+		70FB4EC71386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9B1386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h */; };
+		70FB4EC81386EBC100D8F6F0 /* atomicops-internals-x86.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E9C1386EBC100D8F6F0 /* atomicops-internals-x86.cc */; };
+		70FB4EC91386EBC100D8F6F0 /* atomicops-internals-x86.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9D1386EBC100D8F6F0 /* atomicops-internals-x86.h */; };
+		70FB4ECA1386EBC100D8F6F0 /* atomicops.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9E1386EBC100D8F6F0 /* atomicops.h */; };
+		70FB4ECB1386EBC100D8F6F0 /* basictypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9F1386EBC100D8F6F0 /* basictypes.h */; };
+		70FB4ECC1386EBC100D8F6F0 /* central_freelist.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EA01386EBC100D8F6F0 /* central_freelist.cc */; };
+		70FB4ECD1386EBC100D8F6F0 /* central_freelist.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EA11386EBC100D8F6F0 /* central_freelist.h */; };
+		70FB4ECE1386EBC100D8F6F0 /* commandlineflags.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EA21386EBC100D8F6F0 /* commandlineflags.h */; };
+		70FB4ECF1386EBC100D8F6F0 /* common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EA31386EBC100D8F6F0 /* common.cc */; };
+		70FB4ED01386EBC100D8F6F0 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EA41386EBC100D8F6F0 /* common.h */; };
+		70FB4ED11386EBC100D8F6F0 /* cycleclock.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EA51386EBC100D8F6F0 /* cycleclock.h */; };
+		70FB4ED21386EBC100D8F6F0 /* internal_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EA61386EBC100D8F6F0 /* internal_logging.cc */; };
+		70FB4ED31386EBC100D8F6F0 /* internal_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EA71386EBC100D8F6F0 /* internal_logging.h */; };
+		70FB4ED41386EBC100D8F6F0 /* linked_list.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EA81386EBC100D8F6F0 /* linked_list.h */; };
+		70FB4ED51386EBC100D8F6F0 /* linux_syscall_support.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EA91386EBC100D8F6F0 /* linux_syscall_support.h */; };
+		70FB4ED61386EBC100D8F6F0 /* malloc_extension.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EAA1386EBC100D8F6F0 /* malloc_extension.cc */; };
+		70FB4ED71386EBC100D8F6F0 /* malloc_extension.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EAB1386EBC100D8F6F0 /* malloc_extension.h */; };
+		70FB4ED81386EBC100D8F6F0 /* packed-cache-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EAC1386EBC100D8F6F0 /* packed-cache-inl.h */; };
+		70FB4ED91386EBC100D8F6F0 /* page_heap.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EAD1386EBC100D8F6F0 /* page_heap.cc */; };
+		70FB4EDA1386EBC100D8F6F0 /* page_heap.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EAE1386EBC100D8F6F0 /* page_heap.h */; };
+		70FB4EDB1386EBC100D8F6F0 /* page_heap_allocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EAF1386EBC100D8F6F0 /* page_heap_allocator.h */; };
+		70FB4EDC1386EBC100D8F6F0 /* pagemap.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EB01386EBC100D8F6F0 /* pagemap.h */; };
+		70FB4EDD1386EBC100D8F6F0 /* span.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EB11386EBC100D8F6F0 /* span.cc */; };
+		70FB4EDE1386EBC100D8F6F0 /* span.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EB21386EBC100D8F6F0 /* span.h */; };
+		70FB4EDF1386EBC100D8F6F0 /* spinlock.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EB31386EBC100D8F6F0 /* spinlock.cc */; };
+		70FB4EE01386EBC100D8F6F0 /* spinlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EB41386EBC100D8F6F0 /* spinlock.h */; };
+		70FB4EE11386EBC100D8F6F0 /* spinlock_linux-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EB51386EBC100D8F6F0 /* spinlock_linux-inl.h */; };
+		70FB4EE21386EBC100D8F6F0 /* spinlock_posix-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EB61386EBC100D8F6F0 /* spinlock_posix-inl.h */; };
+		70FB4EE31386EBC100D8F6F0 /* spinlock_win32-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EB71386EBC100D8F6F0 /* spinlock_win32-inl.h */; };
+		70FB4EE41386EBC100D8F6F0 /* static_vars.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EB81386EBC100D8F6F0 /* static_vars.cc */; };
+		70FB4EE51386EBC100D8F6F0 /* static_vars.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EB91386EBC100D8F6F0 /* static_vars.h */; };
+		70FB4EE61386EBC100D8F6F0 /* sysinfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EBA1386EBC100D8F6F0 /* sysinfo.cc */; };
+		70FB4EE71386EBC100D8F6F0 /* sysinfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EBB1386EBC100D8F6F0 /* sysinfo.h */; };
+		70FB4EE81386EBC100D8F6F0 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EBC1386EBC100D8F6F0 /* system-alloc.cc */; };
+		70FB4EE91386EBC100D8F6F0 /* system-alloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EBD1386EBC100D8F6F0 /* system-alloc.h */; };
+		70FB4EEA1386EBC100D8F6F0 /* tcmalloc-platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EBE1386EBC100D8F6F0 /* tcmalloc-platform.h */; };
+		70FB4EEB1386EBC100D8F6F0 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EBF1386EBC100D8F6F0 /* tcmalloc.cc */; };
+		70FB4EEC1386EBC100D8F6F0 /* tcmalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EC01386EBC100D8F6F0 /* tcmalloc.h */; };
+		70FB4EED1386EBC100D8F6F0 /* tcmalloc_guard.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EC11386EBC100D8F6F0 /* tcmalloc_guard.h */; };
+		70FB4EEE1386EBC100D8F6F0 /* thread_annotations.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EC21386EBC100D8F6F0 /* thread_annotations.h */; };
+		70FB4EEF1386EBC100D8F6F0 /* thread_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4EC31386EBC100D8F6F0 /* thread_cache.cc */; };
+		70FB4EF01386EBC100D8F6F0 /* thread_cache.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4EC41386EBC100D8F6F0 /* thread_cache.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7078B5341386EFBC00CE9027 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		70FB4E911386EB5100D8F6F0 /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libtcmalloc-1.4.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		70FB4E991386EBC100D8F6F0 /* atomicops-internals-linuxppc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-linuxppc.h"; sourceTree = "<group>"; };
+		70FB4E9A1386EBC100D8F6F0 /* atomicops-internals-macosx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-macosx.h"; sourceTree = "<group>"; };
+		70FB4E9B1386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-x86-msvc.h"; sourceTree = "<group>"; };
+		70FB4E9C1386EBC100D8F6F0 /* atomicops-internals-x86.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "atomicops-internals-x86.cc"; sourceTree = "<group>"; };
+		70FB4E9D1386EBC100D8F6F0 /* atomicops-internals-x86.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-x86.h"; sourceTree = "<group>"; };
+		70FB4E9E1386EBC100D8F6F0 /* atomicops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomicops.h; sourceTree = "<group>"; };
+		70FB4E9F1386EBC100D8F6F0 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
+		70FB4EA01386EBC100D8F6F0 /* central_freelist.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = central_freelist.cc; sourceTree = "<group>"; };
+		70FB4EA11386EBC100D8F6F0 /* central_freelist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = central_freelist.h; sourceTree = "<group>"; };
+		70FB4EA21386EBC100D8F6F0 /* commandlineflags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = commandlineflags.h; sourceTree = "<group>"; };
+		70FB4EA31386EBC100D8F6F0 /* common.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cc; sourceTree = "<group>"; };
+		70FB4EA41386EBC100D8F6F0 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		70FB4EA51386EBC100D8F6F0 /* cycleclock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cycleclock.h; sourceTree = "<group>"; };
+		70FB4EA61386EBC100D8F6F0 /* internal_logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = internal_logging.cc; sourceTree = "<group>"; };
+		70FB4EA71386EBC100D8F6F0 /* internal_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal_logging.h; sourceTree = "<group>"; };
+		70FB4EA81386EBC100D8F6F0 /* linked_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linked_list.h; sourceTree = "<group>"; };
+		70FB4EA91386EBC100D8F6F0 /* linux_syscall_support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linux_syscall_support.h; sourceTree = "<group>"; };
+		70FB4EAA1386EBC100D8F6F0 /* malloc_extension.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = malloc_extension.cc; sourceTree = "<group>"; };
+		70FB4EAB1386EBC100D8F6F0 /* malloc_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = malloc_extension.h; sourceTree = "<group>"; };
+		70FB4EAC1386EBC100D8F6F0 /* packed-cache-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "packed-cache-inl.h"; sourceTree = "<group>"; };
+		70FB4EAD1386EBC100D8F6F0 /* page_heap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = page_heap.cc; sourceTree = "<group>"; };
+		70FB4EAE1386EBC100D8F6F0 /* page_heap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = page_heap.h; sourceTree = "<group>"; };
+		70FB4EAF1386EBC100D8F6F0 /* page_heap_allocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = page_heap_allocator.h; sourceTree = "<group>"; };
+		70FB4EB01386EBC100D8F6F0 /* pagemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pagemap.h; sourceTree = "<group>"; };
+		70FB4EB11386EBC100D8F6F0 /* span.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = span.cc; sourceTree = "<group>"; };
+		70FB4EB21386EBC100D8F6F0 /* span.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = span.h; sourceTree = "<group>"; };
+		70FB4EB31386EBC100D8F6F0 /* spinlock.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spinlock.cc; sourceTree = "<group>"; };
+		70FB4EB41386EBC100D8F6F0 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
+		70FB4EB51386EBC100D8F6F0 /* spinlock_linux-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_linux-inl.h"; sourceTree = "<group>"; };
+		70FB4EB61386EBC100D8F6F0 /* spinlock_posix-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_posix-inl.h"; sourceTree = "<group>"; };
+		70FB4EB71386EBC100D8F6F0 /* spinlock_win32-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_win32-inl.h"; sourceTree = "<group>"; };
+		70FB4EB81386EBC100D8F6F0 /* static_vars.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = static_vars.cc; sourceTree = "<group>"; };
+		70FB4EB91386EBC100D8F6F0 /* static_vars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = static_vars.h; sourceTree = "<group>"; };
+		70FB4EBA1386EBC100D8F6F0 /* sysinfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sysinfo.cc; sourceTree = "<group>"; };
+		70FB4EBB1386EBC100D8F6F0 /* sysinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysinfo.h; sourceTree = "<group>"; };
+		70FB4EBC1386EBC100D8F6F0 /* system-alloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "system-alloc.cc"; sourceTree = "<group>"; };
+		70FB4EBD1386EBC100D8F6F0 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "system-alloc.h"; sourceTree = "<group>"; };
+		70FB4EBE1386EBC100D8F6F0 /* tcmalloc-platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-platform.h"; sourceTree = "<group>"; };
+		70FB4EBF1386EBC100D8F6F0 /* tcmalloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcmalloc.cc; sourceTree = "<group>"; };
+		70FB4EC01386EBC100D8F6F0 /* tcmalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcmalloc.h; sourceTree = "<group>"; };
+		70FB4EC11386EBC100D8F6F0 /* tcmalloc_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcmalloc_guard.h; sourceTree = "<group>"; };
+		70FB4EC21386EBC100D8F6F0 /* thread_annotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_annotations.h; sourceTree = "<group>"; };
+		70FB4EC31386EBC100D8F6F0 /* thread_cache.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_cache.cc; sourceTree = "<group>"; };
+		70FB4EC41386EBC100D8F6F0 /* thread_cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_cache.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		70FB4E8E1386EB5100D8F6F0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		70FB4E861386EB5100D8F6F0 = {
+			isa = PBXGroup;
+			children = (
+				70FB4E981386EBC100D8F6F0 /* src */,
+				70FB4E921386EB5100D8F6F0 /* products */,
+				7078B5341386EFBC00CE9027 /* CMakeLists.txt */,
+			);
+			sourceTree = "<group>";
+		};
+		70FB4E921386EB5100D8F6F0 /* products */ = {
+			isa = PBXGroup;
+			children = (
+				70FB4E911386EB5100D8F6F0 /* libtcmalloc-1.4.a */,
+			);
+			name = products;
+			sourceTree = "<group>";
+		};
+		70FB4E981386EBC100D8F6F0 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				70FB4E991386EBC100D8F6F0 /* atomicops-internals-linuxppc.h */,
+				70FB4E9A1386EBC100D8F6F0 /* atomicops-internals-macosx.h */,
+				70FB4E9B1386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h */,
+				70FB4E9C1386EBC100D8F6F0 /* atomicops-internals-x86.cc */,
+				70FB4E9D1386EBC100D8F6F0 /* atomicops-internals-x86.h */,
+				70FB4E9E1386EBC100D8F6F0 /* atomicops.h */,
+				70FB4E9F1386EBC100D8F6F0 /* basictypes.h */,
+				70FB4EA01386EBC100D8F6F0 /* central_freelist.cc */,
+				70FB4EA11386EBC100D8F6F0 /* central_freelist.h */,
+				70FB4EA21386EBC100D8F6F0 /* commandlineflags.h */,
+				70FB4EA31386EBC100D8F6F0 /* common.cc */,
+				70FB4EA41386EBC100D8F6F0 /* common.h */,
+				70FB4EA51386EBC100D8F6F0 /* cycleclock.h */,
+				70FB4EA61386EBC100D8F6F0 /* internal_logging.cc */,
+				70FB4EA71386EBC100D8F6F0 /* internal_logging.h */,
+				70FB4EA81386EBC100D8F6F0 /* linked_list.h */,
+				70FB4EA91386EBC100D8F6F0 /* linux_syscall_support.h */,
+				70FB4EAA1386EBC100D8F6F0 /* malloc_extension.cc */,
+				70FB4EAB1386EBC100D8F6F0 /* malloc_extension.h */,
+				70FB4EAC1386EBC100D8F6F0 /* packed-cache-inl.h */,
+				70FB4EAD1386EBC100D8F6F0 /* page_heap.cc */,
+				70FB4EAE1386EBC100D8F6F0 /* page_heap.h */,
+				70FB4EAF1386EBC100D8F6F0 /* page_heap_allocator.h */,
+				70FB4EB01386EBC100D8F6F0 /* pagemap.h */,
+				70FB4EB11386EBC100D8F6F0 /* span.cc */,
+				70FB4EB21386EBC100D8F6F0 /* span.h */,
+				70FB4EB31386EBC100D8F6F0 /* spinlock.cc */,
+				70FB4EB41386EBC100D8F6F0 /* spinlock.h */,
+				70FB4EB51386EBC100D8F6F0 /* spinlock_linux-inl.h */,
+				70FB4EB61386EBC100D8F6F0 /* spinlock_posix-inl.h */,
+				70FB4EB71386EBC100D8F6F0 /* spinlock_win32-inl.h */,
+				70FB4EB81386EBC100D8F6F0 /* static_vars.cc */,
+				70FB4EB91386EBC100D8F6F0 /* static_vars.h */,
+				70FB4EBA1386EBC100D8F6F0 /* sysinfo.cc */,
+				70FB4EBB1386EBC100D8F6F0 /* sysinfo.h */,
+				70FB4EBC1386EBC100D8F6F0 /* system-alloc.cc */,
+				70FB4EBD1386EBC100D8F6F0 /* system-alloc.h */,
+				70FB4EBE1386EBC100D8F6F0 /* tcmalloc-platform.h */,
+				70FB4EBF1386EBC100D8F6F0 /* tcmalloc.cc */,
+				70FB4EC01386EBC100D8F6F0 /* tcmalloc.h */,
+				70FB4EC11386EBC100D8F6F0 /* tcmalloc_guard.h */,
+				70FB4EC21386EBC100D8F6F0 /* thread_annotations.h */,
+				70FB4EC31386EBC100D8F6F0 /* thread_cache.cc */,
+				70FB4EC41386EBC100D8F6F0 /* thread_cache.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		70FB4E8F1386EB5100D8F6F0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70FB4EC51386EBC100D8F6F0 /* atomicops-internals-linuxppc.h in Headers */,
+				70FB4EC61386EBC100D8F6F0 /* atomicops-internals-macosx.h in Headers */,
+				70FB4EC71386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h in Headers */,
+				70FB4EC91386EBC100D8F6F0 /* atomicops-internals-x86.h in Headers */,
+				70FB4ECA1386EBC100D8F6F0 /* atomicops.h in Headers */,
+				70FB4ECB1386EBC100D8F6F0 /* basictypes.h in Headers */,
+				70FB4ECD1386EBC100D8F6F0 /* central_freelist.h in Headers */,
+				70FB4ECE1386EBC100D8F6F0 /* commandlineflags.h in Headers */,
+				70FB4ED01386EBC100D8F6F0 /* common.h in Headers */,
+				70FB4ED11386EBC100D8F6F0 /* cycleclock.h in Headers */,
+				70FB4ED31386EBC100D8F6F0 /* internal_logging.h in Headers */,
+				70FB4ED41386EBC100D8F6F0 /* linked_list.h in Headers */,
+				70FB4ED51386EBC100D8F6F0 /* linux_syscall_support.h in Headers */,
+				70FB4ED71386EBC100D8F6F0 /* malloc_extension.h in Headers */,
+				70FB4ED81386EBC100D8F6F0 /* packed-cache-inl.h in Headers */,
+				70FB4EDA1386EBC100D8F6F0 /* page_heap.h in Headers */,
+				70FB4EDB1386EBC100D8F6F0 /* page_heap_allocator.h in Headers */,
+				70FB4EDC1386EBC100D8F6F0 /* pagemap.h in Headers */,
+				70FB4EDE1386EBC100D8F6F0 /* span.h in Headers */,
+				70FB4EE01386EBC100D8F6F0 /* spinlock.h in Headers */,
+				70FB4EE11386EBC100D8F6F0 /* spinlock_linux-inl.h in Headers */,
+				70FB4EE21386EBC100D8F6F0 /* spinlock_posix-inl.h in Headers */,
+				70FB4EE31386EBC100D8F6F0 /* spinlock_win32-inl.h in Headers */,
+				70FB4EE51386EBC100D8F6F0 /* static_vars.h in Headers */,
+				70FB4EE71386EBC100D8F6F0 /* sysinfo.h in Headers */,
+				70FB4EE91386EBC100D8F6F0 /* system-alloc.h in Headers */,
+				70FB4EEA1386EBC100D8F6F0 /* tcmalloc-platform.h in Headers */,
+				70FB4EEC1386EBC100D8F6F0 /* tcmalloc.h in Headers */,
+				70FB4EED1386EBC100D8F6F0 /* tcmalloc_guard.h in Headers */,
+				70FB4EEE1386EBC100D8F6F0 /* thread_annotations.h in Headers */,
+				70FB4EF01386EBC100D8F6F0 /* thread_cache.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		70FB4E901386EB5100D8F6F0 /* tcmalloc-1.4 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 70FB4E951386EB5100D8F6F0 /* Build configuration list for PBXNativeTarget "tcmalloc-1.4" */;
+			buildPhases = (
+				70FB4E8D1386EB5100D8F6F0 /* Sources */,
+				70FB4E8E1386EB5100D8F6F0 /* Frameworks */,
+				70FB4E8F1386EB5100D8F6F0 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "tcmalloc-1.4";
+			productName = "tcmalloc-1";
+			productReference = 70FB4E911386EB5100D8F6F0 /* libtcmalloc-1.4.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		70FB4E881386EB5100D8F6F0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Michigan State University";
+			};
+			buildConfigurationList = 70FB4E8B1386EB5100D8F6F0 /* Build configuration list for PBXProject "TCMalloc-1.4" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 70FB4E861386EB5100D8F6F0;
+			productRefGroup = 70FB4E921386EB5100D8F6F0 /* products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				70FB4E901386EB5100D8F6F0 /* tcmalloc-1.4 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		70FB4E8D1386EB5100D8F6F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70FB4EC81386EBC100D8F6F0 /* atomicops-internals-x86.cc in Sources */,
+				70FB4ECC1386EBC100D8F6F0 /* central_freelist.cc in Sources */,
+				70FB4ECF1386EBC100D8F6F0 /* common.cc in Sources */,
+				70FB4ED21386EBC100D8F6F0 /* internal_logging.cc in Sources */,
+				70FB4ED61386EBC100D8F6F0 /* malloc_extension.cc in Sources */,
+				70FB4ED91386EBC100D8F6F0 /* page_heap.cc in Sources */,
+				70FB4EDD1386EBC100D8F6F0 /* span.cc in Sources */,
+				70FB4EDF1386EBC100D8F6F0 /* spinlock.cc in Sources */,
+				70FB4EE41386EBC100D8F6F0 /* static_vars.cc in Sources */,
+				70FB4EE61386EBC100D8F6F0 /* sysinfo.cc in Sources */,
+				70FB4EE81386EBC100D8F6F0 /* system-alloc.cc in Sources */,
+				70FB4EEB1386EBC100D8F6F0 /* tcmalloc.cc in Sources */,
+				70FB4EEF1386EBC100D8F6F0 /* thread_cache.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		70FB4E931386EB5100D8F6F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = "";
+			};
+			name = Debug;
+		};
+		70FB4E941386EB5100D8F6F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
+				GCC_STRICT_ALIASING = YES;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = "";
+			};
+			name = Release;
+		};
+		70FB4E961386EB5100D8F6F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "tcmalloc-1.4";
+			};
+			name = Debug;
+		};
+		70FB4E971386EB5100D8F6F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "tcmalloc-1.4";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		70FB4E8B1386EB5100D8F6F0 /* Build configuration list for PBXProject "TCMalloc-1.4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70FB4E931386EB5100D8F6F0 /* Debug */,
+				70FB4E941386EB5100D8F6F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		70FB4E951386EB5100D8F6F0 /* Build configuration list for PBXNativeTarget "tcmalloc-1.4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70FB4E961386EB5100D8F6F0 /* Debug */,
+				70FB4E971386EB5100D8F6F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 70FB4E881386EB5100D8F6F0 /* Project object */;
+}
