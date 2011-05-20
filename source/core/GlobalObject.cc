@@ -25,8 +25,8 @@
 #include "avida/core/GlobalObject.h"
 #include "avida/private/core/GlobalObject.h"
 
-#include "tList.h"
-#include "cMutex.h"
+#include "apto/core/List.h"
+#include "apto/core/Mutex.h"
 
 #include <cassert>
 #include <cstdlib>
@@ -37,9 +37,9 @@ Avida::GlobalObject::~GlobalObject() { ; }
 
 struct GlobalObjectData
 {
-  tList<Avida::GlobalObject> objs;
+  Apto::List<Avida::GlobalObject*> objs;
   
-  cMutex mutex;
+  Apto::Mutex mutex;
   bool initialized;
   
   GlobalObjectData() : initialized(false) { ; } 
