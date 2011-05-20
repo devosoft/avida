@@ -363,8 +363,15 @@ ADD_LIBRARY(avidacore ${AVIDA_CORE_SOURCES})
 
 
 
+# Locate TCMalloc
+IF(NOT TARGET tcmalloc-1.4)
+  FIND_LIBRARY(TCMALLOC_LIBRARY tcmalloc-1.4 PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/tcmalloc/cbuild/lib)
+  ADD_LIBRARY(tcmalloc-1.4 STATIC IMPORTED)
+  SET_PROPERTY(TARGET tcmalloc-1.4 PROPERTY IMPORTED_LOCATION "${TCMALLOC_LIBRARY}")
+ENDIF(NOT TARGET tcmalloc-1.4)
 
-# Build Instructions for the TCMalloc library
+
+# Handle the TCMalloc library
 # ------------------------------------------------------------------------------
 IF(UNIX)
   IF (CMAKE_CXX_COMPILER MATCHES ".*icpc.*")
@@ -376,23 +383,12 @@ ELSE(UNIX)
   SET(AVD_ENABLE_TCMALLOC FALSE)
 ENDIF(UNIX)
 IF(AVD_ENABLE_TCMALLOC)
-  SET(TCMALLOC_DIR source/platform/tcmalloc-1.4)
-  SET(TCMALLOC_SOURCES
-    ${TCMALLOC_DIR}/atomicops-internals-x86.cc
-    ${TCMALLOC_DIR}/central_freelist.cc
-    ${TCMALLOC_DIR}/common.cc
-    ${TCMALLOC_DIR}/internal_logging.cc
-    ${TCMALLOC_DIR}/malloc_extension.cc
-    ${TCMALLOC_DIR}/page_heap.cc
-    ${TCMALLOC_DIR}/span.cc
-    ${TCMALLOC_DIR}/spinlock.cc
-    ${TCMALLOC_DIR}/static_vars.cc
-    ${TCMALLOC_DIR}/sysinfo.cc
-    ${TCMALLOC_DIR}/system-alloc.cc
-    ${TCMALLOC_DIR}/tcmalloc.cc
-    ${TCMALLOC_DIR}/thread_cache.cc
-  )
-  ADD_LIBRARY(tcmalloc ${TCMALLOC_SOURCES})
+  # Locate TCMalloc
+  IF(NOT TARGET tcmalloc-1.4)
+    FIND_LIBRARY(TCMALLOC_LIBRARY tcmalloc-1.4 PATHS ${PROJECT_SOURCE_DIR}/../cbuild/lib ${PROJECT_SOURCE_DIR}/../libs/tcmalloc/cbuild/lib)
+    ADD_LIBRARY(tcmalloc-1.4 STATIC IMPORTED)
+    SET_PROPERTY(TARGET tcmalloc-1.4 PROPERTY IMPORTED_LOCATION "${TCMALLOC_LIBRARY}")
+  ENDIF(NOT TARGET tcmalloc-1.4)
 ENDIF(AVD_ENABLE_TCMALLOC)
 
 
@@ -413,7 +409,7 @@ IF(AVD_CMDLINE)
 
   SET(AVIDA_CMDLINE_LIBS avidacore aptostatic)  
   IF(AVD_ENABLE_TCMALLOC)
-    LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc)
+    LIST(APPEND AVIDA_CMDLINE_LIBS tcmalloc-1.4)
   ENDIF(AVD_ENABLE_TCMALLOC)  
   IF(NOT MSVC)
     LIST(APPEND AVIDA_CMDLINE_LIBS pthread)
@@ -475,7 +471,7 @@ IF(AVD_GUI_NCURSES)
       LIST(APPEND AVIDA_VIEWER_LIBS pthread)
     ENDIF(NOT MSVC)
     IF(AVD_ENABLE_TCMALLOC)
-      LIST(APPEND AVIDA_VIEWER_LIBS tcmalloc)
+      LIST(APPEND AVIDA_VIEWER_LIBS tcmalloc-1.4)
     ENDIF(AVD_ENABLE_TCMALLOC)
     TARGET_LINK_LIBRARIES(avida-viewer ${AVIDA_VIEWER_LIBS})
     
@@ -523,7 +519,7 @@ IF(AVD_GUI_PROTOTYPE_TEXT)
       LIST(APPEND AVIDA_TEXT_VIEWER_LIBS pthread)
     ENDIF(NOT MSVC)
     IF(AVD_ENABLE_TCMALLOC)
-      LIST(APPEND AVIDA_TEXT_VIEWER_LIBS tcmalloc)
+      LIST(APPEND AVIDA_TEXT_VIEWER_LIBS tcmalloc-1.4)
     ENDIF(AVD_ENABLE_TCMALLOC)
     TARGET_LINK_LIBRARIES(avida-text ${AVIDA_TEXT_VIEWER_LIBS})
     

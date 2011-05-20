@@ -35,20 +35,6 @@
 			name = "prepare-package";
 			productName = "prepare-package";
 		};
-		70E14E76127B26D10059FB9D /* everything */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 70E14E9A127B271E0059FB9D /* Build configuration list for PBXAggregateTarget "everything" */;
-			buildPhases = (
-			);
-			dependencies = (
-				70E14E7E127B26F30059FB9D /* PBXTargetDependency */,
-				70E14E80127B26F70059FB9D /* PBXTargetDependency */,
-				70E14E84127B26FC0059FB9D /* PBXTargetDependency */,
-				70E14E86127B26FF0059FB9D /* PBXTargetDependency */,
-			);
-			name = everything;
-			productName = everything;
-		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
@@ -81,19 +67,6 @@
 		70211A5D0ECBD531004A293A /* cRCObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 70211A5B0ECBD531004A293A /* cRCObject.h */; };
 		702244BA107D16010079CD25 /* cBioUnit.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702244B8107D16010079CD25 /* cBioUnit.cc */; };
 		702244C4107D168F0079CD25 /* cBioGroup.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702244C2107D168F0079CD25 /* cBioGroup.cc */; };
-		702246DC107FCA900079CD25 /* atomicops-internals-x86.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246B2107FCA590079CD25 /* atomicops-internals-x86.cc */; };
-		702246DD107FCA900079CD25 /* central_freelist.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246B6107FCA590079CD25 /* central_freelist.cc */; };
-		702246DE107FCA900079CD25 /* common.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246B9107FCA590079CD25 /* common.cc */; };
-		702246DF107FCA900079CD25 /* internal_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246BB107FCA590079CD25 /* internal_logging.cc */; };
-		702246E0107FCA900079CD25 /* malloc_extension.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246BE107FCA590079CD25 /* malloc_extension.cc */; };
-		702246E4107FCA900079CD25 /* page_heap.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246C6107FCA590079CD25 /* page_heap.cc */; };
-		702246E6107FCA900079CD25 /* span.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246CB107FCA590079CD25 /* span.cc */; };
-		702246E7107FCA900079CD25 /* spinlock.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246CD107FCA590079CD25 /* spinlock.cc */; };
-		702246E9107FCA900079CD25 /* static_vars.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D1107FCA590079CD25 /* static_vars.cc */; };
-		702246EB107FCA900079CD25 /* system-alloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D5107FCA590079CD25 /* system-alloc.cc */; };
-		702246EC107FCA900079CD25 /* tcmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D8107FCA590079CD25 /* tcmalloc.cc */; settings = {COMPILER_FLAGS = "-fexceptions"; }; };
-		702246ED107FCA900079CD25 /* thread_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702246D9107FCA590079CD25 /* thread_cache.cc */; };
-		7022479E108620E40079CD25 /* sysinfo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7022479C108620E40079CD25 /* sysinfo.cc */; };
 		7023EC3B0C0A431B00362B9C /* cActionLibrary.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */; };
 		7023EC3C0C0A431B00362B9C /* cAnalyze.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A1C091B141000A5E67F /* cAnalyze.cc */; };
 		7023EC3D0C0A431B00362B9C /* cAnalyzeGenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70422A24091B141000A5E67F /* cAnalyzeGenotype.cc */; };
@@ -327,6 +300,11 @@
 		7073972E0D725B9F003855D3 /* cSemanticASTVisitor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7073972C0D725B9D003855D3 /* cSemanticASTVisitor.cc */; };
 		7076FEB00D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAE0D347FD000556CAF /* cAnalyzeTreeStats_CumulativeStemminess.cc */; };
 		7076FEB10D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */; };
+		7078B5381386F6D300CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
+		7078B5391386F6DD00CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
+		7078B53A1386F6E800CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
+		7078B53B1386F6EF00CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
+		7078B53C1386F6F700CE9027 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */; };
 		7090F57510D956A400ECFBA1 /* cParasite.h in Headers */ = {isa = PBXBuildFile; fileRef = 7090F57310D956A400ECFBA1 /* cParasite.h */; };
 		7090F57610D956A400ECFBA1 /* cParasite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7090F57410D956A400ECFBA1 /* cParasite.cc */; };
 		7099D6011215BB9500EB3E46 /* cGenomeTestMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = 7099D5FF1215BB9500EB3E46 /* cGenomeTestMetrics.h */; };
@@ -349,12 +327,8 @@
 		70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C11F3412B944F40092B40D /* cContextPhenotype.cc */; };
 		70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3512B944F40092B40D /* cContextPhenotype.h */; };
 		70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3612B944F40092B40D /* cContextReactionRequisite.h */; };
-		70C9D5C71086890000472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
-		70C9D5CA1086893100472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
-		70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
-		70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
 		70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */; };
@@ -443,62 +417,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 706C7B63125F64B000EDB4B9;
 			remoteInfo = "viewer-core";
-		};
-		70C9D5C5108688FA00472C46 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7022469C107FC4F10079CD25;
-			remoteInfo = "tcmalloc-1.4";
-		};
-		70C9D5C81086891B00472C46 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7022469C107FC4F10079CD25;
-			remoteInfo = "tcmalloc-1.4";
-		};
-		70C9D5CB1086894A00472C46 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7022469C107FC4F10079CD25;
-			remoteInfo = "tcmalloc-1.4";
-		};
-		70D1038A124CF80800F25734 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7022469C107FC4F10079CD25;
-			remoteInfo = "tcmalloc-1.4";
-		};
-		70E14E7D127B26F30059FB9D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DCC3164C07626CF3008F7A48;
-			remoteInfo = avida;
-		};
-		70E14E7F127B26F70059FB9D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 700E2AF3085DE50C00CF158A;
-			remoteInfo = "avida-viewer";
-		};
-		70E14E83127B26FC0059FB9D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 56F555CF0C3B364E00E2E929;
-			remoteInfo = "avida-text";
-		};
-		70E14E85127B26FF0059FB9D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DCC30C4D0762532C008F7A48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 70B6514B0BEA6FAD002472ED;
-			remoteInfo = "unit-tests";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -754,51 +672,6 @@
 		702244B8107D16010079CD25 /* cBioUnit.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBioUnit.cc; sourceTree = "<group>"; };
 		702244C1107D168F0079CD25 /* cBioGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBioGroup.h; sourceTree = "<group>"; };
 		702244C2107D168F0079CD25 /* cBioGroup.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBioGroup.cc; sourceTree = "<group>"; };
-		7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libtcmalloc-1.4.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		702246AF107FCA590079CD25 /* atomicops-internals-linuxppc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-linuxppc.h"; sourceTree = "<group>"; };
-		702246B0107FCA590079CD25 /* atomicops-internals-macosx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-macosx.h"; sourceTree = "<group>"; };
-		702246B1107FCA590079CD25 /* atomicops-internals-x86-msvc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-x86-msvc.h"; sourceTree = "<group>"; };
-		702246B2107FCA590079CD25 /* atomicops-internals-x86.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "atomicops-internals-x86.cc"; sourceTree = "<group>"; };
-		702246B3107FCA590079CD25 /* atomicops-internals-x86.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "atomicops-internals-x86.h"; sourceTree = "<group>"; };
-		702246B4107FCA590079CD25 /* atomicops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomicops.h; sourceTree = "<group>"; };
-		702246B5107FCA590079CD25 /* basictypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basictypes.h; sourceTree = "<group>"; };
-		702246B6107FCA590079CD25 /* central_freelist.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = central_freelist.cc; sourceTree = "<group>"; };
-		702246B7107FCA590079CD25 /* central_freelist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = central_freelist.h; sourceTree = "<group>"; };
-		702246B8107FCA590079CD25 /* commandlineflags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = commandlineflags.h; sourceTree = "<group>"; };
-		702246B9107FCA590079CD25 /* common.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cc; sourceTree = "<group>"; };
-		702246BA107FCA590079CD25 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		702246BB107FCA590079CD25 /* internal_logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = internal_logging.cc; sourceTree = "<group>"; };
-		702246BC107FCA590079CD25 /* internal_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = internal_logging.h; sourceTree = "<group>"; };
-		702246BD107FCA590079CD25 /* linked_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linked_list.h; sourceTree = "<group>"; };
-		702246BE107FCA590079CD25 /* malloc_extension.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = malloc_extension.cc; sourceTree = "<group>"; };
-		702246C4107FCA590079CD25 /* packed-cache-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "packed-cache-inl.h"; sourceTree = "<group>"; };
-		702246C5107FCA590079CD25 /* page_heap_allocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = page_heap_allocator.h; sourceTree = "<group>"; };
-		702246C6107FCA590079CD25 /* page_heap.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = page_heap.cc; sourceTree = "<group>"; };
-		702246C7107FCA590079CD25 /* page_heap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = page_heap.h; sourceTree = "<group>"; };
-		702246C8107FCA590079CD25 /* pagemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pagemap.h; sourceTree = "<group>"; };
-		702246CB107FCA590079CD25 /* span.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = span.cc; sourceTree = "<group>"; };
-		702246CC107FCA590079CD25 /* span.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = span.h; sourceTree = "<group>"; };
-		702246CD107FCA590079CD25 /* spinlock.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spinlock.cc; sourceTree = "<group>"; };
-		702246CE107FCA590079CD25 /* spinlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spinlock.h; sourceTree = "<group>"; };
-		702246D1107FCA590079CD25 /* static_vars.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = static_vars.cc; sourceTree = "<group>"; };
-		702246D2107FCA590079CD25 /* static_vars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = static_vars.h; sourceTree = "<group>"; };
-		702246D5107FCA590079CD25 /* system-alloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "system-alloc.cc"; sourceTree = "<group>"; };
-		702246D6107FCA590079CD25 /* system-alloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "system-alloc.h"; sourceTree = "<group>"; };
-		702246D7107FCA590079CD25 /* tcmalloc_guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcmalloc_guard.h; sourceTree = "<group>"; };
-		702246D8107FCA590079CD25 /* tcmalloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcmalloc.cc; sourceTree = "<group>"; };
-		702246D9107FCA590079CD25 /* thread_cache.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_cache.cc; sourceTree = "<group>"; };
-		702246DA107FCA590079CD25 /* thread_cache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_cache.h; sourceTree = "<group>"; };
-		7022475610861B670079CD25 /* thread_annotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_annotations.h; sourceTree = "<group>"; };
-		7022477A10861D390079CD25 /* tcmalloc-platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "tcmalloc-platform.h"; sourceTree = "<group>"; };
-		7022479C108620E40079CD25 /* sysinfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sysinfo.cc; sourceTree = "<group>"; };
-		7022479D108620E40079CD25 /* sysinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysinfo.h; sourceTree = "<group>"; };
-		702247AD108621660079CD25 /* malloc_extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = malloc_extension.h; sourceTree = "<group>"; };
-		702247D51086236F0079CD25 /* cycleclock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cycleclock.h; sourceTree = "<group>"; };
-		702247D61086236F0079CD25 /* spinlock_linux-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_linux-inl.h"; sourceTree = "<group>"; };
-		702247D71086236F0079CD25 /* spinlock_posix-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_posix-inl.h"; sourceTree = "<group>"; };
-		702247D81086236F0079CD25 /* spinlock_win32-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "spinlock_win32-inl.h"; sourceTree = "<group>"; };
-		702247DA108623920079CD25 /* linux_syscall_support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linux_syscall_support.h; sourceTree = "<group>"; };
-		702247E3108624160079CD25 /* tcmalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcmalloc.h; sourceTree = "<group>"; };
 		7023EC330C0A426900362B9C /* libavida-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libavida-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7027621909D73E5900741717 /* cOrgSourceMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSourceMessage.h; sourceTree = "<group>"; };
 		7027621A09D73E7700741717 /* cOrgSinkMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cOrgSinkMessage.h; sourceTree = "<group>"; };
@@ -992,6 +865,7 @@
 		7076FEAF0D347FD000556CAF /* cAnalyzeTreeStats_Gamma.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyzeTreeStats_Gamma.cc; sourceTree = "<group>"; };
 		7076FEB40D347FEC00556CAF /* cAnalyzeTreeStats_CumulativeStemminess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeTreeStats_CumulativeStemminess.h; sourceTree = "<group>"; };
 		7076FEB50D347FEC00556CAF /* cAnalyzeTreeStats_Gamma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeTreeStats_Gamma.h; sourceTree = "<group>"; };
+		7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libtcmalloc-1.4.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		707AEEEF09E80725001AEA89 /* cAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAction.h; sourceTree = "<group>"; };
 		707AEEFE09E83381001AEA89 /* cActionLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cActionLibrary.h; sourceTree = "<group>"; };
 		707AEF8C09EA8B2D001AEA89 /* cAnalyzeCommandAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAnalyzeCommandAction.h; sourceTree = "<group>"; };
@@ -1326,7 +1200,7 @@
 				706C7B6F125F64F900EDB4B9 /* libviewer-core.a in Frameworks */,
 				5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */,
 				5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */,
-				70C9D5CD1086894E00472C46 /* libtcmalloc-1.4.a in Frameworks */,
+				7078B53A1386F6E800CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1336,14 +1210,7 @@
 			files = (
 				70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */,
 				7023ECD30C0A447700362B9C /* libavida-core.a in Frameworks */,
-				70C9D5CA1086893100472C46 /* libtcmalloc-1.4.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		7022469B107FC4F10079CD25 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				7078B5391386F6DD00CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1365,6 +1232,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7078B53B1386F6EF00CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1373,7 +1241,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7023ECDE0C0A44D800362B9C /* libavida-core.a in Frameworks */,
-				70C9D5C71086890000472C46 /* libtcmalloc-1.4.a in Frameworks */,
+				7078B53C1386F6F700CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1382,8 +1250,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7023ECA80C0A437200362B9C /* libavida-core.a in Frameworks */,
-				70E14E7C127B26E20059FB9D /* libtcmalloc-1.4.a in Frameworks */,
 				70FEF6241381B04500A9D082 /* libapto.a in Frameworks */,
+				7078B5381386F6D300CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1435,57 +1303,6 @@
 				701EF27E0BEA5D2300DAE168 /* main.cc */,
 			);
 			path = "unit-tests";
-			sourceTree = "<group>";
-		};
-		70224698107FC4BB0079CD25 /* tcmalloc-1.4 */ = {
-			isa = PBXGroup;
-			children = (
-				702247E3108624160079CD25 /* tcmalloc.h */,
-				702247DA108623920079CD25 /* linux_syscall_support.h */,
-				702247D51086236F0079CD25 /* cycleclock.h */,
-				702247D61086236F0079CD25 /* spinlock_linux-inl.h */,
-				702247D71086236F0079CD25 /* spinlock_posix-inl.h */,
-				702247D81086236F0079CD25 /* spinlock_win32-inl.h */,
-				702247AD108621660079CD25 /* malloc_extension.h */,
-				7022479C108620E40079CD25 /* sysinfo.cc */,
-				7022479D108620E40079CD25 /* sysinfo.h */,
-				7022477A10861D390079CD25 /* tcmalloc-platform.h */,
-				7022475610861B670079CD25 /* thread_annotations.h */,
-				702246AF107FCA590079CD25 /* atomicops-internals-linuxppc.h */,
-				702246B0107FCA590079CD25 /* atomicops-internals-macosx.h */,
-				702246B1107FCA590079CD25 /* atomicops-internals-x86-msvc.h */,
-				702246B2107FCA590079CD25 /* atomicops-internals-x86.cc */,
-				702246B3107FCA590079CD25 /* atomicops-internals-x86.h */,
-				702246B4107FCA590079CD25 /* atomicops.h */,
-				702246B5107FCA590079CD25 /* basictypes.h */,
-				702246B6107FCA590079CD25 /* central_freelist.cc */,
-				702246B7107FCA590079CD25 /* central_freelist.h */,
-				702246B8107FCA590079CD25 /* commandlineflags.h */,
-				702246B9107FCA590079CD25 /* common.cc */,
-				702246BA107FCA590079CD25 /* common.h */,
-				702246BB107FCA590079CD25 /* internal_logging.cc */,
-				702246BC107FCA590079CD25 /* internal_logging.h */,
-				702246BD107FCA590079CD25 /* linked_list.h */,
-				702246BE107FCA590079CD25 /* malloc_extension.cc */,
-				702246C4107FCA590079CD25 /* packed-cache-inl.h */,
-				702246C5107FCA590079CD25 /* page_heap_allocator.h */,
-				702246C6107FCA590079CD25 /* page_heap.cc */,
-				702246C7107FCA590079CD25 /* page_heap.h */,
-				702246C8107FCA590079CD25 /* pagemap.h */,
-				702246CB107FCA590079CD25 /* span.cc */,
-				702246CC107FCA590079CD25 /* span.h */,
-				702246CD107FCA590079CD25 /* spinlock.cc */,
-				702246CE107FCA590079CD25 /* spinlock.h */,
-				702246D1107FCA590079CD25 /* static_vars.cc */,
-				702246D2107FCA590079CD25 /* static_vars.h */,
-				702246D5107FCA590079CD25 /* system-alloc.cc */,
-				702246D6107FCA590079CD25 /* system-alloc.h */,
-				702246D7107FCA590079CD25 /* tcmalloc_guard.h */,
-				702246D8107FCA590079CD25 /* tcmalloc.cc */,
-				702246D9107FCA590079CD25 /* thread_cache.cc */,
-				702246DA107FCA590079CD25 /* thread_cache.h */,
-			);
-			path = "tcmalloc-1.4";
 			sourceTree = "<group>";
 		};
 		702A66DF121C73EE0014F776 /* glossary */ = {
@@ -1706,12 +1523,12 @@
 			path = actions;
 			sourceTree = "<group>";
 		};
-		707AF2D209EE8501001AEA89 /* Support */ = {
+		707AF2D209EE8501001AEA89 /* support */ = {
 			isa = PBXGroup;
 			children = (
 				702A670F121C746A0014F776 /* config */,
 			);
-			name = Support;
+			name = support;
 			path = support/config;
 			sourceTree = "<group>";
 		};
@@ -1746,7 +1563,7 @@
 			path = misc;
 			sourceTree = "<group>";
 		};
-		70920C1A0A9CCE2C00757CDB /* Documentation */ = {
+		70920C1A0A9CCE2C00757CDB /* documentation */ = {
 			isa = PBXGroup;
 			children = (
 				702A66DF121C73EE0014F776 /* glossary */,
@@ -1777,7 +1594,6 @@
 				70920C690A9CCE2C00757CDB /* structure.html */,
 				70920C6A0A9CCE2C00757CDB /* svn.html */,
 			);
-			name = Documentation;
 			path = documentation;
 			sourceTree = "<group>";
 		};
@@ -1814,13 +1630,14 @@
 			path = "viewer-core";
 			sourceTree = "<group>";
 		};
-		70A1E4B01266249900D56AC4 /* Libraries */ = {
+		70A1E4B01266249900D56AC4 /* libraries */ = {
 			isa = PBXGroup;
 			children = (
 				70FEF6231381B04500A9D082 /* libapto.a */,
 				70658C59085DF67D00486BED /* libncurses.5.4.dylib */,
+				7078B5361386F64800CE9027 /* libtcmalloc-1.4.a */,
 			);
-			name = Libraries;
+			name = libraries;
 			sourceTree = "<group>";
 		};
 		70A1E86912663FA100D56AC4 /* platform */ = {
@@ -1970,14 +1787,6 @@
 			path = script;
 			sourceTree = "<group>";
 		};
-		70DCF4FF09CF81E400924128 /* platform */ = {
-			isa = PBXGroup;
-			children = (
-				70224698107FC4BB0079CD25 /* tcmalloc-1.4 */,
-			);
-			path = platform;
-			sourceTree = "<group>";
-		};
 		70F7D8C8092546DC009E311D /* classification */ = {
 			isa = PBXGroup;
 			children = (
@@ -2060,10 +1869,10 @@
 				703549221333E30800D3865C /* include */,
 				DCC30C670762539A008F7A48 /* source */,
 				70F962BD135AA2E7008EDD1C /* unittests */,
-				70920C1A0A9CCE2C00757CDB /* Documentation */,
-				70A1E4B01266249900D56AC4 /* Libraries */,
-				707AF2D209EE8501001AEA89 /* Support */,
-				DCC3164E07626CF3008F7A48 /* Products */,
+				70920C1A0A9CCE2C00757CDB /* documentation */,
+				707AF2D209EE8501001AEA89 /* support */,
+				70A1E4B01266249900D56AC4 /* libraries */,
+				DCC3164E07626CF3008F7A48 /* products */,
 				70FB86A908BFAFEC00BDF589 /* CMakeLists.txt */,
 				708D3135134231E500AE5CEF /* COPYING */,
 				708D31321342315000AE5CEF /* README */,
@@ -2082,7 +1891,6 @@
 				70FEF65C1382C48900A9D082 /* data */,
 				701D9115094B770B008B845F /* drivers */,
 				DCC310040762539D008F7A48 /* main */,
-				70DCF4FF09CF81E400924128 /* platform */,
 				70DCAD1E097AF81A002F8733 /* script */,
 				70DCAC54097AF730002F8733 /* targets */,
 				DCC314D8076253A2008F7A48 /* tools */,
@@ -2366,7 +2174,7 @@
 			path = tools;
 			sourceTree = "<group>";
 		};
-		DCC3164E07626CF3008F7A48 /* Products */ = {
+		DCC3164E07626CF3008F7A48 /* products */ = {
 			isa = PBXGroup;
 			children = (
 				DCC3164D07626CF3008F7A48 /* avida */,
@@ -2375,22 +2183,14 @@
 				70B6514C0BEA6FAD002472ED /* unit-tests */,
 				7023EC330C0A426900362B9C /* libavida-core.a */,
 				56F555D00C3B364E00E2E929 /* avida-text */,
-				7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */,
 				706C7B64125F64B000EDB4B9 /* libviewer-core.a */,
 			);
-			name = Products;
+			name = products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		70224699107FC4F10079CD25 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		7023EC2F0C0A426900362B9C /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2447,7 +2247,6 @@
 			dependencies = (
 				56F555DB0C3B36FC00E2E929 /* PBXTargetDependency */,
 				706C7B71125F650200EDB4B9 /* PBXTargetDependency */,
-				70C9D5CC1086894A00472C46 /* PBXTargetDependency */,
 			);
 			name = "avida-text";
 			productName = "New Text Viewer";
@@ -2465,30 +2264,12 @@
 			buildRules = (
 			);
 			dependencies = (
-				70C9D5C91086891B00472C46 /* PBXTargetDependency */,
 				7023ECD00C0A445800362B9C /* PBXTargetDependency */,
 			);
 			name = "avida-viewer";
 			productName = primitive;
 			productReference = 700E2B83085DE50C00CF158A /* avida-viewer */;
 			productType = "com.apple.product-type.tool";
-		};
-		7022469C107FC4F10079CD25 /* tcmalloc-1.4 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 702246A3107FC5100079CD25 /* Build configuration list for PBXNativeTarget "tcmalloc-1.4" */;
-			buildPhases = (
-				70224699107FC4F10079CD25 /* Headers */,
-				7022469A107FC4F10079CD25 /* Sources */,
-				7022469B107FC4F10079CD25 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "tcmalloc-1.4";
-			productName = "tcmalloc-1.4";
-			productReference = 7022469D107FC4F10079CD25 /* libtcmalloc-1.4.a */;
-			productType = "com.apple.product-type.library.static";
 		};
 		7023EC320C0A426900362B9C /* avida-core */ = {
 			isa = PBXNativeTarget;
@@ -2555,7 +2336,6 @@
 			);
 			dependencies = (
 				7023ECE30C0A44E000362B9C /* PBXTargetDependency */,
-				70C9D5C6108688FA00472C46 /* PBXTargetDependency */,
 			);
 			name = "avida-s";
 			productName = primitive;
@@ -2574,7 +2354,6 @@
 			);
 			dependencies = (
 				7023ECA70C0A436000362B9C /* PBXTargetDependency */,
-				70D1038B124CF80800F25734 /* PBXTargetDependency */,
 			);
 			name = avida;
 			productName = primitive;
@@ -2597,12 +2376,11 @@
 				German,
 			);
 			mainGroup = DCC30C490762532C008F7A48;
-			productRefGroup = DCC3164E07626CF3008F7A48 /* Products */;
+			productRefGroup = DCC3164E07626CF3008F7A48 /* products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				7023ED520C0A590200362B9C /* default-suite */,
-				70E14E76127B26D10059FB9D /* everything */,
 				702A6748121C798D0014F776 /* prepare-package */,
 				DCC3164C07626CF3008F7A48 /* avida */,
 				70DCAC9D097AF7CC002F8733 /* avida-s */,
@@ -2610,7 +2388,6 @@
 				56F555CF0C3B364E00E2E929 /* avida-text */,
 				70B6514B0BEA6FAD002472ED /* unit-tests */,
 				7023EC320C0A426900362B9C /* avida-core */,
-				7022469C107FC4F10079CD25 /* tcmalloc-1.4 */,
 				706C7B63125F64B000EDB4B9 /* viewer-core */,
 			);
 		};
@@ -2666,26 +2443,6 @@
 				7023ECCC0C0A444200362B9C /* cViewInfo.cc in Sources */,
 				7023ECCD0C0A444600362B9C /* cZoomScreen.cc in Sources */,
 				7023ECCE0C0A444800362B9C /* viewer.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		7022469A107FC4F10079CD25 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				702246DC107FCA900079CD25 /* atomicops-internals-x86.cc in Sources */,
-				702246DD107FCA900079CD25 /* central_freelist.cc in Sources */,
-				702246DE107FCA900079CD25 /* common.cc in Sources */,
-				702246DF107FCA900079CD25 /* internal_logging.cc in Sources */,
-				702246E0107FCA900079CD25 /* malloc_extension.cc in Sources */,
-				702246E4107FCA900079CD25 /* page_heap.cc in Sources */,
-				702246E6107FCA900079CD25 /* span.cc in Sources */,
-				702246E7107FCA900079CD25 /* spinlock.cc in Sources */,
-				702246E9107FCA900079CD25 /* static_vars.cc in Sources */,
-				702246EB107FCA900079CD25 /* system-alloc.cc in Sources */,
-				702246EC107FCA900079CD25 /* tcmalloc.cc in Sources */,
-				702246ED107FCA900079CD25 /* thread_cache.cc in Sources */,
-				7022479E108620E40079CD25 /* sysinfo.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2925,46 +2682,6 @@
 			target = 706C7B63125F64B000EDB4B9 /* viewer-core */;
 			targetProxy = 706C7B70125F650200EDB4B9 /* PBXContainerItemProxy */;
 		};
-		70C9D5C6108688FA00472C46 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
-			targetProxy = 70C9D5C5108688FA00472C46 /* PBXContainerItemProxy */;
-		};
-		70C9D5C91086891B00472C46 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
-			targetProxy = 70C9D5C81086891B00472C46 /* PBXContainerItemProxy */;
-		};
-		70C9D5CC1086894A00472C46 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
-			targetProxy = 70C9D5CB1086894A00472C46 /* PBXContainerItemProxy */;
-		};
-		70D1038B124CF80800F25734 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 7022469C107FC4F10079CD25 /* tcmalloc-1.4 */;
-			targetProxy = 70D1038A124CF80800F25734 /* PBXContainerItemProxy */;
-		};
-		70E14E7E127B26F30059FB9D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DCC3164C07626CF3008F7A48 /* avida */;
-			targetProxy = 70E14E7D127B26F30059FB9D /* PBXContainerItemProxy */;
-		};
-		70E14E80127B26F70059FB9D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 700E2AF3085DE50C00CF158A /* avida-viewer */;
-			targetProxy = 70E14E7F127B26F70059FB9D /* PBXContainerItemProxy */;
-		};
-		70E14E84127B26FC0059FB9D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 56F555CF0C3B364E00E2E929 /* avida-text */;
-			targetProxy = 70E14E83127B26FC0059FB9D /* PBXContainerItemProxy */;
-		};
-		70E14E86127B26FF0059FB9D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 70B6514B0BEA6FAD002472ED /* unit-tests */;
-			targetProxy = 70E14E85127B26FF0059FB9D /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -2997,20 +2714,6 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				PRODUCT_NAME = "avida-viewer";
-			};
-			name = Release;
-		};
-		7022469E107FC4F20079CD25 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "tcmalloc-1.4";
-			};
-			name = Debug;
-		};
-		7022469F107FC4F20079CD25 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "tcmalloc-1.4";
 			};
 			name = Release;
 		};
@@ -3174,21 +2877,6 @@
 			};
 			name = Release;
 		};
-		70E14E77127B26D10059FB9D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = everything;
-			};
-			name = Debug;
-		};
-		70E14E78127B26D10059FB9D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = everything;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3206,15 +2894,6 @@
 			buildConfigurations = (
 				700E2B7F085DE50C00CF158A /* Debug */,
 				700E2B80085DE50C00CF158A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		702246A3107FC5100079CD25 /* Build configuration list for PBXNativeTarget "tcmalloc-1.4" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				7022469E107FC4F20079CD25 /* Debug */,
-				7022469F107FC4F20079CD25 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -3287,15 +2966,6 @@
 			buildConfigurations = (
 				70DCAD18097AF7CC002F8733 /* Debug */,
 				70DCAD19097AF7CC002F8733 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		70E14E9A127B271E0059FB9D /* Build configuration list for PBXAggregateTarget "everything" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				70E14E77127B26D10059FB9D /* Debug */,
-				70E14E78127B26D10059FB9D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
