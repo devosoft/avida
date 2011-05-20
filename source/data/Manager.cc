@@ -44,8 +44,8 @@ Avida::Data::Manager::~Manager()
 Avida::Data::ConstDataSetPtr Avida::Data::Manager::GetAvailable() const
 {
   if (!m_available) {
-    DataSetPtr available(new Apto::Set<Apto::String>);
-    for (Apto::Map<Apto::String, ProviderActivateFunctor>::KeyIterator it = m_provider_map.Keys(); it.Next();) {
+    DataSetPtr available(new DataSet);
+    for (Apto::Map<DataID, ProviderActivateFunctor>::KeyIterator it = m_provider_map.Keys(); it.Next();) {
       available->Insert(*it.Get());
     }
     m_available = available;
@@ -53,12 +53,12 @@ Avida::Data::ConstDataSetPtr Avida::Data::Manager::GetAvailable() const
   return m_available;
 }
 
-bool Avida::Data::Manager::IsAvailable(const Apto::String& data_id) const
+bool Avida::Data::Manager::IsAvailable(const DataID& data_id) const
 {
   return m_provider_map.Has(data_id);
 }
 
-bool Avida::Data::Manager::IsActive(const Apto::String& data_id) const
+bool Avida::Data::Manager::IsActive(const DataID& data_id) const
 {
   return m_active_map.Has(data_id);
 }
@@ -99,7 +99,7 @@ bool Avida::Data::Manager::DetachRecorder(RecorderPtr recorder)
 }
 
 
-bool Avida::Data::Manager::Register(const Apto::String& data_id, ProviderActivateFunctor functor)
+bool Avida::Data::Manager::Register(const DataID& data_id, ProviderActivateFunctor functor)
 {
   if (m_provider_map.Has(data_id)) return false;
   
@@ -108,23 +108,31 @@ bool Avida::Data::Manager::Register(const Apto::String& data_id, ProviderActivat
 }
 
 
-void Avida::Data::Manager::UpdateState()
+void Avida::Data::Manager::UpdateState(Update current_update)
 {
+  m_current_values.Clear();
+  
   // Update all of the active providers
-  for (int i = 0; i < m_active_providers.GetSize(); i++) m_active_providers[i]->UpdateProvidedValues();
+  for (int i = 0; i < m_active_providers.GetSize(); i++) m_active_providers[i]->UpdateProvidedValues(current_update);
   
   // Notify recorders that new data is available
   DataRetrievalFunctor drf(this, &Manager::GetCurrentValue);
   for (Apto::Set<RecorderPtr>::Iterator it = m_recorders.Begin(); it.Next();) {
-    (*it.Get())->NotifyData(drf);
+    (*it.Get())->NotifyData(current_update, drf);
   }
 }
 
-Avida::Data::PackagePtr Avida::Data::Manager::GetCurrentValue(const Apto::String& data_id) const
+Avida::Data::PackagePtr Avida::Data::Manager::GetCurrentValue(const DataID& data_id) const
 {
-  ProviderPtr provider;
-  if (m_active_map.Get(data_id, provider)) return provider->GetProvidedValue(data_id);
+  PackagePtr rtn;
+  if (m_current_values.Get(data_id, rtn)) return rtn;
   
-  return PackagePtr();
+  ProviderPtr provider;
+  if (m_active_map.Get(data_id, provider)) {
+    rtn = provider->GetProvidedValue(data_id);
+    if (rtn) m_current_values[data_id] = rtn;
+  }
+  
+  return rtn;
 }
 

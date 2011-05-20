@@ -321,7 +321,7 @@ Data::ConstDataSetPtr cStats::Provides() const
   return m_provides;
 }
 
-void cStats::UpdateProvidedValues()
+void cStats::UpdateProvidedValues(Update current_update)
 {
   // Nothing for now, all handled by ProcessUpdate()
 }

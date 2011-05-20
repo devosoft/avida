@@ -26,6 +26,7 @@
 #define AvidaDataManager_h
 
 #include "apto/platform.h"
+#include "avida/core/Types.h"
 #include "avida/data/Types.h"
 
 
@@ -39,31 +40,33 @@ namespace Avida {
     {
     private:
       cWorld* m_world;
-      Apto::Map<Apto::String, ProviderActivateFunctor> m_provider_map;
+      Apto::Map<DataID, ProviderActivateFunctor> m_provider_map;
       mutable DataSetPtr m_available;
       
       Apto::Set<RecorderPtr> m_recorders;
       
       Apto::Array<ProviderPtr> m_active_providers;
-      Apto::Map<Apto::String, ProviderPtr> m_active_map;
+      Apto::Map<DataID, ProviderPtr> m_active_map;
+      
+      mutable Apto::Map<DataID, PackagePtr> m_current_values;
       
     public:
       LIB_EXPORT Manager(cWorld* world);
       LIB_EXPORT ~Manager();
       
       LIB_EXPORT ConstDataSetPtr GetAvailable() const;
-      LIB_EXPORT bool IsAvailable(const Apto::String& data_id) const;
-      LIB_EXPORT bool IsActive(const Apto::String& data_id) const;
+      LIB_EXPORT bool IsAvailable(const DataID& data_id) const;
+      LIB_EXPORT bool IsActive(const DataID& data_id) const;
       
       LIB_EXPORT bool AttachRecorder(RecorderPtr recorder);
       LIB_EXPORT bool DetachRecorder(RecorderPtr recorder);
       
-      LIB_EXPORT bool Register(const Apto::String& data_id, ProviderActivateFunctor functor);
+      LIB_EXPORT bool Register(const DataID& data_id, ProviderActivateFunctor functor);
       
     public:
-      LIB_LOCAL void UpdateState();
+      LIB_LOCAL void UpdateState(Update current_update);
       
-      LIB_LOCAL PackagePtr GetCurrentValue(const Apto::String& data_id) const;
+      LIB_LOCAL PackagePtr GetCurrentValue(const DataID& data_id) const;
     };
     
   };

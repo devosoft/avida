@@ -23,6 +23,7 @@
 
 #include "avida/viewer-core/Driver.h"
 
+#include "avida/data/Manager.h"
 #include "avida/viewer-core/Map.h"
 #include "avida/viewer-core/Listener.h"
 
@@ -104,6 +105,8 @@ void Avida::CoreView::Driver::Run()
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
+  Data::Manager& dm = m_world->GetDataManager();
+  
   const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
   const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
   
@@ -124,6 +127,7 @@ void Avida::CoreView::Driver::Run()
     if (stats.GetUpdate() > 0) {
       // Tell the stats object to do update calculations and printing.
       stats.ProcessUpdate();
+      dm.UpdateState(stats.GetUpdate());
     }
     
     

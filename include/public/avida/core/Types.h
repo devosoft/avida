@@ -1,8 +1,8 @@
 /*
- *  Avida.h
+ *  core/Types.h
  *  avida-core
  *
- *  Created by David on 4/17/11.
+ *  Created by David on 5/20/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,27 +22,16 @@
  *
  */
 
-#ifndef AvidaAvida_h
-#define AvidaAvida_h
-
-#ifndef DEBUG
-# ifndef NDEBUG
-#  define NDEBUG
-# endif
-#endif
-
-#ifndef NULL
-# define NULL 0
-#endif
-
-
-#include "avida/core/Definitions.h"
-#include "avida/core/Types.h"
-#include "avida/core/Version.h"
-
+#ifndef AvidaCoreTypes_h
+#define AvidaCoreTypes_h
 
 namespace Avida {
-  void Initialize();
+  
+  // Type Declarations
+  // --------------------------------------------------------------------------------------------------------------  
+  
+  typedef int Update; // Natural time unit in Avida
+  
 };
 
 #endif

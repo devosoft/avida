@@ -1,8 +1,8 @@
 /*
- *  data/Provider.h
+ *  data/TimeSeriesRecorder.h
  *  avida-core
  *
- *  Created by David on 5/16/11.
+ *  Created by David on 5/20/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,30 +22,38 @@
  *
  */
 
-#ifndef AvidaDataProvider_h
-#define AvidaDataProvider_h
+#ifndef AvidaDataTimeSeriesRecorder_h
+#define AvidaDataTimeSeriesRecorder_h
 
-#include "apto/platform.h"
+#include "apto/core/Array.h"
 #include "avida/core/Types.h"
-#include "avida/data/Types.h"
+#include "avida/data/Recorder.h"
 
 
 namespace Avida {
   namespace Data {
     
-    // Data::Provider - Data Provider Protocol Definition
+    // Data::TimeSeriesRecorder
     // --------------------------------------------------------------------------------------------------------------
     
-    class Provider
+    template <class T> class TimeSeriesRecorder : public Recorder
     {
+    private:
+      DataID m_data_id;
+      ConstDataSetPtr m_requested;
+      Apto::Array<T, Apto::Smart> m_data;
+      
     public:
-      LIB_EXPORT virtual ~Provider() { ; }
+      LIB_EXPORT TimeSeriesRecorder(const DataID& data_id);
       
-      LIB_EXPORT virtual ConstDataSetPtr Provides() const = 0;
-      LIB_EXPORT virtual void UpdateProvidedValues(Update current_update) = 0;
+      // Data::Recorder Interface
+      LIB_EXPORT inline ConstDataSetPtr GetRequested() const { return m_requested; }
+      LIB_EXPORT void NotifyData(Update current_update, DataRetrievalFunctor retrieve_data);
       
-      LIB_EXPORT virtual PackagePtr GetProvidedValue(const DataID& data_id) const = 0;
-      LIB_EXPORT virtual Apto::String DescribeProvidedValue(const DataID& data_id) const = 0;
+      // Value Access
+      LIB_EXPORT inline int GetNumPoints() const { return m_data.GetSize(); }
+      LIB_EXPORT inline T GetDataPoint(int idx) const { return m_data[idx]; }
+      LIB_EXPORT inline const Apto::Array<T, Apto::Smart>& GetData() const { return m_data; }
     };
     
   };

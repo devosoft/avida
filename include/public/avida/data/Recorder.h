@@ -32,7 +32,8 @@
 namespace Avida {
   namespace Data {
     
-    class Package;
+    // Data::Recorder - Protocol defining interface for data recorders that can attach to the data manager
+    // --------------------------------------------------------------------------------------------------------------
     
     class Recorder
     {
@@ -41,7 +42,7 @@ namespace Avida {
       
       LIB_EXPORT virtual ConstDataSetPtr GetRequested() = 0;
       
-      LIB_EXPORT virtual void NotifyData(DataRetrievalFunctor retrieve_data); 
+      LIB_EXPORT virtual void NotifyData(Update current_update, DataRetrievalFunctor retrieve_data) = 0; 
     };
     
   };

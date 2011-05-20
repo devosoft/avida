@@ -346,7 +346,7 @@ public:
   
   // Data::Provider
   Data::ConstDataSetPtr Provides() const;
-  void UpdateProvidedValues();
+  void UpdateProvidedValues(Update current_update);
   Data::PackagePtr GetProvidedValue(const Apto::String& data_id) const;
   Apto::String DescribeProvidedValue(const Apto::String& data_id) const;
   
