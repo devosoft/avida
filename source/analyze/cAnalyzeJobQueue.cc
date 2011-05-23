@@ -83,7 +83,7 @@ inline void cAnalyzeJobQueue::queueJob(cAnalyzeJob* job)
 
 void cAnalyzeJobQueue::AddJob(cAnalyzeJob* job)
 {
-  cMutexAutoLock lock(m_mutex);
+  Apto::MutexAutoLock lock(m_mutex);
   job->SetID(m_last_jobid++);
   queueJob(job);
   m_jobs++;

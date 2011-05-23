@@ -23,10 +23,9 @@
 #include "cAvidaConfig.h"
 
 #include "avida/Avida.h"
+#include "avida/core/GlobalObject.h"
 
 #include "AvidaTools.h"
-
-#include "avida/core/GlobalObject.h"
 
 #include "cActionLibrary.h"
 #include "cInitFile.h"
@@ -39,7 +38,7 @@
 using namespace AvidaTools;
 
 
-cMutex cAvidaConfig::global_list_mutex;
+Apto::Mutex cAvidaConfig::global_list_mutex;
 tList<cAvidaConfig::cBaseConfigGroup> cAvidaConfig::global_group_list;
 tList<cAvidaConfig::cBaseConfigCustomFormat> cAvidaConfig::global_format_list;
 

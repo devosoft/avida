@@ -75,7 +75,7 @@ void cRandom::ResetSeed(const int in_seed)
 
 void cRandomMT::ResetSeed(const int in_seed)
 {
-  cMutexAutoLock lock(m_mutex);
+  Apto::MutexAutoLock lock(m_mutex);
   cRandom::ResetSeed(in_seed);
 }
 
@@ -136,7 +136,7 @@ unsigned int cRandom::Get()
 
 unsigned int cRandomMT::Get()
 {
-  cMutexAutoLock lock(m_mutex);
+  Apto::MutexAutoLock lock(m_mutex);
   unsigned int value = cRandom::Get();
   return value;
 }

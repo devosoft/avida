@@ -22,8 +22,8 @@
 #ifndef tAnalyzeJobBatch_h
 #define tAnalyzeJobBatch_h
 
-#include "cConditionVariable.h"
-#include "cMutex.h"
+#include "apto/core.h"
+
 #include "cAnalyzeJobQueue.h"
 #include "tAnalyzeJob.h"
 
@@ -41,8 +41,8 @@ protected:
   
   int m_jobs;
   
-  cMutex m_mutex;
-  cConditionVariable m_cond;
+  Apto::Mutex m_mutex;
+  Apto::ConditionVariable m_cond;
   
   
 public:

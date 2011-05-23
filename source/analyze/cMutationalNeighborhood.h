@@ -22,15 +22,9 @@
 #ifndef cMutationalNeighborhood_h
 #define cMutationalNeighborhood_h
 
-#include "apto/core/RWLock.h"
+#include "apto/core.h"
 #include "avida/core/Genome.h"
 
-#ifndef cMutex_h
-#include "cMutex.h"
-#endif
-#ifndef cRWLock_h
-#include "cRWLock.h"
-#endif
 #ifndef cString_h
 #include "cString.h"
 #endif
@@ -66,7 +60,7 @@ private:
   // Internal state information
   // -----------------------------------------------------------------------------------------------------------------------
   Apto::RWLock m_rwlock;
-  cMutex m_mutex;
+  Apto::Mutex m_mutex;
   
   bool m_initialized;
   int m_cur_site;

@@ -11,7 +11,7 @@
 #ifndef cRandom_h
 #define cRandom_h
 
-#include "cMutex.h"
+#include "apto/core/Mutex.h"
 
 #include <algorithm>
 #include <ctime>
@@ -305,7 +305,7 @@ ForwardIterator choose(ForwardIterator first, ForwardIterator last, RNG rng) {
 class cRandomMT : public cRandom
 {
 private:
-  cMutex m_mutex;
+  Apto::Mutex m_mutex;
   
   unsigned int Get();
 

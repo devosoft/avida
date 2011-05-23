@@ -22,8 +22,8 @@
 #ifndef tDMSingleton_h
 #define tDMSingleton_h
 
+#include "apto/core/Mutex.h"
 #include "avida/core/GlobalObject.h"
-#include "cMutex.h"
 
 using namespace Avida;
 
@@ -65,7 +65,7 @@ template<typename T> class tLazyDMSingleton : public virtual GlobalObject
 private:
   static tLazyDMSingleton* s_dms;
   
-  cMutex m_mutex;
+  Apto::Mutex m_mutex;
   T* (*m_construct)();
   T* m_object;
   
@@ -90,7 +90,7 @@ public:
 
   static T& GetInstance()
   {
-    cMutexAutoLock lock(s_dms->m_mutex);
+    Apto::MutexAutoLock lock(s_dms->m_mutex);
     
     if (!s_dms->m_object) {
       s_dms->m_object = (*s_dms->m_construct)();

@@ -29,7 +29,8 @@
 // be transparently set at compile time and allow the programmer to easily
 // add in new settings with a single line of code.
 
-#include "cMutex.h"
+#include "apto/core/Mutex.h"
+
 #include "cString.h"
 #include "cStringList.h"
 #include "cStringUtil.h"
@@ -250,7 +251,7 @@ private:
   // things in order.  When all configuration objects are built, we then
   // transfer the list to the local cAvidaConfig object (which occurs in the
   // constructor.)
-  static cMutex global_list_mutex;
+  static Apto::Mutex global_list_mutex;
   static tList<cBaseConfigGroup> global_group_list;
   static tList<cBaseConfigCustomFormat> global_format_list;
   tList<cBaseConfigGroup> m_group_list;
