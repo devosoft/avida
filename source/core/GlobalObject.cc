@@ -49,7 +49,7 @@ struct GlobalObjectData
 static void destroyGlobalObjectData()
 {
   Avida::GlobalObject* obj;
-  while ((obj = global_obj_data.objs.Pop())) delete obj;
+  while (global_obj_data.objs.GetSize() && (obj = global_obj_data.objs.Pop())) delete obj;
 }
 
 
