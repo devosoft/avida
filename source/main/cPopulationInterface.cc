@@ -22,6 +22,8 @@
 
 #include "cPopulationInterface.h"
 
+#include "apto/platform.h"
+
 #include "cDeme.h"
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
@@ -33,7 +35,6 @@
 #include "cTestCPU.h"
 #include "cRandom.h"
 #include "cInstSet.h"
-#include "Platform.h"
 
 #include <cassert>
 #include <algorithm>
@@ -43,7 +44,7 @@
 #define NULL 0
 #endif
 
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
 namespace std
 {
   /*inline __int64  abs(__int64 i) { return _abs64(i); }*/

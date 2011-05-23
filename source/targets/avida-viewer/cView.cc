@@ -7,6 +7,8 @@
 
 #include "cView.h"
 
+#include "apto/platform.h"
+
 #include "cEnvironment.h"
 #include "cHardwareManager.h"
 #include "cOrganism.h"
@@ -28,12 +30,10 @@
 #include "cEnvironmentScreen.h"
 #include "cAnalyzeScreen.h"
 
-#include "Platform.h"
-
 #include <csignal>
 #include <fstream>
 
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
 # include <process.h>
 # define kill(x, y)
 #else

@@ -10,22 +10,21 @@
 
 #include "cDataFileManager.h"
 
-#include "AvidaTools.h"
+#include "apto/core/FileSystem.h"
 
 using namespace std;
-using namespace AvidaTools;
 
 
 cDataFileManager::cDataFileManager(const cString& target_dir, bool verbose) : m_target_dir(target_dir)
 {
   m_target_dir.Trim();
   
-  m_target_dir = FileSystem::GetAbsolutePath(m_target_dir);
+  m_target_dir = Apto::FileSystem::GetAbsolutePath(Apto::String(m_target_dir), Apto::FileSystem::GetCWD());
   
   if (m_target_dir.GetSize() > 0) {
     char dir_tail = m_target_dir[m_target_dir.GetSize() - 1];
     if (dir_tail != '\\' && dir_tail != '/') m_target_dir += "/";
-    FileSystem::MkDir(m_target_dir, verbose);
+    Apto::FileSystem::MkDir(Apto::String(m_target_dir));
   }
 }
 
@@ -83,7 +82,8 @@ cDataFile& cDataFileManager::Get(const cString& name)
     if (d - i > 0) {
       cString dir = target.Substring(i, d - i);
       // Create if  that this directory is not a relative path component
-      if (dir.GetSize() > 2 || (dir != "." && dir != "..")) FileSystem::MkDir(dir_prefix + target.Substring(0, d), false);
+      if (dir.GetSize() > 2 || (dir != "." && dir != ".."))
+        Apto::FileSystem::MkDir(Apto::String(dir_prefix + target.Substring(0, d)));
     }
     
     // Adjust next directory name starting point

@@ -934,9 +934,6 @@
 		709D924B0A5D950D00D6A163 /* cMutationalNeighborhood.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cMutationalNeighborhood.cc; sourceTree = "<group>"; };
 		70A1E325125CDF2B00D56AC4 /* ClassificationInfo.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClassificationInfo.cc; sourceTree = "<group>"; };
 		70A1E327125CDF2B00D56AC4 /* Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cc; sourceTree = "<group>"; };
-		70A1E87412663FA100D56AC4 /* tThreadSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tThreadSpecific.h; sourceTree = "<group>"; };
-		70A1E87512663FA100D56AC4 /* tBufferedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tBufferedList.h; sourceTree = "<group>"; };
-		70A1E87A1266404800D56AC4 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
 		70A33CC00D878407008EF976 /* as_overview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = as_overview.html; sourceTree = "<group>"; };
 		70A33CE80D8DBD1E008EF976 /* cASFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASFunction.h; sourceTree = "<group>"; };
 		70A33CF40D8DCBB4008EF976 /* ASCoreLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCoreLib.h; sourceTree = "<group>"; };
@@ -1633,15 +1630,6 @@
 			name = libraries;
 			sourceTree = "<group>";
 		};
-		70A1E86912663FA100D56AC4 /* platform */ = {
-			isa = PBXGroup;
-			children = (
-				70A1E87A1266404800D56AC4 /* Platform.h */,
-				70A1E87412663FA100D56AC4 /* tThreadSpecific.h */,
-			);
-			path = platform;
-			sourceTree = "<group>";
-		};
 		70A53BC5135B732C00C3E661 /* util */ = {
 			isa = PBXGroup;
 			children = (
@@ -2056,7 +2044,6 @@
 		DCC314D8076253A2008F7A48 /* tools */ = {
 			isa = PBXGroup;
 			children = (
-				70A1E86912663FA100D56AC4 /* platform */,
 				70B08B8008FB2E5500FC65FE /* AvidaTools.h */,
 				70B08B9008FB2E6B00FC65FE /* AvidaTools.cc */,
 				70BCB21B0AB7ADA6003FF331 /* cArgContainer.h */,
@@ -2139,7 +2126,6 @@
 				70B549ED10B4791B0013E999 /* tArraySet.h */,
 				70F9FD990C4E89C40083B788 /* tAutoRelease.h */,
 				70B08B8508FB2E5500FC65FE /* tBuffer.h */,
-				70A1E87512663FA100D56AC4 /* tBufferedList.h */,
 				70B984B40EBB71B500A828B1 /* tDataCommandManager.h */,
 				70B08B8608FB2E5500FC65FE /* tDataEntry.h */,
 				70B08B8808FB2E5500FC65FE /* tDataEntryCommand.h */,

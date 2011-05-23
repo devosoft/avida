@@ -7,6 +7,8 @@
 
 #include "cAnalyzeScreen.h"
 
+#include "apto/platform.h"
+
 #include "cAnalyze.h"
 #include "cAnalyzeCommand.h"
 #include "cAnalyzeCommandDefBase.h"
@@ -22,11 +24,9 @@
 #include "cUserFeedback.h"
 #include "cTextViewerDriver_Base.h"
 
-#include "Platform.h"
-
 #include <csignal>
 
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
 # include <process.h>
 # define kill(x, y)
 #else

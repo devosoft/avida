@@ -22,6 +22,8 @@
 
 #include "cTaskLib.h"
 
+#include "apto/platform.h"
+
 #include "cArgSchema.h"
 #include "cDeme.h"
 #include "cEnvironment.h"
@@ -36,21 +38,19 @@
 #include "tArrayUtils.h"
 #include "tHashMap.h"
 
-#include "Platform.h"
-
 #include <cstdlib>
 #include <cmath>
 #include <climits>
 #include <iomanip>
 
 // Various workarounds for Visual Studio shortcomings
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
 # define llabs(x) _abs64(x)
 # define log2(x) (log(x)/log(2.0))
 #endif
 
 // Various workarounds for FreeBSD
-#if AVIDA_PLATFORM(FREEBSD)
+#if APTO_PLATFORM(FREEBSD)
 # define log2(x) (log(x)/log(2.0))
 #endif
 

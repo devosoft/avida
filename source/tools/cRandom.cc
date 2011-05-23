@@ -10,10 +10,11 @@
 
 #include "cRandom.h"
 
-#include "Platform.h"
+#include "apto/platform.h"
+
 #include "tArray.h"
 
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
 # include <process.h>
 #else
 # include <unistd.h>
@@ -57,7 +58,7 @@ void cRandom::ResetSeed(const int in_seed)
   
   if (in_seed <= 0) {
     int seed_time = (int) time(NULL);
-#if AVIDA_PLATFORM(WINDOWS)
+#if APTO_PLATFORM(WINDOWS)
     int seed_pid = (int) _getpid(); 
 #else
     int seed_pid = (int) getpid(); 

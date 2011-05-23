@@ -22,6 +22,8 @@
 
 #include "cInitFile.h"
 
+#include "apto/core/FileSystem.h"
+
 #include "AvidaTools.h"
 #include "cFile.h"
 #include "cStringIterator.h"
@@ -105,7 +107,7 @@ void cInitFile::initMappings(const tDictionary<cString>& mappings)
 bool cInitFile::loadFile(const cString& filename, tSmartArray<sLine*>& lines, const cString& working_dir,
                          const tArraySet<cString>* custom_directives, Feedback& feedback)
 {
-  cFile file(AvidaTools::FileSystem::GetAbsolutePath(filename, working_dir));
+  cFile file(cString(Apto::FileSystem::GetAbsolutePath(Apto::String(filename), Apto::String(working_dir))));
   if (!file.IsOpen()) {
     feedback.Error("unable to open file '%s'.", (const char*)filename);
     return false;   // The file must be opened!
