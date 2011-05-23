@@ -22,14 +22,12 @@
 #ifndef cAnalyzeJobWorker_h
 #define cAnalyzeJobWorker_h
 
-#ifndef cThread_h
-#include "cThread.h"
-#endif
+#include "apto/core/Thread.h"
 
 class cAnalyzeJobQueue;
 
 
-class cAnalyzeJobWorker : public cThread
+class cAnalyzeJobWorker : public Apto::Thread
 {
 private:
   cAnalyzeJobQueue* m_queue;
