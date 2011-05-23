@@ -936,8 +936,6 @@
 		70A1E327125CDF2B00D56AC4 /* Map.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cc; sourceTree = "<group>"; };
 		70A1E86A12663FA100D56AC4 /* cConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConditionVariable.h; sourceTree = "<group>"; };
 		70A1E86B12663FA100D56AC4 /* cMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cMutex.h; sourceTree = "<group>"; };
-		70A1E86C12663FA100D56AC4 /* cRWLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cRWLock.h; sourceTree = "<group>"; };
-		70A1E87312663FA100D56AC4 /* tRLockPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tRLockPtr.h; sourceTree = "<group>"; };
 		70A1E87412663FA100D56AC4 /* tThreadSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tThreadSpecific.h; sourceTree = "<group>"; };
 		70A1E87512663FA100D56AC4 /* tBufferedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tBufferedList.h; sourceTree = "<group>"; };
 		70A1E87A1266404800D56AC4 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
@@ -1643,8 +1641,6 @@
 				70A1E87A1266404800D56AC4 /* Platform.h */,
 				70A1E86A12663FA100D56AC4 /* cConditionVariable.h */,
 				70A1E86B12663FA100D56AC4 /* cMutex.h */,
-				70A1E86C12663FA100D56AC4 /* cRWLock.h */,
-				70A1E87312663FA100D56AC4 /* tRLockPtr.h */,
 				70A1E87412663FA100D56AC4 /* tThreadSpecific.h */,
 			);
 			path = platform;

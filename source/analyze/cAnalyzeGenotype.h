@@ -23,6 +23,7 @@
 #ifndef cAnalyzeGenotype_h
 #define cAnalyzeGenotype_h
 
+#include "apto/core/RWLock.h"
 #include "avida/core/Genome.h"
 
 #include <fstream>
@@ -41,9 +42,6 @@
 #endif
 #ifndef cPhenPlastGenotype_h
 #include "cPhenPlastGenotype.h"
-#endif
-#ifndef cRWLock_h
-#include "cRWLock.h"
 #endif
 #ifndef cString_h
 #include "cString.h"
@@ -109,7 +107,7 @@ private:
   
   struct sGenotypeDatastore : public cRCObject
   {
-    cRWLock rwlock;
+    Apto::RWLock rwlock;
     mutable tArrayMap<int, cGenotypeData*> dmap;
     
     sGenotypeDatastore() { ; }
