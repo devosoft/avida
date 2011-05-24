@@ -330,6 +330,11 @@
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
+		70FA7AC4138C304C00DC70D4 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
+		70FA7AC6138C306700DC70D4 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
+		70FA7AC7138C307A00DC70D4 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
+		70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7023EC330C0A426900362B9C /* libavida-core.a */; };
+		70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 706C7B64125F64B000EDB4B9 /* libviewer-core.a */; };
 		70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E831386C16300D8F6F0 /* TimeSeriesRecorder.cc */; };
 		70FEF6241381B04500A9D082 /* libapto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 70FEF6231381B04500A9D082 /* libapto.a */; };
 		70FEF65E1382C48900A9D082 /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FEF65D1382C48900A9D082 /* Manager.cc */; };
@@ -1187,9 +1192,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				706C7B6F125F64F900EDB4B9 /* libviewer-core.a in Frameworks */,
 				5629D8180C3EE20C00C5F152 /* libncurses.5.4.dylib in Frameworks */,
+				706C7B6F125F64F900EDB4B9 /* libviewer-core.a in Frameworks */,
 				5629D8190C3EE21300C5F152 /* libavida-core.a in Frameworks */,
+				70FA7AC6138C306700DC70D4 /* libapto.a in Frameworks */,
 				7078B53A1386F6E800CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1200,6 +1206,7 @@
 			files = (
 				70658C5A085DF67D00486BED /* libncurses.5.4.dylib in Frameworks */,
 				7023ECD30C0A447700362B9C /* libavida-core.a in Frameworks */,
+				70FA7AC4138C304C00DC70D4 /* libapto.a in Frameworks */,
 				7078B5391386F6DD00CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1222,6 +1229,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70FA7AC8138C308000DC70D4 /* libavida-core.a in Frameworks */,
+				70FA7AC9138C308500DC70D4 /* libviewer-core.a in Frameworks */,
+				70FA7AC7138C307A00DC70D4 /* libapto.a in Frameworks */,
 				7078B53B1386F6EF00CE9027 /* libtcmalloc-1.4.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
