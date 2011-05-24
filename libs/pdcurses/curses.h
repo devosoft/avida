@@ -455,7 +455,7 @@ typedef struct
 #define PDC_MOUSE_WHEEL_UP	32
 #define PDC_MOUSE_WHEEL_DOWN	64
 #define A_BUTTON_CHANGED	(Mouse_status.changes & 7)
-#define MOUSE_MOVED		(Mouse_status.changes & PDC_MOUSE_MOVED)
+//#define MOUSE_MOVED		(Mouse_status.changes & PDC_MOUSE_MOVED)
 #define MOUSE_POS_REPORT	(Mouse_status.changes & PDC_MOUSE_POSITION)
 #define BUTTON_CHANGED(x)	(Mouse_status.changes & (1 << ((x) - 1)))
 #define BUTTON_STATUS(x)	(Mouse_status.button[(x) - 1])
@@ -1515,7 +1515,7 @@ int	PDC_set_line_color(short);
 # define bkgdset(c)		wbkgdset(stdscr, c)
 # define border(ls,rs,ts,bs,tl,tr,bl,br) wborder(stdscr,ls,rs,ts,bs,tl,tr,bl,br)
 # define box(w, v, h)		wborder(w, v, v, h, h, 0, 0, 0, 0)
-# define clear()		wclear(stdscr)
+//# define clear()		wclear(stdscr)
 # define clrtobot()		wclrtobot(stdscr)
 # define clrtoeol()		wclrtoeol(stdscr)
 # define color_set(a, b)	wcolor_set(stdscr, a, b)
@@ -1525,7 +1525,7 @@ int	PDC_set_line_color(short);
 # define derwin(w,nl,nc,by,bx)	subwin((w), (nl), (nc),\
 					(by + (w)->_begy), (bx + (w)->_begx))
 # define echochar(c)		(addch((chtype)c)==ERR?ERR:refresh())
-# define erase()		werase(stdscr)
+//# define erase()		werase(stdscr)
 # define getbkgd(w)		((w)->_bkgd)
 # define getstr(str)		wgetstr(stdscr, str)
 # define getnstr(str, num)	wgetnstr(stdscr, str, num)
