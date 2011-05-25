@@ -147,10 +147,10 @@ cOrganism::cNetSupport::~cNetSupport()
   for (int i = 0; i < received.GetSize(); i++) delete received[i];
 }
 
-void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* interface)
+void cOrganism::SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface)
 {
   delete m_interface;
-  m_interface = interface;
+  m_interface = org_interface;
   
   HardwareReset(ctx);
 }

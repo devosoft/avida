@@ -23,11 +23,16 @@
 #define tAnalyzeJobBatch_h
 
 #include "apto/core.h"
+#include "apto/platform.h"
 
 #include "cAnalyzeJobQueue.h"
 #include "tAnalyzeJob.h"
 
 class cAvidaContext;
+
+#if APTO_PLATFORM(WINDOWS) && defined(AddJob)
+# undef AddJob
+#endif
 
 
 template<class JobClass> class tAnalyzeJobBatch

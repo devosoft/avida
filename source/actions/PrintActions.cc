@@ -2148,8 +2148,8 @@ public:
     reference_genome.LoadFromDetailFile(m_creature, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    cerr << "error: "; break;
-        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;

@@ -12,6 +12,7 @@
 #define cRandom_h
 
 #include "apto/core/Mutex.h"
+#include "apto/platform.h"
 
 #include <algorithm>
 #include <ctime>
@@ -246,17 +247,20 @@ void sample_with_replacement(ForwardIterator first, ForwardIterator last, Output
 }
 
 
+#if !APTO_PLATFORM(WINDOWS)
 /*! Convenience function to assign increasing values to a range.
  */
-template <typename ForwardIterator, typename T>
-void iota(ForwardIterator first, ForwardIterator last, T value) {
-	while(first != last) {
-		*first = value;
-		++first;
-		++value;
-	}
-}
-
+namespace std {
+  template <typename ForwardIterator, typename T>
+  void iota(ForwardIterator first, ForwardIterator last, T value) {
+	  while(first != last) {
+		  *first = value;
+		  ++first;
+		  ++value;
+	  }
+  }
+};
+#endif
 
 /*! Draw a sample (without replacement) from an input range, copying to the output range.
  */
@@ -272,7 +276,7 @@ void sample_without_replacement(ForwardIterator first, ForwardIterator last, Out
 	}
 	
 	std::vector<std::size_t> rmap(range);
-	iota(rmap.begin(), rmap.end(), 0);
+	std::iota(rmap.begin(), rmap.end(), 0);
 	std::random_shuffle(rmap.begin(), rmap.end());
 	
 	while(ofirst != olast) {

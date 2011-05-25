@@ -100,8 +100,8 @@ public:
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    cerr << "error: "; break;
-        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;
@@ -260,8 +260,8 @@ public:
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    cerr << "error: "; break;
-        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;
@@ -330,8 +330,8 @@ public:
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::ERROR:    cerr << "error: "; break;
-          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
           default: break;
         };
         cerr << feedback.GetMessage(i) << endl;
@@ -510,8 +510,8 @@ public:
       genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::ERROR:    cerr << "error: "; break;
-          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
           default: break;
         };
         cerr << feedback.GetMessage(i) << endl;
@@ -587,8 +587,8 @@ public:
       parasite.LoadFromDetailFile(m_filename_parasite, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::ERROR:    cerr << "error: "; break;
-          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
           default: break;
         };
         cerr << feedback.GetMessage(i) << endl;
@@ -650,8 +650,8 @@ public:
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    cerr << "error: "; break;
-        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;
@@ -726,8 +726,8 @@ public:
     genome.LoadFromDetailFile(m_filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    cerr << "error: "; break;
-        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;

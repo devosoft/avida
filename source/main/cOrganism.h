@@ -164,7 +164,7 @@ public:
   
   const cOrgInterface& GetOrgInterface() const { assert(m_interface); return *m_interface; }
   cOrgInterface& GetOrgInterface() { assert(m_interface); return *m_interface; }
-  void SetOrgInterface(cAvidaContext& ctx, cOrgInterface* interface);
+  void SetOrgInterface(cAvidaContext& ctx, cOrgInterface* org_interface);
   
   void SetLineageLabel(int in_label) { m_lineage_label = in_label; }
   int GetLineageLabel() const { return m_lineage_label; }  

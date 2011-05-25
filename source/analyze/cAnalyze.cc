@@ -134,8 +134,8 @@ void cAnalyze::RunFile(cString filename)
     const cUserFeedback& feedback = analyze_file.GetFeedback();
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    cerr << "error: "; break;
-        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;
@@ -178,8 +178,8 @@ void cAnalyze::LoadOrganism(cString cur_string)
   genome.LoadFromDetailFile(filename, m_world->GetWorkingDir(), m_world->GetHardwareManager(), feedback);
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::ERROR:    cerr << "error: "; break;
-      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
       default: break;
     };
     cerr << feedback.GetMessage(i) << endl;
@@ -725,8 +725,8 @@ void cAnalyze::LoadFile(cString cur_string)
     const cUserFeedback& feedback = input_file.GetFeedback();
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    cerr << "error: "; break;
-        case cUserFeedback::WARNING:  cerr << "warning: "; break;
+        case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+        case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
         default: break;
       };
       cerr << feedback.GetMessage(i) << endl;
@@ -754,8 +754,8 @@ void cAnalyze::LoadFile(cString cur_string)
   
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::ERROR:    cerr << "error: "; break;
-      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
       default: break;
     };
     cerr << feedback.GetMessage(i) << endl;
@@ -7966,8 +7966,8 @@ void cAnalyze::EnvironmentSetup(cString cur_string)
   m_world->GetEnvironment().LoadLine(cur_string, feedback);
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::ERROR:    cerr << "error: "; break;
-      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
       default: break;
     };
     cerr << feedback.GetMessage(i) << endl;
@@ -8928,8 +8928,8 @@ void cAnalyze::ProcessCommands(tList<cAnalyzeCommand>& clist)
       command_fun->Run(this, args, *cur_command, feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::ERROR:    cerr << "error: "; break;
-          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
           default: break;
         };
         cerr << feedback.GetMessage(i) << endl;
@@ -9256,8 +9256,8 @@ void cAnalyze::RunInteractive()
       command_fun->Run(this, args, *cur_command, feedback);
       for (int i = 0; i < feedback.GetNumMessages(); i++) {
         switch (feedback.GetMessageType(i)) {
-          case cUserFeedback::ERROR:    cerr << "error: "; break;
-          case cUserFeedback::WARNING:  cerr << "warning: "; break;
+          case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+          case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
           default: break;
         };
         cerr << feedback.GetMessage(i) << endl;

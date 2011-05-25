@@ -28,6 +28,11 @@
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
 
+
+#if APTO_PLATFORM(WINDOWS) && defined(AddJob)
+# undef AddJob
+#endif
+
 using namespace Avida;
 
 

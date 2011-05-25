@@ -4,11 +4,11 @@
 
 IF(WIN32)
   FIND_PATH(NCURSES_INCLUDE_PATH curses.h
-    ${PROJECT_SOURCE_DIR}/source/third-party/pdcurses
+    ${PROJECT_SOURCE_DIR}/../libs/pdcurses
   )
   FIND_LIBRARY(NCURSES_LIBRARY
     NAMES pdcurses
-    PATHS ${PROJECT_SOURCE_DIR}/source/third-party/pdcurses
+    PATHS ${PROJECT_SOURCE_DIR}/../libs/pdcurses
   )
 ELSE(WIN32)
   FIND_PATH(NCURSES_INCLUDE_PATH ncurses.h
