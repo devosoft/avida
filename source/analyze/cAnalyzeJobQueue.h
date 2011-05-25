@@ -22,6 +22,8 @@
 #ifndef cAnalyzeJobQueue_h
 #define cAnalyzeJobQueue_h
 
+#include "apto/platform.h"
+
 #ifndef cAnalyzeJob
 #include "cAnalyzeJob.h"
 #endif
@@ -43,6 +45,10 @@
 
 class cAnalyzeJobWorker;
 class cWorld;
+
+#if APTO_PLATFORM(WINDOWS) && defined(AddJob)
+# undef AddJob
+#endif
 
 
 const int MT_RANDOM_POOL_SIZE = 128;

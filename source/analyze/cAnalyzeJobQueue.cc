@@ -21,6 +21,7 @@
 
 #include "cAnalyzeJobQueue.h"
 
+#include "apto/platform.h"
 #include "avida/Avida.h"
 
 #include "avida/core/cWorldDriver.h"
@@ -28,6 +29,11 @@
 #include "cAnalyzeJobWorker.h"
 #include "cWorld.h"
 #include "Platform.h"
+
+
+#if APTO_PLATFORM(WINDOWS) && defined(AddJob)
+# undef AddJob
+#endif
 
 using namespace Avida;
 

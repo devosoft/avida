@@ -4787,8 +4787,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
     const cUserFeedback& feedback = input_file.GetFeedback();
     for (int i = 0; i < feedback.GetNumMessages(); i++) {
       switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
-        case cUserFeedback::WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
+        case cUserFeedback::UF_ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
+        case cUserFeedback::UF_WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
         default:                      m_world->GetDriver().NotifyComment(feedback.GetMessage(i)); break;
       };
     }

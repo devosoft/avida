@@ -1224,10 +1224,10 @@ bool cEnvironment::Load(const cString& filename, const cString& working_dir, cFe
   if (!infile.WasOpened()) {
     for (int i = 0; i < infile.GetFeedback().GetNumMessages(); i++) {
       switch (infile.GetFeedback().GetMessageType(i)) {
-        case cUserFeedback::ERROR:
+        case cUserFeedback::UF_ERROR:
           feedback.Error(infile.GetFeedback().GetMessage(i));
           break;
-        case cUserFeedback::WARNING:
+        case cUserFeedback::UF_WARNING:
           feedback.Warning(infile.GetFeedback().GetMessage(i));
           break;
         default:

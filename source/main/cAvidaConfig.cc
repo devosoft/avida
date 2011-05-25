@@ -22,6 +22,7 @@
 
 #include "cAvidaConfig.h"
 
+#include "apto/platform.h"
 #include "avida/Avida.h"
 
 #include "AvidaTools.h"
@@ -37,6 +38,10 @@
 #include <fstream>
 
 using namespace AvidaTools;
+
+#if APTO_PLATFORM(WINDOWS) && defined(LoadString)
+# undef LoadString
+#endif
 
 
 cMutex cAvidaConfig::global_list_mutex;

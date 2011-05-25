@@ -173,8 +173,8 @@ static void processArgs(cStringList &argv, cAvidaConfig* cfg)
   cfg->Load(config_filename, FileSystem::GetCWD(), &feedback, &defs, flag_warn_default);
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
-      case cUserFeedback::ERROR:    cerr << "error: "; break;
-      case cUserFeedback::WARNING:  cerr << "warning: "; break;
+      case cUserFeedback::UF_ERROR:    cerr << "error: "; break;
+      case cUserFeedback::UF_WARNING:  cerr << "warning: "; break;
       default: break;
     };
     cerr << feedback.GetMessage(i) << endl;

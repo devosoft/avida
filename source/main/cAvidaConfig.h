@@ -42,7 +42,6 @@ template <class T> class tDictionary;
 
 using namespace std;
 
-
 // The following macro will create all of the code needed to include an
 // entry for a new setting in the configuration.
 //

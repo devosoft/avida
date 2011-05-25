@@ -22,12 +22,18 @@
 #ifndef tAnalyzeJobBatch_h
 #define tAnalyzeJobBatch_h
 
+#include "apto/platform.h"
+
 #include "cConditionVariable.h"
 #include "cMutex.h"
 #include "cAnalyzeJobQueue.h"
 #include "tAnalyzeJob.h"
 
 class cAvidaContext;
+
+#if APTO_PLATFORM(WINDOWS) && defined(AddJob)
+# undef AddJob
+#endif
 
 
 template<class JobClass> class tAnalyzeJobBatch
