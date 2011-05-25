@@ -23,6 +23,7 @@
   </target>
 
   <target name="move-platform-consistencytesting-targets" if="platform">
+    <delete file="${build}/work/avida" quiet="true"/>
     <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work"/>
   </target>
   <target name="check-for-consistencytesting-targets" depends="move-platform-consistencytesting-targets">
