@@ -26,6 +26,7 @@
 #define AvidaCoreViewDriver_h
 
 #include "avida/core/WorldDriver.h"
+#include "avida/data/Recorder.h"
 
 #include "apto/core.h"
 
@@ -87,6 +88,9 @@ namespace Avida {
       
       void AttachListener(Listener* listener);
       void DetachListener(Listener* listener) { m_listeners.Remove(listener); }
+
+      void AttachRecorder(Data::RecorderPtr recorder);
+      void DetachRecorder(Data::RecorderPtr recorder);
 
       
       // WorldDriver Protocol
