@@ -1,4 +1,4 @@
-//
+ //
 //  main.mm
 //  avida/apps/viewer-macos
 //

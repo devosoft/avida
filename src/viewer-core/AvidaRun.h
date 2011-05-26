@@ -29,11 +29,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "avida/data/Types.h"
+
 @protocol CoreViewListener;
 
 namespace Avida {
   namespace CoreView {
-    class Driver;    
+    class Driver;
   };
 };
 
@@ -58,5 +60,8 @@ namespace Avida {
 
 - (void) attachListener:(id<CoreViewListener>)listener;
 - (void) detachListener:(id<CoreViewListener>)listener;
+
+- (void) attachRecorder:(Avida::Data::RecorderPtr)recorder;
+- (void) detachRecorder:(Avida::Data::RecorderPtr)recorder;
 
 @end

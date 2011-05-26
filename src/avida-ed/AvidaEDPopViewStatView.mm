@@ -29,6 +29,23 @@
 
 #import "AvidaEDPopViewStatView.h"
 
+#import "AvidaRun.h"
+
+#include "avida/data/Package.h"
+
+
+@interface AvidaEDPopViewStatViewValues : NSObject {
+@public
+  int organisms;
+  double ave_fitness;
+  double ave_metabolic_rate;
+  double ave_gestation_time;
+  double ave_age;
+}
+@end;
+@implementation AvidaEDPopViewStatViewValues
+@end
+
 
 @implementation AvidaEDPopViewStatView
 
@@ -53,7 +70,21 @@
 - (void)dealloc
 {
   [super dealloc];
+  if (recorder) {
+    assert(run);
+    [run detachRecorder:recorder];
+  }
 }
+
+- (void)finalize
+{
+  [super dealloc];
+  if (recorder) {
+    assert(run);
+    [run detachRecorder:recorder];
+  }
+}
+
 
 - (BOOL)isFlipped {
   return YES;
@@ -81,4 +112,67 @@
   }
 }
 
+
+- (void) setAvidaRun:(AvidaRun*)avidarun {
+  [self clearAvidaRun];
+  run = avidarun;
+  recorder = Avida::Data::RecorderPtr(new AvidaEDPopViewStatViewRecorder(self));
+  [run attachRecorder:recorder];
+}
+
+- (void) clearAvidaRun {
+  if (recorder) {
+    assert(run);
+    [run detachRecorder:recorder];
+    recorder = Avida::Data::RecorderPtr(NULL);
+  }
+  run = nil;
+  
+  NSString* empty_str = @"-";
+  [txtPopSize setStringValue:empty_str];
+  [txtFitness setStringValue:empty_str];
+  [txtMetabolicRate setStringValue:empty_str];
+  [txtGestation setStringValue:empty_str];
+  [txtAge setStringValue:empty_str];
+  
+}
+
+
+- (void) handleData:(AvidaEDPopViewStatViewValues*)values {
+  [txtPopSize setIntegerValue:values->organisms];
+  [txtFitness setDoubleValue:values->ave_fitness];
+  [txtMetabolicRate setDoubleValue:values->ave_metabolic_rate];
+  [txtGestation setDoubleValue:values->ave_gestation_time];
+  [txtAge setDoubleValue:values->ave_age];
+}
+
 @end
+
+
+Avida::Data::ConstDataSetPtr AvidaEDPopViewStatViewRecorder::GetRequested()
+{
+  if (!m_requested) {
+    Avida::Data::DataSetPtr ds(new Avida::Data::DataSet);
+    ds->Insert("core.world.organisms");
+    ds->Insert("core.world.ave_fitness");
+    ds->Insert("core.world.ave_metabolic_rate");
+    ds->Insert("core.world.ave_gestation_time");
+    ds->Insert("core.world.ave_age");
+    m_requested = ds;
+  }
+  
+  return m_requested;
+}
+
+void AvidaEDPopViewStatViewRecorder::NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data)
+{
+  AvidaEDPopViewStatViewValues* values = [[AvidaEDPopViewStatViewValues alloc] init];
+  
+  values->organisms = retrieve_data("core.world.organisms")->IntValue();
+  values->ave_fitness = retrieve_data("core.world.ave_fitness")->DoubleValue();
+  values->ave_metabolic_rate = retrieve_data("core.world.ave_metabolic_rate")->DoubleValue();
+  values->ave_gestation_time = retrieve_data("core.world.ave_gestation_time")->DoubleValue();
+  values->ave_age = retrieve_data("core.world.ave_age")->DoubleValue();
+
+  [m_view performSelectorOnMainThread:@selector(handleData:) withObject:values waitUntilDone:NO];
+}

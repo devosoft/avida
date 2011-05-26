@@ -39,6 +39,8 @@
 @class MapGridView;
 @class MapScaleView;
 
+@class AvidaEDPopViewStatView;
+
 
 @interface AvidaEDController : NSWindowController <CoreViewListener, NSSplitViewDelegate, NSWindowDelegate> {
   IBOutlet NSView* analyzeView;
@@ -56,6 +58,8 @@
   
   IBOutlet NSSplitView* mainSplitView;
   IBOutlet NSSplitView* popSplitView;
+  
+  IBOutlet AvidaEDPopViewStatView* popViewStatView;
   
   AvidaAppDelegate* app;
   

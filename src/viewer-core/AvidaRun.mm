@@ -98,5 +98,12 @@
   if (driver) driver->DetachListener([listener listener]);
 }
 
+- (void) attachRecorder:(Avida::Data::RecorderPtr)recorder {
+  if (driver) driver->AttachRecorder(recorder);
+}
+
+- (void) detachRecorder:(Avida::Data::RecorderPtr)recorder {
+  if (driver) driver->DetachRecorder(recorder);
+}
 
 @end

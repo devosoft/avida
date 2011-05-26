@@ -29,20 +29,51 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "avida/data/Recorder.h"
+
+@class AvidaRun;
+class AvidaEDPopViewStatViewRecorder;
+
 
 @interface AvidaEDPopViewStatView : NSView {
   IBOutlet NSView* orgStatsView;
   IBOutlet NSView* popStatsView;
+  IBOutlet NSTextField* txtPopSize;
+  IBOutlet NSTextField* txtFitness;
+  IBOutlet NSTextField* txtMetabolicRate;
+  IBOutlet NSTextField* txtGestation;
+  IBOutlet NSTextField* txtAge;
   
+  AvidaRun* run;
+  Avida::Data::RecorderPtr recorder;
 }
 
 - (id) initWithFrame:(NSRect)frame;
 - (void) awakeFromNib;
 
 - (void) dealloc;
+- (void) finalize;
 
 - (BOOL) isFlipped;
 
 - (void) resizeSubviewsWithOldSize:(NSSize)oldBoundsSize;
 
+- (void) setAvidaRun:(AvidaRun*)avidarun;
+- (void) clearAvidaRun;
+
 @end
+
+
+class AvidaEDPopViewStatViewRecorder : public Avida::Data::Recorder
+{
+private:
+  Avida::Data::ConstDataSetPtr m_requested;
+  AvidaEDPopViewStatView* m_view;
+  
+public:
+  AvidaEDPopViewStatViewRecorder(AvidaEDPopViewStatView* view) : m_view(view) { ; }
+  
+  Avida::Data::ConstDataSetPtr GetRequested();
+  void NotifyData(Avida::Update, Avida::Data::DataRetrievalFunctor retrieve_data);
+};
+

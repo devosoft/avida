@@ -34,6 +34,8 @@
 #import "CenteringClipView.h"
 #import "MapGridView.h"
 
+#import "AvidaEDPopViewStatView.h"
+
 #include "avida/viewer-core/Map.h"
 
 static const float MAIN_SPLIT_LEFT_MIN = 150.0;
@@ -110,6 +112,7 @@ static const float POP_SPLIT_LEFT_PROPORTIONAL_RESIZE = 0.3;
     } else {
       if (!listener) listener = new MainThreadListener(self);
       [currentRun attachListener:self];
+      [popViewStatView setAvidaRun:currentRun];
       
       [txtUpdate setStringValue:@"0 updates"];
     }

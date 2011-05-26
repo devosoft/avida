@@ -27,7 +27,7 @@
 //  Authors: David M. Bryson <david@programerror.com>
 //
 
-#include "Foundation/Foundation.h"
+#import <Foundation/Foundation.h>
 
 #include "avida/viewer-core/Listener.h"
 
