@@ -26,6 +26,7 @@
 #define AvidaDataRecorder_h
 
 #include "apto/platform.h"
+#include "avida/core/Types.h"
 #include "avida/data/Types.h"
 
 
