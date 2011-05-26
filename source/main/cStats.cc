@@ -376,8 +376,8 @@ void cStats::setupProvidedData()
   m_data_manager.Add("update",      "Update",      &cStats::GetUpdate);
   m_data_manager.Add("generation",  "Generation",  &cStats::GetGeneration);
 
-  PROVIDE("core.update",             "Update",                               int,    GetUpdate);
-  PROVIDE("core.ave_generation",     "Average Generation",                   double, GetGeneration);
+  PROVIDE("core.update",                   "Update",                               int,    GetUpdate);
+  PROVIDE("core.world.ave_generation",     "Average Generation",                   double, GetGeneration);
   
 
   // Population Level Stats
@@ -425,7 +425,7 @@ void cStats::setupProvidedData()
   m_data_manager.Add("threads",        "Count of Threads in Population",         &cStats::GetNumThreads);
   m_data_manager.Add("num_no_birth",   "Count of Childless Organisms",           &cStats::GetNumNoBirthCreatures);
 
-  PROVIDE("core.organisms",          "Count of Organisms in the Population", int,    GetNumCreatures);
+  PROVIDE("core.world.organisms",          "Count of Organisms in the World",      int,    GetNumCreatures);
 
   
   // Total Counts...
@@ -450,10 +450,10 @@ void cStats::setupProvidedData()
   m_data_manager.Add("ave_exe_length", "Average Executed Length",          &cStats::GetAveExeSize);
   m_data_manager.Add("ave_thresh_age", "Average Threshold Genotype Age",   &cStats::GetAveThresholdAge);
 
-  PROVIDE("core.ave_metabolic_rate", "Average Metabolic Rate",               double, GetAveMerit);
-  PROVIDE("core.ave_age",            "Average Organism Age (in updates)",    double, GetAveCreatureAge);
-  PROVIDE("core.ave_gestation_time", "Average Gestation Time",               double, GetAveGestation);
-  PROVIDE("core.ave_fitness",        "Average Fitness",                      double, GetAveFitness);
+  PROVIDE("core.world.ave_metabolic_rate", "Average Metabolic Rate",               double, GetAveMerit);
+  PROVIDE("core.world.ave_age",            "Average Organism Age (in updates)",    double, GetAveCreatureAge);
+  PROVIDE("core.world.ave_gestation_time", "Average Gestation Time",               double, GetAveGestation);
+  PROVIDE("core.world.ave_fitness",        "Average Fitness",                      double, GetAveFitness);
 
   
   // Maximums
