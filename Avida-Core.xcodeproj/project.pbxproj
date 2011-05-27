@@ -76,7 +76,6 @@
 		7023EC410C0A431B00362B9C /* cArgSchema.cc in Sources */ = {isa = PBXBuildFile; fileRef = 703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */; };
 		7023EC420C0A431B00362B9C /* cAvidaConfig.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7013846009028B3E0087ED2E /* cAvidaConfig.cc */; };
 		7023EC430C0A431B00362B9C /* cBirthChamber.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4F3F08DA61FE007BA469 /* cBirthChamber.cc */; };
-		7023EC440C0A431B00362B9C /* cChangeList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087DF08F5F4BA00FC65FE /* cChangeList.cc */; };
 		7023EC450C0A431B00362B9C /* cClassificationManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70F7DAF009290468009E311D /* cClassificationManager.cc */; };
 		7023EC460C0A431B00362B9C /* cCodeLabel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EF4608C393BA00F50912 /* cCodeLabel.cc */; };
 		7023EC470C0A431B00362B9C /* cConstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */; };
@@ -997,10 +996,8 @@
 		70B0872D08F5E82D00FC65FE /* cTaskLib.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cTaskLib.cc; sourceTree = "<group>"; };
 		70B0875A08F5EC8900FC65FE /* nGeometry.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nGeometry.h; sourceTree = "<group>"; };
 		70B0875C08F5ECBC00FC65FE /* nReaction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nReaction.h; sourceTree = "<group>"; };
-		70B087D908F5F4A900FC65FE /* cChangeList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cChangeList.h; sourceTree = "<group>"; };
 		70B087DA08F5F4A900FC65FE /* cConstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cConstSchedule.h; sourceTree = "<group>"; };
 		70B087DB08F5F4A900FC65FE /* cCountTracker.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCountTracker.h; sourceTree = "<group>"; };
-		70B087DF08F5F4BA00FC65FE /* cChangeList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cChangeList.cc; sourceTree = "<group>"; };
 		70B087E008F5F4BA00FC65FE /* cConstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cConstSchedule.cc; sourceTree = "<group>"; };
 		70B0884908F5FE4500FC65FE /* cDataFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFile.h; sourceTree = "<group>"; };
 		70B0884A08F5FE4500FC65FE /* cDataFileManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cDataFileManager.h; sourceTree = "<group>"; };
@@ -2061,8 +2058,6 @@
 				703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */,
 				7020828E0FB9F2DF00637AD6 /* cBitArray.h */,
 				7020828D0FB9F2DF00637AD6 /* cBitArray.cc */,
-				70B087D908F5F4A900FC65FE /* cChangeList.h */,
-				70B087DF08F5F4BA00FC65FE /* cChangeList.cc */,
 				70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */,
 				70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */,
 				70B087DA08F5F4A900FC65FE /* cConstSchedule.h */,
@@ -2440,7 +2435,6 @@
 				7023EC410C0A431B00362B9C /* cArgSchema.cc in Sources */,
 				7023EC420C0A431B00362B9C /* cAvidaConfig.cc in Sources */,
 				7023EC430C0A431B00362B9C /* cBirthChamber.cc in Sources */,
-				7023EC440C0A431B00362B9C /* cChangeList.cc in Sources */,
 				7023EC450C0A431B00362B9C /* cClassificationManager.cc in Sources */,
 				7023EC460C0A431B00362B9C /* cCodeLabel.cc in Sources */,
 				7023EC470C0A431B00362B9C /* cConstSchedule.cc in Sources */,

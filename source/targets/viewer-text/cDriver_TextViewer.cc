@@ -22,7 +22,6 @@
 #include "cDriver_TextViewer.h"
 
 #include "cAnalyze.h"
-#include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
@@ -108,11 +107,7 @@ void cDriver_TextViewer::Run()
   
   cAvidaContext ctx(m_world, m_world->GetRandom());
   
-  while (!m_done) {
-    if (cChangeList* change_list = population.GetChangeList()) {
-      change_list->Reset();
-    }
-    
+  while (!m_done) {    
     m_world->GetEvents(ctx);
     if (m_done == true) break;  // Stop here if told to do so by an event.
     

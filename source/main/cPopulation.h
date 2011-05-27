@@ -45,7 +45,6 @@ namespace Avida {
 class cAvidaContext;
 class cBioUnit;
 class cCodeLabel;
-class cChangeList;
 class cEnvironment;
 class cLineage;
 class cOrganism;
@@ -263,9 +262,6 @@ public:
 
   bool UpdateMerit(int cell_id, double new_merit);
 
-  void SetChangeList(cChangeList* change_list);
-  cChangeList* GetChangeList();
-  
   void AddBeginSleep(int cellID, int start_time);
   void AddEndSleep(int cellID, int end_time);
  
@@ -325,7 +321,7 @@ public:
     void MixPopulation(cAvidaContext& ctx); 
 
 private:
-  void BuildTimeSlicer(cChangeList* change_list); // Build the schedule object
+  void BuildTimeSlicer(); // Build the schedule object
   
   // Methods to place offspring in the population.
   cPopulationCell& PositionOffspring(cPopulationCell& parent_cell, cAvidaContext& ctx, bool parent_ok = true); 

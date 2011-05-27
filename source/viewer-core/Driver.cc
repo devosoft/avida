@@ -28,7 +28,6 @@
 #include "avida/viewer-core/Listener.h"
 
 #include "cAvidaContext.h"
-#include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
@@ -115,7 +114,6 @@ void Avida::CoreView::Driver::Run()
   m_mutex.Lock();
   while (!m_done) {
     m_mutex.Unlock();
-    if (cChangeList* change_list = population.GetChangeList()) change_list->Reset();
     
     m_world->GetEvents(ctx);
     if (m_done) break;  // Stop here if told to do so by an event.

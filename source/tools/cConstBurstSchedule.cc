@@ -21,7 +21,6 @@
 
 #include "cConstBurstSchedule.h"
 
-#include "cChangeList.h"
 #include "cMerit.h"
 
 
@@ -29,8 +28,6 @@ bool cConstBurstSchedule::OK() { return true; }
 
 void cConstBurstSchedule::Adjust(int item_id, const cMerit& merit, int deme_id)
 {
-  if (cChangeList *change_list = GetChangeList()) change_list->MarkChange(item_id);
-
   if (merit == 0.0) m_active[item_id] = false;
   else m_active[item_id] = true;
 }

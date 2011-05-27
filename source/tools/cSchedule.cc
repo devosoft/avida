@@ -22,24 +22,7 @@
 
 #include "cSchedule.h"
 
-#include "cChangeList.h"
 
+cSchedule::cSchedule(int _item_count) : item_count(_item_count) { ; }
 
-cSchedule::cSchedule(int _item_count)
-: item_count(_item_count)
-, m_change_list(0)
-{
-}
-
-cSchedule::~cSchedule()
-{
-}
-
-void cSchedule::SetChangeList(cChangeList *change_list) {
-  m_change_list = change_list;
-  if (m_change_list) m_change_list->Resize(item_count);
-}
-void cSchedule::SetSize(int _item_count) {
-  item_count = _item_count;
-  if (m_change_list) m_change_list->Resize(_item_count);
-}
+cSchedule::~cSchedule() { ; }

@@ -21,7 +21,6 @@
 
 #include "cTextViewerDriver.h"
 
-#include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cHardwareBase.h"
 #include "cOrganism.h"
@@ -67,9 +66,6 @@ void cTextViewerDriver::Run()
   ctx.EnableOrgFaultReporting();
   
   while (!m_done) {
-    if (cChangeList* change_list = population.GetChangeList()) {
-      change_list->Reset();
-    }
     
     m_world->GetEvents(ctx);
     if (m_done == true) break;

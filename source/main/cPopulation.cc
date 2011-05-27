@@ -29,7 +29,6 @@
 #include "cAvidaContext.h"
 #include "cBioGroup.h"
 #include "cBioGroupManager.h"
-#include "cChangeList.h"
 #include "cClassificationManager.h"
 #include "cCPUTestInfo.h"
 #include "cCodeLabel.h"
@@ -240,7 +239,7 @@ cPopulation::cPopulation(cWorld* world)
     }
   }
 
-  BuildTimeSlicer(0);
+  BuildTimeSlicer();
 
   // Setup the resources...
   const cResourceLib & resource_lib = environment.GetResourceLib();
@@ -5249,7 +5248,7 @@ void cPopulation::ResetInputs(cAvidaContext& ctx)
   }
 }
 
-void cPopulation::BuildTimeSlicer(cChangeList * change_list)
+void cPopulation::BuildTimeSlicer()
 {
   switch (m_world->GetConfig().SLICING_METHOD.Get()) {
     case SLICE_CONSTANT:
@@ -5274,7 +5273,6 @@ void cPopulation::BuildTimeSlicer(cChangeList * change_list)
       schedule = new cIntegratedSchedule(cell_array.GetSize());
       break;
   }
-  schedule->SetChangeList(change_list);
 }
 
 
@@ -5776,12 +5774,6 @@ bool cPopulation::UpdateMerit(int cell_id, double new_merit)
   return true;
 }
 
-void cPopulation::SetChangeList(cChangeList *change_list){
-  schedule->SetChangeList(change_list);
-}
-cChangeList *cPopulation::GetChangeList(){
-  return schedule->GetChangeList();
-}
 
 void cPopulation::AddBeginSleep(int cellID, int start_time) {
   sleep_log[cellID].Add(make_pair(start_time,-1));

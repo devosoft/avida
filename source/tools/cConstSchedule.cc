@@ -22,7 +22,6 @@
 
 #include "cConstSchedule.h"
 
-#include "cChangeList.h"
 #include "cMerit.h"
 
 
@@ -34,9 +33,6 @@ bool cConstSchedule::OK()
 
 void cConstSchedule::Adjust(int item_id, const cMerit& merit, int deme_id)
 {
-  if (cChangeList *change_list = GetChangeList()) {
-    change_list->MarkChange(item_id);
-  }
   if (merit == 0.0) is_active[item_id] = false;
   else is_active[item_id] = true;
 }
