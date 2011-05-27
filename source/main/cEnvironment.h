@@ -31,7 +31,6 @@
 #include "cResourceLib.h"
 #include "cString.h"
 #include "cTaskLib.h"
-#include "tArraySet.h"
 #include "tList.h"
 
 #include <set>

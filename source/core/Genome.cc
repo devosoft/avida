@@ -24,6 +24,7 @@
 
 #include "avida/core/Genome.h"
 
+#include "apto/core/Set.h"
 #include "avida/core/Feedback.h"
 
 #include "cInstSet.h"
@@ -32,7 +33,6 @@
 #include "cDataFile.h"
 #include "cInitFile.h"
 #include "cStringUtil.h"
-#include "tArraySet.h"
 #include "tDictionary.h"
 
 
@@ -84,9 +84,9 @@ bool Avida::Genome::LoadFromDetailFile(const cString& fname, const cString& wdir
 {
   bool success = true;
 
-  tArraySet<cString> custom_directives;
-  custom_directives.Add("inst_set");
-  custom_directives.Add("hw_type");
+  Apto::Set<cString> custom_directives;
+  custom_directives.Insert("inst_set");
+  custom_directives.Insert("hw_type");
   
   cInitFile input_file(fname, wdir, feedback, &custom_directives);
   if (!input_file.WasOpened()) return false;

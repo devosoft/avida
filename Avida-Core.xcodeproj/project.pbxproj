@@ -1069,7 +1069,6 @@
 		70B3984E0947B29D0018F09D /* tManagedPointerArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tManagedPointerArray.h; sourceTree = "<group>"; };
 		70B547FA10AB22920013E999 /* cBGGenotypeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBGGenotypeManager.h; sourceTree = "<group>"; };
 		70B547FB10AB22920013E999 /* cBGGenotypeManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cBGGenotypeManager.cc; sourceTree = "<group>"; };
-		70B549ED10B4791B0013E999 /* tArraySet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tArraySet.h; sourceTree = "<group>"; };
 		70B6514C0BEA6FAD002472ED /* unit-tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unit-tests"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70B984220EBB5B7F00A828B1 /* tDMSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDMSingleton.h; sourceTree = "<group>"; };
 		70B984B40EBB71B500A828B1 /* tDataCommandManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tDataCommandManager.h; sourceTree = "<group>"; };
@@ -2133,7 +2132,6 @@
 				70B08B8408FB2E5500FC65FE /* tArray.h */,
 				700D9C170F1A7436002CC711 /* tArrayMap.h */,
 				7069470C0EE8FA2700AD67C0 /* tArrayUtils.h */,
-				70B549ED10B4791B0013E999 /* tArraySet.h */,
 				70F9FD990C4E89C40083B788 /* tAutoRelease.h */,
 				70B08B8508FB2E5500FC65FE /* tBuffer.h */,
 				70B984B40EBB71B500A828B1 /* tDataCommandManager.h */,
