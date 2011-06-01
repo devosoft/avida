@@ -50,6 +50,7 @@
 #include "tAutoRelease.h"
 #include "tIterator.h"
 #include "cUserFeedback.h"
+#include "cParasite.h"
 
 #include <cmath>
 #include <cerrno>
@@ -3309,6 +3310,53 @@ public:
   }
 };
 
+
+//LZ - dump the parasite virulence grid
+class cActionDumpParasiteVirulenceGrid : public cAction
+{
+private:
+  cString m_filename;
+  
+public:
+  cActionDumpParasiteVirulenceGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  {
+    cString largs(args);
+    if (largs.GetSize()) m_filename = largs.PopWord();
+  }
+  static const cString GetDescription() { return "Arguments: [string fname='']"; }
+  void Process(cAvidaContext& ctx)
+  {
+    cString filename(m_filename);
+    if (filename == "") filename.Set("grid_virulence.%d.dat", m_world->GetStats().GetUpdate());
+    ofstream& fp = m_world->GetDataFileOFStream(filename);
+    
+    cPopulation* pop = &m_world->GetPopulation();
+        
+    for (int i = 0; i < pop->GetWorldX(); i++) {
+      for (int j = 0; j < pop->GetWorldY(); j++) {
+        double virulence = 0;
+        int cell_num = i * pop->GetWorldX() + j;
+        if (pop->GetCell(cell_num).IsOccupied() == true) {
+          cOrganism* organism = pop->GetCell(cell_num).GetOrganism();
+          if(organism->GetNumParasites() > 0)
+          {
+            tArray<cBioUnit*> parasites = organism->GetParasites();
+            virulence = dynamic_cast<cParasite*>(parasites[0])->GetVirulence();
+          }
+          else { virulence = -1; }
+        }
+        else { virulence = -1; }
+        fp << virulence << " ";
+      }
+      fp << endl;
+    }
+    
+    m_world->GetDataFileManager().Remove(filename);
+  }
+};
+
+
+
 //Dump the reaction grid from the last gestation cycle, so skip the
 //test cpu, and just use what the phenotype has.
 class cActionDumpReactionGrid : public cAction
@@ -3820,6 +3868,7 @@ void RegisterPrintActions(cActionLibrary* action_lib)
   action_lib->Register<cActionDumpLastTaskGrid>("DumpLastTaskGrid");
 	action_lib->Register<cActionDumpHostTaskGrid>("DumpHostTaskGrid");
   action_lib->Register<cActionDumpParasiteTaskGrid>("DumpParasiteTaskGrid");
+  action_lib->Register<cActionDumpParasiteVirulenceGrid>("DumpParasiteVirulenceGrid");
   action_lib->Register<cActionDumpReactionGrid>("DumpReactionGrid");
   action_lib->Register<cActionDumpDonorGrid>("DumpDonorGrid");
   action_lib->Register<cActionDumpReceiverGrid>("DumpReceiverGrid");

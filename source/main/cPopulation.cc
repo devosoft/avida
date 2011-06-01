@@ -930,7 +930,6 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
     //get default virulence
     parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
   }
-  cout << "vir: " << parasite->GetVirulence() << endl;
   if (!target_organism->ParasiteInfectHost(parasite)) {
     delete parasite;
     return false;
