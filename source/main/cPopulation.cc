@@ -902,6 +902,35 @@ bool cPopulation::ActivateParasite(cOrganism* host, cBioUnit* parent, const cStr
   cGenome mg(parent->GetGenome().GetHardwareType(), parent->GetGenome().GetInstSet(), injected_code);
   cParasite* parasite = new cParasite(m_world, mg, parent->GetPhenotype().GetGeneration(), SRC_PARASITE_INJECT, label);
 
+  //Handle potential virulence evolution if this parasite is comming from a parasite 
+  //and virulence is inhereted from the parent (source == 1)
+  if (parent->IsParasite() && m_world->GetConfig().VIRULENCE_SOURCE.Get() == 1)
+  {
+    //mutate virulence
+    // m_world->GetConfig().PARASITE_VIRULENCE.Get()
+    double oldVir = dynamic_cast<cParasite*>(parent)->GetVirulence();
+    
+    //default to not mutating
+    double newVir = oldVir;
+    
+    //but if we do mutate...
+    if (m_world->GetRandom().GetDouble() < m_world->GetConfig().VIRULENCE_MUT_RATE.Get())
+    {
+      //get this in a temp variable so we don't have to make the next line huge
+      double vir_sd = m_world->GetConfig().VIRULENCE_SD.Get();
+      
+      //sd^2 = varience
+      newVir = m_world->GetRandom().GetRandNormal(oldVir, vir_sd * vir_sd);
+
+    }
+    parasite->SetVirulence(Max(Min(newVir, 1.0), 0.0));
+  }
+  else
+  {
+    //get default virulence
+    parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
+  }
+  cout << "vir: " << parasite->GetVirulence() << endl;
   if (!target_organism->ParasiteInfectHost(parasite)) {
     delete parasite;
     return false;
@@ -5088,7 +5117,10 @@ void cPopulation::InjectParasite(const cString& label, const cSequence& injected
 
   cGenome mg(target_organism->GetHardware().GetType(), target_organism->GetHardware().GetInstSet().GetInstSetName(), injected_code);
   cParasite* parasite = new cParasite(m_world, mg, 0, SRC_PARASITE_FILE_LOAD, label);
-
+  
+  //default to configured parasite virulence
+  parasite->SetVirulence(m_world->GetConfig().PARASITE_VIRULENCE.Get());
+  
   if (target_organism->ParasiteInfectHost(parasite)) {
     m_world->GetClassificationManager().ClassifyNewBioUnit(parasite);
   } else {
