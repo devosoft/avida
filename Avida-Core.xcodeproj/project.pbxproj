@@ -1055,7 +1055,6 @@
 		70B08B8B08FB2E5500FC65FE /* nHashTable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = nHashTable.h; sourceTree = "<group>"; };
 		70B08B8C08FB2E5500FC65FE /* tList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tList.h; sourceTree = "<group>"; };
 		70B08B8D08FB2E5500FC65FE /* tMatrix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tMatrix.h; sourceTree = "<group>"; };
-		70B08B8E08FB2E5500FC65FE /* tMemTrack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tMemTrack.h; sourceTree = "<group>"; };
 		70B08B8F08FB2E5500FC65FE /* tVector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tVector.h; sourceTree = "<group>"; };
 		70B08B9008FB2E6B00FC65FE /* AvidaTools.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AvidaTools.cc; sourceTree = "<group>"; };
 		70B08B9108FB2E6B00FC65FE /* cWeightedIndex.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cWeightedIndex.cc; sourceTree = "<group>"; };
@@ -2140,7 +2139,6 @@
 				70B08B8C08FB2E5500FC65FE /* tList.h */,
 				70B3984E0947B29D0018F09D /* tManagedPointerArray.h */,
 				70B08B8D08FB2E5500FC65FE /* tMatrix.h */,
-				70B08B8E08FB2E5500FC65FE /* tMemTrack.h */,
 				700E28CF0859FFD700CF158A /* tObjectFactory.h */,
 				70211A6C0ECBDB72004A293A /* tRCPtr.h */,
 				7093DB4009D6F50300DE7FEB /* tSmartArray.h */,
