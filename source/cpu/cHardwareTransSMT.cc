@@ -34,6 +34,7 @@
 #include "cWorld.h"
 #include "tArrayUtils.h"
 #include "tInstLibEntry.h"
+#include "cParasite.h"
 
 #include "AvidaTools.h"
 
@@ -192,7 +193,7 @@ void cHardwareTransSMT::cLocalThread::Reset(cHardwareBase* in_hardware, int mem_
 
 cBioUnit* cHardwareTransSMT::ThreadGetOwner()
 {
-  return (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
+  return (m_threads[m_cur_thread].owner) ? (cBioUnit*) m_threads[m_cur_thread].owner : m_organism;
 }
 
 
@@ -211,11 +212,20 @@ bool cHardwareTransSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
   const int num_inst_exec = (m_world->GetConfig().THREAD_SLICING_METHOD.Get() == 1) ? m_threads.GetSize() : 1;
   
   for (int i = 0; i < num_inst_exec; i++) {
+    double parasiteVirulence;
     // Setup the hardware for the next instruction to be executed.
     m_cur_thread++;
 		//Ignore incremeting the thread, set it to be the parasite, unless we draw something lower thean 0.8
 		//Then set it to the parasite
-		double parasiteVirulence = m_world->GetConfig().PARASITE_VIRULENCE.Get();
+    if (m_threads.GetSize() > 1 &&  m_threads[1].owner->IsParasite())
+    {
+      parasiteVirulence = dynamic_cast<cParasite*>(m_threads[1].owner)->GetVirulence();
+    }
+    else
+    {
+      parasiteVirulence = m_world->GetConfig().PARASITE_VIRULENCE.Get();
+    }
+    
 		if (parasiteVirulence != -1) {
       
 			double probThread = ctx.GetRandom().GetDouble();
@@ -667,7 +677,7 @@ bool cHardwareTransSMT::InjectParasite(cAvidaContext& ctx, double mut_multiplier
 	
   bool inject_signal = false;
   if (injected_code.GetSize() > 0) {
-    cBioUnit* parent = (m_threads[m_cur_thread].owner) ? m_threads[m_cur_thread].owner : m_organism;
+    cBioUnit* parent = (m_threads[m_cur_thread].owner) ? (cBioUnit*) m_threads[m_cur_thread].owner : m_organism;
     inject_signal = m_organism->InjectParasite(parent, GetLabel().AsString(), injected_code);
   }
 	

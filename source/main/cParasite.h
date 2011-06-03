@@ -46,6 +46,7 @@ private:
   cString m_src_args;
   const Genome m_initial_genome;
   cPhenotype m_phenotype;
+  double virulence;
   
   
   cParasite(); // @not_implemented
@@ -65,6 +66,8 @@ public:
 
   // --------  cParasite Methods  --------
   cPhenotype& GetPhenotype() { return m_phenotype; }
+  double GetVirulence() { return virulence; }
+  void SetVirulence(double v) { virulence = v; }
 
 };
 
