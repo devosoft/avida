@@ -3318,7 +3318,7 @@ private:
   cString m_filename;
   
 public:
-  cActionDumpParasiteVirulenceGrid(cWorld* world, const cString& args, cFeedback&) : cAction(world, args), m_filename("")
+  cActionDumpParasiteVirulenceGrid(cWorld* world, const cString& args, Feedback&) : cAction(world, args), m_filename("")
   {
     cString largs(args);
     if (largs.GetSize()) m_filename = largs.PopWord();
