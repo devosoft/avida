@@ -561,16 +561,6 @@ void cHardwareGX::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst)
 }
 
 
-bool cHardwareGX::OK()
-{
-  bool result = true;
-  for(programid_list::iterator i=m_programids.begin(); i!=m_programids.end() && result; ++i) {
-    result = result && (*i)->m_stack.OK() && (*i)->m_next_label.OK();
-  }
-  return result;
-}
-
-
 /*! \todo Revisit.
 */
 void cHardwareGX::PrintStatus(ostream& fp)

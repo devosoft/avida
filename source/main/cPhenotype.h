@@ -294,8 +294,6 @@ public:
   
   enum energy_levels {ENERGY_LEVEL_LOW = 0, ENERGY_LEVEL_MEDIUM, ENERGY_LEVEL_HIGH};
 	
-  bool OK();
-
   void ResetMerit(const Sequence & _cgenome);
   void Sterilize();
   // Run when being setup *as* and offspring.

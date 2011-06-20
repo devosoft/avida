@@ -294,34 +294,6 @@ cPhenotype& cPhenotype::operator=(const cPhenotype& in_phen)
   return *this;
 }
 
-bool cPhenotype::OK()
-{
-  assert(genome_length >= 0);
-  assert(copied_size >= 0);
-  assert(gestation_time >= 0);
-  assert(gestation_start >= 0);
-  assert(fitness >= 0.0);
-  assert(div_type >= 0.0);
-  assert(cur_bonus >= 0.0);
-  assert(cur_num_errors >= 0);
-  assert(cur_num_donates >= 0);
-  assert(last_merit_base >= 0.0);
-  assert(last_bonus >= 0.0);
-  assert(last_num_errors >= 0);
-  assert(last_num_donates >= 0);
-  assert(last_fitness >= 0.0);
-  assert(num_divides >= 0);
-  assert(num_divides_failed >= 0);
-  assert(generation >= 0);
-  assert(cpu_cycles_used >= 0);  
-  assert(time_used >= 0);
-  assert(age >= 0);
-  assert(child_copied_size >= 0);
-  assert(energy_received_buffer >= 0);
-  // assert(to_die == false);
-  return (m_world);
-}
-
 
 /**
  * This function is run whenever a new organism is being constructed inside

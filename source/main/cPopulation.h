@@ -213,8 +213,6 @@ public:
   bool LoadPopulation(const cString& filename, cAvidaContext& ctx, int cellid_offset=0, int lineage_offset=0); 
   bool DumpMemorySummary(std::ofstream& fp);
 
-  bool OK();
-
   int GetSize() const { return cell_array.GetSize(); }
   int GetWorldX() const { return world_x; }
   int GetWorldY() const { return world_y; }

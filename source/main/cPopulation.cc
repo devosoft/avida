@@ -5004,21 +5004,6 @@ bool cPopulation::DumpMemorySummary(ofstream& fp)
   return true;
 }
 
-bool cPopulation::OK()
-{
-  // First check all sub-objects...
-  if (!schedule->OK()) return false;
-
-  // Next check organisms...
-  for (int i = 0; i < cell_array.GetSize(); i++) {
-    assert(cell_array[i].GetID() == i);
-  }
-
-  // And stats...
-  assert(world_x * world_y == cell_array.GetSize());
-
-  return true;
-}
 
 
 /**

@@ -1019,18 +1019,6 @@ void cHardwareCPU::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
 }
 
 
-bool cHardwareCPU::OK()
-{
-  bool result = true;
-  
-  for (int i = 0; i < m_threads.GetSize(); i++) {
-    if (m_threads[i].stack.OK() == false) result = false;
-    if (m_threads[i].next_label.OK() == false) result = false;
-  }
-  
-  return result;
-}
-
 void cHardwareCPU::PrintStatus(ostream& fp)
 {
   fp << m_organism->GetPhenotype().GetCPUCyclesUsed() << " ";

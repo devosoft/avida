@@ -191,7 +191,6 @@ public:
   // --------  Helper methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_TRANSSMT; }
   bool SupportsSpeculative() const { return false; }
-  bool OK();
   void PrintStatus(std::ostream& fp);
 	
 	

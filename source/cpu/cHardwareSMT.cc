@@ -305,17 +305,6 @@ void cHardwareSMT::ProcessBonusInst(cAvidaContext& ctx, const cInstruction& inst
   m_organism->SetRunning(prev_run_state);
 }
 
-bool cHardwareSMT::OK()
-{	
-  for (int i = 0; i < m_threads.GetSize(); i++) {
-    for(int j=0; j < NUM_LOCAL_STACKS; j++)
-			if (m_threads[i].local_stacks[j].OK() == false) return false;
-    if (m_threads[i].next_label.OK() == false) return false;
-  }
-	
-  return true;
-}
-
 void cHardwareSMT::PrintStatus(ostream& fp)
 {
   fp << m_organism->GetPhenotype().GetTimeUsed() << " "

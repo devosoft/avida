@@ -70,19 +70,6 @@ cInstSet& cInstSet::operator=(const cInstSet& _in)
 }
 
 
-bool cInstSet::OK() const
-{
-  assert(m_lib_nopmod_map.GetSize() < m_lib_name_map.GetSize());
-  assert(m_mutation_index->GetSize() < MAX_INSTSET_SIZE);
-
-  bool redundancy_ok = true;
-  for (int id=0; id < GetSize(); id++)
-      redundancy_ok = redundancy_ok && (m_lib_name_map[id].redundancy == m_mutation_index->GetWeight(id));
-
-  return redundancy_ok;
-}
-
-
 cInstruction cInstSet::GetRandomInst(cAvidaContext& ctx) const
 {
   double weight = ctx.GetRandom().GetDouble(m_mutation_index->GetTotalWeight());

@@ -281,12 +281,6 @@ double cPopulationCell::UptakeCellEnergy(double frac_to_uptake, cAvidaContext& c
 }
 
 
-bool cPopulationCell::OK()
-{
-  // Nothing for the moment...
-  return true;
-}
-
 /*! Diffuse genome fragments from this cell to its neighbors.
  
  NOTE: This method is for OUTGOING diffusion only.

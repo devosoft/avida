@@ -142,7 +142,6 @@ public:
 
   double UptakeCellEnergy(double frac_to_uptake, cAvidaContext& ctx); 
 
-  bool OK();
 
 	// -------- HGT support --------
 public:

@@ -225,7 +225,6 @@ public:
   // --------  Helper Methods  --------
   int GetType() const { return HARDWARE_TYPE_CPU_EXPERIMENTAL; }  
   bool SupportsSpeculative() const { return true; }
-  bool OK();
   void PrintStatus(std::ostream& fp);
 
 
