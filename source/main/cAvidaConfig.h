@@ -57,7 +57,7 @@ using namespace std;
 //     be derived from the cBaseConfigEntry class so that we may easily refer
 //     to any of these dynamically created classes.
 // 3 - Create a private value for this setting.
-// 4 - Create a LoadString() method to load the settings in from a string.
+// 4 - Create a LoadStr() method to load the settings in from a string.
 // 5 - Create a EqualsString() method to determine if the values are the same.
 // 6 - Create a constructor that passes all of the information to the base
 //     class that it can manage to.
@@ -74,14 +74,14 @@ class cEntry_ ## NAME : public cBaseConfigEntry {                     /* 2 */ \
 private:                                                                      \
   TYPE value;                                                         /* 3 */ \
 public:                                                                       \
-  void LoadString(const cString& str_value) {                         /* 4 */ \
+  void LoadStr(const cString& str_value) {                         /* 4 */ \
     value = cStringUtil::Convert(str_value, value);                           \
   }                                                                           \
   bool EqualsString(const cString& str_value) const {                 /* 5 */ \
     return (value == cStringUtil::Convert(str_value, value));                 \
   }                                                                           \
   cEntry_ ## NAME() : cBaseConfigEntry(#NAME,#TYPE,#DEFAULT,DESC) {   /* 6 */ \
-    LoadString(GetDefault());                                         /* 7 */ \
+    LoadStr(GetDefault());                                         /* 7 */ \
     global_group_list.GetLast()->AddEntry(this);                      /* 8 */ \
   }                                                                           \
   TYPE Get() const { return value; }                                  /* 9 */ \
@@ -156,7 +156,7 @@ private:
     cBaseConfigEntry(const cString& _name, const cString& _type, const cString& _def, const cString& _desc);
     virtual ~cBaseConfigEntry() { ; }
     
-    virtual void LoadString(const cString& str_value) = 0;
+    virtual void LoadStr(const cString& str_value) = 0;
     virtual bool EqualsString(const cString& str_value) const = 0;
     
     const cString& GetName(int id=0) const { return config_name[id]; }
@@ -236,7 +236,7 @@ private:
     }
     ~cBaseConfigFormatEntry() { ; }
     
-    void LoadString(const cString& str_value) { cString lname(m_name); m_format->Add(lname + " " + str_value); }
+    void LoadStr(const cString& str_value) { cString lname(m_name); m_format->Add(lname + " " + str_value); }
     
     const cString& GetName() const { return m_name; }
     const cString& GetDesc() const { return m_description; }    
