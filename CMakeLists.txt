@@ -17,7 +17,9 @@ SET(LIBRARY_OUTPUT_PATH
 
 
 ADD_SUBDIRECTORY(libs/apto)
-ADD_SUBDIRECTORY(libs/tcmalloc-1.4)
+IF(NOT WIN32)
+  ADD_SUBDIRECTORY(libs/tcmalloc-1.4)
+ENDIF(NOT WIN32)
 ADD_SUBDIRECTORY(avida-core)
 
 # Default location for installed software/configs/ docs is the build directory.
