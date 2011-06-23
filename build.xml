@@ -22,6 +22,15 @@
     </exec>
   </target>
 
+  <target name="tcmalloc" depends="builddir">
+    <exec dir="${build}" executable="cmake" failonerror="true">
+      <arg path="${root}/libs/tcmalloc-1.4"/>
+    </exec>
+    <exec dir="${build}" osfamily="unix" executable="make" failonerror="true">
+      <arg value="install"/>
+    </exec>
+  </target>
+
   <target name="move-platform-consistencytesting-targets" if="platform">
     <delete file="${build}/work/avida" quiet="true"/>
     <copy file="${build}/work/platform=${platform}/avida" todir="${build}/work"/>

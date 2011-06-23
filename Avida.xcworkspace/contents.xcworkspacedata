@@ -17,6 +17,9 @@
       <FileRef
          location = "group:libs/apto/Apto.xcodeproj">
       </FileRef>
+      <FileRef
+         location = "group:libs/tcmalloc-1.4/TCMalloc-1.4.xcodeproj">
+      </FileRef>
    </Group>
    <FileRef
       location = "group:CMakeLists.txt">
