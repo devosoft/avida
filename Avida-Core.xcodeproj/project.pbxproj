@@ -321,6 +321,7 @@
 		70B547FD10AB22920013E999 /* cBGGenotypeManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B547FB10AB22920013E999 /* cBGGenotypeManager.cc */; };
 		70B6514F0BEA6FCC002472ED /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701EF27E0BEA5D2300DAE168 /* main.cc */; };
 		70B651B70BEA9AEC002472ED /* unit-tests in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70B6514C0BEA6FAD002472ED /* unit-tests */; };
+		70B9DC4913B91F6B00C833BB /* Manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BEC9E13B3C9C2004CB59D /* Manager.cc */; };
 		70BB2A2B0E9FA12F008269D2 /* ASAvidaLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70BB2A2A0E9FA12F008269D2 /* ASAvidaLib.cc */; };
 		70C11F3712B944F40092B40D /* cContextPhenotype.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C11F3412B944F40092B40D /* cContextPhenotype.cc */; };
 		70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3512B944F40092B40D /* cContextPhenotype.h */; };
@@ -884,6 +885,15 @@
 		708051A70A1F65FE00CBB8B6 /* SaveLoadActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveLoadActions.h; sourceTree = "<group>"; };
 		708051A80A1F65FE00CBB8B6 /* SaveLoadActions.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SaveLoadActions.cc; sourceTree = "<group>"; };
 		708051BA0A1F66B400CBB8B6 /* cActionLibrary.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cActionLibrary.cc; sourceTree = "<group>"; };
+		708BEC9513B3C98E004CB59D /* ActionTrigger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActionTrigger.h; sourceTree = "<group>"; };
+		708BEC9613B3C98E004CB59D /* Catalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Catalyst.h; sourceTree = "<group>"; };
+		708BEC9713B3C98E004CB59D /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
+		708BEC9813B3C98E004CB59D /* Manager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Manager.h; sourceTree = "<group>"; };
+		708BEC9913B3C98E004CB59D /* Product.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
+		708BEC9A13B3C98E004CB59D /* Reaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reaction.h; sourceTree = "<group>"; };
+		708BEC9B13B3C98E004CB59D /* Reagent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reagent.h; sourceTree = "<group>"; };
+		708BEC9C13B3C98E004CB59D /* Resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Resource.h; sourceTree = "<group>"; };
+		708BEC9E13B3C9C2004CB59D /* Manager.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Manager.cc; sourceTree = "<group>"; };
 		708BF2FD0AB65DC700A923BF /* cEventList.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cEventList.cc; sourceTree = "<group>"; };
 		708BF3010AB65DD300A923BF /* cEventList.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cEventList.h; sourceTree = "<group>"; };
 		708D31321342315000AE5CEF /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -1153,6 +1163,7 @@
 		70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cGenotypeBatch.cc; sourceTree = "<group>"; };
 		70EFD65E0D975B5E00FAD32A /* cConstBurstSchedule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cConstBurstSchedule.h; sourceTree = "<group>"; };
 		70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cConstBurstSchedule.cc; sourceTree = "<group>"; };
+		70F27F0C13B4E59F008A88A7 /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		70F7DAEF09290468009E311D /* cClassificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cClassificationManager.h; sourceTree = "<group>"; };
 		70F7DAF009290468009E311D /* cClassificationManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationManager.cc; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
@@ -1392,6 +1403,7 @@
 			children = (
 				703549CD1337BB6C00D3865C /* core */,
 				70FEF6361381CAB900A9D082 /* data */,
+				708BEC9413B3C98E004CB59D /* environment */,
 				70A53BC5135B732C00C3E661 /* util */,
 				703549261333E36800D3865C /* viewer-core */,
 				70A53BC0135B60D700C3E661 /* Avida.h */,
@@ -1556,6 +1568,30 @@
 				705B10251073AB58002242E6 /* organism-no-heads.org */,
 			);
 			path = misc;
+			sourceTree = "<group>";
+		};
+		708BEC9413B3C98E004CB59D /* environment */ = {
+			isa = PBXGroup;
+			children = (
+				708BEC9513B3C98E004CB59D /* ActionTrigger.h */,
+				708BEC9613B3C98E004CB59D /* Catalyst.h */,
+				708BEC9713B3C98E004CB59D /* Context.h */,
+				708BEC9813B3C98E004CB59D /* Manager.h */,
+				708BEC9913B3C98E004CB59D /* Product.h */,
+				708BEC9A13B3C98E004CB59D /* Reaction.h */,
+				708BEC9B13B3C98E004CB59D /* Reagent.h */,
+				708BEC9C13B3C98E004CB59D /* Resource.h */,
+				70F27F0C13B4E59F008A88A7 /* Types.h */,
+			);
+			path = environment;
+			sourceTree = "<group>";
+		};
+		708BEC9D13B3C9C2004CB59D /* environment */ = {
+			isa = PBXGroup;
+			children = (
+				708BEC9E13B3C9C2004CB59D /* Manager.cc */,
+			);
+			path = environment;
 			sourceTree = "<group>";
 		};
 		70920C1A0A9CCE2C00757CDB /* documentation */ = {
@@ -1869,6 +1905,7 @@
 				7061AB7F1358BD6F0000B036 /* core */,
 				DCC30F7C0762539D008F7A48 /* cpu */,
 				70FEF65C1382C48900A9D082 /* data */,
+				708BEC9D13B3C9C2004CB59D /* environment */,
 				701D9115094B770B008B845F /* drivers */,
 				DCC310040762539D008F7A48 /* main */,
 				70DCAD1E097AF81A002F8733 /* script */,
@@ -2554,6 +2591,7 @@
 				70A53BCC135B766600C3E661 /* Version.cc in Sources */,
 				70FEF65E1382C48900A9D082 /* Manager.cc in Sources */,
 				70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */,
+				70B9DC4913B91F6B00C833BB /* Manager.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
