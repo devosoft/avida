@@ -25,23 +25,31 @@
 #ifndef AvidaEnvironmentActionTrigger_h
 #define AvidaEnvironmentActionTrigger_h
 
+#include "avida/environment/Types.h"
 
 namespace Avida {
   namespace Environment {
     
-    // Environment::ActionTrigger - 
+    // Environment::ActionTrigger - Direct resource production resulting from an action
     // --------------------------------------------------------------------------------------------------------------
 
     class ActionTrigger
     {
+      friend class Manager;
     private:
       const ActionTriggerID m_id;
+      const Apto::String m_desc;
+      ConstProductPtr m_product;
       
+      LIB_LOCAL inline ActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, ConstProductPtr product)
+        : m_id(trigger_id), m_desc(desc), m_product(product) { ; }
+
     public:
-      LIB_EXPORT ActionTrigger(const ActionTriggerID& trigger_id);
+      LIB_EXPORT inline ~ActionTrigger() { ; }
       
-      LIB_EXPORT const ActionTriggerID& GetID() const { return m_id; }
-      
+      LIB_EXPORT inline const ActionTriggerID& GetID() const { return m_id; }
+      LIB_EXPORT inline const Apto::String& GetDescription() const { return m_desc; }
+      LIB_EXPORT inline ConstProductPtr GetProduct() const { return m_product; }
     };
     
   };

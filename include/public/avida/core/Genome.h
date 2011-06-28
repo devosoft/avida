@@ -27,6 +27,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/Sequence.h"
+#include "avida/core/Types.h"
 
 #include "cString.h"
 
@@ -37,12 +38,6 @@ template <typename T> class tDictionary;
 
 
 namespace Avida {  
-  
-  // Class Declarations
-  // --------------------------------------------------------------------------------------------------------------
-  
-  class Feedback;
-  
   
   // Genome - genetic and epi-genetic heritable information
   // --------------------------------------------------------------------------------------------------------------

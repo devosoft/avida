@@ -23,6 +23,7 @@
 #define cWorld_h
 
 #include "apto/core/SmartPtr.h"
+#include "avida/core/Types.h"
 #include "avida/data/Types.h"
 
 #include "cAvidaConfig.h"
@@ -31,10 +32,6 @@
 #include "cRandom.h"
 
 #include <cassert>
-
-namespace Avida {
-  class WorldDriver;
-};
 
 class cAnalyze;
 class cAnalyzeGenotype;

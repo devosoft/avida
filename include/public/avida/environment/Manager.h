@@ -33,7 +33,7 @@
 namespace Avida {
   namespace Environment {
     
-    // Environment::Manager
+    // Environment::Manager - holds the top level definition of the environment
     // --------------------------------------------------------------------------------------------------------------
     
     class Manager
@@ -52,7 +52,7 @@ namespace Avida {
     public:
       LIB_EXPORT Manager();
       
-      LIB_EXPORT bool Register(ActionTriggerPtr);
+      LIB_EXPORT bool DefineActionTrigger(const ActionTriggerID& trigger_id, const Apto::String& desc, ConstProductPtr product);
       LIB_EXPORT bool Register(ReactionPtr);
       LIB_EXPORT bool Register(ResourcePtr);
 

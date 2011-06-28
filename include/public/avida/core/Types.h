@@ -27,10 +27,20 @@
 
 namespace Avida {
   
+  // Class Declarations
+  // --------------------------------------------------------------------------------------------------------------
+  
+  class Feedback;
+  class Genome;
+  class GlobalObject;
+  class Sequence;
+  class WorldDriver;
+
+  
   // Type Declarations
   // --------------------------------------------------------------------------------------------------------------  
   
-  typedef int Update; // Natural time unit in Avida
+  typedef int Update; // Discrete unit of activity in Avida
   
 };
 

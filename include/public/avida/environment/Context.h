@@ -29,8 +29,13 @@
 namespace Avida {
   namespace Environment {
     
-    // Environment:: - 
+    // Environment::Context
     // --------------------------------------------------------------------------------------------------------------
+    
+    class Context
+    {
+      
+    };
     
   };
 };

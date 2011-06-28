@@ -1,8 +1,8 @@
 /*
- *  environment/Product.h
+ *  environment/ContextFactory.h
  *  avida-core
  *
- *  Created by David on 6/24/11.
+ *  Created by David on 6/28/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,18 +22,20 @@
  *
  */
 
-#ifndef AvidaEnvironmentProduct_h
-#define AvidaEnvironmentProduct_h
-
+#ifndef AvidaEnvironmentContextFactory_h
+#define AvidaEnvironmentContextFactory_h
 
 namespace Avida {
   namespace Environment {
     
-    // Environment::Product - output of an action trigger or reaction
+    // Environment::ContextFactory - Creates Environment::Context instances, provides data collection facilities
     // --------------------------------------------------------------------------------------------------------------
     
-    class Product
+    class ContextFactory
     {
+    private:
+      
+    public:
       
     };
     
