@@ -5557,7 +5557,7 @@ bool cHardwareCPU::Inst_RotateUphill(cAvidaContext& ctx)
 
 bool cHardwareCPU::Inst_RotateHome(cAvidaContext& ctx)
 {
-  // Will rotate organism to face birth cell if org never used zero-easting or zero-northing. Otherwise will rotate org
+  // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
   // to face the 'marked' spot where those instructions were executed.
   int easterly = m_organism->GetEasterly();
   int northerly = m_organism->GetNortherly();

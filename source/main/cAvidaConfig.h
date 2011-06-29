@@ -685,6 +685,7 @@ public:
   CONFIG_ADD_VAR(VITALITY_BIN_EXTREMES, double, 1.0, "vitality multiplier for extremes (> 1 stddev from the mean population age)");
   CONFIG_ADD_VAR(VITALITY_BIN_CENTER, double, 10.0, "vitality multiplier for center bin (with 1 stddev of the mean population age)");
   CONFIG_ADD_VAR(DEADLY_BOUNDARIES, int, 0, "Are bounded grid border cell deadly? If == 1, orgs stepping onto boundary cells will disappear into oblivion (aka die)");
+  CONFIG_ADD_VAR(STEP_COUNTING_ERROR, int, 0, "% chance a step is not counted as part of easterly/northerly travel.");
   
   // -------- Pheromone config options --------
   CONFIG_ADD_GROUP(PHEROMONE_GROUP, "Pheromone Settings");
