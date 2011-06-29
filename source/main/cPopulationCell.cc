@@ -22,6 +22,8 @@
 
 #include "cPopulationCell.h"
 
+#include "avida/core/Feedback.h"
+
 #include "cDoubleSum.h"
 #include "nHardware.h"
 #include "cOrganism.h"
@@ -298,7 +300,8 @@ void cPopulationCell::DiffuseGenomeFragments() {
 				break;
 			}
 			default: {
-				m_world->GetDriver().RaiseFatalException(-1, "Unrecognized diffusion type in cPopulationCell::DiffuseGenomeFragments().");
+        m_world->GetDriver().Feedback().Error("Invalid HGT_DIFFUSION_METHOD");
+        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
 			}
 	}
 }
@@ -312,13 +315,12 @@ void cPopulationCell::DiffuseGenomeFragments() {
  As a safety measure, we also remove old fragments to conserve memory.  Specifically, we
  remove old fragments until at most HGT_MAX_FRAGMENTS_PER_CELL fragments remain.
  */
-void cPopulationCell::AddGenomeFragments(const Sequence& genome) {
+void cPopulationCell::AddGenomeFragments(cAvidaContext& ctx, const Sequence& genome) {
 	assert(genome.GetSize()>0); // oh, sweet sanity.
 	InitHGTSupport();
 	
 	m_world->GetPopulation().AdjustHGTResource(genome.GetSize());
 	
-	cAvidaContext ctx(m_world, m_world->GetRandom());
 	cGenomeUtil::RandomSplit(ctx, 
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_MEAN.Get(),
 													 m_world->GetConfig().HGT_FRAGMENT_SIZE_VARIANCE.Get(),

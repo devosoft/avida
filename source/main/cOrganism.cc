@@ -22,6 +22,7 @@
 
 #include "cOrganism.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
@@ -813,10 +814,6 @@ void cOrganism::Fault(int fault_loc, int fault_type, cString fault_desc)
   }
 #endif
 
-  // BREAKPOINTS
-#if 0
-  m_phenotype.SetFault(fault_desc);
-#endif
 
   m_phenotype.IncErrors();
 }
@@ -905,7 +902,8 @@ void cOrganism::ReceiveMessage(cOrgMessage& msg) {
 			case 1: // drop this message
 				return;
 			default: // error
-				m_world->GetDriver().RaiseFatalException(-1, "MESSAGE_RECV_BUFFER_BEHAVIOR is set to an invalid value.");
+        m_world->GetDriver().Feedback().Error("MESSAGE_RECV_BUFFER_BEHAVIOR is set to an invalid value.");
+        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
 				assert(false);
 		}
 	}
@@ -1060,8 +1058,9 @@ void cOrganism::SetOpinion(const Opinion& opinion) {
 	
 	const int bsize = m_world->GetConfig().OPINION_BUFFER_SIZE.Get();	
 
-	if(bsize == 0) {
-		m_world->GetDriver().RaiseFatalException(-1, "OPINION_BUFFER_SIZE is set to an invalid value.");
+	if (bsize == 0) {
+    m_world->GetDriver().Feedback().Error("OPINION_BUFFER_SIZE is set to an invalid value.");
+    m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
 	}	
 	
 	if((bsize > 0) || (bsize == -1)) {

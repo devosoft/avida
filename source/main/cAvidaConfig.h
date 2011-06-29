@@ -516,8 +516,6 @@ public:
   CONFIG_ADD_VAR(NO_CPU_CYCLE_TIME, int, 0, "Don't count each CPU cycle as part of gestation time\n");
   CONFIG_ADD_VAR(MAX_LABEL_EXE_SIZE, int, 1, "Max nops marked as executed when labels are used");
   CONFIG_ADD_VAR(PRECALC_PHENOTYPE, int, 0, "0 = Disabled\n 1 = Assign precalculated merit at birth (unlimited resources only)\n 2 = Assign precalculated gestation time\n 3 = Assign precalculated merit AND gestation time.\n 4 = Assign last instruction counts \n 5 = Assign last instruction counts and merit\n 6 = Assign last instruction counts and gestation time \n 7 = Assign everything currently supported\nFitness will be evaluated for organism based on these settings.");
-  CONFIG_ADD_VAR(FASTFORWARD_UPDATES, int, 0, "Fast-forward if the average generation has not changed in this many updates. (0 = off)");
-  CONFIG_ADD_VAR(FASTFORWARD_NUM_ORGS, int, 0, "Fast-forward if population is equal to this");
   CONFIG_ADD_VAR(GENOTYPE_PHENPLAST_CALC, int, 100, "Number of times to test a genotype's\nplasticity during runtime.");
   
 

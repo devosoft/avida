@@ -60,9 +60,8 @@ public:
   void Run();
   
   // Driver Actions
-  void SignalBreakpoint();
-  void SetDone() { m_done = true; }
-  void SetPause() { ; }
+  void Finish() { m_done = true; }
+  void Pause() { ; }
 
   // IO
   void Flush();
@@ -86,8 +85,6 @@ public:
 
   int Confirm(const cString& in_string);
 
-  // Tests
-  bool IsInteractive() { return true; }
 };
 
 

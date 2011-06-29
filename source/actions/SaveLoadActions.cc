@@ -71,7 +71,8 @@ public:
     if (m_update >= 0) m_world->GetStats().SetCurrentUpdate(m_update);
     
     if (!m_world->GetPopulation().LoadPopulation(m_filename, ctx, m_cellid_offset, m_lineage_offset)) { 
-      m_world->GetDriver().RaiseFatalException(-1, "failed to load population");
+      m_world->GetDriver().Feedback().Error("failed to load population");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }
 };

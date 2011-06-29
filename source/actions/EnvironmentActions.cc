@@ -497,7 +497,10 @@ public:
   void Process(cAvidaContext& ctx)
   {
     bool success = m_world->GetEnvironment().SetReactionTask(m_name, m_task);
-    if (!success) m_world->GetDriver().RaiseFatalException(-2,"SetReactionTask action failed");
+    if (!success) {
+      m_world->GetDriver().Feedback().Error("SetReactionTask action failed");
+      m_world->GetDriver().Abort(Avida::INTERNAL_ERROR);
+    }
   }
 };
 
@@ -721,7 +724,8 @@ public:
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
       env.GetTask(m_task).GetArguments().SetInt(m_arg, m_value);
     } else {
-      m_world->GetDriver().RaiseFatalException(-2,"Task specified in SetTaskArgInt action does not exist");
+      m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgInt action does not exist");
+      m_world->GetDriver().Abort(Avida::INTERNAL_ERROR);
     }
   }
 };
@@ -1013,7 +1017,8 @@ public:
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
       env.GetTask(m_task).GetArguments().SetDouble(m_arg, m_value);
     } else {
-      m_world->GetDriver().RaiseFatalException(-2,"Task specified in SetTaskArgDouble action does not exist");
+      m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgDouble action does not exist");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }
 };
@@ -1043,7 +1048,8 @@ public:
     if (m_task >= 0 && m_task < env.GetNumTasks()) {
       env.GetTask(m_task).GetArguments().SetString(m_arg, m_value);
     } else {
-      m_world->GetDriver().RaiseFatalException(-2,"Task specified in SetTaskArgString action does not exist");
+      m_world->GetDriver().Feedback().Error("Task specified in SetTaskArgString action does not exist");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }
 };
@@ -1221,8 +1227,10 @@ public:
     if (largs.GetSize()) m_cvar = largs.PopWord();
     if (largs.GetSize()) m_value = largs.PopWord();
     
-    if (!m_world->GetConfig().HasEntry(m_cvar))
-      m_world->GetDriver().RaiseFatalException(-2, "Config variable specified in SetConfig action exist");
+    if (!m_world->GetConfig().HasEntry(m_cvar)) {
+      m_world->GetDriver().Feedback().Error("Config variable specified in SetConfig action exist");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
+    }
   }
   
   static const cString GetDescription() { return "Arguments: <string config_var> <string value>"; }

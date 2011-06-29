@@ -762,9 +762,6 @@ void cZoomScreen::UpdateCPU_Original(cHardwareBase& hardware)
       if (memory.FlagExecuted(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 23, "Exe");
       }
-      if (memory.FlagBreakpoint(adj_inst_ptr)) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 27, "Bp");
-      }
       
       if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_READ).GetPosition()) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 30, "R");
@@ -900,9 +897,6 @@ void cZoomScreen::UpdateCPU_SMT(cHardwareBase& hardware)
       if (memory.FlagExecuted(adj_inst_ptr)) {
         Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 24, "Exe");
       }
-      if (memory.FlagBreakpoint(adj_inst_ptr)) {
-        Print(MEMORY_Y + MEMORY_PRE_SIZE + 3 + i, MEMORY_X + 28, "Bp");
-      }
       
       if (adj_inst_ptr == hardware.GetHead(nHardware::HEAD_READ, cur_view_thread).GetPosition() &&
           cur_mem_space == hardware.GetHead(nHardware::HEAD_READ, cur_view_thread).GetMemSpace()) {
@@ -1003,7 +997,6 @@ void cZoomScreen::EditMemory(cAvidaContext& ctx)
   // Assemble first choice window.
   cMenuWindow menu1(NUM_INST_EDITS);
   menu1.SetTitle("Choose Edit method:");
-  menu1.AddOption(INST_EDIT_BREAKPOINT, "Toggle [B]reakpoint");
   menu1.AddOption(INST_EDIT_JUMP_IP,    "[J]ump IP");
   menu1.AddOption(INST_EDIT_CHANGE,     "[E]dit Instruction");
   menu1.AddOption(INST_EDIT_INSERT,     "[I]nsert Instruction");
@@ -1033,12 +1026,6 @@ void cZoomScreen::EditMemory(cAvidaContext& ctx)
   
   // Finally, act on the edit method!
   switch (edit_method) {
-    case INST_EDIT_BREAKPOINT:
-      if (edit_head.GetMemory().FlagBreakpoint(edit_head.GetPosition()))
-        edit_head.SetFlagBreakpoint();
-      else
-        edit_head.ClearFlagBreakpoint();
-      break;
     case INST_EDIT_JUMP_IP:
       hardware.IP() = edit_head;
       memory_offset = 0;
@@ -1137,10 +1124,6 @@ void cZoomScreen::ViewInstruction()
   if (inst_ptr.GetMemory().FlagExecuted(inst_ptr.GetPosition())) window->SetBoldColor(COLOR_CYAN);
   else window->SetColor(COLOR_CYAN);
   window->Print(6, 25, "Executed");
-  
-  if (inst_ptr.GetMemory().FlagBreakpoint(inst_ptr.GetPosition())) window->SetBoldColor(COLOR_CYAN);
-  else window->SetColor(COLOR_CYAN);
-  window->Print(7, 25, "Breakpoint");
   
   
   // Print it!

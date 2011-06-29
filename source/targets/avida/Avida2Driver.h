@@ -1,9 +1,10 @@
 /*
- *  cTextViewerDriver.h
- *  Avida
+ *  Avida2Driver.h
+ *  avida
  *
  *  Created by David on 12/11/05.
- *  Copyright 1999-2009 Michigan State University. All rights reserved.
+ *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,40 +18,45 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#ifndef cTextViewerDriver_h
-#define cTextViewerDriver_h
+#ifndef Avida2Driver_h
+#define Avida2Driver_h
 
-#ifndef cTextViewerDriver_Base_h
-#include "cTextViewerDriver_Base.h"
-#endif
+#include "avida/core/Feedback.h"
+#include "avida/core/WorldDriver.h"
 
-class cTextViewerDriver : public cTextViewerDriver_Base
+class cWorld;
+
+
+class Avida2Driver : public Avida::WorldDriver
 {
-private:
-  bool m_pause;
-  bool m_firstupdate;
+protected:
+  cWorld* m_world;
+  bool m_done;
   
-  cTextViewerDriver();  // not implemented
+  class StdIOFeedback : public Avida::Feedback
+  {
+    void Error(const char* fmt, ...);
+    void Warning(const char* fmt, ...);
+    void Notify(const char* fmt, ...);
+  } m_feedback;
   
 public:
-  cTextViewerDriver(cWorld* world);
-  ~cTextViewerDriver();
+  Avida2Driver(cWorld* world);
+  ~Avida2Driver();  
   
+  // Actions
   void Run();
-  
-  // Driver Actions
+
   void Finish() { m_done = true; }
-  void Pause() { m_pause = true; }
+  void Pause() { return; }
+  void Abort(Avida::AbortCondition condition);
   
-  
-  void RaiseException(const cString& in_string);
-  void RaiseFatalException(int exit_code, const cString& in_string);
-  
-  // Notifications
-  void NotifyComment(const cString& in_string);
-  void NotifyWarning(const cString& in_string);
+  // Facilities
+  Avida::Feedback& Feedback() { return m_feedback; }
 };
 
 #endif

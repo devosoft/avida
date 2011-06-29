@@ -233,8 +233,6 @@ public:
   int GetNeighborCellContents() const { return m_interface->GetNeighborCellContents(); }
   void Rotate(int direction) { m_interface->Rotate(direction); }
   
-  void DoBreakpoint() { m_interface->Breakpoint(); }
-  
   int GetInputAt(int i) { return m_interface->GetInputAt(i); }
   int GetNextInput() { return m_interface->GetInputAt(m_input_pointer); }
   int GetNextInput(int& in_input_pointer) { return m_interface->GetInputAt(in_input_pointer); }
@@ -663,15 +661,15 @@ private:
 
 
 inline double cOrganism::GetTestFitness(cAvidaContext& ctx) const {
-  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetFitness();
+  return cGenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetFitness();
 }
 
 inline double cOrganism::GetTestMerit(cAvidaContext& ctx) const {
-  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetMerit();
+  return cGenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetMerit();
 }
 
 inline double cOrganism::GetTestColonyFitness(cAvidaContext& ctx) const {
-  return cGenomeTestMetrics::GetMetrics(ctx, GetBioGroup("genotype"))->GetColonyFitness();
+  return cGenomeTestMetrics::GetMetrics(m_world, ctx, GetBioGroup("genotype"))->GetColonyFitness();
 }
 
 

@@ -47,7 +47,6 @@
 #define FAULT_X      2
 #define FAULT_Y     13
 
-#define INST_EDIT_BREAKPOINT  0
 #define INST_EDIT_JUMP_IP     1
 #define INST_EDIT_CHANGE      2
 #define INST_EDIT_INSERT      3

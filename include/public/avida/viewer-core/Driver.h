@@ -97,9 +97,8 @@ namespace Avida {
       // ------------------------------------------------------------------------------------------------------------  
       
     public:
-      void SignalBreakpoint() { ; }
-      void SetDone() { m_mutex.Lock(); m_done = true; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
-      void SetPause() { m_mutex.Lock(); m_pause_state = DRIVER_PAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
+      void Finish() { m_mutex.Lock(); m_done = true; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
+      void Pause() { m_mutex.Lock(); m_pause_state = DRIVER_PAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
       void Resume() { m_mutex.Lock(); m_pause_state = DRIVER_UNPAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
       
       void RaiseException(const cString& in_string);

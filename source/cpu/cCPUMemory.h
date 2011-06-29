@@ -38,11 +38,11 @@ private:
 	static const unsigned char MASK_COPIED   = 0x01;
 	static const unsigned char MASK_MUTATED  = 0x02;
 	static const unsigned char MASK_EXECUTED = 0x04;
-	static const unsigned char MASK_BREAK    = 0x08;
-	static const unsigned char MASK_POINTMUT = 0x10;
-	static const unsigned char MASK_COPYMUT  = 0x20;
-	static const unsigned char MASK_INJECTED = 0x40;
-	static const unsigned char MASK_UNUSED   = 0x80; // unused bit
+	static const unsigned char MASK_POINTMUT = 0x08;
+	static const unsigned char MASK_COPYMUT  = 0x10;
+	static const unsigned char MASK_INJECTED = 0x20;
+	static const unsigned char MASK_UNUSED1  = 0x40; // unused bit
+	static const unsigned char MASK_UNUSED2  = 0x80; // unused bit
   
   tArray<unsigned char> m_flag_array;
 
@@ -59,7 +59,6 @@ public:
   inline bool FlagCopied(int pos) const     { return MASK_COPIED   & m_flag_array[pos]; }
   inline bool FlagMutated(int pos) const    { return MASK_MUTATED  & m_flag_array[pos]; }
   inline bool FlagExecuted(int pos) const   { return MASK_EXECUTED & m_flag_array[pos]; }
-  inline bool FlagBreakpoint(int pos) const { return MASK_BREAK    & m_flag_array[pos]; }
   inline bool FlagPointMut(int pos) const   { return MASK_POINTMUT & m_flag_array[pos]; }
   inline bool FlagCopyMut(int pos) const    { return MASK_COPYMUT  & m_flag_array[pos]; }
   inline bool FlagInjected(int pos) const   { return MASK_INJECTED & m_flag_array[pos]; }
@@ -67,7 +66,6 @@ public:
   inline void SetFlagCopied(int pos)     { m_flag_array[pos] |= MASK_COPIED;   }
   inline void SetFlagMutated(int pos)    { m_flag_array[pos] |= MASK_MUTATED;  }
   inline void SetFlagExecuted(int pos)   { m_flag_array[pos] |= MASK_EXECUTED; }
-  inline void SetFlagBreakpoint(int pos) { m_flag_array[pos] |= MASK_BREAK;    }
   inline void SetFlagPointMut(int pos)   { m_flag_array[pos] |= MASK_POINTMUT; }
   inline void SetFlagCopyMut(int pos)    { m_flag_array[pos] |= MASK_COPYMUT;  }
   inline void SetFlagInjected(int pos)   { m_flag_array[pos] |= MASK_INJECTED; }
@@ -75,7 +73,6 @@ public:
 	inline void ClearFlagCopied(int pos)     { m_flag_array[pos] &= ~MASK_COPIED;   }
 	inline void ClearFlagMutated(int pos)    { m_flag_array[pos] &= ~MASK_MUTATED;  }
 	inline void ClearFlagExecuted(int pos)   { m_flag_array[pos] &= ~MASK_EXECUTED; }
-	inline void ClearFlagBreakpoint(int pos) { m_flag_array[pos] &= ~MASK_BREAK;    }
 	inline void ClearFlagPointMut(int pos)   { m_flag_array[pos] &= ~MASK_POINTMUT; }
 	inline void ClearFlagCopyMut(int pos)    { m_flag_array[pos] &= ~MASK_COPYMUT;  }
   inline void ClearFlagInjected(int pos)   { m_flag_array[pos] &= ~MASK_INJECTED; }

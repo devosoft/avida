@@ -44,9 +44,8 @@ public:
   void Run();
   
   // Driver Actions
-  void SignalBreakpoint() { return; }
-  void SetDone() { m_done = true; }
-  void SetPause() { return; }
+  void Finish() { m_done = true; }
+  void Pause() { return; }
   
   void RaiseException(const cString& in_string);
   void RaiseFatalException(int exit_code, const cString& in_string);

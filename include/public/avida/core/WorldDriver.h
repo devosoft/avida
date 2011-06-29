@@ -26,9 +26,9 @@
 #define AvidaCoreWorldDriver_h
 
 #include "apto/platform.h"
+#include "avida/core/Definitions.h"
 #include "avida/core/GlobalObject.h"
-
-class cString;
+#include "avida/core/Types.h"
 
 
 namespace Avida {  
@@ -41,28 +41,13 @@ namespace Avida {
   public:
     LIB_EXPORT virtual ~WorldDriver() { ; }
     
-    // Driver Actions
-    LIB_EXPORT virtual void SignalBreakpoint() = 0;
-    LIB_EXPORT virtual void SetDone() = 0;
-    LIB_EXPORT virtual void SetPause() = 0;
-
+    // Actions
+    LIB_EXPORT virtual void Pause() = 0;
+    LIB_EXPORT virtual void Finish() = 0;
+    LIB_EXPORT virtual void Abort(AbortCondition condition) = 0;
     
-    // Legacy Methods
-    // --------------------------------------------------------------------------------------------------------------
-
-    LIB_LOCAL virtual void RaiseException(const cString& in_string) = 0;
-    LIB_LOCAL virtual void RaiseFatalException(int exit_code, const cString& in_string) = 0;
-    
-    LIB_LOCAL virtual void NotifyComment(const cString& in_string) = 0;
-    LIB_LOCAL virtual void NotifyWarning(const cString& in_string) = 0;
-
-    LIB_LOCAL virtual bool IsInteractive() { return false; }
-    
-    
-    // Fast-forward through epochs when no replication is happening -- @JEB
-    // These are only implemented in the DefaultWorldDriver
-    LIB_LOCAL virtual void ClearFastForward() { }
-    LIB_LOCAL virtual bool GetFastForward() { return false; }
+    // Facilities
+    LIB_EXPORT virtual Avida::Feedback& Feedback() = 0;
   };
 };
 

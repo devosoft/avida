@@ -73,7 +73,6 @@ public:
   void GetNeighborhoodCellIDs(tArray<int>& list);
   int GetNeighborCellContents() { return 0; }
   void Rotate(int direction = 1);
-  void Breakpoint() { ; }
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;

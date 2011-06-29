@@ -100,7 +100,6 @@ public:
   int GetFacedCellID();
   int GetNeighborCellContents();
   void Rotate(int direction = 1);
-  void Breakpoint() { m_world->GetDriver().SignalBreakpoint(); }
   int GetInputAt(int& input_pointer);
   void ResetInputs(cAvidaContext& ctx);
   const tArray<int>& GetInputs() const;

@@ -1,9 +1,10 @@
 /*
- *  cDefaultRunDriver.cc
- *  Avida
+ *  Avida2Driver.cc
+ *  avida
  *
  *  Created by David on 12/11/05.
  *  Copyright 1999-2011 Michigan State University. All rights reserved.
+ *  http://avida.devosoft.org/
  *
  *
  *  This file is part of Avida.
@@ -17,9 +18,11 @@
  *  You should have received a copy of the GNU Lesser General Public License along with Avida.
  *  If not, see <http://www.gnu.org/licenses/>.
  *
+ *  Authors: David M. Bryson <david@programerror.com>
+ *
  */
 
-#include "cDefaultRunDriver.h"
+#include "Avida2Driver.h"
 
 #include "cAvidaContext.h"
 #include "cBGGenotype.h"
@@ -33,33 +36,30 @@
 #include "cString.h"
 #include "cWorld.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <iomanip>
 
+using namespace Avida;
 using namespace std;
 
 
-cDefaultRunDriver::cDefaultRunDriver(cWorld* world) : m_world(world), m_done(false), 
-m_fastforward(false),m_last_generation(0),  m_generation_same_update_count(0) 
+Avida2Driver::Avida2Driver(cWorld* world) : m_world(world), m_done(false)
 {
   GlobalObjectManager::Register(this);
   world->SetDriver(this);
-  
-  // Save this config variable
-  m_generation_update_fastforward_threshold = m_world->GetConfig().FASTFORWARD_UPDATES.Get();
-  m_population_fastforward_threshold = m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get();
 }
 
-cDefaultRunDriver::~cDefaultRunDriver()
+Avida2Driver::~Avida2Driver()
 {
   GlobalObjectManager::Unregister(this);
   delete m_world;
 }
 
 
-void cDefaultRunDriver::Run()
+void Avida2Driver::Run()
 {
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
@@ -87,19 +87,16 @@ void cDefaultRunDriver::Run()
       stats.ProcessUpdate();
     }
     
-    // don't process organisms if we are in fast-forward mode. -- @JEB
-    if (!GetFastForward()) {
-      // Process the update.
-			// query the world to calculate the exact size of this update:
-      const int UD_size = m_world->CalculateUpdateSize();
-      const double step_size = 1.0 / (double) UD_size;
-      
-      for (int i = 0; i < UD_size; i++) {
-        if(population.GetNumOrganisms() == 0) {
-          break;
-        }
-        (population.*ActiveProcessStep)(ctx, step_size, population.ScheduleOrganism());
+    // Process the update.
+    // query the world to calculate the exact size of this update:
+    const int UD_size = m_world->CalculateUpdateSize();
+    const double step_size = 1.0 / (double) UD_size;
+    
+    for (int i = 0; i < UD_size; i++) {
+      if(population.GetNumOrganisms() == 0) {
+        break;
       }
+      (population.*ActiveProcessStep)(ctx, step_size, population.ScheduleOrganism());
     }
     
     // end of update stats...
@@ -141,9 +138,6 @@ void cDefaultRunDriver::Run()
       }
     }
     
-    // Keep track of changes in generation for fast-forward purposes
-    UpdateFastForward(stats.GetGeneration(),stats.GetNumCreatures());
-    
     // Exit conditons...
     if((population.GetNumOrganisms()==0) && m_world->AllowsEarlyExit()) {
 			m_done = true;
@@ -151,44 +145,33 @@ void cDefaultRunDriver::Run()
   }
 }
 
-void cDefaultRunDriver::RaiseException(const cString& in_string)
+void Avida2Driver::StdIOFeedback::Error(const char* fmt, ...)
 {
-  cerr << "Error: " << in_string << endl;
+  printf("error: ");
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
 }
 
-void cDefaultRunDriver::RaiseFatalException(int exit_code, const cString& in_string)
+void Avida2Driver::StdIOFeedback::Warning(const char* fmt, ...)
 {
-  cerr << "Error: " << in_string << "  Exiting..." << endl;
-  exit(exit_code);
+  printf("warning: ");
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
 }
 
-void cDefaultRunDriver::NotifyComment(const cString& in_string)
+void Avida2Driver::StdIOFeedback::Notify(const char* fmt, ...)
 {
-  cout << in_string << endl;
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
 }
 
-void cDefaultRunDriver::NotifyWarning(const cString& in_string)
-{
-  cout << "Warning: " << in_string << endl;
-}
 
-void cDefaultRunDriver::UpdateFastForward (double inGeneration, int population)
-{
-  if (bool(m_population_fastforward_threshold))
-  {
-    if (population >= m_population_fastforward_threshold) m_fastforward = true;
-    else m_fastforward = false;
-  }
-  if (!m_generation_update_fastforward_threshold) return;
-  
-  if (inGeneration == m_last_generation)
-  {
-    m_generation_same_update_count++;
-    if (m_generation_same_update_count >= m_generation_update_fastforward_threshold) m_fastforward = true;
-  }
-  else
-  {
-    m_generation_same_update_count = 0;
-    m_last_generation = inGeneration;
-  }
-}

@@ -202,6 +202,12 @@ enum eBioUnitSource {
 
 namespace Avida
 {
+  enum AbortCondition {
+    INVALID_CONFIG = 2,
+    INTERNAL_ERROR = 50
+  };
+  
+  
   extern const char* const BioUnitSourceMap[];
 };
 

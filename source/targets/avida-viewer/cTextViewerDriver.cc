@@ -167,8 +167,3 @@ void cTextViewerDriver::NotifyWarning(const cString& in_string)
 {
   m_view->NotifyWarning(in_string);
 }
-
-void cTextViewerDriver::SignalBreakpoint()
-{
-  m_view->DoBreakpoint();
-}

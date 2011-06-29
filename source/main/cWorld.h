@@ -59,7 +59,7 @@ protected:
   
   cAnalyze* m_analyze;
   cAvidaConfig* m_conf;
-  cAvidaContext m_ctx;
+  cAvidaContext* m_ctx;
   cClassificationManager* m_class_mgr;
   cDataFileManager* m_datafile_mgr;
   cEnvironment* m_env;
@@ -97,7 +97,7 @@ public:
   // General Object Accessors
   cAnalyze& GetAnalyze();
   cAvidaConfig& GetConfig() { return *m_conf; }
-  cAvidaContext& GetDefaultContext() { return m_ctx; }
+  cAvidaContext& GetDefaultContext() { return *m_ctx; }
   cClassificationManager& GetClassificationManager() { return *m_class_mgr; }
   cDataFileManager& GetDataFileManager() { return *m_datafile_mgr; }
   cEnvironment& GetEnvironment() { return *m_env; }

@@ -213,12 +213,7 @@ bool cHardwareSMT::SingleProcess(cAvidaContext& ctx, bool speculative)
     
     AdvanceIP() = true;
     IP().Adjust();
-		
-    // BREAKPOINTS
-#if 0
-    if (IP().FlagBreakpoint()) m_organism->DoBreakpoint();
-#endif
-    
+		    
     // Print the status of this CPU at each step...
     if (m_tracer) m_tracer->TraceHardware(*this);
     

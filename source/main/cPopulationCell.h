@@ -149,7 +149,7 @@ public:
 	//! Diffuse genome fragments from this cell to its neighbors.
 	void DiffuseGenomeFragments();
 	//! Add fragments from the passed-in genome to the HGT fragments contained in this cell.
-	void AddGenomeFragments(const Sequence& genome);
+	void AddGenomeFragments(cAvidaContext& ctx, const Sequence& genome);
 	//! Retrieve the number of genome fragments currently found in this cell.
 	unsigned int CountGenomeFragments() const;
 	//! Remove and return the front genome fragment.

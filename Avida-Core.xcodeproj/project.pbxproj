@@ -86,11 +86,9 @@
 		7023EC4C0C0A431B00362B9C /* cDataFileManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885008F5FE5800FC65FE /* cDataFileManager.cc */; };
 		7023EC4D0C0A431B00362B9C /* cDataManager_Base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0885108F5FE5800FC65FE /* cDataManager_Base.cc */; };
 		7023EC4E0C0A431B00362B9C /* cDefaultAnalyzeDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */; };
-		7023EC500C0A431B00362B9C /* cDefaultRunDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */; };
 		7023EC510C0A431B00362B9C /* cDeme.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1097463D0AE9606E00929ED6 /* cDeme.cc */; };
 		7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */ = {isa = PBXBuildFile; fileRef = 702D4EFC08DA5341007BA469 /* cEnvironment.cc */; };
 		7023EC550C0A431B00362B9C /* cEventList.cc in Sources */ = {isa = PBXBuildFile; fileRef = 708BF2FD0AB65DC700A923BF /* cEventList.cc */; };
-		7023EC560C0A431B00362B9C /* cFallbackWorldDriver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 701D915C094B864A008B845F /* cFallbackWorldDriver.cc */; };
 		7023EC570C0A431B00362B9C /* cFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70B0888308F603D400FC65FE /* cFile.cc */; };
 		7023EC5A0C0A431B00362B9C /* cGenomeUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70CA6EB508DB7F8200068AC2 /* cGenomeUtil.cc */; };
 		7023EC5E0C0A431B00362B9C /* cHardwareBase.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70C1EFA308C39F2100F50912 /* cHardwareBase.cc */; };
@@ -257,6 +255,7 @@
 		7034D0F011CBEA4300020AC4 /* cPhenPlastUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 7034D0EE11CBEA4300020AC4 /* cPhenPlastUtil.h */; };
 		7034D0F111CBEA4300020AC4 /* cPhenPlastUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7034D0EF11CBEA4300020AC4 /* cPhenPlastUtil.cc */; };
 		70381F810EAD0BD000A97DFD /* ASAnalyzeLib.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */; };
+		7038918E13BBA88800606079 /* Avida2Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7038918C13BBA88800606079 /* Avida2Driver.cc */; };
 		7039884D09F00D020052ACE7 /* analyze.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D309EE8501001AEA89 /* analyze.cfg */; };
 		7039884E09F00D030052ACE7 /* avida.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D509EE8501001AEA89 /* avida.cfg */; };
 		7039884F09F00D060052ACE7 /* environment.cfg in Create work dir */ = {isa = PBXBuildFile; fileRef = 707AF2D709EE8501001AEA89 /* environment.cfg */; };
@@ -656,10 +655,6 @@
 		701B355F11E7744D00FEF49A /* tHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tHashMap.h; sourceTree = "<group>"; };
 		701B365B11EE013A00FEF49A /* tIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tIterator.h; sourceTree = "<group>"; };
 		701D51CB09C645F50009B4F8 /* cAvidaContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cAvidaContext.h; sourceTree = "<group>"; };
-		701D9151094B8483008B845F /* cFallbackWorldDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cFallbackWorldDriver.h; sourceTree = "<group>"; };
-		701D915C094B864A008B845F /* cFallbackWorldDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cFallbackWorldDriver.cc; sourceTree = "<group>"; };
-		701D930B094CAD6B008B845F /* cDefaultRunDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDefaultRunDriver.h; sourceTree = "<group>"; };
-		701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultRunDriver.cc; sourceTree = "<group>"; };
 		701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cDefaultAnalyzeDriver.h; sourceTree = "<group>"; };
 		701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cDefaultAnalyzeDriver.cc; sourceTree = "<group>"; };
 		701E746910A37967006B6193 /* cBGGenotype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cBGGenotype.h; sourceTree = "<group>"; };
@@ -751,6 +746,10 @@
 		70381F7F0EAD0BD000A97DFD /* ASAnalyzeLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAnalyzeLib.h; sourceTree = "<group>"; };
 		70381F800EAD0BD000A97DFD /* ASAnalyzeLib.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ASAnalyzeLib.cc; sourceTree = "<group>"; };
 		70381FDB0EAE2A2A00A97DFD /* ASAvidaNativeObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAvidaNativeObjects.h; sourceTree = "<group>"; };
+		7038918C13BBA88800606079 /* Avida2Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Avida2Driver.cc; sourceTree = "<group>"; };
+		7038918D13BBA88800606079 /* Avida2Driver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Avida2Driver.h; sourceTree = "<group>"; };
+		7038918F13BBB2A900606079 /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
+		7038919013BBB6D000606079 /* World.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = World.h; sourceTree = "<group>"; };
 		703D4D6D0ABA374A0032C8A0 /* cArgSchema.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cArgSchema.cc; sourceTree = "<group>"; };
 		70422A1C091B141000A5E67F /* cAnalyze.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = cAnalyze.cc; sourceTree = "<group>"; };
 		70422A1D091B141000A5E67F /* cAnalyze.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cAnalyze.h; sourceTree = "<group>"; };
@@ -1295,10 +1294,6 @@
 			children = (
 				701D93E6094CBF71008B845F /* cDefaultAnalyzeDriver.h */,
 				701D93E7094CBF71008B845F /* cDefaultAnalyzeDriver.cc */,
-				701D930B094CAD6B008B845F /* cDefaultRunDriver.h */,
-				701D930C094CAD6B008B845F /* cDefaultRunDriver.cc */,
-				701D9151094B8483008B845F /* cFallbackWorldDriver.h */,
-				701D915C094B864A008B845F /* cFallbackWorldDriver.cc */,
 				70B984220EBB5B7F00A828B1 /* tDMSingleton.h */,
 			);
 			path = drivers;
@@ -1445,6 +1440,7 @@
 		703549CD1337BB6C00D3865C /* core */ = {
 			isa = PBXGroup;
 			children = (
+				7038918F13BBB2A900606079 /* Context.h */,
 				70A53BC2135B6E9D00C3E661 /* Definitions.h */,
 				70ADB20A133A7995000B9C40 /* Feedback.h */,
 				7061AB7C1358BD420000B036 /* Genome.h */,
@@ -1452,6 +1448,7 @@
 				7061AB7D1358BD420000B036 /* Sequence.h */,
 				70FB4E851386E0B000D8F6F0 /* Types.h */,
 				70A53BBC135B5C7000C3E661 /* Version.h */,
+				7038919013BBB6D000606079 /* World.h */,
 				703549CE1337BB6D00D3865C /* WorldDriver.h */,
 			);
 			path = core;
@@ -1705,6 +1702,8 @@
 		70DCAC55097AF730002F8733 /* avida */ = {
 			isa = PBXGroup;
 			children = (
+				7038918D13BBA88800606079 /* Avida2Driver.h */,
+				7038918C13BBA88800606079 /* Avida2Driver.cc */,
 				70DCAC9B097AF7C0002F8733 /* primitive.cc */,
 			);
 			path = avida;
@@ -2482,11 +2481,9 @@
 				7023EC4C0C0A431B00362B9C /* cDataFileManager.cc in Sources */,
 				7023EC4D0C0A431B00362B9C /* cDataManager_Base.cc in Sources */,
 				7023EC4E0C0A431B00362B9C /* cDefaultAnalyzeDriver.cc in Sources */,
-				7023EC500C0A431B00362B9C /* cDefaultRunDriver.cc in Sources */,
 				7023EC510C0A431B00362B9C /* cDeme.cc in Sources */,
 				7023EC540C0A431B00362B9C /* cEnvironment.cc in Sources */,
 				7023EC550C0A431B00362B9C /* cEventList.cc in Sources */,
-				7023EC560C0A431B00362B9C /* cFallbackWorldDriver.cc in Sources */,
 				7023EC570C0A431B00362B9C /* cFile.cc in Sources */,
 				7023EC5A0C0A431B00362B9C /* cGenomeUtil.cc in Sources */,
 				7023EC5E0C0A431B00362B9C /* cHardwareBase.cc in Sources */,
@@ -2643,6 +2640,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */,
+				7038918E13BBA88800606079 /* Avida2Driver.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

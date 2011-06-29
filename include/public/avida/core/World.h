@@ -1,8 +1,8 @@
 /*
- *  core/Types.h
+ *  core/Context.h
  *  avida-core
  *
- *  Created by David on 5/20/11.
+ *  Created by David on 6/29/11.
  *  Copyright 2011 Michigan State University. All rights reserved.
  *  http://avida.devosoft.org/
  *
@@ -22,27 +22,25 @@
  *
  */
 
-#ifndef AvidaCoreTypes_h
-#define AvidaCoreTypes_h
+#ifndef AvidaCoreWorld_h
+#define AvidaCoreWorld_h
+
+#include "avida/core/Types.h"
+
 
 namespace Avida {
   
-  // Class Declarations
+  // World - container for the various facets of an Avida experiment
   // --------------------------------------------------------------------------------------------------------------
   
-  class Context;
-  class Feedback;
-  class Genome;
-  class GlobalObject;
-  class Sequence;
-  class World;
-  class WorldDriver;
-
-  
-  // Type Declarations
-  // --------------------------------------------------------------------------------------------------------------  
-  
-  typedef int Update; // Discrete unit of activity in Avida
+  class World
+  {
+  private:
+    
+  public:
+    World();
+    
+  };
   
 };
 

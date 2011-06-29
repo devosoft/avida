@@ -21,6 +21,7 @@
 
 #include "DriverActions.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
 #include "cAction.h"
@@ -38,7 +39,7 @@ class cActionExit : public cAction
 public:
   cActionExit(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext& ctx) { m_world->GetDriver().SetDone(); }
+  void Process(cAvidaContext& ctx) { m_world->GetDriver().Finish(); }
 };
 
 class cActionPause : public cAction
@@ -46,7 +47,7 @@ class cActionPause : public cAction
 public:
   cActionPause(cWorld* world, const cString& args, Feedback&) : cAction(world, args) { ; }
   static const cString GetDescription() { return "No Arguments"; }
-  void Process(cAvidaContext& ctx) { m_world->GetDriver().SetPause(); }
+  void Process(cAvidaContext& ctx) { m_world->GetDriver().Pause(); }
 };
 
 class cActionExitAveLineageLabelGreater : public cAction
@@ -65,7 +66,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_world->GetStats().GetAveLineageLabel() > m_threshold) {
-      m_world->GetDriver().SetDone();
+      m_world->GetDriver().Finish();
     }
   }
 };
@@ -86,28 +87,10 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_world->GetStats().GetAveLineageLabel() < m_threshold) {
-      m_world->GetDriver().SetDone();
+      m_world->GetDriver().Finish();
     }
   }
 };
-
-class cActionStopFastForward : public cAction
-{
-private:
-public:
-  cActionStopFastForward(cWorld* world, const cString& args, Feedback&) : cAction(world, args)
-  {
-    cString largs(args);
-  }
-  
-  static const cString GetDescription() { return "Arguments: none"; }
-  
-  void Process(cAvidaContext& ctx)
-  {
-      m_world->GetDriver().ClearFastForward();
-  }
-};
-
 
 /*! Exit Avida when the average generation is greater than or equal to a
 threshold value.  Respects demes / germlines configuration.
@@ -126,7 +109,8 @@ public:
       m_tgt_gen = largs.PopWord().AsDouble();
     } else {
       // error; no default value for targeted generation.
-      m_world->GetDriver().RaiseFatalException(-1, "ExitAveGeneration event requires generation.");
+      m_world->GetDriver().Feedback().Error("ExitAveGeneration event requires generation.");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
     
     // Can't currently calc generation for non-germlines demes.
@@ -146,12 +130,12 @@ public:
       // Using demes; generation might be different.
       if(m_world->GetConfig().DEMES_USE_GERMLINE.Get()
          && (m_world->GetStats().GetAveGermlineGeneration() > m_tgt_gen)) {
-        m_world->GetDriver().SetDone();
+        m_world->GetDriver().Finish();
       }
     } else {
       // No demes; generation is calculated in cStats.
       if(m_world->GetStats().GetGeneration() > m_tgt_gen) {
-        m_world->GetDriver().SetDone();
+        m_world->GetDriver().Finish();
       }
     }
   }
@@ -174,7 +158,8 @@ public:
       m_time = largs.PopWord().AsInt();
     } else {
       // error; no default value for elapsed time.
-      m_world->GetDriver().RaiseFatalException(-1, "ExitElapsedTime event requires elapsed time.");
+      m_world->GetDriver().Feedback().Error("ExitElapsedTime event requires elapsed time.");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
     
     // When did we start?
@@ -188,7 +173,7 @@ public:
   */
   void Process(cAvidaContext& ctx) {
     if((time(0) - m_then) >= m_time) {
-      m_world->GetDriver().SetDone();
+      m_world->GetDriver().Finish();
     }
   }
   
@@ -209,7 +194,8 @@ public:
       m_deme_rep = largs.PopWord().AsInt();
     } else {
       // error; no default value for elapsed time.
-      m_world->GetDriver().RaiseFatalException(-1, "ExitDemeReplications event requires a number of deme replications.");
+      m_world->GetDriver().Feedback().Error("ExitDemeReplications event requires a number of deme replications.");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
 	}
   
@@ -220,7 +206,7 @@ public:
 	 */
   void Process(cAvidaContext& ctx) {
     if(m_world->GetStats().GetNumDemeReplications() >= m_deme_rep) {
-      m_world->GetDriver().SetDone();
+      m_world->GetDriver().Finish();
     }
   }
   
@@ -236,7 +222,6 @@ void RegisterDriverActions(cActionLibrary* action_lib)
   action_lib->Register<cActionExitAveLineageLabelLess>("ExitAveLineageLabelLess");
   action_lib->Register<cActionExitAveGeneration>("ExitAveGeneration");
   action_lib->Register<cActionExitElapsedTime>("ExitElapsedTime");
-  action_lib->Register<cActionStopFastForward>("StopFastForward");
 	action_lib->Register<cActionExitDemeReplications>("ExitDemeReplications");
   action_lib->Register<cActionPause>("Pause");
 }

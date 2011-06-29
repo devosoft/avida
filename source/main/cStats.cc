@@ -2511,14 +2511,17 @@ void cStats::PrintOpinionsSetPerDeme(const cString& filename) {
  of the print events is also called, otherwise we throw an error.
  */
 void cStats::SentFlash(cOrganism& organism) {
-	static bool event_checked=false;
-	if(!event_checked && (m_world->GetEventsList() != 0)) {
-		if(!m_world->GetEventsList()->IsEventUpcoming("PrintSynchronizationData")
-			 && !m_world->GetEventsList()->IsEventUpcoming("PrintDetailedSynchronizationData")) {
-			m_world->GetDriver().RaiseFatalException(-1, "When using the flash instruction, either the PrintSynchronizationData or PrintDetailedSynchronizationData events must also be used.");
-		}
-		event_checked = true;
-	}
+
+  // @DMB - Gahhhh!!!  Static variable.  Non-obvious sanity check location.  Hardcoded event names.   Bad, bad, bad, bad...
+  
+//	static bool event_checked=false;
+//	if(!event_checked && (m_world->GetEventsList() != 0)) {
+//		if(!m_world->GetEventsList()->IsEventUpcoming("PrintSynchronizationData")
+//			 && !m_world->GetEventsList()->IsEventUpcoming("PrintDetailedSynchronizationData")) {
+//			m_world->GetDriver().RaiseFatalException(-1, "When using the flash instruction, either the PrintSynchronizationData or PrintDetailedSynchronizationData events must also be used.");
+//		}
+//		event_checked = true;
+//	}
 
   ++m_flash_count;
 	if(organism.GetOrgInterface().GetDeme() != 0) {

@@ -32,7 +32,6 @@
 #include "cClassificationManager.h"
 #include "cEnvironment.h"
 #include "cEventList.h"
-#include "cFallbackWorldDriver.h"
 #include "cHardwareManager.h"
 #include "cInstSet.h"
 #include "cPopulation.h"
@@ -46,7 +45,7 @@ using namespace AvidaTools;
 
 
 cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
-  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(this, m_rng), m_class_mgr(NULL), m_datafile_mgr(NULL)
+  : m_working_dir(wd), m_analyze(NULL), m_conf(cfg), m_ctx(NULL), m_class_mgr(NULL), m_datafile_mgr(NULL)
   , m_env(NULL), m_event_list(NULL), m_hw_mgr(NULL), m_pop(NULL), m_stats(NULL), m_driver(NULL), m_data_mgr(NULL)
 {
 }
@@ -91,9 +90,6 @@ cWorld::~cWorld()
 bool cWorld::setup(cUserFeedback* feedback)
 {
   bool success = true;
-  
-  m_own_driver = true;
-  m_driver = new cFallbackWorldDriver();
   
   // Setup Random Number Generator
   m_rng.ResetSeed(m_conf->RANDOM_SEED.Get());
@@ -198,6 +194,8 @@ void cWorld::SetDriver(WorldDriver* driver, bool take_ownership)
 {
   // cleanup current driver, if needed
   if (m_own_driver) delete m_driver;
+  if (m_ctx) delete m_ctx;
+  m_ctx = new cAvidaContext(driver, m_rng);
   
   // store new driver information
   m_driver = driver;

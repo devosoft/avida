@@ -34,9 +34,9 @@
 using namespace Avida;
 
 
-cGenomeTestMetrics::cGenomeTestMetrics(cAvidaContext& ctx, cBioGroup* bg)
+cGenomeTestMetrics::cGenomeTestMetrics(cWorld* world, cAvidaContext& ctx, cBioGroup* bg)
 {
-  tAutoRelease<cTestCPU> testcpu(ctx.GetWorld()->GetHardwareManager().CreateTestCPU());
+  tAutoRelease<cTestCPU> testcpu(world->GetHardwareManager().CreateTestCPU());
   
   cCPUTestInfo test_info;
   testcpu->TestGenome(ctx, test_info, Genome(bg->GetProperty("genome").AsString()));
@@ -54,11 +54,11 @@ cGenomeTestMetrics::cGenomeTestMetrics(cAvidaContext& ctx, cBioGroup* bg)
 
 
 
-cGenomeTestMetrics* cGenomeTestMetrics::GetMetrics(cAvidaContext& ctx, cBioGroup* bg)
+cGenomeTestMetrics* cGenomeTestMetrics::GetMetrics(cWorld* world, cAvidaContext& ctx, cBioGroup* bg)
 {
   cGenomeTestMetrics* metrics = bg->GetData<cGenomeTestMetrics>();
   if (!metrics && bg->HasProperty("genome")) {
-    metrics = new cGenomeTestMetrics(ctx, bg);
+    metrics = new cGenomeTestMetrics(world, ctx, bg);
     assert(metrics);
     bg->AttachData(metrics);
   }

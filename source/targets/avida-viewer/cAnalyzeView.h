@@ -51,7 +51,6 @@ public:
   void NotifyComment(const cString & in_string);
   void NotifyOutput(const cString & in_string);
   void Pause() { ; }
-  void DoBreakpoint() { ; }
 
   int Confirm(const cString & message);
   void Notify(const cString & message);

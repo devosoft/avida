@@ -384,13 +384,7 @@ bool cHardwareExperimental::SingleProcess(cAvidaContext& ctx, bool speculative)
     cHeadCPU& ip = m_threads[m_cur_thread].heads[nHardware::HEAD_IP];
     ip.Adjust();
     
-    // BREAKPOINTS
-#if 0
-    if (ip.FlagBreakpoint()) {
-      m_organism->DoBreakpoint();
-    }
-#endif
-    
+   
     // Print the status of this CPU at each step...    
     if (m_tracer != NULL) m_tracer->TraceHardware(*this);
     

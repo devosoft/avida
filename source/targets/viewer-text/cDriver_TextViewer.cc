@@ -181,11 +181,6 @@ void cDriver_TextViewer::Run()
 }
 
 
-void cDriver_TextViewer::SignalBreakpoint()
-{
-//  m_view.DoBreakpoint();
-}
-
 
 void cDriver_TextViewer::Flush()
 {

@@ -107,7 +107,6 @@ cAnalyze::cAnalyze(cWorld* world)
 , interactive_depth(0)
 {
   random.ResetSeed(m_world->GetConfig().RANDOM_SEED.Get());
-  if (m_world->GetDriver().IsInteractive()) exit_on_error = false;
   
   for (int i = 0; i < MAX_BATCHES; i++) {
     batch[i].Name().Set("Batch%d", i);
@@ -250,7 +249,7 @@ void cAnalyze::LoadResources(cString cur_string)
   
   cout << "Loading Resources from: " << filename << endl;
   
-  if (!m_resources->LoadFile(filename, m_world->GetWorkingDir())) m_world->GetDriver().RaiseException("failed to load resource file");
+  if (!m_resources->LoadFile(filename, m_world->GetWorkingDir())) cerr << "error: failed to load resource file" << endl;
 }
 
 double cAnalyze::AnalyzeEntropy(cAnalyzeGenotype* genotype, double mu) 
@@ -1564,10 +1563,9 @@ void cAnalyze::SampleOffspring(cString cur_string)
       use_manual_inputs = true;
       for (int k = 0; cur_string.GetSize(); k++)
         manual_inputs[k] = cur_string.PopWord().AsInt();
-    } else if (m_world->GetVerbosity() >= VERBOSE_ON){
-      msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
-              cur_string.CountNumWords(), m_world->GetEnvironment().GetInputSize());
-      m_world->GetDriver().NotifyWarning(msg);
+    } else if (m_world->GetVerbosity() >= VERBOSE_ON) {
+      cerr << "warning: Invalid number of environment inputs requested for recalculation: " << cur_string.CountNumWords()
+           << " specified, " << m_world->GetEnvironment().GetInputSize() << " required." << endl;
     }
   }
   
@@ -1580,10 +1578,10 @@ void cAnalyze::SampleOffspring(cString cur_string)
 
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     msg.Set("Sampling %d offspring from each of the %d organisms in batch %d...", number_to_sample, batch[cur_batch].GetSize(), cur_batch);
-    m_world->GetDriver().NotifyComment(msg);
+    cout << msg << endl;
   } else{ 
     msg.Set("Sampling offspring...");
-    m_world->GetDriver().NotifyComment(msg);
+    cout << msg << endl;
   }
   
   // Load the mutation rates from the environment.
@@ -1675,7 +1673,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     sg = first_arg.AsInt();
     if (sg < 0 || sg >= m_world->GetEnvironment().GetNumStateGrids()) {
       msg.Set("invalid state grid selection");
-      m_world->GetDriver().NotifyWarning(msg);
+      cerr << "warning: " << msg << endl;
       return;
     }
     first_arg = cur_string.PopWord();
@@ -1697,7 +1695,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     } else if (m_world->GetVerbosity() >= VERBOSE_ON){
       msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
               cur_string.CountNumWords(), m_world->GetEnvironment().GetInputSize());
-      m_world->GetDriver().NotifyWarning(msg);
+      cerr << "warning: " << msg << endl;
     }
   }
   
@@ -1706,7 +1704,7 @@ void cAnalyze::CommandTrace(cString cur_string)
     msg.Set("Tracing batch %d", cur_batch);
   else 
     msg.Set("Tracing organisms.");
-  m_world->GetDriver().NotifyComment(msg);
+  cout << msg << endl;
   
   cTestCPU* testcpu = m_world->GetHardwareManager().CreateTestCPU();  
   
@@ -1734,7 +1732,7 @@ void cAnalyze::CommandTrace(cString cur_string)
 
     if (m_world->GetVerbosity() >= VERBOSE_ON){
       msg = cString("Tracing ") + filename;
-      m_world->GetDriver().NotifyComment(msg);
+      cout << msg << endl;
     }
     
     testcpu->TestGenome(m_ctx, test_info, genotype->GetGenome());
@@ -4451,7 +4449,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
 {
   cString msg;  //Use if to construct any messages to send to driver
   
-  m_world->GetDriver().NotifyComment("Constructing genotype-phenotype maps");
+  cout << "Constructing genotype-phenotype maps" << endl;
   
   // Load in the variables / default them
   cString directory         = PopDirectory(cur_string.PopWord(), "phenotype/");
@@ -4471,7 +4469,7 @@ void cAnalyze::CommandMapTasks(cString cur_string)
   cStringList arg_list(cur_string);
   
   msg.Set("Found %d args.", arg_list.GetSize());
-  m_world->GetDriver().NotifyComment(msg);
+  cout << msg << endl;
   
   int use_resources = 0;
   
@@ -4492,16 +4490,18 @@ void cAnalyze::CommandMapTasks(cString cur_string)
     if (arg_list.GetSize() >= pos + m_world->GetEnvironment().GetInputSize() - 1)
       for (int k = 0; k < m_world->GetEnvironment().GetInputSize(); k++)
         manual_inputs[k] = arg_list.PopLine(pos).AsInt();  
-    else
-      m_world->GetDriver().RaiseFatalException(1, "CommandMapTask: Invalid use of use_manual_inputs");
+    else {
+      cerr << "error: CommandMapTask: Invalid use of use_manual_inputs" << endl;
+      exit(1);
+    }
   }
   
   msg.Set("There are %d column args.", arg_list.GetSize());
-  m_world->GetDriver().NotifyComment(msg);
+  cout << msg << endl;
   
   cAnalyzeGenotype::GetDataCommandManager().LoadCommandList(arg_list, output_list);
   
-  m_world->GetDriver().NotifyComment("Args are loaded.");
+  cout << "Args are loaded." << endl;
   
   const int num_cols = output_list.GetSize();
   
@@ -5282,7 +5282,7 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
   double log10_end_pr_fail = 0;
   if (cur_string.GetSize() != 0) log10_end_pr_fail = cur_string.PopWord().AsDouble();
   if (log10_end_pr_fail > 0) {
-    m_world->GetDriver().NotifyWarning("ANALYZE_REDUNDANCY_BY_INST_FAILURE: End log value greater than 0 set to 0.");
+    cerr << "warning: ANALYZE_REDUNDANCY_BY_INST_FAILURE: End log value greater than 0 set to 0." << endl;
   }
   double log10_step_size_pr_fail = 0.1;
   if (cur_string.GetSize() != 0) log10_step_size_pr_fail = cur_string.PopWord().AsDouble();
@@ -5326,7 +5326,8 @@ void cAnalyze::CommandAnalyzeRedundancyByInstFailure(cString cur_string)
   
     // Avoid unintentional use with no instructions having a chance of failure
     if (num_pr_fail_insts == 0) {
-      m_world->GetDriver().RaiseFatalException(1,"ANALYZE_REDUNDANCY_BY_INST_FAILURE: No instructions have a chance of failure in default instruction set.");
+      cerr << "ANALYZE_REDUNDANCY_BY_INST_FAILURE: No instructions have a chance of failure in default instruction set." << endl;
+      exit(1);
     }
   
     // Recalculate the baseline fitness
@@ -8160,7 +8161,7 @@ void cAnalyze::BatchRecalculate(cString cur_string)
     } else if (m_world->GetVerbosity() >= VERBOSE_ON){
       msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
               cur_string.CountNumWords(), m_world->GetEnvironment().GetInputSize());
-      m_world->GetDriver().NotifyWarning(msg);
+      cerr << "warning: " << msg << endl;
     }
   }
   
@@ -8173,15 +8174,15 @@ void cAnalyze::BatchRecalculate(cString cur_string)
 
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     msg.Set("Running batch %d through test CPUs...", cur_batch);
-    m_world->GetDriver().NotifyComment(msg);
+    cout << msg << endl;
   } else{ 
     msg.Set("Running through test CPUs...");
-    m_world->GetDriver().NotifyComment(msg);
+    cout << msg << endl;
   }
   
   if (m_world->GetVerbosity() >= VERBOSE_ON && batch[cur_batch].IsLineage() == false) {
     msg.Set("Batch may not be a lineage; parent and ancestor distances may not be correct"); 
-    m_world->GetDriver().NotifyWarning(msg);
+    cerr << "warning: " << msg << endl;
   }
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -8230,22 +8231,28 @@ void cAnalyze::BatchRecalculateWithArgs(cString cur_string)
     if (args.GetSize() >= pos + num - 2) 
       for (int k = 0; k < num; k++)
         manual_inputs[k] = args.PopLine(pos).AsInt();  
-    else
-      m_world->GetDriver().RaiseFatalException(1, "RecalculateWithArgs: Invalid use of use_manual_inputs");
+    else {
+      cerr << "error: RecalculateWithArgs: Invalid use of use_manual_inputs" << endl;
+      exit(1);
+    }
   }
   if ( (pos = args.LocateString("update")) != -1 ){
     args.PopString("update");
     if (args.GetSize() >= pos - 1){
       update = args.PopLine(pos).AsInt();
-    } else
-       m_world->GetDriver().RaiseFatalException(1, "RecalculateWithArgs: Invalid use of update (did you specify a value?)");
+    } else {
+       cerr << "error: RecalculateWithArgs: Invalid use of update (did you specify a value?)" << endl;
+      exit(1);
+    }
   }
   if ( (pos = args.LocateString("num_trials")) != -1){
     args.PopString("num_trials");
     if (args.GetSize() >= pos - 1)
       num_trials = args.PopLine(pos).AsInt();
-    else
-      m_world->GetDriver().RaiseFatalException(1, "RecalculateWithArgs: Invalid use of num_trials (did you specify a value?)");
+    else {
+      cerr << "error: RecalculateWithArgs: Invalid use of num_trials (did you specify a value?)" << endl;
+      exit(1);
+    }
   }
   
   if (use_manual_inputs)
@@ -8261,14 +8268,14 @@ void cAnalyze::BatchRecalculateWithArgs(cString cur_string)
   // Notifications
   if (m_world->GetVerbosity() >= VERBOSE_ON) {
     msg.Set("Running batch %d through test CPUs...", cur_batch);
-    m_world->GetDriver().NotifyComment(msg);
+    cout << msg << endl;
   } else{ 
     msg.Set("Running through test CPUs...");
-    m_world->GetDriver().NotifyComment(msg);
+    cout << msg << endl;
   }
   if (m_world->GetVerbosity() >= VERBOSE_ON && batch[cur_batch].IsLineage() == false) {
     msg.Set("Batch may not be a lineage; parent and ancestor distances may not be correct"); 
-    m_world->GetDriver().NotifyWarning(msg);
+    cerr << "warning: " << msg << endl;
   }
   
   tListIterator<cAnalyzeGenotype> batch_it(batch[cur_batch].List());
@@ -8963,7 +8970,7 @@ void cAnalyze::PopCommonCPUTestParameters(cWorld* in_world, cString& cur_string,
     } else if (in_world->GetVerbosity() >= VERBOSE_ON){
       msg.Set("Invalid number of environment inputs requested for recalculation: %d specified, %d required.", 
               cur_string.CountNumWords(), in_world->GetEnvironment().GetInputSize());
-      in_world->GetDriver().NotifyWarning(msg);
+      cerr << "warning: " << msg << endl;
     }
   }
   

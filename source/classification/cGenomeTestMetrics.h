@@ -26,6 +26,7 @@
 
 class cAvidaContext;
 class cBioGroup;
+class cWorld;
 
 
 class cGenomeTestMetrics
@@ -42,7 +43,7 @@ private:
   
   cGenomeTestMetrics(); // @not_implemented
   
-  cGenomeTestMetrics(cAvidaContext& ctx, cBioGroup* bg);
+  cGenomeTestMetrics(cWorld* world, cAvidaContext& ctx, cBioGroup* bg);
   
 public:
   bool IsViable() const { return m_is_viable; }
@@ -54,7 +55,7 @@ public:
   int GetGestationTime() const { return m_gestation_time; }
   
   
-  static cGenomeTestMetrics* GetMetrics(cAvidaContext& ctx, cBioGroup* bg);
+  static cGenomeTestMetrics* GetMetrics(cWorld* world, cAvidaContext& ctx, cBioGroup* bg);
 };
 
 #endif

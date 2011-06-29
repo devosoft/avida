@@ -23,11 +23,12 @@
 
 #include "cAnalyzeJobQueue.h"
 #include "cAvidaContext.h"
+#include "cWorld.h"
 
 
 void cAnalyzeJobWorker::Run()
 {
-  cAvidaContext ctx(m_queue->m_world, NULL);
+  cAvidaContext ctx(&m_queue->m_world->GetDriver(), NULL);
   ctx.SetAnalyzeMode();
   
   cAnalyzeJob* job = NULL;

@@ -163,14 +163,6 @@ void cView::NotifyOutput(const cString & in_string)
   if (cur_screen == analyze_screen) analyze_screen->Refresh();
 }
 
-void cView::DoBreakpoint(cAvidaContext& ctx)
-{
-  if (info.GetPauseLevel() == PAUSE_OFF ||
-      info.GetPauseLevel() == PAUSE_ADVANCE_UPDATE) {
-    Pause();
-    NotifyUpdate(ctx);
-  }
-}
 
 void cView::DoInputs(cAvidaContext& ctx)
 {

@@ -48,8 +48,6 @@ protected:
   ~cTextViewerDriver_Base();
 
 public:
-  // Override standard output and error.
-  bool IsInteractive() { return true; }
   void Flush();
 
   bool ProcessKeypress(cAvidaContext& ctx, int keypress);

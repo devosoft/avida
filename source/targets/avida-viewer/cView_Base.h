@@ -27,7 +27,6 @@ public:
   virtual void NotifyComment(const cString & in_string) = 0;
   virtual void NotifyOutput(const cString & in_string) = 0;
   virtual void Pause() { ; }
-  virtual void DoBreakpoint() { ; }
 
   virtual int Confirm(const cString & message) = 0;
   virtual void Notify(const cString & message) = 0;

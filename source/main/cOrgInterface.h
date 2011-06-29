@@ -90,8 +90,6 @@ public:
   virtual int GetNeighborCellContents() = 0;
   virtual void Rotate(int direction = 1) = 0;
   
-  virtual void Breakpoint() = 0;
-  
   virtual int GetInputAt(int& input_pointer) = 0;
   virtual void ResetInputs(cAvidaContext& ctx) = 0;
   virtual const tArray<int>& GetInputs() const = 0;

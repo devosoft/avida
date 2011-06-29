@@ -86,7 +86,6 @@ public:
   void NotifyComment(const cString & in_string);
   void NotifyOutput(const cString & in_string);
   void Pause() { info.SetPauseLevel(PAUSE_ON); }
-  void DoBreakpoint(cAvidaContext& ctx);
   
   int Confirm(const cString & message);
   void Notify(const cString & message);

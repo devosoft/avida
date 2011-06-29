@@ -97,14 +97,12 @@ public:
   inline void SetFlagCopied() { return GetMemory().SetFlagCopied(m_position); }
   inline void SetFlagMutated() { return GetMemory().SetFlagMutated(m_position); }
   inline void SetFlagExecuted() { return GetMemory().SetFlagExecuted(m_position); }
-  inline void SetFlagBreakpoint() { return GetMemory().SetFlagBreakpoint(m_position); }
   inline void SetFlagPointMut() { return GetMemory().SetFlagPointMut(m_position); }
   inline void SetFlagCopyMut() { return GetMemory().SetFlagCopyMut(m_position); }
   
   inline void ClearFlagCopied() { return GetMemory().ClearFlagCopied(m_position); }
   inline void ClearFlagMutated() { return GetMemory().ClearFlagMutated(m_position); }
   inline void ClearFlagExecuted() { return GetMemory().ClearFlagExecuted(m_position); }
-  inline void ClearFlagBreakpoint() { return GetMemory().ClearFlagBreakpoint(m_position); }
   inline void ClearFlagPointMut() { return GetMemory().ClearFlagPointMut(m_position); }
   inline void ClearFlagCopyMut() { return GetMemory().ClearFlagCopyMut(m_position); }
   

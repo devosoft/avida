@@ -23,6 +23,7 @@
 #include "cPopulationInterface.h"
 
 #include "apto/platform.h"
+#include "avida/core/Feedback.h"
 
 #include "cDeme.h"
 #include "cEnvironment.h"
@@ -780,7 +781,8 @@ void cPopulationInterface::DoHGTDonation(cAvidaContext& ctx) {
 			break;
 		}
 		default: {
-			m_world->GetDriver().RaiseFatalException(1, "HGT_CONJUGATION_METHOD is set to an invalid value.");
+			ctx.Driver().Feedback().Error("HGT_CONJUGATION_METHOD is set to an invalid value.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
 			break;
 		}
 	}
@@ -830,7 +832,8 @@ void cPopulationInterface::DoHGTConjugation(cAvidaContext& ctx) {
 			break;
 		}
 		default: {
-			m_world->GetDriver().RaiseFatalException(1, "HGT_CONJUGATION_METHOD is set to an invalid value.");
+			ctx.Driver().Feedback().Error("HGT_CONJUGATION_METHOD is set to an invalid value.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
 			break;
 		}
 	}
@@ -883,11 +886,12 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				// this is a little hackish, but this is the cleanest way to make sure
 				// that all downstream stuff works right.
 				cell.ClearFragments();
-				cell.AddGenomeFragments(cell.GetOrganism()->GetGenome().GetSequence());
+				cell.AddGenomeFragments(ctx, cell.GetOrganism()->GetGenome().GetSequence());
 				break;
 			}
 			default: { // error
-				m_world->GetDriver().RaiseFatalException(1, "HGT_SOURCE is set to an invalid value.");
+        ctx.Driver().Feedback().Error("HGT_SOURCE is set to an invalid value.");
+        ctx.Driver().Abort(Avida::INVALID_CONFIG);
 				break;
 			}
 		}
@@ -921,7 +925,8 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				break;
 			}
 			default: { // error
-				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_SELECTION is set to an invalid value.");
+        ctx.Driver().Feedback().Error("HGT_FRAGMENT_SELECTION is set to an invalid value.");
+        ctx.Driver().Abort(Avida::INVALID_CONFIG);
 				break;
 			}
 		}
@@ -945,7 +950,8 @@ void cPopulationInterface::DoHGTMutation(cAvidaContext& ctx, Genome& offspring) 
 				break;
 			}
 			default: { // error
-				m_world->GetDriver().RaiseFatalException(1, "HGT_FRAGMENT_XFORM is set to an invalid value.");
+        ctx.Driver().Feedback().Error("HGT_FRAGMENT_XFORM is set to an invalid value.");
+        ctx.Driver().Abort(Avida::INVALID_CONFIG);
 				break;
 			}				
 		}

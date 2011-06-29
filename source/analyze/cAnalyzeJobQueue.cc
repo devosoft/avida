@@ -23,6 +23,7 @@
 
 #include "apto/platform.h"
 #include "avida/Avida.h"
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
 #include "cAnalyzeJobWorker.h"
@@ -108,7 +109,7 @@ void cAnalyzeJobQueue::AddJobImmediate(cAnalyzeJob* job)
 void cAnalyzeJobQueue::Start()
 {
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-    m_world->GetDriver().NotifyComment("waking worker threads...");
+    m_world->GetDriver().Feedback().Notify("waking worker threads...");
 
   m_cond.Broadcast();
 }
@@ -117,7 +118,7 @@ void cAnalyzeJobQueue::Start()
 void cAnalyzeJobQueue::Execute()
 {
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-    m_world->GetDriver().NotifyComment("waking worker threads...");
+    m_world->GetDriver().Feedback().Notify("waking worker threads...");
 
   m_cond.Broadcast();
   
@@ -129,12 +130,12 @@ void cAnalyzeJobQueue::Execute()
   m_mutex.Unlock();
 
   if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-    m_world->GetDriver().NotifyComment("job queue complete");
+    m_world->GetDriver().Feedback().Notify("job queue complete");
 }
 
 void cAnalyzeJobQueue::singleThreadedJobExecution(cAnalyzeJob* job)
 {
-  cAvidaContext ctx(m_world, NULL);
+  cAvidaContext ctx(&m_world->GetDriver(), NULL);
   ctx.SetRandom(GetRandom(job->GetID()));
   job->Run(ctx);
   delete job;

@@ -423,7 +423,7 @@ void cAnalyzeGenotype::CalcKnockouts(bool check_pairs, bool check_chart) const
       knockout_stats->pos_count++;
       ko_effect[line_num] = 1;
     } else {
-      m_world->GetDriver().RaiseException("internal: illegal state in CalcKnockouts()");
+      cerr << "error: internal: illegal state in CalcKnockouts()" << endl;
     }
     
     // Reset the mod_genome back to the original sequence.

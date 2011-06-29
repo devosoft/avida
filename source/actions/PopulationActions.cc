@@ -23,6 +23,7 @@
 
 #include "AvidaTools.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/Sequence.h"
 
 #include "cAction.h"
@@ -323,7 +324,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      m_world->GetDriver().NotifyWarning("InjectRange has invalid range!");
+      ctx.Driver().Feedback().Warning("InjectRange has invalid range!");
     } else {
       Genome genome;
       cUserFeedback feedback;
@@ -391,7 +392,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      m_world->GetDriver().NotifyWarning("InjectSequence has invalid range!");
+      ctx.Driver().Feedback().Warning("InjectSequence has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
@@ -453,7 +454,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      m_world->GetDriver().NotifyWarning("InjectSequenceWithDivMutRate has invalid range!");
+      ctx.Driver().Feedback().Warning("InjectSequenceWithDivMutRate has invalid range!");
     } else {
       const cInstSet& is = m_world->GetHardwareManager().GetDefaultInstSet();
       Genome genome(is.GetHardwareType(), is.GetInstSetName(), Sequence(m_sequence));
@@ -503,7 +504,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      m_world->GetDriver().NotifyWarning("InjectParasite has invalid range!");
+      ctx.Driver().Feedback().Warning("InjectParasite has invalid range!");
     } else {
       Genome genome;
       cUserFeedback feedback;
@@ -579,7 +580,7 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (m_cell_start < 0 || m_cell_end > m_world->GetPopulation().GetSize() || m_cell_start >= m_cell_end) {
-      m_world->GetDriver().NotifyWarning("InjectParasitePair has invalid range!");
+      ctx.Driver().Feedback().Warning("InjectParasitePair has invalid range!");
     } else {
       Genome genome, parasite;
       cUserFeedback feedback;
@@ -3478,7 +3479,8 @@ public:
       cString err("Unknown replication trigger '");
       err += in_trigger;
       err += "' in ReplicatDemes action.";
-      m_world->GetDriver().RaiseException(err);
+      m_world->GetDriver().Feedback().Error(err);
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
       m_rep_trigger = DEME_TRIGGER_UNKNOWN;
       return;
     }
@@ -3699,7 +3701,7 @@ public:
     if (m_max == -1) m_max = world_y;
     if (m_id < 0 || m_id >= world_x) {
       cString err = cStringUtil::Stringf("Column ID %d out of range for SeverGridCol", m_id);
-      m_world->GetDriver().RaiseException(err);
+      ctx.Driver().Feedback().Warning(err);
       return;
     }
     
@@ -3777,7 +3779,7 @@ public:
     if (m_max == -1) m_max = world_x;
     if (m_id < 0 || m_id >= world_y) {
       cString err = cStringUtil::Stringf("Row ID %d out of range for SeverGridRow", m_id);
-      m_world->GetDriver().RaiseException(err);
+      ctx.Driver().Feedback().Warning(err);
       return;
     }
     
@@ -3853,7 +3855,7 @@ public:
     if (m_max == -1) m_max = world_y;
     if (m_id < 0 || m_id >= world_x) {
       cString err = cStringUtil::Stringf("Column ID %d out of range for JoinGridCol", m_id);
-      m_world->GetDriver().RaiseException(err);
+      ctx.Driver().Feedback().Warning(err);
       return;
     }
     // Loop through all of the rows and make the cut on each...
@@ -3929,7 +3931,7 @@ public:
     if (m_max == -1) m_max = world_x;
     if (m_id < 0 || m_id >= world_y) {
       cString err = cStringUtil::Stringf("Row ID %d out of range for JoinGridRow", m_id);
-      m_world->GetDriver().RaiseException(err);
+      ctx.Driver().Feedback().Warning(err);
       return;
     }
     // Loop through all of the rows and make the cut on each...
@@ -3993,7 +3995,7 @@ public:
     const int world_y = m_world->GetPopulation().GetWorldY();
     if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
         m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
-      m_world->GetDriver().RaiseException("ConnectCells cell out of range");
+      ctx.Driver().Feedback().Warning("ConnectCells cell out of range");
       return;
     }
     int idA = m_a_y * world_x + m_a_x;
@@ -4033,7 +4035,7 @@ public:
     const int world_y = m_world->GetPopulation().GetWorldY();
     if (m_a_x < 0 || m_a_x >= world_x || m_a_y < 0 || m_a_y >= world_y ||
         m_b_x < 0 || m_b_x >= world_x || m_b_y < 0 || m_b_y >= world_y) {
-      m_world->GetDriver().RaiseException("DisconnectCells cell out of range");
+      ctx.Driver().Feedback().Warning("DisconnectCells cell out of range");
       return;
     }
     int idA = m_a_y * world_x + m_a_x;
@@ -4068,11 +4070,11 @@ public:
     const int num_cells = m_world->GetPopulation().GetSize();
     if (id1 < 0 || id1 >= num_cells ||
         id2 < 0 || id2 >= num_cells) {
-      m_world->GetDriver().RaiseException("SwapCells cell ID out of range");
+      ctx.Driver().Feedback().Warning("SwapCells cell ID out of range");
       return;
     }
     if (id1 == id2) {
-      m_world->GetDriver().NotifyWarning("SwapCells cell IDs identical");
+      ctx.Driver().Feedback().Warning("SwapCells cell IDs identical");
     }
     
     m_world->GetPopulation().SwapCells(id1, id2, ctx); 
@@ -4901,7 +4903,8 @@ public:
 		} 
 		
 		if((m_donation_p < 0.0) || (m_donation_p > 1.0)) {
-			world->GetDriver().RaiseFatalException(-1, "Conjugate event must include probability of donation [0..1].");
+			world->GetDriver().Feedback().Error("Conjugate event must include probability of donation [0..1].");
+      world->GetDriver().Abort(Avida::INVALID_CONFIG);
 		}
   }
   

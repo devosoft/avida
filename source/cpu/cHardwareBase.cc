@@ -22,6 +22,7 @@
 
 #include "cHardwareBase.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
@@ -537,7 +538,8 @@ void cHardwareBase::doSlipMutation(cAvidaContext& ctx, Sequence& genome, int fro
           break;
           
         default:
-          m_world->GetDriver().RaiseException("Unknown SLIP_FILL_MODE\n");
+          ctx.Driver().Feedback().Error("Unknown SLIP_FILL_MODE");
+          ctx.Driver().Abort(Avida::INVALID_CONFIG);
       }
     }
   }
@@ -1015,7 +1017,9 @@ void cHardwareBase::SingleProcess_PayPostCosts(cAvidaContext& ctx, const cInstru
 //! Called when the organism that owns this CPU has received a flash from a neighbor.
 void cHardwareBase::ReceiveFlash()
 {
-  m_world->GetDriver().RaiseFatalException(1, "Method cHardwareBase::ReceiveFlash must be overriden.");
+  // @TODO - this method should not be here
+  // Method cHardwareBase::ReceiveFlash must be overriden
+  exit(1);
 }
 
 /*! Retrieve a fragment of this organism's genome that extends downstream from the read head.

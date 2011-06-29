@@ -22,6 +22,7 @@
 
 #include "cPopulation.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/Sequence.h"
 
 #include "AvidaTools.h"
@@ -270,7 +271,8 @@ cPopulation::cPopulation(cWorld* world)
     // check to see if this is the hgt resource:
     if (res->GetHGTMetabolize()) {
       if (m_hgt_resid != -1) {
-	m_world->GetDriver().RaiseFatalException(-1, "Only one HGT resource is currently supported.");
+	m_world->GetDriver().Feedback().Error("Only one HGT resource is currently supported.");
+        m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
       }
       m_hgt_resid = i;
     }
@@ -312,14 +314,14 @@ cPopulation::cPopulation(cWorld* world)
         // could add deme resources to global resource stats here
       }
     } else {
-      cerr<< "ERROR: Resource \"" << res->GetName() <<"\"is not a global or deme resource.  Exit";
-      exit(1);
+      m_world->GetDriver().Feedback().Error("Resource \"%s\"is not a global or deme resource.", (const char*)res->GetName());
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
   }
   
   // if HGT is on, make sure there's a resource for it:
   if (m_world->GetConfig().ENABLE_HGT.Get() && (m_hgt_resid == -1)) {
-    m_world->GetDriver().NotifyWarning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
+    m_world->GetDriver().Feedback().Warning("HGT is enabled, but no HGT resource is defined; add hgt=1 to a single resource in the environment file.");
   }
 
 }
@@ -365,10 +367,6 @@ inline void cPopulation::AdjustSchedule(const cPopulationCell& cell, const cMeri
 
 bool cPopulation::ActivateOffspring(cAvidaContext& ctx, const Genome& offspring_genome, cOrganism* parent_organism)
 {
-  if (m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get() > 0 && GetNumOrganisms() >= m_world->GetConfig().FASTFORWARD_NUM_ORGS.Get())
-  {
-    return true;
-  }
   assert(parent_organism != NULL);
   bool is_doomed = false;
   tArray<cOrganism*> offspring_array;
@@ -1299,7 +1297,7 @@ void cPopulation::KillOrganism(cPopulationCell& in_cell, cAvidaContext& ctx)
   // the HGT resource.
   if(m_world->GetConfig().ENABLE_HGT.Get()
 		 && (m_world->GetConfig().HGT_COMPETENCE_P.Get() > 0.0)) {
-    in_cell.AddGenomeFragments(organism->GetGenome().GetSequence());
+    in_cell.AddGenomeFragments(ctx, organism->GetGenome().GetSequence());
   }
 
   // And clear it!
@@ -1776,8 +1774,8 @@ void cPopulation::CompeteDemes(const std::vector<double>& calculated_fitness, cA
 
       // better have more than deme tournament size, otherwise something is *really* screwed up:
       if (m_world->GetConfig().DEMES_TOURNAMENT_SIZE.Get() > static_cast<int>(deme_ids.size())) {
-        m_world->GetDriver().RaiseFatalException(-1,
-                                                 "Number of demes available to participate in a tournament < the deme tournament size.");
+        ctx.Driver().Feedback().Error("Number of demes available to participate in a tournament < the deme tournament size.");
+        ctx.Driver().Abort(Avida::INVALID_CONFIG);
       }
 
       // Run the tournaments.
@@ -2083,7 +2081,7 @@ void cPopulation::ReplicateDeme(cDeme & source_deme, cAvidaContext& ctx)
 
  @refactor Replace manual mutation with strategy pattern.
  */
-void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx2) 
+void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext& ctx) 
 {
   // Stats tracking; pre-replication hook.
   m_world->GetStats().DemePreReplication(source_deme, target_deme);
@@ -2091,7 +2089,7 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
   // used to pass energy to offspring demes (set to zero if energy model is not enabled)
   double source_deme_energy(0.0), deme_energy_decay(0.0), parent_deme_energy(0.0), offspring_deme_energy(0.0);
   if (m_world->GetConfig().ENERGY_ENABLED.Get()) {
-    double energyRemainingInSourceDeme = source_deme.CalculateTotalEnergy(ctx2); 
+    double energyRemainingInSourceDeme = source_deme.CalculateTotalEnergy(ctx); 
     source_deme.SetEnergyRemainingInDemeAtReplication(energyRemainingInSourceDeme); 
     source_deme_energy = energyRemainingInSourceDeme + source_deme.GetTotalEnergyTestament(); 
 
@@ -2143,7 +2141,6 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     // @JEB Original germlines
     Genome next_germ(source_deme.GetGermline().GetLatest());
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(next_germ.GetInstSet());
-    cAvidaContext ctx(m_world, m_world->GetRandom());
 
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<next_germ.GetSize(); ++i) {
@@ -2174,13 +2171,13 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     m_world->GetStats().GermlineReplication(source_deme.GetGermline(), target_deme.GetGermline());
 
     // All done with the germline manipulation; seed each deme.
-    SeedDeme(source_deme, source_deme.GetGermline().GetLatest(), SRC_DEME_GERMLINE, ctx2); 
+    SeedDeme(source_deme, source_deme.GetGermline().GetLatest(), SRC_DEME_GERMLINE, ctx); 
 
     /* MJM - source and target deme could be the same!
      * Seeding the same deme twice probably shouldn't happen.
      */
     if (source_deme.GetDemeID() != target_deme.GetDemeID()) {
-      SeedDeme(target_deme, target_deme.GetGermline().GetLatest(), SRC_DEME_GERMLINE, ctx2); 
+      SeedDeme(target_deme, target_deme.GetGermline().GetLatest(), SRC_DEME_GERMLINE, ctx); 
     }
 
   } else if (m_world->GetConfig().DEMES_USE_GERMLINE.Get() == 2) {
@@ -2195,7 +2192,6 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     Genome mg(germline_genotype->GetProperty("genome").AsString());
     cCPUMemory new_genome(mg.GetSequence());
     const cInstSet& instset = m_world->GetHardwareManager().GetInstSet(mg.GetInstSet());
-    cAvidaContext ctx(m_world, m_world->GetRandom());
 
     if (m_world->GetConfig().GERMLINE_COPY_MUT.Get() > 0.0) {
       for(int i=0; i<new_genome.GetSize(); ++i) {
@@ -2226,12 +2222,12 @@ void cPopulation::ReplaceDeme(cDeme& source_deme, cDeme& target_deme, cAvidaCont
     cBioGroup* new_germline_genotype = germline_genotype->ClassifyNewBioUnit(&unit, &parents);
     source_deme.ReplaceGermline(new_germline_genotype);
     target_deme.ReplaceGermline(new_germline_genotype);
-    SeedDeme(source_deme, new_germline_genotype, SRC_DEME_GERMLINE, ctx2); 
-    SeedDeme(target_deme, new_germline_genotype, SRC_DEME_GERMLINE, ctx2); 
+    SeedDeme(source_deme, new_germline_genotype, SRC_DEME_GERMLINE, ctx); 
+    SeedDeme(target_deme, new_germline_genotype, SRC_DEME_GERMLINE, ctx); 
     new_germline_genotype->RemoveBioUnit(&unit);
   } else {
     // Not using germlines; things are much simpler.  Seed the target from the source.
-    target_successfully_seeded = SeedDeme(source_deme, target_deme, ctx2); 
+    target_successfully_seeded = SeedDeme(source_deme, target_deme, ctx); 
   }
 
 
@@ -2487,7 +2483,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
           if (source_deme.GetOrgCount() >= 2) {
 
             if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() != 0) {
-              m_world->GetDriver().RaiseFatalException(1, "Germline DEMES_ORGANISM_SELECTION methods 2 and 3 can only be used with DEMES_DIVIDE_METHOD 0.");
+              ctx.Driver().Feedback().Error("Germline DEMES_ORGANISM_SELECTION methods 2 and 3 can only be used with DEMES_DIVIDE_METHOD 0.");
+              ctx.Driver().Abort(Avida::INVALID_CONFIG);
             }
 
             tArray<cOrganism*> prospective_founders;
@@ -2705,7 +2702,8 @@ bool cPopulation::SeedDeme(cDeme& source_deme, cDeme& target_deme, cAvidaContext
       else if (m_world->GetConfig().DEMES_DIVIDE_METHOD.Get() == 2) {
       }
       else {
-        m_world->GetDriver().RaiseFatalException(1, "Unknown DEMES_DIVIDE_METHOD");
+        ctx.Driver().Feedback().Error("Unknown DEMES_DIVIDE_METHOD");
+        ctx.Driver().Abort(Avida::INVALID_CONFIG);
       }
 
 
@@ -4171,7 +4169,8 @@ cPopulationCell& cPopulation::PositionDemeMigration(cPopulationCell& parent_cell
 
     // Up one row
     if (m_world->GetConfig().DEMES_NUM_X.Get() == 0) {
-      m_world->GetDriver().RaiseFatalException(1, "DEMES_NUM_X must be non-zero if DEMES_MIGRATION_METHOD 1 used.");
+      m_world->GetDriver().Feedback().Error("DEMES_NUM_X must be non-zero if DEMES_MIGRATION_METHOD 1 used.");
+      m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
     }
     int x_size = m_world->GetConfig().DEMES_NUM_X.Get();
     int y_size = (int) (m_world->GetConfig().NUM_DEMES.Get() / x_size);
@@ -4809,18 +4808,8 @@ bool cPopulation::LoadPopulation(const cString& filename, cAvidaContext& ctx, in
 {
   // @TODO - build in support for verifying population dimensions
 
-  cInitFile input_file(filename, m_world->GetWorkingDir());
-  if (!input_file.WasOpened()) {
-    const cUserFeedback& feedback = input_file.GetFeedback();
-    for (int i = 0; i < feedback.GetNumMessages(); i++) {
-      switch (feedback.GetMessageType(i)) {
-        case cUserFeedback::UF_ERROR:    m_world->GetDriver().RaiseException(feedback.GetMessage(i)); break;
-        case cUserFeedback::UF_WARNING:  m_world->GetDriver().NotifyWarning(feedback.GetMessage(i)); break;
-        default:                      m_world->GetDriver().NotifyComment(feedback.GetMessage(i)); break;
-      };
-    }
-    return false;
-  }
+  cInitFile input_file(filename, m_world->GetWorkingDir(), ctx.Driver().Feedback());
+  if (!input_file.WasOpened()) return false;
 
   // Clear out the population, unless an offset is being used
   if (cellid_offset == 0) {
@@ -5390,14 +5379,14 @@ void cPopulation::CompeteOrganisms_ConstructOffspring(int cell_id, cOrganism& pa
 }
 
 
-void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx2, int lineage_label) 
+void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& genome, cAvidaContext& ctx, int lineage_label) 
 {
   assert(cell_id >= 0 && cell_id < cell_array.GetSize());
   if (cell_id < 0 || cell_id >= cell_array.GetSize()) {
-    m_world->GetDriver().RaiseFatalException(1, "InjectGenotype into nonexistent cell");
+    ctx.Driver().Feedback().Error("InjectGenotype into nonexistent cell");
+    ctx.Driver().Abort(Avida::INTERNAL_ERROR);
   }
 
-  cAvidaContext& ctx = m_world->GetDefaultContext();
 
   cOrganism* new_organism = new cOrganism(m_world, ctx, genome, -1, src);
 
@@ -5412,7 +5401,7 @@ void cPopulation::InjectGenome(int cell_id, eBioUnitSource src, const Genome& ge
   //Coalescense Clade Setup
   new_organism->SetCCladeLabel(-1);
 
-  cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(ctx, new_organism->GetBioGroup("genotype"));
+  cGenomeTestMetrics* metrics = cGenomeTestMetrics::GetMetrics(m_world, ctx, new_organism->GetBioGroup("genotype"));
 
   if (m_world->GetConfig().ENERGY_ENABLED.Get() == 1) {
     phenotype.SetMerit(cMerit(phenotype.ConvertEnergyToMerit(phenotype.GetStoredEnergy())));
@@ -5979,7 +5968,8 @@ void cPopulation::CompeteOrganisms(cAvidaContext& ctx, int competition_type, int
           break;
 
         default:
-          m_world->GetDriver().RaiseFatalException(1, "Unknown CompeteOrganisms method");
+          ctx.Driver().Feedback().Error("Unknown CompeteOrganisms method");
+          ctx.Driver().Abort(Avida::INVALID_CONFIG);
       }
       if (m_world->GetVerbosity() >= VERBOSE_DETAILS) {
         cout << "Trial fitness in cell " << i << " = " << fitness << endl;

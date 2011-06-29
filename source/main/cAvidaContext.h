@@ -26,25 +26,27 @@
 #ifndef cAvidaContext_h
 #define cAvidaContext_h
 
+#include "avida/core/Types.h"
 
 class cRandom;
 class cWorld;
 
+
 class cAvidaContext
 {
 private:
-  cWorld* m_world;
+  Avida::WorldDriver* m_driver;
   cRandom* m_rng;
   bool m_analyze;
   bool m_testing;
   bool m_org_faults;
   
 public:
-  cAvidaContext(cWorld* world, cRandom& rng) : m_world(world), m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
-  cAvidaContext(cWorld* world, cRandom* rng) : m_world(world), m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(Avida::WorldDriver* driver, cRandom& rng) : m_driver(driver), m_rng(&rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
+  cAvidaContext(Avida::WorldDriver* driver, cRandom* rng) : m_driver(driver), m_rng(rng), m_analyze(false), m_testing(false), m_org_faults(false) { ; }
   ~cAvidaContext() { ; }
   
-  cWorld* GetWorld() { return m_world; }
+  Avida::WorldDriver& Driver() { return *m_driver; }
   
   void SetRandom(cRandom& rng) { m_rng = &rng; }  
   void SetRandom(cRandom* rng) { m_rng = rng; }  
