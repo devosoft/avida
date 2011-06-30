@@ -1,18 +1,18 @@
-# Thu Jun 30 12:23:06 2011
-# Filename........: archive/029-aaaac.org
+# Thu Jun 30 13:22:07 2011
+# Filename........: archive/027-aaabb.org
 # Update Output...: 30
 # Is Viable.......: 0
 # Repro Cycle Size: 0
 # Depth to Viable.: -1
 # 
 # Generation: 0
-# Merit...........: 29.000000
+# Merit...........: 27.000000
 # Gestation Time..: 0
 # Fitness.........: 0.000000
 # Errors..........: 0
-# Genome Size.....: 29
-# Copied Size.....: 29
-# Executed Size...: 29
+# Genome Size.....: 27
+# Copied Size.....: 27
+# Executed Size...: 27
 # Offspring.......: NONE
 # 
 # Tasks Performed:
@@ -21,9 +21,8 @@
 
 zero
 nop-A
-zero-easterly
+if-less
 zero
-rotate-uphill
 nop-B
 zero
 add
@@ -33,14 +32,13 @@ nop-C
 nop-C
 nop-C
 zero
-h-search
 nop-C
-swap
+h-search
 nop-C
 nop-C
 IO
 nop-C
-dec
+swap
 nop-C
 IO
 nop-C
