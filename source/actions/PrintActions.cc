@@ -21,6 +21,7 @@
 
 #include "PrintActions.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/Sequence.h"
 #include "avida/core/WorldDriver.h"
 
@@ -500,7 +501,7 @@ public:
       m_args.Set("Echo : Update = %f\t AveGeneration = %f", m_world->GetStats().GetUpdate(),
                  m_world->GetStats().SumGeneration().Average());
     }
-    m_world->GetDriver().NotifyComment(m_args);
+    ctx.Driver().Feedback().Notify(m_args);
   }
 };
 
@@ -889,11 +890,15 @@ public:
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
-    if (ctx.GetAnalyzeMode())
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount requires avida to be in run mode.");
+    if (ctx.GetAnalyzeMode()) {
+      ctx.Driver().Feedback().Error("PrintCCladeCount requires avida to be in run mode.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
-    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount requires coalescence clade tracking to be enabled.");
+    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0) {
+      ctx.Driver().Feedback().Error("PrintCCladeCount requires coalescence clade tracking to be enabled.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
 
     tHashMap<int, int> cclade_count;  //A count for each clade in the population
@@ -915,8 +920,10 @@ public:
     }
 
     ofstream& fp = m_world->GetDataFileManager().GetOFStream(filename);
-    if (!fp.is_open())
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeCount: Unable to open output file.");
+    if (!fp.is_open()) {
+      ctx.Driver().Feedback().Error("PrintCCladeCount: Unable to open output file.");
+      ctx.Driver().Abort(Avida::IO_ERROR);
+    }
     if (first_time)
     {
       fp << "# Each line is formatted as follows:" << endl;
@@ -1049,9 +1056,10 @@ public:
       else if (mode == "ACTUAL"){
         fitness = (test_info.IsViable()) ?
         (*oit)->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
+      } else {
+        ctx.Driver().Feedback().Error("PrintLogFitnessHistogram::MakeHistogram: Invalid fitness mode requested.");
+        ctx.Driver().Abort(Avida::INVALID_CONFIG);
       }
-      else
-        world->GetDriver().RaiseFatalException(1, "PrintLogFitnessHistogram::MakeHistogram: Invalid fitness mode requested.");
 
       //Update the histogram
       int update_bin = (fitness == 0) ? 0 :
@@ -1235,13 +1243,16 @@ public:
       else if (mode == "ACTUAL"){
         fitness = (test_info.IsViable()) ?
         (*oit)->GetPhenotype().GetMerit().CalcFitness(test_info.GetTestPhenotype().GetGestationTime()) : 0.0;
+      } else {
+        ctx.Driver().Feedback().Error("MakeHistogram: Invalid fitness mode requested.");
+        ctx.Driver().Abort(Avida::INVALID_CONFIG);
       }
-      else
-        world->GetDriver().RaiseFatalException(1, "MakeHistogram: Invalid fitness mode requested.");
 
       //Update the histogram
-      if (parent_fitness <= 0.0)
-        world->GetDriver().RaiseFatalException(1, cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->GetProperty("parents").AsString());
+      if (parent_fitness <= 0.0) {
+        ctx.Driver().Feedback().Error(cString("PrintRelativeFitness::MakeHistogram reports a parent fitness is zero.") + (*git)->GetProperty("parents").AsString());
+        ctx.Driver().Abort(Avida::INTERNAL_ERROR);
+      }
 
       int update_bin = 0;
       double rfitness = fitness/parent_fitness;
@@ -1266,8 +1277,10 @@ public:
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
-    if (ctx.GetAnalyzeMode())
-      m_world->GetDriver().RaiseFatalException(1, "PrintRelativeFitnessHistogram requires avida to be in run mode.");
+    if (ctx.GetAnalyzeMode()) {
+      ctx.Driver().Feedback().Error("PrintRelativeFitnessHistogram requires avida to be in run mode.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
     //Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
@@ -1350,16 +1363,21 @@ public:
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
-    if (ctx.GetAnalyzeMode())
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram requires avida to be in run mode.");
+    if (ctx.GetAnalyzeMode()) {
+      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram requires avida to be in run mode.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
-    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram requires coalescence clade tracking to be enabled.");
+    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0) {
+      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram requires coalescence clade tracking to be enabled.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
     //Verify input parameters
-    if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
-        m_hist_fmin > m_hist_fmax)
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram: Check parameters.");
+    if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") || m_hist_fmin > m_hist_fmax) {
+      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram: Check parameters.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
     //Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
@@ -1389,8 +1407,10 @@ public:
 
     //Create and print the histograms; this calls a static method in another action
     ofstream& fp = m_world->GetDataFileManager().GetOFStream(m_filename);
-    if (!fp.is_open())
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeFitnessHistogram: Unable to open output file.");
+    if (!fp.is_open()) {
+      ctx.Driver().Feedback().Error("PrintCCladeFitnessHistogram: Unable to open output file.");
+      ctx.Driver().Abort(Avida::IO_ERROR);
+    }
     map< int, tArray<cOrganism*> >::iterator oit = org_map.begin();
     map< int, tArray<cBioGroup*> >::iterator git = gen_map.begin();
     for (; oit != org_map.end(); oit++, git++) {
@@ -1471,16 +1491,21 @@ public:
   void Process(cAvidaContext& ctx)
   {
     //Handle possible errors
-    if (ctx.GetAnalyzeMode())
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram requires avida to be in run mode.");
+    if (ctx.GetAnalyzeMode()) {
+      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitnessHistogram requires avida to be in run mode.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
-    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0)
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram requires coalescence clade tracking to be enabled.");
+    if (m_world->GetConfig().TRACK_CCLADES.Get() == 0) {
+      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitnessHistogram requires coalescence clade tracking to be enabled.");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
     //Verify input parameters
-    if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") ||
-        m_hist_fmin > m_hist_fmax)
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitness: check parameters");
+    if ( (m_mode != "ACTUAL" && m_mode != "CURRENT" && m_mode != "TESTCPU") || m_hist_fmin > m_hist_fmax) {
+      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitness: check parameters");
+      ctx.Driver().Abort(Avida::INVALID_CONFIG);
+    }
 
     ///Gather data objects
     cPopulation& pop        = m_world->GetPopulation();
@@ -1510,8 +1535,10 @@ public:
 
     //Create and print the histograms; this calls a static method in another action
     ofstream& fp = m_world->GetDataFileManager().GetOFStream(m_filename);
-    if (!fp.is_open())
-      m_world->GetDriver().RaiseFatalException(1, "PrintCCladeRelativeFitnessHistogram: Unable to open output file.");
+    if (!fp.is_open()) {
+      ctx.Driver().Feedback().Error("PrintCCladeRelativeFitnessHistogram: Unable to open output file.");
+      ctx.Driver().Abort(Avida::IO_ERROR);      
+    }
     map< int, tArray<cOrganism*> >::iterator oit = org_map.begin();
     map< int, tArray<cBioGroup*> >::iterator git = gen_map.begin();
     for (; oit != org_map.end(); oit++, git++) {
@@ -1596,7 +1623,7 @@ public:
     //With all sequences aligned and stored, we can proceed to calculate per-site entropies
     if (!aligned.GetSize())
     {
-      m_world->GetDriver().NotifyComment("cActionPrintGenomicSiteEntropy: No sequences available.  Abort.");
+      ctx.Driver().Feedback().Notify("cActionPrintGenomicSiteEntropy: No sequences available.  Abort.");
       return;
     }
 

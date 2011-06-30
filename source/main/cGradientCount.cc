@@ -23,6 +23,7 @@
 
 #include "cGradientCount.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
 #include "cAvidaContext.h"
@@ -92,10 +93,12 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
 {
   if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
       && m_move_speed != 0) {
-    m_world->GetDriver().RaiseFatalException(-1, "Move speed greater or equal to 2*Radius");    
+    m_world->GetDriver().Feedback().Error("Move speed greater or equal to 2*Radius");    
+    m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
   }
   if (m_halo == 1 && (m_halo_width < (2 * m_height) && plateau >= 0)) {
-    m_world->GetDriver().RaiseFatalException(-1, "Halo width < 2 * height (aka plateau radius)");
+    m_world->GetDriver().Feedback().Error("Halo width < 2 * height (aka plateau radius)");
+    m_world->GetDriver().Abort(Avida::INVALID_CONFIG);
   }
   m_plateau_array.Resize(int(4 * m_height * m_height + 0.5));
   m_plateau_array.SetAll(0);

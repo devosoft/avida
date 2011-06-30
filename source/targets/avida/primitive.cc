@@ -25,10 +25,10 @@
 #include "avida/util/CmdLine.h"
 
 #include "cAvidaConfig.h"
-#include "cDefaultAnalyzeDriver.h"
-#include "cDefaultRunDriver.h"
 #include "cUserFeedback.h"
 #include "cWorld.h"
+
+#include "Avida2Driver.h"
 
 
 int main(int argc, char * argv[])
@@ -66,11 +66,7 @@ int main(int argc, char * argv[])
 
   cout << endl;
   
-  if (world->GetConfig().ANALYZE_MODE.Get() > 0) {
-    (new cDefaultAnalyzeDriver(world, (world->GetConfig().ANALYZE_MODE.Get() == 2)))->Run();
-  } else {
-    (new cDefaultRunDriver(world))->Run();
-  }
+  (new Avida2Driver(world))->Run();
   
   return 0;
 }

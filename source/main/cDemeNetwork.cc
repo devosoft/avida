@@ -20,6 +20,7 @@
 
 #include "avida/Avida.h"
 
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 
 #include "cDeme.h"
@@ -59,7 +60,8 @@ cDemeNetwork* cDemeNetwork::DemeNetworkFactory(cWorld* world, cDeme& deme) {
 		}
 	}	
 #else
-	world->GetDriver().RaiseFatalException(-1, "cDemeNetwork requires Boost; if Boost *is* available, #define BOOST_IS_AVAILABLE in defs.h, and (possibly) update your include path.");
+	world->GetDriver().Feedback().Error("cDemeNetwork requires Boost; if Boost *is* available, #define BOOST_IS_AVAILABLE in defs.h, and (possibly) update your include path.");
+  world->GetDriver().Abort(Avida::INTERNAL_ERROR);
 #endif
 	return 0; // never reached, to quell warnings only.
 }

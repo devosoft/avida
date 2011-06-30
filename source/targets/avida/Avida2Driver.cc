@@ -24,6 +24,7 @@
 
 #include "Avida2Driver.h"
 
+#include "cAnalyze.h"
 #include "cAvidaContext.h"
 #include "cBGGenotype.h"
 #include "cClassificationManager.h"
@@ -61,6 +62,14 @@ Avida2Driver::~Avida2Driver()
 
 void Avida2Driver::Run()
 {
+  if (m_world->GetConfig().ANALYZE_MODE.Get() > 0) {
+    cout << "In analyze mode!!" << endl;
+    cAnalyze& analyze = m_world->GetAnalyze();
+    analyze.RunFile(m_world->GetConfig().ANALYZE_FILE.Get());
+    if (m_world->GetConfig().ANALYZE_MODE.Get() == 2) analyze.RunInteractive();
+    return;
+  }
+  
   cPopulation& population = m_world->GetPopulation();
   cStats& stats = m_world->GetStats();
   
@@ -143,6 +152,11 @@ void Avida2Driver::Run()
 			m_done = true;
 		}
   }
+}
+
+void Avida2Driver::Abort(Avida::AbortCondition condition)
+{
+  exit(condition);
 }
 
 void Avida2Driver::StdIOFeedback::Error(const char* fmt, ...)

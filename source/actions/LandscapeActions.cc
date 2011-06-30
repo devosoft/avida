@@ -90,9 +90,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Performing landscape analysis on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Performing landscape analysis...");
+        ctx.Driver().Feedback().Notify("Performing landscape analysis...");
       }
 
       cAnalyzeGenotype* genotype = NULL;
@@ -191,9 +191,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Precalculating landscape for batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Precalculating landscape...");
+        ctx.Driver().Feedback().Notify("Precalculating landscape...");
       }
       
       tAnalyzeJobBatch<cAnalyzeGenotype> jobbatch(m_world->GetAnalyze().GetJobQueue());
@@ -239,7 +239,7 @@ public:
     cLandscape* land = NULL;
     
     if (m_dist < 1) {
-      m_world->GetDriver().RaiseException("landscape distance must be >= 1");
+      ctx.Driver().Feedback().Error("landscape distance must be >= 1");
       return;
     }
     
@@ -247,9 +247,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Full Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Full Landscapping...");
+        ctx.Driver().Feedback().Notify("Full Landscapping...");
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
@@ -317,9 +317,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Dumping Landscape of batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Dumping Landscape...");
+        ctx.Driver().Feedback().Notify("Dumping Landscape...");
       }
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
@@ -400,9 +400,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Deletion Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Deletion Landscapping...");
+        ctx.Driver().Feedback().Notify("Deletion Landscapping...");
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
@@ -474,9 +474,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Insertion Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Insertion Landscapping...");
+        ctx.Driver().Feedback().Notify("Insertion Landscapping...");
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
@@ -542,9 +542,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Predicting W Landscape on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Predicting W Landscape...");
+        ctx.Driver().Feedback().Notify("Predicting W Landscape...");
       }
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
@@ -592,9 +592,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Predicting Nu Landscape on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Predicting Nu Landscape...");
+        ctx.Driver().Feedback().Notify("Predicting Nu Landscape...");
       }
       
       tListIterator<cAnalyzeGenotype> batch_it(m_world->GetAnalyze().GetCurrentBatch().List());
@@ -648,9 +648,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Random Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Random Landscapping...");
+        ctx.Driver().Feedback().Notify("Random Landscapping...");
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
@@ -718,9 +718,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Sample Landscaping batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Sample Landscapping...");
+        ctx.Driver().Feedback().Notify("Sample Landscapping...");
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
@@ -780,9 +780,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Calculating Hill Climb on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Calculating Hill Climb...");
+        ctx.Driver().Feedback().Notify("Calculating Hill Climb...");
       }
       
       cDataFile& df = m_world->GetDataFile(m_filename);
@@ -843,9 +843,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Calculating Mutational Neighborhood for batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Calculating Mutational Neighborhood...");
+        ctx.Driver().Feedback().Notify("Calculating Mutational Neighborhood...");
       }
 
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
@@ -916,9 +916,9 @@ public:
       if (m_world->GetVerbosity() >= VERBOSE_ON) {
         cString msg("Pair Testing Landscape on batch ");
         msg += cStringUtil::Convert(m_world->GetAnalyze().GetCurrentBatchID());
-        m_world->GetDriver().NotifyComment(msg);
+        ctx.Driver().Feedback().Notify(msg);
       } else if (m_world->GetVerbosity() > VERBOSE_SILENT) {
-        m_world->GetDriver().NotifyComment("Pair Testing Landscape...");
+        ctx.Driver().Feedback().Notify("Pair Testing Landscape...");
       }
       
       cAnalyzeJobQueue& jobqueue = m_world->GetAnalyze().GetJobQueue();
@@ -1017,10 +1017,10 @@ public:
   void Process(cAvidaContext& ctx)
   {
     if (ctx.GetAnalyzeMode()) {
-      m_world->GetDriver().NotifyWarning("AnalyzePopulation not currently supported in Analyze Mode.");
+      ctx.Driver().Feedback().Warning("AnalyzePopulation not currently supported in Analyze Mode.");
     } else {
       if (m_world->GetVerbosity() >= VERBOSE_DETAILS)
-        m_world->GetDriver().NotifyComment("Analyzing Population...");
+        ctx.Driver().Feedback().Notify("Analyzing Population...");
 
       const int update = m_world->GetStats().GetUpdate();
 
