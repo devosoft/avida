@@ -75,7 +75,7 @@
 
 
 - (void) pause {
-  driver->SetPause();
+  driver->Pause();
 }
 
 
@@ -85,7 +85,7 @@
 
 
 - (void) end {
-  driver->SetDone();
+  driver->Finish();
 }
 
 
