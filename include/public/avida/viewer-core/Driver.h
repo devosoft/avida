@@ -25,10 +25,10 @@
 #ifndef AvidaCoreViewDriver_h
 #define AvidaCoreViewDriver_h
 
+#include "apto/core.h"
+#include "avida/core/Feedback.h"
 #include "avida/core/WorldDriver.h"
 #include "avida/data/Recorder.h"
-
-#include "apto/core.h"
 
 class cWorld;
 
@@ -46,7 +46,7 @@ namespace Avida {
     // Enumerations
     // --------------------------------------------------------------------------------------------------------------  
     
-    enum eDriverPauseState {
+    enum DriverPauseState {
       DRIVER_PAUSED,
       DRIVER_UNPAUSED
     };
@@ -62,52 +62,50 @@ namespace Avida {
       
       Apto::Mutex m_mutex;
       Apto::ConditionVariable m_pause_cv;
-      eDriverPauseState m_pause_state;
+      DriverPauseState m_pause_state;
       bool m_done;
       bool m_paused;
       
       Map* m_map;
       
       Apto::Set<Listener*> m_listeners;
-      
-      
-      Driver(); // @not_implemented
-      Driver(const Driver&); // @not_implemented
-      Driver& operator=(const Driver&); // @not_implemented
-      
+
+      class StdIOFeedback : public Avida::Feedback
+      {
+        void Error(const char* fmt, ...);
+        void Warning(const char* fmt, ...);
+        void Notify(const char* fmt, ...);
+      } m_feedback;
+
       
     public:
-      Driver(cWorld* world);
-      ~Driver();
+      LIB_EXPORT Driver(cWorld* world);
+      LIB_EXPORT ~Driver();
       
-      static Driver* InitWithDirectory(const Apto::String& dir);
+      LIB_EXPORT static Driver* InitWithDirectory(const Apto::String& dir);
       
       
-      eDriverPauseState GetPauseState() const { return m_pause_state; }
-      bool IsPaused() const { return m_paused; }
+      LIB_EXPORT DriverPauseState GetPauseState() const { return m_pause_state; }
+      LIB_EXPORT bool IsPaused() const { return m_paused; }
+      LIB_EXPORT void Resume();
       
-      void AttachListener(Listener* listener);
-      void DetachListener(Listener* listener) { m_listeners.Remove(listener); }
+      LIB_EXPORT void AttachListener(Listener* listener);
+      LIB_EXPORT void DetachListener(Listener* listener) { m_listeners.Remove(listener); }
 
-      void AttachRecorder(Data::RecorderPtr recorder);
-      void DetachRecorder(Data::RecorderPtr recorder);
+      LIB_EXPORT void AttachRecorder(Data::RecorderPtr recorder);
+      LIB_EXPORT void DetachRecorder(Data::RecorderPtr recorder);
 
       
       // WorldDriver Protocol
       // ------------------------------------------------------------------------------------------------------------  
       
     public:
-      void Finish() { m_mutex.Lock(); m_done = true; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
-      void Pause() { m_mutex.Lock(); m_pause_state = DRIVER_PAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
-      void Resume() { m_mutex.Lock(); m_pause_state = DRIVER_UNPAUSED; m_mutex.Unlock(); m_pause_cv.Broadcast(); }
+      LIB_EXPORT void Pause();
+      LIB_EXPORT void Finish();
+      LIB_EXPORT void Abort(AbortCondition condition);
       
-      void RaiseException(const cString& in_string);
-      void RaiseFatalException(int exit_code, const cString& in_string);
-      
-      // Notifications
-      void NotifyComment(const cString& in_string);
-      void NotifyWarning(const cString& in_string);
-      
+      LIB_EXPORT Avida::Feedback& Feedback() { return m_feedback; }
+
       
       // Apto::Thread Interface
       // ------------------------------------------------------------------------------------------------------------  

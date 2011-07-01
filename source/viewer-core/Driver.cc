@@ -98,112 +98,153 @@ Avida::CoreView::Driver* Avida::CoreView::Driver::InitWithDirectory(const Apto::
 }
 
 
+void Avida::CoreView::Driver::Pause()
+{
+  m_mutex.Lock();
+  m_pause_state = DRIVER_PAUSED;
+  m_mutex.Unlock();
+  m_pause_cv.Broadcast();
+}
+
+void Avida::CoreView::Driver::Resume()
+{
+  m_mutex.Lock();
+  m_pause_state = DRIVER_UNPAUSED;
+  m_mutex.Unlock();
+  m_pause_cv.Broadcast();
+}
+
+void Avida::CoreView::Driver::Finish()
+{
+  m_mutex.Lock();
+  m_done = true;
+  m_mutex.Unlock();
+  m_pause_cv.Broadcast();
+}
+
+void Avida::CoreView::Driver::Abort(AbortCondition condition)
+{
+  throw condition;
+}
+
 
 void Avida::CoreView::Driver::Run()
 {
-  cPopulation& population = m_world->GetPopulation();
-  cStats& stats = m_world->GetStats();
-  
-  Data::Manager& dm = m_world->GetDataManager();
-  
-  const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
-  const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
-  
-  cAvidaContext ctx(m_world, m_world->GetRandom());
-  
-  m_mutex.Lock();
-  while (!m_done) {
-    m_mutex.Unlock();
+  try {
+    cPopulation& population = m_world->GetPopulation();
+    cStats& stats = m_world->GetStats();
     
-    m_world->GetEvents(ctx);
-    if (m_done) break;  // Stop here if told to do so by an event.
+    Data::Manager& dm = m_world->GetDataManager();
     
-    // Increment the Update.
-    stats.IncCurrentUpdate();
+    const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
+    const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
     
-    // Handle all data collection for previous update.
-    if (stats.GetUpdate() > 0) {
-      // Tell the stats object to do update calculations and printing.
-      stats.ProcessUpdate();
-      dm.UpdateState(stats.GetUpdate());
-    }
+    cAvidaContext ctx(this, m_world->GetRandom());
     
-    
-    // Process the update.
-    const int UD_size = ave_time_slice * population.GetNumOrganisms();
-    const double step_size = 1.0 / (double) UD_size;
-    
-    
-    // Are we stepping through an organism?
-//    if (m_info.GetStepOrganism() != -1) {  // Yes we are!
-//      // Keep the viewer informed about the organism we are stepping through...
-//      for (int i = 0; i < UD_size; i++) {
-//        const int next_id = population.ScheduleOrganism();
-//        if (next_id == m_info.GetStepOrganism()) {
-//          DoUpdate();
-//        }
-//        population.ProcessStep(ctx, step_size, next_id);
-//      }
-//    }
-//    else {
-      for (int i = 0; i < UD_size; i++) population.ProcessStep(ctx, step_size, population.ScheduleOrganism());
-//    }
-    
-    
-    // end of update stats...
-    population.ProcessPostUpdate(ctx);
-    
-    
-    if (m_map) m_map->UpdateMaps(population);
-    for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
-      if ((*it.Get())->WantsMap()) {
-        (*it.Get())->NotifyMap(m_map);
+    m_mutex.Lock();
+    while (!m_done) {
+      m_mutex.Unlock();
+      
+      m_world->GetEvents(ctx);
+      if (m_done) break;  // Stop here if told to do so by an event.
+      
+      // Increment the Update.
+      stats.IncCurrentUpdate();
+      
+      // Handle all data collection for previous update.
+      if (stats.GetUpdate() > 0) {
+        // Tell the stats object to do update calculations and printing.
+        stats.ProcessUpdate();
+        dm.UpdateState(stats.GetUpdate());
       }
-      if ((*it.Get())->WantsUpdate()) (*it.Get())->NotifyUpdate(stats.GetUpdate());
-    }
-    
-    
-    // Do Point Mutations
-    if (point_mut_prob > 0 ) {
-      for (int i = 0; i < population.GetSize(); i++) {
-        if (population.GetCell(i).IsOccupied()) {
-          population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx, point_mut_prob);
+      
+      
+      // Process the update.
+      const int UD_size = ave_time_slice * population.GetNumOrganisms();
+      const double step_size = 1.0 / (double) UD_size;
+      
+      
+      // Are we stepping through an organism?
+  //    if (m_info.GetStepOrganism() != -1) {  // Yes we are!
+  //      // Keep the viewer informed about the organism we are stepping through...
+  //      for (int i = 0; i < UD_size; i++) {
+  //        const int next_id = population.ScheduleOrganism();
+  //        if (next_id == m_info.GetStepOrganism()) {
+  //          DoUpdate();
+  //        }
+  //        population.ProcessStep(ctx, step_size, next_id);
+  //      }
+  //    }
+  //    else {
+        for (int i = 0; i < UD_size; i++) population.ProcessStep(ctx, step_size, population.ScheduleOrganism());
+  //    }
+      
+      
+      // end of update stats...
+      population.ProcessPostUpdate(ctx);
+      
+      
+      if (m_map) m_map->UpdateMaps(population);
+      for (Apto::Set<Listener*>::Iterator it = m_listeners.Begin(); it.Next();) {
+        if ((*it.Get())->WantsMap()) {
+          (*it.Get())->NotifyMap(m_map);
+        }
+        if ((*it.Get())->WantsUpdate()) (*it.Get())->NotifyUpdate(stats.GetUpdate());
+      }
+      
+      
+      // Do Point Mutations
+      if (point_mut_prob > 0 ) {
+        for (int i = 0; i < population.GetSize(); i++) {
+          if (population.GetCell(i).IsOccupied()) {
+            population.GetCell(i).GetOrganism()->GetHardware().PointMutate(ctx, point_mut_prob);
+          }
         }
       }
-    }
-    
-    // Exit conditons...
-    m_mutex.Lock();
-    if (population.GetNumOrganisms() == 0) m_done = true;
-    while (!m_done && m_pause_state == DRIVER_PAUSED) {
-      m_paused = true;
-      m_pause_cv.Wait(m_mutex);
-    }
-    m_paused = false;
-  }  
-  m_mutex.Unlock();
+      
+      // Exit conditons...
+      m_mutex.Lock();
+      if (population.GetNumOrganisms() == 0) m_done = true;
+      while (!m_done && m_pause_state == DRIVER_PAUSED) {
+        m_paused = true;
+        m_pause_cv.Wait(m_mutex);
+      }
+      m_paused = false;
+    }  
+    m_mutex.Unlock();
+  } catch (Avida::AbortCondition condition) {
+    cerr << "abort: " << condition << endl;
+  }
 }
 
 
-void Avida::CoreView::Driver::RaiseException(const cString& in_string)
+void Avida::CoreView::Driver::StdIOFeedback::Error(const char* fmt, ...)
 {
-  std::cerr << "Error: " << in_string << std::endl;
+  printf("error: ");
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
 }
 
-void Avida::CoreView::Driver::RaiseFatalException(int exit_code, const cString& in_string)
+void Avida::CoreView::Driver::StdIOFeedback::Warning(const char* fmt, ...)
 {
-  std::cerr << "Error: " << in_string << "  Exiting..." << std::endl;
-  exit(exit_code);
+  printf("warning: ");
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
 }
 
-void Avida::CoreView::Driver::NotifyComment(const cString& in_string)
+void Avida::CoreView::Driver::StdIOFeedback::Notify(const char* fmt, ...)
 {
-  std::cout << in_string << std::endl;
-}
-
-void Avida::CoreView::Driver::NotifyWarning(const cString& in_string)
-{
-  std::cout << "Warning: " << in_string << std::endl;
+  va_list args;
+  va_start(args, fmt);
+  printf(fmt, args);
+  va_end(args);
+  printf("\n");
 }
 
 
