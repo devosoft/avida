@@ -8,9 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		70FB4EC51386EBC100D8F6F0 /* atomicops-internals-linuxppc.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E991386EBC100D8F6F0 /* atomicops-internals-linuxppc.h */; };
-		70FB4EC61386EBC100D8F6F0 /* atomicops-internals-macosx.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9A1386EBC100D8F6F0 /* atomicops-internals-macosx.h */; };
 		70FB4EC71386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9B1386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h */; };
-		70FB4EC81386EBC100D8F6F0 /* atomicops-internals-x86.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70FB4E9C1386EBC100D8F6F0 /* atomicops-internals-x86.cc */; };
 		70FB4EC91386EBC100D8F6F0 /* atomicops-internals-x86.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9D1386EBC100D8F6F0 /* atomicops-internals-x86.h */; };
 		70FB4ECA1386EBC100D8F6F0 /* atomicops.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9E1386EBC100D8F6F0 /* atomicops.h */; };
 		70FB4ECB1386EBC100D8F6F0 /* basictypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 70FB4E9F1386EBC100D8F6F0 /* basictypes.h */; };
@@ -189,7 +187,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				70FB4EC51386EBC100D8F6F0 /* atomicops-internals-linuxppc.h in Headers */,
-				70FB4EC61386EBC100D8F6F0 /* atomicops-internals-macosx.h in Headers */,
 				70FB4EC71386EBC100D8F6F0 /* atomicops-internals-x86-msvc.h in Headers */,
 				70FB4EC91386EBC100D8F6F0 /* atomicops-internals-x86.h in Headers */,
 				70FB4ECA1386EBC100D8F6F0 /* atomicops.h in Headers */,
@@ -272,7 +269,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70FB4EC81386EBC100D8F6F0 /* atomicops-internals-x86.cc in Sources */,
 				70FB4ECC1386EBC100D8F6F0 /* central_freelist.cc in Sources */,
 				70FB4ECF1386EBC100D8F6F0 /* common.cc in Sources */,
 				70FB4ED21386EBC100D8F6F0 /* internal_logging.cc in Sources */,

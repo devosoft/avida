@@ -58,15 +58,18 @@
 
 typedef int32_t Atomic32;
 
-// MacOS uses long for intptr_t, AtomicWord and Atomic32 are always different
-// on the Mac, even when they are the same size.  Similarly, on __ppc64__,
-// AtomicWord and Atomic64 are always different.  Thus, we need explicit
-// casting.
-#ifdef __LP64__
-#define AtomicWordCastType base::subtle::Atomic64
-#else
-#define AtomicWordCastType Atomic32
-#endif
+
+// The following casting yielded compile errors under Clang/LLVM Xcode 4.2
+//
+//// MacOS uses long for intptr_t, AtomicWord and Atomic32 are always different
+//// on the Mac, even when they are the same size.  Similarly, on __ppc64__,
+//// AtomicWord and Atomic64 are always different.  Thus, we need explicit
+//// casting.
+//#ifdef __LP64__
+//#define AtomicWordCastType base::subtle::Atomic64
+//#else
+//#define AtomicWordCastType Atomic32
+//#endif
 
 #if defined(__LP64__) || defined(__i386__)
 #define BASE_HAS_ATOMIC64 1  // Use only in tests and atomic*
