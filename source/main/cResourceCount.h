@@ -95,7 +95,8 @@ void Setup(cWorld* world, const int& id, const cString& name, const double& init
      const int& in_updatestep, const int& in_halo, const int& in_halo_inner_radius, const int& in_halo_width,
      const int& in_halo_anchor_x, const int& in_halo_anchor_y, const int& in_move_speed, 
      const double& in_plateau_inflow, const double& in_plateau_outflow, const int& in_is_plateau_common, 
-     const double& in_floor, const bool& isgradient
+     const double& in_floor, const int& in_habitat, const int& in_min_size, const int& in_max_size,
+     const int& in_config, const int& in_count, const bool& isgradient
 	   ); 
              
   int GetResourceCountID(const cString& res_name);

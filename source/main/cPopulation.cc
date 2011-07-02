@@ -302,7 +302,8 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -1040,7 +1041,29 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
 {
   cPopulationCell& src_cell = GetCell(src_cell_id);
   cPopulationCell& dest_cell = GetCell(dest_cell_id);
-
+  
+  // check for habitat effects on movement
+  // get the resource library
+  const cResourceLib & resource_lib = environment.GetResourceLib();
+  // get the destination cell resource levels
+  tArray<double> dest_cell_resources = m_world->GetPopulation().GetCellResources(dest_cell_id, ctx);
+  // get the current cell resource levels
+  tArray<double> src_cell_resources = m_world->GetPopulation().GetCellResources(src_cell_id, ctx);
+  // movement fails if there are any barrier resources in the faced cell (unless the org is already on a barrier,
+  // which would happen if we built a new barrier under an org and we need to let it get off)
+  bool curr_is_barrier = false;
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 & src_cell_resources[i] > 0) {
+      curr_is_barrier = true;      
+      break;
+    }
+  }
+  if (!curr_is_barrier) {
+    for (int i = 0; i < resource_lib.GetSize(); i++) {
+      if (resource_lib.GetResource(i)->GetHabitat() == 2 & dest_cell_resources[i] > 0) return false;      
+    }    
+  }
+  
   if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
     int absolute_cell_ID = src_cell.GetOrganism()->GetCellID();
     int deme_id = src_cell.GetOrganism()->GetDemeID();
@@ -6187,7 +6210,8 @@ void cPopulation::UpdateGradientCount(const int Verbosity, cWorld* world, const 
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetGradient()
                            ); 
       } 
    }
@@ -6241,7 +6265,8 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
-                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                           res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetGradient()
                            ); 
 
     } else if (res->GetDemeResource()) {

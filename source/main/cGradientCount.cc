@@ -69,7 +69,8 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
                                int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep,  
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
-                               double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor)
+                               double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor,
+                               int habitat, int min_size, int max_size, int config, int count)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -78,10 +79,12 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_halo(halo), m_halo_inner_radius(halo_inner_radius), m_halo_width(halo_width)
   , m_halo_anchor_x(halo_anchor_x), m_halo_anchor_y(halo_anchor_y)
   , m_move_speed(move_speed), m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow)
-  , m_is_plateau_common(is_plateau_common), m_floor(floor)
+  , m_is_plateau_common(is_plateau_common), m_floor(floor) 
+  , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count)
   , m_move_y_scaler(0.5)
   , m_counter(0)
   , m_move_counter(1)
+  , m_wall_counter(updatestep)
   , m_movesignx(0)
   , m_movesigny(0)
   , m_just_reset(true)
@@ -89,6 +92,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_current_height(0.0)
   , m_ave_plat_cell_loss(0.0)
   , m_common_plat_height(0.0)
+
 {
   if ((m_move_speed >= (2 * (m_halo_inner_radius + m_halo_width))) && ((m_halo_inner_radius + m_halo_width) != 0)
       && m_move_speed != 0) {
@@ -104,12 +108,22 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   m_current_height = m_height;
   m_common_plat_height = m_plateau;
   ResizeClear(worldx, worldy, geometry);
+  if (m_habitat == 2) {
+    generateBarrier(m_world->GetDefaultContext());
+  }
+  else {
   generatePeak(m_world->GetDefaultContext());
   UpdateCount(m_world->GetDefaultContext());
+  }
 }
 
 void cGradientCount::UpdateCount(cAvidaContext& ctx)
 { 
+  if (m_habitat == 2) {
+    generateBarrier(m_world->GetDefaultContext());
+    return;
+  }
+  
   bool has_edible = false;
 
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
@@ -372,11 +386,10 @@ void cGradientCount::generatePeak(cAvidaContext& ctx)
     m_counter = 0;
     m_just_reset = true;
     refreshResourceValues();
-    return;
 }
 
 void cGradientCount::refreshResourceValues()
-{         
+{  
   int max_pos_x;
   int min_pos_x;
   int max_pos_y;
@@ -463,7 +476,6 @@ void cGradientCount::refreshResourceValues()
     }
   }         
   m_just_reset = false;
-  return;
 }
 
 void cGradientCount::getCurrentPlatValues()
@@ -493,5 +505,87 @@ void cGradientCount::getCurrentPlatValues()
     }        
   }
   m_ave_plat_cell_loss = amount_devoured / plateau_cell;
-  return;
 } 
+
+void cGradientCount::generateBarrier(cAvidaContext& ctx)
+// If habitat == 2 we are creating barriers to movement (walls), not really gradient resources
+{ 
+  // generate/regenerate walls when counter == config updatestep
+  if (m_wall_counter == m_updatestep) { 
+    // reset counter
+    m_wall_counter = 1;
+    // clear any old resource
+    for (int ii = 0; ii < GetX(); ii++) {
+      for (int jj = 0; jj < GetY(); jj++) {
+        Element(jj * GetX() + ii).SetAmount(0);
+      }
+    }
+    // generate number barriers equal to count 
+    for (int i = 0; i < m_count; i++) {
+      // drop the anchor/first block for current barrier
+      int randx = ctx.GetRandom().GetUInt(0, GetX());
+      int randy = ctx.GetRandom().GetUInt(0, GetY());   
+      Element(randy * GetX() + randx).SetAmount(m_plateau);
+      
+      // decide the size of the current barrier
+      int rand_block_count = ctx.GetRandom().GetUInt(m_min_size, m_max_size + 1);
+      // for vertical or horizontal wall building, pick a random direction once for the whole wall
+      int direction = 0;
+      if (m_config == 1 || m_config == 2) direction = ctx.GetRandom().GetUInt(0,2);
+      
+      for (int num_blocks = 0; num_blocks < rand_block_count; num_blocks++) {
+        // if config == 0, build random shaped walls
+        if (m_config == 0) {
+          // choose a direction for next block
+          direction = ctx.GetRandom().GetUInt(0, 8);
+          // move one cell in chosen direction
+          if (direction == 0) {
+            randy = randy - 1;
+          }
+          else if (direction == 1) {
+            randy = randy - 1;
+            randx = randx + 1;
+          }
+          else if (direction == 2) {
+            randx = randx + 1;
+          }
+          else if (direction == 3) {
+            randy = randy + 1;
+            randx = randx + 1;
+          }
+          else if (direction == 4) {
+            randy = randy + 1;
+          }
+          else if (direction == 5) {
+            randy = randy + 1;
+            randx = randx - 1;
+          }
+          else if (direction == 6) {
+            randx = randx - 1;
+          }
+          else if (direction == 7) {
+            randy = randy - 1;
+            randx = randx - 1;
+          }
+        }
+        // if config == 1, build vertical walls
+        else if (m_config == 1) {
+          // choose up/down build direction
+          if (direction == 0) randy = randy - 1;
+          else randy = randy + 1;
+        }
+        // if config == 2, build horizontal walls
+        else if (m_config == 2) {
+          // choose left/right build direction
+          if (direction == 0) randx = randx - 1;
+          else randx = randx + 1;
+        }       
+        // place the new block if not off edge of world, otherwise ignore it
+        if (randy < GetY() & randy > 0 & randx < GetX() & randx > 0) Element(randy * GetX() + randx).SetAmount(m_plateau);
+        // we're done with this wall if it's horizontal or vertical build and we went off the world edge already
+        else if (m_config == 1 || m_config == 2) break;
+      }      
+    }
+  }
+  else m_wall_counter++; 
+}

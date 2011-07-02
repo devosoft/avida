@@ -599,7 +599,8 @@ void cDeme::SetupDemeRes(int id, cResource * res, int verbosity, cWorld* world) 
                             res->GetHalo(), res->GetHaloInnerRadius(), res->GetHaloWidth(),
                             res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                             res->GetPlateauInflow(), res->GetPlateauOutflow(),                            
-                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetGradient()
+                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
+                            res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetGradient()
                             ); 
   
   if(res->GetEnergyResource()) {

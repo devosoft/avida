@@ -57,12 +57,18 @@ private:
   double m_plateau_outflow;
   int m_is_plateau_common;
   double m_floor;
+  int m_habitat;
+  int m_min_size;
+  int m_max_size; 
+  int m_config; 
+  int m_count;
   
   // Internal Values
   double m_move_y_scaler;
   
   int m_counter;
   int m_move_counter;
+  int m_wall_counter;
   int m_movesignx;
   int m_movesigny;
   
@@ -81,7 +87,7 @@ public:
                  int max_x, int max_y, int min_x, int min_y, double move_a_scaler, int updatestep, 
                  int worldx, int worldy, int geometry,int halo, int halo_inner_radius, int halo_width,
                  int halo_anchor_x, int halo_anchor_y, int move_speed, double plateau_inflow, double plateau_outflow,
-                 int is_plateau_common, double floor);
+                 int is_plateau_common, double floor, int habitat, int min_size, int max_size, int config, int count);
 
 
   void UpdateCount(cAvidaContext& ctx);
@@ -91,6 +97,7 @@ private:
   void refreshResourceValues();
   void generatePeak(cAvidaContext& ctx);
   void getCurrentPlatValues();
+  void generateBarrier(cAvidaContext& ctx);
 };
 
 #endif

@@ -240,6 +240,7 @@ tInstLib<cHardwareCPU::tMethod>* cHardwareCPU::initInstLib(void)
     tInstLibEntry<tMethod>("sense-resource-id", &cHardwareCPU::Inst_SenseResourceID, nInstFlag::STALL), 
     tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareCPU::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareCPU::Inst_SenseDiffFaced, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareCPU::Inst_SenseFacedHabitat, nInstFlag::STALL),
     
     tInstLibEntry<tMethod>("sense-resource0", &cHardwareCPU::Inst_SenseResource0, nInstFlag::STALL),
     tInstLibEntry<tMethod>("sense-resource1", &cHardwareCPU::Inst_SenseResource1, nInstFlag::STALL),
@@ -3780,6 +3781,38 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
     int res_diff = (int) ((faced_res - res_count[opinion])/res_count[opinion] * 100 + 0.5);
     GetRegister(reg_to_set) = res_diff;
   }
+  return true;
+}
+
+bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
+{
+  int reg_to_set = FindModifiedRegister(REG_BX);
+  // get the true faced cell id
+  int faced_cell_id = m_organism->GetOrgInterface().GetFacedCellID();
+  
+  // get the resource library
+  const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+  
+  // get the destination cell resource levels
+  tArray<double> cell_resource_levels = m_world->GetPopulation().GetCellResources(faced_cell_id, ctx);
+
+  // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
+  // are there any barrier resources in the faced cell    
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 2 & cell_resource_levels[i] > 0) {
+      GetRegister(reg_to_set) = 2;
+      return true;
+    }    
+  }
+  // if no barriers, are there any hills in the faced cell    
+  for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 & cell_resource_levels[i] > 0) {
+      GetRegister(reg_to_set) = 1;
+      return true;
+    }
+  }
+  // if no barriers or hills, we return a 0 to indicate clear sailing
+  GetRegister(reg_to_set) = 0;
   return true;
 }
 

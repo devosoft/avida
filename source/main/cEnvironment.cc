@@ -904,6 +904,26 @@ bool cEnvironment::LoadGradientResource(cString desc, Feedback& feedback)
         if (!AssertInputDouble(var_value, "floor", var_type, feedback)) return false;
         new_resource->SetFloor( var_value.AsDouble() );
       } 
+      else if (var_name == "habitat") {
+        if (!AssertInputInt(var_value, "habitat", var_type, feedback)) return false;
+        new_resource->SetHabitat( var_value.AsInt() );
+      } 
+      else if (var_name == "min_size") {
+        if (!AssertInputInt(var_value, "min_size", var_type, feedback)) return false;
+        new_resource->SetMinSize( var_value.AsInt() );
+      } 
+      else if (var_name == "max_size") {
+        if (!AssertInputInt(var_value, "max_size", var_type, feedback)) return false;
+        new_resource->SetMaxSize( var_value.AsInt() );
+      } 
+      else if (var_name == "config") {
+        if (!AssertInputInt(var_value, "config", var_type, feedback)) return false;
+        new_resource->SetConfig( var_value.AsInt() );
+      } 
+      else if (var_name == "count") {
+        if (!AssertInputInt(var_value, "count", var_type, feedback)) return false;
+        new_resource->SetCount( var_value.AsInt() );
+      } 
       else {
         feedback.Error("unknown variable '%s' in gradient resource '%s'",
                                       (const char*)var_name, (const char*)name);
