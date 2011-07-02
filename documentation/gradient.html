@@ -29,7 +29,8 @@ Gradient resource format is:
 <p>
 Like other resources, all entries on a gradient resource line are names of individual 
 resources. Gradient resources are a type of spatial resource, the main difference being
-that gradient resources can move. 
+that gradient resources can move (standard gradient resources and halo gradient resources)
+and can affect org movements (hills and barriers). 
 </p>
 <p>
 Currently moving gradient resources are only supported for bounded grid environments.
@@ -43,33 +44,63 @@ Currently moving gradient resources are only supported for bounded grid environm
   <pre>GRADIENT_RESOURCE gradient_resource_name[:options]  {gradient_resource_name ...}</pre>
 
 <p>
-The Gradient Resource command allows the user to specify a resource distribution which changes over
-time. If movement is enabled, this conical distribution moves randomly around the Avida grid. This movement 
-may also be confined to an orbit around a specified anchor cell on the Avida grid. These are called halo gradients. 
-Cones can be capped with a plateau cylinder of a determined height wherever cone height meets or exceeds the 
-value of 1. In terms of actual resource value, this is analogous to slicing the cone at height 1 and then setting 
-the actual resource value (plateau) in the sliced area to some flat value. Organisms can use sense instructions to 
-detect resources on all parts of the cone, but they can only consume the resources where the value is >= min value 
+Habitats:
+The habitat a resource represents controls both the specifications of the resource (i.e. moving or stationary,
+orbiting or bounded within a defined area) and any effect of the resource on the organisms (i.e. blocking or
+slowing movement). Currently there are 2 habitats implemented with the ground work set for a third (hills): 
+gradient, hills, and barriers.
+</p>
+<p>
+Gradient Resources: Standard and Halo  
+Standard gradient and halo resources allows the user to specify resource distributions which change over
+time. If movement is enabled, the conical resources move around the Avida grid. This movement may 
+be confined to an orbit around a specified anchor cell on the Avida grid (halos) or within a defined bounding box
+(standard). 
+Gradient resource cones can be capped with a plateau cylinder of a determined height wherever cone height meets or 
+exceeds the value of 1. In terms of actual resource value, this is analogous to slicing the cone at height 1 and then 
+setting the actual resource value (plateau) in the sliced area to some flat value. Organisms can use sense instructions 
+to detect resources on all parts of the cone, but they can only consume the resources where the value is >= min value 
 in the associated reaction or collect instruction. Typically, the min value is set so that only the plateau area of
 the cone can be consumed. When an organism consumes any part of the cone, the cone can be set to stop moving until 
 a predifined number of updates (=decay) has passed or all consumable resource (all cells with value >= 1) has been 
 consumed. The cone is then refreshed at some random location within the specified boundaries. An odd but useful quirk 
 is that if decay is set to 1, you can have walking wounded resources. 
 </p>
-  
+<p>
+Barriers: Random, Vertical, and Horizontal
+Barriers are far simpler than halo and standard gradient resources. Barrier resources are simply meant to represent walls
+which block movement. Barriers are only implemented to be created randomly within the grid (the first block is set down
+in a random cell, then the next block set in a connected random, E-W, or N-S cell, and so on). Because barriers can be 
+generated in the middle of a run, we allow orgs already standing on a barrier (which should only happen if they are born
+on a barrier or if a barrier was created underneath them) to continue moving. In other words, they can exit a barrier,
+but orgs cannot enter one. If an org (not already on a barrier) tries to enter a barrier cell, movement fails and a 0 is 
+returned to the ?BX? register. Orgs can also make use of the sense-faced-habitat instruction to find the most restrictive
+habitat type in the faced cell. This will return a 1 if the 'worst' resource in the faced cell is a hill, a 2 if a barrier
+is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
+</p>  
 <div align="center">
 <p>&nbsp;</p>
 <h3>Table 1: <span>Gradient Resource Options</span></h3>
 <p>
-(<span class="resall">blue</span> variables used for all gradient resources
-while <span class="reshalo"><font color="#029C1C">green</font></span> variables are only used for 
-halo resources)
+(<b>black</b> variables apply to all gradient resource types,
+<span class="resall"><font color="#1c019c">blue</font></span> variables apply to standard and halo gradient resources,
+<span class="reshalo"><font color="#029C1C">green</font></span> variables apply only to halo resources,
+<span class="resbarrier"><font color="#9c1c01">red</font></span> variables apply only to barriers)
 </p>
 <table border="1" cellpadding="2">
 <tr>
   <th>Argument</th>
   <th>Description</th>
   <th>Default</th>
+</tr>
+<tr>
+  <td><b>habitat</b></td>
+  <td>
+    Type of gradient resource. This determines most of the behaviors and effects of the resource. 
+  </br>
+    0 = gradient (standard or halo), 1 = hills, 2 = barriers. 
+  </td>
+  <td>0</td>
 </tr>
 <tr>
   <td class="resall">peakx</td>
@@ -100,11 +131,14 @@ halo resources)
 </tr>
 </tr>
 <tr>
-  <td class="resall">plateau</td>
+  <td><b>plateau</b></td>
   <td>
-    Actual initial height in terms of resource levels wherever cone height is greater or equal
-    to 1. This will supersede the cone height in eligible cells. A value of -1 turns this
-    option off. 
+    <font color="#1c019c">Standard and Halo</font>: Actual initial height in terms of resource 
+    levels wherever cone height is greater or equal to 1. This will supersede the cone height in 
+    eligible cells. A value of -1 turns this option off.
+    </br> 
+    <font color="#9c1c01">Barriers</font>: Height of the barrier. Apart from when plateau = 0 (off)
+    and plateau > 0 (on), the plateau value has no effect outside of providing values for drawing/rendering.
   </td>
   <td>
     -1.0
@@ -178,12 +212,16 @@ halo resources)
   <td>1.0</td>
 </tr>
 <tr>
-  <td class="resall">updatestep</td>
+  <td><b>updatestep</b></td>
   <td>
-    How many updates to wait until changing gradient resouce movement direction. 
-    Resources move in random directions, only changing course if they bounce or
-    when updatestep is reached. Low updatestep numbers result in chaotic peak
-    movements (and peaks tend not to travel very far overall).
+    <font color="#1c019c">Standard and Halo</font>: How many updates to wait until changing 
+    gradient resouce movement direction. Resources move in random directions, only changing 
+    course if they bounce or when updatestep is reached. Low updatestep numbers result in 
+    chaotic peak movements (and peaks tend not to travel very far overall).
+    </br> 
+    <font color="#9c1c01">Barriers</font>: How many updates to wait until regenerating the 
+    barriers at new locations. Any value less than 1 (or the number of updates in the run) 
+    will turn off regeneration.
   </td>
   <td>1</td>
 </tr>
@@ -270,7 +308,8 @@ halo resources)
   cells and the peak slopes are not changed.
   </td>
   <td>0</td>
-  <tr>
+</tr>
+<tr>
   <td class="resall">plateau_inflow</td>
   <td>
 	Inflow rate of resources within the plateau. This amount will be added to each
@@ -282,7 +321,8 @@ halo resources)
   plateau. Maximum value for height (for cone shape) remains capped at original height value.   
   </td>
   <td>0.0</td>
-  <tr>
+</tr>
+<tr>
   <td class="resall">plateau_outflow</td>
   <td>
 	Outflow rate of resource within the plateau. The quantity of resources = outflow * height 
@@ -294,7 +334,8 @@ halo resources)
   extent of the plateau. Minimum resulting value for height (cone shape) is 0.
   </td>
   <td>0.0</td>
-  <tr>
+</tr>
+<tr>
   <td class="resall">floor</td>
   <td>
 	Minimum value for cells within the cone. Cells that would otherwise have lower values
@@ -303,7 +344,35 @@ halo resources)
   for experiments where cell values along the slopes would affect merit rewards.
   </td>
   <td>0.0</td>
-  </tr>
+</tr>
+<tr>
+  <td class="resbarrier"><font color="#9c1c01">count</td>
+  <td>
+  The number of walls/barriers to generate.
+  </td>
+  <td>1</td> 
+</tr>
+<tr>
+  <td class="resbarrier"><font color="#9c1c01">max_size</td>
+  <td>
+  The maximum number of blocks to generate (maximum wall size). Actual wall size will be random number between min and max (inclusive), minus any blocks placed off-world or overlapping with other walls (or self if config = 0).
+  </td>
+  <td>1</td>
+</tr>
+<tr>
+  <td class="resbarrier"><font color="#9c1c01">min_size</td>
+  <td>
+  The minimum number of blocks to generate (minimum wall size).
+  </td>
+  <td>1</td>  
+</tr>
+<tr>  
+  <td class="resbarrier"><font color="#9c1c01">config</td>
+  <td>
+  The orientation of the wall. 0 = random (all blocks placed randomly, but neighboring, relative to previous block), 1 = vertical (N or S from seed block), 2 = horizontal (E or W from seed block).
+  </td>
+  <td>0</td> 
+</tr>
 </tr>
 </table>
 <p>&nbsp;</p>
@@ -327,6 +396,15 @@ is of height 2, and the resource moves only every 10000 updates.
 </P>
   <pre>GRADIENT_RESOURCE nest1:peakx=189:peaky=249:height=20:spread=19:plateau=2:decay=1:min_x=125:max_x=375:min_y=125:max_y=375:move_a_scaler=1:updatestep=10000</pre>
 
+<P>
+Examples of barrier resources. Both will create 5 randomly placed vertical or horizontal walls, each between 10 and 200 cells long. For each barrier
+  instance, the initial 'seed' block will be placed in a random cell. Then the build direction (N or S for the first, E or W for the second) will be 
+  chosen and the next block placed in the corresponding neighboring cell until the (randomly chosen) target size is met or the edge of the world is 
+  reached. All walls will be dismantled and new sets generated every 250 updates.
+</P>
+  <pre>GRADIENT_RESOURCE vert_walls:habitat=2:plateau=1.5:updatestep=250:count=5:max_size=200:min_size=10:config=1</pre>
+  
+  <pre>GRADIENT_RESOURCE horiz_walls:habitat=2:plateau=1.5:updatestep=250:count=5:max_size=200:min_size=10:config=2</pre>
 
 <hr />
 
