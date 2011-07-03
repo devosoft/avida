@@ -3036,10 +3036,24 @@ public:
       for (int i = 0; i < m_world->GetPopulation().GetWorldX(); i++) {
         const tArray<double> res_count = m_world->GetPopulation().GetCellResources(j * m_world->GetPopulation().GetWorldX() + i, ctx); 
         double max_resource = 0.0;    
-        // if more than one resource is available, return the resource with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+        // get the resource library
+        const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+        // if more than one resource is available, return the resource with the most available in this spot 
+        // (note that, with global resources, the GLOBAL total will evaluated)
+        // we build regular resources on top of any hills, but replace any regular resources or hills with any walls 
+        double topo_height = 0.0;
         for (int h = 0; h < res_count.GetSize(); h++) {
-          if (res_count[h] > max_resource) max_resource = res_count[h];
+          int hab_type = resource_lib.GetResource(h)->GetHabitat();
+          if ((res_count[h] > max_resource) & (hab_type != 1) & (hab_type !=2)) max_resource = res_count[h];
+          else if (hab_type == 1 & res_count[h] > 0) topo_height = resource_lib.GetResource(h)->GetPlateau();
+          // allow walls to trump everything else
+          else if (hab_type == 2 & res_count[h] > 0) { 
+            topo_height = resource_lib.GetResource(h)->GetPlateau();
+            max_resource = 0.0;
+            break;
+          }
         }
+        max_resource = max_resource + topo_height;
         fp << max_resource << " ";
       }
       fp << endl;

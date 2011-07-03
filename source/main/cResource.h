@@ -128,6 +128,7 @@ private:
   int m_max_size;
   int m_config;
   int m_count; 
+  double m_resistance;
   bool isgradient;
   tArray<cCellResource> cell_list;
   tArray<int> cell_id_list;
@@ -207,6 +208,7 @@ public:
   int GetMaxSize() { return m_max_size; }
   int GetConfig() { return m_config; }
   int GetCount() { return m_count; }
+  double GetResistance() { return m_resistance; }
   bool GetGradient() { return isgradient; }
   tArray<cCellResource> *GetCellListPtr() { return &cell_list; }
   tArray<int> *GetCellIdListPtr() { return &cell_id_list; }
@@ -280,6 +282,7 @@ public:
   void SetMaxSize(int _max_size) { m_max_size = _max_size; }
   void SetConfig(int _config) { m_config = _config; }
   void SetCount(int _count) { m_count = _count; }
+  void SetResistance(double _resistance) { m_resistance = _resistance; }
   void SetGradient(bool _gradient) { isgradient = _gradient; }
   void AddCellResource(cCellResource new_cell) { cell_list.Push(new_cell); }
   cCellResource *GetCellResourcePtr(int _id);

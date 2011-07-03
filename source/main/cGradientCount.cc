@@ -70,7 +70,7 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
                                int worldx, int worldy, int geometry, int halo, int halo_inner_radius, int halo_width,
                                int halo_anchor_x, int halo_anchor_y, int move_speed, 
                                double plateau_inflow, double plateau_outflow, int is_plateau_common, double floor,
-                               int habitat, int min_size, int max_size, int config, int count)
+                               int habitat, int min_size, int max_size, int config, int count, double resistance)
   : m_world(world)
   , m_peakx(peakx), m_peaky(peaky)
   , m_height(height), m_spread(spread), m_plateau(plateau), m_decay(decay)
@@ -80,11 +80,11 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   , m_halo_anchor_x(halo_anchor_x), m_halo_anchor_y(halo_anchor_y)
   , m_move_speed(move_speed), m_plateau_inflow(plateau_inflow), m_plateau_outflow(plateau_outflow)
   , m_is_plateau_common(is_plateau_common), m_floor(floor) 
-  , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count)
+  , m_habitat(habitat), m_min_size(min_size), m_max_size(max_size), m_config(config), m_count(count), m_resistance(resistance)
   , m_move_y_scaler(0.5)
   , m_counter(0)
   , m_move_counter(1)
-  , m_wall_counter(updatestep)
+  , m_topo_counter(updatestep)
   , m_movesignx(0)
   , m_movesigny(0)
   , m_just_reset(true)
@@ -111,6 +111,9 @@ cGradientCount::cGradientCount(cWorld* world, int peakx, int peaky, int height, 
   if (m_habitat == 2) {
     generateBarrier(m_world->GetDefaultContext());
   }
+  else if (m_habitat == 1) {
+    generateHills(m_world->GetDefaultContext());
+  }
   else {
   generatePeak(m_world->GetDefaultContext());
   UpdateCount(m_world->GetDefaultContext());
@@ -123,7 +126,10 @@ void cGradientCount::UpdateCount(cAvidaContext& ctx)
     generateBarrier(m_world->GetDefaultContext());
     return;
   }
-  
+  else if (m_habitat == 1) {
+    generateHills(m_world->GetDefaultContext());
+    return;
+  }  
   bool has_edible = false;
 
   // determine if there is any edible food left in the peak (don't refresh the peak values until decay kicks in if there is edible food left) 
@@ -511,9 +517,9 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
 // If habitat == 2 we are creating barriers to movement (walls), not really gradient resources
 { 
   // generate/regenerate walls when counter == config updatestep
-  if (m_wall_counter == m_updatestep) { 
+  if (m_topo_counter == m_updatestep) { 
     // reset counter
-    m_wall_counter = 1;
+    m_topo_counter = 1;
     // clear any old resource
     for (int ii = 0; ii < GetX(); ii++) {
       for (int jj = 0; jj < GetY(); jj++) {
@@ -587,5 +593,62 @@ void cGradientCount::generateBarrier(cAvidaContext& ctx)
       }      
     }
   }
-  else m_wall_counter++; 
+  else m_topo_counter++; 
+}
+
+void cGradientCount::generateHills(cAvidaContext& ctx)
+// If habitat == 1 we are creating hills which slow movement, not really gradient resources
+{ 
+  cRandom& rng = ctx.GetRandom();
+  // generate/regenerate hills when counter == config updatestep
+  if (m_topo_counter == m_updatestep) { 
+    // reset counter
+    m_topo_counter = 1;
+    // since we are potentially plotting more than one hill per resource, we need to wipe the world before we start
+    for (int ii = 0; ii < GetX(); ii++) {
+      for (int jj = 0; jj < GetY(); jj++) {
+        Element(jj * GetX() + ii).SetAmount(0);
+      }
+    }
+
+    // generate number hills equal to count
+    for (int i = 0; i < m_count; i++) {
+      // decide the size of the current hill
+      int rand_hill_radius = ctx.GetRandom().GetUInt(m_min_size, m_max_size + 1);
+      
+      // choose the peak center for current hill, keeping the entire hill outside of any inner_radius
+      int chooseEW = rng.GetUInt(0,2);
+      if (chooseEW == 0) {
+        m_peakx = rng.GetUInt(0, m_halo_anchor_x - m_halo_inner_radius - rand_hill_radius);
+      } else {
+        m_peakx = rng.GetUInt(m_halo_anchor_x + m_halo_inner_radius + rand_hill_radius, GetX() - 1);
+      }
+      int chooseNS = rng.GetUInt(0,2);
+      if (chooseNS == 0) { 
+        m_peaky = rng.GetUInt(0, m_halo_anchor_y - m_halo_inner_radius - rand_hill_radius);
+      } else {
+        m_peaky = rng.GetUInt(m_halo_anchor_y + m_halo_inner_radius + rand_hill_radius, GetY() - 1);
+      }
+
+      // figure the coordinate extent of each hill (box)
+      int max_pos_x = min(m_peakx + rand_hill_radius + 1, GetX() - 1);
+      int min_pos_x = max(m_peakx - rand_hill_radius - 1, 0);
+      int max_pos_y = min(m_peaky + rand_hill_radius + 1, GetY() - 1);
+      int min_pos_y = max(m_peaky - rand_hill_radius - 1, 0);
+
+      // look to place new cell values within a box around the hill center
+      for (int ii = min_pos_x; ii < max_pos_x + 1; ii++) {
+        for (int jj = min_pos_y; jj < max_pos_y + 1; jj++) {
+          double thisheight = 0.0;
+          double thisdist = sqrt((double) (m_peakx - ii) * (m_peakx - ii) + (m_peaky - jj) * (m_peaky - jj));
+          // only plot values when within set config radius & if no larger amount has already been plotted for another overlapping hill
+          if ((thisdist <= rand_hill_radius) & (Element(jj * GetX() + ii).GetAmount() <  m_plateau / (thisdist + 1))) {
+          thisheight = m_plateau / (thisdist + 1);
+          Element(jj * GetX() + ii).SetAmount(thisheight);
+          }
+        }
+      }
+    }
+  }
+  else m_topo_counter++; 
 }

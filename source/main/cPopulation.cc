@@ -303,7 +303,7 @@ cPopulation::cPopulation(cWorld* world)
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetGradient()
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
                            ); 
       m_world->GetStats().SetResourceName(global_res_index, res->GetName());
     } else if (res->GetDemeResource()) {
@@ -1063,6 +1063,23 @@ bool cPopulation::MoveOrganisms(cAvidaContext& ctx, int src_cell_id, int dest_ce
       if (resource_lib.GetResource(i)->GetHabitat() == 2 & dest_cell_resources[i] > 0) return false;      
     }    
   }
+  // if any of the resources in current cells are hills, find the id of the most resistant resource
+  int steepest_hill = 0;
+  double curr_resistance = 1.0;
+  for (int i = 0; i < resource_lib.GetSize(); i++) {
+    if (resource_lib.GetResource(i)->GetHabitat() == 1 & src_cell_resources[i] > 0) {
+      if (resource_lib.GetResource(i)->GetResistance() > curr_resistance) {
+        curr_resistance = resource_lib.GetResource(i)->GetResistance();
+        steepest_hill = i;
+      }
+    }
+  } 
+  // apply the chance of move failing for the steepest hill in this cell, if there is a hill at all
+  if (resource_lib.GetResource(steepest_hill)->GetHabitat() == 1 & src_cell_resources[steepest_hill] > 0) {
+    // we use resistance to determine chance of movement succeeding: 'resistance == # move instructions executed, on average, to move one step/cell'
+    int chance_move_success = int(((1/curr_resistance) * 100) + 0.5);
+    if (ctx.GetRandom().GetInt(0,101) > chance_move_success) return false;      
+  }      
   
   if (m_world->GetConfig().DEADLY_BOUNDARIES.Get() == 1 && m_world->GetConfig().WORLD_GEOMETRY.Get() == 1) {
     int absolute_cell_ID = src_cell.GetOrganism()->GetCellID();
@@ -6211,7 +6228,7 @@ void cPopulation::UpdateGradientCount(const int Verbosity, cWorld* world, const 
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetGradient()
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
                            ); 
       } 
    }
@@ -6266,7 +6283,7 @@ void cPopulation::UpdateResourceCount(const int Verbosity, cWorld* world) {
                            res->GetHaloAnchorX(), res->GetHaloAnchorY(), res->GetMoveSpeed(),
                            res->GetPlateauInflow(), res->GetPlateauOutflow(), 
                            res->GetIsPlateauCommon(), res->GetFloor(), res->GetHabitat(), 
-                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetGradient()
+                           res->GetMinSize(), res->GetMaxSize(), res->GetConfig(), res->GetCount(), res->GetResistance(), res->GetGradient()
                            ); 
 
     } else if (res->GetDemeResource()) {
