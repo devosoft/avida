@@ -47,8 +47,7 @@ Currently moving gradient resources are only supported for bounded grid environm
 Habitats:
 The habitat a resource represents controls both the specifications of the resource (i.e. moving or stationary,
 orbiting or bounded within a defined area) and any effect of the resource on the organisms (i.e. blocking or
-slowing movement). Currently there are 2 habitats implemented with the ground work set for a third (hills): 
-gradient, hills, and barriers.
+slowing movement). Currently there are 3 habitats implemented: gradient, hills, and barriers.
 </p>
 <p>
 Gradient Resources: Standard and Halo  
@@ -78,14 +77,26 @@ returned to the ?BX? register. Orgs can also make use of the sense-faced-habitat
 habitat type in the faced cell. This will return a 1 if the 'worst' resource in the faced cell is a hill, a 2 if a barrier
 is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
 </p>  
+<p>
+Hills
+Hills are simply meant to represent areas which slow movement. Hills are only implemented to be created randomly within the 
+grid. The center block for each occurance of a hill is set down in a random cell, then the rest of the block is drawn in a 
+circle around the center point using a random radius selected from within the config set radius range. The user can also 
+specify and exclusion area by using halo_inner_radius and halo anchors. The effects on movement are determined by the 
+resistance config setting. This is implemented as the probability of successfully moving while on a hill is equal to 1/resistance. 
+As such, on average, an org on a hill with resistance = 4, will have to execute 4 move instructions to move one cell.
+</p>  
 <div align="center">
 <p>&nbsp;</p>
 <h3>Table 1: <span>Gradient Resource Options</span></h3>
 <p>
-(<b>black</b> variables apply to all gradient resource types,
-<span class="resall"><font color="#1c019c">blue</font></span> variables apply to standard and halo gradient resources,
-<span class="reshalo"><font color="#029C1C">green</font></span> variables apply only to halo resources,
-<span class="resbarrier"><font color="#9c1c01">red</font></span> variables apply only to barriers)
+<b>black</b> variables apply to all gradient resource types,<br>
+<span class="resall"><font color="#1c019c">blue</font></span> variables apply to standard and halo gradient resources,<br>
+<span class="reshalo"><font color="#029C1C">green</font></span> variables apply only to halo resources,<br>
+<span class="reslocate"><font color="#9c6800">brown(ish)</font></span> variables apply to halo resources and hills,<br>
+<span class="resbarrier"><font color="#9c1c01">red</font></span> variables apply only to barriers,<br>
+<span class="reshills"><font color="#9C1FFE">purple</font></span> variables apply only to hills,<br>
+<span class="restopo"><font color="#01819c">blue-green</font></span> variables apply to all topographic features (hills and barriers).<br>
 </p>
 <table border="1" cellpadding="2">
 <tr>
@@ -137,8 +148,9 @@ is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
     levels wherever cone height is greater or equal to 1. This will supersede the cone height in 
     eligible cells. A value of -1 turns this option off.
     </br> 
-    <font color="#9c1c01">Barriers</font>: Height of the barrier. Apart from when plateau = 0 (off)
-    and plateau > 0 (on), the plateau value has no effect outside of providing values for drawing/rendering.
+    <font color="#9c1c01">Barriers</font> and <font color="#9C1FFE">Hills</font>: Height of the topographic feature. 
+    Apart from when plateau = 0 (off) and plateau > 0 (on), the plateau value has no effect outside of providing values 
+    for drawing/rendering.
   </td>
   <td>
     -1.0
@@ -219,14 +231,14 @@ is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
     course if they bounce or when updatestep is reached. Low updatestep numbers result in 
     chaotic peak movements (and peaks tend not to travel very far overall).
     </br> 
-    <font color="#9c1c01">Barriers</font>: How many updates to wait until regenerating the 
-    barriers at new locations. Any value less than 1 (or the number of updates in the run) 
-    will turn off regeneration.
+    <font color="#9c1c01">Barriers</font> and <font color="#9C1FFE">Hills</font>: How many 
+    updates to wait until regenerating the topographic features at new locations. Any value 
+    less than 1 (or >= the number of updates in the run) will turn off regeneration.
   </td>
   <td>1</td>
 </tr>
 <tr>
-  <td class="relhalo"><font color="#029C1C">halo</font></td>
+  <td class="reshalo"><font color="#029C1C">halo</font></td>
   <td>
     Determines if this is a halo gradient. Instead of 
     moving in a predetermined box, halo resources move 
@@ -241,21 +253,26 @@ is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
   <td>0</td>
 </tr>
 <tr>
-  <td class="relhalo"><font color="#029C1C">halo_inner_radius</font></td>
+  <td class="reslocate"><font color="#9c6800">halo_inner_radius</font></td>
   <td>
-    Closest (in number of cells) the inner edge of a plateau of a halo resource 
-    can be to the anchor cell. If no plateau is set, then this will just be the 
-    closest the center peak cell can be to the anchor, i.e. the minimum orbit. 
-    If plateau is set, minimum orbit will be halo_inner_radius + height (since 
-    radius of plateau = height). If you want a plateau of size 10 to be centered
-    on the anchor point, you would need to set halo_inner_radius = -10. If you want
-    the same peak to orbit the anchor point with no space between the plateau 
-    and the anchor, halo_inner_radius would be set to 10.
+    <font color="#029C1C">Halo</font>: Closest (in number of cells) the inner 
+    edge of a plateau of a halo resource can be to the anchor cell. If no plateau 
+    is set, then this will just be the closest the center peak cell can be to the 
+    anchor, i.e. the minimum orbit. If plateau is set, minimum orbit will be 
+    halo_inner_radius + height (since radius of plateau = height). If you want a 
+    plateau of size 10 to be centered on the anchor point, you would need to set 
+    halo_inner_radius = -10. If you want the same peak to orbit the anchor point 
+    with no space between the plateau and the anchor, halo_inner_radius would be 
+    set to 10. <br>
+    <font color="#9C1FFE">Hills</font>: Closest any part of any generated
+    hill can be to the given anchor point. For hill placement, the box defined by
+    the anchor point, inner_radius, and hill radius define an exclusion zone for 
+    placement of the hill center point and build of the hill.
   </td>
   <td>0</td>
 </tr>
 <tr>
-  <td class="relhalo"><font color="#029C1C">halo_width</font></td>
+  <td class="reshalo"><font color="#029C1C">halo_width</font></td>
   <td>
    How wide in cells the orbit is. The farthest the outer edge of the plateau 
    can be from the anchor cell is halo_inner_radius + halo_width.
@@ -268,16 +285,18 @@ is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
   <td>0</td>
 </tr>
 <tr>
-  <td class="relhalo"><font color="#029C1C">halo_anchor_x</font></td>
+  <td class="reslocate"><font color="#9c6800">halo_anchor_x</font></td>
   <td>
-    x-coordinate of the anchor cell.
+    X-coordinate of the anchor cell. For <font color="#9C1FFE">hills</font>
+    this is simply the center point of any exclusion zone and does not otherwise
+    determine where the hill is drawn.
   </td>
   <td>0</td>
 </tr>
 <tr>
-  <td class="relhalo"><font color="#029C1C">halo_anchor_y</font></td>
+  <td class="reslocate"><font color="#9c6800">halo_anchor_y</font></td>
   <td>
-   y-coordinate of the anchor cell.
+   Y-coordinate of the anchor cell.
   </td>
   <td>0</td>
 </tr>
@@ -346,32 +365,44 @@ is in the faced cell, and a 0 if no hills or barriers are in the faced cell.
   <td>0.0</td>
 </tr>
 <tr>
-  <td class="resbarrier"><font color="#9c1c01">count</td>
+  <td class="restopo"><font color="#01819c">count</font></td>
   <td>
-  The number of walls/barriers to generate.
+  The number of hills or walls/barriers to generate.
   </td>
   <td>1</td> 
 </tr>
 <tr>
-  <td class="resbarrier"><font color="#9c1c01">max_size</td>
+  <td class="restopo"><font color="#01819c">max_size</font></td>
   <td>
-  The maximum number of blocks to generate (maximum wall size). Actual wall size will be random number between min and max (inclusive), minus any blocks placed off-world or overlapping with other walls (or self if config = 0).
+  The maximum wall size in number of blocks(cells) or maximum hill radius. Actual hill and wall sizes will be determined by
+  a random number selected between min and max (inclusive), minus any blocks placed off-world or overlapping with other 
+  blocks of the same resource (or self for walls, if config = 0).
   </td>
   <td>1</td>
 </tr>
 <tr>
-  <td class="resbarrier"><font color="#9c1c01">min_size</td>
+  <td class="restopo"><font color="#01819c">min_size</font></td>
   <td>
-  The minimum number of blocks to generate (minimum wall size).
+  The minimum wall or hill size.
   </td>
   <td>1</td>  
 </tr>
 <tr>  
-  <td class="resbarrier"><font color="#9c1c01">config</td>
+  <td class="resbarrier"><font color="#9c1c01">config</font></td>
   <td>
-  The orientation of the wall. 0 = random (all blocks placed randomly, but neighboring, relative to previous block), 1 = vertical (N or S from seed block), 2 = horizontal (E or W from seed block).
+  The orientation of the wall. 0 = random (all blocks placed randomly, but neighboring, relative to previous block), 
+  1 = vertical (N or S from seed block), 2 = horizontal (E or W from seed block).
   </td>
   <td>0</td> 
+</tr>
+<tr>  
+  <td class="reshills"><font color="#9C1FFE">resistance</font></td>
+  <td>
+  This is implemented as a simple way of impacting the speed with which orgs can move through/across a hill. 
+  On average, an org on a hill will have to execute a number of move instructions equal to the resistance 
+  setting to move one cell.
+  </td>
+  <td>1.0</td> 
 </tr>
 </tr>
 </table>
@@ -398,13 +429,21 @@ is of height 2, and the resource moves only every 10000 updates.
 
 <P>
 Examples of barrier resources. Both will create 5 randomly placed vertical or horizontal walls, each between 10 and 200 cells long. For each barrier
-  instance, the initial 'seed' block will be placed in a random cell. Then the build direction (N or S for the first, E or W for the second) will be 
-  chosen and the next block placed in the corresponding neighboring cell until the (randomly chosen) target size is met or the edge of the world is 
-  reached. All walls will be dismantled and new sets generated every 250 updates.
+instance, the initial 'seed' block will be placed in a random cell. Then the build direction (N or S for the first, E or W for the second) will be 
+chosen and the next block placed in the corresponding neighboring cell until the (randomly chosen) target size is met or the edge of the world is 
+reached. All walls will be dismantled and new sets generated every 250 updates.
 </P>
   <pre>GRADIENT_RESOURCE vert_walls:habitat=2:plateau=1.5:updatestep=250:count=5:max_size=200:min_size=10:config=1</pre>
   
   <pre>GRADIENT_RESOURCE horiz_walls:habitat=2:plateau=1.5:updatestep=250:count=5:max_size=200:min_size=10:config=2</pre>
+
+<P>
+An example of a hill resource. This will draw 10 randomly placed hills every 1000 updates, with each individual hill having a radius between
+50 and 125 cells. No hills will be drawn/placed within 10 cells of the center of the world (49, 49). When crossing any of these hills, an
+organism, on average, will have to take two steps for every one cell traversed.  
+</P>
+  <pre>GRADIENT_RESOURCE hills:habitat=1:plateau=0.2:updatestep=1000:count=10:max_size=125:min_size=50:halo_inner_radius=10:halo_anchor_x=49:halo_anchor_y=49:resistance=2</pre>
+  
 
 <hr />
 
