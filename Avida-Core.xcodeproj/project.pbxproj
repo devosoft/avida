@@ -1158,7 +1158,6 @@
 		70F7DAEF09290468009E311D /* cClassificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cClassificationManager.h; sourceTree = "<group>"; };
 		70F7DAF009290468009E311D /* cClassificationManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cClassificationManager.cc; sourceTree = "<group>"; };
 		70F7DE76092967A8009E311D /* cGenotypeBatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cGenotypeBatch.h; sourceTree = "<group>"; };
-		70F962BC135A9CFA008EDD1C /* GlobalObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlobalObject.h; sourceTree = "<group>"; };
 		70F962BF135AA2E7008EDD1C /* Genome.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Genome.cc; sourceTree = "<group>"; };
 		70F962C0135AA2E7008EDD1C /* Sequence.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Sequence.cc; sourceTree = "<group>"; };
 		70F962C1135AA2E7008EDD1C /* main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
@@ -1393,7 +1392,6 @@
 		703549241333E32D00D3865C /* private */ = {
 			isa = PBXGroup;
 			children = (
-				70F962BB135A9CFA008EDD1C /* core */,
 				7035492A1333E39300D3865C /* viewer-core */,
 			);
 			name = private;
@@ -1811,14 +1809,6 @@
 				701B342E11E4CC1E00FEF49A /* cSexualAncestry.cc */,
 			);
 			path = classification;
-			sourceTree = "<group>";
-		};
-		70F962BB135A9CFA008EDD1C /* core */ = {
-			isa = PBXGroup;
-			children = (
-				70F962BC135A9CFA008EDD1C /* GlobalObject.h */,
-			);
-			path = core;
 			sourceTree = "<group>";
 		};
 		70F962BD135AA2E7008EDD1C /* unittests */ = {

@@ -25,6 +25,9 @@
 #ifndef AvidaCoreGlobalObject_h
 #define AvidaCoreGlobalObject_h
 
+#include "apto/platform.h"
+
+
 namespace Avida {
   
   // GlobalObject - protocol for globally registered objects
@@ -33,7 +36,7 @@ namespace Avida {
   class GlobalObject
   {
   public:
-    virtual ~GlobalObject() = 0;
+    LIB_EXPORT virtual ~GlobalObject() = 0;
   };
   
 
@@ -41,8 +44,10 @@ namespace Avida {
   // --------------------------------------------------------------------------------------------------------------
   
   namespace GlobalObjectManager {
-    void Register(GlobalObject* obj);
-    void Unregister(GlobalObject* obj);
+    LIB_EXPORT void Register(GlobalObject* obj);
+    LIB_EXPORT void Unregister(GlobalObject* obj);
+    
+    LIB_LOCAL void Initialize();
   };
 };
 

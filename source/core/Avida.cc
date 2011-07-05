@@ -25,7 +25,7 @@
 #include "avida/Avida.h"
 
 #include "apto/platform.h"
-#include "avida/private/core/GlobalObject.h"
+#include "avida/core/GlobalObject.h"
 
 #include "AvidaTools.h"
 #include "cActionLibrary.h"

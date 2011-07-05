@@ -23,7 +23,6 @@
  */
 
 #include "avida/core/GlobalObject.h"
-#include "avida/private/core/GlobalObject.h"
 
 #include "apto/core/List.h"
 #include "apto/core/Mutex.h"
