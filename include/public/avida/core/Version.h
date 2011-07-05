@@ -25,20 +25,21 @@
 #ifndef AvidaCoreVersion_h
 #define AvidaCoreVersion_h
 
+#include "apto/platform.h"
 #include "apto/core/String.h"
 
 
 namespace Avida {
   namespace Version {
-    inline const char* String() { return "2.13.0 (TBD)"; }
-    inline int Major() { return 2; }
-    inline int Minor() { return 13; }
-    inline int Patch() { return 0; }
-    inline const char* Tag() { return "TDB"; }
+    LIB_EXPORT inline const char* String() { return "2.13.0 (TBD)"; }
+    LIB_EXPORT inline int Major() { return 2; }
+    LIB_EXPORT inline int Minor() { return 13; }
+    LIB_EXPORT inline int Patch() { return 0; }
+    LIB_EXPORT inline const char* Tag() { return "TDB"; }
     
-    Apto::String Banner();
+    LIB_EXPORT Apto::String Banner();
     
-    bool CheckCompatibility(const char* version);
+    LIB_EXPORT bool CheckCompatibility(const char* version);
   };
 };
 
