@@ -26,8 +26,7 @@
 #define AvidaDataTypes_h
 
 #include "apto/core.h"
-
-class cWorld;
+#include "avida/core/Types.h"
 
 namespace Avida {
   namespace Data {
@@ -46,7 +45,7 @@ namespace Avida {
 
     typedef Apto::String DataID;
     typedef Apto::SmartPtr<Provider, Apto::ThreadSafeRefCount> ProviderPtr;
-    typedef Apto::Functor<ProviderPtr, Apto::TL::Create<cWorld*> > ProviderActivateFunctor;
+    typedef Apto::Functor<ProviderPtr, Apto::TL::Create<World*> > ProviderActivateFunctor;
     
     typedef Apto::SmartPtr<Recorder, Apto::ThreadSafeRefCount> RecorderPtr;
     
@@ -59,6 +58,7 @@ namespace Avida {
     
     typedef Apto::Functor<PackagePtr, Apto::TL::Create<const DataID&> > DataRetrievalFunctor;
     
+    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
   };
 };
 

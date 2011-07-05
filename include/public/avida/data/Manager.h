@@ -27,6 +27,7 @@
 
 #include "apto/platform.h"
 #include "avida/core/Types.h"
+#include "avida/core/World.h"
 #include "avida/data/Types.h"
 
 
@@ -36,10 +37,10 @@ namespace Avida {
     // Data::Manager - Manages available and active data providers for a given world
     // --------------------------------------------------------------------------------------------------------------
     
-    class Manager
+    class Manager : public WorldFacet
     {
     private:
-      cWorld* m_world;
+      World* m_world;
       Apto::Map<DataID, ProviderActivateFunctor> m_provider_map;
       mutable DataSetPtr m_available;
       
@@ -51,7 +52,7 @@ namespace Avida {
       mutable Apto::Map<DataID, PackagePtr> m_current_values;
       
     public:
-      LIB_EXPORT Manager(cWorld* world);
+      LIB_EXPORT Manager();
       LIB_EXPORT ~Manager();
       
       LIB_EXPORT ConstDataSetPtr GetAvailable() const;
@@ -63,8 +64,13 @@ namespace Avida {
       
       LIB_EXPORT bool Register(const DataID& data_id, ProviderActivateFunctor functor);
       
+      LIB_EXPORT static bool Attach(ManagerPtr ptr, World* world);
+      LIB_EXPORT static ManagerPtr Of(World* world);
+      
     public:
-      LIB_LOCAL void UpdateState(Update current_update);
+      LIB_LOCAL void PerformUpdate(Avida::Context& ctx, Update current_update);
+      LIB_LOCAL WorldFacetID UpdateBefore() const;
+      LIB_LOCAL WorldFacetID UpdateAfter() const;
       
       LIB_LOCAL PackagePtr GetCurrentValue(const DataID& data_id) const;
     };

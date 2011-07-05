@@ -26,7 +26,7 @@
 #define AvidaEnvironmentManager_h
 
 #include "apto/platform.h"
-
+#include "avida/core/World.h"
 #include "avida/environment/types.h"
 
 
@@ -36,7 +36,7 @@ namespace Avida {
     // Environment::Manager - holds the top level definition of the environment
     // --------------------------------------------------------------------------------------------------------------
     
-    class Manager
+    class Manager : public WorldFacet
     {
     private:
       Apto::RWLock m_rwlock;
@@ -64,6 +64,12 @@ namespace Avida {
       
       LIB_EXPORT ConstResourceIDSetPtr GetResourceIDs() const;
       LIB_EXPORT ConstResourcePtr GetResource(const ResourceID& resource_id) const;
+      
+      
+      LIB_EXPORT static ManagerPtr Of(World* world);
+      
+    public:
+      LIB_LOCAL void PerformUpdate(Avida::Context& ctx, Update current_update);
     };
     
   };

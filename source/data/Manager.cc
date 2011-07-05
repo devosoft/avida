@@ -31,7 +31,7 @@
 #include <cassert>
 
 
-Avida::Data::Manager::Manager(cWorld* world) : m_world(world)
+Avida::Data::Manager::Manager() : m_world(NULL)
 {
   
 }
@@ -107,8 +107,37 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ProviderActivateFunct
   return true;
 }
 
+bool Avida::Data::Manager::Attach(ManagerPtr manager, World* world)
+{
+  if (manager->m_world) return false;
+  if (world->AttachFacet(Reserved::DataManagerFacetID, manager)) {
+    manager->m_world = world;
+    return true;
+  }
+  return false;
+}
+                                    
+                                    
+Avida::Data::ManagerPtr Avida::Data::Manager::Of(World* world)
+{
+  ManagerPtr manager;
+  WorldFacetPtr facet(world->GetFacet(Reserved::DataManagerFacetID));
+  manager.DynamicCastFrom(facet);
+  return manager;
+}
 
-void Avida::Data::Manager::UpdateState(Update current_update)
+Avida::WorldFacetID Avida::Data::Manager::UpdateBefore() const
+{
+  return "";
+}
+
+Avida::WorldFacetID Avida::Data::Manager::UpdateAfter() const
+{
+  return "";
+}
+
+
+void Avida::Data::Manager::PerformUpdate(Context& ctx, Update current_update)
 {
   m_current_values.Clear();
   

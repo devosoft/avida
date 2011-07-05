@@ -73,6 +73,8 @@ namespace Avida {
     typedef Apto::SmartPtr<ResourceIDSet, Apto::ThreadSafeRefCount> ResourceIDSetPtr;
     typedef Apto::SmartPtr<const ReactionIDSet, Apto::ThreadSafeRefCount> ConstResourceIDSetPtr;
     typedef Apto::Set<ResourceID>::ConstIterator ConstResourceIDSetIterator;
+    
+    typedef Apto::SmartPtr<Manager, Apto::InternalRCObject> ManagerPtr;
   };
 };
 

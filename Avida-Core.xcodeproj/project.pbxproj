@@ -326,6 +326,7 @@
 		70C11F3812B944F40092B40D /* cContextPhenotype.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3512B944F40092B40D /* cContextPhenotype.h */; };
 		70C11F3912B944F40092B40D /* cContextReactionRequisite.h in Headers */ = {isa = PBXBuildFile; fileRef = 70C11F3612B944F40092B40D /* cContextReactionRequisite.h */; };
 		70DCAC9C097AF7C0002F8733 /* primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DCAC9B097AF7C0002F8733 /* primitive.cc */; };
+		70DF729013BE20130085F85E /* World.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70DF728F13BE20130085F85E /* World.cc */; };
 		70E14D4D1279FA5B0059FB9D /* Driver.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E14D4B1279FA5B0059FB9D /* Driver.cc */; };
 		70E60C4B0EC0088300718740 /* cGenotypeBatch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70E60C4A0EC0088300718740 /* cGenotypeBatch.cc */; };
 		70EFD6600D975B6E00FAD32A /* cConstBurstSchedule.cc in Sources */ = {isa = PBXBuildFile; fileRef = 70EFD65F0D975B5E00FAD32A /* cConstBurstSchedule.cc */; };
@@ -1146,6 +1147,7 @@
 		70DCAD1F097AF81A002F8733 /* AvidaScript.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AvidaScript.h; sourceTree = "<group>"; };
 		70DCAD20097AF81A002F8733 /* cLexer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cLexer.h; sourceTree = "<group>"; };
 		70DCAD21097AF81A002F8733 /* cLexer.l */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.lex; path = cLexer.l; sourceTree = "<group>"; };
+		70DF728F13BE20130085F85E /* World.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = World.cc; sourceTree = "<group>"; };
 		70E130BF0C442B2900CE9249 /* cCoords.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = cCoords.h; sourceTree = "<group>"; };
 		70E130E30C4551E900CE9249 /* cASTVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cASTVisitor.h; sourceTree = "<group>"; };
 		70E14D4B1279FA5B0059FB9D /* Driver.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Driver.cc; sourceTree = "<group>"; };
@@ -1481,6 +1483,7 @@
 				70A53BA9135A29AA00C3E661 /* GlobalObject.cc */,
 				7061AB811358BD6F0000B036 /* Sequence.cc */,
 				70A53BBE135B5F2200C3E661 /* Version.cc */,
+				70DF728F13BE20130085F85E /* World.cc */,
 			);
 			path = core;
 			sourceTree = "<group>";
@@ -2570,6 +2573,7 @@
 				70FEF65E1382C48900A9D082 /* Manager.cc in Sources */,
 				70FB4E841386C16300D8F6F0 /* TimeSeriesRecorder.cc in Sources */,
 				70B9DC4913B91F6B00C833BB /* Manager.cc in Sources */,
+				70DF729013BE20130085F85E /* World.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -109,7 +109,7 @@ public:
   
   Data::Manager& GetDataManager() { return *m_data_mgr; }
   
-  Data::ProviderPtr GetStatsProvider(cWorld*);
+  Data::ProviderPtr GetStatsProvider(World*);
   
   // Access to Data File Manager
   std::ofstream& GetDataFileOFStream(const cString& fname) { return m_datafile_mgr->GetOFStream(fname); }

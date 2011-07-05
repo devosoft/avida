@@ -96,7 +96,7 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   m_datafile_mgr = new cDataFileManager(cString(Apto::FileSystem::GetAbsolutePath(Apto::String(m_conf->DATA_DIR.Get()), Apto::String(m_working_dir))), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   
-  m_data_mgr = new Avida::Data::Manager(this);
+  m_data_mgr = new Avida::Data::Manager();
   
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
@@ -166,7 +166,7 @@ bool cWorld::setup(cUserFeedback* feedback)
   return success;
 }
 
-Apto::SmartPtr<Data::Provider, Apto::ThreadSafeRefCount> cWorld::GetStatsProvider(cWorld*) { return m_stats; }
+Data::ProviderPtr cWorld::GetStatsProvider(World*) { return m_stats; }
 
 
 cAnalyze& cWorld::GetAnalyze()

@@ -25,6 +25,8 @@
 #ifndef AvidaCoreTypes_h
 #define AvidaCoreTypes_h
 
+#include "apto/core.h"
+
 namespace Avida {
   
   // Class Declarations
@@ -37,12 +39,16 @@ namespace Avida {
   class Sequence;
   class World;
   class WorldDriver;
+  class WorldFacet;
 
   
   // Type Declarations
   // --------------------------------------------------------------------------------------------------------------  
   
   typedef int Update; // Discrete unit of activity in Avida
+  
+  typedef Apto::String WorldFacetID;
+  typedef Apto::SmartPtr<WorldFacet, Apto::InternalRCObject> WorldFacetPtr;
   
 };
 

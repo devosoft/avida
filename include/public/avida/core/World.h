@@ -1,5 +1,5 @@
 /*
- *  core/Context.h
+ *  core/World.h
  *  avida-core
  *
  *  Created by David on 6/29/11.
@@ -25,6 +25,7 @@
 #ifndef AvidaCoreWorld_h
 #define AvidaCoreWorld_h
 
+#include "apto/platform.h"
 #include "avida/core/Types.h"
 
 
@@ -36,12 +37,57 @@ namespace Avida {
   class World
   {
   private:
+    WorldFacetPtr m_data_manager;
+    WorldFacetPtr m_environment;
+    
+    Apto::Map<WorldFacetID, WorldFacetPtr> m_facets;
+    Apto::Array<WorldFacetPtr> m_facet_order;
     
   public:
-    World();
+    LIB_EXPORT World();
     
+    // General facet methods
+    LIB_EXPORT bool AttachFacet(WorldFacetID facet_id, WorldFacetPtr facet);
+    LIB_EXPORT inline WorldFacetPtr GetFacet(const WorldFacetID& facet_id) const;
+
+    // Specific built-in facet accessors
+    LIB_EXPORT inline WorldFacetPtr DataManager() const { return m_data_manager; }
+    LIB_EXPORT inline WorldFacetPtr Environment() const { return m_environment; }
+    
+    // Actions
+    LIB_EXPORT void PerformUpdate(Context& ctx, Update current_update);
   };
   
+
+  inline WorldFacetPtr World::GetFacet(const WorldFacetID& facet_id) const
+  {
+    WorldFacetPtr facet;
+    m_facets.Get(facet_id, facet);
+    return facet;
+  }
+  
+  
+  // WorldFacet
+  // --------------------------------------------------------------------------------------------------------------
+  
+  class WorldFacet : public Apto::MTRefCountObject
+  {
+  public:
+    LIB_EXPORT virtual WorldFacetID UpdateBefore() const = 0;
+    LIB_EXPORT virtual WorldFacetID UpdateAfter() const = 0;
+    
+    LIB_EXPORT virtual void PerformUpdate(Context& ctx, Update current_update);
+  };
+  
+  
+  // Reserved Names
+  // --------------------------------------------------------------------------------------------------------------
+
+  namespace Reserved
+  {
+    LIB_EXPORT extern const WorldFacetID DataManagerFacetID;
+    LIB_EXPORT extern const WorldFacetID EnvironmentFacetID;
+  };
 };
 
 #endif
