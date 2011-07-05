@@ -362,14 +362,14 @@ void cStats::setupProvidedData()
   
   // Setup functors and references for use in the PROVIDE macro
   Data::ProviderActivateFunctor activate(m_world, &cWorld::GetStatsProvider);
-  Data::Manager& mgr = m_world->GetDataManager();
+  Data::ManagerPtr mgr = m_world->GetDataManager();
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<int (cStats::*)() const> > intStat(this, &cStats::packageData<int>);
   Apto::Functor<Data::PackagePtr, Apto::TL::Create<double (cStats::*)() const> > doubleStat(this, &cStats::packageData<double>);
 
   // Define PROVIDE macro to simplify instantiating new provided data
 #define PROVIDE(name, desc, type, func) { \
   m_provided_data[name] = ProvidedData(desc, Apto::BindFirst(type ## Stat, &cStats::func));\
-  mgr.Register(name, activate); \
+  mgr->Register(name, activate); \
 }
   
   // Time Stats

@@ -66,10 +66,11 @@ namespace Avida {
       LIB_EXPORT ConstResourcePtr GetResource(const ResourceID& resource_id) const;
       
       
+      LIB_EXPORT bool AttachTo(World* world);
       LIB_EXPORT static ManagerPtr Of(World* world);
       
-    public:
-      LIB_LOCAL void PerformUpdate(Avida::Context& ctx, Update current_update);
+      LIB_LOCAL WorldFacetID UpdateBefore() const;
+      LIB_LOCAL WorldFacetID UpdateAfter() const;
     };
     
   };

@@ -42,8 +42,8 @@
 #include <iostream>
 
 
-Avida::CoreView::Driver::Driver(cWorld* world)
-: Apto::Thread(), m_world(world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
+Avida::CoreView::Driver::Driver(cWorld* world, World* new_world)
+: Apto::Thread(), m_world(world), m_new_world(new_world), m_pause_state(DRIVER_UNPAUSED), m_done(false), m_paused(false), m_map(NULL)
 {
   GlobalObjectManager::Register(this);
 }
@@ -81,7 +81,8 @@ Avida::CoreView::Driver* Avida::CoreView::Driver::InitWithDirectory(const Apto::
     return NULL;
   }
   
-  cWorld* world = cWorld::Initialize(cfg, static_cast<const char*>(config_path), &feedback);
+  World* new_world = new World;
+  cWorld* world = cWorld::Initialize(cfg, static_cast<const char*>(config_path), new_world, &feedback);
   
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
@@ -94,7 +95,7 @@ Avida::CoreView::Driver* Avida::CoreView::Driver::InitWithDirectory(const Apto::
   
   
   if (!world) return NULL;
-  return new Avida::CoreView::Driver(world);  
+  return new Avida::CoreView::Driver(world, new_world);
 }
 
 
@@ -134,7 +135,7 @@ void Avida::CoreView::Driver::Run()
     cPopulation& population = m_world->GetPopulation();
     cStats& stats = m_world->GetStats();
     
-    Data::Manager& dm = m_world->GetDataManager();
+    Data::ManagerPtr dm = m_world->GetDataManager();
     
     const int ave_time_slice = m_world->GetConfig().AVE_TIME_SLICE.Get();
     const double point_mut_prob = m_world->GetConfig().POINT_MUT_PROB.Get();
@@ -155,7 +156,6 @@ void Avida::CoreView::Driver::Run()
       if (stats.GetUpdate() > 0) {
         // Tell the stats object to do update calculations and printing.
         stats.ProcessUpdate();
-        dm.UpdateState(stats.GetUpdate());
       }
       
       
@@ -257,10 +257,10 @@ void Avida::CoreView::Driver::AttachListener(Listener* listener)
 
 void Avida::CoreView::Driver::AttachRecorder(Data::RecorderPtr recorder)
 {
-  m_world->GetDataManager().AttachRecorder(recorder);
+  m_world->GetDataManager()->AttachRecorder(recorder);
 }
 
 void Avida::CoreView::Driver::DetachRecorder(Data::RecorderPtr recorder)
 {
-  m_world->GetDataManager().DetachRecorder(recorder);
+  m_world->GetDataManager()->DetachRecorder(recorder);
 }

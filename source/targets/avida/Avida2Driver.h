@@ -26,6 +26,7 @@
 #define Avida2Driver_h
 
 #include "avida/core/Feedback.h"
+#include "avida/core/Types.h"
 #include "avida/core/WorldDriver.h"
 
 class cWorld;
@@ -35,6 +36,7 @@ class Avida2Driver : public Avida::WorldDriver
 {
 protected:
   cWorld* m_world;
+  Avida::World* m_new_world;
   bool m_done;
   
   class StdIOFeedback : public Avida::Feedback
@@ -45,7 +47,7 @@ protected:
   } m_feedback;
   
 public:
-  Avida2Driver(cWorld* world);
+  Avida2Driver(cWorld* world, Avida::World* new_world);
   ~Avida2Driver();  
   
   // Actions

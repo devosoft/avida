@@ -47,7 +47,7 @@ using namespace Avida;
 using namespace std;
 
 
-Avida2Driver::Avida2Driver(cWorld* world) : m_world(world), m_done(false)
+Avida2Driver::Avida2Driver(cWorld* world, World* new_world) : m_world(world), m_new_world(new_world), m_done(false)
 {
   GlobalObjectManager::Register(this);
   world->SetDriver(this);

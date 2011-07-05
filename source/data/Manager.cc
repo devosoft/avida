@@ -107,11 +107,15 @@ bool Avida::Data::Manager::Register(const DataID& data_id, ProviderActivateFunct
   return true;
 }
 
-bool Avida::Data::Manager::Attach(ManagerPtr manager, World* world)
+bool Avida::Data::Manager::AttachTo(World* world)
 {
-  if (manager->m_world) return false;
-  if (world->AttachFacet(Reserved::DataManagerFacetID, manager)) {
-    manager->m_world = world;
+  if (m_world) return false;
+  
+  WorldFacetPtr ptr(this);
+  AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
+  
+  if (world->AttachFacet(Reserved::DataManagerFacetID, ptr)) {
+    m_world = world;
     return true;
   }
   return false;

@@ -124,3 +124,36 @@ Avida::Environment::ConstResourcePtr Avida::Environment::Manager::GetResource(co
   m_resources.Get(resource_id, resource);
   return resource;
 }
+
+bool Avida::Environment::Manager::AttachTo(World* world)
+{
+  WorldFacetPtr ptr(this);
+  AddReference();  // explictly add reference, since this is internally creating a smart pointer to itself
+  
+  if (world->AttachFacet(Reserved::EnvironmentFacetID, ptr)) {
+    return true;
+  }
+  return false;
+}
+
+
+Avida::Environment::ManagerPtr Avida::Environment::Manager::Of(World* world)
+{
+  ManagerPtr manager;
+  WorldFacetPtr facet(world->Environment());
+  manager.DynamicCastFrom(facet);
+  return manager;
+}
+
+Avida::WorldFacetID Avida::Environment::Manager::UpdateBefore() const
+{
+  return Reserved::DataManagerFacetID;
+}
+
+Avida::WorldFacetID Avida::Environment::Manager::UpdateAfter() const
+{
+  return "";
+}
+
+
+

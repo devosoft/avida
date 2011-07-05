@@ -22,6 +22,7 @@
 
 #include "apto/core/FileSystem.h"
 #include "avida/Avida.h"
+#include "avida/core/World.h"
 #include "avida/util/CmdLine.h"
 
 #include "cAvidaConfig.h"
@@ -43,7 +44,8 @@ int main(int argc, char * argv[])
   Avida::Util::ProcessCmdLineArgs(argc, argv, cfg);
   
   cUserFeedback feedback;
-  cWorld* world = cWorld::Initialize(cfg, cString(Apto::FileSystem::GetCWD()), &feedback);
+  Avida::World* new_world = new Avida::World();
+  cWorld* world = cWorld::Initialize(cfg, cString(Apto::FileSystem::GetCWD()), new_world, &feedback);
 
   for (int i = 0; i < feedback.GetNumMessages(); i++) {
     switch (feedback.GetMessageType(i)) {
@@ -66,7 +68,7 @@ int main(int argc, char * argv[])
 
   cout << endl;
   
-  (new Avida2Driver(world))->Run();
+  (new Avida2Driver(world, new_world))->Run();
   
   return 0;
 }

@@ -25,6 +25,7 @@
 #include "AvidaTools.h"
 
 #include "avida/data/Manager.h"
+#include "avida/environment/Manager.h"
 
 #include "cAnalyze.h"
 #include "cAnalyzeGenotype.h"
@@ -50,10 +51,10 @@ cWorld::cWorld(cAvidaConfig* cfg, const cString& wd)
 {
 }
 
-cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback)
+cWorld* cWorld::Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback)
 {
   cWorld* world = new cWorld(cfg, working_dir);
-  if (!world->setup(feedback)) { 
+  if (!world->setup(new_world, feedback)) { 
     delete world;
     world = NULL;
   }
@@ -76,9 +77,7 @@ cWorld::~cWorld()
   // Delete after all classes that may be logging items
   if (m_datafile_mgr) { m_datafile_mgr->FlushAll(); }
   delete m_datafile_mgr; m_datafile_mgr = NULL;
-  
-  delete m_data_mgr;
-  
+    
   // Delete Last
   delete m_conf; m_conf = NULL;
 
@@ -87,7 +86,7 @@ cWorld::~cWorld()
 }
 
 
-bool cWorld::setup(cUserFeedback* feedback)
+bool cWorld::setup(World* new_world, cUserFeedback* feedback)
 {
   bool success = true;
   
@@ -96,8 +95,17 @@ bool cWorld::setup(cUserFeedback* feedback)
   
   m_datafile_mgr = new cDataFileManager(cString(Apto::FileSystem::GetAbsolutePath(Apto::String(m_conf->DATA_DIR.Get()), Apto::String(m_working_dir))), (m_conf->VERBOSITY.Get() > VERBOSE_ON));
   
-  m_data_mgr = new Avida::Data::Manager();
+  // Initialize new API-based data structures here for now
+  {
+    // Data Manager
+    m_data_mgr = Data::ManagerPtr(new Data::Manager);
+    m_data_mgr->AttachTo(new_world);
+    
+    // Environment
+    Environment::ManagerPtr(new Environment::Manager)->AttachTo(new_world);
+  }
   
+
   m_class_mgr = new cClassificationManager(this);
   m_env = new cEnvironment(this);
   

@@ -22,7 +22,6 @@
 #ifndef cWorld_h
 #define cWorld_h
 
-#include "apto/core/SmartPtr.h"
 #include "avida/core/Types.h"
 #include "avida/data/Types.h"
 
@@ -69,7 +68,7 @@ protected:
   Apto::SmartPtr<cStats, Apto::ThreadSafeRefCount> m_stats;
   WorldDriver* m_driver;
   
-  Avida::Data::Manager* m_data_mgr;
+  Data::ManagerPtr m_data_mgr;
 
   cRandom m_rng;
   
@@ -87,7 +86,7 @@ private:
   
   
 public:
-  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, cUserFeedback* feedback = NULL); 
+  static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback = NULL); 
   virtual ~cWorld();
   
   void SetDriver(WorldDriver* driver, bool take_ownership = false);
@@ -107,7 +106,7 @@ public:
   cStats& GetStats() { return *m_stats; }
   WorldDriver& GetDriver() { return *m_driver; }
   
-  Data::Manager& GetDataManager() { return *m_data_mgr; }
+  Data::ManagerPtr& GetDataManager() { return m_data_mgr; }
   
   Data::ProviderPtr GetStatsProvider(World*);
   
@@ -148,7 +147,7 @@ public:
   
 protected:
   // Internal Methods
-  bool setup(cUserFeedback* errors); 
+  bool setup(World* new_world, cUserFeedback* errors); 
 
 };
 

@@ -59,6 +59,7 @@ namespace Avida {
     {
     private:
       cWorld* m_world;
+      World* m_new_world;
       
       Apto::Mutex m_mutex;
       Apto::ConditionVariable m_pause_cv;
@@ -79,7 +80,7 @@ namespace Avida {
 
       
     public:
-      LIB_EXPORT Driver(cWorld* world);
+      LIB_EXPORT Driver(cWorld* world, World* new_world);
       LIB_EXPORT ~Driver();
       
       LIB_EXPORT static Driver* InitWithDirectory(const Apto::String& dir);
