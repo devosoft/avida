@@ -24,6 +24,7 @@
 #include "avida/Avida.h"
 
 #include "avida/core/Feedback.h"
+#include "avida/environment/Manager.h"
 
 #include "cArgSchema.h"
 #include "cAvidaContext.h"
@@ -737,6 +738,8 @@ bool cEnvironment::LoadReaction(cString desc, Feedback& feedback)
   cTaskEntry* cur_task = m_tasklib.AddTask(trigger, trigger_info, envreqs, feedback);
   if (cur_task == NULL) return false;
   new_reaction->SetTask(cur_task);      // Attack task to reaction.
+  Environment::ManagerPtr env = Environment::Manager::Of(m_world->GetNewWorld());
+  env->DefineActionTrigger((const char*)cur_task->GetName(), (const char*)cur_task->GetDesc(), Environment::ConstProductPtr());
 
   while (desc.GetSize()) {
     cString desc_entry = desc.PopWord();      // Get the next argument

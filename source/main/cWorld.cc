@@ -88,6 +88,8 @@ cWorld::~cWorld()
 
 bool cWorld::setup(World* new_world, cUserFeedback* feedback)
 {
+  m_new_world = new_world;
+  
   bool success = true;
   
   // Setup Random Number Generator

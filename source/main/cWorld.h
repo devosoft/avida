@@ -54,6 +54,7 @@ using namespace Avida;
 class cWorld
 {
 protected:
+  World* m_new_world;
   cString m_working_dir;
   
   cAnalyze* m_analyze;
@@ -79,11 +80,6 @@ protected:
 
   cWorld(cAvidaConfig* cfg, const cString& wd);
   
-private:
-  cWorld(); // @not_implemented
-  cWorld(const cWorld&); // @not_implemented
-  cWorld& operator=(const cWorld&); // @not_implemented  
-  
   
 public:
   static cWorld* Initialize(cAvidaConfig* cfg, const cString& working_dir, World* new_world, cUserFeedback* feedback = NULL); 
@@ -105,6 +101,7 @@ public:
   cRandom& GetRandom() { return m_rng; }
   cStats& GetStats() { return *m_stats; }
   WorldDriver& GetDriver() { return *m_driver; }
+  World* GetNewWorld() { return m_new_world; }
   
   Data::ManagerPtr& GetDataManager() { return m_data_mgr; }
   
