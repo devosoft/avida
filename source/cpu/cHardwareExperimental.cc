@@ -239,7 +239,27 @@ tInstLib<cHardwareExperimental::tMethod>* cHardwareExperimental::initInstLib(voi
     tInstLibEntry<tMethod>("sg-rotate-r", &cHardwareExperimental::Inst_SGRotateR),
     tInstLibEntry<tMethod>("sg-sense", &cHardwareExperimental::Inst_SGSense),
 
-    
+      
+    // Movement and Navigation instructions
+    tInstLibEntry<tMethod>("move", &cHardwareExperimental::Inst_Move),
+    tInstLibEntry<tMethod>("rotate-left-one", &cHardwareExperimental::Inst_RotateLeftOne, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-right-one", &cHardwareExperimental::Inst_RotateRightOne, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-uphill", &cHardwareExperimental::Inst_RotateUphill, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("rotate-home", &cHardwareExperimental::Inst_RotateHome, nInstFlag::STALL),
+
+      
+    // Resource and Topography Sensing
+    tInstLibEntry<tMethod>("sense-resource-id", &cHardwareExperimental::Inst_SenseResourceID, nInstFlag::STALL), 
+    tInstLibEntry<tMethod>("sense-opinion-resource-quantity", &cHardwareExperimental::Inst_SenseOpinionResourceQuantity, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-diff-faced", &cHardwareExperimental::Inst_SenseDiffFaced, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("sense-faced-habitat", &cHardwareExperimental::Inst_SenseFacedHabitat, nInstFlag::STALL),
+
+     
+    // Grouping instructions
+    tInstLibEntry<tMethod>("join-group", &cHardwareExperimental::Inst_JoinGroup, nInstFlag::STALL),
+    tInstLibEntry<tMethod>("get-group-id", &cHardwareExperimental::Inst_GetGroupID),
+
+      
     // DEPRECATED Instructions
     tInstLibEntry<tMethod>("set-flow", &cHardwareExperimental::Inst_SetFlow, 0, "Set flow-head to position in ?CX?")
   };
@@ -2572,5 +2592,217 @@ bool cHardwareExperimental::Inst_SGSense(cAvidaContext& ctx)
   return true; 
 }
 
+bool cHardwareExperimental::Inst_Move(cAvidaContext& ctx)
+{
+    // In TestCPU, movement fails...
+    if (m_organism->GetCellID() == -1) return false;
+    
+    bool move_success = m_organism->Move(ctx);  
+    const int out_reg = FindModifiedRegister(rBX);   
+    setInternalValue(out_reg, move_success, true);   
+    return true;
+}
 
+bool cHardwareExperimental::Inst_RotateLeftOne(cAvidaContext& ctx)
+{
+    m_organism->Rotate(1);
+    return true;
+}
 
+bool cHardwareExperimental::Inst_RotateRightOne(cAvidaContext& ctx)
+{
+    m_organism->Rotate(-1);
+    return true;
+}
+
+bool cHardwareExperimental::Inst_RotateUphill(cAvidaContext& ctx)
+{
+    int actualNeighborhoodSize = m_organism->GetNeighborhoodSize();  
+    int opinion = 0;
+    
+    if(m_organism->HasOpinion()) opinion = m_organism->GetOpinion().first; 
+    
+    const tArray<double> current_res = m_organism->GetOrgInterface().GetResources(ctx);   
+    double max_res = 0;
+    for(int i = 0; i < actualNeighborhoodSize; i++) {
+        m_organism->Rotate(1);
+        tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+        if (faced_res[opinion] > max_res) max_res = faced_res[opinion];
+    } 
+    
+    if (max_res > current_res[opinion]) {
+        for(int i = 0; i < actualNeighborhoodSize; i++) {
+            tArray<double> faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx); 
+            if (faced_res[opinion] != max_res) m_organism->Rotate(1);
+        }
+    }
+    // return % change
+    int res_diff = (int) ((max_res - current_res[opinion])/current_res[opinion] * 100 + 0.5);
+    int reg_to_set = FindModifiedRegister(rBX);
+    setInternalValue(reg_to_set, res_diff, true);
+    return true;
+}
+
+bool cHardwareExperimental::Inst_RotateHome(cAvidaContext& ctx)
+{
+    // Will rotate organism to face birth cell if org never used zero-easterly or zero-northerly. Otherwise will rotate org
+    // to face the 'marked' spot where those instructions were executed.
+    int easterly = m_organism->GetEasterly();
+    int northerly = m_organism->GetNortherly();
+    int correct_facing = 0;
+    if (northerly < 0 && easterly == 0) correct_facing = 6; // rotate S
+    
+    else if (northerly < 0 && easterly > 0) correct_facing = 2; // rotate SW
+    else if (northerly == 0 && easterly > 0) correct_facing = 3; // rotate W
+    else if (northerly > 0 && easterly > 0) correct_facing = 1; // rotate NW  
+    else if (northerly > 0 && easterly == 0) correct_facing = 0; // rotate N    
+    else if (northerly > 0 && easterly < 0) correct_facing = 4; // rotate NE
+    else if (northerly == 0 && easterly < 0) correct_facing = 5; // rotate E
+    else if (northerly < 0 && easterly < 0) correct_facing = 7; // rotate SE
+    for (int i = 0; i < m_organism->GetNeighborhoodSize(); i++) {
+        m_organism->Rotate(1);
+        if (m_organism->GetFacing() == correct_facing) break;
+    }
+    return true;
+}
+
+bool cHardwareExperimental::Inst_SenseResourceID(cAvidaContext& ctx)
+{
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    int reg_to_set = FindModifiedRegister(rBX);  
+    double max_resource = 0.0;    
+    // if more than one resource is available, return the resource ID with the most available in this spot (note that, with global resources, the GLOBAL total will evaluated)
+    for (int i = 0; i < res_count.GetSize(); i++) {
+        if (res_count[i] > max_resource) {
+            max_resource = res_count[i];
+            setInternalValue(reg_to_set, i, true);
+        }
+    }    
+    return true;
+}
+
+bool cHardwareExperimental::Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx)
+{
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    // check if this is a valid group
+    if(m_organism->HasOpinion()) {
+        int opinion = m_organism->GetOpinion().first;
+        int res_opinion = (int) (res_count[opinion] * 100 + 0.5);
+        int reg_to_set = FindModifiedRegister(rBX);
+        setInternalValue(reg_to_set, res_opinion, true);
+    }
+    return true;
+}
+
+bool cHardwareExperimental::Inst_SenseDiffFaced(cAvidaContext& ctx) 
+{
+    const tArray<double> res_count = m_organism->GetOrgInterface().GetResources(ctx); 
+    if(m_organism->HasOpinion()) {
+        int opinion = m_organism->GetOpinion().first;
+        int reg_to_set = FindModifiedRegister(rBX);
+        double faced_res = m_organism->GetOrgInterface().GetFacedCellResources(ctx)[opinion];  
+        // return % change
+        int res_diff = (int) ((faced_res - res_count[opinion])/res_count[opinion] * 100 + 0.5);
+        setInternalValue(reg_to_set, res_diff, true);
+    }
+    return true;
+}
+
+bool cHardwareExperimental::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
+{
+    int reg_to_set = FindModifiedRegister(rBX);
+    
+    // get the resource library
+    const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
+    
+    // get the destination cell resource levels
+    tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
+    
+    // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
+    // are there any barrier resources in the faced cell    
+    for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == 2 & cell_resource_levels[i] > 0) {
+            setInternalValue(reg_to_set, 2, true);
+            return true;
+        }    
+    }
+    // if no barriers, are there any hills in the faced cell    
+    for (int i = 0; i < cell_resource_levels.GetSize(); i++) {
+        if (resource_lib.GetResource(i)->GetHabitat() == 1 & cell_resource_levels[i] > 0) {
+            setInternalValue(reg_to_set, 1, true);
+            return true;
+        }
+    }
+    // if no barriers or hills, we return a 0 to indicate clear sailing
+    setInternalValue(reg_to_set, 0, true);
+    return true;
+}
+
+//! An organism joins a group by setting it opinion to the group id. 
+bool cHardwareExperimental::Inst_JoinGroup(cAvidaContext& ctx)
+{
+    int opinion;
+    // Check if the org is currently part of a group
+    assert(m_organism != 0);
+	
+    int prop_group_id = GetRegister(FindModifiedRegister(rBX));
+    
+    // check if this is a valid group
+    if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 &&
+        !(m_world->GetEnvironment().IsGroupID(prop_group_id))) return false; 
+    
+    // injected orgs might not have an opinion
+    if (m_organism->HasOpinion()) {
+        opinion = m_organism->GetOpinion().first;
+        
+        //return false if org setting opinion to current one (avoid paying costs for not switching)
+        if (opinion == prop_group_id) return false;
+        
+        // If tolerances are on the org must pass immigration chance @JJB
+        if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
+            // If there are no members of the target group, automatically successful immigration
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
+                m_organism->LeaveGroup(opinion);
+            }
+            // Calculate chances based on target group tolerance of another org successfully immigrating
+            else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
+                const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
+                const double target_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(prop_group_id);
+                double probability_immigration = target_group_tolerance / tolerance_max;
+                double rand = m_world->GetRandom().GetDouble();
+                if (rand <= probability_immigration) {
+                    // Org successfully immigrates
+                    m_organism->LeaveGroup(opinion);
+                }
+                // If the org fails to immigrate it stays in its current group (return true so there is a resource cost paid for failed immigration)
+                else {
+                    return true;
+                }
+            }
+        }
+        else {
+            // otherwise, subtract org from current group
+            m_organism->LeaveGroup(opinion);
+        }
+    }
+	
+    // Set the opinion
+    m_organism->SetOpinion(prop_group_id);
+	
+    // Add org to group count
+    opinion = m_organism->GetOpinion().first;	
+    m_organism->JoinGroup(opinion);
+    
+    return true;
+}
+
+bool cHardwareExperimental::Inst_GetGroupID(cAvidaContext& ctx)
+{
+    assert(m_organism != 0);
+    if (m_organism->HasOpinion()) {
+        const int opinion_reg = FindModifiedRegister(rBX);
+        
+        setInternalValue(opinion_reg, m_organism->GetOpinion().first, false);
+    }
+    return true;
+}

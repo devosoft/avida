@@ -141,7 +141,11 @@ public:
 
   virtual void JoinGroup(int group_id) = 0;
   virtual void LeaveGroup(int group_id) = 0;
-  
+  virtual int NumberOfOrganismsInGroup(int group_id) = 0;
+    
+  virtual int CalcGroupToleranceImmigrants(int target_group_id) = 0;
+  virtual int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group) = 0;
+    
   virtual void BeginSleep() = 0;
   virtual void EndSleep() = 0;
 };

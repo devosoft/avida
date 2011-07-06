@@ -1045,6 +1045,20 @@ void cPopulationInterface::LeaveGroup(int group_id)
   m_world->GetPopulation().LeaveGroup(GetOrganism(), group_id);
 }
 
+int cPopulationInterface::NumberOfOrganismsInGroup(int group_id)
+{
+  return m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+}
+
+int cPopulationInterface::CalcGroupToleranceImmigrants(int prop_group_id)
+{
+  return m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
+}
+
+int cPopulationInterface::CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group)
+{
+  return m_world->GetPopulation().CalcGroupToleranceOffspring(parent_organism, parent_group);
+}
 
 void cPopulationInterface::BeginSleep()
 {

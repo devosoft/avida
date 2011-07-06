@@ -201,7 +201,11 @@ protected:
 public:
   void JoinGroup(int group_id);
   void LeaveGroup(int group_id);
+  int NumberOfOrganismsInGroup(int group_id);
   
+  int CalcGroupToleranceImmigrants(int prop_group_id);
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group);
+    
   void BeginSleep();
   void EndSleep();
 };

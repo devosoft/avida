@@ -1390,7 +1390,7 @@ bool cHardwareCPU::ForkThread()
   // Find the first free bit in m_thread_id_chart to determine the new
   // thread id.
   int new_id = 0;
-  while ( (m_thread_id_chart >> new_id) & 1 == 1) new_id++;
+  while ( (m_thread_id_chart >> new_id) & 1) new_id++;
   m_threads[num_threads].SetID(new_id);
   m_thread_id_chart |= (1 << new_id);
   
@@ -3787,14 +3787,12 @@ bool cHardwareCPU::Inst_SenseDiffFaced(cAvidaContext& ctx)
 bool cHardwareCPU::Inst_SenseFacedHabitat(cAvidaContext& ctx) 
 {
   int reg_to_set = FindModifiedRegister(REG_BX);
-  // get the true faced cell id
-  int faced_cell_id = m_organism->GetOrgInterface().GetFacedCellID();
   
   // get the resource library
   const cResourceLib& resource_lib = m_world->GetEnvironment().GetResourceLib();
   
   // get the destination cell resource levels
-  tArray<double> cell_resource_levels = m_world->GetPopulation().GetCellResources(faced_cell_id, ctx);
+  tArray<double> cell_resource_levels = m_organism->GetOrgInterface().GetFacedCellResources(ctx);
 
   // check for any habitats ahead that affect movement, returning the most 'severe' habitat type
   // are there any barrier resources in the faced cell    
@@ -8654,7 +8652,7 @@ bool cHardwareCPU::Inst_AttackRandomOrg(cAvidaContext& ctx)
 {
   assert(m_organism != 0);
   //How many valid groups are we dealing with?
-  int num_poss_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+  int num_poss_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
   //Make sure we are using groups and there are resources out there.
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
   m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
@@ -8667,7 +8665,7 @@ bool cHardwareCPU::Inst_AttackRandomWhenFacingOrg(cAvidaContext& ctx)
   assert(m_organism != 0);
   if (!m_organism->IsNeighborCellOccupied()) return false;
   //How many valid groups are we dealing with?
-  int num_poss_groups = m_world->GetPopulation().GetResources(ctx).GetSize();
+  int num_poss_groups = m_organism->GetOrgInterface().GetResources(ctx).GetSize();
   //Make sure we are using groups and there are resources out there.
   if (m_world->GetConfig().USE_FORM_GROUPS.Get() == 2 && num_poss_groups <= 0) return false;
   m_world->GetPopulation().AttackRandomOrg(ctx, m_organism, num_poss_groups);
@@ -9341,13 +9339,13 @@ bool cHardwareCPU::Inst_JoinGroup(cAvidaContext& ctx)
         // If tolerances are on the org must pass immigration chance @JJB
         if (m_world->GetConfig().TOLERANCE_WINDOW.Get() > 0) {
             // If there are no members of the target group, automatically successful immigration
-            if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) == 0) {
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) == 0) {
                 m_organism->LeaveGroup(opinion);
             }
             // Calculate chances based on target group tolerance of another org successfully immigrating
-            else if (m_world->GetPopulation().NumberOfOrganismsInGroup(prop_group_id) > 0) {
+            else if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(prop_group_id) > 0) {
                 const double tolerance_max = (double) m_world->GetConfig().MAX_TOLERANCE.Get();
-                const double target_group_tolerance = (double) m_world->GetPopulation().CalcGroupToleranceImmigrants(prop_group_id);
+                const double target_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(prop_group_id);
                 double probability_immigration = target_group_tolerance / tolerance_max;
                 double rand = m_world->GetRandom().GetDouble();
                 if (rand <= probability_immigration) {
@@ -9403,7 +9401,7 @@ bool cHardwareCPU::Inst_NumberOrgsInMyGroup(cAvidaContext& ctx)
   
   if (m_organism->HasOpinion()) {
     opinion = m_organism->GetOpinion().first;
-    num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(opinion);
+    num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(opinion);
   }
   GetRegister(num_org_reg) = num_orgs;
 
@@ -9419,7 +9417,7 @@ bool cHardwareCPU::Inst_NumberOrgsInGroup(cAvidaContext& ctx)
   const int group_id = FindModifiedRegister(REG_BX);
   const int num_org_reg = FindModifiedRegister(REG_CX);
   
-  num_orgs = m_world->GetPopulation().NumberOfOrganismsInGroup(group_id);
+  num_orgs = m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id);
   
   GetRegister(num_org_reg) = num_orgs;
   return true;
@@ -9629,18 +9627,18 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             // Retrieve the parent's tolerance for its offspring
             double parent_tolerance_own_offspring = (double) m_organism->GetPhenotype().CalcToleranceOffspringOwn();
             // Retrieve the parent group's tolerance for offspring (this does not include the parent's contribution)
-            double parent_group_tolerance = (double) m_world->GetPopulation().CalcGroupToleranceOffspring(m_organism, group_id);
+            double parent_group_tolerance = (double) m_organism->GetOrgInterface().CalcGroupToleranceOffspring(m_organism, group_id);
             // Retrieve the parent's tolerance towards other offspring
             double parent_tolerance_other_offspring = (double) m_organism->GetPhenotype().CalcToleranceOffspringOthers();
             
             // Calculate the total group's tolerance towards the parent's offspring
             // If the parent is the only group member their vote counts for everything
             double total_own_offspring_tolerance = 0;
-            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) == 1) {
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id) == 1) {
                 total_own_offspring_tolerance = parent_tolerance_own_offspring;
             }
             // If the parent is not the only group member            
-            if (m_world->GetPopulation().NumberOfOrganismsInGroup(group_id) > 1){
+            if (m_organism->GetOrgInterface().NumberOfOrganismsInGroup(group_id) > 1){
                 // using 50-50 vote split
                 // their vote counts for half the total and the rest of the group the other half
                 //total_own_offspring_tolerance = (parent_tolerance_own_offspring / 2) + (parent_group_tolerance / 2);
@@ -9662,7 +9660,7 @@ bool cHardwareCPU::Inst_GetGroupTolerance(cAvidaContext& ctx)
             offspring_others_odds =  total_group_tolerance_offspring / tolerance_max;
             
             // Retrieve the group's tolerance towards immigrants
-            double total_group_tolerance_immigrants = (double) m_world->GetPopulation().CalcGroupToleranceImmigrants(group_id);
+            double total_group_tolerance_immigrants = (double) m_organism->GetOrgInterface().CalcGroupToleranceImmigrants(group_id);
             
             // Calculate probability for immigrants
             immigrant_odds = total_group_tolerance_immigrants / tolerance_max;

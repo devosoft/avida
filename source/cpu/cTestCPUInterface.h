@@ -141,7 +141,11 @@ public:
   
   void JoinGroup(int group_id) { ; }
   void LeaveGroup(int group_id) { ; }
-  
+  int NumberOfOrganismsInGroup(int group_id) {return 0; }
+    
+  int CalcGroupToleranceImmigrants(int prop_group_id) {return 0; }
+  int CalcGroupToleranceOffspring(cOrganism* parent_organism, int parent_group) {return 0; }
+
   void BeginSleep() { ; }
   void EndSleep() { ; }
 };

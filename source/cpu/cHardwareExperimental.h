@@ -35,6 +35,8 @@
 #include "tArray.h"
 #include "tInstLib.h"
 #include "tManagedPointerArray.h"
+#include "cEnvReqs.h"
+#include "cEnvironment.h"
 
 #include <cstring>
 #include <iomanip>
@@ -494,7 +496,24 @@ private:
   bool Inst_SGMove(cAvidaContext& ctx);
   bool Inst_SGRotateL(cAvidaContext& ctx);
   bool Inst_SGRotateR(cAvidaContext& ctx);
-  bool Inst_SGSense(cAvidaContext& ctx);  
+  bool Inst_SGSense(cAvidaContext& ctx);
+
+  // Movement and Navigation
+  bool Inst_Move(cAvidaContext& ctx);
+  bool Inst_RotateLeftOne(cAvidaContext& ctx);
+  bool Inst_RotateRightOne(cAvidaContext& ctx);
+  bool Inst_RotateUphill(cAvidaContext& ctx);
+  bool Inst_RotateHome(cAvidaContext& ctx);
+
+  // Resource and Topography Sensing
+  bool Inst_SenseResourceID(cAvidaContext& ctx); 
+  bool Inst_SenseOpinionResourceQuantity(cAvidaContext& ctx); 
+  bool Inst_SenseDiffFaced(cAvidaContext& ctx); 
+  bool Inst_SenseFacedHabitat(cAvidaContext& ctx);
+ 
+  // Opinion and Group 
+  bool Inst_JoinGroup(cAvidaContext& ctx);
+  bool Inst_GetGroupID(cAvidaContext& ctx);
 };
 
 
